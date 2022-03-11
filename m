@@ -2,104 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4092C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75833C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349466AbiCKOol (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:44:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60522 "EHLO
+        id S236044AbiCKOoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 09:44:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345037AbiCKOm1 (ORCPT
+        with ESMTP id S1350322AbiCKOod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:42:27 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8F91A2737;
-        Fri, 11 Mar 2022 06:40:57 -0800 (PST)
-Date:   Fri, 11 Mar 2022 14:40:54 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647009655;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HHll+TQ7r83xKSwcS7SmbWIwQwNrl/62wJEj3uh21hg=;
-        b=HVakd5zFfUrIFKlEkNIgxjMbi2qdHgpnfiHKd+oA5NTbMcEi8z1aCaE/pOpQ6fL/AQwh4b
-        fK/2iN4/S2X9P6ZsogpSpmfkucBMS/5SuX76XX3pt8k+FemgZ1WHkE61Q0OY2ll2NpV+1J
-        58wCjqdlyAmRe4cTsSJPaonkuWK6AtaeQn1fKZE5/c3IKcvvXVuQmKBN+pFrizNsw3OqTN
-        /xjziXxSlsY2mRYR0Z0HUEjUY61bl/r+wu8qG8HuNVX576Po9LmS7265DIQ0jc4x/iQrZx
-        2ZbXXDds3XxSrKv+cg6hP7Jhn3erGnnSqX5ld80ouBVzK78QzixaYzeDk+GnTA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647009655;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HHll+TQ7r83xKSwcS7SmbWIwQwNrl/62wJEj3uh21hg=;
-        b=wm5y/282KVgFCydrvQA+bkPpmMddXYbjw7bSFOLzeLEv70MA0aKBIiFr58hW54EGxiUXeB
-        Q37Kot0qVzbY/sBg==
-From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86,bpf: Fix bpf_arch_text_poke()
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <YionV0%2bv%2fcUBiOh0@hirez.programming.kicks-ass.net>
-References: <YionV0%2bv%2fcUBiOh0@hirez.programming.kicks-ass.net>
+        Fri, 11 Mar 2022 09:44:33 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB6A141471
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:43:27 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id l10so5272132wmb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:43:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DC5Lyo0u7Webj/mowBh6O4eTeZkl9naLEHKUm4TCwDA=;
+        b=fIIGKec5DhH7F0ghCXPyZCkwex77X91zaslVC3Sc1TEvoJ4Bes/UzjErOJWjNuTDff
+         9qj08Pls0ObfslAUvMrOqrEuVqtN4idDs6iIh09TJjeV2iGXnEWNM6Q9ILUmZoj9530R
+         4vz81HPYCgDscgepPU9V1JpwS9PYhPIi6RsMwgoChYJaJXRSqiChSmATYJTYGHAqyj7u
+         7mViLQKVnWrzAga3B7jQkXShvFMjYcbRTpSL9WWrH6DNepV3YJNLkd69KrXXkZGuHqH9
+         tIjuPr2u7K56MtLiy6q6xGyttG3KdslZwUuS5NcBpfXxzBHMmEJKWpD1eqBN8JcqDHTx
+         yBIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DC5Lyo0u7Webj/mowBh6O4eTeZkl9naLEHKUm4TCwDA=;
+        b=5dcLR3lIkT4lgV96YLqFtbEVgr7XQGdj6kFpkjsqXa5w+AhuIbj5Wjlr0rP0M1eQC4
+         1W8XG9MfAk0m9LspFPfuJNOcB5Xale7U8cxnuRT4ktHPp3GpwA7/8coAl6oliUj9ODkE
+         oD/LbcyuqRkCRAYXmOhbbmVQHg90u7cD/tQUWBoBo2jWLKHZr/zwdJshBQUOfBEj2GE2
+         Dcgc1aj7JggMaeFh7tB/TJWRM7Oyr3D2Q8XkeC4KDmSLSfmzblqroM9wxCz2/Hzuz/Q5
+         VQA80A+U1MY73BOqK1rqKwf1TtxWxiRW71wUVDMzIWkZDnZbjdJTbRPQkvFzleqJSJ2D
+         gUbw==
+X-Gm-Message-State: AOAM53043/QHUcNVE9XYExDEQsg6gd59fMvgSSkboKUtH46xYKdebPL1
+        lhVTDtvqGM5eGj0DhiYIVESqUEFsrA==
+X-Google-Smtp-Source: ABdhPJxxP8Lu/fGeHzfvA3fx0YR6fw65co8BUd9DGxv9qhHoMnPCM7TvaZ8gK6FZBw2SgNB8aMkcRw==
+X-Received: by 2002:a05:600c:4c11:b0:383:fae4:41c2 with SMTP id d17-20020a05600c4c1100b00383fae441c2mr15947724wmp.104.1647009805909;
+        Fri, 11 Mar 2022 06:43:25 -0800 (PST)
+Received: from localhost.localdomain ([46.53.250.95])
+        by smtp.gmail.com with ESMTPSA id e20-20020adfa454000000b001f01a14dce8sm6877637wra.97.2022.03.11.06.43.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 06:43:25 -0800 (PST)
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     x86@kernel.org
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org, adobriyan@gmail.com
+Subject: [PATCH 1/5] x86/alternative: simplify DUMP_BYTES macro
+Date:   Fri, 11 Mar 2022 17:43:08 +0300
+Message-Id: <20220311144312.88466-1-adobriyan@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Message-ID: <164700965461.16921.7171901216645910235.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/core branch of tip:
+Avoid zero length check with clever whitespace placement in the format
+string.
 
-Commit-ID:     9e1db76f44de4d9439e48c9ef61e5d457395202b
-Gitweb:        https://git.kernel.org/tip/9e1db76f44de4d9439e48c9ef61e5d457395202b
-Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Fri, 11 Mar 2022 10:44:37 +01:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 11 Mar 2022 13:05:08 +01:00
-
-x86,bpf: Fix bpf_arch_text_poke()
-
-Alexei reported that BPF direct trampolines are no longer working with
-IBT=y builds.
-
-Ensure that bpf_arch_text_poke() can find the NOP callsite emitted by
-emit_prologue().
-
-Fixes: 2f6f7bf13ab6 ("x86/ibt,bpf: Add ENDBR instructions to prologue and trampoline")
-Reported-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/YionV0%2bv%2fcUBiOh0@hirez.programming.kicks-ass.net
+Signed-off-by: Alexey Dobriyan (CloudLinux) <adobriyan@gmail.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/kernel/alternative.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index 159b79f..f071c03 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -395,6 +395,13 @@ int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
- 		/* BPF poking in modules is not supported */
- 		return -EINVAL;
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index 5007c3ffe96f..6c9758ee6810 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -66,13 +66,10 @@ do {									\
+ 	if (unlikely(debug_alternative)) {				\
+ 		int j;							\
+ 									\
+-		if (!(len))						\
+-			break;						\
+-									\
+ 		printk(KERN_DEBUG pr_fmt(fmt), ##args);			\
+-		for (j = 0; j < (len) - 1; j++)				\
+-			printk(KERN_CONT "%02hhx ", buf[j]);		\
+-		printk(KERN_CONT "%02hhx\n", buf[j]);			\
++		for (j = 0; j < (len); j++)				\
++			printk(KERN_CONT " %02hhx", buf[j]);		\
++		printk(KERN_CONT "\n");					\
+ 	}								\
+ } while (0)
  
-+	/*
-+	 * See emit_prologue(), for IBT builds the trampoline hook is preceded
-+	 * with an ENDBR instruction.
-+	 */
-+	if (is_endbr(*(u32 *)ip))
-+		ip += ENDBR_INSN_SIZE;
-+
- 	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
+@@ -214,7 +211,7 @@ static __always_inline int optimize_nops_range(u8 *instr, u8 instrlen, int off)
+ 	add_nops(instr + off, nnops);
+ 	local_irq_restore(flags);
+ 
+-	DUMP_BYTES(instr, instrlen, "%px: [%d:%d) optimized NOPs: ", instr, off, i);
++	DUMP_BYTES(instr, instrlen, "%px: [%d:%d) optimized NOPs:", instr, off, i);
+ 
+ 	return nnops;
  }
+@@ -303,8 +300,8 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
+ 			instr, instr, a->instrlen,
+ 			replacement, a->replacementlen);
  
+-		DUMP_BYTES(instr, a->instrlen, "%px:   old_insn: ", instr);
+-		DUMP_BYTES(replacement, a->replacementlen, "%px:   rpl_insn: ", replacement);
++		DUMP_BYTES(instr, a->instrlen, "%px:   old_insn:", instr);
++		DUMP_BYTES(replacement, a->replacementlen, "%px:   rpl_insn:", replacement);
+ 
+ 		memcpy(insn_buff, replacement, a->replacementlen);
+ 		insn_buff_sz = a->replacementlen;
+@@ -328,7 +325,7 @@ void __init_or_module noinline apply_alternatives(struct alt_instr *start,
+ 		for (; insn_buff_sz < a->instrlen; insn_buff_sz++)
+ 			insn_buff[insn_buff_sz] = 0x90;
+ 
+-		DUMP_BYTES(insn_buff, insn_buff_sz, "%px: final_insn: ", instr);
++		DUMP_BYTES(insn_buff, insn_buff_sz, "%px: final_insn:", instr);
+ 
+ 		text_poke_early(instr, insn_buff, insn_buff_sz);
+ 
+@@ -499,8 +496,8 @@ void __init_or_module noinline apply_retpolines(s32 *start, s32 *end)
+ 		len = patch_retpoline(addr, &insn, bytes);
+ 		if (len == insn.length) {
+ 			optimize_nops(bytes, len);
+-			DUMP_BYTES(((u8*)addr),  len, "%px: orig: ", addr);
+-			DUMP_BYTES(((u8*)bytes), len, "%px: repl: ", addr);
++			DUMP_BYTES(((u8*)addr),  len, "%px: orig:", addr);
++			DUMP_BYTES(((u8*)bytes), len, "%px: repl:", addr);
+ 			text_poke_early(addr, bytes, len);
+ 		}
+ 	}
+-- 
+2.34.1
+
