@@ -2,86 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74722C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C95DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347950AbiCKKdS (ORCPT
+        id S1344342AbiCKKea (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:33:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57834 "EHLO
+        Fri, 11 Mar 2022 05:34:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347940AbiCKKdN (ORCPT
+        with ESMTP id S232985AbiCKKe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:33:13 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E021BFDF8;
-        Fri, 11 Mar 2022 02:32:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646994731; x=1678530731;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=e/UsX7cNMuryOkY6jULWGNVc2efVlgmX0ItMhmQS2qw=;
-  b=bCFvsCV9nTerews7pfommMehZmsZhKkpJs3OSqHNtTC/aIbCvocuMtXJ
-   NTCsD34ogumNbYX3yh0hJpRqwSUkJ7D88xsaxMhdvNCiwngib4ZHIuQSz
-   AnWDtiJLVuvJSgrDdQ6M+WJFoQ9/mY95gU99XZruGiK3GlLEU8QLawybi
-   OpOc1SoVLfJ/B6K+EPTcx2BJJpd474PC9MgTmyuXVGw8/NxSJq98kf2GQ
-   /jfQ+alrk4c2VR44MtmCmQLrwhJRDzR6/Y6XhSEFB1lMVdBqvBDIL22BF
-   C6DkwO+YFyPF0na53iH+6koDNsn4NmUQigw0FbCFbWHN+NQhpsbKod+L7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="341976375"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="341976375"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 02:32:10 -0800
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="538955722"
-Received: from duan-server-s2600bt.bj.intel.com ([10.240.192.123])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 02:32:07 -0800
-From:   Zhenzhong Duan <zhenzhong.duan@intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org
-Subject: [PATCH v2 2/2] KVM: x86: Remove redundant vm_entry_controls_clearbit() call
-Date:   Fri, 11 Mar 2022 18:26:43 +0800
-Message-Id: <20220311102643.807507-3-zhenzhong.duan@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220311102643.807507-1-zhenzhong.duan@intel.com>
-References: <20220311102643.807507-1-zhenzhong.duan@intel.com>
+        Fri, 11 Mar 2022 05:34:29 -0500
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABC7F407B
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:33:25 -0800 (PST)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 11 Mar
+ 2022 18:33:25 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 11 Mar
+ 2022 18:33:23 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <Larry.Finger@lwfinger.net>, <phil@philpotter.co.uk>,
+        <gregkh@linuxfoundation.org>
+CC:     <linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        "Haowen Bai" <baihaowen@meizu.com>
+Subject: [PATCH] staging: r8188eu: simplify unnecessary NULL check
+Date:   Fri, 11 Mar 2022 18:33:21 +0800
+Message-ID: <1646994801-26211-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When emulating exit from long mode, EFER_LMA is cleared which lead to
-efer writing emulation, which will unset VM_ENTRY_IA32E_MODE control
-bit as requested by SDM. So no need to unset VM_ENTRY_IA32E_MODE again
-in exit_lmode() explicitly.
+remove the optimisation of NULL checking it inline, kfree/rtw_free_netdev
+will take care if that would ever be the case.
 
-In fact benefited from shadow controls mechanism, this change doesn't
-eliminate vmread or vmwrite.
-
-In case EFER isn't supported by hardware, long mode isn't supported,
-so this will no break.
-
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/r8188eu/os_dep/usb_intf.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index cadb3769031c..70717f56a2a2 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2907,7 +2907,6 @@ static void enter_lmode(struct kvm_vcpu *vcpu)
- 
- static void exit_lmode(struct kvm_vcpu *vcpu)
- {
--	vm_entry_controls_clearbit(to_vmx(vcpu), VM_ENTRY_IA32E_MODE);
- 	vmx_set_efer(vcpu, vcpu->arch.efer & ~EFER_LMA);
- }
- 
+diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
+index 91792df..8d1ac48 100644
+--- a/drivers/staging/r8188eu/os_dep/usb_intf.c
++++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
+@@ -425,10 +425,8 @@ static struct adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
+ 		rtw_handle_dualmac(padapter, 0);
+ free_adapter:
+ 	if (status != _SUCCESS) {
+-		if (pnetdev)
+-			rtw_free_netdev(pnetdev);
+-		else if (padapter)
+-			vfree(padapter);
++		rtw_free_netdev(pnetdev);
++		vfree(padapter);
+ 		padapter = NULL;
+ 	}
+ exit:
 -- 
-2.25.1
+2.7.4
 
