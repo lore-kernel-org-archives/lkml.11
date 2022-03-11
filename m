@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F730C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 954B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350037AbiCKPwn (ORCPT
+        id S1349917AbiCKPwr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:52:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        Fri, 11 Mar 2022 10:52:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349886AbiCKPwP (ORCPT
+        with ESMTP id S1349954AbiCKPwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:52:15 -0500
+        Fri, 11 Mar 2022 10:52:38 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F71B1CD7D8
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:50:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92F9D1CDDCE
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:51:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647013853;
+        s=mimecast20190719; t=1647013861;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=sN6DWASh/AKFZGnLsQPjnzaSKJmnnbjQwij/4RRQmag=;
-        b=bXv65HyXfkB9vpAb+eQz9bKxc+13mvnHJyjnEQKrggIFahdep3l3r6HHo+3aZENMEy0ZM8
-        k2ChT43oNqYS+K1TKrriRuBfmr6kTaK7P4yrOHaVaCjGGfRrBXOOlxQROTskXHYRgphvUA
-        6gZ70LUEra0KUKfeYRdKLW+zHfg73Xs=
+        bh=LgKxZ+60OBmBTv0uCZcgzTAGPMwScB8wIZWfQnzZcjo=;
+        b=KcwjS+8MJDrYoQsNbi+ppVkAAejXRZZ6h8CXWchUXhGTwofjSubvfLEV2XOVfTGEHZ8vgl
+        RsjTSslWqojv2eqMaU/aPP1LJ70Zx7BfH7DZ5lzwJtOMwImPMgdoIS0XpM6v63R/Mq4f0z
+        QZ80WLeoNMU7dHNP/Vn2ohoaz7M2GJw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-218-AikEhRbCN32ehAOwjbc4rA-1; Fri, 11 Mar 2022 10:50:48 -0500
-X-MC-Unique: AikEhRbCN32ehAOwjbc4rA-1
+ us-mta-492-2ueYG3m-ODO_eMOnBPB-TA-1; Fri, 11 Mar 2022 10:50:56 -0500
+X-MC-Unique: 2ueYG3m-ODO_eMOnBPB-TA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E48D801AFC;
-        Fri, 11 Mar 2022 15:50:46 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C51ED1006AA6;
+        Fri, 11 Mar 2022 15:50:54 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 09960785FD;
-        Fri, 11 Mar 2022 15:50:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 53F1A866D4;
+        Fri, 11 Mar 2022 15:50:52 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         linux-hyperv@vger.kernel.org,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 20/31] KVM: selftests: Add hyperv_svm_test to .gitignore
-Date:   Fri, 11 Mar 2022 16:49:32 +0100
-Message-Id: <20220311154943.2299191-21-vkuznets@redhat.com>
+Subject: [PATCH 23/31] KVM: selftests: Make it possible to replace PTEs with __virt_pg_map()
+Date:   Fri, 11 Mar 2022 16:49:35 +0100
+Message-Id: <20220311154943.2299191-24-vkuznets@redhat.com>
 In-Reply-To: <20220311154943.2299191-1-vkuznets@redhat.com>
 References: <20220311154943.2299191-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -60,26 +60,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add hyperv_svm_test to .gitignore.
+__virt_pg_map() makes an assumption that leaf PTE is not present. This
+is not suitable if the test wants to replace an already present
+PTE. Hyper-V PV TLB flush test is going to need that.
 
-Fixes: e67bd7df28a0 ("KVM: selftests: nSVM: Add enlightened MSR-Bitmap selftest")
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- tools/testing/selftests/kvm/.gitignore | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/kvm/include/x86_64/processor.h | 2 +-
+ tools/testing/selftests/kvm/lib/x86_64/processor.c     | 6 +++---
+ tools/testing/selftests/kvm/x86_64/mmu_role_test.c     | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index 052ddfe4b23a..e42620dbaac7 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -21,6 +21,7 @@
- /x86_64/hyperv_clock
- /x86_64/hyperv_cpuid
- /x86_64/hyperv_features
-+/x86_64/hyperv_svm_test
- /x86_64/mmio_warning_test
- /x86_64/mmu_role_test
- /x86_64/platform_info_test
+diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
+index 4962cd0ceacd..1a3550c99eb1 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/processor.h
++++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
+@@ -468,7 +468,7 @@ enum x86_page_size {
+ 	X86_PAGE_SIZE_1G,
+ };
+ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+-		   enum x86_page_size page_size);
++		   enum x86_page_size page_size, bool replace);
+ 
+ /*
+  * Basic CPU control in CR0
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 9f000dfb5594..20df3e84d777 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -229,7 +229,7 @@ static struct pageUpperEntry *virt_create_upper_pte(struct kvm_vm *vm,
+ }
+ 
+ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+-		   enum x86_page_size page_size)
++		   enum x86_page_size page_size, bool replace)
+ {
+ 	const uint64_t pg_size = 1ull << ((page_size * 9) + 12);
+ 	struct pageUpperEntry *pml4e, *pdpe, *pde;
+@@ -270,7 +270,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+ 
+ 	/* Fill in page table entry. */
+ 	pte = virt_get_pte(vm, pde->pfn, vaddr, 0);
+-	TEST_ASSERT(!pte->present,
++	TEST_ASSERT(replace || !pte->present,
+ 		    "PTE already present for 4k page at vaddr: 0x%lx\n", vaddr);
+ 	pte->pfn = paddr >> vm->page_shift;
+ 	pte->writable = true;
+@@ -279,7 +279,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
+ 
+ void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
+ {
+-	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K);
++	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K, false);
+ }
+ 
+ static struct pageTableEntry *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
+diff --git a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
+index da2325fcad87..e3fdf320b9f4 100644
+--- a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
++++ b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
+@@ -35,7 +35,7 @@ static void mmu_role_test(u32 *cpuid_reg, u32 evil_cpuid_val)
+ 	run = vcpu_state(vm, VCPU_ID);
+ 
+ 	/* Map 1gb page without a backing memlot. */
+-	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G);
++	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G, false);
+ 
+ 	r = _vcpu_run(vm, VCPU_ID);
+ 
 -- 
 2.35.1
 
