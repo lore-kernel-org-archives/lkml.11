@@ -2,92 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31674C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00237C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348061AbiCKKmM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:42:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
+        id S231485AbiCKKn6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 05:43:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242183AbiCKKmJ (ORCPT
+        with ESMTP id S229865AbiCKKnz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:42:09 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E361C2D96;
-        Fri, 11 Mar 2022 02:41:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=AkzjaffqsM7lApV4o+H65jHOpuOe6KV8yXwb2WF6dMU=; b=sVckvczzMIqkK8zNtlAixrVAvU
-        XCJLBekqmH2a/SE7X2l1z/z/w2OfOGZsCFggKc6zcGOYvUl694puMBUueA+QLykPu2XhwIqaGq2bf
-        dE9pVZvyd3vOTmw7KrDYQvOKYAyFb0d6MEIJztRARnNT6ENLjks4cqKOnLa4RM01FuGJ4DtNbqK7V
-        4I+xps9y2vaUDGPqay3CSdmiQM1Mlj/Tom3UJMcfMFa29I568+zZ1eaKFiBNLpRs7724pa1VMSp/I
-        s3MWeBi7L1PajYfrkjqV0TqzPAgIXtcrSIV3UkkCFgOusdMdvgxWfsZh8j2fkcgeyZuRVNcFaioPY
-        8EfkYSOQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nSchC-001UGh-DO; Fri, 11 Mar 2022 10:40:30 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        Fri, 11 Mar 2022 05:43:55 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894866929C
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:42:52 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 25BD030027B;
-        Fri, 11 Mar 2022 11:40:28 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 041AD201EE482; Fri, 11 Mar 2022 11:40:27 +0100 (CET)
-Date:   Fri, 11 Mar 2022 11:40:27 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, mhiramat@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-Message-ID: <YisnG9lW6kp8lBp3@hirez.programming.kicks-ass.net>
-References: <20220308153011.021123062@infradead.org>
- <20220308200052.rpr4vkxppnxguirg@ast-mbp.dhcp.thefacebook.com>
- <YifSIDAJ/ZBKJWrn@hirez.programming.kicks-ass.net>
- <YifZhUVoHLT/76fE@hirez.programming.kicks-ass.net>
- <Yif8nO2xg6QnVQfD@hirez.programming.kicks-ass.net>
- <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
- <YinGZObp37b27LjK@hirez.programming.kicks-ass.net>
- <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
- <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net>
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 39B143F30F
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 10:42:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646995371;
+        bh=x4TvzHF8QuKQ3/zOGOuqHkYTzalnGKY2B97/GSUfpsM=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=wKY4ijq178WgQSNw1eeE0nkeDM3zj7C5WU4Z4yRwb0qCIaD1FVcGcjC18vwATPhw+
+         VN+tNKKNjslf6OZ1LqfEXQ25w85F4M2T9RprutHcmXZ+44gzJpgxcRPTREHgpNTkL3
+         EHOpAGr0mNAQwQEqClu5Y73hztZZLq/sl2UdrDAKjHfyydiA6/sf+ZznUkbWCaOADh
+         3Bdamcmx5yujKhoUaY3YpghflcahiFeFDofFlMHNC4sNtktKwKbkyIrphn/Yrra5LB
+         yhUo/hbvwd4ZGUn/YUG8o4bkEeiiG6Z3YzqaMQ4OR5c1e4dRfUub+016lLi/6dH+/A
+         O88Z6tkjMSpbg==
+Received: by mail-ed1-f69.google.com with SMTP id n11-20020aa7c68b000000b0041641550e11so4678583edq.8
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:42:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=x4TvzHF8QuKQ3/zOGOuqHkYTzalnGKY2B97/GSUfpsM=;
+        b=2jbCo/7wf/GUnrLM8gh9UdYOoG+0QnAxbGZN7+pwrz190NpsXVileHEDBfHDYtA1Li
+         ErtUAwAqqtZ5k3Ij16bjg3I7hHdVi2tUKgmF2DebHernbT4/Ly12fMsyZCjuTs6cLrh8
+         DswM0gZPiYEg2KLlemgsIRqIlTxLT1h6gJELmckfVKFhFMTSn8357VSuC84/9V01kp/C
+         ijNDdtxZBqgNCt4aysagP3kgCqgZktg45GnBm+a2M1pePUXaYGWr7Czbm3CzJ7VHoxoX
+         oi0+n7aD6xCmHxjGv5cxP5Mn50ICPktqEkM8ESATO4dBw/9FyHJ2pYGPYqG6PP0bOnPG
+         bqHQ==
+X-Gm-Message-State: AOAM531CxfhCPks2/+01H4Ic0E1CUXX6un0pBCVU0lP+JanOSTvGMLmD
+        pluCmFQibZGLTUkRY+72AP3DOHsYiPaFisAAGJkyA2C3s0b2XYDwiZ/9DzL1+d1vnEszF1b23wF
+        Xv9RlJOTdF7hWpvonwkvahldcLIHqyvYAG2kMsD5xew==
+X-Received: by 2002:a05:6402:4301:b0:415:b73f:1b48 with SMTP id m1-20020a056402430100b00415b73f1b48mr8164298edc.39.1646995370723;
+        Fri, 11 Mar 2022 02:42:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz5gHHbbJP79tXVqgVSmziJdzb2BPwQmpwOBIR/Tn9dJGGxL7wDFb7JWGH8AKhMGqStoPQB7g==
+X-Received: by 2002:a05:6402:4301:b0:415:b73f:1b48 with SMTP id m1-20020a056402430100b00415b73f1b48mr8164284edc.39.1646995370567;
+        Fri, 11 Mar 2022 02:42:50 -0800 (PST)
+Received: from [192.168.0.148] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id b10-20020a056402278a00b00415b20902a6sm3272872ede.27.2022.03.11.02.42.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 02:42:49 -0800 (PST)
+Message-ID: <ad94136d-f651-7e6e-b3ec-94553c4c6d3b@canonical.com>
+Date:   Fri, 11 Mar 2022 11:42:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/2] tty: serial: samsung: Add ARTPEC-8 support
+Content-Language: en-US
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     kernel@axis.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        alim.akhtar@samsung.com
+References: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
+ <20220311094515.3223023-3-vincent.whitchurch@axis.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220311094515.3223023-3-vincent.whitchurch@axis.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 05:29:11PM +0100, Peter Zijlstra wrote:
-
-> This seems to cure most of the rest. I'm still seeing one failure:
+On 11/03/2022 10:45, Vincent Whitchurch wrote:
+> Add support for the UART block on the ARTPEC-8 SoC.  This is closely
+> related to the variants used on the Exynos chips.  The register layout
+> is identical to Exynos850 et al but the fifo size is different (64 bytes
+> in each direction for all instances).
 > 
-> libbpf: prog 'connect_v4_prog': BPF program load failed: Invalid argument
-> libbpf: failed to load program 'connect_v4_prog'
-> libbpf: failed to load object './connect4_prog.o'
-> test_fexit_bpf2bpf_common:FAIL:tgt_prog_load unexpected error: -22 (errno 22)
-> #48/4 fexit_bpf2bpf/func_replace_verify:FAIL
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+> 
+> Notes:
+>     v2:
+>     - Added Krzysztof's Reviewed-by.
+>     - Expanded commit message
+>     - Fixed fifo size
+>     - Rebased on top of Krzysztof's "minor fixes/cleanups" series.  This needed a
+>       couple of fixes for build errors.
+>     
+>     (I'm always unsure if Reviewed-by should be carried over or not if the fixes
+>     are minor.  I apologize in advance if carring it over was the wrong thing to do
+>     in this case.)
 
+For minor fixes, usually we carry Rb tag over. It's fine.
 
-Hmm, with those two patches on I get:
+LGTM
 
-root@tigerlake:/usr/src/linux-2.6/tgl-build# ./test_progs -t fexit
-#46 fentry_fexit:OK
-#48 fexit_bpf2bpf:OK
-#49 fexit_sleep:OK
-#50 fexit_stress:OK
-#51 fexit_test:OK
-Summary: 5/9 PASSED, 0 SKIPPED, 0 FAILED
-
-On the tigerlake, I suppose I'm doing something wrong on the other
-machine because there it's even failing on the pre-ibt kernel image.
-
-I'll go write up changelogs and stick these on.
+Best regards,
+Krzysztof
