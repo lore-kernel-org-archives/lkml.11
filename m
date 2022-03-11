@@ -2,210 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59FAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 01:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38AACC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 01:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345332AbiCKBdp (ORCPT
+        id S1345361AbiCKBd6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 20:33:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48694 "EHLO
+        Thu, 10 Mar 2022 20:33:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237827AbiCKBdn (ORCPT
+        with ESMTP id S1345360AbiCKBd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 20:33:43 -0500
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDBF140E1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 17:32:38 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V6qnh1P_1646962355;
-Received: from 30.97.48.70(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V6qnh1P_1646962355)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 11 Mar 2022 09:32:35 +0800
-Message-ID: <f7490de2-4f0e-1c5e-5bdd-479d1744d111@linux.alibaba.com>
-Date:   Fri, 11 Mar 2022 09:33:39 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v2] mm: Only re-generate demotion targets when a numa node
- changes its N_CPU state
-To:     Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        Abhishek Goel <huntbag@linux.vnet.ibm.com>, linux-mm@kvack.org,
+        Thu, 10 Mar 2022 20:33:57 -0500
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB069972E3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 17:32:52 -0800 (PST)
+Date:   Fri, 11 Mar 2022 01:32:44 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1646962369;
+        bh=QwZDFWa+hj+czammg/GqJUDVTdjcC7UxItWq97HZnpU=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:From:To:Cc:Date:
+         Subject:Reply-To:Feedback-ID:Message-ID;
+        b=jLuFrzSniJy7x/BjbxJ7amVd2cSnyzFYiZ0IkOG7FaxP+YWmV+7tHkj447i7HVC18
+         qCbBIN0+MxBDZWEMDwu/SyyUH6RN4FSFvYCavOE1SExo8vqtyRH6zdSXn4LbtU2sqb
+         3v+YKkNUenXdiIldxfHKnLIXMxqYk3VIWEUI5sRu4W9Gfp2/QTxHt+rE7Cb8kb8r5R
+         5+3Ot2/H1tGZrhlg314Ymvzi/ZpTkygeUmqeJFwneIS7r4ZXP9rf1WbHQWoEanvq4H
+         mgd1jPRwF4Kn0dqaSomAGdtasx2weG6WIp8LNPtTqrrTJwJNCuWI3C2wOawY6Og3lW
+         R/z+Maa2+NskQ==
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
         linux-kernel@vger.kernel.org
-References: <20220310120749.23077-1-osalvador@suse.de>
-From:   Baolin Wang <baolin.wang@linux.alibaba.com>
-In-Reply-To: <20220310120749.23077-1-osalvador@suse.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From:   =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Reply-To: =?utf-8?Q?Barnab=C3=A1s_P=C5=91cze?= <pobrn@protonmail.com>
+Subject: [RFC PATCH v1 0/2] add type-safer list_head wrapper
+Message-ID: <20220311013238.3387227-1-pobrn@protonmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+As there have been various discussions[1][2] about improving
+the current `list_head` facilities, I would like to
+propose a type-safe(r), lightweight wrapper: tlist.
+
+The first commit goes into details as to how it works,
+lists some of its advantages and disadvantages.
+
+The second commit showcases it in the existing WMI platform driver.
+
+NOTE: these changes are mostly untested! They are purely for showcasing
+a possible implementation and API. And they depend on the switch to gnu11.
+
+I would like to get some feedback as to whether/how acceptable this
+approach is before going further: writing documentation, tests, and
+adding more wrappers around existing `list_head` facilities
+(e.g. reverse iteration is not implemented).
+
+If this idea has already been proposed, I apologize,
+I must have missed it when I searched for similar patches.
+
+PS. I have tried to select those who may be interested
+in this discussion, I may have missed people or added
+people who aren't interested. Sorry.
+
+[1]: https://lore.kernel.org/all/20220217184829.1991035-1-jakobkoschel@gmai=
+l.com/
+[2]: https://lore.kernel.org/all/20220301075839.4156-1-xiam0nd.tong@gmail.c=
+om/
+And see https://lwn.net/Articles/887097/ for a summary.
+
+Barnab=C3=A1s P=C5=91cze (2):
+  list: add type-safer list_head wrapper
+  platform/x86: wmi: use tlist for WMI blocks
+
+ drivers/platform/x86/wmi.c | 54 ++++++++++---------------
+ include/linux/tlist.h      | 81 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 102 insertions(+), 33 deletions(-)
+ create mode 100644 include/linux/tlist.h
+
+--
+2.35.1
 
 
-On 3/10/2022 8:07 PM, Oscar Salvador wrote:
-> Abhishek reported that after patch [1], hotplug operations are
-> taking ~double the expected time. [2]
-> 
-> The reason behind is that the CPU callbacks that migrate_on_reclaim_init()
-> sets always call set_migration_target_nodes() whenever a CPU is brought
-> up/down.
-> But we only care about numa nodes going from having cpus to become
-> cpuless, and vice versa, as that influences the demotion_target order.
-> 
-> We do already have two CPU callbacks (vmstat_cpu_online() and vmstat_cpu_dead())
-> that check exactly that, so get rid of the CPU callbacks in
-> migrate_on_reclaim_init() and only call set_migration_target_nodes() from
-> vmstat_cpu_{dead,online}() whenever a numa node change its N_CPU state.
-> 
-> [1] https://lore.kernel.org/linux-mm/20210721063926.3024591-2-ying.huang@intel.com/
-> [2] https://lore.kernel.org/linux-mm/eb438ddd-2919-73d4-bd9f-b7eecdd9577a@linux.vnet.ibm.com/
-> 
-> Reported-by: Abhishek Goel <huntbag@linux.vnet.ibm.com>
-> Signed-off-by: Oscar Salvador <osalvador@suse.de>
-> ---
-> v1 -> v2: - Fix prototype function declaration
->            - Fix build error on RISC
->            - Adressed feedback from Baolin and Huang
-> ---
->   include/linux/migrate.h |  8 ++++++++
->   mm/migrate.c            | 41 +++++------------------------------------
->   mm/vmstat.c             | 13 ++++++++++++-
->   3 files changed, 25 insertions(+), 37 deletions(-)
-> 
-> diff --git a/include/linux/migrate.h b/include/linux/migrate.h
-> index db96e10eb8da..90e75d5a54d6 100644
-> --- a/include/linux/migrate.h
-> +++ b/include/linux/migrate.h
-> @@ -48,7 +48,15 @@ int folio_migrate_mapping(struct address_space *mapping,
->   		struct folio *newfolio, struct folio *folio, int extra_count);
->   
->   extern bool numa_demotion_enabled;
-> +extern void migrate_on_reclaim_init(void);
-> +#ifdef CONFIG_HOTPLUG_CPU
-> +extern void set_migration_target_nodes(void);
->   #else
-> +static inline void set_migration_target_nodes(void) {}
-> +#endif
-> +#else
-> +
-> +static inline void set_migration_target_nodes(void) {}
->   
->   static inline void putback_movable_pages(struct list_head *l) {}
->   static inline int migrate_pages(struct list_head *l, new_page_t new,
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index c7da064b4781..f9d5b6092a42 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -3190,7 +3190,7 @@ static void __set_migration_target_nodes(void)
->   /*
->    * For callers that do not hold get_online_mems() already.
->    */
-> -static void set_migration_target_nodes(void)
-> +void set_migration_target_nodes(void)
->   {
->   	get_online_mems();
->   	__set_migration_target_nodes();
-> @@ -3254,51 +3254,20 @@ static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
->   	return notifier_from_errno(0);
->   }
->   
-> -/*
-> - * React to hotplug events that might affect the migration targets
-> - * like events that online or offline NUMA nodes.
-> - *
-> - * The ordering is also currently dependent on which nodes have
-> - * CPUs.  That means we need CPU on/offline notification too.
-> - */
-> -static int migration_online_cpu(unsigned int cpu)
-> +void __init migrate_on_reclaim_init(void)
->   {
-> -	set_migration_target_nodes();
-> -	return 0;
-> -}
-> -
-> -static int migration_offline_cpu(unsigned int cpu)
-> -{
-> -	set_migration_target_nodes();
-> -	return 0;
-> -}
-> -
-> -static int __init migrate_on_reclaim_init(void)
-> -{
-> -	int ret;
-> -
->   	node_demotion = kmalloc_array(nr_node_ids,
->   				      sizeof(struct demotion_nodes),
->   				      GFP_KERNEL);
->   	WARN_ON(!node_demotion);
->   
-> -	ret = cpuhp_setup_state_nocalls(CPUHP_MM_DEMOTION_DEAD, "mm/demotion:offline",
-> -					NULL, migration_offline_cpu);
->   	/*
-> -	 * In the unlikely case that this fails, the automatic
-> -	 * migration targets may become suboptimal for nodes
-> -	 * where N_CPU changes.  With such a small impact in a
-> -	 * rare case, do not bother trying to do anything special.
-> +	 * At this point, all numa nodes with memory/CPus have their state
-> +	 * properly set, so we can build the demotion order now.
->   	 */
-> -	WARN_ON(ret < 0);
-> -	ret = cpuhp_setup_state(CPUHP_AP_MM_DEMOTION_ONLINE, "mm/demotion:online",
-> -				migration_online_cpu, NULL);
-> -	WARN_ON(ret < 0);
-> -
-> +	set_migration_target_nodes();
->   	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
-> -	return 0;
->   }
-> -late_initcall(migrate_on_reclaim_init);
->   #endif /* CONFIG_HOTPLUG_CPU */
->   
->   bool numa_demotion_enabled = false;
-> diff --git a/mm/vmstat.c b/mm/vmstat.c
-> index 4057372745d0..9e9536df51b5 100644
-> --- a/mm/vmstat.c
-> +++ b/mm/vmstat.c
-> @@ -28,6 +28,7 @@
->   #include <linux/mm_inline.h>
->   #include <linux/page_ext.h>
->   #include <linux/page_owner.h>
-> +#include <linux/migrate.h>
->   
->   #include "internal.h"
->   
-> @@ -2043,7 +2044,12 @@ static void __init init_cpu_node_state(void)
->   static int vmstat_cpu_online(unsigned int cpu)
->   {
->   	refresh_zone_stat_thresholds();
-> -	node_set_state(cpu_to_node(cpu), N_CPU);
-> +
-> +	if (!node_state(cpu_to_node(cpu), N_CPU)) {
-> +		node_set_state(cpu_to_node(cpu), N_CPU);
-> +		set_migration_target_nodes();
-> +	}
-> +
->   	return 0;
->   }
->   
-> @@ -2066,6 +2072,8 @@ static int vmstat_cpu_dead(unsigned int cpu)
->   		return 0;
->   
->   	node_clear_state(node, N_CPU);
-> +	set_migration_target_nodes();
-> +
->   	return 0;
->   }
->   
-> @@ -2097,6 +2105,9 @@ void __init init_mm_internals(void)
->   
->   	start_shepherd_timer();
->   #endif
-> +#if defined(CONFIG_MIGRATION) && defined(CONFIG_HOTPLUG_CPU)
- > +	migrate_on_reclaim_init();
-
-I guess can we move these CONFIG_* macros into migrate.h like what 
-set_migration_target_nodes() does? Otherwise LGTM. Please feel free to add:
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
