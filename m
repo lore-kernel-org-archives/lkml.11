@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED843C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEAEC46467
 	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347693AbiCKF7W (ORCPT
+        id S1347661AbiCKF7S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:59:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
+        Fri, 11 Mar 2022 00:59:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346686AbiCKFyG (ORCPT
+        with ESMTP id S1346675AbiCKFyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:54:06 -0500
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC430939BC
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:01 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id q8-20020a170902f78800b00151cc484688so3990099pln.20
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:01 -0800 (PST)
+        Fri, 11 Mar 2022 00:54:01 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DEB4CD49
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:56 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id 9-20020a630509000000b0037c8607d296so4214914pgf.22
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=BA/9wv0f77CQq9BIsQx7F9vfIHz6iVe/678SmR1+8tE=;
-        b=WQF0KgysDaaJu9Y3mx+KOlWf0ZVKyEj3J6Yn37Z1WDSBbXs0Wr6wBHwlQgXe8qFULo
-         AJWJXIT/r/VILG7HoZF/D1lEUWkA1o1mDXA6kwRcXMv2uSxSuPbAxxJq1yxsHzH3uOeS
-         dssXE0Ry2xZMKNFOaIpoezS9O1J93nnzg+qtYDKV/PSYwIueaIVROCGFdKCZ5uLG4egM
-         FhkkxTh10f0DigiUdfYidO6grQV/pEaho01RK+t/yRiM8rN5eL6I5ugy4ZDgWwVd7RP+
-         g53m63bybBML5s8IJy26KN2ZDjfD2xoGDV2poQEW2EFrQSvQcBS1fc1PMfuDOq4rLC06
-         pQvQ==
+        bh=ps9uAAiwAcVTTH/yb1s5LSlXQ12+IJIbxw2+bvSNcUM=;
+        b=oz4L0QnTrNVJLa/7xFrob+aTe6eCQjRBTc3fqhtXYWr2VOUFGT5f3rK+zYSuPzvB3S
+         tVeEYA5Dbcx/mbUZD7BueJNjjLadap/nq2vQI/YSBN0RP+Vb3dCDGros7V7S0udvShNq
+         Nnvnf43ZBppoTQw3J5HVLmAz0G+ABDQoSpFPolivqN61j2io7uo0dpAi+k+Kn7xN9eUB
+         sJDOVI9n5UW09u7wMo3lenO6CBHEMd91CDYHTTUOsLMqWgQTunjpnxc2hgjEj+Nps97x
+         phYMyxjvBqLDa/U2rQ3w0+KZiIezbrmwGfQDMTM0h9/tGvZuVdBZ+oiXU3ca//st+yoH
+         MjBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=BA/9wv0f77CQq9BIsQx7F9vfIHz6iVe/678SmR1+8tE=;
-        b=K42/yRZKKcYd8zsJW0ZOc9I9G4gbKcRywYZKC5MfWuXvJWONCXI2D6uu/rxRkqXC0S
-         4TMmnjDhxzKBtBTJ7O2nLb7+rDunpQXMrbMDENiOEyifMZzFaFCpV24eCo7+d1QE8Hr9
-         1gvvgpVfeTpH4riSU7TxHFIkAThtaNP7NpJgDnghMiLSHZipZWSJx+3SnmQW2kdYMNGk
-         WfYeEGnjHtYn9wARO0tWoMvYhlzmThXRRnyTdpe5Syv/0Uki2qaMPyxF7DxUllUMczx6
-         J3e3zFiuaZL/F6SyxufDmm3zfwXwRqC2lvlxTfTlsaNBcE0zn0FX/8mZry/XPW6iv5cb
-         LeqA==
-X-Gm-Message-State: AOAM5318yMm6oDHi+d1fH48oXLdH5mNZCOximSxeeveHaJQSFatvc1lS
-        gPkjGp1HOKr/OZyJSww/o/YQXX1WeyxVrp0QOmJxeDmuOKAmcKqqMrpwzflgMCHsiDKEGJMFXrw
-        paCplpBB1v8lrBz1P+vKkh3xEa7EMchLTvoYtSrqqUmahkpssAyAp0TVumgtfvXoJAqcwvA==
-X-Google-Smtp-Source: ABdhPJyO64b4YYiRZ6am1T9W0ltMlJVXEu1ZlQDof+yx1PjYN3s/VQ5OMluVlq7lpxdVg7A/EO4tQw8BTCE=
+        bh=ps9uAAiwAcVTTH/yb1s5LSlXQ12+IJIbxw2+bvSNcUM=;
+        b=u1WKtL6kJM+Vl+H4Dkq+q7QV+AE72FubIidxEPAp5alFNTheJy+cQkPLy0xSOo/eOH
+         0KOyb0G9CvVxFABRSemyEJfwtWvDo6aL9XJ8lj9uR3wBXPk/ddqqRXUC7C2khYP9WVkp
+         fFLho9ttMsLpxklDMFVyQATueOIJeFVJiewn3j2AwzadWpKcHBm8YlZaMfnJa8r8kwg5
+         QtUvr2YyQpaOYPS1bdnOMkXlC+AocNIC3EWjzUM5FL1RLBkq2RcCm3GCyEpGzh6kd4P4
+         Q6H2iXkw4cgr0lDRSia1IaAbQmtRir2CuyCuN+9bp6I/1m1H5o2BLy/9F6k9d/U8htnQ
+         TEag==
+X-Gm-Message-State: AOAM530ilZuYclmBUMixKxcv8zswAKjSOF78i6HpQqhLmSaIJ1J8E3CV
+        5ulhCl3N/wErt4pfFCAe5tqhUi9vDHKQsmIXfTtzUgpGQj+Oc/STIueFlqIAxgCG+gPMvdaCJH0
+        RRJGgzbCJhETxIXLj0vFmknXcFSAlWBaBITei0SwBJoX0Ko4SRSz+fgPhs7Nky3Q7gKBDAQ==
+X-Google-Smtp-Source: ABdhPJwSGlZHI+t/zrF/jeaWCb8h9SZnqc1mxWXnNYt+DArsN3L265yB76K4OZd+GRa6bx+5O9kzNVVP32w=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:e3c5:b0:153:3022:4fb8 with SMTP id
- r5-20020a170902e3c500b0015330224fb8mr3168241ple.106.1646977980948; Thu, 10
- Mar 2022 21:53:00 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4d81:b0:1bf:8ce4:4f51 with SMTP id
+ oj1-20020a17090b4d8100b001bf8ce44f51mr461584pjb.0.1646977975650; Thu, 10 Mar
+ 2022 21:52:55 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:19 +0000
+Date:   Fri, 11 Mar 2022 05:50:16 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-69-seanjc@google.com>
+Message-Id: <20220311055056.57265-66-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 068/105] KVM: selftests: Convert vmx_invalid_nested_guest_state
- away from VCPU_ID
+Subject: [RFC PATCH 065/105] KVM: selftests: Convert cr4_cpuid_sync_test away
+ from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -67,65 +67,67 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../x86_64/vmx_invalid_nested_guest_state.c    | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ .../selftests/kvm/x86_64/cr4_cpuid_sync_test.c  | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_invalid_nested_guest_state.c b/tools/testing/selftests/kvm/x86_64/vmx_invalid_nested_guest_state.c
-index 489fbed4ca6f..ba534be498f9 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_invalid_nested_guest_state.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_invalid_nested_guest_state.c
-@@ -9,7 +9,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c b/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c
+index 6f6fd189dda3..d5615cd0b81b 100644
+--- a/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c
++++ b/tools/testing/selftests/kvm/x86_64/cr4_cpuid_sync_test.c
+@@ -21,7 +21,6 @@
  
- #include "kselftest.h"
+ #define X86_FEATURE_XSAVE	(1<<26)
+ #define X86_FEATURE_OSXSAVE	(1<<27)
+-#define VCPU_ID			1
  
--#define VCPU_ID	0
- #define ARBITRARY_IO_PORT 0x2000
- 
- static struct kvm_vm *vm;
-@@ -55,20 +54,21 @@ int main(int argc, char *argv[])
+ static inline bool cr4_cpuid_is_sync(void)
  {
- 	vm_vaddr_t vmx_pages_gva;
- 	struct kvm_sregs sregs;
+@@ -63,12 +62,12 @@ static void guest_code(void)
+ 
+ int main(int argc, char *argv[])
+ {
 +	struct kvm_vcpu *vcpu;
  	struct kvm_run *run;
+ 	struct kvm_vm *vm;
+ 	struct kvm_sregs sregs;
+ 	struct kvm_cpuid_entry2 *entry;
  	struct ucall uc;
+-	int rc;
  
- 	nested_vmx_check_supported();
+ 	entry = kvm_get_supported_cpuid_entry(1);
+ 	if (!(entry->ecx & X86_FEATURE_XSAVE)) {
+@@ -79,25 +78,23 @@ int main(int argc, char *argv[])
+ 	/* Tell stdout not to buffer its content */
+ 	setbuf(stdout, NULL);
  
--	vm = vm_create_default(VCPU_ID, 0, (void *) l1_guest_code);
-+	vm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);
- 
- 	/* Allocate VMX pages and shared descriptors (vmx_pages). */
- 	vcpu_alloc_vmx(vm, &vmx_pages_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, vmx_pages_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, vmx_pages_gva);
- 
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_run(vm, vcpu->id);
- 
+-	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
 -	run = vcpu_state(vm, VCPU_ID);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 +	run = vcpu->run;
  
- 	/*
- 	 * The first exit to L0 userspace should be an I/O access from L2.
-@@ -88,13 +88,13 @@ int main(int argc, char *argv[])
- 	 * emulating invalid guest state for L2.
- 	 */
- 	memset(&sregs, 0, sizeof(sregs));
--	vcpu_sregs_get(vm, VCPU_ID, &sregs);
-+	vcpu_sregs_get(vm, vcpu->id, &sregs);
- 	sregs.tr.unusable = 1;
--	vcpu_sregs_set(vm, VCPU_ID, &sregs);
-+	vcpu_sregs_set(vm, vcpu->id, &sregs);
+ 	while (1) {
+-		rc = _vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
  
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_run(vm, vcpu->id);
+-		TEST_ASSERT(rc == 0, "vcpu_run failed: %d\n", rc);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "Unexpected exit reason: %u (%s),\n",
+ 			    run->exit_reason,
+ 			    exit_reason_str(run->exit_reason));
  
--	switch (get_ucall(vm, VCPU_ID, &uc)) {
-+	switch (get_ucall(vm, vcpu->id, &uc)) {
- 	case UCALL_DONE:
- 		break;
- 	case UCALL_ABORT:
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+ 			/* emulate hypervisor clearing CR4.OSXSAVE */
+-			vcpu_sregs_get(vm, VCPU_ID, &sregs);
++			vcpu_sregs_get(vm, vcpu->id, &sregs);
+ 			sregs.cr4 &= ~X86_CR4_OSXSAVE;
+-			vcpu_sregs_set(vm, VCPU_ID, &sregs);
++			vcpu_sregs_set(vm, vcpu->id, &sregs);
+ 			break;
+ 		case UCALL_ABORT:
+ 			TEST_FAIL("Guest CR4 bit (OSXSAVE) unsynchronized with CPUID bit.");
 -- 
 2.35.1.723.g4982287a31-goog
 
