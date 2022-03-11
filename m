@@ -2,115 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E020C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC601C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:49:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349384AbiCKPsi (ORCPT
+        id S1349435AbiCKPuh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:48:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
+        Fri, 11 Mar 2022 10:50:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347030AbiCKPsf (ORCPT
+        with ESMTP id S1344675AbiCKPuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:48:35 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE83FFE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:47:27 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id i66so5328555wma.5
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:47:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6vhOIIdJvfX6cOrm/Hp75giDPzX5k6IkKRc2Ldr4x1g=;
-        b=Bj6+61b8ssmOb5ECuJge2OAspgv/M7zGpi7BjzO4bu1W3koRCvckm1lQtfNmVEYrrZ
-         ScnrRgEe1/NzaUSlcRWvEcGQM46tzCw0vFRAi2x3igvX2oGZy29BH6uFGjSH1nsD4Xdk
-         lwwpqqu7fpE3SvuVwlmZKl4+Tt8CKYLBYl70mo3T8wTO3QCu3qhmKYt1prHpKvXwDeMY
-         tT1Y339mai2MYxrPUMxvRDwzvdcRzGdPcj7+vaYm+2nR4gLa9n4bDL1QjO32mLk/xeFl
-         pcqthmf5Yl03svTr/kiL6KL0ihzrFf+eASqmjABAjnKdpOwa5/laN+sS4NhcNE27F9Ib
-         8+6Q==
+        Fri, 11 Mar 2022 10:50:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C25628EB51
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:49:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647013771;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=D2pmc0xLyfbXJv4H5Su2IjuCtdgSulAIgXXCBsJ28QE=;
+        b=ffyI2r7cHoMyoQ7CVsrxu2JwH0aeNSrYqo9z8MERn3MdWH48m/hLw2oDDqIEl+Fsb3TE/D
+        BaWhNa55D+q0IUyzlefR9TYNxt5aNgsjHnoNR/0erVfJj9trS2frgT7bMXGAVUSTeqnI1L
+        et+wvrMIBkIbirq13zj0OJGiDDjUelM=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-562-zVBycbBdNH2fqlXWdMYBXQ-1; Fri, 11 Mar 2022 10:49:29 -0500
+X-MC-Unique: zVBycbBdNH2fqlXWdMYBXQ-1
+Received: by mail-qv1-f71.google.com with SMTP id x16-20020a0ce250000000b00432ec6eaf85so7887615qvl.15
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:49:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6vhOIIdJvfX6cOrm/Hp75giDPzX5k6IkKRc2Ldr4x1g=;
-        b=Q9MhJ51lt/Vk+44fLIWKtg+yCwMLo37feMmcZBQeKh2+eYWQ7uZDaI8TNMs6CB8XJj
-         XAn/UXg15r/iAM3xIGYwiMhQBzfWCspSjzzEpzq9/5HaInLNYTNxvxRX0JvayJ+6YRbO
-         V1LKSun+iESmu870Ss79yOOT4Co1O7SXghcP8htlz/zJLB16OnjdOZmvwLqzWd9rUt6B
-         l3ItlA5h3CZGj3S95yzUjw7XCT5LgOV++ekmMDyhH59ahZWDRk+QdT+Z4H1So0FuGeEk
-         wl5raZ7ibxnCZ7CwrUA6Td61KChPL+QL4e6kN5zxmAAEe6SB5Z3QcxGvBiDARcWhZoBu
-         NyXA==
-X-Gm-Message-State: AOAM5328R/ZvwYejD1QAroJYyyAkGgBxgIpe0uj7F7gScbaNeUvcUX3V
-        9pXtPT/HkLg7j6bBWC78OIdSAd2wqw6jEF5E
-X-Google-Smtp-Source: ABdhPJyNFd+WeXNqTNfnthvORZ2Sgedf9Lvk4w/MuHRm6084TXCr0E0apu6+WCLgKaxk/lm41FdE2g==
-X-Received: by 2002:a05:600c:4ecb:b0:389:e765:b4cb with SMTP id g11-20020a05600c4ecb00b00389e765b4cbmr5836985wmq.160.1647013646216;
-        Fri, 11 Mar 2022 07:47:26 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05600c191100b00389a1a68b95sm20113957wmq.27.2022.03.11.07.47.25
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D2pmc0xLyfbXJv4H5Su2IjuCtdgSulAIgXXCBsJ28QE=;
+        b=p6GitnCKqMTb9U1kLxH7pdq8yRW8Xvkh4Rb7Wm51z+xVTjElcpknMRqmHDQvCA+oH3
+         SoxFI34g/tj4PF+z1dXG52XRYEu3Qffvp0z4AX7xpkx1GydAdq3Hrncbve5EEwWQppq8
+         kgG9SMBSHlcvZmXiOK91PjMOh4Mkawp0Oc0J3UBiBylZFknSVKYFAXpG+StUiSmcAjqK
+         YZgn85mEOu4VcdPXmblByfH+oR1taVIr2VbMbBBZ8pILGbOigyBHgUhBofhjo+tcFhql
+         +Do6FSuTIULLUDkC0zdBbJd36e5HIvDRJ6m0zGmJP/Dl9bjWmhZfBHLuB9oE+j1O1fM1
+         TvsQ==
+X-Gm-Message-State: AOAM5307kAjAzGlyESRTmpWkyhwZP6y9hNTkKe7DQOREcNznv9dh4OqD
+        bAOvMeDuC9RZjnRr/jIz/TPvaCo1rCc+4hEtWJAV9i0elc9HZq2c5IYOLG2RiEnV+rKUi/68vkf
+        iCIz1FYDt6R1U331fM7anmqPX
+X-Received: by 2002:a05:622a:550:b0:2e0:7422:a1d5 with SMTP id m16-20020a05622a055000b002e07422a1d5mr8888176qtx.444.1647013769071;
+        Fri, 11 Mar 2022 07:49:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJycKl9MtiYetzeS9duFZfYrf1qfeHF2oqbyGQqrK2X38v2Q/P9G/k00aKlaQClsoPQJAlwqsA==
+X-Received: by 2002:a05:622a:550:b0:2e0:7422:a1d5 with SMTP id m16-20020a05622a055000b002e07422a1d5mr8888165qtx.444.1647013768866;
+        Fri, 11 Mar 2022 07:49:28 -0800 (PST)
+Received: from xps13.. (c-98-239-145-235.hsd1.wv.comcast.net. [98.239.145.235])
+        by smtp.gmail.com with ESMTPSA id z6-20020ae9c106000000b0067d3b9ef387sm3602719qki.28.2022.03.11.07.49.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 07:47:25 -0800 (PST)
-Date:   Fri, 11 Mar 2022 15:47:23 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Aaron Tomlin <atomlin@redhat.com>, christophe.leroy@csgroup.eu,
-        hch@infradead.org, cl@linux.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        void@manifault.com, atomlin@atomlin.com, allen.lkml@gmail.com,
-        joe@perches.com, msuchanek@suse.de, oleksandr@natalenko.name,
-        jason.wessel@windriver.com, pmladek@suse.com
-Subject: Re: [PATCH] kdb: Remove redundant module related references
-Message-ID: <20220311154723.ezo3wvgg4puu2zk7@maple.lan>
-References: <20220307174741.2889588-1-atomlin@redhat.com>
- <20220308105203.2981099-1-atomlin@redhat.com>
- <20220309120640.uumh46n2l37jaddf@maple.lan>
- <YiporeSIrkFg/YS8@bombadil.infradead.org>
+        Fri, 11 Mar 2022 07:49:28 -0800 (PST)
+From:   Brian Masney <bmasney@redhat.com>
+To:     bjorn.andersson@linaro.org
+Cc:     mani@kernel.org, dianders@chromium.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH 0/2] ARM: qcom_defconfig: add crypto and debugfs support
+Date:   Fri, 11 Mar 2022 10:49:17 -0500
+Message-Id: <20220311154919.1797920-1-bmasney@redhat.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YiporeSIrkFg/YS8@bombadil.infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 01:07:57PM -0800, Luis Chamberlain wrote:
-> On Wed, Mar 09, 2022 at 12:06:40PM +0000, Daniel Thompson wrote:
-> > On Tue, Mar 08, 2022 at 10:52:03AM +0000, Aaron Tomlin wrote:
-> > > Hi Luis, Christoph, Daniel,
-> > > 
-> > > Is this patch ok or would you rather another iteration of the series?
-> > > Either way is fine for me. Thanks.
-> > 
-> > Another iteration makes more sense to me.
-> 
-> Iteration yes, but separating the patches no into another series no.
-> 
-> > The removal of kdb_modules is semantically part of your module clean
-> > up patch set and should certainly be included in it.
-> > 
-> > The removal of the spurious #include's in other kdb files is a
-> > good change but it is fully independent of the module rework. AFAICT
-> > those fixes are good with or without your changes. This suggests
-> > these changes can be separate from the main patch set.
-> 
-> Small fixes get piled in first on the series. But this is not a fix.
-> This effort will not be merged separately too. This won't go into the
-> next merge window either, because:
-> 
-> 1) There is no rush
-> 2) It is too late as all this needs proper testing and
->    its too late to claim enough testing
-> 
-> So given this is all related to the move I see no reason to treat
-> this as a separate series. Your review of the v11 would be nice.
+Here's two minor additions to the defconfig for the Qualcomm random
+number generator and debug fs.
 
-The reason to suggest separation was that the changes to the other
-files in kernel/debug/ are entirely independent of the module rework
-and would usually be landed via a different tree.
+Note that the DTS for the Qualcomm prng is already present in the
+upstream tree for the msm8974.
 
-On the whole it doesn't really matter much... but landing the
-independent parts via the normal route for kgdb code reduces what I
-have to remember acking.
+Brian Masney (2):
+  ARM: qcom_defconfig: enable options for Qualcomm random number
+    generator
+  ARM: qcom_defconfig: enable debug fs support
 
+ arch/arm/configs/qcom_defconfig | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Daniel.
+-- 
+2.34.1
+
