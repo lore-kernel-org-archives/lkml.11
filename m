@@ -2,338 +2,412 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4927C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346540AbiCKFwU (ORCPT
+        id S1346549AbiCKFw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:52:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
+        Fri, 11 Mar 2022 00:52:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235070AbiCKFwN (ORCPT
+        with ESMTP id S1346526AbiCKFwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:52:13 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3B0ECC63
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:07 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id f21-20020a633815000000b0038105768c61so1015074pga.21
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:07 -0800 (PST)
+        Fri, 11 Mar 2022 00:52:14 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C15ECC72
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:11 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id e1-20020a17090a280100b001bf44b6d74bso7304455pjd.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=m+zrLQV2v8uq4zkPfu5p9jArDq+18jogCFTcPpgzke0=;
-        b=mZWR4TO+ja4MFPPNRURqpOZdF7XcXrtvbin/1TevsX3LItGyhGgZyR306GBtZ52E5S
-         /t7rw+jA34ALr8095C5Zi6DiSek6dlgcAkHCKMtVVW15bi/oQlKRk1UqdAGOsEVDAyPZ
-         I3Fhbg0WUVRs9Q4QQc0ERsEzCGLri0ZrBdiOHENQTQlKSt3Nc55o18xy1mmTiT2QpApi
-         tU6SbWmRspwYNBNyo+6RSMUfUsQ0w2RmM7HL8ZGxNStap1QZsph/iVTg3MJeeNY5Tr39
-         sAHTowS8ZF5DkkCid7FGricgmQcHq7gA6S8k2qyK66lq+7bRMfnBJwxapLOGTJs+vJGB
-         9D6w==
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=IlAOOfd+yjpBKx3sGohnGp0k5UedDOqO6DTlbC9I7/o=;
+        b=AHwe3L1UBOLOFvRnkYn4H5rqgLYsWe/9rz1NcYwFAuzO+/PV9IVsJfia+KUiFrF7Wr
+         U/AzC0EsLN0n+vX1BDaSfij2v7ueYoX3j4y6J5B8nvQJGBOVTXMCbuZB+VvfgNzDyzzF
+         a3M/4ab8+OifPc0SazONc5ThbREnBXErIUfm5F1kZDEvRxobad+agb1yoV3xp+BY2J4a
+         +leFuRiyizESiajG13N7v+49czgVUXGE6HDqv0PVKMVqSOqQ/z94wu/k+HA9PiRcQxDe
+         wvehmPCAqf90iClWlccjdmOt54KBc8qlbrtx4jSGY9BVl/MPy/DHSeD4DqZB4qv4w4IX
+         g5Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=m+zrLQV2v8uq4zkPfu5p9jArDq+18jogCFTcPpgzke0=;
-        b=n6QPaDOJMC4WH4rwDtf9+Ka0hvRDz/1pRSCX+0fZPzdDDA+uRWw+dbQTMm+BAmecPm
-         0U1qAmyPGlcXWvw3Mf4Ut18ezbBMh+BkDy+91UbNSf2BztDbl9kh3+C4W+2nwwgaoYMD
-         xHv3b/qCfRS0tLiPx4jOhx92x/zP0RbYSLR7wQV77jF3t+TZVsgG7vb2Jq4HcryKXobb
-         Gw9ZM1ogTtepZ8SSOmdoidi9Ef4dbpE7DSAUcdqv/fgX4IUWrf5cvsS2lTj7r+5bDiIe
-         Wed7mb1mLWHry6Z75S94OIL94WgSQID8i6drHaHkG3iAfp1p1d2/ICQBYUfhrOlc7c9C
-         1YXQ==
-X-Gm-Message-State: AOAM5309hM3m+58Or2sWlIKE9yszJi6oyV+OXIdTnm/5pHiByTsmW9Pd
-        ZQWM8DJ/6N6TtUejFFHX8gYJiFYMoURa3PWy08oNuZ3NGDVD6YQ4ZPwqrqeIo+plBFQVGaEmAlD
-        ocG6n4H4gc5Im2e/yIlu5A1EH006EAPjVXVk1a0VKigJO+1bL/Y6ESX4oyKNnM2EOJX2ayw==
-X-Google-Smtp-Source: ABdhPJzMm/MchNZwY6Kh+sUy0nC2hWwRDYwa5hqbN8fgd4iwJarAnq353gwGILMqB/C9EK8uGP+bce4qGJI=
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=IlAOOfd+yjpBKx3sGohnGp0k5UedDOqO6DTlbC9I7/o=;
+        b=YzOXQFn5obU6MMOYzv6x1WydtvU9bhsLMfKiAjB6NRnTKCo1Ar4ETHm13xGK2CoZXs
+         tAHEw9IiWW7hXkLt1qAJ08hKunlOPn9ce6KPYvelivVtMlzBmhWxtioMQMeLWW9Q/+xR
+         R3Y52rH95OJ3xonHzaw2Ym+cQZXcfqHW1aGVonTK9XsPT8yxlCmmQDeVgeYWy7AylxlJ
+         csfaJb2qY7U9vDFoX1CjxKA1PmLMOR1Q9ExW8NDicn15q6iMCaee2mUTqovbnOcUo0if
+         /Pxu0iYTuzOiS2doay5YhSAIUP2qORuiyn78GwVxS3qy/ea+vZivFzWmx9oOI0DyPMsG
+         8k4g==
+X-Gm-Message-State: AOAM532n+rI1a9ybohI86kPacU/H5qpBIiQlTJljHlmZd3Y/cckQsmwZ
+        K3nInCnbABDB1nesra0/bNA59BGOqjWb0lv6vgbgSU6x6Uag09+/bijINWz0LnMb9RCRUcJ27AL
+        petOJAN+NwUcO6s5HWlWZErejOzQdfOkbn7yJgip19tHoJaSKjxjRa2t212X5I7ZzxpgLbw==
+X-Google-Smtp-Source: ABdhPJwwksVaQQv0UGOboLOCN0S0AnjExM9NOc9xZFogbhfKDDvhXcKDnuZmcFxgnDHNkec7eSX1zl1YCSc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:7608:b0:153:32d3:f721 with SMTP id
- k8-20020a170902760800b0015332d3f721mr2415202pll.168.1646977867070; Thu, 10
- Mar 2022 21:51:07 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:1e10:b0:1bf:6c78:54a9 with SMTP id
+ pg16-20020a17090b1e1000b001bf6c7854a9mr460280pjb.1.1646977870391; Thu, 10 Mar
+ 2022 21:51:10 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:49:11 +0000
-Message-Id: <20220311055056.57265-1-seanjc@google.com>
+Date:   Fri, 11 Mar 2022 05:49:13 +0000
+In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
+Message-Id: <20220311055056.57265-3-seanjc@google.com>
 Mime-Version: 1.0
+References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 000/105] KVM: selftests: Overhaul APIs, purge VCPU_ID
+Subject: [RFC PATCH 002/105] KVM: selftests: Always open VM file descriptors
+ with O_RDWR
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Jones <drjones@redhat.com>,
-        Thomas Huth <thuth@redhat.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>
+Cc:     Sean Christopherson <seanjc@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-First off, hopefully I didn't just spam you with 106 emails.  In theory,
-unless you're subscribed to LKML, you should see only the cover letter
-and everything else should be on lore if you want to pull down the mbox
-(instead of saying "LOL, 105 patches!?!?", or maybe after you say that).
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ .../selftests/kvm/aarch64/get-reg-list.c      |  2 +-
+ .../selftests/kvm/aarch64/psci_cpu_on_test.c  |  2 +-
+ tools/testing/selftests/kvm/dirty_log_test.c  |  2 +-
+ .../selftests/kvm/hardware_disable_test.c     |  2 +-
+ .../selftests/kvm/include/kvm_util_base.h     |  4 ++--
+ .../selftests/kvm/kvm_binary_stats_test.c     |  2 +-
+ .../selftests/kvm/kvm_create_max_vcpus.c      |  2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 20 +++++++++----------
+ .../selftests/kvm/set_memory_region_test.c    |  4 ++--
+ tools/testing/selftests/kvm/x86_64/amx_test.c |  2 +-
+ .../testing/selftests/kvm/x86_64/evmcs_test.c |  2 +-
+ .../selftests/kvm/x86_64/set_boot_cpu_id.c    |  2 +-
+ .../selftests/kvm/x86_64/set_sregs_test.c     |  2 +-
+ .../selftests/kvm/x86_64/sev_migrate_tests.c  |  8 ++++----
+ tools/testing/selftests/kvm/x86_64/smm_test.c |  2 +-
+ .../testing/selftests/kvm/x86_64/state_test.c |  2 +-
+ .../kvm/x86_64/vmx_preemption_timer_test.c    |  2 +-
+ 17 files changed, 30 insertions(+), 32 deletions(-)
 
-This is a (very) early RFC for overhauling KVM's selftests APIs.  It's
-compile tested only (maybe), there are no changelogs, etc...
-
-My end goal with an overhaul is to get to a state where adding new
-features and writing tests is less painful/disgusting (I feel dirty every
-time I copy+paste VCPU_ID).  I opted to directly send only the cover
-letter because most of the individual patches aren't all that interesting,
-there's still 46 patches even if the per-test conversions are omitted, and
-it's the final state that I really care about and want to discuss.
-
-The overarching theme of my take on where to go with selftests is to stop
-treating tests like second class citizens.  Stop hiding vcpu, kvm_vm, etc...
-There's no sensitive data/constructs, and the encapsulation has led to
-really, really bad and difficult to maintain code.  E.g. Want to call a
-vCPU ioctl()?  Hope you have the VM...
-
-The other theme in the rework is to deduplicate code and try to set us
-up for success in the future.  E.g. provide macros/helpers instead of
-spamming CTRL-C => CTRL-V (see the -700 LoC).
-
-I was hoping to get this into a less shabby state before posting, but I'm
-I'm going to be OOO for the next few weeks and want to get the ball rolling
-instead of waiting another month or so.
-
-Based on an older version of kvm/queue.  The full thing is also on github:
-
-  https://github.com/sean-jc/linux.git x86/selftests_overhaul
-
-Cc: kvm@vger.kernel.org
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc: Wanpeng Li <wanpengli@tencent.com>
-Cc: Jim Mattson <jmattson@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Andrew Jones <drjones@redhat.com>
-Cc: Thomas Huth <thuth@redhat.com>
-Cc: Janosch Frank <frankja@linux.ibm.com>
-Cc: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: David Matlack <dmatlack@google.com>
-Cc: Ben Gardon <bgardon@google.com>
-Cc: Oliver Upton <oupton@google.com>
-
-Sean Christopherson (105):
-  KVM: selftests: Fix buggy check in test_v3_new_redist_regions()
-  KVM: selftests: Always open VM file descriptors with O_RDWR
-  KVM: selftest: Add another underscore to inner ioctl helpers
-  KVM: selftests: Make vcpu_ioctl() a wrapper to pretty print ioctl name
-  KVM: selftests: Drop @mode from common vm_create() helper
-  KVM: selftests: Split vcpu_set_nested_state() into two helpers
-  KVM: selftests: Add hyperv_svm_test test binary to .gitignore
-  KVM: sefltests: Use vcpu_ioctl() and __vcpu_ioctl() helpers
-  KVM: selftests: Add __vcpu_run() helper
-  KVM: selftests: Use vcpu_access_device_attr() in arm64 code
-  KVM: selftests: Remove vcpu_get_fd()
-  KVM: selftests: Add vcpu_get() to retrieve and assert on vCPU
-    existence
-  KVM: selftests: Make vm_ioctl() a wrapper to pretty print ioctl name
-  KVM: sefltests: Use vm_ioctl() and __vm_ioctl() helpers
-  KVM: selftests: Make kvm_ioctl() a wrapper to pretty print ioctl name
-  KVM: selftests: Use kvm_ioctl() helpers
-  KVM: selftests: Make x86-64's register dump helpers static
-  KVM: selftests: Get rid of kvm_util_internal.h
-  KVM: selftests: Use KVM_IOCTL_ERROR() for one-off arm64 ioctls
-  KVM: selftests: Drop @test param from kvm_create_device()
-  KVM: selftests: Move KVM_CREATE_DEVICE_TEST code to separate helper
-  KVM: selftests: Multiplex return code and fd in __kvm_create_device()
-  KVM: selftests: Rename KVM_HAS_DEVICE_ATTR helpers for consistency
-  KVM: selftests: Drop 'int' return from asserting *_device_has_attr()
-  KVM: selftests: Split get/set device_attr helpers
-  KVM: selftests: Add a VM backpointer to 'struct vcpu'
-  KVM: selftests: Add vm_create_*() variants to expose/return 'struct
-    vcpu'
-  KVM: selftests: Rename vcpu.state => vcpu.run
-  KVM: selftests: Rename 'struct vcpu' to 'struct kvm_vcpu'
-  KVM: selftests: Return the created vCPU from vm_vcpu_add()
-  KVM: selftests: Convert memslot_perf_test away from VCPU_ID
-  KVM: selftests: Convert rseq_test away from VCPU_ID
-  KVM: selftests: Convert xss_msr_test away from VCPU_ID
-  KVM: selftests: Convert vmx_preemption_timer_test away from VCPU_ID
-  KVM: selftests: Convert vmx_pmu_msrs_test away from VCPU_ID
-  KVM: selftests: Convert vmx_set_nested_state_test away from VCPU_ID
-  KVM: selftests: Convert vmx_tsc_adjust_test away from VCPU_ID
-  KVM: selftests: Convert mmu_role_test away from VCPU_ID
-  KVM: selftests: Convert pmu_event_filter_test away from VCPU_ID
-  KVM: selftests: Convert smm_test away from VCPU_ID
-  KVM: selftests: Convert state_test away from VCPU_ID
-  KVM: selftests: Convert svm_int_ctl_test away from VCPU_ID
-  KVM: selftests: Convert svm_vmcall_test away from VCPU_ID
-  KVM: selftests: Convert sync_regs_test away from VCPU_ID
-  KVM: selftests: Convert hyperv_cpuid away from VCPU_ID
-  KVM: selftests: Convert kvm_pv_test away from VCPU_ID
-  KVM: selftests: Convert platform_info_test away from VCPU_ID
-  KVM: selftests: Convert vmx_nested_tsc_scaling_test away from VCPU_ID
-  KVM: selftests: Convert set_sregs_test away from VCPU_ID
-  KVM: selftests: Convert vmx_dirty_log_test away from VCPU_ID
-  KVM: selftests: Convert vmx_close_while_nested_test away from VCPU_ID
-  KVM: selftests: Convert vmx_apic_access_test away from VCPU_ID
-  KVM: selftests: Convert userspace_msr_exit_test away from VCPU_ID
-  KVM: selftests: Convert vmx_exception_with_invalid_guest_state away
-    from VCPU_ID
-  KVM: selftests: Convert tsc_msrs_test away from VCPU_ID
-  KVM: selftests: Convert kvm_clock_test away from VCPU_ID
-  KVM: selftests: Convert hyperv_svm_test away from VCPU_ID
-  KVM: selftests: Convert hyperv_features away from VCPU_ID
-  KVM: selftests: Convert hyperv_clock away from VCPU_ID
-  KVM: selftests: Convert evmcs_test away from VCPU_ID
-  KVM: selftests: Convert emulator_error_test away from VCPU_ID
-  KVM: selftests: Convert debug_regs away from VCPU_ID
-  KVM: selftests: Add proper helper for advancing RIP in debug_regs
-  KVM: selftests: Convert amx_test away from VCPU_ID
-  KVM: selftests: Convert cr4_cpuid_sync_test away from VCPU_ID
-  KVM: selftests: Convert cpuid_test away from VCPU_ID
-  KVM: selftests: Convert userspace_io_test away from VCPU_ID
-  KVM: selftests: Convert vmx_invalid_nested_guest_state away from
-    VCPU_ID
-  KVM: selftests: Convert xen_vmcall_test away from VCPU_ID
-  KVM: selftests: Convert xen_shinfo_test away from VCPU_ID
-  KVM: selftests: Convert dirty_log_test away from VCPU_ID
-  KVM: selftests: Convert set_memory_region_test away from VCPU_ID
-  KVM: selftests: Convert system_counter_offset_test away from VCPU_ID
-  KVM: selftests: Convert debug-exceptions away from VCPU_ID
-  KVM: selftests: Convert vgic_irq.c include/aarch64/vgic.h
-    lib/aarch64/vgic away from VCPU_ID
-  KVM: selftests: Make arm64's guest_get_vcpuid() declaration arm64-only
-  KVM: selftests: Move vm_is_unrestricted_guest() to x86-64
-  KVM: selftests: Add "arch" to common utils that have arch
-    implementations
-  KVM: selftests: Return created vcpu from vm_vcpu_add_default()
-  KVM: selftests: Rename vm_vcpu_add* helpers to better show
-    relationships
-  KVM: selftests: Convert set_boot_cpu_id away from VCPU_ID
-  KVM: selftests: Convert psci_cpu_on_test away from VCPU_ID
-  KVM: selftests: Convert hardware_disable_test away from VCPU_ID
-  KVM: selftests: Add VM creation helper that "returns" vCPUs
-  KVM: selftests: Convert steal_time away from VCPU_ID
-  KVM: selftests: Convert arch_timer away from VCPU_ID
-  KVM: selftests: Fix typo in vgic_init test
-  KVM: selftests: Convert vgic_init away from
-    vm_create_default_with_vcpus()
-  KVM: selftests: Convert xapic_ipi_test away from *_VCPU_ID
-  KVM: selftests: Convert sync_regs_test away from VCPU_ID
-  KVM: selftests: Convert resets away from VCPU_ID
-  KVM: selftests: Convert memop away from VCPU_ID
-  KVM: selftests: Convert s390x/diag318_test_handler away from VCPU_ID
-  KVM: selftests: Drop vm_create_default* helpers
-  KVM: selftests: Drop vcpuids param from VM creators
-  KVM: selftests: Convert kvm_page_table_test away from reliance on
-    vcpu_id
-  KVM: selftests: Convert kvm_binary_stats_test away from VCPU_ID
-  KVM: selftests: Convert get-reg-list away from VCPU_ID
-  KVM: selftests: Stop conflating vCPU index and ID in perf tests
-  KVM: selftests: Remove vcpu_get() usage from dirty_log_test
-  KVM: selftests: Require vCPU output array when creating VM with vCPUs
-  KVM: selftest: Purge vm+vcpu_id == vcpu silliness
-  KVM: selftests: Drop vcpu_get(), rename vcpu_find() => vcpu_exists()
-  KVM: selftests: Remove vcpu_state() helper
-  KVM: selftests: Open code and drop kvm_vm accessors
-
- tools/testing/selftests/kvm/.gitignore        |   1 +
- .../selftests/kvm/aarch64/arch_timer.c        |  68 +-
- .../selftests/kvm/aarch64/debug-exceptions.c  |  17 +-
- .../selftests/kvm/aarch64/get-reg-list.c      |  19 +-
- .../selftests/kvm/aarch64/psci_cpu_on_test.c  |  22 +-
- .../testing/selftests/kvm/aarch64/vgic_init.c | 369 +++----
- .../testing/selftests/kvm/aarch64/vgic_irq.c  |  30 +-
- .../selftests/kvm/access_tracking_perf_test.c |  81 +-
- .../selftests/kvm/demand_paging_test.c        |  39 +-
- .../selftests/kvm/dirty_log_perf_test.c       |  42 +-
- tools/testing/selftests/kvm/dirty_log_test.c  |  80 +-
- .../selftests/kvm/hardware_disable_test.c     |  27 +-
- .../selftests/kvm/include/aarch64/processor.h |  20 +-
- .../selftests/kvm/include/aarch64/vgic.h      |   6 +-
- .../selftests/kvm/include/kvm_util_base.h     | 677 ++++++++----
- .../selftests/kvm/include/perf_test_util.h    |   5 +-
- .../selftests/kvm/include/riscv/processor.h   |   8 +-
- .../selftests/kvm/include/ucall_common.h      |   2 +-
- .../selftests/kvm/include/x86_64/evmcs.h      |   2 +-
- .../selftests/kvm/include/x86_64/processor.h  |  52 +-
- .../selftests/kvm/kvm_binary_stats_test.c     |  27 +-
- .../selftests/kvm/kvm_create_max_vcpus.c      |   4 +-
- .../selftests/kvm/kvm_page_table_test.c       |  66 +-
- .../selftests/kvm/lib/aarch64/processor.c     |  79 +-
- .../testing/selftests/kvm/lib/aarch64/ucall.c |   9 +-
- .../testing/selftests/kvm/lib/aarch64/vgic.c  |  44 +-
- tools/testing/selftests/kvm/lib/elf.c         |   1 -
- tools/testing/selftests/kvm/lib/guest_modes.c |   6 +-
- tools/testing/selftests/kvm/lib/kvm_util.c    | 981 +++---------------
- .../selftests/kvm/lib/kvm_util_internal.h     | 128 ---
- .../selftests/kvm/lib/perf_test_util.c        |  84 +-
- .../selftests/kvm/lib/riscv/processor.c       | 110 +-
- tools/testing/selftests/kvm/lib/riscv/ucall.c |   7 +-
- .../kvm/lib/s390x/diag318_test_handler.c      |   9 +-
- .../selftests/kvm/lib/s390x/processor.c       |  44 +-
- tools/testing/selftests/kvm/lib/s390x/ucall.c |   8 +-
- .../selftests/kvm/lib/x86_64/processor.c      | 311 ++----
- tools/testing/selftests/kvm/lib/x86_64/svm.c  |   1 -
- .../testing/selftests/kvm/lib/x86_64/ucall.c  |  10 +-
- tools/testing/selftests/kvm/lib/x86_64/vmx.c  |   5 +-
- .../kvm/memslot_modification_stress_test.c    |  13 +-
- .../testing/selftests/kvm/memslot_perf_test.c |  28 +-
- tools/testing/selftests/kvm/rseq_test.c       |   9 +-
- tools/testing/selftests/kvm/s390x/memop.c     |  31 +-
- tools/testing/selftests/kvm/s390x/resets.c    | 137 +--
- .../selftests/kvm/s390x/sync_regs_test.c      |  37 +-
- .../selftests/kvm/set_memory_region_test.c    |  45 +-
- tools/testing/selftests/kvm/steal_time.c      | 120 +--
- .../kvm/system_counter_offset_test.c          |  29 +-
- tools/testing/selftests/kvm/x86_64/amx_test.c |  33 +-
- .../testing/selftests/kvm/x86_64/cpuid_test.c |  29 +-
- .../kvm/x86_64/cr4_cpuid_sync_test.c          |  17 +-
- .../testing/selftests/kvm/x86_64/debug_regs.c |  72 +-
- .../kvm/x86_64/emulator_error_test.c          |  65 +-
- .../testing/selftests/kvm/x86_64/evmcs_test.c |  51 +-
- .../kvm/x86_64/get_msr_index_features.c       |  16 +-
- .../selftests/kvm/x86_64/hyperv_clock.c       |  25 +-
- .../selftests/kvm/x86_64/hyperv_cpuid.c       |  25 +-
- .../selftests/kvm/x86_64/hyperv_features.c    |  51 +-
- .../selftests/kvm/x86_64/hyperv_svm_test.c    |  14 +-
- .../selftests/kvm/x86_64/kvm_clock_test.c     |  23 +-
- .../selftests/kvm/x86_64/kvm_pv_test.c        |  25 +-
- .../selftests/kvm/x86_64/mmio_warning_test.c  |   6 +-
- .../selftests/kvm/x86_64/mmu_role_test.c      |  20 +-
- .../selftests/kvm/x86_64/platform_info_test.c |  34 +-
- .../kvm/x86_64/pmu_event_filter_test.c        |  60 +-
- .../selftests/kvm/x86_64/set_boot_cpu_id.c    |  87 +-
- .../selftests/kvm/x86_64/set_sregs_test.c     |  47 +-
- .../selftests/kvm/x86_64/sev_migrate_tests.c  |  17 +-
- tools/testing/selftests/kvm/x86_64/smm_test.c |  37 +-
- .../testing/selftests/kvm/x86_64/state_test.c |  29 +-
- .../selftests/kvm/x86_64/svm_int_ctl_test.c   |  21 +-
- .../selftests/kvm/x86_64/svm_vmcall_test.c    |  16 +-
- .../selftests/kvm/x86_64/sync_regs_test.c     |  52 +-
- .../selftests/kvm/x86_64/tsc_msrs_test.c      |  35 +-
- .../selftests/kvm/x86_64/userspace_io_test.c  |  18 +-
- .../kvm/x86_64/userspace_msr_exit_test.c      | 165 ++-
- .../kvm/x86_64/vmx_apic_access_test.c         |  18 +-
- .../kvm/x86_64/vmx_close_while_nested_test.c  |  17 +-
- .../selftests/kvm/x86_64/vmx_dirty_log_test.c |  13 +-
- .../vmx_exception_with_invalid_guest_state.c  |  62 +-
- .../x86_64/vmx_invalid_nested_guest_state.c   |  18 +-
- .../kvm/x86_64/vmx_nested_tsc_scaling_test.c  |  19 +-
- .../selftests/kvm/x86_64/vmx_pmu_msrs_test.c  |  25 +-
- .../kvm/x86_64/vmx_preemption_timer_test.c    |  30 +-
- .../kvm/x86_64/vmx_set_nested_state_test.c    |  86 +-
- .../kvm/x86_64/vmx_tsc_adjust_test.c          |  12 +-
- .../selftests/kvm/x86_64/xapic_ipi_test.c     |  48 +-
- .../selftests/kvm/x86_64/xen_shinfo_test.c    |  35 +-
- .../selftests/kvm/x86_64/xen_vmcall_test.c    |  17 +-
- .../selftests/kvm/x86_64/xss_msr_test.c       |  10 +-
- 91 files changed, 2363 insertions(+), 3087 deletions(-)
- delete mode 100644 tools/testing/selftests/kvm/lib/kvm_util_internal.h
-
-
-base-commit: f6ae04ddb347f526b4620d1053690ecf1f87d77f
+diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+index f769fc6cd927..336de3e574d0 100644
+--- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
++++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+@@ -411,7 +411,7 @@ static void run_test(struct vcpu_config *c)
+ 
+ 	check_supported(c);
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 	prepare_vcpu_init(c, &init);
+ 	aarch64_vcpu_add_default(vm, 0, &init, NULL);
+ 	finalize_vcpu(vm, 0, c);
+diff --git a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
+index 4c5f6814030f..15f4b3544ee5 100644
+--- a/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
++++ b/tools/testing/selftests/kvm/aarch64/psci_cpu_on_test.c
+@@ -76,7 +76,7 @@ int main(void)
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 	kvm_vm_elf_load(vm, program_invocation_name);
+ 	ucall_init(vm, NULL);
+ 
+diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
+index 3fcd89e195c7..11bf606e3165 100644
+--- a/tools/testing/selftests/kvm/dirty_log_test.c
++++ b/tools/testing/selftests/kvm/dirty_log_test.c
+@@ -679,7 +679,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
+ 
+ 	pr_info("Testing guest mode: %s\n", vm_guest_mode_string(mode));
+ 
+-	vm = vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages, O_RDWR);
++	vm = vm_create(mode, DEFAULT_GUEST_PHY_PAGES + extra_pg_pages);
+ 	kvm_vm_elf_load(vm, program_invocation_name);
+ #ifdef __x86_64__
+ 	vm_create_irqchip(vm);
+diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
+index b21c69a56daa..1c9e2295c75b 100644
+--- a/tools/testing/selftests/kvm/hardware_disable_test.c
++++ b/tools/testing/selftests/kvm/hardware_disable_test.c
+@@ -104,7 +104,7 @@ static void run_test(uint32_t run)
+ 	for (i = 0; i < VCPU_NUM; i++)
+ 		CPU_SET(i, &cpu_set);
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 	kvm_vm_elf_load(vm, program_invocation_name);
+ 	vm_create_irqchip(vm);
+ 
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 4ed6aa049a91..bbc66442f91f 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -110,9 +110,9 @@ int vcpu_enable_cap(struct kvm_vm *vm, uint32_t vcpu_id,
+ void vm_enable_dirty_ring(struct kvm_vm *vm, uint32_t ring_size);
+ const char *vm_guest_mode_string(uint32_t i);
+ 
+-struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages, int perm);
++struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages);
+ void kvm_vm_free(struct kvm_vm *vmp);
+-void kvm_vm_restart(struct kvm_vm *vmp, int perm);
++void kvm_vm_restart(struct kvm_vm *vmp);
+ void kvm_vm_release(struct kvm_vm *vmp);
+ void kvm_vm_get_dirty_log(struct kvm_vm *vm, int slot, void *log);
+ void kvm_vm_clear_dirty_log(struct kvm_vm *vm, int slot, void *log,
+diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+index 17f65d514915..6217f4630e6c 100644
+--- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
++++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
+ 	TEST_ASSERT(vms, "Allocate memory for storing VM pointers");
+ 	for (i = 0; i < max_vm; ++i) {
+ 		vms[i] = vm_create(VM_MODE_DEFAULT,
+-				DEFAULT_GUEST_PHY_PAGES, O_RDWR);
++				DEFAULT_GUEST_PHY_PAGES);
+ 		for (j = 0; j < max_vcpu; ++j)
+ 			vm_vcpu_add(vms[i], j);
+ 	}
+diff --git a/tools/testing/selftests/kvm/kvm_create_max_vcpus.c b/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
+index aed9dc3ca1e9..bb69b75eac23 100644
+--- a/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
++++ b/tools/testing/selftests/kvm/kvm_create_max_vcpus.c
+@@ -28,7 +28,7 @@ void test_vcpu_creation(int first_vcpu_id, int num_vcpus)
+ 	pr_info("Testing creating %d vCPUs, with IDs %d...%d.\n",
+ 		num_vcpus, first_vcpu_id, first_vcpu_id + num_vcpus - 1);
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 
+ 	for (i = first_vcpu_id; i < first_vcpu_id + num_vcpus; i++)
+ 		/* This asserts that the vCPU was created. */
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index d8cf851ab119..3e9654e65a67 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -173,9 +173,9 @@ void vm_enable_dirty_ring(struct kvm_vm *vm, uint32_t ring_size)
+ 	vm->dirty_ring_size = ring_size;
+ }
+ 
+-static void vm_open(struct kvm_vm *vm, int perm)
++static void vm_open(struct kvm_vm *vm)
+ {
+-	vm->kvm_fd = _open_kvm_dev_path_or_exit(perm);
++	vm->kvm_fd = _open_kvm_dev_path_or_exit(O_RDWR);
+ 
+ 	if (!kvm_check_cap(KVM_CAP_IMMEDIATE_EXIT)) {
+ 		print_skip("immediate_exit not available");
+@@ -240,7 +240,6 @@ _Static_assert(sizeof(vm_guest_mode_params)/sizeof(struct vm_guest_mode_params)
+  * Input Args:
+  *   mode - VM Mode (e.g. VM_MODE_P52V48_4K)
+  *   phy_pages - Physical memory pages
+- *   perm - permission
+  *
+  * Output Args: None
+  *
+@@ -253,12 +252,12 @@ _Static_assert(sizeof(vm_guest_mode_params)/sizeof(struct vm_guest_mode_params)
+  * descriptor to control the created VM is created with the permissions
+  * given by perm (e.g. O_RDWR).
+  */
+-struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages, int perm)
++struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages)
+ {
+ 	struct kvm_vm *vm;
+ 
+-	pr_debug("%s: mode='%s' pages='%ld' perm='%d'\n", __func__,
+-		 vm_guest_mode_string(mode), phy_pages, perm);
++	pr_debug("%s: mode='%s' pages='%ld'\n", __func__,
++		 vm_guest_mode_string(mode), phy_pages);
+ 
+ 	vm = calloc(1, sizeof(*vm));
+ 	TEST_ASSERT(vm != NULL, "Insufficient Memory");
+@@ -340,7 +339,7 @@ struct kvm_vm *vm_create(enum vm_guest_mode mode, uint64_t phy_pages, int perm)
+ 		vm->type = KVM_VM_TYPE_ARM_IPA_SIZE(vm->pa_bits);
+ #endif
+ 
+-	vm_open(vm, perm);
++	vm_open(vm);
+ 
+ 	/* Limit to VA-bit canonical virtual addresses. */
+ 	vm->vpages_valid = sparsebit_alloc();
+@@ -412,7 +411,7 @@ struct kvm_vm *vm_create_with_vcpus(enum vm_guest_mode mode, uint32_t nr_vcpus,
+ 		    nr_vcpus, kvm_check_cap(KVM_CAP_MAX_VCPUS));
+ 
+ 	pages = vm_adjust_num_guest_pages(mode, pages);
+-	vm = vm_create(mode, pages, O_RDWR);
++	vm = vm_create(mode, pages);
+ 
+ 	kvm_vm_elf_load(vm, program_invocation_name);
+ 
+@@ -449,7 +448,6 @@ struct kvm_vm *vm_create_default(uint32_t vcpuid, uint64_t extra_mem_pages,
+  *
+  * Input Args:
+  *   vm - VM that has been released before
+- *   perm - permission
+  *
+  * Output Args: None
+  *
+@@ -457,12 +455,12 @@ struct kvm_vm *vm_create_default(uint32_t vcpuid, uint64_t extra_mem_pages,
+  * global state, such as the irqchip and the memory regions that are mapped
+  * into the guest.
+  */
+-void kvm_vm_restart(struct kvm_vm *vmp, int perm)
++void kvm_vm_restart(struct kvm_vm *vmp)
+ {
+ 	int ctr;
+ 	struct userspace_mem_region *region;
+ 
+-	vm_open(vmp, perm);
++	vm_open(vmp);
+ 	if (vmp->has_irqchip)
+ 		vm_create_irqchip(vmp);
+ 
+diff --git a/tools/testing/selftests/kvm/set_memory_region_test.c b/tools/testing/selftests/kvm/set_memory_region_test.c
+index 72a1c9b4882c..6a115d8d2fe3 100644
+--- a/tools/testing/selftests/kvm/set_memory_region_test.c
++++ b/tools/testing/selftests/kvm/set_memory_region_test.c
+@@ -314,7 +314,7 @@ static void test_zero_memory_regions(void)
+ 
+ 	pr_info("Testing KVM_RUN with zero added memory regions\n");
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, 0);
+ 	vm_vcpu_add(vm, VCPU_ID);
+ 
+ 	TEST_ASSERT(!ioctl(vm_get_fd(vm), KVM_SET_NR_MMU_PAGES, 64),
+@@ -370,7 +370,7 @@ static void test_add_max_memory_regions(void)
+ 		    "KVM_CAP_NR_MEMSLOTS should be greater than 0");
+ 	pr_info("Allowed number of memory slots: %i\n", max_mem_slots);
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, 0);
+ 
+ 	/* Check it can be added memory slots up to the maximum allowed */
+ 	pr_info("Adding slots 0..%i, each memory region with %dK size\n",
+diff --git a/tools/testing/selftests/kvm/x86_64/amx_test.c b/tools/testing/selftests/kvm/x86_64/amx_test.c
+index 52a3ef6629e8..89d2423a2ffd 100644
+--- a/tools/testing/selftests/kvm/x86_64/amx_test.c
++++ b/tools/testing/selftests/kvm/x86_64/amx_test.c
+@@ -432,7 +432,7 @@ int main(int argc, char *argv[])
+ 		kvm_vm_release(vm);
+ 
+ 		/* Restore state in a new VM.  */
+-		kvm_vm_restart(vm, O_RDWR);
++		kvm_vm_restart(vm);
+ 		vm_vcpu_add(vm, VCPU_ID);
+ 		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+ 		vcpu_load_state(vm, VCPU_ID, state);
+diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+index d12e043aa2ee..f97049ab045f 100644
+--- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
+@@ -184,7 +184,7 @@ static void save_restore_vm(struct kvm_vm *vm)
+ 	kvm_vm_release(vm);
+ 
+ 	/* Restore state in a new VM.  */
+-	kvm_vm_restart(vm, O_RDWR);
++	kvm_vm_restart(vm);
+ 	vm_vcpu_add(vm, VCPU_ID);
+ 	vcpu_set_hv_cpuid(vm, VCPU_ID);
+ 	vcpu_enable_evmcs(vm, VCPU_ID);
+diff --git a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
+index ae76436af0cc..2fe893ccedd0 100644
+--- a/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
++++ b/tools/testing/selftests/kvm/x86_64/set_boot_cpu_id.c
+@@ -88,7 +88,7 @@ static struct kvm_vm *create_vm(void)
+ 	uint64_t pages = DEFAULT_GUEST_PHY_PAGES + vcpu_pages + extra_pg_pages;
+ 
+ 	pages = vm_adjust_num_guest_pages(VM_MODE_DEFAULT, pages);
+-	vm = vm_create(VM_MODE_DEFAULT, pages, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, pages);
+ 
+ 	kvm_vm_elf_load(vm, program_invocation_name);
+ 	vm_create_irqchip(vm);
+diff --git a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
+index 318be0bf77ab..44711ab735c3 100644
+--- a/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
++++ b/tools/testing/selftests/kvm/x86_64/set_sregs_test.c
+@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
+ 	 * use it to verify all supported CR4 bits can be set prior to defining
+ 	 * the vCPU model, i.e. without doing KVM_SET_CPUID2.
+ 	 */
+-	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, DEFAULT_GUEST_PHY_PAGES);
+ 	vm_vcpu_add(vm, VCPU_ID);
+ 
+ 	vcpu_sregs_get(vm, VCPU_ID, &sregs);
+diff --git a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
+index 80056bbbb003..7729ca60a9d7 100644
+--- a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
++++ b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
+@@ -52,7 +52,7 @@ static struct kvm_vm *sev_vm_create(bool es)
+ 	struct kvm_sev_launch_start start = { 0 };
+ 	int i;
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, 0);
+ 	sev_ioctl(vm->fd, es ? KVM_SEV_ES_INIT : KVM_SEV_INIT, NULL);
+ 	for (i = 0; i < NR_MIGRATE_TEST_VCPUS; ++i)
+ 		vm_vcpu_add(vm, i);
+@@ -69,7 +69,7 @@ static struct kvm_vm *aux_vm_create(bool with_vcpus)
+ 	struct kvm_vm *vm;
+ 	int i;
+ 
+-	vm = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++	vm = vm_create(VM_MODE_DEFAULT, 0);
+ 	if (!with_vcpus)
+ 		return vm;
+ 
+@@ -174,9 +174,9 @@ static void test_sev_migrate_parameters(void)
+ 
+ 	sev_vm = sev_vm_create(/* es= */ false);
+ 	sev_es_vm = sev_vm_create(/* es= */ true);
+-	vm_no_vcpu = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++	vm_no_vcpu = vm_create(VM_MODE_DEFAULT, 0);
+ 	vm_no_sev = aux_vm_create(true);
+-	sev_es_vm_no_vmsa = vm_create(VM_MODE_DEFAULT, 0, O_RDWR);
++	sev_es_vm_no_vmsa = vm_create(VM_MODE_DEFAULT, 0);
+ 	sev_ioctl(sev_es_vm_no_vmsa->fd, KVM_SEV_ES_INIT, NULL);
+ 	vm_vcpu_add(sev_es_vm_no_vmsa, 1);
+ 
+diff --git a/tools/testing/selftests/kvm/x86_64/smm_test.c b/tools/testing/selftests/kvm/x86_64/smm_test.c
+index a626d40fdb48..9757c45575ff 100644
+--- a/tools/testing/selftests/kvm/x86_64/smm_test.c
++++ b/tools/testing/selftests/kvm/x86_64/smm_test.c
+@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
+ 
+ 		state = vcpu_save_state(vm, VCPU_ID);
+ 		kvm_vm_release(vm);
+-		kvm_vm_restart(vm, O_RDWR);
++		kvm_vm_restart(vm);
+ 		vm_vcpu_add(vm, VCPU_ID);
+ 		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+ 		vcpu_load_state(vm, VCPU_ID, state);
+diff --git a/tools/testing/selftests/kvm/x86_64/state_test.c b/tools/testing/selftests/kvm/x86_64/state_test.c
+index 2e0a92da8ff5..41f7faaef2ac 100644
+--- a/tools/testing/selftests/kvm/x86_64/state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/state_test.c
+@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
+ 		kvm_vm_release(vm);
+ 
+ 		/* Restore state in a new VM.  */
+-		kvm_vm_restart(vm, O_RDWR);
++		kvm_vm_restart(vm);
+ 		vm_vcpu_add(vm, VCPU_ID);
+ 		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+ 		vcpu_load_state(vm, VCPU_ID, state);
+diff --git a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
+index ff92e25b6f1e..f5b4ae914131 100644
+--- a/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
++++ b/tools/testing/selftests/kvm/x86_64/vmx_preemption_timer_test.c
+@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
+ 		kvm_vm_release(vm);
+ 
+ 		/* Restore state in a new VM.  */
+-		kvm_vm_restart(vm, O_RDWR);
++		kvm_vm_restart(vm);
+ 		vm_vcpu_add(vm, VCPU_ID);
+ 		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+ 		vcpu_load_state(vm, VCPU_ID, state);
 -- 
 2.35.1.723.g4982287a31-goog
 
