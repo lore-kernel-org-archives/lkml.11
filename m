@@ -2,123 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 260B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349706AbiCKPzm (ORCPT
+        id S1346764AbiCKPzo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58226 "EHLO
+        Fri, 11 Mar 2022 10:55:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350291AbiCKPxx (ORCPT
+        with ESMTP id S1350285AbiCKPxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:53:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61E281CC7EF
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:51:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647013890;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I+R/eNqjb1wpUKu1EY5DiMRn7IAObJ3SaayfFkvzkX4=;
-        b=Y8GV/hUSKVjFbQzfHmn+7j8uvBwvIwOqDJbcwNtn5NeBya2F0yF/ZBm/hhwm/tnXSQiyHJ
-        2IaFMKm6jOxtqsuIhS+6da/cqm2W0SzvusUVWDxFyLZiSnLfcPBQj4nuoHzgo6PGKgkTYG
-        BgGY3uXVdChWz22IqTQpCJLhR9jd8G0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-nzN-DciFNh-KEfBTSZlOow-1; Fri, 11 Mar 2022 10:51:27 -0500
-X-MC-Unique: nzN-DciFNh-KEfBTSZlOow-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4F39E1800D50;
-        Fri, 11 Mar 2022 15:51:25 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6FAC5866DB;
-        Fri, 11 Mar 2022 15:50:58 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 25/31] KVM: selftests: Sync 'struct hv_enlightened_vmcs' definition with hyperv-tlfs.h
-Date:   Fri, 11 Mar 2022 16:49:37 +0100
-Message-Id: <20220311154943.2299191-26-vkuznets@redhat.com>
-In-Reply-To: <20220311154943.2299191-1-vkuznets@redhat.com>
-References: <20220311154943.2299191-1-vkuznets@redhat.com>
+        Fri, 11 Mar 2022 10:53:52 -0500
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16B51CD9D7;
+        Fri, 11 Mar 2022 07:51:52 -0800 (PST)
+Received: by mail-oi1-f176.google.com with SMTP id w2so1686125oie.2;
+        Fri, 11 Mar 2022 07:51:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aFQmY8Q3Xcs50vqeMZuNuMuDo4MjkwmEEkUJ4NeBy6w=;
+        b=bsQFtUu11nacc7Cv0yQLN2cLXRQeUo57ZUQmugMBB7HjIWYAuZ71sTPS9BlEp2h6IQ
+         Ar/xpTbSm4gePcgZIBMOI0y0NizOYto9mCMjbXqanS1iLg03NWIwJ9YC4Q3dO272Xjxt
+         2nmde3gwFDJ1l9nrn6bwHAMj4GyS0rw45HDiAABFvZuYZjqjomZiS6rYDX8J8gWl/yFk
+         p0aD2xJwZrZMa43/bWcWbfc5cHPJlctiWHgLQXwv2HZf9o0wZza1rHOOprquPMFc9GLp
+         RFL4AkWBEj2YsBQLOXTPp3gl5XKFg7HGtRGZSVcNz2TT0dAj+08f6z5f64PHdgR+ukgE
+         f1fw==
+X-Gm-Message-State: AOAM531w1g+ptjMY8OwiYkmbmiPxLt2eUFp/jfVqQaOmc9zsPr7As7F9
+        37S4BzB3lrZmi5h0Yp4U9w==
+X-Google-Smtp-Source: ABdhPJxOckzuMfoeKLRh2uMhfA7547OHTQ+38S+0GQ+35G6dShSqk8U+eYRPpxG5WGYqgKkP1XXYIg==
+X-Received: by 2002:a05:6808:218b:b0:2da:5fd1:a85b with SMTP id be11-20020a056808218b00b002da5fd1a85bmr5388120oib.71.1647013902733;
+        Fri, 11 Mar 2022 07:51:42 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r21-20020a05683002f500b005b249ffa43fsm3856004ote.22.2022.03.11.07.51.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 07:51:42 -0800 (PST)
+Received: (nullmailer pid 3868935 invoked by uid 1000);
+        Fri, 11 Mar 2022 15:51:41 -0000
+Date:   Fri, 11 Mar 2022 09:51:41 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Steve Lee <steve.lee.analog@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, broonie@kernel.org,
+        lgirdwood@gmail.com, ryans.lee@maximintegrated.com,
+        alsa-devel@alsa-project.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [V2 2/2] ASoC: dt-bindings: max98390: add reset gpio bindings
+Message-ID: <YitwDaQcXUApGKW4@robh.at.kernel.org>
+References: <20220311132906.32292-1-steve.lee.analog@gmail.com>
+ <20220311132906.32292-2-steve.lee.analog@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311132906.32292-2-steve.lee.analog@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'struct hv_enlightened_vmcs' definition in selftests is not '__packed'
-and so we rely on the compiler doing the right padding. This is not
-obvious so it seems beneficial to use the same definition as in kernel.
+On Fri, 11 Mar 2022 22:29:06 +0900, Steve Lee wrote:
+>  This adds support for the reset gpio binding.
+> 
+> Signed-off-by: Steve Lee <steve.lee.analog@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/sound/maxim,max98390.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- tools/testing/selftests/kvm/include/x86_64/evmcs.h | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-index cc5d14a45702..b6067b555110 100644
---- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-@@ -41,6 +41,8 @@ struct hv_enlightened_vmcs {
- 	u16 host_gs_selector;
- 	u16 host_tr_selector;
- 
-+	u16 padding16_1;
-+
- 	u64 host_ia32_pat;
- 	u64 host_ia32_efer;
- 
-@@ -159,7 +161,7 @@ struct hv_enlightened_vmcs {
- 	u64 ept_pointer;
- 
- 	u16 virtual_processor_id;
--	u16 padding16[3];
-+	u16 padding16_2[3];
- 
- 	u64 padding64_2[5];
- 	u64 guest_physical_address;
-@@ -195,15 +197,15 @@ struct hv_enlightened_vmcs {
- 	u64 guest_rip;
- 
- 	u32 hv_clean_fields;
--	u32 hv_padding_32;
-+	u32 padding32_1;
- 	u32 hv_synthetic_controls;
- 	struct {
- 		u32 nested_flush_hypercall:1;
- 		u32 msr_bitmap:1;
- 		u32 reserved:30;
--	} hv_enlightenments_control;
-+	}  __packed hv_enlightenments_control;
- 	u32 hv_vp_id;
--
-+	u32 padding32_2;
- 	u64 hv_vm_id;
- 	u64 partition_assist_page;
- 	u64 padding64_4[4];
-@@ -211,7 +213,7 @@ struct hv_enlightened_vmcs {
- 	u64 padding64_5[7];
- 	u64 xss_exit_bitmap;
- 	u64 padding64_6[7];
--};
-+} __packed;
- 
- #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE                     0
- #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_IO_BITMAP                BIT(0)
--- 
-2.35.1
-
+Acked-by: Rob Herring <robh@kernel.org>
