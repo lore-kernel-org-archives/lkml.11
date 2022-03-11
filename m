@@ -2,145 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230319AbiCKXDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:03:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53576 "EHLO
+        id S230114AbiCKXD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:03:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231335AbiCKXDI (ORCPT
+        with ESMTP id S230107AbiCKXDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:03:08 -0500
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16228248CCE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:58:10 -0800 (PST)
-Received: by mail-vk1-xa36.google.com with SMTP id j9so5460422vkj.1
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:58:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3INdYjmD9sI3AAGt1tE2s/Am9WLmWC+N03DHnuY4rE8=;
-        b=BMA7qz0hmDXjgLAj/07b1iUaF7Hpsjn69duyTb+GziOeEl6FfVlZDbJDnlOKFb5OxL
-         993gwyQ2uOEj3GwTJER0T9zTHJQ6k2YiGQTupxTGAeMkt/rxQ8SU7B9al7D4z9jq+inU
-         xbnrI77JFap8h53TWHjivFVxM/5MoRxNBSh2yX54H67Yp6YZMsQAViCyWkISwhr/YT+i
-         mF5wyHwgkInp+C4d5kf++Um69oOINKpvHpy1b28ckD6Y+qNFCGvwWa9cJ9efFbon6Epm
-         qL/hHNgx/Su35VLn9pfl0NE6jHYctKc0W1IDlZ6EMyJaDiqCHBSVDl5l8Gtv573d3IuH
-         NkEA==
+        Fri, 11 Mar 2022 18:03:17 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8831647D
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:58:22 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id x6-20020a923006000000b002bea39c3974so6443346ile.12
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:58:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3INdYjmD9sI3AAGt1tE2s/Am9WLmWC+N03DHnuY4rE8=;
-        b=599/SR7FDKKFxqlFxEG6pSOe1nhklmmwBRT2aq3aG5SQveO8ACX4EeWkc8TCIb7n+h
-         NJIyA57CFfhS9n9Fr0Qh9Gbi+AkvtcLLsORdfqOKAKiTSAXKnY47ggV1GXP8kZiTZ5Zw
-         YQmMugCHZf+bpOMJB+bj6xOg9mCeypATLd+TocMmtQCpdQ6xr2Xo9QBZ0S68obURGAb0
-         aauw3lNaZjdpC81ABYWlq4YEkwWXJTFKbAchTGGNSYWeBzpnrXNi3QxiyGhTMz8fJ3BS
-         wRQU66rO3KwVPlFQH+8CQF46lBE9w1CBZiZiECiwe5566yVbAs0QOEamWNPAkBKGVLOI
-         Bj/w==
-X-Gm-Message-State: AOAM530v7Ds5/LHz25GFz5DwRyjzeOtTv6lo68xQsCUijJt+NSSqP6Hx
-        wCOjIQsO+3HbXh0rYUhCsPSRUGHDb17D6QCJjzNc/g==
-X-Google-Smtp-Source: ABdhPJwGpXBfC5BGWFXcbt51OotnQdLdCIZrxqrjphxJw0BNDdEab0gCbm4RnWAIGbVNilKBQ/CyJES1Xl9HPBWgrnk=
-X-Received: by 2002:a05:6122:2089:b0:337:bb38:9145 with SMTP id
- i9-20020a056122208900b00337bb389145mr5955292vkd.14.1647039488964; Fri, 11 Mar
- 2022 14:58:08 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=2Q57z1F8XAilR8GwXp2jj5N7XCSKupWDFaXmEOuADRs=;
+        b=YcPKmhVmogr4u5WqPKgjiKkDhN3WlHQS6nwheJbL1WJnBuPh7VWuPKIntRVYeTG5iK
+         d/ZwxAzMZm4n8Cffe5aLPzaPtMl6Ybcj05GUPSonsSf3mnpIh8BB+qvWhsXcGfvCVXqP
+         7UjvOIlk4tA9GPGLxIXFLL0kquQxMQlTvSdai7Igrgh0W4twoKti1DL2avJyVd8Yghb6
+         3MDyfKA9IN0aq/m+VX9RxQ4zulMXlxruVG7Qa9I5dKBgCatv6iL66aNy76Hxr5Clv+zW
+         1Kr5eFOsaFfxjyiliOZOR3i6VN4mz6A1it5du+9eCi/BFCYmUUYGZ7BuQ9M1brkAnCo7
+         jMKg==
+X-Gm-Message-State: AOAM533GvXs4Y5+6jOxRytrUaEwt0fA6oZwHuVkgB8Dy1kR6rtVvdC35
+        lmJ9/pYTEOv5cE1EZ+SmeMuGpKksT/CcIBNDLcKX8TxukAVP
+X-Google-Smtp-Source: ABdhPJzlSRIpwopQ8QEJSaEfO56jSAg8VmG8rwEcJCD1LVuSs7XkXxwvm92qEiO8iYlqHohMkIKoqCvixG1+yhAYSTDudbLJMQDg
 MIME-Version: 1.0
-References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-2-yuzhao@google.com>
- <CAGsJ_4yt_q4=pPW1M6fHN9HrV5JuTo9_9GQ0wv4-VT7tivU1+Q@mail.gmail.com>
-In-Reply-To: <CAGsJ_4yt_q4=pPW1M6fHN9HrV5JuTo9_9GQ0wv4-VT7tivU1+Q@mail.gmail.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Fri, 11 Mar 2022 15:57:57 -0700
-Message-ID: <CAOUHufZy+3+0zWTpAr8wJkWeQ4c4b9msiuWWu0XK=_aedqB=8w@mail.gmail.com>
-Subject: Re: [PATCH v9 01/14] mm: x86, arm64: add arch_has_hw_pte_young()
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
+X-Received: by 2002:a05:6e02:1447:b0:2c6:7e8b:6ff8 with SMTP id
+ p7-20020a056e02144700b002c67e8b6ff8mr8132718ilo.178.1647033009715; Fri, 11
+ Mar 2022 13:10:09 -0800 (PST)
+Date:   Fri, 11 Mar 2022 13:10:09 -0800
+In-Reply-To: <Yiu4tCONfHVH1Qfv@rowland.harvard.edu>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007a3fb305d9f7c1bd@google.com>
+Subject: Re: [syzbot] memory leak in usb_get_configuration
+From:   syzbot <syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, pavel.hofman@ivitera.com,
+        rob@robgreener.com, stern@rowland.harvard.edu,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 3:55 AM Barry Song <21cnbao@gmail.com> wrote:
->
-> On Wed, Mar 9, 2022 at 3:47 PM Yu Zhao <yuzhao@google.com> wrote:
-> >
-> > Some architectures automatically set the accessed bit in PTEs, e.g.,
-> > x86 and arm64 v8.2. On architectures that do not have this capability,
-> > clearing the accessed bit in a PTE usually triggers a page fault
-> > following the TLB miss of this PTE (to emulate the accessed bit).
-> >
-> > Being aware of this capability can help make better decisions, e.g.,
-> > whether to spread the work out over a period of time to reduce bursty
-> > page faults when trying to clear the accessed bit in many PTEs.
-> >
-> > Note that theoretically this capability can be unreliable, e.g.,
-> > hotplugged CPUs might be different from builtin ones. Therefore it
-> > should not be used in architecture-independent code that involves
-> > correctness, e.g., to determine whether TLB flushes are required (in
-> > combination with the accessed bit).
-> >
-> > Signed-off-by: Yu Zhao <yuzhao@google.com>
-> > Acked-by: Brian Geffon <bgeffon@google.com>
-> > Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
-> > Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> > Acked-by: Steven Barrett <steven@liquorix.net>
-> > Acked-by: Suleiman Souhlal <suleiman@google.com>
-> > Acked-by: Will Deacon <will@kernel.org>
-> > Tested-by: Daniel Byrne <djbyrne@mtu.edu>
-> > Tested-by: Donald Carr <d@chaos-reins.com>
-> > Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
-> > Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
-> > Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
-> > Tested-by: Sofia Trinh <sofia.trinh@edi.works>
-> > Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
-> > ---
->
-> Reviewed-by: Barry Song <baohua@kernel.org>
+Hello,
 
-Thanks.
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+memory leak in usb_get_configuration
 
-> i guess arch_has_hw_pte_young() isn't called that often in either
-> mm/memory.c or mm/vmscan.c.
-> Otherwise, moving to a static key might help. Is it?
+BUG: memory leak
+unreferenced object 0xffff8881128c0320 (size 32):
+  comm "kworker/1:1", pid 25, jiffies 4294943657 (age 15.110s)
+  hex dump (first 32 bytes):
+    09 02 12 00 01 00 00 00 00 09 04 00 00 00 d0 bb  ................
+    3a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  :...............
+  backtrace:
+    [<ffffffff82c98127>] kmalloc include/linux/slab.h:586 [inline]
+    [<ffffffff82c98127>] usb_get_configuration+0x1c7/0x1cd0 drivers/usb/core/config.c:919
+    [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
+    [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
+    [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+    [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+    [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
+    [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
+    [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
+    [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
+    [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
+    [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
 
-MRS shouldn't be slower than either branch of a static key. With a
-static key, we only can optimize one of the two cases.
+BUG: memory leak
+unreferenced object 0xffff888108eeb640 (size 64):
+  comm "kworker/1:1", pid 25, jiffies 4294943661 (age 15.080s)
+  hex dump (first 32 bytes):
+    01 00 00 00 01 00 00 00 09 04 00 00 00 d0 bb 3a  ...............:
+    00 00 00 00 00 00 00 00 32 03 8c 12 81 88 ff ff  ........2.......
+  backtrace:
+    [<ffffffff82c9871d>] kmalloc include/linux/slab.h:586 [inline]
+    [<ffffffff82c9871d>] kzalloc include/linux/slab.h:714 [inline]
+    [<ffffffff82c9871d>] usb_parse_configuration drivers/usb/core/config.c:772 [inline]
+    [<ffffffff82c9871d>] usb_get_configuration+0x7bd/0x1cd0 drivers/usb/core/config.c:944
+    [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
+    [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
+    [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+    [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+    [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
+    [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
+    [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
+    [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
+    [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
+    [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
 
-There is a *theoretical* problem with MRS: ARM specs don't prohibit a
-physical CPU to support both cases (on different logical CPUs).
+BUG: memory leak
+unreferenced object 0xffff888112a7bf00 (size 64):
+  comm "kworker/1:2", pid 1569, jiffies 4294944314 (age 8.550s)
+  hex dump (first 32 bytes):
+    01 00 00 00 01 00 00 00 09 04 00 00 00 d0 bb 3a  ...............:
+    00 00 00 00 00 00 00 00 52 66 72 12 81 88 ff ff  ........Rfr.....
+  backtrace:
+    [<ffffffff82c9871d>] kmalloc include/linux/slab.h:586 [inline]
+    [<ffffffff82c9871d>] kzalloc include/linux/slab.h:714 [inline]
+    [<ffffffff82c9871d>] usb_parse_configuration drivers/usb/core/config.c:772 [inline]
+    [<ffffffff82c9871d>] usb_get_configuration+0x7bd/0x1cd0 drivers/usb/core/config.c:944
+    [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
+    [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
+    [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+    [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+    [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
+    [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
+    [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
+    [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
+    [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
+    [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+
+
+Tested on:
+
+commit:         0014404f Merge branch 'akpm' (patches from Andrew)
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+console output: https://syzkaller.appspot.com/x/log.txt?x=155954d9700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3f0a704147ec8e32
+dashboard link: https://syzkaller.appspot.com/bug?extid=f0fae482604e6d9a87c9
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1005e709700000
+
