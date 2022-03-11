@@ -2,163 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EFB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 496ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229550AbiCKXNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:13:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36750 "EHLO
+        id S229769AbiCKXNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:13:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiCKXMu (ORCPT
+        with ESMTP id S230091AbiCKXMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:12:50 -0500
+        Fri, 11 Mar 2022 18:12:51 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E6A2710D0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:11:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E652692A2;
+        Fri, 11 Mar 2022 15:11:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647040306; x=1678576306;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=uuSBPgW8Uq91Uvfhx+gXO07IUIcD2MzJovC3YjcLuEo=;
-  b=nE66KPzmKQTbVVA1bqPtKiWFVz1HGjjvn1U8cXNqYfuIvTaMem1uXmJ9
-   63RHmCdcw/6xlOMsQt4dC8AdcjwWkdojpiW1QDNlVDhiHGbGuNOnBRagx
-   Ti7FP0r1Y0klirxfOFIxisdrGuK+ZF7QOZ2+yWgxOJCaksNDTBxkQVnDk
-   1nI0NpsV244O7ujnMRI7RYkubwtGCwKl/JdZrBqa8d8DjIW+t/ftQGKsh
-   RQwT3ICOtxN6MALECSNgTTbB0A29Ai0caKav+DuFcDAZnIsU4djgh5jax
-   qHzHc8EW5rpBEf6oiC11Su5yuNDejrJizdeGAXc+EEYyIOs5DnAiRb7Gn
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TII6J4aKIbWXaAC0bycqdUuzXY20aYHTjj7YIZmiAvQ=;
+  b=iwSI8WJCcqWOByyFTliGfNDJf+uhbBfP9YiD6yYuX0uec3yb9Lz0/d2P
+   rSNHUVV14RQ8o1iyYSeDPcUi8bgdrq5Hkh6FV4fX+5LQP+qAZ0t0yJZ/R
+   WpB1Lxt7jHQQ1Mi3JRCEtI+1wHmFCSEkfRirYY/2FNLWUrSmUBRkiZyj1
+   qgoySM7Ga1/jLcG+ssUJcdmOKhz8DAlxoSFKqFh/m8PPu/rf0VA/O/dHF
+   ifX7CCjv5zVMorHlS4Rq63fj6OzWTFWbWvKfW9MsM0vhQccsC/3g3w23D
+   xoFoSZ0iDU1zHRPWrz0Oy0hJNan8GgozKmxjb02i8ePLx8L5Rkub26NFm
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="237824556"
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="237832400"
 X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="237824556"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 12:59:24 -0800
+   d="scan'208";a="237832400"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 13:51:16 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="645052848"
-Received: from cpeirce-mobl1.amr.corp.intel.com (HELO [10.212.128.243]) ([10.212.128.243])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 12:59:24 -0800
-Message-ID: <70e08bd5-187a-daee-2822-1d9a437a9cff@intel.com>
-Date:   Fri, 11 Mar 2022 12:59:17 -0800
+   d="scan'208";a="496890795"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 11 Mar 2022 13:51:12 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSnAG-00079K-09; Fri, 11 Mar 2022 21:51:12 +0000
+Date:   Sat, 12 Mar 2022 05:50:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Michael Riesch <michael.riesch@wolfvision.net>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Rob Herring <robh+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>, Levin Du <djw@t-chip.com.cn>,
+        Tianling Shen <cnsztl@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Alex Bee <knaerzche@gmail.com>, Liang Chen <cl@rock-chips.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>
+Subject: Re: [PATCH v2 2/3] arm64: dts: rockchip: add basic dts for the radxa
+ rock3 model a
+Message-ID: <202203120525.muN78AQX-lkp@intel.com>
+References: <20220310210352.451136-3-michael.riesch@wolfvision.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Nadav Amit <namit@vmware.com>
-Cc:     Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Peter Xu <peterx@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Nick Piggin <npiggin@gmail.com>,
-        "x86@kernel.org" <x86@kernel.org>
-References: <20220311190749.338281-1-namit@vmware.com>
- <20220311190749.338281-3-namit@vmware.com>
- <a2a43395-b848-a4f9-4065-109387680701@intel.com>
- <AC8D21EA-CD32-4F9F-B5C1-ED8804EC76FF@vmware.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [RESEND PATCH v3 2/5] x86/mm: check exec permissions on fault
-In-Reply-To: <AC8D21EA-CD32-4F9F-B5C1-ED8804EC76FF@vmware.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310210352.451136-3-michael.riesch@wolfvision.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/11/22 12:38, Nadav Amit wrote:
->> On Mar 11, 2022, at 11:41 AM, Dave Hansen <dave.hansen@intel.com> wrote:
-...
->> Can any sane code trigger this?
-> 
-> Well, regarding this question and the previous one: I do not think that
-> this scenario is possible today since mprotect() holds the mmap_lock
-> for write. There is no other code that I am aware of that toggles
-> the NX bit on a present entry.
-> 
-> But I will not bet my life on it. That’s the reason for the somewhat
-> vague phrasing that I used.
+Hi Michael,
 
-From the userspace perspective, mmap(MAP_FIXED) can do this too.  But,
-sane userspace can't rely on the syscall to have done any work and the
-TLB flushing is currently done before the syscall returns.
+Thank you for the patch! Yet something to improve:
 
-I'd put it this way:
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on arm/for-next xilinx-xlnx/master arm64/for-next/core shawnguo/for-next clk/clk-next kvmarm/next keystone/next v5.17-rc7]
+[cannot apply to rockchip/for-next soc/for-next next-20220310]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-	Today, it is possible for a thread to end up in access_error()
-	for a PF_INSN fault and observe a VM_EXEC VMA.  If you are
-	generous, this could be considered a spurious fault.
+url:    https://github.com/0day-ci/linux/commits/Michael-Riesch/arm64-dts-rockchip-add-basic-dts-for-the-radxa-rock3-model-a/20220311-050612
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: arm64-buildonly-randconfig-r002-20220310 (https://download.01.org/0day-ci/archive/20220312/202203120525.muN78AQX-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/8d0dad8b66056847b8a2e95272ee74ca4b12fd29
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Michael-Riesch/arm64-dts-rockchip-add-basic-dts-for-the-radxa-rock3-model-a/20220311-050612
+        git checkout 8d0dad8b66056847b8a2e95272ee74ca4b12fd29
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-	However, the faulting thread would have had to race with the
-	thread which was changing the PTE and the VMA and is currently
-	*in* mprotect() (or some other syscall).  In other words, the
-	faulting thread can encounter this situation, but it never had
-	any assurance from the kernel that it wouldn't fault.  This is
-	because the faulting thread never had a chance to observe the
-	syscall return.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	There is no evidence that the existing behavior can cause any
-	issues with sane userspace.
+Note: the linux-review/Michael-Riesch/arm64-dts-rockchip-add-basic-dts-for-the-radxa-rock3-model-a/20220311-050612 HEAD c217f194b7a9cbdb7cbb8149ae1f6e8c2faf6e3f builds fine.
+      It only hurts bisectability.
 
->>> index d0074c6ed31a..ad0ef0a6087a 100644
->>> --- a/arch/x86/mm/fault.c
->>> +++ b/arch/x86/mm/fault.c
->>> @@ -1107,10 +1107,28 @@ access_error(unsigned long error_code, struct vm_area_struct *vma)
->>> 				       (error_code & X86_PF_INSTR), foreign))
->>> 		return 1;
->>>
->>> -	if (error_code & X86_PF_WRITE) {
->>> +	if (error_code & (X86_PF_WRITE | X86_PF_INSTR)) {
->>> +		/*
->>> +		 * CPUs are not expected to set the two error code bits
->>> +		 * together, but to ensure that hypervisors do not misbehave,
->>> +		 * run an additional sanity check.
->>> +		 */
->>> +		if ((error_code & (X86_PF_WRITE|X86_PF_INSTR)) ==
->>> +					(X86_PF_WRITE|X86_PF_INSTR)) {
->>> +			WARN_ON_ONCE(1);
->>> +			return 1;
->>> +		}
->>
->> access_error() is only used on the do_user_addr_fault() side of things.
->> Can we stick this check somewhere that also works for kernel address
->> faults?  This is a generic sanity check.  It can also be in a separate
->> patch.
-> 
-> I can wrap it in a different function and also call it from
-> do_kern_addr_fault() or spurious_kernel_fault().
-> 
-> Anyhow, spurious_kernel_fault() should handle spurious faults on
-> executable code correctly. 
+All errors (new ones prefixed by >>):
 
-This is really about checking the sanity of the "hardware"-provided
-error code.  Let's just do it in  handle_page_fault(), maybe hidden in a
-function like:
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:132.1-5 Label or path gpu not found
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:473.1-16 Label or path usb_host0_ehci not found
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:477.1-16 Label or path usb_host0_ohci not found
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:481.1-16 Label or path usb_host1_ehci not found
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:485.1-16 Label or path usb_host1_ohci not found
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:489.1-10 Label or path usb2phy1 not found
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:493.1-15 Label or path usb2phy1_host not found
+>> Error: arch/arm64/boot/dts/rockchip/rk3568-rock-3a.dts:498.1-14 Label or path usb2phy1_otg not found
+>> FATAL ERROR: Syntax error parsing input tree
 
-void check_error_code_sanity(unsigned long error_code)
-{
-	WARN_ON_ONCE(...);
-}
-
-You can leave the X86_PF_PK check in place for now.  It's probably going
-away soon anyway.
-
->> Also, we should *probably* stop talking about CPUs here.  If there's
->> ever something wonky with error code bits, I'd put my money on a weird
->> hypervisor before any kind of CPU issue.
-> 
-> I thought I manage to convey exactly that in the comment. Can you provide
-> a better phrasing?
-
-Maybe:
-
-	/*
-	 * X86_PF_INSTR for instruction _fetches_.  Fetches never write.
-	 * X86_PF_WRITE should never be set with X86_PF_INSTR.
-	 *
-	 * This is most likely due to a buggy hypervisor.
-	 */
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
