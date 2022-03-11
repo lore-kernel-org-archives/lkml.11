@@ -2,123 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1888C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B21FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346581AbiCKKjx (ORCPT
+        id S1347994AbiCKKl6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:39:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49186 "EHLO
+        Fri, 11 Mar 2022 05:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238656AbiCKKjv (ORCPT
+        with ESMTP id S240231AbiCKKlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:39:51 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560F91B0C72
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:38:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646995128; x=1678531128;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ERoDqGPLZcDRwDdhAPlR9WKCdT1GPrd63rNG7I71OYY=;
-  b=dyZg81u2DAMVzQWWAQuEExy6latdkQSGvIdUEX/euXWdMRTzT8LXV2sW
-   FPV4X194+qSwvbJdxl0cHXu/rXRvvg8jnyLXcddXNlblNLmXG6GIWCGDU
-   zHogBxo4aqAnsE96UjmUj0mbw4EmjVYf8ECVwn/7/51KjVsHWexqFB4t7
-   mWnA0Ggs2k+SyUKrf5c/g/v3zR6XOdUHjDy66Wbbr3wxCn40aVt7MJUVH
-   s48BpsTb+UWaR6Ivtkl63cMhM0TW85skOptVSQmILt7We2BVfBIk831UD
-   P+n9DeD5p0Mtbz8Xlw1EY469xjW8O6liKB3W7F6mwoWQkUO7h//U9hwd9
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="316269639"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="316269639"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 02:38:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="644893929"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 11 Mar 2022 02:38:46 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nScfV-0006G3-Bz; Fri, 11 Mar 2022 10:38:45 +0000
-Date:   Fri, 11 Mar 2022 18:38:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        linux-kernel@vger.kernel.org
-Subject: [djwong-xfs:vectorized-scrub 123/346]
- fs/xfs/libxfs/xfs_rmap.c:783:1: error: expected identifier or '('
-Message-ID: <202203111813.2n44ZvrR-lkp@intel.com>
+        Fri, 11 Mar 2022 05:41:52 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952B61BBF6E
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:40:49 -0800 (PST)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3105F3F203
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 10:40:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646995248;
+        bh=X21HZt8T3IqWraDQ7iGgx+oLbWN9WZTETBwQGf+ZZUQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=KdcjXER4uQ15ZhxmI3i0zIVeFSQKIZek5+hagVNE5I56vSdFzQfUtno6aqjCUJqMh
+         5H/SNAtPMBlQaHJkY4PVYaXBSN1btJzNBrvDMdFcA2EFDyv6o2FTTzwwun92FlsZik
+         m0nqjITOhYvTMauZdBCkHM6jGTpPTRxBmcsa1cGrusJ9drPiayPdTousE6D+jTNCKN
+         s+ZKT/K1kzfCzbddPTnTLIiyl9mBhkhLiSYlRMsLhNrEWytMEYJ5ZKfa/aT9fgnrP4
+         ABzi/i0Y1rSzJFrVrm3KouQzgsFNYDX3WVGGxNk6NsFY4bb+JMPk2kCygAFSyE7uQM
+         aQUBr+aAQELJw==
+Received: by mail-ej1-f69.google.com with SMTP id y5-20020a1709060a8500b006da9258a34cso4703771ejf.21
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:40:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=X21HZt8T3IqWraDQ7iGgx+oLbWN9WZTETBwQGf+ZZUQ=;
+        b=LCN6sjUpXJHmz1Aah/H9sAJSqm9Ls+Y8WK/fwrsnpFLUf37Wfo6axOP48FzOLNXaEC
+         +02WODteWvMCjUKlpqswXuM0DRhCTNIoG3n2XjZdEKGBFyKGQtyDcGftMY/WAJBgU/fR
+         DaDMQe0ebQr3bywr7LnIfh6ermsYh4bCJf718vcX3akJfg9Y+4Rhmluk8JB0xcYZKWse
+         YfWhrG19DppFKPLiWV00LnRRwFda1jkg8WI8fBkitjT27YYqc0+mVTCmYz9/LRLIY2NV
+         v/dYKE/yr9eEpESFUwRzqLqHBpVl4rwF3YQfAQ8JzwRU/aGVpG1WWvO6pTjEbodS23kq
+         Cl8A==
+X-Gm-Message-State: AOAM532I8aZgV53j9s4jyyZRMPF+1ncVXQvrqgYqewW2Hzs8PHWKqEtx
+        G+dNTIWkkA7JxulbYQy8f0l78bIv7ZR9YWeSX2YGE5SbAxzx41pCxhzYM4x24EAK/0qhiy1lHj4
+        GMXdi3TzKbPIN00kGYchIVxAlLaJrMkD9JE6hz7Kn7A==
+X-Received: by 2002:a05:6402:68e:b0:415:d29e:dfe8 with SMTP id f14-20020a056402068e00b00415d29edfe8mr8020406edy.351.1646995247919;
+        Fri, 11 Mar 2022 02:40:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx44n4lTaDW21Sf5vUfjbgKehNameHRuZxjI/VFFs7cXlR4x7K02XzPeqdOLSqhYmJx/XlfIw==
+X-Received: by 2002:a05:6402:68e:b0:415:d29e:dfe8 with SMTP id f14-20020a056402068e00b00415d29edfe8mr8020389edy.351.1646995247762;
+        Fri, 11 Mar 2022 02:40:47 -0800 (PST)
+Received: from [192.168.0.148] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id m25-20020a170906161900b006d43be5b95fsm2830773ejd.118.2022.03.11.02.40.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 02:40:47 -0800 (PST)
+Message-ID: <46c82688-79fd-fe65-b740-ac72a809f189@canonical.com>
+Date:   Fri, 11 Mar 2022 11:40:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: samsung: Add ARTPEC-8 UART
+Content-Language: en-US
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        krzysztof.kozlowski@canonical.com
+Cc:     kernel@axis.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        alim.akhtar@samsung.com
+References: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
+ <20220311094515.3223023-2-vincent.whitchurch@axis.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220311094515.3223023-2-vincent.whitchurch@axis.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git vectorized-scrub
-head:   38ef7fcbbc5b33107155955dcd6ed6c92f4ceb91
-commit: e0be8b1f630bd6eda5845896af660c5cc1b43831 [123/346] xfs: hook live rmap operations during a repair operation
-config: hexagon-randconfig-r025-20220310 (https://download.01.org/0day-ci/archive/20220311/202203111813.2n44ZvrR-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git/commit/?id=e0be8b1f630bd6eda5845896af660c5cc1b43831
-        git remote add djwong-xfs https://git.kernel.org/pub/scm/linux/kernel/git/djwong/xfs-linux.git
-        git fetch --no-tags djwong-xfs vectorized-scrub
-        git checkout e0be8b1f630bd6eda5845896af660c5cc1b43831
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/xfs/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> fs/xfs/libxfs/xfs_rmap.c:783:1: error: expected identifier or '('
-   XFS_HOOKS_SWITCH_DEFINE(xfs_rmap_hooks_switch);
-   ^
-   fs/xfs/xfs_mount.h:78:42: note: expanded from macro 'XFS_HOOKS_SWITCH_DEFINE'
-   # define XFS_HOOKS_SWITCH_DEFINE(name)  ((void)0)
-                                             ^
->> fs/xfs/libxfs/xfs_rmap.c:783:1: error: expected ')'
-   fs/xfs/xfs_mount.h:78:42: note: expanded from macro 'XFS_HOOKS_SWITCH_DEFINE'
-   # define XFS_HOOKS_SWITCH_DEFINE(name)  ((void)0)
-                                             ^
-   fs/xfs/libxfs/xfs_rmap.c:783:1: note: to match this '('
-   fs/xfs/xfs_mount.h:78:41: note: expanded from macro 'XFS_HOOKS_SWITCH_DEFINE'
-   # define XFS_HOOKS_SWITCH_DEFINE(name)  ((void)0)
-                                            ^
->> fs/xfs/libxfs/xfs_rmap.c:783:1: error: expected ')'
-   XFS_HOOKS_SWITCH_DEFINE(xfs_rmap_hooks_switch);
-   ^
-   fs/xfs/xfs_mount.h:78:47: note: expanded from macro 'XFS_HOOKS_SWITCH_DEFINE'
-   # define XFS_HOOKS_SWITCH_DEFINE(name)  ((void)0)
-                                                  ^
-   fs/xfs/libxfs/xfs_rmap.c:783:1: note: to match this '('
-   fs/xfs/xfs_mount.h:78:40: note: expanded from macro 'XFS_HOOKS_SWITCH_DEFINE'
-   # define XFS_HOOKS_SWITCH_DEFINE(name)  ((void)0)
-                                           ^
-   3 errors generated.
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for OMAP_GPMC
-   Depends on MEMORY && OF_ADDRESS
-   Selected by
-   - MTD_NAND_OMAP2 && MTD && MTD_RAW_NAND && (ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST && HAS_IOMEM
+On 11/03/2022 10:45, Vincent Whitchurch wrote:
+> Add a compatible for the UART on the ARTPEC-8 SoC.  This hardware block
+> is closely related to the variants used on the Exynos chips.  The
+> register layout is identical to Exynos850 et al but the fifo size is
+> different (64 bytes in each direction for all instances).
+> 
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+> 
 
 
-vim +783 fs/xfs/libxfs/xfs_rmap.c
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-   781	
-   782	#ifdef CONFIG_XFS_LIVE_HOOKS
- > 783	XFS_HOOKS_SWITCH_DEFINE(xfs_rmap_hooks_switch);
-   784	
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best regards,
+Krzysztof
