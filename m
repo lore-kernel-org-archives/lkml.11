@@ -2,225 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8FCC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0581C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbiCKWr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:47:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        id S229609AbiCKWsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:48:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiCKWrh (ORCPT
+        with ESMTP id S229580AbiCKWsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:47:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A905298F33;
-        Fri, 11 Mar 2022 14:22:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3A00B82D7E;
-        Fri, 11 Mar 2022 21:46:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A1EAC340E9;
-        Fri, 11 Mar 2022 21:46:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647035186;
-        bh=iXp2TGfLwLiTBFPs1pvk41RMObc7ZpenPk6oFMs3zGo=;
-        h=Subject:From:To:Date:From;
-        b=KyPuszPcw09aw7u5sDlCpBl3H7Su2CmudLK+mrTbuYPUXf11fpQFjTRN7iVlf3oN+
-         0TlC9FvN8kK9TC1yd2rF5hC7/NYn/gcED6bkBO60bEDjRFAbwyXT2wCvN0aeSVkXRk
-         PqpAysjHEx6qyly6XaFatX+CiWzEXiZe31PsXHLu/bHWU6vz4GpK6XrxVVNRRQPDik
-         uljSF5Ob+4a8Xv3hmnsiytjR9gXBPIZEIU5+uEcB4pjO69po5PXlNaHayFs4pYs+7P
-         pI0q1krEQWTc94D0U8FzBrRSeoeSyqm4sqjEmbO7WUqwvNYjuLafxYmyX2RHH/WllK
-         KquAhIuKakmEA==
-Message-ID: <0af02f70d3a0b3653bb3079266878f13e6682a69.camel@kernel.org>
-Subject: [ANNOUNCE] 5.4.182-rt71
-From:   Tom Zanussi <zanussi@kernel.org>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Wagner <wagi@monom.org>,
-        Clark Williams <williams@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
-        Tom Zanussi <zanussi@kernel.org>
-Date:   Fri, 11 Mar 2022 15:46:23 -0600
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Fri, 11 Mar 2022 17:48:00 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79535B8238;
+        Fri, 11 Mar 2022 14:35:50 -0800 (PST)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BKcMu3014752;
+        Fri, 11 Mar 2022 21:04:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=B3pdfYyWo0OhCVTNyH6THmXanl+fxg8Ys7u7zsO5kBI=;
+ b=ABM9IjlJPRLAHgeKHmWkyEmOiWGcsYcaEwQKCm2VSvD8ie6Joow82pkkUdLXBYZBnHVA
+ qyyg7LUEbM2uXfOjXax8T/ZmwJ525C/p7hd1JHBBE9gdrqUSd0I16L2nkc/XQrkMXzLc
+ v4qIVnb9hhre6oaIzz7mzYHqbg7v5rBIk9+zpu2ny+yryZ2oXF1eIBUsQtQM/d2jPzRf
+ ScYVzDURsHruLFGA+HTU8u0v+bEavW2aYV0Kx6/htFlE05Bm4lwysigNBAmEoMmT3FSh
+ MNp49FZyQoAChnyltZCvTV90dtFvlI5XD7+++9aBRQNaqHTNAg1wwuiZVCEzunK8+P5j 2Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3eqrre7gms-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:04:10 +0000
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22BKpVgJ005143;
+        Fri, 11 Mar 2022 21:04:10 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3eqrre7gmc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:04:09 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22BL3Vxd011402;
+        Fri, 11 Mar 2022 21:04:08 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3ep8c3y13g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:04:07 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22BL44NA17105370
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Mar 2022 21:04:04 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 794CE4C044;
+        Fri, 11 Mar 2022 21:04:04 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EA4424C04A;
+        Fri, 11 Mar 2022 21:04:00 +0000 (GMT)
+Received: from li-4b5937cc-25c4-11b2-a85c-cea3a66903e4.ibm.com.com (unknown [9.211.110.168])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 11 Mar 2022 21:04:00 +0000 (GMT)
+From:   Nayna Jain <nayna@linux.ibm.com>
+To:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
+Cc:     dhowells@redhat.com, zohar@linux.ibm.com, jarkko@kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
+        seth@forshee.me, rnsastry@linux.ibm.com, masahiroy@kernel.org,
+        Nayna Jain <nayna@linux.ibm.com>
+Subject: [PATCH v12 3/4] Revert "certs: move scripts/extract-cert to certs/"
+Date:   Fri, 11 Mar 2022 16:03:43 -0500
+Message-Id: <20220311210344.102396-4-nayna@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220311210344.102396-1-nayna@linux.ibm.com>
+References: <20220311210344.102396-1-nayna@linux.ibm.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: _q_TZ-tT8swzcoq0TjhDlkqVAnv9rVcB
+X-Proofpoint-GUID: hgIUDV40yWuKk1lrLc0BTMgepHsIWZzI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-11_09,2022-03-11_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 bulkscore=0 malwarescore=0 suspectscore=0 spamscore=0
+ lowpriorityscore=0 mlxlogscore=999 adultscore=0 impostorscore=0
+ phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203110103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello RT Folks!
+This reverts commit 340a02535ee785c64c62a9c45706597a0139e972.
 
-I'm pleased to announce the 5.4.182-rt71 stable release.
+extract-cert is used outside certs/ by INTEGRITY_PLATFORM_KEYRING.
 
-You can get this release via the git tree at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
-
-  branch: v5.4-rt
-  Head SHA1: 8f83fc7941f704f55939adaa778afd8ae76662e4
-
-Or to build 5.4.182-rt71 directly, the following patches should be applied:
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.tar.xz
-
-  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.4.182.xz
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/patch-5.4.182-rt71.patch.xz
-
-
-You can also build from 5.4.182-rt70 by applying the incremental patch:
-
-  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/incr/patch-5.4.182-rt70-rt71.patch.xz
-
-Enjoy!
-
-   Tom
-
-Changes from v5.4.182-rt70:
+Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
 ---
+ MAINTAINERS                       |  1 +
+ certs/.gitignore                  |  1 -
+ certs/Makefile                    | 13 ++++---------
+ scripts/.gitignore                |  1 +
+ scripts/Makefile                  | 11 +++++++++--
+ {certs => scripts}/extract-cert.c |  2 +-
+ scripts/remove-stale-files        |  2 --
+ 7 files changed, 16 insertions(+), 15 deletions(-)
+ rename {certs => scripts}/extract-cert.c (98%)
 
-Thomas Gleixner (1):
-      eventfd: Make signal recursion protection a task bit
-
-Tom Zanussi (1):
-      Linux 5.4.182-rt71
-
-Xie Yongji (1):
-      aio: Fix incorrect usage of eventfd_signal_allowed()
----
-fs/aio.c                |  2 +-
- fs/eventfd.c            | 12 +++++-------
- include/linux/eventfd.h | 11 +++++------
- include/linux/sched.h   | 12 ++++++++++++
- localversion-rt         |  2 +-
- 5 files changed, 24 insertions(+), 15 deletions(-)
----
-diff --git a/fs/aio.c b/fs/aio.c
-index fb92c32a6f1e..0bb9abf39065 100644
---- a/fs/aio.c
-+++ b/fs/aio.c
-@@ -1767,7 +1767,7 @@ static int aio_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
- 		list_del_init(&req->wait.entry);
- 		list_del(&iocb->ki_list);
- 		iocb->ki_res.res = mangle_poll(mask);
--		if (iocb->ki_eventfd && eventfd_signal_count()) {
-+		if (iocb->ki_eventfd && !eventfd_signal_allowed()) {
- 			iocb = NULL;
- 			INIT_WORK(&req->work, aio_poll_put_work);
- 			schedule_work(&req->work);
-diff --git a/fs/eventfd.c b/fs/eventfd.c
-index 78e41c7c3d05..661ccc45852b 100644
---- a/fs/eventfd.c
-+++ b/fs/eventfd.c
-@@ -24,8 +24,6 @@
- #include <linux/seq_file.h>
- #include <linux/idr.h>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 05fd080b82f3..cf4cd22ca3a0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4471,6 +4471,7 @@ L:	keyrings@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/admin-guide/module-signing.rst
+ F:	certs/
++F:	scripts/extract-cert.c
+ F:	scripts/sign-file.c
  
--DEFINE_PER_CPU(int, eventfd_wake_count);
+ CFAG12864B LCD DRIVER
+diff --git a/certs/.gitignore b/certs/.gitignore
+index 9e42fe3e02f5..8c3763f80be3 100644
+--- a/certs/.gitignore
++++ b/certs/.gitignore
+@@ -1,4 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-/extract-cert
+ /x509_certificate_list
+ /x509_revocation_list
+diff --git a/certs/Makefile b/certs/Makefile
+index b92b6ff339d5..a4a6f6a78904 100644
+--- a/certs/Makefile
++++ b/certs/Makefile
+@@ -14,11 +14,11 @@ obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
+ endif
+ 
+ quiet_cmd_extract_certs  = CERT    $@
+-      cmd_extract_certs  = $(obj)/extract-cert $(2) $@
++      cmd_extract_certs  = scripts/extract-cert $(2) $@
+ 
+ $(obj)/system_certificates.o: $(obj)/x509_certificate_list
+ 
+-$(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/extract-cert FORCE
++$(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) scripts/extract-cert FORCE
+ 	$(call if_changed,extract_certs,$(if $(CONFIG_SYSTEM_TRUSTED_KEYS),$<,""))
+ 
+ targets += x509_certificate_list
+@@ -75,7 +75,7 @@ endif
+ 
+ $(obj)/system_certificates.o: $(obj)/signing_key.x509
+ 
+-$(obj)/signing_key.x509: $(X509_DEP) $(obj)/extract-cert FORCE
++$(obj)/signing_key.x509: $(X509_DEP) scripts/extract-cert FORCE
+ 	$(call if_changed,extract_certs,$(if $(CONFIG_MODULE_SIG_KEY),$(if $(X509_DEP),$<,$(CONFIG_MODULE_SIG_KEY)),""))
+ endif # CONFIG_MODULE_SIG
+ 
+@@ -83,12 +83,7 @@ targets += signing_key.x509
+ 
+ $(obj)/revocation_certificates.o: $(obj)/x509_revocation_list
+ 
+-$(obj)/x509_revocation_list: $(CONFIG_SYSTEM_REVOCATION_KEYS) $(obj)/extract-cert FORCE
++$(obj)/x509_revocation_list: $(CONFIG_SYSTEM_REVOCATION_KEYS) scripts/extract-cert FORCE
+ 	$(call if_changed,extract_certs,$(if $(CONFIG_SYSTEM_REVOCATION_KEYS),$<,""))
+ 
+ targets += x509_revocation_list
 -
- static DEFINE_IDA(eventfd_ida);
- 
- struct eventfd_ctx {
-@@ -66,21 +64,21 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
- 	 * Deadlock or stack overflow issues can happen if we recurse here
- 	 * through waitqueue wakeup handlers. If the caller users potentially
- 	 * nested waitqueues with custom wakeup handlers, then it should
--	 * check eventfd_signal_count() before calling this function. If
--	 * it returns true, the eventfd_signal() call should be deferred to a
-+	 * check eventfd_signal_allowed() before calling this function. If
-+	 * it returns false, the eventfd_signal() call should be deferred to a
- 	 * safe context.
- 	 */
--	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
-+	if (WARN_ON_ONCE(current->in_eventfd_signal))
- 		return 0;
- 
- 	spin_lock_irqsave(&ctx->wqh.lock, flags);
--	this_cpu_inc(eventfd_wake_count);
-+	current->in_eventfd_signal = 1;
- 	if (ULLONG_MAX - ctx->count < n)
- 		n = ULLONG_MAX - ctx->count;
- 	ctx->count += n;
- 	if (waitqueue_active(&ctx->wqh))
- 		wake_up_locked_poll(&ctx->wqh, EPOLLIN);
--	this_cpu_dec(eventfd_wake_count);
-+	current->in_eventfd_signal = 0;
- 	spin_unlock_irqrestore(&ctx->wqh.lock, flags);
- 
- 	return n;
-diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
-index dc4fd8a6644d..836b4c021a0a 100644
---- a/include/linux/eventfd.h
-+++ b/include/linux/eventfd.h
-@@ -14,6 +14,7 @@
- #include <linux/err.h>
- #include <linux/percpu-defs.h>
- #include <linux/percpu.h>
-+#include <linux/sched.h>
- 
- /*
-  * CAREFUL: Check include/uapi/asm-generic/fcntl.h when defining
-@@ -42,11 +43,9 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n);
- int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_entry_t *wait,
- 				  __u64 *cnt);
- 
--DECLARE_PER_CPU(int, eventfd_wake_count);
+-hostprogs := extract-cert
 -
--static inline bool eventfd_signal_count(void)
-+static inline bool eventfd_signal_allowed(void)
+-HOSTCFLAGS_extract-cert.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+-HOSTLDLIBS_extract-cert = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
+diff --git a/scripts/.gitignore b/scripts/.gitignore
+index eed308bef604..e83c620ef52c 100644
+--- a/scripts/.gitignore
++++ b/scripts/.gitignore
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ /asn1_compiler
+ /bin2c
++/extract-cert
+ /insert-sys-cert
+ /kallsyms
+ /module.lds
+diff --git a/scripts/Makefile b/scripts/Makefile
+index ce5aa9030b74..cedc1f0e21d8 100644
+--- a/scripts/Makefile
++++ b/scripts/Makefile
+@@ -3,19 +3,26 @@
+ # scripts contains sources for various helper programs used throughout
+ # the kernel for the build process.
+ 
++CRYPTO_LIBS = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
++CRYPTO_CFLAGS = $(shell pkg-config --cflags libcrypto 2> /dev/null)
++
+ hostprogs-always-$(CONFIG_BUILD_BIN2C)			+= bin2c
+ hostprogs-always-$(CONFIG_KALLSYMS)			+= kallsyms
+ hostprogs-always-$(BUILD_C_RECORDMCOUNT)		+= recordmcount
+ hostprogs-always-$(CONFIG_BUILDTIME_TABLE_SORT)		+= sorttable
+ hostprogs-always-$(CONFIG_ASN1)				+= asn1_compiler
+ hostprogs-always-$(CONFIG_MODULE_SIG_FORMAT)		+= sign-file
++hostprogs-always-$(CONFIG_SYSTEM_TRUSTED_KEYRING)	+= extract-cert
+ hostprogs-always-$(CONFIG_SYSTEM_EXTRA_CERTIFICATE)	+= insert-sys-cert
++hostprogs-always-$(CONFIG_SYSTEM_REVOCATION_LIST)	+= extract-cert
+ 
+ HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
+ HOSTLDLIBS_sorttable = -lpthread
+ HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+-HOSTCFLAGS_sign-file.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+-HOSTLDLIBS_sign-file = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
++HOSTCFLAGS_sign-file.o = $(CRYPTO_CFLAGS)
++HOSTLDLIBS_sign-file = $(CRYPTO_LIBS)
++HOSTCFLAGS_extract-cert.o = $(CRYPTO_CFLAGS)
++HOSTLDLIBS_extract-cert = $(CRYPTO_LIBS)
+ 
+ ifdef CONFIG_UNWINDER_ORC
+ ifeq ($(ARCH),x86_64)
+diff --git a/certs/extract-cert.c b/scripts/extract-cert.c
+similarity index 98%
+rename from certs/extract-cert.c
+rename to scripts/extract-cert.c
+index f7ef7862f207..3bc48c726c41 100644
+--- a/certs/extract-cert.c
++++ b/scripts/extract-cert.c
+@@ -29,7 +29,7 @@ static __attribute__((noreturn))
+ void format(void)
  {
--	return this_cpu_read(eventfd_wake_count);
-+	return !current->in_eventfd_signal;
+ 	fprintf(stderr,
+-		"Usage: extract-cert <source> <dest>\n");
++		"Usage: scripts/extract-cert <source> <dest>\n");
+ 	exit(2);
  }
  
- #else /* CONFIG_EVENTFD */
-@@ -77,9 +76,9 @@ static inline int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx,
- 	return -ENOSYS;
- }
- 
--static inline bool eventfd_signal_count(void)
-+static inline bool eventfd_signal_allowed(void)
- {
--	return false;
-+	return true;
- }
- 
- #endif
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 79e34e98f812..e1dfb01f4623 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -802,6 +802,18 @@ struct task_struct {
- 	/* to be used once the psi infrastructure lands upstream. */
- 	unsigned			use_memdelay:1;
- #endif
-+#ifdef CONFIG_PSI
-+	/* Stalled due to lack of memory */
-+	unsigned			in_memstall:1;
-+#endif
-+#ifdef CONFIG_PAGE_OWNER
-+	/* Used by page_owner=on to detect recursion in page tracking. */
-+	unsigned			in_page_owner:1;
-+#endif
-+#ifdef CONFIG_EVENTFD
-+	/* Recursion prevention for eventfd_signal() */
-+	unsigned			in_eventfd_signal:1;
-+#endif
- 
- 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
- 
-diff --git a/localversion-rt b/localversion-rt
-index f36b5d418dd8..f38a3cc7f310 100644
---- a/localversion-rt
-+++ b/localversion-rt
-@@ -1 +1 @@
---rt70
-+-rt71
+diff --git a/scripts/remove-stale-files b/scripts/remove-stale-files
+index 7adab4618035..80430b8fb617 100755
+--- a/scripts/remove-stale-files
++++ b/scripts/remove-stale-files
+@@ -39,5 +39,3 @@ if [ -n "${building_out_of_srctree}" ]; then
+ 		rm -f arch/parisc/boot/compressed/${f}
+ 	done
+ fi
+-
+-rm -f scripts/extract-cert
+-- 
+2.34.1
 
