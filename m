@@ -2,87 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B555CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB77C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343533AbiCKH0G (ORCPT
+        id S1347165AbiCKH0I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 02:26:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
+        Fri, 11 Mar 2022 02:26:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242146AbiCKHZw (ORCPT
+        with ESMTP id S241896AbiCKHZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 02:25:52 -0500
-Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358141B65E9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:24:49 -0800 (PST)
-Received: by mail-vs1-xe31.google.com with SMTP id y20so449424vsy.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:24:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mXGaQdBpuvPjjktH43u4Da1nLJOL+0Xh+KFVna4/Bow=;
-        b=bzTMnisFFmryCgrj+eTq5YX98qEedUP2VMX0YmA1V5EEenhRgyE4UKuS/+fnJMmp+L
-         sXMxwXSwJ7OFKUonSlmoUW6EcmyDQHZi2dKecscK521Z8nvvKS+W6WnLG5cqeIohGl/+
-         8FP2ABjuNctSybdVNv+tNxkttPG+dbQUfc+6M+qE4j6FxWoCltHOfgjYB69I8vpL+Ay5
-         YvAdyz6kiuCmEwLeixAOIRJATES+Z7bogzJTrqYGw3BVVeQeeII3Ppoz6kHnXxuugLii
-         tL+MeJtWqxPg5RWbyLj87UyYUWq3UG+hGoYUkDHSeTYi4bT1X1FC+26feqyUD0j5iGpb
-         aw0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mXGaQdBpuvPjjktH43u4Da1nLJOL+0Xh+KFVna4/Bow=;
-        b=5FpiFDhcFrjuNzosShdR5msW/tkmVO9aBa0A8cJUUZlgfsTcwj6f/+Hf8Yat7WLP7v
-         ChH2/g1W9h2Fert+qilC2wZsJg9MSBvhS1esofFz9Z+WwSGh+a/w6B+GRMrOtnuhhz6V
-         Mi+MEQgsfPJO+bCOHnLNtuiQfwLvXorIvv1RRkwdpVK90ztXhCVwTmicaDpI8xFx0GGY
-         fIDyrZwbJFkZyqMDW2voTlzkQqXC1xciePVWa8afxpsbUKN7VMl24zMXs33qUodHhi4X
-         yVCz9bwinT90h3NJ5A70e8TCXKxnTNsXVVpQjvOByZrTfYlESWEtzID36Ace4e4gmnWo
-         +xWw==
-X-Gm-Message-State: AOAM530tkESkH4S9slRkqJ+JSIEquEJvjWVWrRmpnFQfj0bC4FlcaCa6
-        JCnMt6bty7pxahrn0eg5HKP4IyxcX/O1brN2PUo=
-X-Google-Smtp-Source: ABdhPJx/sJ1EbfPU3xKUnnJUKNIsQJxwWw+03k/VM/J12oLcgnr29Z5Cc8gobJKYBRGrj0FvYnVZX360hDP9htWKLho=
-X-Received: by 2002:a67:af05:0:b0:320:bfb5:e63b with SMTP id
- v5-20020a67af05000000b00320bfb5e63bmr4517191vsl.9.1646983488149; Thu, 10 Mar
- 2022 23:24:48 -0800 (PST)
+        Fri, 11 Mar 2022 02:25:54 -0500
+Received: from esa12.hc1455-7.c3s2.iphmx.com (esa12.hc1455-7.c3s2.iphmx.com [139.138.37.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5EA1B65EB;
+        Thu, 10 Mar 2022 23:24:51 -0800 (PST)
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="45601609"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643641200"; 
+   d="scan'208";a="45601609"
+Received: from unknown (HELO yto-r4.gw.nic.fujitsu.com) ([218.44.52.220])
+  by esa12.hc1455-7.c3s2.iphmx.com with ESMTP; 11 Mar 2022 16:23:45 +0900
+Received: from yto-m4.gw.nic.fujitsu.com (yto-nat-yto-m4.gw.nic.fujitsu.com [192.168.83.67])
+        by yto-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id 0EBB7E05C8;
+        Fri, 11 Mar 2022 16:23:45 +0900 (JST)
+Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
+        by yto-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 58FF0EA177;
+        Fri, 11 Mar 2022 16:23:44 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by yto-om4.fujitsu.com (Postfix) with ESMTP id 32EF9401110B3;
+        Fri, 11 Mar 2022 16:23:44 +0900 (JST)
+From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        tan.shaopeng@jp.fujitsu.com
+Subject: [PATCH v5 4/6] selftests/resctrl: Make resctrl_tests run using kselftest framework
+Date:   Fri, 11 Mar 2022 16:21:45 +0900
+Message-Id: <20220311072147.3301525-5-tan.shaopeng@jp.fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220311072147.3301525-1-tan.shaopeng@jp.fujitsu.com>
+References: <20220311072147.3301525-1-tan.shaopeng@jp.fujitsu.com>
 MIME-Version: 1.0
-References: <20220310055922.459460-1-yusisamerican@gmail.com>
- <3c0422d9-8ce9-64d8-f332-e07bc8e207c4@infradead.org> <CAJoG2+8OcL=5RRptaNMhXkFeDragq46_WpHpuN8XEP+jNbdZ0w@mail.gmail.com>
- <YirxlzkYxl3MIjoR@kroah.com>
-In-Reply-To: <YirxlzkYxl3MIjoR@kroah.com>
-From:   Yusuf Khan <yusisamerican@gmail.com>
-Date:   Thu, 10 Mar 2022 23:24:38 -0800
-Message-ID: <CAJoG2+_NN2n64G+ROm5B_c_LGrvRGdU=DE=jk5VVe1T7aKNDEw@mail.gmail.com>
-Subject: Re: [PATCH v4] drivers: ddcci: upstream DDCCI driver
-To:     gregkh <gregkh@linuxfoundation.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, javier@javigon.com,
-        Arnd Bergmann <arnd@arndb.de>, Will Deacon <will@kernel.org>,
-        Jens Axboe <axboe@kernel.dk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fine
+In kselftest framework, all tests can be build/run at a time,
+and a sub test also can be build/run individually. As follows:
+$ make kselftest-all TARGETS=resctrl
+$ make -C tools/testing/selftests run_tests
+$ make -C tools/testing/selftests TARGETS=resctrl run_tests
 
-On Thu, Mar 10, 2022 at 10:52 PM gregkh <gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Mar 10, 2022 at 05:19:47PM -0800, Yusuf Khan wrote:
-> > I (hopefully) fulfilled those requests in my subsequent patch,
-> > turns out I forgot to git add some of my changes. I did not
-> > remove the unlikely()s  as I think they look good and point
-> > to where error checking is that many may miss.
->
-> Never use a unlikely() or likely() macro unless you can prove, with a
-> benchmark, that it makes the code go faster.  If not, just remove them
-> as the compiler and CPU will always do a better job at this (we have
-> proof of it in the past.)
->
-> thanks,
->
-> greg k-h
+However, resctrl_tests cannot be run using kselftest framework,
+users have to change directory to tools/testing/selftests/resctrl/,
+run "make" to build executable file "resctrl_tests",
+and run "sudo ./resctrl_tests" to execute the test.
+
+To build/run resctrl_tests using kselftest framework.
+Modify tools/testing/selftests/Makefile
+and tools/testing/selftests/resctrl/Makefile.
+
+Even after this change, users can still build/run resctrl_tests
+without using framework as before.
+
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+---
+ tools/testing/selftests/Makefile         |  1 +
+ tools/testing/selftests/resctrl/Makefile | 18 +++---------------
+ 2 files changed, 4 insertions(+), 15 deletions(-)
+
+diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
+index d08fe4cfe811..6138354b3760 100644
+--- a/tools/testing/selftests/Makefile
++++ b/tools/testing/selftests/Makefile
+@@ -52,6 +52,7 @@ TARGETS += proc
+ TARGETS += pstore
+ TARGETS += ptrace
+ TARGETS += openat2
++TARGETS += resctrl
+ TARGETS += rlimits
+ TARGETS += rseq
+ TARGETS += rtc
+diff --git a/tools/testing/selftests/resctrl/Makefile b/tools/testing/selftests/resctrl/Makefile
+index 6bcee2ec91a9..30af27b07d21 100644
+--- a/tools/testing/selftests/resctrl/Makefile
++++ b/tools/testing/selftests/resctrl/Makefile
+@@ -1,17 +1,5 @@
+-CC = $(CROSS_COMPILE)gcc
+-CFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2
+-SRCS=$(wildcard *.c)
+-OBJS=$(SRCS:.c=.o)
++TEST_GEN_PROGS := resctrl_tests
+ 
+-all: resctrl_tests
++include ../lib.mk
+ 
+-$(OBJS): $(SRCS)
+-	$(CC) $(CFLAGS) -c $(SRCS)
+-
+-resctrl_tests: $(OBJS)
+-	$(CC) $(CFLAGS) -o $@ $^
+-
+-.PHONY: clean
+-
+-clean:
+-	$(RM) $(OBJS) resctrl_tests
++$(OUTPUT)/resctrl_tests: $(wildcard *.c)
+-- 
+2.27.0
+
