@@ -2,187 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1139FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C118C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348662AbiCKMxA (ORCPT
+        id S1348665AbiCKMxS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 07:53:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
+        Fri, 11 Mar 2022 07:53:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348665AbiCKMw7 (ORCPT
+        with ESMTP id S1348667AbiCKMxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 07:52:59 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F561B65F7
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 04:51:55 -0800 (PST)
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 60B613F1E5
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 12:51:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647003108;
-        bh=sIH/nw87aweAmAQLqAzIP/TZcavVp/TlhUgamFHUSgY=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=esdae9CkvtjpLJY/QugCFXzBCaDFKb227QrXDOss/IrqBGDtAR+cbQe36c3uVBULK
-         HXxoMJOf+kq1AxcD3uH/pOClQwdfw/HnvN5Bg6/xbJ21E2EJJ8ojQfxTBaBxoGZzWR
-         CRn7FnDpv3x3Pk2sILMyeEzsb3gorbjb6zI1zyWOz6Gc+ykUgf27PwveeQ3bMmWT5y
-         YP4lMrWfyE+MTMBr4w19LLWUqmg8aZBeiCx3wobKf90r8R9foNU2IZ8mZla8wLvfaa
-         F+43fMSAzvVjdAVtC4UUGjbMRBg8k8X/wZl8U78ZKkfeSifb1/F8Ac6FGttKkeaU54
-         lE8E7Bm3mYogg==
-Received: by mail-ed1-f69.google.com with SMTP id u28-20020a50d51c000000b004159ffb8f24so4819092edi.4
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 04:51:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sIH/nw87aweAmAQLqAzIP/TZcavVp/TlhUgamFHUSgY=;
-        b=nsmzJ5HmuLwzUXkWS0fFNXDaZbCeLrGAJ4SG6emA3d6DLoveEHxZTGzjsQklQVaEyB
-         kze2XmyQ0VcPyF/R7Irq8zdbFlOKqBEzfuxWJavTIIftjoQbaJxFDdHUV87ZtIZuv/do
-         5M3/kLpwZGUlS7y2JouhXIlh3kefFOyUoNYqTjtf/KZi4YDFFesJ5swYuFr9Nbr3RgzN
-         zT9G3c5dPzIZJPBB/6K77C1DOa46bfRQbO0vqxr1fLhL7y/cDhUEThHf5CMraiI726JK
-         rshVIRQ3tq7OTh0yKZbViA8xVtJ6mp7kDmZxflB4kdcINlrNLNBMtT0TAetmJ8KROHDM
-         0e7w==
-X-Gm-Message-State: AOAM532q1zI3aOrlngPS2SquJ63I7ph5kcHPy1tevsEd3PvdXkrag6tZ
-        s8SLxUI8lCjkAl8SEdvxComLrP6fK1pnhxmiSkC2EjeV7aduMWOLITGuz4OQcOtFbgfvU3RJmPc
-        XIvMtFhm00SYXkEZZ3ZWzceKlxzxjkQa/evrArEhgrg==
-X-Received: by 2002:a05:6402:5192:b0:415:c6e6:23b with SMTP id q18-20020a056402519200b00415c6e6023bmr8844081edd.336.1647003108023;
-        Fri, 11 Mar 2022 04:51:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwbU5SYJkuKpQTbRCfYqLBZibZifI+8r07PwQMlyxzomP76itjmbDnqogO/XmojoU85iAG/Fg==
-X-Received: by 2002:a05:6402:5192:b0:415:c6e6:23b with SMTP id q18-20020a056402519200b00415c6e6023bmr8844055edd.336.1647003107774;
-        Fri, 11 Mar 2022 04:51:47 -0800 (PST)
-Received: from [192.168.0.148] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id ce12-20020a170906b24c00b006da824011eesm2924624ejb.166.2022.03.11.04.51.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 04:51:46 -0800 (PST)
-Message-ID: <69be9f88-b69b-c149-4387-c5002219bf0a@canonical.com>
-Date:   Fri, 11 Mar 2022 13:51:45 +0100
+        Fri, 11 Mar 2022 07:53:09 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5A01B7187
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 04:52:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647003126; x=1678539126;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=5QSetv+PP1A/fdkcp2EKiLWClyc2pYwIJ2+iPsNa67w=;
+  b=iAA3mUrUVQGRwdc239FlnFuHcZjR000EMqtK+OxN4IRHnl+PQazpP308
+   2Sx2gmGADazsE/Ztc3sbTbfUtoNFKKExV/8Piyf0ibcYKIZCSQQJ9YvKt
+   tiw5luL1XBry7UNriVkEIrfE2hxRMFltKNm9Oai5h5Wp0UmAhRwE18evf
+   Vw8SKEYv0yDjNmEKYMwMNx+7Eg1BQ+3MhgXhLguZXm/6MMuhh9ORtCGhn
+   flwBITM7PtQx4bKuXBRQoVIdS3N/v+rWjmUeeaZrBVzB/w2K9/KQLnTAn
+   6SehtVOqfFveruOiFWalPznjvZXkCCuCauHKh3ejGvnvHVS0iVjzbasJx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="253129071"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="253129071"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 04:52:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="496755736"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 11 Mar 2022 04:52:04 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSekV-0006Pe-Ig; Fri, 11 Mar 2022 12:52:03 +0000
+Date:   Fri, 11 Mar 2022 20:51:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.17-rc1 4/8]
+ arch/arm/mm/init.c:307:13: warning: no previous prototype for function
+ 'mem_init_print_arm_info'
+Message-ID: <202203112052.m5tYcVx1-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/4] clocksource/drivers/exynos_mct: Support
- local-timer-index property
-Content-Language: en-US
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        kernel <kernel@axis.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-samsung-soc@vger.kernel.org" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20220308142410.3193729-1-vincent.whitchurch@axis.com>
- <20220308142410.3193729-4-vincent.whitchurch@axis.com>
- <226dcb1b-d141-f0d3-68c4-11d2466ca571@canonical.com>
- <20220311113543.GA17877@axis.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220311113543.GA17877@axis.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/03/2022 12:35, Vincent Whitchurch wrote:
-> On Tue, Mar 08, 2022 at 03:57:55PM +0100, Krzysztof Kozlowski wrote:
->> On 08/03/2022 15:24, Vincent Whitchurch wrote:
->>> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
->>> index f29c812b70c9..5f8b516614eb 100644
->>> --- a/drivers/clocksource/exynos_mct.c
->>> +++ b/drivers/clocksource/exynos_mct.c
->>> @@ -33,7 +33,7 @@
->>>  #define EXYNOS4_MCT_G_INT_ENB		EXYNOS4_MCTREG(0x248)
->>>  #define EXYNOS4_MCT_G_WSTAT		EXYNOS4_MCTREG(0x24C)
->>>  #define _EXYNOS4_MCT_L_BASE		EXYNOS4_MCTREG(0x300)
->>> -#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * x))
->>> +#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * (x)))
->>>  #define EXYNOS4_MCT_L_MASK		(0xffffff00)
->>>  
->>>  #define MCT_L_TCNTB_OFFSET		(0x00)
->>> @@ -75,6 +75,7 @@ enum {
->>>  static void __iomem *reg_base;
->>>  static unsigned long clk_rate;
->>>  static unsigned int mct_int_type;
->>> +static unsigned int mct_local_idx;
->>
->> No more static variables. This was wrong design, happens, but let's not
->> grow the list.
->>
->> I propose to conditionally (depending on property samsung,frc-shared)
->> assign .resume callback to NULL or exynos4_frc_resume. The init can
->> receive an argument whether to call frc_start().
-> 
-> Could we just add the skip-write-register-if-already-started change in
-> exynos4_mct_frc_start() uncondtionally?  Perhaps it could be in a
-> separate patch too?  I was probably being over-cautious when I did it
-> conditionally on mct_local_idx.  Doing it uncondtionally would make it
-> easier to remove the global variable.
-> 
-> On my system the FRC is actually started long before Linux, and I assume
-> it's similar on other chips.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.17-rc1
+head:   66e9038ef48dc66c07b12443b73e2d1f3f12cbab
+commit: 18e0d99ee35450767fc8222f1727febdd2a4deac [4/8] ARM: Print virtual memory info again
+config: arm-vt8500_v6_v7_defconfig (https://download.01.org/0day-ci/archive/20220311/202203112052.m5tYcVx1-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=18e0d99ee35450767fc8222f1727febdd2a4deac
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.17-rc1
+        git checkout 18e0d99ee35450767fc8222f1727febdd2a4deac
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mm/
 
-+Cc Marek,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Maybe we could skip it, I don't know. It could be enabled by early boot
-code or by trusted firmware. This would require more testing, on few
-different platforms.
+All warnings (new ones prefixed by >>):
 
-On my Exynos5422 HC1 board the MCT is not running upon boot. The
-EXYNOS4_MCT_G_TCON starts with a reset value (0x0).
-
-> 
->>
->>>  static int mct_irqs[MCT_NR_IRQS];
->>>  
->>>  struct mct_clock_event_device {
->>> @@ -157,6 +158,17 @@ static void exynos4_mct_frc_start(void)
->>>  	u32 reg;
->>>  
->>>  	reg = readl_relaxed(reg_base + EXYNOS4_MCT_G_TCON);
->>> +
->>> +	/*
->>> +	 * If the FRC is already running, we don't need to start it again.  We
->>> +	 * could probably just do this on all systems, but, to avoid any risk
->>> +	 * for regressions, we only do it on systems where it's absolutely
->>> +	 * necessary (i.e., on systems where writes to the global registers
->>> +	 * need to be avoided).
->>> +	 */
->>> +	if (mct_local_idx && (reg & MCT_G_TCON_START))
->>
->> This contradicts your intentions in commit #2 msg, where you described
->> that A53 will be started first.
-> 
-> Yes, you're right.  The case of the FRC not being running when the A5
-> starts up is only ever hit in our simulation environment where we are
-> able to start Linux on the A5 directly, without having to go via the
-> A53.
-> 
->> 1. If A53 is always started first, is it possible to be here from A5?
->> 2. If above is possible, how do you handle locking? For example:
->> a. A53 started with some delay, entered exynos4_mct_frc_start() pass
->> this check;
->> b. A5 gets to exynos4_mct_frc_start(), check is still false, so A5
->> enables the FRC,
->> c. A53 also enables the FRC.
-> 
-> The A5 is normally started from Linux on the A53 (using the remoteproc
-> framework).  This is long after exynos4_mct_frc_start() has been called
-> on the A53.
-
-If it is 100% like this, let's make it explicit - if it is A53 (lack of
-dedicated property), let's start it. If it A5 (property present), skip it.
-
-Let's wait for Marek thoughts, he was digging the MCT a lot.
+   arch/arm/mm/init.c:97:13: warning: no previous prototype for function 'setup_dma_zone' [-Wmissing-prototypes]
+   void __init setup_dma_zone(const struct machine_desc *mdesc)
+               ^
+   arch/arm/mm/init.c:97:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init setup_dma_zone(const struct machine_desc *mdesc)
+   ^
+   static 
+>> arch/arm/mm/init.c:307:13: warning: no previous prototype for function 'mem_init_print_arm_info' [-Wmissing-prototypes]
+   void __init mem_init_print_arm_info(void)
+               ^
+   arch/arm/mm/init.c:307:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init mem_init_print_arm_info(void)
+   ^
+   static 
+   2 warnings generated.
 
 
-Best regards,
-Krzysztof
+vim +/mem_init_print_arm_info +307 arch/arm/mm/init.c
+
+   306	
+ > 307	void __init mem_init_print_arm_info(void)
+   308	{
+   309	#define MLM(b, t) b, t, ((t) - (b)) >> 20
+   310		pr_notice("Virtual kernel memory layout:\n"
+   311			  "    fixmap  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   312			  "    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   313			  "    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   314	#ifdef CONFIG_MODULES
+   315			  "    modules : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+   316	#endif
+   317			  "     kernel : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+   318			  MLM(FIXADDR_START, FIXADDR_END),
+   319			  MLM(VMALLOC_START, VMALLOC_END),
+   320			  MLM(PAGE_OFFSET, (unsigned long)high_memory),
+   321	#ifdef CONFIG_MODULES
+   322			  MLM(MODULES_VADDR, MODULES_END),
+   323	#endif
+   324			  /* From beginning of .text to end of .bss */
+   325			  MLM((unsigned long)_text, (unsigned long)__bss_stop));
+   326	#undef MLM
+   327	}
+   328	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
