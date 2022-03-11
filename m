@@ -2,218 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A75EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E777C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348749AbiCKNGf (ORCPT
+        id S1348755AbiCKNIh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 08:06:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33550 "EHLO
+        Fri, 11 Mar 2022 08:08:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346650AbiCKNGc (ORCPT
+        with ESMTP id S245300AbiCKNIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 08:06:32 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427751C1EC3;
-        Fri, 11 Mar 2022 05:05:28 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id DE2DD1F46728
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647003926;
-        bh=rUy82retHJplKsOR9NC+ggwiU5URGWHncAnTi8Qja1k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=b5CclgDI9qqQWiOv0XaimrlRwcCrB7SNZ0MclyNUAxVJg9vTL1mJh7nWzNQH0jHyu
-         DWkdpEasXBx1rh1imN83XkeZn4WFwtU96uOqujPKOOqJNh1h0icNuHJ+oTMj4RUH5E
-         6LHGj/bsgY1uT3tdSF/pobWJUBQ8cd7BUuXTw0GtkyuRynVTBFElMTRmUEd2Xtybr8
-         RoxIKtN5sViBiUjMXKzdrRJVaNZTC1geAt6fKlnk5rZQzZiDIO4w9oZoO6PpzJJulf
-         MgemYS+3NmUkEGSvA+GtFnje2Cyze0qQqC/nezugk6gaaZY3HwF0gVZiMkWgmrJ91J
-         3ZUmcSoaJxpPQ==
-Message-ID: <d1d746b3-4452-6424-a2fb-62faebcc7b92@collabora.com>
-Date:   Fri, 11 Mar 2022 14:05:23 +0100
+        Fri, 11 Mar 2022 08:08:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF92A1C1ED1
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:07:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93666B82BF2
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 13:07:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06D17C340E9;
+        Fri, 11 Mar 2022 13:07:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647004042;
+        bh=58ior3d6CroSXdJjh1+e5H+RH2gmDYHOSIAoeVBmSb8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uBqzrVJGdauHil1v0bp1o/bMsBHndzEP28TPFcfnXpoxPskDOWiq6dy18dLMKIPlU
+         HiBBYt+Z3tYPaNnrasMcRHO77H8BFFlCHA2qOB3Ujedcd59Hl1vIZaNejjyFlUWqgr
+         yaEQaT9Ymt9CjxlyM9m793t85XP7B1jY9gBwa/D0pp0h3bTwrYZ4EQS56wgAV6ohQA
+         wc2c/bY1ac06olXZukn88U63Rz+xYpArsxtiNyE346QEAmzByNQ6qwKOYl2c1tJfq1
+         Rrz2n4c/AOuRcxy7MJQ77JFkQEBb+rdfoEJbUz0C2N++lG8QTjHcWiWjSqnPKyr2vI
+         e3lLM0lkwnMnw==
+Date:   Fri, 11 Mar 2022 14:07:19 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Scenario TREE07 with CONFIG_PREEMPT_DYNAMIC=n?
+Message-ID: <20220311130719.GC96127@lothringen>
+References: <20220310215630.GA3490034@paulmck-ThinkPad-P17-Gen-1>
+ <20220310224103.GA94994@lothringen>
+ <20220310225219.GE4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2] remoteproc: mediatek: fix side effect of mt8195 sram
- power on
-Content-Language: en-US
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220311123056.32689-1-tinghan.shen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220311123056.32689-1-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310225219.GE4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 11/03/22 13:30, Tinghan Shen ha scritto:
-> The definition of L1TCM_SRAM_PDN bits on mt8195 is different to mt8192.
+On Thu, Mar 10, 2022 at 02:52:19PM -0800, Paul E. McKenney wrote:
+> On Thu, Mar 10, 2022 at 11:41:03PM +0100, Frederic Weisbecker wrote:
+> > On Thu, Mar 10, 2022 at 01:56:30PM -0800, Paul E. McKenney wrote:
+> > > Hello, Frederic,
+> > > 
+> > > I recently added CONFIG_PREEMPT_DYNAMIC=n to the TREE07 file, and since
+> > > then am getting roughly one RCU CPU stall warning (or silent hang)
+> > > per few tens of hours of rcutorture testing on dual-socket systems.
+> > > The stall warnings feature starvation of RCU grace-period kthread.
+> > > 
+> > > Any advice on debugging this?
+> > 
+> > Oh, I'm testing that!
 > 
-> L1TCM_SRAM_PDN bits[3:0] control the power of mt8195 L1TCM SRAM.
-> 
-> L1TCM_SRAM_PDN bits[7:4] control the access path to EMI for SCP.
-> These bits have to be powered on to allow EMI access for SCP.
-> 
-> Bits[7:4] also affect audio DSP because audio DSP and SCP are
-> placed on the same hardware bus. If SCP cannot access EMI, audio DSP is
-> blocked too.
-> 
-> L1TCM_SRAM_PDN bits[31:8] are not used.
-> 
-> This fix removes modification of bits[7:4] when power on/off mt8195 SCP
-> L1TCM. It's because the modification introduces a short period of time
-> blocking audio DSP to access EMI. This was not a problem until we have
-> to load both SCP module and audio DSP module. audio DSP needs to access
-> EMI because it has source/data on DRAM. Audio DSP will have unexpected
-> behavior when it accesses EMI and the SCP driver blocks the EMI path at
-> the same time.
-> 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> ---
->   drivers/remoteproc/mtk_common.h |  2 +
->   drivers/remoteproc/mtk_scp.c    | 67 +++++++++++++++++++++++++--------
->   2 files changed, 53 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
-> index 5ff3867c72f3..ff954a06637c 100644
-> --- a/drivers/remoteproc/mtk_common.h
-> +++ b/drivers/remoteproc/mtk_common.h
-> @@ -51,6 +51,8 @@
->   #define MT8192_CORE0_WDT_IRQ		0x10030
->   #define MT8192_CORE0_WDT_CFG		0x10034
->   
-> +#define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		GENMASK(7, 4)
-> +
->   #define SCP_FW_VER_LEN			32
->   #define SCP_SHARE_BUFFER_SIZE		288
->   
-> diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
-> index dcddb33e9997..086cf8263f6c 100644
-> --- a/drivers/remoteproc/mtk_scp.c
-> +++ b/drivers/remoteproc/mtk_scp.c
-> @@ -365,22 +365,22 @@ static int mt8183_scp_before_load(struct mtk_scp *scp)
->   	return 0;
->   }
->   
-> -static void mt8192_power_on_sram(void __iomem *addr)
-> +static void scp_sram_power_on(void __iomem *addr, u32 reserved_mask)
->   {
->   	int i;
->   
->   	for (i = 31; i >= 0; i--)
-> -		writel(GENMASK(i, 0), addr);
-> +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
->   	writel(0, addr);
->   }
->   
-> -static void mt8192_power_off_sram(void __iomem *addr)
-> +static void scp_sram_power_off(void __iomem *addr, u32 reserved_mask)
->   {
->   	int i;
->   
->   	writel(0, addr);
->   	for (i = 0; i < 32; i++)
-> -		writel(GENMASK(i, 0), addr);
-> +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
->   }
->   
->   static int mt8192_scp_before_load(struct mtk_scp *scp)
-> @@ -391,11 +391,32 @@ static int mt8192_scp_before_load(struct mtk_scp *scp)
->   	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
->   
->   	/* enable SRAM clock */
-> -	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_0);
-> -	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_1);
-> -	mt8192_power_on_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_2);
-> -	mt8192_power_on_sram(scp->reg_base + MT8192_L1TCM_SRAM_PDN);
-> -	mt8192_power_on_sram(scp->reg_base + MT8192_CPU0_SRAM_PD);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN, 0);
-> +	scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
-> +
-> +	/* enable MPU for all memory regions */
-> +	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
-> +
-> +	return 0;
-> +}
-> +
-> +static int mt8195_scp_before_load(struct mtk_scp *scp)
-> +{
-> +	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
-> +	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
-> +
-> +	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
-> +
-> +	/* enable SRAM clock */
-> +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
-> +	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
-> +			  MT8195_L1TCM_SRAM_PDN_RESERVED_BITS);
+> Even better, thank you!  ;-)
 
-This is supposed to be MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS.
+Here is what I'm testing below. If it happens to work though, it's still not
+the most optimized way of dealing with the UP on SMP situation as we still start
+an exp grace period when we could early return. But since we have a cookie
+to pass to poll_state_synchronize_rcu_expedited()...
 
-> +	scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
->   
->   	/* enable MPU for all memory regions */
->   	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
-> @@ -551,11 +572,25 @@ static void mt8183_scp_stop(struct mtk_scp *scp)
->   static void mt8192_scp_stop(struct mtk_scp *scp)
->   {
->   	/* Disable SRAM clock */
-> -	mt8192_power_off_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_0);
-> -	mt8192_power_off_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_1);
-> -	mt8192_power_off_sram(scp->reg_base + MT8192_L2TCM_SRAM_PD_2);
-> -	mt8192_power_off_sram(scp->reg_base + MT8192_L1TCM_SRAM_PDN);
-> -	mt8192_power_off_sram(scp->reg_base + MT8192_CPU0_SRAM_PD);
-> +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
-> +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-> +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
-> +	scp_sram_power_off(scp->reg_base + MT8192_L1TCM_SRAM_PDN, 0);
-> +	scp_sram_power_off(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
-> +
-> +	/* Disable SCP watchdog */
-> +	writel(0, scp->reg_base + MT8192_CORE0_WDT_CFG);
-> +}
-> +
-> +static void mt8195_scp_stop(struct mtk_scp *scp)
-> +{
-> +	/* Disable SRAM clock */
-> +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
-> +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-> +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
-> +	scp_sram_power_off(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
-> +			   MT8195_L1TCM_SRAM_PDN_RESERVED_BITS);
+Oh but if we were to early check a positive rcu_blocking_is_gp() from
+start_poll_synchronize_rcu_expedited(),
+we could simply return the current value of rcu_state.expedited_sequence without
+doing an rcu_exp_gp_seq_snap() and then pass that to
+poll_state_synchronize_rcu_expedited() which should then immediately return.
 
-same here.
+Now even if we do that, we still need the below in case the CPUs went offline
+in the middle of start_poll_synchronize_rcu_expedited() (again, assuming this
+fixes the issue. I'm running the test).
 
-> +	scp_sram_power_off(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
->   
->   	/* Disable SCP watchdog */
->   	writel(0, scp->reg_base + MT8192_CORE0_WDT_CFG);
-> @@ -888,11 +923,11 @@ static const struct mtk_scp_of_data mt8192_of_data = {
->   
->   static const struct mtk_scp_of_data mt8195_of_data = {
->   	.scp_clk_get = mt8195_scp_clk_get,
-> -	.scp_before_load = mt8192_scp_before_load,
-> +	.scp_before_load = mt8195_scp_before_load,
->   	.scp_irq_handler = mt8192_scp_irq_handler,
->   	.scp_reset_assert = mt8192_scp_reset_assert,
->   	.scp_reset_deassert = mt8192_scp_reset_deassert,
-> -	.scp_stop = mt8192_scp_stop,
-> +	.scp_stop = mt8195_scp_stop,
->   	.scp_da_to_va = mt8192_scp_da_to_va,
->   	.host_to_scp_reg = MT8192_GIPC_IN_SET,
->   	.host_to_scp_int_bit = MT8192_HOST_IPC_INT_BIT,
+---
+From 3c9f5df000b9659edbcf38cb87136fea1f8ac682 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 11 Mar 2022 13:30:02 +0100
+Subject: [PATCH] rcu: Fix rcu exp polling
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+---
+ kernel/rcu/tree_exp.h | 52 ++++++++++++++++++++++++-------------------
+ 1 file changed, 29 insertions(+), 23 deletions(-)
+
+diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+index d5f30085b0cf..69c4dcc9159a 100644
+--- a/kernel/rcu/tree_exp.h
++++ b/kernel/rcu/tree_exp.h
+@@ -794,27 +794,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp)
+ 
+ #endif /* #else #ifdef CONFIG_PREEMPT_RCU */
+ 
+-/**
+- * synchronize_rcu_expedited - Brute-force RCU grace period
+- *
+- * Wait for an RCU grace period, but expedite it.  The basic idea is to
+- * IPI all non-idle non-nohz online CPUs.  The IPI handler checks whether
+- * the CPU is in an RCU critical section, and if so, it sets a flag that
+- * causes the outermost rcu_read_unlock() to report the quiescent state
+- * for RCU-preempt or asks the scheduler for help for RCU-sched.  On the
+- * other hand, if the CPU is not in an RCU read-side critical section,
+- * the IPI handler reports the quiescent state immediately.
+- *
+- * Although this is a great improvement over previous expedited
+- * implementations, it is still unfriendly to real-time workloads, so is
+- * thus not recommended for any sort of common-case code.  In fact, if
+- * you are using synchronize_rcu_expedited() in a loop, please restructure
+- * your code to batch your updates, and then use a single synchronize_rcu()
+- * instead.
+- *
+- * This has the same semantics as (but is more brutal than) synchronize_rcu().
+- */
+-void synchronize_rcu_expedited(void)
++static void __synchronize_rcu_expedited(bool polling)
+ {
+ 	bool boottime = (rcu_scheduler_active == RCU_SCHEDULER_INIT);
+ 	struct rcu_exp_work rew;
+@@ -827,7 +807,7 @@ void synchronize_rcu_expedited(void)
+ 			 "Illegal synchronize_rcu_expedited() in RCU read-side critical section");
+ 
+ 	/* Is the state is such that the call is a grace period? */
+-	if (rcu_blocking_is_gp())
++	if (rcu_blocking_is_gp() && !polling)
+ 		return;
+ 
+ 	/* If expedited grace periods are prohibited, fall back to normal. */
+@@ -863,6 +843,32 @@ void synchronize_rcu_expedited(void)
+ 
+ 	if (likely(!boottime))
+ 		destroy_work_on_stack(&rew.rew_work);
++
++}
++
++/**
++ * synchronize_rcu_expedited - Brute-force RCU grace period
++ *
++ * Wait for an RCU grace period, but expedite it.  The basic idea is to
++ * IPI all non-idle non-nohz online CPUs.  The IPI handler checks whether
++ * the CPU is in an RCU critical section, and if so, it sets a flag that
++ * causes the outermost rcu_read_unlock() to report the quiescent state
++ * for RCU-preempt or asks the scheduler for help for RCU-sched.  On the
++ * other hand, if the CPU is not in an RCU read-side critical section,
++ * the IPI handler reports the quiescent state immediately.
++ *
++ * Although this is a great improvement over previous expedited
++ * implementations, it is still unfriendly to real-time workloads, so is
++ * thus not recommended for any sort of common-case code.  In fact, if
++ * you are using synchronize_rcu_expedited() in a loop, please restructure
++ * your code to batch your updates, and then use a single synchronize_rcu()
++ * instead.
++ *
++ * This has the same semantics as (but is more brutal than) synchronize_rcu().
++ */
++void synchronize_rcu_expedited(void)
++{
++	__synchronize_rcu_expedited(false);
+ }
+ EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
+ 
+@@ -903,7 +909,7 @@ static void sync_rcu_do_polled_gp(struct work_struct *wp)
+ 	if (s & 0x1)
+ 		return;
+ 	while (!sync_exp_work_done(s))
+-		synchronize_rcu_expedited();
++		__synchronize_rcu_expedited(true);
+ 	raw_spin_lock_irqsave(&rnp->exp_poll_lock, flags);
+ 	s = rnp->exp_seq_poll_rq;
+ 	if (!(s & 0x1) && !sync_exp_work_done(s))
+-- 
+2.25.1
 
