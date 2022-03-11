@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7364CC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F74C4321E
 	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347534AbiCKF6k (ORCPT
+        id S1347548AbiCKF6p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:58:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
+        Fri, 11 Mar 2022 00:58:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346673AbiCKFxv (ORCPT
+        with ESMTP id S1346674AbiCKFxv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Mar 2022 00:53:51 -0500
 Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82AA6344
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:37 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id q8-20020a170902f78800b00151cc484688so3989346pln.20
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D6011A12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:42 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id j9-20020a170903024900b0015195e68490so3986396plh.19
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=EG76RmjpT36oc/OYWnIelI/676foWe9jWdF9au7Hu10=;
-        b=Js+NAHJdk6Ux7fMRiJFASq0FtWxMG4ry18aV8wwU00YK06PiDx5ZN4HLOGk2cN+XjP
-         KxymBtCzRfUVkd4FEzePBr2hVSA3wLjSxueXeE8HbOw1VJVH0VJjglAwMYhOZhy5dSFq
-         1z8/2aPFfWZhRNiTojvhbHis+az276ZQL3fpvFMYo0lspobg4bKcFfH1s++RZleo4xFM
-         N9wdrsQ59lfCJIUyLH6tmLK8ISXp1pRVmHuIdfkLSbBvdMiMHg8DwT8ENyDS/qO3Nc3c
-         O39WZpxX+JQpW7FIaI8X/RyM5nLQ9ltNDO+e/7M9w4t6gej2dx3VX1yx3CVDcPoOxNhy
-         dzdw==
+        bh=7cybGKQ7twwpsb/qnodDyF8Mn5LXVu4ZlYZ7x+hR7eE=;
+        b=NRbOWYomFJU5rcwGuhVhK6pUeZd0VFoa7YkR9KcnQboKYAbUo8syVNH1PBl8kO4Zwz
+         n+VsyRw9IcxN95utqJzP1V0HtKHkKJYs1o3grj4YXiotZuaYEYmhIHi+icd638OJEsOF
+         3ZJRIQJmLQUF37sscaNPRepes7SqSlK7PVMgG7E0GF0EOdsvcP3vJQ2elEV4WMJvstO3
+         sjViPs2KOWcfOl7cB/f8bINNh0ons0yyXRAQikdjInC8gMC0I1uRdoMigko1iv019G4D
+         A+YfVnsBSyz4aeMFUEQJxENHGzHW2cnHXmCkwLyxSLtNeMyym9YZG/lSC35vjJ1UJkFQ
+         BFpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=EG76RmjpT36oc/OYWnIelI/676foWe9jWdF9au7Hu10=;
-        b=o3C+0wdfTwcezyzJyJ6ARiyPRoTycJqc62NUNqTwzLnLHQ2z4aOJOuLsCrWyy6U4/v
-         tlA/u/YfiV6KVxHCOz0DY7PfYwjdjKtjExfmRnbM4eu+2FpsZaI9fuBYG+TVhvontlbg
-         58I2dFKC5Ktxxwc9e4wMf274WaKbsuH+r2dmAAKL8TOfJJ6Eer+RKfj0AtOFY/GmQ43k
-         HEaQLuM+E789yHD+T00sAYf+mF1xr4z06CTVVPRYeRAIu/HCGitYvOMcos50A/nshTYA
-         A4qK3qFmKKv7Jl3qYsZlyo4HdYvCk0P4rdySdJKRaYrlJ0R882EVFOF0F5lc9H7F8+8B
-         rcrQ==
-X-Gm-Message-State: AOAM531lmaB1n73KpS7OW+xETWQK09jyFwt4wrwjSAPlHai4shbmQa/5
-        iqaW4U4o1JvY0cE4HrAy+MgAEuqv5L0QX2AqpvZwZ3zuPVPk5xBDfE+uAb6MzBPocgH3xGID8bY
-        F8G/+4Tit5uxAN1WTaWGq1SywInWthY0MRguNm3CNyTaspaD3FPTKbcFJHCx5vBC3O/6hTA==
-X-Google-Smtp-Source: ABdhPJxr/GvkFCYLQqvtdJqyR+cAjzBSQVwxHqBpvFxx1Zl5wUtYShVzOhZeH8qLlxoAlRU2gSSkU2ermug=
+        bh=7cybGKQ7twwpsb/qnodDyF8Mn5LXVu4ZlYZ7x+hR7eE=;
+        b=KB+KiedCsPHZYhTCWTnprC9h8Ihf2hGKQ27MeGEREE0L/E8zrNT7qa8pgJuK7vstXH
+         eZzUqopARQMsFs2JRkps0H8YUSvoKvUBXov8pba8HmtkVCfwVfZHZyEWc4/JgogM189q
+         vX+kFYt33HJXjIpPCZn3Oi8MdkO2bb7hefHXAj1akoggkvXF57zrT15q27A87Xpt6TrL
+         yxX9NZNYdsszxBGt0mrwV3+75dU8AIu09TZyCWkms9C7Pk4UbVkpgO6ESy7TNP/lI+nU
+         3NReuDT+VMYTkdEpgxTwrSE57Pgnb8asdNGihdh4w5tj+R1/FErob45YGAlwisUNUkMH
+         AJAw==
+X-Gm-Message-State: AOAM5334m/5HceAFF0UwxYWEdnjzIPPLsHxgKz078K8ptwZFW5ZgmOzD
+        IpBSr47UrJFyOE6Rn75tduyZ0xNX97yY4lzf9/qv62xjQbujTjmxfTmMHr0vk6UdsO0O4eX3eEw
+        I+IZz6EPDu2YTHtXpwwJ2KHOZCAaGTuPNyqqfv29LDmWnt1F9VrcToJPX8YYgeSRRdy/SbA==
+X-Google-Smtp-Source: ABdhPJzLD70AGjURuPHSsew9G6xF7zeOA14Yn1vRGVxEEbwnUT94A/qJoqtHo85gvyxbExcA7vh/EIUtpA8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:4d81:b0:1bf:8ce4:4f51 with SMTP id
- oj1-20020a17090b4d8100b001bf8ce44f51mr461471pjb.0.1646977956785; Thu, 10 Mar
- 2022 21:52:36 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:903:2442:b0:151:e3e2:cbf9 with SMTP id
+ l2-20020a170903244200b00151e3e2cbf9mr9088495pls.115.1646977961959; Thu, 10
+ Mar 2022 21:52:41 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:05 +0000
+Date:   Fri, 11 Mar 2022 05:50:08 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-55-seanjc@google.com>
+Message-Id: <20220311055056.57265-58-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 054/105] KVM: selftests: Convert vmx_exception_with_invalid_guest_state
- away from VCPU_ID
+Subject: [RFC PATCH 057/105] KVM: selftests: Convert hyperv_svm_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -67,168 +66,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../vmx_exception_with_invalid_guest_state.c  | 62 +++++++++++--------
- 1 file changed, 36 insertions(+), 26 deletions(-)
+ .../testing/selftests/kvm/x86_64/hyperv_svm_test.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c b/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c
-index 27a850f3d7ce..70b30583e50d 100644
---- a/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c
-+++ b/tools/testing/selftests/kvm/x86_64/vmx_exception_with_invalid_guest_state.c
-@@ -10,10 +10,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
+index 21f5ca9197da..46f1070e7297 100644
+--- a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
++++ b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
+@@ -21,7 +21,6 @@
+ #include "svm_util.h"
+ #include "hyperv.h"
  
- #include "kselftest.h"
+-#define VCPU_ID		1
+ #define L2_GUEST_STACK_SIZE 256
  
--#define VCPU_ID	0
--
--static struct kvm_vm *vm;
--
- static void guest_ud_handler(struct ex_regs *regs)
+ struct hv_enlightenments {
+@@ -127,6 +126,7 @@ int main(int argc, char *argv[])
  {
- 	/* Loop on the ud2 until guest state is made invalid. */
-@@ -24,11 +20,11 @@ static void guest_code(void)
- 	asm volatile("ud2");
- }
+ 	vm_vaddr_t nested_gva = 0;
  
--static void __run_vcpu_with_invalid_state(void)
-+static void __run_vcpu_with_invalid_state(struct kvm_vcpu *vcpu)
- {
--	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
-+	struct kvm_run *run = vcpu->run;
- 
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_run(vcpu->vm, vcpu->id);
- 
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_INTERNAL_ERROR,
- 		    "Expected KVM_EXIT_INTERNAL_ERROR, got %d (%s)\n",
-@@ -38,15 +34,15 @@ static void __run_vcpu_with_invalid_state(void)
- 		    run->emulation_failure.suberror);
- }
- 
--static void run_vcpu_with_invalid_state(void)
-+static void run_vcpu_with_invalid_state(struct kvm_vcpu *vcpu)
- {
- 	/*
- 	 * Always run twice to verify KVM handles the case where _KVM_ queues
- 	 * an exception with invalid state and then exits to userspace, i.e.
- 	 * that KVM doesn't explode if userspace ignores the initial error.
- 	 */
--	__run_vcpu_with_invalid_state();
--	__run_vcpu_with_invalid_state();
-+	__run_vcpu_with_invalid_state(vcpu);
-+	__run_vcpu_with_invalid_state(vcpu);
- }
- 
- static void set_timer(void)
-@@ -59,33 +55,43 @@ static void set_timer(void)
- 	ASSERT_EQ(setitimer(ITIMER_REAL, &timer, NULL), 0);
- }
- 
--static void set_or_clear_invalid_guest_state(bool set)
-+static void set_or_clear_invalid_guest_state(struct kvm_vcpu *vcpu, bool set)
- {
- 	static struct kvm_sregs sregs;
- 
- 	if (!sregs.cr0)
--		vcpu_sregs_get(vm, VCPU_ID, &sregs);
-+		vcpu_sregs_get(vcpu->vm, vcpu->id, &sregs);
- 	sregs.tr.unusable = !!set;
--	vcpu_sregs_set(vm, VCPU_ID, &sregs);
-+	vcpu_sregs_set(vcpu->vm, vcpu->id, &sregs);
- }
- 
--static void set_invalid_guest_state(void)
-+static void set_invalid_guest_state(struct kvm_vcpu *vcpu)
- {
--	set_or_clear_invalid_guest_state(true);
-+	set_or_clear_invalid_guest_state(vcpu, true);
- }
- 
--static void clear_invalid_guest_state(void)
-+static void clear_invalid_guest_state(struct kvm_vcpu *vcpu)
- {
--	set_or_clear_invalid_guest_state(false);
-+	set_or_clear_invalid_guest_state(vcpu, false);
-+}
-+
-+static struct kvm_vcpu *get_set_sigalrm_vcpu(struct kvm_vcpu *__vcpu)
-+{
-+	static struct kvm_vcpu *vcpu = NULL;
-+
-+	if (__vcpu)
-+		vcpu = __vcpu;
-+	return vcpu;
- }
- 
- static void sigalrm_handler(int sig)
- {
-+	struct kvm_vcpu *vcpu = get_set_sigalrm_vcpu(NULL);
- 	struct kvm_vcpu_events events;
- 
- 	TEST_ASSERT(sig == SIGALRM, "Unexpected signal = %d", sig);
- 
--	vcpu_events_get(vm, VCPU_ID, &events);
-+	vcpu_events_get(vcpu->vm, vcpu->id, &events);
- 
- 	/*
- 	 * If an exception is pending, attempt KVM_RUN with invalid guest,
-@@ -93,8 +99,8 @@ static void sigalrm_handler(int sig)
- 	 * between KVM queueing an exception and re-entering the guest.
- 	 */
- 	if (events.exception.pending) {
--		set_invalid_guest_state();
--		run_vcpu_with_invalid_state();
-+		set_invalid_guest_state(vcpu);
-+		run_vcpu_with_invalid_state(vcpu);
- 	} else {
- 		set_timer();
- 	}
-@@ -102,15 +108,19 @@ static void sigalrm_handler(int sig)
- 
- int main(int argc, char *argv[])
- {
 +	struct kvm_vcpu *vcpu;
-+	struct kvm_vm *vm;
-+
- 	if (!is_intel_cpu() || vm_is_unrestricted_guest(NULL)) {
- 		print_skip("Must be run with kvm_intel.unrestricted_guest=0");
+ 	struct kvm_vm *vm;
+ 	struct kvm_run *run;
+ 	struct ucall uc;
+@@ -137,20 +137,20 @@ int main(int argc, char *argv[])
  		exit(KSFT_SKIP);
  	}
- 
--	vm = vm_create_default(VCPU_ID, 0, (void *)guest_code);
+ 	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
+-	vcpu_set_hv_cpuid(vm, VCPU_ID);
+-	run = vcpu_state(vm, VCPU_ID);
 +	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	get_set_sigalrm_vcpu(vcpu);
++	vcpu_set_hv_cpuid(vm, vcpu->id);
++	run = vcpu->run;
+ 	vcpu_alloc_svm(vm, &nested_gva);
+-	vcpu_args_set(vm, VCPU_ID, 1, nested_gva);
++	vcpu_args_set(vm, vcpu->id, 1, nested_gva);
  
- 	vm_init_descriptor_tables(vm);
--	vcpu_init_descriptor_tables(vm, VCPU_ID);
-+	vcpu_init_descriptor_tables(vm, vcpu->id);
+ 	for (stage = 1;; stage++) {
+-		_vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "Stage %d: unexpected exit reason: %u (%s),\n",
+ 			    stage, run->exit_reason,
+ 			    exit_reason_str(run->exit_reason));
  
- 	vm_install_exception_handler(vm, UD_VECTOR, guest_ud_handler);
- 
-@@ -119,8 +129,8 @@ int main(int argc, char *argv[])
- 	 * KVM_RUN should induce a TRIPLE_FAULT in L2 as KVM doesn't support
- 	 * emulating invalid guest state for L2.
- 	 */
--	set_invalid_guest_state();
--	run_vcpu_with_invalid_state();
-+	set_invalid_guest_state(vcpu);
-+	run_vcpu_with_invalid_state(vcpu);
- 
- 	/*
- 	 * Verify KVM also handles the case where userspace gains control while
-@@ -129,11 +139,11 @@ int main(int argc, char *argv[])
- 	 * guest with invalid state when the handler interrupts KVM with an
- 	 * exception pending.
- 	 */
--	clear_invalid_guest_state();
-+	clear_invalid_guest_state(vcpu);
- 	TEST_ASSERT(signal(SIGALRM, sigalrm_handler) != SIG_ERR,
- 		    "Failed to register SIGALRM handler, errno = %d (%s)",
- 		    errno, strerror(errno));
- 
- 	set_timer();
--	run_vcpu_with_invalid_state();
-+	run_vcpu_with_invalid_state(vcpu);
- }
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_ABORT:
+ 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+ 				  __FILE__, uc.args[1]);
 -- 
 2.35.1.723.g4982287a31-goog
 
