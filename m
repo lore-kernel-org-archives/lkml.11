@@ -2,153 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E901FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C56C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349321AbiCKO3F (ORCPT
+        id S1349345AbiCKO3i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
+        Fri, 11 Mar 2022 09:29:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349253AbiCKO3D (ORCPT
+        with ESMTP id S236273AbiCKO3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:29:03 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B5012624
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:27:58 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id i66so5202429wma.5
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:27:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=MpXiSYabOrYwVZBoUNg0nqtYEvuBi16Uja5dFf2EH0o=;
-        b=k2nh2gjDZ2GWduILDMTVTdPhwUGy/gKiaKiDAAeWeNvWs+qTTrNrgWKCpvV5YZTUem
-         oS/VqO60ezzCYtbnUQI49E+RYcTTpPSClCwilaRKFbUWSxsD5nb47zN5aSspNsfFktFZ
-         FkbA1p2tgEoHpfs74AHjwcd7z1Fmq06KPg4uI1LJjNZjy+w0+El9JAo7Kd2WQgnuoWT+
-         HpMizIPvpJ4kBD8vcbDXLo7JWtSiBBROSlbVgdGvOfUJcbc+q2t6xbeJDOeNJ7IgcDkf
-         oPtG5W7BIAAQOD9tgIZbFNVeFcpnIzkbhUQGtMeyPsJMSxGYr8R3kg3jnU3j/sB/SxSq
-         Xk9A==
+        Fri, 11 Mar 2022 09:29:36 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981B3EBAD8
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:28:32 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 1A2AE3F4BE
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:28:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647008911;
+        bh=PdIndayzdh0p1erKParNfrZ1poZ/AkWCjFd9nsPB1bM=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=r53M9jV+B8XmgcA7X8IiKPGsHT7nVwDDq+PhKCeLEp8O9hBjfPqebgMaJEYmLdO41
+         L4ZeuYKaCVDw7wTKxrLQOPKY35ERdumH+YC+7eJ5XsqVrZiNypcu5WIRkxhRpCN9hw
+         xLOq1Wl6hbrD+Hjn4wp1lLn6ZQZBQ0z3GsaygtXWuzuDFOk0X4VR1TPrL/dvsHoo28
+         c0XB6NC1mVZbWOAYxCzPVZtkZl0EQSHJfAu56847GseXvaDF9Jgt0+THQ7ZcYJpUoT
+         TaLrq7s2tucgCsjpsV8vnfEYJN8japQMpOxZE5Q3kCgqyov/dxB+lOVLSQlj9GqS3w
+         cDr6/edhPbHVg==
+Received: by mail-ej1-f70.google.com with SMTP id r18-20020a17090609d200b006a6e943d09eso5007779eje.20
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:28:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=MpXiSYabOrYwVZBoUNg0nqtYEvuBi16Uja5dFf2EH0o=;
-        b=3fzgZfMBQOjxDaR0cu8EyLXv15decE+ifsOqEtvm55YRptfBdMPzf0Avy7UhQaeVqx
-         Ltx8sNBVdp4576SMPhvAbhDO/QMyG/fa7KdGRQWLcrxAg8fKBD6rkw561DYJbKweywnI
-         l+iOubm7R//WxQk/mT75J3Sq1zokMPEPpM/wv34Jw4myvPDeFpYuBUw+YEBSHF60Kewj
-         W/luX3p4vGLSbwNALUYDGc8uS3M1fNtvU1kRz9NrvhtdMgwVtgo8A/gttctbAybtNE27
-         coMAmbd36HDG3Q/aJ8w0bJWgekeEisDrD7++oGdoImQSqFuZwyHJsqv5rAZHE3NdGiPb
-         hHcg==
-X-Gm-Message-State: AOAM532ifQgsUgYdxk4C7cUmjpk1ZRPff7lk8BdPut1+U4vaNhtszjNA
-        Fw9nck26YUJV/fi+9OwYckyUtQ==
-X-Google-Smtp-Source: ABdhPJxQojmr11qBMELiUdbxhAZwsibac1eN9niCtFM0AGC0j84YVyfws1DV7ZJcT9GegkvTIMpT+w==
-X-Received: by 2002:a1c:f718:0:b0:380:ed20:6557 with SMTP id v24-20020a1cf718000000b00380ed206557mr16407510wmh.53.1647008876745;
-        Fri, 11 Mar 2022 06:27:56 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id u23-20020a7bcb17000000b0037bdfa1665asm14118274wmj.18.2022.03.11.06.27.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 06:27:56 -0800 (PST)
-Date:   Fri, 11 Mar 2022 14:27:54 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
- outside the loop
-Message-ID: <20220311142754.a3jnnjqxpok75qgp@maple.lan>
-References: <CAHk-=whJX52b1jNsmzXeVr6Z898R=9rBcSYx2oLt69XKDbqhOg@mail.gmail.com>
- <20220304025109.15501-1-xiam0nd.tong@gmail.com>
- <CAHk-=wjesxw9U6JvTw34FREFAsayEE196Fi=VHtJXL8_9wgi=A@mail.gmail.com>
- <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PdIndayzdh0p1erKParNfrZ1poZ/AkWCjFd9nsPB1bM=;
+        b=nYacU9/xcxhTEb4TP/AOR1ddF1wvVWNN6xMAb7Add/gmCKbfGyFfefEgZBkAFlPPZp
+         BojrAYPJuk7iMxPGnsqQbV+77Go6ZEQwe7NdtDd95zzE27MM7NQq52BxE6xY76uGoq1c
+         FQAk7FKcXqCp3pqnJ+t90Tod801NiN3Gyv5T/y1IQC5OaMC9zelPJbiqA/OmRTvrpCTZ
+         H1153VbPLauIRr/DYxkR8XTqK4vZBUY8N0awW895yTaped0vLfVJ4KejawB9K+g1BRP2
+         4EKo61OG/gwOT38b2WtmqRsc1y5pJJpcT3nP2NNv0iKY7iwd3tv7RhEkgXwUE8V862lr
+         hAXw==
+X-Gm-Message-State: AOAM530KeC3TfFY0Wt2WO2yyC9ddwqKIWpTi4C/OhM6RB9D5NnPq6fcw
+        IeMM6kE+nwm236o2DbpVxWuGcvPBLYtF00lh+t2la6Dtq5DXSIgPpWNuH535pq37sCvCN5QAjjY
+        EYHBgRqA+OzaFUB7/zCNzuKvcH4Xh8N8U0ZhBJuLU9A==
+X-Received: by 2002:a17:906:40a:b0:6db:3e2a:a7ce with SMTP id d10-20020a170906040a00b006db3e2aa7cemr8563512eja.255.1647008910476;
+        Fri, 11 Mar 2022 06:28:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxu7HRELcvW932dJyiTM8RcnBlSViVbwCdvsfEGJ7B4Ej6w1K6mhpjwwmEC8B/O6gJR4wVowQ==
+X-Received: by 2002:a17:906:40a:b0:6db:3e2a:a7ce with SMTP id d10-20020a170906040a00b006db3e2aa7cemr8563494eja.255.1647008910276;
+        Fri, 11 Mar 2022 06:28:30 -0800 (PST)
+Received: from [192.168.0.148] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id z7-20020a05640240c700b00416cee953dasm1089877edb.24.2022.03.11.06.28.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 06:28:29 -0800 (PST)
+Message-ID: <0454647b-7aa3-ed70-0b92-1e5c98d0adc0@canonical.com>
+Date:   Fri, 11 Mar 2022 15:28:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/2] dt-bindings: phy: mediatek: Add YAML schema for PCIe
+ PHY
+Content-Language: en-US
+To:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rex-bc.chen@mediatek.com, randy.wu@mediatek.com,
+        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
+        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
+References: <20220311133527.5914-1-jianjun.wang@mediatek.com>
+ <20220311133527.5914-3-jianjun.wang@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220311133527.5914-3-jianjun.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 05, 2022 at 04:35:36PM -0800, Linus Torvalds wrote:
-> On Sat, Mar 5, 2022 at 1:09 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> What do people think? Is this clever and useful, or just too
-> subtle and odd to exist?
-
-> NOTE! I decided to add that "name of the target head in the target
-> type" to the list_traversal_head() macro, but it's not actually used
-> as is. It's more of a wishful "maybe we could add some sanity checking
-> of the target list entries later".
+On 11/03/2022 14:35, Jianjun Wang wrote:
+> Add YAML schema documentation for PCIe PHY on MediaTek chipsets.
 > 
-> Comments?
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> ---
+>  .../bindings/phy/mediatek,pcie-phy.yaml       | 71 +++++++++++++++++++
+>  1 file changed, 71 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml b/Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+> new file mode 100644
+> index 000000000000..da15b4bf3117
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/phy/mediatek,pcie-phy.yaml
+> @@ -0,0 +1,71 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/phy/mediatek,pcie-phy.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek PCIe PHY Device Tree Binding
 
-It is possible simply to use spelling to help uncover errors in
-list_traverse()?
+Title is for hardware, so s/Device Tree Binding//
 
-Something like:
+> +
+> +maintainers:
+> +  - Jianjun Wang <jianjun.wang@mediatek.com>
+> +
+> +description: |
+> +  The PCIe PHY supports physical layer functionality for PCIe Gen3 port.
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,pcie-phy
 
-#define list_traversal_head(type, name, target_member) \
-	union { \
-		struct list_head name; \
-		type *name##_traversal_mismatch_##target_member; \
-	}
+Is it going to be exactly one pcie-phy for all Mediatek chipsets for
+next years? Are you sure about that? It sounds highly unlikely....
 
-And:
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  reg-names:
+> +    items:
+> +      - const: sif
+> +
+> +  "#phy-cells":
+> +    const: 0
+> +
+> +  nvmem-cells:
+> +    maxItems: 7
+> +    description:
+> +      Phandles to nvmem cell that contains the efuse data, if unspecified,
+> +      default value is used.
+> +
+> +  nvmem-cell-names:
+> +    items:
+> +      - const: glb_intr
+> +      - const: tx_ln0_pmos
+> +      - const: tx_ln0_nmos
+> +      - const: rx_ln0
+> +      - const: tx_ln1_pmos
+> +      - const: tx_ln1_nmos
+> +      - const: rx_ln1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - reg-names
+> +  - "#phy-cells"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    pciephy: phy@11e80000 {
+> +        compatible = "mediatek,pcie-phy";
+> +        #phy-cells = <0>;
+> +        reg = <0x11e80000 0x10000>;
+> +        reg-names = "sif";
+> +        nvmem-cells = <&pciephy_glb_intr>,
+> +                      <&pciephy_tx_ln0_pmos>,
+> +                      <&pciephy_tx_ln0_nmos>,
+> +                      <&pciephy_rx_ln0>,
+> +                      <&pciephy_tx_ln1_pmos>,
+> +                      <&pciephy_tx_ln1_nmos>,
+> +                      <&pciephy_rx_ln1>;
+> +        nvmem-cell-names = "glb_intr", "tx_ln0_pmos",
+> +                           "tx_ln0_nmos", "rx_ln0",
+> +                           "tx_ln1_pmos", "tx_ln1_nmos",
+> +                           "rx_ln1";
+> +    };
 
-#define list_traverse(pos, head, member) \
-	for (typeof(*head##_traversal_mismatch_##member) pos = list_first_entry(head, typeof(*pos), member); \
-		!list_entry_is_head(pos, head, member);	\
-		pos = list_next_entry(pos, member))
 
-If I deliberately insert an error into your modified exit.c then the
-resulting errors even make helpful suggestions about what you did
-wrong:
-
-kernel/exit.c:412:32: error: ‘struct task_struct’ has no member named
-‘children_traversal_mismatch_children’; did you mean
-‘children_traversal_mismatch_sibling’?
-
-The suggestions are not always as good as the above
-(children_traversal_mismatch_ptrace_entry suggests
-ptraced_traversal_mismatch_ptrace_entry) but, nevertheless, it does
- appears to be robust in detecting incorrect traversal.
-
-
-> diff --git a/include/linux/list.h b/include/linux/list.h
-> index dd6c2041d09c..1e8b3e495b51 100644
-> --- a/include/linux/list.h
-> +++ b/include/linux/list.h
-> @@ -25,6 +25,9 @@
->  #define LIST_HEAD(name) \
->  	struct list_head name = LIST_HEAD_INIT(name)
-
-Seeing this in the diff did set me thinking about static/global
-list heads.
-
-For architectures without HAVE_LD_DEAD_CODE_DATA_ELIMINATION then the
-"obvious" extension of list_traversal_head() ends up occupying bss
-space. Even replacing the pointer with a zero length array is still
-provoking gcc-11 (arm64) to allocate a byte from bss (often with a lot
-of padding added).
-
-Perhaps in the grand scheme of things this doesn't matter. Across the
-whole tree and all architecture I see only ~1200 instances so even in
-the worst case and with padding everywhere the wasted RAM is only a few
-kb.
-
-Nevertheless I was curious if there is any cunning tricks to avoid
-this? Naturally LIST_HEAD() could just declare a union but that would
-require all sites of use to be updated simultaneously and I rather
-like the way list_traverse_head() is entirely incremental.
-
-
-Daniel.
+Best regards,
+Krzysztof
