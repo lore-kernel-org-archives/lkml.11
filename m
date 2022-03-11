@@ -2,86 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E02C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:51:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229964AbiCKWwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:52:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
+        id S229562AbiCKWwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:52:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229851AbiCKWvu (ORCPT
+        with ESMTP id S229962AbiCKWwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:51:50 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C68229E5AC;
-        Fri, 11 Mar 2022 14:25:37 -0800 (PST)
-Date:   Fri, 11 Mar 2022 23:09:07 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647036548;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=E1hpGVBDseCVeet7NoMPueWVt4kGDQQEBLbUVjRRwI8=;
-        b=4QJaiVaptzeJS6+LzbVm3Xrw5F/1q7kF93x+4CRPNIm2qD7FOWhBK3NmuPoZTt+Zxq1WNA
-        OeXe0GAmlsd3bBx46wIABfNjqOHMotZ2I4utofWmFyZmLjyshVaVfnb3Fs/C/kXL8orv7E
-        r09AnCPs2rX1VKxeFou0StI2JjGuuJYFNuF0vnRTfm1pno8O4MmLkzwRsshTHzegyL8fT6
-        Zg4kmrOF+V+t/k/4D5zmaYeG2txoBEGZ6h1yi40zjwSluAHC7cDDNU4iEb+CUrQT1P3WUm
-        fCQMnCFdFX5mnMuVooF660bpOulTzE9khign51M7dtfiYurqK5XYvAnDGa3Lqg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647036548;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=E1hpGVBDseCVeet7NoMPueWVt4kGDQQEBLbUVjRRwI8=;
-        b=tDCaJdY8cDI/Da494PQCrYc5rVXDpEaCC/LuqCmcF0zLSjp47EzZtocaK8hHKjG29NffSo
-        QZ8U13ULgKPLAgBA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Tom Zanussi <zanussi@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Carsten Emde <C.Emde@osadl.org>,
-        John Kacur <jkacur@redhat.com>, Daniel Wagner <wagi@monom.org>,
-        Clark Williams <williams@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
-Subject: Re: [ANNOUNCE] 5.4.182-rt71
-Message-ID: <YivIg2H6BY5KuMQ/@linutronix.de>
-References: <0af02f70d3a0b3653bb3079266878f13e6682a69.camel@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <0af02f70d3a0b3653bb3079266878f13e6682a69.camel@kernel.org>
+        Fri, 11 Mar 2022 17:52:11 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4AC8ECB1B;
+        Fri, 11 Mar 2022 14:30:32 -0800 (PST)
+Received: from localhost.localdomain (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 4260520B7178;
+        Fri, 11 Mar 2022 14:30:32 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 4260520B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1647037832;
+        bh=N1x1V2sY7mMppzWbWx3qgkpf7QBnkkPjK7jq4FHoask=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NJ+BUV1i55rgsecezhByakHPZ4Hzs5zerEkLc++lG+THztYBUCt9sJxZPHAwh3Tx9
+         BlSJVyCIivEa8CeF1nXyI4ylhSpouIuWNL1g61LVAJ4DonI3AF0YNovCTNJQ7mjSFb
+         QPSISgmiIx2mrTPp7SHZ+7/QaGyAwLbCjibUXvVM=
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     rostedt@goodmis.org, mhiramat@kernel.org
+Cc:     anders.roxell@linaro.org, linux-trace-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        beaub@linux.microsoft.com
+Subject: [PATCH] user_events: Use alloc_pages instead of kzalloc for register pages
+Date:   Fri, 11 Mar 2022 14:30:28 -0800
+Message-Id: <20220311223028.1865-1-beaub@linux.microsoft.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-11 15:46:23 [-0600], Tom Zanussi wrote:
-> index 79e34e98f812..e1dfb01f4623 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -802,6 +802,18 @@ struct task_struct {
->  	/* to be used once the psi infrastructure lands upstream. */
->  	unsigned			use_memdelay:1;
->  #endif
-> +#ifdef CONFIG_PSI
-> +	/* Stalled due to lack of memory */
-> +	unsigned			in_memstall:1;
-> +#endif
-> +#ifdef CONFIG_PAGE_OWNER
-> +	/* Used by page_owner=on to detect recursion in page tracking. */
-> +	unsigned			in_page_owner:1;
-> +#endif
+kzalloc virtual addresses do not work with SetPageReserved, use the
+actual page virtual addresses instead via alloc_pages.
 
-the upper two don't look like they belong here.
+The issue is reported when booting with user_events and
+DEBUG_VM_PGFLAGS=y.
 
-> +#ifdef CONFIG_EVENTFD
-> +	/* Recursion prevention for eventfd_signal() */
-> +	unsigned			in_eventfd_signal:1;
-> +#endif
->  
->  	unsigned long			atomic_flags; /* Flags requiring atomic access. */
->  
-> diff --git a/localversion-rt b/localversion-rt
+Link: https://lore.kernel.org/linux-trace-devel/CADYN=9+xY5Vku3Ws5E9S60SM5dCFfeGeRBkmDFbcxX0ZMoFing@mail.gmail.com/#R
 
-Sebastian
+Reported-by: Anders Roxell <anders.roxell@linaro.org>
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+---
+ kernel/trace/trace_events_user.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index 2b5e9fdb63a0..59c900789757 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -1587,16 +1587,20 @@ static void set_page_reservations(bool set)
+ static int __init trace_events_user_init(void)
+ {
+ 	int ret;
++	struct page *register_pages;
+ 
+ 	/* Zero all bits beside 0 (which is reserved for failures) */
+ 	bitmap_zero(page_bitmap, MAX_EVENTS);
+ 	set_bit(0, page_bitmap);
+ 
+-	register_page_data = kzalloc(MAX_EVENTS, GFP_KERNEL);
++	register_pages = alloc_pages(GFP_KERNEL | __GFP_ZERO,
++				     get_order(MAX_EVENTS));
+ 
+-	if (!register_page_data)
++	if (!register_pages)
+ 		return -ENOMEM;
+ 
++	register_page_data = page_address(register_pages);
++
+ 	set_page_reservations(true);
+ 
+ 	ret = create_user_tracefs();
+@@ -1604,7 +1608,7 @@ static int __init trace_events_user_init(void)
+ 	if (ret) {
+ 		pr_warn("user_events could not register with tracefs\n");
+ 		set_page_reservations(false);
+-		kfree(register_page_data);
++		__free_pages(register_pages, get_order(MAX_EVENTS));
+ 		return ret;
+ 	}
+ 
+
+base-commit: 864ea0e10cc90416a01b46f0d47a6f26dc020820
+-- 
+2.17.1
+
