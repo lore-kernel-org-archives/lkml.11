@@ -2,102 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97361C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:05:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238059AbiCKQEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:04:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36958 "EHLO
+        id S1350034AbiCKQG0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 11:06:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350247AbiCKQDE (ORCPT
+        with ESMTP id S238838AbiCKQGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 11:03:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 066C21CD9C9
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:01:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647014517;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Fri, 11 Mar 2022 11:06:24 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7121D0865
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:05:21 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 448FD210FB;
+        Fri, 11 Mar 2022 16:05:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647014720; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=rzupkkLJorsxLrR+OX5BVyDV3vQCDlEKQHwxOJHubCQ=;
-        b=dIpFZphqOUrcy3vRpe0kU2J3kBTuw+stciQYZ60nKAITFMUhPwqNwKhXUmYdpN50aLMvmV
-        oFr40t2BjXxwDI7kH52RYt5amu0poR/qJAoSMuASn50MFCmNAYSiCTMPyusDHNG2498c2u
-        ne+++OyXLRnSK6wpyLREjk3Ji2Tk/2s=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-640-PMU8aHU_PL6qxLYmNbkhSQ-1; Fri, 11 Mar 2022 11:01:56 -0500
-X-MC-Unique: PMU8aHU_PL6qxLYmNbkhSQ-1
-Received: by mail-wr1-f70.google.com with SMTP id a16-20020adff7d0000000b001f0473a6b25so2964052wrq.1
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:01:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rzupkkLJorsxLrR+OX5BVyDV3vQCDlEKQHwxOJHubCQ=;
-        b=g39M3L29Ue0a86c0zqAn2w4iCTeOToud2y4b+fr2ctpT1xT37KdefbMwL/Un6l0Fvk
-         D1QdAWVKvyINDXFWDK81LJr2b8yC+Jvo5FeG7lI6WLOdwrq+rMJlfLGfjOCfuNOMZntC
-         4u5gfbIcOgFiU0SYlbSC3mPefHWiM00pi+A8AF7MsQyq/1MN13E6NUqEGg5wO7ylVGO3
-         y8mhnjviHj2ZnYfDZ5RwkBkF6d+iTRqLcdsGdtxHp3bDWBdIGN6LEOKBp+XAWmOiP30x
-         S5UE5l8wjTnpxEDn0S7g5C3Vm+WiPfQv6+4J3sJZVmtJOiuBZporOGiuDYhZinj5CDzd
-         anqw==
-X-Gm-Message-State: AOAM533o5k2RznXQAGOA94GurawsG3S/7w86v5VYOQD36EYYycYKHJMg
-        Pdlf6ensfclNqX3niP5IQC2wDdvvhTLNNi1bO+brsWf3pbza2zoRC3nI5uVeNxEwDCuJOWeDoN+
-        vpjBjBlmMGyn0NxG/0CcX61I=
-X-Received: by 2002:a5d:684b:0:b0:1f1:fc5d:d91c with SMTP id o11-20020a5d684b000000b001f1fc5dd91cmr7821707wrw.266.1647014514877;
-        Fri, 11 Mar 2022 08:01:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzuysRnBXAFiroTtcVLgk2nMYmL7tDhq1rUhjyinUARX5WWN8WwymIFesIXi0FesbUeSQhPGg==
-X-Received: by 2002:a5d:684b:0:b0:1f1:fc5d:d91c with SMTP id o11-20020a5d684b000000b001f1fc5dd91cmr7821672wrw.266.1647014514642;
-        Fri, 11 Mar 2022 08:01:54 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id x2-20020adff0c2000000b001f1fa284a32sm6996838wro.115.2022.03.11.08.01.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 08:01:53 -0800 (PST)
-Date:   Fri, 11 Mar 2022 16:01:53 +0000
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>, christophe.leroy@csgroup.eu,
-        hch@infradead.org, cl@linux.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        void@manifault.com, atomlin@atomlin.com, allen.lkml@gmail.com,
-        joe@perches.com, msuchanek@suse.de, oleksandr@natalenko.name,
-        jason.wessel@windriver.com, pmladek@suse.com
-Subject: Re: [PATCH] kdb: Remove redundant module related references
-Message-ID: <20220311160153.3k2avq24mpjyrdpy@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220307174741.2889588-1-atomlin@redhat.com>
- <20220308105203.2981099-1-atomlin@redhat.com>
- <20220309120640.uumh46n2l37jaddf@maple.lan>
- <YiporeSIrkFg/YS8@bombadil.infradead.org>
- <20220311154723.ezo3wvgg4puu2zk7@maple.lan>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220311154723.ezo3wvgg4puu2zk7@maple.lan>
+        bh=yApc6HcfAc79gGltdvVeKZkz9xGlddFKuvJ/aLNodbg=;
+        b=qgkWEc+Cp+++LoxIF+BKpvL4Vs/a9WoKFhrQ+qrEa5l66DG/Uj2P9P11RR4a6titAcmU+/
+        nKI0KN15KvM+XcL10MIGysuZdFg2Aql/AWheLmYisBuHdvTiPaSninza3y/rwEgY8NyhWU
+        LPAz1jNxMnq4CU5SDI2Y4hs6AAmP1ac=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647014720;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yApc6HcfAc79gGltdvVeKZkz9xGlddFKuvJ/aLNodbg=;
+        b=mXBzdmOqpgklaHnP+YFA71CRR4L2kQP3yaVn5rBv7cpVKQz9Ku5z9DoNFTUeUTVLXywltF
+        ZGqyBpIKU9JRsJDw==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 8DC61A3B81;
+        Fri, 11 Mar 2022 16:05:19 +0000 (UTC)
+Date:   Fri, 11 Mar 2022 17:05:19 +0100
+Message-ID: <s5hsfrocw5c.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     huangwenhui <huangwenhuia@uniontech.com>
+Cc:     perex@perex.cz, tiwai@suse.com, jeremy.szu@canonical.com,
+        hui.wang@canonical.com, wse@tuxedocomputers.com, cam@neo-zeon.de,
+        kailang@realtek.com, tanureal@opensource.cirrus.com, sami@loone.fi,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: hda/realtek - Fix headset mic problem for a HP machine with alc671
+In-Reply-To: <20220311093836.20754-1-huangwenhuia@uniontech.com>
+References: <20220311093836.20754-1-huangwenhuia@uniontech.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-03-11 15:47 +0000, Daniel Thompson wrote:
-> On the whole it doesn't really matter much... but landing the
-> independent parts via the normal route for kgdb code reduces what I
-> have to remember acking.
+On Fri, 11 Mar 2022 10:38:36 +0100,
+huangwenhui wrote:
+> 
+> On a HP 288 Pro G8, the front mic could not be detected.In order to
+> get it working, the pin configuration needs to be set correctly, and
+> the ALC671_FIXUP_HP_HEADSET_MIC2 fixup needs to be applied.
+> 
+> Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
 
-Hi Daniel,
-
-Any thoughts on this [1]? Unfortunately, the wrong In-Reply-To was
-specified. So sorry about that. I will send another iteration of the series
-so that it'll be easier for Luis to apply to mcgrof/modules-testing or
-mcgrof/modules-next but after we have more feedback.
-
-[1]: https://lore.kernel.org/lkml/20220310102625.3441888-2-atomlin@redhat.com/
+Thanks, applied now.
 
 
-Kind regards,
-
--- 
-Aaron Tomlin
-
+Takashi
