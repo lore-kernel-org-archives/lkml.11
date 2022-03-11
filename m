@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C34C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346685AbiCKGAl (ORCPT
+        id S1345199AbiCKGAx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 01:00:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
+        Fri, 11 Mar 2022 01:00:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346755AbiCKFzH (ORCPT
+        with ESMTP id S1346688AbiCKFzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:55:07 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E921DFDF90
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:36 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id 9-20020a630509000000b0037c8607d296so4215923pgf.22
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:36 -0800 (PST)
+        Fri, 11 Mar 2022 00:55:08 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4136FFF9C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:41 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id y3-20020a1709029b8300b0014c8bcb70a1so4019570plp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=fTRgciqd2oM8e2A4aufW48NTHgVD8bRTOiK4pDiyJUo=;
-        b=m5bsNEazzsuwHW0xRT8haw7lzZuXLgZtmFN8xzebFO9bXazVKcIHIoMhymRPrAqpzc
-         j63SRbaasMrPd17YcBx+/PJApTGKMTAKG/kDECofUmvTGUdsY3QHpFgt3HsaI+Ys4UqN
-         AHDKFKEIQgQoBLPHqTh6BpD05E4HaT3EOIEGp5lvnrzEoYvypQW/TBTNhUoEYwyIkYqN
-         JBP2HkuZMcFmAlKOLffXqk5sysRmpqn1dXiUatOGc8drmUnMKMaN24VpgxM1zGOVq/jn
-         baTl9RtY0hJsz1jsU+sgIZwc5tL1z2SU6DqUtvCaqg+QwQDMTBs8MV2LoT/fi6WxI/n3
-         gzGA==
+        bh=3kN0MYjfZR0BF6JbBsye3XJksluYj8f6Xh8iEcuCoNk=;
+        b=Al1dQ7JRLtGWo/GJ2RefXVayagFQinXXM6EvQUf/l3Sahfl1bT4v6P/Pxr0mtssCKK
+         6WyaL8H24o0nqZQEVAr1KC8YdSXT3JXLO5PwHs8jT7M+oJrRSKKsblCDeRd/ZjlTO6tJ
+         h/lT2Syp/xbV4f+SgxZSRCE+kERoPQ+IBA/rCD/Au9P3G2hhvCBFv7bZBZm+16Wu4PMe
+         4h4X42/2LkSc/0/ldSaxikunEb8hfdSM+8cmk4T0KOtVp7Hfy5xqmY0PDpYPNn/kZxI/
+         5dSjJCKCcl4Y4gYUHYnn2TNgPhA+TCTMbdrLnx0zMw1j6s8SDYOZIqxRsP9ECI+Mgg6B
+         8H0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=fTRgciqd2oM8e2A4aufW48NTHgVD8bRTOiK4pDiyJUo=;
-        b=ctONNLreUPoEOICc9BrbvMX2uAcmiEA0eIY/8eHruiewGJ1VPZ+XShOzVuPUSjY0Bo
-         Y1Gnx1H2AHCMZIqNWDff2GBGrgfukcvE7Jx2RJFcLQufUSBp8MzFpj9kxQjQAo+75HRB
-         HDpzaIqk7Rf35G7c/8pdeh5xerJBEAP/iGPuoB+rplFsFUunHB34WOwGxCQ1HJvObwSz
-         dqpR3uVBxcCbUWH5qXvJ3qWeEvBoSnzD4ldDvScbTBfjqZxsoqbdl8eCiUnNMZRyTgko
-         GXTiPs2AUPOmjkdcfqnfTUm74nFFspepGO4xek33NPHNIyh7fv46RaBBMs9iqnpXFZEJ
-         5mPQ==
-X-Gm-Message-State: AOAM532kgctOCwD25mbXlFEPPDq4u3gvkJSYTt4kOOIc2S0JXihIq5hK
-        8ov1TfhYm47PuMRkdC2qc+YSiufv5DqJNOxIp35iU4TTSqvJ/KvHzhTvJYeOwJ3YVb5W+JTr8Ln
-        FJAs8TmP+gbnijW0XC0/5TScn7SbjxekTOjm64+uJWmQykzQYSqNNavq+ACq/lrZBqkfuYg==
-X-Google-Smtp-Source: ABdhPJy6g9iYQAPZVUkq+vp5vislrXjLxDopYT4xNw13R0aEyl1eIeiW0c4oQdnjEZaYB+vz8vpfK+LH+QA=
+        bh=3kN0MYjfZR0BF6JbBsye3XJksluYj8f6Xh8iEcuCoNk=;
+        b=jYA3As/SGavdM045VHWmVhl2IPwA9gZ+2uQvN1tUmH1/8IKdXbo6NtQcVdjZWrNk3y
+         gNkwsgEnRVcrXK1/UsY1XykLrkS2ggx4IY63Ea3ejgllGGLpI66Ou2YVv4MWCg63Bgnq
+         NsWVj/R8OUbbK9SSUZITKmC+U8OWRH4k9zEyXAClE3rWcCPcWeLefuG2Kwibn6FB9RQq
+         pLVx+b8HFtn0DmToqqwy25A4Ag8jPlCXanPLCY8CF4CjrIwno8ibwtKHaBnsvtvYO+Tn
+         JMcwSmtWlsuANozg7IHXdV5EaG5LPJE1D5yjvPjC1gS6QSwMT1hmK3ZWiROebU7yAQFg
+         g2ww==
+X-Gm-Message-State: AOAM530Uf9CdQz3TOR6ICA/TMHlE26dytBn9Mmykk6YwpxOaO1zsALKu
+        XKL2CsEGFtCEe8FsqKLXyS5I8C7qmt/ifka9wS3U1jLwwk/MHxFYqFdFJEcdKBcfF6qLqufmdcq
+        nzK7K5WfQTao+6lziTEavhrNJ+Az1F3Zmqc+Ha3/G44FzbWQG+5Ex8tcgyRy9gEpM/n8G7g==
+X-Google-Smtp-Source: ABdhPJxRcyBVNMtn377xng1PjvGXjhHyMQLleIdIKIJ9OG5at0dMqPIfAvhWDyUELyH9qerIRwgztYvAmYI=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:a8b:b0:4cd:6030:4df3 with SMTP id
- b11-20020a056a000a8b00b004cd60304df3mr8461343pfl.40.1646978016360; Thu, 10
- Mar 2022 21:53:36 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a62:7bc4:0:b0:4f6:aaa1:91f8 with SMTP id
+ w187-20020a627bc4000000b004f6aaa191f8mr8704511pfc.48.1646978021357; Thu, 10
+ Mar 2022 21:53:41 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:40 +0000
+Date:   Fri, 11 Mar 2022 05:50:43 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-90-seanjc@google.com>
+Message-Id: <20220311055056.57265-93-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 089/105] KVM: selftests: Convert xapic_ipi_test away from *_VCPU_ID
+Subject: [RFC PATCH 092/105] KVM: selftests: Convert memop away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,158 +66,137 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/x86_64/xapic_ipi_test.c     | 48 ++++++++-----------
- 1 file changed, 20 insertions(+), 28 deletions(-)
+ tools/testing/selftests/kvm/s390x/memop.c | 31 +++++++++++------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c b/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c
-index 8b366652be31..4484ee563b18 100644
---- a/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/xapic_ipi_test.c
-@@ -39,9 +39,6 @@
- /* Default delay between migrate_pages calls (microseconds) */
- #define DEFAULT_DELAY_USECS 500000
+diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
+index 460799cc2098..a09b1b654d7f 100644
+--- a/tools/testing/selftests/kvm/s390x/memop.c
++++ b/tools/testing/selftests/kvm/s390x/memop.c
+@@ -13,8 +13,6 @@
+ #include "test_util.h"
+ #include "kvm_util.h"
  
--#define HALTER_VCPU_ID 0
--#define SENDER_VCPU_ID 1
+-#define VCPU_ID 1
 -
- /*
-  * Vector for IPI from sender vCPU to halting vCPU.
-  * Value is arbitrary and was chosen for the alternating bit pattern. Any
-@@ -79,8 +76,7 @@ struct test_data_page {
+ static uint8_t mem1[65536];
+ static uint8_t mem2[65536];
  
- struct thread_params {
- 	struct test_data_page *data;
--	struct kvm_vm *vm;
--	uint32_t vcpu_id;
+@@ -31,6 +29,7 @@ static void guest_code(void)
+ 
+ int main(int argc, char *argv[])
+ {
 +	struct kvm_vcpu *vcpu;
- 	uint64_t *pipis_rcvd; /* host address of ipis_rcvd global */
- };
+ 	struct kvm_vm *vm;
+ 	struct kvm_run *run;
+ 	struct kvm_s390_mem_op ksmo;
+@@ -47,8 +46,8 @@ int main(int argc, char *argv[])
+ 		maxsize = sizeof(mem1);
  
-@@ -198,6 +194,7 @@ static void sender_guest_code(struct test_data_page *data)
- static void *vcpu_thread(void *arg)
- {
- 	struct thread_params *params = (struct thread_params *)arg;
-+	struct kvm_vcpu *vcpu = params->vcpu;
- 	struct ucall uc;
- 	int old;
- 	int r;
-@@ -206,17 +203,17 @@ static void *vcpu_thread(void *arg)
- 	r = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old);
- 	TEST_ASSERT(r == 0,
- 		    "pthread_setcanceltype failed on vcpu_id=%u with errno=%d",
--		    params->vcpu_id, r);
-+		    vcpu->id, r);
+ 	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
+-	run = vcpu_state(vm, VCPU_ID);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
++	run = vcpu->run;
  
--	fprintf(stderr, "vCPU thread running vCPU %u\n", params->vcpu_id);
--	vcpu_run(params->vm, params->vcpu_id);
--	exit_reason = vcpu_state(params->vm, params->vcpu_id)->exit_reason;
-+	fprintf(stderr, "vCPU thread running vCPU %u\n", vcpu->id);
-+	vcpu_run(vcpu->vm, vcpu->id);
-+	exit_reason = vcpu->run->exit_reason;
+ 	for (i = 0; i < sizeof(mem1); i++)
+ 		mem1[i] = i * i + i;
+@@ -60,10 +59,10 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
  
- 	TEST_ASSERT(exit_reason == KVM_EXIT_IO,
- 		    "vCPU %u exited with unexpected exit reason %u-%s, expected KVM_EXIT_IO",
--		    params->vcpu_id, exit_reason, exit_reason_str(exit_reason));
-+		    vcpu->id, exit_reason, exit_reason_str(exit_reason));
+ 	/* Let the guest code copy the first array to the second */
+-	vcpu_run(vm, VCPU_ID);
++	vcpu_run(vm, vcpu->id);
+ 	TEST_ASSERT(run->exit_reason == KVM_EXIT_S390_SIEIC,
+ 		    "Unexpected exit reason: %u (%s)\n",
+ 		    run->exit_reason,
+@@ -78,7 +77,7 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_READ;
+ 	ksmo.buf = (uintptr_t)mem2;
+ 	ksmo.ar = 0;
+-	vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
  
--	if (get_ucall(params->vm, params->vcpu_id, &uc) == UCALL_ABORT) {
-+	if (get_ucall(vcpu->vm, vcpu->id, &uc) == UCALL_ABORT) {
- 		TEST_ASSERT(false,
- 			    "vCPU %u exited with error: %s.\n"
- 			    "Sending vCPU sent %lu IPIs to halting vCPU\n"
-@@ -224,7 +221,7 @@ static void *vcpu_thread(void *arg)
- 			    "Halter TPR=%#x PPR=%#x LVR=%#x\n"
- 			    "Migrations attempted: %lu\n"
- 			    "Migrations completed: %lu\n",
--			    params->vcpu_id, (const char *)uc.args[0],
-+			    vcpu->id, (const char *)uc.args[0],
- 			    params->data->ipis_sent, params->data->hlt_count,
- 			    params->data->wake_count,
- 			    *params->pipis_rcvd, params->data->halter_tpr,
-@@ -236,7 +233,7 @@ static void *vcpu_thread(void *arg)
- 	return NULL;
- }
+ 	TEST_ASSERT(!memcmp(mem1, mem2, maxsize),
+ 		    "Memory contents do not match!");
+@@ -90,7 +89,7 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = __vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = __vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == E2BIG, "ioctl allows insane sizes");
  
--static void cancel_join_vcpu_thread(pthread_t thread, uint32_t vcpu_id)
-+static void cancel_join_vcpu_thread(pthread_t thread, struct kvm_vcpu *vcpu)
- {
- 	void *retval;
- 	int r;
-@@ -244,12 +241,12 @@ static void cancel_join_vcpu_thread(pthread_t thread, uint32_t vcpu_id)
- 	r = pthread_cancel(thread);
- 	TEST_ASSERT(r == 0,
- 		    "pthread_cancel on vcpu_id=%d failed with errno=%d",
--		    vcpu_id, r);
-+		    vcpu->id, r);
+ 	/* Zero size: */
+@@ -100,7 +99,7 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = __vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = __vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && (errno == EINVAL || errno == ENOMEM),
+ 		    "ioctl allows 0 as size");
  
- 	r = pthread_join(thread, &retval);
- 	TEST_ASSERT(r == 0,
- 		    "pthread_join on vcpu_id=%d failed with errno=%d",
--		    vcpu_id, r);
-+		    vcpu->id, r);
- 	TEST_ASSERT(retval == PTHREAD_CANCELED,
- 		    "expected retval=%p, got %p", PTHREAD_CANCELED,
- 		    retval);
-@@ -415,34 +412,30 @@ int main(int argc, char *argv[])
- 	if (delay_usecs <= 0)
- 		delay_usecs = DEFAULT_DELAY_USECS;
+@@ -111,7 +110,7 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = __vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = __vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows all flags");
  
--	vm = vm_create_default(HALTER_VCPU_ID, 0, halter_guest_code);
--	params[0].vm = vm;
--	params[1].vm = vm;
-+	vm = vm_create_with_one_vcpu(&params[0].vcpu, halter_guest_code);
+ 	/* Bad operation: */
+@@ -121,7 +120,7 @@ int main(int argc, char *argv[])
+ 	ksmo.op = -1;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = __vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = __vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows bad operations");
  
- 	vm_init_descriptor_tables(vm);
--	vcpu_init_descriptor_tables(vm, HALTER_VCPU_ID);
-+	vcpu_init_descriptor_tables(vm, params[0].vcpu->id);
- 	vm_install_exception_handler(vm, IPI_VECTOR, guest_ipi_handler);
+ 	/* Bad guest address: */
+@@ -131,7 +130,7 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 0;
+-	rv = __vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = __vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv > 0, "ioctl does not report bad guest memory access");
  
- 	virt_pg_map(vm, APIC_DEFAULT_GPA, APIC_DEFAULT_GPA);
+ 	/* Bad host address: */
+@@ -141,24 +140,24 @@ int main(int argc, char *argv[])
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = 0;
+ 	ksmo.ar = 0;
+-	rv = __vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = __vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EFAULT,
+ 		    "ioctl does not report bad host memory address");
  
--	vm_vcpu_add(vm, SENDER_VCPU_ID, sender_guest_code);
-+	params[1].vcpu = vm_vcpu_add(vm, 1, sender_guest_code);
+ 	/* Bad access register: */
+ 	run->psw_mask &= ~(3UL << (63 - 17));
+ 	run->psw_mask |= 1UL << (63 - 17);  /* Enable AR mode */
+-	vcpu_run(vm, VCPU_ID);              /* To sync new state to SIE block */
++	vcpu_run(vm, vcpu->id);              /* To sync new state to SIE block */
+ 	ksmo.gaddr = (uintptr_t)mem1;
+ 	ksmo.flags = 0;
+ 	ksmo.size = maxsize;
+ 	ksmo.op = KVM_S390_MEMOP_LOGICAL_WRITE;
+ 	ksmo.buf = (uintptr_t)mem1;
+ 	ksmo.ar = 17;
+-	rv = __vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
++	rv = __vcpu_ioctl(vm, vcpu->id, KVM_S390_MEM_OP, &ksmo);
+ 	TEST_ASSERT(rv == -1 && errno == EINVAL, "ioctl allows ARs > 15");
+ 	run->psw_mask &= ~(3UL << (63 - 17));   /* Disable AR mode */
+-	vcpu_run(vm, VCPU_ID);                  /* Run to sync new state */
++	vcpu_run(vm, vcpu->id);                  /* Run to sync new state */
  
- 	test_data_page_vaddr = vm_vaddr_alloc_page(vm);
--	data =
--	   (struct test_data_page *)addr_gva2hva(vm, test_data_page_vaddr);
-+	data = addr_gva2hva(vm, test_data_page_vaddr);
- 	memset(data, 0, sizeof(*data));
- 	params[0].data = data;
- 	params[1].data = data;
+ 	kvm_vm_free(vm);
  
--	vcpu_args_set(vm, HALTER_VCPU_ID, 1, test_data_page_vaddr);
--	vcpu_args_set(vm, SENDER_VCPU_ID, 1, test_data_page_vaddr);
-+	vcpu_args_set(vm, params[0].vcpu->id, 1, test_data_page_vaddr);
-+	vcpu_args_set(vm, params[1].vcpu->id, 1, test_data_page_vaddr);
- 
- 	pipis_rcvd = (uint64_t *)addr_gva2hva(vm, (uint64_t)&ipis_rcvd);
- 	params[0].pipis_rcvd = pipis_rcvd;
- 	params[1].pipis_rcvd = pipis_rcvd;
- 
- 	/* Start halter vCPU thread and wait for it to execute first HLT. */
--	params[0].vcpu_id = HALTER_VCPU_ID;
- 	r = pthread_create(&threads[0], NULL, vcpu_thread, &params[0]);
- 	TEST_ASSERT(r == 0,
- 		    "pthread_create halter failed errno=%d", errno);
-@@ -462,7 +455,6 @@ int main(int argc, char *argv[])
- 		"Halter vCPU thread reported its APIC ID: %u after %d seconds.\n",
- 		data->halter_apic_id, wait_secs);
- 
--	params[1].vcpu_id = SENDER_VCPU_ID;
- 	r = pthread_create(&threads[1], NULL, vcpu_thread, &params[1]);
- 	TEST_ASSERT(r == 0, "pthread_create sender failed errno=%d", errno);
- 
-@@ -478,8 +470,8 @@ int main(int argc, char *argv[])
- 	/*
- 	 * Cancel threads and wait for them to stop.
- 	 */
--	cancel_join_vcpu_thread(threads[0], HALTER_VCPU_ID);
--	cancel_join_vcpu_thread(threads[1], SENDER_VCPU_ID);
-+	cancel_join_vcpu_thread(threads[0], params[0].vcpu);
-+	cancel_join_vcpu_thread(threads[1], params[1].vcpu);
- 
- 	fprintf(stderr,
- 		"Test successful after running for %d seconds.\n"
 -- 
 2.35.1.723.g4982287a31-goog
 
