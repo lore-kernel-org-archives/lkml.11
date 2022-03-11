@@ -2,123 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA8AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B91C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346128AbiCKD3x (ORCPT
+        id S1346057AbiCKD34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:29:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
+        Thu, 10 Mar 2022 22:29:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346028AbiCKD3m (ORCPT
+        with ESMTP id S1346060AbiCKD3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:29:42 -0500
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082FBEC5D7
+        Thu, 10 Mar 2022 22:29:43 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5965EBB88
         for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:19 -0800 (PST)
-X-QQ-mid: bizesmtp85t1646969247tscer40p
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 11 Mar 2022 11:27:21 +0800 (CST)
-X-QQ-SSF: 01400000002000C0H000000A0000000
-X-QQ-FEAT: Mzskoac49Oix45HU7RpkQ25a/rIjfqz/xgRkOTk+Y7CcKbw/h3EHuchHvEdlb
-        YN24DiTvtEVge8S7aK4kQwchQyKrDxvx1VNqEfkQIrt+wImigdULiJ3EOryxyvIF/NG+0ha
-        UBt61aD3nL4PF/5sMItOvZyBTcYl55U4a279CoBfx6U0u34TdQ7Q7UdhGHhpubR5z/1Ce6t
-        z6ct/d3hBKwL2uXlnUEdySVHF3UkUjDga1LCdAyRhFY24h5Pyq1MDtaJGqJgqqmBiFUia8g
-        +/qXnndJXL4VdQt3YME58G787MOhCea1Cc/WURqTIsl5HwymukdxtgwORTtm3LrdXw5ZkpC
-        BZkeRwiRdqrLVjuYe9GF25I3cda06tv8QDO5Ths5aXavKIcB+TB3ROgaYxCOA==
-X-QQ-GoodBg: 1
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com
-Cc:     linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH v2] Bluetooth: btrtl: btmrvl: Fix firmware filename for rtl chipset
-Date:   Fri, 11 Mar 2022 11:27:20 +0800
-Message-Id: <20220311032720.28499-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
-X-QQ-Bgrelay: 1
+Received: by mail-pg1-x549.google.com with SMTP id p21-20020a631e55000000b00372d919267cso4068576pgm.1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=4wHqQmQYMmlrvs3hNFs3qg3hjBR4lK0MtK0mo5CKbtk=;
+        b=dm/O2RQ0osNZqyPdQT9mVd47I6mZ1PQUwrpx1+f80sVQ/M/bsGsmpwbfFg+/ofwoic
+         na1VFKn6V1/+TNoqFtNHX+vjWsAE8mdaZF//Y2XYPqsnMVvSUDKqQaqJSsPIn4IvS3TT
+         0UKzZGDLGsYzmTWmczT5so8JBiWvcoCCQ4yGUPDkVOZ/0er9d7LCzEe30xbkuFpQdnDv
+         PNzvfSsn73gXvupazH432VmfG8qOnnoEAk5hEOiSX7fbSz+ufvQ28Q7v3h1n7FFRcUN3
+         ghk+vJ5LeKHL7HRR/kL5VgC9ekxzJCcfSfYJgIf3qmmLo1K4mM4SM0HkvuvIlUz4t3lD
+         zyEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=4wHqQmQYMmlrvs3hNFs3qg3hjBR4lK0MtK0mo5CKbtk=;
+        b=gNXxI2mttwmUNzSN7bmGBXlJ49/3uw/CU2Z2K6ZOErlOdQdX1rxpzEgX9ufD6b8UJi
+         VtbWnIecpIyHlw4o1AGX4C+rjxKPSv5GTKOVeZM0wAMksfiy72Ha3QXCPQXlmaqJc4jn
+         m5XpGTr3PcR1INYOHUlGmuXK1B4zPxOsky5Cpn9RTQDeLJAtjBGnh8T+yIh/ymXXdUkn
+         i5u54CILkMZ7TJ3bed+9q2+cLRNKyySQ5+xdrejHBeVwvOVrJm7qyG5aQHtfI7rF6smS
+         p5Wfcj2AMdCfUR+fXyXSL9D+wRguQU5BNgpniEaXdfAAYl+Fgcbfhs0BKLdr21o615E9
+         UPVw==
+X-Gm-Message-State: AOAM533c3fjSsADXsSeGyyl7EOo902beRGNQowj1iQjREDD3zwVO8axR
+        1PcDkx1UIOOtEXrMPmBxcVJQQGKq7+0=
+X-Google-Smtp-Source: ABdhPJyRDLP072Uw4B0sqGdbay9yE4OLa/6LAjtCL6JnJz5Dpd4znMU+cQxDWQlz2yB2sc/JgGetmzRaUNg=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:a8b:b0:4e1:52db:9e5c with SMTP id
+ b11-20020a056a000a8b00b004e152db9e5cmr7945372pfl.38.1646969298739; Thu, 10
+ Mar 2022 19:28:18 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Fri, 11 Mar 2022 03:27:49 +0000
+In-Reply-To: <20220311032801.3467418-1-seanjc@google.com>
+Message-Id: <20220311032801.3467418-10-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220311032801.3467418-1-seanjc@google.com>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH 09/21] KVM: nVMX: Ignore SIPI that arrives in L2 when vCPU is
+ not in WFS
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Firmware for rtl chipset is as part of the linux-firmware repository
-in dir linux-firmware/rtl_bt. Today, the rtl8761a_config,
-rtl8821a_config, rtl8723b_config and rtl8723bs_config files are used
-in btrtl, but it doesn't actually exist, which causes errors like:
+Fall through to handling other pending exception/events for L2 if SIPI
+is pending while the CPU is not in Wait-for-SIPI.  KVM correctly ignores
+the event, but incorrectly returns immediately, e.g. a SIPI coincident
+with another event could lead to KVM incorrectly routing the event to L1
+instead of L2.
 
-bluetooth: Direct firmware load for rtl_bt/rtl8821a_config.bin
-           failed with error -2
-
-According to the files in the rtl_bt directory in the Linux firmware,
-fixes the driver to load correct firmware file for rtl.
-
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Fixes: bf0cd88ce363 ("KVM: x86: emulate wait-for-SIPI and SIPI-VMExit")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- drivers/bluetooth/btrtl.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
-index c2030f7e25b4..e3cfe0dff07d 100644
---- a/drivers/bluetooth/btrtl.c
-+++ b/drivers/bluetooth/btrtl.c
-@@ -88,14 +88,14 @@ static const struct id_table ic_id_table[] = {
- 	  .config_needed = true,
- 	  .has_rom_version = true,
- 	  .fw_name  = "rtl_bt/rtl8723bs_fw.bin",
--	  .cfg_name = "rtl_bt/rtl8723bs_config" },
-+	  .cfg_name = "rtl_bt/rtl8723bs_config-OBDA8723" },
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 53ac6ebb3b3b..b22089ebfe76 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3911,10 +3911,12 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ 			return -EBUSY;
  
- 	/* 8723B */
- 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xb, 0x6, HCI_USB),
- 	  .config_needed = false,
- 	  .has_rom_version = true,
- 	  .fw_name  = "rtl_bt/rtl8723b_fw.bin",
--	  .cfg_name = "rtl_bt/rtl8723b_config" },
-+	  .cfg_name = NULL },
+ 		clear_bit(KVM_APIC_SIPI, &apic->pending_events);
+-		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED)
++		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
+ 			nested_vmx_vmexit(vcpu, EXIT_REASON_SIPI_SIGNAL, 0,
+ 						apic->sipi_vector & 0xFFUL);
+-		return 0;
++			return 0;
++		}
++		/* Fallthrough, the SIPI is completely ignored. */
+ 	}
  
- 	/* 8723D */
- 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xd, 0x8, HCI_USB),
-@@ -116,7 +116,7 @@ static const struct id_table ic_id_table[] = {
- 	  .config_needed = false,
- 	  .has_rom_version = true,
- 	  .fw_name  = "rtl_bt/rtl8821a_fw.bin",
--	  .cfg_name = "rtl_bt/rtl8821a_config" },
-+	  .cfg_name = NULL },
- 
- 	/* 8821C */
- 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xc, 0x8, HCI_USB),
-@@ -131,7 +131,7 @@ static const struct id_table ic_id_table[] = {
- 	  .config_needed = false,
- 	  .has_rom_version = true,
- 	  .fw_name  = "rtl_bt/rtl8761a_fw.bin",
--	  .cfg_name = "rtl_bt/rtl8761a_config" },
-+	  .cfg_name = NULL },
- 
- 	/* 8761B */
- 	{ IC_INFO(RTL_ROM_LMP_8761A, 0xb, 0xa, HCI_UART),
-@@ -921,15 +921,12 @@ MODULE_VERSION(VERSION);
- MODULE_LICENSE("GPL");
- MODULE_FIRMWARE("rtl_bt/rtl8723a_fw.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8723b_fw.bin");
--MODULE_FIRMWARE("rtl_bt/rtl8723b_config.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8723bs_fw.bin");
--MODULE_FIRMWARE("rtl_bt/rtl8723bs_config.bin");
-+MODULE_FIRMWARE("rtl_bt/rtl8723bs_config-OBDA8723.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8723ds_fw.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8723ds_config.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8761a_fw.bin");
--MODULE_FIRMWARE("rtl_bt/rtl8761a_config.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8821a_fw.bin");
--MODULE_FIRMWARE("rtl_bt/rtl8821a_config.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8822b_fw.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8822b_config.bin");
- MODULE_FIRMWARE("rtl_bt/rtl8852au_fw.bin");
+ 	/*
 -- 
-2.20.1
-
-
+2.35.1.723.g4982287a31-goog
 
