@@ -2,105 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348117AbiCKK5W (ORCPT
+        id S1348110AbiCKK7A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:57:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60666 "EHLO
+        Fri, 11 Mar 2022 05:59:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347547AbiCKK5R (ORCPT
+        with ESMTP id S1346129AbiCKK65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:57:17 -0500
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787381BBF40;
-        Fri, 11 Mar 2022 02:56:13 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id E843F5FD03;
-        Fri, 11 Mar 2022 13:56:10 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1646996170;
-        bh=DD/056Xz/HdtVJttGh/0J3YuBHetrOfFSU0k/r+/LWU=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=oygVYYnfmxInViijSb+SiWbY6FDcVbeACrqVXJ5/lj7pzqrJUhON6MRdmOrX5a2BX
-         DeKfafmEVkco3JdxvWnNvbqxJtig5Rd1MZNcP/SjDjAYFgaX0HO2TZhQCjuA04iR0z
-         WcVHnmNFBl8tPFPy5kue7LGFxeI1Njgm+/9ZoHGvriXc1JE55spbw6+lWpOntj5+eC
-         nehQQqH2XgxIcm9CQfl75vAPOG0p2MzNqYQeRxvHzvPCXhSdiqq+UfiMhAjGpg1TsC
-         J8jnPCH3ZoooJMC2N8R4O9MqNrJ6HsgP464NpkFZ/16dn6tdkXqLwvrdLQWVMPPjGt
-         uEafdS1fWAxxA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 11 Mar 2022 13:56:10 +0300 (MSK)
-From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v1 2/3] af_vsock: SOCK_SEQPACKET receive timeout test
-Thread-Topic: [RFC PATCH v1 2/3] af_vsock: SOCK_SEQPACKET receive timeout test
-Thread-Index: AQHYNTaJU61+cjcYFEaSzJHWUZnmpA==
-Date:   Fri, 11 Mar 2022 10:55:42 +0000
-Message-ID: <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
-In-Reply-To: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B649EFA0EFBCF448BF2B340A76F6CAF0@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Fri, 11 Mar 2022 05:58:57 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A692BFBA77;
+        Fri, 11 Mar 2022 02:57:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1646996274; x=1678532274;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3DJWRY8DxKyOlSga9F41zew51/GuSj1jE3Ph1MQJt8Y=;
+  b=o7ebj9CS08+koP150V/bvVKSFP17oPq1gXb293SgV4/TUDZlWXAMefqd
+   QjeOpVFkWUB/xWbd1ARKC7gKbA3nVUvOK1Rd7KWbiPv3PYpOdfJ0s+qP5
+   4kW6m/UaqrqTJDRDU3Udz8HHMu+P/d1MwPjJjNvmxUkR59vAOsM5dTjQH
+   eJoh6aKxtfMUxgiI6h19G+R3kLaiUj+O25Au5hw+StDIBceMZQHj2zs9G
+   c6IU2hy+nc50RG1cldYeF428ytfW6139h9byu9iSxhbojLXetYEy20s0b
+   +G8rZwRgJ6yHm8cQxneg5/Tpb30tvjnvuiXXzE9Uv5CoWOuzGkSSPy+ri
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,173,1643670000"; 
+   d="scan'208";a="22608829"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 11 Mar 2022 11:57:51 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 11 Mar 2022 11:57:51 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 11 Mar 2022 11:57:51 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1646996271; x=1678532271;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3DJWRY8DxKyOlSga9F41zew51/GuSj1jE3Ph1MQJt8Y=;
+  b=YNN0iYzRCHmLitYGgTinhhK1M5AwB2Nrb78y5oKbHqwYImogY2X9CX6l
+   7pLf7XLFEGrValAEsaaQtAs36mIhtQEaPOUsbKyAcvrSWRFNPUAtuK6wV
+   9nrBm52Blrzu+KpCH0bzh/47vzeVzo/q98E03eV0ZK43JA1dULMZ7S2on
+   HtT3enQv48RBQWF56TRFLL4vsS0adUD7O4JfjajefAU8OgGjzKnt2E4We
+   8+vEWYDo41K5G0ET2Ch/bt6eGrbv57UI016ZGD4bfW8iwEeWpIZnBQclQ
+   i31DGCDORaTi5Spx6mtnCiyHBQHUcLBE7Lp9DZ7O9RJZ3PLVbVoJunF4b
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,173,1643670000"; 
+   d="scan'208";a="22608828"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 11 Mar 2022 11:57:51 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id CB1F2280065;
+        Fri, 11 Mar 2022 11:57:50 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Alifer Moraes <alifer.m@variscite.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        eran.m@variscite.com, festevam@gmail.com, kernel@pengutronix.de,
+        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
+        linux-i2c@vger.kernel.org, linux@rempel-privat.de,
+        pierluigi.p@variscite.com, s.hauer@pengutronix.de,
+        shawnguo@kernel.org, gaopan <b54642@freescale.com>,
+        Fugang Duan <B38611@freescale.com>,
+        Vipul Kumar <vipul_kumar@mentor.com>
+Subject: Re: (EXT) [PATCH] i2c: imx: add irqf_no_suspend
+Date:   Fri, 11 Mar 2022 11:57:48 +0100
+Message-ID: <3676803.kQq0lBPeGt@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <20220307143630.28697-1-alifer.m@variscite.com>
+References: <20220307143630.28697-1-alifer.m@variscite.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/11 07:23:00 #18938550
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGVzdCBmb3IgcmVjZWl2ZSB0aW1lb3V0IGNoZWNrOiBjb25uZWN0aW9uIGlzIGVzdGFibGlzaGVk
-LA0KcmVjZWl2ZXIgc2V0cyB0aW1lb3V0LCBidXQgc2VuZGVyIGRvZXMgbm90aGluZy4gUmVjZWl2
-ZXIncw0KJ3JlYWQoKScgY2FsbCBtdXN0IHJldHVybiBFQUdBSU4uDQoNClNpZ25lZC1vZmYtYnk6
-IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KLS0tDQogdG9vbHMv
-dGVzdGluZy92c29jay92c29ja190ZXN0LmMgfCA0OSArKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKw0KIDEgZmlsZSBjaGFuZ2VkLCA0OSBpbnNlcnRpb25zKCspDQoNCmRpZmYgLS1naXQg
-YS90b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2sv
-dnNvY2tfdGVzdC5jDQppbmRleCAyYTM2MzhjMGEwMDguLmFhMmRlMjdkMGY3NyAxMDA2NDQNCi0t
-LSBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jDQorKysgYi90b29scy90ZXN0aW5n
-L3Zzb2NrL3Zzb2NrX3Rlc3QuYw0KQEAgLTM5MSw2ICszOTEsNTAgQEAgc3RhdGljIHZvaWQgdGVz
-dF9zZXFwYWNrZXRfbXNnX3RydW5jX3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRz
-KQ0KIAljbG9zZShmZCk7DQogfQ0KIA0KK3N0YXRpYyB2b2lkIHRlc3Rfc2VxcGFja2V0X3RpbWVv
-dXRfY2xpZW50KGNvbnN0IHN0cnVjdCB0ZXN0X29wdHMgKm9wdHMpDQorew0KKwlpbnQgZmQ7DQor
-CXN0cnVjdCB0aW1ldmFsIHR2Ow0KKwljaGFyIGR1bW15Ow0KKw0KKwlmZCA9IHZzb2NrX3NlcXBh
-Y2tldF9jb25uZWN0KG9wdHMtPnBlZXJfY2lkLCAxMjM0KTsNCisJaWYgKGZkIDwgMCkgew0KKwkJ
-cGVycm9yKCJjb25uZWN0Iik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJdHYu
-dHZfc2VjID0gMTsNCisJdHYudHZfdXNlYyA9IDA7DQorDQorCWlmIChzZXRzb2Nrb3B0KGZkLCBT
-T0xfU09DS0VULCBTT19SQ1ZUSU1FTywgKHZvaWQgKikmdHYsIHNpemVvZih0dikpID09IC0xKSB7
-DQorCQlwZXJyb3IoInNldHNvY2tvcHQgJ1NPX1JDVlRJTUVPJyIpOw0KKwkJZXhpdChFWElUX0ZB
-SUxVUkUpOw0KKwl9DQorDQorCWlmICgocmVhZChmZCwgJmR1bW15LCBzaXplb2YoZHVtbXkpKSAh
-PSAtMSkgfHwNCisJICAgIChlcnJubyAhPSBFQUdBSU4pKSB7DQorCQlwZXJyb3IoIkVBR0FJTiBl
-eHBlY3RlZCIpOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWNvbnRyb2xfd3Jp
-dGVsbigiV0FJVERPTkUiKTsNCisJY2xvc2UoZmQpOw0KK30NCisNCitzdGF0aWMgdm9pZCB0ZXN0
-X3NlcXBhY2tldF90aW1lb3V0X3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0K
-K3sNCisJaW50IGZkOw0KKw0KKwlmZCA9IHZzb2NrX3NlcXBhY2tldF9hY2NlcHQoVk1BRERSX0NJ
-RF9BTlksIDEyMzQsIE5VTEwpOw0KKwlpZiAoZmQgPCAwKSB7DQorCQlwZXJyb3IoImFjY2VwdCIp
-Ow0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWNvbnRyb2xfZXhwZWN0bG4oIldB
-SVRET05FIik7DQorCWNsb3NlKGZkKTsNCit9DQorDQogc3RhdGljIHN0cnVjdCB0ZXN0X2Nhc2Ug
-dGVzdF9jYXNlc1tdID0gew0KIAl7DQogCQkubmFtZSA9ICJTT0NLX1NUUkVBTSBjb25uZWN0aW9u
-IHJlc2V0IiwNCkBAIC00MzEsNiArNDc1LDExIEBAIHN0YXRpYyBzdHJ1Y3QgdGVzdF9jYXNlIHRl
-c3RfY2FzZXNbXSA9IHsNCiAJCS5ydW5fY2xpZW50ID0gdGVzdF9zZXFwYWNrZXRfbXNnX3RydW5j
-X2NsaWVudCwNCiAJCS5ydW5fc2VydmVyID0gdGVzdF9zZXFwYWNrZXRfbXNnX3RydW5jX3NlcnZl
-ciwNCiAJfSwNCisJew0KKwkJLm5hbWUgPSAiU09DS19TRVFQQUNLRVQgdGltZW91dCIsDQorCQku
-cnVuX2NsaWVudCA9IHRlc3Rfc2VxcGFja2V0X3RpbWVvdXRfY2xpZW50LA0KKwkJLnJ1bl9zZXJ2
-ZXIgPSB0ZXN0X3NlcXBhY2tldF90aW1lb3V0X3NlcnZlciwNCisJfSwNCiAJe30sDQogfTsNCiAN
-Ci0tIA0KMi4yNS4xDQo=
+Hallo,
+
+Am Montag, 7. M=E4rz 2022, 15:36:30 CET schrieb Alifer Moraes:
+> From: gaopan <b54642@freescale.com>
+>=20
+> The i2c irq is masked when pcie starts a i2c transfer process
+> during noirq suspend stage. As a result, i2c transfer fails.
+> To solve the problem, IRQF_NO_SUSPEND is added to i2c bus.
+>=20
+> Signed-off-by: Gao Pan <b54642@freescale.com>
+> Signed-off-by: Fugang Duan <B38611@freescale.com>
+> Signed-off-by: Vipul Kumar <vipul_kumar@mentor.com>
+> ---
+>  drivers/i2c/busses/i2c-imx.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/i2c/busses/i2c-imx.c b/drivers/i2c/busses/i2c-imx.c
+> index 27f969b3dc07..fcc09a1e7f44 100644
+> --- a/drivers/i2c/busses/i2c-imx.c
+> +++ b/drivers/i2c/busses/i2c-imx.c
+> @@ -1478,7 +1478,8 @@ static int i2c_imx_probe(struct platform_device *pd=
+ev)
+> goto rpm_disable;
+>=20
+>  	/* Request IRQ */
+> -	ret =3D request_threaded_irq(irq, i2c_imx_isr, NULL, IRQF_SHARED,
+> +	ret =3D request_threaded_irq(irq, i2c_imx_isr, NULL,
+> +				   IRQF_SHARED | IRQF_NO_SUSPEND,
+>  				   pdev->name, i2c_imx);
+>  	if (ret) {
+>  		dev_err(&pdev->dev, "can't claim irq %d\n", irq);
+
+
+I stumbled across Documentation/power/suspend-and-interrupts.rst which stat=
+es:
+> For this reason, using IRQF_NO_SUSPEND and IRQF_SHARED at the
+> same time should be avoided.
+Given this IMHO at least a comment should be inserted why this is fine. I d=
+ont=20
+have a full picture about the situation, but to me it seems there is a=20
+reference missing, or why/how does some PCIe start some I2C transfer when t=
+he
+controller is suspended already? Do I miss something?
+
+Best regards,
+Alexander
+
+
+
