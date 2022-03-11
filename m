@@ -2,106 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B30C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 19:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C9EC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351179AbiCKT6w (ORCPT
+        id S1351147AbiCKUBq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 14:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41272 "EHLO
+        Fri, 11 Mar 2022 15:01:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241078AbiCKT6s (ORCPT
+        with ESMTP id S238731AbiCKUBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 14:58:48 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5C129CA6
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:57:44 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id u3so13546361ljd.0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:57:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wd/VfUESiedi2T20MDzQRQGroPtqGURIlMD0YY8oI7c=;
-        b=Mrv0ya7At6brNnSMetWxGly9F3DEvixI5X0RSd0S2xAl8G8x/qAsW2i4SfvlNRGXmY
-         IJciyrCO4rFR0y1TF0IhVUjhikkLVMgtOCQVeEnv1wi1AL2tDinPKnvD5p9hTSrEBqvo
-         Bais2VxhX6RGbk78jzHb5/kN7xAkSYu0sOREI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wd/VfUESiedi2T20MDzQRQGroPtqGURIlMD0YY8oI7c=;
-        b=UeRPP0fAxnFTxCMoefVgMaMcnl4E8F1TF1CQWocNcE0qsDOQ1FoicC1LRpJW5a3PyX
-         DNo/ZW+pYaS58lylOeYBTNQSPqeLkJFeqTEekhMqjHzqarD4ChAlamVJreaEpJ/R1ExF
-         nMDFWp+n8kOXOG2+VYKpBhJu/hxhc9KXdZc77qz/188rv1lG0EwtrdjkBNaR9R3ij6QH
-         Uz8RFuGrqrvOPhWW+9YSHndY5xNHetJGfx7UTeBxFp7pFj3F50VoJ4MGsgdP9aUBEs6j
-         Nrn5+W7qmwFu9HBiLPePCfpkxWVgokTqEC6upRVBf0DeAoUDQny/VaAKiuVPzTkpb5KM
-         cozg==
-X-Gm-Message-State: AOAM531CjcaD0TO1s7u/Bqzcvr71IwHYiSCZNKXvMRYDD3yMjjcfF2V6
-        ryuIU4Mv+9eHRpbgG0VDCScEKOpAHREwN05jBEQ=
-X-Google-Smtp-Source: ABdhPJzRqIBP/GqAjuhMu77XjTWSSMoSr7Q1d3Ui71GRQZqCTV139jOXmqsdN75m2RC6Z6UZLYbDuw==
-X-Received: by 2002:a05:651c:1503:b0:244:c075:2103 with SMTP id e3-20020a05651c150300b00244c0752103mr6852040ljf.442.1647028662398;
-        Fri, 11 Mar 2022 11:57:42 -0800 (PST)
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
-        by smtp.gmail.com with ESMTPSA id p2-20020a196042000000b00448729bbc48sm596517lfk.82.2022.03.11.11.57.42
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 11:57:42 -0800 (PST)
-Received: by mail-lf1-f41.google.com with SMTP id z11so16805358lfh.13
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:57:42 -0800 (PST)
-X-Received: by 2002:a2e:9904:0:b0:247:ec95:fdee with SMTP id
- v4-20020a2e9904000000b00247ec95fdeemr6789578lji.291.1647028186416; Fri, 11
- Mar 2022 11:49:46 -0800 (PST)
+        Fri, 11 Mar 2022 15:01:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2600F1BFDEC;
+        Fri, 11 Mar 2022 12:00:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 862CFB82CE0;
+        Fri, 11 Mar 2022 20:00:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B7BC340E9;
+        Fri, 11 Mar 2022 20:00:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647028837;
+        bh=TvxVgxvG902p5ANsA/iC3earRyw+vVTX1cKROKGiNFI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UgTXinLpIlSBzQqHijYtsJGrX9FB+JuMlSnN0mz7ExSXSdHSzcSiMu45bW+TkfDlb
+         +L8zp9ft0x73hdPxtx7QpRuSs+veNB9KWwmU6IolZLyqJE8R1YIgUC34gaLUuJ17w8
+         KpU8RQS8Sbh2gYyrCQZpXHfNQ3O4xfp/6J1IQZvcA1pq969ff3wPD8mRSq4Ogdo6ot
+         PsOEdfXx2bqJdGndBwKRak4jM5i1aXIf55GroeIXKTvRT+aL9GSxr7FSYnegEfIZfT
+         jGQERWV9+CKOAltuH5D9vVzKF8K+qNzEBC7aiK0HO+CZRnzv+9WOcGRoqdXQmh7+cx
+         jlKJwrqWy9rPw==
+Date:   Fri, 11 Mar 2022 12:00:34 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Vasily Gorbik <gor@linux.ibm.com>, linux-nvme@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk, hch@lst.de,
+        martin.petersen@oracle.com,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCHv4 6/8] crypto: add rocksoft 64b crc guard tag framework
+Message-ID: <20220311200034.GA413555@dhcp-10-100-145-180.wdc.com>
+References: <20220303201312.3255347-1-kbusch@kernel.org>
+ <20220303201312.3255347-7-kbusch@kernel.org>
+ <your-ad-here.call-01646770901-ext-3299@work.hours>
+ <20220308202747.GA3502158@dhcp-10-100-145-180.wdc.com>
+ <YigzoKRJ1EHFRZY9@sol.localdomain>
+ <20220309193126.GA3950874@dhcp-10-100-145-180.wdc.com>
+ <YikEs7RNgPXTQolv@gmail.com>
+ <20220310153959.GB329710@dhcp-10-100-145-180.wdc.com>
+ <YipFP8B8MxMxTVBR@gmail.com>
 MIME-Version: 1.0
-References: <20220308141437.144919-1-david@redhat.com> <20220308141437.144919-11-david@redhat.com>
- <a0bd6f52-7bb5-0c32-75c8-2c7c592c2d6d@redhat.com> <CAHk-=wjWx_bPBLB=qMMae8Sy3KrO+Kvaf4juPknO5HX-+Ot0XQ@mail.gmail.com>
- <e166e925-508e-3830-574f-59b2d2cf2431@redhat.com>
-In-Reply-To: <e166e925-508e-3830-574f-59b2d2cf2431@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 11 Mar 2022 11:49:30 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiSNvb=0B=QzwCO7Xg6xZPJwe20p8ogsS=iOphkbNsKTw@mail.gmail.com>
-Message-ID: <CAHk-=wiSNvb=0B=QzwCO7Xg6xZPJwe20p8ogsS=iOphkbNsKTw@mail.gmail.com>
-Subject: Re: [PATCH v1 10/15] mm/page-flags: reuse PG_slab as
- PG_anon_exclusive for PageAnon() pages
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YipFP8B8MxMxTVBR@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 11:36 AM David Hildenbrand <david@redhat.com> wrote:
->
-> Yes, but PG_has_hwpoisoned is located on the second subpage of a
-> compound page, not on the head page.
+On Thu, Mar 10, 2022 at 06:36:47PM +0000, Eric Biggers wrote:
+> I think the lib functions should still use native endianness, like what crc32
+> does.
 
-Ahh. Ok, I missed that when just looking at the patch.
+Gotcha, then it should simply be this patch:
 
-I wish we had a different namespace entirely for those separate bits
-or something.
-
-                  Linus
+---
+diff --git a/crypto/testmgr.h b/crypto/testmgr.h
+index f1a22794c404..f9e5f601c657 100644
+--- a/crypto/testmgr.h
++++ b/crypto/testmgr.h
+@@ -3686,11 +3686,11 @@ static const struct hash_testvec crc64_rocksoft_tv_template[] = {
+ 	{
+ 		.plaintext	= zeroes,
+ 		.psize		= 4096,
+-		.digest		= (u8 *)(u64[]){ 0x6482d367eb22b64eull },
++		.digest		= "\x4e\xb6\x22\xeb\x67\xd3\x82\x64",
+ 	}, {
+ 		.plaintext	= ones,
+ 		.psize		= 4096,
+-		.digest		= (u8 *)(u64[]){ 0xc0ddba7302eca3acull },
++		.digest		= "\xac\xa3\xec\x02\x73\xba\xdd\xc0",
+ 	}
+ };
+ 
+--
