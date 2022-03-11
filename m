@@ -2,91 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2995BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E80E1C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348749AbiCKQ7D (ORCPT
+        id S1350302AbiCKQ7r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:59:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        Fri, 11 Mar 2022 11:59:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347005AbiCKQ64 (ORCPT
+        with ESMTP id S1347005AbiCKQ7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 11:58:56 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784F34EA1A
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:57:52 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 0EE921F37F;
-        Fri, 11 Mar 2022 16:57:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647017871; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IgYsa93xt0GY9NquD+Rifu92tu5q759OSHLEWka1V1c=;
-        b=TAQ2zI2PEEPgL4weLoI8+rSAKd9ncxDYA80GxH7LiGLG3ppmFAxcisd/CDUFcyzAecXkDD
-        tWyiBorYE8fJKwjvKvceGJ2ykToOgbJGYTOB66BqxqQwHclOcAIoouJAZAcyNRjwG/iXqn
-        sc74fekLIRG3hVv83iND1rNbFIjXX20=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647017871;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IgYsa93xt0GY9NquD+Rifu92tu5q759OSHLEWka1V1c=;
-        b=7FyObfeCbchdfIZG8lS4jiAmsvDxu5WSuF1V/D7FuDpQNa4Ss8NuJPZV5+too1CH1nnP/Y
-        mqh6P/EA1sV58MAA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C554013A95;
-        Fri, 11 Mar 2022 16:57:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id J5ulLo5/K2KuNQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 11 Mar 2022 16:57:50 +0000
-Message-ID: <28aa571b-6dba-feb0-b888-4d18c9b0ffa1@suse.cz>
-Date:   Fri, 11 Mar 2022 17:57:50 +0100
+        Fri, 11 Mar 2022 11:59:44 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF69665796;
+        Fri, 11 Mar 2022 08:58:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647017920; x=1678553920;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xss8NVffgnDqny0DrevtiFdcFMiLKAGG+aI7RRI/y0o=;
+  b=W8HkTavODK1O+jdAPf65T6PEwVm8q9GoGfDyPv5iG9Pka8s8Un6qtDQB
+   8GKXQXNJiSCWNtV8SEfkQCNnRSvuUQdWLpmaPAzkBnvSkS4Hno9QTlBGg
+   C/ZA8U+Dn4ztRkRsMecaaXQ+d1bCWtUuzFqQmlizy1UXmw9vGcQJRPxHr
+   tKv1WOtCgAdBt8jJv5SXZcVb/DzY10QnbPEkdXz4FEveNKzpAEKY37fSV
+   SszaieKHHlQ5cHA/7mMoClDhf9HKe8rQHd/iKq4iXcqJmaLZX+HTj7OFt
+   xOS4J+IUFGlSzxa80nzGfD7EH6DvKNrncWUYjTeguwZIY9parm+JznW15
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="316330538"
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="316330538"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 08:58:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="548509073"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga007.fm.intel.com with ESMTP; 11 Mar 2022 08:58:37 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSib6-0006nF-Dj; Fri, 11 Mar 2022 16:58:36 +0000
+Date:   Sat, 12 Mar 2022 00:58:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn,
+        sunshouxin@chinatelecom.cn
+Subject: Re: [PATCH 3/3] net:bonding:Add support for IPV6 RLB to balance-alb
+ mode
+Message-ID: <202203120001.k8e1fNyg-lkp@intel.com>
+References: <20220311024958.7458-4-sunshouxin@chinatelecom.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] mm/page_alloc: check high-order pages for corruption
- during PCP operations
-Content-Language: en-US
-To:     Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Hugh Dickins <hughd@google.com>,
-        David Rientjes <rientjes@google.com>
-References: <20220310092456.GJ15701@techsingularity.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220310092456.GJ15701@techsingularity.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311024958.7458-4-sunshouxin@chinatelecom.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/10/22 10:24, Mel Gorman wrote:
-> Eric Dumazet pointed out that commit 44042b449872 ("mm/page_alloc: allow
-> high-order pages to be stored on the per-cpu lists") only checks the head
-> page during PCP refill and allocation operations. This was an oversight
-> and all pages should be checked. This will incur a small performance
-> penalty but it's necessary for correctness.
-> 
-> Fixes: 44042b449872 ("mm/page_alloc: allow high-order pages to be stored on the per-cpu lists")
-> Reported-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-> Acked-by: Eric Dumazet <edumazet@google.com>
+Hi Sun,
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on 2a9eef868a997ec575c2e6ae885e91313f635d59]
+
+url:    https://github.com/0day-ci/linux/commits/Sun-Shouxin/net-bonding-Add-support-for-IPV6-RLB-to-balance-alb-mode/20220311-110221
+base:   2a9eef868a997ec575c2e6ae885e91313f635d59
+config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220312/202203120001.k8e1fNyg-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/dde3df4ab3030a55968f48dc96ff2014d8f18410
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Sun-Shouxin/net-bonding-Add-support-for-IPV6-RLB-to-balance-alb-mode/20220311-110221
+        git checkout dde3df4ab3030a55968f48dc96ff2014d8f18410
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/bonding/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/net/bonding/bond_alb.c:986:6: warning: no previous prototype for 'rlb6_update_client' [-Wmissing-prototypes]
+     986 | void rlb6_update_client(struct rlb_client_info *client_info)
+         |      ^~~~~~~~~~~~~~~~~~
+
+
+vim +/rlb6_update_client +986 drivers/net/bonding/bond_alb.c
+
+   984	
+   985	/*********************** ipv6 rlb specific functions ***************************/
+ > 986	void rlb6_update_client(struct rlb_client_info *client_info)
+   987	{
+   988		int i;
+   989	
+   990		if (!client_info->slave || !is_valid_ether_addr(client_info->mac_dst))
+   991			return;
+   992	
+   993		for (i = 0; i < RLB_ARP_BURST_SIZE; i++) {
+   994			ndisc_bond_send_na(client_info->slave->dev,
+   995					   &client_info->ip6_dst,
+   996					   &client_info->ip6_src,
+   997					   false, false, true, true,
+   998					   client_info->vlan_id,
+   999					   client_info->mac_dst,
+  1000					   client_info->slave->dev->dev_addr);
+  1001		}
+  1002	}
+  1003	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
