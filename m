@@ -2,134 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FD8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 435CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbiCKWsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:48:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
+        id S229910AbiCKWta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:49:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiCKWsm (ORCPT
+        with ESMTP id S229745AbiCKWtU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:48:42 -0500
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C3325ECB4;
-        Fri, 11 Mar 2022 14:23:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1647034001; bh=7WkCBki01o3cgWpYVtHrHq4muPjNKx9mmNTlevvNUDM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Xi29xZzNV8VdAfnPq3bwoIDchffnvxI7Czcpvx1uMa9qcPtCItKCDtsGHx3aq4z2v
-         NjyewKqy/TT9vzHd1E/bpvL1vkOHnzUqLImJLNKi/u4FepwOyHd2rcQIiAokmb9mwN
-         AE7ayxffj0ZOieR0TVmuPLnjZqgR3YxJTy56HLlknEv2/dA+qUO9JtmBVegc/89y9O
-         FTVOYDQdy20xjiXNo+m/aZsJI40OZD5fDyKMeomqh/gxU2UUGjybB54TnhqxKPz1Po
-         SQ/4OfXnHNrB0mqydQcS0Z48Amg7kSqN4ExVAseV8RCYFK6nF3D7ixUaz7V62Qwe+A
-         1B/WNWgTNx+Zg==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 5B80E39EB7A;
-        Fri, 11 Mar 2022 21:26:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1647034001; bh=7WkCBki01o3cgWpYVtHrHq4muPjNKx9mmNTlevvNUDM=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Xi29xZzNV8VdAfnPq3bwoIDchffnvxI7Czcpvx1uMa9qcPtCItKCDtsGHx3aq4z2v
-         NjyewKqy/TT9vzHd1E/bpvL1vkOHnzUqLImJLNKi/u4FepwOyHd2rcQIiAokmb9mwN
-         AE7ayxffj0ZOieR0TVmuPLnjZqgR3YxJTy56HLlknEv2/dA+qUO9JtmBVegc/89y9O
-         FTVOYDQdy20xjiXNo+m/aZsJI40OZD5fDyKMeomqh/gxU2UUGjybB54TnhqxKPz1Po
-         SQ/4OfXnHNrB0mqydQcS0Z48Amg7kSqN4ExVAseV8RCYFK6nF3D7ixUaz7V62Qwe+A
-         1B/WNWgTNx+Zg==
-Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi [88.113.46.102])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.mleia.com (Postfix) with ESMTPSA id E338D39EB79;
-        Fri, 11 Mar 2022 21:26:40 +0000 (UTC)
-Subject: Re: [PATCH v2 3/3] ARM: dts: lpc32xx: Update spi clock properties
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220311093800.18778-1-singh.kuldeep87k@gmail.com>
- <20220311093800.18778-4-singh.kuldeep87k@gmail.com>
- <4aae560d-d266-d0d0-136f-32891b15bc01@mleia.com>
- <CAK8P3a3a_WXbDKN-jJUt_Wuvop0rfaUs4ytwyhogOxdtJAPx0w@mail.gmail.com>
- <4f39f086-1932-1729-8761-d5c533356812@mleia.com>
- <2f53f17a-427c-62d6-a0c6-4a3962ab01f0@canonical.com>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-Message-ID: <9f4e3cdc-f5e2-7102-949e-7b3032118e63@mleia.com>
-Date:   Fri, 11 Mar 2022 23:26:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Fri, 11 Mar 2022 17:49:20 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C0F1587BF;
+        Fri, 11 Mar 2022 14:23:16 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id r11so11727895ioh.10;
+        Fri, 11 Mar 2022 14:23:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c1oesbnKmDcQXvY8yfzmiNzpMiDAOHp1ykwgmMM9nlA=;
+        b=iwTjtfvGojQ9KUq3c8HJ/wzYbGP8a7/Q5qUFesXx9rh96Q/IUb6knVDfAhWgIKOOZj
+         EykXMAr7pZKSKyL2yqW0e33Zt4QxbhU8vN5MCcWydDoUn2zuAJ4DKbHhN6cQE6lkyd+I
+         m93QcP7aAxT9Zjvn+iCiQB35YqHSNwMuprvXouukaGiwns8vKOrC8cN5Ai3HEFK9mGMG
+         7guuT8T3tNFNKY+brnd3DwrJyAU/s9eUb/12MTPQ0hcISikHC7fFdSJ3n+Q4UkZy6YXm
+         AuvwSu+To65uNZCioQlzvn9BSb4AbGotlELegsJx3oWVWkH648eaRgdpyf1Q1PIMgcS8
+         1C7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c1oesbnKmDcQXvY8yfzmiNzpMiDAOHp1ykwgmMM9nlA=;
+        b=d4VOIY3XVcygor5ePqjy0LsigTK0XZJBT7yTAYCeor45tRnkQDT7j2kQuNF8kQA7Q4
+         tJX68cAQcHz4rb51F55z8Bf17ZEa5EWkr1SX/VzdeX8s+qJgJ7teUzthOf8iDZKfhUV7
+         OeJpkoru51eLKAYRt+UhqwZOwOMymJeVy6ZZH7p5q1/VOMqQTSUluPddgbjoM5Tsh/Pr
+         oFAqu0yq6YXE/+aVbAAPCgX5vS+Ag30q7tzoVfnWuCV1vy+VH4h9cZskUegKFgFpga2T
+         2QuOpPrgt1YdwRL8Ii7+AV8i1VUMiqVCUFCal16evPwdSDKGKEPiST3Vrj1VwNKUCXcB
+         R2aA==
+X-Gm-Message-State: AOAM530pNmnVO5WIQby6/6J20fc6RPfWrft4Tbq7oal2f4RMqNptP387
+        DtsD+MzVLmEEFLNBhvDWAr7+oKwUvRJapAtU4Rc=
+X-Google-Smtp-Source: ABdhPJxkLN6itSSQGHJQzD9aspp0hOVSsIwmlG2LO+lBCNVlra1XsQGYdTFQvWXM6bMb8lIqj26JC8xgMJsNUQBtI/I=
+X-Received: by 2002:a05:6602:185a:b0:645:d914:35e9 with SMTP id
+ d26-20020a056602185a00b00645d91435e9mr9402831ioi.154.1647037395766; Fri, 11
+ Mar 2022 14:23:15 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <2f53f17a-427c-62d6-a0c6-4a3962ab01f0@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20220311_212641_399648_0507643B 
-X-CRM114-Status: GOOD (  20.91  )
+References: <20220310082202.1229345-1-namhyung@kernel.org> <20220310082202.1229345-2-namhyung@kernel.org>
+In-Reply-To: <20220310082202.1229345-2-namhyung@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 11 Mar 2022 14:23:04 -0800
+Message-ID: <CAEf4BzZUEvCqz-zGdKAeyg3vywEEnFWuZ4Q446BrTGOsFqNqyQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] bpf/selftests: Test skipping stacktrace
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Eugene Loh <eugene.loh@oracle.com>, Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/11/22 4:33 PM, Krzysztof Kozlowski wrote:
-> On 11/03/2022 15:07, Vladimir Zapolskiy wrote:
->> On 3/11/22 3:38 PM, Arnd Bergmann wrote:
->>> On Fri, Mar 11, 2022 at 2:20 PM Vladimir Zapolskiy <vz@mleia.com> wrote:
->>>>
->>>> On 3/11/22 11:38 AM, Kuldeep Singh wrote:
->>>>> PL022 binding require two clocks to be defined but lpc platform doesn't
->>>>> comply with bindings and define only one clock i.e apb_pclk.
->>>>>
->>>>> Update spi clocks and clocks-names property by adding appropriate clock
->>>>> reference to make it compliant with bindings.
->>>>>
->>>>> CC: Vladimir Zapolskiy <vz@mleia.com>
->>>>> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
->>>>> ---
->>>>> v2:
->>>>> - New patch with similar changeset
->>>>> - Send to soc ML
->>>>>
->>>>>     arch/arm/boot/dts/lpc32xx.dtsi | 8 ++++----
->>>>>     1 file changed, 4 insertions(+), 4 deletions(-)
->>>>>
->>>>> diff --git a/arch/arm/boot/dts/lpc32xx.dtsi b/arch/arm/boot/dts/lpc32xx.dtsi
->>>>> index c87066d6c995..30958e02d5e2 100644
->>>>> --- a/arch/arm/boot/dts/lpc32xx.dtsi
->>>>> +++ b/arch/arm/boot/dts/lpc32xx.dtsi
->>>>> @@ -178,8 +178,8 @@ ssp0: spi@20084000 {
->>>>>                                 compatible = "arm,pl022", "arm,primecell";
->>>>>                                 reg = <0x20084000 0x1000>;
->>>>>                                 interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
->>>>> -                             clocks = <&clk LPC32XX_CLK_SSP0>;
->>>>> -                             clock-names = "apb_pclk";
->>>>> +                             clocks = <&clk LPC32XX_CLK_SSP0>, <&clk LPC32XX_CLK_SSP0>;
->>>>> +                             clock-names = "sspclk", "apb_pclk";
->>>>
->>>> In fact I'm uncertain if it is the right change, could it happen that the commit
->>>> cc0f6e96c4fd ("spi: dt-bindings: Convert Arm pl022 to json-schema") sets a wrong
->>>> schema pattern?
->>>
->>> Good pointm this doesn't quite seem right: it is unlikely that the same clock
->>> is used for both the SPI bus and the APB bus.
->>>
->>>> Apparently just one clock is wanted on all observed platforms and cases, this
->>>> is implicitly confirmed by clock handling in the drivers/spi/spi-pl022.c :
->>>>
->>>>           pl022->clk = devm_clk_get(&adev->dev, NULL);
->>>>
->>>> So, I would vote to fix the device tree bindings schema.
-> 
-> Drivers do not describe the hardware. Bindings should not be modeled on
-> drivers, but on actual hardware, so the example is not convincing.
+On Thu, Mar 10, 2022 at 12:22 AM Namhyung Kim <namhyung@kernel.org> wrote:
+>
+> Add a test case for stacktrace with skip > 0 using a small sized
+> buffer.  It didn't support skipping entries greater than or equal to
+> the size of buffer and filled the skipped part with 0.
+>
+> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> ---
+>  .../bpf/prog_tests/stacktrace_map_skip.c      | 72 ++++++++++++++++
+>  .../selftests/bpf/progs/stacktrace_map_skip.c | 82 +++++++++++++++++++
+>  2 files changed, 154 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/stacktrace_map_skip.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c
+> new file mode 100644
+> index 000000000000..bcb244aa3c78
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_map_skip.c
+> @@ -0,0 +1,72 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <test_progs.h>
+> +#include "stacktrace_map_skip.skel.h"
+> +
+> +#define TEST_STACK_DEPTH  2
+> +
+> +void test_stacktrace_map_skip(void)
+> +{
+> +       struct stacktrace_map_skip *skel;
+> +       int control_map_fd, stackid_hmap_fd, stackmap_fd, stack_amap_fd;
+> +       int err, stack_trace_len;
+> +       __u32 key, val, duration = 0;
+> +
+> +       skel = stacktrace_map_skip__open_and_load();
+> +       if (CHECK(!skel, "skel_open_and_load", "skeleton open failed\n"))
+> +               return;
+> +
+> +       /* find map fds */
+> +       control_map_fd = bpf_map__fd(skel->maps.control_map);
+> +       if (CHECK_FAIL(control_map_fd < 0))
+> +               goto out;
+> +
+> +       stackid_hmap_fd = bpf_map__fd(skel->maps.stackid_hmap);
+> +       if (CHECK_FAIL(stackid_hmap_fd < 0))
+> +               goto out;
+> +
+> +       stackmap_fd = bpf_map__fd(skel->maps.stackmap);
+> +       if (CHECK_FAIL(stackmap_fd < 0))
+> +               goto out;
+> +
+> +       stack_amap_fd = bpf_map__fd(skel->maps.stack_amap);
+> +       if (CHECK_FAIL(stack_amap_fd < 0))
+> +               goto out;
+> +
+> +       err = stacktrace_map_skip__attach(skel);
+> +       if (CHECK(err, "skel_attach", "skeleton attach failed\n"))
+> +               goto out;
+> +
+> +       /* give some time for bpf program run */
+> +       sleep(1);
+> +
+> +       /* disable stack trace collection */
+> +       key = 0;
+> +       val = 1;
+> +       bpf_map_update_elem(control_map_fd, &key, &val, 0);
+> +
+> +       /* for every element in stackid_hmap, we can find a corresponding one
+> +        * in stackmap, and vise versa.
+> +        */
+> +       err = compare_map_keys(stackid_hmap_fd, stackmap_fd);
+> +       if (CHECK(err, "compare_map_keys stackid_hmap vs. stackmap",
+> +                 "err %d errno %d\n", err, errno))
+> +               goto out;
+> +
+> +       err = compare_map_keys(stackmap_fd, stackid_hmap_fd);
+> +       if (CHECK(err, "compare_map_keys stackmap vs. stackid_hmap",
+> +                 "err %d errno %d\n", err, errno))
+> +               goto out;
+> +
+> +       stack_trace_len = TEST_STACK_DEPTH * sizeof(__u64);
+> +       err = compare_stack_ips(stackmap_fd, stack_amap_fd, stack_trace_len);
+> +       if (CHECK(err, "compare_stack_ips stackmap vs. stack_amap",
+> +                 "err %d errno %d\n", err, errno))
+> +               goto out;
+> +
+> +       if (CHECK(skel->bss->failed, "check skip",
+> +                 "failed to skip some depth: %d", skel->bss->failed))
+> +               goto out;
+> +
+> +out:
+> +       stacktrace_map_skip__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/stacktrace_map_skip.c b/tools/testing/selftests/bpf/progs/stacktrace_map_skip.c
+> new file mode 100644
+> index 000000000000..323248b17ae4
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/stacktrace_map_skip.c
+> @@ -0,0 +1,82 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <vmlinux.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#define TEST_STACK_DEPTH         2
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> +       __uint(max_entries, 1);
+> +       __type(key, __u32);
+> +       __type(value, __u32);
+> +} control_map SEC(".maps");
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_HASH);
+> +       __uint(max_entries, 16384);
+> +       __type(key, __u32);
+> +       __type(value, __u32);
+> +} stackid_hmap SEC(".maps");
+> +
+> +typedef __u64 stack_trace_t[TEST_STACK_DEPTH];
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_STACK_TRACE);
+> +       __uint(max_entries, 16384);
+> +       __type(key, __u32);
+> +       __type(value, stack_trace_t);
+> +} stackmap SEC(".maps");
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> +       __uint(max_entries, 16384);
+> +       __type(key, __u32);
+> +       __type(value, stack_trace_t);
+> +} stack_amap SEC(".maps");
+> +
+> +/* taken from /sys/kernel/debug/tracing/events/sched/sched_switch/format */
+> +struct sched_switch_args {
+> +       unsigned long long pad;
+> +       char prev_comm[TASK_COMM_LEN];
+> +       int prev_pid;
+> +       int prev_prio;
+> +       long long prev_state;
+> +       char next_comm[TASK_COMM_LEN];
+> +       int next_pid;
+> +       int next_prio;
+> +};
+> +
+> +int failed = 0;
+> +
+> +SEC("tracepoint/sched/sched_switch")
+> +int oncpu(struct sched_switch_args *ctx)
+> +{
+> +       __u32 max_len = TEST_STACK_DEPTH * sizeof(__u64);
+> +       __u32 key = 0, val = 0, *value_p;
+> +       __u64 *stack_p;
+> +
 
-My concern is that fixing the bindings can break the driver and all its users,
-is it clear enough how it can happen in assumption that the driver uses just
-one clock at the moment?
+please also add filtering by PID to avoid interference from other
+selftests when run in parallel mode
 
---
-Best wishes,
-Vladimir
+> +       value_p = bpf_map_lookup_elem(&control_map, &key);
+> +       if (value_p && *value_p)
+> +               return 0; /* skip if non-zero *value_p */
+> +
+> +       /* it should allow skipping whole buffer size entries */
+> +       key = bpf_get_stackid(ctx, &stackmap, TEST_STACK_DEPTH);
+> +       if ((int)key >= 0) {
+> +               /* The size of stackmap and stack_amap should be the same */
+> +               bpf_map_update_elem(&stackid_hmap, &key, &val, 0);
+> +               stack_p = bpf_map_lookup_elem(&stack_amap, &key);
+> +               if (stack_p) {
+> +                       bpf_get_stack(ctx, stack_p, max_len, TEST_STACK_DEPTH);
+> +                       /* it wrongly skipped all the entries and filled zero */
+> +                       if (stack_p[0] == 0)
+> +                               failed = 1;
+> +               }
+> +       } else if ((int)key == -14/*EFAULT*/) {
+> +               /* old kernel doesn't support skipping that many entries */
+> +               failed = 2;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
+> --
+> 2.35.1.723.g4982287a31-goog
+>
