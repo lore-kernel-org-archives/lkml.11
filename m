@@ -2,108 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65386C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347532AbiCKJeO (ORCPT
+        id S1347535AbiCKJfW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:34:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
+        Fri, 11 Mar 2022 04:35:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347477AbiCKJeM (ORCPT
+        with ESMTP id S1343959AbiCKJfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:34:12 -0500
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F711BE0DE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 01:33:09 -0800 (PST)
-Received: by mail-qv1-xf32.google.com with SMTP id e22so6556297qvf.9
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 01:33:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=vpPcHMluYAXV8Paw7JGI4S73DN1T1jhxT9j/EEXlW3Q=;
-        b=mp3Eia2dyVOCG0jbYGZw65g85ozfSFa31ZZnBTRpOm+QoI1uYrxH7NMKYYBAZ2OZBy
-         xIzHAKF98navsEfg8UdZd3RyGPRiL0EDWgCatPtRH19MJXQ/8R/nuigafMDRjL1wBmGe
-         Y7AldwHbOXRuAjwnbpFrLmvU1uSZNiWR0J+C3UgZm3zakPqlRLp8/4UupqdWDG5ZNAAS
-         2qE/5gL+ttv6Rcl6iITcIe2xEGKDFtcX/3GCutQnN8xcYqDvNIHOXqPKoGFcEEokRKkY
-         Q1G1/QwmgSi1JA99opOxjStXLjHYe6KZ3dpi5ofoh37oHmYh4CFpTeyyCal5+YuYx9ex
-         1fng==
+        Fri, 11 Mar 2022 04:35:19 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F701BE0E5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 01:34:17 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E41663F1F6
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:34:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646991255;
+        bh=TipXjTJr6+EeQa1Bn0UjvOBERTURaDG374mBi9nTu7o=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=uifZArCv0iwnkHdcXum0bCTJVN8oMWgw/8wRlvJyNtAgnyYa2+whlNOOSxZ3Q/Tgo
+         +eJ6K8KOE7r6g9bjgSuZS4t3VzlCWErJcZPZyeZlsJScyqFh7vmNjZSm8rETMRMeek
+         PmF7acPBHphdp1MWEHkA5YW3Va6Tv1BLrlmfS5HWVOouk/foINRTqhJEt9shG9AX7F
+         uvmD+OemuOB3nJdQLZ+b4QlNOEUz0O3RrQrYOlJ8DrX3YKjMa684RCT6yHk+zPRHKd
+         KrNfPOFQfxT+GZHIQ1F9Apjb/jm4d9UPTF1DpM5hEUUSC7ESF8KSTkCIsDTG8BNJ2c
+         3GbePv2lh7S5Q==
+Received: by mail-ed1-f69.google.com with SMTP id da28-20020a056402177c00b00415ce4b20baso4551109edb.17
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 01:34:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=vpPcHMluYAXV8Paw7JGI4S73DN1T1jhxT9j/EEXlW3Q=;
-        b=oeR/5n95ANWXlEQsTawDl/2MHYWoqb2WFtotL4SaxpjEJiSKB2l8qx+ouBV1agFg3r
-         2KTYTfcEtLqyzsg/DRq5azg+bf+9Y72CNTikljWG+buLKCUIqDqfckNsL7Jr81kqnI69
-         c2MhAqRpsszbqmEB4tGa6+yH4JMUqdMeezl7cOjfpiupte/ylM29cRVRuj3ERjOfg8WN
-         FlejFXODL9XPKdaH4ecg10bwEPVVKq2NQ6BnQqDaBdTRxpafVjqz1jdCoDqweS2gakqC
-         HvLy8Oqz5rYmi6sRJGgZbarB/+Z93R95P/9ZrOlP16hPm/6xl07kTnm0r+bRcUPMP7Of
-         r1kA==
-X-Gm-Message-State: AOAM530Dw5B0Wg7ZQTWWuh8KlRUfZcoffme1WDn4g86wbc1/B7LbPmGL
-        mufpiOisZoTc7Cfnm0TCWlAN3g==
-X-Google-Smtp-Source: ABdhPJztjI+5fmqkcecCbEwAfuR6OVRvwXzRVXtMyeIKy8MrkXPdGDcy5hhoOnlr178M2Z/mxeqCCg==
-X-Received: by 2002:ad4:5dca:0:b0:43c:5758:480a with SMTP id m10-20020ad45dca000000b0043c5758480amr493049qvh.77.1646991187966;
-        Fri, 11 Mar 2022 01:33:07 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id y196-20020a3764cd000000b0067d51bbacdfsm2184830qkb.107.2022.03.11.01.33.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 01:33:07 -0800 (PST)
-Date:   Fri, 11 Mar 2022 01:33:05 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Liam Howlett <liam.howlett@oracle.com>
-cc:     Vlastimil Babka <vbabka@suse.cz>, Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>
-Subject: Re: [PATCH mmotm] mempolicy: mbind_range() set_policy() after
- vma_merge()
-In-Reply-To: <20220309191023.34fmzibc2u5tcinw@revolver>
-Message-ID: <d8bbd273-5d64-c826-fae2-3e399eefcf@google.com>
-References: <319e4db9-64ae-4bca-92f0-ade85d342ff@google.com> <20220304184927.vkq6ewn6uqtcesma@revolver> <20220304190531.6giqbnnaka4xhovx@revolver> <6038ebc2-bc88-497d-a3f3-5936726fb023@google.com> <20220305020021.qmwg5dkham4lyz6v@revolver>
- <29eac73-4f94-1688-3834-8bd6687a18@google.com> <20220308160552.d3dlcaclkqnlkzzj@revolver> <6036627b-6110-cc58-ca1-a6f736553dd@google.com> <105e1620-5cf2-fecd-27e7-21a6045cc3ac@suse.cz> <20220309191023.34fmzibc2u5tcinw@revolver>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=TipXjTJr6+EeQa1Bn0UjvOBERTURaDG374mBi9nTu7o=;
+        b=nUqCWgnk9kz5PAl6ei2Ua3B097ydKwB2b+5tyws1I2MoJXlL9Eas+FvnUumKg8oAoA
+         mM1w9PfzGF/rxcqJUAzaH4DeAOHfZyUI4o2CAPp8BvDiCCo5bfWjo3hE4yCg5gYuTQbd
+         daVvr8VR4kKLcOJeAyPgAX7fd0xnAFPDO1e4p86B3SbG13rB8ytRi5csQNkl3bM7liHa
+         lfxwmjVROOr9FRK/SFeuuhGKsCypvw0GiJE5XeEOEIPVZ/m5XEECoU0r3asnILd/sRt+
+         8gMEyudyoGtMHx5aZ2/eYjzUzkRqflUBfx9ysB5JVkyWHLovrwORZYe6mZ2LuvsKWAPF
+         kOQg==
+X-Gm-Message-State: AOAM5316eUqfJasItcvm9vHwDARJ11D2d9E1U6rUARBeYpRcjh0c7c+p
+        M2HTVFmjkbArBsiyxxW7cK6bcSk25DfDXeRxcJdBmS833pc8fg+2sNWVlJzC5i2149Bq37gJxu9
+        owXqldEJ6JOZAidk7xC+8Lc/76TePFZMSRfP7BOvqWw==
+X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id q7-20020a1709064cc700b006d07efb049fmr7590407ejt.639.1646991255640;
+        Fri, 11 Mar 2022 01:34:15 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwilYeVFSbzYfGvwO8uQk/e6hBMqrA9GTqbIJ9dpK4F5E1UIJiiyc95/4j9Z0RvNcy8yn3Q2A==
+X-Received: by 2002:a17:906:4cc7:b0:6d0:7efb:49f with SMTP id q7-20020a1709064cc700b006d07efb049fmr7590387ejt.639.1646991255451;
+        Fri, 11 Mar 2022 01:34:15 -0800 (PST)
+Received: from [192.168.0.148] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id q11-20020a170906144b00b006cf61dfb03esm2718313ejc.62.2022.03.11.01.34.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 01:34:14 -0800 (PST)
+Message-ID: <c6309ed8-6e74-67d3-304a-f5399d16cc37@canonical.com>
+Date:   Fri, 11 Mar 2022 10:34:14 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 06/10] dt-bindings: watchdog: Add HPE GXP Watchdog
+ timer binding
+Content-Language: en-US
+To:     nick.hawkins@hpe.com, verdun@hpe.com
+Cc:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220310195229.109477-1-nick.hawkins@hpe.com>
+ <20220310195229.109477-6-nick.hawkins@hpe.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220310195229.109477-6-nick.hawkins@hpe.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Mar 2022, Liam Howlett wrote:
-> * Vlastimil Babka <vbabka@suse.cz> [220309 07:41]:
-> > On 3/8/22 22:32, Hugh Dickins wrote:
-> > 
-> > > Does that help?
+On 10/03/2022 20:52, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
 > 
-> I think so.  You want to set the mpol the same across the vma because we
-> are specifically calling mbind, but it isn't necessary because the mpol
-> is equivalent but not the same mpol?
+> Add the hpe gxp watchdog timer binding hpe,gxp-wdt.
+> This will enable support for the HPE GXP Watchdog
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> ---
+>  .../bindings/watchdog/hpe,gxp-wdt.yaml        | 37 +++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> new file mode 100644
+> index 000000000000..6044496b4968
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/watchdog/hpe,gxp-wdt.yaml
+> @@ -0,0 +1,37 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/watchdog/hpe,gxp-wdt.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: HPE GXP Controlled Watchdog
+> +
+> +allOf:
+> +  - $ref: "watchdog.yaml#"
+> +
+> +maintainers:
+> +  - Nick Hawkins <nick.hawkins@hpe.com>
+> +  - Jean-Marie Verdun <verdun@hpe.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: hpe,gxp-wdt
+> +
+> +  reg:
+> +    items:
+> +      - description: WDGRST register
+> +      - description: WDGCS register
 
-I did not understand that logic, so cannot confirm it.
+Why are you mapping each register instead of entire address space? It
+won't scale if your new design comes with 10 registers...
 
-The crucial point, as I see it, is that a call to shmem_set_policy() was
-needed in many cases, but had been "optimized away" by the mpol_equal test.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    watchdog0:  watchdog@c0000090 {
 
-> I guess I have the same question
-> as Vlastimil brought up - why does tmpfs need this?
+Skip the label. You also have there double space between label and node
+name.
 
-One way of answering would be: because tmpfs is used to back SysV SHM,
-and "man 2 mbind" has a paragraph on the subject of mbind on a shared
-memory region created using the shmget(2) system call.
-
-Or you could look in Documentation/admin-guide/mm/numa_memory_policy.rst,
-section on "Shared Policy".  (But it's a surprise to me to see how that
-makes no mention of tmpfs itself: it's as if it's just an accident that
-this is how NUMA mempolicy is applied to mappings of tmpfs files.)
-
-An important comment from ChangeLog-2.6.7 when mm/mempolicy.c came in:
-For shmfs/tmpfs/hugetlbfs shared memory the policy is shared between
-all users and remembered even when nobody has memory mapped.
-
-(But although hugetlbfs support was intended in the original RFC to lkml,
-it was never implemented in the tree, despite appearances: a patch I did
-not send this time, but eventually will, removes the appearance of shared
-mempolicy on hugetlbfs.)
-
-Hugh
+Best regards,
+Krzysztof
