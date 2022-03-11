@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0216AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:29:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346152AbiCKDat (ORCPT
+        id S1346218AbiCKDaz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:30:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
+        Thu, 10 Mar 2022 22:30:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346137AbiCKDaD (ORCPT
+        with ESMTP id S1346168AbiCKD3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:30:03 -0500
+        Thu, 10 Mar 2022 22:29:50 -0500
 Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF84F65C4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:37 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id p8-20020a17090a74c800b001bf257861efso7072786pjl.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314FBF4602
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:30 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id x6-20020a17090aa38600b001c227fbfbc5so1268717pjp.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=/e3NuCK6DEBMSiOBllCLklyOmWNes/4L3RuR/tOp3B8=;
-        b=XOLboWLfFXbX2EXQeMjKwLV6hLREdiguZxYDnuFwBuG0g6/gIna0YR6QYqHT4p1+Ai
-         iuUn2KTOej2omvllKM73JZYbjdxE9EH2tCjvi9lMJi4tpV79z7foRGjphhTiEluZfi32
-         v7zz4eqgOYJ6sYADUd7RxRMgZDcQveHCFUYvcM667PaA6vbJDeify+PRBuO2MYkw3A9/
-         EXxs4MwG7h/dawghwislfrsuM2lVM/v/qYmsDiB2dm2BMQ/HkDN7Qk/E+fpqYzqWI2er
-         cbNwr9ZB7LEzUgD3U1/FlnhvlNTrPWhgmTv2u3Fqr82M/xVRU6OPPp8OsAXk7bNyYnAp
-         osIw==
+        bh=/3hTzlaDbI+285CROy2A1iE61ckSvYZ31v9FVpbRb8s=;
+        b=UX1w/P7jg1a798gyvWXu1wypx7wjM/pHwylJXYUX138rvUTE46OHEe6KKLLOy83Bi1
+         IM0oPux+Lp3TbcuqMvJEZ3/pb77EFhen/M3xXOxjgRmTgJ9QcKNl3RNoWufP/tH9tAvG
+         Dwl99UB0XD8Oo7KlvGMsmYJ8xNf3UGsO0bhsXzQkJ7w6IFAbLbvJ3ZmaQZ+DaT3qbn+C
+         qt3Mhzh88XlbQL2fdRPv96/xDlcNc3XkUb8oBgzfREcXxcRry8GL0uinjqpchEMG0fva
+         eOr6a1JabfQu05p6PpLiVxdYsAvpshzxeDB5AsPtFFVo5629JXMgCLTbQ7rXIHLQ62rx
+         RUkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=/e3NuCK6DEBMSiOBllCLklyOmWNes/4L3RuR/tOp3B8=;
-        b=p/o3Wq8/gDZkzpuYCKMowSvOP6xsUqeN4RzIXMBoKvMv+nQooTFP7PqTBSHb286oag
-         HBSvN/fur9pvuIScPWuF0MyLjOJ0tLS1E0/tHkinGN6D4Tb8YPqlgUE8b4Aea7vYqvM1
-         S+AiweqP6s0Nlor2Q5neSaEE5TrHQJJenJPVp+Qh5LmirBuHtwDZFoNuAUrBtS8DWjWj
-         hAq1blKQ5bYVC+rot/VuqHgotHQ7IRhpp0D1gZsJunNrwKnXBiaFuQOvqxW8V5QC5K76
-         LL9DpKvNXvxZ2ugQnQ4N+OayGoNf0hCbRNnrwxxqhY+el7CrFERIUv+CvG6ESDYySW7m
-         iZxg==
-X-Gm-Message-State: AOAM531KUPVLbLivjHru3r8r1tWEtemMQEfxNRVH9lFl5JDykl9THyAj
-        RR1P9yPO99kEr+T8HAjfwR+2lB9fJfo=
-X-Google-Smtp-Source: ABdhPJzFYOk3S8UZ5kwOhBOm3APg84bUmiikFn1or8h3TTrOWPVhXJfsCuqcMNAwQ5xgMZoKJf9vC65jKlg=
+        bh=/3hTzlaDbI+285CROy2A1iE61ckSvYZ31v9FVpbRb8s=;
+        b=XYvPJIXOU534MTFinHot7wSf9PiwpNpHCJRvyPCheoikn/VYVwBmghxpSMzsAt/uoz
+         2zLvH/cB+MVkPMasfAG2aaC42Rrv37lgXXkBtXg2Ta+LKR8OGN4fswvWZTJBIhmjcK+D
+         +jLVzT2LmJWA2W3S1lHd22/5JEhqACh8khhY4H/HwClbWPtKbpXsgpoN3xBPGsBXFCn/
+         v4li6Xfs2R7S5Fek97LgsI42b04QTOFmfQTruQn90yIy/h/MLwdfXc5lo2n7neIIgdYm
+         Pa8SBEb4LTrnMXa2gJjGKSM807Evs1btbc1DrLE0dayJ+KhABdyz1xYVajaPjU/XvVDt
+         RK8A==
+X-Gm-Message-State: AOAM532gcZSHJhB4HnPs7GhYk0q2qGyrjhxUBTDduI1vtaPtwwmLRCvU
+        VPZi5bVx7/P3LZLpVhzFKuFqujnK/0g=
+X-Google-Smtp-Source: ABdhPJxJslK22N6B7y/w6enIzRagBV9xKv6A0m5KOVOgB6/0UtNBTn43PhLt3jDYbUTJdLT8qSfQGDF41zw=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:4d81:b0:1bf:8ce4:4f51 with SMTP id
- oj1-20020a17090b4d8100b001bf8ce44f51mr404271pjb.0.1646969316456; Thu, 10 Mar
- 2022 19:28:36 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:902:e84b:b0:151:ca71:7d3d with SMTP id
+ t11-20020a170902e84b00b00151ca717d3dmr8295289plg.26.1646969309525; Thu, 10
+ Mar 2022 19:28:29 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 03:27:59 +0000
+Date:   Fri, 11 Mar 2022 03:27:55 +0000
 In-Reply-To: <20220311032801.3467418-1-seanjc@google.com>
-Message-Id: <20220311032801.3467418-20-seanjc@google.com>
+Message-Id: <20220311032801.3467418-16-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311032801.3467418-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH 19/21] KVM: VMX: Update MTF and ICEBP comments to document
- KVM's subtle behavior
+Subject: [PATCH 15/21] KVM: x86: Use kvm_queue_exception_e() to queue #DF
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -70,51 +69,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the oddities of ICEBP interception (trap-like #DB is intercepted
-as a fault-like exception), and how using VMX's inner "skip" helper
-deliberately bypasses the pending MTF and single-step #DB logic.
+Queue #DF by recursing on kvm_multiple_exception() by way of
+kvm_queue_exception_e() instead of open coding the behavior.  This will
+allow KVM to Just Work when a future commit moves exception interception
+checks (for L2 => L1) into kvm_multiple_exception().
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ arch/x86/kvm/x86.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 0420bc6d418a..ae88d42289ce 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1570,9 +1570,13 @@ static void vmx_update_emulated_instruction(struct kvm_vcpu *vcpu)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 74843767383c..d6fbff896263 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -669,25 +669,22 @@ static void kvm_multiple_exception(struct kvm_vcpu *vcpu,
+ 	}
+ 	class1 = exception_class(prev_nr);
+ 	class2 = exception_class(nr);
+-	if ((class1 == EXCPT_CONTRIBUTORY && class2 == EXCPT_CONTRIBUTORY)
+-		|| (class1 == EXCPT_PF && class2 != EXCPT_BENIGN)) {
++	if ((class1 == EXCPT_CONTRIBUTORY && class2 == EXCPT_CONTRIBUTORY) ||
++	    (class1 == EXCPT_PF && class2 != EXCPT_BENIGN)) {
+ 		/*
+-		 * Generate double fault per SDM Table 5-5.  Set
+-		 * exception.pending = true so that the double fault
+-		 * can trigger a nested vmexit.
++		 * Synthesize #DF.  Clear the previously injected or pending
++		 * exception so as not to incorrectly trigger shutdown.
+ 		 */
+-		vcpu->arch.exception.pending = true;
+ 		vcpu->arch.exception.injected = false;
+-		vcpu->arch.exception.has_error_code = true;
+-		vcpu->arch.exception.vector = DF_VECTOR;
+-		vcpu->arch.exception.error_code = 0;
+-		vcpu->arch.exception.has_payload = false;
+-		vcpu->arch.exception.payload = 0;
+-	} else
++		vcpu->arch.exception.pending = false;
++
++		kvm_queue_exception_e(vcpu, DF_VECTOR, 0);
++	} else {
+ 		/* replace previous exception with a new one in a hope
+ 		   that instruction re-execution will regenerate lost
+ 		   exception */
+ 		goto queue;
++	}
+ }
  
- 	/*
- 	 * Per the SDM, MTF takes priority over debug-trap exceptions besides
--	 * T-bit traps. As instruction emulation is completed (i.e. at the
--	 * instruction boundary), any #DB exception pending delivery must be a
--	 * debug-trap. Record the pending MTF state to be delivered in
-+	 * TSS T-bit traps and ICEBP (INT1).  KVM doesn't emulate T-bit traps
-+	 * or ICEBP (in the emulator proper), and skipping of ICEBP after an
-+	 * intercepted #DB deliberately avoids single-step #DB and MTF updates
-+	 * as ICEBP is higher priority than both.  As instruction emulation is
-+	 * completed at this point (i.e. KVM is at the instruction boundary),
-+	 * any #DB exception pending delivery must be a debug-trap of lower
-+	 * priority than MTF.  Record the pending MTF state to be delivered in
- 	 * vmx_check_nested_events().
- 	 */
- 	if (nested_cpu_has_mtf(vmcs12) &&
-@@ -4924,8 +4928,10 @@ static int handle_exception_nmi(struct kvm_vcpu *vcpu)
- 			 * instruction.  ICEBP generates a trap-like #DB, but
- 			 * despite its interception control being tied to #DB,
- 			 * is an instruction intercept, i.e. the VM-Exit occurs
--			 * on the ICEBP itself.  Note, skipping ICEBP also
--			 * clears STI and MOVSS blocking.
-+			 * on the ICEBP itself.  Use the inner "skip" helper to
-+			 * avoid single-step #DB and MTF updates, as ICEBP is
-+			 * higher priority.  Note, skipping ICEBP still clears
-+			 * STI and MOVSS blocking.
- 			 *
- 			 * For all other #DBs, set vmcs.PENDING_DBG_EXCEPTIONS.BS
- 			 * if single-step is enabled in RFLAGS and STI or MOVSS
+ void kvm_queue_exception(struct kvm_vcpu *vcpu, unsigned nr)
 -- 
 2.35.1.723.g4982287a31-goog
 
