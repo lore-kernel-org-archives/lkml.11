@@ -2,96 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 399E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 858D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348195AbiCKLRk (ORCPT
+        id S1348200AbiCKLVT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 06:17:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
+        Fri, 11 Mar 2022 06:21:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348204AbiCKLRf (ORCPT
+        with ESMTP id S235465AbiCKLVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 06:17:35 -0500
-Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067CE1BAF24
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 03:16:27 -0800 (PST)
-Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay07.hostedemail.com (Postfix) with ESMTP id 342D52214E;
-        Fri, 11 Mar 2022 11:16:26 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 75FF820025;
-        Fri, 11 Mar 2022 11:16:24 +0000 (UTC)
-Message-ID: <9b4e3cda7f5e8b630437cfc101f72810bc3f8d46.camel@perches.com>
-Subject: Re: [PATCH v7] drivers: ddcci: upstream DDCCI driver
-From:   Joe Perches <joe@perches.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Yusuf Khan <yusisamerican@gmail.com>, linux-kernel@vger.kernel.org,
-        jasowang@redhat.com, mikelley@microsoft.com, mst@redhat.com,
-        javier@javigon.com, arnd@arndb.de, will@kernel.org, axboe@kernel.dk
-Date:   Fri, 11 Mar 2022 03:16:22 -0800
-In-Reply-To: <Yisr7WH+EfEhMbVY@kroah.com>
-References: <20220311074413.14644-1-yusisamerican@gmail.com>
-         <YisE6jjbzJyytqB8@kroah.com>
-         <15e453381279ee9f607936d3b8d77806b58d9678.camel@perches.com>
-         <Yisr7WH+EfEhMbVY@kroah.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Fri, 11 Mar 2022 06:21:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362182AC5;
+        Fri, 11 Mar 2022 03:20:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C87F461B49;
+        Fri, 11 Mar 2022 11:20:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2B112C340EC;
+        Fri, 11 Mar 2022 11:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646997610;
+        bh=Rxfu0cswIO+qQGh9OO4iRX9Xy2FWrCarh4AekUQZwGY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=r24EOsV6xnlTrAubJns9lcLAoj9aRhlfE1Qavvw00K64aY8HROSdzpMe6UM02I0zI
+         Wkdc7BGi/20CNiwg7L1rrTzh97rHYAYCta0QRiQlVy5fhs4UWZ2SKRweBJsby94zPu
+         eVMsnLUoF3DL+0gcCKqTpebmSfXe8cw6EfSBacUHRBxKmdjOo1vQ1IKMlwGWXUwctg
+         HRHnCMxnNMYqLDUz6SuEHuQwF4c/LM2OVtIMbLih2EMAmO4UQvJ2PaDe9H3LDXXyZ7
+         hyu9/DUAPb/V15oOMQFDB2ncW8k1FkJdT/ZVTJ2ca0ZmbeBY1gaav1kjnUzqfM3Mk1
+         iOlSag1Z+7uZA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0DD20EAC095;
+        Fri, 11 Mar 2022 11:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: 75FF820025
-X-Stat-Signature: 5po8kd3yc1ugunkpkbtwcyziegigaza3
-X-Rspamd-Server: rspamout01
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1/JF3V02d8DhJtbQQlhIUg4vRfWTPU7y6U=
-X-HE-Tag: 1646997384-35921
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] net: lan966x: Improve the CPU TX bitrate.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164699761005.9005.4935359925915457985.git-patchwork-notify@kernel.org>
+Date:   Fri, 11 Mar 2022 11:20:10 +0000
+References: <20220310084005.262551-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20220310084005.262551-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        david.laight@aculab.com, andrew@lunn.ch
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-03-11 at 12:01 +0100, Greg KH wrote:
-> On Fri, Mar 11, 2022 at 02:45:01AM -0800, Joe Perches wrote:
-> > On Fri, 2022-03-11 at 09:14 +0100, Greg KH wrote:
-> > > On Thu, Mar 10, 2022 at 11:44:13PM -0800, Yusuf Khan wrote:
-> > > > This patch upstreams the DDCCI driver by Christoph Grenz into
-> > > > the kernel. The original gitlab page is loacted at https://gitlab
-> > > > .com/ddcci-driver-linux/ddcci-driver-linux/-/tree/master.
-> > []
-> > > > diff --git a/drivers/char/ddcci.c b/drivers/char/ddcci.c
-> > []
-> > > > @@ -0,0 +1,1887 @@
-> > > > +// SPDX-License-Identifier: GPL-2.0
-> > > > +/*
-> > > > + *  DDC/CI sub-bus driver
-> > > > + *
-> > > > + *  Copyright (c) 2015 Christoph Grenz
-> > > > + */
-> > > > +
-> > > > +/*
-> > > > + * This program is free software; you can redistribute it and/or modify it
-> > > > + * under the terms of the GNU General Public License as published by the Free
-> > > > + * Software Foundation; either version 2 of the License, or (at your option)
-> > > > + * any later version.
-> > > 
-> > > This does not match the SPDX line.  Please fix up first before going any
-> > > further.
-> > 
-> > Which means fix up the SPDX line above to use the actual
-> > license of the code.
-> > 
-> > // SPDX-License-Identifier: GPL-2.0-or-later
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 10 Mar 2022 09:40:05 +0100 you wrote:
+> When doing manual injection of the frame, it is required to check if the
+> TX FIFO is ready to accept the next word of the frame. For this we are
+> using 'readx_poll_timeout_atomic', the only problem is that before it
+> actually checks the status, is determining the time when to finish polling
+> the status. Which seems to be an expensive operation.
+> Therefore check the status of the TX FIFO before calling
+> 'readx_poll_timeout_atomic'.
+> Doing this will improve the TX bitrate by ~70%. Because 99% the FIFO is
+> ready by that time. The measurements were done using iperf3.
 > 
-> If that is the intent, it depends on the original author, I have not
-> seen the source for where this came from, have you?
+> [...]
 
-Tes.
+Here is the summary with links:
+  - [net-next,v2] net: lan966x: Improve the CPU TX bitrate.
+    https://git.kernel.org/netdev/net-next/c/fb9eb027fbc9
 
-Just take 10 seconds to look at the link provided in the text above
-before you take 10 seconds to ask me instead.
-
-https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux/-/tree/master
-
-And it's a bit odd of you to suggest otherwise when the link is
-clearly shown and the actual license text is clear with
-"(at your option) any later version".
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
