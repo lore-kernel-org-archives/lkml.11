@@ -2,271 +2,280 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B13C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229458AbiCKXRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:17:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49166 "EHLO
+        id S229877AbiCKXV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:21:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbiCKXRC (ORCPT
+        with ESMTP id S229641AbiCKXVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:17:02 -0500
-Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [5.144.164.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0DA1FDFAE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:15:56 -0800 (PST)
-Received: from [192.168.1.101] (abxi44.neoplus.adsl.tpnet.pl [83.9.2.44])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 3DE213F6AB;
-        Fri, 11 Mar 2022 22:22:52 +0100 (CET)
-Message-ID: <b428593e-a4db-984b-df7f-7cd14795d5e2@somainline.org>
-Date:   Fri, 11 Mar 2022 22:22:51 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] mtd: nand: raw: qcom_nandc: Don't clear_bam_transaction
- on READID
+        Fri, 11 Mar 2022 18:21:25 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC4C1520CA;
+        Fri, 11 Mar 2022 15:20:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647040821; x=1678576821;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=sZ4U6SXH1B8m6HrY7484581FZGt4fDJ/dJfagMqENnI=;
+  b=X7fKOrnXZVy0CQaNH/w+9v34LCIIpLeYoFVgrq1DTw+Mb226Q//xsxkb
+   HF0oXbwIe8EXlZtV3s0lRJTv+J6o3jVzqv18WiGujt2ApB5eXu43hhUjv
+   wc7YWeN8Geo47ZvqZ35ki2LKXB95O+3yyFz2tSdGhjwaNJSnqcW2/aomL
+   wmzN4DagwGQvMF5bJRrdM+UXSycoCbpL/MtlAH/WPJCoySz9Z2lOJKd/8
+   5zpEs+/CmPmbrpvBrg5rcRDDAugNuOcYjio8h5viNL3g+YCVylM3/hKNW
+   NpsclNj3IdjAkAhsTtiI2iuosUxF9f6sj5dZzxlKE+oUfKoGQITkrnUhM
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="255861147"
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="255861147"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 15:20:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="539175377"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga007.jf.intel.com with ESMTP; 11 Mar 2022 15:20:20 -0800
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 15:20:20 -0800
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 15:20:19 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Fri, 11 Mar 2022 15:20:19 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Fri, 11 Mar 2022 15:20:19 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jogfJMLEPiFz0MFsRl9l70RGw9ECdn5AZVc6pQJyrLBXvHj3NA9t4bMgXc61XizDxQ9mEJUhq8BMzyQMGjQiN2zgd+f4aV/yJmYXDKiFWXgtUQAjnP9QghwB6WPUgsep/A2kq3eyngVx3D1MergP0yxP4ghidkaOjXX1ZmQr0ZsJNeC0tDDTR1T1tz87036pKoNFvLs1mFRxyl5nrDWSUO27/VxKKOTywM0VRsTkm80jJF2PvoFWWVAPVSnq8jf8b/06DbHT3ZS+O/8cS93oe2Y0SAJ2m99owCsIs7szQtiYoUGF5m/+FJxYsTIAMSokhDLMHdD1RVIyHxlB6ntV9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3WvmHy7+k3AqecEOriYt2tpQ0qBFLV2KiHjLV+xfUX4=;
+ b=SOIJ7XvqqS8KW/ipQId+b4qtzkfmsVYqQX8ObdVt2Vvo5vz/g1BG7iCvgmf3pZFwsni9ofnQkeA9JfOrm1KMBIaSua4vp7kZyg4Ob8lE3LjQNF5YKRkREPDBEmVCmF9lU1UoixmXAyUv3f5V7FYdFj9MI3CZIRXw1wa3Yx8NeFWAWX/9xreRZ0mVUa0rJFsiL/XqM+qI6xN7BzfkkwgrHwaILcOg5tibWuxn4M2esyrD/10fiarvop144/AquqTa/4qb46Ws3/H9R8mvpiekufRrudEXAKVq43+ztzM1GwXf2mezFIahfdJA6NKaL9VHU6tU1yx26ZazlvzHZsr0cQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CH0PR11MB5740.namprd11.prod.outlook.com (2603:10b6:610:101::7)
+ by SA2PR11MB5180.namprd11.prod.outlook.com (2603:10b6:806:fb::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22; Fri, 11 Mar
+ 2022 23:20:18 +0000
+Received: from CH0PR11MB5740.namprd11.prod.outlook.com
+ ([fe80::b432:16ba:2819:d702]) by CH0PR11MB5740.namprd11.prod.outlook.com
+ ([fe80::b432:16ba:2819:d702%5]) with mapi id 15.20.5061.025; Fri, 11 Mar 2022
+ 23:20:17 +0000
+Message-ID: <44e4d46d-c0cb-8010-4ec9-34441e1d2cb0@intel.com>
+Date:   Fri, 11 Mar 2022 15:20:14 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.6.1
+Subject: Re: [PATCH v5 5/6] selftests/resctrl: Update README about using
+ kselftest framework to build/run resctrl_tests
 Content-Language: en-US
-To:     Sricharan Ramabadhran <sricharan@codeaurora.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Manivannan Sadhasivam <mani@kernel.org>, pragalla@codeaurora.org,
-        ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mdalam@codeaurora.org,
-        bbhatt@codeaurora.org, hemantk@codeaurora.org
-References: <20220113184427.2259509-1-konrad.dybcio@somainline.org>
- <20220114082718.32a2fc83@xps13> <20220126111613.3ab0021e@xps13>
- <20220126103316.GA212068@thinkpad> <20220126114200.4cc3c21b@xps13>
- <fc80a6e7-bd44-3b3e-fca2-1316a76d65f5@codeaurora.org>
- <a6fcc533-e7cd-7b55-4db0-cec80c07b46a@codeaurora.org>
- <0a8d6550-aa19-0af1-abae-66bf34c91ea8@somainline.org>
- <be779ed9-bd80-8f01-fe7f-d3c07d3d85aa@codeaurora.org>
- <12cad24a-fa2f-9a82-cf43-241a0a6fe4f6@somainline.org>
- <20220201145204.54646475@xps13>
- <d79bf21d-5a90-0074-cef6-896f66e80d28@somainline.org>
- <c63d5410-7f08-80fe-28ac-f4867038ff30@codeaurora.org>
- <cc1302f4-9150-0145-421c-bf2b7a7bf258@codeaurora.org>
- <6b839237-74f0-7270-2f33-f5c17e6b59de@somainline.org>
- <2fb9d943-d6c8-06b1-08cc-b0c3a8256082@codeaurora.org>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <2fb9d943-d6c8-06b1-08cc-b0c3a8256082@codeaurora.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
+References: <20220311072147.3301525-1-tan.shaopeng@jp.fujitsu.com>
+ <20220311072147.3301525-6-tan.shaopeng@jp.fujitsu.com>
+From:   Reinette Chatre <reinette.chatre@intel.com>
+In-Reply-To: <20220311072147.3301525-6-tan.shaopeng@jp.fujitsu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW4PR03CA0091.namprd03.prod.outlook.com
+ (2603:10b6:303:b7::6) To CH0PR11MB5740.namprd11.prod.outlook.com
+ (2603:10b6:610:101::7)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8901fe80-49d1-4962-934a-08da03b5b45d
+X-MS-TrafficTypeDiagnostic: SA2PR11MB5180:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <SA2PR11MB518007C1C651F252B3F94BACF80C9@SA2PR11MB5180.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Z8O3EPbRPKmKvqWSOvSHnLmOe0S+EFWrrIknWTOcbDQTOFw+MjKYyojGHKWYz4ILQBu1/RyJEqe6ZdnxtXUX7CRwa+xtFYXJc5HQwEJmtPO3s7q/eKPs7L+Tva8R9TRvbO37YTLhY38CBN5yiqutGwT0sf8JePq5eUTi/xQo1/Ukwg2pe/hO8wKJaAGF108aepG4CRYp28sj7KkULjDFbU6Tw0XwJvCgOeC0/i3FkZzcNKFYeMmJcxSZOSuWcbWHwjTYe7duIXXbcor6h3vmZlPOdeigz+z6Fmwmb2BsEt5FGejNCQQyxckHwz3dcBMkv03T0sCzoPsMabtoYAWuFKP5+Nfr50sPvRO2gPdFVhcConGTCYq2123JdzcUp/NZCqHZQGtibQBYFHBJLcU5IZdXNbzIm/ywCLZ8Z0/KEn4BEOR7fTbZ4VxKgKa1J52rTfY5f/dFXmh7XE3Rxfeliae/ShRhRrHnt9TctHpMm9JXtaUF8cQF+KwgLVWoQrYNlqVfe3jgY2DzTasT4u1fHzB4uX+wEMgMeDlwHS6jMVr1piVN/HmV75lC85YlaPE9UOe5mdyxzTLvNiAfu3Mzy5Qn6virzKYra1evZUKqSFqXzLd7Mm2t+38nWJCUXe3f6ExEE05vfbfJ93I96W+sm6SaoRkmBOHUVtCpulvNyTcWJJdk6DkNo779rRZmctUU5oO3i9MwciXSNeNB9LaYy/3s9qwugxtf1CM7SEZWElXRH/c9F/GgJq2FfY9punPW
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5740.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(5660300002)(6486002)(8936002)(8676002)(508600001)(44832011)(66946007)(66476007)(66556008)(110136005)(316002)(83380400001)(2616005)(53546011)(6666004)(6512007)(6506007)(2906002)(26005)(186003)(31696002)(86362001)(36756003)(38100700002)(31686004)(82960400001)(4326008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MWFWdHZMS3h6VE5pK1JleXZ3SzdtVkFxK0NaZDRheVRZY2lTZVdDbmtaSDlQ?=
+ =?utf-8?B?YXVEOFNraU1yNUZPTXFTSll3SXBldjE1TWRxS2s4V3RiUGh0M2poY0M5SWVh?=
+ =?utf-8?B?dnBhYzREMjF4ZzVpOVlYMjhoeHBuQVpkRHJrZDU2SVVCNXpueVgyTlNWUTM5?=
+ =?utf-8?B?TzA4Q29zY0pzQWtKaDZVMEJCc2FyaWN2bkNkZzc0WU9pT3pXVjJoeWFvOE1r?=
+ =?utf-8?B?YXg3dGUyUWQrYTFWdkppRHpnZW1BcHdTcWY4MklRSjZXTmUyOEVRZDZ0eXdK?=
+ =?utf-8?B?Nm9DeFV0bWJta3BENTBIOTdIZTl3ckI1YXJwSENkMWpLZFBoUzVoWmhQNVZF?=
+ =?utf-8?B?WkpVQkpmRG1MWWpZM09zVW52dkFZeUpwY3VIa0hHMk1qMENRMVh0OVdFT1hz?=
+ =?utf-8?B?SUNLbmlIZWdEcnJRS1hud2JJK2gvZ2ZqaVljd0dkTElHYXJLclNNclhQY0tk?=
+ =?utf-8?B?UStvT01EU0IrMFBDOTBIZUE0MDVjbWI5YWRtWUN3ZmJVV2x4RGtXSDVlR3NU?=
+ =?utf-8?B?U2gwblV4WWtBS1pOTm9LbG1Qby9lSkdCYVpCNm5JRG1pd0VteVpHTEI4QXBh?=
+ =?utf-8?B?NTlhdjVpQnNTcHZMd2VoOTdQSDJObHpRclNkNjJpOGFqQTVqa0xSOHpuQkh0?=
+ =?utf-8?B?L3ZrRWNmdGJML3VWVGxLRWFwREYxQkl3TzdnZmorY0dxekZJZXVOUS9HOW5l?=
+ =?utf-8?B?RmhtRjdqdjlnVkZrakdlN1g1czR5YkJUSHVONnVLTHlIaWFPWk9pR01ZblNo?=
+ =?utf-8?B?SFdtemhoem1hbTBtQzFST29xYzNvZlJwSTNSQ1piQ1U0K2tuNGt1a3pUZnNl?=
+ =?utf-8?B?S3lnVGIrV0RUaHYzdWE3d1h4NVdYODdIUjlvTEJtTzZ3L3N4TWpBVXhlS0w0?=
+ =?utf-8?B?THlvL2o1YmhzclAwbE5OMDZPWjZOOEtQWXhVYzhyU0t5OEtrYXcwTlRBNDVv?=
+ =?utf-8?B?WmJ5dVlTaXhpVzNGQUNrTExNYURBeUZaOExaT1g5dXFMemRENDFvWG9xS0JK?=
+ =?utf-8?B?Mm5YNmc1VThZUVNnTmk2d05nMkE1T293RjJtV0RTTmZpZE00RS9SblhSUXo4?=
+ =?utf-8?B?RjZ6WXMxcHJ5UWE2L01CaWxJUk5QeVpjQTJCZFlvNUlMVFhsSFFldVhsN2xM?=
+ =?utf-8?B?M0Fkb1RyWW1ydEE4RWtzYmNuYXFMcElmNGs0NGJpeUxSK09uV0dmVEZLV3Rw?=
+ =?utf-8?B?T0dxQnArcDlLSFIwakIvQWxQM21uQ2xqeW1OaWl4RjRyMmk4cVRZUVJVTnUy?=
+ =?utf-8?B?QzNVSjhhMnIwNlRjaXlJWjlzdkd2MzE4Q3RXbWRYbDd2TDNKaGY3ZnFDT0ZH?=
+ =?utf-8?B?NCs3N09udGRrV2c1N2F0TzZnd1RwRjl1RWtSZGVWVWNQR0w1WjhPOUdnaG5I?=
+ =?utf-8?B?ZkhvWjNCd3BndC9QcmE4c2JhQmFBK3VvZkJCS04yb3M4Ullkc1RTaUNDa0Za?=
+ =?utf-8?B?bk90R0kxbFQrSlRHZko4UVVMSldPZmRna0VGMm9TMEh0VHp2dHl5c1Zhclgr?=
+ =?utf-8?B?QVpUK0FBTyt6bHdQSkwzZHQ1VHZocmF4MUlESDJiM2sxL2tUWk9uYjY5UmU5?=
+ =?utf-8?B?QnNEc3JxcFBVc2ZrZXMvbVQ5UHNMUU56dHc3N0ZhYlAvWGEzRzdQZmEvWG1H?=
+ =?utf-8?B?a2tUcDV5NzBDNmxWS2tZOHZCckY4cGVNL0Y0M0owUk5Wb25MTmpqR2JCWXJo?=
+ =?utf-8?B?N3haUy83YlJrLzhYK0hJLzFOeEtUN1djcW1CUm53d09qVnpNeUZpL2E5RG9Y?=
+ =?utf-8?B?TlBjdXFwYnFxVmVXMnpJQ3FRTUlvbjNHUG5mUzNnR1NlU3NwZnpia0FDQjhR?=
+ =?utf-8?B?R1JJQmtxYWpmbm5wNXB3T2ZRWnZYQkI0K0FzMStnc3VQR01VVUdaR3V2Sjg4?=
+ =?utf-8?B?WU5qWUk5TURoRVYyWDhKTFhSazAxc3ZJS0xHa0N3T0QwS1gzMTE3Rks4eDdS?=
+ =?utf-8?B?ZGJLNmpJMFpqdHZScEprZjVGTEUxVzFJazVwaDc1MzFMUmZzR1ZRRXp1NEJW?=
+ =?utf-8?B?WVpmbEY0TmZBPT0=?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8901fe80-49d1-4962-934a-08da03b5b45d
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5740.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 23:20:17.8854
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FCzPmK7Kq/y7bASxyNmeUgLvgXZNoSEgAamzmhOv7Q2YZhbbtSdnKekTMAI+Vkv2jqXyxWeqGFI6hbRvGBpZGzxatH0TCTw9IWQJntbhh8Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5180
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Shaopeng Tan,
 
-
-On 24.02.2022 08:33, Sricharan Ramabadhran wrote:
-> Hi Konrad,
+On 3/10/2022 11:21 PM, Shaopeng Tan wrote:
+> resctrl_tests can be built or run using kselftests framework.
+> Add description on how to do so in README.
 > 
-> On 2/8/2022 10:15 PM, Konrad Dybcio wrote:
->>
->> On 4.02.2022 18:17, Sricharan Ramabadhran wrote:
->>> On 2/2/2022 12:54 PM, Sricharan Ramabadhran wrote:
->>>> Hi Konrad/Miquel,
->>>>
->>>> On 2/1/2022 9:21 PM, Konrad Dybcio wrote:
->>>>> On 01/02/2022 14:52, Miquel Raynal wrote:
->>>>>> Hi Konrad,
->>>>>>
->>>>>> konrad.dybcio@somainline.org wrote on Mon, 31 Jan 2022 20:54:12 +0100:
->>>>>>
->>>>>>> On 31/01/2022 15:13, Sricharan Ramabadhran wrote:
->>>>>>>> Hi Konrad,
->>>>>>>>
->>>>>>>> On 1/31/2022 3:39 PM, Konrad Dybcio wrote:
->>>>>>>>> On 28/01/2022 18:50, Sricharan Ramabadhran wrote:
->>>>>>>>>> Hi Konrad,
->>>>>>>>>>
->>>>>>>>>> On 1/28/2022 9:55 AM, Sricharan Ramabadhran wrote:
->>>>>>>>>>> Hi Miquel,
->>>>>>>>>>>
->>>>>>>>>>> On 1/26/2022 4:12 PM, Miquel Raynal wrote:
->>>>>>>>>>>> Hi Mani,
->>>>>>>>>>>>
->>>>>>>>>>>> mani@kernel.org wrote on Wed, 26 Jan 2022 16:03:16 +0530:
->>>>>>>>>>>>> On Wed, Jan 26, 2022 at 11:16:13AM +0100, Miquel Raynal wrote:
->>>>>>>>>>>>>> Hello,
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> miquel.raynal@bootlin.com wrote on Fri, 14 Jan 2022 08:27:18 +0100:
->>>>>>>>>>>>>>> Hi Konrad,
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> konrad.dybcio@somainline.org wrote on Thu, 13 Jan 2022 19:44:26 >>>>>>>> +0100:
->>>>>>>>>>>>>>>> While I have absolutely 0 idea why and how, running >>>>>>>>> clear_bam_transaction
->>>>>>>>>>>>>>>> when READID is issued makes the DMA totally clog up and refuse >>>>>>>>> to function
->>>>>>>>>>>>>>>> at all on mdm9607. In fact, it is so bad that all the data >>>>>>>>> gets garbled
->>>>>>>>>>>>>>>> and after a short while in the nand probe flow, the CPU >>>>>>>>> decides that
->>>>>>>>>>>>>>>> sepuku is the only option.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Removing _READID from the if condition makes it work like a >>>>>>>>> charm, I can
->>>>>>>>>>>>>>>> read data and mount partitions without a problem.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
->>>>>>>>>>>>>>>> ---
->>>>>>>>>>>>>>>> This is totally just an observation which took me an inhumane >>>>>>>>> amount of
->>>>>>>>>>>>>>>> debug prints to find.. perhaps there's a better reason behind >>>>>>>>> this, but
->>>>>>>>>>>>>>>> I can't seem to find any answers.. Therefore, this is a BIG RFC!
->>>>>>>>>>>>>>> I'm adding two people from codeaurora who worked a lot on this >>>>>>>> driver.
->>>>>>>>>>>>>>> Hopefully they will have an idea :)
->>>>>>>>>>>>>> Sadre, I've spent a significant amount of time reviewing your >>>>>>> patches,
->>>>>>>>>>>>>> now it's your turn to not take a month to answer to your peers
->>>>>>>>>>>>>> proposals.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Please help reviewing this patch.
->>>>>>>>>>>>> Sorry. I was hoping that Qcom folks would chime in as I don't >>>>>> have any idea
->>>>>>>>>>>>> about the mdm9607 platform. It could be that the mail server >>>>>> migration from
->>>>>>>>>>>>> codeaurora to quicinc put a barrier here.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Let me ping them internally.
->>>>>>>>>>>> Oh, ok, I didn't know. Thanks!
->>>>>>>>>>>      Sorry Miquel, somehow we did not get this email in our inbox.
->>>>>>>>>>>      Thanks to Mani for pinging us, we will test this up today and >>>> get back.
->>>>>>>>>>         While we could not reproduce this issue on our ipq boards (do >>> not have a mdm9607 right now) and
->>>>>>>>>>          issue does not look any obvious.
->>>>>>>>>>         can you please give the debug logs that you did for the above >>> stage by stage ?
->>>>>>>>> I won't have access to the board for about two weeks, sorry.
->>>>>>>>>
->>>>>>>>> When I get to it, I'll surely try to send you the logs, though there
->>>>>>>>>
->>>>>>>>> wasn't much more than just something jumping to who-knows-where
->>>>>>>>>
->>>>>>>>> after clear_bam_transaction was called, resulting in values >> associated with
->>>>>>>>>
->>>>>>>>> the NAND being all zeroed out in pr_err/_debug/etc.
->>>>>>>>>
->>>>>>>>       Ok sure. So was the READID command itself failing (or) the > subsequent one ?
->>>>>>>>      We can check which parameter reset by the clear_bam_transaction is > causing the
->>>>>>>>      failure.  Meanwhile, looping in Pradeep who has access to the > board, so in a better
->>>>>>>>      position to debug.
->>>>>>> I'm sorry I have so few details on hand, and no kernel tree (no access to that machine either, for now).
->>>>>>>
->>>>>>>
->>>>>>> I will try to describe to the best of my abilities what I recall.
->>>>>>>
->>>>>>>
->>>>>>> My methodology of making sure things don't go haywire was to print the oob size
->>>>>>>
->>>>>>> of our NAND basically every two lines of code (yes, i was very desperate at one point),
->>>>>>>
->>>>>>> as that was zeroed out when *the bug* happened,
->>>>>> This does look like a pointer error at some point and some kernel data
->>>>>> has been corrupted very badly by the driver.
->>>>>>
->>>>>>> leading to a kernel bug/panic/stall
->>>>>>>
->>>>>>> (can't recall what exactly it was, but it said something along the lines of "no support for
->>>>>>>
->>>>>>> oob size 0" and then it didn't fail graceully, leading to some bad jumps and ultimately
->>>>>>>
->>>>>>> a dead platform..)
->>>>>>>
->>>>>>>
->>>>>>> after hours of digging, I found out that everything goes fine until clear_bam_transaction is called,
->>>>>> Do you remember if this function was called for the first time when
->>>>>> this happened?
->>>>> I think so, if I recall correctly there are no more callers in this path, as readid is the first nand command executed in flash probe flow.
->>>>>
->>>>>
->>>>>
->>>>>>> after that gets executed every nand op starts reading all zeroes (for example in JEDEC ID check)
->>>>>>>
->>>>>>> so I added the changes from this patch, and things magically started working... My suspicion is
->>>>>>>
->>>>>>> that the underlying FIFO isn't fully drained (is it a FIFO on 9607? bah, i work on too many socs at once)
->>>>>> I don't see it in the list of supported devices, what's the exact
->>>>>> compatible used?
->>>>> qcom,ipq4019-nand
->>>>>
->>>>>
->>>>>
->>>>>>> and this function only makes Linux think it is, without actually draining it, and the leftover
->>>>>>>
->>>>>>> commands get executed with some parts of them getting overwritten, resulting in the
->>>>>>>
->>>>>>> famous garbage in - garbage out situation, but that's only a guesstimate..
->>>>>> I would bet for a non allocated bam-ish pointer that is reset to zero
->>>>>> in the clear_bam_transaction() helper.
->>>>>>
->>>>>> Can you get your hands on the board again?
->>>>> Sure, but as I mentioned previously, only in about 2 weeks, I can't really do any dev before then.. :(
->>>>>
->>>>>
->>>>>
->>>>>> It would be nice to check if the allocation always occurs before use,
->>>>>> and if yes on how much bytes.
->>>>>>
->>>>>> If the pointer is not dangling, then perhaps something else smashes
->>>>>> that pointer.
->>>>>
->>>>> Konrad
->>>>>
->>>>>>> Do note this somehow worked fine on 5.11 and then broke on 5.12/13. I went as far as replacing most
->>>>>>>
->>>>>>> of the kernel with the updated/downgraded parts via git checkout (i tried many combinations),
->>>>>>>
->>>>>>> to no avail.. I even tried different compilers and optimization levels, thinking it could have been
->>>>>>>
->>>>>>> a codegen issue, but no luck either.
->>>>>>>
->>>>>>>
->>>>>>> I.. do understand this email is a total mess to read, as much as it was to write, but
->>>>>>>
->>>>>>> without access to my code and the machine itself I can't give you solid details, and
->>>>>>>
->>>>>>> the fact this situation is far from ordinary doesn't help either..
->>>>>>>
->>>>>>>
->>>>>>> The latest (ancient, not quite pretty, but probably working if my memory is correct) version of my patches
->>>>>>>
->>>>>>> for the mdm9607 is available at [1], I will push the new revision after I get access to the workstation.
->>>>>>>
->>>>    + few more who have access to the board.
->>>>
->>>>     Going by the description, for kernel corruption, we can try out a KASAN build.
->>>>     Since you have mentioned it worked till 5.11, you bisected the driver till 5.11 head and it worked ?
->>>>
->>>     Tried running a KASAN enabled image on IPQ board, but no luck. Nothing came out.
->>>     Only if someone with the board can help here, we can proceed
->>>
->>>
->>> Regards,
->>>    Sricharan
->>>
->> I have the board with me again. Please tell me where do we start :)
+> Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+> ---
+>  tools/testing/selftests/resctrl/README | 43 ++++++++++++++++++++------
+>  1 file changed, 34 insertions(+), 9 deletions(-)
 > 
->  Sorry for the delayed response.
-[Looks at the calendar] What can I say... lots of things happened :)
+> diff --git a/tools/testing/selftests/resctrl/README b/tools/testing/selftests/resctrl/README
+> index 3d2bbd4fa3aa..c74b8246e6c9 100644
+> --- a/tools/testing/selftests/resctrl/README
+> +++ b/tools/testing/selftests/resctrl/README
+> @@ -12,24 +12,49 @@ Allocation test on Intel RDT hardware. More tests will be added in the future.
+>  And the test suit can be extended to cover AMD QoS and ARM MPAM hardware
+>  as well.
+>  
+> +resctrl_tests can be run with or without kselftest framework.
 
+Saying "with or without kselftest framework" sounds good. Could you please
+keep using that instead of the "use" and "not use" in the new headers?
 
-> 
->      As a first step, Can you enable KASAN and check if you get any warnings ?
-> 
->      Then, can you check inside clear_bam_transaction, which parameter resetting specifically is causing the issue ?
-> 
-I have 3 logs for you:
+> +
+> +USE KSELFTEST FRAMEWORK
+> +=======================
 
-[1] is KASAN=y, with this patch
-[2] is KASAN=y, WITHOUT this patch (should die, but doesn't - does KASAN prevent it from doing something stupid?)
-[3] is KASAN=n, WITHOUT this patch (dies as expected)
+So, here it can be "WITH KSELFTEST FRAMEWORK"
 
-Looks like there's a lot happening..
+> +
+> +* BUILD
+> +-------
 
+Please remove the "*" to make it consistent with the "BUILD" later in the file.
 
-Konrad
-> 
-> Regards,
->   Sricharan
-> 
-> 
+> +
+> +Build executable file "resctrl_tests" at top level directory of the kernel source.
+> + $ make -C tools/testing/selftests TARGETS=resctrl
 
-[1] https://paste.debian.net/1233873/
-[2] https://paste.debian.net/1233874/
-[3] https://paste.debian.net/1233878/
+Please use ":" after the sentence that describes a command that follows. For
+example, above would read:
+
+Build executable file "resctrl_tests" from top level directory of the kernel source:
+ $ make -C tools/testing/selftests TARGETS=resctrl
+
+(also note me changing "at" to "from")
+
+> +
+> +* RUN
+
+Please remove the "*" to make it consistent with the "RUN" later in the file.
+
+> +-----
+> +
+> +Run resctrl_tests as sudo or root since the test needs to mount resctrl file
+> +system and change contents in the file system.
+> +Using kselftest framework will run all supported tests of resctrl_tests.
+
+"tests of resctrl_tests." -> "tests within resctrl_tests:"?
+
+> +
+> + $ sudo make -C tools/testing/selftests TARGETS=resctrl run_tests
+> +
+> +More details about kselftest framework as follow.
+> +Documentation/dev-tools/kselftest.rst
+
+"More details about kselftest framework can be found in Documentation/dev-tools/kselftest.rst."
+
+> +
+> +NOT USE KSELFTEST FRAMEWORK
+> +===========================
+
+("WITHOUT KSELFTEST FRAMEWORK")
+
+> +
+>  BUILD
+>  -----
+>  
+> -Run "make" to build executable file "resctrl_tests".
+> +Build executable file "resctrl_tests" at this directory(tools/testing/selftests/resctrl/).
+
+"at this directory" -> "from this directory"
+
+"." -> ":"
+
+> +  $ make
+>  
+>  RUN
+>  ---
+>  
+> -To use resctrl_tests, root or sudoer privileges are required. This is because
+> -the test needs to mount resctrl file system and change contents in the file
+> -system.
+> -
+> -Executing the test without any parameter will run all supported tests:
+> +Run resctrl_tests as sudo or root since the test needs to mount resctrl file
+> +system and change contents in the file system.
+> +Executing the test without any parameter will run all supported tests.
+
+"." -> ":"
+
+>  
+> -	sudo ./resctrl_tests
+> + $ sudo ./resctrl_tests
+>  
+>  OVERVIEW OF EXECUTION
+> ----------------------
+> +=====================
+>  
+>  A test case has four stages:
+>  
+> @@ -41,7 +66,7 @@ A test case has four stages:
+>    - teardown: umount resctrl and clear temporary files.
+>  
+>  ARGUMENTS
+> ----------
+> +=========
+>  
+>  Parameter '-h' shows usage information.
+>  
+
+Reinette
