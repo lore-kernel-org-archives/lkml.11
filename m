@@ -2,66 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36D0CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF095C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348698AbiCKNB3 (ORCPT
+        id S1348717AbiCKNDK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 08:01:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
+        Fri, 11 Mar 2022 08:03:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243439AbiCKNBZ (ORCPT
+        with ESMTP id S1348678AbiCKNDJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 08:01:25 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4661C0256
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:00:22 -0800 (PST)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KFQtD61mHz9sYt;
-        Fri, 11 Mar 2022 20:56:36 +0800 (CST)
-Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
- (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 11 Mar
- 2022 21:00:20 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <mpe@ellerman.id.au>, <benh@kernel.crashing.org>,
-        <paulus@samba.org>, <christophe.leroy@csgroup.eu>
-CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH -next] powerpc/kuap: Remove unused inline function __kuap_assert_locked()
-Date:   Fri, 11 Mar 2022 21:00:17 +0800
-Message-ID: <20220311130017.22936-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        Fri, 11 Mar 2022 08:03:09 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9EE1C0262
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:02:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647003726; x=1678539726;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=8p85oTWSgB5OqD5IXy7JJjQ5MEHJCs1MBGpwJc3QHC8=;
+  b=WfMl+PuO3si1oZCpGxg83o0WjshOGRtaxBIiU9tukuG4N0/EryhMYPfb
+   FTtGVPWcYhX6cl2CT/z2DqXRcVoqJ4Su29IZn3zKXejPXGd3Rz0W54kYs
+   bi//Kr5vaRZ5ydlPp0zb+xmuKiszG0SKEX5jqgX+pWM/3oirJ06Bw1t2E
+   h7IGZK/c1hIqiYbWzerOtfepR4lEHkef5P7TJvaI2TdMy7Lvk1dslUBZA
+   LbK23V/QQCzEDULojw7fUL6rTTm9hwaN1Jfecsylw7Z8cWfIEYHdea6Go
+   8JMIwESbYAILj78+rqs5TUw8FY/BOqLshrjA3/T9+gSZcacx/lf1qomG1
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="253130354"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="253130354"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 05:02:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="597103569"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 11 Mar 2022 05:02:04 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSeuC-0006Qd-3Y; Fri, 11 Mar 2022 13:02:04 +0000
+Date:   Fri, 11 Mar 2022 21:01:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.17-rc1 4/8]
+ arch/arm/mm/init.c:317:5: warning: format specifies type 'unsigned long' but
+ the argument has type 'char *'
+Message-ID: <202203112007.GfOV3M1u-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 2341964e27b0 ("powerpc/kuap: Remove __kuap_assert_locked()")
-left behind this one, remove it.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.17-rc1
+head:   66e9038ef48dc66c07b12443b73e2d1f3f12cbab
+commit: 18e0d99ee35450767fc8222f1727febdd2a4deac [4/8] ARM: Print virtual memory info again
+config: arm-orion5x_defconfig (https://download.01.org/0day-ci/archive/20220311/202203112007.GfOV3M1u-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=18e0d99ee35450767fc8222f1727febdd2a4deac
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.17-rc1
+        git checkout 18e0d99ee35450767fc8222f1727febdd2a4deac
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mm/
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   arch/arm/mm/init.c:97:13: warning: no previous prototype for function 'setup_dma_zone' [-Wmissing-prototypes]
+   void __init setup_dma_zone(const struct machine_desc *mdesc)
+               ^
+   arch/arm/mm/init.c:97:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init setup_dma_zone(const struct machine_desc *mdesc)
+   ^
+   static 
+>> arch/arm/mm/init.c:317:5: warning: format specifies type 'unsigned long' but the argument has type 'char *' [-Wformat]
+                     "     kernel : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
+           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+                                     ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+>> arch/arm/mm/init.c:322:5: warning: data argument not used by format string [-Wformat-extra-args]
+                     MLM(MODULES_VADDR, MODULES_END),
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
+           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^
+   arch/arm/mm/init.c:309:25: note: expanded from macro 'MLM'
+   #define MLM(b, t) b, t, ((t) - (b)) >> 20
+                           ^
+   arch/arm/mm/init.c:307:13: warning: no previous prototype for function 'mem_init_print_arm_info' [-Wmissing-prototypes]
+   void __init mem_init_print_arm_info(void)
+               ^
+   arch/arm/mm/init.c:307:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init mem_init_print_arm_info(void)
+   ^
+   static 
+   4 warnings generated.
+
+
+vim +317 arch/arm/mm/init.c
+
+   306	
+   307	void __init mem_init_print_arm_info(void)
+   308	{
+   309	#define MLM(b, t) b, t, ((t) - (b)) >> 20
+   310		pr_notice("Virtual kernel memory layout:\n"
+   311			  "    fixmap  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   312			  "    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   313			  "    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+   314	#ifdef CONFIG_MODULES
+   315			  "    modules : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+   316	#endif
+ > 317			  "     kernel : 0x%08lx - 0x%08lx   (%4ld MB)\n",
+   318			  MLM(FIXADDR_START, FIXADDR_END),
+   319			  MLM(VMALLOC_START, VMALLOC_END),
+   320			  MLM(PAGE_OFFSET, (unsigned long)high_memory),
+   321	#ifdef CONFIG_MODULES
+ > 322			  MLM(MODULES_VADDR, MODULES_END),
+   323	#endif
+   324			  /* From beginning of .text to end of .bss */
+   325			  MLM((unsigned long)_text, (unsigned long)__bss_stop));
+   326	#undef MLM
+   327	}
+   328	
+
 ---
- arch/powerpc/include/asm/kup.h | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/powerpc/include/asm/kup.h b/arch/powerpc/include/asm/kup.h
-index fb2237809d63..d751ddd08110 100644
---- a/arch/powerpc/include/asm/kup.h
-+++ b/arch/powerpc/include/asm/kup.h
-@@ -52,7 +52,6 @@ __bad_kuap_fault(struct pt_regs *regs, unsigned long address, bool is_write)
- 	return false;
- }
- 
--static inline void __kuap_assert_locked(void) { }
- static inline void __kuap_lock(void) { }
- static inline void __kuap_save_and_lock(struct pt_regs *regs) { }
- static inline void kuap_user_restore(struct pt_regs *regs) { }
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
