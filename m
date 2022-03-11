@@ -2,192 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 04:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22093C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 04:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346382AbiCKEgp (ORCPT
+        id S1346444AbiCKEhD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 23:36:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
+        Thu, 10 Mar 2022 23:37:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346349AbiCKEg2 (ORCPT
+        with ESMTP id S1346338AbiCKEgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 23:36:28 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A741A635A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 20:35:24 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id p8-20020a17090a74c800b001bf257861efso7157203pjl.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 20:35:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=/6LQxDqWY4Esp9ZSrV3TLgBHw5oWwKje6YnPfn1gVe0=;
-        b=Ek/1bsnAG/hVG7ii8JsZz32AwUfIFyGF5Pg/fau347mO2ZAfGwG0UB614TTFDqGnhZ
-         rHNZfjHHrDTghOxk5BEyXlc0ltIELClmRGKqBoATRPt2BS7goqkfj8BkJF29etWZSBfQ
-         ogfd/KgGzcaYkGTucgBwZK3rAZVi17Fqq+ecgRtxGKBYwsyLlIfTprCJQVJ2gxW2R2Hh
-         YhQYnkAcQY23qa+zzBLg8Ex98nPHW4hsW6gQs9OibMFI4knEYxJTrytypXM1npoyVx3f
-         3aQveppHSVg8Y2Lzih9UHdlOV6na/TLEB6DxPm7h8aP3uXOC5vLh7KTd70LuVtgaRbql
-         SbpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=/6LQxDqWY4Esp9ZSrV3TLgBHw5oWwKje6YnPfn1gVe0=;
-        b=xz+SA/0j9bBxDYnd0ToXSG4d3AiMML3KeFvkKyRcOD1Tp35y3RdSpjgl5qnSG8wC0R
-         2UacA8kqXi6V6c2yWLOOcWT3kdtHA/sTsefb83Xbq8XPeoXm0H3oil4uV09yOg1DSCKZ
-         nPhwUD63jsOGOR9VldK8Sg+NPiEnVflCmLHCw/1vNT+yK5gHjdLPQ6QXussb2fN6+bFv
-         JgcPVU7ed6LInNwlbd4IugPgvb0J+6Gp0NCOcGmk7adkjX6QrybOiTQoZZaXfw4QhbsU
-         3MCSCdLBZLdaEvhFwxTpYdNX1Uw20hOcKd5tFQTVpFONweTFyBu4+1TR9L/MF4RBUWoX
-         O60A==
-X-Gm-Message-State: AOAM53111SC4SiZ6v6rMhVyE4vSB37bZUemvvBGWSnJ9GOMsSwuQKTIW
-        pZlQtLam3+VkhX54mrhxtvYfWWukUA8=
-X-Google-Smtp-Source: ABdhPJzaU/3SkUVoi8JwM+s+Wt6EJBlWPhdtMUcMIgfxrHnURy15ljF5E+wyiVXG/Sj3nonWf14vKGKFkXQ=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:2284:b0:4f7:86a3:6f6 with SMTP id
- f4-20020a056a00228400b004f786a306f6mr3370520pfe.20.1646973324382; Thu, 10 Mar
- 2022 20:35:24 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 04:35:17 +0000
-In-Reply-To: <20220311043517.17027-1-seanjc@google.com>
-Message-Id: <20220311043517.17027-4-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220311043517.17027-1-seanjc@google.com>
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH 3/3] KVM: x86: Trace all APICv inhibit changes and capture
- overall status
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Thu, 10 Mar 2022 23:36:37 -0500
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2891A635A;
+        Thu, 10 Mar 2022 20:35:33 -0800 (PST)
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 22B4ZAqd019685;
+        Fri, 11 Mar 2022 13:35:10 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 22B4ZAqd019685
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1646973311;
+        bh=LjOGr0pIATee6R8ACoH57i1hpgApkEujUZuMS4lP7v8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rQcco8k5x7idvPaucbYhdy9OS4UGkaySWfHK/oPxSIKfKH9IkR/KCdlIbqE251Zjj
+         GUkAxnyBE/fDd4IPzxWx8odoVNMtti0u8tAPyGNbPSJpe50baxLlv3VgrxQt+Kct7c
+         thhiM2Z9tSZ4UZTWAkd12ToXtQcMlXWHdOc0beDnfR6n7flwGIeXMc+HpoJozxFkOJ
+         KzOy+dbS3AD0wO/8QsE580tgztKblTGu5ZI4Cyz0x0zcvWXzA5NfUENNSHnhp8itMX
+         z8okMuiUCokPndSTBRRkr3LKO9zQltOt+vrNB2iq8u6X30rXf8d0nnrumhnjPHFvM/
+         5RcYnD0JrfFag==
+X-Nifty-SrcIP: [209.85.214.177]
+Received: by mail-pl1-f177.google.com with SMTP id e2so6731238pls.10;
+        Thu, 10 Mar 2022 20:35:10 -0800 (PST)
+X-Gm-Message-State: AOAM533OJz2gN09FgpEXOn1Yg5EMosuB8EeL2yAOH3h2hfYyLrR0MXqD
+        MYmu1+DOjnRXu6JxDFHnPAMXE/+KWFnruY+AYs4=
+X-Google-Smtp-Source: ABdhPJyNCJkb3M7ukFi53zgoJUHhvSQ95COymbct3oUAAg6F4eHuljQlez2+7VK5S8Wkne54zlfb5/vEPBZyEYdE0jY=
+X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
+ s3-20020a170902b18300b0014fc26620d5mr8764545plr.136.1646973309837; Thu, 10
+ Mar 2022 20:35:09 -0800 (PST)
+MIME-Version: 1.0
+References: <20220310214450.676505-1-nayna@linux.ibm.com> <20220310214450.676505-4-nayna@linux.ibm.com>
+In-Reply-To: <20220310214450.676505-4-nayna@linux.ibm.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 11 Mar 2022 13:34:27 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQKqn1B=j2oeFb1r5oBrrcbJYrAQd0v2LqmqQT1F+1LLw@mail.gmail.com>
+Message-ID: <CAK7LNAQKqn1B=j2oeFb1r5oBrrcbJYrAQd0v2LqmqQT1F+1LLw@mail.gmail.com>
+Subject: Re: [PATCH v11 3/4] certs: conditionally build extract-cert if
+ platform keyring is enabled
+To:     Nayna Jain <nayna@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-security-module <linux-security-module@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        dimitri.ledkov@canonical.com, seth@forshee.me,
+        rnsastry@linux.ibm.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Trace all APICv inhibit changes instead of just those that result in
-APICv being (un)inhibited, and log the current state.  Debugging why
-APICv isn't working is frustrating as it's hard to see why APICv is still
-inhibited, and logging only the first inhibition means unnecessary onion
-peeling.
+On Fri, Mar 11, 2022 at 6:45 AM Nayna Jain <nayna@linux.ibm.com> wrote:
+>
+> extract-cert is used outside certs/ by INTEGRITY_PLATFORM_KEYRING.
+> Also build extract-cert if INTEGRITY_PLATFORM_KEYRING is enabled.
 
-Opportunistically drop the export of the tracepoint, it is not and should
-not be used by vendor code due to the need to serialize toggling via
-apicv_update_lock.
+If really so, extract-cert should go back to scripts/ again.
+(i.e. revert 340a02535ee785c64c62a9c45706597a0139e972)
 
-Note, using the common flow means kvm_apicv_init() switched from atomic
-to non-atomic bitwise operations.  The VM is unreachable at init, so
-non-atomic is perfectly ok.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/trace.h | 18 ++++++++++--------
- arch/x86/kvm/x86.c   | 29 +++++++++++++++++++----------
- 2 files changed, 29 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/kvm/trace.h b/arch/x86/kvm/trace.h
-index 105037a251b5..e3a24b8f04be 100644
---- a/arch/x86/kvm/trace.h
-+++ b/arch/x86/kvm/trace.h
-@@ -1339,23 +1339,25 @@ TRACE_EVENT(kvm_hv_stimer_cleanup,
- 		  __entry->vcpu_id, __entry->timer_index)
- );
- 
--TRACE_EVENT(kvm_apicv_update_request,
--	    TP_PROTO(int reason, bool activate),
--	    TP_ARGS(reason, activate),
-+TRACE_EVENT(kvm_apicv_inhibit_changed,
-+	    TP_PROTO(int reason, bool set, unsigned long inhibits),
-+	    TP_ARGS(reason, set, inhibits),
- 
- 	TP_STRUCT__entry(
- 		__field(int, reason)
--		__field(bool, activate)
-+		__field(bool, set)
-+		__field(unsigned long, inhibits)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->reason = reason;
--		__entry->activate = activate;
-+		__entry->set = set;
-+		__entry->inhibits = inhibits;
- 	),
- 
--	TP_printk("%s reason=%u",
--		  __entry->activate ? "activate" : "deactivate",
--		  __entry->reason)
-+	TP_printk("%s reason=%u, inhibits=0x%lx",
-+		  __entry->set ? "set" : "cleared",
-+		  __entry->reason, __entry->inhibits)
- );
- 
- TRACE_EVENT(kvm_apicv_accept_irq,
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 965688aa6b45..7333322a22ff 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9053,15 +9053,29 @@ bool kvm_apicv_activated(struct kvm *kvm)
- }
- EXPORT_SYMBOL_GPL(kvm_apicv_activated);
- 
-+
-+static void set_or_clear_apicv_inhibit(unsigned long *inhibits,
-+				       enum kvm_apicv_inhibit reason, bool set)
-+{
-+	if (set)
-+		__set_bit(reason, inhibits);
-+	else
-+		__clear_bit(reason, inhibits);
-+
-+	trace_kvm_apicv_inhibit_changed(reason, set, *inhibits);
-+}
-+
- static void kvm_apicv_init(struct kvm *kvm)
- {
-+	unsigned long *inhibits = &kvm->arch.apicv_inhibit_reasons;
-+
- 	init_rwsem(&kvm->arch.apicv_update_lock);
- 
--	set_bit(APICV_INHIBIT_REASON_ABSENT,
--		&kvm->arch.apicv_inhibit_reasons);
-+	set_or_clear_apicv_inhibit(inhibits, APICV_INHIBIT_REASON_ABSENT, true);
-+
- 	if (!enable_apicv)
--		set_bit(APICV_INHIBIT_REASON_DISABLE,
--			&kvm->arch.apicv_inhibit_reasons);
-+		set_or_clear_apicv_inhibit(inhibits,
-+					   APICV_INHIBIT_REASON_ABSENT, true);
- }
- 
- static void kvm_sched_yield(struct kvm_vcpu *vcpu, unsigned long dest_id)
-@@ -9747,13 +9761,9 @@ void __kvm_set_or_clear_apicv_inhibit(struct kvm *kvm,
- 
- 	old = new = kvm->arch.apicv_inhibit_reasons;
- 
--	if (set)
--		__set_bit(reason, &new);
--	else
--		__clear_bit(reason, &new);
-+	set_or_clear_apicv_inhibit(&new, reason, set);
- 
- 	if (!!old != !!new) {
--		trace_kvm_apicv_update_request(reason, !set);
- 		/*
- 		 * Kick all vCPUs before setting apicv_inhibit_reasons to avoid
- 		 * false positives in the sanity check WARN in svm_vcpu_run().
-@@ -12939,7 +12949,6 @@ EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_pi_irte_update);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_avic_unaccelerated_access);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_avic_incomplete_ipi);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_avic_ga_log);
--EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_apicv_update_request);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_apicv_accept_irq);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_enter);
- EXPORT_TRACEPOINT_SYMBOL_GPL(kvm_vmgexit_exit);
--- 
-2.35.1.723.g4982287a31-goog
+>
+> Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+> ---
+>  certs/Makefile | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/certs/Makefile b/certs/Makefile
+> index b92b6ff339d5..dfb48e043cfe 100644
+> --- a/certs/Makefile
+> +++ b/certs/Makefile
+> @@ -88,7 +88,11 @@ $(obj)/x509_revocation_list: $(CONFIG_SYSTEM_REVOCATION_KEYS) $(obj)/extract-cer
+>
+>  targets += x509_revocation_list
+>
+> +ifeq ($(CONFIG_INTEGRITY_PLATFORM_KEYRING),y)
+> +hostprogs-always-y := extract-cert
+> +else
+>  hostprogs := extract-cert
+> +endif
+>
+>  HOSTCFLAGS_extract-cert.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
+>  HOSTLDLIBS_extract-cert = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
+> --
+> 2.27.0
+>
 
+
+--
+Best Regards
+Masahiro Yamada
