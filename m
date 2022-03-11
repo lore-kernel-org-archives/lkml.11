@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DC31C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346722AbiCKFyV (ORCPT
+        id S1346734AbiCKFyb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:54:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
+        Fri, 11 Mar 2022 00:54:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346550AbiCKFwn (ORCPT
+        with ESMTP id S1346560AbiCKFwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:52:43 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E679FF9FB3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:37 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id t18-20020a63dd12000000b00342725203b5so4205675pgg.16
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:37 -0800 (PST)
+        Fri, 11 Mar 2022 00:52:45 -0500
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7643F11A6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:42 -0800 (PST)
+Received: by mail-pj1-x104a.google.com with SMTP id q21-20020a17090a2e1500b001c44f70fd38so338911pjd.6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=mSaO6+QnMWWeIwCnlQiy3I7psXBlkN5aFHPmI5GJrpE=;
-        b=FCGnqjPbkseOrMYyCHrqxAIaVqtnLi8AxjGKJPZX3S5j3a66lxzSyS/yD62o0BjUPi
-         D7bf3dIefvNcU97dei7CR+FUF4vB9txnMqMrE1ZfVmj/OI8ZWE3X9DVCvSX88KrsowqU
-         UOBxu+rvxAl5/Nqx49/Tl5HkRLDedWQRZZLfidlpqIMrnXPdv0UWUm0cJ7u8sDK1tZgM
-         e7YnxFLQuQApbNg5yA9XvELEOIWooHpkYs+JDjDMr/hMF++VutHq/NAN7U7r/Xo5Oo24
-         pY+kwEr6u8xXcdhQlWCtV2b/PlmpDdOd7pD8/YcEKSUwceX65jmEMJIZg4/PODi6pMKa
-         0uZg==
+        bh=ObE4vFks/3TzFTIWtkMMXGOjctmkoD0LvkElMb+vMzk=;
+        b=S1nS1658yfcQ53QosCnNh+vzGFFMhwmzYTFgLeCx2wARYRO2JnljUgQI+VcbSj4p1i
+         BEyDre+/u31X7K3vWS1AAYZVrngXE3HnmSVWjusCa1teBUednQI0IgS3kIdCFHg5zXr1
+         /55G67M6+vBvehyZYByAchQzjPvRJEE4r+iAp132F1coVPCsQ8CCesXU4VQCHIzlu4ec
+         SX4IanV1jEtL5xrZi0+XRTKVEn42zJFsOjhDrSs5GJdgqhtwiwsKBSXZ+rPN7CjgwhGl
+         AbWgWDOAe+7hXK/UzuRsXVjkLlmh5squCKWQacm4pyhQJFvFom535HHyuNr96wxcagDq
+         UN9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=mSaO6+QnMWWeIwCnlQiy3I7psXBlkN5aFHPmI5GJrpE=;
-        b=UhpZdSxz+N8/SaWGUEFyUw9nKPKlYuRjUPVpIN562m2S5D6Z11Qdv+57WPLbH+6Qqz
-         /B1Jku0KlNhUee1OM9PVHIXuUXrdENd/RF8xQ9Y2nf2VFMWcKG4pPTcRzBZqln3atKqp
-         LxJqEhpQgUiD/glXTm7q6Dcb4P6Ihun8NVP1EBzRPOzvDqBvhjQpvff51X9y9Ao+NKhh
-         A3q5dNpO+5whCURMmgqcP0ULZeG7Qb+hAHOTcyGvHQEQoul0pFfdHpNUdGe+YUidvIxV
-         XGm4BJjrct6iVNloW2yYfu9GJfmiLh31DxyMKW30343ribAu6ZPDFiRKgae+HNOqt7t7
-         DREA==
-X-Gm-Message-State: AOAM533/7sS9dJcNPyc5X5SSM2PuXgK+ktfanH38p9uUg7XDe4QLjJIQ
-        2b8oEONjnVc/kKXm+4tY3fC3DCQ86t7Osq77eAXy4TPIZzgVnghmv90hEipHur6F89DUFc30jv5
-        z6d0lOcQh8d8uH9z4Wj/QK8Wp4BhnyBbhKvk6FKdpOMzwqA4GtSbLu/MNbxR+rgAiL6nACg==
-X-Google-Smtp-Source: ABdhPJwIafp9cvM1AbG13Srks7eDiQ4MqalsNr6N4Rrx/YQJKV3EBpTT9sxVnkvvt67S1nAllnBuda+MnlY=
+        bh=ObE4vFks/3TzFTIWtkMMXGOjctmkoD0LvkElMb+vMzk=;
+        b=OfbAPeTTChmvLgA3fGQU3CGHTylEOC+yDc4e4eS5XdIToJns1awyptkUfoj2/sJ+Jx
+         /9PyT8ydeQdIVYF8obRgcRvXNdAox6Aiy1DFVg6BAvkuLJ5qFL+5LPtSA4YkfagMskQr
+         TwOHa7ChxfSyPSnQT6wE7zmMhgnw/eqFIlpI3hK90WxdZ9++ZPXfbBbe+2QN7kCnCNE4
+         cMnBnODnQxEBz6n9jqtHK8WvOh0MEfZA8oeN3Ph6lKJ7UHrPSfypMk++0NftlRp7q3Bj
+         sPmDF+sBTnxYIr1SxTcB5BkImVj27V1y6qwQNzy92jbwbM4Zyv7XBzbonJeOsOGCQmyi
+         iwBA==
+X-Gm-Message-State: AOAM532cZfR7SDm1R/tfvS8G6s/K+pjs2HGm+Uy7kpzATJhj375q48Vg
+        RnjzT+nMKCPGxmvI1aaAtRvrHAA8u1VViv7V06GH4XmMINTVJIckMBdUwXpxyfQuJrbUvPR4R6j
+        EG7B3Jki9tq9GeE498J6FY+q3FMtq0lxzqUglx859cvrIlr7Qbco/kqWgypMO8xM6VqL/vg==
+X-Google-Smtp-Source: ABdhPJwgdUy/YJX0CA1VmDzsMYQJXRf9kV83UuZZXvbnfQlKNVpskQWtpae90LJ93LV7bkGYFYsuiuLPHdw=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:4b4a:b0:1bf:83d:6805 with SMTP id
- mi10-20020a17090b4b4a00b001bf083d6805mr20581582pjb.174.1646977897282; Thu, 10
- Mar 2022 21:51:37 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1a8b:b0:4f7:595c:b900 with SMTP id
+ e11-20020a056a001a8b00b004f7595cb900mr8627237pfv.62.1646977902211; Thu, 10
+ Mar 2022 21:51:42 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:49:30 +0000
+Date:   Fri, 11 Mar 2022 05:49:33 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-20-seanjc@google.com>
+Message-Id: <20220311055056.57265-23-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 019/105] KVM: selftests: Use KVM_IOCTL_ERROR() for one-off
- arm64 ioctls
+Subject: [RFC PATCH 022/105] KVM: selftests: Multiplex return code and fd in __kvm_create_device()
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -67,33 +66,88 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/lib/aarch64/processor.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ tools/testing/selftests/kvm/aarch64/vgic_init.c  |  6 +++---
+ .../selftests/kvm/include/kvm_util_base.h        |  2 +-
+ tools/testing/selftests/kvm/lib/kvm_util.c       | 16 +++++++---------
+ 3 files changed, 11 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/aarch64/processor.c b/tools/testing/selftests/kvm/lib/aarch64/processor.c
-index 6fa52e141e1b..5f6967058647 100644
---- a/tools/testing/selftests/kvm/lib/aarch64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/aarch64/processor.c
-@@ -472,15 +472,15 @@ void aarch64_get_supported_page_sizes(uint32_t ipa,
- 	TEST_ASSERT(vm_fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VM, vm_fd));
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+index 18d1d0335108..1015f6fc352c 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+@@ -642,8 +642,8 @@ static void test_v3_its_region(void)
+ int test_kvm_device(uint32_t gic_dev_type)
+ {
+ 	struct vm_gic v;
+-	int ret, fd;
+ 	uint32_t other;
++	int ret;
  
- 	vcpu_fd = ioctl(vm_fd, KVM_CREATE_VCPU, 0);
--	TEST_ASSERT(vcpu_fd >= 0, "Can't create vcpu");
-+	TEST_ASSERT(vcpu_fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VCPU, vcpu_fd));
+ 	v.vm = vm_create_default_with_vcpus(NR_VCPUS, 0, 0, guest_code, NULL);
  
- 	err = ioctl(vm_fd, KVM_ARM_PREFERRED_TARGET, &preferred_init);
--	TEST_ASSERT(err == 0, "Can't get target");
-+	TEST_ASSERT(err == 0, KVM_IOCTL_ERROR(KVM_ARM_PREFERRED_TARGET, err));
- 	err = ioctl(vcpu_fd, KVM_ARM_VCPU_INIT, &preferred_init);
--	TEST_ASSERT(err == 0, "Can't get init vcpu");
-+	TEST_ASSERT(err == 0, KVM_IOCTL_ERROR(KVM_ARM_VCPU_INIT, err));
+@@ -657,8 +657,8 @@ int test_kvm_device(uint32_t gic_dev_type)
+ 		return ret;
+ 	v.gic_fd = kvm_create_device(v.vm, gic_dev_type);
  
- 	err = ioctl(vcpu_fd, KVM_GET_ONE_REG, &reg);
--	TEST_ASSERT(err == 0, "Can't get MMFR0");
-+	TEST_ASSERT(err == 0, KVM_IOCTL_ERROR(KVM_GET_ONE_REG, vcpu_fd));
+-	ret = __kvm_create_device(v.vm, gic_dev_type, &fd);
+-	TEST_ASSERT(ret && errno == EEXIST, "create GIC device twice");
++	ret = __kvm_create_device(v.vm, gic_dev_type);
++	TEST_ASSERT(ret < 0 && errno == EEXIST, "create GIC device twice");
  
- 	*ps4k = ((val >> 28) & 0xf) != 0xf;
- 	*ps64k = ((val >> 24) & 0xf) == 0;
+ 	/* try to create the other gic_dev_type */
+ 	other = VGIC_DEV_IS_V2(gic_dev_type) ? KVM_DEV_TYPE_ARM_VGIC_V3
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 081ba04e5df3..df1202bacc04 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -480,7 +480,7 @@ void vcpu_args_set(struct kvm_vm *vm, uint32_t vcpuid, unsigned int num, ...);
+ int _kvm_device_check_attr(int dev_fd, uint32_t group, uint64_t attr);
+ int kvm_device_check_attr(int dev_fd, uint32_t group, uint64_t attr);
+ int __kvm_test_create_device(struct kvm_vm *vm, uint64_t type);
+-int __kvm_create_device(struct kvm_vm *vm, uint64_t type, int *fd);
++int __kvm_create_device(struct kvm_vm *vm, uint64_t type);
+ int kvm_create_device(struct kvm_vm *vm, uint64_t type);
+ int _kvm_device_access(int dev_fd, uint32_t group, uint64_t attr,
+ 		       void *val, bool write);
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index f0a08de67f0f..e10894cc2bc1 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1610,27 +1610,25 @@ int __kvm_test_create_device(struct kvm_vm *vm, uint64_t type)
+ 	return __vm_ioctl(vm, KVM_CREATE_DEVICE, &create_dev);
+ }
+ 
+-int __kvm_create_device(struct kvm_vm *vm, uint64_t type, int *fd)
++int __kvm_create_device(struct kvm_vm *vm, uint64_t type)
+ {
+ 	struct kvm_create_device create_dev = {
+ 		.type = type,
+ 		.fd = -1,
+ 		.flags = 0,
+ 	};
+-	int ret;
++	int err;
+ 
+-	ret = __vm_ioctl(vm, KVM_CREATE_DEVICE, &create_dev);
+-	*fd = create_dev.fd;
+-	return ret;
++	err = __vm_ioctl(vm, KVM_CREATE_DEVICE, &create_dev);
++	TEST_ASSERT(err <= 0, "KVM_CREATE_DEVICE shouldn't return a positive value");
++	return err ? : create_dev.fd;
+ }
+ 
+ int kvm_create_device(struct kvm_vm *vm, uint64_t type)
+ {
+-	int fd, ret;
++	int fd = __kvm_create_device(vm, type);
+ 
+-	ret = __kvm_create_device(vm, type, &fd);
+-
+-	TEST_ASSERT(!ret, "KVM_CREATE_DEVICE IOCTL failed, rc: %i errno: %i", ret, errno);
++	TEST_ASSERT(fd >= 0, "KVM_CREATE_DEVICE IOCTL failed, rc: %i errno: %i", fd, errno);
+ 	return fd;
+ }
+ 
 -- 
 2.35.1.723.g4982287a31-goog
 
