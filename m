@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C531C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67306C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347738AbiCKJ67 (ORCPT
+        id S1347788AbiCKJ7V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:58:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
+        Fri, 11 Mar 2022 04:59:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347724AbiCKJ6p (ORCPT
+        with ESMTP id S1347692AbiCKJ6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:58:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC103E08D;
-        Fri, 11 Mar 2022 01:57:38 -0800 (PST)
+        Fri, 11 Mar 2022 04:58:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8DF1C11E;
+        Fri, 11 Mar 2022 01:57:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 476F2615AA;
-        Fri, 11 Mar 2022 09:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 852F6C340E9;
-        Fri, 11 Mar 2022 09:57:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 182EE615AA;
+        Fri, 11 Mar 2022 09:57:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A3A0C340E9;
+        Fri, 11 Mar 2022 09:57:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646992657;
-        bh=1ZgHiYjkDibjMM4gmwWb57+6BkmRdWgnjA+uV3laCmA=;
+        s=korg; t=1646992663;
+        bh=bfa+jBpEP1Ie/EPjQJmLC47xaqcv2tyJInYaPbADS7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=klfdGwZumtJuwNNdbanTQ12jZU+4CJVIq1LPItL11JcXzvm+0m9JSUxuycxZHIu9d
-         6mRvecbHasAGw1TLG/Q/bzINwHs0jetNY+lvX4XLOdrQ78HLVYJAas6TIvzvtaPQ1s
-         9zke/XcZT6j4wn10idoSNw1bQvaesE3jR4p9tGrM=
+        b=UPEkKlooDXghEkgdu8KoBrmXtQar3d5JQq3eVOD9Lo8oEQlfDuMKZDYL/UXnxN6Bg
+         CsqHqVc6oOcHUcRCWlQ81otctLf6O4NBXN7a9CEpEqvkXmbmBoZpjV0c8AmgcQtU/D
+         DEGoIk01pxaoIfZLZBtpUM5+0w6UTOvGi27NWJ8k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.14.271
-Date:   Fri, 11 Mar 2022 10:57:25 +0100
-Message-Id: <164699264516207@kroah.com>
+Subject: Re: Linux 4.19.234
+Date:   Fri, 11 Mar 2022 10:57:29 +0100
+Message-Id: <16469926499295@kroah.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <164699264579198@kroah.com>
-References: <164699264579198@kroah.com>
+In-Reply-To: <1646992649239226@kroah.com>
+References: <1646992649239226@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -135,10 +135,10 @@ index 985181dba0ba..6bd97cd50d62 100644
  ARM white papers:
  
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d840466c8b21..55ad746d3574 100644
+index 0ee49b4929be..5754585d7265 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4150,8 +4150,12 @@
+@@ -4329,8 +4329,12 @@
  			Specific mitigations can also be selected manually:
  
  			retpoline	  - replace indirect branches
@@ -154,17 +154,17 @@ index d840466c8b21..55ad746d3574 100644
  			Not specifying this option is equivalent to
  			spectre_v2=auto.
 diff --git a/Makefile b/Makefile
-index 6b4a4650a507..78850e721b3d 100644
+index c93bacac0795..f3f1a59ec25b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 14
--SUBLEVEL = 270
-+SUBLEVEL = 271
+ PATCHLEVEL = 19
+-SUBLEVEL = 233
++SUBLEVEL = 234
  EXTRAVERSION =
- NAME = Petit Gorille
+ NAME = "People's Front"
  
 diff --git a/arch/arm/include/asm/assembler.h b/arch/arm/include/asm/assembler.h
 index 1935b580f0e8..c7fa0c0ff447 100644
@@ -226,10 +226,10 @@ index 000000000000..d1fa5607d3aa
 +
 +#endif
 diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
-index 3939ad178405..07a421255e4e 100644
+index 8b679e2ca3c3..dc31426cae6d 100644
 --- a/arch/arm/kernel/Makefile
 +++ b/arch/arm/kernel/Makefile
-@@ -101,4 +101,6 @@ endif
+@@ -106,4 +106,6 @@ endif
  
  obj-$(CONFIG_HAVE_ARM_SMCCC)	+= smccc-call.o
  
@@ -237,10 +237,10 @@ index 3939ad178405..07a421255e4e 100644
 +
  extra-y := $(head-y) vmlinux.lds
 diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
-index 2d8323648256..8d75da86ea8b 100644
+index cde22c04ad2b..3ed860c8cd73 100644
 --- a/arch/arm/kernel/entry-armv.S
 +++ b/arch/arm/kernel/entry-armv.S
-@@ -1033,12 +1033,11 @@ vector_\name:
+@@ -1029,12 +1029,11 @@ vector_\name:
  	sub	lr, lr, #\correction
  	.endif
  
@@ -257,7 +257,7 @@ index 2d8323648256..8d75da86ea8b 100644
  	str	lr, [sp, #8]		@ save spsr
  
  	@
-@@ -1059,6 +1058,44 @@ vector_\name:
+@@ -1055,6 +1054,44 @@ vector_\name:
  	movs	pc, lr			@ branch to handler in SVC mode
  ENDPROC(vector_\name)
  
@@ -302,7 +302,7 @@ index 2d8323648256..8d75da86ea8b 100644
  	.align	2
  	@ handler addresses follow this label
  1:
-@@ -1067,6 +1104,10 @@ ENDPROC(vector_\name)
+@@ -1063,6 +1100,10 @@ ENDPROC(vector_\name)
  	.section .stubs, "ax", %progbits
  	@ This must be the first word
  	.word	vector_swi
@@ -313,7 +313,7 @@ index 2d8323648256..8d75da86ea8b 100644
  
  vector_rst:
   ARM(	swi	SYS_ERROR0	)
-@@ -1181,8 +1222,10 @@ vector_addrexcptn:
+@@ -1177,8 +1218,10 @@ vector_addrexcptn:
   * FIQ "NMI" handler
   *-----------------------------------------------------------------------------
   * Handle a FIQ using the SVC stack allowing FIQ act like NMI on x86
@@ -325,7 +325,7 @@ index 2d8323648256..8d75da86ea8b 100644
  	vector_stub	fiq, FIQ_MODE, 4
  
  	.long	__fiq_usr			@  0  (USR_26 / USR_32)
-@@ -1215,6 +1258,30 @@ vector_addrexcptn:
+@@ -1211,6 +1254,30 @@ vector_addrexcptn:
  	W(b)	vector_irq
  	W(b)	vector_fiq
  
@@ -357,10 +357,10 @@ index 2d8323648256..8d75da86ea8b 100644
  	.align	2
  
 diff --git a/arch/arm/kernel/entry-common.S b/arch/arm/kernel/entry-common.S
-index 08a7132f5600..558f88fbb33c 100644
+index 0465d65d23de..e27fc2df5231 100644
 --- a/arch/arm/kernel/entry-common.S
 +++ b/arch/arm/kernel/entry-common.S
-@@ -151,6 +151,29 @@ ENDPROC(ret_from_fork)
+@@ -165,6 +165,29 @@ ENDPROC(ret_from_fork)
   *-----------------------------------------------------------------------------
   */
  
@@ -390,7 +390,7 @@ index 08a7132f5600..558f88fbb33c 100644
  	.align	5
  ENTRY(vector_swi)
  #ifdef CONFIG_CPU_V7M
-@@ -158,6 +181,7 @@ ENTRY(vector_swi)
+@@ -172,6 +195,7 @@ ENTRY(vector_swi)
  #else
  	sub	sp, sp, #PT_REGS_SIZE
  	stmia	sp, {r0 - r12}			@ Calling r0 - r12
@@ -476,7 +476,7 @@ index 000000000000..0dcefc36fb7a
 +	return sprintf(buf, "Mitigation: %s\n", method);
 +}
 diff --git a/arch/arm/kernel/traps.c b/arch/arm/kernel/traps.c
-index f702f2b37052..7d81d4a1f5a9 100644
+index aec533168f04..d49fafd2b865 100644
 --- a/arch/arm/kernel/traps.c
 +++ b/arch/arm/kernel/traps.c
 @@ -33,6 +33,7 @@
@@ -487,7 +487,7 @@ index f702f2b37052..7d81d4a1f5a9 100644
  #include <asm/unistd.h>
  #include <asm/traps.h>
  #include <asm/ptrace.h>
-@@ -820,10 +821,59 @@ static inline void __init kuser_init(void *vectors)
+@@ -830,10 +831,59 @@ static inline void __init kuser_init(void *vectors)
  }
  #endif
  
@@ -549,7 +549,7 @@ index f702f2b37052..7d81d4a1f5a9 100644
  	extern char __stubs_start[], __stubs_end[];
  	extern char __vectors_start[], __vectors_end[];
  	unsigned i;
-@@ -844,17 +894,20 @@ void __init early_trap_init(void *vectors_base)
+@@ -854,17 +904,20 @@ void __init early_trap_init(void *vectors_base)
  	 * into the vector page, mapped at 0xffff0000, and ensure these
  	 * are visible to the instruction stream.
  	 */
@@ -574,13 +574,13 @@ index f702f2b37052..7d81d4a1f5a9 100644
 -#endif
  }
 +#endif
-diff --git a/arch/arm/kernel/vmlinux-xip.lds.S b/arch/arm/kernel/vmlinux-xip.lds.S
-index 0951df916b85..a7d553f11e0e 100644
---- a/arch/arm/kernel/vmlinux-xip.lds.S
-+++ b/arch/arm/kernel/vmlinux-xip.lds.S
-@@ -13,6 +13,19 @@
- #include <asm/memory.h>
- #include <asm/page.h>
+diff --git a/arch/arm/kernel/vmlinux.lds.h b/arch/arm/kernel/vmlinux.lds.h
+index 8247bc15addc..78d156e4f008 100644
+--- a/arch/arm/kernel/vmlinux.lds.h
++++ b/arch/arm/kernel/vmlinux.lds.h
+@@ -25,6 +25,19 @@
+ #define ARM_MMU_DISCARD(x)	x
+ #endif
  
 +/*
 + * ld.lld does not support NOCROSSREFS:
@@ -596,121 +596,54 @@ index 0951df916b85..a7d553f11e0e 100644
 +	sym##_end = LOADADDR(section) + SIZEOF(section)
 +
  #define PROC_INFO							\
- 	. = ALIGN(4);							\
- 	VMLINUX_SYMBOL(__proc_info_begin) = .;				\
-@@ -149,19 +162,31 @@ SECTIONS
- 	 * The vectors and stubs are relocatable code, and the
- 	 * only thing that matters is their relative offsets
- 	 */
--	__vectors_start = .;
--	.vectors 0xffff0000 : AT(__vectors_start) {
--		*(.vectors)
-+	__vectors_lma = .;
-+	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {
-+		.vectors {
-+			*(.vectors)
-+		}
-+		.vectors.bhb.loop8 {
-+			*(.vectors.bhb.loop8)
-+		}
-+		.vectors.bhb.bpiall {
-+			*(.vectors.bhb.bpiall)
-+		}
- 	}
--	. = __vectors_start + SIZEOF(.vectors);
--	__vectors_end = .;
--
--	__stubs_start = .;
--	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {
-+	ARM_LMA(__vectors, .vectors);
-+	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);
-+	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);
-+	. = __vectors_lma + SIZEOF(.vectors) +
-+		SIZEOF(.vectors.bhb.loop8) +
-+		SIZEOF(.vectors.bhb.bpiall);
-+
-+	__stubs_lma = .;
-+	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
- 		*(.stubs)
- 	}
--	. = __stubs_start + SIZEOF(.stubs);
--	__stubs_end = .;
-+	ARM_LMA(__stubs, .stubs);
-+	. = __stubs_lma + SIZEOF(.stubs);
- 
- 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
- 
-diff --git a/arch/arm/kernel/vmlinux.lds.S b/arch/arm/kernel/vmlinux.lds.S
-index 1845a5affb44..b7a27a563a3a 100644
---- a/arch/arm/kernel/vmlinux.lds.S
-+++ b/arch/arm/kernel/vmlinux.lds.S
-@@ -15,6 +15,19 @@
- #include <asm/page.h>
- #include <asm/pgtable.h>
- 
-+/*
-+ * ld.lld does not support NOCROSSREFS:
-+ * https://github.com/ClangBuiltLinux/linux/issues/1609
-+ */
-+#ifdef CONFIG_LD_IS_LLD
-+#define NOCROSSREFS
-+#endif
-+
-+/* Set start/end symbol names to the LMA for the section */
-+#define ARM_LMA(sym, section)						\
-+	sym##_start = LOADADDR(section);				\
-+	sym##_end = LOADADDR(section) + SIZEOF(section)
-+
- #define PROC_INFO							\
- 	. = ALIGN(4);							\
- 	VMLINUX_SYMBOL(__proc_info_begin) = .;				\
-@@ -170,19 +183,31 @@ SECTIONS
- 	 * The vectors and stubs are relocatable code, and the
- 	 * only thing that matters is their relative offsets
- 	 */
--	__vectors_start = .;
--	.vectors 0xffff0000 : AT(__vectors_start) {
--		*(.vectors)
-+	__vectors_lma = .;
-+	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {
-+		.vectors {
-+			*(.vectors)
-+		}
-+		.vectors.bhb.loop8 {
-+			*(.vectors.bhb.loop8)
-+		}
-+		.vectors.bhb.bpiall {
-+			*(.vectors.bhb.bpiall)
-+		}
- 	}
--	. = __vectors_start + SIZEOF(.vectors);
--	__vectors_end = .;
--
--	__stubs_start = .;
--	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {
-+	ARM_LMA(__vectors, .vectors);
-+	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);
-+	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);
-+	. = __vectors_lma + SIZEOF(.vectors) +
-+		SIZEOF(.vectors.bhb.loop8) +
-+		SIZEOF(.vectors.bhb.bpiall);
-+
-+	__stubs_lma = .;
-+	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {
- 		*(.stubs)
- 	}
--	. = __stubs_start + SIZEOF(.stubs);
--	__stubs_end = .;
-+	ARM_LMA(__stubs, .stubs);
-+	. = __stubs_lma + SIZEOF(.stubs);
- 
+ 		. = ALIGN(4);						\
+ 		__proc_info_begin = .;					\
+@@ -100,19 +113,31 @@
+  * only thing that matters is their relative offsets
+  */
+ #define ARM_VECTORS							\
+-	__vectors_start = .;						\
+-	.vectors 0xffff0000 : AT(__vectors_start) {			\
+-		*(.vectors)						\
++	__vectors_lma = .;						\
++	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {		\
++		.vectors {						\
++			*(.vectors)					\
++		}							\
++		.vectors.bhb.loop8 {					\
++			*(.vectors.bhb.loop8)				\
++		}							\
++		.vectors.bhb.bpiall {					\
++			*(.vectors.bhb.bpiall)				\
++		}							\
+ 	}								\
+-	. = __vectors_start + SIZEOF(.vectors);				\
+-	__vectors_end = .;						\
++	ARM_LMA(__vectors, .vectors);					\
++	ARM_LMA(__vectors_bhb_loop8, .vectors.bhb.loop8);		\
++	ARM_LMA(__vectors_bhb_bpiall, .vectors.bhb.bpiall);		\
++	. = __vectors_lma + SIZEOF(.vectors) +				\
++		SIZEOF(.vectors.bhb.loop8) +				\
++		SIZEOF(.vectors.bhb.bpiall);				\
+ 									\
+-	__stubs_start = .;						\
+-	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_start) {		\
++	__stubs_lma = .;						\
++	.stubs ADDR(.vectors) + 0x1000 : AT(__stubs_lma) {		\
+ 		*(.stubs)						\
+ 	}								\
+-	. = __stubs_start + SIZEOF(.stubs);				\
+-	__stubs_end = .;						\
++	ARM_LMA(__stubs, .stubs);					\
++	. = __stubs_lma + SIZEOF(.stubs);				\
+ 									\
  	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
  
 diff --git a/arch/arm/mm/Kconfig b/arch/arm/mm/Kconfig
-index 77fd4446b5fc..09c6ba22a02e 100644
+index 9738c1f9737c..7f11e44cf7cc 100644
 --- a/arch/arm/mm/Kconfig
 +++ b/arch/arm/mm/Kconfig
-@@ -829,6 +829,7 @@ config CPU_BPREDICT_DISABLE
+@@ -823,6 +823,7 @@ config CPU_BPREDICT_DISABLE
  
  config CPU_SPECTRE
  	bool
@@ -718,7 +651,7 @@ index 77fd4446b5fc..09c6ba22a02e 100644
  
  config HARDEN_BRANCH_PREDICTOR
  	bool "Harden the branch predictor against aliasing attacks" if EXPERT
-@@ -849,6 +850,16 @@ config HARDEN_BRANCH_PREDICTOR
+@@ -843,6 +844,16 @@ config HARDEN_BRANCH_PREDICTOR
  
  	   If unsure, say Y.
  
@@ -736,7 +669,7 @@ index 77fd4446b5fc..09c6ba22a02e 100644
  	bool
  	select NEED_KUSER_HELPERS
 diff --git a/arch/arm/mm/proc-v7-bugs.c b/arch/arm/mm/proc-v7-bugs.c
-index 9a07916af8dd..1b6e770bc1cd 100644
+index a6554fdb56c5..8394307272d6 100644
 --- a/arch/arm/mm/proc-v7-bugs.c
 +++ b/arch/arm/mm/proc-v7-bugs.c
 @@ -7,8 +7,36 @@
@@ -840,7 +773,7 @@ index 9a07916af8dd..1b6e770bc1cd 100644
  
  	switch (read_cpuid_part()) {
  	case ARM_CPU_PART_CORTEX_A8:
-@@ -52,29 +128,32 @@ static void cpu_v7_spectre_init(void)
+@@ -52,32 +128,37 @@ static void cpu_v7_spectre_init(void)
  	case ARM_CPU_PART_CORTEX_A17:
  	case ARM_CPU_PART_CORTEX_A73:
  	case ARM_CPU_PART_CORTEX_A75:
@@ -861,6 +794,11 @@ index 9a07916af8dd..1b6e770bc1cd 100644
  		break;
  
 -#ifdef CONFIG_ARM_PSCI
+ 	case ARM_CPU_PART_BRAHMA_B53:
+ 		/* Requires no workaround */
++		state = SPECTRE_UNAFFECTED;
+ 		break;
++
  	default:
  		/* Other ARM CPUs require no workaround */
 -		if (read_cpuid_implementor() == ARM_CPU_IMP_ARM)
@@ -882,7 +820,7 @@ index 9a07916af8dd..1b6e770bc1cd 100644
  		if (psci_ops.smccc_version == SMCCC_VERSION_1_0)
  			break;
  
-@@ -84,10 +163,7 @@ static void cpu_v7_spectre_init(void)
+@@ -87,10 +168,7 @@ static void cpu_v7_spectre_init(void)
  					  ARM_SMCCC_ARCH_WORKAROUND_1, &res);
  			if ((int)res.a0 != 0)
  				break;
@@ -894,7 +832,7 @@ index 9a07916af8dd..1b6e770bc1cd 100644
  			break;
  
  		case PSCI_CONDUIT_SMC:
-@@ -95,29 +171,97 @@ static void cpu_v7_spectre_init(void)
+@@ -98,29 +176,97 @@ static void cpu_v7_spectre_init(void)
  					  ARM_SMCCC_ARCH_WORKAROUND_1, &res);
  			if ((int)res.a0 != 0)
  				break;
@@ -1001,7 +939,7 @@ index 9a07916af8dd..1b6e770bc1cd 100644
  static __maybe_unused bool cpu_v7_check_auxcr_set(bool *warned,
  						  u32 mask, const char *msg)
  {
-@@ -146,16 +290,17 @@ static bool check_spectre_auxcr(bool *warned, u32 bit)
+@@ -149,16 +295,17 @@ static bool check_spectre_auxcr(bool *warned, u32 bit)
  void cpu_v7_ca8_ibe(void)
  {
  	if (check_spectre_auxcr(this_cpu_ptr(&spectre_warned), BIT(6)))
@@ -1023,7 +961,7 @@ index 9a07916af8dd..1b6e770bc1cd 100644
 +	cpu_v7_spectre_bhb_init();
  }
 diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index e08866cd2287..094b8f2d9821 100644
+index f7f9604b10cc..8910dde943d1 100644
 --- a/arch/x86/include/asm/cpufeatures.h
 +++ b/arch/x86/include/asm/cpufeatures.h
 @@ -203,7 +203,7 @@
@@ -1036,7 +974,7 @@ index e08866cd2287..094b8f2d9821 100644
  #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
  #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
 diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index 270448b178a7..19829b00e4fe 100644
+index 62f9903544b5..812976a6d864 100644
 --- a/arch/x86/include/asm/nospec-branch.h
 +++ b/arch/x86/include/asm/nospec-branch.h
 @@ -119,7 +119,7 @@
@@ -1091,13 +1029,13 @@ index 270448b178a7..19829b00e4fe 100644
  
  /* The indirect branch speculation control variants */
 diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
-index fcea3aa19c23..cf8d3f69ab30 100644
+index c524fa1f4c0e..f7b5f1645507 100644
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
 @@ -31,6 +31,7 @@
- #include <asm/set_memory.h>
  #include <asm/intel-family.h>
  #include <asm/e820/api.h>
+ #include <asm/hypervisor.h>
 +#include <linux/bpf.h>
  
  #include "cpu.h"
@@ -1432,7 +1370,7 @@ index fcea3aa19c23..cf8d3f69ab30 100644
  static ssize_t srbds_show_state(char *buf)
  {
  	return sprintf(buf, "%s\n", srbds_strings[srbds_mitigation]);
-@@ -1652,12 +1755,7 @@ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr
+@@ -1655,12 +1758,7 @@ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr
  		return sprintf(buf, "%s\n", spectre_v1_strings[spectre_v1_mitigation]);
  
  	case X86_BUG_SPECTRE_V2:
@@ -1447,33 +1385,10 @@ index fcea3aa19c23..cf8d3f69ab30 100644
  	case X86_BUG_SPEC_STORE_BYPASS:
  		return sprintf(buf, "%s\n", ssb_strings[ssb_mode]);
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index 448753021724..a97a306c3850 100644
+index a9e07d09b230..482d2e37e20c 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
-@@ -1278,17 +1278,16 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
- 		list_for_each_entry_safe(persistent_gnt, n,
- 					 &rinfo->grants, node) {
- 			list_del(&persistent_gnt->node);
--			if (persistent_gnt->gref != GRANT_INVALID_REF) {
--				gnttab_end_foreign_access(persistent_gnt->gref,
--							  0, 0UL);
--				rinfo->persistent_gnts_c--;
--			}
-+			if (persistent_gnt->gref == GRANT_INVALID_REF ||
-+			    !gnttab_try_end_foreign_access(persistent_gnt->gref))
-+				continue;
-+
-+			rinfo->persistent_gnts_c--;
- 			if (info->feature_persistent)
- 				__free_page(persistent_gnt->page);
- 			kfree(persistent_gnt);
- 		}
- 	}
--	BUG_ON(rinfo->persistent_gnts_c != 0);
- 
- 	for (i = 0; i < BLK_RING_SIZE(info); i++) {
- 		/*
-@@ -1345,7 +1344,8 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+@@ -1344,7 +1344,8 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
  			rinfo->ring_ref[i] = GRANT_INVALID_REF;
  		}
  	}
@@ -1483,7 +1398,7 @@ index 448753021724..a97a306c3850 100644
  	rinfo->ring.sring = NULL;
  
  	if (rinfo->irq)
-@@ -1429,9 +1429,15 @@ static int blkif_get_final_status(enum blk_req_status s1,
+@@ -1428,9 +1429,15 @@ static int blkif_get_final_status(enum blk_req_status s1,
  	return BLKIF_RSP_OKAY;
  }
  
@@ -1502,7 +1417,16 @@ index 448753021724..a97a306c3850 100644
  {
  	int i = 0;
  	struct scatterlist *sg;
-@@ -1505,42 +1511,43 @@ static bool blkif_completion(unsigned long *id,
+@@ -1453,7 +1460,7 @@ static bool blkif_completion(unsigned long *id,
+ 
+ 		/* Wait the second response if not yet here. */
+ 		if (s2->status < REQ_DONE)
+-			return false;
++			return 0;
+ 
+ 		bret->status = blkif_get_final_status(s->status,
+ 						      s2->status);
+@@ -1504,42 +1511,43 @@ static bool blkif_completion(unsigned long *id,
  	}
  	/* Add the persistent grant into the list of free grants */
  	for (i = 0; i < num_grant; i++) {
@@ -1560,7 +1484,16 @@ index 448753021724..a97a306c3850 100644
  				/*
  				 * Add the used indirect page back to the list of
  				 * available pages for indirect grefs.
-@@ -1621,12 +1628,17 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+@@ -1554,7 +1562,7 @@ static bool blkif_completion(unsigned long *id,
+ 		}
+ 	}
+ 
+-	return true;
++	return 1;
+ }
+ 
+ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+@@ -1620,12 +1628,17 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
  		}
  
  		if (bret.operation != BLKIF_OP_DISCARD) {
@@ -1579,7 +1512,7 @@ index 448753021724..a97a306c3850 100644
  		}
  
  		if (add_id_to_freelist(rinfo, id)) {
-@@ -1732,8 +1744,7 @@ static int setup_blkring(struct xenbus_device *dev,
+@@ -1731,8 +1744,7 @@ static int setup_blkring(struct xenbus_device *dev,
  	for (i = 0; i < info->nr_ring_pages; i++)
  		rinfo->ring_ref[i] = GRANT_INVALID_REF;
  
@@ -1589,7 +1522,7 @@ index 448753021724..a97a306c3850 100644
  	if (!sring) {
  		xenbus_dev_fatal(dev, -ENOMEM, "allocating shared ring");
  		return -ENOMEM;
-@@ -1743,7 +1754,7 @@ static int setup_blkring(struct xenbus_device *dev,
+@@ -1742,7 +1754,7 @@ static int setup_blkring(struct xenbus_device *dev,
  
  	err = xenbus_grant_ring(dev, rinfo->ring.sring, info->nr_ring_pages, gref);
  	if (err < 0) {
@@ -1598,6 +1531,19 @@ index 448753021724..a97a306c3850 100644
  		rinfo->ring.sring = NULL;
  		goto fail;
  	}
+@@ -2720,11 +2732,10 @@ static void purge_persistent_grants(struct blkfront_info *info)
+ 		list_for_each_entry_safe(gnt_list_entry, tmp, &rinfo->grants,
+ 					 node) {
+ 			if (gnt_list_entry->gref == GRANT_INVALID_REF ||
+-			    gnttab_query_foreign_access(gnt_list_entry->gref))
++			    !gnttab_try_end_foreign_access(gnt_list_entry->gref))
+ 				continue;
+ 
+ 			list_del(&gnt_list_entry->node);
+-			gnttab_end_foreign_access(gnt_list_entry->gref, 0, 0UL);
+ 			rinfo->persistent_gnts_c--;
+ 			gnt_list_entry->gref = GRANT_INVALID_REF;
+ 			list_add_tail(&gnt_list_entry->node, &rinfo->grants);
 diff --git a/drivers/firmware/psci.c b/drivers/firmware/psci.c
 index c80ec1d03274..d855c20de663 100644
 --- a/drivers/firmware/psci.c
@@ -1625,7 +1571,7 @@ index c80ec1d03274..d855c20de663 100644
  				unsigned long, unsigned long);
  static psci_fn *invoke_psci_fn;
 diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 56c7f2ebf573..430d7c223585 100644
+index 7fb7c10ff9eb..70af7830eed8 100644
 --- a/drivers/net/xen-netfront.c
 +++ b/drivers/net/xen-netfront.c
 @@ -414,14 +414,12 @@ static bool xennet_tx_buf_gc(struct netfront_queue *queue)
@@ -1645,7 +1591,7 @@ index 56c7f2ebf573..430d7c223585 100644
  			gnttab_release_grant_reference(
  				&queue->gref_tx_head, queue->grant_tx_ref[id]);
  			queue->grant_tx_ref[id] = GRANT_INVALID_REF;
-@@ -841,7 +839,6 @@ static int xennet_get_responses(struct netfront_queue *queue,
+@@ -864,7 +862,6 @@ static int xennet_get_responses(struct netfront_queue *queue,
  	int max = XEN_NETIF_NR_SLOTS_MIN + (rx->status <= RX_COPY_THRESHOLD);
  	int slots = 1;
  	int err = 0;
@@ -1653,7 +1599,7 @@ index 56c7f2ebf573..430d7c223585 100644
  
  	if (rx->flags & XEN_NETRXF_extra_info) {
  		err = xennet_get_extras(queue, extras, rp);
-@@ -872,8 +869,13 @@ static int xennet_get_responses(struct netfront_queue *queue,
+@@ -895,8 +892,13 @@ static int xennet_get_responses(struct netfront_queue *queue,
  			goto next;
  		}
  
@@ -1669,7 +1615,7 @@ index 56c7f2ebf573..430d7c223585 100644
  
  		gnttab_release_grant_reference(&queue->gref_rx_head, ref);
  
-@@ -1077,6 +1079,10 @@ static int xennet_poll(struct napi_struct *napi, int budget)
+@@ -1100,6 +1102,10 @@ static int xennet_poll(struct napi_struct *napi, int budget)
  		err = xennet_get_responses(queue, &rinfo, rp, &tmpq);
  
  		if (unlikely(err)) {
@@ -1680,7 +1626,7 @@ index 56c7f2ebf573..430d7c223585 100644
  err:
  			while ((skb = __skb_dequeue(&tmpq)))
  				__skb_queue_tail(&errq, skb);
-@@ -1654,7 +1660,7 @@ static int setup_netfront(struct xenbus_device *dev,
+@@ -1678,7 +1684,7 @@ static int setup_netfront(struct xenbus_device *dev,
  			struct netfront_queue *queue, unsigned int feature_split_evtchn)
  {
  	struct xen_netif_tx_sring *txs;
@@ -1689,7 +1635,7 @@ index 56c7f2ebf573..430d7c223585 100644
  	grant_ref_t gref;
  	int err;
  
-@@ -1674,21 +1680,21 @@ static int setup_netfront(struct xenbus_device *dev,
+@@ -1698,21 +1704,21 @@ static int setup_netfront(struct xenbus_device *dev,
  
  	err = xenbus_grant_ring(dev, txs, 1, &gref);
  	if (err < 0)
@@ -1714,7 +1660,7 @@ index 56c7f2ebf573..430d7c223585 100644
  	queue->rx_ring_ref = gref;
  
  	if (feature_split_evtchn)
-@@ -1701,22 +1707,28 @@ static int setup_netfront(struct xenbus_device *dev,
+@@ -1725,22 +1731,28 @@ static int setup_netfront(struct xenbus_device *dev,
  		err = setup_netfront_single(queue);
  
  	if (err)
@@ -1826,10 +1772,10 @@ index 3fa40c723e8e..edb0acd0b832 100644
  }
  
 diff --git a/drivers/xen/grant-table.c b/drivers/xen/grant-table.c
-index 1fb374466e84..2d203ba75e46 100644
+index 97341fa75458..e434a583ee7e 100644
 --- a/drivers/xen/grant-table.c
 +++ b/drivers/xen/grant-table.c
-@@ -115,12 +115,9 @@ struct gnttab_ops {
+@@ -135,12 +135,9 @@ struct gnttab_ops {
  	 */
  	unsigned long (*end_foreign_transfer_ref)(grant_ref_t ref);
  	/*
@@ -1844,13 +1790,18 @@ index 1fb374466e84..2d203ba75e46 100644
  };
  
  struct unmap_refs_callback_data {
-@@ -255,17 +252,6 @@ int gnttab_grant_foreign_access(domid_t domid, unsigned long frame,
+@@ -285,22 +282,6 @@ int gnttab_grant_foreign_access(domid_t domid, unsigned long frame,
  }
  EXPORT_SYMBOL_GPL(gnttab_grant_foreign_access);
  
 -static int gnttab_query_foreign_access_v1(grant_ref_t ref)
 -{
 -	return gnttab_shared.v1[ref].flags & (GTF_reading|GTF_writing);
+-}
+-
+-static int gnttab_query_foreign_access_v2(grant_ref_t ref)
+-{
+-	return grstatus[ref] & (GTF_reading|GTF_writing);
 -}
 -
 -int gnttab_query_foreign_access(grant_ref_t ref)
@@ -1862,7 +1813,7 @@ index 1fb374466e84..2d203ba75e46 100644
  static int gnttab_end_foreign_access_ref_v1(grant_ref_t ref, int readonly)
  {
  	u16 flags, nflags;
-@@ -296,6 +282,11 @@ int gnttab_end_foreign_access_ref(grant_ref_t ref, int readonly)
+@@ -354,6 +335,16 @@ int gnttab_end_foreign_access_ref(grant_ref_t ref, int readonly)
  }
  EXPORT_SYMBOL_GPL(gnttab_end_foreign_access_ref);
  
@@ -1871,10 +1822,15 @@ index 1fb374466e84..2d203ba75e46 100644
 +	return gnttab_shared.v1[ref].frame;
 +}
 +
++static unsigned long gnttab_read_frame_v2(grant_ref_t ref)
++{
++	return gnttab_shared.v2[ref].full_page.frame;
++}
++
  struct deferred_entry {
  	struct list_head list;
  	grant_ref_t ref;
-@@ -325,12 +316,9 @@ static void gnttab_handle_deferred(unsigned long unused)
+@@ -383,12 +374,9 @@ static void gnttab_handle_deferred(struct timer_list *unused)
  		spin_unlock_irqrestore(&gnttab_list_lock, flags);
  		if (_gnttab_end_foreign_access_ref(entry->ref, entry->ro)) {
  			put_free_entry(entry->ref);
@@ -1890,7 +1846,7 @@ index 1fb374466e84..2d203ba75e46 100644
  			kfree(entry);
  			entry = NULL;
  		} else {
-@@ -355,9 +343,18 @@ static void gnttab_handle_deferred(unsigned long unused)
+@@ -413,9 +401,18 @@ static void gnttab_handle_deferred(struct timer_list *unused)
  static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
  				struct page *page)
  {
@@ -1910,7 +1866,7 @@ index 1fb374466e84..2d203ba75e46 100644
  	if (entry) {
  		unsigned long flags;
  
-@@ -378,11 +375,21 @@ static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
+@@ -436,11 +433,21 @@ static void gnttab_add_deferred(grant_ref_t ref, bool readonly,
  	       what, ref, page ? page_to_pfn(page) : -1);
  }
  
@@ -1934,7 +1890,7 @@ index 1fb374466e84..2d203ba75e46 100644
  		if (page != 0)
  			put_page(virt_to_page(page));
  	} else
-@@ -1019,7 +1026,7 @@ static const struct gnttab_ops gnttab_v1_ops = {
+@@ -1297,7 +1304,7 @@ static const struct gnttab_ops gnttab_v1_ops = {
  	.update_entry			= gnttab_update_entry_v1,
  	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v1,
  	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v1,
@@ -1942,7 +1898,42 @@ index 1fb374466e84..2d203ba75e46 100644
 +	.read_frame			= gnttab_read_frame_v1,
  };
  
- static void gnttab_request_version(void)
+ static const struct gnttab_ops gnttab_v2_ops = {
+@@ -1309,7 +1316,7 @@ static const struct gnttab_ops gnttab_v2_ops = {
+ 	.update_entry			= gnttab_update_entry_v2,
+ 	.end_foreign_access_ref		= gnttab_end_foreign_access_ref_v2,
+ 	.end_foreign_transfer_ref	= gnttab_end_foreign_transfer_ref_v2,
+-	.query_foreign_access		= gnttab_query_foreign_access_v2,
++	.read_frame			= gnttab_read_frame_v2,
+ };
+ 
+ static bool gnttab_need_v2(void)
+diff --git a/drivers/xen/pvcalls-front.c b/drivers/xen/pvcalls-front.c
+index d7438fdc5706..285bb8390a97 100644
+--- a/drivers/xen/pvcalls-front.c
++++ b/drivers/xen/pvcalls-front.c
+@@ -346,8 +346,8 @@ static void free_active_ring(struct sock_mapping *map)
+ 	if (!map->active.ring)
+ 		return;
+ 
+-	free_pages((unsigned long)map->active.data.in,
+-			map->active.ring->ring_order);
++	free_pages_exact(map->active.data.in,
++			 PAGE_SIZE << map->active.ring->ring_order);
+ 	free_page((unsigned long)map->active.ring);
+ }
+ 
+@@ -361,8 +361,8 @@ static int alloc_active_ring(struct sock_mapping *map)
+ 		goto out;
+ 
+ 	map->active.ring->ring_order = PVCALLS_RING_ORDER;
+-	bytes = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+-					PVCALLS_RING_ORDER);
++	bytes = alloc_pages_exact(PAGE_SIZE << PVCALLS_RING_ORDER,
++				  GFP_KERNEL | __GFP_ZERO);
+ 	if (!bytes)
+ 		goto out;
+ 
 diff --git a/drivers/xen/xenbus/xenbus_client.c b/drivers/xen/xenbus/xenbus_client.c
 index e35bb6b87449..6dde323dabd4 100644
 --- a/drivers/xen/xenbus/xenbus_client.c
@@ -2082,24 +2073,24 @@ index 18863d56273c..6366b04c7d5f 100644
  #endif /*__ASSEMBLY__*/
  #endif /*__LINUX_ARM_SMCCC_H*/
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index e9e87599338e..3aa05ea79ba1 100644
+index 3b3337333cfd..48e6d68ec5ee 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -337,6 +337,11 @@ static inline int bpf_map_attr_numa_node(const union bpf_attr *attr)
- 		attr->numa_node : NUMA_NO_NODE;
- }
+@@ -533,6 +533,11 @@ static inline int bpf_map_attr_numa_node(const union bpf_attr *attr)
+ struct bpf_prog *bpf_prog_get_type_path(const char *name, enum bpf_prog_type type);
+ int array_map_alloc_check(union bpf_attr *attr);
  
 +static inline bool unprivileged_ebpf_enabled(void)
 +{
 +	return !sysctl_unprivileged_bpf_disabled;
 +}
 +
- #else
+ #else /* !CONFIG_BPF_SYSCALL */
  static inline struct bpf_prog *bpf_prog_get(u32 ufd)
  {
-@@ -400,6 +405,12 @@ static inline void __dev_map_insert_ctx(struct bpf_map *map, u32 index)
- static inline void __dev_map_flush(struct bpf_map *map)
+@@ -644,6 +649,12 @@ static inline struct bpf_prog *bpf_prog_get_type_path(const char *name,
  {
+ 	return ERR_PTR(-EOPNOTSUPP);
  }
 +
 +static inline bool unprivileged_ebpf_enabled(void)
@@ -2109,9 +2100,9 @@ index e9e87599338e..3aa05ea79ba1 100644
 +
  #endif /* CONFIG_BPF_SYSCALL */
  
- #if defined(CONFIG_STREAM_PARSER) && defined(CONFIG_BPF_SYSCALL)
+ static inline struct bpf_prog *bpf_prog_get_type(u32 ufd,
 diff --git a/include/xen/grant_table.h b/include/xen/grant_table.h
-index f9d8aac170fb..c51ae64b6dcb 100644
+index a9978350b45b..a58a89cc0e97 100644
 --- a/include/xen/grant_table.h
 +++ b/include/xen/grant_table.h
 @@ -97,17 +97,32 @@ int gnttab_end_foreign_access_ref(grant_ref_t ref, int readonly);
@@ -2149,11 +2140,25 @@ index f9d8aac170fb..c51ae64b6dcb 100644
  /*
   * operations on reserved batches of grant references
   */
+diff --git a/init/Kconfig b/init/Kconfig
+index 0fe4f60c974d..15c02e15d3fd 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -19,6 +19,9 @@ config GCC_VERSION
+ config CC_IS_CLANG
+ 	def_bool $(success,$(CC) --version | head -n 1 | grep -q clang)
+ 
++config LD_IS_LLD
++	def_bool $(success,$(LD) -v | head -n 1 | grep -q LLD)
++
+ config CLANG_VERSION
+ 	int
+ 	default $(shell,$(srctree)/scripts/clang-version.sh $(CC))
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index c9a3e61c88f8..4258db3a6470 100644
+index 03af4a493aff..93a7bd4185d0 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -243,6 +243,11 @@ static int sysrq_sysctl_handler(struct ctl_table *table, int write,
+@@ -251,6 +251,11 @@ static int sysrq_sysctl_handler(struct ctl_table *table, int write,
  #endif
  
  #ifdef CONFIG_BPF_SYSCALL
@@ -2165,7 +2170,7 @@ index c9a3e61c88f8..4258db3a6470 100644
  static int bpf_unpriv_handler(struct ctl_table *table, int write,
                               void *buffer, size_t *lenp, loff_t *ppos)
  {
-@@ -260,6 +265,9 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -268,6 +273,9 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  			return -EPERM;
  		*(int *)table->data = unpriv_enable;
  	}
@@ -2176,7 +2181,7 @@ index c9a3e61c88f8..4258db3a6470 100644
  }
  #endif
 diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index da843b68cdeb..ac6a69f6c5e2 100644
+index 21132bf3d850..ac60ddfcd88b 100644
 --- a/net/9p/trans_xen.c
 +++ b/net/9p/trans_xen.c
 @@ -301,9 +301,9 @@ static void xen_9pfs_front_free(struct xen_9pfs_front_priv *priv)
@@ -2215,7 +2220,7 @@ index da843b68cdeb..ac6a69f6c5e2 100644
  	gnttab_end_foreign_access(ring->ref, 0, 0);
  	free_page((unsigned long)ring->intf);
 diff --git a/tools/arch/x86/include/asm/cpufeatures.h b/tools/arch/x86/include/asm/cpufeatures.h
-index 8418462298e7..bb5861adb5a0 100644
+index 89a048c2faec..beab4d4e4a35 100644
 --- a/tools/arch/x86/include/asm/cpufeatures.h
 +++ b/tools/arch/x86/include/asm/cpufeatures.h
 @@ -203,7 +203,7 @@
@@ -2225,5 +2230,5 @@ index 8418462298e7..bb5861adb5a0 100644
 -#define X86_FEATURE_RETPOLINE_AMD	( 7*32+13) /* "" AMD Retpoline mitigation for Spectre variant 2 */
 +#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCEs for Spectre variant 2 */
  #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
- 
+ #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
  #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
