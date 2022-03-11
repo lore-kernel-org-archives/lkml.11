@@ -2,73 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E86F0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA14FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229936AbiCKIZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:25:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
+        id S235752AbiCKIZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:25:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231452AbiCKIZH (ORCPT
+        with ESMTP id S229474AbiCKIZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Mar 2022 03:25:07 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28541B8FD2;
-        Fri, 11 Mar 2022 00:24:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646987043; x=1678523043;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=hXMTWP12cF1XIIoGwokz4YFKIaWPIIR3XQCj1zCJMg0=;
-  b=Wt01LPcqEzMLtdMOoT6FGj67rMl5EpRGDUCNEQDbxnAmRYICA/2ORSj7
-   wKcn2uF5cIfYrr6NgKjcIQQR/3njFsanoIG4IDUE6mu7zSVVoAZB5uufg
-   duUvoDM045JmNi9bplY1qKmSoJ9HY26TcFm8++8vzOxKHLW2GcSVnfvCZ
-   0u5Uv7yhVPlOoRtquZh+/tKFbfTNGp4m/hTm36acksF+s5++vdXAHLr9I
-   HmJywexqr7Af0E1z6dilZhM2FCIZ6kV7EJjA5D1fgKEhJAm3pbEUoFxVQ
-   1xYc7zYJB4Yd1Pug5T8S4o29JEtwYBhtSaSnxsodqnjZv6TxjGCRl82Iv
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="318751061"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="318751061"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 00:24:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="555210745"
-Received: from mylly.fi.intel.com (HELO [10.237.72.51]) ([10.237.72.51])
-  by orsmga008.jf.intel.com with ESMTP; 11 Mar 2022 00:24:01 -0800
-Message-ID: <99e859a3-5a8e-8dc2-5a04-0a63f69173a6@linux.intel.com>
-Date:   Fri, 11 Mar 2022 10:24:01 +0200
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0F01B8FDE
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:24:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C57FB82976
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:24:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF7BCC340F3;
+        Fri, 11 Mar 2022 08:24:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646987042;
+        bh=vj6CfSHOXQ9Mtuetdyb8VmglTURJ+IW9CGO2ktkkhl8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=d1AofjplgR64OwNX0sGVbCWDiqMvUSM7NJ89M69UEG2NLGVRUV9X9TZ2C/IRfGAfB
+         tcHFZwaD+OTW0B3/H3Av2jnM4eGYfJkfmul6AUiHRZUv7mmrmYMIZLwalBrq6wnpJJ
+         x2PS1ktqRz4QWhD8e6r2j+acNGPq3vVnkyM0zdsUATMxijTImmWRB1nOPuWVhXOzUE
+         LlUkXShM65Y7zJmZt9MaDb84sjlg3UG/onVKkn//ho/8iwvPHC53qiMRZKbxoI/xw6
+         BIMOjpHtnUQsljmX57pIc0wz0TY4EG2UdfWDKMuEDbHp+FRFImiU21gmXG+LPp3PW/
+         p2RqHm8iQ8rYA==
+Message-ID: <2c4ed430-efc9-1328-b630-9b951f87a5b1@kernel.org>
+Date:   Fri, 11 Mar 2022 16:23:58 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.6.1
-Subject: Re: [PATCH v2 -next] i2c: designware: Remove code duplication
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] erofs: silence warnings related to impossible m_plen
 Content-Language: en-US
-To:     Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, andriy.shevchenko@linux.intel.com
-Cc:     wsa@kernel.org, upstream@semihalf.com
-References: <20220310220932.140973-1-jsd@semihalf.com>
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-In-Reply-To: <20220310220932.140973-1-jsd@semihalf.com>
+To:     Gao Xiang <hsiangkao@linux.alibaba.com>,
+        linux-erofs@lists.ozlabs.org
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220310173448.19962-1-hsiangkao@linux.alibaba.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220310173448.19962-1-hsiangkao@linux.alibaba.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/11/22 00:09, Jan Dabros wrote:
-> Simplify code by moving common part to one function.
+On 2022/3/11 1:34, Gao Xiang wrote:
+> Dan reported two smatch warnings [1],
+> .. warn: should '1 << lclusterbits' be a 64 bit type?
+> .. warn: should 'm->compressedlcs << lclusterbits' be a 64 bit type?
 > 
-> Signed-off-by: Jan Dabros <jsd@semihalf.com>
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
-> v1->v2:
-> * Add kudos for Andy who suggested this change
-> * Get rid of extra function and move common code to psp_send_i2c_req
-> * Update commit message and commit title
->    (was "i2c:designware: Add helper to remove redundancy")
->   drivers/i2c/busses/i2c-designware-amdpsp.c | 35 ++++++++++------------
->   1 file changed, 15 insertions(+), 20 deletions(-)
+> In practice, m_plen cannot be more than 1MiB due to on-disk constraint
+> for the compression mode, so we're always safe here.
 > 
-Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+> In order to make static analyzers happy and don't report again,
+> let's silence them instead.
+> 
+> [1] https://lore.kernel.org/r/202203091002.lJVzsX6e-lkp@intel.com
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+
+Reviewed-by: Chao Yu <chao@kernel.org>
+
+Thanks,
