@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 06:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F43FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 06:46:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346831AbiCKGpV (ORCPT
+        id S1345932AbiCKGrg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 01:45:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
+        Fri, 11 Mar 2022 01:47:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232738AbiCKGpS (ORCPT
+        with ESMTP id S232738AbiCKGre (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 01:45:18 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7DC19D624
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 22:44:16 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id z16so7137631pfh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 22:44:16 -0800 (PST)
+        Fri, 11 Mar 2022 01:47:34 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC33A19D617
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 22:46:32 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id q13so6928505plk.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 22:46:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id;
         bh=MDO98zfNryitJLRORLTZ+LkzoKAWivGOSBuxXfv/2ck=;
-        b=B4CZ8EgN6uMCbIn+6jLTUOtMnFKQJlPVHxUEB1anNFRkeAQU7D1pR48cU1x1FAOW4+
-         LttwPdInXm84Pf6P7jBFjQSBuYRHVb77bqAMcQMe1tEc0aDJnQuC70dShY99dwNCkhMG
-         pgVq6IV2APHTyS0ZaxXPDPFphbfyT65OPlE3U9wgJAO5ghf9h6FWVCY9cAWB/SlZ+kjK
-         uqGhZuMZdhot7FvO+SwR6BOOiyXs8+GZZkz5Yj6OCDWcf0yu9Ss1A3/cb31T3SeSIVtp
-         goaoW9pE995+CXDXCXiN0qwmeC4CT8IFK+xXiynAArlaQ/LgI/qUTIyHr0EhwpJ8ti2O
-         jH8Q==
+        b=Locg1LNIe+YyIJbh8hZviuYWEecJYbAU8GbggY1FbPSptu4HwbL6H9enLJNtiy4O9y
+         qsKWLexxG9XFotNKrLDpP4FIvP9bpGLdb3ceaBzDXRzLqD7DLbV4nvcXVlYIVEUc+84m
+         OZL6vugdjH3FQ4dJaDxLDHfsZW24d/K4aHOE24FKIJqK8RKKotfPSB/D8ygA7ULReAr3
+         h2Y0xrOTYCf0otNALKf7umXd0+uGP6ws7LIenhkFLTLMxiyO++hSwrXPRSKuuwfLAogD
+         B2u1/BQfCkeCXIfIqqRrZ0/bEz9hlIqaGgTZjyUZrB4Z/OAc+0+YewT5zVgjRgtCVOH3
+         ZODA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
         bh=MDO98zfNryitJLRORLTZ+LkzoKAWivGOSBuxXfv/2ck=;
-        b=3U6yr/0m1Q1WsgpI7WIGHmF08t9lShsVKZRYwwZxR5AGgukxCOJuWGXnitSsYTvk8P
-         nML+vnzA2y/dS7XODyCkWVqYGPFNH5FIt4P0RNe+BAEqaZdHVfJGNKE1FmwquMTzw1kn
-         sGAmna6Gqe2vLxvj+JLHnpH1I4GUH9VHRxnl/4FHOTqHr/BZ1QGsTlrTPTChnQZU55L2
-         qF7rMlFYrRk56H+BNAWKpibwmtxdupmaV3Gs4eOtz09VruvfDiFz+wL5xzrqevPpyZDN
-         QGdQqqA+4CFroXzzTLuSTTPaknCWP2xwjOcmnYMaqVDv6zM8dlKGPL8bu3ck7nfYaZs7
-         bKNg==
-X-Gm-Message-State: AOAM5310HvGAWRsZtZn6N262ZvOyYSY1VluRpb6GEG3NDwQjchV+simU
-        //j+oQ5raQmncunsV3y0jA==
-X-Google-Smtp-Source: ABdhPJyfTh88vZxDUKCRK1ck4KCNksRSrEqUQXlAmzBSd8cak9OJnx/xpAs+LUAQNBUNRUeIZPmKYA==
-X-Received: by 2002:a63:d642:0:b0:378:a4c2:7b94 with SMTP id d2-20020a63d642000000b00378a4c27b94mr7202499pgj.218.1646981055642;
-        Thu, 10 Mar 2022 22:44:15 -0800 (PST)
+        b=ssMaPhmPqNX8VXQuE74TCCb/O8BNqH9YUI25GTzTYhu+IVwF+dnv05bUl2xcX1a/jU
+         OmyLkxFFqD0FHz+BLaG/3OMvUUdmJsXZOgKBx1baNIExvjKrwoPrQY8oRxSP+3veCmJK
+         O6bk8god27e7OU62L7/m2S9NJk85s9BVPoGdd2kAJZ2n9CUSsBMh/aQRhcgUyd3BKUzU
+         NJvRKFh9zMb62SZplZF6dt7yTz/Bd32cdhCPmcclo2zaV4fb6jKUnIGR3hFH9yLr/0SJ
+         dAXB1gOw920di2B1BVxjcQHWDuGmx1zZvwdWACN5QUjDFKVJjMeksClRiFsN7ZimtgEF
+         YSNg==
+X-Gm-Message-State: AOAM533UIRMrcebWQmWImmZ+QLNwD4pNXhZOshbdY+T1JFoAeJvnzj6N
+        MZtyhPadtPuRm97PfbMMqxWPSy3HsQ==
+X-Google-Smtp-Source: ABdhPJzOqAUc50SCwJ9tg96bi/j3yvTpUoNqVLebYB0d5O3nzLVV4Eewfk/P4/q+NKO2fbpcs22R7w==
+X-Received: by 2002:a17:903:291:b0:150:4197:7cf2 with SMTP id j17-20020a170903029100b0015041977cf2mr8726281plr.173.1646981192234;
+        Thu, 10 Mar 2022 22:46:32 -0800 (PST)
 Received: from sh08423pcu1.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id j13-20020a63594d000000b003639cf2f9c7sm7328628pgm.71.2022.03.10.22.44.13
+        by smtp.gmail.com with ESMTPSA id e16-20020aa78c50000000b004f76c255e92sm5085738pfd.101.2022.03.10.22.46.29
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Mar 2022 22:44:15 -0800 (PST)
+        Thu, 10 Mar 2022 22:46:31 -0800 (PST)
 From:   Bruce Chen <brucechen251@gmail.com>
 To:     bruce.chen@unisoc.com, rogerq@kernel.org, myungjoo.ham@samsung.com,
         cw00.choi@samsung.com, linux-kernel@vger.kernel.org
 Cc:     orsonzhai@gmail.com, gengcixi@gmail.com, baolin.wang7@gmail.com,
         zhang.lyra@gmail.com
 Subject: [PATCH RESEND V2] extcon: usb-gpio: Remove disable irq operation in system sleep.
-Date:   Fri, 11 Mar 2022 14:42:18 +0800
-Message-Id: <1646980938-29982-1-git-send-email-brucechen251@gmail.com>
+Date:   Fri, 11 Mar 2022 14:45:03 +0800
+Message-Id: <1646981103-30050-1-git-send-email-brucechen251@gmail.com>
 X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
