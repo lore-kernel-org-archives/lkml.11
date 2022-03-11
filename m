@@ -2,141 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E86F0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235316AbiCKIYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:24:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
+        id S229936AbiCKIZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:25:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231452AbiCKIYI (ORCPT
+        with ESMTP id S231452AbiCKIZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:24:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5B37EB15;
-        Fri, 11 Mar 2022 00:23:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47847B81851;
-        Fri, 11 Mar 2022 08:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 470ACC340E9;
-        Fri, 11 Mar 2022 08:22:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646986982;
-        bh=KverrhU0ilwYSOTbDjb5NWI3RqQ1D4NxyR5YGBIYlUA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k+MpEl5dSt63vGIvS8CupZNeN35ejCtgrZeVkPJInVupcsB8t6ZFziVp64gQcKpCu
-         l3JU2gAiU18J3SYdDgE7q+qpxX/bN50kzuR8UaNyIdPNlFFr4nOuM4iosxNuLw7TjI
-         VN/an72iUvHceWgq/6TvSB8bSL0fLriY7nTUNsRUnDv/KbFW+PiiNQWSxYPSubpmI1
-         Q7DACwgm1QjQPrzPQgNA7kdf70psqz3Aom5RBS1E/aebAT+roWjpiciqcA4lZ5Iny7
-         axkAJVywn/LIfDnpEBolS4nvB1zjvBPIvJkxi9PesV5wa2ppv/o9A0najUnElXqH7I
-         YJ6yGGRecAvkA==
-Date:   Fri, 11 Mar 2022 10:22:45 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        Holger =?iso-8859-1?Q?Hoffst=E4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Subject: Re: [PATCH v9 14/14] mm: multi-gen LRU: design doc
-Message-ID: <YisG1Q5wZP16B13o@kernel.org>
-References: <20220309021230.721028-1-yuzhao@google.com>
- <20220309021230.721028-15-yuzhao@google.com>
+        Fri, 11 Mar 2022 03:25:07 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28541B8FD2;
+        Fri, 11 Mar 2022 00:24:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646987043; x=1678523043;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=hXMTWP12cF1XIIoGwokz4YFKIaWPIIR3XQCj1zCJMg0=;
+  b=Wt01LPcqEzMLtdMOoT6FGj67rMl5EpRGDUCNEQDbxnAmRYICA/2ORSj7
+   wKcn2uF5cIfYrr6NgKjcIQQR/3njFsanoIG4IDUE6mu7zSVVoAZB5uufg
+   duUvoDM045JmNi9bplY1qKmSoJ9HY26TcFm8++8vzOxKHLW2GcSVnfvCZ
+   0u5Uv7yhVPlOoRtquZh+/tKFbfTNGp4m/hTm36acksF+s5++vdXAHLr9I
+   HmJywexqr7Af0E1z6dilZhM2FCIZ6kV7EJjA5D1fgKEhJAm3pbEUoFxVQ
+   1xYc7zYJB4Yd1Pug5T8S4o29JEtwYBhtSaSnxsodqnjZv6TxjGCRl82Iv
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="318751061"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="318751061"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 00:24:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="555210745"
+Received: from mylly.fi.intel.com (HELO [10.237.72.51]) ([10.237.72.51])
+  by orsmga008.jf.intel.com with ESMTP; 11 Mar 2022 00:24:01 -0800
+Message-ID: <99e859a3-5a8e-8dc2-5a04-0a63f69173a6@linux.intel.com>
+Date:   Fri, 11 Mar 2022 10:24:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220309021230.721028-15-yuzhao@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.6.1
+Subject: Re: [PATCH v2 -next] i2c: designware: Remove code duplication
+Content-Language: en-US
+To:     Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, andriy.shevchenko@linux.intel.com
+Cc:     wsa@kernel.org, upstream@semihalf.com
+References: <20220310220932.140973-1-jsd@semihalf.com>
+From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
+In-Reply-To: <20220310220932.140973-1-jsd@semihalf.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 07:12:31PM -0700, Yu Zhao wrote:
-> Add a design doc.
+On 3/11/22 00:09, Jan Dabros wrote:
+> Simplify code by moving common part to one function.
 > 
-> Signed-off-by: Yu Zhao <yuzhao@google.com>
-> Acked-by: Brian Geffon <bgeffon@google.com>
-> Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
-> Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-> Acked-by: Steven Barrett <steven@liquorix.net>
-> Acked-by: Suleiman Souhlal <suleiman@google.com>
-> Tested-by: Daniel Byrne <djbyrne@mtu.edu>
-> Tested-by: Donald Carr <d@chaos-reins.com>
-> Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-> Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
-> Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
-> Tested-by: Sofia Trinh <sofia.trinh@edi.works>
-> Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+> Signed-off-by: Jan Dabros <jsd@semihalf.com>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  Documentation/vm/index.rst        |   1 +
->  Documentation/vm/multigen_lru.rst | 156 ++++++++++++++++++++++++++++++
->  2 files changed, 157 insertions(+)
->  create mode 100644 Documentation/vm/multigen_lru.rst
+> v1->v2:
+> * Add kudos for Andy who suggested this change
+> * Get rid of extra function and move common code to psp_send_i2c_req
+> * Update commit message and commit title
+>    (was "i2c:designware: Add helper to remove redundancy")
+>   drivers/i2c/busses/i2c-designware-amdpsp.c | 35 ++++++++++------------
+>   1 file changed, 15 insertions(+), 20 deletions(-)
 > 
-> diff --git a/Documentation/vm/index.rst b/Documentation/vm/index.rst
-> index 44365c4574a3..b48434300226 100644
-> --- a/Documentation/vm/index.rst
-> +++ b/Documentation/vm/index.rst
-> @@ -25,6 +25,7 @@ algorithms.  If you are looking for advice on simply allocating memory, see the
->     ksm
->     memory-model
->     mmu_notifier
-> +   multigen_lru
->     numa
->     overcommit-accounting
->     page_migration
-> diff --git a/Documentation/vm/multigen_lru.rst b/Documentation/vm/multigen_lru.rst
-> new file mode 100644
-> index 000000000000..cde60de16621
-> --- /dev/null
-> +++ b/Documentation/vm/multigen_lru.rst
-> @@ -0,0 +1,156 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +=============
-> +Multi-Gen LRU
-> +=============
-
-Here I also miss an introductory paragraph about what Multi-Gen LRU is.
-
-All the rest looks good to me.
-> +
-> +Design overview
-> +===============
-> +Objectives
-> +----------
-
--- 
-Sincerely yours,
-Mike.
+Acked-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
