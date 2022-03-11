@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D691C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 06:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 511DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 06:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346284AbiCKGBa (ORCPT
+        id S1346944AbiCKGBv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 01:01:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34874 "EHLO
+        Fri, 11 Mar 2022 01:01:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346781AbiCKFzM (ORCPT
+        with ESMTP id S1346681AbiCKFzN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:55:12 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28B71045B3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:54 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id v4-20020a63f844000000b003745fd0919aso4213867pgj.20
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:54 -0800 (PST)
+        Fri, 11 Mar 2022 00:55:13 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C1F10612C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:59 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id lp2-20020a17090b4a8200b001bc449ecbceso7263839pjb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=n6MVcBp9xF00LuCwzBhnfGyYw6cwlL4e+hz2gsv1tH0=;
-        b=pyxdEO9F3FP7xAgGgt1/oJekPIzt1FBQXaReU39K22pjrZhYTlxK/j6Mt5ctVKCZRt
-         CAeL/cSURQpYTH6VT5rGmjVaYf0XUUnyTB9+v25Zyo/MmjXXury7MgJGh9cUNgG3JfOW
-         uo886/We5zDTTFWSWp93RF1x4qv8EbBzJKQnbRlvUNnpegHr+6wk57DEfaFBesGRtkzV
-         M92gmNtyMT+/WwbPF8SgFUtU78lHwF+kBRx+tsBUdp7zShYRP/2EakgWh6P8dBoINp/w
-         WLMdVjoZ5Jl0xuC425RetQpmnGchCP01Ayft8uG1WzqPYgeV7cdap8pINeptigwv/aqR
-         gPEQ==
+        bh=d9N99i+QpGyC5SnNdmZZfNM/fJE6Xn0g3WkRGRvLwsU=;
+        b=fAZNZTYGrO/Fa9d2l/9Sp9pVcLj/TuKJyynO9X3/NCGgO22NaY4AMXfgeab3qhvbzA
+         Nzj9fsDnDT/XJooHuuqneqw7zDGzuNZNj5IGn/coVzuoOYNfNnRFKGcQjImOYJvS3IUm
+         oMikvbsPHtxITRCcxsbtzHySG8IDyDg/qRLmj+5cBqMYxNHIFJ/AOPxqzzkgM1s29Jek
+         gb7xdNwuGOuiveye1PjGTmQDQQSIvImMjGlQ6I5edby9JLCKooSqL2CvbTf9Wc8Ots/5
+         tWLHNhtyIyOKbLwM5TDUojIs/qvVUgOtuaoKce8zk+tXVg20EjahbpgZU8L3JZFLIDcj
+         tCVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=n6MVcBp9xF00LuCwzBhnfGyYw6cwlL4e+hz2gsv1tH0=;
-        b=hsIdk24drW6xVuZuBd9aTzk8OdwwSHn4mFJBJ+zPRvx1kt9V6hoscb36Wv2DlWoZH8
-         WEoXLIfZ5PeISFpp4GkBZKyfsYr0KlrKvFlW1z+/ZgjpSr4ogbvyoVosF52Jp4OdKWka
-         3hM4NLYN5+jrCoC6IuZbtXxmjPaH44sRZ/Vv8YGvDA3q7kWIrthIa8NFyAB2Nn5b22O1
-         84tmgfc1XhMvRKNNytVstgMhLYb325CcmYINrnc6c2FPQJeqOQHE/BNQr1QgfogyxQKO
-         hm8xyWCbSBTh3NT/fFtdQEY3QpgMaEacsUeDOyskAoIcQ1pt7AwdmjZfmFbmzrx5OB3Z
-         QCQw==
-X-Gm-Message-State: AOAM531FdqIom/BAbLXJ3xOppNu7kXCf5FlOrxZDkSnvijljDWzIgHJY
-        ujxoO5gZ9QcLG4got4yjFeR9hlFtYRXs3jNRBQ449RKGDk2lw9jrJIsNdKIshWGwOevHNOdiA99
-        Zi2XKW3yrQk+oHGIbFWEgu9+0fgeba3xnUgf4DkXxSmG/LkGV0QweOY1hcvrOePLA0GtZ6w==
-X-Google-Smtp-Source: ABdhPJz/c7ZdvJfr7lmo/fQkf9d/zyTPhjXn+vUCORaETFy5iwpKKTesUOeCTuNUvdpKDg/QcrkglxaFXLs=
+        bh=d9N99i+QpGyC5SnNdmZZfNM/fJE6Xn0g3WkRGRvLwsU=;
+        b=bssmR1K2z4wFDOyNWxY+/qMJ/f+DQlHFISUAa3IPTWZUXUJut8jy+JBhFt2W5ksyko
+         9mjpIPDQw10aS9YwoOGrt9FUtdA14pWOmyhe515FZBGiRHuUQTfDIsgBFCfciZ8LI8HR
+         QT/+A+M/KeowP1BXIr+nMPnS/AUqZQL7ItcRreIofrRzjH8tMTPo7ho719NB3ALlItIj
+         INMIMRa/+z5Km0G0cbxtjZdhGv0yMrqK7mYzQDANpgqGIhkGtH+G//aPKFnWPGYscqyQ
+         9wmcpYQapwsQKqPg6I1XX7JEGsxWNk7P+a40/UzKk8gbuLknwzMZ72JUF6FzOoxZLxCa
+         UKww==
+X-Gm-Message-State: AOAM531MXXCKWUp8ROinY31nmkoUHSOWQFMyMRc43f/wOgOYfi51MubB
+        aLt75yZWtGWS0+vhFq5cYU7DVSFmLo4vJXWileZt739iC2qcYMqgh3nzOy66zw1XU/NIdmPF8cw
+        x4B5dK1Cbk2gKSQtJeWH903mlcVJ68PWeZXvqM7Aj6hMbkuZWOIpckxiv5sRIxiswIH5Cbw==
+X-Google-Smtp-Source: ABdhPJxeU4vxUmktStnJAKuNMGxU0n1Gn6A68XktF4tGG8J66xIl2Du8JtFIo3xZRJB0g2GXuiyXtRln2wo=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:5ae4:b0:1bf:9c61:6973 with SMTP id
- n91-20020a17090a5ae400b001bf9c616973mr9155539pji.73.1646978034000; Thu, 10
- Mar 2022 21:53:54 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a63:28d:0:b0:365:8e16:5c19 with SMTP id
+ 135-20020a63028d000000b003658e165c19mr7174704pgc.579.1646978038904; Thu, 10
+ Mar 2022 21:53:58 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:51 +0000
+Date:   Fri, 11 Mar 2022 05:50:54 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-101-seanjc@google.com>
+Message-Id: <20220311055056.57265-104-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 100/105] KVM: selftests: Remove vcpu_get() usage from dirty_log_test
+Subject: [RFC PATCH 103/105] KVM: selftests: Drop vcpu_get(), rename
+ vcpu_find() => vcpu_exists()
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,44 +67,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/dirty_log_test.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ .../selftests/kvm/include/kvm_util_base.h     |  2 --
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 34 +++++++------------
+ 2 files changed, 13 insertions(+), 23 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
-index e480b503c08b..7bc2c027492d 100644
---- a/tools/testing/selftests/kvm/dirty_log_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_test.c
-@@ -668,7 +668,7 @@ static void vm_dirty_log_verify(enum vm_guest_mode mode, unsigned long *bmap)
- 	}
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index c0873a5ca3c3..6d46261432cb 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -93,8 +93,6 @@ struct kvm_vm {
+ 			continue;			\
+ 		else
+ 
+-struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpu_id);
+-
+ struct userspace_mem_region *
+ memslot2region(struct kvm_vm *vm, uint32_t memslot);
+ 
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index b6faffcdcf39..b86c8b0883ad 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -475,26 +475,6 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
+ 	return &region->region;
  }
  
--static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
-+static struct kvm_vm *create_vm(enum vm_guest_mode mode, struct kvm_vcpu **vcpu,
- 				uint64_t extra_mem_pages, void *guest_code)
- {
- 	struct kvm_vm *vm;
-@@ -682,7 +682,7 @@ static struct kvm_vm *create_vm(enum vm_guest_mode mode, uint32_t vcpuid,
- 	vm_create_irqchip(vm);
- #endif
- 	log_mode_create_vm_done(vm);
--	vm_vcpu_add(vm, vcpuid, guest_code);
-+	*vcpu = vm_vcpu_add(vm, 0, guest_code);
- 	return vm;
+-static struct kvm_vcpu *vcpu_find(struct kvm_vm *vm, uint32_t vcpu_id)
+-{
+-	struct kvm_vcpu *vcpu;
+-
+-	list_for_each_entry(vcpu, &vm->vcpus, list) {
+-		if (vcpu->id == vcpu_id)
+-			return vcpu;
+-	}
+-
+-	return NULL;
+-}
+-
+-struct kvm_vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpu_id)
+-{
+-	struct kvm_vcpu *vcpu = vcpu_find(vm, vcpu_id);
+-
+-	TEST_ASSERT(vcpu, "vCPU %d does not exist", vcpu_id);
+-	return vcpu;
+-}
+-
+ /*
+  * VM VCPU Remove
+  *
+@@ -1044,6 +1024,18 @@ static int vcpu_mmap_sz(void)
+ 	return ret;
  }
  
-@@ -716,10 +716,8 @@ static void run_test(enum vm_guest_mode mode, void *arg)
- 	 * (e.g., 64K page size guest will need even less memory for
- 	 * page tables).
- 	 */
--	vm = create_vm(mode, 0,
--		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K),
--		       guest_code);
--	vcpu = vcpu_get(vm, 0);
-+	vm = create_vm(mode, &vcpu,
-+		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K), guest_code);
++static bool vcpu_exists(struct kvm_vm *vm, uint32_t vcpu_id)
++{
++	struct kvm_vcpu *vcpu;
++
++	list_for_each_entry(vcpu, &vm->vcpus, list) {
++		if (vcpu->id == vcpu_id)
++			return true;
++	}
++
++	return false;
++}
++
+ /*
+  * Adds a virtual CPU to the VM specified by vm with the ID given by vcpu_id.
+  * No additional vCPU setup is done.  Returns the vCPU.
+@@ -1053,7 +1045,7 @@ struct kvm_vcpu *__vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id)
+ 	struct kvm_vcpu *vcpu;
  
- 	guest_page_size = vm_get_page_size(vm);
- 	/*
+ 	/* Confirm a vcpu with the specified id doesn't already exist. */
+-	TEST_ASSERT(!vcpu_find(vm, vcpu_id), "vCPU%d already exists\n", vcpu_id);
++	TEST_ASSERT(!vcpu_exists(vm, vcpu_id), "vCPU%d already exists\n", vcpu_id);
+ 
+ 	/* Allocate and initialize new vcpu structure. */
+ 	vcpu = calloc(1, sizeof(*vcpu));
 -- 
 2.35.1.723.g4982287a31-goog
 
