@@ -2,131 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F216C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D965C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348032AbiCKKgk (ORCPT
+        id S1348055AbiCKKgv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
+        Fri, 11 Mar 2022 05:36:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347980AbiCKKgg (ORCPT
+        with ESMTP id S1348024AbiCKKgh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:36:36 -0500
-Received: from smtp.tom.com (smtprz02.163.net [106.3.154.235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20DE6117CA7
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:35:29 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 5F493440166
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 18:35:28 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646994928; bh=R3j49KALSMnjuQeiVsymhqxJED/9xKOwSzuBBzckNSQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cIxeJUWkDpEfQay55q1OipyMmLqQHo7DQl5MqLx0JGNH+Udw2XOuCcrsAEgWPMyjp
-         HrixmJmWEdlm7wzbidMAfucbRiEMN61g2btZCgfmmJkIkO0IrVo1fKqaVWeUQ/6MWz
-         dz5ozeAiKablIyHN4QzyIUtgy26Bp9A/Wd6GRi9s=
-Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID -1316492745
-          for <linux-kernel@vger.kernel.org>;
-          Fri, 11 Mar 2022 18:35:28 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646994928; bh=R3j49KALSMnjuQeiVsymhqxJED/9xKOwSzuBBzckNSQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cIxeJUWkDpEfQay55q1OipyMmLqQHo7DQl5MqLx0JGNH+Udw2XOuCcrsAEgWPMyjp
-         HrixmJmWEdlm7wzbidMAfucbRiEMN61g2btZCgfmmJkIkO0IrVo1fKqaVWeUQ/6MWz
-         dz5ozeAiKablIyHN4QzyIUtgy26Bp9A/Wd6GRi9s=
-Received: from localhost.localdomain (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id 1DF371541564;
-        Fri, 11 Mar 2022 18:35:23 +0800 (CST)
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     sunmingbao@tom.com, tyler.sun@dell.com, ping.gan@dell.com,
-        yanxiu.cai@dell.com, libin.zhang@dell.com, ao.sun@dell.com
-Subject: [PATCH v2 1/3] tcp: export symbol tcp_set_congestion_control
-Date:   Fri, 11 Mar 2022 18:34:12 +0800
-Message-Id: <20220311103414.8255-1-sunmingbao@tom.com>
-X-Mailer: git-send-email 2.26.2
+        Fri, 11 Mar 2022 05:36:37 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAF61BD987;
+        Fri, 11 Mar 2022 02:35:30 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 18DCC21900;
+        Fri, 11 Mar 2022 10:35:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1646994929; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=2A0s9MNxg2Q3sbNoaDjqzamUO4PIFL9q9tcCNyUQzoo=;
+        b=kOTKT+erKLJg8Sd4nahKDsq5kn2bQQGml4MXQ+m1NTG+glUxRhoBrK+ftjenbbb2FK5k4N
+        eJMBxr9G8aAIvMFDCdAYBBuywecStRBkVAMuu2sI8CW0jHZ3ZUIZZpAs+Mz/MUbN1DD61B
+        Go1rLUSZ6tZYV9RL/MORon1oqiyXz4s=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CE33E13A85;
+        Fri, 11 Mar 2022 10:35:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 2CMJMfAlK2JydgAAMHmgww
+        (envelope-from <jgross@suse.com>); Fri, 11 Mar 2022 10:35:28 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        =?UTF-8?q?Roger=20Pau=20Monn=C3=A9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>, Jan Beulich <jbeulich@suse.com>
+Subject: [PATCH] xen/blkfront: speed up purge_persistent_grants()
+Date:   Fri, 11 Mar 2022 11:35:27 +0100
+Message-Id: <20220311103527.12931-1-jgross@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mingbao Sun <tyler.sun@dell.com>
+purge_persistent_grants() is scanning the grants list for persistent
+grants being no longer in use by the backend. When having found such a
+grant, it will be set to "invalid" and pushed to the tail of the list.
 
-congestion-control could have a noticeable impaction on the
-performance of TCP-based communications. This is of course true
-to NVMe/TCP in the kernel.
+Instead of pushing it directly to the end of the list, add it first to
+a temporary list, avoiding to scan those entries again in the main
+list traversal. After having finished the scan, append the temporary
+list to the grant list.
 
-Different congestion-controls (e.g., cubic, dctcp) are suitable for
-different scenarios. Proper adoption of congestion control would
-benefit the performance. On the contrary, the performance could be
-destroyed.
-
-So to gain excellent performance against different network
-environments, NVMe/TCP tends to support specifying the
-congestion-control.
-
-This means NVMe/TCP (a kernel user) needs to set the congestion-control
-of its TCP sockets.
-
-Since the kernel API 'kernel_setsockopt' was removed, and since the
-function ‘tcp_set_congestion_control’ is just the real underlying guy
-handling this job, so it makes sense to get it exported.
-
-Signed-off-by: Mingbao Sun <tyler.sun@dell.com>
+Suggested-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Juergen Gross <jgross@suse.com>
 ---
- net/ipv4/tcp_cong.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/block/xen-blkfront.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index db5831e6c136..1d6a23e42f7d 100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -344,10 +344,20 @@ int tcp_set_allowed_congestion_control(char *val)
- 	return ret;
- }
+diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index aa996b637d0b..378262ec47ae 100644
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -2533,6 +2533,7 @@ static void purge_persistent_grants(struct blkfront_info *info)
  
--/* Change congestion control for socket. If load is false, then it is the
-- * responsibility of the caller to call tcp_init_congestion_control or
-- * tcp_reinit_congestion_control (if the current congestion control was
-- * already initialized.
-+/**
-+ * tcp_set_congestion_control - set a sock's congestion control
-+ * @sk:            the sock.
-+ * @name:          the desired congestion control.
-+ * @load:          whether to load the required module in case not loaded.
-+ * @cap_net_admin: indicating if the caller have the CAP_NET_ADMIN.
-+ *
-+ * Returns 0 or an error.
-+ *
-+ * Must be called on a locked sock.
-+ *
-+ * If load is false, then it is the responsibility of the caller to call
-+ * tcp_init_congestion_control or tcp_reinit_congestion_control (if the
-+ * current congestion control was already initialized).
-  */
- int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
- 			       bool cap_net_admin)
-@@ -383,6 +393,7 @@ int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
- 	rcu_read_unlock();
- 	return err;
- }
-+EXPORT_SYMBOL_GPL(tcp_set_congestion_control);
+ 	for_each_rinfo(info, rinfo, i) {
+ 		struct grant *gnt_list_entry, *tmp;
++		LIST_HEAD(grants);
  
- /* Slow start is used when congestion window is no greater than the slow start
-  * threshold. We base on RFC2581 and also handle stretch ACKs properly.
+ 		spin_lock_irqsave(&rinfo->ring_lock, flags);
+ 
+@@ -2550,9 +2551,11 @@ static void purge_persistent_grants(struct blkfront_info *info)
+ 			list_del(&gnt_list_entry->node);
+ 			rinfo->persistent_gnts_c--;
+ 			gnt_list_entry->gref = GRANT_INVALID_REF;
+-			list_add_tail(&gnt_list_entry->node, &rinfo->grants);
++			list_add_tail(&gnt_list_entry->node, &grants);
+ 		}
+ 
++		list_splice_tail(&grants, &rinfo->grants);
++
+ 		spin_unlock_irqrestore(&rinfo->ring_lock, flags);
+ 	}
+ }
 -- 
-2.26.2
+2.34.1
 
