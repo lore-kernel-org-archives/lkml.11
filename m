@@ -2,62 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F576C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 06:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAAF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:01:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346813AbiCKHAr (ORCPT
+        id S1346880AbiCKHCh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 02:00:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
+        Fri, 11 Mar 2022 02:02:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbiCKHAq (ORCPT
+        with ESMTP id S234827AbiCKHCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 02:00:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0950619D619;
-        Thu, 10 Mar 2022 22:59:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B034AB82AD2;
-        Fri, 11 Mar 2022 06:59:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D57A3C340E9;
-        Fri, 11 Mar 2022 06:59:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646981981;
-        bh=0WbXxLuxlZKAOqGKpTMpp6DzDDfXQiNeF05NorkWRvM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MAfDw4UK8vxKnXrwzJ0oc89AnkFLsoJbKawVpuaVMFICufxHI0nTTk/H+FLbD35UG
-         2pacxuaZf0p3BgDZ4hARUoM3qXCX7ZgPIwOnvW9mu+suDqhPqruepBwJo/HSiPFNGp
-         6lWmWNFmy1yFpTSNUM8tssSvbkKpOimXsWGQG26P2cuqcMFNOp5vm8lF7n/vF1x3DA
-         C+6UivbBSe7Gay/LQRkipls/X+A2iWokrMuhULxaAcH7c4hz7bjrscM8KRVtOL06nI
-         VOEw741wjoJwFMD6q58D/ZjnrQSSj7bRossmloQjtR6gCAvsyF5cd6r+oub8txOAvi
-         TwTaynT/hr2rg==
-Date:   Fri, 11 Mar 2022 12:29:37 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, dmaengine@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next] dmaengine: imx-sdma: clean up some inconsistent
- indenting
-Message-ID: <YirzWX6bHLzTmhQE@matsya>
-References: <20220217011604.123106-1-yang.lee@linux.alibaba.com>
+        Fri, 11 Mar 2022 02:02:32 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBF519D624
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:01:30 -0800 (PST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KFGtr6ypCzcZyH;
+        Fri, 11 Mar 2022 14:56:36 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 15:01:28 +0800
+Subject: Re: [PATCH] mm/huge_memory: remove unneeded local variable follflags
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220310131253.30970-1-linmiaohe@huawei.com>
+ <90246c21-94e9-e64e-dd83-fce45de89f72@arm.com>
+ <15d17cb9-6eae-0345-8e67-da30a5978300@huawei.com>
+ <2abaff3b-455a-c345-be93-0036b8dd1519@arm.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <84c5befc-02b0-99cd-a670-8ed0b08dd820@huawei.com>
+Date:   Fri, 11 Mar 2022 15:01:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217011604.123106-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <2abaff3b-455a-c345-be93-0036b8dd1519@arm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17-02-22, 09:16, Yang Li wrote:
-> Eliminate the following coccicheck warning:
-> ./drivers/dma/imx-sdma.c:896:3-16: code aligned with following code on
-> line 897
+On 2022/3/11 14:39, Anshuman Khandual wrote:
+> 
+> 
+> On 3/11/22 11:56, Miaohe Lin wrote:
+>> On 2022/3/11 12:51, Anshuman Khandual wrote:
+>>> Hi Miaohe,
+>>>
+>>> On 3/10/22 18:42, Miaohe Lin wrote:
+>>>> We can pass FOLL_GET | FOLL_DUMP to follow_page directly to simplify
+>>>> the code a bit.
+>>>>
+>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>>> ---
+>>>>  mm/huge_memory.c | 4 +---
+>>>>  1 file changed, 1 insertion(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+>>>> index 3557aabe86fe..418d077da246 100644
+>>>> --- a/mm/huge_memory.c
+>>>> +++ b/mm/huge_memory.c
+>>>> @@ -2838,7 +2838,6 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
+>>>>  	 */
+>>>>  	for (addr = vaddr_start; addr < vaddr_end; addr += PAGE_SIZE) {
+>>>>  		struct vm_area_struct *vma = find_vma(mm, addr);
+>>>> -		unsigned int follflags;
+>>>>  		struct page *page;
+>>>>  
+>>>>  		if (!vma || addr < vma->vm_start)
+>>>> @@ -2851,8 +2850,7 @@ static int split_huge_pages_pid(int pid, unsigned long vaddr_start,
+>>>>  		}
+>>>>  
+>>>>  		/* FOLL_DUMP to ignore special (like zero) pages */
+>>>> -		follflags = FOLL_GET | FOLL_DUMP;
+>>>> -		page = follow_page(vma, addr, follflags);
+>>>> +		page = follow_page(vma, addr, FOLL_GET | FOLL_DUMP);
+>>>>  
+>>>>  		if (IS_ERR(page))
+>>>>  			continue;
+>>>
+>>> LGTM, but there is another similar instance in add_page_for_migration()
+>>> inside mm/migrate.c, requiring this exact clean up.
+>>>
+>>
+>> Thanks for comment. That similar case is done in my previous patch series[1]
+>> aimed at migration cleanup and fixup. It might be more suitable to do that
+>> clean up in that specialized series?
+> 
+> Both these similar scenarios i.e the one proposed here and other one in the
+> migration series, should be folded into a separate single patch, either here
+> or in the series itself.
 
-Applied, thanks
+Looks fine to me. Will do. Thanks.
 
--- 
-~Vinod
+> 
+>>
+>> [1]:https://lore.kernel.org/linux-mm/20220304093409.25829-4-linmiaohe@huawei.com/
+>>
+>>> Hence with that change in place.
+>>>
+>>> Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>>
+>> Thanks again.
+>>
+>>> .
+>>>
+>>
+> .
+> 
+
