@@ -2,96 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2432CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8447C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349488AbiCKPun (ORCPT
+        id S1349535AbiCKPu7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:50:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54932 "EHLO
+        Fri, 11 Mar 2022 10:50:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348161AbiCKPug (ORCPT
+        with ESMTP id S232190AbiCKPuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:50:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F4D0954A1
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:49:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647013772;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qTfEf7yr9paJUlzwxSKVIzpRbR+ggiBcztvNLiAH+tY=;
-        b=Chdir7Llre8Lys4KPWjRsF6ur6tSx7G4HZ3+qsCOZlyqaZL1rFd4SDBsg8ABNy+LQVSYLR
-        Ri8YkgCSFYZEH9zn0J9he/kr3PXX4Edb6sdRrY/3eHwW4cKpX0DvEHetYPB7V248ukjiWI
-        bJ7BIZFmwKEGQXHBlWVhF2nbkd8KCiI=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-78-GvlbbILfM3-n_KpSA-D7ow-1; Fri, 11 Mar 2022 10:49:31 -0500
-X-MC-Unique: GvlbbILfM3-n_KpSA-D7ow-1
-Received: by mail-qk1-f200.google.com with SMTP id a66-20020ae9e845000000b0067b308a9f56so6390734qkg.21
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:49:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qTfEf7yr9paJUlzwxSKVIzpRbR+ggiBcztvNLiAH+tY=;
-        b=ivxxkbKCgKfZ+1HAAaSp2kwqetPb18TGgXiuyE8Gn8FUfFeCeU7GrGQ4xOw44tia1+
-         6fT/lu936CRkoN8dCP2/zBPgtbRqCUnwC/gdJeIVecRxApnNlhP0FA+AO8lDBjcxGUrS
-         dxW6Gx5DBk9GyvDPbuRl/Sqm1lJWJNuiOWfcaRTUFITftBZfnRw6VpQdkX5wK1/zYWb8
-         jL7m4wrz1D56mfn4kFsqfa6qEX4FChxVAaERQ2csVIHp5MPwCN/iJ43C6jrA7V59Jaed
-         u/6/ene8b/kKHBVL9wLcVKiF6tnWcP2l/W4OQeGBkI2584TTyWR271N1CcyC6Id28Xns
-         cjMA==
-X-Gm-Message-State: AOAM5338gu3A8UzjsSEHG48Km3daPXkSu8ERpb8FZDZIiOZNpbHxdd6q
-        1iWH3L+kCZPAQFhyLwoQpmspHQv0aKheGqRWwwWrAiPHoQLRKiWpfVVioDAjYA8sukzON3eYeH3
-        K6+MmSUCciDB/nAnm7WcqoWrB
-X-Received: by 2002:a05:6214:5290:b0:435:208a:5fd with SMTP id kj16-20020a056214529000b00435208a05fdmr8244511qvb.66.1647013770721;
-        Fri, 11 Mar 2022 07:49:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzWg01x03AaRegxM1Hv5DU8L2U/TjmBjwQz2DtkoLyKiBE5QG0qlg6M5cwrZ/osbrpgVxDXBw==
-X-Received: by 2002:a05:6214:5290:b0:435:208a:5fd with SMTP id kj16-20020a056214529000b00435208a05fdmr8244493qvb.66.1647013770479;
-        Fri, 11 Mar 2022 07:49:30 -0800 (PST)
-Received: from xps13.. (c-98-239-145-235.hsd1.wv.comcast.net. [98.239.145.235])
-        by smtp.gmail.com with ESMTPSA id z6-20020ae9c106000000b0067d3b9ef387sm3602719qki.28.2022.03.11.07.49.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 07:49:30 -0800 (PST)
-From:   Brian Masney <bmasney@redhat.com>
-To:     bjorn.andersson@linaro.org
-Cc:     mani@kernel.org, dianders@chromium.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH 2/2] ARM: qcom_defconfig: enable debug fs support
-Date:   Fri, 11 Mar 2022 10:49:19 -0500
-Message-Id: <20220311154919.1797920-3-bmasney@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220311154919.1797920-1-bmasney@redhat.com>
-References: <20220311154919.1797920-1-bmasney@redhat.com>
+        Fri, 11 Mar 2022 10:50:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94A51C2D95
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:49:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 621D7B82C1C
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:49:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98F1AC340E9;
+        Fri, 11 Mar 2022 15:49:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647013788;
+        bh=vFydxBFqRh4gnkjZK63kJHNwdn3NtDUoiD8VT7M6qy4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mbh/5i5D+jJiaA3aSmvQXm/73G3kYlpZYs5WutA4kgnGS8vvFDqoyqnwAVuaRATI3
+         RcKZZ5mYbt8GLob1FWxYNKI3sz5pJDJi7UwU2AMQEsejl2aLYuxRlvQ5/ZZnM4wbNY
+         baGY5qk1XDaso0KIv2lbvYwdoyRElptstm0l5CQSh5rDvIq9ljdehfPXfbk1kKH0Os
+         N+ULASO3hkSgWz/t0lYGR27NHbDx/fUVTjQ9+8H9ePE/AhMKtHa/ESyitvR6rqrIFq
+         JyPJu7ahmb3wxPoSrrwQCbJSPkk/AmlylljQ9juyNvI5IxUWpO5lJpkjVm+aPhbvA6
+         roUR6xHjUyDPg==
+Date:   Fri, 11 Mar 2022 16:49:44 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH 05/19] context_tracking: Split user tracking Kconfig
+Message-ID: <20220311154944.GD227945@lothringen>
+References: <20220302154810.42308-1-frederic@kernel.org>
+ <20220302154810.42308-6-frederic@kernel.org>
+ <20220310194346.GT4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310194346.GT4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable CONFIG_DEBUG_FS since this is useful to have around.
+On Thu, Mar 10, 2022 at 11:43:46AM -0800, Paul E. McKenney wrote:
+> On Wed, Mar 02, 2022 at 04:47:56PM +0100, Frederic Weisbecker wrote:
+> > Context tracking is going to be used not only to track user transitions
+> > but also idle/IRQs/NMIs. The user tracking part will then become a
+> > seperate feature. Prepare Kconfig for that.
+> 
+> s/seperate/separate/ # nit
 
-Signed-off-by: Brian Masney <bmasney@redhat.com>
----
- arch/arm/configs/qcom_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+Thanks, of course I'm never sure about that one.
 
-diff --git a/arch/arm/configs/qcom_defconfig b/arch/arm/configs/qcom_defconfig
-index 50e28a74c361..5cd935ee148a 100644
---- a/arch/arm/configs/qcom_defconfig
-+++ b/arch/arm/configs/qcom_defconfig
-@@ -308,6 +308,7 @@ CONFIG_PRINTK_TIME=y
- CONFIG_DYNAMIC_DEBUG=y
- CONFIG_DEBUG_INFO=y
- CONFIG_MAGIC_SYSRQ=y
-+CONFIG_DEBUG_FS=y
- # CONFIG_SCHED_DEBUG is not set
- CONFIG_WATCHDOG=y
- CONFIG_QCOM_WDT=y
--- 
-2.34.1
+> > diff --git a/arch/Kconfig b/arch/Kconfig
+> > index 678a80713b21..1a3b79cfc9e3 100644
+> > --- a/arch/Kconfig
+> > +++ b/arch/Kconfig
+> > @@ -762,7 +762,7 @@ config HAVE_ARCH_WITHIN_STACK_FRAMES
+> >  	  and similar) by implementing an inline arch_within_stack_frames(),
+> >  	  which is used by CONFIG_HARDENED_USERCOPY.
+> >  
+> > -config HAVE_CONTEXT_TRACKING
+> > +config HAVE_CONTEXT_TRACKING_USER
+> 
+> Just checking...  This means that only some configs will see userland
+> execution as being different than kernel execution, correct?  (Which
+> is the case today, to be fair.)
 
+Exactly!
+
+Thanks!
