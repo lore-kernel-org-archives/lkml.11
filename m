@@ -2,99 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 406E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76943C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348091AbiCKLjK (ORCPT
+        id S1348258AbiCKLnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 06:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
+        Fri, 11 Mar 2022 06:43:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232676AbiCKLjH (ORCPT
+        with ESMTP id S232676AbiCKLnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 06:39:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AD863507
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 03:38:03 -0800 (PST)
+        Fri, 11 Mar 2022 06:43:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C46BDE89;
+        Fri, 11 Mar 2022 03:42:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 954D1B82AD2
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:38:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A09EC340E9;
-        Fri, 11 Mar 2022 11:37:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646998681;
-        bh=e4y3Z0M6OHH8hOOsfv+op+DHBVtoqM4faCpqS9Xl8uU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=g1jxaks/+lJoF0nO1IAAjxawKI0ko+aKkwulHRxCgZnr1xWbUVBLR7c1jdMN+w+U2
-         6cm+tTiVqaowR5Ncg4U1esB4Ey5SXwONGFW4fAyQSvddk4B6dQavU1v/gyitXcUMtN
-         FylD1vi4UaqJbo4yeGSTinuYHvS5j2ZNSYtUOBMDqDI5+hVyF84mx5PHq1jObzbLnl
-         O+jWJhUavz3LM9nWyTvQQcu0LzzJL5FBguiegnqP8+Omnc6wusNY7v9dY8sJOUzCI4
-         EMePzLFBq+97ctuNIUOvMpIs2kr1KkhiehRXV+TE2ewdpmNK6q+4zhB2UDXSlRu0uz
-         ORzwPjb75UpNg==
-Message-ID: <c6333d9ebf5fcf03c1cf62071336c110a013a762.camel@kernel.org>
-Subject: Re: [PATCH 00/19] rcu/context-tracking: Merge RCU eqs-dynticks
- counter to context tracking
-From:   nicolas saenz julienne <nsaenz@kernel.org>
-To:     Frederic Weisbecker <frederic@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Phil Auld <pauld@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Yu Liao <liaoyu15@huawei.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Date:   Fri, 11 Mar 2022 12:37:55 +0100
-In-Reply-To: <20220302154810.42308-1-frederic@kernel.org>
-References: <20220302154810.42308-1-frederic@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE32261C5E;
+        Fri, 11 Mar 2022 11:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90BC7C340E9;
+        Fri, 11 Mar 2022 11:42:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646998950;
+        bh=5CvOYnGLJwEtyKF2QV/xv7ZYt39LVP/J1z80OCjr3NQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oGehODKlzAIsI2hTz5UUgswcyU2KhqGXevN+De2Cr1JcSjDobAWgm0hLDnakGgcdG
+         H344G/Y4BR/DloUgC/gBHmq5VuW2jA+UV92yZ/Zb5gify9nLXG1q0uwi5G/xBADZ1y
+         icGMaEdnq+J/0d40jLbUBB/IAgh7Na+kLIYmmXQ0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 5.15.28
+Date:   Fri, 11 Mar 2022 12:42:26 +0100
+Message-Id: <1646998946149237@kroah.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-03-02 at 16:47 +0100, Frederic Weisbecker wrote:
-> This mixes up the RCU dynticks counter and the context tracking state
-> updates into a single atomic instruction. This may serve several
-> purposes:
-> 
-> 1) Improve CPU isolation with deferring some disturbances until sensitive
->    userspace workload completes and goes to the kernel. This can take
->    several forms, for example smp_call_function_housekeeping() or
->    on_each_housekeeping_cpu() to enqueue and execute work on all
->    housekeeping CPUs. Then an atomic operation on ct->state can defer
->    the work on nohz_full CPUs until they run in kernel (or IPI them
->    if they are in kernel mode), see this proposal by Peter:
->    https://lore.kernel.org/all/20210929151723.162004989@infradead.org/#r
-> 
-> 2) Unearth sysidle (https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/commit/?h=sysidle.2017.05.11a&id=fe5ac724d81a3c7803e60c2232718f212f3f38d4)
->    This feature allowed to shutdown the tick on the last housekeeping
->    CPU once the rest of the system is fully idle. We needed some proper
->    fully ordered context tracking for that.
-> 
-> Inspired by Peterz: https://lore.kernel.org/all/20210929151723.162004989@infradead.org
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
-> 	rcu/context-tracking
-> 
-> HEAD: e4eaff86ec91c1cbde9a113cf5232dac9f897337
-> 
-> Thanks,
-> 	Frederic
-> ---
+I'm announcing the release of the 5.15.28 kernel.
 
-I've been testing patches 1 to 18 on my nohz_full setup. Everything is looking
-good so far.
+All users of the 5.15 kernel series must upgrade.
 
-Regards,
-Nicolas
+The updated 5.15.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.15.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+
+thanks,
+
+greg k-h
+
+------------
+
+ Documentation/admin-guide/hw-vuln/spectre.rst   |   48 +-
+ Documentation/admin-guide/kernel-parameters.txt |    8 
+ Documentation/arm64/cpu-feature-registers.rst   |   29 +
+ Documentation/arm64/elf_hwcaps.rst              |   12 
+ Makefile                                        |    2 
+ arch/arm/include/asm/assembler.h                |   10 
+ arch/arm/include/asm/spectre.h                  |   32 +
+ arch/arm/include/asm/vmlinux.lds.h              |   43 ++
+ arch/arm/kernel/Makefile                        |    2 
+ arch/arm/kernel/entry-armv.S                    |   79 ++++
+ arch/arm/kernel/entry-common.S                  |   24 +
+ arch/arm/kernel/spectre.c                       |   71 ++++
+ arch/arm/kernel/traps.c                         |   65 +++
+ arch/arm/mm/Kconfig                             |   11 
+ arch/arm/mm/proc-v7-bugs.c                      |  208 ++++++++++--
+ arch/arm64/Kconfig                              |    9 
+ arch/arm64/include/asm/assembler.h              |   53 +++
+ arch/arm64/include/asm/cpu.h                    |    1 
+ arch/arm64/include/asm/cpufeature.h             |   29 +
+ arch/arm64/include/asm/cputype.h                |   14 
+ arch/arm64/include/asm/fixmap.h                 |    6 
+ arch/arm64/include/asm/hwcap.h                  |    3 
+ arch/arm64/include/asm/insn.h                   |    1 
+ arch/arm64/include/asm/kvm_host.h               |    5 
+ arch/arm64/include/asm/rwonce.h                 |    4 
+ arch/arm64/include/asm/sections.h               |    5 
+ arch/arm64/include/asm/spectre.h                |    4 
+ arch/arm64/include/asm/sysreg.h                 |   18 +
+ arch/arm64/include/asm/vectors.h                |   73 ++++
+ arch/arm64/include/uapi/asm/hwcap.h             |    3 
+ arch/arm64/include/uapi/asm/kvm.h               |    5 
+ arch/arm64/kernel/cpu_errata.c                  |    7 
+ arch/arm64/kernel/cpufeature.c                  |   28 +
+ arch/arm64/kernel/cpuinfo.c                     |    4 
+ arch/arm64/kernel/entry.S                       |  214 +++++++++----
+ arch/arm64/kernel/image-vars.h                  |    4 
+ arch/arm64/kernel/proton-pack.c                 |  391 +++++++++++++++++++++++-
+ arch/arm64/kernel/vmlinux.lds.S                 |    2 
+ arch/arm64/kvm/arm.c                            |    5 
+ arch/arm64/kvm/hyp/hyp-entry.S                  |    9 
+ arch/arm64/kvm/hyp/nvhe/mm.c                    |    4 
+ arch/arm64/kvm/hyp/vhe/switch.c                 |    9 
+ arch/arm64/kvm/hypercalls.c                     |   12 
+ arch/arm64/kvm/psci.c                           |   18 +
+ arch/arm64/kvm/sys_regs.c                       |    2 
+ arch/arm64/mm/mmu.c                             |   12 
+ arch/arm64/tools/cpucaps                        |    1 
+ arch/x86/include/asm/cpufeatures.h              |    2 
+ arch/x86/include/asm/nospec-branch.h            |   16 
+ arch/x86/kernel/cpu/bugs.c                      |  205 +++++++++---
+ arch/x86/lib/retpoline.S                        |    2 
+ drivers/acpi/ec.c                               |   10 
+ drivers/acpi/sleep.c                            |   14 
+ drivers/block/xen-blkfront.c                    |   63 ++-
+ drivers/net/slip/slip.h                         |    2 
+ drivers/net/xen-netfront.c                      |   54 ++-
+ drivers/scsi/xen-scsifront.c                    |    3 
+ drivers/xen/gntalloc.c                          |   25 -
+ drivers/xen/grant-table.c                       |   71 ++--
+ drivers/xen/pvcalls-front.c                     |    8 
+ drivers/xen/xenbus/xenbus_client.c              |   24 -
+ include/linux/arm-smccc.h                       |    5 
+ include/linux/bpf.h                             |   12 
+ include/xen/grant_table.h                       |   19 +
+ kernel/sysctl.c                                 |    7 
+ net/9p/trans_xen.c                              |   14 
+ tools/arch/x86/include/asm/cpufeatures.h        |    2 
+ 67 files changed, 1799 insertions(+), 358 deletions(-)
+
+Anshuman Khandual (1):
+      arm64: Add Cortex-X2 CPU part definition
+
+Emmanuel Gil Peyrot (1):
+      ARM: fix build error when BPF_SYSCALL is disabled
+
+Greg Kroah-Hartman (2):
+      Revert "ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE"
+      Linux 5.15.28
+
+Huang Pei (1):
+      slip: fix macro redefine warning
+
+James Morse (20):
+      arm64: entry.S: Add ventry overflow sanity checks
+      arm64: spectre: Rename spectre_v4_patch_fw_mitigation_conduit
+      KVM: arm64: Allow indirect vectors to be used without SPECTRE_V3A
+      arm64: entry: Make the trampoline cleanup optional
+      arm64: entry: Free up another register on kpti's tramp_exit path
+      arm64: entry: Move the trampoline data page before the text page
+      arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
+      arm64: entry: Don't assume tramp_vectors is the start of the vectors
+      arm64: entry: Move trampoline macros out of ifdef'd section
+      arm64: entry: Make the kpti trampoline's kpti sequence optional
+      arm64: entry: Allow the trampoline text to occupy multiple pages
+      arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
+      arm64: entry: Add vectors that have the bhb mitigation sequences
+      arm64: entry: Add macro for reading symbol addresses from the trampoline
+      arm64: Add percpu vectors for EL1
+      arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
+      arm64: Mitigate spectre style branch history side channels
+      KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+      arm64: Use the clearbhb instruction in mitigations
+      arm64: proton-pack: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+
+Joey Gouly (3):
+      arm64: add ID_AA64ISAR2_EL1 sys register
+      arm64: cpufeature: add HWCAP for FEAT_AFP
+      arm64: cpufeature: add HWCAP for FEAT_RPRES
+
+Josh Poimboeuf (3):
+      x86/speculation: Include unprivileged eBPF status in Spectre v2 mitigation reporting
+      x86/speculation: Warn about Spectre v2 LFENCE mitigation
+      x86/speculation: Warn about eIBRS + LFENCE + Unprivileged eBPF + SMT
+
+Juergen Gross (11):
+      xen/xenbus: don't let xenbus_grant_ring() remove grants in error case
+      xen/grant-table: add gnttab_try_end_foreign_access()
+      xen/blkfront: don't use gnttab_query_foreign_access() for mapped status
+      xen/netfront: don't use gnttab_query_foreign_access() for mapped status
+      xen/scsifront: don't use gnttab_query_foreign_access() for mapped status
+      xen/gntalloc: don't use gnttab_query_foreign_access()
+      xen: remove gnttab_query_foreign_access()
+      xen/9p: use alloc/free_pages_exact()
+      xen/pvcalls: use alloc/free_pages_exact()
+      xen/gnttab: fix gnttab_end_foreign_access() without page specified
+      xen/netfront: react properly to failing gnttab_end_foreign_access_ref()
+
+Kim Phillips (2):
+      x86/speculation: Use generic retpoline by default on AMD
+      x86/speculation: Update link to AMD speculation whitepaper
+
+Marc Zyngier (1):
+      arm64: Add HWCAP for self-synchronising virtual counter
+
+Nathan Chancellor (2):
+      ARM: Do not use NOCROSSREFS directive with ld.lld
+      arm64: Do not include __READ_ONCE() block in assembly files
+
+Peter Zijlstra (3):
+      x86,bugs: Unconditionally allow spectre_v2=retpoline,amd
+      x86/speculation: Add eIBRS + Retpoline options
+      Documentation/hw-vuln: Update spectre doc
+
+Peter Zijlstra (Intel) (1):
+      x86/speculation: Rename RETPOLINE_AMD to RETPOLINE_LFENCE
+
+Russell King (Oracle) (7):
+      ARM: report Spectre v2 status through sysfs
+      ARM: early traps initialisation
+      ARM: use LOADADDR() to get load address of sections
+      ARM: Spectre-BHB workaround
+      ARM: include unprivileged BPF status in Spectre V2 reporting
+      ARM: fix co-processor register typo
+      ARM: fix build warning in proc-v7-bugs.c
+
+Suzuki K Poulose (1):
+      arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
+
