@@ -2,186 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5656C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2280DC35276
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345367AbiCKPye (ORCPT
+        id S1349942AbiCKPyi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:54:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
+        Fri, 11 Mar 2022 10:54:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349909AbiCKPwc (ORCPT
+        with ESMTP id S1349899AbiCKPwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:52:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A2391CD9C5
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:50:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647013855;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5n7gy9H/BMqsJ4RsjxsgJmI1zewtaeQWOy9VL2DQsf4=;
-        b=VR3CdX0VLeMdB14MOmUiaMs7iiFS+INo6FTjiJEx6lVWwyJ7YSdpaG6TEYWjqHfXa9aFd7
-        gaPBB+wPNTQ/3s07oXSTCCJJvtmDyFfziEK4tcRWQpE4am1eXyjhhe6ZFgM1q8Y7G7cUY7
-        GkUGUugRZuMrJWIbLJZ6CLzCe160mYA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-75-0FebaiqVNFydDrWw5CHSAg-1; Fri, 11 Mar 2022 10:50:50 -0500
-X-MC-Unique: 0FebaiqVNFydDrWw5CHSAg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B7731854E27;
-        Fri, 11 Mar 2022 15:50:49 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C5C22866D4;
-        Fri, 11 Mar 2022 15:50:46 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 21/31] KVM: selftests: Better XMM read/write helpers
-Date:   Fri, 11 Mar 2022 16:49:33 +0100
-Message-Id: <20220311154943.2299191-22-vkuznets@redhat.com>
-In-Reply-To: <20220311154943.2299191-1-vkuznets@redhat.com>
-References: <20220311154943.2299191-1-vkuznets@redhat.com>
+        Fri, 11 Mar 2022 10:52:21 -0500
+Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FA31CCB08;
+        Fri, 11 Mar 2022 07:50:55 -0800 (PST)
+Received: by mail-oo1-f43.google.com with SMTP id 6-20020a4a0906000000b0031d7eb98d31so10915194ooa.10;
+        Fri, 11 Mar 2022 07:50:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YxoZwXk5JXeLrOiq7bY7pTDwkNHArk5BUIDnHUOp3fI=;
+        b=XjHeNiwB/r1gEk87H55x7G8nUSVmS2XYotqcJ+zHrd8i5gLH6/CnuJVRijRG2LphtW
+         r3zXGoWF9YDLkCcJWeehuF46+cFnlKpKUra+LMjbuXfl23QvS2FDVNaRHpWQs2+RVkI7
+         4hxFuu6Sqg5NslZy4xFS2bKXamYzExjyQZ1rBc10rHdx2Y+inWkRMahD8hOKIIZx/HAJ
+         ppApSKyBdV8ejl5joExQHB28jOYZ6BUqzlcCXUWPsHa57/VzXYiwS2wmXRYBbrl8k6Ww
+         IFraIgtn44jcAqZayr0oDH3CCfMf/goMaMp76rBcQmBdLJtujhWfvbaY4DTSJCJ3iU+N
+         tGKg==
+X-Gm-Message-State: AOAM530Fqs23SpZs1oxrTvRd3LafvaGvJK4UVtMuN8SM7TvLaBT8H/N8
+        ftaelxF0WMabyCcr7W0zMlrMpG7e9Q==
+X-Google-Smtp-Source: ABdhPJwTNhTLkhpo9jtKQvQYWXEtv5T34b0UK/llvnOM7PooDJmEUR4392gY6ZLXZe41uYkJ8Pb+sQ==
+X-Received: by 2002:a05:6870:4149:b0:da:5e34:9448 with SMTP id r9-20020a056870414900b000da5e349448mr11505061oad.112.1647013855095;
+        Fri, 11 Mar 2022 07:50:55 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n11-20020a9d710b000000b005af4ceeaac1sm3727274otj.37.2022.03.11.07.50.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 07:50:54 -0800 (PST)
+Received: (nullmailer pid 3867362 invoked by uid 1000);
+        Fri, 11 Mar 2022 15:50:52 -0000
+Date:   Fri, 11 Mar 2022 09:50:52 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     hsinyi@chromium.org, Thomas Gleixner <tglx@linutronix.de>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+Subject: Re: [PATCH v4 1/4] dt-bindings: timer: Add compatible for Mediatek
+ MT8186
+Message-ID: <Yitv3IUpCzp1/eGX@robh.at.kernel.org>
+References: <20220311130732.22706-1-allen-kh.cheng@mediatek.com>
+ <20220311130732.22706-2-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311130732.22706-2-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-set_xmm()/get_xmm() helpers are fairly useless as they only read 64 bits
-from 128-bit registers. Moreover, these helpers are not used. Borrow
-_kvm_read_sse_reg()/_kvm_write_sse_reg() from KVM limiting them to
-XMM0-XMM8 for now.
+On Fri, 11 Mar 2022 21:07:29 +0800, Allen-KH Cheng wrote:
+> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> 
+> This commit adds dt-binding documentation of timer for Mediatek MT8186 SoC
+> Platform.
+> 
+> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/timer/mediatek,mtk-timer.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- .../selftests/kvm/include/x86_64/processor.h  | 70 ++++++++++---------
- 1 file changed, 36 insertions(+), 34 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 8a470da7b71a..4962cd0ceacd 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -296,71 +296,73 @@ static inline void cpuid(uint32_t *eax, uint32_t *ebx,
- 	    : "memory");
- }
- 
--#define SET_XMM(__var, __xmm) \
--	asm volatile("movq %0, %%"#__xmm : : "r"(__var) : #__xmm)
-+typedef u32		__attribute__((vector_size(16))) sse128_t;
-+#define __sse128_u	union { sse128_t vec; u64 as_u64[2]; u32 as_u32[4]; }
-+#define sse128_lo(x)	({ __sse128_u t; t.vec = x; t.as_u64[0]; })
-+#define sse128_hi(x)	({ __sse128_u t; t.vec = x; t.as_u64[1]; })
- 
--static inline void set_xmm(int n, unsigned long val)
-+static inline void read_sse_reg(int reg, sse128_t *data)
- {
--	switch (n) {
-+	switch (reg) {
- 	case 0:
--		SET_XMM(val, xmm0);
-+		asm("movdqa %%xmm0, %0" : "=m"(*data));
- 		break;
- 	case 1:
--		SET_XMM(val, xmm1);
-+		asm("movdqa %%xmm1, %0" : "=m"(*data));
- 		break;
- 	case 2:
--		SET_XMM(val, xmm2);
-+		asm("movdqa %%xmm2, %0" : "=m"(*data));
- 		break;
- 	case 3:
--		SET_XMM(val, xmm3);
-+		asm("movdqa %%xmm3, %0" : "=m"(*data));
- 		break;
- 	case 4:
--		SET_XMM(val, xmm4);
-+		asm("movdqa %%xmm4, %0" : "=m"(*data));
- 		break;
- 	case 5:
--		SET_XMM(val, xmm5);
-+		asm("movdqa %%xmm5, %0" : "=m"(*data));
- 		break;
- 	case 6:
--		SET_XMM(val, xmm6);
-+		asm("movdqa %%xmm6, %0" : "=m"(*data));
- 		break;
- 	case 7:
--		SET_XMM(val, xmm7);
-+		asm("movdqa %%xmm7, %0" : "=m"(*data));
- 		break;
-+	default:
-+		BUG();
- 	}
- }
- 
--#define GET_XMM(__xmm)							\
--({									\
--	unsigned long __val;						\
--	asm volatile("movq %%"#__xmm", %0" : "=r"(__val));		\
--	__val;								\
--})
--
--static inline unsigned long get_xmm(int n)
-+static inline void write_sse_reg(int reg, const sse128_t *data)
- {
--	assert(n >= 0 && n <= 7);
--
--	switch (n) {
-+	switch (reg) {
- 	case 0:
--		return GET_XMM(xmm0);
-+		asm("movdqa %0, %%xmm0" : : "m"(*data));
-+		break;
- 	case 1:
--		return GET_XMM(xmm1);
-+		asm("movdqa %0, %%xmm1" : : "m"(*data));
-+		break;
- 	case 2:
--		return GET_XMM(xmm2);
-+		asm("movdqa %0, %%xmm2" : : "m"(*data));
-+		break;
- 	case 3:
--		return GET_XMM(xmm3);
-+		asm("movdqa %0, %%xmm3" : : "m"(*data));
-+		break;
- 	case 4:
--		return GET_XMM(xmm4);
-+		asm("movdqa %0, %%xmm4" : : "m"(*data));
-+		break;
- 	case 5:
--		return GET_XMM(xmm5);
-+		asm("movdqa %0, %%xmm5" : : "m"(*data));
-+		break;
- 	case 6:
--		return GET_XMM(xmm6);
-+		asm("movdqa %0, %%xmm6" : : "m"(*data));
-+		break;
- 	case 7:
--		return GET_XMM(xmm7);
-+		asm("movdqa %0, %%xmm7" : : "m"(*data));
-+		break;
-+	default:
-+		BUG();
- 	}
--
--	/* never reached */
--	return 0;
- }
- 
- bool is_intel_cpu(void);
--- 
-2.35.1
-
+Acked-by: Rob Herring <robh@kernel.org>
