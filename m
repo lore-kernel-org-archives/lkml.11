@@ -2,206 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7727AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236432AbiCKP4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:56:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42288 "EHLO
+        id S1346161AbiCKP5q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 10:57:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350119AbiCKP4e (ORCPT
+        with ESMTP id S239828AbiCKP5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:56:34 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A133E14A6E2;
-        Fri, 11 Mar 2022 07:54:43 -0800 (PST)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BFp6Yr031164;
-        Fri, 11 Mar 2022 15:54:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=6HIG7rNoQrih35D4U3E44J0jVh4DptJLHecmpDFx3kA=;
- b=DWj0EK2HGBqwG4VSHpTlrGRD2xBdqMMxhA6xAfz2fB2wbFWd3smm7tHujYYwXNhxXc4P
- 4g3M9Q3vXn2fUPr0gBbtleX9Tm7sBzUElTdOjqT+LbE24Of40k7WFjmv+TEjMxxAkJ2p
- SOXB9KKYOlKYm0QFEvIapkCvOGgmqP2fCQKdTGV6KRRgzf84hyCy6elZCpeabzsO8GtS
- l7i7dpugPyk6tvZy/t2B9CTmlbpuCHBkdtw3sXkxyQC72+zW2QZtvFqPv3zvhSSDGa/2
- c0UyD5H3whB39JqDpr2eQkGnomBCVRj1nbhbcOFjPu/d83lmH0uIdM37b0D6be3kYhBK PQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3ekxn2ska0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Mar 2022 15:54:42 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22BFjkYM056316;
-        Fri, 11 Mar 2022 15:54:41 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2172.outbound.protection.outlook.com [104.47.58.172])
-        by aserp3030.oracle.com with ESMTP id 3ekwwe5yvu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Mar 2022 15:54:41 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JWW73lq7OcDxyKHz5Hqfb0sGDGUG4deuTg/TJyd5To47V0J8qp5BxKNngpTOhk1x9TBThPOhJ6HSxX5u5/Mo1Vh/54ISoQK+vVntK+CJjolBF31JE/qRxxzc2r0O/LmpEp2+EagIEZUeD4laPvbDXkETdHMPEBBfePoSwBCDcFqu/9zpBoDMRgRRD52Yk1ZcXiM3LIlC4DlzT74dMkvne5K9o8uLjjisO1EKkANogXl5vlEU6I82QI3q+raBpVGLIXnyCE+g8K1EWY0VUt4q0Sii99yRGh5BBDPcrhDKoDh39svoQiXFq0keToRYt7GWr5bN/Dz/8gJzQsW0BP25BA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6HIG7rNoQrih35D4U3E44J0jVh4DptJLHecmpDFx3kA=;
- b=Uu2xokAyyYPCD0oDfD5i9IXPuxhFBVmzQIHRbvpS7g+C1pxaJkzlULCkwmA1hg+/Fb9O3tnzqe74pzwpELHimqi6llKFKNU+ZilUYyBeY5jreQ9ob7HwXqHvQsSyuktKTb82qBCrxPmPViSvmJsm6rHBoIrXrtAtzQyVpkFe2xaW/oJKX7ViJJ51CiDf1Q4De7AC1VOteG8kB6MuqO3VFZVk5100nmE3SpefIARl/nQhZLTjzpKiVH/qhvjlg6t042UvBqvQesHc+2SwVQSQg2XR4hNuC0lw9F67ZTDWV11bzKARJ51JIutY6w38xwAkjpK+pdhPCGbGqHW9y3Ux3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Fri, 11 Mar 2022 10:57:32 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6297714A6E2
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:56:11 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id j26so13619451wrb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:56:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6HIG7rNoQrih35D4U3E44J0jVh4DptJLHecmpDFx3kA=;
- b=VvC0dIwGbDZPI8LD14s3xTM/GcjrOi0qkayOCwZr2eSew4mXWvNRwr4FuNoO8XW+Zlu8mU5hYMc4XAHQaHSZsCDIxpKHIno6IfLnQ9V7pcyYlGhc1NMWNmrMo4bNmKxmyfKWIyr0cWfIjPhB+O+mAULkEaG/Pwt+w69lAHTfj1c=
-Received: from DS7PR10MB5134.namprd10.prod.outlook.com (2603:10b6:5:3a1::23)
- by MWHPR10MB1677.namprd10.prod.outlook.com (2603:10b6:301:a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.23; Fri, 11 Mar
- 2022 15:54:39 +0000
-Received: from DS7PR10MB5134.namprd10.prod.outlook.com
- ([fe80::1422:288c:c410:93bb]) by DS7PR10MB5134.namprd10.prod.outlook.com
- ([fe80::1422:288c:c410:93bb%3]) with mapi id 15.20.5061.025; Fri, 11 Mar 2022
- 15:54:39 +0000
-From:   Chuck Lever III <chuck.lever@oracle.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-CC:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] remove reference to the removed config NFSD_V3
-Thread-Topic: [PATCH] remove reference to the removed config NFSD_V3
-Thread-Index: AQHYNVv43IyubEb7xESELjAt08Pu/qy6VecA
-Date:   Fri, 11 Mar 2022 15:54:39 +0000
-Message-ID: <54AB09CE-9345-4C8C-84F8-FA5C8D9F9EB9@oracle.com>
-References: <20220311143941.9628-1-lukas.bulwahn@gmail.com>
- <9A70DCDF-2F9D-4020-B936-380D919421D4@oracle.com>
-In-Reply-To: <9A70DCDF-2F9D-4020-B936-380D919421D4@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3654.120.0.1.13)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ef7385ad-78ce-4891-b839-08da03777309
-x-ms-traffictypediagnostic: MWHPR10MB1677:EE_
-x-microsoft-antispam-prvs: <MWHPR10MB1677623D931525EBC2F7D91A930C9@MWHPR10MB1677.namprd10.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ScLbG7apisz2GHV596rFoUtnP/s+7RP7ezoEDLAvSrJv/WkE0NQKPH7Nc1xE01sTDnOHg2vZnBnKOGqfqoM6dO0MApHzDOIl9HUGhdz0j8GBl7kBoN1fbK1M6R5IG9vhCyctX770KDJxPVxceS9UWTflqne/eYhJzIezA8mkZJaal20Huy1rALj2m8qMcIuSLg7lChD4JMEKeaUPUy92LwfAmo2JTAopBmZVDesqNpGj9rebfQPELGePOXXSXUgUgjZrCG7tOy4XmiiqSDVBqcgZBgGaoUMCRa78emL+mGeq7qSO/9jvg928RvOMgvJHwLstLgFEvF67Ov6EdavTv47l52xscpud+QazCbBG7LzGDNqk2OmxGp6bicj/CbGVAaRBvYJwKYOhNRKnLH8JDWR3yK4rnw2F3fO9zCIWGLboP2Y9gnamcYQLIj5IUKEZVL78xKaF3qO3HfrILrS9UC8D8t0tFXmGuf2PKuVl8gJ2N39QLSO9rW3TDRr1TpI3o6YyEmY8/rRGdoQJGA02d0wZ633AXZ4eNlpMOLLiX2V8omiNN6ixOkPSRHbEFb3L6uKfDOKv0gVxYSbgSRZ9IHcJdmfx3oN4a5cfjBXNRoXPhAOERxMtArlbFYNcxvEqxy9pJbV8TGeK+wvOmZiztIci9DAxO7fR9t/J+vOGbfzQpSrnZziGQs46ajKW3DR+iPAYZunk7sneAho8HqAiOCKgm/Dns11DuuwBBQE6GtYIkZDA2F9+5RJX5C2YGb5w
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB5134.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66476007)(66556008)(66446008)(66946007)(4326008)(6486002)(91956017)(8676002)(76116006)(33656002)(5660300002)(38070700005)(8936002)(508600001)(86362001)(71200400001)(2616005)(64756008)(6512007)(36756003)(316002)(122000001)(54906003)(6916009)(53546011)(83380400001)(6506007)(2906002)(38100700002)(26005)(186003)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?01L/6RMCw79U0wA+SmkMo7hswWlPfDSVRZAps0AU1v9wN2CCjYlbUOisPZKe?=
- =?us-ascii?Q?aM1dQ0HTtyZ8FVgiwVuys23u0SiQHm04IEErGMGJsPatAjnrFXpGtl6THhsJ?=
- =?us-ascii?Q?qC8mGyr3jpeDVapPJzIrIn26w9hP6A/E6shzxgqgZ359E8iPS2jzl8Fvpp/Y?=
- =?us-ascii?Q?Y0nuTa0Qt0z5ZE+PJC3AigIBZOj4fQ+OURXxxNjiHdtchMA0WaIfK8t3H/Kd?=
- =?us-ascii?Q?3XkmiMcbqB/RJENz2+4gUCXHH9bXZE8mh8Ttn+PT9p60dgUCZtEShHPHW7nW?=
- =?us-ascii?Q?3tVsD1kL4orvgV8ZILLPNhi0GR9/CmrNXlU3fyrk6oMWAroQYZZ8YOzJc/69?=
- =?us-ascii?Q?XCCsI+2ccKZb68eTIOi7qCIX+A5x4kjO9BDWNtlY9vwBaO3ZYadpavvJKduA?=
- =?us-ascii?Q?0AV0fRbVd+dN+rosXJNmZnaAk9RJrkMYMSnXKaN8Z0K/rwMg4E/knZ7WNanp?=
- =?us-ascii?Q?tiKxsMTX41EaiCzu13MKI8KnPg6QpYKHT7XRu/paZJ6OsHPNEO63mvdF0jVc?=
- =?us-ascii?Q?ftcQhu5pdqKzSDvKojYl0lK72Y2e8H/qjSFZdwv82ZP9WdsAUKu1HWlXiYeS?=
- =?us-ascii?Q?+oiEamwOy8JZwZUG8yX+VbPHlS8XQDiC951lqtj+HZtKSJbtqfRU8fYFXDEE?=
- =?us-ascii?Q?QfbPHr8RBtEhNCQ7ND13D04nDewTnqbbUSSoAd+b1Sthxzknmz5KMS64kcl6?=
- =?us-ascii?Q?C01QRktnhO7myMgxB9eRTXuMPFiH70ka9O/scFYP/vA1GUZbrfjVjsEmnhX1?=
- =?us-ascii?Q?eoy8zzjmRvycdSv9YEriLAE/QTQQnohediDgX7M5NIMgNG9gVkwVODPD59+q?=
- =?us-ascii?Q?nmNYxlcV2rrNXJcHwY45Qlx5xC4DpDv9Q6B2hxCywUQomWGGPANvLrrbBMEN?=
- =?us-ascii?Q?1l0mUxqER6lqCE52voU3erb9f1DEI51cNRo00v9/1WbyOFZRxn4AX3uw0CPf?=
- =?us-ascii?Q?JRQhu/Tl5MU0AZqsDOuhZiS3DKJ1sTVuLwoKFy0VhGhZ3Js5ot6W5Yj3D5KL?=
- =?us-ascii?Q?wJXzDThY43TMnvRO3+BIVNMIEKCKzP4NjnI/2RKv9YkUFokTc9cwqtnsQeMf?=
- =?us-ascii?Q?o7tKvQ+4W/UJSOu2oqUzPZtiXzOFtEHA17Uu3qobKoZuQbNzCI6kDAVZzefb?=
- =?us-ascii?Q?Mx63yQx1ZaA7IoxcGkBbk1lt1kj3Vp+Wawf39kUlWU7i0yL6T2dkySw3srji?=
- =?us-ascii?Q?fhKGYeWstLPbzBKb0uwWAq7UImT0D7kO3rkwOkOhXchBDpq0GUs1Xq1OB/X4?=
- =?us-ascii?Q?AMNfGwmaZ+H9iwS5wrcWNNhiiHAAT013ZxkgtF/DpTSUjwHykIsQu9qzSkOU?=
- =?us-ascii?Q?PWFo+nqESUzcxwVDLPr+rBEmMzk7hjYqD6eMpS/j4JzpSIBwa/ANC0FLxIEm?=
- =?us-ascii?Q?gqMn8mtluPgFDRfbV6vT9eYO5LIWScu6xLlxS6N78rgnvr2TisSXU03bNgMM?=
- =?us-ascii?Q?DEH/3d3EvaZI+kwpUCx8rPVnsM4NbpmaUJUbICFmeMxFURK3ymfNbA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7CAE6DBF132D7D40BF865402525C9E30@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yBab81rlsXVfIrb1h5ugmlXAnmE0dZk087QNoq8lEw4=;
+        b=usv/7QYbADl2R0gma2J6J5sYrjRw4TDBnKEeY2m5BrJxInoEh23dkuXQowKqQZwUi1
+         fVqYVr9Z//li8WbUkitTqPkn/gaJv6nhYvMmT7qz0ovfQeb4JJCjKxdHkPX4ea44XVl/
+         YqyoH8eyNpliPfG06CzQsl2zZKyOfoe/6lL7NbLo2gaAy0/md4nK3MJXE8mcE0GkO8Z/
+         LyY3KFqx/85OFkBU+Svo/0OIxh8wEOknlbdYWOr94y+CRto3VjCdPgc4oZkzgP31La6C
+         Og/51kAY3M1RIkN9ZoUJv3xB2OWzN6p7tXyAaiAI2damReBHdb6p9lGOCyyBarml2Tal
+         kvcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yBab81rlsXVfIrb1h5ugmlXAnmE0dZk087QNoq8lEw4=;
+        b=OcukiM/VVS6wDzQIgtqRE+qeWOhNqGxLLDLV3IPac5SBCYdomHvlpf4raYQJKrDYtP
+         LbxUBepOJxmNV+vBhqnQUOnsZBC+10fTLBK+jivKFcyXAKxcx3II9425g/aYEak8irwB
+         NwUz+kLc0tXuYt3ulk3pZjJyMXOrPKigkPxtFFUA8pp6xXfPST7bFxr5NTipw0gPnnYp
+         9GUT8W6OOk3+BJUPrRWPOorciRBIU2dTadO6rknbQ1gAPi2YvW7EMl0oe2vbOWX58Y7X
+         9c5pBqqFnTwxZTqJpgnfkOGluWNbEFsPbwYX0vfjVifKqGCTbLb+4DUz1R3NfVphj0lM
+         cmfw==
+X-Gm-Message-State: AOAM533PR80+TUiF77DH2wTSulVNUXe90soToycMbvvISHmkEHidyCUq
+        ht4G27lQaI82Corc1j/B8tf46IKAZoSmtM7DaAgiMQ==
+X-Google-Smtp-Source: ABdhPJyHRl575oJ/E1f/YImGvu+xA6j3CfpVKm2dTU3ZrtKOXYSGHQkH5/l443BVjYhYSzAzYaAurPGVf+bw/uab3is=
+X-Received: by 2002:a5d:4a8f:0:b0:1f0:4af2:4e29 with SMTP id
+ o15-20020a5d4a8f000000b001f04af24e29mr7798876wrq.519.1647014165262; Fri, 11
+ Mar 2022 07:56:05 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB5134.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef7385ad-78ce-4891-b839-08da03777309
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2022 15:54:39.1573
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qK43Y66Sj07mFz898/dy0tmXA7CwTkdnJGAKubjXwrGDuZGOqwxgnC9EYYQiGlGYypjIB9GPREqoK8nfrQC7Vw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1677
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10282 signatures=692556
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 spamscore=0
- phishscore=0 bulkscore=0 adultscore=0 malwarescore=0 suspectscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203110078
-X-Proofpoint-ORIG-GUID: LvBPGt-D3kIi_ygPuCi4L6_7MIjJfufW
-X-Proofpoint-GUID: LvBPGt-D3kIi_ygPuCi4L6_7MIjJfufW
+References: <20220113091056.1297982-1-james.clark@arm.com> <20220113091056.1297982-2-james.clark@arm.com>
+ <b3545a88-4743-db95-4676-b0b193cbea78@arm.com> <CAJ9a7Vi584BcY49TaRn5CJT=wcpafMf-3cA0R+sZ54p6iUKmeQ@mail.gmail.com>
+ <7fae6630-fdec-3f95-9eac-3f7a5c789272@arm.com>
+In-Reply-To: <7fae6630-fdec-3f95-9eac-3f7a5c789272@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Fri, 11 Mar 2022 15:56:00 +0000
+Message-ID: <CAJ9a7VjTJ4E7=qdPgfTTVjoW01rCzd-f1mFYHjtA3BHk25saMA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/6] coresight: Add config flag to enable branch broadcast
+To:     James Clark <James.Clark@arm.com>
+Cc:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        mathieu.poirier@linaro.org, coresight@lists.linaro.org,
+        leo.yan@linaro.com, Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi James,
+
+On Fri, 11 Mar 2022 at 14:58, James Clark <james.clark@arm.com> wrote:
+>
+>
+>
+> On 02/02/2022 20:25, Mike Leach wrote:
+> > Hi James, Suzuki
+> >
+> > On Fri, 28 Jan 2022 at 11:19, Suzuki K Poulose <suzuki.poulose@arm.com> wrote:
+> >>
+> >> On 13/01/2022 09:10, James Clark wrote:
+> >>> When enabled, all taken branch addresses are output, even if the branch
+> >>> was because of a direct branch instruction. This enables reconstruction
+> >>> of the program flow without having access to the memory image of the
+> >>> code being executed.
+> >>>
+> >>> Use bit 8 for the config option which would be the correct bit for
+> >>> programming ETMv3. Although branch broadcast can't be enabled on ETMv3
+> >>> because it's not in the define ETM3X_SUPPORTED_OPTIONS, using the
+> >>> correct bit might help prevent future collisions or allow it to be
+> >>> enabled if needed.
+> >>>
+> >>> Signed-off-by: James Clark <james.clark@arm.com>
+> >>> ---
+> >>>   drivers/hwtracing/coresight/coresight-etm-perf.c   |  2 ++
+> >>>   drivers/hwtracing/coresight/coresight-etm4x-core.c | 10 ++++++++++
+> >>>   include/linux/coresight-pmu.h                      |  2 ++
+> >>>   3 files changed, 14 insertions(+)
+> >>>
+> >>> diff --git a/drivers/hwtracing/coresight/coresight-etm-perf.c b/drivers/hwtracing/coresight/coresight-etm-perf.c
+> >>> index c039b6ae206f..43bbd5dc3d3b 100644
+> >>> --- a/drivers/hwtracing/coresight/coresight-etm-perf.c
+> >>> +++ b/drivers/hwtracing/coresight/coresight-etm-perf.c
+> >>> @@ -52,6 +52,7 @@ static DEFINE_PER_CPU(struct coresight_device *, csdev_src);
+> >>>    * The PMU formats were orignally for ETMv3.5/PTM's ETMCR 'config';
+> >>>    * now take them as general formats and apply on all ETMs.
+> >>>    */
+> >>> +PMU_FORMAT_ATTR(branch_broadcast, "config:"__stringify(ETM_OPT_BRANCH_BROADCAST));
+> >>>   PMU_FORMAT_ATTR(cycacc,             "config:" __stringify(ETM_OPT_CYCACC));
+> >>>   /* contextid1 enables tracing CONTEXTIDR_EL1 for ETMv4 */
+> >>>   PMU_FORMAT_ATTR(contextid1, "config:" __stringify(ETM_OPT_CTXTID));
+> >>> @@ -97,6 +98,7 @@ static struct attribute *etm_config_formats_attr[] = {
+> >>>       &format_attr_sinkid.attr,
+> >>>       &format_attr_preset.attr,
+> >>>       &format_attr_configid.attr,
+> >>> +     &format_attr_branch_broadcast.attr,
+> >>
+> >> Does it make sense to hide the option if the bb is not supported ? I
+> >> guess it will be tricky as we don't track the common feature set. So,
+> >> that said...
+> >>
+> >>>       NULL,
+> >>>   };
+> >>>
+> >>> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> >>> index bf18128cf5de..04669ecc0efa 100644
+> >>> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> >>> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> >>> @@ -692,6 +692,16 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
+> >>>               ret = cscfg_csdev_enable_active_config(csdev, cfg_hash, preset);
+> >>>       }
+> >>>
+> >>> +     /* branch broadcast - enable if selected and supported */
+> >>> +     if (attr->config & BIT(ETM_OPT_BRANCH_BROADCAST)) {
+> >>> +             if (!drvdata->trcbb) {
+> >>> +                     ret = -EINVAL;
+> >>
+> >> Should we fail here ? We could simply ignore this and generate the trace
+> >> normally. This would work on a big.LITTLE system with one set missing
+> >> the branch broadcast, while the others support.
+> >>
+> >> Mike,
+> >>
+> >> Does this affect the trace decoding ? As such the OpenCSD should be able
+> >> to decode the packets as they appear in the stream. Correct ?
+> >>
+> >
+> > Depends on what you mean by affect the trace decoding!
+> > From the simplest perspective - no - there is no issue as the packets
+> > will be decode as seen. THE decoder does not know that BB exists - nor
+> > if it is enabled.
+> >
+> > However, the reason that a user may engage BB is that the code is in
+> > some way self modifying - so that following the code static image and
+> > calculating addresses will result in a different path taken.
+> >
+> > e.g. imagine an opcode:-
+> >
+> > B <address0>
+> >
+> > Without BB, this will trace as a single E atom, the decoder will
+> > calculate address0 from the opcode in the static image and continue
+> > from there as the next trace address.
+> >
+> > Now look at the case where this is changed on the fly to
+> >
+> > B <address1>
+> >
+> > With BB, This will trace to
+> > E
+> > TGT_ADDR<address1>
+> >
+> > The decoder will initially  extract address0 from the static image,
+> > but the immediately following target address packet will alter the
+> > next address traced to address1
+> > This is why we have BB.
+> >
+> >  So if the user has a reason to engage BB - we should really fail if
+> > it is not present - as the outcome of the trace can be affected.
+>
+> Hi Mike,
+>
+> Now I'm starting to wonder if it's best to have some kind of non-binary
+> image mode for BB where you'd just get a list of addresses output by
+> perf script and it doesn't attempt to do any lookups.
+
+Not at all sure what you mean by this
+
+Mike
+
+>  Although I think
+> that would require a change in OpenCSD if it's not aware of the mode?
+>
+> I also need to go back to my JVM profiling test and see what's
+> going on again. But I think I understand your points a bit more now.
+>
+> Thanks
+> James
+>
+> >
+> >> Suzuki
+> >>
+> >>
+> >>> +                     goto out;
+> >>> +             } else {
+> >>> +                     config->cfg |= BIT(ETM4_CFG_BIT_BB);
+> >>> +             }
+> >>> +     }
+> >>> +
+> >>>   out:
+> >>>       return ret;
+> >>>   }
+> >>> diff --git a/include/linux/coresight-pmu.h b/include/linux/coresight-pmu.h
+> >>> index 4ac5c081af93..6c2fd6cc5a98 100644
+> >>> --- a/include/linux/coresight-pmu.h
+> >>> +++ b/include/linux/coresight-pmu.h
+> >>> @@ -18,6 +18,7 @@
+> >>>    * ETMv3.5/PTM doesn't define ETMCR config bits with prefix "ETM3_" and
+> >>>    * directly use below macros as config bits.
+> >>>    */
+> >>> +#define ETM_OPT_BRANCH_BROADCAST 8
+> >>>   #define ETM_OPT_CYCACC              12
+> >>>   #define ETM_OPT_CTXTID              14
+> >>>   #define ETM_OPT_CTXTID2             15
+> >>> @@ -25,6 +26,7 @@
+> >>>   #define ETM_OPT_RETSTK              29
+> >>>
+> >>>   /* ETMv4 CONFIGR programming bits for the ETM OPTs */
+> >>> +#define ETM4_CFG_BIT_BB         3
+> >>>   #define ETM4_CFG_BIT_CYCACC 4
+> >>>   #define ETM4_CFG_BIT_CTXTID 6
+> >>>   #define ETM4_CFG_BIT_VMID   7
+> >>
+> >
+> >
 
 
-> On Mar 11, 2022, at 10:23 AM, Chuck Lever III <chuck.lever@oracle.com> wr=
-ote:
->=20
->=20
->=20
->> On Mar 11, 2022, at 9:39 AM, Lukas Bulwahn <lukas.bulwahn@gmail.com> wro=
-te:
->>=20
->> Commit 6a687e69a54e ("NFSD: Remove CONFIG_NFSD_V3") removes the config
->> NFSD_V3, but misses one reference in fs/Kconfig.
->>=20
->> Remove this remaining reference to the removed config symbol.
->>=20
->> This issue was discovered with ./scripts/checkkconfigsymbols.py.
->>=20
->> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
->> ---
->> Chuck, please pick this quick fix to your commit in linux-next.
->>=20
->> fs/Kconfig | 2 +-
->> 1 file changed, 1 insertion(+), 1 deletion(-)
->>=20
->> diff --git a/fs/Kconfig b/fs/Kconfig
->> index 7f2455e8e18a..ec2cf8ccd170 100644
->> --- a/fs/Kconfig
->> +++ b/fs/Kconfig
->> @@ -344,7 +344,7 @@ config LOCKD
->>=20
->> config LOCKD_V4
->> 	bool
->> -	depends on NFSD_V3 || NFS_V3
->> +	depends on NFS_V3
->=20
-> Actually, I think:
->=20
-> 	depends on NFSD || NFS_V3
->=20
-> is more correct. LOCKD_V4 now needs to be enabled whenever
-> the server is enabled, since NFSv3 support in the server is
-> now always enabled.
 
-I've squashed this change into "NFSD: Remove CONFIG_NFSD_V3".
-Thanks for reporting it, Lukas!
-
-
->> 	depends on FILE_LOCKING
->> 	default y
->>=20
->> --=20
->> 2.17.1
->>=20
->=20
-> --
-> Chuck Lever
-
---
-Chuck Lever
-
-
-
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
