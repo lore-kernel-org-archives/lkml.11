@@ -2,210 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D60C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5282C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345358AbiCKIH1 (ORCPT
+        id S1347270AbiCKIHa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:07:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50578 "EHLO
+        Fri, 11 Mar 2022 03:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229654AbiCKIHY (ORCPT
+        with ESMTP id S229654AbiCKIH1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:07:24 -0500
-Received: from esa.hc3962-90.iphmx.com (esa.hc3962-90.iphmx.com [216.71.140.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B851B6E05;
-        Fri, 11 Mar 2022 00:06:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=qti.qualcomm.com; i=@qti.qualcomm.com; q=dns/txt;
-  s=qccesdkim1; t=1646985981; x=1647590781;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=sP1BLHbw3Lr4ylz/W17EEnNydHOOsQ7UB7d755qVXzw=;
-  b=Ad9D2pr5ogN6EgtCn8PY4sxH3iif2p6FF1SVx8hPRl9U1/CPnEb00Ccg
-   z5ks8lwCUfJR93Y/bXbOiYHTihKmV5NFGHAj/1Xxur4YuIt9FoO8xonI1
-   OKD3X1o8sWblnCqDtdzqvoxNd+ZH+sBZueWG5my51ZtkIn+hJgpDHCchG
-   s=;
-Received: from mail-dm6nam10lp2103.outbound.protection.outlook.com (HELO NAM10-DM6-obe.outbound.protection.outlook.com) ([104.47.58.103])
-  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 08:06:20 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dWfYIsD7clEhdmem/yxxmuzlfpTb9gCHN7/3zQgvwcUF4C5kEBI8+SIAF2SKWuQphyjYLi31eqYh8FsyFoTwb7E80xjDcWci/+9D+ZwS1Vr8MZRB38HmSjNAfkKVUeEbEttN4AbtYMFNyVMX3Q95FCugl8UZPFOQs9uEKR80rYDaJXSBC2t/HmjM9QufMKoqMA8StjU2g55xLaLbhGabsJQZ5aGxgxGWyNBtqMmQFbgGGZaHcaQjQkGy5MJ0JQlLifDSt42aYkg4KKVct0YocfiQeP8xWARX+dWv/GrL2mFdoW/rSJi4dAacTtsS13Ns7ToopqrzKWq/oX5GCH7hJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sP1BLHbw3Lr4ylz/W17EEnNydHOOsQ7UB7d755qVXzw=;
- b=R8EGVxkc7txSIKBqhYXLvX+C0pmffwU/GwyNPqNsnA79Fyi6jt5C+DXCHbV9r3U1NY5OOKw8UirY6w1aniT7TIHYSzI5DdfC3wJHimbKC5WaCvruIA9kwybFTW1fF2shq8Oo5repdDejDhVzfPCT3eTadFRzXK1wkIWPlJpMgEzZYdrn2KbxZjpJWYMVQvIiFi22pz6AomIlnwKwLcoo9rM2XPvKnP5qg3aFC+pNzzgeC13ujF5OHId8IGxDcsrPd2HOhM/rRqSIVhhTlMD5b6wSLdhZ10ChtM0NGKhDTo9YMlk7TQSKuRm2Gh3wYHpe23IStXBAPyMJ0vuNOwjhog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=qti.qualcomm.com; dmarc=pass action=none
- header.from=qti.qualcomm.com; dkim=pass header.d=qti.qualcomm.com; arc=none
-Received: from BN0PR02MB8173.namprd02.prod.outlook.com (2603:10b6:408:163::15)
- by MW2PR02MB3788.namprd02.prod.outlook.com (2603:10b6:907:a::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Fri, 11 Mar
- 2022 08:06:17 +0000
-Received: from BN0PR02MB8173.namprd02.prod.outlook.com
- ([fe80::198b:e44b:f8af:4635]) by BN0PR02MB8173.namprd02.prod.outlook.com
- ([fe80::198b:e44b:f8af:4635%8]) with mapi id 15.20.5061.022; Fri, 11 Mar 2022
- 08:06:17 +0000
-From:   Vinod Polimera <vpolimer@qti.qualcomm.com>
-To:     Stephen Boyd <swboyd@chromium.org>,
-        quic_vpolimer <quic_vpolimer@quicinc.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "robdclark@gmail.com" <robdclark@gmail.com>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>
-Subject: RE: [PATCH v5 1/5] arm64/dts/qcom/sc7280: remove assigned-clock-rate
- property for mdp clk
-Thread-Topic: [PATCH v5 1/5] arm64/dts/qcom/sc7280: remove assigned-clock-rate
- property for mdp clk
-Thread-Index: AQHYMw1MIykDpUV2rUqySF9PFnA3Zay16aiAgAPtSVA=
-Date:   Fri, 11 Mar 2022 08:06:17 +0000
-Message-ID: <BN0PR02MB8173F2E408848216D489D503E40C9@BN0PR02MB8173.namprd02.prod.outlook.com>
-References: <1646758500-3776-1-git-send-email-quic_vpolimer@quicinc.com>
- <1646758500-3776-2-git-send-email-quic_vpolimer@quicinc.com>
- <CAE-0n51bfqWs8yOiyQ-A_bEQ7CZSqavz8epcFEWYyZxxoRYFHg@mail.gmail.com>
-In-Reply-To: <CAE-0n51bfqWs8yOiyQ-A_bEQ7CZSqavz8epcFEWYyZxxoRYFHg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=qti.qualcomm.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 74ca4225-01fc-4ef7-4ed8-08da03360502
-x-ms-traffictypediagnostic: MW2PR02MB3788:EE_
-x-microsoft-antispam-prvs: <MW2PR02MB3788529A65250F676F9019FBE40C9@MW2PR02MB3788.namprd02.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iDm2+oDRLTfsHYRjICKDkWREy+SLtTfk7dyQCq1BEounYSmYP/nvXzR9rq2z1aLxVK8JhRbBwxy5lOyxKUDewlYX2bhC7vzHcPXziDR6gbZvG9F868v4V9CbfFxQaTjESqGNoUZWdOFD1yF2pghuZuwZJnzWugN4GXOYZ4vFOws2j0OrQUo5hTQsHaDNxdA90b5evr4DBAe6u0IYxcYF/eSm8xkXAyLGRd8ky8mZVort2wHt7BJBsnbCG6RhNVUUHG2wbs71BEOYJFvzcbTrAcf70HRxC/5dlhZLoGPDrLu5X7fw2pB44yLYR9RbKkEeEI2U0w0TP0M9mQ8tY4sc82NU1GTOqn62KFOQJc37NRSjhkbmfvjQsjwwuR/KCpkrJNH6gaCrK1sdKJHIhJBxXr4kHD1ZC/Eyb1o0afhytDHRVHhpP7UasXpTpUVX/DQ4M297Cf3aFZhtSDSpDqzPssAIxaPHzCNsL7NomFOYMvKDvkBNMKSGPlzKMImj4wM/jG+OR2QXBono69g7ZdtShgOMYfKnjoyhBmUt46E58IjGHEoFXwIIiaGyWEf6TiDV3CN61GyKg7WLZILO/I/2E+gMRdRiWpW8sgNoDGxXFQ5KteoaNn8XOTJWIpJNGcVS8Eg5NGUcAFXizbddWnUBELJ8fKkx33JIiTA0L80cCDzqVUpoBr0Ox1u5eR5tP5p2xn5PwaETinJ+PXeJTMhpTQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR02MB8173.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(52536014)(6506007)(316002)(8936002)(55016003)(7696005)(26005)(2906002)(9686003)(186003)(38070700005)(110136005)(66476007)(66446008)(66556008)(86362001)(64756008)(38100700002)(71200400001)(76116006)(33656002)(122000001)(54906003)(508600001)(83380400001)(8676002)(66946007)(107886003)(5660300002)(4326008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Y3VUQ0pLQXg1dDA2Wlg4emE2MWFlV1hIbFNCSWx0M2hKcUpDdU03SC9HcEpp?=
- =?utf-8?B?UG1EendFNE5zbmlDWWN0YXBJNnRxNnlCbWx6S1JUVCtyUkRWdTJ4dnNiVnRH?=
- =?utf-8?B?S2xCTFhDeGRqUjZ0Rld5OUZ6Z1hrUkx1TjZyK3BZRFMrcm1LRWUydWNUUkxC?=
- =?utf-8?B?YW5HYndXZWJ4eFVSN1hEYW1QT0pONHdwN3Vaa1NFcU5PdWVEWHJuM29FM3FH?=
- =?utf-8?B?R01tNnNQTkNMZVFGRExuVkJXak04TmMzSHM3VUhDVWZqTVk0a0NzMG9JSWlr?=
- =?utf-8?B?MzdGSFQzQmFLTDRkOHRwZWk2dXg3d2FWaW9MTEhzK3BwdWNRRnc5eS9qMk85?=
- =?utf-8?B?L0YwVEhzQ0djZW0rMDlUdFgrdW50ZHRFWDBTNGVZbjJ5aGhOdWdVNGdiQVZ0?=
- =?utf-8?B?L1BJaEZIMXN5RWhLMTc4N0l6eHJQUHorb3Y5NFh3RGlJY0Yrc3A2dnJxNFkr?=
- =?utf-8?B?K3BuWXI2Wk8vVU10NlVzY1ZQSlg2aDZMaFoyTThwU1hkZFJlNklDb1RWbXkw?=
- =?utf-8?B?cHQvK2o0bUpXMU8wUHdQLzRvVWQrYVQ4cUZ2a1FXYk9DeVhqNXJTN0srUjdG?=
- =?utf-8?B?b2tOVlc2cHdUOWoyNDRYWVBsbkJWZzV2cTZ2TTNycjNWWTR6MDF1ZVFjYzFz?=
- =?utf-8?B?Y3orQklKQSs3YlNsd21LZmRqUjVuR0krQXdzNTZMWFp3SW53WHhVVE53SWVo?=
- =?utf-8?B?VHZCQXcxVnkxa2o5OVF0RWxTWXcrUlQ4ZnlmejU4cEIvNU1vVmlSbVNEQWRo?=
- =?utf-8?B?RWl6OXB4NC9tNnFLdTBndlg4RVp5eHNmSjNWYzRqS2lVWGdNb29ITGkzRkt6?=
- =?utf-8?B?Ui9mOUZQQndCTmlXN205cStmZldDTm9SRnBnNjZYSWQrMHdtSUVYbU9zeXR4?=
- =?utf-8?B?YnZISzg2aWcvNXJGdmNPSlg1QURhd3N0WHhDRlBaYVd2NDNUQklpZlhzYitZ?=
- =?utf-8?B?UUNsMWdXaUhFM1Rid09jNjJjamNYd2tMNlc3SGJyd2t5WmhpTkNkMFFFTHY3?=
- =?utf-8?B?S2loRGlzQnB0cVdQSFQ1SmZtUHo0KzRmUDdWTkRBVFhvTUFiREdrOFVtRTJG?=
- =?utf-8?B?MkZPdUI3dzdOdjVNb1IxMkYyVFBZVVRubHY3bHBTUXMzazVQbGNOWEFKOUd0?=
- =?utf-8?B?SzlVVGl3UldubnVnb1JwODlBUGl3Lzh3SlQ5QTFYVWxJUXprNDlzNGdnTC9v?=
- =?utf-8?B?UTltSG44SUZUbXRtMlV2ZWFXZEhCZlo5K1J4SVltVkk0clExdW1Ocmp5ZHly?=
- =?utf-8?B?NzQ3OG55dGZxMk14Y25NTE03Q0lScVFGODNRdjNnQ0piTSsycDFDREt4NHNm?=
- =?utf-8?B?end2eWNsSmR2Zkk4N1ZzQ2t2OW0vZElOOXhpVXlndmNnU3RPWnVsQzBuaSsv?=
- =?utf-8?B?VlNMQisxUjVEOXdMRFNyL1ZpMjN5amVXM2hvMVNKdlBsSjJ1cnN6Nmt5WGtN?=
- =?utf-8?B?TjJ5NUlCaVlSWnhDM0JTVTRYZ0RoQ1Y5bzhGcGRkYUlGaExGOG05WFJMTkF4?=
- =?utf-8?B?NWJ4cDFYSGc1dVJrU2xNK2pLTnBCT1o2YWdMbW9EQVBGVU9JN1hjL2lRNUNY?=
- =?utf-8?B?K2syOGJVcGlRUmZRVGVWcmVLeFZJWHg4Y0xKSWQyV1pkQzM5Z204NjFxVmJW?=
- =?utf-8?B?c3pDS3RBY1p6aTlCYmN5blpMeVlwWUFNc3ZEZHdwYTdnVjRTT20rVTlNaEsr?=
- =?utf-8?B?TFJsUll1NE1yb2xjMmd1aHBmbU1TRU1RbXFCSkoxNVl4Zk1LRXk5OGFObGFQ?=
- =?utf-8?B?Q0FtaFAxNXkwRTllQ1ZzYUorL2RVMlFWMkt0cXpBVkNML0xyMWY0OStaakJY?=
- =?utf-8?B?QmVkd05mdlpPc291RzVMZWdxR2lsMy9uTE83bXBjdlVZNlA4NVNRSVduUzhM?=
- =?utf-8?B?THlXbWIxMUZCZWgyanpGeVF4VDd4U09rays2TG4xSkRES3paaGcyNTM0T2Vp?=
- =?utf-8?B?WHNQZzduSFBzNXFONWdqanBKWVl3eFk2R1ZZWGl1ZzVvNGFyUjZQcVFVZ2JL?=
- =?utf-8?B?bXU3bGNiQ1lmb3U3NGh2MVNPZE9ZMnVkVDFxMEluS29GZlBpL0l3eVVQTy9n?=
- =?utf-8?B?MTI5MGx3MXlPaHlYVVMrd3hKVmh6dndmb1Y3anRyV3d2T3RQZ3cwZ1pzVzMx?=
- =?utf-8?B?ZkVzQ3RRR1RUUDk3eHNxSVFvd3BNQ3lzQ1VsNnpIMDMrclhUNDZMNy9UM2hF?=
- =?utf-8?B?U29tUHpDT3RXdFJ1OURHWmVHTDhBM3dHQXNmcVIvTlJyYURSTnBXVnZUOHZD?=
- =?utf-8?B?ZkhvR1NuZU5WUmUrc2t5MnltY1VnPT0=?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 11 Mar 2022 03:07:27 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7111B6E05
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:06:24 -0800 (PST)
+Received: from mail-wm1-f53.google.com ([209.85.128.53]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1My3Mv-1oM5eD3qLH-00zYJR for <linux-kernel@vger.kernel.org>; Fri, 11 Mar
+ 2022 09:06:22 +0100
+Received: by mail-wm1-f53.google.com with SMTP id n33-20020a05600c3ba100b003832caf7f3aso5509857wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:06:22 -0800 (PST)
+X-Gm-Message-State: AOAM5310TF+G4M7OM00PY2EJ32ECAOoPAbLio8j13ThtW+Skz0S17Gv7
+        9hFvkMz1RX7Bqu5WnQinYbuztXlVkyBli77FF7g=
+X-Google-Smtp-Source: ABdhPJy17LqDTAxjPGrIpJ7hGQWebaXhx8FEgzAQaMgcnDW0cuC+n1tELJsffidaq8vu0XVBaNn4fqCx/0TgBM77wbE=
+X-Received: by 2002:a1c:4e15:0:b0:387:3661:e857 with SMTP id
+ g21-20020a1c4e15000000b003873661e857mr14436323wmh.94.1646985982435; Fri, 11
+ Mar 2022 00:06:22 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: qti.qualcomm.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR02MB8173.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 74ca4225-01fc-4ef7-4ed8-08da03360502
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2022 08:06:17.2720
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Q6E7SprS7eGD5NKPr+lL1Sno5TQBnvEZot5UCfd0oYDmWKDSYdPOAyBeQaRg6vJhpvPebIBXGJJd5fgZWt9NvKFKjBY4St1HIysa34IEt1M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR02MB3788
+References: <20220310195229.109477-1-nick.hawkins@hpe.com>
+In-Reply-To: <20220310195229.109477-1-nick.hawkins@hpe.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 11 Mar 2022 09:06:06 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2YeENkriOpXk_a6uvOC0T1Ys2gLm_AZJL_HLmez24KQw@mail.gmail.com>
+Message-ID: <CAK8P3a2YeENkriOpXk_a6uvOC0T1Ys2gLm_AZJL_HLmez24KQw@mail.gmail.com>
+Subject: Re: [PATCH v3 01/10] arch: arm: mach-hpe: Introduce the HPE GXP architecture
+To:     "Hawkins, Nick" <nick.hawkins@hpe.com>
+Cc:     "Verdun, Jean-Marie" <verdun@hpe.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:qdcpI9WEjLKeIGB6mDZLdCRyYo8yHJzcY1bK1yrfmH3TCGfaTF4
+ PMwjOWsaaNcT+FiqNcHh67ZKAywzD6s8Tf7fuU9ZW/VE0QozurEObBbLX3gkcEYPQTZUbin
+ PD4sSFR/wVsKbGJb7Hsfbqa0EXcoIKhmWkmxh7SSW5LIya43o7e7qP8lYdpbwN4K7G++bCk
+ eXRPw+mdGZ0TaVHISG0yw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+63tD2KNLus=:Q9y9m4bKvLdW2uXoCRos0i
+ zZlde72WDOMM3Di7SY9mQ+U5lnx7FAaiCkq0qx2r3Zy5YAeVAwfowBSin4C7SYruSAnKrgPsg
+ Zr9T3IPHkk+M3dJdh1+uEvXzZuZEoQX4w96X8kGXR7YLWEMkymhzM7HCO7sNToE4l+caF8QyH
+ eFbnrNk/KdGDuF1Q9LMlJiAIaH35fiJGPsZvA5yntKZ01A3YHJZ6cGiZtUhuP/UgXEynpHJ1O
+ NMQso3owEHgFAUv/Ab0rtuM6MvHRn9bZwccwIRbv1TXpKsM3C6mpYIL7y5O57LGYPJ5kSK2PU
+ dmQ9h7j2rJAnbD208WehY+rRgt2fuBL9h2LHTULFfLe2Oh5Tt1NktNQ8BHkwHv4VRq0nejasB
+ hPvN88WTyQFRbMD7hPlQz2kCeo9U1MWARy5umWcssmXSsQBi0V5SM4siOHKrPmcbe7B3KsEFq
+ kdTzXbITKK75Sm5F9Jh/pHAgntdkoAIsGa5GLqOTV/WDqRfzxPZfcPPwC8OwhL8URBMYq5PEb
+ U3WJBY0Y6JwWOl99Qr2saWWlHapf+DWrQ5yHP8lVaEoWURQlvKAH9lf8fj5n5frdxAReZ4yOh
+ 0os/3KOq2lHka2zUd5j9f945yn99Tb+I4Qv027VoVrTqEUEZ7aFwJY7aX6hRLhLahKvtRDF11
+ +vFGkDPA0RsX06n3bkkMqXYpoaUhJikZnuQajdszadB1dg3IFD4JhtAyJd53OVsKZMNA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU3RlcGhlbiBCb3lkIDxz
-d2JveWRAY2hyb21pdW0ub3JnPg0KPiBTZW50OiBXZWRuZXNkYXksIE1hcmNoIDksIDIwMjIgMToz
-NiBBTQ0KPiBUbzogcXVpY192cG9saW1lciA8cXVpY192cG9saW1lckBxdWljaW5jLmNvbT47DQo+
-IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Au
-b3JnOw0KPiBmcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnOyBsaW51eC1hcm0tbXNtQHZn
-ZXIua2VybmVsLm9yZw0KPiBDYzogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgcm9iZGNs
-YXJrQGdtYWlsLmNvbTsNCj4gZGlhbmRlcnNAY2hyb21pdW0ub3JnOyBxdWljX2thbHlhbnQgPHF1
-aWNfa2FseWFudEBxdWljaW5jLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2NSAxLzVdIGFy
-bTY0L2R0cy9xY29tL3NjNzI4MDogcmVtb3ZlIGFzc2lnbmVkLWNsb2NrLQ0KPiByYXRlIHByb3Bl
-cnR5IGZvciBtZHAgY2xrDQo+IA0KPiBXQVJOSU5HOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJv
-bSBvdXRzaWRlIG9mIFF1YWxjb21tLiBQbGVhc2UgYmUgd2FyeQ0KPiBvZiBhbnkgbGlua3Mgb3Ig
-YXR0YWNobWVudHMsIGFuZCBkbyBub3QgZW5hYmxlIG1hY3Jvcy4NCj4gDQo+IFF1b3RpbmcgVmlu
-b2QgUG9saW1lcmEgKDIwMjItMDMtMDggMDg6NTQ6NTYpDQo+ID4gS2VybmVsIGNsb2NrIGRyaXZl
-ciBhc3N1bWVzIHRoYXQgaW5pdGlhbCByYXRlIGlzIHRoZQ0KPiA+IG1heCByYXRlIGZvciB0aGF0
-IGNsb2NrIGFuZCB3YXMgbm90IGFsbG93aW5nIGl0IHRvIHNjYWxlDQo+ID4gYmV5b25kIHRoZSBh
-c3NpZ25lZCBjbG9jayB2YWx1ZS4NCj4gDQo+IEhvdz8gSSBzZWUgZnRibF9kaXNwX2NjX21kc3Nf
-bWRwX2Nsa19zcmNbXSBoYXMgbXVsdGlwbGUgZnJlcXVlbmNpZXMgYW5kDQo+IGNsa19yY2cyX3No
-YXJlZF9vcHMgc28gaXQgZG9lc24ndCBsb29rIGxpa2UgYW55dGhpbmcgaW4gdGhlIGNsayBkcml2
-ZXINCj4gaXMgcHJldmVudGluZyB0aGUgZnJlcXVlbmN5IGZyb20gY2hhbmdpbmcgYmV5b25kIHRo
-ZSBhc3NpZ25lZCB2YWx1ZS4NCg0KRm9sb3dpbmcgdGhlIGNvbW1lbnQgb2YgU3RlcGhlbiwgaSBo
-YXZlIGNoZWNrZWQgYSBiaXQgbW9yZS4gaXQgYXBwZWFycyB0aGF0IGNsb2NrIGRyaXZlciBpcyBu
-b3Qgc2V0dGluZyB0aGUgbWF4IGNsb2NrIGZyb20gYXNzZ2luZWQgY2xvY2tzLCBkcHUgZHJpdmVy
-IGlzIGRvaW5nIHRoYXQuDQppIGFtIHBsYW5uaW5nIHRvIGZpeCBpdCBhcyBiZWxvdy4NCjEpIGFz
-c2lnbiBVTE9OR19NQVggdG8gbWF4X3JhdGUgd2hpbGUgaW5pdGlhbGl6aW5nIGNsb2NrIGluIGRw
-dSBkcml2ZXIuDQoyKSByZW1vdmUgdW5uZWNlc3NhcnkgY2hlY2tzIGluIHRoZSBjb3JlX3BlcmYg
-bGlicmFyeS4gSWYgcmF0ZSBkb2Vzbid0IG1hdGNoIHdpdGggdGhlIGVudHJpZXMgaW4gdGhlIG9w
-cCB0YWJsZSwgaXQgd2lsbCB0aHJvdyBlcnJvciwgaGVuY2UgZnVydGh1ciBjaGVja3MgYXJlIG5v
-dCBuZWVkZWQuDQozKSBubyBjaGFuZ2VzIGluIGR0IGFyZSByZXF1aXJlZC4gKHdlIGNhbiBkcm9w
-IGFsbCB0aGUgcG9zdGVkIG9uZXMpDQoNCkNoYW5nZXMgOg0KYGBgLS0tIGEvZHJpdmVycy9ncHUv
-ZHJtL21zbS9kaXNwL2RwdTEvZHB1X2NvcmVfcGVyZi5jDQorKysgYi9kcml2ZXJzL2dwdS9kcm0v
-bXNtL2Rpc3AvZHB1MS9kcHVfY29yZV9wZXJmLmMNCkBAIC0yODQsMTcgKzI4NCw2IEBAIHZvaWQg
-ZHB1X2NvcmVfcGVyZl9jcnRjX3JlbGVhc2VfYncoc3RydWN0IGRybV9jcnRjICpjcnRjKQ0KIAl9
-DQogfQ0KIA0KLXN0YXRpYyBpbnQgX2RwdV9jb3JlX3BlcmZfc2V0X2NvcmVfY2xrX3JhdGUoc3Ry
-dWN0IGRwdV9rbXMgKmttcywgdTY0IHJhdGUpDQotew0KLQlzdHJ1Y3QgZHNzX2NsayAqY29yZV9j
-bGsgPSBrbXMtPnBlcmYuY29yZV9jbGs7DQotDQotCWlmIChjb3JlX2Nsay0+bWF4X3JhdGUgJiYg
-KHJhdGUgPiBjb3JlX2Nsay0+bWF4X3JhdGUpKQ0KLQkJcmF0ZSA9IGNvcmVfY2xrLT5tYXhfcmF0
-ZTsNCi0NCi0JY29yZV9jbGstPnJhdGUgPSByYXRlOw0KLQlyZXR1cm4gZGV2X3BtX29wcF9zZXRf
-cmF0ZSgma21zLT5wZGV2LT5kZXYsIGNvcmVfY2xrLT5yYXRlKTsNCi19DQotDQogc3RhdGljIHU2
-NCBfZHB1X2NvcmVfcGVyZl9nZXRfY29yZV9jbGtfcmF0ZShzdHJ1Y3QgZHB1X2ttcyAqa21zKQ0K
-IHsNCiAJdTY0IGNsa19yYXRlID0ga21zLT5wZXJmLnBlcmZfdHVuZS5taW5fY29yZV9jbGs7DQpA
-QCAtNDA1LDcgKzM5NCw3IEBAIGludCBkcHVfY29yZV9wZXJmX2NydGNfdXBkYXRlKHN0cnVjdCBk
-cm1fY3J0YyAqY3J0YywNCiANCiAJCXRyYWNlX2RwdV9jb3JlX3BlcmZfdXBkYXRlX2NsayhrbXMt
-PmRldiwgc3RvcF9yZXEsIGNsa19yYXRlKTsNCiANCi0JCXJldCA9IF9kcHVfY29yZV9wZXJmX3Nl
-dF9jb3JlX2Nsa19yYXRlKGttcywgY2xrX3JhdGUpOw0KKwkJcmV0ID0gZGV2X3BtX29wcF9zZXRf
-cmF0ZSgma21zLT5wZGV2LT5kZXYsIGNsa19yYXRlKTsNCiAJCWlmIChyZXQpIHsNCiAJCQlEUFVf
-RVJST1IoImZhaWxlZCB0byBzZXQgJXMgY2xvY2sgcmF0ZSAlbGx1XG4iLA0KIAkJCQkJa21zLT5w
-ZXJmLmNvcmVfY2xrLT5jbGtfbmFtZSwgY2xrX3JhdGUpOw0KLS0tIGEvZHJpdmVycy9ncHUvZHJt
-L21zbS9kaXNwL2RwdTEvZHB1X2lvX3V0aWwuYw0KKysrIGIvZHJpdmVycy9ncHUvZHJtL21zbS9k
-aXNwL2RwdTEvZHB1X2lvX3V0aWwuYw0KQEAgLTE3NSw3ICsxNzUsNyBAQCBpbnQgbXNtX2Rzc19w
-YXJzZV9jbG9jayhzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2LA0KIAkJCWNvbnRpbnVlOw0K
-IAkJbXAtPmNsa19jb25maWdbaV0ucmF0ZSA9IHJhdGU7DQogCQltcC0+Y2xrX2NvbmZpZ1tpXS50
-eXBlID0gRFNTX0NMS19QQ0xLOw0KLQkJbXAtPmNsa19jb25maWdbaV0ubWF4X3JhdGUgPSByYXRl
-Ow0KKwkJbXAtPmNsa19jb25maWdbaV0ubWF4X3JhdGUgPSBVTE9OR19NQVg7DQogCX0NCiANCiAJ
-bXAtPm51bV9jbGsgPSBudW1fY2xrOw0KLS1gYGANCg0KVGhhbmtzLA0KVmlub2QuDQoNCj4gDQo+
-ID4NCj4gPiBEcm9wIHRoZSBhc3NpZ25lZCBjbG9jayByYXRlIHByb3BlcnR5IGFuZCB2b3RlIG9u
-IHRoZSBtZHAgY2xvY2sgYXMgcGVyDQo+ID4gY2FsY3VsYXRlZCB2YWx1ZSBkdXJpbmcgdGhlIHVz
-ZWNhc2UuDQo+ID4NCj4gPiBDaGFuZ2VzIGluIHYyOg0KPiA+IC0gUmVtb3ZlIGFzc2lnbmVkLWNs
-b2NrLXJhdGUgcHJvcGVydHkgYW5kIHNldCBtZHAgY2xrIGR1cmluZyByZXN1bWUNCj4gc2VxdWVu
-Y2UuDQo+ID4gLSBBZGQgZml4ZXMgdGFnLg0KPiA+DQo+ID4gQ2hhbmdlcyBpbiB2MzoNCj4gPiAt
-IFJlbW92ZSBleHRyYSBsaW5lIGFmdGVyIGZpeGVzIHRhZy4oU3RlcGhlbiBCb3lkKQ0KPiANCj4g
-VGhpcyBjaGFuZ2Vsb2cgc2hvdWxkIGJlIHJlbW92ZWQuDQo+IA0KPiA+DQo+ID4gRml4ZXM6IDYy
-ZmJkY2U5MSgiYXJtNjQ6IGR0czogcWNvbTogc2M3MjgwOiBhZGQgZGlzcGxheSBkdCBub2RlcyIp
-DQo+IA0KPiBJIHRob3VnaHQgZm9sa3Mgd2VyZSBzYXlpbmcgdGhhdCB0aGlzIGlzIGJhZCB0byBr
-ZWVwPyBJIGRvbid0IHJlYWxseQ0KPiBtaW5kIGVpdGhlciB3YXksIGJ1dCBJIGd1ZXNzIGl0J3Mg
-YmV0dGVyIHRvIGRyb3AgdGhlIGZpeGVzIHRhZyBiZWNhdXNlDQo+IHRoaXMgaXMgbGFyZ2VseSBh
-IHBlcmZvcm1hbmNlIGltcHJvdmVtZW50Pw0KPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBWaW5vZCBQ
-b2xpbWVyYSA8cXVpY192cG9saW1lckBxdWljaW5jLmNvbT4NCj4gPiBSZXZpZXdlZC1ieTogU3Rl
-cGhlbiBCb3lkIDxzd2JveWRAY2hyb21pdW0ub3JnPg0K
+On Thu, Mar 10, 2022 at 8:52 PM <nick.hawkins@hpe.com> wrote:
+>
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+>
+> The GXP is the HPE BMC SoC that is used in the majority
+> of HPE Generation 10 servers. Traditionally the asic will
+> last multiple generations of server before being replaced.
+> In gxp.c we reset the EHCI controller early to boot the asic.
+>
+> Info about SoC:
+>
+> HPE GXP is the name of the HPE Soc. This SoC is used to implement
+> many BMC features at HPE. It supports ARMv7 architecture based on
+> the Cortex A9 core. It is capable of using an AXI bus to which
+> a memory controller is attached. It has multiple SPI interfaces
+> to connect boot flash and BIOS flash. It uses a 10/100/1000 MAC
+> for network connectivity. It has multiple i2c engines to drive
+> connectivity with a host infrastructure. The initial patches
+> enable the watchdog and timer enabling the host to be able to
+> boot.
+>
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+
+Please add me to Cc for the entire series when resending.
+
+
+> +config ARCH_HPE_GXP
+> +       bool "HPE GXP SoC"
+> +       select ARM_VIC
+> +       select PINCTRL
+> +       select IRQ_DOMAIN
+> +       select GENERIC_IRQ_CHIP
+> +       select MULTI_IRQ_HANDLER
+> +       select SPARSE_IRQ
+> +       select CLKSRC_MMIO
+> +       depends on ARCH_MULTI_V7
+
+By convention, the 'depends on' usually comes first here.
+
+Please drop the 'select' statements for things that are already selected
+by ARCH_MULTIPLATFORM or ARCH_MULTI_V7.
+
+
+> +
+> +#define IOP_REGS_PHYS_BASE 0xc0000000
+> +#define IOP_REGS_VIRT_BASE 0xf0000000
+> +#define IOP_REGS_SIZE (240*SZ_1M)
+> +#define RESET_CMD 0x00080002
+> +
+> +static struct map_desc gxp_io_desc[] __initdata = {
+> +       {
+> +               .virtual        = (unsigned long)IOP_REGS_VIRT_BASE,
+> +               .pfn            = __phys_to_pfn(IOP_REGS_PHYS_BASE),
+> +               .length         = IOP_REGS_SIZE,
+> +               .type           = MT_DEVICE,
+> +       },
+> +};
+
+It looks like this is only used for the pxf_restart() function below.
+In this case, you should get rid of the static mapping entirely and
+use an ioremap() in the gxp_dt_init() function instead, ideally getting
+the address from an appropriate device node rather than hardcoding
+it here.
+
+If there are other drivers using the static mapping, either explain
+here why this is required, or try to change them to dynamic mappings as well.
+
+> +static void __init gxp_dt_init(void)
+> +{
+> +       void __iomem *gxp_init_regs;
+> +       struct device_node *np;
+> +
+> +       np = of_find_compatible_node(NULL, NULL, "hpe,gxp-cpu-init");
+> +       gxp_init_regs = of_iomap(np, 0);
+> +
+> +       /*it is necessary for our SOC to reset ECHI through this*/
+> +       /* register due to a hardware limitation*/
+> +       __raw_writel(RESET_CMD,
+> +               (gxp_init_regs));
+
+My feeling is still that this should be done in the platform specific EHCI
+driver front-end. I think I commented on this before but don't remember
+getting an explanation why you can't have it there.
+
+> +static void gxp_restart(enum reboot_mode mode, const char *cmd)
+> +{
+> +       __raw_writel(1, (void __iomem *) IOP_REGS_VIRT_BASE);
+> +}
+
+With both of these, you should use writel() instead of __raw_write().
+Using the __raw accessors breaks big-endian kernels (which you
+probably don't need, but shouldn't break for no reason anyway), and
+lacks serialization and atomicity of the access.
+
+A better place for the restart logic may be a separate driver in
+drivers/power/reset/, at least if this otherwise ends up being the only
+platform specific code you need.
+
+          Arnd
