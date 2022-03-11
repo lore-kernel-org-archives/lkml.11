@@ -2,143 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1708C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350393AbiCKQkE (ORCPT
+        id S1350413AbiCKQlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:40:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
+        Fri, 11 Mar 2022 11:41:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233077AbiCKQkA (ORCPT
+        with ESMTP id S231971AbiCKQlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 11:40:00 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2089.outbound.protection.outlook.com [40.107.237.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5740F1795C7;
-        Fri, 11 Mar 2022 08:38:57 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FnNlcyZgvgTANYMYsZzfXCtvQrEjWb84L03ydnL+SOeXnlYeNkJIhPTbG0WC1X/l8WZaigHnZzOG9UKVL4SiHiBqBUrJbcF6fYPGFw6vM+Piw1uU+NwFD8gch7WCMrLggSbzkdgFohWtyWQyByW0xKhXLyolbcRiBgumf8I3vGur9W0alhKwJRoAjwxHYQd9p48/sjWZT08QVGQMuVlNICJkRJlycUxd3LH4Ie697BlKnvrwmIzN94gPdSNXoC8chyDuabCg/2AE7PIZwN48ovr1qacYhJnCoIPDr2uw6rCA5n6dH4t4p7Wh32/4VZtCmR6Lydse1u689n8VCtl1Dg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Zq0Q9qjaqgnE7T+m0JPR3Kt0rniFFt4wy2/AMMy9M5E=;
- b=jcms5Z0SDJ7gpH8mY3jgxXtqccg8wfE2Km7eD+NpGeT8Nck7yani2L1tbONi/8giU0ake9hd4hoL6LTMX2EFnP9wd6WrPhLGRER7dDP1BCskj7CbD8RwafbwDNCMvQ/mk+eE9ifyv9aXqMpIGXRoeDiw2tNtz6vkDuaO0I9dofHusdO9viN0KVQUgzszGcqMgcgmEPF8GYuLRrPG5NxUm7zsevfyQ2h2FGc7p00o0Nb2D89/dCqxDQrrGBqSuJRhXMelAyFuMM9e9schheCw6T02Jd7oYWTXg2I05JG95r4B99C5y/BwOnFc8lsz7vy/Afvix94UAKiy9UoonZUMNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zq0Q9qjaqgnE7T+m0JPR3Kt0rniFFt4wy2/AMMy9M5E=;
- b=OoBduXlnMXkT4Ffggte84ijjeylXJjRTUrTCtUyHjQohRmWDwEACGaz/mfYNY6N/sNYRW0qN8aBE5NuYlWaKpBXEkviF3rEEQAbLYlY8hlFliTOSvPQxkgd2dtbyn+Cq9keWeUON4pxM2sCHZDRJ9SeM6x9oP7EKyzcjh/avrK+ZJvP/F6OGkO7Z0lHebOhJ7l096wNZb0wCZywAYz34vz716tf0qM6IYSpB+7N1fjHeZ2M/W53zIBMGTFNBqV1tvCkZjFKWSo8/+bhqFbxwfxqGbTib2kphW83SuimmY7GI+wGPbw2Xxqo/DAV3BK3zEqVwdLNu/luVergb9/puRg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BY5PR12MB3713.namprd12.prod.outlook.com (2603:10b6:a03:1a6::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Fri, 11 Mar
- 2022 16:38:55 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::51a0:4aee:2b4c:ca28]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::51a0:4aee:2b4c:ca28%4]) with mapi id 15.20.5038.030; Fri, 11 Mar 2022
- 16:38:55 +0000
-Date:   Fri, 11 Mar 2022 12:17:38 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Abhishek Sahu <abhsahu@nvidia.com>, kvm@vger.kernel.org,
-        Cornelia Huck <cohuck@redhat.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 5/5] vfio/pci: add the support for PCI D3cold state
-Message-ID: <20220311161738.GE3120@nvidia.com>
-References: <20220124181726.19174-1-abhsahu@nvidia.com>
- <20220124181726.19174-6-abhsahu@nvidia.com>
- <20220309102642.251aff25.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220309102642.251aff25.alex.williamson@redhat.com>
-X-ClientProxiedBy: YQBPR0101CA0285.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:c01:6d::21) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Fri, 11 Mar 2022 11:41:07 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8C91B60B0;
+        Fri, 11 Mar 2022 08:40:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F5E9CE294C;
+        Fri, 11 Mar 2022 16:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1125C340E9;
+        Fri, 11 Mar 2022 16:39:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647016800;
+        bh=xAQesJm2XzMSPjRWRkbuzP8E/HwIUyUXHhBDPK3AifM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=GIgHtmezvcHnWsSoyna5wsVHeNlnY8NUR2uBCJpmWExIZN54hqRdQZRVEfFbZU9Qx
+         Uer2HApzZ5RGFVu90IxueG7SDnZxkSP5ZXQJW0jDOCvHkF39QLn60EGNHfSM1R/UPJ
+         zVmciQci8KZrDkK5HIfQbKnjQmRkQwuGKklbu5qnNUxYA3CWtYRYGAVXcy7IxzcRHU
+         CL0+QdOZk/DhZGTIT8oG7YzIH5B6wgP+LswMjWfi293yvxGGOPooRTm5Vi0Axt4HDR
+         OQKIlb1yXKWFOSF/EOenpTQ7xIoNKhnnMgwYLkGHkHqAej/ZfcguEp0uZ48z5bwzxo
+         ATXGNGi3ZVdGg==
+Message-ID: <286a9ec3aa052cc1ed61e7257af492325d8e7279.camel@kernel.org>
+Subject: Re: [PATCH v11 0/4] integrity: support including firmware
+ ".platform" keys at build time
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Nayna Jain <nayna@linux.ibm.com>, linux-integrity@vger.kernel.org,
+        keyrings@vger.kernel.org
+Cc:     dhowells@redhat.com, zohar@linux.ibm.com,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
+        seth@forshee.me, rnsastry@linux.ibm.com,
+        Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 11 Mar 2022 18:39:14 +0200
+In-Reply-To: <20220310214450.676505-1-nayna@linux.ibm.com>
+References: <20220310214450.676505-1-nayna@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8752a2f8-476f-4d9d-d221-08da037da20b
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3713:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB3713392EFBB468A88117B97AC20C9@BY5PR12MB3713.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RuXHpzUl9xgtGBor+27L/jgXCUPlndJ7FscGfu+uUONG4WDf5hXODme+YEmsUOXULi0f15368uPlg3ZOL4xKD8LhOdSa/DeNVlNX7Toih4pkk5i+aJ4kUVHnmQDkhYsb3JxM7DGN33DSTIvDscYbU88rnZm3ZBpZz2M/NH6pyGHl9BZZenYDJCFO/dbReQbfK0iU4GxGympeUizZSmfqcYTpvQrHmBTcqpo982RHcXtiEhzjpbvM5a1pnjoEIAc1AWH/I4pI/0qx1zmqdVKhs5huNwOas5B+glqXK4Z/bxVy0Czv5HehDcT0nnsmgyvhI2us95VVkl+SDIzQo+sKXgbwvK/FoONy9IFpkvp3dVvaF9jV1zXs/Crbe/lXOVSfUQ4P8LWX/ET27cuAQ55qmlm5YeSBCacYqdes0eYafEAmD1P3f0K2pa0vfP9nqh/PVtxNqfd17hmQ+RDGpmkATOr3yVfUK/TM/NNSK0qFws8eASDTtqxSIF+3YFwvCrNNIKel21OBf/DemyLCJvd5oDHuTY5wG1YyhZKWRBC9g5bjTRPpyZb+svDNr2VEDP2O1fZ6CgHcDmXmh/LomdDYnkmQLG2Swu8Ca1ty+gD12gDmSQPqItnu3eu4g13CaDpWH2NcDgtX/ag8KzdAP9gdTxa8A3JgAF7mDrIgPBYvoX395WU9bVURumiu8UKgTKEe
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(2616005)(8936002)(6486002)(186003)(26005)(508600001)(6506007)(36756003)(6666004)(6512007)(8676002)(6916009)(4326008)(66556008)(66476007)(66946007)(5660300002)(33656002)(316002)(54906003)(2906002)(38100700002)(86362001)(32563001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sQ3RHCV7zF/iItUXUf7Zsx1tV72V8RV7JmvQETRGOWO7d5LnPXPiorBgeuqM?=
- =?us-ascii?Q?TGF66SevF2uBcuxeDVBoU9Qdreh6Rhk4cJSNpOilyMzG5H9tQLnDEDKwZkuM?=
- =?us-ascii?Q?uBZG1CxWUdcBk3yAsYF6UZ1izzmdbXfSDnfpIHfxEWEd5MX7Yt/StW6yjL9d?=
- =?us-ascii?Q?eiBVgmA2+mtk+5OcLV1ACyAazFVrj65fRAH8nMJeJxcBB1PQ6xJIhYEcReOg?=
- =?us-ascii?Q?hLHRI7TnN8hNjCYFA9B3nofKpgkyBrbmBLguXQDY/gwa8YM5XCGGAmqeKb2K?=
- =?us-ascii?Q?AIQuVyqih8Lg3awP7Z/bglxUPYlrDpK0C+yZbqQtTaM2P12fWqts9amvC5YR?=
- =?us-ascii?Q?FL/TxExmEyCtKup8snAid0ywRqOvBFYB6xLS62ceniCf073MKKUbczMJH8Pa?=
- =?us-ascii?Q?GyEJ06MFFIWkVCd3OPnKH7NUmeUqcJzDrOb+T+aGdTWJbqlEYnVYH1liJqPB?=
- =?us-ascii?Q?RKTaft/TQbEmR8uFF44DaG1blJ6G3BMUdYXxrd4AaZ6KTuC7L0KqK+z30HOW?=
- =?us-ascii?Q?7NlGzugfHhq3mvD2vJTBU8sezaqpitL4X8OWoqN+PJcVNR7I6HnkuM5tI4bd?=
- =?us-ascii?Q?Ss5BzzX1XI2tMYdCtMGGcykPvAzxflDcq9Vb8+OiT51ewJfqo5Ylz83h/7+Z?=
- =?us-ascii?Q?fL5f8eboCi1SzBhSoaDIDPX86D4fEk1bxeqZVnD1ZiX/R10b514yol23whTT?=
- =?us-ascii?Q?j+dDqJLMf4wf94E03SsNikqF2ocVG3+Vn6/cNq91iWSttG2vS5aHizVaB2HT?=
- =?us-ascii?Q?NCUfAEqOGpcs42BM927OOCS8L9arp3DBWf3G0F/m+H70vSyPL1wRCLAAKCSg?=
- =?us-ascii?Q?W6kJ6RLQQxBquC4vjil51fpKSQ/fQJsYFG0MxnE6IuJFakDWh5Oenk+Bi0pa?=
- =?us-ascii?Q?9iGWzruE/Pgs/6038EX5m/77dAxH6+hRHspB5zdZs+ZMLje2bskJ8rmScJPi?=
- =?us-ascii?Q?5/Nkj3LiJznScL+Vs9NQjvA6fUAf8G6Aih4/iiTJTeBNuifh9bGdnKQfkZGX?=
- =?us-ascii?Q?mFm+LmnMLn4ym77YntQFucRlR3nSYvj20hft3WzuoACBA4ZQ2wkSZ0f4lup5?=
- =?us-ascii?Q?cWpxVka9RT+v2n336goObHO3vE/k7RkMJv2GVUHzmXhtNd9eqlX+Sk5sOOLE?=
- =?us-ascii?Q?2v8465zwlTVRPaTX46hoPJ566YXZC86n9yQpIecbCbh6YDGOXNrtxcY8EXLP?=
- =?us-ascii?Q?Fr/5f58AmdE8b7JDc9oT98TsCy6J+cGCJcDT0YLdFDhACjQbF3Yp99IX8ZUp?=
- =?us-ascii?Q?MpX5SATiK5XYkzExqRWce8wO1RBq1zZ7k9esMVmRCC/XoXz3es9OFra7JFgA?=
- =?us-ascii?Q?ilcwxv/y2PMVZ7+r+ena40GWx6oUrpzZAfnrcj3pq5YtRb3As7TMZm9tX0XJ?=
- =?us-ascii?Q?lICsHxJiT057mjuAPsPS/gL2Xr55A4fpxdDMa2TaBL9T6aTqc6L3Nt4tLKTW?=
- =?us-ascii?Q?3exEp2ouDFjsdnnpYTGA3F8v3Z1yATTYxpu79JmNBzthG/e5Ahd9Nmnumh4w?=
- =?us-ascii?Q?YiuTfjZLF2u/iFXnyqQTO/xhCDbvvKqAyKv3yyeQCSVurEofPujzj9rFFp3I?=
- =?us-ascii?Q?hnJlELP3eaW1GmE/uyk=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8752a2f8-476f-4d9d-d221-08da037da20b
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 16:38:55.2700
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xdRHww0AXtKqXD+2dU5AAV83UkOoHE7gxiZiKSsk3cYUQAo0kxIKEQEkBD1URSWM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3713
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:26:42AM -0700, Alex Williamson wrote:
+On Thu, 2022-03-10 at 16:44 -0500, Nayna Jain wrote:
+> Some firmware support secure boot by embedding static keys to verify the
+> Linux kernel during boot. However, these firmware do not expose an
+> interface for the kernel to load firmware keys onto the ".platform"
+> keyring, preventing the kernel from verifying the kexec kernel image
+> signature.
+>=20
+> This patchset exports load_certificate_list() and defines a new function
+> load_builtin_platform_cert() to load compiled in certificates onto the
+> ".platform" keyring.
+>=20
+> Changelog:
+> v11:
+> * Added a new patch to conditionally build extract-cert if
+> PLATFORM_KEYRING is enabled.
+>=20
+> v10:
+> * Fixed the externs warning for Patch 3.
+>=20
+> v9:
+> * Rebased on Jarkko's repo -=20
+> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
+>=20
+> v8:
+> * Includes Jarkko's feedback on patch description and removed Reported-by
+> for Patch 1.
+>=20
+> v7:
+> * Incldues Jarkko's feedback on patch description for Patch 1 and 3.
+>=20
+> v6:
+> * Includes Jarkko's feedback:
+> =C2=A0* Split Patch 2 into two.
+> =C2=A0* Update Patch description.
+>=20
+> v5:
+> * Renamed load_builtin_platform_cert() to load_platform_certificate_list(=
+)
+> and config INTEGRITY_PLATFORM_BUILTIN_KEYS to INTEGRITY_PLATFORM_KEYS, as
+> suggested by Mimi Zohar.
+>=20
+> v4:
+> * Split into two patches as per Mimi Zohar and Dimitri John Ledkov
+> recommendation.
+>=20
+> v3:
+> * Included Jarkko's feedback
+> =C2=A0** updated patch description to include approach.
+> =C2=A0** removed extern for function declaration in the .h file.
+> * Included load_certificate_list() within #ifdef CONFIG_KEYS condition.
+>=20
+> v2:
+> * Fixed the error reported by kernel test robot
+> * Updated patch description based on Jarkko's feedback.
+>=20
+> Nayna Jain (4):
+> =C2=A0 certs: export load_certificate_list() to be used outside certs/
+> =C2=A0 integrity: make integrity_keyring_from_id() non-static
+> =C2=A0 certs: conditionally build extract-cert if platform keyring is ena=
+bled
+> =C2=A0 integrity: support including firmware ".platform" keys at build ti=
+me
+>=20
+> =C2=A0certs/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 9 ++++=
+++--
+> =C2=A0certs/blacklist.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 1 -
+> =C2=A0certs/common.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 +-
+> =C2=A0certs/common.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 9 ----=
+----
+> =C2=A0certs/system_keyring.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 |=C2=A0 1 -
+> =C2=A0include/keys/system_keyring.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 6 ++++=
++
+> =C2=A0security/integrity/Kconfig=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ | 10 ++++++++
+> =C2=A0security/integrity/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 15 =
++++++++++++-
+> =C2=A0security/integrity/digsig.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=
+=A0 2 +-
+> =C2=A0security/integrity/integrity.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 9 ++++++++
+> =C2=A0.../integrity/platform_certs/platform_cert.S=C2=A0 | 23 +++++++++++=
+++++++++
+> =C2=A0.../platform_certs/platform_keyring.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 | 23 +++++++++++++++++++
+> =C2=A012 files changed, 94 insertions(+), 16 deletions(-)
+> =C2=A0delete mode 100644 certs/common.h
+> =C2=A0create mode 100644 security/integrity/platform_certs/platform_cert.=
+S
+>=20
+>=20
+> base-commit: fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9
 
-> > diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-> > index c8695baf3b54..4ac3338c8fc7 100644
-> > +++ b/drivers/vfio/pci/vfio_pci.c
-> > @@ -153,7 +153,6 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> >  	ret = vfio_pci_core_register_device(vdev);
-> >  	if (ret)
-> >  		goto out_free;
-> > -	dev_set_drvdata(&pdev->dev, vdev);
-> 
-> Relocating the setting of drvdata should be proposed separately rather
-> than buried in this patch.  The driver owns drvdata, the driver is the
-> only consumer of drvdata, so pushing this into the core to impose a
-> standard for drvdata across all vfio-pci variants doesn't seem like a
-> good idea to me.
+I tuned tags. Nayna, Mimi is this how it should be:
 
-I've been wanting to do this for another reason - there is a few
-places in the core vfio-pci that converts a struct device to a
-vfio_device the slow way when the drvdata is the right way to do it.
+commit f38ebfc7469c4924087dab2203479ee9bb6911ac (HEAD -> master, origin/nex=
+t, origin/master, origin/HEAD, next)
+Author: Nayna Jain <nayna@linux.ibm.com>
+Date:   Thu Mar 10 16:44:50 2022 -0500
 
-So either have the core code set it or require drivers to set it to the
-vfio_pci_core_device pointer seems necessary.
+    integrity: support including firmware ".platform" keys at build time
+   =20
+    Allow firmware keys to be embedded in the Linux kernel and loaded onto
+    the ".platform" keyring on boot.
+   =20
+    The firmware keys can be specified in a file as a list of PEM encoded
+    certificates using new config INTEGRITY_PLATFORM_KEYS. The certificates
+    are embedded in the image by converting the PEM-formatted certificates
+    into DER(binary) and generating
+    security/integrity/platform_certs/platform_certificate_list file at
+    build time. On boot, the embedded certs from the image are loaded onto
+    the ".platform" keyring at late_initcall(), ensuring the platform keyri=
+ng
+    exists before loading the keys.
+   =20
+    Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+    Tested-by: Mimi Zohar <zohar@linux.ibm.com>
+    Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+    Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-But yes, it should be a seperated patch
+commit 233bb42918e71f143e6f31d99763348768eb1619
+Author: Nayna Jain <nayna@linux.ibm.com>
+Date:   Thu Mar 10 16:44:49 2022 -0500
 
-Jason
+    certs: conditionally build extract-cert if platform keyring is enabled
+   =20
+    extract-cert is used outside certs/ by INTEGRITY_PLATFORM_KEYRING.
+    Also build extract-cert if INTEGRITY_PLATFORM_KEYRING is enabled.
+   =20
+    Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+    Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+    Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+
+commit 5e1a41f1c2ee838af6ac39d1cdd4ed0f509186a1
+Author: Nayna Jain <nayna@linux.ibm.com>
+Date:   Thu Mar 10 16:44:48 2022 -0500
+
+    integrity: make integrity_keyring_from_id() non-static
+   =20
+    Make integrity_keyring_from_id() non-static so that it is accessible
+    by other files in security/integrity.
+   =20
+    Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+    Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+    Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+    Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+
+commit 05489d362bde0f25c4e921d15cad4492d22147ae
+Author: Nayna Jain <nayna@linux.ibm.com>
+Date:   Thu Mar 10 16:44:47 2022 -0500
+
+    certs: export load_certificate_list() to be used outside certs/
+   =20
+    load_certificate_list() parses certificates embedded in the kernel
+    image to load them onto the keyring.
+   =20
+    Commit "2565ca7f5ec1 (certs: Move load_system_certificate_list to a com=
+mon
+    function)" made load_certificate_list() a common function in the certs/
+    directory. Export load_certificate_list() outside certs/ to be used by
+    load_platform_certificate_list() for loading compiled in platform keys
+    onto the .platform keyring at boot time.
+   =20
+    Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
+    Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+    Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+    Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+
+BR, Jarkko
