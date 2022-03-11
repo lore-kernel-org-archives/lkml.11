@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC728C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A8DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346619AbiCKFyN (ORCPT
+        id S1346722AbiCKFyV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:54:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54918 "EHLO
+        Fri, 11 Mar 2022 00:54:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346602AbiCKFwm (ORCPT
+        with ESMTP id S1346550AbiCKFwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:52:42 -0500
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61010ECB30
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:34 -0800 (PST)
-Received: by mail-pj1-x104a.google.com with SMTP id p8-20020a17090a74c800b001bf257861efso7268144pjl.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:34 -0800 (PST)
+        Fri, 11 Mar 2022 00:52:43 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E679FF9FB3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:37 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id t18-20020a63dd12000000b00342725203b5so4205675pgg.16
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=emCA/tvvyJ2efmmGNI3zej5xo0FQCGV6fGdLSat4I7c=;
-        b=lWtf2u3vSetMdZSOR+twpZfb0d0apL+VekYKn3VhGok6LLdMZHCuxKf0fWY2+ACJ1X
-         JR3BrxghU1yFmU7XYIXMu6JbUWNqE9AP2O3MXVVlfI9I1wuBUKD6IBj6Ch8HzSZ73Gri
-         RrKbXcz8v4Ld5hAy/MJz6kwsl7RFmUWEbpBnvtjnfTdcONj/UIYyRWygJtcpnQtFNcuU
-         wROFXjDVMPtDtCE7a6vaOVqc7kjbphu8TxahJIAFFhkC6jT8Rdq5dhcB+7NsmKKp4zSA
-         q+LOzX64bG2elXXjQZVPxYd4kd9nuhipWPItBIjAhlC7SaeKztoeimmEm33oBY/WTYMR
-         Q7pg==
+        bh=mSaO6+QnMWWeIwCnlQiy3I7psXBlkN5aFHPmI5GJrpE=;
+        b=FCGnqjPbkseOrMYyCHrqxAIaVqtnLi8AxjGKJPZX3S5j3a66lxzSyS/yD62o0BjUPi
+         D7bf3dIefvNcU97dei7CR+FUF4vB9txnMqMrE1ZfVmj/OI8ZWE3X9DVCvSX88KrsowqU
+         UOBxu+rvxAl5/Nqx49/Tl5HkRLDedWQRZZLfidlpqIMrnXPdv0UWUm0cJ7u8sDK1tZgM
+         e7YnxFLQuQApbNg5yA9XvELEOIWooHpkYs+JDjDMr/hMF++VutHq/NAN7U7r/Xo5Oo24
+         pY+kwEr6u8xXcdhQlWCtV2b/PlmpDdOd7pD8/YcEKSUwceX65jmEMJIZg4/PODi6pMKa
+         0uZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=emCA/tvvyJ2efmmGNI3zej5xo0FQCGV6fGdLSat4I7c=;
-        b=wLB2jYIXhLdcYEHTnSSemR8GGY1vjcJzKd7JMDa5yivIwUZ09nXulmEiwIBsWOajMV
-         LzwgJSMmUlEDFVGivOm19IcA8p9O9dOcDIG066hQzUszbPVS+1fCgornnnEvZVL6313k
-         5X1YJiGKt0mz9XXINp06IDI2x+RwHL+HXISAPgPm+CJAh1sGgHEL7tZvW7kUzGoPYM4u
-         RS7DXygR/q7TbqdGzQZSLynTEYMiSvDuKaV49bVPAOCawoF8j0wsAXR1mj+eCmA4vRX/
-         RSAPGCsVbb/zBGxue43PjnaHr/8PzfF4pfVLrKs05bPH1VDM98v0xQMXi5Zgr4YYVFt0
-         XVlA==
-X-Gm-Message-State: AOAM532+11yOVWo+R249IT+GdQSnmkazdshX6fQaKNocinEND3AHyvhz
-        dXipa7nC9n8wTf903FheVWELCosbMDC5D27fV1rAps/gPQGttsynSV/74QDhVtDGGwdLRgVIS9x
-        dZpGYLQNRekH/lRt3Iee4fXgN3IuKtPONip3MXzo6Ci1XFUUZwo0TbCt7wzu7Hb/rG4ZaIg==
-X-Google-Smtp-Source: ABdhPJxt9q09h8ksPAnjIoTfHEG4b9LnDxuEEWORenT0r305qH/wfd3AKOK1MW1Nq/ey1T/Etxw4EnG7F24=
+        bh=mSaO6+QnMWWeIwCnlQiy3I7psXBlkN5aFHPmI5GJrpE=;
+        b=UhpZdSxz+N8/SaWGUEFyUw9nKPKlYuRjUPVpIN562m2S5D6Z11Qdv+57WPLbH+6Qqz
+         /B1Jku0KlNhUee1OM9PVHIXuUXrdENd/RF8xQ9Y2nf2VFMWcKG4pPTcRzBZqln3atKqp
+         LxJqEhpQgUiD/glXTm7q6Dcb4P6Ihun8NVP1EBzRPOzvDqBvhjQpvff51X9y9Ao+NKhh
+         A3q5dNpO+5whCURMmgqcP0ULZeG7Qb+hAHOTcyGvHQEQoul0pFfdHpNUdGe+YUidvIxV
+         XGm4BJjrct6iVNloW2yYfu9GJfmiLh31DxyMKW30343ribAu6ZPDFiRKgae+HNOqt7t7
+         DREA==
+X-Gm-Message-State: AOAM533/7sS9dJcNPyc5X5SSM2PuXgK+ktfanH38p9uUg7XDe4QLjJIQ
+        2b8oEONjnVc/kKXm+4tY3fC3DCQ86t7Osq77eAXy4TPIZzgVnghmv90hEipHur6F89DUFc30jv5
+        z6d0lOcQh8d8uH9z4Wj/QK8Wp4BhnyBbhKvk6FKdpOMzwqA4GtSbLu/MNbxR+rgAiL6nACg==
+X-Google-Smtp-Source: ABdhPJwIafp9cvM1AbG13Srks7eDiQ4MqalsNr6N4Rrx/YQJKV3EBpTT9sxVnkvvt67S1nAllnBuda+MnlY=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:aa7:9017:0:b0:4df:e33f:f1b4 with SMTP id
- m23-20020aa79017000000b004dfe33ff1b4mr8800411pfo.80.1646977893746; Thu, 10
- Mar 2022 21:51:33 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4b4a:b0:1bf:83d:6805 with SMTP id
+ mi10-20020a17090b4b4a00b001bf083d6805mr20581582pjb.174.1646977897282; Thu, 10
+ Mar 2022 21:51:37 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:49:28 +0000
+Date:   Fri, 11 Mar 2022 05:49:30 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-18-seanjc@google.com>
+Message-Id: <20220311055056.57265-20-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 017/105] KVM: selftests: Make x86-64's register dump
- helpers static
+Subject: [RFC PATCH 019/105] KVM: selftests: Use KVM_IOCTL_ERROR() for one-off
+ arm64 ioctls
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -67,123 +67,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/lib/kvm_util_internal.h     | 34 ------------------
- .../selftests/kvm/lib/x86_64/processor.c      | 36 ++-----------------
- 2 files changed, 2 insertions(+), 68 deletions(-)
+ tools/testing/selftests/kvm/lib/aarch64/processor.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util_internal.h b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-index 0c7c44499129..544b90df2f80 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-+++ b/tools/testing/selftests/kvm/lib/kvm_util_internal.h
-@@ -88,40 +88,6 @@ struct vcpu *vcpu_get(struct kvm_vm *vm, uint32_t vcpuid);
-  */
- void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent);
+diff --git a/tools/testing/selftests/kvm/lib/aarch64/processor.c b/tools/testing/selftests/kvm/lib/aarch64/processor.c
+index 6fa52e141e1b..5f6967058647 100644
+--- a/tools/testing/selftests/kvm/lib/aarch64/processor.c
++++ b/tools/testing/selftests/kvm/lib/aarch64/processor.c
+@@ -472,15 +472,15 @@ void aarch64_get_supported_page_sizes(uint32_t ipa,
+ 	TEST_ASSERT(vm_fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VM, vm_fd));
  
--/*
-- * Register Dump
-- *
-- * Input Args:
-- *   stream - Output FILE stream
-- *   regs   - Registers
-- *   indent - Left margin indent amount
-- *
-- * Output Args: None
-- *
-- * Return: None
-- *
-- * Dumps the state of the registers given by @regs, to the FILE stream
-- * given by @stream.
-- */
--void regs_dump(FILE *stream, struct kvm_regs *regs, uint8_t indent);
--
--/*
-- * System Register Dump
-- *
-- * Input Args:
-- *   stream - Output FILE stream
-- *   sregs  - System registers
-- *   indent - Left margin indent amount
-- *
-- * Output Args: None
-- *
-- * Return: None
-- *
-- * Dumps the state of the system registers given by @sregs, to the FILE stream
-- * given by @stream.
-- */
--void sregs_dump(FILE *stream, struct kvm_sregs *sregs, uint8_t indent);
--
- struct userspace_mem_region *
- memslot2region(struct kvm_vm *vm, uint32_t memslot);
+ 	vcpu_fd = ioctl(vm_fd, KVM_CREATE_VCPU, 0);
+-	TEST_ASSERT(vcpu_fd >= 0, "Can't create vcpu");
++	TEST_ASSERT(vcpu_fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VCPU, vcpu_fd));
  
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 64dd2acb2ab7..c47b84449a8a 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -51,8 +51,7 @@ struct pageTableEntry {
- 	uint64_t execute_disable:1;
- };
+ 	err = ioctl(vm_fd, KVM_ARM_PREFERRED_TARGET, &preferred_init);
+-	TEST_ASSERT(err == 0, "Can't get target");
++	TEST_ASSERT(err == 0, KVM_IOCTL_ERROR(KVM_ARM_PREFERRED_TARGET, err));
+ 	err = ioctl(vcpu_fd, KVM_ARM_VCPU_INIT, &preferred_init);
+-	TEST_ASSERT(err == 0, "Can't get init vcpu");
++	TEST_ASSERT(err == 0, KVM_IOCTL_ERROR(KVM_ARM_VCPU_INIT, err));
  
--void regs_dump(FILE *stream, struct kvm_regs *regs,
--	       uint8_t indent)
-+static void regs_dump(FILE *stream, struct kvm_regs *regs, uint8_t indent)
- {
- 	fprintf(stream, "%*srax: 0x%.16llx rbx: 0x%.16llx "
- 		"rcx: 0x%.16llx rdx: 0x%.16llx\n",
-@@ -75,21 +74,6 @@ void regs_dump(FILE *stream, struct kvm_regs *regs,
- 		regs->rip, regs->rflags);
- }
+ 	err = ioctl(vcpu_fd, KVM_GET_ONE_REG, &reg);
+-	TEST_ASSERT(err == 0, "Can't get MMFR0");
++	TEST_ASSERT(err == 0, KVM_IOCTL_ERROR(KVM_GET_ONE_REG, vcpu_fd));
  
--/*
-- * Segment Dump
-- *
-- * Input Args:
-- *   stream  - Output FILE stream
-- *   segment - KVM segment
-- *   indent  - Left margin indent amount
-- *
-- * Output Args: None
-- *
-- * Return: None
-- *
-- * Dumps the state of the KVM segment given by @segment, to the FILE stream
-- * given by @stream.
-- */
- static void segment_dump(FILE *stream, struct kvm_segment *segment,
- 			 uint8_t indent)
- {
-@@ -107,21 +91,6 @@ static void segment_dump(FILE *stream, struct kvm_segment *segment,
- 		segment->unusable, segment->padding);
- }
- 
--/*
-- * dtable Dump
-- *
-- * Input Args:
-- *   stream - Output FILE stream
-- *   dtable - KVM dtable
-- *   indent - Left margin indent amount
-- *
-- * Output Args: None
-- *
-- * Return: None
-- *
-- * Dumps the state of the KVM dtable given by @dtable, to the FILE stream
-- * given by @stream.
-- */
- static void dtable_dump(FILE *stream, struct kvm_dtable *dtable,
- 			uint8_t indent)
- {
-@@ -131,8 +100,7 @@ static void dtable_dump(FILE *stream, struct kvm_dtable *dtable,
- 		dtable->padding[0], dtable->padding[1], dtable->padding[2]);
- }
- 
--void sregs_dump(FILE *stream, struct kvm_sregs *sregs,
--		uint8_t indent)
-+static void sregs_dump(FILE *stream, struct kvm_sregs *sregs, uint8_t indent)
- {
- 	unsigned int i;
- 
+ 	*ps4k = ((val >> 28) & 0xf) != 0xf;
+ 	*ps64k = ((val >> 24) & 0xf) == 0;
 -- 
 2.35.1.723.g4982287a31-goog
 
