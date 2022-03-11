@@ -2,142 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF044C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B174C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229460AbiCKW3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:29:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        id S229486AbiCKW3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:29:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiCKW3P (ORCPT
+        with ESMTP id S229472AbiCKW3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:29:15 -0500
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B859C3D2337
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:18:26 -0800 (PST)
-Received: by mail-oi1-f173.google.com with SMTP id q189so10890269oia.9
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:18:26 -0800 (PST)
+        Fri, 11 Mar 2022 17:29:17 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC62F2706FB
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:18:34 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id o64so10914189oib.7
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:18:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ouXKxtl+8G+GwtOSfWWV903AmhWVHKS99b2n31iKIp0=;
-        b=O1KTLBkViqTZcE4jO3SOzLYQ8Mei2Q0WFKGyWQ7q1Z8YSG0iZna9ofEhD8FI7UWF6z
-         tPER/jc5vn1cs81+THtmfmovsASEuu8cL32uJb60hesZuTGIhUY65eyZMFg2cc47Q73Q
-         FuhcV/gVHTTrsUcWIYK3CUEyun16UeMGBpUYAvy41TxF1qtIZaveH3q6GuDpVV7wiXnZ
-         i1dmjE90JWtGhYePMiyO51edeJlKCZz5Vea3iD7NHYxibiq//Ld9uhfyIyRWRQFWl/7P
-         tSq33q/j6F+ToeLOezKn+VNRlqO0s0NXR7GYYAyHhIcT6ZCffDol6e78+d61FdBJ6Ywf
-         VMQg==
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=XH+5/+cW8VQKO81AORhyT2Hmdy1TzbLeTlOyFWJWYeA=;
+        b=PgciNoUU40YKRk+bsPBh194RRGa5sI3NFQvsgyxxdemnlRf1lRQ/7uF7PvVTwNVjfQ
+         7Wyakm1uYkqo7VUjKAM5orbK+8q8lq7akwX+fqKy6nN1+sjl1DfS0c8YnPPtBGF5jDg6
+         fJkE1+lwwLz8zeQVLEywqWQi90ErE7gVWl4dNjehnQZsCox+D81F4cPth65VOI7g0VKD
+         WfK1qgaHCY4UHfnAsl3pcdK/OEzZAO2tLDrXaen8KPpom8gQnUTQbnAxvLrka4s29uMb
+         eS9Up5m0pSRi6L7s5+L8KqFaRtMyIWUWJDKnkL7XPpKByOKQcdqnCmmVV9QkS2tr+VFX
+         4SGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ouXKxtl+8G+GwtOSfWWV903AmhWVHKS99b2n31iKIp0=;
-        b=xHCROHdPg/Um69LRCBoyryliSoorrR9ddjEGsBTgJVJnTgFcsFjjTA300PcvO+uMAR
-         sJvgz8Ygavk4iex0eYaQaxU+V11gTBHN0yJ3ZzGZz0dRlwGNBY9mIiPgJ91uU3dn7BgA
-         wsN78WUnCsvonirpWrXGcYFC3vRLYTqgZ8dxhrMMV+zRuwNUWME3q0QFPc04X2/Esd8z
-         NAc4Inva7wrNXj1Rt818m0Xbq215SdWs/7hVypWJWg2RMAhyFxFaJVCTKWlgIkzTUMyJ
-         0iQkXU1nUBkQGW8S+eBkpWkKVU6oo8MRult0xBkNa4iNtMMY5jE1Ls8UyDTmTZzAHiRm
-         3MXg==
-X-Gm-Message-State: AOAM533fADhK2bAGNYzwKGCzKQYiVDWmjM2cARit0mgfP4F1xVIC4Z3z
-        v19EUxbQKNnApUkAVmi3s6a961+evtTPlg==
-X-Google-Smtp-Source: ABdhPJy5imBF8v+itpeZObmG9hNl+BNIFPxFEpa5iCCi6LwHq9hqq00WyZ3eP2YdWvG14iZkBA/VnA==
-X-Received: by 2002:a05:6870:b42a:b0:d4:fc95:35e8 with SMTP id x42-20020a056870b42a00b000d4fc9535e8mr11876861oap.4.1647032510568;
-        Fri, 11 Mar 2022 13:01:50 -0800 (PST)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id j10-20020a4ad2ca000000b0031c515672d0sm4112516oos.23.2022.03.11.13.01.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 13:01:50 -0800 (PST)
-Date:   Fri, 11 Mar 2022 15:01:48 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Mukesh Ojha <quic_mojha@quicinc.com>
-Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mathieu.poirier@linaro.org
-Subject: Re: [PATCH] remoteproc: Use unbounded/high priority workqueue for
- recovery work
-Message-ID: <Yiu4vKuqWHQ5wfZ1@builder.lan>
-References: <1642620644-19297-1-git-send-email-quic_mojha@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1642620644-19297-1-git-send-email-quic_mojha@quicinc.com>
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=XH+5/+cW8VQKO81AORhyT2Hmdy1TzbLeTlOyFWJWYeA=;
+        b=H1xl/B+2hmGtgEFO6e9KRYIX3sq8iumGRNqsB4RbYNvI8LNfJVr0tYci8jMge2ln3N
+         l5kIiVIglYJKC4qVg//B3P+hVA1r4vO5NvneErudujMwCz8a0qWlBZddpWvZhJOGjoHt
+         oD4b2WOrJqbb7gtdBivGgya0gNjkFjRESLPGcT4rvBd0hucmFioKlL+R80ryIadP4bSJ
+         qytn3yW8diGD1UaJ8QZ3OECAfrmWCD/rceVJ9Oe5iJKfMKygDtp/i56e842Lw0kmXh5K
+         /HgSr7wR28vJ4Dy7Td/ko9arpIFy7miCNQEBxUSjt4fNJTa+SpXutAKIrk58MJ9EsrrD
+         0XWQ==
+X-Gm-Message-State: AOAM532eQn+jq29d6OpmRb3BUDgFZ5DtwUN7+8MPy7JMDZ/M5TmIx3lq
+        hrlW4Y5kERqORmQmYgjMnVS2oBRNnq4=
+X-Google-Smtp-Source: ABdhPJwucZP2RjPXu31Wk6NuUNHwx2Rs6nW29uTE/rQOakKnRfuUIrgOwAsq2TZhmEYXGijjSMbAJg==
+X-Received: by 2002:a17:90b:4ac1:b0:1bf:6d51:1ad9 with SMTP id mh1-20020a17090b4ac100b001bf6d511ad9mr23648278pjb.199.1647033421514;
+        Fri, 11 Mar 2022 13:17:01 -0800 (PST)
+Received: from smtpclient.apple ([66.170.99.1])
+        by smtp.gmail.com with ESMTPSA id c14-20020a056a00248e00b004f77e0fbfc0sm6864387pfv.185.2022.03.11.13.17.00
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 11 Mar 2022 13:17:01 -0800 (PST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [RESEND PATCH v3 2/5] x86/mm: check exec permissions on fault
+From:   Nadav Amit <nadav.amit@gmail.com>
+In-Reply-To: <70e08bd5-187a-daee-2822-1d9a437a9cff@intel.com>
+Date:   Fri, 11 Mar 2022 13:16:59 -0800
+Cc:     Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Peter Xu <peterx@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
+        Nick Piggin <npiggin@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <E46E0DA7-6427-4733-9D43-6CC1107194D6@gmail.com>
+References: <20220311190749.338281-1-namit@vmware.com>
+ <20220311190749.338281-3-namit@vmware.com>
+ <a2a43395-b848-a4f9-4065-109387680701@intel.com>
+ <AC8D21EA-CD32-4F9F-B5C1-ED8804EC76FF@vmware.com>
+ <70e08bd5-187a-daee-2822-1d9a437a9cff@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 19 Jan 13:30 CST 2022, Mukesh Ojha wrote:
 
-> There could be a scenario where there is too much load(n number
-> of tasks which is affined) on a core on which rproc recovery
-> is queued. Due to which, it takes number of seconds to complete
-> the recovery.
-> 
-> If we make this queue unbounded and move it to high priority worker
-> pool then this work can be attempted to finished in less time.
 
-I unfortunately find this reasoning for adding WQ_HIGHPRI rather
-speculative. Please describe a concrete case that warrants the new
-work queue to be high priority.
+> On Mar 11, 2022, at 12:59 PM, Dave Hansen <dave.hansen@intel.com> =
+wrote:
+>=20
+> On 3/11/22 12:38, Nadav Amit wrote:
+>>> On Mar 11, 2022, at 11:41 AM, Dave Hansen <dave.hansen@intel.com> =
+wrote:
+> ...
+>>> Can any sane code trigger this?
+>>=20
+>> Well, regarding this question and the previous one: I do not think =
+that
+>> this scenario is possible today since mprotect() holds the mmap_lock
+>> for write. There is no other code that I am aware of that toggles
+>> the NX bit on a present entry.
+>>=20
+>> But I will not bet my life on it. That=E2=80=99s the reason for the =
+somewhat
+>> vague phrasing that I used.
+>=20
+> =46rom the userspace perspective, mmap(MAP_FIXED) can do this too.  =
+But,
+> sane userspace can't rely on the syscall to have done any work and the
+> TLB flushing is currently done before the syscall returns.
+>=20
+> I'd put it this way:
+>=20
+> 	Today, it is possible for a thread to end up in access_error()
+> 	for a PF_INSN fault and observe a VM_EXEC VMA.  If you are
+> 	generous, this could be considered a spurious fault.
+>=20
+> 	However, the faulting thread would have had to race with the
+> 	thread which was changing the PTE and the VMA and is currently
+> 	*in* mprotect() (or some other syscall).  In other words, the
+> 	faulting thread can encounter this situation, but it never had
+> 	any assurance from the kernel that it wouldn't fault.  This is
+> 	because the faulting thread never had a chance to observe the
+> 	syscall return.
+>=20
+> 	There is no evidence that the existing behavior can cause any
+> 	issues with sane userspace.
 
-What is "number of seconds", what is "less time" and why is it more
-important to recover some remote processor than whatever else the system
-is busy doing?
+Done. Thanks.
 
-Thanks,
-Bjorn
+>=20
+>>>> index d0074c6ed31a..ad0ef0a6087a 100644
+>>>> --- a/arch/x86/mm/fault.c
+>>>> +++ b/arch/x86/mm/fault.c
+>>>> @@ -1107,10 +1107,28 @@ access_error(unsigned long error_code, =
+struct vm_area_struct *vma)
+>>>> 				       (error_code & X86_PF_INSTR), =
+foreign))
+>>>> 		return 1;
+>>>>=20
+>>>> -	if (error_code & X86_PF_WRITE) {
+>>>> +	if (error_code & (X86_PF_WRITE | X86_PF_INSTR)) {
+>>>> +		/*
+>>>> +		 * CPUs are not expected to set the two error code bits
+>>>> +		 * together, but to ensure that hypervisors do not =
+misbehave,
+>>>> +		 * run an additional sanity check.
+>>>> +		 */
+>>>> +		if ((error_code & (X86_PF_WRITE|X86_PF_INSTR)) =3D=3D
+>>>> +					(X86_PF_WRITE|X86_PF_INSTR)) {
+>>>> +			WARN_ON_ONCE(1);
+>>>> +			return 1;
+>>>> +		}
+>>>=20
+>>> access_error() is only used on the do_user_addr_fault() side of =
+things.
+>>> Can we stick this check somewhere that also works for kernel address
+>>> faults?  This is a generic sanity check.  It can also be in a =
+separate
+>>> patch.
+>>=20
+>> I can wrap it in a different function and also call it from
+>> do_kern_addr_fault() or spurious_kernel_fault().
+>>=20
+>> Anyhow, spurious_kernel_fault() should handle spurious faults on
+>> executable code correctly.=20
+>=20
+> This is really about checking the sanity of the "hardware"-provided
+> error code.  Let's just do it in  handle_page_fault(), maybe hidden in =
+a
+> function like:
+>=20
+> void check_error_code_sanity(unsigned long error_code)
+> {
+> 	WARN_ON_ONCE(...);
+> }
+>=20
+> You can leave the X86_PF_PK check in place for now.  It's probably =
+going
+> away soon anyway.
 
-> 
-> Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
-> ---
->  drivers/remoteproc/remoteproc_core.c | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-> index 69f51ac..efb6316 100644
-> --- a/drivers/remoteproc/remoteproc_core.c
-> +++ b/drivers/remoteproc/remoteproc_core.c
-> @@ -59,6 +59,7 @@ static int rproc_release_carveout(struct rproc *rproc,
->  
->  /* Unique indices for remoteproc devices */
->  static DEFINE_IDA(rproc_dev_index);
-> +static struct workqueue_struct *rproc_recovery_wq;
->  
->  static const char * const rproc_crash_names[] = {
->  	[RPROC_MMUFAULT]	= "mmufault",
-> @@ -2752,8 +2753,10 @@ void rproc_report_crash(struct rproc *rproc, enum rproc_crash_type type)
->  	dev_err(&rproc->dev, "crash detected in %s: type %s\n",
->  		rproc->name, rproc_crash_to_string(type));
->  
-> -	/* Have a worker handle the error; ensure system is not suspended */
-> -	queue_work(system_freezable_wq, &rproc->crash_handler);
-> +	if (rproc_recovery_wq)
-> +		queue_work(rproc_recovery_wq, &rproc->crash_handler);
-> +	else
-> +		queue_work(system_freezable_wq, &rproc->crash_handler);
->  }
->  EXPORT_SYMBOL(rproc_report_crash);
->  
-> @@ -2802,6 +2805,11 @@ static void __exit rproc_exit_panic(void)
->  
->  static int __init remoteproc_init(void)
->  {
-> +	rproc_recovery_wq = alloc_workqueue("rproc_recovery_wq", WQ_UNBOUND |
-> +				WQ_HIGHPRI | WQ_FREEZABLE, 0);
-> +	if (!rproc_recovery_wq)
-> +		pr_err("remoteproc: creation of rproc_recovery_wq failed\n");
-> +
->  	rproc_init_sysfs();
->  	rproc_init_debugfs();
->  	rproc_init_cdev();
-> @@ -2818,6 +2826,8 @@ static void __exit remoteproc_exit(void)
->  	rproc_exit_panic();
->  	rproc_exit_debugfs();
->  	rproc_exit_sysfs();
-> +	if (rproc_recovery_wq)
-> +		destroy_workqueue(rproc_recovery_wq);
->  }
->  module_exit(remoteproc_exit);
->  
-> -- 
-> 2.7.4
-> 
+Done. Thanks. But note that removing the check from access_error() means
+that if the assertion is broken, userspace might crash inadvertently
+(in contrast to the version I sent, which would have potentially led to
+infinite stream of page-faults). I don=E2=80=99t know which behavior is =
+better,
+so let=E2=80=99s go with your version and just hope it doesn=E2=80=99t =
+happen.
+
+>=20
+>>> Also, we should *probably* stop talking about CPUs here.  If there's
+>>> ever something wonky with error code bits, I'd put my money on a =
+weird
+>>> hypervisor before any kind of CPU issue.
+>>=20
+>> I thought I manage to convey exactly that in the comment. Can you =
+provide
+>> a better phrasing?
+>=20
+> Maybe:
+>=20
+> 	/*
+> 	 * X86_PF_INSTR for instruction _fetches_.  Fetches never write.
+> 	 * X86_PF_WRITE should never be set with X86_PF_INSTR.
+> 	 *
+> 	 * This is most likely due to a buggy hypervisor.
+> 	 */
+
+Done, thank you.
+
