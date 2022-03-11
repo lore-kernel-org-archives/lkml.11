@@ -2,158 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC28C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 088F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349052AbiCKOIK (ORCPT
+        id S1349056AbiCKOIg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
+        Fri, 11 Mar 2022 09:08:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241882AbiCKOIG (ORCPT
+        with ESMTP id S243047AbiCKOIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:08:06 -0500
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DBA1C57ED;
-        Fri, 11 Mar 2022 06:07:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1647007621; bh=X7QPQb+htRz7ijlZAL5/j6af/llFgL+z+jlTnD4er04=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=kBKz9ja3yPteYgNxZud4I+jBYVWeHmLpYWX7faXPvY8ysYCgTW3HdxfoK6Ru26Ilp
-         S3T/OJCsZG6LU72Iwb2B6bZztPdVGwdLfnRrbgJMOjFVyp0HCoZJgu55vnzXkaKakf
-         fVz/G54FbP2iwqdVSH9e9C1kpJmGNqmjQ9J/ScAz9ygAhutzqN8DDrOdwOcFUs3G2N
-         /Zuyx5DhuN85emmNwT9dgBWl2d3qOgnqlNNLumCbfv1tWAtUogTcCAtQu5uf2MoPCJ
-         GC5yzsNRNFFPLwHDFcdn53ruuU7rPqOGc6DdHWnU3zRKbovRG1tpIgn+xJUF79Lqph
-         U6udsEk3xTeQA==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-        by mail.mleia.com (Postfix) with ESMTP id 993C339E985;
-        Fri, 11 Mar 2022 14:07:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-        t=1647007621; bh=X7QPQb+htRz7ijlZAL5/j6af/llFgL+z+jlTnD4er04=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=kBKz9ja3yPteYgNxZud4I+jBYVWeHmLpYWX7faXPvY8ysYCgTW3HdxfoK6Ru26Ilp
-         S3T/OJCsZG6LU72Iwb2B6bZztPdVGwdLfnRrbgJMOjFVyp0HCoZJgu55vnzXkaKakf
-         fVz/G54FbP2iwqdVSH9e9C1kpJmGNqmjQ9J/ScAz9ygAhutzqN8DDrOdwOcFUs3G2N
-         /Zuyx5DhuN85emmNwT9dgBWl2d3qOgnqlNNLumCbfv1tWAtUogTcCAtQu5uf2MoPCJ
-         GC5yzsNRNFFPLwHDFcdn53ruuU7rPqOGc6DdHWnU3zRKbovRG1tpIgn+xJUF79Lqph
-         U6udsEk3xTeQA==
-Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi [88.113.46.102])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.mleia.com (Postfix) with ESMTPSA id 371DA39E948;
-        Fri, 11 Mar 2022 14:07:01 +0000 (UTC)
-Subject: Re: [PATCH v2 3/3] ARM: dts: lpc32xx: Update spi clock properties
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220311093800.18778-1-singh.kuldeep87k@gmail.com>
- <20220311093800.18778-4-singh.kuldeep87k@gmail.com>
- <4aae560d-d266-d0d0-136f-32891b15bc01@mleia.com>
- <CAK8P3a3a_WXbDKN-jJUt_Wuvop0rfaUs4ytwyhogOxdtJAPx0w@mail.gmail.com>
-From:   Vladimir Zapolskiy <vz@mleia.com>
-Message-ID: <4f39f086-1932-1729-8761-d5c533356812@mleia.com>
-Date:   Fri, 11 Mar 2022 16:07:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <CAK8P3a3a_WXbDKN-jJUt_Wuvop0rfaUs4ytwyhogOxdtJAPx0w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Fri, 11 Mar 2022 09:08:32 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2048.outbound.protection.outlook.com [40.107.243.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FDA10C2;
+        Fri, 11 Mar 2022 06:07:28 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d5axo4VoTJjE5lJZwvb2jEaUhogZoQeTlnIeQ34c3bCE74hz5gd09Z1ThDk/aVI9EHqzW5Hhnktqv68OGHUkYKg6+DH/DZGuj3HScFmmo++M3Na19kQKutKhQCTUTwEwtqRgyDwmjcuv5vblkAkT5fEr1ct6CWyBn1HAN+he0t16HC0yxkgX7fmVTSRY9cBNt7FXUcSAoBmDYXj5Ae74h6vvbP0u6IeTwhmIqrj32YwWrvBSaUAw3OfBzpnS36ikOV72cDkN2OwLfa8VCItwWtylrAH8s8NK4LIyIYsAGiO+qImp3z2GT4UQ+rnWNSuvLbVwH/3DpvZBkMRFKRzZrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=S678nBqKqfOTZhEN9q/6uQdkNJAFq4n32RmdzUyeg1w=;
+ b=adAT501i/9XHFCNYzJBR29kVwlv4hRZjiHqfQtpq/dIUES6IdrfHH8c4RFlX8EYEZrCzUKqQZsKOf/F2dR+YWG2+maPWaCxNTUa8jc1kibxM0OBD205kJG7HGcDlz5duf/63I88JEWuYK9egc7QyGfgTuQDMmKmUAtEyOoVBwLbUqJ7aqwUZV56y5Lf5k9q954X0hXNu0UJlt6dWuJngk6EUDXARnWBeR268ihHPpeWuABhasUIvldSV28IEAsDTG+5mVRfrYzfQkl4gPiJcYqiOLpKHnLP6/Pgxguso8zeL+oLC6DQBkHHsX5CKdkrEPjJyN24837h00tF6XAdQTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S678nBqKqfOTZhEN9q/6uQdkNJAFq4n32RmdzUyeg1w=;
+ b=t6SgrrvlHNQn+3gUK+/2ad6S/vXkuYKx5dAD6gjSswGF68KKkU6SRSrmeg7tNhhqf6PFGeEXI+QtclSUdhs/WnEwZEiSALuAUYweTaFKt5XiPhpXY1WYVQgX5uFVrq1Nhlj7+1qnf9H8W/GKtZD8Dw1NcH45/buYUGw5A5Wl5QY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL1PR12MB5874.namprd12.prod.outlook.com (2603:10b6:208:396::17)
+ by BN6PR12MB1300.namprd12.prod.outlook.com (2603:10b6:404:1a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Fri, 11 Mar
+ 2022 14:07:25 +0000
+Received: from BL1PR12MB5874.namprd12.prod.outlook.com
+ ([fe80::8940:cfde:90ac:b008]) by BL1PR12MB5874.namprd12.prod.outlook.com
+ ([fe80::8940:cfde:90ac:b008%6]) with mapi id 15.20.5061.022; Fri, 11 Mar 2022
+ 14:07:25 +0000
+Message-ID: <18a5a49a-e68f-621e-f8ae-16e794a74905@amd.com>
+Date:   Fri, 11 Mar 2022 08:07:23 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] x86/mce: Cover grading of AMD machine error checks
 Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+        x86@kernel.org, yazen.ghannam@amd.com,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        bilbao@vt.edu
+References: <20220309174107.6113-1-carlos.bilbao@amd.com>
+ <Yijz7dA1U0AMcYPZ@zn.tnic> <4a345de2-6a2c-fe26-c55c-34ce6ea431d4@amd.com>
+ <Yip4EV69+lElCuPM@zn.tnic>
+From:   Carlos Bilbao <carlos.bilbao@amd.com>
+In-Reply-To: <Yip4EV69+lElCuPM@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20220311_140701_650581_6E8DF4CB 
-X-CRM114-Status: GOOD (  29.83  )
+X-ClientProxiedBy: BL1PR13CA0257.namprd13.prod.outlook.com
+ (2603:10b6:208:2ba::22) To BL1PR12MB5874.namprd12.prod.outlook.com
+ (2603:10b6:208:396::17)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9ec6d534-10cb-415f-15ae-08da036877fe
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1300:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1300EB62647D68E9E4EB6E47F80C9@BN6PR12MB1300.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vup2sihE9RFVtoCeWzXPcJzkTG2VIzIoY3U/9Q9M6KMc62Bl6r5WANH9YCJEU0QIj0JdMSAjL+Uc/1vCLZz/QwSEUvckdE/2PXyOjN1YEUCTI7eEVKjiIehojm5ncezQPoonE+KfxLk0EOkfxVRjmdlF6+EDFQrjSmiF40Wxo/qLqBKOaUtvOS5nS6a6KbFjpiuDprA6YHSWVLOefm/psMLhoMp5RcKKjToNmGaGKv9kXa2dl4zP1Sz/OGCsemRb+RuOVfNq2gom8e0AAgZd2gs7cGcT6meKalcJXIUHXarTLB2+IL9jYDWbzhxWUq23ugGtrSETeugPX6x/3PtGFTL9o9fJH29XMVWukzWFRDiNWJEkEH8kbXTk2nXD1QbpNj9mZpY4Mu8BF6hprBbY00HBwy+MZqT6sksrqHwTg3XQbobtHMHwo/+1PdtSC3osEhOQUfCAxmCuL3ef+4r00PVoIGu5cD6pK46sqz+hAX95emX81r7SOdpVMqhZnta985/f6kZelebl0NBRhfWTUVlo6nmYounJeUfGf5G1gfdpE7YvWW3tAXWWtInQhHnUo634X66HQlqFPF2+0nwb2k5cG8gW2k+KLaECNpW31ITdWZd50b05WYkNASCJewBXzA5apxqQvNKhZU+0XWYBVsNalEA1yQgfUYYaM6NMqWvjYMlL1WfhvwlcG66RucTkpVKOfSizhDvWHgh7ox8X1NDQ6NXQ/xY5g6dKwSLe31g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5874.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(31686004)(8936002)(6916009)(38100700002)(83380400001)(186003)(5660300002)(2906002)(26005)(66556008)(66946007)(44832011)(66476007)(8676002)(4326008)(2616005)(86362001)(508600001)(6486002)(53546011)(6506007)(6512007)(36756003)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cHBPY3FQN2s0RndQSnRpZzIxQjZsdFVMbWZUVzFxT0FTMjBnZ3ZDU2ZsMFor?=
+ =?utf-8?B?Z25RMHVzSXUvSUw3WlJSNURCZmxUUHRyMjYzYjZ6MDhsVWlEQ3dIYTNUV1cv?=
+ =?utf-8?B?ZytyL1hQLzFlOFdGVVBnMzBCZGhBaXlPREQxYUVzR1BzVkVKUlRCOUFmd3pD?=
+ =?utf-8?B?WjZjSmFzZzFMZndEbUFDNSsxYW1CRC9mSVhkZURCd2lNSlBNMkFTZGJ0LzNy?=
+ =?utf-8?B?WkFEM05MdE9VMWxkcU4rVFJjb3VpN045NlBONVZmR1IwRytYemRFWlFzbkpT?=
+ =?utf-8?B?OE5USjVtMkJUeFgvdGZIL283bFV3cGJGVVEzOHVrb0NYNGVLVW5wcjlHckhE?=
+ =?utf-8?B?TzRwMEh5RFY5V3A0SS9udldpWlU2dllCaVVkVUF0S0pLbEpTNkhYbGN0b3Rr?=
+ =?utf-8?B?S21nd1gyMzN6c0VjYnNadHR0cjRhVytFKzJtd2hFSWFzZGNTQkc2L2hMUHBx?=
+ =?utf-8?B?SXBRM25SNFhNbUVORWgzYkNRQVVPQ2FNSytmZngyZysxYk1RWkpCa2Z5Tm5R?=
+ =?utf-8?B?d3Q2V1luL3Y5YlVNQmwwOXdMNDVRTXFVY0F1VXNTbmtoMXp4YUJkRkdxUmx6?=
+ =?utf-8?B?bnUybVBUWnlvMmlzMGN5bTh4a3pUQU9weUFHTlhBWmhjMU90a1EwYTZ3V1N5?=
+ =?utf-8?B?Y1VvU3ZOM1FqQjJNZFNxWEQwbk9kbEJTN2xhYThzbTNqS1hjWVJCb3BNMXcv?=
+ =?utf-8?B?U3EwNU0zcEdCWSttSkxsSHoxT1UrTVk1alFUR015Vmg2OStzZ0RKcy9tdzYz?=
+ =?utf-8?B?bDNsYnBLOWdvQWRGc1NpSTd6MjNPOUc1NE4wNkFvSUJBZS9YRTlMdjNQbjlz?=
+ =?utf-8?B?dmZ0ZEt1TFN2M0JFeUx2MnVQOHcxVThJUG9kVG5tRm9YaWxvRktDeDhtK2Zl?=
+ =?utf-8?B?eE9lMTNPbTJVdlpWQmNxTjAwS21QQjA0bEtpcXVxT2IySm9PNEVQYUpJekhy?=
+ =?utf-8?B?VTNrcS9nUEdWUDZhRmU3WVh2UlFFVHYxNFpzTWF0S0ppWEZYWWh0Y29zMTh0?=
+ =?utf-8?B?OXoyMlhOemFLS3FCbVE5RUhjdkFlM3N2RUhscno1OWR1VHNiNzBMRUhMM3Fy?=
+ =?utf-8?B?bEJxM3VJbmtDZFZJeXJEN3ZFT3BtWGViRE8vSVhNR1BQM0NRWSt0WjZEV09Z?=
+ =?utf-8?B?SjZla0tseWRRVzNGY3VhclJpSW1LVlExd0lKQ3kyUWV6Y3RkUnR0UGQ5Y2kx?=
+ =?utf-8?B?RzRyTWl0ejd4S29jMXNUNzE3RnBtbnNUQVJSanpKNklJdkorMnROcUNucWtn?=
+ =?utf-8?B?Z21pL3dqUU5KQ2Vxa3I5aGhqd0wzemV1U3NiaDhZa2k0SHlhR1E1WGl0V2NB?=
+ =?utf-8?B?MzFhbzZzQ0NPbWMrQmk0Ui8vOC9HZnRZVTV1M0FJNHlKQXRuNlNGcmRhSnhY?=
+ =?utf-8?B?NHhFdWlQQWdpd2JWT3lHbnQ5QlVCOG1TMHJMNjBPUFQzN0djL1MxSFFyWll3?=
+ =?utf-8?B?eWZrZXRtaGJWUWVoTmo3alg5V3Z4WHQrbkdjalFKNUFHQ2doNDR1S3hJTGEz?=
+ =?utf-8?B?UEdLVHR0Z2huMjRINktNZEhveDkwRjJKL1RlOW93YW15bmI0NmVJQ25MdzZI?=
+ =?utf-8?B?NjQ5ZzZZcmg0Sk5pUzhleGZnbEYyQ3BrbHlkZzk4c3BxMFhXd3FwL3RVMlEv?=
+ =?utf-8?B?OXNBS0R0MzRyVFp2UmtTUEdwTEFZZlM3TnZQVllzOHNpVEJFSWpkY2gzMjJT?=
+ =?utf-8?B?WTJvaXFWV0Y0OWxiaHlKMS9RZnFzRmRUaXVKQklRVUxEU2dyWTZaVXRKWFJi?=
+ =?utf-8?B?bnA5VTBjUjZJMExLVC80dCsvaFF1MnRNRzR4TGZzdkxZcEVQTzZMODlBNTJh?=
+ =?utf-8?B?Zld5WFVtYXRUYUtZTm4yOWtIUXhUTmZCSzlwaHp3U2lvTE5VcXN3OTQrU3VK?=
+ =?utf-8?B?NWFwdlErM0drSnZsNm9tWmYyTFcrUXBERE1nL2R1eTdhSHkvUkN1UlVDcHdV?=
+ =?utf-8?B?SHc3b0hIWXN2N2lUclVKYXdieGpiOHNRZnZuUGthbTd3bm9KQ0lKSkRpNlV2?=
+ =?utf-8?B?MHRJd2NvTUdtcDZWTEpaRlV2Vy95VVpQT0VIc2xHODl2RjhkeldzOTF6Y0Fm?=
+ =?utf-8?B?SWE5ejZTQVVDSnlKRGc0K0RLc2VNSTRIMUxTbkVTQmdUTjhWU0FrS3Ywb3VX?=
+ =?utf-8?B?SFByNVdvL0NQcEdxaVRpOXVGcXdLczBmVFRPSHZJdXlGNytlMFVUMllxeTZp?=
+ =?utf-8?Q?bITFXXkkoFALIzAhQsQtoIE=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ec6d534-10cb-415f-15ae-08da036877fe
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5874.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 14:07:25.2531
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: m9vRhYQ64e6uMXr7iM65scj8RNp0z2YZluWdOjlKKGuHc+dF55LVCwciq0fz+2Ro2s5g5uxQrq5KBqO2jWOBiQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1300
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/11/22 3:38 PM, Arnd Bergmann wrote:
-> On Fri, Mar 11, 2022 at 2:20 PM Vladimir Zapolskiy <vz@mleia.com> wrote:
->>
->> On 3/11/22 11:38 AM, Kuldeep Singh wrote:
->>> PL022 binding require two clocks to be defined but lpc platform doesn't
->>> comply with bindings and define only one clock i.e apb_pclk.
->>>
->>> Update spi clocks and clocks-names property by adding appropriate clock
->>> reference to make it compliant with bindings.
->>>
->>> CC: Vladimir Zapolskiy <vz@mleia.com>
->>> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
->>> ---
->>> v2:
->>> - New patch with similar changeset
->>> - Send to soc ML
->>>
->>>    arch/arm/boot/dts/lpc32xx.dtsi | 8 ++++----
->>>    1 file changed, 4 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/arch/arm/boot/dts/lpc32xx.dtsi b/arch/arm/boot/dts/lpc32xx.dtsi
->>> index c87066d6c995..30958e02d5e2 100644
->>> --- a/arch/arm/boot/dts/lpc32xx.dtsi
->>> +++ b/arch/arm/boot/dts/lpc32xx.dtsi
->>> @@ -178,8 +178,8 @@ ssp0: spi@20084000 {
->>>                                compatible = "arm,pl022", "arm,primecell";
->>>                                reg = <0x20084000 0x1000>;
->>>                                interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
->>> -                             clocks = <&clk LPC32XX_CLK_SSP0>;
->>> -                             clock-names = "apb_pclk";
->>> +                             clocks = <&clk LPC32XX_CLK_SSP0>, <&clk LPC32XX_CLK_SSP0>;
->>> +                             clock-names = "sspclk", "apb_pclk";
->>
->> In fact I'm uncertain if it is the right change, could it happen that the commit
->> cc0f6e96c4fd ("spi: dt-bindings: Convert Arm pl022 to json-schema") sets a wrong
->> schema pattern?
+On 3/10/2022 4:13 PM, Borislav Petkov wrote:
+> On Thu, Mar 10, 2022 at 12:24:08PM -0600, Carlos Bilbao wrote:
+>> We will cover grading of MCEs like deferred memory scrub errors, attempts 
+>> to access poisonous data, etc. I could list all new covered cases in the 
+>> commit message if you think that'd be positive.
 > 
-> Good pointm this doesn't quite seem right: it is unlikely that the same clock
-> is used for both the SPI bus and the APB bus.
+> So no actual use case - you want to grade error severity for all types
+> of MCEs.
 > 
->> Apparently just one clock is wanted on all observed platforms and cases, this
->> is implicitly confirmed by clock handling in the drivers/spi/spi-pl022.c :
->>
->>          pl022->clk = devm_clk_get(&adev->dev, NULL);
->>
->> So, I would vote to fix the device tree bindings schema.
+>> Hope that helps clarify,
 > 
-> Isn't this just using the wrong name? The name of the macro
-> LPC32XX_CLK_SSP0 might indicate that this is indeed the SPI clock
-> rather than the APB clock, so we only need to change clock-names
-> property here and leave it unchanged otherwise.
-
-Yes, the name is wrong, here I'm ready to take the blame:
-
-Fixes: 93898eb775e5 ("arm: dts: lpc32xx: add clock properties to device nodes")
-
-Noteworthy the commit above presets the same clock name to other PrimeCell
-controllers, namely pl110 (LCD), pl080 (DMA), pl175 (EMC) and pl18x (SD),
-plus this one pl022 (SSP), and all but SSP and SD are AHB slaves in fact.
-
-On LPC32xx the bus clock source and function clock source for SSP is HCLK.
-
-My guess is that the misnamed "apb_pclk" migrated into the schema from
-the lpc32xx.dtsi, so I'd suggest, unless some platform really needs it,
-firstly fix the schema by removing "apb_pclk" clock. It will leave just one
-clock, so "clock-names" property can be set as optional, and the drop
-the property from the lpc32xx.dtsi.
-
-> Looking at the driver, I also see that this refers to the clock as
-> "SSP/SPI bus clock", and it reads the rate from that.
-
-Yes, that's correct, it's a SPI bus clock with an option to set a rate.
-
-> In case of the LG platform, my impression is that the clocks listed
-> in DT don't reflect the system at all, they all refer to the same
-> fixed clock node at 198000000HZ, which is also used as for the
-> UART and timer nodes. Changing the name on that one doesn't
-> really make it correct, but should not hurt either.
+> Yes, it does a bit.
 > 
->          Arnd
+> It sounds to me like you want to do at least two patches:
+> 
+> 1. Extend the severity grading function with the new types of errors
+> 
+> 2. Add string descriptions of the error types mce_severity_amd() looks
+> at, so that mce_panic() issues them.
+> 
+> I.e., you want to decode the fatal MCEs which panic the machine.
+> 
+> In general, what would help is if you think about what you're trying to
+> achieve and write it down first. How to achieve that we can figure out
+> later.
+> 
+> What happens now is you send me a patch and I'm trying to decipher from
+> the code why you're doing what you're doing. Which is kinda backwards if
+> you think about it...
 > 
 
---
-Best wishes,
-Vladimir
+Glad we are on the same page now. I will prepare a pachset and include more
+informative commit messages.
+
+Thanks,
+Carlos
