@@ -2,72 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77DD8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:26:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229575AbiCKX1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
+        id S229518AbiCKX3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:29:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiCKX1j (ORCPT
+        with ESMTP id S229458AbiCKX3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:27:39 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2205EBD1;
-        Fri, 11 Mar 2022 15:26:35 -0800 (PST)
-Received: from zn.tnic (p200300ea9719388a568d7c698b997aed.dip0.t-ipconnect.de [IPv6:2003:ea:9719:388a:568d:7c69:8b99:7aed])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D26331EC050D;
-        Fri, 11 Mar 2022 22:00:44 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1647032444;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=JpIq6ekrJpOUTsg6cHFprI2/5RJXASUAuEdVc9D8S9k=;
-        b=b9Q5VbeBECyqG+BpOY6zgOn2mC7w664Y24poCqiTNluUNb3+a2IKUBm+6knRfO1Slpoa0N
-        mLGklLTHZ577DWjTJYee6rzJcpLDCn9eWlGF74beKl0nHq2e2gRDgvyefvo5XRTRLYW9yV
-        LeQlbFPCubLIGJJaDXqLsWUBPcIhZuc=
-Date:   Fri, 11 Mar 2022 22:00:50 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
-        rric@kernel.org, Smita.KoralahalliChannabasappa@amd.com
-Subject: Re: [PATCH v4 16/24] EDAC/amd64: Define function to make space for
- CS ID
-Message-ID: <Yiu4guP6xPUuSzuz@zn.tnic>
-References: <20220127204115.384161-1-yazen.ghannam@amd.com>
- <20220127204115.384161-17-yazen.ghannam@amd.com>
- <YgpQLnTd4TyiehS/@zn.tnic>
- <YikpUrojo1cMFfOp@yaz-ubuntu>
+        Fri, 11 Mar 2022 18:29:18 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC4053BA6A;
+        Fri, 11 Mar 2022 15:28:14 -0800 (PST)
+Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 58C4320B7178;
+        Fri, 11 Mar 2022 15:28:14 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 58C4320B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1647041294;
+        bh=WfV97jFHnXJqj+8W72uvh/s0Oir5+4FauwMiti7lDyo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WklNVZ8VgCMbt6CBIj/Ou2yFgYoFSQ9clwj6uTd8IsNJq1rp+1zuix4huK4EAN6gf
+         CwX0BEhHri8MluGwQOum1Z19FFOE7SgBGcoFgvju54mv6jaYtU9y+yf1kWXdkUoraJ
+         7/Y0+4a+Ud/qau4VOrlqnWjLJgzRovBd2Uw17XS0=
+Date:   Fri, 11 Mar 2022 15:28:09 -0800
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Anders Roxell <anders.roxell@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        linux-trace-devel@vger.kernel.org
+Subject: Re: [next] arm64: allmodconfig: kernel BUG at
+ include/linux/page-flags.h:509
+Message-ID: <20220311232809.GA2044@kbox>
+References: <CADYN=9+xY5Vku3Ws5E9S60SM5dCFfeGeRBkmDFbcxX0ZMoFing@mail.gmail.com>
+ <20220311112426.7e3cf434@gandalf.local.home>
+ <20220311171123.GA1675@kbox>
+ <20220311130453.54a4e0b2@gandalf.local.home>
+ <20220311181328.GA1904@kbox>
+ <20220311181500.0be31225@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YikpUrojo1cMFfOp@yaz-ubuntu>
+In-Reply-To: <20220311181500.0be31225@gandalf.local.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:25:22PM +0000, Yazen Ghannam wrote:
-> I guess this could be "addr = func(x, y, addr)", but why not just operate on
-> the value directly? There isn't an error condition here that's obvious to me.
+On Fri, Mar 11, 2022 at 06:15:00PM -0500, Steven Rostedt wrote:
+> On Fri, 11 Mar 2022 10:13:28 -0800
+> Beau Belgrave <beaub@linux.microsoft.com> wrote:
+> 
+> > Is that true as well for the user process that has this mapped? Will the
+> > user process virtual memory that maps to this ever page it out? I
+> > believe that was the concern. My understanding is by reserving in
+> > kernel, even though it won't page out on that side, marks the user side
+> > entry to not let it page out.
+> 
+> My memory of the purpose of SetPageReserve() is a bit fuzzy, and there's
+> not much use of it in the kernel. Just a hand full. I'll try to investigate
+> it some more.
+> 
 
-Because when you look at the callsite:
+OK, you know more than I, so hopefully we can land on if we really need
+it or not. For now I've left it in.
 
-	ctx->make_space_for_cs_id(ctx);
+> > 
+> > The other thing is that this patch applied to 5.10.X on ARM64 does not
+> > appear to hit this. Is it some weird interaction with something else or
+> > was 5.10.X just getting lucky?
+> 
+> Perhaps it's because you allocated the page with kzalloc and not just
+> getting a page directly?
+> 
 
-and compare it with the version I'm suggesting:
+Yeah, I think so too. I was able to repro locally and validate that using
+alloc_pages directly fixes this by setting DEBUG_VM_PGFLAGS=y.
 
-	ctx->ret_addr = ctx->add_coherent_slave_id_slice(ctx);
+I've posted a patch for this:
+https://lore.kernel.org/linux-trace-devel/20220311223028.1865-1-beaub@linux.microsoft.com/
 
-my version says exactly what it does: it adds the bit slice of CS ID to
-ret_addr. You don't even have to look at the function body in order to
-know what's going on.
+> Again, my knowledge in this area is lacking. I'm looking more into it.
+> 
+> -- Steve
 
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks,
+-Beau
