@@ -2,136 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95AEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6804DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350302AbiCKQ07 (ORCPT
+        id S1350363AbiCKQ1D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:26:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
+        Fri, 11 Mar 2022 11:27:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350345AbiCKQ0g (ORCPT
+        with ESMTP id S1350342AbiCKQ0g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Mar 2022 11:26:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 163D01BA17F;
-        Fri, 11 Mar 2022 08:25:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74FBB61BDF;
-        Fri, 11 Mar 2022 16:25:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8C1CC340F9;
-        Fri, 11 Mar 2022 16:25:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647015900;
-        bh=aeMzJEZ9sFNCdhritR/EtuJ7IxGKXNGHHq3QcZWtA7Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=E6eHbcUTeiM6GjK/GG2GVEFfaaNefS9Ukh65vGoMYE/f7esyLLb1aF7QuKdlKfmys
-         D+9Kj5SNr0ULXP+YxEmus4//yoE8HLmOqLeFEolcGSReXSToMphFquMW30JDt1KT+8
-         jt0nS+MSKybnCwLwZE4D9odaQSjEjMjr9nTRfB5Vtb/0ckYupweM582QHUw+bUUsgD
-         3Tc13TpqhuF1RDDSIfHnGpmz9/y12iTVDbn3ObtfKASNQWHOGcLXB16xH3Gq8cCo9B
-         L5VA3QIiq3DbmVXThX+ILr66wcNYphWC2E80hAitsTZXTjcwIXoU5F/43I5ErilDZ8
-         eeA4tkA2cyaag==
-Date:   Fri, 11 Mar 2022 10:24:59 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>, wse@tuxedocomputers.com,
-        Matt Hansen <2lprbe78@duck.com>
-Subject: Re: [PATCH 3/3] x86/PCI: Preserve host bridge windows completely
- covered by E820
-Message-ID: <20220311162459.GA304957@bhelgaas>
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F41F1B8BF7;
+        Fri, 11 Mar 2022 08:25:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1647015902;
+  x=1678551902;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=eqHYnpjKDOMF1TwiA1Bf1WVBNshhdDSbtR3z1p21pAk=;
+  b=LkpaT22z9yzvNZbzx0/U1CPCP2w2+HflUInWlFPV5q44tzUtQbOhBmWT
+   LJVC/RPbvDDO9siDFpGN6BLms1CZOz6Ab+h0tZFH2O2hTk7Pi/Mqu39yg
+   alOd7kEXNLs6jq6a6zuQGQfLvzlF69e0m0vT/q+TBmlntQW7A+Lp3y7b3
+   WAJSlvzconIXizP5VIR0cIs1t+WnsIvIndtVhFaGkpcpu0xuxeVwMfPXR
+   369R4GwH+Qjsx/4JHbFoy6SuHzeFqMj7Om0gZ1VCBCLZrrTE8396ujnCT
+   7UD6NFa/9w2g2PWK7MD+nZUHRnkVKjEUxUl3VMnsSIN8wzx70y/K5MKaQ
+   Q==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <devicetree@vger.kernel.org>, <linux-um@lists.infradead.org>,
+        <shuah@kernel.org>, <brendanhiggins@google.com>,
+        <linux-kselftest@vger.kernel.org>, <jic23@kernel.org>,
+        <linux-iio@vger.kernel.org>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <a.zummo@towertech.it>,
+        <alexandre.belloni@bootlin.com>, <linux-rtc@vger.kernel.org>,
+        <corbet@lwn.net>, <linux-doc@vger.kernel.org>
+Subject: [RFC v1 00/10] roadtest: a driver testing framework
+Date:   Fri, 11 Mar 2022 17:24:35 +0100
+Message-ID: <20220311162445.346685-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <03675c75-ee6f-5da3-099c-2b82a1865455@redhat.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Matt]
+This patchset proposes roadtest, a device-driver testing framework.  Drivers
+are tested under User Mode Linux (UML) and interact with mocked/modelled
+hardware.  The tests and hardware models are written in Python, the former
+using Python's built-in unittest framework.
 
-On Fri, Mar 11, 2022 at 08:52:31AM +0100, Hans de Goede wrote:
-> On 3/10/22 13:28, Hans de Goede wrote:
-> > On 3/9/22 19:15, Bjorn Helgaas wrote:
-> >> On Sat, Mar 05, 2022 at 11:37:23AM +0100, Hans de Goede wrote:
-> >>> On 3/4/22 16:46, Hans de Goede wrote:
-> >>>> On 3/4/22 16:32, Bjorn Helgaas wrote:
-> >>>>> On Fri, Mar 04, 2022 at 03:16:42PM +0100, Hans de Goede wrote:
-> >>>>>> On 3/4/22 04:51, Bjorn Helgaas wrote:
-> >>>>>>> From: Bjorn Helgaas <bhelgaas@google.com>
-> >>>>>>>
-> >>>>>>> Many folks have reported PCI devices not working.  It could affect any
-> >>>>>>> device, but most reports are for Thunderbolt controllers on Lenovo Yoga and
-> >>>>>>> Clevo Barebone laptops and the touchpad on Lenovo IdeaPads.
-> >>>>>>> ...
-> >>
-> >>>>>>> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-> >>>>>>> index 7378ea146976..405f0af53e3d 100644
-> >>>>>>> --- a/arch/x86/kernel/resource.c
-> >>>>>>> +++ b/arch/x86/kernel/resource.c
-> >>>>>>> @@ -39,6 +39,17 @@ void remove_e820_regions(struct device *dev, struct resource *avail)
-> >>>>>>>  		e820_start = entry->addr;
-> >>>>>>>  		e820_end = entry->addr + entry->size - 1;
-> >>>>>>>  
-> >>>>>>> +		/*
-> >>>>>>> +		 * If an E820 entry covers just part of the resource, we
-> >>>>>>> +		 * assume E820 is telling us about something like host
-> >>>>>>> +		 * bridge register space that is unavailable for PCI
-> >>>>>>> +		 * devices.  But if it covers the *entire* resource, it's
-> >>>>>>> +		 * more likely just telling us that this is MMIO space, and
-> >>>>>>> +		 * that doesn't need to be removed.
-> >>>>>>> +		 */
-> >>>>>>> +		if (e820_start <= avail->start && avail->end <= e820_end)
-> >>>>>>> +			continue;
-> >>>>>>> +
-> >>>>>>
-> >>>>>> IMHO it would be good to add some logging here, since hitting this is
-> >>>>>> somewhat of a special case. For the Fedora test kernels I did I changed
-> >>>>>> this to:
-> >>>>>>
-> >>>>>> 		if (e820_start <= avail->start && avail->end <= e820_end) {
-> >>>>>> 			dev_info(dev, "resource %pR fully covered by e820 entry [mem %#010Lx-%#010Lx]\n",
-> >>>>>> 				 avail, e820_start, e820_end);
-> >>>>>> 			continue;
-> >>>>>> 		}
-> >>>>>>
-> >>>>>> And I expect/hope to see this new info message on the ideapad with the
-> >>>>>> touchpad issue.
-> >>
-> >> I added this logging.
-> >>
-> >>> So I just got the first report back from the Fedora test 5.16.12 kernel
-> >>> with this series added. Good news on the ideapad this wotks fine to
-> >>> fix the touchpad issue (as expected).
-> >>
-> >> Any "Tested-by" I could add?  If we can, I'd really like to give some
-> >> credit to the folks who suffered through this and helped resolve it.
-> > 
-> > Good point, the reporter of:
-> > https://bugzilla.redhat.com/show_bug.cgi?id=1868899
-> > 
-> > has done most of the ideapad with touchpad issues testing for me
-> > and has been very helpful. I agree he deserves credit for this.
-> > 
-> > I've asked him if he is ok with adding a Tested-by tag and if yes,
-> > which email we should use.
-> 
-> If you can add the following tag that would be great:
-> 
-> Tested-by: Matt Hansen <2lprbe78@duck.com>
+Drivers are tested via their userspace interfaces.  The hardware models allow
+tests to inject values into registers and assert that drivers control the
+hardware in the right way and react as expected to stimuli.
 
-Done, thank you very much, Matt!  Many people will benefit from your
-work.
+Roadtest is meant to be used for relatively simple drivers, such as the ones
+part of the IIO, regulator and RTC subsystems.
+
+Questions and answers:
+
+= Why do we need this?
+
+There are a large amount of these kind of drivers in the kernel.  Most of the
+hardware is not available in current CI systems so most drivers can only, at
+best, be build-tested there.  Even basic soundness such as a driver
+successfully probing and binding to the devices it tries to be support cannot
+be tested.  Drivers cannot be easily regression-tested to ensure that bugs
+fixed once do not get reintroduced.
+
+Many drivers support multiple related hardware variants, and far from all patch
+submitters have access to all the variants which the driver that they are
+patching supports, so there is no way for them to easily verify that they
+haven't broken something basic on a variant which they do not own.
+
+Furthermore, hardware can be used in many different configurations with drivers
+supporting many different devicetree properties, so even just having access to
+all the variants would be insufficient.
+
+On top of that, some of the chips measure environmental conditions such as
+temperature, so testing extreme cases may not be simple even if one has access
+to the hardware.
+
+All this makes development, modification, maintenance, and reviewing of these
+drivers harder than it necessarily needs to be.  Roadtest hopes to make some of
+these things slightly easier by providing a framework to create hardware
+models/mocks and to write testcases which exercise drivers using these models.
+
+= Do you have some specific examples of the kind of code this could be used to
+  test?
+
+Here is an example of a patch which can easily be regression-tested using
+roadtest (in fact, this series includes such a regression test) but is much
+harder to do so automatically with real hardware since it requires specific
+environmental conditions:
+
+ iio: light: opt3001: Fixed timeout error when 0 lux
+ https://lore.kernel.org/lkml/20210920125351.6569-1-valek@2n.cz/
+
+Here is another example.  This driver has code which correctly parses a
+documented devicetree property (amstaos,proximity-diodes) but which then fails
+to actually communicate this setting to the hardware in any way.  Such code can
+be easily tested with roadtest since the framework integrates devicetree
+support and provides functions to assert that drivers writes expected registers
+with expected values:
+
+ drivers/iio/light/tsl2772.c tsl2772_read_prox_diodes()
+
+(Both the above examples happen to be from the same subsystem but that should
+in no way be taken to imply that such issues are unique to that subsystem or
+that that subsystem has more of them.)
+
+= How does this relate to kselftests?
+
+Tests in kselftests also test kernel code using the userspace interfaces, but
+that's about what's common between the frameworks.  kselftests has other goals
+and does not provide any kind of mechanism for hardware mocking.
+
+= How does this relate to kunit?
+
+Kunit is for unit testing of functions in kernel code, and is not meant for
+testing kernel code via userspace interfaces.  It could in theory be used to
+test some of the simple drivers too, but that would require (1) a large amount
+of mocking code in various kernel frameworks, and, more importantly, (2)
+refactoring of the drivers to be tested.
+
+This can be contrasted with roadtest which works with mostly unmodified drivers
+and which mocks the hardware at the lowest level without having to change
+kernel frameworks.
+
+= How do I use it?
+
+See Documentation/dev-tools/roadtest.rst added by the documentation patch for
+more information about running and writing tests using this framework.
+
+= What's included in the patchset?
+
+The current framework allows developing tests for hardware which uses the I2C
+bus.  Hardware models can also control GPIOs and use them to trigger
+interrupts.
+
+This series includes tests for some IIO, regulator and RTC drivers.  The
+regulator and RTC tests depend on a few driver patches which are either in
+review or in linux-next.  These are noted in the commit messages.
+
+The entire patch set, including the required dependencies, is also available in
+a git tree:
+
+ https://github.com/vwax/linux/commits/roadtest/rfc-v1
+
+Cc: linux-kernel@vger.kernel.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-um@lists.infradead.org
+
+Cc: shuah@kernel.org
+Cc: brendanhiggins@google.com
+Cc: linux-kselftest@vger.kernel.org
+
+Cc: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org
+
+Cc: lgirdwood@gmail.com
+Cc: broonie@kernel.org
+
+Cc: a.zummo@towertech.it
+Cc: alexandre.belloni@bootlin.com
+Cc: linux-rtc@vger.kernel.org
+
+Cc: corbet@lwn.net
+Cc: linux-doc@vger.kernel.org
+
+Vincent Whitchurch (10):
+  roadtest: import libvhost-user from QEMU
+  roadtest: add C backend
+  roadtest: add framework
+  roadtest: add base config
+  roadtest: add build files
+  roadtest: add documentation
+  iio: light: opt3001: add roadtest
+  iio: light: vcnl4000: add roadtest
+  regulator: tps62864: add roadtest
+  rtc: pcf8563: add roadtest
+
+ Documentation/dev-tools/index.rst             |    1 +
+ Documentation/dev-tools/roadtest.rst          |  669 ++++
+ tools/testing/roadtest/.gitignore             |    2 +
+ tools/testing/roadtest/Dockerfile             |   25 +
+ tools/testing/roadtest/Makefile               |   84 +
+ tools/testing/roadtest/init.sh                |   19 +
+ tools/testing/roadtest/pyproject.toml         |   10 +
+ tools/testing/roadtest/requirements.txt       |    4 +
+ tools/testing/roadtest/roadtest/__init__.py   |    2 +
+ .../roadtest/roadtest/backend/__init__.py     |    0
+ .../roadtest/roadtest/backend/backend.py      |   32 +
+ .../testing/roadtest/roadtest/backend/gpio.py |  111 +
+ .../testing/roadtest/roadtest/backend/i2c.py  |  123 +
+ .../testing/roadtest/roadtest/backend/main.py |   13 +
+ .../testing/roadtest/roadtest/backend/mock.py |   20 +
+ .../roadtest/roadtest/backend/test_gpio.py    |   98 +
+ .../roadtest/roadtest/backend/test_i2c.py     |   84 +
+ .../testing/roadtest/roadtest/cmd/__init__.py |    0
+ tools/testing/roadtest/roadtest/cmd/main.py   |  146 +
+ tools/testing/roadtest/roadtest/cmd/remote.py |   48 +
+ .../roadtest/roadtest/core/__init__.py        |    0
+ .../testing/roadtest/roadtest/core/control.py |   52 +
+ .../roadtest/roadtest/core/devicetree.py      |  155 +
+ .../roadtest/roadtest/core/hardware.py        |   94 +
+ tools/testing/roadtest/roadtest/core/log.py   |   42 +
+ .../testing/roadtest/roadtest/core/modules.py |   38 +
+ .../testing/roadtest/roadtest/core/opslog.py  |   35 +
+ tools/testing/roadtest/roadtest/core/proxy.py |   48 +
+ tools/testing/roadtest/roadtest/core/suite.py |  286 ++
+ tools/testing/roadtest/roadtest/core/sysfs.py |   77 +
+ .../roadtest/roadtest/core/test_control.py    |   35 +
+ .../roadtest/roadtest/core/test_devicetree.py |   31 +
+ .../roadtest/roadtest/core/test_hardware.py   |   41 +
+ .../roadtest/roadtest/core/test_log.py        |   54 +
+ .../roadtest/roadtest/core/test_opslog.py     |   27 +
+ .../roadtest/roadtest/tests/__init__.py       |    0
+ .../roadtest/roadtest/tests/base/config       |   84 +
+ .../roadtest/roadtest/tests/iio/__init__.py   |    0
+ .../roadtest/roadtest/tests/iio/config        |    1 +
+ .../roadtest/roadtest/tests/iio/iio.py        |  112 +
+ .../roadtest/tests/iio/light/__init__.py      |    0
+ .../roadtest/roadtest/tests/iio/light/config  |    2 +
+ .../roadtest/tests/iio/light/test_opt3001.py  |   95 +
+ .../roadtest/tests/iio/light/test_vcnl4000.py |  132 +
+ .../roadtest/tests/iio/light/test_vcnl4010.py |  282 ++
+ .../roadtest/tests/iio/light/test_vcnl4040.py |  104 +
+ .../roadtest/tests/iio/light/test_vcnl4200.py |   96 +
+ .../roadtest/tests/regulator/__init__.py      |    0
+ .../roadtest/roadtest/tests/regulator/config  |    4 +
+ .../roadtest/tests/regulator/test_tps62864.py |  187 ++
+ .../roadtest/roadtest/tests/rtc/__init__.py   |    0
+ .../roadtest/roadtest/tests/rtc/config        |    1 +
+ .../roadtest/roadtest/tests/rtc/rtc.py        |   73 +
+ .../roadtest/tests/rtc/test_pcf8563.py        |  348 ++
+ tools/testing/roadtest/src/.gitignore         |    1 +
+ tools/testing/roadtest/src/backend.c          |  884 +++++
+ .../src/libvhost-user/include/atomic.h        |  310 ++
+ .../src/libvhost-user/libvhost-user.c         | 2885 +++++++++++++++++
+ .../src/libvhost-user/libvhost-user.h         |  691 ++++
+ 59 files changed, 8798 insertions(+)
+ create mode 100644 Documentation/dev-tools/roadtest.rst
+ create mode 100644 tools/testing/roadtest/.gitignore
+ create mode 100644 tools/testing/roadtest/Dockerfile
+ create mode 100644 tools/testing/roadtest/Makefile
+ create mode 100755 tools/testing/roadtest/init.sh
+ create mode 100644 tools/testing/roadtest/pyproject.toml
+ create mode 100644 tools/testing/roadtest/requirements.txt
+ create mode 100644 tools/testing/roadtest/roadtest/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/backend.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/gpio.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/i2c.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/main.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/mock.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/test_gpio.py
+ create mode 100644 tools/testing/roadtest/roadtest/backend/test_i2c.py
+ create mode 100644 tools/testing/roadtest/roadtest/cmd/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/cmd/main.py
+ create mode 100644 tools/testing/roadtest/roadtest/cmd/remote.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/control.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/devicetree.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/hardware.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/log.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/modules.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/opslog.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/proxy.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/suite.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/sysfs.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/test_control.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/test_devicetree.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/test_hardware.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/test_log.py
+ create mode 100644 tools/testing/roadtest/roadtest/core/test_opslog.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/base/config
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/config
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/iio.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/config
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_opt3001.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4000.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4010.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4040.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4200.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/regulator/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/regulator/config
+ create mode 100644 tools/testing/roadtest/roadtest/tests/regulator/test_tps62864.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/config
+ create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/rtc.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/test_pcf8563.py
+ create mode 100644 tools/testing/roadtest/src/.gitignore
+ create mode 100644 tools/testing/roadtest/src/backend.c
+ create mode 100644 tools/testing/roadtest/src/libvhost-user/include/atomic.h
+ create mode 100644 tools/testing/roadtest/src/libvhost-user/libvhost-user.c
+ create mode 100644 tools/testing/roadtest/src/libvhost-user/libvhost-user.h
+
+-- 
+2.34.1
+
