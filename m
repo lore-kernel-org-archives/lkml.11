@@ -2,269 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3650C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE06C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiCKWxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:53:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
+        id S230159AbiCKWyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:54:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbiCKWxa (ORCPT
+        with ESMTP id S229834AbiCKWy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:53:30 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5936F2E4087;
-        Fri, 11 Mar 2022 14:29:25 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BKcAX9022137;
-        Fri, 11 Mar 2022 21:04:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=YkYGmfeYZMf+8hugmF5odKW/SoWqd7Itn5m4OyORHmQ=;
- b=USY9GIwIkSfgzDBx94LZkA9T9R5K1U0OeEejoPYdxbJA7nvRv/4RWpdP2wU9MmmOYYoX
- KvLmbqRbz0X1XUbOeTMJY2zJPQxHgzOlxo8yI/AQWQsVttTqut1O/4u/Bva2GDtTnxud
- uMQ9LfR3RDJ4grpJY3OjQlBu0SvfgddHWQw/5HO4UqcNX/hZeWGtVaLmToBipAH/yIXk
- fi01sC+LvETBLSjyZLQQbdWC7ozcEgXVIfZpTvPlcIRno46x7ENQGCjXwC2YrxM8vzCg
- zq2GcyeDHotl9kBTXYNPQqZLNmicEqn3vldFlKWl2/zGfAuf6NsYeHZHQwgy/6oVcK3e 8g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eqm1bdkdt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:04:14 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22BL0puh027697;
-        Fri, 11 Mar 2022 21:04:13 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3eqm1bdkdd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:04:13 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22BL3qcs003063;
-        Fri, 11 Mar 2022 21:04:11 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ekyg97smh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:04:11 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22BKqpaN45482458
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Mar 2022 20:52:51 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 58B954C040;
-        Fri, 11 Mar 2022 21:04:08 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 06D0B4C044;
-        Fri, 11 Mar 2022 21:04:05 +0000 (GMT)
-Received: from li-4b5937cc-25c4-11b2-a85c-cea3a66903e4.ibm.com.com (unknown [9.211.110.168])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 11 Mar 2022 21:04:04 +0000 (GMT)
-From:   Nayna Jain <nayna@linux.ibm.com>
-To:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
-Cc:     dhowells@redhat.com, zohar@linux.ibm.com, jarkko@kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, rnsastry@linux.ibm.com, masahiroy@kernel.org,
-        Nayna Jain <nayna@linux.ibm.com>
-Subject: [PATCH v12 4/4] integrity: support including firmware ".platform" keys at build time
-Date:   Fri, 11 Mar 2022 16:03:44 -0500
-Message-Id: <20220311210344.102396-5-nayna@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220311210344.102396-1-nayna@linux.ibm.com>
-References: <20220311210344.102396-1-nayna@linux.ibm.com>
+        Fri, 11 Mar 2022 17:54:27 -0500
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B656CF4050
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:28:48 -0800 (PST)
+Received: by mail-ua1-x92c.google.com with SMTP id 63so4238668uaw.10
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:28:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=92arqH79BiLSpPq07XLUFaVqVUezAYRqELNUQGsWkP8=;
+        b=iQpC0+rNJZbuHaOeNvznCfYVkxwcczBWd0UPzccgCs+Go8jlx74Jwrya4YQPPBqi1a
+         LIhTzDWIhSomlxEQMebBYj8mab0jbSuU3k9hDKg0n1CMhsrp9WiAjLKAjU27AZhCBitS
+         QdUsya3XzeGHUIkAESKVibTANgUfmYd5fV2hTFATDwqkRGRgZ8T6ndA7i/TLiLdoJf0W
+         ZgnR8E5uV3gns2EJU0+hrIVrz5bQFQ2CfJzZXCTKlZr0x+0nbhJsXD0LqeAY2NFTGf2N
+         ZcI9uRsZS71/z3er5kTnwf0nSFfrzZrnHIc3Sol/BUgkr2SKn5yPQVWURocQU4wj4diI
+         6opQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=92arqH79BiLSpPq07XLUFaVqVUezAYRqELNUQGsWkP8=;
+        b=4uacjPuCqeBcVW2R6u9fXVS4KF1gY1hd4NzGF5KPoBshJT5eQdCEsAxP9u/Hm54Vm8
+         MrRRWH4o7Q9HyBI7rb4U6VQgtxh8cf/V5xmnVqngc4TH77tyL7dl9Czj4qhiccGhsn+4
+         XSxilnmuZN526XwgocoiZGyuxLYHSCHRMrWKAoZ7llkXFDJ5HSCjywwIue/rXVEqcVG/
+         IZCdfbzTBddL69L0pRPQm03rP141u8pibjb5q8zl2YR33UFONpXVYZJ7uSqCTAp01CsL
+         xWnLLmIqv6y6RWGduulxKPWRkD1+ZHDnGJ1U0fGw4xH8g9fiimbrU4Aa2MguNlGehyLC
+         2K6g==
+X-Gm-Message-State: AOAM531qqzKXxl83ylluWuKzt4sjR3VyFkhRZnCHNKewJercbGQPn+Ei
+        PCnU9D+KKHN74Z67m2RVu8LDLvANPBr9tA==
+X-Google-Smtp-Source: ABdhPJyNJ1dbWXRv+O1wDk73YwyJ+7WeYLAxuFLmw30ASpn4am7HYMJlx1E1uXw3X6gJavS+fE1RZA==
+X-Received: by 2002:a4a:a9cf:0:b0:2e9:5c75:e242 with SMTP id h15-20020a4aa9cf000000b002e95c75e242mr5516391oon.25.1647033654425;
+        Fri, 11 Mar 2022 13:20:54 -0800 (PST)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id u22-20020a4ae696000000b0032158ab4ce9sm2585808oot.26.2022.03.11.13.20.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 13:20:53 -0800 (PST)
+Date:   Fri, 11 Mar 2022 15:20:52 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     mathieu.poirier@linaro.org, arnaud.pouliquen@foss.st.com,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        peng.fan@nxp.com
+Subject: Re: [PATCH V3 2/2] remoteproc: support attach recovery after rproc
+ crash
+Message-ID: <Yiu9NNn/ZFpg7j7F@builder.lan>
+References: <20220309230128.15856-1-peng.fan@oss.nxp.com>
+ <20220309230128.15856-3-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: nLVnCLBubX1QQ1byyP1hD16iL_mMTain
-X-Proofpoint-GUID: DO8PiVkQRPNpIlXFc3t7ctO_2pSvozgp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-11_09,2022-03-11_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 suspectscore=0 impostorscore=0 priorityscore=1501
- adultscore=0 mlxscore=0 bulkscore=0 spamscore=0 mlxlogscore=999
- phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2202240000 definitions=main-2203110103
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309230128.15856-3-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow firmware keys to be embedded in the Linux kernel and loaded onto
-the ".platform" keyring on boot.
+On Wed 09 Mar 17:01 CST 2022, Peng Fan (OSS) wrote:
 
-The firmware keys can be specified in a file as a list of PEM encoded
-certificates using new config INTEGRITY_PLATFORM_KEYS. The certificates
-are embedded in the image by converting the PEM-formatted certificates
-into DER(binary) and generating
-security/integrity/platform_certs/platform_certificate_list file at
-build time. On boot, the embedded certs from the image are loaded onto
-the ".platform" keyring at late_initcall(), ensuring the platform keyring
-exists before loading the keys.
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Current logic only support main processor to stop/start the remote
+> processor after rproc crash. However to SoC, such as i.MX8QM/QXP, the
+> remote processor could do attach recovery after crash and trigger watchdog
+> reboot. It does not need main processor to load image, or stop/start M4
+> core.
+> 
+> Introduce two functions: rproc_attach_recovery, rproc_firmware_recovery
+> for the two cases. Firmware recovery is as before, let main processor to
+> help recovery, while attach recovery is recover itself withou help.
+> To attach recovery, we only do detach and attach.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 
-Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
----
- scripts/Makefile                              |  1 +
- security/integrity/Kconfig                    | 10 ++++++++
- security/integrity/Makefile                   | 15 +++++++++++-
- security/integrity/integrity.h                |  3 +++
- .../integrity/platform_certs/platform_cert.S  | 23 +++++++++++++++++++
- .../platform_certs/platform_keyring.c         | 23 +++++++++++++++++++
- 6 files changed, 74 insertions(+), 1 deletion(-)
- create mode 100644 security/integrity/platform_certs/platform_cert.S
+Hi Peng,
 
-diff --git a/scripts/Makefile b/scripts/Makefile
-index cedc1f0e21d8..c569594af4a6 100644
---- a/scripts/Makefile
-+++ b/scripts/Makefile
-@@ -15,6 +15,7 @@ hostprogs-always-$(CONFIG_MODULE_SIG_FORMAT)		+= sign-file
- hostprogs-always-$(CONFIG_SYSTEM_TRUSTED_KEYRING)	+= extract-cert
- hostprogs-always-$(CONFIG_SYSTEM_EXTRA_CERTIFICATE)	+= insert-sys-cert
- hostprogs-always-$(CONFIG_SYSTEM_REVOCATION_LIST)	+= extract-cert
-+hostprogs-always-$(CONFIG_INTEGRITY_PLATFORM_KEYRING)	+= extract-cert
- 
- HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
- HOSTLDLIBS_sorttable = -lpthread
-diff --git a/security/integrity/Kconfig b/security/integrity/Kconfig
-index 599429f99f99..77b2c22c0e1b 100644
---- a/security/integrity/Kconfig
-+++ b/security/integrity/Kconfig
-@@ -62,6 +62,16 @@ config INTEGRITY_PLATFORM_KEYRING
-          provided by the platform for verifying the kexec'ed kerned image
-          and, possibly, the initramfs signature.
- 
-+config INTEGRITY_PLATFORM_KEYS
-+        string "Builtin X.509 keys for .platform keyring"
-+        depends on KEYS
-+        depends on ASYMMETRIC_KEY_TYPE
-+        depends on INTEGRITY_PLATFORM_KEYRING
-+        help
-+          If set, this option should be the filename of a PEM-formatted file
-+          containing X.509 certificates to be loaded onto the ".platform"
-+          keyring.
-+
- config INTEGRITY_MACHINE_KEYRING
- 	bool "Provide a keyring to which Machine Owner Keys may be added"
- 	depends on SECONDARY_TRUSTED_KEYRING
-diff --git a/security/integrity/Makefile b/security/integrity/Makefile
-index d0ffe37dc1d6..4154bf4996a9 100644
---- a/security/integrity/Makefile
-+++ b/security/integrity/Makefile
-@@ -3,13 +3,17 @@
- # Makefile for caching inode integrity data (iint)
- #
- 
-+quiet_cmd_extract_certs  = CERT  $@
-+      cmd_extract_certs  = scripts/extract-cert $(2) $@
-+
- obj-$(CONFIG_INTEGRITY) += integrity.o
- 
- integrity-y := iint.o
- integrity-$(CONFIG_INTEGRITY_AUDIT) += integrity_audit.o
- integrity-$(CONFIG_INTEGRITY_SIGNATURE) += digsig.o
- integrity-$(CONFIG_INTEGRITY_ASYMMETRIC_KEYS) += digsig_asymmetric.o
--integrity-$(CONFIG_INTEGRITY_PLATFORM_KEYRING) += platform_certs/platform_keyring.o
-+integrity-$(CONFIG_INTEGRITY_PLATFORM_KEYRING) += platform_certs/platform_keyring.o \
-+						  platform_certs/platform_cert.o
- integrity-$(CONFIG_INTEGRITY_MACHINE_KEYRING) += platform_certs/machine_keyring.o
- integrity-$(CONFIG_LOAD_UEFI_KEYS) += platform_certs/efi_parser.o \
- 				      platform_certs/load_uefi.o \
-@@ -20,3 +24,12 @@ integrity-$(CONFIG_LOAD_PPC_KEYS) += platform_certs/efi_parser.o \
-                                      platform_certs/keyring_handler.o
- obj-$(CONFIG_IMA)			+= ima/
- obj-$(CONFIG_EVM)			+= evm/
-+
-+$(obj)/platform_certs/platform_cert.o: $(obj)/platform_certs/platform_certificate_list
-+
-+targets += platform_certificate_list
-+
-+$(obj)/platform_certs/platform_certificate_list: $(CONFIG_INTEGRITY_PLATFORM_KEYS) scripts/extract-cert FORCE
-+	$(call if_changed,extract_certs,$(if $(CONFIG_INTEGRITY_PLATFORM_KEYS),$<,""))
-+
-+clean-files := platform_certs/platform_certificate_list
-diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
-index 76e9a9515f99..219da29fecf7 100644
---- a/security/integrity/integrity.h
-+++ b/security/integrity/integrity.h
-@@ -282,6 +282,9 @@ integrity_audit_log_start(struct audit_context *ctx, gfp_t gfp_mask, int type)
- #endif
- 
- #ifdef CONFIG_INTEGRITY_PLATFORM_KEYRING
-+extern __initconst const u8 platform_certificate_list[];
-+extern __initconst const unsigned long platform_certificate_list_size;
-+
- void __init add_to_platform_keyring(const char *source, const void *data,
- 				    size_t len);
- #else
-diff --git a/security/integrity/platform_certs/platform_cert.S b/security/integrity/platform_certs/platform_cert.S
-new file mode 100644
-index 000000000000..20bccce5dc5a
---- /dev/null
-+++ b/security/integrity/platform_certs/platform_cert.S
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <linux/export.h>
-+#include <linux/init.h>
-+
-+	__INITRODATA
-+
-+	.align 8
-+#ifdef CONFIG_INTEGRITY_PLATFORM_KEYRING
-+	.globl platform_certificate_list
-+platform_certificate_list:
-+__cert_list_start:
-+	.incbin "security/integrity/platform_certs/platform_certificate_list"
-+__cert_list_end:
-+#endif
-+
-+	.align 8
-+	.globl platform_certificate_list_size
-+platform_certificate_list_size:
-+#ifdef CONFIG_64BIT
-+	.quad __cert_list_end - __cert_list_start
-+#else
-+	.long __cert_list_end - __cert_list_start
-+#endif
-diff --git a/security/integrity/platform_certs/platform_keyring.c b/security/integrity/platform_certs/platform_keyring.c
-index bcafd7387729..c2368912fd1b 100644
---- a/security/integrity/platform_certs/platform_keyring.c
-+++ b/security/integrity/platform_certs/platform_keyring.c
-@@ -12,6 +12,7 @@
- #include <linux/cred.h>
- #include <linux/err.h>
- #include <linux/slab.h>
-+#include <keys/system_keyring.h>
- #include "../integrity.h"
- 
- /**
-@@ -37,6 +38,28 @@ void __init add_to_platform_keyring(const char *source, const void *data,
- 		pr_info("Error adding keys to platform keyring %s\n", source);
- }
- 
-+static __init int load_platform_certificate_list(void)
-+{
-+	const u8 *p;
-+	unsigned long size;
-+	int rc;
-+	struct key *keyring;
-+
-+	p = platform_certificate_list;
-+	size = platform_certificate_list_size;
-+
-+	keyring = integrity_keyring_from_id(INTEGRITY_KEYRING_PLATFORM);
-+	if (IS_ERR(keyring))
-+		return PTR_ERR(keyring);
-+
-+	rc = load_certificate_list(p, size, keyring);
-+	if (rc)
-+		pr_info("Error adding keys to platform keyring %d\n", rc);
-+
-+	return rc;
-+}
-+late_initcall(load_platform_certificate_list);
-+
- /*
-  * Create the trusted keyrings.
-  */
--- 
-2.34.1
+Didn't spot this v3 as I reviewed v2, please see my feedback on that
+version.
 
+Regards,
+Bjorn
+
+> ---
+> 
+> V3:
+>  Resend with cover-letter
+> 
+> V2-version 2:
+>  use rproc_has_feature in patch 1/2
+> V2-version1:
+>  Nothing change in V2.
+>  Only move this patch out from
+>  https://patchwork.kernel.org/project/linux-remoteproc/list/?series=604364
+> 
+>  drivers/remoteproc/remoteproc_core.c | 67 ++++++++++++++++++++--------
+>  1 file changed, 48 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> index 69f51acf235e..366fad475898 100644
+> --- a/drivers/remoteproc/remoteproc_core.c
+> +++ b/drivers/remoteproc/remoteproc_core.c
+> @@ -1887,6 +1887,50 @@ static int __rproc_detach(struct rproc *rproc)
+>  	return 0;
+>  }
+>  
+> +static int rproc_attach_recovery(struct rproc *rproc)
+> +{
+> +	int ret;
+> +
+> +	mutex_unlock(&rproc->lock);
+> +	ret = rproc_detach(rproc);
+> +	mutex_lock(&rproc->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (atomic_inc_return(&rproc->power) > 1)
+> +		return 0;
+> +
+> +	return rproc_attach(rproc);
+> +}
+> +
+> +static int rproc_firmware_recovery(struct rproc *rproc)
+> +{
+> +	const struct firmware *firmware_p;
+> +	struct device *dev = &rproc->dev;
+> +	int ret;
+> +
+> +	ret = rproc_stop(rproc, true);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* generate coredump */
+> +	rproc->ops->coredump(rproc);
+> +
+> +	/* load firmware */
+> +	ret = request_firmware(&firmware_p, rproc->firmware, dev);
+> +	if (ret < 0) {
+> +		dev_err(dev, "request_firmware failed: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	/* boot the remote processor up again */
+> +	ret = rproc_start(rproc, firmware_p);
+> +
+> +	release_firmware(firmware_p);
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * rproc_trigger_recovery() - recover a remoteproc
+>   * @rproc: the remote processor
+> @@ -1901,7 +1945,6 @@ static int __rproc_detach(struct rproc *rproc)
+>   */
+>  int rproc_trigger_recovery(struct rproc *rproc)
+>  {
+> -	const struct firmware *firmware_p;
+>  	struct device *dev = &rproc->dev;
+>  	int ret;
+>  
+> @@ -1915,24 +1958,10 @@ int rproc_trigger_recovery(struct rproc *rproc)
+>  
+>  	dev_err(dev, "recovering %s\n", rproc->name);
+>  
+> -	ret = rproc_stop(rproc, true);
+> -	if (ret)
+> -		goto unlock_mutex;
+> -
+> -	/* generate coredump */
+> -	rproc->ops->coredump(rproc);
+> -
+> -	/* load firmware */
+> -	ret = request_firmware(&firmware_p, rproc->firmware, dev);
+> -	if (ret < 0) {
+> -		dev_err(dev, "request_firmware failed: %d\n", ret);
+> -		goto unlock_mutex;
+> -	}
+> -
+> -	/* boot the remote processor up again */
+> -	ret = rproc_start(rproc, firmware_p);
+> -
+> -	release_firmware(firmware_p);
+> +	if (rproc_has_feature(rproc, RPROC_FEAT_ATTACH_RECOVERY))
+> +		ret = rproc_attach_recovery(rproc);
+> +	else
+> +		ret = rproc_firmware_recovery(rproc);
+>  
+>  unlock_mutex:
+>  	mutex_unlock(&rproc->lock);
+> -- 
+> 2.30.0
+> 
