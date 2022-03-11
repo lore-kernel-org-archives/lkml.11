@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F74C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC89C41535
 	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347548AbiCKF6p (ORCPT
+        id S1347602AbiCKF7B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
+        Fri, 11 Mar 2022 00:59:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346674AbiCKFxv (ORCPT
+        with ESMTP id S1346325AbiCKFx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:53:51 -0500
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D6011A12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:42 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id j9-20020a170903024900b0015195e68490so3986396plh.19
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:42 -0800 (PST)
+        Fri, 11 Mar 2022 00:53:58 -0500
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4525133365
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:53 -0800 (PST)
+Received: by mail-pf1-x44a.google.com with SMTP id m22-20020a628c16000000b004f6f1b43114so4636155pfd.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=7cybGKQ7twwpsb/qnodDyF8Mn5LXVu4ZlYZ7x+hR7eE=;
-        b=NRbOWYomFJU5rcwGuhVhK6pUeZd0VFoa7YkR9KcnQboKYAbUo8syVNH1PBl8kO4Zwz
-         n+VsyRw9IcxN95utqJzP1V0HtKHkKJYs1o3grj4YXiotZuaYEYmhIHi+icd638OJEsOF
-         3ZJRIQJmLQUF37sscaNPRepes7SqSlK7PVMgG7E0GF0EOdsvcP3vJQ2elEV4WMJvstO3
-         sjViPs2KOWcfOl7cB/f8bINNh0ons0yyXRAQikdjInC8gMC0I1uRdoMigko1iv019G4D
-         A+YfVnsBSyz4aeMFUEQJxENHGzHW2cnHXmCkwLyxSLtNeMyym9YZG/lSC35vjJ1UJkFQ
-         BFpw==
+        bh=uj7mAABif4Ddq7lKfkCnuKGQskrveL83cSygqcTPo+k=;
+        b=Op7LLtBAMNCU0RMvfN41LJyBMaXkfjyfp7KueQVqkA9yPKvSBHftgo7eTx7K9qL7zi
+         ON9pQ6eBEbnFVonT/myDasV1FyqI9eLQLLGOATovuFVJkdGZGvx7UpGVoL/XTt27WKrY
+         B+qGOuvb5r5Xqa2Vn4RfLrIMiqxJSiqh408Fhmrna6WAEf3cfEL3Lp4RTW1bg4FJSNBB
+         yO9sreZ6kDsW70WGWdcXyvHaqhww9XgEcKJA2GlTUsPEnpSk308DdplTOlervi0iXn64
+         6AAOxJhB0X8u3M57WkNDsc6kvXbD54H0FNBXNmB/B4puFCZnIJrrwdAJjGyr2AwlAAmC
+         Pskg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=7cybGKQ7twwpsb/qnodDyF8Mn5LXVu4ZlYZ7x+hR7eE=;
-        b=KB+KiedCsPHZYhTCWTnprC9h8Ihf2hGKQ27MeGEREE0L/E8zrNT7qa8pgJuK7vstXH
-         eZzUqopARQMsFs2JRkps0H8YUSvoKvUBXov8pba8HmtkVCfwVfZHZyEWc4/JgogM189q
-         vX+kFYt33HJXjIpPCZn3Oi8MdkO2bb7hefHXAj1akoggkvXF57zrT15q27A87Xpt6TrL
-         yxX9NZNYdsszxBGt0mrwV3+75dU8AIu09TZyCWkms9C7Pk4UbVkpgO6ESy7TNP/lI+nU
-         3NReuDT+VMYTkdEpgxTwrSE57Pgnb8asdNGihdh4w5tj+R1/FErob45YGAlwisUNUkMH
-         AJAw==
-X-Gm-Message-State: AOAM5334m/5HceAFF0UwxYWEdnjzIPPLsHxgKz078K8ptwZFW5ZgmOzD
-        IpBSr47UrJFyOE6Rn75tduyZ0xNX97yY4lzf9/qv62xjQbujTjmxfTmMHr0vk6UdsO0O4eX3eEw
-        I+IZz6EPDu2YTHtXpwwJ2KHOZCAaGTuPNyqqfv29LDmWnt1F9VrcToJPX8YYgeSRRdy/SbA==
-X-Google-Smtp-Source: ABdhPJzLD70AGjURuPHSsew9G6xF7zeOA14Yn1vRGVxEEbwnUT94A/qJoqtHo85gvyxbExcA7vh/EIUtpA8=
+        bh=uj7mAABif4Ddq7lKfkCnuKGQskrveL83cSygqcTPo+k=;
+        b=kfVCqDlVWICUwm0wt/jcQLVlM8UhlH+EhKYH9n3QThjDTLyIoxxdaHgBDAxdU5XtoG
+         VVtsdr3OEDTwBjlCxgWbhd8NQTdIqfqAFSSD40cAuJSvAJBMqZA2gSGYJcYUOJ6ylXR3
+         v8rsVl1ykhLnsDISNykjw5c3l6PiEiSq16Ubz9jD1aigNeQdFQMwGYMPhaVI4zTzLICs
+         G//FlopmOOrqJTniX6/Tmm0Tda4NFcCLzzjjNn6XvPxqhAmCEmU5A4/29npQ+TZCQI0D
+         rCP2LC99Oc700iur59iqFb4QRi+SHrVulneANDq716WnV4vOE2NmXx1pNHDKFjlTSSba
+         Plqw==
+X-Gm-Message-State: AOAM533ur4XiNyBGzHKtMNJ4+zoZNQYIedDbA8ozf0Btyrms3mB+TPIa
+        y879s3okPBUoy/m22eRCAHlzQW8GXMB2YBo3mCCkRH0VbmCwC6mx8ITjmvoyh6EFulOpbPkAmBW
+        uKsddvmUxEAAMVPctbGvL0tV+UpkTB73Jxnwe9i9lmxZ1FnigJu3YEHKMS+qsJ3wiI3lOwg==
+X-Google-Smtp-Source: ABdhPJw3i5YMuAjcXxcAd2ain6eljOWqXL7G8Wtej+7wX9ZVUWL++AAQ8obxNd3wQd/C9r3fNBPXtvetzk8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:903:2442:b0:151:e3e2:cbf9 with SMTP id
- l2-20020a170903244200b00151e3e2cbf9mr9088495pls.115.1646977961959; Thu, 10
- Mar 2022 21:52:41 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4d81:b0:1bf:8ce4:4f51 with SMTP id
+ oj1-20020a17090b4d8100b001bf8ce44f51mr461558pjb.0.1646977971971; Thu, 10 Mar
+ 2022 21:52:51 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:08 +0000
+Date:   Fri, 11 Mar 2022 05:50:14 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-58-seanjc@google.com>
+Message-Id: <20220311055056.57265-64-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 057/105] KVM: selftests: Convert hyperv_svm_test away from VCPU_ID
+Subject: [RFC PATCH 063/105] KVM: selftests: Add proper helper for advancing
+ RIP in debug_regs
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,56 +67,78 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../testing/selftests/kvm/x86_64/hyperv_svm_test.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ .../testing/selftests/kvm/x86_64/debug_regs.c | 25 ++++++++++---------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-index 21f5ca9197da..46f1070e7297 100644
---- a/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/hyperv_svm_test.c
-@@ -21,7 +21,6 @@
- #include "svm_util.h"
- #include "hyperv.h"
+diff --git a/tools/testing/selftests/kvm/x86_64/debug_regs.c b/tools/testing/selftests/kvm/x86_64/debug_regs.c
+index b999c9753fc3..487d0ae3e75f 100644
+--- a/tools/testing/selftests/kvm/x86_64/debug_regs.c
++++ b/tools/testing/selftests/kvm/x86_64/debug_regs.c
+@@ -65,19 +65,21 @@ static void guest_code(void)
+ }
  
--#define VCPU_ID		1
- #define L2_GUEST_STACK_SIZE 256
+ #define  CAST_TO_RIP(v)  ((unsigned long long)&(v))
+-#define  SET_RIP(v)  do {				\
+-		vcpu_regs_get(vm, vcpu->id, &regs);	\
+-		regs.rip = (v);				\
+-		vcpu_regs_set(vm, vcpu->id, &regs);	\
+-	} while (0)
+-#define  MOVE_RIP(v)  SET_RIP(regs.rip + (v));
++
++static void vcpu_skip_insn(struct kvm_vcpu *vcpu, int insn_len)
++{
++	struct kvm_regs regs;
++
++	vcpu_regs_get(vcpu->vm, vcpu->id, &regs);
++	regs.rip += insn_len;
++	vcpu_regs_set(vcpu->vm, vcpu->id, &regs);
++}
  
- struct hv_enlightenments {
-@@ -127,6 +126,7 @@ int main(int argc, char *argv[])
+ int main(void)
  {
- 	vm_vaddr_t nested_gva = 0;
- 
-+	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
+ 	struct kvm_guest_debug debug;
+ 	unsigned long long target_dr6, target_rip;
+ 	struct kvm_vcpu *vcpu;
+-	struct kvm_regs regs;
  	struct kvm_run *run;
+ 	struct kvm_vm *vm;
  	struct ucall uc;
-@@ -137,20 +137,20 @@ int main(int argc, char *argv[])
- 		exit(KSFT_SKIP);
+@@ -112,7 +114,7 @@ int main(void)
+ 		    "INT3: exit %d exception %d rip 0x%llx (should be 0x%llx)",
+ 		    run->exit_reason, run->debug.arch.exception,
+ 		    run->debug.arch.pc, CAST_TO_RIP(sw_bp));
+-	MOVE_RIP(1);
++	vcpu_skip_insn(vcpu, 1);
+ 
+ 	/* Test instruction HW BP over DR[0-3] */
+ 	for (i = 0; i < 4; i++) {
+@@ -134,7 +136,7 @@ int main(void)
+ 			    run->debug.arch.dr6, target_dr6);
  	}
- 	/* Create VM */
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	vcpu_set_hv_cpuid(vm, VCPU_ID);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	vcpu_set_hv_cpuid(vm, vcpu->id);
-+	run = vcpu->run;
- 	vcpu_alloc_svm(vm, &nested_gva);
--	vcpu_args_set(vm, VCPU_ID, 1, nested_gva);
-+	vcpu_args_set(vm, vcpu->id, 1, nested_gva);
+ 	/* Skip "nop" */
+-	MOVE_RIP(1);
++	vcpu_skip_insn(vcpu, 1);
  
- 	for (stage = 1;; stage++) {
--		_vcpu_run(vm, VCPU_ID);
-+		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
- 			    "Stage %d: unexpected exit reason: %u (%s),\n",
- 			    stage, run->exit_reason,
- 			    exit_reason_str(run->exit_reason));
+ 	/* Test data access HW BP over DR[0-3] */
+ 	for (i = 0; i < 4; i++) {
+@@ -156,15 +158,14 @@ int main(void)
+ 			    run->debug.arch.pc, CAST_TO_RIP(write_data),
+ 			    run->debug.arch.dr6, target_dr6);
+ 		/* Rollback the 4-bytes "mov" */
+-		MOVE_RIP(-7);
++		vcpu_skip_insn(vcpu, -7);
+ 	}
+ 	/* Skip the 4-bytes "mov" */
+-	MOVE_RIP(7);
++	vcpu_skip_insn(vcpu, 7);
  
--		switch (get_ucall(vm, VCPU_ID, &uc)) {
-+		switch (get_ucall(vm, vcpu->id, &uc)) {
- 		case UCALL_ABORT:
- 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
- 				  __FILE__, uc.args[1]);
+ 	/* Test single step */
+ 	target_rip = CAST_TO_RIP(ss_start);
+ 	target_dr6 = 0xffff4ff0ULL;
+-	vcpu_regs_get(vm, vcpu->id, &regs);
+ 	for (i = 0; i < (sizeof(ss_size) / sizeof(ss_size[0])); i++) {
+ 		target_rip += ss_size[i];
+ 		memset(&debug, 0, sizeof(debug));
 -- 
 2.35.1.723.g4982287a31-goog
 
