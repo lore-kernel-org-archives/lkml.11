@@ -2,398 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbiCKWqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:46:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
+        id S229519AbiCKWqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:46:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbiCKWpm (ORCPT
+        with ESMTP id S229711AbiCKWq0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:45:42 -0500
-Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD73327DF84;
-        Fri, 11 Mar 2022 14:21:22 -0800 (PST)
-Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
-        by mxout2.routing.net (Postfix) with ESMTP id BA9F75FFC0;
-        Fri, 11 Mar 2022 21:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1647032661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vlRDm1/qlmoS4ath4JNE82LhPNtQtJeGB8j4u4VXee4=;
-        b=xjM/FwIlV+yErQQdN8yzt34/8C7l7wM63B73LIsvYlLVXz+nq2Y7iP091blEDrMow4ASMo
-        JvTwWhbPGFdF6mL7H1pTfTaLS1wA/yTYmzOmfhw8CIKsotjIthD+yCnH4U+rrv6Hxk6wgH
-        QcVuB9Y2yxqN0xN4jAwL3nkidnae/3E=
-Received: from localhost.localdomain (fttx-pool-217.61.144.196.bambit.de [217.61.144.196])
-        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id 9970E406D6;
-        Fri, 11 Mar 2022 21:04:18 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     devicetree@vger.kernel.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH v6 1/6] dt-bindings: ata: ahci-platform: Convert DT bindings to yaml
-Date:   Fri, 11 Mar 2022 22:03:52 +0100
-Message-Id: <20220311210357.222830-2-linux@fw-web.de>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220311210357.222830-1-linux@fw-web.de>
-References: <20220311210357.222830-1-linux@fw-web.de>
-MIME-Version: 1.0
+        Fri, 11 Mar 2022 17:46:26 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869082E86F6;
+        Fri, 11 Mar 2022 14:37:18 -0800 (PST)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BJgiEv026670;
+        Fri, 11 Mar 2022 21:03:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=c4oKa8YHconhNmykPPJwtaqGobzI4xAAjjShykA4Yy4=;
+ b=P4fMWLfPd6F+D1ws06rfxwKmj76Hh5u47Nmtjykkn7GbNk4rKldp0Wtb/BoInpxFw7dE
+ TB9Cjmxd2a4ncFxSbAblt/yP5iPYXemyo3zBNSg34WgCbJO2cK0XZWDx8/AWgDse4vw5
+ O0eZ1t1WTHP+QGAKfTQw5So2uX5dQYo40OuWgbNUebN7idHJf+CKIBVjYdlEZrhru9r/
+ V5eHTGXnYQ3W99RzAgPX5dI8RT88dtg18iaMUYZKsRRfn2lW9z3N4l44eDyZFOaPvgiV
+ FGAf9Hc8pwNXI8fz77iEYdRYL2YG77/p9/WbNeAvjJfC6UtBfSfAmoQ8B8I0D4SokxRP xQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqtfgpa6v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:03:20 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22BKpO7I020866;
+        Fri, 11 Mar 2022 21:03:19 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqtfgpa6f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:03:19 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22BL3Gua024566;
+        Fri, 11 Mar 2022 21:03:18 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma01dal.us.ibm.com with ESMTP id 3emgamjwy0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Mar 2022 21:03:18 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22BL3Gxx38994426
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Mar 2022 21:03:16 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BB2B328059;
+        Fri, 11 Mar 2022 21:03:16 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 89C2B2805A;
+        Fri, 11 Mar 2022 21:03:13 +0000 (GMT)
+Received: from [9.211.110.168] (unknown [9.211.110.168])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 11 Mar 2022 21:03:13 +0000 (GMT)
+Message-ID: <f92ec4d8-47c0-ece5-3c52-caeb8265881c@linux.vnet.ibm.com>
+Date:   Fri, 11 Mar 2022 16:03:12 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v11 0/4] integrity: support including firmware ".platform"
+ keys at build time
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Nageswara Sastry <rnsastry@linux.ibm.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
+Cc:     dhowells@redhat.com, zohar@linux.ibm.com,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
+        seth@forshee.me, Masahiro Yamada <masahiroy@kernel.org>
+References: <20220310214450.676505-1-nayna@linux.ibm.com>
+ <4afae87c-2986-6b0e-07be-954dd4937afd@linux.ibm.com>
+ <f78d11fefd13bd17748e36621acee9c2f27a77f6.camel@kernel.org>
+From:   Nayna <nayna@linux.vnet.ibm.com>
+In-Reply-To: <f78d11fefd13bd17748e36621acee9c2f27a77f6.camel@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Heow9UKywaWt9NTO6YuP7NDv5g_6SmDY
+X-Proofpoint-GUID: e7V-kq4jBh8gRnlsxn6EdPMwfBVMWcS8
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: e647ae1a-ec31-4ea6-a12a-3efc7d81d2e6
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-11_08,2022-03-11_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ bulkscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=0
+ priorityscore=1501 malwarescore=0 adultscore=0 clxscore=1011 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203110103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
 
-Create a yaml file for dtbs_check from the old txt binding.
+On 3/11/22 11:42, Jarkko Sakkinen wrote:
+> On Fri, 2022-03-11 at 10:11 +0530, Nageswara Sastry wrote:
+>>
+>> On 11/03/22 3:14 am, Nayna Jain wrote:
+>>> Some firmware support secure boot by embedding static keys to verify the
+>>> Linux kernel during boot. However, these firmware do not expose an
+>>> interface for the kernel to load firmware keys onto the ".platform"
+>>> keyring, preventing the kernel from verifying the kexec kernel image
+>>> signature.
+>>>
+>>> This patchset exports load_certificate_list() and defines a new function
+>>> load_builtin_platform_cert() to load compiled in certificates onto the
+>>> ".platform" keyring.
+>>>
+>>> Changelog:
+>>> v11:
+>>> * Added a new patch to conditionally build extract-cert if
+>>> PLATFORM_KEYRING is enabled.
+>>>
+>> Tested the following four patches with and with out setting
+>> CONFIG_INTEGRITY_PLATFORM_KEYS
+>>
+>> Tested-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
+> OK, I added it:
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
 
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
+Thanks Jarkko. Masahiro Yamada would prefer to revert the original 
+commit 340a02535ee785c64c62a9c45706597a0139e972 i.e. move extract-cert 
+back to the scripts/ directory.
 
-v6:
-  - fix indentation of examples
-  - add compatible marvell,berlin2-ahci
-  - change maximum of ports-implemented
-  - add select to exclude qcom compatibles
-  - drop marvell,armada-380-ahci
-    it is not handled in the ahci-platform.c but ahci_mvebu.c
-    and incompatible due to missing phys/target-supply
+I am just posting v12 which includes Masahiro feedback. Nageswara has 
+already tested v12 version as well.
 
-v5:
-  - change subject
-  - drop brcm,iproc-ahci from standalone enum
-  - fix reg address in example 2
-  - move clocknames next to clocks, regnames to reg
-  - drop interrupts description
-  - drop newline from dma-coherent
-  - drop max-items from ports-implemented
-  - min2max in child phys
-  - fix identation for compatible and sata-common
-  - add additionalProperties=false for subnodes
-  - pipe for paragraphs and newline after title
-  - add maximum for ports-implemented (found only 0x1 as its value)
-  - add phy-names to sata-ports
+I am fine either way 1.) Adding v11 and then separately handling of 
+reverting of the commit or 2.) Adding v12 version which includes the 
+revert. I leave the decision on you as to which one to upstream.
 
-v4:
-  - fix min vs. max
-  - fix indention of examples
-  - move up sata-common.yaml
-  - reorder compatible
-  - add descriptions/maxitems
-  - fix compatible-structure
-  - fix typo in example achi vs. ahci
-  - add clock-names and reg-names
-  - fix ns2 errors in separate patch
-v3:
-  - add conversion to sata-series
-  - fix some errors in dt_binding_check and dtbs_check
-  - move to unevaluated properties = false
+Thanks & Regards,
 
-arch/arm/boot/dts/qcom-apq8064.dtsi had caused errors for clock-count
----
-
-have not added reviewed-by from v5 because i have changed patch too much
-
----
- .../devicetree/bindings/ata/ahci-platform.txt |  79 --------
- .../bindings/ata/ahci-platform.yaml           | 182 ++++++++++++++++++
- 2 files changed, 182 insertions(+), 79 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/ata/ahci-platform.txt
- create mode 100644 Documentation/devicetree/bindings/ata/ahci-platform.yaml
-
-diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.txt b/Documentation/devicetree/bindings/ata/ahci-platform.txt
-deleted file mode 100644
-index 77091a277642..000000000000
---- a/Documentation/devicetree/bindings/ata/ahci-platform.txt
-+++ /dev/null
-@@ -1,79 +0,0 @@
--* AHCI SATA Controller
--
--SATA nodes are defined to describe on-chip Serial ATA controllers.
--Each SATA controller should have its own node.
--
--It is possible, but not required, to represent each port as a sub-node.
--It allows to enable each port independently when dealing with multiple
--PHYs.
--
--Required properties:
--- compatible        : compatible string, one of:
--  - "brcm,iproc-ahci"
--  - "hisilicon,hisi-ahci"
--  - "cavium,octeon-7130-ahci"
--  - "ibm,476gtr-ahci"
--  - "marvell,armada-380-ahci"
--  - "marvell,armada-3700-ahci"
--  - "snps,dwc-ahci"
--  - "snps,spear-ahci"
--  - "generic-ahci"
--- interrupts        : <interrupt mapping for SATA IRQ>
--- reg               : <registers mapping>
--
--Please note that when using "generic-ahci" you must also specify a SoC specific
--compatible:
--	compatible = "manufacturer,soc-model-ahci", "generic-ahci";
--
--Optional properties:
--- dma-coherent      : Present if dma operations are coherent
--- clocks            : a list of phandle + clock specifier pairs
--- resets            : a list of phandle + reset specifier pairs
--- target-supply     : regulator for SATA target power
--- phy-supply        : regulator for PHY power
--- phys              : reference to the SATA PHY node
--- phy-names         : must be "sata-phy"
--- ahci-supply       : regulator for AHCI controller
--- ports-implemented : Mask that indicates which ports that the HBA supports
--		      are available for software to use. Useful if PORTS_IMPL
--		      is not programmed by the BIOS, which is true with
--		      some embedded SOC's.
--
--Required properties when using sub-nodes:
--- #address-cells    : number of cells to encode an address
--- #size-cells       : number of cells representing the size of an address
--
--Sub-nodes required properties:
--- reg		    : the port number
--And at least one of the following properties:
--- phys		    : reference to the SATA PHY node
--- target-supply     : regulator for SATA target power
--
--Examples:
--        sata@ffe08000 {
--		compatible = "snps,spear-ahci";
--		reg = <0xffe08000 0x1000>;
--		interrupts = <115>;
--        };
--
--With sub-nodes:
--	sata@f7e90000 {
--		compatible = "marvell,berlin2q-achi", "generic-ahci";
--		reg = <0xe90000 0x1000>;
--		interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&chip CLKID_SATA>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		sata0: sata-port@0 {
--			reg = <0>;
--			phys = <&sata_phy 0>;
--			target-supply = <&reg_sata0>;
--		};
--
--		sata1: sata-port@1 {
--			reg = <1>;
--			phys = <&sata_phy 1>;
--			target-supply = <&reg_sata1>;;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-new file mode 100644
-index 000000000000..e71bfb04d7f1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-@@ -0,0 +1,182 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ata/ahci-platform.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: AHCI SATA Controller
-+
-+description: |
-+  SATA nodes are defined to describe on-chip Serial ATA controllers.
-+  Each SATA controller should have its own node.
-+
-+  It is possible, but not required, to represent each port as a sub-node.
-+  It allows to enable each port independently when dealing with multiple
-+  PHYs.
-+
-+maintainers:
-+  - Hans de Goede <hdegoede@redhat.com>
-+  - Jens Axboe <axboe@kernel.dk>
-+
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - brcm,iproc-ahci
-+          - cavium,octeon-7130-ahci
-+          - hisilicon,hisi-ahci
-+          - ibm,476gtr-ahci
-+          - marvell,armada-3700-ahci
-+          - marvell,armada-8k-ahci
-+          - marvell,berlin2q-ahci
-+          - snps,dwc-ahci
-+          - snps,spear-ahci
-+  required:
-+    - compatible
-+
-+allOf:
-+  - $ref: "sata-common.yaml#"
-+
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - brcm,iproc-ahci
-+              - marvell,armada-8k-ahci
-+              - marvell,berlin2-ahci
-+              - marvell,berlin2q-ahci
-+          - const: generic-ahci
-+      - enum:
-+          - cavium,octeon-7130-ahci
-+          - hisilicon,hisi-ahci
-+          - ibm,476gtr-ahci
-+          - marvell,armada-3700-ahci
-+          - snps,dwc-ahci
-+          - snps,spear-ahci
-+
-+  reg:
-+    minItems: 1
-+    maxItems: 2
-+
-+  reg-names:
-+    maxItems: 1
-+
-+  clocks:
-+    description:
-+      Clock IDs array as required by the controller.
-+    minItems: 1
-+    maxItems: 3
-+
-+  clock-names:
-+    description:
-+      Names of clocks corresponding to IDs in the clock property.
-+    minItems: 1
-+    maxItems: 3
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  ahci-supply:
-+    description:
-+      regulator for AHCI controller
-+
-+  dma-coherent: true
-+
-+  phy-supply:
-+    description:
-+      regulator for PHY power
-+
-+  phys:
-+    description:
-+      List of all PHYs on this controller
-+    maxItems: 1
-+
-+  phy-names:
-+    description:
-+      Name specifier for the PHYs
-+    maxItems: 1
-+
-+  ports-implemented:
-+    $ref: '/schemas/types.yaml#/definitions/uint32'
-+    description: |
-+      Mask that indicates which ports that the HBA supports
-+      are available for software to use. Useful if PORTS_IMPL
-+      is not programmed by the BIOS, which is true with
-+      some embedded SoCs.
-+    maximum: 0x1f
-+
-+  resets:
-+    maxItems: 1
-+
-+  target-supply:
-+    description:
-+      regulator for SATA target power
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+patternProperties:
-+  "^sata-port@[0-9a-f]+$":
-+    type: object
-+    additionalProperties: false
-+    description:
-+      Subnode with configuration of the Ports.
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+
-+      phys:
-+        maxItems: 1
-+
-+      phy-names:
-+        maxItems: 1
-+
-+      target-supply:
-+        description:
-+          regulator for SATA target power
-+
-+    required:
-+      - reg
-+
-+    anyOf:
-+      - required: [ phys ]
-+      - required: [ target-supply ]
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    sata@ffe08000 {
-+        compatible = "snps,spear-ahci";
-+        reg = <0xffe08000 0x1000>;
-+        interrupts = <115>;
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/berlin2q.h>
-+    sata@f7e90000 {
-+        compatible = "marvell,berlin2q-ahci", "generic-ahci";
-+        reg = <0xf7e90000 0x1000>;
-+        interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&chip CLKID_SATA>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        sata0: sata-port@0 {
-+            reg = <0>;
-+            phys = <&sata_phy 0>;
-+            target-supply = <&reg_sata0>;
-+        };
-+
-+        sata1: sata-port@1 {
-+            reg = <1>;
-+            phys = <&sata_phy 1>;
-+            target-supply = <&reg_sata1>;
-+        };
-+    };
--- 
-2.25.1
+     - Nayna
 
