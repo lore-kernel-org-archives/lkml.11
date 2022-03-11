@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23306C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A96C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347790AbiCKF7q (ORCPT
+        id S1347742AbiCKF7f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:59:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
+        Fri, 11 Mar 2022 00:59:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346714AbiCKFyT (ORCPT
+        with ESMTP id S1346706AbiCKFyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:54:19 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE82F1EAC
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:17 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id t12-20020a17090a448c00b001b9cbac9c43so4615832pjg.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:17 -0800 (PST)
+        Fri, 11 Mar 2022 00:54:09 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD82492D30
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:06 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id j1-20020a170903028100b0014b1f9e0068so4005844plr.8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=dT/eOvE+WRX23Q5t+kOORFXcbEma/L7+oPwtuT8Wl1k=;
-        b=Ypg8JDkxFk3q2+eigzxvEb8qG8c+Su567Vz0MTkMvceU0QnQXvqi56CiExZxo88Nty
-         +yE3ubHh+W09IWhZ6pqoLxEWM8y58JWC+7wv7L/CP4oY8SsAwu6Mbg1QsZSri7aGoYUS
-         5/V54butK3A+xjRiibV/A1VP4I9AIsRRQvIjdTZDNKQs3dtzOu5zxyO22M2sSKpeKZMO
-         v7GxMsKqtS0No3REMFU/z2OD51K1Vk4VLHqvUrMvFBr7SDZpKExCrBAn7FJOgqVqvBXY
-         W8x7Ck7CVRGj62xjpg1lMqjAYswBKtBcp0DEBbXCz7XhB2Phrs0mbGw3Y2tzizlimUNP
-         dhqA==
+        bh=19AYdxlQF5CgqwXk1D5hC7bENj8MzASyLlm16VdNZxc=;
+        b=MJdNmvvECtXKdZmpMuTVaChct4A9DCWUBsEBDSbW6HJWChoSJYaP1RwXnsTN+WmjAi
+         nxbEWp/Wk+RGcsmEHMu1p+bLO5gt+fKlbE5bXz02xmV67N41FGuk/c72RbdKkzICcZ98
+         gbsSTxRtk3hgQcCjHPLCW9cknOzecrUNKrxxsWTuHdIYvyWCfxX9XFNs4xnPF/8eypCh
+         3El6mU38u/2jseK5bfsTW//bFXwjpN2sEdCXH8DV5D29OYMq3MRJSWuQvrpctLjVL7da
+         CJGAzfsgAWC6qXoHVV5TnxVwZxYnXPghNSQJJ+hlXzDQXlwKijnVFhGdQMzovXcJHz2z
+         yqPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=dT/eOvE+WRX23Q5t+kOORFXcbEma/L7+oPwtuT8Wl1k=;
-        b=PJ9H1IsAnsGzfRusdxVILwCX5VM4UfshEyaZ6RL/9rv9b5JXTreYQpcQzaEA2QskhJ
-         j73l1xtdlQm9V4PD6GJTwADRQdcHK9Hu1I/sWBh5sRW4rjIoUl5CFNIweBe0GJ03ujyZ
-         zIo2oLr/ZtP6UpQS1JyrwhUbUM59SyIOTVnbGAp4ltUB8hPKUbcfp+MhIAyoG/JW7znV
-         Vc1OkogtSTo1dvWZrvqrrZ8s0I2keM6XqG47gW/CNcpfYVQGPQYuGM6qtYOcuEHdlev7
-         lgn+DvGyO1DZNuKgNGSFP3oKeP+8OhoEEqGkpC+zwfwEzpKqsuOjI/IGjVqeiGRAfXz6
-         GwzQ==
-X-Gm-Message-State: AOAM533fdWgnDenYL8MWahNDiUJTTAwGkn/65Mr+D0MmLE+juGFJ5psn
-        zP7qBvj6uKg/hVDxtrOnbyuzTnTOQr9DcOqBVfuguVQDJgSljnb2phc8cAcYFJARoqsnUePWjzt
-        uWWA3Ifn9XLNTTziTzZFm9DhgbGSpvHPUgBKUnaxxl4i8+IGDydom5kP2rJ5Erx34ZdPCXQ==
-X-Google-Smtp-Source: ABdhPJwMvY5G7stWPNnlBP0tdatZSWEU54XnWgMGviSbOSjFJTPkGBwNcqHvCSlHiQKojBVguoBRrMrzCtI=
+        bh=19AYdxlQF5CgqwXk1D5hC7bENj8MzASyLlm16VdNZxc=;
+        b=aXH3LWVBgeISL7/zUIJKRJlqdLJrGJhzqLc2WAdWuaXqpCVu7iJWQtuWLq8bJTUlUR
+         iyHCIQj70tppX/VNm44UD6Qhtm0HSUab2kubkgopHgc/dlA5G6jLtaC6fLd23vwobyth
+         +wuCdWXSDHbRxUSuFk6jR7cmoMjPHGjNTYcBn6UVOUHk4lqD0lnl3PqIlKdywiWcjBJt
+         twkbkNahC50bnBaeX8fCN6FA6+tnIwyFjTRXJ1uesAZ6gIWGzkdR6MbZjg1qAOwi64Gq
+         P9j56f6tEqRFnOnmGYrb2gIB19VBMpkQT99C4XrgWo4RtG4vlzc2X801jd045C51BRyp
+         BsnA==
+X-Gm-Message-State: AOAM530vG4bPhuZQDWe3QbN7eRfLb5d/FoTMrSz1XwxGcelACfKwXVA/
+        a/4osylX+Dh1exbT3JGsu+SCZhvlL0y5g+CqclLpLO+NxCUZYnqfQaHmBvIpgmUtCD6uEbS35OL
+        2C3CztlbueyfDr04PHt6HK2wI/27YzecKOjZq6R5kq6AHIomAQvWO2hEEuoO9BAiTZ9g6QQ==
+X-Google-Smtp-Source: ABdhPJxT5A7kKgjNE0dIXSGTFFaWvyRTcCsyYiFb9iBCuQcuOZ5/G6eJrTlGomKiFeVopyMnXY7d6+Xn5oY=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a62:7793:0:b0:4f6:27a8:ae6d with SMTP id
- s141-20020a627793000000b004f627a8ae6dmr8700532pfc.65.1646977996447; Thu, 10
- Mar 2022 21:53:16 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:1e10:b0:1bf:6c78:54a9 with SMTP id
+ pg16-20020a17090b1e1000b001bf6c7854a9mr460989pjb.1.1646977986046; Thu, 10 Mar
+ 2022 21:53:06 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:28 +0000
+Date:   Fri, 11 Mar 2022 05:50:22 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-78-seanjc@google.com>
+Message-Id: <20220311055056.57265-72-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 077/105] KVM: selftests: Move vm_is_unrestricted_guest()
- to x86-64
+Subject: [RFC PATCH 071/105] KVM: selftests: Convert dirty_log_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -67,122 +66,211 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     |  7 ----
- .../selftests/kvm/include/x86_64/processor.h  |  1 +
- tools/testing/selftests/kvm/lib/kvm_util.c    | 33 -------------------
- .../selftests/kvm/lib/x86_64/processor.c      | 21 ++++++++++++
- 4 files changed, 22 insertions(+), 40 deletions(-)
+ tools/testing/selftests/kvm/dirty_log_test.c | 59 ++++++++++----------
+ 1 file changed, 30 insertions(+), 29 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index e1e25ec09158..042c39e474da 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -647,8 +647,6 @@ struct kvm_vcpu *vm_recreate_with_one_vcpu(struct kvm_vm *vm);
-  */
- void vm_vcpu_add_default(struct kvm_vm *vm, uint32_t vcpuid, void *guest_code);
+diff --git a/tools/testing/selftests/kvm/dirty_log_test.c b/tools/testing/selftests/kvm/dirty_log_test.c
+index 5752486764c9..1c7d25bf4a5a 100644
+--- a/tools/testing/selftests/kvm/dirty_log_test.c
++++ b/tools/testing/selftests/kvm/dirty_log_test.c
+@@ -23,8 +23,6 @@
+ #include "guest_modes.h"
+ #include "processor.h"
  
--bool vm_is_unrestricted_guest(struct kvm_vm *vm);
+-#define VCPU_ID				1
 -
- unsigned int vm_get_page_size(struct kvm_vm *vm);
- unsigned int vm_get_page_shift(struct kvm_vm *vm);
- unsigned long vm_compute_max_gfn(struct kvm_vm *vm);
-@@ -675,11 +673,6 @@ struct kvm_userspace_memory_region *
- kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
- 				 uint64_t end);
+ /* The memory slot index to track dirty pages */
+ #define TEST_MEM_SLOT_INDEX		1
  
--struct kvm_dirty_log *
--allocate_kvm_dirty_log(struct kvm_userspace_memory_region *region);
--
--int vm_create_device(struct kvm_vm *vm, struct kvm_create_device *cd);
--
- #define sync_global_to_guest(vm, g) ({				\
- 	typeof(g) *_p = addr_gva2hva(vm, (vm_vaddr_t)&(g));	\
- 	memcpy(_p, &(g), sizeof(g));				\
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index b20de7919411..d67cb5d7fded 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -430,6 +430,7 @@ static inline void vcpu_set_msr(struct kvm_vm *vm, uint32_t vcpuid,
- uint32_t kvm_get_cpuid_max_basic(void);
- uint32_t kvm_get_cpuid_max_extended(void);
- void kvm_get_cpu_address_width(unsigned int *pa_bits, unsigned int *va_bits);
-+bool vm_is_unrestricted_guest(struct kvm_vm *vm);
- 
- struct ex_regs {
- 	uint64_t rax, rcx, rdx, rbx;
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index fa880874c8d5..23de0335f22b 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1936,39 +1936,6 @@ void *addr_gva2hva(struct kvm_vm *vm, vm_vaddr_t gva)
- 	return addr_gpa2hva(vm, addr_gva2gpa(vm, gva));
+@@ -229,17 +227,17 @@ static void clear_log_create_vm_done(struct kvm_vm *vm)
+ 	vm_enable_cap(vm, &cap);
  }
  
--/*
-- * Is Unrestricted Guest
-- *
-- * Input Args:
-- *   vm - Virtual Machine
-- *
-- * Output Args: None
-- *
-- * Return: True if the unrestricted guest is set to 'Y', otherwise return false.
-- *
-- * Check if the unrestricted guest flag is enabled.
-- */
--bool vm_is_unrestricted_guest(struct kvm_vm *vm)
--{
--	char val = 'N';
--	size_t count;
--	FILE *f;
--
--	if (vm == NULL) {
--		/* Ensure that the KVM vendor-specific module is loaded. */
--		close(open_kvm_dev_path_or_exit());
--	}
--
--	f = fopen("/sys/module/kvm_intel/parameters/unrestricted_guest", "r");
--	if (f) {
--		count = fread(&val, sizeof(char), 1, f);
--		TEST_ASSERT(count == 1, "Unable to read from param file.");
--		fclose(f);
--	}
--
--	return val == 'Y';
--}
--
- unsigned int vm_get_page_size(struct kvm_vm *vm)
+-static void dirty_log_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void dirty_log_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					  void *bitmap, uint32_t num_pages)
  {
- 	return vm->page_size;
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 289a73262f8c..ea7f1703e51e 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -1440,3 +1440,24 @@ unsigned long vm_compute_max_gfn(struct kvm_vm *vm)
- done:
- 	return min(max_gfn, ht_gfn - 1);
+-	kvm_vm_get_dirty_log(vm, slot, bitmap);
++	kvm_vm_get_dirty_log(vcpu->vm, slot, bitmap);
  }
-+
-+/* Returns true if kvm_intel was loaded with unrestricted_guest=1. */
-+bool vm_is_unrestricted_guest(struct kvm_vm *vm)
-+{
-+	char val = 'N';
-+	size_t count;
-+	FILE *f;
-+
-+	/* Ensure that a KVM vendor-specific module is loaded. */
-+	if (vm == NULL)
-+		close(open_kvm_dev_path_or_exit());
-+
-+	f = fopen("/sys/module/kvm_intel/parameters/unrestricted_guest", "r");
-+	if (f) {
-+		count = fread(&val, sizeof(char), 1, f);
-+		TEST_ASSERT(count == 1, "Unable to read from param file.");
-+		fclose(f);
-+	}
-+
-+	return val == 'Y';
-+}
+ 
+-static void clear_log_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void clear_log_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					  void *bitmap, uint32_t num_pages)
+ {
+-	kvm_vm_get_dirty_log(vm, slot, bitmap);
+-	kvm_vm_clear_dirty_log(vm, slot, bitmap, 0, num_pages);
++	kvm_vm_get_dirty_log(vcpu->vm, slot, bitmap);
++	kvm_vm_clear_dirty_log(vcpu->vm, slot, bitmap, 0, num_pages);
+ }
+ 
+ /* Should only be called after a GUEST_SYNC */
+@@ -253,14 +251,14 @@ static void vcpu_handle_sync_stop(void)
+ 	}
+ }
+ 
+-static void default_after_vcpu_run(struct kvm_vm *vm, int ret, int err)
++static void default_after_vcpu_run(struct kvm_vcpu *vcpu, int ret, int err)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 
+ 	TEST_ASSERT(ret == 0 || (ret == -1 && err == EINTR),
+ 		    "vcpu run failed: errno=%d", err);
+ 
+-	TEST_ASSERT(get_ucall(vm, VCPU_ID, NULL) == UCALL_SYNC,
++	TEST_ASSERT(get_ucall(vcpu->vm, vcpu->id, NULL) == UCALL_SYNC,
+ 		    "Invalid guest sync status: exit_reason=%s\n",
+ 		    exit_reason_str(run->exit_reason));
+ 
+@@ -331,7 +329,7 @@ static void dirty_ring_continue_vcpu(void)
+ 	sem_post(&sem_vcpu_cont);
+ }
+ 
+-static void dirty_ring_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void dirty_ring_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					   void *bitmap, uint32_t num_pages)
+ {
+ 	/* We only have one vcpu */
+@@ -351,10 +349,10 @@ static void dirty_ring_collect_dirty_pages(struct kvm_vm *vm, int slot,
+ 	}
+ 
+ 	/* Only have one vcpu */
+-	count = dirty_ring_collect_one(vcpu_map_dirty_ring(vm, VCPU_ID),
++	count = dirty_ring_collect_one(vcpu_map_dirty_ring(vcpu->vm, vcpu->id),
+ 				       slot, bitmap, num_pages, &fetch_index);
+ 
+-	cleared = kvm_vm_reset_dirty_ring(vm);
++	cleared = kvm_vm_reset_dirty_ring(vcpu->vm);
+ 
+ 	/* Cleared pages should be the same as collected */
+ 	TEST_ASSERT(cleared == count, "Reset dirty pages (%u) mismatch "
+@@ -369,12 +367,12 @@ static void dirty_ring_collect_dirty_pages(struct kvm_vm *vm, int slot,
+ 	pr_info("Iteration %ld collected %u pages\n", iteration, count);
+ }
+ 
+-static void dirty_ring_after_vcpu_run(struct kvm_vm *vm, int ret, int err)
++static void dirty_ring_after_vcpu_run(struct kvm_vcpu *vcpu, int ret, int err)
+ {
+-	struct kvm_run *run = vcpu_state(vm, VCPU_ID);
++	struct kvm_run *run = vcpu->run;
+ 
+ 	/* A ucall-sync or ring-full event is allowed */
+-	if (get_ucall(vm, VCPU_ID, NULL) == UCALL_SYNC) {
++	if (get_ucall(vcpu->vm, vcpu->id, NULL) == UCALL_SYNC) {
+ 		/* We should allow this to continue */
+ 		;
+ 	} else if (run->exit_reason == KVM_EXIT_DIRTY_RING_FULL ||
+@@ -408,10 +406,10 @@ struct log_mode {
+ 	/* Hook when the vm creation is done (before vcpu creation) */
+ 	void (*create_vm_done)(struct kvm_vm *vm);
+ 	/* Hook to collect the dirty pages into the bitmap provided */
+-	void (*collect_dirty_pages) (struct kvm_vm *vm, int slot,
++	void (*collect_dirty_pages) (struct kvm_vcpu *vcpu, int slot,
+ 				     void *bitmap, uint32_t num_pages);
+ 	/* Hook to call when after each vcpu run */
+-	void (*after_vcpu_run)(struct kvm_vm *vm, int ret, int err);
++	void (*after_vcpu_run)(struct kvm_vcpu *vcpu, int ret, int err);
+ 	void (*before_vcpu_join) (void);
+ } log_modes[LOG_MODE_NUM] = {
+ 	{
+@@ -473,22 +471,22 @@ static void log_mode_create_vm_done(struct kvm_vm *vm)
+ 		mode->create_vm_done(vm);
+ }
+ 
+-static void log_mode_collect_dirty_pages(struct kvm_vm *vm, int slot,
++static void log_mode_collect_dirty_pages(struct kvm_vcpu *vcpu, int slot,
+ 					 void *bitmap, uint32_t num_pages)
+ {
+ 	struct log_mode *mode = &log_modes[host_log_mode];
+ 
+ 	TEST_ASSERT(mode->collect_dirty_pages != NULL,
+ 		    "collect_dirty_pages() is required for any log mode!");
+-	mode->collect_dirty_pages(vm, slot, bitmap, num_pages);
++	mode->collect_dirty_pages(vcpu, slot, bitmap, num_pages);
+ }
+ 
+-static void log_mode_after_vcpu_run(struct kvm_vm *vm, int ret, int err)
++static void log_mode_after_vcpu_run(struct kvm_vcpu *vcpu, int ret, int err)
+ {
+ 	struct log_mode *mode = &log_modes[host_log_mode];
+ 
+ 	if (mode->after_vcpu_run)
+-		mode->after_vcpu_run(vm, ret, err);
++		mode->after_vcpu_run(vcpu, ret, err);
+ }
+ 
+ static void log_mode_before_vcpu_join(void)
+@@ -510,7 +508,8 @@ static void generate_random_array(uint64_t *guest_array, uint64_t size)
+ static void *vcpu_worker(void *data)
+ {
+ 	int ret;
+-	struct kvm_vm *vm = data;
++	struct kvm_vcpu *vcpu = data;
++	struct kvm_vm *vm = vcpu->vm;
+ 	uint64_t *guest_array;
+ 	uint64_t pages_count = 0;
+ 	struct kvm_signal_mask *sigmask = alloca(offsetof(struct kvm_signal_mask, sigset)
+@@ -525,7 +524,7 @@ static void *vcpu_worker(void *data)
+ 	sigmask->len = 8;
+ 	pthread_sigmask(0, NULL, sigset);
+ 	sigdelset(sigset, SIG_IPI);
+-	vcpu_ioctl(vm, VCPU_ID, KVM_SET_SIGNAL_MASK, sigmask);
++	vcpu_ioctl(vm, vcpu->id, KVM_SET_SIGNAL_MASK, sigmask);
+ 
+ 	sigemptyset(sigset);
+ 	sigaddset(sigset, SIG_IPI);
+@@ -537,13 +536,13 @@ static void *vcpu_worker(void *data)
+ 		generate_random_array(guest_array, TEST_PAGES_PER_LOOP);
+ 		pages_count += TEST_PAGES_PER_LOOP;
+ 		/* Let the guest dirty the random pages */
+-		ret = __vcpu_run(vm, VCPU_ID);
++		ret = __vcpu_run(vm, vcpu->id);
+ 		if (ret == -1 && errno == EINTR) {
+ 			int sig = -1;
+ 			sigwait(sigset, &sig);
+ 			assert(sig == SIG_IPI);
+ 		}
+-		log_mode_after_vcpu_run(vm, ret, errno);
++		log_mode_after_vcpu_run(vcpu, ret, errno);
+ 	}
+ 
+ 	pr_info("Dirtied %"PRIu64" pages\n", pages_count);
+@@ -699,6 +698,7 @@ struct test_params {
+ static void run_test(enum vm_guest_mode mode, void *arg)
+ {
+ 	struct test_params *p = arg;
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	unsigned long *bmap;
+ 
+@@ -716,9 +716,10 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 	 * (e.g., 64K page size guest will need even less memory for
+ 	 * page tables).
+ 	 */
+-	vm = create_vm(mode, VCPU_ID,
++	vm = create_vm(mode, 0,
+ 		       2ul << (DIRTY_MEM_BITS - PAGE_SHIFT_4K),
+ 		       guest_code);
++	vcpu = vcpu_get(vm, 0);
+ 
+ 	guest_page_size = vm_get_page_size(vm);
+ 	/*
+@@ -779,12 +780,12 @@ static void run_test(enum vm_guest_mode mode, void *arg)
+ 	host_clear_count = 0;
+ 	host_track_next_count = 0;
+ 
+-	pthread_create(&vcpu_thread, NULL, vcpu_worker, vm);
++	pthread_create(&vcpu_thread, NULL, vcpu_worker, vcpu);
+ 
+ 	while (iteration < p->iterations) {
+ 		/* Give the vcpu thread some time to dirty some pages */
+ 		usleep(p->interval * 1000);
+-		log_mode_collect_dirty_pages(vm, TEST_MEM_SLOT_INDEX,
++		log_mode_collect_dirty_pages(vcpu, TEST_MEM_SLOT_INDEX,
+ 					     bmap, host_num_pages);
+ 
+ 		/*
 -- 
 2.35.1.723.g4982287a31-goog
 
