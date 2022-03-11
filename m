@@ -2,117 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F332EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B674C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 17:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350768AbiCKR2y (ORCPT
+        id S1350757AbiCKR35 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 12:28:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
+        Fri, 11 Mar 2022 12:29:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344114AbiCKR2v (ORCPT
+        with ESMTP id S1347454AbiCKR34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 12:28:51 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174BA31DD3;
-        Fri, 11 Mar 2022 09:27:46 -0800 (PST)
-Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KFXsB6JVmz684TK;
-        Sat, 12 Mar 2022 01:26:06 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Mar 2022 18:27:43 +0100
-Received: from [10.47.87.13] (10.47.87.13) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Fri, 11 Mar
- 2022 17:27:42 +0000
-Message-ID: <162a116a-4b0f-c58b-6760-86d10ecf543f@huawei.com>
-Date:   Fri, 11 Mar 2022 17:27:41 +0000
+        Fri, 11 Mar 2022 12:29:56 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E24175821
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 09:28:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 24D8ECE2986
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 17:28:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CF96C340E9;
+        Fri, 11 Mar 2022 17:28:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647019725;
+        bh=d5z9c3EOdhxF2p3xDGp+4qitBzF+8Lm3Do/gcuSvtSA=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=pC9eiC+706ZZZyFZiO+I2EImk55YkM5DNe6IUnidqCTowfTE6mlPz8X3obfmOQsYt
+         C2ePj/tCLaltOl8NWS8U1/U2pYrw3hXYiAs4/tIhV0AKEVp7Aa12ZQQeO4/2WRkQc8
+         tvEQjkEfk0Gjdm2Nimpyb50tvEA46visb+L2OREnHqwitJ6QpYSYt3jCcpCqVBwGxT
+         DWtNc1TU1GHIlyTxi7F8KsWuK09xSGbtm2ZCc1OKRayYH9w1Sb0DTRBkQ3PMdvN6us
+         vW4BwGDJ/cISPo0881WGhfFRHtiQEM7CZ1Fut/6rW+TAryOsbENDmFC9O18MfaezIS
+         H2LzNkpTCTXmQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id BF6885C0140; Fri, 11 Mar 2022 09:28:44 -0800 (PST)
+Date:   Fri, 11 Mar 2022 09:28:44 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Phil Auld <pauld@redhat.com>,
+        Alex Belits <abelits@marvell.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yu Liao <liaoyu15@huawei.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH 18/19] rcu/context_tracking: Merge dynticks counter and
+ context tracking states
+Message-ID: <20220311172844.GJ4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220302154810.42308-1-frederic@kernel.org>
+ <20220302154810.42308-19-frederic@kernel.org>
+ <20220310203222.GC4285@paulmck-ThinkPad-P17-Gen-1>
+ <20220311163525.GF227945@lothringen>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v5 1/8] iommu/arm-smmu-v3: Make default domain type of
- HiSilicon PTT device to identity
-To:     Yicong Yang <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-        <song.bao.hua@hisilicon.com>
-References: <20220308084930.5142-1-yangyicong@hisilicon.com>
- <20220308084930.5142-2-yangyicong@hisilicon.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220308084930.5142-2-yangyicong@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.87.13]
-X-ClientProxiedBy: lhreml707-chm.china.huawei.com (10.201.108.56) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311163525.GF227945@lothringen>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/03/2022 08:49, Yicong Yang wrote:
-> The DMA of HiSilicon PTT device can only work with identical mapping.
-
-nit: I'd have "DMA operations of the HiSilicon PTT device can only work 
-properly with identity mappings".
-
-> So add a quirk for the device to force the domain passthrough.
-
-".. domain as passthrough."
-
+On Fri, Mar 11, 2022 at 05:35:25PM +0100, Frederic Weisbecker wrote:
+> On Thu, Mar 10, 2022 at 12:32:22PM -0800, Paul E. McKenney wrote:
+> > On Wed, Mar 02, 2022 at 04:48:09PM +0100, Frederic Weisbecker wrote:
+> > > Updating the context tracking state and the RCU dynticks counter
+> > > atomically in a single operation is a first step towards improving CPU
+> > > isolation. This makes the context tracking state updates fully ordered
+> > > and therefore allow for later enhancements such as postponing some work
+> > > while a task is running isolated in userspace until it ever comes back
+> > > to the kernel.
+> > > 
+> > > The state field becomes divided in two parts:
+> > > 
+> > > 1) Lower bits for context tracking state:
+> > > 
+> > >    	CONTEXT_IDLE = 1,
+> > > 	CONTEXT_USER = 2,
+> > > 	CONTEXT_GUEST = 4,
+> > 
+> > And the CONTEXT_DISABLED value of -1 works because you can have only
+> > one of the above three bits set at a time?
+> > 
+> > Except that RCU needs this to unconditionally at least distinguish
+> > between kernel and idle, given the prevalence of CONFIG_NO_HZ_IDLE=y.
+> > So does the CONTEXT_DISABLED really happen anymore?
+> > 
+> > A few more questions interspersed below.
 > 
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
->   1 file changed, 16 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 6dc6d8b6b368..6f67a2b1dd27 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2838,6 +2838,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
->   	}
->   }
->   
-> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-> +					 (pdev)->device == 0xa12e)
-> +
-> +static int arm_smmu_def_domain_type(struct device *dev)
-> +{
-> +	if (dev_is_pci(dev)) {
-> +		struct pci_dev *pdev = to_pci_dev(dev);
-> +
-> +		if (IS_HISI_PTT_DEVICE(pdev))
-> +			return IOMMU_DOMAIN_IDENTITY;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   static struct iommu_ops arm_smmu_ops = {
->   	.capable		= arm_smmu_capable,
->   	.domain_alloc		= arm_smmu_domain_alloc,
-> @@ -2863,6 +2878,7 @@ static struct iommu_ops arm_smmu_ops = {
->   	.sva_unbind		= arm_smmu_sva_unbind,
->   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
->   	.page_response		= arm_smmu_page_response,
-> +	.def_domain_type	= arm_smmu_def_domain_type,
->   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->   	.owner			= THIS_MODULE,
->   };
+> The value of CONTEXT_DISABLED is never stored in the ct->state. It is just
+> returned as is when CONTEXT_TRACKING is disabled. So this shouldn't conflict
+> with RCU.
 
+Whew!  ;-)
+
+> > > @@ -452,15 +453,16 @@ void noinstr __ct_user_exit(enum ctx_state state)
+> > >  			 * Exit RCU idle mode while entering the kernel because it can
+> > >  			 * run a RCU read side critical section anytime.
+> > >  			 */
+> > > -			rcu_eqs_exit(true);
+> > > +			ct_kernel_enter(true, RCU_DYNTICKS_IDX - state);
+> > >  			if (state == CONTEXT_USER) {
+> > >  				instrumentation_begin();
+> > >  				vtime_user_exit(current);
+> > >  				trace_user_exit(0);
+> > >  				instrumentation_end();
+> > >  			}
+> > > +		} else {
+> > > +			atomic_sub(state, &ct->state);
+> > 
+> > OK, atomic_sub() got my attention.  What is going on here?  ;-)
+> 
+> Right :-)
+> 
+> So that's when context tracking user is running but RCU doesn't
+> track user. This is for example when NO_HZ_FULL=n but VIRT_CPU_ACCOUNTING_GEN=y.
+> 
+> I might remove that standalone VIRT_CPU_ACCOUNTING_GEN=y one day but for now
+> it's there.
+> 
+> Anyway so in this case we only want to track KERNEL <-> USER from context
+> tracking POV, but we don't need the DYNTICKS_RCU_IDX part, hence the spared
+> ordering.
+> 
+> But it still needs to be atomic because NMIs may increase DYNTICKS_RCU_IDX on
+> the same field.
+
+OK, so the idea is because NO_HZ_FULL=n, RCU doesn't care about user
+space execution?
+
+How about looking at it the other way?  Is there some reason that RCU
+shouldn't take advantage of the userspace-execution information when it
+exists?  For example, in the NO_HZ_FULL=n but VIRT_CPU_ACCOUNTING_GEN=y
+case, is there some chance that RCU would be ignoring a non-noinstr
+function?
+
+> > > @@ -548,7 +550,7 @@ EXPORT_SYMBOL_GPL(context_tracking);
+> > >  void ct_idle_enter(void)
+> > >  {
+> > >  	lockdep_assert_irqs_disabled();
+> > > -	rcu_eqs_enter(false);
+> > > +	ct_kernel_exit(false, RCU_DYNTICKS_IDX + CONTEXT_IDLE);
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(ct_idle_enter);
+> > >  
+> > > @@ -566,7 +568,7 @@ void ct_idle_exit(void)
+> > >  	unsigned long flags;
+> > >  
+> > >  	local_irq_save(flags);
+> > > -	rcu_eqs_exit(false);
+> > > +	ct_kernel_enter(false, RCU_DYNTICKS_IDX - CONTEXT_IDLE);
+> > 
+> > Nice!  This works because all transitions must be either from or
+> > to kernel context, correct?
+> 
+> Exactly. There is no such thing as IDLE -> USER -> GUEST, etc...
+> There has to be KERNEL in the middle of each. Because we never
+> call rcu_idle_enter() -> rcu_user_enter() for example. The has to be
+> rcu_idle_exit() in the middle.
+> 
+> (famous last words).
+
+Works for me, for the moment, anyway.  ;-)
+
+> > >  /* Return true if the specified CPU is currently idle from an RCU viewpoint.  */
+> > > @@ -321,8 +321,7 @@ bool rcu_dynticks_zero_in_eqs(int cpu, int *vp)
+> > >  	int snap;
+> > >  
+> > >  	// If not quiescent, force back to earlier extended quiescent state.
+> > > -	snap = ct_dynticks_cpu(cpu) & ~0x1;
+> > > -
+> > > +	snap = ct_dynticks_cpu(cpu) & ~RCU_DYNTICKS_IDX;
+> > 
+> > Do we also need to get rid of the low-order bits?  Or is that happening
+> > elsewhere?  Or is there some reason that they can stick around?
+> 
+> Yep, ct_dynticks_cpu() clears the low order CONTEXT_* bits.
+
+Whew!  ;-)
+
+> > > diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
+> > > index 9bf5cc79d5eb..1ac48c804006 100644
+> > > --- a/kernel/rcu/tree_stall.h
+> > > +++ b/kernel/rcu/tree_stall.h
+> > > @@ -459,7 +459,7 @@ static void print_cpu_stall_info(int cpu)
+> > >  			rdp->rcu_iw_pending ? (int)min(delta, 9UL) + '0' :
+> > >  				"!."[!delta],
+> > >  	       ticks_value, ticks_title,
+> > > -	       rcu_dynticks_snap(cpu) & 0xfff,
+> > > +	       (rcu_dynticks_snap(cpu) >> RCU_DYNTICKS_SHIFT) & 0xfff ,
+> > 
+> > Actually, the low-ordder several bits are useful when debugging, so
+> > could you please not shift them away?  Maybe also go to 0xffff to allow
+> > for more bits taken?
+> 
+> Yeah that makes sense, I'll change that.
+> 
+> Thanks a lot for the reviews!
+
+Thank you for the series!
+
+							Thanx, Paul
