@@ -2,94 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA43AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B93C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229914AbiCKWwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:52:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
+        id S229678AbiCKWwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229994AbiCKWwU (ORCPT
+        with ESMTP id S229769AbiCKWw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:52:20 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9AF1409D0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:30:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647037844; x=1678573844;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=rCFdGeOoGSRoO6cqnYj1xlhLSbsmex/R1MQnhd4g/08=;
-  b=jg8y5cmTl1wwieyISJTwlswXFVrJj7kRE8y1KbzcHbAUwbrSPTBnSRxq
-   3bjQUd9dQ44FqA+HjPp5Zcm+JJXwGAq+5XH9pM5vY+F+lYMFTV5x8eeg4
-   0tJTZcvYVYxcUG+CxqgzC6dORL3SHjZ4TapfxiDNsM5EA6Z/ew1XQbVmD
-   WllvGJL8vUmLjpyC9jidFoED9DmtWEqfUgLk2ZEo5HYwNeblnyB3kvtJC
-   fMRYRh7WkYDx7eMhWR88eGPpgIOyhf+elR2DrEexnijWWmcBCo5UsULuz
-   ccocd1H9bURjOL8FQM/BYIRfAL3+F8zODuXXqLlWDAuV/U2l/HV04XkLF
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="255604311"
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="255604311"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 13:23:33 -0800
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="645060406"
-Received: from cpeirce-mobl1.amr.corp.intel.com (HELO [10.212.128.243]) ([10.212.128.243])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 13:23:32 -0800
-Message-ID: <103853ef-3afb-bb94-5ffd-8318d1a1d1a0@intel.com>
-Date:   Fri, 11 Mar 2022 13:23:26 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Nadav Amit <nadav.amit@gmail.com>
-Cc:     Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Andy Lutomirski <luto@kernel.org>,
+        Fri, 11 Mar 2022 17:52:29 -0500
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2046.outbound.protection.outlook.com [40.107.96.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C71B29E59A;
+        Fri, 11 Mar 2022 14:26:10 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OLuvHGKG7I4qrU73P+HYeFflUmmpohPZaBglTUu3tTwluq2nvluKaTK8D4bjchI/UQflI70sK5YDPGbNzz4b7unNlcZL+6y5OAnVqm0N/JNI/NTuwMWG457VbIO/crjhm50ojzTxeSkWFdAg9klTnDr/ruhyhUc9+FP2T9PDQ1poOu0LVJliSP5odq0wf/avB6/3j7VdfIcj90/UuQnUTZqaKwQT2PQ6PF7LKsek7o/IbmxLTG26j2Q03Q/oN96R3OCAnPYViefuStvTtkM9tr3KZNAMN5I4eRYslWCZ9edOX4vbTMuifMODpOt885n4A/8+dt6z72Ahhp7hGmrZEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vF/hUGdV9kjnCy2Q1qQLAMf1s3PRnPt8RbF+heTXGgI=;
+ b=XA2roOD3UqOC544g2lLpTOyyy1N/aGwO0VUr7FVe+rdmPkbGwAbMV2bxKcaoGTFVgtrTMroqrzgJJJKyo0c3uzG9flIePcmAL1zLyevobFF1MvieHYuMZZknqfOgr+xLET1w/j7RplsZxPLxuy/HyFBGZmWYrp40oYKqxB7TFmS4mdcSpXZ2wakKdgyRMerJ1cK+F6hoFJZiMHpibZ+xQB+4AXCvyZLF2DC7QOjMldLxn48m/tSSYHJ8mfP/AsHYoeTVKGy85B16vJR3OYVlEhkKkN0iC1gx/WgsMo/IGg0YHfK7Wz/WaIf6zAGHhxSZ0IvWCtDIr24AD9UVWbYQdQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vF/hUGdV9kjnCy2Q1qQLAMf1s3PRnPt8RbF+heTXGgI=;
+ b=Wympc9Ivg51qqyns4bfVj4OwI5+4czoHD/dPDHT69950qlGVgHxj8Ecl7eeRUQllQlU796zzcc5LUAZCXJDKFzoag7JSmDpcP9wm1JV4t21JXPC1mbQWKo5Vc1mtl31y5PxSvCYRggEoeNnvCYTTBEWqG+bIxNZct1/PTd7mR3o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB2869.namprd12.prod.outlook.com (2603:10b6:a03:132::30)
+ by DM6PR12MB2875.namprd12.prod.outlook.com (2603:10b6:5:15c::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Fri, 11 Mar
+ 2022 21:00:45 +0000
+Received: from BYAPR12MB2869.namprd12.prod.outlook.com
+ ([fe80::9df3:5cc7:c61e:ec6a]) by BYAPR12MB2869.namprd12.prod.outlook.com
+ ([fe80::9df3:5cc7:c61e:ec6a%5]) with mapi id 15.20.5038.027; Fri, 11 Mar 2022
+ 21:00:45 +0000
+Subject: Re: [PATCH v4 0/3] x86/mce: Support extended MCA_ADDR address on SMCA
+ systems
+To:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
+        x86@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tony Luck <tony.luck@intel.com>, "H . Peter Anvin" <hpa@zytor.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Peter Xu <peterx@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
-        Nick Piggin <npiggin@gmail.com>,
-        "x86@kernel.org" <x86@kernel.org>
-References: <20220311190749.338281-1-namit@vmware.com>
- <20220311190749.338281-3-namit@vmware.com>
- <a2a43395-b848-a4f9-4065-109387680701@intel.com>
- <AC8D21EA-CD32-4F9F-B5C1-ED8804EC76FF@vmware.com>
- <70e08bd5-187a-daee-2822-1d9a437a9cff@intel.com>
- <E46E0DA7-6427-4733-9D43-6CC1107194D6@gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [RESEND PATCH v3 2/5] x86/mm: check exec permissions on fault
-In-Reply-To: <E46E0DA7-6427-4733-9D43-6CC1107194D6@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Yazen Ghannam <yazen.ghannam@amd.com>
+References: <20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com>
+From:   "Koralahalli Channabasappa, Smita" <skoralah@amd.com>
+Message-ID: <b6bcde0a-8232-4384-4e48-156fee7a229e@amd.com>
+Date:   Fri, 11 Mar 2022 15:00:43 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.1
+In-Reply-To: <20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: BY3PR05CA0039.namprd05.prod.outlook.com
+ (2603:10b6:a03:39b::14) To BYAPR12MB2869.namprd12.prod.outlook.com
+ (2603:10b6:a03:132::30)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 448d6613-c953-4598-9071-08da03a23597
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2875:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB2875A87A2860D48D3688889A900C9@DM6PR12MB2875.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mK2V7Ql+x+Q8pDXVrWNOfn/63kUA09M/CimQhdTRUwfj8U1lp13SCXU80Vh/+twPaEzl0aLgdp5rzJzVGCyVj8B6PohqP5+N4QpgTzFMBj/frE9hFvRlCsXz4bONMQrfel1QlwHpxow7SAsmISVbkEnOf0g/UGgJDEnodUbfL6Zwd+5Xz8NVZMMqsFyGImOGT1MQmK5IYRaXka3LHOahAxrngwPAVmYeXwc56rDKj8hePYjKTXq1OoRmdrz45QzkIbcW/dltFzZWM9k+rLOxMkWcjTubssWkliMAeDyUneoB/mu+PSSkPpr2OB5obbMNmiV/W2JUuqFxlteQR5VbI6It7prVB8KJQ5HmiFza5GQnKy5v+1G8iHay+XR/oCHn4SAh4DviAxskL5vO+qIX4TXdNKM66pOcdhXIvCRaexEZX2RN+wqKqRQFhUtsm9uSCPzz2kKSK3Zre1jGOgMkLJS3xQLhI6ziQpgpkI1xCf27Rs1xEawM7hWPtVV7gSEyUpzWK727PUNnOQi3yW4SC98qWZYZr3cIFQ/tY15ThRM+h/+BImwjEccE/LxO/Uxi/vBLcFFzMy1LiVunNFXxdyEH3IkHKjaZRnrXfgW2/BX33Bv94ixbEmuIcyKxNMYmWVVHwLkZWSL6BDySeeI5AG0gfrW6xabyZzSAxbXRzWcSmhJnQ3Yk8p03NrIbAVcLO8R3uJNjCjqizLMAuZ4cnl9ukyXZikf0/UPgBkE0C7h/yBg6n9P7kSEaj2OqMSNKUG4BcPnagsQWBrgzCCFxKCkky00z8pa1o/wteleMNBifwhnO2Aj+roPdpKs1M3JPailXDNttkEmOKWFQxG3bBA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(31686004)(54906003)(4326008)(36756003)(31696002)(8676002)(2616005)(966005)(5660300002)(6506007)(53546011)(66946007)(83380400001)(6512007)(6486002)(38100700002)(508600001)(66556008)(8936002)(66476007)(2906002)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y3BvQ0FHaW5EN2RuTlVkOTIrdFpHeWwrS29EQWczeHlDVEhFd1o1ZDZ5NDZa?=
+ =?utf-8?B?a0tvdWhFSHk3RDV5Zlp2aFJGcDlKUzgxMVZ1WTBLeWZyakR1bXFYaEIyN1NS?=
+ =?utf-8?B?QW9NZWhmUktJYU1uU3RWK2NHZjA1bHg5c0JIK0Y3a3o2UTBsa1BxaDJBZGZZ?=
+ =?utf-8?B?dnYzTDJFSENmYk9UdTIxWnZJSlFCTWVQVjBYcVllM0haM0hrbG9Cd2V4MlZz?=
+ =?utf-8?B?SG9GYnpwSE1GUElaQU1IUGJxbDhJcmFseWhqRml4bHVidnZpNi9OQ3krd1Vq?=
+ =?utf-8?B?ZjZadVFobDVjVTlkazJWOGtiNlk0SUpNbDdSTFpnRlpSUVBGY0RMUXU1Umk1?=
+ =?utf-8?B?Q2FlR2NvSUQxU0FmWmlNc1JUQ3JMWERRbW9hU3RxTGhxZisrdndJQlNjRGsr?=
+ =?utf-8?B?ZmF1YXp6dkxxdGhta0RLcVpiNFRlRkpyeGZmMTVHNmpnaTBjU2VaNFFkNEsx?=
+ =?utf-8?B?QUllK1FTWDVTK1YvYUZaaVNUWEhNYUg5S2VVVW1mL1BKcGdSVWxKU0xzSnhB?=
+ =?utf-8?B?WUFVZy9GMVFXTzgxQ0JHcWpUSWJpSkxhL2xaR2V6d2ZnajZFcFdRRmtMZEJw?=
+ =?utf-8?B?aGNFcVIvMk9ISURXQTAvdTRIZ3lWMDV6VGRIM2JZRGRsRUR1RWlwZ0p2dTQy?=
+ =?utf-8?B?dU9rMjgvSnRSa2tsVUhXaVlkaVhUQll3RE9Sb0lkc2wvVENHKzBmdjBBZCtN?=
+ =?utf-8?B?K0Foam5rLzZrVWxTVklpRFZha0p5bE5RR2pvNjc5c3VoR05US0htaDZzaVFm?=
+ =?utf-8?B?eTZ0VHlNRENkZVpjaDBKSjdseXhWNENQb0h3SFNNUkZrQjEyWkVMYyttUlZX?=
+ =?utf-8?B?aHNheWZ4akhMQ0lrWWJMYzdFbTVCMWgrVjcvMlN2b3BneFNzcTI1dnVUaFpU?=
+ =?utf-8?B?MkVQcE4vaG5haERxTkw5elV1OVYwVWlWWjNQdy9IQmo1bzV4RlhnUWVxYW95?=
+ =?utf-8?B?YlU2ejR3SmxpQ3ErQ1ZsUjdXbUwwSGhRMHN2RVVZSFpvd21yK0tldU1ONU5x?=
+ =?utf-8?B?Z2xEYTYvL1hnS3Z5S2RJNkx2akQ0TlpRV1lHNmFyYnFIZk1rVlFwNG14YlVj?=
+ =?utf-8?B?eUt0VHdBWWVPWVdHbDVDYkpyNi81WTF6MUtCSlZpZER4N2V5MFE2aFhBZTdO?=
+ =?utf-8?B?S1AzMTRVdnVIclVjZFluYmdGdDNSaHlOYS9KTUp4N3RaZHhTUHA2YTlSTTJw?=
+ =?utf-8?B?dWtSOGFseCswaGNaak1NRk5CaU4wdXlpY0cvcWJHS2ZtYU9Eb2J2d0lVSyt3?=
+ =?utf-8?B?MERjOXhXR25wWWpTcWVWallmek1XR1JSaWtwczZuclJKTkg3U1ZkaTJPUVBW?=
+ =?utf-8?B?bkNEcGNtRTZnaDNMQmQ4YStvREc4ZGcwdG4wMjczK2tFSCtwbE9yOXNYcXlC?=
+ =?utf-8?B?MzQwQldKRmpOSC9hc1JRcmhJVmErUEh1Tm40cmh5b2l0dGY1cEZ1SGZZVWpH?=
+ =?utf-8?B?UGQ0MjYyYW0rZU4zSEg3N2UyOXY3YzNneUlxM3VWZ3J0MFY4Q3hlUDIwSFNj?=
+ =?utf-8?B?R1N2YTI2Wmg4WXJ4dGRobjhSQkMvcXpQL2dWVGxzZ2NWeFlWemdLREZZU2RM?=
+ =?utf-8?B?cmdjMzFzenN0S2Z3Q01zQmRaL0I3N0ltZW5yM2E3Vit2d1FIQkhrb2JHcGNH?=
+ =?utf-8?B?TXdLdjB2TFBNZ2E5OWlBZjBJblJPOGsvbXhPcFdxUUJFdDl6b3VqMjF2MXF2?=
+ =?utf-8?B?VDNIdmRSbmpFMmxBZmhCVTNZNUJJTXd0MVhoUUtKU3d3S3VaZktDU1E5ZkJm?=
+ =?utf-8?B?WUs5dkZCaU8ycU02OEdEMnZja2Z6dlR5QVNuek1Uekp5alhJZWg5TU03L3F2?=
+ =?utf-8?B?bzNvbGdCU2FtSmg5ZURlbTEvanI1UlFPbnB5Y2xqWWxsT2pFR3VSeENWOEpM?=
+ =?utf-8?B?YmoyOTlXd2JteFJ1bFpUaXc5dklZeWxIcE1meFlsRVY2bEpVQXlYUWpyeXE3?=
+ =?utf-8?B?alpqT1VKSzVSbVZEeWhNRnN2ZDEyYWJyZjVDQk5kd1p1OWtOT2dTSWNUbGdK?=
+ =?utf-8?B?YUxzL0lsVW9KQlV5SzN0LzZUZ0gxeDM5bDgzbnZyQjlVNFVRcFltaW5URE9p?=
+ =?utf-8?B?YkdoajV4VzYvd01CWllYS2ZhbkNOa3dicGpUcWY3R0hoSnFtZndIeWxRSmVN?=
+ =?utf-8?B?a0JsOTQ0bjJNMVhiRGtEcHRYQW9OaXJLSGdRcTUwQkJiNFg2MnpQeXNCVzE2?=
+ =?utf-8?B?bkhXN0RyZVpSdlMxdXhWV3hxNGlaUW9KbEF5b01jM3JUNG5EbnMvOEFLS0Nn?=
+ =?utf-8?Q?plad6Rwh2nt7Z0VDg+jdXlFQXAHVlSaITxQHPuojvE=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 448d6613-c953-4598-9071-08da03a23597
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 21:00:44.9588
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rq1ZehWrJRDKbFbr7LcJM1Wq1fm40Ni1wOHla1R3Q6C26Wyx1NO3vdZQIQUTGAFGsJFnYud6k2k/qreJlrVzaw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2875
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/11/22 13:16, Nadav Amit wrote:
->> This is really about checking the sanity of the "hardware"-provided
->> error code.  Let's just do it in  handle_page_fault(), maybe hidden in a
->> function like:
->>
->> void check_error_code_sanity(unsigned long error_code)
->> {
->> 	WARN_ON_ONCE(...);
->> }
->>
->> You can leave the X86_PF_PK check in place for now.  It's probably going
->> away soon anyway.
-> Done. Thanks. But note that removing the check from access_error() means
-> that if the assertion is broken, userspace might crash inadvertently
-> (in contrast to the version I sent, which would have potentially led to
-> infinite stream of page-faults). I don’t know which behavior is better,
-> so let’s go with your version and just hope it doesn’t happen.
+Hi all,
 
-Actually, crashing sounds much nicer to me than infinite page faults.
-It's a lot easier to debug, *especially* with a warning on dmesg.
+Do you have any comments that needs to be addressed on these set of patches?
+
+Thanks,
+Smita
+
+On 2/25/22 1:33 PM, Smita Koralahalli wrote:
+
+> This series of patches adds support for extended physical address on newer
+> AMD processors such as AMD 'Milan'.
+>
+> The first patch provides a fix to avoid unnecessary padding in mce_bank
+> struct.
+>
+> The second patch defines a separate helper function to extract
+> MCA_ADDR[ErrorAddr].
+>
+> Finally, the last patch adds support for extended ErrorAddr bits in
+> MCA_ADDR.
+>
+> Link:
+> https://lkml.kernel.org/r/20220211223442.254489-1-Smita.KoralahalliChannabasappa@amd.com
+>
+> Smita Koralahalli (3):
+>    x86/mce: Avoid unnecessary padding in struct mce_bank
+>    x86/mce: Define function to extract ErrorAddr from MCA_ADDR
+>    x86/mce: Add support for Extended Physical Address MCA changes
+>
+>   arch/x86/include/asm/mce.h         |  4 ++++
+>   arch/x86/kernel/cpu/mce/amd.c      | 35 ++++++++++++++++++++++--------
+>   arch/x86/kernel/cpu/mce/core.c     | 20 +++++------------
+>   arch/x86/kernel/cpu/mce/internal.h | 16 ++++++++++++++
+>   4 files changed, 52 insertions(+), 23 deletions(-)
+>
 
