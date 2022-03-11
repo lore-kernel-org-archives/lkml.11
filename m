@@ -2,224 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 438F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:35:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC02C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 13:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348906AbiCKNgf (ORCPT
+        id S1348921AbiCKNgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 08:36:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
+        Fri, 11 Mar 2022 08:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236194AbiCKNgc (ORCPT
+        with ESMTP id S1348894AbiCKNgo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 08:36:32 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E00A19BE5A
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:35:26 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id u3so17132056ybh.5
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 05:35:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=b8Tl4+MXrc0vuYGiinc9MCoQ2yL9HNQEJa9pctwRXuE=;
-        b=cBZt4ojv1e+l7+D3LYcgkm82aZTGvTUvo+kr/KkuxcCukS44eqfn+h/855G7AzwplF
-         KqR91IvgkKDuCeokb/EiZrSzQsx5zH/OLstzGT/u6gZNp6g+9qf17I9luj2JebRR8siR
-         b06uD3U75FwqhnzRTPNbas7SY8ARLNL3t8eG/n8oDe/s9EWIIfdezUaPSLfMylnHlJAS
-         XxGvn6lHjGSg0y60pmPtGOZ56IBDTUaTOj/0PiIM+hzs73Pb8Va15skqddJ1vrqUOrmf
-         GBs0P9drlts/zmaS+k0kXj695ndOeWgKuT2cC80A76PkeyT4bclEJDVkvRbLAGZ5zCcI
-         Vw7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=b8Tl4+MXrc0vuYGiinc9MCoQ2yL9HNQEJa9pctwRXuE=;
-        b=PGt6lXPHEbtne3gRETVbzp8HHodC6vtDIvFQElonh2OJiKlR8CA0cocMEjaZmrY7Vd
-         SE7W9sDphkhuQwJTGfkuIZXt02g39nZ1pPc/fgbykCr/mNkII6mqrWrKAQB/UDNGJhs3
-         b/RfddGfqtLnzv8z2zI+EMiuDNJw9QpPfTWHK7oVOLheZ3WvTt2njhHWqk6EV2S5ppYi
-         HpD0pJJ4dUKYVAsIteN7rtbedI0A4/x3++h7iQuz46lIRfBmKsFwMJ0hPy0VJUhNW6IE
-         XEfHIRPmeVeXiImqATc8FtCFwBNjPYLuhTVqU/zNCBL3ctgTt1ssa2I4V3Kpk0ZcQW6y
-         6gxA==
-X-Gm-Message-State: AOAM531ZeyaVMspEvwUN1Fge8c3rs8uSkghNwc06ljwFPJ0UNNclSeiq
-        nI8MnOXBunleIW/X6zVOJvOA4tiATpUePouiePK7nA==
-X-Google-Smtp-Source: ABdhPJznH42A8GcPEVRl4cnAJAktefmDA444z8iGteAkAShHQ8sLJjb+6k1JP5qL/J8Pa2lccVX2r5ZdDN6/cdyHxQc=
-X-Received: by 2002:a25:be05:0:b0:629:1f49:b782 with SMTP id
- h5-20020a25be05000000b006291f49b782mr7720207ybk.88.1647005725421; Fri, 11 Mar
- 2022 05:35:25 -0800 (PST)
+        Fri, 11 Mar 2022 08:36:44 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF7419BE63;
+        Fri, 11 Mar 2022 05:35:36 -0800 (PST)
+X-UUID: db0f0db475c74c00aebf51a8dad6331c-20220311
+X-UUID: db0f0db475c74c00aebf51a8dad6331c-20220311
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <jianjun.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 880253415; Fri, 11 Mar 2022 21:35:33 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 11 Mar 2022 21:35:32 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 11 Mar
+ 2022 21:35:32 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 11 Mar 2022 21:35:31 +0800
+From:   Jianjun Wang <jianjun.wang@mediatek.com>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Jianjun Wang <jianjun.wang@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
+        <randy.wu@mediatek.com>, <jieyy.yang@mediatek.com>,
+        <chuanjia.liu@mediatek.com>, <qizhong.cheng@mediatek.com>,
+        <jian.yang@mediatek.com>
+Subject: [PATCH 1/2] phy: mediatek: Add PCIe PHY driver
+Date:   Fri, 11 Mar 2022 21:35:26 +0800
+Message-ID: <20220311133527.5914-2-jianjun.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220311133527.5914-1-jianjun.wang@mediatek.com>
+References: <20220311133527.5914-1-jianjun.wang@mediatek.com>
 MIME-Version: 1.0
-References: <20220310140808.136149678@linuxfoundation.org>
-In-Reply-To: <20220310140808.136149678@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Fri, 11 Mar 2022 19:05:14 +0530
-Message-ID: <CA+G9fYtic5bjvmtqyncrESz1bEOEcPmK+dWr3ZBAQAF8wO4bMA@mail.gmail.com>
-Subject: Re: [PATCH 4.9 00/38] 4.9.306-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Mar 2022 at 19:45, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.9.306 release.
-> There are 38 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
-4.9.306-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-4.9.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Add PCIe GEN3 PHY driver support on MediaTek chipsets.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+---
+ drivers/phy/mediatek/Kconfig        |  11 ++
+ drivers/phy/mediatek/Makefile       |   1 +
+ drivers/phy/mediatek/phy-mtk-pcie.c | 198 ++++++++++++++++++++++++++++
+ 3 files changed, 210 insertions(+)
+ create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+diff --git a/drivers/phy/mediatek/Kconfig b/drivers/phy/mediatek/Kconfig
+index 55f8e6c048ab..387ed1b3f2cc 100644
+--- a/drivers/phy/mediatek/Kconfig
++++ b/drivers/phy/mediatek/Kconfig
+@@ -55,3 +55,14 @@ config PHY_MTK_MIPI_DSI
+ 	select GENERIC_PHY
+ 	help
+ 	  Support MIPI DSI for Mediatek SoCs.
++
++config PHY_MTK_PCIE
++	tristate "MediaTek PCIe-PHY Driver"
++	depends on ARCH_MEDIATEK || COMPILE_TEST
++	depends on OF
++	select GENERIC_PHY
++	help
++	  Say 'Y' here to add support for MediaTek PCIe PHY driver.
++	  This driver create the basic PHY instance and provides initialize
++	  callback for PCIe GEN3 port, it supports software efuse
++	  initialization.
+diff --git a/drivers/phy/mediatek/Makefile b/drivers/phy/mediatek/Makefile
+index ace660fbed3a..788c13147f63 100644
+--- a/drivers/phy/mediatek/Makefile
++++ b/drivers/phy/mediatek/Makefile
+@@ -6,6 +6,7 @@
+ obj-$(CONFIG_PHY_MTK_TPHY)		+= phy-mtk-tphy.o
+ obj-$(CONFIG_PHY_MTK_UFS)		+= phy-mtk-ufs.o
+ obj-$(CONFIG_PHY_MTK_XSPHY)		+= phy-mtk-xsphy.o
++obj-$(CONFIG_PHY_MTK_PCIE)		+= phy-mtk-pcie.o
+ 
+ phy-mtk-hdmi-drv-y			:= phy-mtk-hdmi.o
+ phy-mtk-hdmi-drv-y			+= phy-mtk-hdmi-mt2701.o
+diff --git a/drivers/phy/mediatek/phy-mtk-pcie.c b/drivers/phy/mediatek/phy-mtk-pcie.c
+new file mode 100644
+index 000000000000..45a67d9171f6
+--- /dev/null
++++ b/drivers/phy/mediatek/phy-mtk-pcie.c
+@@ -0,0 +1,198 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2022 MediaTek Inc.
++ * Author: Jianjun Wang <jianjun.wang@mediatek.com>
++ */
++
++#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/nvmem-consumer.h>
++#include <linux/of_address.h>
++#include <linux/of_device.h>
++#include <linux/phy/phy.h>
++#include <linux/platform_device.h>
++
++#include "phy-mtk-io.h"
++
++#define PEXTP_ANA_GLB_00_REG		0x9000
++#define PEXTP_ANA_LN0_TX_REG		0xA004
++#define PEXTP_ANA_LN0_RX_REG		0xA03C
++#define PEXTP_ANA_LN1_TX_REG		0xA104
++#define PEXTP_ANA_LN1_RX_REG		0xA13c
++
++/* PEXTP_GLB_00_RG[28:24] Internal Resistor Selection of TX Bias Current */
++#define EFUSE_GLB_INTR_SEL		GENMASK(28, 24)
++#define EFUSE_GLB_INTR_VAL(x)		((0x1f & (x)) << 24)
++
++/* PEXTP_ANA_LN_RX_RG[3:0] LN0 RX impedance selection */
++#define EFUSE_LN_RX_SEL			GENMASK(3, 0)
++#define EFUSE_LN_RX_VAL(x)		(0xf & (x))
++
++/* PEXTP_ANA_LN_TX_RG[5:2] LN0 TX PMOS impedance selection */
++#define EFUSE_LN_TX_PMOS_SEL		GENMASK(5, 2)
++#define EFUSE_LN_TX_PMOS_VAL(x)		((0xf & (x)) << 2)
++
++/* PEXTP_ANA_LN_TX_RG[11:8] LN0 TX NMOS impedance selection */
++#define EFUSE_LN_TX_NMOS_SEL		GENMASK(11, 8)
++#define EFUSE_LN_TX_NMOS_VAL(x)		((0xf & (x)) << 8)
++
++struct mtk_pcie_phy {
++	struct device *dev;
++	struct phy *phy;
++	void __iomem *sif_base;
++};
++
++static int mtk_pcie_phy_init(struct phy *phy)
++{
++	struct mtk_pcie_phy *pcie_phy = phy_get_drvdata(phy);
++	struct device *dev = pcie_phy->dev;
++	bool nvmem_enabled;
++	u32 glb_intr, tx_pmos, tx_nmos, rx_data;
++	int ret;
++
++	nvmem_enabled = device_property_read_bool(dev, "nvmem-cells");
++	if (!nvmem_enabled)
++		return 0;
++
++	/* Set efuse value for lane0 */
++	ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln0_pmos", &tx_pmos);
++	if (ret) {
++		dev_err(dev, "%s: Failed to read tx_ln0_pmos\n", __func__);
++		return ret;
++	}
++
++	ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln0_nmos", &tx_nmos);
++	if (ret) {
++		dev_err(dev, "%s: Failed to read tx_ln0_nmos\n", __func__);
++		return ret;
++	}
++
++	ret = nvmem_cell_read_variable_le_u32(dev, "rx_ln0", &rx_data);
++	if (ret) {
++		dev_err(dev, "%s: Failed to read rx_ln0\n", __func__);
++		return ret;
++	}
++
++	/* Don't wipe the old data if there is no data in efuse cell */
++	if (!(tx_pmos || tx_nmos || rx_data)) {
++		dev_warn(dev, "%s: No efuse data found, but dts enable it\n",
++			 __func__);
++		return 0;
++	}
++
++	mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN0_TX_REG,
++			    EFUSE_LN_TX_PMOS_SEL,
++			    EFUSE_LN_TX_PMOS_VAL(tx_pmos));
++
++	mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN0_TX_REG,
++			    EFUSE_LN_TX_NMOS_SEL,
++			    EFUSE_LN_TX_NMOS_VAL(tx_nmos));
++
++	mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN0_RX_REG,
++			    EFUSE_LN_RX_SEL, EFUSE_LN_RX_VAL(rx_data));
++
++	/* Set global data */
++	ret = nvmem_cell_read_variable_le_u32(dev, "glb_intr", &glb_intr);
++	if (ret) {
++		dev_err(dev, "%s: Failed to read glb_intr\n", __func__);
++		return ret;
++	}
++
++	mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_GLB_00_REG,
++			    EFUSE_GLB_INTR_SEL, EFUSE_GLB_INTR_VAL(glb_intr));
++
++	/*
++	 * Set efuse value for lane1, only available for the platform which
++	 * supports two lane.
++	 */
++	ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln1_pmos", &tx_pmos);
++	if (ret) {
++		dev_err(dev, "%s: Failed to read tx_ln1_pmos, efuse value not support for lane 1\n",
++			__func__);
++		return 0;
++	}
++
++	ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln1_nmos", &tx_nmos);
++	if (ret) {
++		dev_err(dev, "%s: Failed to read tx_ln1_pmos\n", __func__);
++		return ret;
++	}
++
++	ret = nvmem_cell_read_variable_le_u32(dev, "rx_ln1", &rx_data);
++	if (ret) {
++		dev_err(dev, "%s: Failed to read rx_ln1\n", __func__);
++		return ret;
++	}
++
++	if (!(tx_pmos || tx_nmos || rx_data))
++		return 0;
++
++	mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN1_TX_REG,
++			    EFUSE_LN_TX_PMOS_SEL,
++			    EFUSE_LN_TX_PMOS_VAL(tx_pmos));
++
++	mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN1_TX_REG,
++			    EFUSE_LN_TX_NMOS_SEL,
++			    EFUSE_LN_TX_NMOS_VAL(tx_nmos));
++
++	mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN1_RX_REG,
++			    EFUSE_LN_RX_SEL, EFUSE_LN_RX_VAL(rx_data));
++
++	return 0;
++}
++
++static const struct phy_ops mtk_pcie_phy_ops = {
++	.init	= mtk_pcie_phy_init,
++	.owner	= THIS_MODULE,
++};
++
++static int mtk_pcie_phy_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct phy_provider *provider;
++	struct mtk_pcie_phy *pcie_phy;
++
++	pcie_phy = devm_kzalloc(dev, sizeof(*pcie_phy), GFP_KERNEL);
++	if (!pcie_phy)
++		return -ENOMEM;
++
++	pcie_phy->dev = dev;
++
++	pcie_phy->sif_base = devm_platform_ioremap_resource_byname(pdev, "sif");
++	if (IS_ERR(pcie_phy->sif_base)) {
++		dev_err(dev, "%s: Failed to map phy-sif base\n", __func__);
++		return PTR_ERR(pcie_phy->sif_base);
++	}
++
++	pcie_phy->phy = devm_phy_create(dev, dev->of_node, &mtk_pcie_phy_ops);
++	if (IS_ERR(pcie_phy->phy)) {
++		dev_err(dev, "%s: Failed to create PCIe phy\n", __func__);
++		return PTR_ERR(pcie_phy->phy);
++	}
++
++	phy_set_drvdata(pcie_phy->phy, pcie_phy);
++
++	provider = devm_of_phy_provider_register(dev, of_phy_simple_xlate);
++
++	return PTR_ERR_OR_ZERO(provider);
++}
++
++static const struct of_device_id mtk_pcie_phy_of_match[] = {
++	{ .compatible = "mediatek,pcie-phy" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, mtk_pcie_phy_of_match);
++
++static struct platform_driver mtk_pcie_phy_driver = {
++	.probe	= mtk_pcie_phy_probe,
++	.driver	= {
++		.name = "mtk-pcie-phy",
++		.of_match_table = mtk_pcie_phy_of_match,
++	},
++};
++module_platform_driver(mtk_pcie_phy_driver);
++
++MODULE_DESCRIPTION("MediaTek PCIe PHY driver");
++MODULE_AUTHOR("Jianjun Wang <jianjun.wang@mediatek.com>");
++MODULE_LICENSE("GPL v2");
+-- 
+2.18.0
 
-## Build
-* kernel: 4.9.306-rc2
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-4.9.y
-* git commit: 274dadc1cdeb33ce11f6d23f6b89e75249d8f8c4
-* git describe: v4.9.305-39-g274dadc1cdeb
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.9.y/build/v4.9.3=
-05-39-g274dadc1cdeb
-
-## Test Regressions (compared to v4.9.304-34-gd3c7ac3bc772)
-No test regressions found.
-
-## Metric Regressions (compared to v4.9.304-34-gd3c7ac3bc772)
-No metric regressions found.
-
-## Test Fixes (compared to v4.9.304-34-gd3c7ac3bc772)
-No test fixes found.
-
-## Metric Fixes (compared to v4.9.304-34-gd3c7ac3bc772)
-No metric fixes found.
-
-## Test result summary
-total: 70888, pass: 56046, fail: 861, skip: 11856, xfail: 2125
-
-## Build Summary
-* arm: 254 total, 238 passed, 16 failed
-* arm64: 32 total, 32 passed, 0 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 19 total, 19 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 22 total, 22 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 31 total, 31 passed, 0 failed
-
-## Test suites summary
-* fwts
-* kselftest-android
-* kselftest-arm64
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
