@@ -2,132 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A364C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346049AbiCKDzI (ORCPT
+        id S1346085AbiCKDzj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:55:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
+        Thu, 10 Mar 2022 22:55:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238284AbiCKDzH (ORCPT
+        with ESMTP id S238284AbiCKDzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:55:07 -0500
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3150618FAEB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:54:04 -0800 (PST)
-Received: by mail-oo1-xc2e.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so9337841ooi.0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:54:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sZfHvkJKS8yaHN8WYfqJ8pOq4+GXhz/qEgdhfNSZgv8=;
-        b=aLaPHpvNyMznOcG5oNJBuMxmVHIoRSaUoXA89DDdjr8P1y9SK+/3WYQo8rhP4YtxUB
-         tQlyaD2sSjQ8PDznA6dUnLfUr0BX1rwfEFmdZn/eXb30R6ghq3d7ljxNOX6ppKgtlCld
-         6jus8xLKu4kaFsdPwgdsrabiPJvKf9qUwkkb1noPU2ajzR08nxleacxV6t68FJfALOnu
-         mPj05vYXUX7+G4RcTsqN47r2JK+2ie2yg43gv6hWrTdIY04QS53afjbdrUZ0v50/rwEA
-         F7ZG/l8joqToOC1I5Y00aSRvq/5GnjkLJQptK/hSS7vH9g0XsrUWfN/Uzhu917CmRLBJ
-         TfRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sZfHvkJKS8yaHN8WYfqJ8pOq4+GXhz/qEgdhfNSZgv8=;
-        b=Hrqa+pPXFMsdJ7GXtYkgqXTLu6ZjNq/qCmRGaQ3fHVkF8GEHEc99RxkylwXN3ko0OM
-         EE7kwACKBXn9+0lMS25kr8VjcuK/zoleGehnTKWtdQRCB2xFJDkmYAKkf/7Ralrpmzy3
-         klF1anL+CVEIxmzM1e24kIhw9WT4fSDJzFYeDpBXHRzNI60vjJa7e6q/rLse+OkX8GoY
-         HIxSfUVHm/aK5xBONG/+fngP5VpeR8JiyAfv6gubb3R23+aP7UTGmK+2T96xCh7jkdkI
-         +Kk2BcX6KtHmCJzjh9GKLiXaTsG76YXoerMp2uJ+Sw9JVgpTZAP+7C8L8Akp3LuVmOi3
-         jv3A==
-X-Gm-Message-State: AOAM530IHfeMcujYapDN0xzuVNZvYXybxQWJ2HyXspfUm2HuoNigRdRD
-        grpbpkDSsBaqDPAapg1hhEM5ng==
-X-Google-Smtp-Source: ABdhPJxRbXUuC1D2tO1Q3R2NddgYYD1/BgTSRkCtqLU52Nw8td9E5ZesoOy8gtYZoFPkrwTJc+TKrQ==
-X-Received: by 2002:a05:6870:559f:b0:da:b3f:320d with SMTP id n31-20020a056870559f00b000da0b3f320dmr4606119oao.189.1646970841846;
-        Thu, 10 Mar 2022 19:54:01 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id l7-20020acabb07000000b002da34f9ffc3sm3312505oif.37.2022.03.10.19.54.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 19:54:01 -0800 (PST)
-Date:   Thu, 10 Mar 2022 19:55:41 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Cc:     krzk+dt@kernel.org, agross@kernel.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_asutoshd@quicinc.com,
-        quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
-        quic_sartgarg@quicinc.com, quic_nitirawa@quicinc.com,
-        quic_sayalil@quicinc.com
-Subject: Re: [PATCH V2] arm64: dts: qcom: sc7280: Enable gcc HW reset
-Message-ID: <YirIPRvcSSYhxiNv@ripper>
-References: <1646923503-28847-1-git-send-email-quic_c_sbhanu@quicinc.com>
+        Thu, 10 Mar 2022 22:55:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE81218FAEB;
+        Thu, 10 Mar 2022 19:54:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5824FB827DB;
+        Fri, 11 Mar 2022 03:54:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF23C340EC;
+        Fri, 11 Mar 2022 03:54:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646970872;
+        bh=T+/Lld+hq4lV5n+RrrbXPXhhkwm8I168aObglERBuwE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OpfkPI2msYKkkC5nZeH8IsoDx+YzlKIEfI7skQRpiXnE1fNld2q6/YAaAzwH0ca9r
+         0zGObTOwzvHCl53JWLqCpeZjSj+az0KeFK4KxTxcqeeadS91X9ZhZwnsv3f54fGc4H
+         Sj9fRhMZlztib/eHZsd5TKIioVs8TI4QgA4QZK/StDYrBiD5HC4JTV5aiwpt8/Frz1
+         AvP7ZrU7PV31xMrlPTYJYhsOfUMVzJF6h+lpu1hsrkNgvqjW7Ht5OccT4RruxfdZYt
+         ZlgilyAsU7QYDnW4KZVMIadiqy2IBE67Mmb2EuRPlnI7QLRMeBbGabvNmzydO9IdTw
+         WB0KVYpW1FxpA==
+Date:   Thu, 10 Mar 2022 19:54:29 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     menglong8.dong@gmail.com
+Cc:     dsahern@kernel.org, nhorman@tuxdriver.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, davem@davemloft.net, imagedong@tencent.com,
+        edumazet@google.com, talalahmad@google.com, keescook@chromium.org,
+        alobakin@pm.me, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Mengen Sun <mengensun@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: Re: [PATCH] net: skb: move enum skb_drop_reason to uapi
+Message-ID: <20220310195429.4ba93edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220311032828.702392-1-imagedong@tencent.com>
+References: <20220311032828.702392-1-imagedong@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646923503-28847-1-git-send-email-quic_c_sbhanu@quicinc.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 10 Mar 06:45 PST 2022, Shaik Sajida Bhanu wrote:
-
-Without looking at what Krzysztof suggested, I think $subject should
-reflect the fact that it's the reset of the two SDCC controllers that
-you're adding.
-
-Something like "arm64: dts:qcom: Add resets for SDCC controllers" would allow me to grasp the full
-purpose of the patch by only reading the subject.
-
-> Enable gcc HW reset for eMMC and SD card.
+On Fri, 11 Mar 2022 11:28:28 +0800 menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-> ---
-> 
-> Changes since V1:
-> 	- Updated commit message, subject and comments in dtsi file as
-> 	  suggested by Krzysztof Kozlowski.
-> ---
->  arch/arm64/boot/dts/qcom/sc7280.dtsi | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> index c07765d..721abf5 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> @@ -881,6 +881,9 @@
->  			mmc-hs400-1_8v;
->  			mmc-hs400-enhanced-strobe;
->  
-> +			/* Add gcc hw reset dt entry for eMMC */
+> Move the definition of 'enum skb_drop_reason' in 'skbuff.h' to the uapi
+> header 'net_dropmon.h', therefore some users, such as eBPF program, can
+> make use of it.
 
-When you read this comment 2 weeks from now it won't add any value.
-
-> +			resets = <&gcc GCC_SDCC1_BCR>;
-> +			reset-names = "core_reset";
-
-Doesn't seem that this binding has been converted to YAML, but the .txt
-binding doesn't mention "resets" and I don't see a reason for having a
-reset-names for a single reset.
-
-And please keep the empty line before the opp-table.
-
-Regards,
-Bjorn
-
->  			sdhc1_opp_table: opp-table {
->  				compatible = "operating-points-v2";
->  
-> @@ -2686,6 +2689,9 @@
->  
->  			qcom,dll-config = <0x0007642c>;
->  
-> +			/* Add gcc hw reset dt entry for SD card */
-> +			resets = <&gcc GCC_SDCC2_BCR>;
-> +			reset-names = "core_reset";
->  			sdhc2_opp_table: opp-table {
->  				compatible = "operating-points-v2";
->  
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-> of Code Aurora Forum, hosted by The Linux Foundation
-> 
+BPF does not need an enum definition to be part of the uAPI to make use
+of it. BTF should encode the values, and CO-RE can protect from them
+changing, AFAIU. I think we need a better example user / justification.
