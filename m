@@ -2,126 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A158C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E69E9C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241276AbiCKIt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:49:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
+        id S241927AbiCKIvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:51:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238171AbiCKItz (ORCPT
+        with ESMTP id S238171AbiCKIv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:49:55 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E311C574BC
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:48:48 -0800 (PST)
-Received: from [192.168.1.111] (91-156-85-209.elisa-laajakaista.fi [91.156.85.209])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id E5862488;
-        Fri, 11 Mar 2022 09:48:45 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1646988526;
-        bh=619hxS5eRALXNbTGrMeDNhkIZN+yytyMrHKVVWIcuf4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=BRw6g9pPuq+rnp3tD1xTLWXQoIMiJPf9cpirhuw0kZX6t3hCROcydjDBbYKyF0et8
-         82Ld1M0sJYaPVRHATdk5DKr7h4FT5TlGeOz8yI0fOlVpLI24307wdwxoRYMd4L/zfV
-         eho/5S/Xi94Mm0ki+p3Z28bTNNorgPc62LX/d/4Q=
-Message-ID: <632b3099-36ff-6141-a27b-95d920588a80@ideasonboard.com>
-Date:   Fri, 11 Mar 2022 10:48:42 +0200
+        Fri, 11 Mar 2022 03:51:28 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443F8574AD
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:50:24 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nSayY-0004dr-AU; Fri, 11 Mar 2022 09:50:18 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nSayV-00552v-Nv; Fri, 11 Mar 2022 09:50:15 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, paskripkin@gmail.com
+Subject: [PATCH net-next v2 3/4] net: usb: asix: make use of mdiobus_get_phy and phy_connect_direct
+Date:   Fri, 11 Mar 2022 09:50:13 +0100
+Message-Id: <20220311085014.1210963-3-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220311085014.1210963-1-o.rempel@pengutronix.de>
+References: <20220311085014.1210963-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] arm64: defconfig: Enable configs for DisplayPort on
- J721e
-Content-Language: en-US
-To:     Rahul T R <r-ravikumar@ti.com>, bjorn.andersson@linaro.org,
-        catalin.marinas@arm.com, will@kernel.org, shawnguo@kernel.org,
-        krzk@kernel.org, geert+renesas@glider.be,
-        marcel.ziswiler@toradex.com
-Cc:     biju.das.jz@bp.renesas.com, vkoul@kernel.org,
-        enric.balletbo@collabora.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, laurent.pinchart@ideasonboard.com,
-        nm@ti.com
-References: <20220223101539.4734-1-r-ravikumar@ti.com>
-From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-In-Reply-To: <20220223101539.4734-1-r-ravikumar@ti.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/02/2022 12:15, Rahul T R wrote:
-> Enable DRM and PHY configs required for supporting
-> DisplayPort on J721e
-> 
-> Signed-off-by: Rahul T R <r-ravikumar@ti.com>
-> ---
-> 
-> Notes:
->      v2:
->      	Fixed the places using savedefconfig
->      	Added more info in notes
->      
->      No change in vmlinux:
->      
->      	add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
->      	Function                                     old     new   delta
->      	Total: Before=24042991, After=24042991, chg +0.00%
->      
->      Diffstat of bootlogs:
->      
->      	after_boot.log |   46 ++++++++++++++++++++++++++--------------------
->      	1 file changed, 26 insertions(+), 20 deletions(-)
-> 
->   arch/arm64/configs/defconfig | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-> index 9f23d7ec1232..56d4c126f6da 100644
-> --- a/arch/arm64/configs/defconfig
-> +++ b/arch/arm64/configs/defconfig
-> @@ -736,6 +736,7 @@ CONFIG_DRM_THINE_THC63LVD1024=m
->   CONFIG_DRM_TI_SN65DSI86=m
->   CONFIG_DRM_I2C_ADV7511=m
->   CONFIG_DRM_I2C_ADV7511_AUDIO=y
-> +CONFIG_DRM_CDNS_MHDP8546=m
->   CONFIG_DRM_DW_HDMI_AHB_AUDIO=m
->   CONFIG_DRM_DW_HDMI_CEC=m
->   CONFIG_DRM_IMX_DCSS=m
-> @@ -750,6 +751,7 @@ CONFIG_DRM_MESON=m
->   CONFIG_DRM_PL111=m
->   CONFIG_DRM_LIMA=m
->   CONFIG_DRM_PANFROST=m
-> +CONFIG_DRM_TIDSS=m
->   CONFIG_FB=y
->   CONFIG_FB_MODE_HELPERS=y
->   CONFIG_FB_EFI=y
-> @@ -1151,6 +1153,7 @@ CONFIG_RESET_RZG2L_USBPHY_CTRL=y
->   CONFIG_RESET_TI_SCI=y
->   CONFIG_PHY_XGENE=y
->   CONFIG_PHY_SUN4I_USB=y
-> +CONFIG_PHY_CADENCE_TORRENT=m
->   CONFIG_PHY_MIXEL_MIPI_DPHY=m
->   CONFIG_PHY_FSL_IMX8M_PCIE=y
->   CONFIG_PHY_HI6220_USB=y
-> @@ -1175,6 +1178,7 @@ CONFIG_PHY_SAMSUNG_UFS=y
->   CONFIG_PHY_UNIPHIER_USB2=y
->   CONFIG_PHY_UNIPHIER_USB3=y
->   CONFIG_PHY_TEGRA_XUSB=y
-> +CONFIG_PHY_J721E_WIZ=m
->   CONFIG_ARM_SMMU_V3_PMU=m
->   CONFIG_FSL_IMX8_DDR_PMU=m
->   CONFIG_QCOM_L2_PMU=y
+In most cases we use own mdio bus, there is no need to create and store
+string for the PHY address.
 
-Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/usb/asix.h         |  1 -
+ drivers/net/usb/asix_devices.c | 19 ++++++++++---------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-Not directly related to this patch, but this is slightly annoying:
+diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
+index 691f37f45238..072760d76a72 100644
+--- a/drivers/net/usb/asix.h
++++ b/drivers/net/usb/asix.h
+@@ -184,7 +184,6 @@ struct asix_common_private {
+ 	struct mii_bus *mdio;
+ 	struct phy_device *phydev;
+ 	u16 phy_addr;
+-	char phy_name[20];
+ 	bool embd_phy;
+ 	u8 chipcode;
+ };
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index a0c02cd53472..40046d23d986 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -661,15 +661,16 @@ static int ax88772_init_phy(struct usbnet *dev)
+ 	struct asix_common_private *priv = dev->driver_priv;
+ 	int ret;
+ 
+-	snprintf(priv->phy_name, sizeof(priv->phy_name), PHY_ID_FMT,
+-		 priv->mdio->id, priv->phy_addr);
+-
+-	priv->phydev = phy_connect(dev->net, priv->phy_name, &asix_adjust_link,
+-				   PHY_INTERFACE_MODE_INTERNAL);
+-	if (IS_ERR(priv->phydev)) {
+-		netdev_err(dev->net, "Could not connect to PHY device %s\n",
+-			   priv->phy_name);
+-		ret = PTR_ERR(priv->phydev);
++	priv->phydev = mdiobus_get_phy(priv->mdio, priv->phy_addr);
++	if (!priv->phydev) {
++		netdev_err(dev->net, "Could not find PHY\n");
++		return -ENODEV;
++	}
++
++	ret = phy_connect_direct(dev->net, priv->phydev, &asix_adjust_link,
++				 PHY_INTERFACE_MODE_INTERNAL);
++	if (ret) {
++		netdev_err(dev->net, "Could not connect PHY\n");
+ 		return ret;
+ 	}
+ 
+-- 
+2.30.2
 
-cdns-mhdp8546 a000000.dp-bridge: invalid resource
-cdns-mhdp8546 a000000.dp-bridge: Failed to get SAPB memory resource, 
-HDCP not supported
-
-The first one is an error print and the second is a warning. I think a 
-dev_info about HDCP not supported would be enough.
-
-  Tomi
