@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB992C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348556AbiCKMPl (ORCPT
+        id S1348561AbiCKMQN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 07:15:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
+        Fri, 11 Mar 2022 07:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348533AbiCKMPi (ORCPT
+        with ESMTP id S1348554AbiCKMQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 07:15:38 -0500
+        Fri, 11 Mar 2022 07:16:06 -0500
 Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812AF186212;
-        Fri, 11 Mar 2022 04:14:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E81B184B49;
+        Fri, 11 Mar 2022 04:15:01 -0800 (PST)
 Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22B9kmH9007519;
-        Fri, 11 Mar 2022 13:14:18 +0100
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22B9kioB007226;
+        Fri, 11 Mar 2022 13:14:51 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : mime-version : content-transfer-encoding :
  content-type; s=selector1;
- bh=EdcURazVt+c0nmYLTmhQVE6ArzEwbBcfE+iE4T18VC4=;
- b=c3vrx9fNjx0k4xb8T8VUTbXxkKJGtXIhm1PK4yIxi5CV+dY16aiCLht8fjepJF3OZhbF
- RowmcrTjjZBrHVtysJPjNd1TmXK5hf1MT/rpDQS4xLCkLABySRxlSMTVFfaPHLa+sNYH
- K9zzqcLN0gSNjWb9OnaVgSnP/fWpOa3mRXdykU9MHy4PhtYHMdR18tyoFbJ0B2h1b/ls
- kbDXCHuI5sI1AK5ZNTSbLZie1Ly5VaqlLnQZ9HkhqBALhJo2KJH5X/ZiXI23zoiLpKQr
- z+0SLR04K2w3I/qds6e8Mbbd/iLZyR+GemXhfadZ4ZIPYgMZVUyjptdslBfiCWuu9YRS ig== 
+ bh=mZnPHPm24M02q+judbp3O+Zv8lTtDyzXELqq0TnJu9I=;
+ b=Rv2N3KvVOFUTJvDRHMXr/IrgnCXJ09Z0+a34XqUYNgSb/Vhw3GB+tuIzDLEQPiRjPqK6
+ OFo4JpGO5hci2GTHjHlvgVH+zpxw2cl01bX7vlrAGn6OTsURQbZzMlWTFVH5jlZmcQIt
+ EmhJlnFN3a3ClEDWVo6DUxR5GoVn3gPyP3c1v4fnslEL8MQwYt8qd+so/0szFNDKwqfA
+ aQBBmzjp6GrG45OD4wzFRGzkHg8iN8ufLip7Yn6xV/TPhX98HV4GTmRCbzXYSMmGoPe0
+ Zz5CGXDXdR0UdkAul/mYMGGm8gzy7nwuqGN2/1RRrbehNeVoEgIO/rnmGRawJrPAge+l dw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3eqx822xpc-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3eqx822xrm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 13:14:18 +0100
+        Fri, 11 Mar 2022 13:14:51 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 72E2710002A;
-        Fri, 11 Mar 2022 13:14:17 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 321F810002A;
+        Fri, 11 Mar 2022 13:14:51 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6A2F921E69C;
-        Fri, 11 Mar 2022 13:14:17 +0100 (CET)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2A9C321E69E;
+        Fri, 11 Mar 2022 13:14:51 +0100 (CET)
 Received: from localhost (10.75.127.51) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 11 Mar 2022 13:14:16
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 11 Mar 2022 13:14:50
  +0100
 From:   Fabien Dessenne <fabien.dessenne@foss.st.com>
 To:     Rob Herring <robh+dt@kernel.org>,
@@ -50,9 +50,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
 CC:     Fabien Dessenne <fabien.dessenne@foss.st.com>
-Subject: [PATCH] ARM: dts: stm32: fix pinctrl node name warnings (MPU soc)
-Date:   Fri, 11 Mar 2022 13:13:23 +0100
-Message-ID: <20220311121323.18125-1-fabien.dessenne@foss.st.com>
+Subject: [PATCH] ARM: dts: stm32: fix pinctrl node name warnings (MCU soc)
+Date:   Fri, 11 Mar 2022 13:14:48 +0100
+Message-ID: <20220311121448.18221-1-fabien.dessenne@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,45 +73,50 @@ Fix the node names to the preferred 'pinctrl'.
 
 Signed-off-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
 ---
- arch/arm/boot/dts/stm32mp131.dtsi | 2 +-
- arch/arm/boot/dts/stm32mp151.dtsi | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/stm32f4-pinctrl.dtsi | 2 +-
+ arch/arm/boot/dts/stm32f7-pinctrl.dtsi | 2 +-
+ arch/arm/boot/dts/stm32h743.dtsi       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index 86126dc0d898..57a911cddebe 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -164,7 +164,7 @@ ts_cal2: calib@5e {
- 		 * Break node order to solve dependency probe issue between
- 		 * pinctrl and exti.
- 		 */
--		pinctrl: pin-controller@50002000 {
-+		pinctrl: pinctrl@50002000 {
+diff --git a/arch/arm/boot/dts/stm32f4-pinctrl.dtsi b/arch/arm/boot/dts/stm32f4-pinctrl.dtsi
+index 155d9ffacc83..500bcc302d42 100644
+--- a/arch/arm/boot/dts/stm32f4-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stm32f4-pinctrl.dtsi
+@@ -45,7 +45,7 @@
+ 
+ / {
+ 	soc {
+-		pinctrl: pin-controller@40020000 {
++		pinctrl: pinctrl@40020000 {
  			#address-cells = <1>;
  			#size-cells = <1>;
- 			compatible = "st,stm32mp135-pinctrl";
-diff --git a/arch/arm/boot/dts/stm32mp151.dtsi b/arch/arm/boot/dts/stm32mp151.dtsi
-index 1cfc2f011e70..489fb9979085 100644
---- a/arch/arm/boot/dts/stm32mp151.dtsi
-+++ b/arch/arm/boot/dts/stm32mp151.dtsi
-@@ -1602,7 +1602,7 @@ tamp: tamp@5c00a000 {
- 		 * Break node order to solve dependency probe issue between
- 		 * pinctrl and exti.
- 		 */
--		pinctrl: pin-controller@50002000 {
-+		pinctrl: pinctrl@50002000 {
+ 			ranges = <0 0x40020000 0x3000>;
+diff --git a/arch/arm/boot/dts/stm32f7-pinctrl.dtsi b/arch/arm/boot/dts/stm32f7-pinctrl.dtsi
+index 1cf8a23c2644..8f37aefa7315 100644
+--- a/arch/arm/boot/dts/stm32f7-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stm32f7-pinctrl.dtsi
+@@ -9,7 +9,7 @@
+ 
+ / {
+ 	soc {
+-		pinctrl: pin-controller@40020000 {
++		pinctrl: pinctrl@40020000 {
  			#address-cells = <1>;
  			#size-cells = <1>;
- 			compatible = "st,stm32mp157-pinctrl";
-@@ -1733,7 +1733,7 @@ gpiok: gpio@5000c000 {
- 			};
+ 			ranges = <0 0x40020000 0x3000>;
+diff --git a/arch/arm/boot/dts/stm32h743.dtsi b/arch/arm/boot/dts/stm32h743.dtsi
+index 6e42ca2dada2..91dde07a38ba 100644
+--- a/arch/arm/boot/dts/stm32h743.dtsi
++++ b/arch/arm/boot/dts/stm32h743.dtsi
+@@ -583,7 +583,7 @@ mac: ethernet@40028000 {
+ 			status = "disabled";
  		};
  
--		pinctrl_z: pin-controller-z@54004000 {
-+		pinctrl_z: pinctrl@54004000 {
+-		pinctrl: pin-controller@58020000 {
++		pinctrl: pinctrl@58020000 {
  			#address-cells = <1>;
  			#size-cells = <1>;
- 			compatible = "st,stm32mp157-z-pinctrl";
+ 			compatible = "st,stm32h743-pinctrl";
 -- 
 2.25.1
 
