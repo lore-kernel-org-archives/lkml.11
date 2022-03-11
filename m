@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFCFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32437C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241819AbiCKIve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:51:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34904 "EHLO
+        id S242810AbiCKIvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:51:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234599AbiCKIv2 (ORCPT
+        with ESMTP id S238760AbiCKIv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Mar 2022 03:51:28 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAB51B754E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A591BA93A
         for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:50:24 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nSayY-0004ds-AX; Fri, 11 Mar 2022 09:50:18 +0100
+        id 1nSayY-0004dp-AT; Fri, 11 Mar 2022 09:50:18 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nSayV-005534-Oq; Fri, 11 Mar 2022 09:50:15 +0100
+        id 1nSayV-00552d-M1; Fri, 11 Mar 2022 09:50:15 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -31,12 +31,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org, paskripkin@gmail.com
-Subject: [PATCH net-next v2 4/4] net: usb: asix: suspend embedded PHY if external is used
-Date:   Fri, 11 Mar 2022 09:50:14 +0100
-Message-Id: <20220311085014.1210963-4-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 1/4] net: usb: asix: unify ax88772_resume code
+Date:   Fri, 11 Mar 2022 09:50:11 +0100
+Message-Id: <20220311085014.1210963-1-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220311085014.1210963-1-o.rempel@pengutronix.de>
-References: <20220311085014.1210963-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
@@ -47,80 +45,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case external PHY is used, we need to take care of embedded PHY.
-Since there are no methods to disable this PHY from the MAC side and
-keeping RMII reference clock, we need to suspend it.
-
-This patch will reduce electrical noise (PHY is continuing to send FLPs)
-and power consumption by 0,22W.
+The only difference is the reset code, so remove not needed duplicates.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
-changes v2:
-- rename internal to embedded PHY
-- add note about refclock dependency
----
- drivers/net/usb/asix.h         |  3 +++
- drivers/net/usb/asix_devices.c | 18 +++++++++++++++++-
- 2 files changed, 20 insertions(+), 1 deletion(-)
+ drivers/net/usb/asix.h         |  1 +
+ drivers/net/usb/asix_devices.c | 32 ++++++++------------------------
+ 2 files changed, 9 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/net/usb/asix.h b/drivers/net/usb/asix.h
-index 072760d76a72..2c81236c6c7c 100644
+index 4334aafab59a..b5ac693cebf2 100644
 --- a/drivers/net/usb/asix.h
 +++ b/drivers/net/usb/asix.h
-@@ -158,6 +158,8 @@
- #define AX_EEPROM_MAGIC		0xdeadbeef
- #define AX_EEPROM_LEN		0x200
- 
-+#define AX_EMBD_PHY_ADDR	0x10
-+
- /* This structure cannot exceed sizeof(unsigned long [5]) AKA 20 bytes */
- struct asix_data {
- 	u8 multi_filter[AX_MCAST_FILTER_SIZE];
-@@ -183,6 +185,7 @@ struct asix_common_private {
+@@ -177,6 +177,7 @@ struct asix_rx_fixup_info {
+ struct asix_common_private {
+ 	void (*resume)(struct usbnet *dev);
+ 	void (*suspend)(struct usbnet *dev);
++	int (*reset)(struct usbnet *dev, int in_pm);
+ 	u16 presvd_phy_advertise;
+ 	u16 presvd_phy_bmcr;
  	struct asix_rx_fixup_info rx_fixup_info;
- 	struct mii_bus *mdio;
- 	struct phy_device *phydev;
-+	struct phy_device *phydev_int;
- 	u16 phy_addr;
- 	bool embd_phy;
- 	u8 chipcode;
 diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 40046d23d986..4241852f392b 100644
+index e6cfa9a39a87..28bb98cdfa33 100644
 --- a/drivers/net/usb/asix_devices.c
 +++ b/drivers/net/usb/asix_devices.c
-@@ -679,6 +679,22 @@ static int ax88772_init_phy(struct usbnet *dev)
+@@ -625,27 +625,13 @@ static void ax88772_resume(struct usbnet *dev)
+ 	int i;
  
- 	phy_attached_info(priv->phydev);
+ 	for (i = 0; i < 3; i++)
+-		if (!ax88772_hw_reset(dev, 1))
++		if (!priv->reset(dev, 1))
+ 			break;
  
-+	if (priv->embd_phy)
-+		return 0;
-+
-+	/* In case main PHY is not the embedded PHY and MAC is RMII clock
-+	 * provider, we need to suspend embedded PHY by keeping PLL enabled
-+	 * (AX_SWRESET_IPPD == 0).
-+	 */
-+	priv->phydev_int = mdiobus_get_phy(priv->mdio, AX_EMBD_PHY_ADDR);
-+	if (!priv->phydev_int) {
-+		netdev_err(dev->net, "Could not find internal PHY\n");
-+		return -ENODEV;
-+	}
-+
-+	priv->phydev_int->mac_managed_pm = 1;
-+	phy_suspend(priv->phydev_int);
-+
- 	return 0;
+ 	if (netif_running(dev->net))
+ 		phy_start(priv->phydev);
  }
  
-@@ -734,7 +750,7 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+-static void ax88772a_resume(struct usbnet *dev)
+-{
+-	struct asix_common_private *priv = dev->driver_priv;
+-	int i;
+-
+-	for (i = 0; i < 3; i++) {
+-		if (!ax88772a_hw_reset(dev, 1))
+-			break;
+-	}
+-
+-	if (netif_running(dev->net))
+-		phy_start(priv->phydev);
+-}
+-
+ static int asix_resume(struct usb_interface *intf)
+ {
+ 	struct usbnet *dev = usb_get_intfdata(intf);
+@@ -763,9 +749,14 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
+ 
+ 	chipcode &= AX_CHIPCODE_MASK;
+ 
+-	ret = (chipcode == AX_AX88772_CHIPCODE) ? ax88772_hw_reset(dev, 0) :
+-						  ax88772a_hw_reset(dev, 0);
++	priv->resume = ax88772_resume;
++	priv->suspend = ax88772_suspend;
++	if (chipcode == AX_AX88772_CHIPCODE)
++		priv->reset = ax88772_hw_reset;
++	else
++		priv->reset = ax88772a_hw_reset;
+ 
++	ret = priv->reset(dev, 0);
+ 	if (ret < 0) {
+ 		netdev_dbg(dev->net, "Failed to reset AX88772: %d\n", ret);
  		return ret;
+@@ -780,13 +771,6 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
  
- 	priv->phy_addr = ret;
--	priv->embd_phy = ((priv->phy_addr & 0x1f) == 0x10);
-+	priv->embd_phy = ((priv->phy_addr & 0x1f) == AX_EMBD_PHY_ADDR);
+ 	priv->presvd_phy_bmcr = 0;
+ 	priv->presvd_phy_advertise = 0;
+-	if (chipcode == AX_AX88772_CHIPCODE) {
+-		priv->resume = ax88772_resume;
+-		priv->suspend = ax88772_suspend;
+-	} else {
+-		priv->resume = ax88772a_resume;
+-		priv->suspend = ax88772_suspend;
+-	}
  
- 	ret = asix_read_cmd(dev, AX_CMD_STATMNGSTS_REG, 0, 0, 1,
- 			    &priv->chipcode, 0);
+ 	ret = ax88772_init_mdio(dev);
+ 	if (ret)
 -- 
 2.30.2
 
