@@ -2,96 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89497C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:28:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346163AbiCKD3t (ORCPT
+        id S1346128AbiCKD3x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:29:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42390 "EHLO
+        Thu, 10 Mar 2022 22:29:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346071AbiCKD3Z (ORCPT
+        with ESMTP id S1346028AbiCKD3m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:29:25 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D92CECB14
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:17 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id 1-20020a630c41000000b00378d9d6bd91so4046326pgm.17
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=ah7917HNa/g0cmKwYFpbM45yCdlvulapW582Yzn7pZ0=;
-        b=N407RnY58cz0djG3g+jXoIaXBqOrqIAQT5TafvJUD7SHhBvrPDJvakgzpjkg06fbrx
-         SUfemsCdjmv3U4K/JwCSJ9qb40qz9Mmxbex4VowQEoCe19Mwrp0FK/fwbJP5qnXmgDpD
-         aClTR0kaIMLMEiqIc0ZV/yLp9SaHLcVsPuJPBNiBMk6K5mVLN4NBlRH6G7CyyEFQeqY4
-         IVTF8YlLKrXiNpNSRsRNWqsKxFzvh6xFEB4sztjCQ+7jiG2ZGhMxYB8vvur0SRS33HBV
-         jg+Fj5WHM8hBK7IuMlRSTg7uCIiA8e9PClba+YuIAQ9duIdfU9N5X6zEtGCUlvCQbGsU
-         Ew2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=ah7917HNa/g0cmKwYFpbM45yCdlvulapW582Yzn7pZ0=;
-        b=2DT0XKuSw4niKMsLpYbr+mhg7OSlffAakk4Hl25s6GMM5POdKa0G2MpALXyFU2w7aY
-         nNKzDuEkSjH9dF2e7kEFocPZUQ3lytOfqDarALkXMBvoGqqDhYE3gXzCJf0nuiigs+Xi
-         o+g/jgxjv2EeIgfcnw/4zFq+kKlG8SBEzi8XeKj5sO7HhDxaKv4XJO3oPVIoUiwZgVnc
-         4/s1rbgwfAlkJZA1zMifNE0/cp3LY3u2x7tl0ob03a5KR5Uw+ZRv4mmCqR+gwkp+REhS
-         BiG8oLACWhW3ufVTyimWwgwL0noS4isYwOgBd6xFfnWjnVGmAdbCVHyE6l75ce3nMa4s
-         QMdQ==
-X-Gm-Message-State: AOAM530gmf1ag27KP3/8dLLK9MJ7NKF84C0rjdeErProKYL25pFFpX9L
-        dfx3IpQm91b3kajZSQKY+myh+YY/oDo=
-X-Google-Smtp-Source: ABdhPJwVEqTJyDOKgyRp9BN9/5t9HOysd368ONGXLWYbTYZ9iwc0I/OfH2lbvowB1Cq6FK3nyOUCoBrpfng=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:e2cc:b0:1bf:711f:11e7 with SMTP id
- fr12-20020a17090ae2cc00b001bf711f11e7mr19466024pjb.40.1646969297010; Thu, 10
- Mar 2022 19:28:17 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 03:27:48 +0000
-In-Reply-To: <20220311032801.3467418-1-seanjc@google.com>
-Message-Id: <20220311032801.3467418-9-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220311032801.3467418-1-seanjc@google.com>
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH 08/21] KVM: x86: Use DR7_GD macro instead of open coding check
- in emulator
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 10 Mar 2022 22:29:42 -0500
+Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082FBEC5D7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:19 -0800 (PST)
+X-QQ-mid: bizesmtp85t1646969247tscer40p
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 11 Mar 2022 11:27:21 +0800 (CST)
+X-QQ-SSF: 01400000002000C0H000000A0000000
+X-QQ-FEAT: Mzskoac49Oix45HU7RpkQ25a/rIjfqz/xgRkOTk+Y7CcKbw/h3EHuchHvEdlb
+        YN24DiTvtEVge8S7aK4kQwchQyKrDxvx1VNqEfkQIrt+wImigdULiJ3EOryxyvIF/NG+0ha
+        UBt61aD3nL4PF/5sMItOvZyBTcYl55U4a279CoBfx6U0u34TdQ7Q7UdhGHhpubR5z/1Ce6t
+        z6ct/d3hBKwL2uXlnUEdySVHF3UkUjDga1LCdAyRhFY24h5Pyq1MDtaJGqJgqqmBiFUia8g
+        +/qXnndJXL4VdQt3YME58G787MOhCea1Cc/WURqTIsl5HwymukdxtgwORTtm3LrdXw5ZkpC
+        BZkeRwiRdqrLVjuYe9GF25I3cda06tv8QDO5Ths5aXavKIcB+TB3ROgaYxCOA==
+X-QQ-GoodBg: 1
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com
+Cc:     linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH v2] Bluetooth: btrtl: btmrvl: Fix firmware filename for rtl chipset
+Date:   Fri, 11 Mar 2022 11:27:20 +0800
+Message-Id: <20220311032720.28499-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use DR7_GD in the emulator instead of open coding the check, and drop a
-comically wrong comment.
+Firmware for rtl chipset is as part of the linux-firmware repository
+in dir linux-firmware/rtl_bt. Today, the rtl8761a_config,
+rtl8821a_config, rtl8723b_config and rtl8723bs_config files are used
+in btrtl, but it doesn't actually exist, which causes errors like:
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+bluetooth: Direct firmware load for rtl_bt/rtl8821a_config.bin
+           failed with error -2
+
+According to the files in the rtl_bt directory in the Linux firmware,
+fixes the driver to load correct firmware file for rtl.
+
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- arch/x86/kvm/emulate.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/bluetooth/btrtl.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index a60b4d20b309..648a0687120d 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -4148,8 +4148,7 @@ static int check_dr7_gd(struct x86_emulate_ctxt *ctxt)
+diff --git a/drivers/bluetooth/btrtl.c b/drivers/bluetooth/btrtl.c
+index c2030f7e25b4..e3cfe0dff07d 100644
+--- a/drivers/bluetooth/btrtl.c
++++ b/drivers/bluetooth/btrtl.c
+@@ -88,14 +88,14 @@ static const struct id_table ic_id_table[] = {
+ 	  .config_needed = true,
+ 	  .has_rom_version = true,
+ 	  .fw_name  = "rtl_bt/rtl8723bs_fw.bin",
+-	  .cfg_name = "rtl_bt/rtl8723bs_config" },
++	  .cfg_name = "rtl_bt/rtl8723bs_config-OBDA8723" },
  
- 	ctxt->ops->get_dr(ctxt, 7, &dr7);
+ 	/* 8723B */
+ 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xb, 0x6, HCI_USB),
+ 	  .config_needed = false,
+ 	  .has_rom_version = true,
+ 	  .fw_name  = "rtl_bt/rtl8723b_fw.bin",
+-	  .cfg_name = "rtl_bt/rtl8723b_config" },
++	  .cfg_name = NULL },
  
--	/* Check if DR7.Global_Enable is set */
--	return dr7 & (1 << 13);
-+	return dr7 & DR7_GD;
- }
+ 	/* 8723D */
+ 	{ IC_INFO(RTL_ROM_LMP_8723B, 0xd, 0x8, HCI_USB),
+@@ -116,7 +116,7 @@ static const struct id_table ic_id_table[] = {
+ 	  .config_needed = false,
+ 	  .has_rom_version = true,
+ 	  .fw_name  = "rtl_bt/rtl8821a_fw.bin",
+-	  .cfg_name = "rtl_bt/rtl8821a_config" },
++	  .cfg_name = NULL },
  
- static int check_dr_read(struct x86_emulate_ctxt *ctxt)
+ 	/* 8821C */
+ 	{ IC_INFO(RTL_ROM_LMP_8821A, 0xc, 0x8, HCI_USB),
+@@ -131,7 +131,7 @@ static const struct id_table ic_id_table[] = {
+ 	  .config_needed = false,
+ 	  .has_rom_version = true,
+ 	  .fw_name  = "rtl_bt/rtl8761a_fw.bin",
+-	  .cfg_name = "rtl_bt/rtl8761a_config" },
++	  .cfg_name = NULL },
+ 
+ 	/* 8761B */
+ 	{ IC_INFO(RTL_ROM_LMP_8761A, 0xb, 0xa, HCI_UART),
+@@ -921,15 +921,12 @@ MODULE_VERSION(VERSION);
+ MODULE_LICENSE("GPL");
+ MODULE_FIRMWARE("rtl_bt/rtl8723a_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723b_fw.bin");
+-MODULE_FIRMWARE("rtl_bt/rtl8723b_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723bs_fw.bin");
+-MODULE_FIRMWARE("rtl_bt/rtl8723bs_config.bin");
++MODULE_FIRMWARE("rtl_bt/rtl8723bs_config-OBDA8723.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723ds_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8723ds_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8761a_fw.bin");
+-MODULE_FIRMWARE("rtl_bt/rtl8761a_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8821a_fw.bin");
+-MODULE_FIRMWARE("rtl_bt/rtl8821a_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8822b_fw.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8822b_config.bin");
+ MODULE_FIRMWARE("rtl_bt/rtl8852au_fw.bin");
 -- 
-2.35.1.723.g4982287a31-goog
+2.20.1
+
+
 
