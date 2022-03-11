@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A43B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 19:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15542C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 19:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351051AbiCKTIT (ORCPT
+        id S1351052AbiCKTIY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 14:08:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
+        Fri, 11 Mar 2022 14:08:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351036AbiCKTIK (ORCPT
+        with ESMTP id S1351047AbiCKTIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 14:08:10 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623B51AE66C
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:07:06 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id rm8-20020a17090b3ec800b001c55791fdb1so1199763pjb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:07:06 -0800 (PST)
+        Fri, 11 Mar 2022 14:08:18 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 680251B45D8
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:07:10 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id 27so8194128pgk.10
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:07:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2SJwDWdiGMEZCVwB+/7uYYAov/bAs7rI8E5dgDcHCHE=;
-        b=RNQvCIeNkI4a6kLZuTON6FllInIPnYqg62rwO8uY4lqXnydg7/VigusyjdDFurCpyA
-         aZXwXDaW7rxdtHW2kXSbfdOGvqMuG0VR3uYmnR5C6fefO6pRdmPrLDeAcGksiwudrbPJ
-         +uS23aBaNlyW0XX7OGc85OfYadCVJY7t8QkH11lz1wPwpTu7NxXw8LIsKfNXGjEdDh+d
-         LdeTShgIANY79GqZTPLLMZeOjHeXEtMEeyXY/slpMh9JNQn9q2wrgVKViNoLw7GUcJmV
-         xAw8FyP6gSJJoLj3ROIh4jy5cZhvnzwyl03cKtvmVJzRqjbXUTvg55K/2sLgZQ1OfwL7
-         Ir6g==
+        bh=H+7HXLBkyAOLpnbUPOmqITaSjFmsP/5pELWsoOHR/vE=;
+        b=MJUW/OBtekTcOTSPuabcFv3BZEGGPew/ae5RAx3Okfwdh7+YFVmWWVBCoD2oJ9Wpp2
+         yiGW3QXb4/sREzD5y8Ba3WABTEmXNS4zXZMt11BPqGrjIRvnnYrfBJHqf05nQHuRTfoQ
+         HtrZNCd49fExA3DSuGIxYVOTGgHwbzMgx8JzfVqSZWBRig7y9a0r5GBTAALGT6wJ8h5d
+         1mZT0oa97bKk6POT4ycHwrShqf3jeoz1RqYEIe1YSaWdzJdFyhsQUkNrKan7IoJmhYia
+         TWWZg1lcE/0BzVPilxag1kNVCgjk1t/S1yWle7P4w4w9O/XDRfUvm+pGvIoV+2wLIPcq
+         OQUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2SJwDWdiGMEZCVwB+/7uYYAov/bAs7rI8E5dgDcHCHE=;
-        b=ZMTjfrlQnsF1jW1DbzzeeKi8/RxwPN3hZQyUuykeggH3w7FgmFjx/0W0+Lc93DAp8x
-         8JcQo9pAkYrIvJOAxDCigfkwRRIxjxBDQmjPZ/oNyXAWNHtjGbUr4HuDrGv2qdwJlIGZ
-         N9LdLmg/e6+nUeXlLKaieTVg8GAAFfFc8/SpbxuDTiWMNxeV8StTOvrZ0NBTLhGraqZ7
-         RwAuC+iVJoUVzPQibfbn1X91qhM9TMAmrwtESDRjRkXIg4IGefm11ZHHypKu4MLZikBa
-         TI/aucISactRIsMMrhPxRzHHeMlPHMfnPloZxkFqmBlI19dLBkG1G5MOHNgzrlAmGohp
-         PWIw==
-X-Gm-Message-State: AOAM531/m2xzfUGqSr5yqqUrqhIsGpX+DYd3sqFyjEexmJeSnyFE7YTK
-        9JPyt3HQaEzvJt9FpTKdLsY=
-X-Google-Smtp-Source: ABdhPJzL9/Di0EFA1D/q8bRtKkBUbBPgCgrnm9WVIMobs4Hsr0B+nA08KlWZ2rvqyD+IC3SeAeAwHA==
-X-Received: by 2002:a17:902:a9cb:b0:151:f21c:2432 with SMTP id b11-20020a170902a9cb00b00151f21c2432mr12252500plr.158.1647025625493;
-        Fri, 11 Mar 2022 11:07:05 -0800 (PST)
+        bh=H+7HXLBkyAOLpnbUPOmqITaSjFmsP/5pELWsoOHR/vE=;
+        b=c02UDWHWjTQW5J3sEeQs3QQzCFqiNWWHl7YTMbNOB70aKhvvgS7KfC2fYvrzwbi6Ly
+         //FkUMTccFwNZjpFIQ8oeFBZFzUj8/9pKhHbiirBQdOpA6+Kr9fG/3DqUtCkjdWjhPnU
+         QzLeQ4+7SzEwJabZFU3NsFEq2C90+qJuMBdeHIkYjwe6NFpcDmSUyALXHoJa0TDynlE4
+         QiJEvTX/AyXQ1imc+OA4qSYkJg7sb9OiUdsfmsuzlh1onZFaBTiHwx87SSWdUadLuIxv
+         USjHQvG+DespG6dfZTs6osLPF2OgHOd4na2dwPmt3rJpoLfAYevCPEoFhpFbJCnzy642
+         z0Aw==
+X-Gm-Message-State: AOAM533E3HTBPZWOGT4xEbgUW/PCWXbw+cgtC0ptDvJQ32O4oqYLLoHD
+        1vv/fZnCQKvpVkqkvsgp+04=
+X-Google-Smtp-Source: ABdhPJy26ze4QxSMoBycri2ovrzLLtoevyKLqjLrR1rTJIL+/VdzLtOd0fg/tVvh/U2SjSZv0AfVrA==
+X-Received: by 2002:a63:7cb:0:b0:380:f89f:c9a2 with SMTP id 194-20020a6307cb000000b00380f89fc9a2mr6316679pgh.264.1647025629551;
+        Fri, 11 Mar 2022 11:07:09 -0800 (PST)
 Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
-        by smtp.gmail.com with ESMTPSA id a5-20020a621a05000000b004f79f8f795fsm857329pfa.0.2022.03.11.11.07.04
+        by smtp.gmail.com with ESMTPSA id a5-20020a621a05000000b004f79f8f795fsm857329pfa.0.2022.03.11.11.07.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 11:07:05 -0800 (PST)
+        Fri, 11 Mar 2022 11:07:09 -0800 (PST)
 From:   Nadav Amit <nadav.amit@gmail.com>
 X-Google-Original-From: Nadav Amit
 To:     linux-mm@kvack.org
@@ -64,9 +64,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Thomas Gleixner <tglx@linutronix.de>,
         Will Deacon <will@kernel.org>, Yu Zhao <yuzhao@google.com>,
         Nick Piggin <npiggin@gmail.com>, x86@kernel.org
-Subject: [RESEND PATCH v3 2/5] x86/mm: check exec permissions on fault
-Date:   Fri, 11 Mar 2022 11:07:46 -0800
-Message-Id: <20220311190749.338281-3-namit@vmware.com>
+Subject: [RESEND PATCH v3 5/5] mm: avoid unnecessary flush on change_huge_pmd()
+Date:   Fri, 11 Mar 2022 11:07:49 -0800
+Message-Id: <20220311190749.338281-6-namit@vmware.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220311190749.338281-1-namit@vmware.com>
 References: <20220311190749.338281-1-namit@vmware.com>
@@ -78,22 +78,21 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nadav Amit <namit@vmware.com>
 
-access_error() currently does not check for execution permission
-violation. As a result, spurious page-faults due to execution permission
-violation cause SIGSEGV.
+Calls to change_protection_range() on THP can trigger, at least on x86,
+two TLB flushes for one page: one immediately, when pmdp_invalidate() is
+called by change_huge_pmd(), and then another one later (that can be
+batched) when change_protection_range() finishes.
 
-It appears not to be an issue so far, but the next patches avoid TLB
-flushes on permission promotion, which can lead to this scenario. nodejs
-for instance crashes when TLB flush is avoided on permission promotion.
+The first TLB flush is only necessary to prevent the dirty bit (and with
+a lesser importance the access bit) from changing while the PTE is
+modified. However, this is not necessary as the x86 CPUs set the
+dirty-bit atomically with an additional check that the PTE is (still)
+present. One caveat is Intel's Knights Landing that has a bug and does
+not do so.
 
-Add a check to prevent access_error() from returning mistakenly that
-spurious page-faults due to instruction fetch are a reason for an access
-error.
-
-It is assumed that error code bits of "instruction fetch" and "write" in
-the hardware error code are mutual exclusive, and the change assumes so.
-However, to be on the safe side, especially if hypervisors misbehave,
-assert this is the case and warn otherwise.
+Leverage this behavior to eliminate the unnecessary TLB flush in
+change_huge_pmd(). Introduce a new arch specific pmdp_invalidate_ad()
+that only invalidates the access and dirty bit from further changes.
 
 Cc: Andrea Arcangeli <aarcange@redhat.com>
 Cc: Andrew Cooper <andrew.cooper3@citrix.com>
@@ -109,44 +108,117 @@ Cc: Nick Piggin <npiggin@gmail.com>
 Cc: x86@kernel.org
 Signed-off-by: Nadav Amit <namit@vmware.com>
 ---
- arch/x86/mm/fault.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/pgtable.h |  5 +++++
+ arch/x86/mm/pgtable.c          | 10 ++++++++++
+ include/linux/pgtable.h        | 20 ++++++++++++++++++++
+ mm/huge_memory.c               |  4 ++--
+ mm/pgtable-generic.c           |  8 ++++++++
+ 5 files changed, 45 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index d0074c6ed31a..ad0ef0a6087a 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -1107,10 +1107,28 @@ access_error(unsigned long error_code, struct vm_area_struct *vma)
- 				       (error_code & X86_PF_INSTR), foreign))
- 		return 1;
- 
--	if (error_code & X86_PF_WRITE) {
-+	if (error_code & (X86_PF_WRITE | X86_PF_INSTR)) {
-+		/*
-+		 * CPUs are not expected to set the two error code bits
-+		 * together, but to ensure that hypervisors do not misbehave,
-+		 * run an additional sanity check.
-+		 */
-+		if ((error_code & (X86_PF_WRITE|X86_PF_INSTR)) ==
-+					(X86_PF_WRITE|X86_PF_INSTR)) {
-+			WARN_ON_ONCE(1);
-+			return 1;
-+		}
-+
- 		/* write, present and write, not present: */
--		if (unlikely(!(vma->vm_flags & VM_WRITE)))
-+		if ((error_code & X86_PF_WRITE) &&
-+		    unlikely(!(vma->vm_flags & VM_WRITE)))
-+			return 1;
-+
-+		/* exec, present and exec, not present: */
-+		if ((error_code & X86_PF_INSTR) &&
-+		    unlikely(!(vma->vm_flags & VM_EXEC)))
- 			return 1;
-+
- 		return 0;
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+index 62ab07e24aef..23ad34edcc4b 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -1173,6 +1173,11 @@ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
  	}
+ }
+ #endif
++
++#define __HAVE_ARCH_PMDP_INVALIDATE_AD
++extern pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma,
++				unsigned long address, pmd_t *pmdp);
++
+ /*
+  * Page table pages are page-aligned.  The lower half of the top
+  * level is used for userspace and the top half for the kernel.
+diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+index 3481b35cb4ec..b2fcb2c749ce 100644
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -608,6 +608,16 @@ int pmdp_clear_flush_young(struct vm_area_struct *vma,
  
+ 	return young;
+ }
++
++pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma, unsigned long address,
++			 pmd_t *pmdp)
++{
++	pmd_t old = pmdp_establish(vma, address, pmdp, pmd_mkinvalid(*pmdp));
++
++	if (cpu_feature_enabled(X86_BUG_PTE_LEAK))
++		flush_pmd_tlb_range(vma, address, address + HPAGE_PMD_SIZE);
++	return old;
++}
+ #endif
+ 
+ /**
+diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+index f4f4077b97aa..5826e8e52619 100644
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -570,6 +570,26 @@ extern pmd_t pmdp_invalidate(struct vm_area_struct *vma, unsigned long address,
+ 			    pmd_t *pmdp);
+ #endif
+ 
++#ifndef __HAVE_ARCH_PMDP_INVALIDATE_AD
++
++/*
++ * pmdp_invalidate_ad() invalidates the PMD while changing a transparent
++ * hugepage mapping in the page tables. This function is similar to
++ * pmdp_invalidate(), but should only be used if the access and dirty bits would
++ * not be cleared by the software in the new PMD value. The function ensures
++ * that hardware changes of the access and dirty bits updates would not be lost.
++ *
++ * Doing so can allow in certain architectures to avoid a TLB flush in most
++ * cases. Yet, another TLB flush might be necessary later if the PMD update
++ * itself requires such flush (e.g., if protection was set to be stricter). Yet,
++ * even when a TLB flush is needed because of the update, the caller may be able
++ * to batch these TLB flushing operations, so fewer TLB flush operations are
++ * needed.
++ */
++extern pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma,
++				unsigned long address, pmd_t *pmdp);
++#endif
++
+ #ifndef __HAVE_ARCH_PTE_SAME
+ static inline int pte_same(pte_t pte_a, pte_t pte_b)
+ {
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 51b0f3cb1ba0..691d80edcfd7 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1781,10 +1781,10 @@ int change_huge_pmd(struct mmu_gather *tlb, struct vm_area_struct *vma,
+ 	 * The race makes MADV_DONTNEED miss the huge pmd and don't clear it
+ 	 * which may break userspace.
+ 	 *
+-	 * pmdp_invalidate() is required to make sure we don't miss
++	 * pmdp_invalidate_ad() is required to make sure we don't miss
+ 	 * dirty/young flags set by hardware.
+ 	 */
+-	oldpmd = pmdp_invalidate(vma, addr, pmd);
++	oldpmd = pmdp_invalidate_ad(vma, addr, pmd);
+ 
+ 	entry = pmd_modify(oldpmd, newprot);
+ 	if (preserve_write)
+diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
+index 6523fda274e5..90ab721a12a8 100644
+--- a/mm/pgtable-generic.c
++++ b/mm/pgtable-generic.c
+@@ -201,6 +201,14 @@ pmd_t pmdp_invalidate(struct vm_area_struct *vma, unsigned long address,
+ }
+ #endif
+ 
++#ifndef __HAVE_ARCH_PMDP_INVALIDATE_AD
++pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma, unsigned long address,
++			 pmd_t *pmdp)
++{
++	return pmdp_invalidate(vma, address, pmdp);
++}
++#endif
++
+ #ifndef pmdp_collapse_flush
+ pmd_t pmdp_collapse_flush(struct vm_area_struct *vma, unsigned long address,
+ 			  pmd_t *pmdp)
 -- 
 2.25.1
 
