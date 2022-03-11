@@ -2,127 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E29C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347363AbiCKIHj (ORCPT
+        id S1347370AbiCKIHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:07:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
+        Fri, 11 Mar 2022 03:07:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347263AbiCKIHa (ORCPT
+        with ESMTP id S1347339AbiCKIHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:07:30 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05311B8BE9;
-        Fri, 11 Mar 2022 00:06:27 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id z16so7269791pfh.3;
-        Fri, 11 Mar 2022 00:06:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I4mPMM0gIhSxQZ/tzxXpTn3ZOiYuivV0O9sNop/c8sI=;
-        b=il1d1E3OFC7Csbd3qnuZS5YRJ5y/Rc4uPfRoXmfth3ij5lYfLx5PJovulX25nKiqqn
-         vGePV3TL+cyve3s37baTWod1BPphum7yd2gT/HCubM2qqqqEm52VivO6ehOZU2UsH+PK
-         8wtkISRmnTQVexlioR99rW2FmrJ1tUdVmCyhQzgRlbx1R0ERSwUIKjjfGZtpvp2lcHmw
-         0KGF+d5k3GCJa2/nz8INa4e1d4RDNGJ8VGr5KIoADmtOj93UEMlmkQZJwoBgJRfhQ5AH
-         uNZwQddq3TodFiuEWHaubThYbU7NKE2Aw+D9Ps2FDXGnQ4MhQeIuz7jbvRwYR1dtUwXn
-         cv6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I4mPMM0gIhSxQZ/tzxXpTn3ZOiYuivV0O9sNop/c8sI=;
-        b=NX0PiRWcfn3mE3Ll2rWfcsvHZIRpwyLJwBmLk8saj6+E8X4RenoXXTGT0yPs19Hrua
-         u33Pze8hWhYsd1KSTL/QZBLjx6DKFtFB/0zrWpqzPfENw+7bHlRFMcPSWgEv3sz2F8vU
-         fYsJ1utL+I6OuOTjz+2DiJ87vIcNe1J76pVjF+lFuSYEWyvkySGAgT3FzNylYgZu3JCb
-         85VlO7wtkiFc4i8hooJfDgFxKUbFSfF8LfU6p3HgOdpa1DA8GYD2AmyT6a98wGi96Bjt
-         PvQWF83p1e6cRBgYn+0hfTLH3muhYJykAQhjNWY3oukvlF26KflB4nFehHOO7dgWsucr
-         A0pA==
-X-Gm-Message-State: AOAM530MX+YKLbIuri/kaZ08KIeA5Eq5t+xDkUdn7EaDQPY5HrIe6qRz
-        bjtTdjAMnFLy7BMjbe8GMwo=
-X-Google-Smtp-Source: ABdhPJx3i3wIHo6UiI84MecSCwTjGmum3NqQnyb1CeMpqDDoStSDeMTk2gNNMhl3buwRZVfo7h/UkQ==
-X-Received: by 2002:a63:e5e:0:b0:380:d345:589d with SMTP id 30-20020a630e5e000000b00380d345589dmr7315022pgo.453.1646985987278;
-        Fri, 11 Mar 2022 00:06:27 -0800 (PST)
-Received: from slim.das-security.cn ([103.84.139.54])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056a000cc500b004f6ff0f51f4sm9230383pfv.5.2022.03.11.00.06.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 00:06:26 -0800 (PST)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, stefan.maetje@esd.eu, mailhol.vincent@wanadoo.fr,
-        paskripkin@gmail.com, b.krumboeck@gmail.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] can: usb_8dev: fix possible double dev_kfree_skb in usb_8dev_start_xmit
-Date:   Fri, 11 Mar 2022 16:06:14 +0800
-Message-Id: <20220311080614.45229-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 11 Mar 2022 03:07:43 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C121B8C93
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:06:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646985999; x=1678521999;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=GTyKozF/D2v7CM54enDSTVCx4w8CPMOvs00slp4xkgM=;
+  b=DSXTJwUrFy5ApEnn1tomDAoSkMPAd8HQaE0R8H62ybd9LRIQP5h8znqm
+   0Y9xLlROBXL60jcEqMUQVMv5mTwG5I70nsEFBdFUfGboxlxM6u0+vpkC0
+   QpAl9CgYZZhqt3pLhl8R353lmEPwqMc9UUlU35rf/IXtvisdOMmtwvRiJ
+   V7wbkE6K09BpZT/HWdR1NS9D8bspaHA2EBUOungeO//juPQKdBYWExZQ0
+   TDxhLH2oRviS8L6LbXS/5gGP8nIyJXYx1DKO9UfM4/FFWKr4Onk+UKnHK
+   tXgJQZgRzQR/E4HFvMyoD999JxkI1auginC5LJPGXdTTds1gbgq+prRtD
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="236128247"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="236128247"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 00:06:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="514423909"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 11 Mar 2022 00:06:37 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSaIG-00065K-DV; Fri, 11 Mar 2022 08:06:36 +0000
+Date:   Fri, 11 Mar 2022 16:05:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 2786/4732] arch/arm64/kvm/arm.c:2011:46: error: 'smccc_trng_available'
+ undeclared
+Message-ID: <202203111548.gUwWECDs-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need to call dev_kfree_skb when usb_submit_urb fails beacause
-can_put_echo_skb deletes original skb and can_free_echo_skb deletes the cloned
-skb.
+Hi Will,
 
-Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+FYI, the error/warning still remains.
+
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   a733d4b8db7589d12249cbb282108a2ff8b6e08c
+commit: 888643ea37b504cb32afdd6430698d1e92a79a71 [2786/4732] ANDROID: KVM: arm64: relay entropy requests from protected guests directly to secure
+config: arm64-randconfig-r003-20220217 (https://download.01.org/0day-ci/archive/20220311/202203111548.gUwWECDs-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/888643ea37b504cb32afdd6430698d1e92a79a71
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout 888643ea37b504cb32afdd6430698d1e92a79a71
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arch/arm64/kvm/arm.c: In function 'kvm_hyp_init_protection':
+>> arch/arm64/kvm/arm.c:2011:46: error: 'smccc_trng_available' undeclared (first use in this function)
+    2011 |         kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
+         |                                              ^~~~~~~~~~~~~~~~~~~~
+   arch/arm64/kvm/arm.c:2011:46: note: each undeclared identifier is reported only once for each function it appears in
+
+
+vim +/smccc_trng_available +2011 arch/arm64/kvm/arm.c
+
+  1997	
+  1998	static int kvm_hyp_init_protection(u32 hyp_va_bits)
+  1999	{
+  2000		void *addr = phys_to_virt(hyp_mem_base);
+  2001		int ret;
+  2002	
+  2003		kvm_nvhe_sym(id_aa64pfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR0_EL1);
+  2004		kvm_nvhe_sym(id_aa64pfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64PFR1_EL1);
+  2005		kvm_nvhe_sym(id_aa64isar0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR0_EL1);
+  2006		kvm_nvhe_sym(id_aa64isar1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64ISAR1_EL1);
+  2007		kvm_nvhe_sym(id_aa64mmfr0_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
+  2008		kvm_nvhe_sym(id_aa64mmfr1_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR1_EL1);
+  2009		kvm_nvhe_sym(id_aa64mmfr2_el1_sys_val) = read_sanitised_ftr_reg(SYS_ID_AA64MMFR2_EL1);
+  2010		kvm_nvhe_sym(__icache_flags) = __icache_flags;
+> 2011		kvm_nvhe_sym(smccc_trng_available) = smccc_trng_available;
+  2012	
+  2013		ret = create_hyp_mappings(addr, addr + hyp_mem_size, PAGE_HYP);
+  2014		if (ret)
+  2015			return ret;
+  2016	
+  2017		ret = init_stage2_iommu();
+  2018		if (ret < 0)
+  2019			return ret;
+  2020	
+  2021		ret = do_pkvm_init(hyp_va_bits, (enum kvm_iommu_driver)ret);
+  2022		if (ret)
+  2023			return ret;
+  2024	
+  2025		free_hyp_pgds();
+  2026	
+  2027		return 0;
+  2028	}
+  2029	
+
 ---
- drivers/net/can/usb/usb_8dev.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
-index 431af1ec1e3c..b638604bf1ee 100644
---- a/drivers/net/can/usb/usb_8dev.c
-+++ b/drivers/net/can/usb/usb_8dev.c
-@@ -663,9 +663,20 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
- 	atomic_inc(&priv->active_tx_urbs);
- 
- 	err = usb_submit_urb(urb, GFP_ATOMIC);
--	if (unlikely(err))
--		goto failed;
--	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
-+	if (unlikely(err)) {
-+		can_free_echo_skb(netdev, context->echo_index, NULL);
-+
-+		usb_unanchor_urb(urb);
-+		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
-+
-+		atomic_dec(&priv->active_tx_urbs);
-+
-+		if (err == -ENODEV)
-+			netif_device_detach(netdev);
-+		else
-+			netdev_warn(netdev, "failed tx_urb %d\n", err);
-+		stats->tx_dropped++;
-+	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
- 		/* Slow down tx path */
- 		netif_stop_queue(netdev);
- 
-@@ -684,19 +695,6 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
- 
- 	return NETDEV_TX_BUSY;
- 
--failed:
--	can_free_echo_skb(netdev, context->echo_index, NULL);
--
--	usb_unanchor_urb(urb);
--	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
--
--	atomic_dec(&priv->active_tx_urbs);
--
--	if (err == -ENODEV)
--		netif_device_detach(netdev);
--	else
--		netdev_warn(netdev, "failed tx_urb %d\n", err);
--
- nomembuf:
- 	usb_free_urb(urb);
- 
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
