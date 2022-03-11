@@ -2,133 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40909C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10249C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348323AbiCKLgv (ORCPT
+        id S1348315AbiCKLhV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 06:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
+        Fri, 11 Mar 2022 06:37:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348289AbiCKLgt (ORCPT
+        with ESMTP id S237792AbiCKLhT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 06:36:49 -0500
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D82186BA9;
-        Fri, 11 Mar 2022 03:35:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1646998546;
-  x=1678534546;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ePdSlJGdNO1CPKcwOdopJLY1Ek3GzVO2ZQn/333Vrac=;
-  b=Kl4AO5TjZEN8rmyxtfrSoX1SaiFGiIUqiEibbWFjcy3tP/1NXIdbuYIv
-   rM8Bj50mBOwwMg5ZFkg6On2zeOdooo+pqIMiuGYqha4qR+5qbrdXk8io8
-   0Hmg6HLrZr3FxaVQXZ0IVKDLx2sTDd37PVVxz7COqHBwZyjJFppvZu8iE
-   uYvTWIofQh16Mp/yDY5JKpqAx+65jlKau+p23YZcccxiaf5WO2wQI/JYH
-   UdRi5InFZdtJi+Vu8SUuTXhc5Mv/xCAhbBViTbTqrWmbe8vzi7mQQ6WoJ
-   EuacI3uGO+oTkJRv8/+pxBjcxAkuy9tt2U2OP/XXkimVFjhiRdg1yImuG
-   A==;
-Date:   Fri, 11 Mar 2022 12:35:43 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        kernel <kernel@axis.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-samsung-soc@vger.kernel.org" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 3/4] clocksource/drivers/exynos_mct: Support
- local-timer-index property
-Message-ID: <20220311113543.GA17877@axis.com>
-References: <20220308142410.3193729-1-vincent.whitchurch@axis.com>
- <20220308142410.3193729-4-vincent.whitchurch@axis.com>
- <226dcb1b-d141-f0d3-68c4-11d2466ca571@canonical.com>
+        Fri, 11 Mar 2022 06:37:19 -0500
+Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590AD1C0251
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 03:36:15 -0800 (PST)
+Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
+        by mx1.smtp.larsendata.com (Halon) with ESMTPS
+        id 75b78978-a12f-11ec-9faa-0050568c148b;
+        Fri, 11 Mar 2022 11:36:15 +0000 (UTC)
+Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: sam@ravnborg.org)
+        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 6F2BC194B58;
+        Fri, 11 Mar 2022 12:36:13 +0100 (CET)
+Date:   Fri, 11 Mar 2022 12:36:09 +0100
+X-Report-Abuse-To: abuse@mxhotel.dk
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, qwen@analogixsemi.com,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        mliu@analogixsemi.com, hsinyi@chromium.org, bliang@analogixsemi.com
+Subject: Re: [PATCH v2] drm/bridge: anx7625: Fix not correct get property
+ counts
+Message-ID: <Yis0KXVqZokrkoP7@ravnborg.org>
+References: <20220311103525.1431890-1-xji@analogixsemi.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <226dcb1b-d141-f0d3-68c4-11d2466ca571@canonical.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220311103525.1431890-1-xji@analogixsemi.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 03:57:55PM +0100, Krzysztof Kozlowski wrote:
-> On 08/03/2022 15:24, Vincent Whitchurch wrote:
-> > diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-> > index f29c812b70c9..5f8b516614eb 100644
-> > --- a/drivers/clocksource/exynos_mct.c
-> > +++ b/drivers/clocksource/exynos_mct.c
-> > @@ -33,7 +33,7 @@
-> >  #define EXYNOS4_MCT_G_INT_ENB		EXYNOS4_MCTREG(0x248)
-> >  #define EXYNOS4_MCT_G_WSTAT		EXYNOS4_MCTREG(0x24C)
-> >  #define _EXYNOS4_MCT_L_BASE		EXYNOS4_MCTREG(0x300)
-> > -#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * x))
-> > +#define EXYNOS4_MCT_L_BASE(x)		(_EXYNOS4_MCT_L_BASE + (0x100 * (x)))
-> >  #define EXYNOS4_MCT_L_MASK		(0xffffff00)
-> >  
-> >  #define MCT_L_TCNTB_OFFSET		(0x00)
-> > @@ -75,6 +75,7 @@ enum {
-> >  static void __iomem *reg_base;
-> >  static unsigned long clk_rate;
-> >  static unsigned int mct_int_type;
-> > +static unsigned int mct_local_idx;
+Hi Xin.
+
+On Fri, Mar 11, 2022 at 06:35:25PM +0800, Xin Ji wrote:
+> The property length which returns from "of_get_property", it means array
+> bytes count if the property has prefix as "/bits/ 8". The driver should
+> call function "of_property_read_u8_array" to get correct array value.
 > 
-> No more static variables. This was wrong design, happens, but let's not
-> grow the list.
+> Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
 > 
-> I propose to conditionally (depending on property samsung,frc-shared)
-> assign .resume callback to NULL or exynos4_frc_resume. The init can
-> receive an argument whether to call frc_start().
-
-Could we just add the skip-write-register-if-already-started change in
-exynos4_mct_frc_start() uncondtionally?  Perhaps it could be in a
-separate patch too?  I was probably being over-cautious when I did it
-conditionally on mct_local_idx.  Doing it uncondtionally would make it
-easier to remove the global variable.
-
-On my system the FRC is actually started long before Linux, and I assume
-it's similar on other chips.
-
+> ---
+> V1 -> V2: Fix Sam comment, use of_property_read_u8_array to get array
+> value
+> ---
+>  drivers/gpu/drm/bridge/analogix/anx7625.c | 8 ++++----
+>  drivers/gpu/drm/bridge/analogix/anx7625.h | 4 ++--
+>  2 files changed, 6 insertions(+), 6 deletions(-)
 > 
-> >  static int mct_irqs[MCT_NR_IRQS];
-> >  
-> >  struct mct_clock_event_device {
-> > @@ -157,6 +158,17 @@ static void exynos4_mct_frc_start(void)
-> >  	u32 reg;
-> >  
-> >  	reg = readl_relaxed(reg_base + EXYNOS4_MCT_G_TCON);
-> > +
-> > +	/*
-> > +	 * If the FRC is already running, we don't need to start it again.  We
-> > +	 * could probably just do this on all systems, but, to avoid any risk
-> > +	 * for regressions, we only do it on systems where it's absolutely
-> > +	 * necessary (i.e., on systems where writes to the global registers
-> > +	 * need to be avoided).
-> > +	 */
-> > +	if (mct_local_idx && (reg & MCT_G_TCON_START))
-> 
-> This contradicts your intentions in commit #2 msg, where you described
-> that A53 will be started first.
+> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> index c6a9a02ed762..628cbf769141 100644
+> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> @@ -1598,8 +1598,8 @@ static int anx7625_get_swing_setting(struct device *dev,
+>  			num_regs = DP_TX_SWING_REG_CNT;
+>  
+>  		pdata->dp_lane0_swing_reg_cnt = num_regs;
+> -		of_property_read_u32_array(dev->of_node, "analogix,lane0-swing",
+> -					   pdata->lane0_reg_data, num_regs);
+> +		of_property_read_u8_array(dev->of_node, "analogix,lane0-swing",
+> +					  pdata->lane0_reg_data, num_regs);
 
-Yes, you're right.  The case of the FRC not being running when the A5
-starts up is only ever hit in our simulation environment where we are
-able to start Linux on the A5 directly, without having to go via the
-A53.
+The current implementation do a two step approach. First is find the
+number of elements and then read the elements.
+The number of elements is only used to limit what is read.
 
-> 1. If A53 is always started first, is it possible to be here from A5?
-> 2. If above is possible, how do you handle locking? For example:
-> a. A53 started with some delay, entered exynos4_mct_frc_start() pass
-> this check;
-> b. A5 gets to exynos4_mct_frc_start(), check is still false, so A5
-> enables the FRC,
-> c. A53 also enables the FRC.
+I suggest to use:
 
-The A5 is normally started from Linux on the A53 (using the remoteproc
-framework).  This is long after exynos4_mct_frc_start() has been called
-on the A53.
+of_property_read_u8_array(dev->of_node, "analogix,lane0-swing",
+			  pdata->lane0_reg_data, DP_TX_SWING_REG_CNT);
+
+Then you a guaranteed to read at maximum DP_TX_SWING_REG_CNT entries.
+And as the number of elements is not stored anywhere that should be fine.
+
+This looks simpler and matches what we for example do in
+drivers/gpu/drm/arm/malidp_drv.c - the only user in gpu/ of
+of_property_read_u8_array().
+
+
+	Sam
