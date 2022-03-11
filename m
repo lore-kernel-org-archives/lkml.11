@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B45C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0029FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346729AbiCKFyx (ORCPT
+        id S1346736AbiCKFzA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:54:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
+        Fri, 11 Mar 2022 00:55:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346629AbiCKFw5 (ORCPT
+        with ESMTP id S1346593AbiCKFws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:52:57 -0500
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24578F47EA
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:50 -0800 (PST)
-Received: by mail-pf1-x44a.google.com with SMTP id d145-20020a621d97000000b004f7285f67e8so4625108pfd.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:50 -0800 (PST)
+        Fri, 11 Mar 2022 00:52:48 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE52F65FE
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:46 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d81518795fso60976507b3.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:51:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=iI4XTc/wR6t2j4zmaPouy0Ex+zWaKMJ1wxjoKdDM8s0=;
-        b=TcFWlrsfKB4Ni5oft6Gi/P58XgEfWqvJIGiKdVIBM37zoyL9baSvAPQ9b5AYs4bWcy
-         mlnwbCIvpURi8OdSxQEMyRFpl0eHyO3SyASQNpJZQtEtqWg9bl6psDtx9XFlTfsgfbb9
-         L95ebIUdrK4+AP82ez6XL0ma+VdlJ9al+CJIa6WWCc9wPHpFlNcjOYEcz/FeZHlcxikk
-         kZ0NW+SXFwZKl+NflJVnVRF4ahyqCBZfSthLau400xUccnSR9YPx1SksMmqih1+ncAlA
-         RhgeVgbzeMucp8hvLzAQlUciywClyoqSWDfZKi89DBcDd71fLVyqK1NPN2MWjJJr9Cks
-         fb1g==
+        bh=7H8ID3PArWSAJFJ6fYpFi7ULZbBg9B4ckFvVp1ij2d0=;
+        b=HdpVEkn5gh7Y7pXFm/yfiLjrtEeWne7M5t+WTVmJB8OFpy4Bzgv/djJCldP+qjB8wR
+         l0BsPv1hZviV6gcYyWD+Eb5yghuejzuUOMjMV3xKSnLH1oz77UaQvzu9bizjInbt7nxA
+         o/+fYhWIdL/rg90ppDV8/oJiuvxOefrSBSzPom6t0ywcBzWitHtzm51lub8jpwXiWqEk
+         5rHvjkaxjdXP8j7yp23LFNAhByKAXn5E27KXNT7P1mHFsLH3AWzUGYz1q6iJx5zVdV5l
+         yqV8bDGYzgYwigFDTThI7s2N6uxKdJAK1B6v5IF0JS6985sH/wbLyQdijowHDTC5zoUF
+         WGhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=iI4XTc/wR6t2j4zmaPouy0Ex+zWaKMJ1wxjoKdDM8s0=;
-        b=XUBK3+4YfDtyXgi9jDdaQVhwLw6So+H7Me3eGkdzyT0ufGjBG6cl7etSCS7al1Bk4i
-         5+KE86pOKqDmahbFGNIWIUJYqFMOkElrhHsDrYw9SMSGHpYdsJ09Jt8bHoY0K1y2fG+2
-         V3D/5jEVa4O7bSm2xpAH37qFqspY/ALQ97+UwTvkjlnR3KUfwoumlEQKX3/DpzSd5EUs
-         jcMNvSJoCGzwfoVDNbSqbVZzpP71N5gsjomttz1UV+y7w8AdvOnFejKxduBdUe5qlYC9
-         mv8aVMC5dJsf5zZ+WLpEvRnE8XIu/W9/xDrwGr0BH3Cwh9xhj1bh4cdlVV+m/z3zBLXt
-         exXA==
-X-Gm-Message-State: AOAM5302JZJPj/rKO5yQL9mKusjUJeRnKtYN/YAS/vQUK3jLu16sTSCY
-        ZOWXGIsHWxM+4TgoE8IArAz1u4aRHOnvGLxdmXyGKAb4/YojBbjaxSZLFQGPwtMMq0T5ZHjywuS
-        ws/7yqPBjp/YcayP16PGnSADswTofuqHbHMP6o0OvP4HnVqsLUcpcxwXRr2ITEcGPXYV5rw==
-X-Google-Smtp-Source: ABdhPJx3FkLzWSbRDV3YpRaCRYf7Re45glg1XPevAsRxd0jqPrSD3CE+NHSAs6HX658gxxpy21AN7PhR3CI=
+        bh=7H8ID3PArWSAJFJ6fYpFi7ULZbBg9B4ckFvVp1ij2d0=;
+        b=la2I0V5eT1jjfY7HrsAlY3PYA7YSwcsmYSiOsymilGhoUHAZX/ggxWLMFV3PijLz5W
+         8vUicDlRhmykxsU1WKjxNrAlJSdCd9HTWj+hfdV/T8y345vABMoQItVA7yiB8IomCc+H
+         NqZTFijZqPDyN0PKEQ7c4Wxr4CcLwy+7kquPA2f6O2ZMqcSADz9xGaAaGPmDV4y19i8w
+         OnC/nQIKWEHBCwec8SUl53iw3M68A96l4kPYNnbwINDWEPELQJjRFWROHFGmQl8iA668
+         FKbqJ3EPx5Ab7gAMm5dV3WETIOsZU8upQntXGEXZB/RbMwuWx2xeEA6wPAelDt/Nyjb/
+         OyIA==
+X-Gm-Message-State: AOAM532XVNblY2pe4ST5MrL1DWdcsSKjO8qruknTjpEGxAR2XQCHJwaa
+        jXjz3yDeSZo7Mqt8+Kx5BthM1Ye0K038EOurRl4KQjSZ9BGuoD1UfM6tgZCWR9LPwBfEvxAeXTc
+        NZo5RMBvTNkgrfjgT1NmdTDeVpt59iF8Llg7na3Olym3X8QdF4cGYtzIqalV/LpjNgZ/7Nw==
+X-Google-Smtp-Source: ABdhPJwYQjKdg5iUSKA4CBJzxuMoPO6ZIaxgAnDNH18z9Dz9Yt0ZY9Nao1hESo1NsjmIUIKJs4TSgyjoNfU=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1501:b0:4f7:948d:14fa with SMTP id
- q1-20020a056a00150100b004f7948d14famr94271pfu.74.1646977909517; Thu, 10 Mar
- 2022 21:51:49 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a0d:ca16:0:b0:2dc:40af:d431 with SMTP id
+ m22-20020a0dca16000000b002dc40afd431mr7014149ywd.206.1646977905744; Thu, 10
+ Mar 2022 21:51:45 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:49:37 +0000
+Date:   Fri, 11 Mar 2022 05:49:35 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-27-seanjc@google.com>
+Message-Id: <20220311055056.57265-25-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 026/105] KVM: selftests: Add a VM backpointer to 'struct vcpu'
+Subject: [RFC PATCH 024/105] KVM: selftests: Drop 'int' return from asserting *_device_has_attr()
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,34 +66,99 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/include/kvm_util_base.h | 1 +
- tools/testing/selftests/kvm/lib/kvm_util.c          | 1 +
- 2 files changed, 2 insertions(+)
+ .../testing/selftests/kvm/aarch64/vgic_init.c |  4 ++--
+ .../selftests/kvm/include/kvm_util_base.h     | 20 ++++++++++++++++---
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 17 ----------------
+ 3 files changed, 19 insertions(+), 22 deletions(-)
 
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+index 223fef4c1f62..2425894b3775 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+@@ -201,8 +201,8 @@ static void subtest_v3_redist_regions(struct vm_gic *v)
+ 	uint64_t addr, expected_addr;
+ 	int ret;
+ 
+-	ret = kvm_has_device_attr(v->gic_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
+-				     KVM_VGIC_V3_ADDR_TYPE_REDIST);
++	ret = __kvm_has_device_attr(v->gic_fd, KVM_DEV_ARM_VGIC_GRP_ADDR,
++				    KVM_VGIC_V3_ADDR_TYPE_REDIST);
+ 	TEST_ASSERT(!ret, "Multiple redist regions advertised");
+ 
+ 	addr = REDIST_REGION_ATTR_ADDR(NR_VCPUS, 0x100000, 2, 0);
 diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index f81443666f8c..21020d6a4f01 100644
+index 97cdeeac4db6..4cc2553887f7 100644
 --- a/tools/testing/selftests/kvm/include/kvm_util_base.h
 +++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -47,6 +47,7 @@ struct vcpu {
- 	struct list_head list;
- 	uint32_t id;
- 	int fd;
-+	struct kvm_vm *vm;
- 	struct kvm_run *state;
- 	struct kvm_dirty_gfn *dirty_gfns;
- 	uint32_t fetch_index;
+@@ -478,7 +478,14 @@ void *vcpu_map_dirty_ring(struct kvm_vm *vm, uint32_t vcpuid);
+ void vcpu_args_set(struct kvm_vm *vm, uint32_t vcpuid, unsigned int num, ...);
+ 
+ int __kvm_has_device_attr(int dev_fd, uint32_t group, uint64_t attr);
+-int kvm_has_device_attr(int dev_fd, uint32_t group, uint64_t attr);
++
++static inline void kvm_has_device_attr(int dev_fd, uint32_t group, uint64_t attr)
++{
++	int ret = __kvm_has_device_attr(dev_fd, group, attr);
++
++	TEST_ASSERT(!ret, "KVM_HAS_DEVICE_ATTR failed, rc: %i errno: %i", ret, errno);
++}
++
+ int __kvm_test_create_device(struct kvm_vm *vm, uint64_t type);
+ int __kvm_create_device(struct kvm_vm *vm, uint64_t type);
+ int kvm_create_device(struct kvm_vm *vm, uint64_t type);
+@@ -491,8 +498,15 @@ int _kvm_irq_line(struct kvm_vm *vm, uint32_t irq, int level);
+ 
+ int __vcpu_has_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
+ 			  uint64_t attr);
+-int vcpu_has_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
+-			 uint64_t attr);
++
++static inline void vcpu_has_device_attr(struct kvm_vm *vm, uint32_t vcpuid,
++					uint32_t group, uint64_t attr)
++{
++	int ret = __vcpu_has_device_attr(vm, vcpuid, group, attr);
++
++	TEST_ASSERT(!ret, KVM_IOCTL_ERROR(KVM_HAS_DEVICE_ATTR, ret));
++}
++
+ int _vcpu_access_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
+ 			  uint64_t attr, void *val, bool write);
+ int vcpu_access_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
 diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index e2427b51375d..ed7e2c5b0062 100644
+index f9547edb30ad..e635241e3ee5 100644
 --- a/tools/testing/selftests/kvm/lib/kvm_util.c
 +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1070,6 +1070,7 @@ void vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpuid)
- 	vcpu = calloc(1, sizeof(*vcpu));
- 	TEST_ASSERT(vcpu != NULL, "Insufficient Memory");
+@@ -1592,14 +1592,6 @@ int __kvm_has_device_attr(int dev_fd, uint32_t group, uint64_t attr)
+ 	return ioctl(dev_fd, KVM_HAS_DEVICE_ATTR, &attribute);
+ }
  
-+	vcpu->vm = vm;
- 	vcpu->id = vcpuid;
- 	vcpu->fd = __vm_ioctl(vm, KVM_CREATE_VCPU, (void *)(unsigned long)vcpuid);
- 	TEST_ASSERT(vcpu->fd >= 0, KVM_IOCTL_ERROR(KVM_CREATE_VCPU, vcpu->fd));
+-int kvm_has_device_attr(int dev_fd, uint32_t group, uint64_t attr)
+-{
+-	int ret = __kvm_has_device_attr(dev_fd, group, attr);
+-
+-	TEST_ASSERT(!ret, "KVM_HAS_DEVICE_ATTR failed, rc: %i errno: %i", ret, errno);
+-	return ret;
+-}
+-
+ int __kvm_test_create_device(struct kvm_vm *vm, uint64_t type)
+ {
+ 	struct kvm_create_device create_dev = {
+@@ -1665,15 +1657,6 @@ int __vcpu_has_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
+ 	return __kvm_has_device_attr(vcpu->fd, group, attr);
+ }
+ 
+-int vcpu_has_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
+-				 uint64_t attr)
+-{
+-	int ret = __vcpu_has_device_attr(vm, vcpuid, group, attr);
+-
+-	TEST_ASSERT(!ret, "KVM_HAS_DEVICE_ATTR IOCTL failed, rc: %i errno: %i", ret, errno);
+-	return ret;
+-}
+-
+ int _vcpu_access_device_attr(struct kvm_vm *vm, uint32_t vcpuid, uint32_t group,
+ 			     uint64_t attr, void *val, bool write)
+ {
 -- 
 2.35.1.723.g4982287a31-goog
 
