@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F22B4C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4163FC352A7
 	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236833AbiCKGAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 01:00:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
+        id S1347622AbiCKF7H (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 00:59:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346682AbiCKFyf (ORCPT
+        with ESMTP id S1346669AbiCKFyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:54:35 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ED8DFBA40
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:27 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dbd2b5e180so60958177b3.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:27 -0800 (PST)
+        Fri, 11 Mar 2022 00:54:00 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426F865C6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:54 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id b70-20020a253449000000b0062c16d950c5so6536577yba.9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=QNnRoJhZKEQyM/+E7bB1cN1LmMxMwC2JWJu27WTAeTM=;
-        b=Ry+dEZKN+MH4zff16isFV3FfMvQ+BCkZ32pitHXN2VEamd2AJiR9FphyjNg88P9VuP
-         8nvTXjSCfBCvopww/LlHrgabXXcLMSCZ84lxQIJ6oQLWjF/RmSIDl10AyoJgUKzKri03
-         NAzEUV0PPow9po5JjaMnFg24lGgc7WpD7RsC36w8ULy6EHpxBYL2vmSjklcvAPX26+Xy
-         vy4aGAQWQYjxGA0QK+lexwp6iIX/PQkgwX85YSxdGO0XBzeXIz/N6P65kCesqfXSOox/
-         Lq3vq9Q4A5UpyHZa4BxHaRiuJizQLI1VpY5FYxDbzle+cn0PAWFTClDHVxAU2YoSPXCO
-         u9Mw==
+        bh=BHTniUnZLHzExLKWJC5iuCglVl1tbe9p6eIowKy0GQM=;
+        b=pwrwOwn9+tJo509wahAPqMGhQ2rvAbKv6/ghJQdd6I5mQ+Cjy4DKzBktwKWL86+Chk
+         FnzXllpNtO/3FK2NDSSwYOhGaUm6ECpT2npxpiwI2GxgHdjfBQwdCYOfTahCA/lt7Mx7
+         b656+TF0aYMaisWYv5cRjl49hSw5SxaoCFcvreene5/tsV8CBb7aNojQ7AIssaRBwbBl
+         vGqeumBoksGL42JZz81Dq9zaZ8WV/9DSS5cOKsuOsoi03DzCHtmxMx+fGLJvGhSm15A1
+         7H4EAtgSObUTA1CJRpvN0cRBNwq5AIJhWI2Ju71QZu2PHXuwUFMkMR/t/oDB3x8eTI8Z
+         3lKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=QNnRoJhZKEQyM/+E7bB1cN1LmMxMwC2JWJu27WTAeTM=;
-        b=4clJFHclZEMiZ6CORHnGmqMJblFz/nbGfr/46RR54mGKQJ3C5N0Uo2XhQJFJKpyAdW
-         uPjkHNjNenVUmQYAc7SDPZqwznDMkhdhTVQ7gZl9vPdSxqFoSP076JC5LL5bvUnB898B
-         6L8lCJ0w7Aq8ZB+Na99Aq77R0meM37Xh8TNJesepi9R/FF4CXv3agaJi0iK0ERTuzHL3
-         jNG0l0EKvjEDxeXyg8irgkUOk9SB7YKVP5yhUNdRaww/tEWVJxzV21MNZZ+6pnK8FdyF
-         GdiJHfSl4hzxYOuPimbFPlSOQau6Tz9ezg1Pao0Q56/ILDFRPLIScUQWUmQRoUySuHT/
-         43vg==
-X-Gm-Message-State: AOAM530FEbtPbvgL0MgzSadj3Of6jWPWWChL5juiFcUk88tyqW8LCzVp
-        ZA/l17SlmuJ6WxaTuCpRqulL2J20HbT2ybCbTgrEDVaAMVTc4rstJYrCFINs/tzPZjwK/J25shC
-        mZOWN4YcdyRPI+UKzhAqsSe7sxwd/k/Jg5GShYl/ex8Jr3Z+/7bVK8jmtcQIzYiJJRO2/jw==
-X-Google-Smtp-Source: ABdhPJyyEB4J3/QUI+gHEPET1+jXWCa7sRxei7S9luq6Lzr95phlO6T30+GGBVDQpCwT4yY23CoEf61XufU=
+        bh=BHTniUnZLHzExLKWJC5iuCglVl1tbe9p6eIowKy0GQM=;
+        b=dvebp7PR6tjcNhxQkCVtV19t8IReIA62j2Hv6ajvY5l15ckG05+zcyTD37fVInMD/t
+         DFo6mathcmNGmoIN12uptCBxCooKkkO+GLDgivxkOrlQ+BR85sYoN6Z9m9CHu+j6i/SX
+         NP1YB8xmq5/yLBDWNHx67UFnJt+d7uKbY2xLP8qImi1XsIPPucDYE/i4kW7ax3lBJQid
+         i47+rsUxT83rZPeivLW3gS9LbaN/MXZFmPU8dx+Wl/d4+SLqQ577jqgsXLb/bQKLwKpn
+         4iyluHdoeaou5PSN80stkxEZeJ7NScMj1KatfmbHnJvEeBe2MzFt+UA4H4MGCuQVY0Og
+         Ym7Q==
+X-Gm-Message-State: AOAM531OYNFic0w12X14ocZqwn/vhg321EiWmJ2LKNnMcLv4hxIixMMw
+        nXet3oh49C8elGSldGfFBlQhdlWEnImhnJzJWdxIylzaAtQADcj9c/xpWACPHuifnHSr/zdC5tj
+        0HuOyq6NG2x6bSbA3cKXefrOCelmdM9SxV7Z9JuMw34yd5SXc3T93TYqz/7yxJ1ESKFYgag==
+X-Google-Smtp-Source: ABdhPJydwvYY8q1PnDU3RNwscBmDVt6S5yfy7oMnsJHXIa1RsuR2ODkdAzZ93yT/Rm1125zfUhsdQZowe1E=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6902:108:b0:621:165e:5c1e with SMTP id
- o8-20020a056902010800b00621165e5c1emr6589152ybh.204.1646978006526; Thu, 10
- Mar 2022 21:53:26 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a25:b11c:0:b0:62c:16d9:c028 with SMTP id
+ g28-20020a25b11c000000b0062c16d9c028mr6971040ybj.288.1646977973807; Thu, 10
+ Mar 2022 21:52:53 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:34 +0000
+Date:   Fri, 11 Mar 2022 05:50:15 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-84-seanjc@google.com>
+Message-Id: <20220311055056.57265-65-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 083/105] KVM: selftests: Convert hardware_disable_test
- away from VCPU_ID
+Subject: [RFC PATCH 064/105] KVM: selftests: Convert amx_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,74 +66,113 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/hardware_disable_test.c     | 25 ++++++-------------
- 1 file changed, 8 insertions(+), 17 deletions(-)
+ tools/testing/selftests/kvm/x86_64/amx_test.c | 33 +++++++++----------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/hardware_disable_test.c b/tools/testing/selftests/kvm/hardware_disable_test.c
-index c31af07fae97..70cd22485357 100644
---- a/tools/testing/selftests/kvm/hardware_disable_test.c
-+++ b/tools/testing/selftests/kvm/hardware_disable_test.c
-@@ -27,12 +27,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/amx_test.c b/tools/testing/selftests/kvm/x86_64/amx_test.c
+index 89d2423a2ffd..cd5a71f5a7ac 100644
+--- a/tools/testing/selftests/kvm/x86_64/amx_test.c
++++ b/tools/testing/selftests/kvm/x86_64/amx_test.c
+@@ -25,7 +25,6 @@
+ # error This test is 64-bit only
+ #endif
  
- sem_t *sem;
+-#define VCPU_ID				0
+ #define X86_FEATURE_XSAVE		(1 << 26)
+ #define X86_FEATURE_OSXSAVE		(1 << 27)
  
--/* Arguments for the pthreads */
--struct payload {
--	struct kvm_vm *vm;
--	uint32_t index;
--};
--
- static void guest_code(void)
- {
- 	for (;;)
-@@ -42,14 +36,14 @@ static void guest_code(void)
- 
- static void *run_vcpu(void *arg)
- {
--	struct payload *payload = (struct payload *)arg;
--	struct kvm_run *state = vcpu_state(payload->vm, payload->index);
-+	struct kvm_vcpu *vcpu = arg;
-+	struct kvm_run *run = vcpu->run;
- 
--	vcpu_run(payload->vm, payload->index);
-+	vcpu_run(vcpu->vm, vcpu->id);
- 
- 	TEST_ASSERT(false, "%s: exited with reason %d: %s\n",
--		    __func__, state->exit_reason,
--		    exit_reason_str(state->exit_reason));
-+		    __func__, run->exit_reason,
-+		    exit_reason_str(run->exit_reason));
- 	pthread_exit(NULL);
- }
- 
-@@ -92,11 +86,11 @@ static inline void check_join(pthread_t thread, void **retval)
- 
- static void run_test(uint32_t run)
- {
+@@ -320,6 +319,7 @@ int main(int argc, char *argv[])
+ 	struct kvm_cpuid_entry2 *entry;
+ 	struct kvm_regs regs1, regs2;
+ 	bool amx_supported = false;
 +	struct kvm_vcpu *vcpu;
  	struct kvm_vm *vm;
- 	cpu_set_t cpu_set;
- 	pthread_t threads[VCPU_NUM];
- 	pthread_t throw_away;
--	struct payload payloads[VCPU_NUM];
- 	void *b;
- 	uint32_t i, j;
+ 	struct kvm_run *run;
+ 	struct kvm_x86_state *state;
+@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
+ 	vm_xsave_req_perm(XSTATE_XTILE_DATA_BIT);
  
-@@ -110,12 +104,9 @@ static void run_test(uint32_t run)
+ 	/* Create VM */
+-	vm = vm_create_default(VCPU_ID, 0, guest_code);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
  
- 	pr_debug("%s: [%d] start vcpus\n", __func__, run);
- 	for (i = 0; i < VCPU_NUM; ++i) {
--		vm_vcpu_add(vm, i, guest_code);
--		payloads[i].vm = vm;
--		payloads[i].index = i;
-+		vcpu = vm_vcpu_add(vm, i, guest_code);
+ 	entry = kvm_get_supported_cpuid_entry(1);
+ 	if (!(entry->ecx & X86_FEATURE_XSAVE)) {
+@@ -351,12 +351,12 @@ int main(int argc, char *argv[])
+ 		xsave_restore_size = entry->ecx;
+ 	}
  
--		check_create_thread(&threads[i], NULL, run_vcpu,
--				    (void *)&payloads[i]);
-+		check_create_thread(&threads[i], NULL, run_vcpu, vcpu);
- 		check_set_affinity(threads[i], &cpu_set);
+-	run = vcpu_state(vm, VCPU_ID);
+-	vcpu_regs_get(vm, VCPU_ID, &regs1);
++	run = vcpu->run;
++	vcpu_regs_get(vm, vcpu->id, &regs1);
  
- 		for (j = 0; j < SLEEPING_THREAD_NUM; ++j) {
+ 	/* Register #NM handler */
+ 	vm_init_descriptor_tables(vm);
+-	vcpu_init_descriptor_tables(vm, VCPU_ID);
++	vcpu_init_descriptor_tables(vm, vcpu->id);
+ 	vm_install_exception_handler(vm, NM_VECTOR, guest_nm_handler);
+ 
+ 	/* amx cfg for guest_code */
+@@ -370,16 +370,16 @@ int main(int argc, char *argv[])
+ 	/* xsave data for guest_code */
+ 	xsavedata = vm_vaddr_alloc_pages(vm, 3);
+ 	memset(addr_gva2hva(vm, xsavedata), 0, 3 * getpagesize());
+-	vcpu_args_set(vm, VCPU_ID, 3, amx_cfg, tiledata, xsavedata);
++	vcpu_args_set(vm, vcpu->id, 3, amx_cfg, tiledata, xsavedata);
+ 
+ 	for (stage = 1; ; stage++) {
+-		_vcpu_run(vm, VCPU_ID);
++		vcpu_run(vm, vcpu->id);
+ 		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
+ 			    "Stage %d: unexpected exit reason: %u (%s),\n",
+ 			    stage, run->exit_reason,
+ 			    exit_reason_str(run->exit_reason));
+ 
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vm, vcpu->id, &uc)) {
+ 		case UCALL_ABORT:
+ 			TEST_FAIL("%s at %s:%ld", (const char *)uc.args[0],
+ 				  __FILE__, uc.args[1]);
+@@ -404,7 +404,7 @@ int main(int argc, char *argv[])
+ 				 * size subtract 8K amx size.
+ 				 */
+ 				amx_offset = xsave_restore_size - NUM_TILES*TILE_SIZE;
+-				state = vcpu_save_state(vm, VCPU_ID);
++				state = vcpu_save_state(vm, vcpu->id);
+ 				void *amx_start = (void *)state->xsave + amx_offset;
+ 				void *tiles_data = (void *)addr_gva2hva(vm, tiledata);
+ 				/* Only check TMM0 register, 1 tile */
+@@ -425,22 +425,21 @@ int main(int argc, char *argv[])
+ 			TEST_FAIL("Unknown ucall %lu", uc.cmd);
+ 		}
+ 
+-		state = vcpu_save_state(vm, VCPU_ID);
++		state = vcpu_save_state(vm, vcpu->id);
+ 		memset(&regs1, 0, sizeof(regs1));
+-		vcpu_regs_get(vm, VCPU_ID, &regs1);
++		vcpu_regs_get(vm, vcpu->id, &regs1);
+ 
+ 		kvm_vm_release(vm);
+ 
+ 		/* Restore state in a new VM.  */
+-		kvm_vm_restart(vm);
+-		vm_vcpu_add(vm, VCPU_ID);
+-		vcpu_set_cpuid(vm, VCPU_ID, kvm_get_supported_cpuid());
+-		vcpu_load_state(vm, VCPU_ID, state);
+-		run = vcpu_state(vm, VCPU_ID);
++		vcpu = vm_recreate_with_one_vcpu(vm);
++		vcpu_set_cpuid(vm, vcpu->id, kvm_get_supported_cpuid());
++		vcpu_load_state(vm, vcpu->id, state);
++		run = vcpu->run;
+ 		kvm_x86_state_cleanup(state);
+ 
+ 		memset(&regs2, 0, sizeof(regs2));
+-		vcpu_regs_get(vm, VCPU_ID, &regs2);
++		vcpu_regs_get(vm, vcpu->id, &regs2);
+ 		TEST_ASSERT(!memcmp(&regs1, &regs2, sizeof(regs2)),
+ 			    "Unexpected register values after vcpu_load_state; rdi: %lx rsi: %lx",
+ 			    (ulong) regs2.rdi, (ulong) regs2.rsi);
 -- 
 2.35.1.723.g4982287a31-goog
 
