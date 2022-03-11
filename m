@@ -2,217 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2511DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345526AbiCKCBi (ORCPT
+        id S1345547AbiCKCDT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 21:01:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50582 "EHLO
+        Thu, 10 Mar 2022 21:03:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235129AbiCKCBe (ORCPT
+        with ESMTP id S1345520AbiCKCDM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 21:01:34 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0851A58D9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:00:29 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id c12-20020a170902848c00b0015025f53e9cso3701058plo.7
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:00:29 -0800 (PST)
+        Thu, 10 Mar 2022 21:03:12 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715771A58CD
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:02:10 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d07ae11462so57665977b3.8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:02:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=w5gdGojmRFq7pJcnsqi+arSi8dK8jySvBve6ok8cGsk=;
-        b=G5reGyTHI1S6J1MXim+bSdp6b8dgv/0P0vw8cxR99oaNLfO1821ObXoCpFhAaVLrW/
-         9QyG3ajv3oZJ3alPiQTRE1Qzt8DyYjH+r+vaI5Pty6Sa44RyspCQ2gt2XCIqK5j6W0H7
-         2oldirIm3nZbR+W3A8CiAxQr3qhE6i8ce6ITvi5jFW6s6jLP4AxrlTGs7vw43k+JAm8G
-         ZBS9hPtNSV4CG9Hj7kWUJwDJfVnJiAku9dB95TbeRpQ4oMwArNJ1g4YIof+Ds1GiwK0O
-         5hdEpE4DgLAOc24absApcq9Irq4VU+ZViOj9Mup4Vps/u8s+HgVXtv/kiLYhT2+FoJVE
-         lrzg==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=2hsaR8WAxcqWtbQLCYo/TxbTYR2phuKd4uO3CbSGXis=;
+        b=Q4jqn7qEyVL5UGQm48tyWxHXBIKnYgeh4VJEcNABuXL8XnVgyd64deKgPWFzS66j7R
+         g19GwgGrR2Qn0tEHazNj8b5zGGY9w6dYR/QXR3bG0gkvWfu9DJlLW79z0K/C/zsxfTge
+         GcJ5vm2PigirvczYxMY0bKFOqMgstn4HhF3LhKS5zTfBa4NqlI/XoXoEUjMe2v7dxm83
+         78tk4oqkEHsC95dm3g4GEnbysiblZLmhiaBQwu415BH228ci8sg+b9UrKjafX1FBmrjF
+         +3UHolf80KtUStuJ7TfPlOzTfUAoZ1d5e7HGQhKJXtFMuZ4vYMUHLKLRBrrn/Zia00/l
+         V3NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=w5gdGojmRFq7pJcnsqi+arSi8dK8jySvBve6ok8cGsk=;
-        b=ZBbBzZAGFKyWmRLD8WCvJ+RX+mFx0heQMs7ye0gVhd6mMn/uHI4fKRkbwoxKn7VWLA
-         RHrFAvoMNo4apzLrReOk2L2XwVkNRSOg5ZqxgX9ZCXzjhR3wy7ucc+PhSIExyEO7AUfe
-         +Z9MxJYaCGY8PDCIY0oWpYw08Yokweu9VoFrSigsCqNJLyS4rjlgwSvsBNLsosTZUCn5
-         FI2/u7y10IIfmf8r0t8udSF/BxklCJbtgc1DACU/miWsOw6UBD1bsxIRDkaB0Gui6PD8
-         Gp4bH9y3Vh5FZ+GdI4kpiA9hRk4jXC33GvHcZ2L0S0hdv9vr6kLj1r/iu7vwwIXOXt9z
-         yraQ==
-X-Gm-Message-State: AOAM530q9Ys/pEv1++uBRUVkWSeCpyvUzebuVVjWrQwBIckuMk+Pu+TW
-        7E0wWoOWH1V2swPcSsBNj0AenOyiqPY=
-X-Google-Smtp-Source: ABdhPJzazzYAzImuNPpCqfpkBnaZXEcV5D6f5cHVSOq6/Xihk8SFjlhnICQ+CYXKWDpFbXwvqHpVGXNDCfE=
-X-Received: from jiyong.seo.corp.google.com ([2401:fa00:d:11:f59e:134:eb7:e1d2])
- (user=jiyong job=sendgmr) by 2002:a17:902:dacc:b0:151:c216:2772 with SMTP id
- q12-20020a170902dacc00b00151c2162772mr7960491plx.107.1646964029307; Thu, 10
- Mar 2022 18:00:29 -0800 (PST)
-Date:   Fri, 11 Mar 2022 11:00:16 +0900
-Message-Id: <20220311020017.1509316-1-jiyong@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=2hsaR8WAxcqWtbQLCYo/TxbTYR2phuKd4uO3CbSGXis=;
+        b=cRokBrlTE53oLTXt/U53qzkt4keWmw+2vFwr/ycPMnUhLTIQKeo58nacHFcWOsRBYZ
+         O4/DCJ2zN8vrU7G2DwyOdwlho5csR1EteWWLvWB7weIibBJI/NFPejFx/LRO0fCY5x+m
+         sgC7+5sqP6PSltnZQ+dL6uYETgnRcz5Ca4BDLX7utF04EqyxYqDHwL9tiLSu3Htm7Ldm
+         Ku6p+oPy68GQh6r/1znZ2s/JN3QqOarUOalJpURlgUuXIc9cIxyS1XXk1xNahaQVtzAG
+         dy0BDRr79xiQ3gHaJcsJM6Mj5rwhp4QpVtynLbydwandAxHNLPVJ3Da0LLtvhRp2olxz
+         RDTQ==
+X-Gm-Message-State: AOAM5338fck1N2lrfnVBtwcXDg6ALBSwVyCnbNHpzED0yR6X52s5tkiL
+        CmnL9wF2a8C7LdC+JMX/pwzXvWagtjtchg==
+X-Google-Smtp-Source: ABdhPJzOTCYYIPtqY5f4TpqaFYLmmfYjNi7qJZgtvYTI9QaocypqR0Q/Ra+o/HDjGm3UwlCg1pPVe9yP2r+USg==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
+ (user=shakeelb job=sendgmr) by 2002:a81:7556:0:b0:2dc:6ea9:8d53 with SMTP id
+ q83-20020a817556000000b002dc6ea98d53mr6501468ywc.413.1646964129540; Thu, 10
+ Mar 2022 18:02:09 -0800 (PST)
+Date:   Fri, 11 Mar 2022 02:02:06 +0000
+In-Reply-To: <20220310092456.GJ15701@techsingularity.net>
+Message-Id: <20220311020206.qncvybld6zrgmm3m@google.com>
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH net v3 resend] vsock: each transport cycles only on its own sockets
-From:   Jiyong Park <jiyong@google.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     adelva@google.com, Jiyong Park <jiyong@google.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+References: <20220310092456.GJ15701@techsingularity.net>
+Subject: Re: [PATCH] mm/page_alloc: check high-order pages for corruption
+ during PCP operations
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Mel Gorman <mgorman@techsingularity.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>, Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@kernel.org>, Wei Xu <weixugc@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When iterating over sockets using vsock_for_each_connected_socket, make
-sure that a transport filters out sockets that don't belong to the
-transport.
+On Thu, Mar 10, 2022 at 09:24:56AM +0000, Mel Gorman wrote:
+> Eric Dumazet pointed out that commit 44042b449872 ("mm/page_alloc: allow
+> high-order pages to be stored on the per-cpu lists") only checks the head
+> page during PCP refill and allocation operations. This was an oversight
+> and all pages should be checked. This will incur a small performance
+> penalty but it's necessary for correctness.
 
-There actually was an issue caused by this; in a nested VM
-configuration, destroying the nested VM (which often involves the
-closing of /dev/vhost-vsock if there was h2g connections to the nested
-VM) kills not only the h2g connections, but also all existing g2h
-connections to the (outmost) host which are totally unrelated.
+> Fixes: 44042b449872 ("mm/page_alloc: allow high-order pages to be stored  
+> on the per-cpu lists")
+> Reported-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+> Acked-by: Eric Dumazet <edumazet@google.com>
 
-Tested: Executed the following steps on Cuttlefish (Android running on a
-VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
-connection inside the VM, (2) open and then close /dev/vhost-vsock by
-`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
-session is not reset.
-
-[1] https://android.googlesource.com/device/google/cuttlefish/
-
-Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Jiyong Park <jiyong@google.com>
----
-Changes in v3:
-  - Fixed the build error in vmci_transport.c
-Changes in v2:
-  - Squashed into a single patch
-
- drivers/vhost/vsock.c            | 3 ++-
- include/net/af_vsock.h           | 3 ++-
- net/vmw_vsock/af_vsock.c         | 9 +++++++--
- net/vmw_vsock/virtio_transport.c | 7 +++++--
- net/vmw_vsock/vmci_transport.c   | 5 ++++-
- 5 files changed, 20 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 37f0b4274113..e6c9d41db1de 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -753,7 +753,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 
- 	/* Iterating over all connections for all CIDs to find orphans is
- 	 * inefficient.  Room for improvement here. */
--	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
-+	vsock_for_each_connected_socket(&vhost_transport.transport,
-+					vhost_vsock_reset_orphans);
- 
- 	/* Don't check the owner, because we are in the release path, so we
- 	 * need to stop the vsock device in any case.
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index ab207677e0a8..f742e50207fb 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
- struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
- 					 struct sockaddr_vm *dst);
- void vsock_remove_sock(struct vsock_sock *vsk);
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk));
- int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
- bool vsock_find_cid(unsigned int cid);
- 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 38baeb189d4e..f04abf662ec6 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
- }
- EXPORT_SYMBOL_GPL(vsock_remove_sock);
- 
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk))
- {
- 	int i;
- 
-@@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
- 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
- 		struct vsock_sock *vsk;
- 		list_for_each_entry(vsk, &vsock_connected_table[i],
--				    connected_table)
-+				    connected_table) {
-+			if (vsk->transport != transport)
-+				continue;
-+
- 			fn(sk_vsock(vsk));
-+		}
- 	}
- 
- 	spin_unlock_bh(&vsock_table_lock);
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index fb3302fff627..5afc194a58bb 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -24,6 +24,7 @@
- static struct workqueue_struct *virtio_vsock_workqueue;
- static struct virtio_vsock __rcu *the_virtio_vsock;
- static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
-+static struct virtio_transport virtio_transport; /* forward declaration */
- 
- struct virtio_vsock {
- 	struct virtio_device *vdev;
-@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
- 	switch (le32_to_cpu(event->id)) {
- 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
- 		virtio_vsock_update_guest_cid(vsock);
--		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+		vsock_for_each_connected_socket(&virtio_transport.transport,
-+						virtio_vsock_reset_sock);
- 		break;
- 	}
- }
-@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	synchronize_rcu();
- 
- 	/* Reset all connected sockets when the device disappear */
--	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+	vsock_for_each_connected_socket(&virtio_transport.transport,
-+					virtio_vsock_reset_sock);
- 
- 	/* Stop all work handlers to make sure no one is accessing the device,
- 	 * so we can safely call virtio_reset_device().
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 7aef34e32bdf..b17dc9745188 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -75,6 +75,8 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
- 
- static int PROTOCOL_OVERRIDE = -1;
- 
-+static struct vsock_transport vmci_transport; /* forward declaration */
-+
- /* Helper function to convert from a VMCI error code to a VSock error code. */
- 
- static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
-@@ -882,7 +884,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
- 					 const struct vmci_event_data *e_data,
- 					 void *client_data)
- {
--	vsock_for_each_connected_socket(vmci_transport_handle_detach);
-+	vsock_for_each_connected_socket(&vmci_transport,
-+					vmci_transport_handle_detach);
- }
- 
- static void vmci_transport_recv_pkt_work(struct work_struct *work)
-
-base-commit: 3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b
--- 
-2.35.1.723.g4982287a31-goog
-
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
