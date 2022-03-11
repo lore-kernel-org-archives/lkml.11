@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2380FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6209AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345864AbiCKDBI (ORCPT
+        id S1345875AbiCKDBM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:01:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34356 "EHLO
+        Thu, 10 Mar 2022 22:01:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239205AbiCKDA7 (ORCPT
+        with ESMTP id S1345837AbiCKDBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:00:59 -0500
+        Thu, 10 Mar 2022 22:01:00 -0500
 Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6267F9549A;
-        Thu, 10 Mar 2022 18:59:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81D0D98586;
+        Thu, 10 Mar 2022 18:59:58 -0800 (PST)
 HMM_SOURCE_IP: 172.18.0.218:37692.1206753115
 HMM_ATTACHE_NUM: 0000
 HMM_SOURCE_TYPE: SMTP
 Received: from clientip-202.80.192.39 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id 15E93280137;
-        Fri, 11 Mar 2022 10:50:38 +0800 (CST)
+        by chinatelecom.cn (HERMES) with SMTP id 4D40B280146;
+        Fri, 11 Mar 2022 10:51:04 +0800 (CST)
 X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
 Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 59bedcae11f147cfa01eb2135873986d for j.vosburgh@gmail.com;
-        Fri, 11 Mar 2022 10:50:42 CST
-X-Transaction-ID: 59bedcae11f147cfa01eb2135873986d
+        by app0025 with ESMTP id 49ec3a755d724745a73cf7af43972e6f for j.vosburgh@gmail.com;
+        Fri, 11 Mar 2022 10:51:10 CST
+X-Transaction-ID: 49ec3a755d724745a73cf7af43972e6f
 X-Real-From: sunshouxin@chinatelecom.cn
 X-Receive-IP: 172.18.0.218
 X-MEDUSA-Status: 0
@@ -37,38 +37,45 @@ To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
         dsahern@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
-Subject: [PATCH 0/3] net:bonding:Add support for IPV6 RLB to balance-alb mode
-Date:   Thu, 10 Mar 2022 21:49:55 -0500
-Message-Id: <20220311024958.7458-1-sunshouxin@chinatelecom.cn>
+Subject: [PATCH 2/3] net:ipv6:Export inet6_ifa_finish_destroy and ipv6_get_ifaddr
+Date:   Thu, 10 Mar 2022 21:49:57 -0500
+Message-Id: <20220311024958.7458-3-sunshouxin@chinatelecom.cn>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220311024958.7458-1-sunshouxin@chinatelecom.cn>
+References: <20220311024958.7458-1-sunshouxin@chinatelecom.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset is implementing IPV6 RLB for balance-alb mode.
+Export inet6_ifa_finish_destroy and ipv6_get_ifaddr for bonding usage.
 
-Sun Shouxin (3):
-  net:ipv6:Add ndisc_bond_send_na to support sending na by slave
-    directly
-  net:ipv6:Export inet6_ifa_finish_destroy and ipv6_get_ifaddr
-  net:bonding:Add support for IPV6 RLB to balance-alb mode
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+---
+ net/ipv6/addrconf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- drivers/net/bonding/bond_3ad.c     |   2 +-
- drivers/net/bonding/bond_alb.c     | 588 ++++++++++++++++++++++++++++-
- drivers/net/bonding/bond_debugfs.c |  14 +
- drivers/net/bonding/bond_main.c    |   6 +-
- include/net/bond_3ad.h             |   2 +-
- include/net/bond_alb.h             |   7 +
- include/net/bonding.h              |   6 +-
- include/net/ndisc.h                |   6 +
- net/ipv6/addrconf.c                |   2 +
- net/ipv6/ndisc.c                   |  61 +++
- 10 files changed, 680 insertions(+), 14 deletions(-)
-
-
-base-commit: 2a9eef868a997ec575c2e6ae885e91313f635d59
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index b22504176588..12004b8a46b5 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -975,6 +975,7 @@ void inet6_ifa_finish_destroy(struct inet6_ifaddr *ifp)
+ 
+ 	kfree_rcu(ifp, rcu);
+ }
++EXPORT_SYMBOL(inet6_ifa_finish_destroy);
+ 
+ static void
+ ipv6_link_dev_addr(struct inet6_dev *idev, struct inet6_ifaddr *ifp)
+@@ -2037,6 +2038,7 @@ struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6_addr *add
+ 
+ 	return result;
+ }
++EXPORT_SYMBOL(ipv6_get_ifaddr);
+ 
+ /* Gets referenced address, destroys ifaddr */
+ 
 -- 
 2.27.0
 
