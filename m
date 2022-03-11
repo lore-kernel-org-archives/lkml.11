@@ -2,132 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 954B2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349917AbiCKPwr (ORCPT
+        id S1349987AbiCKPwx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:52:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
+        Fri, 11 Mar 2022 10:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349954AbiCKPwi (ORCPT
+        with ESMTP id S1349942AbiCKPwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:52:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92F9D1CDDCE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:51:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647013861;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LgKxZ+60OBmBTv0uCZcgzTAGPMwScB8wIZWfQnzZcjo=;
-        b=KcwjS+8MJDrYoQsNbi+ppVkAAejXRZZ6h8CXWchUXhGTwofjSubvfLEV2XOVfTGEHZ8vgl
-        RsjTSslWqojv2eqMaU/aPP1LJ70Zx7BfH7DZ5lzwJtOMwImPMgdoIS0XpM6v63R/Mq4f0z
-        QZ80WLeoNMU7dHNP/Vn2ohoaz7M2GJw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-492-2ueYG3m-ODO_eMOnBPB-TA-1; Fri, 11 Mar 2022 10:50:56 -0500
-X-MC-Unique: 2ueYG3m-ODO_eMOnBPB-TA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C51ED1006AA6;
-        Fri, 11 Mar 2022 15:50:54 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 53F1A866D4;
-        Fri, 11 Mar 2022 15:50:52 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 23/31] KVM: selftests: Make it possible to replace PTEs with __virt_pg_map()
-Date:   Fri, 11 Mar 2022 16:49:35 +0100
-Message-Id: <20220311154943.2299191-24-vkuznets@redhat.com>
-In-Reply-To: <20220311154943.2299191-1-vkuznets@redhat.com>
-References: <20220311154943.2299191-1-vkuznets@redhat.com>
+        Fri, 11 Mar 2022 10:52:35 -0500
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373B11CD9F4;
+        Fri, 11 Mar 2022 07:51:01 -0800 (PST)
+Received: by mail-oi1-f173.google.com with SMTP id 12so9716630oix.12;
+        Fri, 11 Mar 2022 07:51:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6NEUsk0pZcf1ZvCBxSl99gFtqxiz2JOvHrLo+iX2PNw=;
+        b=1xwcpeLJBYpWoPIuMMp+GDaDU7lKU/aE6f0/24yv3sKhqU3fhSFPqBpPnJyavyIWwl
+         7Zp3dNsbyhWpcz3IcXa1KKrbVhWy7PezrZ3doBABMNnQzhku7Pqf6MDtjhX/3+2o0nFd
+         YRN97l02ULIvctbXGHKD08NcBwTxi0JeZOJsQXqU7ecORRjafUCiYqquSgTAC4mAmxh/
+         v//d8xPE1D44iAHRuPZQHhp4hZH5pCPOI/P78MkCabufG1SBNgOlOo0xSU9L3wOUPpTh
+         aXuLYrSMje1poMVHWAVraJ2YomI2551nwZUUs0SZpsCkdVbLnZZa1kIoBwpiISpqSmG6
+         Th+g==
+X-Gm-Message-State: AOAM532LH+k5HtO5n6VYmFxTQ7iP8yO99813k44cil5Rf4BuWQ/IXnqp
+        GW9ph6W7CIjZWsFKD3toNg==
+X-Google-Smtp-Source: ABdhPJz2tFjP0i1YZqYFU0hfa5NCSKGTYu5YnNfXEZ09NUTvDUZh3jhw1aVDauubxBUJCcGUqbsMog==
+X-Received: by 2002:a05:6808:2c4:b0:2d7:968c:dd37 with SMTP id a4-20020a05680802c400b002d7968cdd37mr13361942oid.146.1647013860505;
+        Fri, 11 Mar 2022 07:51:00 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id p67-20020acabf46000000b002d97bda3868sm3886508oif.45.2022.03.11.07.50.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 07:50:59 -0800 (PST)
+Received: (nullmailer pid 3867630 invoked by uid 1000);
+        Fri, 11 Mar 2022 15:50:58 -0000
+Date:   Fri, 11 Mar 2022 09:50:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org,
+        devicetree@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        hsinyi@chromium.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v4 2/4] dt-bindings: watchdog: Add compatible for
+ Mediatek MT8186
+Message-ID: <Yitv4sRQMuewLcfT@robh.at.kernel.org>
+References: <20220311130732.22706-1-allen-kh.cheng@mediatek.com>
+ <20220311130732.22706-3-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311130732.22706-3-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__virt_pg_map() makes an assumption that leaf PTE is not present. This
-is not suitable if the test wants to replace an already present
-PTE. Hyper-V PV TLB flush test is going to need that.
+On Fri, 11 Mar 2022 21:07:30 +0800, Allen-KH Cheng wrote:
+> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> 
+> This commit adds dt-binding documentation of watchdog for Mediatek
+> MT8186 SoC Platform.
+> 
+> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- tools/testing/selftests/kvm/include/x86_64/processor.h | 2 +-
- tools/testing/selftests/kvm/lib/x86_64/processor.c     | 6 +++---
- tools/testing/selftests/kvm/x86_64/mmu_role_test.c     | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 4962cd0ceacd..1a3550c99eb1 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -468,7 +468,7 @@ enum x86_page_size {
- 	X86_PAGE_SIZE_1G,
- };
- void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
--		   enum x86_page_size page_size);
-+		   enum x86_page_size page_size, bool replace);
- 
- /*
-  * Basic CPU control in CR0
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-index 9f000dfb5594..20df3e84d777 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -229,7 +229,7 @@ static struct pageUpperEntry *virt_create_upper_pte(struct kvm_vm *vm,
- }
- 
- void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
--		   enum x86_page_size page_size)
-+		   enum x86_page_size page_size, bool replace)
- {
- 	const uint64_t pg_size = 1ull << ((page_size * 9) + 12);
- 	struct pageUpperEntry *pml4e, *pdpe, *pde;
-@@ -270,7 +270,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
- 
- 	/* Fill in page table entry. */
- 	pte = virt_get_pte(vm, pde->pfn, vaddr, 0);
--	TEST_ASSERT(!pte->present,
-+	TEST_ASSERT(replace || !pte->present,
- 		    "PTE already present for 4k page at vaddr: 0x%lx\n", vaddr);
- 	pte->pfn = paddr >> vm->page_shift;
- 	pte->writable = true;
-@@ -279,7 +279,7 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
- 
- void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
- {
--	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K);
-+	__virt_pg_map(vm, vaddr, paddr, X86_PAGE_SIZE_4K, false);
- }
- 
- static struct pageTableEntry *_vm_get_page_table_entry(struct kvm_vm *vm, int vcpuid,
-diff --git a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
-index da2325fcad87..e3fdf320b9f4 100644
---- a/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/mmu_role_test.c
-@@ -35,7 +35,7 @@ static void mmu_role_test(u32 *cpuid_reg, u32 evil_cpuid_val)
- 	run = vcpu_state(vm, VCPU_ID);
- 
- 	/* Map 1gb page without a backing memlot. */
--	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G);
-+	__virt_pg_map(vm, MMIO_GPA, MMIO_GPA, X86_PAGE_SIZE_1G, false);
- 
- 	r = _vcpu_run(vm, VCPU_ID);
- 
--- 
-2.35.1
-
+Acked-by: Rob Herring <robh@kernel.org>
