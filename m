@@ -2,154 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A202DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:01:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 411E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229966AbiCKXCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:02:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
+        id S230319AbiCKXDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:03:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiCKXBr (ORCPT
+        with ESMTP id S231335AbiCKXDI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:01:47 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6409A24DD60
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:54:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647039298; x=1678575298;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=eKBtcpoHrPqlKqhYnJeiJbBZO+7HypJb6qXhbR6fhOA=;
-  b=BE+Y2Q3sDaMDsHHuAkmZfaCAFIBAOp+dOMnTRLJUVT2ReZiUPxaMuPEm
-   Op+/sBGvIridRm6qYNRb2mFq532vu9aHEJqJKTlZF3d1JMHIOorD3HTxp
-   zAbdELs8nY5Czb+3Su2v0xXd17BNsJyZX1kNpGya8yOwmzHb5VUjJ++Gm
-   /2ygUrFYcfIo9XMh/4RRdqYn9jQBX/4S9CgQfwGnAT711qO+A6s7VQrLC
-   hNAGlo92R1ljkZWOWIPPO3UVSdeQpPRMo5S1/8Co7VooKiKacWpWf8AvR
-   uWdLMTI6sltsfg4KF1Y3Llhmei7Qk4peobfy99G8Vsx3LMscj4JEATC44
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="235620724"
-X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="235620724"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 14:54:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="712995916"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 11 Mar 2022 14:54:54 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSo9u-0007DK-05; Fri, 11 Mar 2022 22:54:54 +0000
-Date:   Sat, 12 Mar 2022 06:54:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pavel Tatashin <pasha.tatashin@soleen.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Will Deacon <will@kernel.org>,
-        Matthias Brugger <mbrugger@suse.com>
-Subject: arch/arm64/kernel/hibernate.c:202:44: sparse: sparse: cast from
- restricted gfp_t
-Message-ID: <202203120653.S3Am11od-lkp@intel.com>
+        Fri, 11 Mar 2022 18:03:08 -0500
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16228248CCE
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:58:10 -0800 (PST)
+Received: by mail-vk1-xa36.google.com with SMTP id j9so5460422vkj.1
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:58:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=3INdYjmD9sI3AAGt1tE2s/Am9WLmWC+N03DHnuY4rE8=;
+        b=BMA7qz0hmDXjgLAj/07b1iUaF7Hpsjn69duyTb+GziOeEl6FfVlZDbJDnlOKFb5OxL
+         993gwyQ2uOEj3GwTJER0T9zTHJQ6k2YiGQTupxTGAeMkt/rxQ8SU7B9al7D4z9jq+inU
+         xbnrI77JFap8h53TWHjivFVxM/5MoRxNBSh2yX54H67Yp6YZMsQAViCyWkISwhr/YT+i
+         mF5wyHwgkInp+C4d5kf++Um69oOINKpvHpy1b28ckD6Y+qNFCGvwWa9cJ9efFbon6Epm
+         qL/hHNgx/Su35VLn9pfl0NE6jHYctKc0W1IDlZ6EMyJaDiqCHBSVDl5l8Gtv573d3IuH
+         NkEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3INdYjmD9sI3AAGt1tE2s/Am9WLmWC+N03DHnuY4rE8=;
+        b=599/SR7FDKKFxqlFxEG6pSOe1nhklmmwBRT2aq3aG5SQveO8ACX4EeWkc8TCIb7n+h
+         NJIyA57CFfhS9n9Fr0Qh9Gbi+AkvtcLLsORdfqOKAKiTSAXKnY47ggV1GXP8kZiTZ5Zw
+         YQmMugCHZf+bpOMJB+bj6xOg9mCeypATLd+TocMmtQCpdQ6xr2Xo9QBZ0S68obURGAb0
+         aauw3lNaZjdpC81ABYWlq4YEkwWXJTFKbAchTGGNSYWeBzpnrXNi3QxiyGhTMz8fJ3BS
+         wRQU66rO3KwVPlFQH+8CQF46lBE9w1CBZiZiECiwe5566yVbAs0QOEamWNPAkBKGVLOI
+         Bj/w==
+X-Gm-Message-State: AOAM530v7Ds5/LHz25GFz5DwRyjzeOtTv6lo68xQsCUijJt+NSSqP6Hx
+        wCOjIQsO+3HbXh0rYUhCsPSRUGHDb17D6QCJjzNc/g==
+X-Google-Smtp-Source: ABdhPJwGpXBfC5BGWFXcbt51OotnQdLdCIZrxqrjphxJw0BNDdEab0gCbm4RnWAIGbVNilKBQ/CyJES1Xl9HPBWgrnk=
+X-Received: by 2002:a05:6122:2089:b0:337:bb38:9145 with SMTP id
+ i9-20020a056122208900b00337bb389145mr5955292vkd.14.1647039488964; Fri, 11 Mar
+ 2022 14:58:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-2-yuzhao@google.com>
+ <CAGsJ_4yt_q4=pPW1M6fHN9HrV5JuTo9_9GQ0wv4-VT7tivU1+Q@mail.gmail.com>
+In-Reply-To: <CAGsJ_4yt_q4=pPW1M6fHN9HrV5JuTo9_9GQ0wv4-VT7tivU1+Q@mail.gmail.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Fri, 11 Mar 2022 15:57:57 -0700
+Message-ID: <CAOUHufZy+3+0zWTpAr8wJkWeQ4c4b9msiuWWu0XK=_aedqB=8w@mail.gmail.com>
+Subject: Re: [PATCH v9 01/14] mm: x86, arm64: add arch_has_hw_pte_young()
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        LAK <linux-arm-kernel@lists.infradead.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        x86 <x86@kernel.org>, Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   68453767131a5deec1e8f9ac92a9042f929e585d
-commit: 50f53fb721817a6efa541cca24f1b7caa84801c1 arm64: trans_pgd: make trans_pgd_map_page generic
-date:   1 year, 1 month ago
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220312/202203120653.S3Am11od-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=50f53fb721817a6efa541cca24f1b7caa84801c1
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 50f53fb721817a6efa541cca24f1b7caa84801c1
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
+On Fri, Mar 11, 2022 at 3:55 AM Barry Song <21cnbao@gmail.com> wrote:
+>
+> On Wed, Mar 9, 2022 at 3:47 PM Yu Zhao <yuzhao@google.com> wrote:
+> >
+> > Some architectures automatically set the accessed bit in PTEs, e.g.,
+> > x86 and arm64 v8.2. On architectures that do not have this capability,
+> > clearing the accessed bit in a PTE usually triggers a page fault
+> > following the TLB miss of this PTE (to emulate the accessed bit).
+> >
+> > Being aware of this capability can help make better decisions, e.g.,
+> > whether to spread the work out over a period of time to reduce bursty
+> > page faults when trying to clear the accessed bit in many PTEs.
+> >
+> > Note that theoretically this capability can be unreliable, e.g.,
+> > hotplugged CPUs might be different from builtin ones. Therefore it
+> > should not be used in architecture-independent code that involves
+> > correctness, e.g., to determine whether TLB flushes are required (in
+> > combination with the accessed bit).
+> >
+> > Signed-off-by: Yu Zhao <yuzhao@google.com>
+> > Acked-by: Brian Geffon <bgeffon@google.com>
+> > Acked-by: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+> > Acked-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+> > Acked-by: Steven Barrett <steven@liquorix.net>
+> > Acked-by: Suleiman Souhlal <suleiman@google.com>
+> > Acked-by: Will Deacon <will@kernel.org>
+> > Tested-by: Daniel Byrne <djbyrne@mtu.edu>
+> > Tested-by: Donald Carr <d@chaos-reins.com>
+> > Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
+> > Tested-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+> > Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
+> > Tested-by: Sofia Trinh <sofia.trinh@edi.works>
+> > Tested-by: Vaibhav Jain <vaibhav@linux.ibm.com>
+> > ---
+>
+> Reviewed-by: Barry Song <baohua@kernel.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks.
 
+> i guess arch_has_hw_pte_young() isn't called that often in either
+> mm/memory.c or mm/vmscan.c.
+> Otherwise, moving to a static key might help. Is it?
 
-sparse warnings: (new ones prefixed by >>)
-   arch/arm64/kernel/hibernate.c:181:39: sparse: sparse: cast to restricted gfp_t
->> arch/arm64/kernel/hibernate.c:202:44: sparse: sparse: cast from restricted gfp_t
+MRS shouldn't be slower than either branch of a static key. With a
+static key, we only can optimize one of the two cases.
 
-vim +202 arch/arm64/kernel/hibernate.c
-
-   183	
-   184	/*
-   185	 * Copies length bytes, starting at src_start into an new page,
-   186	 * perform cache maintenance, then maps it at the specified address low
-   187	 * address as executable.
-   188	 *
-   189	 * This is used by hibernate to copy the code it needs to execute when
-   190	 * overwriting the kernel text. This function generates a new set of page
-   191	 * tables, which it loads into ttbr0.
-   192	 *
-   193	 * Length is provided as we probably only want 4K of data, even on a 64K
-   194	 * page system.
-   195	 */
-   196	static int create_safe_exec_page(void *src_start, size_t length,
-   197					 unsigned long dst_addr,
-   198					 phys_addr_t *phys_dst_addr)
-   199	{
-   200		struct trans_pgd_info trans_info = {
-   201			.trans_alloc_page	= hibernate_page_alloc,
- > 202			.trans_alloc_arg	= (void *)GFP_ATOMIC,
-   203		};
-   204	
-   205		void *page = (void *)get_safe_page(GFP_ATOMIC);
-   206		pgd_t *trans_pgd;
-   207		int rc;
-   208	
-   209		if (!page)
-   210			return -ENOMEM;
-   211	
-   212		memcpy(page, src_start, length);
-   213		__flush_icache_range((unsigned long)page, (unsigned long)page + length);
-   214	
-   215		trans_pgd = (void *)get_safe_page(GFP_ATOMIC);
-   216		if (!trans_pgd)
-   217			return -ENOMEM;
-   218	
-   219		rc = trans_pgd_map_page(&trans_info, trans_pgd, page, dst_addr,
-   220					PAGE_KERNEL_EXEC);
-   221		if (rc)
-   222			return rc;
-   223	
-   224		/*
-   225		 * Load our new page tables. A strict BBM approach requires that we
-   226		 * ensure that TLBs are free of any entries that may overlap with the
-   227		 * global mappings we are about to install.
-   228		 *
-   229		 * For a real hibernate/resume cycle TTBR0 currently points to a zero
-   230		 * page, but TLBs may contain stale ASID-tagged entries (e.g. for EFI
-   231		 * runtime services), while for a userspace-driven test_resume cycle it
-   232		 * points to userspace page tables (and we must point it at a zero page
-   233		 * ourselves). Elsewhere we only (un)install the idmap with preemption
-   234		 * disabled, so T0SZ should be as required regardless.
-   235		 */
-   236		cpu_set_reserved_ttbr0();
-   237		local_flush_tlb_all();
-   238		write_sysreg(phys_to_ttbr(virt_to_phys(trans_pgd)), ttbr0_el1);
-   239		isb();
-   240	
-   241		*phys_dst_addr = virt_to_phys(page);
-   242	
-   243		return 0;
-   244	}
-   245	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+There is a *theoretical* problem with MRS: ARM specs don't prohibit a
+physical CPU to support both cases (on different logical CPUs).
