@@ -2,200 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 372D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26023C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347891AbiCKK1n (ORCPT
+        id S1347893AbiCKK3w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:27:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
+        Fri, 11 Mar 2022 05:29:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347865AbiCKK1k (ORCPT
+        with ESMTP id S239701AbiCKK3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:27:40 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2167C792
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:26:37 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F0A521F38D;
-        Fri, 11 Mar 2022 10:26:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646994395; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iDHlRfevwYuO53uWfkV+3+6vj5gqnO1eqvyOtlQyFUg=;
-        b=IjA2cc+VwQHHyl5Izis9qUmfgpFP18q2zzaMlOqmSs4L8tvMLjUE7mf6BUNiMD1sPyL34L
-        HTtI+XuU0sZu+GNEzo7ITyxbrC1zH4qRIxcR8sEjGMcaMnABHlwq3M568gsQsxjqlxIWQF
-        UMMyIlO6Uo7kSzyo/Rp1SQQMmYatG1Y=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id AE63BA3B88;
-        Fri, 11 Mar 2022 10:26:35 +0000 (UTC)
-Date:   Fri, 11 Mar 2022 11:26:32 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
- proper kthread support
-Message-ID: <Yisj2PEtjZfHMe6N@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220207194323.273637-12-john.ogness@linutronix.de>
- <YhYKP/UuSKENGwfj@alley>
- <87tuc7xma0.fsf@jogness.linutronix.de>
- <YioMcSe0P0Z7ksiW@alley>
- <87wnh14wp9.fsf@jogness.linutronix.de>
+        Fri, 11 Mar 2022 05:29:50 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8956717F6BE
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:28:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646994527; x=1678530527;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=NhfIPSzwJXId8+VZdMKuXhPcehF31c0r3OdEixOdLnk=;
+  b=Pp/DZhoRQlRKyQMxPFymk9FJ1AmkMGU0/IIznwWmemY1moKjRmF1vrhm
+   8T3WnTUTxy5mxKCjOni1UIgaNoNB+Z5ws4hm/1r+bNh/+veiBWTpG5w3P
+   qwt7abqvXrihhkLHc7vkesGZRsqbJO6xJhCwvjDTP9z3QEPmrspJEPkv9
+   MJE8ZvvC5f4pSIwidGeCV1GIoWUiwClXKx8u7JG80GgVN3OHhuKPgos4U
+   1JrXgIbxAQM+ud2aD9MmMSC+gtBfr87u0zwBo2ljtBQx2mXtp/h9p/1n0
+   vcYJPA52a6Kx/ux72eGaYrHUmr8cQjv+xxhvq1zAbJFG+eKc64igph0ek
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="254375394"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="254375394"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 02:28:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="644891900"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 11 Mar 2022 02:28:45 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nScVo-0006FX-W1; Fri, 11 Mar 2022 10:28:44 +0000
+Date:   Fri, 11 Mar 2022 18:28:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.17-rc1 8/8]
+ include/linux/kern_levels.h:5:25: warning: format '%x' expects argument of
+ type 'unsigned int', but argument 2 has type 'long unsigned int'
+Message-ID: <202203111841.1Q9NXFVF-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87wnh14wp9.fsf@jogness.linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-03-10 17:14:18, John Ogness wrote:
-> On 2022-03-10, Petr Mladek <pmladek@suse.com> wrote:
-> >    console_unlock()
-> >    {
-> > 	  [...]
-> > 	  if (may_schedule)
-> > 	      retry = console_trylock_sched();
-> > 	  else
-> > 	      retry = console_trylock();
-> >    }
-> 
-> I believe the main confusion comes from the function name I chose and
-> the poor function description. Using your above code idea and changing
-> to a more fitting name, I would suggest:
-> 
->     console_unlock()
->     {
->  	  [...]
->  	  if (may_schedule)
->  	      retry = console_lock_reacquire();
->  	  else
->  	      retry = console_trylock();
->     }
-> 
-> This console_lock_reacquire() acquires the console lock the same way
-> that console_lock() does it. The only reason we don't just use
-> console_lock() is because we want to perform a try on @console_sem. But
-> if we are successful, in the end, we have re-taken the console lock
-> exactly as console_lock() did before: @console_sem locked, kthreads
-> blocked by mutex.
-> 
-> You say this creates deadlock potential, but I do not see how that could
-> be. We are in the same context and locking the same way we did before.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.17-rc1
+head:   66e9038ef48dc66c07b12443b73e2d1f3f12cbab
+commit: 66e9038ef48dc66c07b12443b73e2d1f3f12cbab [8/8] KASAN horror
+config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220311/202203111841.1Q9NXFVF-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=66e9038ef48dc66c07b12443b73e2d1f3f12cbab
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.17-rc1
+        git checkout 66e9038ef48dc66c07b12443b73e2d1f3f12cbab
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mm/
 
-Yeah, it looks safe when using to re-acquire the lock in console_unlock().
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I thought about it as a generic API. If it exists, it might be used
-anywhere. And it has pretty special behavior that one has to keep
-in mind.
+All warnings (new ones prefixed by >>):
 
-
-> But my primary concern is not the naming or workarounds or confusing
-> APIs. So we should not let ourselves be diverted by that aspect.
-> 
-> My primary concern is the technical difference when a schedulable
-> context reacquires via atomic counter (which fails if any kthread is
-> active) vs. reacquiring via mutex (which never fails).
-> 
-> The reason for the reacquire is because (during direct printing) we see
-> that a new record appeared and we need to make sure it gets printed
-> (because other direct printers may have aborted, expecting us to print
-> it).
-
-I see. I missed this POV.
-
-
-> This scenario is only interesting if kthread printers exist because
-> otherwise @console_sem is enough to handle the direct printing.
-> 
-> So the questions are:
-> 
-> 1. Is it OK to assume the new record will be printed if any kthread is
-> active? If yes, then it is enough to use the atomic counter.
-> 
-> 2. Or, since we are responsible for direct printing, do we want to be
-> certain that the record is printed by printing it ourselves? If yes,
-> then we must block all the kthreads and perform the printing directly to
-> all the consoles. This requires the mutex approach.
->
-> IMHO #1 will relies heavily on kthreads waking up and printing (even
-> though the printk caller requested direct printing), whereas #2 will
-> cause direct printers to more actively print (possibly printing more
-> than was requested).
-
-OK, it means that the main problem here _is not_ the scheduling context,
-console_lock() vs. console_trylock(). The main problem _is_ the direct
-printing vs. the offload to kthreads.
-
-Of course, the context is important. It affects how we could re-take
-the lock. But the main problem is the printing mode. We must make sure
-that:
-
-    1. someone is printing pending messages when the direct mode is needed
-
-    2. kthreads are woken and can enter the printing mode when the direct
-       mode is disabled.
-
-Will console_trylock_sched()/console_trylock_reacquire() really
-help here?
-
-The API theoretically helps in direct mode when the lock was taken
-via console_lock(). But it does not help when the lock was taken
-via console_trylock() from printk(). It might mean that
-the forward progress might not be guaranteed in the direct mode
-(early boot, panic, ...).
-
-Hmm, the forward progress seems to be guaranteed in the direct
-mode most of the time. console_trylock() can take over
-the atomic counter because console kthreads are not allowed
-to enter the printing mode in this case.
-
-I used "most of the time" because there might be races when
-the mode is switched. "printk_direct" is an atomic variable.
-CON_DIRECT is set under con->mutex but console_trylock()
-does not take the mutex...
-
-There are also races when the offload to consoles kthreads
-is allowed. For example, console_trylock() might block
-console_kthread_printing_tryenter().
+   In file included from include/asm-generic/bug.h:22,
+                    from arch/arm/include/asm/bug.h:60,
+                    from include/linux/bug.h:5,
+                    from include/linux/kasan.h:5,
+                    from arch/arm/mm/kasan_init.c:11:
+   arch/arm/mm/kasan_init.c: In function 'kasan_init':
+>> include/linux/kern_levels.h:5:25: warning: format '%x' expects argument of type 'unsigned int', but argument 2 has type 'long unsigned int' [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:519:9: note: in expansion of macro 'printk'
+     519 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
+      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+         |                         ^~~~~~~~
+   include/linux/printk.h:519:16: note: in expansion of macro 'KERN_INFO'
+     519 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~~
+   arch/arm/mm/kasan_init.c:237:9: note: in expansion of macro 'pr_info'
+     237 |         pr_info("clearing PGDs from %08x-%08x\n", KASAN_SHADOW_START, KASAN_SHADOW_END);
+         |         ^~~~~~~
+   include/linux/kern_levels.h:5:25: warning: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'long unsigned int' [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:519:9: note: in expansion of macro 'printk'
+     519 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
+      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+         |                         ^~~~~~~~
+   include/linux/printk.h:519:16: note: in expansion of macro 'KERN_INFO'
+     519 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~~
+   arch/arm/mm/kasan_init.c:237:9: note: in expansion of macro 'pr_info'
+     237 |         pr_info("clearing PGDs from %08x-%08x\n", KASAN_SHADOW_START, KASAN_SHADOW_END);
+         |         ^~~~~~~
 
 
-Sigh, I am afraid that we have non-trivial problems
-to guarantee that all messages will be printed:
+vim +5 include/linux/kern_levels.h
 
-     + races when switching between direct mode
-       and offload to kthreads. It might cause
-       stall in both modes.
+314ba3520e513a Joe Perches 2012-07-30  4  
+04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
+04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
+04d2c8c83d0e3a Joe Perches 2012-07-30  7  
 
-     + console_trylock() races with
-       console_kthread_printing_tryenter().
-       It might put kthread into a sleep even when
-       it is supposed to print the message.
+:::::: The code at line 5 was first introduced by commit
+:::::: 04d2c8c83d0e3ac5f78aeede51babb3236200112 printk: convert the format for KERN_<LEVEL> to a 2 byte pattern
 
+:::::: TO: Joe Perches <joe@perches.com>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
 
-IMHO, console_trylock_sched() does not help much here.
-We need to solve console_trylock() path anyway.
-
-I think that the solution might be:
-
-   + make sure that the state of "printk_direct" atomic variable
-     is enough to distinguish about the mode.
-
-   + always wakeup() console kthreads after console_trylock()
-     to handle the possible race with
-     console_kthread_printing_tryenter()
-
-I have to think more about it.
-
-Does it make any sense, please?
-
-Best Regards,
-Petr
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
