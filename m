@@ -2,234 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF530C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347887AbiCKOki (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:40:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
+        id S237329AbiCKOlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 09:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349574AbiCKOhj (ORCPT
+        with ESMTP id S1344430AbiCKOk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:37:39 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A801C9455;
-        Fri, 11 Mar 2022 06:36:30 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 50B90240004;
-        Fri, 11 Mar 2022 14:36:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647009389;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iggvo2rKOQxtmuPw2qJyHa5S/fk0RafXxscwtfDj1dg=;
-        b=l9t27ymgioqxk7VMuWg/PvC3tPc7/UErsoxRubSz31jmRdbEC0qRkTI0l+7Yonz1Ba8MUz
-        VVKgEiwiGzKKZzK96DGmG9o/JFR2xhwQcjFYA677mnScynZ9MlRl77npkKBGQta/uouBpT
-        eRNdAxPFeeMv2LSX5GV2LPAcRfZCtJT+UwVcJ7BV95fecJ2JJS2x/XtRVoydAW81Zg7UyL
-        p/Rx39pi2Vwga2MUx4zewJD8Bas7j1ttgYhiiE3mPJI1JcNm/6BEorzAq3uAeFsv6pKWE2
-        9sxevk6fr/NG64ZB2LF+jzsalYlpbdWdZmxV40yRJYCfuMmkD1vaaVh+Qxm0ig==
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
-Cc:     Yong Deng <yong.deng@magewell.com>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: [PATCH v3 26/46] media: sun6i-csi: Remove custom format helper and rework configure
-Date:   Fri, 11 Mar 2022 15:35:12 +0100
-Message-Id: <20220311143532.265091-27-paul.kocialkowski@bootlin.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220311143532.265091-1-paul.kocialkowski@bootlin.com>
-References: <20220311143532.265091-1-paul.kocialkowski@bootlin.com>
+        Fri, 11 Mar 2022 09:40:56 -0500
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C14374842;
+        Fri, 11 Mar 2022 06:38:34 -0800 (PST)
+Received: by mail-qk1-x734.google.com with SMTP id r127so7057142qke.13;
+        Fri, 11 Mar 2022 06:38:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=iU7gCGr1VdelurSCAywqdNeaWdDipjKRqNaP000KsAo=;
+        b=PgpGhqFkFlrhdXEk5NEwF9LnOxYUeXR7cl7/M/TirE17bvhJL2qugvXCtwvlL4o4Dx
+         L88gwsbwDdOIga1mu+25Awtebtfq44yuIMG5iCJ0VsaaEVVPUNdfv+NRf7KXQeIwypJu
+         O8tZasWRh4WjIPL5ykgBT7qJs+Lyamqqom+fysMikTwBYZjuT8TsitusNFFYIOgDU0xx
+         XHt5BzFqKYLLRwaqwYJEJbVxH+HW4ZEOkIr1QA19a/ZnPF8THsaPwt0wfhqp312cN9mr
+         EWLQAd6GK+aqdwCSami1lTIStb48UD5E0fagjHl8zzpb4hHyx3KEaGxNnm+u0v8Kote0
+         1ypg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=iU7gCGr1VdelurSCAywqdNeaWdDipjKRqNaP000KsAo=;
+        b=7Ag7JrPatoLWhD+bgxBG22eczX/CSifT8ZbWp+8HPMgQ2+eTiYOvGH6mzNRvn2cg4R
+         JoR3CV4BETEi0DobwLsVtKLCRo/F5bod4lbe4ef6kIo1cjb9Hyi23D9EGFa4K3BF2nDO
+         QN0y5m+wmo3VMvTG5Tjs293iciVKaUUytmUn84An5mEn+9uUKbb+kkQrJFU51L+D70fI
+         BKfzz8lbi6B6gm6I2NOz3/i1p/gj3Bbc1yKBywntTdhcqG3BI9TMqXaZZHya7J5iqtjb
+         RkE9cKDAl5JZU+eXiJKV3tlLn1uJRvcOMhFvzJV0Xm9wMWgGHOlzaZ4XhgsrT8uSulqN
+         9zJQ==
+X-Gm-Message-State: AOAM532zkWjaezKvFn/dhnWAxYFj9YcPuVZGmgMfYPPyvpZlddAjEUo5
+        xqBbxvw2uq29p2rfumuGILDkr1792Bg=
+X-Google-Smtp-Source: ABdhPJw6nD67gfFWGHM95lBbaXlhy7v9j3Co97lvY43StlVZnpd/eC3HALjxThfHbP3Kuo1mh5gAnQ==
+X-Received: by 2002:a37:3d5:0:b0:67b:335d:59c3 with SMTP id 204-20020a3703d5000000b0067b335d59c3mr6551783qkd.739.1647009512972;
+        Fri, 11 Mar 2022 06:38:32 -0800 (PST)
+Received: from localhost (pppoe-209-91-167-254.vianet.ca. [209.91.167.254])
+        by smtp.gmail.com with ESMTPSA id s7-20020ac85cc7000000b002e1b34b30c9sm3116984qta.75.2022.03.11.06.38.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 06:38:32 -0800 (PST)
+Date:   Fri, 11 Mar 2022 09:38:30 -0500
+From:   Trevor Woerner <twoerner@gmail.com>
+To:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/3] serial: 8250_fintek.c: Finish support for the F81865
+Message-ID: <20220311143830.GA39653@localhost>
+References: <20220311070203.18159-1-twoerner@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220311070203.18159-1-twoerner@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the custom sun6i_csi_get_bpp helper in favor of common v4l2
-infrastructure and rework the related window configuration code.
+On Fri 2022-03-11 @ 02:02:00 AM, Trevor Woerner wrote:
+> This driver only partially supports the F81865 device. The UART portions
+> of this SuperIO chip behave exactly like the UART of the F81866, except
+> that the F81866 has 128-byte FIFOs whereas the F81865 has 16-byte FIFOs.
+> Therefore fill out the support for the F81865 in the places where it is
+> missing.
+> 
+> Tested at 1500000 baud on the iEi NANO-PV-D5251-R10 board.
 
-Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
----
- .../platform/sunxi/sun6i-csi/sun6i_csi.h      | 49 -------------
- .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 70 +++++++++----------
- 2 files changed, 35 insertions(+), 84 deletions(-)
+Is it too late to send a v2? I'd like to fixup the subject to remove the ".c",
+and I should probably add some comments in the driver explaining that the
+F81865 is functionally the same as the F81866 (except for the fifo sizes)
+which is why the F81865 doesn't have any of its own #define's.
 
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-index 8a9586e02f73..21932aae3636 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-@@ -61,53 +61,4 @@ struct sun6i_csi_variant {
- bool sun6i_csi_is_format_supported(struct sun6i_csi_device *csi_dev,
- 				   u32 pixformat, u32 mbus_code);
- 
--/* get bpp form v4l2 pixformat */
--static inline int sun6i_csi_get_bpp(unsigned int pixformat)
--{
--	switch (pixformat) {
--	case V4L2_PIX_FMT_SBGGR8:
--	case V4L2_PIX_FMT_SGBRG8:
--	case V4L2_PIX_FMT_SGRBG8:
--	case V4L2_PIX_FMT_SRGGB8:
--	case V4L2_PIX_FMT_JPEG:
--		return 8;
--	case V4L2_PIX_FMT_SBGGR10:
--	case V4L2_PIX_FMT_SGBRG10:
--	case V4L2_PIX_FMT_SGRBG10:
--	case V4L2_PIX_FMT_SRGGB10:
--		return 10;
--	case V4L2_PIX_FMT_SBGGR12:
--	case V4L2_PIX_FMT_SGBRG12:
--	case V4L2_PIX_FMT_SGRBG12:
--	case V4L2_PIX_FMT_SRGGB12:
--	case V4L2_PIX_FMT_NV12_16L16:
--	case V4L2_PIX_FMT_NV12:
--	case V4L2_PIX_FMT_NV21:
--	case V4L2_PIX_FMT_YUV420:
--	case V4L2_PIX_FMT_YVU420:
--		return 12;
--	case V4L2_PIX_FMT_YUYV:
--	case V4L2_PIX_FMT_YVYU:
--	case V4L2_PIX_FMT_UYVY:
--	case V4L2_PIX_FMT_VYUY:
--	case V4L2_PIX_FMT_NV16:
--	case V4L2_PIX_FMT_NV61:
--	case V4L2_PIX_FMT_YUV422P:
--	case V4L2_PIX_FMT_RGB565:
--	case V4L2_PIX_FMT_RGB565X:
--		return 16;
--	case V4L2_PIX_FMT_RGB24:
--	case V4L2_PIX_FMT_BGR24:
--		return 24;
--	case V4L2_PIX_FMT_RGB32:
--	case V4L2_PIX_FMT_BGR32:
--		return 32;
--	default:
--		WARN(1, "Unsupported pixformat: 0x%x\n", pixformat);
--		break;
--	}
--
--	return 0;
--}
--
- #endif /* __SUN6I_CSI_H__ */
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-index 9c8b33c7e59c..f977b89dcea2 100644
---- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-+++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
-@@ -483,68 +483,68 @@ static void sun6i_csi_capture_configure_format(struct sun6i_csi_device *csi_dev)
- 
- static void sun6i_csi_capture_configure_window(struct sun6i_csi_device *csi_dev)
- {
-+	struct regmap *regmap = csi_dev->regmap;
-+	const struct v4l2_format_info *info;
-+	u32 hsize_len, vsize_len;
-+	u32 luma_line, chroma_line = 0;
- 	u32 pixelformat, field;
- 	u32 width, height;
--	u32 bytesperline_y;
--	u32 bytesperline_c;
--	u32 hor_len;
- 
- 	sun6i_csi_capture_dimensions(csi_dev, &width, &height);
- 	sun6i_csi_capture_format(csi_dev, &pixelformat, &field);
- 
--	hor_len = width;
-+	hsize_len = width;
-+	vsize_len = height;
- 
- 	switch (pixelformat) {
- 	case V4L2_PIX_FMT_YUYV:
- 	case V4L2_PIX_FMT_YVYU:
- 	case V4L2_PIX_FMT_UYVY:
- 	case V4L2_PIX_FMT_VYUY:
--		dev_dbg(csi_dev->dev,
--			"Horizontal length should be 2 times of width for packed YUV formats!\n");
--		hor_len = width * 2;
-+		/*
-+		 * Horizontal length should be 2 times of width for packed
-+		 * YUV formats.
-+		 */
-+		hsize_len *= 2;
- 		break;
- 	default:
- 		break;
- 	}
- 
--	regmap_write(csi_dev->regmap, SUN6I_CSI_CH_HSIZE_REG,
--		     SUN6I_CSI_CH_HSIZE_LEN(hor_len) |
-+	regmap_write(regmap, SUN6I_CSI_CH_HSIZE_REG,
-+		     SUN6I_CSI_CH_HSIZE_LEN(hsize_len) |
- 		     SUN6I_CSI_CH_HSIZE_START(0));
--	regmap_write(csi_dev->regmap, SUN6I_CSI_CH_VSIZE_REG,
--		     SUN6I_CSI_CH_VSIZE_LEN(height) |
-+
-+	regmap_write(regmap, SUN6I_CSI_CH_VSIZE_REG,
-+		     SUN6I_CSI_CH_VSIZE_LEN(vsize_len) |
- 		     SUN6I_CSI_CH_VSIZE_START(0));
- 
- 	switch (pixelformat) {
--	case V4L2_PIX_FMT_NV12_16L16:
--	case V4L2_PIX_FMT_NV12:
--	case V4L2_PIX_FMT_NV21:
--	case V4L2_PIX_FMT_NV16:
--	case V4L2_PIX_FMT_NV61:
--		bytesperline_y = width;
--		bytesperline_c = width;
-+	case V4L2_PIX_FMT_RGB565X:
-+		luma_line = width * 2;
- 		break;
--	case V4L2_PIX_FMT_YUV420:
--	case V4L2_PIX_FMT_YVU420:
--		bytesperline_y = width;
--		bytesperline_c = width / 2;
-+	case V4L2_PIX_FMT_NV12_16L16:
-+		luma_line = width;
-+		chroma_line = width;
- 		break;
--	case V4L2_PIX_FMT_YUV422P:
--		bytesperline_y = width;
--		bytesperline_c = width / 2;
-+	case V4L2_PIX_FMT_JPEG:
-+		luma_line = width;
- 		break;
--	default: /* raw */
--		dev_dbg(csi_dev->dev,
--			"Calculating pixelformat(0x%x)'s bytesperline as a packed format\n",
--			pixelformat);
--		bytesperline_y = (sun6i_csi_get_bpp(pixelformat) *
--				  width) / 8;
--		bytesperline_c = 0;
-+	default:
-+		info = v4l2_format_info(pixelformat);
-+		if (WARN_ON(!info))
-+			return;
-+
-+		luma_line = width * info->bpp[0];
-+
-+		if (info->comp_planes > 1)
-+			chroma_line = width * info->bpp[1] / info->hdiv;
- 		break;
- 	}
- 
--	regmap_write(csi_dev->regmap, SUN6I_CSI_CH_BUF_LEN_REG,
--		     SUN6I_CSI_CH_BUF_LEN_CHROMA_LINE(bytesperline_c) |
--		     SUN6I_CSI_CH_BUF_LEN_LUMA_LINE(bytesperline_y));
-+	regmap_write(regmap, SUN6I_CSI_CH_BUF_LEN_REG,
-+		     SUN6I_CSI_CH_BUF_LEN_CHROMA_LINE(chroma_line) |
-+		     SUN6I_CSI_CH_BUF_LEN_LUMA_LINE(luma_line));
- }
- 
- static void sun6i_csi_capture_configure(struct sun6i_csi_device *csi_dev)
--- 
-2.35.1
-
+> Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+> ---
+>  drivers/tty/serial/8250/8250_fintek.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+> index 251f0018ae8c..d9f0e546b1a1 100644
+> --- a/drivers/tty/serial/8250/8250_fintek.c
+> +++ b/drivers/tty/serial/8250/8250_fintek.c
+> @@ -316,6 +316,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
+>  		break;
+>  	case CHIP_ID_F81966:
+>  	case CHIP_ID_F81866:
+> +	case CHIP_ID_F81865:
+>  		reg = F81866_UART_CLK;
+>  		break;
+>  	default:
+> @@ -363,6 +364,7 @@ static void fintek_8250_set_termios_handler(struct uart_8250_port *uart)
+>  	case CHIP_ID_F81216H:
+>  	case CHIP_ID_F81966:
+>  	case CHIP_ID_F81866:
+> +	case CHIP_ID_F81865:
+>  		uart->port.set_termios = fintek_8250_set_termios;
+>  		break;
+>  
+> -- 
+> 2.34.1.75.gabe6bb3905
+> 
