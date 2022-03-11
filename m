@@ -2,242 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D73EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346512AbiCKFsv (ORCPT
+        id S1346515AbiCKFvf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:48:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45394 "EHLO
+        Fri, 11 Mar 2022 00:51:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240044AbiCKFsp (ORCPT
+        with ESMTP id S235070AbiCKFvc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:48:45 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0D572BF6;
-        Thu, 10 Mar 2022 21:47:26 -0800 (PST)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 2FE6F488;
-        Fri, 11 Mar 2022 06:47:25 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1646977645;
-        bh=oockvR1LA+v9n302HI7aC2gMooUZaYtMOy6sArIIR2I=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=DHFCOygtdIWYDOa312BgpS/tKmOtVfjrUwPBlAjBDNa8Dku1KLiq4c2nL217+FDpI
-         asDffEq0T0LvXow4y7D/ESM6SMGACt2+ghp5a59VfUYhFyPu0MUiTka6sY5IdhzjfT
-         ttCRAF4JC0ihIbgIoE9i9m/u0UI+icDdw5BB2YaY=
-Content-Type: text/plain; charset="utf-8"
+        Fri, 11 Mar 2022 00:51:32 -0500
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD9A6E98EA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:50:29 -0800 (PST)
+Received: by mail-io1-xd41.google.com with SMTP id 195so9119786iou.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:50:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=3B8QjIlmdJC8Bd0Vem9hqomGTMW6ZUxC9fqa1LEpXd8=;
+        b=QZGS63PS9pfUSfyFr/oDhhJNtJFuik3KIdwKY3PpvuP3fY8aefSNurgtEJ75OAJyXL
+         CbRQeVKeQor4yz60nSIWEdR5TZyN0QV5+FekbuenDvWrWpkFpxM/C4z3yTEHlb/CMZsz
+         3tk7l0R0YAf4zaLJ8CRpfdHIa8eu6xV20zKYwP2lEhHwTocUGa2bGeUbL+8BP4kzFmk/
+         qspHqatyaz920KEXdhgy+7n0G4bWFdblmhL49w9f0cn27W06zm6HVcD9ApjQMvrHUGEc
+         nEV34M7C8hyfoRJKqjBc5ni9sld+2F3Ibx0OyfKLTKdJiIRDULBT4HlyFk2YUmbGdvLr
+         7VsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3B8QjIlmdJC8Bd0Vem9hqomGTMW6ZUxC9fqa1LEpXd8=;
+        b=SUlq/6VP+A0zjr03k55EJpU9m8/8fA73NcIgdXlKOTpuFb3Yrk76mpS0oqieumCxCl
+         LuntwUjFI4FYBNI90UdJikrBtcYObIduhKFer9fObI2/P1KHb6OQmj+exzeawa5H2ias
+         9qT7lDaS+h99Dv4f2yjNbuxbEIceY+H+VEP2IvLaio9SCVaa4nmSkIlyYybOcQU3veN+
+         9MQ96lfvtwz9h8WTfP+MosDWn3EgtFHqrfq+XDmaxzNBESoXPgt1AWicFhAiKx7Z24Gi
+         Kms8+Ea5yiAw/0FC8IVeyUI60yy3pOHJiyzx+jZgsBrJdkVBVEh2KNxcLPU1AeOoQfA6
+         xhxQ==
+X-Gm-Message-State: AOAM533GHFuKz+xUap7M2U3mchDb/0sw33l5ONCWqaZcDFQCKFIceJIl
+        a0t61w0eBQSGPKa3RKdTaA19oiYXM52gPCBmTBI=
+X-Google-Smtp-Source: ABdhPJzAbtdKwaCEOZhQzztbjFX7GP+aQtiKKok15pkU1whKZ1twhEO8IZfK457hIHx3+Bb+/kd5NE5f7iIGcTsyC+U=
+X-Received: by 2002:a05:6602:168f:b0:648:c800:3d61 with SMTP id
+ s15-20020a056602168f00b00648c8003d61mr514167iow.197.1646977829264; Thu, 10
+ Mar 2022 21:50:29 -0800 (PST)
 MIME-Version: 1.0
+References: <20220310081548.31846-1-steve.lee.analog@gmail.com> <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
+In-Reply-To: <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
+From:   Lee Steve <steve.lee.analog@gmail.com>
+Date:   Fri, 11 Mar 2022 14:50:18 +0900
+Message-ID: <CA+Fz0PbNBXfC_0SYKVuHDic0ZREpHBk+oSqU5sO9Mq0AjY8_-w@mail.gmail.com>
+Subject: Re: [PATCH] ASoC: max98390: Add reset gpio control
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "perex@perex.cz" <perex@perex.cz>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "ckeepax@opensource.cirrus.com" <ckeepax@opensource.cirrus.com>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "rf@opensource.wolfsonmicro.com" <rf@opensource.wolfsonmicro.com>,
+        "shumingf@realtek.com" <shumingf@realtek.com>,
+        "srinivas.kandagatla@linaro.org" <srinivas.kandagatla@linaro.org>,
+        "krzk@kernel.org" <krzk@kernel.org>,
+        "dmurphy@ti.com" <dmurphy@ti.com>,
+        "jack.yu@realtek.com" <jack.yu@realtek.com>,
+        "steves.lee@maximintegrated.com" <steves.lee@maximintegrated.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAD=FV=UqTh-FLDyXvH=ED-4cbJ6ggDLsTGqhTeqNMsKDphbzYA@mail.gmail.com>
-References: <20220310152227.2122960-1-kieran.bingham+renesas@ideasonboard.com> <20220310152227.2122960-4-kieran.bingham+renesas@ideasonboard.com> <CAD=FV=UqTh-FLDyXvH=ED-4cbJ6ggDLsTGqhTeqNMsKDphbzYA@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] drm/bridge: ti-sn65dsi86: Support hotplug detection
-From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-To:     Doug Anderson <dianders@chromium.org>
-Date:   Fri, 11 Mar 2022 05:47:22 +0000
-Message-ID: <164697764297.2392702.10094603553189733655@Monstersaurus>
-User-Agent: alot/0.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug,
-
-Quoting Doug Anderson (2022-03-10 23:10:12)
-> Hi,
->=20
-> On Thu, Mar 10, 2022 at 7:22 AM Kieran Bingham
-> <kieran.bingham+renesas@ideasonboard.com> wrote:
+On Thu, Mar 10, 2022 at 5:48 PM Sa, Nuno <Nuno.Sa@analog.com> wrote:
+>
+> Hi Steve,
+>
+> > From: Steve Lee <steve.lee.analog@gmail.com>
+> > Sent: Thursday, March 10, 2022 9:16 AM
+> > To: lgirdwood@gmail.com; broonie@kernel.org; perex@perex.cz;
+> > tiwai@suse.com; ckeepax@opensource.cirrus.com; geert@linux-
+> > m68k.org; rf@opensource.wolfsonmicro.com; shumingf@realtek.com;
+> > srinivas.kandagatla@linaro.org; krzk@kernel.org; dmurphy@ti.com;
+> > jack.yu@realtek.com; Sa, Nuno <Nuno.Sa@analog.com>;
+> > steves.lee@maximintegrated.com; linux-kernel@vger.kernel.org;
+> > alsa-devel@alsa-project.org
+> > Cc: Steve Lee <steve.lee.analog@gmail.com>
+> > Subject: [PATCH] ASoC: max98390: Add reset gpio control
 > >
-> > @@ -1135,6 +1161,36 @@ static void ti_sn_bridge_atomic_post_disable(str=
-uct drm_bridge *bridge,
-> >         pm_runtime_put_sync(pdata->dev);
-> >  }
+> > [External]
 > >
-> > +static enum drm_connector_status ti_sn_bridge_detect(struct drm_bridge=
- *bridge)
-> > +{
-> > +       struct ti_sn65dsi86 *pdata =3D bridge_to_ti_sn65dsi86(bridge);
-> > +       int val;
-> > +
-> > +       regmap_read(pdata->regmap, SN_HPD_DISABLE_REG, &val);
->=20
-> Don't you need a pm_runtime_get_sync() before this and a
-> put_autosuspend() after? The "detect" will be used in the yes-HPD but
-> no-IRQ case, right? In that case there's nobody holding the pm_runtime
-> reference.
-
-Hrm ... I'll have to dig on this a bit. The polling is done by the DRM
-core, so indeed I suspect it could be done outside of a context that
-holds the pm runtime reference.
-
-Equally a get and put on the reference doesn't hurt even if it's already
-taken, so perhaps it's best to add it, but I'll try to confirm it's
-requirement first.
-
-
-> Also, a nit that it'd be great if you error checked the regmap_read().
-> I know this driver isn't very good about it, but it's probably
-> something to get better. i2c transactions can fail. I guess another
-> alternative would be to init "val" to 0...
-
-It's a good point indeed. If we can't read the device we should return
-disconnected.
-
->=20
->=20
-> > +       return val & HPD_DEBOUNCED_STATE ? connector_status_connected
-> > +                                        : connector_status_disconnecte=
-d;
-> > +}
-> > +
-> > +static void ti_sn_bridge_hpd_enable(struct drm_bridge *bridge)
-> > +{
-> > +       struct ti_sn65dsi86 *pdata =3D bridge_to_ti_sn65dsi86(bridge);
-> > +
-> > +       /* The device must remain active for HPD to function */
-> > +       pm_runtime_get_sync(pdata->dev);
-> > +       regmap_write(pdata->regmap, SN_IRQ_HPD_REG,
-> > +                    IRQ_HPD_EN | IRQ_HPD_INSERTION_EN |
-> > +                    IRQ_HPD_REMOVAL_EN | IRQ_HPD_REPLUG_EN);
-> > +}
-> > +
-> > +static void ti_sn_bridge_hpd_disable(struct drm_bridge *bridge)
-> > +{
-> > +       struct ti_sn65dsi86 *pdata =3D bridge_to_ti_sn65dsi86(bridge);
-> > +
-> > +       regmap_write(pdata->regmap, SN_IRQ_HPD_REG, 0);
-> > +       pm_runtime_put_autosuspend(pdata->dev);
->=20
-> Before doing the pm_runtime_put_autosuspend() it feels like you should
-> ensure that the interrupt has finished. Otherwise we could be midway
-> through processing an interrupt and the pm_runtime reference could go
-> away, right? Maybe we just disable the irq which I think will wait for
-> anything outstanding to finish?
-
-Should the IRQ handler also call pm_runtime_get/put then?
-
-> > @@ -1223,6 +1282,34 @@ static int ti_sn_bridge_parse_dsi_host(struct ti=
-_sn65dsi86 *pdata)
-> >         return 0;
-> >  }
+> >  Add reset gpio control to support RESET PIN connected to gpio.
 > >
-> > +static irqreturn_t ti_sn65dsi86_irq_handler(int irq, void *arg)
-> > +{
-> > +       struct ti_sn65dsi86 *pdata =3D arg;
-> > +       int ret;
-> > +       unsigned int hpd;
-> > +
-> > +       ret =3D regmap_read(pdata->regmap, SN_IRQ_HPD_STATUS_REG, &hpd);
-> > +       if (ret || !hpd)
-> > +               return IRQ_NONE;
-> > +
-> > +       if (hpd & IRQ_HPD_INSERTION_STATUS)
-> > +               drm_bridge_hpd_notify(&pdata->bridge, connector_status_=
-connected);
-> > +
-> > +       if (hpd & IRQ_HPD_REMOVAL_STATUS)
-> > +               drm_bridge_hpd_notify(&pdata->bridge, connector_status_=
-disconnected);
-> > +
-> > +       /* When replugged, ensure we trigger a detect to update the dis=
-play */
-> > +       if (hpd & IRQ_HPD_REPLUG_STATUS)
-> > +               drm_bridge_hpd_notify(&pdata->bridge, connector_status_=
-disconnected);
->=20
-> How does the ordering work here if _both_ insertion and removal are
-> asserted? Is that somehow not possible? Should this be "else if" type
-> statements then, or give a warn if more than one bit is set, or ... ?
-
-As I understand it, that would trigger a REPLUG IRQ. However this is one
-part I quite disliked about the drm_bridge_hpd_notify. The values here
-are not taken as the hardware state anyway. A call to drm_bridge_hpd_notify=
- will=20
-trigger a call on the detect function so a further read will occur to
-determine the current state using the same function as is used with
-polling.
-
-The IRQ handler only cuts out the polling as far as I see.
-
-
-> > +       /* reset the status registers */
-> > +       regmap_write(pdata->regmap, SN_IRQ_HPD_STATUS_REG,
-> > +                    IRQ_HPD_STATUS | IRQ_HPD_INSERTION_STATUS |
-> > +                    IRQ_HPD_REMOVAL_STATUS | IRQ_HPD_REPLUG_STATUS);
->=20
-> IMO this regmap_write() belongs right after the read and should be
-> based on what you read--you shouldn't just clear all of them. AKA:
->=20
-> a) Read to see what interrupt are asserted.
-> b) Ack the interrupts that you saw asserted.
-> c) Process the interrupts that you saw asserted.
->=20
-> If you process before acking then you can miss interrupts (in other
-> words if you do "a" then "c" then "b" then you can miss interrupts
-> that come in after "b" but before "c".
-
-Agreed, I'll respin.
-
-> > @@ -1247,9 +1342,29 @@ static int ti_sn_bridge_probe(struct auxiliary_d=
-evice *adev,
-> >         pdata->bridge.type =3D pdata->next_bridge->type =3D=3D DRM_MODE=
-_CONNECTOR_DisplayPort
-> >                            ? DRM_MODE_CONNECTOR_DisplayPort : DRM_MODE_=
-CONNECTOR_eDP;
+> > Signed-off-by: Steve Lee <steve.lee.analog@gmail.com>
+> > ---
+> >  sound/soc/codecs/max98390.c | 18 ++++++++++++++++++
+> >  sound/soc/codecs/max98390.h |  1 +
+> >  2 files changed, 19 insertions(+)
 > >
-> > -       if (pdata->bridge.type =3D=3D DRM_MODE_CONNECTOR_DisplayPort)
-> > +       if (pdata->bridge.type =3D=3D DRM_MODE_CONNECTOR_DisplayPort) {
-> >                 pdata->bridge.ops =3D DRM_BRIDGE_OP_EDID;
+> > diff --git a/sound/soc/codecs/max98390.c
+> > b/sound/soc/codecs/max98390.c
+> > index b392567c2b3e..574d8d5f1119 100644
+> > --- a/sound/soc/codecs/max98390.c
+> > +++ b/sound/soc/codecs/max98390.c
+> > @@ -1073,6 +1073,24 @@ static int max98390_i2c_probe(struct
+> > i2c_client *i2c,
+> >               return ret;
+> >       }
 > >
-> > +               if (!pdata->no_hpd)
-> > +                       pdata->bridge.ops |=3D DRM_BRIDGE_OP_DETECT;
-> > +       }
-> > +
-> > +       if (!pdata->no_hpd && pdata->irq > 0) {
-> > +               dev_err(pdata->dev, "registering IRQ %d\n", pdata->irq);
-> > +
-> > +               ret =3D devm_request_threaded_irq(pdata->dev, pdata->ir=
-q, NULL,
-> > +                                               ti_sn65dsi86_irq_handle=
-r,
-> > +                                               IRQF_ONESHOT, "sn65dsi8=
-6-irq",
-> > +                                               pdata);
-> > +               if (ret)
-> > +                       return dev_err_probe(pdata->dev, ret,
-> > +                                            "Failed to register DP int=
-errupt\n");
-> > +
-> > +               /* Enable IRQ based HPD */
-> > +               regmap_write(pdata->regmap, SN_IRQ_EN_REG, IRQ_EN);
->=20
-> Why not put the above regmap_write() in the ti_sn_bridge_hpd_enable() cal=
-l?
+> > +     max98390->reset_gpio =3D of_get_named_gpio(i2c-
+> > >dev.of_node,
+> > +                                             "maxim,reset-gpios", 0);
+>
+> Why not using devm_gpiod_get_optional()? We could request the pin
+> already in the asserted state and make the code slightly better...
+>
+> /* I guess there's no need to save it in our struct as we only use it her=
+e? */
+> struct gpio_desc *reset_gpio;
+>
+> reset_gpio =3D devm_gpiod_get_optional(&i2c->dev, "reset", GPIOD_OUT_HIGH=
+);
+> if (reset_gpio) {
+>       usleep_range(1000, 2000);
+>      /* bring out of reset */
+>       gpio_direction_output(max98390->reset_gpio, 0);
+>       usleep_range(1000, 2000);
+> }
+>
+> Also, do we have this on the bindings doc? If not, it should be done on a=
+ second
+> patch on this series...
+>
+> - Nuno S=C3=A1
+>
 
-I assumed the IRQ handler may get used by other non-HPD events. Which is
-also why it was originally registered in the main probe(). HPD is just
-one feature of the interrupts. Of course it's only used for HPD now
-though. I guess I could have solved the bridge dependency by splitting
-the IRQ handler to have a dedicated HPD handler function which would
-return if the bridge wasn't initialised, but went with the deferred
-registration of the handler.
-
-I can move this and then leave it to anyone else implementing further
-IRQ features to refactor if needed.
-
->=20
-> -Doug
+Thanks for comment on this patch. I will check and update as commented.
