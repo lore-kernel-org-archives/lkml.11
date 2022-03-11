@@ -2,94 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14988C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3470C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 10:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348009AbiCKKgW (ORCPT
+        id S1348028AbiCKKgf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 05:36:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
+        Fri, 11 Mar 2022 05:36:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240566AbiCKKgR (ORCPT
+        with ESMTP id S1348027AbiCKKg3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 05:36:17 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2051160F9;
-        Fri, 11 Mar 2022 02:35:04 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Fri, 11 Mar 2022 05:36:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13DC115960;
+        Fri, 11 Mar 2022 02:35:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1505421901;
-        Fri, 11 Mar 2022 10:35:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1646994903; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=cl8eXsZGXE2910dV3+hGtO5AmlArXF2/CNH7AFhna9A=;
-        b=jzLP/R1zJqyhsxtF02jryM8k300pfwJZXj8gxvxt/4Nm6TDhvTgoPKqENjWl1clmPGCMbt
-        UIL2Xl9sT9WOeDqiCb8WyElSfyhKO6RDIANpNYwGrrZN/pHL8Z7FWmqzuDzEpdMtsLQpdh
-        GxViyLpxS0aatuAWvXEwYj0rudthaDU=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D69EB13A85;
-        Fri, 11 Mar 2022 10:35:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Pe8nM9YlK2I5dgAAMHmgww
-        (envelope-from <jgross@suse.com>); Fri, 11 Mar 2022 10:35:02 +0000
-From:   Juergen Gross <jgross@suse.com>
-To:     xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82FD8B82B26;
+        Fri, 11 Mar 2022 10:35:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD37C340E9;
+        Fri, 11 Mar 2022 10:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646994913;
+        bh=wm21xJ5baeJkPPj20x7VMn4tjjFzIKcijQ8aYc6wCCw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=urCsqq81srgWnxBxhy9F1NKaTMHHFWdjAW6oWLs5Ypm7sIheRwHLLnNf3pEqeBIKw
+         ZAB67zR0zufKxLzt2YHcI0rceWq90vOOQBaGh3/y507kjPwe7C9Tlww8Ep/OSAwFtX
+         NFjdUrscnENIbr+YRL1W5F1jO1zJOdbTNiKdsX+y9eFw259ygEcGfH0sHfR95vDIbn
+         mgRJfbaDalFPs2MshVMuwIA9h5DQ4W2oVVCQJfbszH8ROGeV2dDzhk9RPpKmi89BkD
+         iaOAxtfOpxbvrKcyKrSF08CiOjAWUnLBOXvLc4V2yf6ci+9knfXeusFPh6IcLT+Gr1
+         3EjsQkbgBDGqw==
+Date:   Fri, 11 Mar 2022 16:05:09 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     trix@redhat.com
+Cc:     Eugeniy.Paltsev@synopsys.com, dmaengine@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH] xen/usb: don't use arbitrary_virt_to_machine()
-Date:   Fri, 11 Mar 2022 11:35:00 +0100
-Message-Id: <20220311103500.12885-1-jgross@suse.com>
-X-Mailer: git-send-email 2.34.1
+Subject: Re: [PATCH] dmaengine: dw-axi-dmac: cleanup comments
+Message-ID: <Yisl3cliIotPpFkl@matsya>
+References: <20220309020056.1026106-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220309020056.1026106-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arbitrary_virt_to_machine() is meant to be used in PV guests only.
-Replace its usage with virt_to_gfn().
+On 08-03-22, 18:00, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> For spdx, /* */ for *.h, remove extra space
+> 
+> Replacements
+> configurarion to configuration
+> inerrupts to interrupts
+> chanels to channels
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
----
- drivers/usb/host/xen-hcd.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Applied, thanks
 
-diff --git a/drivers/usb/host/xen-hcd.c b/drivers/usb/host/xen-hcd.c
-index 5f4a00df4f1c..01db5c767251 100644
---- a/drivers/usb/host/xen-hcd.c
-+++ b/drivers/usb/host/xen-hcd.c
-@@ -589,14 +589,12 @@ static void xenhcd_gnttab_map(struct xenhcd_info *info, void *addr, int length,
- 			      int nr_pages, int flags)
- {
- 	grant_ref_t ref;
--	unsigned long buffer_mfn;
- 	unsigned int offset;
- 	unsigned int len = length;
- 	unsigned int bytes;
- 	int i;
- 
- 	for (i = 0; i < nr_pages; i++) {
--		buffer_mfn = PFN_DOWN(arbitrary_virt_to_machine(addr).maddr);
- 		offset = offset_in_page(addr);
- 
- 		bytes = PAGE_SIZE - offset;
-@@ -605,7 +603,7 @@ static void xenhcd_gnttab_map(struct xenhcd_info *info, void *addr, int length,
- 
- 		ref = gnttab_claim_grant_reference(gref_head);
- 		gnttab_grant_foreign_access_ref(ref, info->xbdev->otherend_id,
--						buffer_mfn, flags);
-+						virt_to_gfn(addr), flags);
- 		seg[i].gref = ref;
- 		seg[i].offset = (__u16)offset;
- 		seg[i].length = (__u16)bytes;
 -- 
-2.34.1
-
+~Vinod
