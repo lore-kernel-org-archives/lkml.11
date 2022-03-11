@@ -2,150 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E6EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345696AbiCKCn4 (ORCPT
+        id S1345713AbiCKCoW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 21:43:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
+        Thu, 10 Mar 2022 21:44:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240820AbiCKCny (ORCPT
+        with ESMTP id S240820AbiCKCoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 21:43:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B003F3584A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 18:42:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48ADF60B22
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 02:42:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1692C340E8;
-        Fri, 11 Mar 2022 02:42:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646966571;
-        bh=jMF+7A91O+CmShR7jtuBs7wudx+hHvkwGcYaTfViQeg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BgA8wgE2jmR6CmyR9PfBrZu+Y/t8HwTk2AZDQZm/cKKaTHSDmBlMJ62flLj0xhey+
-         1n24qoD4fYv+II0qVmEuV6bQRI0PxgK4AAYM8+54BpQ9voQ6oOImfbFguS0jicREdD
-         nDpGa1DQqEB4R6kmgG5BW2tsXlpf8EVjd8K0teyQzQsgpkVKFpznwHrGgAVK+XOqP8
-         ZmPz+V85hjEJlHWRjigIZHbbQdOGg7BahewIj2aIhZF8LRIDPPmRWRq6r9yxsJnk1Q
-         zZcXWubdBnSaVupyHvrLwOWE6qMO3jZNsfFMggIx9GKBSgGVJwi2RzyIFFe1Flqj2x
-         N0OJ1u8dtgNXQ==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Hyunchul Lee <cheol.lee@lge.com>, Chao Yu <chao.yu@oppo.com>
-Subject: [PATCH] f2fs: fix to override bi_write_hint in fs-based whint_mode
-Date:   Fri, 11 Mar 2022 10:42:40 +0800
-Message-Id: <20220311024240.3700299-1-chao@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Mar 2022 21:44:16 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1F1F3907;
+        Thu, 10 Mar 2022 18:43:14 -0800 (PST)
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KF9DC1HJPzBrKj;
+        Fri, 11 Mar 2022 10:41:15 +0800 (CST)
+Received: from [10.174.176.103] (10.174.176.103) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 10:43:11 +0800
+Message-ID: <0e5faf35-5adb-3ea1-9f7f-7c4f61a623b2@huawei.com>
+Date:   Fri, 11 Mar 2022 10:43:10 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH -next] nbd: fix possible overflow on 'first_minor' in
+ nbd_dev_add()
+To:     <josef@toxicpanda.com>, <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <nbd@other.debian.org>, <yukuai3@huawei.com>
+References: <20220310093224.4002895-1-zhangwensheng5@huawei.com>
+From:   "zhangwensheng (E)" <zhangwensheng5@huawei.com>
+In-Reply-To: <20220310093224.4002895-1-zhangwensheng5@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.103]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If whint_mode=fs-based, for direct write IO, it needs to override
-bio.bi_write_hint with the hint provided by filesystem.
+friendly ping...
 
-Fixes: 0cdd31953967 ("f2fs: support passing down write hints given by users to block layer")
-Cc: Hyunchul Lee <cheol.lee@lge.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
- fs/f2fs/f2fs.h    |  1 +
- fs/f2fs/file.c    | 21 +++++++++++++++++++++
- fs/f2fs/segment.c | 17 +++++++++++------
- 3 files changed, 33 insertions(+), 6 deletions(-)
-
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index 68d791ec8b27..01d1393b8f83 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -3629,6 +3629,7 @@ void f2fs_replace_block(struct f2fs_sb_info *sbi, struct dnode_of_data *dn,
- 			block_t old_addr, block_t new_addr,
- 			unsigned char version, bool recover_curseg,
- 			bool recover_newaddr);
-+int f2fs_get_segment_temp(int seg_type);
- void f2fs_allocate_data_block(struct f2fs_sb_info *sbi, struct page *page,
- 			block_t old_blkaddr, block_t *new_blkaddr,
- 			struct f2fs_summary *sum, int type,
-diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-index d5c3273c6efe..9a1c4f69a39a 100644
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -4458,6 +4458,26 @@ static ssize_t f2fs_buffered_write_iter(struct kiocb *iocb,
- 	return ret;
- }
- 
-+
-+static void f2fs_dio_submit_io(const struct iomap_iter *iter, struct bio *bio,
-+							  loff_t file_offset)
-+{
-+	struct inode *inode = iter->inode;
-+	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-+
-+	if (F2FS_OPTION(sbi).whint_mode == WHINT_MODE_FS) {
-+		int seg_type = f2fs_rw_hint_to_seg_type(bio->bi_write_hint);
-+		enum temp_type temp = f2fs_get_segment_temp(seg_type);
-+
-+		/*
-+		 * in fs-based whint_mode, override bi_write_hint w/
-+		 * the hint provided by filesystem.
-+		 */
-+		bio->bi_write_hint = f2fs_io_type_to_rw_hint(sbi, DATA, temp);
-+	}
-+	submit_bio(bio);
-+}
-+
- static int f2fs_dio_write_end_io(struct kiocb *iocb, ssize_t size, int error,
- 				 unsigned int flags)
- {
-@@ -4472,6 +4492,7 @@ static int f2fs_dio_write_end_io(struct kiocb *iocb, ssize_t size, int error,
- 
- static const struct iomap_dio_ops f2fs_iomap_dio_write_ops = {
- 	.end_io = f2fs_dio_write_end_io,
-+	.submit_io = f2fs_dio_submit_io,
- };
- 
- static ssize_t f2fs_dio_write_iter(struct kiocb *iocb, struct iov_iter *from,
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 012524db7437..20aa9f11de5e 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -3397,6 +3397,15 @@ static int __get_segment_type_6(struct f2fs_io_info *fio)
- 	}
- }
- 
-+int f2fs_get_segment_temp(int seg_type)
-+{
-+	if (IS_HOT(seg_type))
-+		return HOT;
-+	else if (IS_WARM(seg_type))
-+		return WARM;
-+	return COLD;
-+}
-+
- static int __get_segment_type(struct f2fs_io_info *fio)
- {
- 	int type = 0;
-@@ -3415,12 +3424,8 @@ static int __get_segment_type(struct f2fs_io_info *fio)
- 		f2fs_bug_on(fio->sbi, true);
- 	}
- 
--	if (IS_HOT(type))
--		fio->temp = HOT;
--	else if (IS_WARM(type))
--		fio->temp = WARM;
--	else
--		fio->temp = COLD;
-+	fio->temp = f2fs_get_segment_temp(type);
-+
- 	return type;
- }
- 
--- 
-2.25.1
-
+在 2022/3/10 17:32, Zhang Wensheng 写道:
+> When 'index' is a big numbers, it may become negative which forced
+> to 'int'. then 'index << part_shift' might overflow to a positive
+> value that is not greater than '0xfffff', then sysfs might complains
+> about duplicate creation. Because of this, move the 'index' judgment
+> to the front will fix it and be better.
+>
+> Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
+> Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
+> Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+> ---
+>   drivers/block/nbd.c | 24 ++++++++++++------------
+>   1 file changed, 12 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+> index 5a1f98494ddd..b3cdfc0ffb98 100644
+> --- a/drivers/block/nbd.c
+> +++ b/drivers/block/nbd.c
+> @@ -1800,17 +1800,6 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
+>   	refcount_set(&nbd->refs, 0);
+>   	INIT_LIST_HEAD(&nbd->list);
+>   	disk->major = NBD_MAJOR;
+> -
+> -	/* Too big first_minor can cause duplicate creation of
+> -	 * sysfs files/links, since index << part_shift might overflow, or
+> -	 * MKDEV() expect that the max bits of first_minor is 20.
+> -	 */
+> -	disk->first_minor = index << part_shift;
+> -	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
+> -		err = -EINVAL;
+> -		goto out_free_work;
+> -	}
+> -
+>   	disk->minors = 1 << part_shift;
+>   	disk->fops = &nbd_fops;
+>   	disk->private_data = nbd;
+> @@ -1915,8 +1904,19 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
+>   	if (!netlink_capable(skb, CAP_SYS_ADMIN))
+>   		return -EPERM;
+>   
+> -	if (info->attrs[NBD_ATTR_INDEX])
+> +	if (info->attrs[NBD_ATTR_INDEX]) {
+>   		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
+> +
+> +		/*
+> +		 * Too big first_minor can cause duplicate creation of
+> +		 * sysfs files/links, since index << part_shift might overflow, or
+> +		 * MKDEV() expect that the max bits of first_minor is 20.
+> +		 */
+> +		if (index < 0 || index > MINORMASK >> part_shift) {
+> +			printk(KERN_ERR "nbd: illegal input index %d\n", index);
+> +			return -EINVAL;
+> +		}
+> +	}
+>   	if (!info->attrs[NBD_ATTR_SOCKETS]) {
+>   		printk(KERN_ERR "nbd: must specify at least one socket\n");
+>   		return -EINVAL;
