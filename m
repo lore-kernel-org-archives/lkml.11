@@ -2,481 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E14C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348616AbiCKMbH (ORCPT
+        id S1348580AbiCKMcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 07:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
+        Fri, 11 Mar 2022 07:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348587AbiCKMbC (ORCPT
+        with ESMTP id S1347980AbiCKMcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 07:31:02 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE2B1B3086;
-        Fri, 11 Mar 2022 04:29:58 -0800 (PST)
-Received: from fraeml737-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KFQFp5c3Cz687Dc;
-        Fri, 11 Mar 2022 20:28:30 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml737-chm.china.huawei.com (10.206.15.218) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Mar 2022 13:29:50 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Mar 2022 12:29:46 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
-        <jinpu.wang@cloud.ionos.com>, <damien.lemoal@opensource.wdc.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <Ajish.Koshy@microchip.com>, <linuxarm@huawei.com>,
-        <Viswas.G@microchip.com>, <hch@lst.de>, <liuqi115@huawei.com>,
-        <chenxiang66@hisilicon.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH v2 3/4] scsi: pm8001: Use libsas internal abort support
-Date:   Fri, 11 Mar 2022 20:23:51 +0800
-Message-ID: <1647001432-239276-4-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1647001432-239276-1-git-send-email-john.garry@huawei.com>
-References: <1647001432-239276-1-git-send-email-john.garry@huawei.com>
+        Fri, 11 Mar 2022 07:32:07 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE7818A790
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 04:31:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647001864; x=1678537864;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=FoD1JM/1D0JznHoPzQxU879H7hdslD8rGb6v2/pSS1o=;
+  b=a0xnRAeArV6AcN4DLEfaP67aSjB4G88+oggdFnYCOQWFo/YnAkpLYxtu
+   un0D3Qg2c1ctkdZWv3uIj2qttAhapPgK6NHxQdVOwF98xJbfK0eDSfWkS
+   9qJwB3C8tBCMDI/02GsBQgdRO8kIzEFk4MXM0g1B/Sl1P0QsWT4R41POu
+   Z0RXOVobCeyhLsHbYL4MRJvCGaOvGen/8QRK2mmyD/iucJDj7PEBRLv4e
+   1nr2Q2QSZjKNWdOFMgVaNkhaoP/TQHcbCx6GrGoMzKnp1MHqjETJyxtt2
+   nSCd6CBb/g2FbJ/TKmdsxmMwOs3gCoChSKuRyurJppQlssZYGXFr7Ac7s
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="253126549"
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="253126549"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 04:31:04 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
+   d="scan'208";a="579273474"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 11 Mar 2022 04:31:02 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSeQA-0006O5-6G; Fri, 11 Mar 2022 12:31:02 +0000
+Date:   Fri, 11 Mar 2022 20:30:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [arm-integrator:kernel-in-vmalloc-v5.17-rc1 6/8]
+ drivers/xen/xenfs/xenstored.c:42:20: warning: incompatible pointer to
+ integer conversion passing 'struct xenstore_domain_interface *' to parameter
+ of type 'unsigned long'
+Message-ID: <202203112032.czFw7ztl-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-New special handling is added for SAS_PROTOCOL_INTERNAL_ABORT proto so that
-we may use the common queue command API.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.17-rc1
+head:   66e9038ef48dc66c07b12443b73e2d1f3f12cbab
+commit: 5976b9fa0b76bace6d7b038a7e1941175da8f5c5 [6/8] ARM: Compile the kernel into VMALLOC
+config: arm-randconfig-r036-20220310 (https://download.01.org/0day-ci/archive/20220311/202203112032.czFw7ztl-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=5976b9fa0b76bace6d7b038a7e1941175da8f5c5
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.17-rc1
+        git checkout 5976b9fa0b76bace6d7b038a7e1941175da8f5c5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/xen/xenfs/
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/xen/xenfs/xenstored.c:42:20: warning: incompatible pointer to integer conversion passing 'struct xenstore_domain_interface *' to parameter of type 'unsigned long' [-Wint-conversion]
+                               virt_to_pfn(xen_store_interface),
+                                           ^~~~~~~~~~~~~~~~~~~
+   arch/arm/include/asm/memory.h:323:55: note: passing argument to parameter 'kaddr' here
+   static inline unsigned long virt_to_pfn(unsigned long kaddr)
+                                                         ^
+   1 warning generated.
+
+
+vim +42 drivers/xen/xenfs/xenstored.c
+
+655d406a7c80bf Ian Campbell 2009-02-06  33  
+655d406a7c80bf Ian Campbell 2009-02-06  34  static int xsd_kva_mmap(struct file *file, struct vm_area_struct *vma)
+655d406a7c80bf Ian Campbell 2009-02-06  35  {
+655d406a7c80bf Ian Campbell 2009-02-06  36  	size_t size = vma->vm_end - vma->vm_start;
+655d406a7c80bf Ian Campbell 2009-02-06  37  
+655d406a7c80bf Ian Campbell 2009-02-06  38  	if ((size > PAGE_SIZE) || (vma->vm_pgoff != 0))
+655d406a7c80bf Ian Campbell 2009-02-06  39  		return -EINVAL;
+655d406a7c80bf Ian Campbell 2009-02-06  40  
+655d406a7c80bf Ian Campbell 2009-02-06  41  	if (remap_pfn_range(vma, vma->vm_start,
+655d406a7c80bf Ian Campbell 2009-02-06 @42  			    virt_to_pfn(xen_store_interface),
+655d406a7c80bf Ian Campbell 2009-02-06  43  			    size, vma->vm_page_prot))
+655d406a7c80bf Ian Campbell 2009-02-06  44  		return -EAGAIN;
+655d406a7c80bf Ian Campbell 2009-02-06  45  
+655d406a7c80bf Ian Campbell 2009-02-06  46  	return 0;
+655d406a7c80bf Ian Campbell 2009-02-06  47  }
+655d406a7c80bf Ian Campbell 2009-02-06  48  
+
+:::::: The code at line 42 was first introduced by commit
+:::::: 655d406a7c80bffc03263d071b6ba1e0fcf548f9 xen: add /proc/xen/xsd_{kva,port} to xenfs
+
+:::::: TO: Ian Campbell <ian.campbell@citrix.com>
+:::::: CC: Jeremy Fitzhardinge <jeremy.fitzhardinge@citrix.com>
+
 ---
- drivers/scsi/pm8001/pm8001_hwi.c |  27 +++--
- drivers/scsi/pm8001/pm8001_hwi.h |   5 -
- drivers/scsi/pm8001/pm8001_sas.c | 178 ++++++++++---------------------
- drivers/scsi/pm8001/pm8001_sas.h |   6 +-
- drivers/scsi/pm8001/pm80xx_hwi.h |   5 -
- 5 files changed, 74 insertions(+), 147 deletions(-)
-
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 048ff41852c9..f7466a895d3b 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -4477,22 +4477,25 @@ pm8001_chip_isr(struct pm8001_hba_info *pm8001_ha, u8 vec)
- }
- 
- static int send_task_abort(struct pm8001_hba_info *pm8001_ha, u32 opc,
--	u32 dev_id, u8 flag, u32 task_tag, u32 cmd_tag)
-+	u32 dev_id, enum sas_internal_abort type, u32 task_tag, u32 cmd_tag)
- {
- 	struct task_abort_req task_abort;
- 
- 	memset(&task_abort, 0, sizeof(task_abort));
--	if (ABORT_SINGLE == (flag & ABORT_MASK)) {
-+	if (type == SAS_INTERNAL_ABORT_SINGLE) {
- 		task_abort.abort_all = 0;
- 		task_abort.device_id = cpu_to_le32(dev_id);
- 		task_abort.tag_to_abort = cpu_to_le32(task_tag);
--		task_abort.tag = cpu_to_le32(cmd_tag);
--	} else if (ABORT_ALL == (flag & ABORT_MASK)) {
-+	} else if (type == SAS_INTERNAL_ABORT_DEV) {
- 		task_abort.abort_all = cpu_to_le32(1);
- 		task_abort.device_id = cpu_to_le32(dev_id);
--		task_abort.tag = cpu_to_le32(cmd_tag);
-+	} else {
-+		pm8001_dbg(pm8001_ha, EH, "unknown type (%d)\n", type);
-+		return -EIO;
- 	}
- 
-+	task_abort.tag = cpu_to_le32(cmd_tag);
-+
- 	return pm8001_mpi_build_cmd(pm8001_ha, 0, opc, &task_abort,
- 				    sizeof(task_abort), 0);
- }
-@@ -4501,12 +4504,16 @@ static int send_task_abort(struct pm8001_hba_info *pm8001_ha, u32 opc,
-  * pm8001_chip_abort_task - SAS abort task when error or exception happened.
-  */
- int pm8001_chip_abort_task(struct pm8001_hba_info *pm8001_ha,
--	struct pm8001_device *pm8001_dev, u8 flag, u32 task_tag, u32 cmd_tag)
-+	struct pm8001_ccb_info *ccb)
- {
--	u32 opc, device_id;
-+	struct sas_task *task = ccb->task;
-+	struct sas_internal_abort_task *abort = &task->abort_task;
-+	struct pm8001_device *pm8001_dev = ccb->device;
- 	int rc = TMF_RESP_FUNC_FAILED;
-+	u32 opc, device_id;
-+
- 	pm8001_dbg(pm8001_ha, EH, "cmd_tag = %x, abort task tag = 0x%x\n",
--		   cmd_tag, task_tag);
-+		   ccb->ccb_tag, abort->tag);
- 	if (pm8001_dev->dev_type == SAS_END_DEVICE)
- 		opc = OPC_INB_SSP_ABORT;
- 	else if (pm8001_dev->dev_type == SAS_SATA_DEV)
-@@ -4514,8 +4521,8 @@ int pm8001_chip_abort_task(struct pm8001_hba_info *pm8001_ha,
- 	else
- 		opc = OPC_INB_SMP_ABORT;/* SMP */
- 	device_id = pm8001_dev->device_id;
--	rc = send_task_abort(pm8001_ha, opc, device_id, flag,
--		task_tag, cmd_tag);
-+	rc = send_task_abort(pm8001_ha, opc, device_id, abort->type,
-+			     abort->tag, ccb->ccb_tag);
- 	if (rc != TMF_RESP_FUNC_COMPLETE)
- 		pm8001_dbg(pm8001_ha, EH, "rc= %d\n", rc);
- 	return rc;
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.h b/drivers/scsi/pm8001/pm8001_hwi.h
-index d1f3aa93325b..961d0465b923 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.h
-+++ b/drivers/scsi/pm8001/pm8001_hwi.h
-@@ -434,11 +434,6 @@ struct task_abort_req {
- 	u32	reserved[11];
- } __attribute__((packed, aligned(4)));
- 
--/* These flags used for SSP SMP & SATA Abort */
--#define ABORT_MASK		0x3
--#define ABORT_SINGLE		0x0
--#define ABORT_ALL		0x1
--
- /**
-  * brief the data structure of SSP SATA SMP Abort Response
-  * use to describe SSP SMP & SATA Abort Response ( 64 bytes)
-diff --git a/drivers/scsi/pm8001/pm8001_sas.c b/drivers/scsi/pm8001/pm8001_sas.c
-index ac9c40c95070..3a863d776724 100644
---- a/drivers/scsi/pm8001/pm8001_sas.c
-+++ b/drivers/scsi/pm8001/pm8001_sas.c
-@@ -324,6 +324,18 @@ static int pm8001_task_prep_ata(struct pm8001_hba_info *pm8001_ha,
- 	return PM8001_CHIP_DISP->sata_req(pm8001_ha, ccb);
- }
- 
-+/**
-+  * pm8001_task_prep_internal_abort - the dispatcher function, prepare data
-+  *				      for internal abort task
-+  * @pm8001_ha: our hba card information
-+  * @ccb: the ccb which attached to sata task
-+  */
-+static int pm8001_task_prep_internal_abort(struct pm8001_hba_info *pm8001_ha,
-+					   struct pm8001_ccb_info *ccb)
-+{
-+	return PM8001_CHIP_DISP->task_abort(pm8001_ha, ccb);
-+}
-+
- /**
-   * pm8001_task_prep_ssp_tm - the dispatcher function, prepare task management data
-   * @pm8001_ha: our hba card information
-@@ -367,6 +379,35 @@ static int sas_find_local_port_id(struct domain_device *dev)
- #define DEV_IS_GONE(pm8001_dev)	\
- 	((!pm8001_dev || (pm8001_dev->dev_type == SAS_PHY_UNUSED)))
- 
-+
-+static int pm8001_deliver_command(struct pm8001_hba_info *pm8001_ha,
-+				  struct pm8001_ccb_info *ccb)
-+{
-+	struct sas_task *task = ccb->task;
-+	enum sas_protocol task_proto = task->task_proto;
-+	struct sas_tmf_task *tmf = task->tmf;
-+	int is_tmf = !!tmf;
-+
-+	switch (task_proto) {
-+	case SAS_PROTOCOL_SMP:
-+		return pm8001_task_prep_smp(pm8001_ha, ccb);
-+	case SAS_PROTOCOL_SSP:
-+		if (is_tmf)
-+			return pm8001_task_prep_ssp_tm(pm8001_ha, ccb, tmf);
-+		return pm8001_task_prep_ssp(pm8001_ha, ccb);
-+	case SAS_PROTOCOL_SATA:
-+	case SAS_PROTOCOL_STP:
-+		return pm8001_task_prep_ata(pm8001_ha, ccb);
-+	case SAS_PROTOCOL_INTERNAL_ABORT:
-+		return pm8001_task_prep_internal_abort(pm8001_ha, ccb);
-+	default:
-+		dev_err(pm8001_ha->dev, "unknown sas_task proto: 0x%x\n",
-+			task_proto);
-+	}
-+
-+	return -EINVAL;
-+}
-+
- /**
-   * pm8001_queue_command - register for upper layer used, all IO commands sent
-   * to HBA are from this interface.
-@@ -379,16 +420,15 @@ int pm8001_queue_command(struct sas_task *task, gfp_t gfp_flags)
- 	enum sas_protocol task_proto = task->task_proto;
- 	struct domain_device *dev = task->dev;
- 	struct pm8001_device *pm8001_dev = dev->lldd_dev;
-+	bool internal_abort = sas_is_internal_abort(task);
- 	struct pm8001_hba_info *pm8001_ha;
- 	struct pm8001_port *port = NULL;
- 	struct pm8001_ccb_info *ccb;
--	struct sas_tmf_task *tmf = task->tmf;
--	int is_tmf = !!task->tmf;
- 	unsigned long flags;
- 	u32 n_elem = 0;
- 	int rc = 0;
- 
--	if (!dev->port) {
-+	if (!internal_abort && !dev->port) {
- 		ts->resp = SAS_TASK_UNDELIVERED;
- 		ts->stat = SAS_PHY_DOWN;
- 		if (dev->dev_type != SAS_SATA_DEV)
-@@ -410,7 +450,8 @@ int pm8001_queue_command(struct sas_task *task, gfp_t gfp_flags)
- 	pm8001_dev = dev->lldd_dev;
- 	port = &pm8001_ha->port[sas_find_local_port_id(dev)];
- 
--	if (DEV_IS_GONE(pm8001_dev) || !port->port_attached) {
-+	if (!internal_abort &&
-+	    (DEV_IS_GONE(pm8001_dev) || !port->port_attached)) {
- 		ts->resp = SAS_TASK_UNDELIVERED;
- 		ts->stat = SAS_PHY_DOWN;
- 		if (sas_protocol_ata(task_proto)) {
-@@ -448,27 +489,7 @@ int pm8001_queue_command(struct sas_task *task, gfp_t gfp_flags)
- 
- 	atomic_inc(&pm8001_dev->running_req);
- 
--	switch (task_proto) {
--	case SAS_PROTOCOL_SMP:
--		rc = pm8001_task_prep_smp(pm8001_ha, ccb);
--		break;
--	case SAS_PROTOCOL_SSP:
--		if (is_tmf)
--			rc = pm8001_task_prep_ssp_tm(pm8001_ha, ccb, tmf);
--		else
--			rc = pm8001_task_prep_ssp(pm8001_ha, ccb);
--		break;
--	case SAS_PROTOCOL_SATA:
--	case SAS_PROTOCOL_STP:
--		rc = pm8001_task_prep_ata(pm8001_ha, ccb);
--		break;
--	default:
--		dev_printk(KERN_ERR, pm8001_ha->dev,
--			   "unknown sas_task proto: 0x%x\n", task_proto);
--		rc = -EINVAL;
--		break;
--	}
--
-+	rc = pm8001_deliver_command(pm8001_ha, ccb);
- 	if (rc) {
- 		atomic_dec(&pm8001_dev->running_req);
- 		if (!sas_protocol_ata(task_proto) && n_elem)
-@@ -668,87 +689,7 @@ void pm8001_task_done(struct sas_task *task)
- 	complete(&task->slow_task->completion);
- }
- 
--static void pm8001_tmf_timedout(struct timer_list *t)
--{
--	struct sas_task_slow *slow = from_timer(slow, t, timer);
--	struct sas_task *task = slow->task;
--	unsigned long flags;
--
--	spin_lock_irqsave(&task->task_state_lock, flags);
--	if (!(task->task_state_flags & SAS_TASK_STATE_DONE)) {
--		task->task_state_flags |= SAS_TASK_STATE_ABORTED;
--		complete(&task->slow_task->completion);
--	}
--	spin_unlock_irqrestore(&task->task_state_lock, flags);
--}
--
- #define PM8001_TASK_TIMEOUT 20
--static int
--pm8001_exec_internal_task_abort(struct pm8001_hba_info *pm8001_ha,
--	struct pm8001_device *pm8001_dev, struct domain_device *dev, u32 flag,
--	u32 task_tag)
--{
--	int res, retry;
--	struct pm8001_ccb_info *ccb;
--	struct sas_task *task = NULL;
--
--	for (retry = 0; retry < 3; retry++) {
--		task = sas_alloc_slow_task(GFP_KERNEL);
--		if (!task)
--			return -ENOMEM;
--
--		task->dev = dev;
--		task->task_proto = dev->tproto;
--		task->task_done = pm8001_task_done;
--		task->slow_task->timer.function = pm8001_tmf_timedout;
--		task->slow_task->timer.expires =
--			jiffies + PM8001_TASK_TIMEOUT * HZ;
--		add_timer(&task->slow_task->timer);
--
--		ccb = pm8001_ccb_alloc(pm8001_ha, pm8001_dev, task);
--		if (!ccb) {
--			res = -SAS_QUEUE_FULL;
--			break;
--		}
--
--		res = PM8001_CHIP_DISP->task_abort(pm8001_ha, pm8001_dev, flag,
--						   task_tag, ccb->ccb_tag);
--		if (res) {
--			del_timer(&task->slow_task->timer);
--			pm8001_dbg(pm8001_ha, FAIL,
--				   "Executing internal task failed\n");
--			pm8001_ccb_free(pm8001_ha, ccb);
--			break;
--		}
--
--		wait_for_completion(&task->slow_task->completion);
--		res = TMF_RESP_FUNC_FAILED;
--
--		/* Even TMF timed out, return direct. */
--		if (task->task_state_flags & SAS_TASK_STATE_ABORTED) {
--			pm8001_dbg(pm8001_ha, FAIL, "TMF task timeout.\n");
--			break;
--		}
--
--		if (task->task_status.resp == SAS_TASK_COMPLETE &&
--			task->task_status.stat == SAS_SAM_STAT_GOOD) {
--			res = TMF_RESP_FUNC_COMPLETE;
--			break;
--		}
--
--		pm8001_dbg(pm8001_ha, EH,
--			   " Task to dev %016llx response: 0x%x status 0x%x\n",
--			   SAS_ADDR(dev->sas_addr),
--			   task->task_status.resp,
--			   task->task_status.stat);
--		sas_free_task(task);
--		task = NULL;
--	}
--
--	BUG_ON(retry == 3 && task != NULL);
--	sas_free_task(task);
--	return res;
--}
- 
- /**
-   * pm8001_dev_gone_notify - see the comments for "pm8001_dev_found_notify"
-@@ -769,8 +710,7 @@ static void pm8001_dev_gone_notify(struct domain_device *dev)
- 			   pm8001_dev->device_id, pm8001_dev->dev_type);
- 		if (atomic_read(&pm8001_dev->running_req)) {
- 			spin_unlock_irqrestore(&pm8001_ha->lock, flags);
--			pm8001_exec_internal_task_abort(pm8001_ha, pm8001_dev,
--							dev, 1, 0);
-+			sas_execute_internal_abort_dev(dev, 0, NULL);
- 			while (atomic_read(&pm8001_dev->running_req))
- 				msleep(20);
- 			spin_lock_irqsave(&pm8001_ha->lock, flags);
-@@ -893,8 +833,7 @@ int pm8001_I_T_nexus_reset(struct domain_device *dev)
- 			goto out;
- 		}
- 		msleep(2000);
--		rc = pm8001_exec_internal_task_abort(pm8001_ha, pm8001_dev,
--						     dev, 1, 0);
-+		rc = sas_execute_internal_abort_dev(dev, 0, NULL);
- 		if (rc) {
- 			pm8001_dbg(pm8001_ha, EH, "task abort failed %x\n"
- 				   "with rc %d\n", pm8001_dev->device_id, rc);
-@@ -939,8 +878,7 @@ int pm8001_I_T_nexus_event_handler(struct domain_device *dev)
- 			goto out;
- 		}
- 		/* send internal ssp/sata/smp abort command to FW */
--		rc = pm8001_exec_internal_task_abort(pm8001_ha, pm8001_dev,
--						     dev, 1, 0);
-+		sas_execute_internal_abort_dev(dev, 0, NULL);
- 		msleep(100);
- 
- 		/* deregister the target device */
-@@ -955,8 +893,7 @@ int pm8001_I_T_nexus_event_handler(struct domain_device *dev)
- 		wait_for_completion(&completion_setstate);
- 	} else {
- 		/* send internal ssp/sata/smp abort command to FW */
--		rc = pm8001_exec_internal_task_abort(pm8001_ha, pm8001_dev,
--						     dev, 1, 0);
-+		sas_execute_internal_abort_dev(dev, 0, NULL);
- 		msleep(100);
- 
- 		/* deregister the target device */
-@@ -983,8 +920,7 @@ int pm8001_lu_reset(struct domain_device *dev, u8 *lun)
- 	DECLARE_COMPLETION_ONSTACK(completion_setstate);
- 	if (dev_is_sata(dev)) {
- 		struct sas_phy *phy = sas_get_local_phy(dev);
--		rc = pm8001_exec_internal_task_abort(pm8001_ha, pm8001_dev,
--						     dev, 1, 0);
-+		sas_execute_internal_abort_dev(dev, 0, NULL);
- 		rc = sas_phy_reset(phy, 1);
- 		sas_put_local_phy(phy);
- 		pm8001_dev->setds_completion = &completion_setstate;
-@@ -1084,8 +1020,7 @@ int pm8001_abort_task(struct sas_task *task)
- 	spin_unlock_irqrestore(&task->task_state_lock, flags);
- 	if (task->task_proto & SAS_PROTOCOL_SSP) {
- 		rc = sas_abort_task(task, tag);
--		pm8001_exec_internal_task_abort(pm8001_ha, pm8001_dev,
--			pm8001_dev->sas_device, 0, tag);
-+		sas_execute_internal_abort_single(dev, tag, 0, NULL);
- 	} else if (task->task_proto & SAS_PROTOCOL_SATA ||
- 		task->task_proto & SAS_PROTOCOL_STP) {
- 		if (pm8001_ha->chip_id == chip_8006) {
-@@ -1158,8 +1093,7 @@ int pm8001_abort_task(struct sas_task *task)
- 			 * is removed from the ccb. on success the caller is
- 			 * going to free the task.
- 			 */
--			ret = pm8001_exec_internal_task_abort(pm8001_ha,
--				pm8001_dev, pm8001_dev->sas_device, 1, tag);
-+			ret = sas_execute_internal_abort_dev(dev, 0, NULL);
- 			if (ret)
- 				goto out;
- 			ret = wait_for_completion_timeout(
-@@ -1175,14 +1109,12 @@ int pm8001_abort_task(struct sas_task *task)
- 				pm8001_dev, DS_OPERATIONAL);
- 			wait_for_completion(&completion);
- 		} else {
--			rc = pm8001_exec_internal_task_abort(pm8001_ha,
--				pm8001_dev, pm8001_dev->sas_device, 0, tag);
-+			ret = sas_execute_internal_abort_single(dev, tag, 0, NULL);
- 		}
- 		rc = TMF_RESP_FUNC_COMPLETE;
- 	} else if (task->task_proto & SAS_PROTOCOL_SMP) {
- 		/* SMP */
--		rc = pm8001_exec_internal_task_abort(pm8001_ha, pm8001_dev,
--			pm8001_dev->sas_device, 0, tag);
-+		rc = sas_execute_internal_abort_single(dev, tag, 0, NULL);
- 
- 	}
- out:
-diff --git a/drivers/scsi/pm8001/pm8001_sas.h b/drivers/scsi/pm8001/pm8001_sas.h
-index d522bd0bb46b..060ab680a7ed 100644
---- a/drivers/scsi/pm8001/pm8001_sas.h
-+++ b/drivers/scsi/pm8001/pm8001_sas.h
-@@ -196,8 +196,7 @@ struct pm8001_dispatch {
- 	int (*phy_ctl_req)(struct pm8001_hba_info *pm8001_ha,
- 		u32 phy_id, u32 phy_op);
- 	int (*task_abort)(struct pm8001_hba_info *pm8001_ha,
--		struct pm8001_device *pm8001_dev, u8 flag, u32 task_tag,
--		u32 cmd_tag);
-+		struct pm8001_ccb_info *ccb);
- 	int (*ssp_tm_req)(struct pm8001_hba_info *pm8001_ha,
- 		struct pm8001_ccb_info *ccb, struct sas_tmf_task *tmf);
- 	int (*get_nvmd_req)(struct pm8001_hba_info *pm8001_ha, void *payload);
-@@ -683,8 +682,7 @@ int pm8001_chip_ssp_tm_req(struct pm8001_hba_info *pm8001_ha,
- 				struct pm8001_ccb_info *ccb,
- 				struct sas_tmf_task *tmf);
- int pm8001_chip_abort_task(struct pm8001_hba_info *pm8001_ha,
--				struct pm8001_device *pm8001_dev,
--				u8 flag, u32 task_tag, u32 cmd_tag);
-+				struct pm8001_ccb_info *ccb);
- int pm8001_chip_dereg_dev_req(struct pm8001_hba_info *pm8001_ha, u32 device_id);
- void pm8001_chip_make_sg(struct scatterlist *scatter, int nr, void *prd);
- void pm8001_work_fn(struct work_struct *work);
-diff --git a/drivers/scsi/pm8001/pm80xx_hwi.h b/drivers/scsi/pm8001/pm80xx_hwi.h
-index b9d9d113809b..acf6e3005b84 100644
---- a/drivers/scsi/pm8001/pm80xx_hwi.h
-+++ b/drivers/scsi/pm8001/pm80xx_hwi.h
-@@ -672,11 +672,6 @@ struct task_abort_req {
- 	u32	reserved[27];
- } __attribute__((packed, aligned(4)));
- 
--/* These flags used for SSP SMP & SATA Abort */
--#define ABORT_MASK		0x3
--#define ABORT_SINGLE		0x0
--#define ABORT_ALL		0x1
--
- /**
-  * brief the data structure of SSP SATA SMP Abort Response
-  * use to describe SSP SMP & SATA Abort Response ( 64 bytes)
--- 
-2.26.2
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
