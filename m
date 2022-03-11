@@ -2,92 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:35:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C84D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349397AbiCKOgQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:36:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        id S243203AbiCKOg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 09:36:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237079AbiCKOgO (ORCPT
+        with ESMTP id S237079AbiCKOg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:36:14 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF221C8D8C;
-        Fri, 11 Mar 2022 06:35:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647009311; x=1678545311;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JlTOqI+h+WG8aKADoRW8mWa2X0Y8TfkTAAlyGRwmsq8=;
-  b=T4S3rAaoRazPXVfIJzLbAz3g9FABFnpDs7Lh/i6xwONSt4hoXGaSu/ej
-   hNxG1KyfP/8gg3R6XOVg7C/u3Q7jEvpkprtrclebugwy3BHJdC6F+Zk3E
-   LPlTAa3fibdV2GSNK+PWEBMBxkTaZcxrJRVU0EeskWcJIUhcHRqxw4gyD
-   JgaZuOHFYIgeGqXPzYTBUMRTOyKRTZso/DxpGfA9gidCzbrxm7xueVSCZ
-   Lfnx9U1kU858t784RaNlZsAwsa/G9oY7d4zW9iKowOmdwjpsbUqOx3xUp
-   68tFFlmfv/XPYCTe/wMUAqibp2qCXieUb+YWHH+9CKZ/eBkCmvO73H+kQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255769996"
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="255769996"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 06:35:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="514519517"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
-  by orsmga006.jf.intel.com with ESMTP; 11 Mar 2022 06:35:08 -0800
-Date:   Fri, 11 Mar 2022 22:28:14 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.manne@xilinx.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com,
-        michal.simek@xilinx.com, linux-fpga@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 2/6] fpga: zynqmp: Initialized variables before using it
-Message-ID: <20220311142814.GA97487@yilunxu-OptiPlex-7050>
-References: <20220308094519.1816649-1-nava.manne@xilinx.com>
- <20220308094519.1816649-3-nava.manne@xilinx.com>
+        Fri, 11 Mar 2022 09:36:57 -0500
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398AA1C8D93;
+        Fri, 11 Mar 2022 06:35:53 -0800 (PST)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id BADB9240012;
+        Fri, 11 Mar 2022 14:35:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647009351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XT+M29uVA0vJ1WSKa+wbExMQdXBbv2jocdFEg0seS+M=;
+        b=Cy+Kn6dBk6RepjY0iXSK5OBNQ3WeErvF+tgHZwZqmSxJwCGjI1zfYF5poSCECorUyeoSbY
+        ZxFyq6FuOlExsdLnPajNiLaGPZtpPxJ3ozPQdNLoh6i9JYEIAXeTTWyRi8dyVRy82xXJ2O
+        CeLAbA2ysa6a0HvHwxMTqxf6Bf67PJopc/PYJTJoI0IlrHhJiQ6l4oTE8RPkvaC8eCcdF2
+        zJarh3J2do+KObPD2Y4zXsGTmdWpcqBKKXb3ua3jS0diMn7QqRR9cGBJOYcltUwMOmPeAv
+        jtcJv8gr6a7cGaz7kQO4vZFdU42LhZkmqo/tC6YbqIjtQV+xv0X+hC+kGjuYCw==
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev
+Cc:     Yong Deng <yong.deng@magewell.com>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: [PATCH v3 00/46] Allwinner A31/A83T MIPI CSI-2 and A31 ISP / CSI Rework
+Date:   Fri, 11 Mar 2022 15:34:46 +0100
+Message-Id: <20220311143532.265091-1-paul.kocialkowski@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220308094519.1816649-3-nava.manne@xilinx.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 08, 2022 at 03:15:15PM +0530, Nava kishore Manne wrote:
-> This patch initialized variables with the proper value.
-> Addresses-Coverity: "uninit_use: Using uninitialized value"
-> 
-> Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
-> ---
->  drivers/fpga/zynqmp-fpga.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/fpga/zynqmp-fpga.c b/drivers/fpga/zynqmp-fpga.c
-> index c60f20949c47..e931d69819a7 100644
-> --- a/drivers/fpga/zynqmp-fpga.c
-> +++ b/drivers/fpga/zynqmp-fpga.c
-> @@ -41,7 +41,7 @@ static int zynqmp_fpga_ops_write(struct fpga_manager *mgr,
->  				 const char *buf, size_t size)
->  {
->  	struct zynqmp_fpga_priv *priv;
-> -	dma_addr_t dma_addr;
-> +	dma_addr_t dma_addr = 0;
+This new version is an offspring from the big "Allwinner A31/A83T
+MIPI CSI-2 Support and A31 ISP Support" series, which was split into
+individual series for better clarity and handling.
 
-The first use of this variable is as an output parameter:
+This part only concerns the rework of the CSI driver to support the MIPI CSI-2
+and ISP workflows.
 
-	kbuf = dma_alloc_coherent(priv->dev, size, &dma_addr, GFP_KERNEL);
+Changes since all-in-one v2:
+- Reworked capture video device registration, which stays in the main path.
+- Reworked async subdev handling with a dedicated structure holding the
+  corresponding source to avoid matching in the driver;
+- Added mutex for mbus format serialization;
+- Remove useless else in link_validate;
+- Reworked commit logs to include missing information;
+- Cleaned up Kconfig, added PM dependency;
+- Moved platform-specific clock rate to of match data;
+- Added collected Reviewed-by tags;
+- Updated copyright years;
 
-So I don't think it needs to be initialized as 0.
+Paul Kocialkowski (46):
+  media: sun6i-csi: Define and use driver name and (reworked)
+    description
+  media: sun6i-csi: Refactor main driver data structures
+  media: sun6i-csi: Grab bus clock instead of passing it to regmap
+  media: sun6i-csi: Tidy up platform code
+  media: sun6i-csi: Always set exclusive module clock rate
+  media: sun6i-csi: Define and use variant to get module clock rate
+  media: sun6i-csi: Use runtime pm for clocks and reset
+  media: sun6i-csi: Tidy up Kconfig
+  media: sun6i-csi: Tidy up v4l2 code
+  media: sun6i-csi: Tidy up video code
+  media: sun6i-csi: Pass and store csi device directly in video code
+  media: sun6i-csi: Register the media device after creation
+  media: sun6i-csi: Add media ops with link notify callback
+  media: sun6i-csi: Introduce and use video helper functions
+  media: sun6i-csi: Move csi buffer definition to main header file
+  media: sun6i-csi: Add bridge v4l2 subdev with port management
+  media: sun6i-csi: Rename sun6i_video to sun6i_csi_capture
+  media: sun6i-csi: Add capture state using vsync for page flip
+  media: sun6i-csi: Rework register definitions, invert misleading
+    fields
+  media: sun6i-csi: Add dimensions and format helpers to capture
+  media: sun6i-csi: Implement address configuration without indirection
+  media: sun6i-csi: Split stream sequences and irq code in capture
+  media: sun6i-csi: Move power management to runtime pm in capture
+  media: sun6i-csi: Move register configuration to capture
+  media: sun6i-csi: Rework capture format management with helper
+  media: sun6i-csi: Remove custom format helper and rework configure
+  media: sun6i-csi: Add bridge dimensions and format helpers
+  media: sun6i-csi: Get mbus code from bridge instead of storing it
+  media: sun6i-csi: Tidy capture configure code
+  media: sun6i-csi: Introduce bridge format structure, list and helper
+  media: sun6i-csi: Introduce capture format structure, list and helper
+  media: sun6i-csi: Configure registers from format tables
+  media: sun6i-csi: Introduce format match structure, list and helper
+  media: sun6i-csi: Implement capture link validation with logic
+  media: sun6i-csi: Get bridge subdev directly in capture stream ops
+  media: sun6i-csi: Move hardware control to the bridge
+  media: sun6i-csi: Unset bridge source on capture streamon fail
+  media: sun6i-csi: Rename the capture video device to sun6i-csi-capture
+  media: sun6i-csi: Cleanup headers and includes, update copyright lines
+  media: sun6i-csi: Add support for MIPI CSI-2 to the bridge code
+  media: sun6i-csi: Only configure capture when streaming
+  media: sun6i-csi: Add extra checks to the interrupt routine
+  media: sun6i-csi: Request a shared interrupt
+  media: sun6i-csi: Detect the availability of the ISP
+  media: sun6i-csi: Add support for hooking to the isp devices
+  MAINTAINERS: Add myself as sun6i-csi maintainer and rename/move entry
 
-Thanks,
-Yilun
+ MAINTAINERS                                   |   17 +-
+ .../media/platform/sunxi/sun6i-csi/Kconfig    |    9 +-
+ .../media/platform/sunxi/sun6i-csi/Makefile   |    2 +-
+ .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 1086 +++++-----------
+ .../platform/sunxi/sun6i-csi/sun6i_csi.h      |  154 +--
+ .../sunxi/sun6i-csi/sun6i_csi_bridge.c        |  883 +++++++++++++
+ .../sunxi/sun6i-csi/sun6i_csi_bridge.h        |   70 ++
+ .../sunxi/sun6i-csi/sun6i_csi_capture.c       | 1102 +++++++++++++++++
+ .../sunxi/sun6i-csi/sun6i_csi_capture.h       |   89 ++
+ .../platform/sunxi/sun6i-csi/sun6i_csi_reg.h  |  362 +++---
+ .../platform/sunxi/sun6i-csi/sun6i_video.c    |  681 ----------
+ .../platform/sunxi/sun6i-csi/sun6i_video.h    |   38 -
+ 12 files changed, 2688 insertions(+), 1805 deletions(-)
+ create mode 100644 drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.c
+ create mode 100644 drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.h
+ create mode 100644 drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.c
+ create mode 100644 drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_capture.h
+ delete mode 100644 drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+ delete mode 100644 drivers/media/platform/sunxi/sun6i-csi/sun6i_video.h
 
->  	u32 eemi_flags = 0;
->  	char *kbuf;
->  	int ret;
-> -- 
-> 2.25.1
+-- 
+2.35.1
+
