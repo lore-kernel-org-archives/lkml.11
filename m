@@ -2,70 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3EADC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E02C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:51:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiCKWvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:51:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40988 "EHLO
+        id S229964AbiCKWwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:52:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiCKWvL (ORCPT
+        with ESMTP id S229851AbiCKWvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:51:11 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E09A2CEA4E;
-        Fri, 11 Mar 2022 14:25:09 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id r2so2044007ilh.0;
-        Fri, 11 Mar 2022 14:25:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GyRIcZoZdI7XJjcQT5Ld8APIti4p48Wxyfw1hBRxBYU=;
-        b=dS5amww75jfn2iQvjxVUBXupGO2l6Bys4O6ss8C+vdIfjfPMJaujEm9TMdOfi7JJyn
-         dbbcd0UFSTRfv2jADGOoSFe/5DqenzhVZiNNC5D7pcNNV5fNMn6qY9YozZdE73LxFZtI
-         pnveBYNUf9BYXlTbd1eXM3UPGIUa98Z7uBLitXc8JdYSGBw9ETqBFQmoAbHVTtll4cyU
-         K/KBDNv6YGh/NENGPHCdN9wCmBkbzE/D2e0bK4dxrorUsqRcpcKs9cG9AgxQA5ylD2nc
-         RtdafaGoBCkTZ1oFaqNQ1swY2EvaLzVFAERsNeGJjn6VO9ThV34v6kZ9RrIh6DJTNqRs
-         LhkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GyRIcZoZdI7XJjcQT5Ld8APIti4p48Wxyfw1hBRxBYU=;
-        b=q+awXIar1gg5IRwQ055ABjExUa7TeEs48GnmcmJ4MTpSFrpNf4jELE//OxvnGrx6NR
-         cT3Us+oqcaUtI12Cy2qRlbeCivmzwAhCJwKv6P+FwrpEaDEZS5km/IJEJp44AfCPthxC
-         UuoFYTVW1oHHgydw+Roxl+IVKGiJm2W910l5yyg9ATMxgj4WUX+vzn8a1L+iGl02ex8R
-         CWRAk6oT7azrShwexgsUaaBThtVbcdOk+2gFabiWE0fWXFugSIj4gMxHRiXVoeXsbCHp
-         ISnXNcGqaH7k6Hy0bkDA1pYztTuoQjBHTQF8eyFS9U9hRceGDAZIH2H18ZelOmPGTM5G
-         WpmA==
-X-Gm-Message-State: AOAM533t2h8LTChWPbT5qrj1D9NNHU5xXh740ir+ib4bnz1rqFvGFNnq
-        m2tWEajYjzzteENgb6QhgDh5S5zLwV976MBJHiM=
-X-Google-Smtp-Source: ABdhPJxZl3L+TKpxjt4oWEG4AolAgkwpnkj2tGpgqjLVYdjTm0XEwk6syLuzVL7BUndaT96BlC3Ga8o+TnZXMlpD/Yc=
-X-Received: by 2002:a05:6e02:20c3:b0:2c2:9e23:8263 with SMTP id
- 3-20020a056e0220c300b002c29e238263mr9686933ilq.248.1647037508686; Fri, 11 Mar
- 2022 14:25:08 -0800 (PST)
+        Fri, 11 Mar 2022 17:51:50 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C68229E5AC;
+        Fri, 11 Mar 2022 14:25:37 -0800 (PST)
+Date:   Fri, 11 Mar 2022 23:09:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647036548;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=E1hpGVBDseCVeet7NoMPueWVt4kGDQQEBLbUVjRRwI8=;
+        b=4QJaiVaptzeJS6+LzbVm3Xrw5F/1q7kF93x+4CRPNIm2qD7FOWhBK3NmuPoZTt+Zxq1WNA
+        OeXe0GAmlsd3bBx46wIABfNjqOHMotZ2I4utofWmFyZmLjyshVaVfnb3Fs/C/kXL8orv7E
+        r09AnCPs2rX1VKxeFou0StI2JjGuuJYFNuF0vnRTfm1pno8O4MmLkzwRsshTHzegyL8fT6
+        Zg4kmrOF+V+t/k/4D5zmaYeG2txoBEGZ6h1yi40zjwSluAHC7cDDNU4iEb+CUrQT1P3WUm
+        fCQMnCFdFX5mnMuVooF660bpOulTzE9khign51M7dtfiYurqK5XYvAnDGa3Lqg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647036548;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=E1hpGVBDseCVeet7NoMPueWVt4kGDQQEBLbUVjRRwI8=;
+        b=tDCaJdY8cDI/Da494PQCrYc5rVXDpEaCC/LuqCmcF0zLSjp47EzZtocaK8hHKjG29NffSo
+        QZ8U13ULgKPLAgBA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Tom Zanussi <zanussi@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>, Daniel Wagner <wagi@monom.org>,
+        Clark Williams <williams@redhat.com>,
+        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Subject: Re: [ANNOUNCE] 5.4.182-rt71
+Message-ID: <YivIg2H6BY5KuMQ/@linutronix.de>
+References: <0af02f70d3a0b3653bb3079266878f13e6682a69.camel@kernel.org>
 MIME-Version: 1.0
-References: <20220311132906.32292-1-steve.lee.analog@gmail.com> <Yit5v+JkYDiWz0z0@sirena.org.uk>
-In-Reply-To: <Yit5v+JkYDiWz0z0@sirena.org.uk>
-From:   Lee Steve <steve.lee.analog@gmail.com>
-Date:   Sat, 12 Mar 2022 07:24:57 +0900
-Message-ID: <CA+Fz0PY9bi7cJpbmD4LSMRyDFEyJ4JQPqWWNoV-PZm01=KboNw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] ASoC: max98390: Add reset gpio control
-To:     Mark Brown <broonie@kernel.org>
-Cc:     lgirdwood@gmail.com, robh+dt@kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ryans.lee@maximintegrated.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0af02f70d3a0b3653bb3079266878f13e6682a69.camel@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 1:33 AM Mark Brown <broonie@kernel.org> wrote:
->
-> On Fri, Mar 11, 2022 at 10:29:05PM +0900, Steve Lee wrote:
-> >  Add reset gpio control to support RESET PIN connected to gpio.
->
-> This doesn't apply against current code, please check and resend.
+On 2022-03-11 15:46:23 [-0600], Tom Zanussi wrote:
+> index 79e34e98f812..e1dfb01f4623 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -802,6 +802,18 @@ struct task_struct {
+>  	/* to be used once the psi infrastructure lands upstream. */
+>  	unsigned			use_memdelay:1;
+>  #endif
+> +#ifdef CONFIG_PSI
+> +	/* Stalled due to lack of memory */
+> +	unsigned			in_memstall:1;
+> +#endif
+> +#ifdef CONFIG_PAGE_OWNER
+> +	/* Used by page_owner=on to detect recursion in page tracking. */
+> +	unsigned			in_page_owner:1;
+> +#endif
 
-I will check and resend patch.
+the upper two don't look like they belong here.
+
+> +#ifdef CONFIG_EVENTFD
+> +	/* Recursion prevention for eventfd_signal() */
+> +	unsigned			in_eventfd_signal:1;
+> +#endif
+>  
+>  	unsigned long			atomic_flags; /* Flags requiring atomic access. */
+>  
+> diff --git a/localversion-rt b/localversion-rt
+
+Sebastian
