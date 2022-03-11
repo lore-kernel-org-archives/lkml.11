@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C22C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 00:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B499C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 00:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345254AbiCKA7s (ORCPT
+        id S1345249AbiCKA7u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 19:59:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
+        Thu, 10 Mar 2022 19:59:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241066AbiCKA7j (ORCPT
+        with ESMTP id S1344877AbiCKA7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 19:59:39 -0500
+        Thu, 10 Mar 2022 19:59:44 -0500
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F93E98D4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 16:58:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 181C712D09E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 16:58:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646960316; x=1678496316;
+  t=1646960322; x=1678496322;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wzyA39JwdZxDDT/IXqrk8/yZKwNXu3aWKvXpfEakV14=;
-  b=Ebc6/R9JQ6ah3AAIAy5kxC4//PxF+ZzB6ZZUIaRGGRyks/phEP7wXJYX
-   sPJauC6h0bOZjm3+UwjnVKcY5cx/04RNZ+XeoF57QJMBkhgWrgAdTuSV4
-   BWGofFUMnVT4NiJ7spMw6uaYYGXZSCh35bXL1sDkaAZmE/1qtwbNUxYJG
-   eAYuCA+f5D0DGAUPJJXOkfNojoLILA9FnemT1e4HBelRNI6j9fwLsWX/7
-   SF7vU+ssBVrKDeOVw6KiWovI/UK9i+spZLdNfqQ2erqtBbOsacD/Z2GnU
-   RpOhCQLJcxV56nhhsi1aPuDHucm+pS6vdemUvYpoqZ4eIQpmhU5w5t+A3
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255405810"
+  bh=9ygcwAbQ0NfIqlDdywkiojUz0KGKAHWj5E1qd9qQFb4=;
+  b=YvpOoRUaQd+xITTeGZ5DoGlkBCKTaEOtXccDm6nK2eUykLCki+xZwb+z
+   wxBqnIJqXB5sxZCYNBEf0JKcwsNS1n83vYsA/k7ZBcYFeU2ZcUYY5tqjw
+   qDCnMXfiNjl6XQEq7jWpjZWaF8AUyoPR7sBvbaTjL+8nz/zqQM1wjOev1
+   NSa7UL+trZPxn1B5GRSGLKhpLl5aiCYKB9V1WxSvYuW6OwsQY2QGAzQZl
+   5O7KuZwwMkvwxL9hLOIBNm8uW8AcvwxmgKjSDs+w0/DePQ5/vOMzM1yWe
+   XUOJ/tFSIxyBMeyTRSPnFqY1py12JIh5PzsXKbQQ7xsjbjND/uY5MJvOo
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255405867"
 X-IronPort-AV: E=Sophos;i="5.90,172,1643702400"; 
-   d="scan'208";a="255405810"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 16:57:47 -0800
+   d="scan'208";a="255405867"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 16:57:59 -0800
 X-IronPort-AV: E=Sophos;i="5.90,172,1643702400"; 
-   d="scan'208";a="538750565"
+   d="scan'208";a="554989246"
 Received: from gdavids1-mobl.amr.corp.intel.com (HELO localhost) ([10.212.65.108])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 16:57:47 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 16:57:49 -0800
 From:   ira.weiny@intel.com
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 Cc:     Ira Weiny <ira.weiny@intel.com>,
         "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
         linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/5] powerpc/pkeys: Properly type pkey in init_{i}amr()
-Date:   Thu, 10 Mar 2022 16:57:40 -0800
-Message-Id: <20220311005742.1060992-4-ira.weiny@intel.com>
+Subject: [PATCH 5/5] x86/pkeys: Standardize on u8 for pkey type
+Date:   Thu, 10 Mar 2022 16:57:42 -0800
+Message-Id: <20220311005742.1060992-6-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220311005742.1060992-1-ira.weiny@intel.com>
 References: <20220311005742.1060992-1-ira.weiny@intel.com>
@@ -58,42 +58,63 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Negative values passed to pkeyshift() will cause an overflow of the amr
-and imar values.  Pkey should not be negative in this call path and u8
-is large enough for the 32 pkeys available on powerpc.
+The number of pkeys supported on x86 and powerpc are much smaller than a
+u16 value can hold.  It is desirable to standardize on the type for
+pkeys.  powerpc currently supports the most pkeys at 32.  u8 is plenty
+large for that.
 
-Change pkey to u8 in init_amr() and init_iamr().
+Standardize on the pkey types by changing u16 to u8.
 
-To: Michael Ellerman <mpe@ellerman.id.au>
+To: Dave Hansen <dave.hansen@linux.intel.com>
 Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 ---
- arch/powerpc/mm/book3s64/pkeys.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/pgtable.h | 4 ++--
+ arch/x86/include/asm/pkru.h    | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/mm/book3s64/pkeys.c b/arch/powerpc/mm/book3s64/pkeys.c
-index 753e62ba67af..d6456f8846de 100644
---- a/arch/powerpc/mm/book3s64/pkeys.c
-+++ b/arch/powerpc/mm/book3s64/pkeys.c
-@@ -310,7 +310,7 @@ void pkey_mm_init(struct mm_struct *mm)
- 	mm->context.execute_only_pkey = execute_only_key;
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+index 8a9432fb3802..cb89f1224d8a 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -1357,7 +1357,7 @@ static inline pmd_t pmd_swp_clear_uffd_wp(pmd_t pmd)
+ }
+ #endif /* CONFIG_HAVE_ARCH_USERFAULTFD_WP */
+ 
+-static inline u16 pte_flags_pkey(unsigned long pte_flags)
++static inline u8 pte_flags_pkey(unsigned long pte_flags)
+ {
+ #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
+ 	/* ifdef to avoid doing 59-bit shift on 32-bit values */
+@@ -1367,7 +1367,7 @@ static inline u16 pte_flags_pkey(unsigned long pte_flags)
+ #endif
  }
  
--static inline void init_amr(int pkey, u8 init_bits)
-+static inline void init_amr(u8 pkey, u8 init_bits)
+-static inline bool __pkru_allows_pkey(u16 pkey, bool write)
++static inline bool __pkru_allows_pkey(u8 pkey, bool write)
  {
- 	u64 new_amr_bits = (((u64)init_bits & 0x3UL) << pkeyshift(pkey));
- 	u64 old_amr = current_thread_amr() & ~((u64)(0x3ul) << pkeyshift(pkey));
-@@ -318,7 +318,7 @@ static inline void init_amr(int pkey, u8 init_bits)
- 	current->thread.regs->amr = old_amr | new_amr_bits;
+ 	u32 pkru = read_pkru();
+ 
+diff --git a/arch/x86/include/asm/pkru.h b/arch/x86/include/asm/pkru.h
+index 74f0a2d34ffd..06d088f06229 100644
+--- a/arch/x86/include/asm/pkru.h
++++ b/arch/x86/include/asm/pkru.h
+@@ -16,13 +16,13 @@ extern u32 init_pkru_value;
+ #define pkru_get_init_value()	0
+ #endif
+ 
+-static inline bool __pkru_allows_read(u32 pkru, u16 pkey)
++static inline bool __pkru_allows_read(u32 pkru, u8 pkey)
+ {
+ 	int pkru_pkey_bits = pkey * PKRU_BITS_PER_PKEY;
+ 	return !(pkru & (PKRU_AD_BIT << pkru_pkey_bits));
  }
  
--static inline void init_iamr(int pkey, u8 init_bits)
-+static inline void init_iamr(u8 pkey, u8 init_bits)
+-static inline bool __pkru_allows_write(u32 pkru, u16 pkey)
++static inline bool __pkru_allows_write(u32 pkru, u8 pkey)
  {
- 	u64 new_iamr_bits = (((u64)init_bits & 0x1UL) << pkeyshift(pkey));
- 	u64 old_iamr = current_thread_iamr() & ~((u64)(0x1ul) << pkeyshift(pkey));
+ 	int pkru_pkey_bits = pkey * PKRU_BITS_PER_PKEY;
+ 	/*
 -- 
 2.35.1
 
