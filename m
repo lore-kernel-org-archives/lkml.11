@@ -2,121 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB09DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 09:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347660AbiCKJqJ (ORCPT
+        id S1347661AbiCKJqg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 04:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
+        Fri, 11 Mar 2022 04:46:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238116AbiCKJqI (ORCPT
+        with ESMTP id S1347649AbiCKJq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 04:46:08 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC2D1B3708
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 01:45:06 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id o83so1324167oif.0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 01:45:06 -0800 (PST)
+        Fri, 11 Mar 2022 04:46:28 -0500
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7141BE4D8;
+        Fri, 11 Mar 2022 01:45:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=cVczuzNre+vtNmBk9yrx2YwKmhuwSmFiNpzeXGmT38c=;
-        b=L+F3zhqkl/Ct8Qq1V35I+omWnTGlk+AjBc0WRiSjC7+RmA7r2TlIxxo6rufzP6haEU
-         MGHHWTT3zhErtyNeAVx5otmei2A5HDbOtNu3p5l3NX3dgnWj0NiiQTziNzJotEQop8bS
-         I/2gTOkEPc6Emea3sC7DRCcanpKRQuvmt+9d0FXTMsGktHjd9Mej5cTPxfn9vSOMASK8
-         Xd+dht2uqezbrzDBua9fnhBtEu2ayXkTYvOPHdhLDK2VEwVA9HPNtrZcD1B5+Prrr4Eq
-         pXhGJ6m92lz5kaVbH9+4EtsWhszitfUe+xQFhRrUqVVoWeLyAYcyThglGxmCTFh3A2GD
-         JD9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=cVczuzNre+vtNmBk9yrx2YwKmhuwSmFiNpzeXGmT38c=;
-        b=t3MJ0cACOkhYF32s+7lzFLQbCEMfCY85GSVea77IFIwnJ5bIPQEW1/h1K3SDfHc3ye
-         ioWRKlchxdA5IVGWJXSyCvYu3mkRy5pGZ+DE3kSYY39cQDlPjWxSdc5qouSTTKSx6OBS
-         STJWI56pFAO8Pwfdxm04DXEugXr+a1rzhhxtny7CYrJodjS0HG83g7w1r0uWm4uInrgw
-         4pxVKNfJXZVVYIMyxC69gOzIxQn1S9fuMoZEXtn1HkP56Eu1INlxZ6AvWHNvmRwvLnOp
-         5/CTJkMh0rCUVoiD8SRDltGv8whNynKyBgTfo+zfM2aSp+qKxXbFEqCPg6F4H5UvM6F/
-         KhCw==
-X-Gm-Message-State: AOAM533BcWys/z3xTnWaeScsZqf38mhdGO4lYbqq/+7QNaeQTyBKvb0M
-        rTmGi0TjRn4qShn6WTkGKe+T0w==
-X-Google-Smtp-Source: ABdhPJxpJQtMDTtXA2ssF7gPxUQOs6B6AaihiU1Ud4gfukMe6UQt48hg7ecbADzegKT2OiPivTZvhw==
-X-Received: by 2002:a05:6808:218b:b0:2da:5fd1:a85b with SMTP id be11-20020a056808218b00b002da5fd1a85bmr4384601oib.71.1646991905244;
-        Fri, 11 Mar 2022 01:45:05 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id r21-20020a05683002f500b005b249ffa43fsm3483775ote.22.2022.03.11.01.45.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 01:45:04 -0800 (PST)
-Date:   Fri, 11 Mar 2022 01:44:54 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     kernel test robot <oliver.sang@intel.com>
-cc:     Yang Shi <shy828301@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Hildenbrand <david@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Hugh Dickins <hughd@google.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        lkp@intel.com
-Subject: Re: [mm]  aae2359b1a:
- BUG:Bad_rss-counter_state_mm:#type:MM_ANONPAGES_val
-In-Reply-To: <20220311022718.GC18612@xsang-OptiPlex-9020>
-Message-ID: <a98d4b1-da3f-c183-52a7-af72131ee5@google.com>
-References: <20220311022718.GC18612@xsang-OptiPlex-9020>
+  d=axis.com; q=dns/txt; s=axis-central1; t=1646991924;
+  x=1678527924;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=HGte/zaS5mfJUA4/Q4DGs8r+NCytaCeHNe8LA2QiASY=;
+  b=m9KCbxlJCv+udCdeH0UTFeus96wzYIUKN9pTop2RX5Fd+luLE2vDpFCS
+   75nIXFKQ1aPgEzniLjIJjyhyL6Hr2C+mIVHCoV3dUx6IpXj2l3TWI8nxm
+   06H2TpVMb9BB4rP/QTku4d/wjowePuoO/LognOsU1hBP84UyCYFsQKyKx
+   Feu0D9aleBLCk6wu444hdJZWndQk30LuazgSt60DE7oBGYbSEvpeuaEWE
+   kv36kzXpL+QeK9vwLEoyFXnzwrrzfVl8t26hDeZGTH3IN9wUNuBkxPPHO
+   ek7EH92HaYfi5fw2CMuE/r98uiEc+dtaYDhYadJQn0BswtPjWzBoDnBlG
+   g==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <krzysztof.kozlowski@canonical.com>
+CC:     <kernel@axis.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <robh+dt@kernel.org>,
+        <alim.akhtar@samsung.com>
+Subject: [PATCH v2 1/2] dt-bindings: serial: samsung: Add ARTPEC-8 UART
+Date:   Fri, 11 Mar 2022 10:45:14 +0100
+Message-ID: <20220311094515.3223023-2-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
+References: <20220311094515.3223023-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Mar 2022, kernel test robot wrote:
-> 
-> Greeting,
-> 
-> FYI, we noticed the following commit (built with gcc-9):
-> 
-> commit: aae2359b1a514180633c4a4e6666c91e44a928c8 ("mm: thp: don't have to lock page anymore when splitting PMD")
+Add a compatible for the UART on the ARTPEC-8 SoC.  This hardware block
+is closely related to the variants used on the Exynos chips.  The
+register layout is identical to Exynos850 et al but the fifo size is
+different (64 bytes in each direction for all instances).
 
-Yes, known bad patch, replaced by good patch a day or two later.
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
 
-> url: https://github.com/0day-ci/linux/commits/Qianggui-Song/arm64-dts-meson-s4-add-gpio_intc-node/20220310-172923
-> 
-> in testcase: trinity
-> version: trinity-static-i386-x86_64-f93256fb_2019-08-28
-> with following parameters:
-> 
-> 	runtime: 300s
-> 	group: group-01
-> 
-> test-description: Trinity is a linux system call fuzz tester.
-> test-url: http://codemonkey.org.uk/projects/trinity/
-> 
-> 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> 
-> 
-> 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> 
-> 
-> [   20.947643][ T4079] mm/pgtable-generic.c:51: bad pmd e7d8e333(8000000433c000c5)
-> [   20.949757][  T427] BUG: Bad rss-counter state mm:84638533 type:MM_ANONPAGES val:512
-> [   20.951030][  T427] BUG: non-zero pgtables_bytes on freeing mm: 4096
-> [   20.960329][ T4080] mm/pgtable-generic.c:51: bad pmd 6dc594d8(8000000433c000c5)
-> [   20.961775][  T427] BUG: Bad rss-counter state mm:bf324b3f type:MM_ANONPAGES val:512
-> [   20.963109][  T427] BUG: non-zero pgtables_bytes on freeing mm: 4096
-> [   20.974600][ T4081] mm/pgtable-generic.c:51: bad pmd d1c9ec63(8000000433c000c5)
-> [   20.977758][  T427] BUG: Bad rss-counter state mm:e038d31c type:MM_ANONPAGES val:512
-> [   20.978918][  T427] BUG: non-zero pgtables_bytes on freeing mm: 4096
-> [   20.982960][ T4082] mm/pgtable-generic.c:51: bad pmd 8d2043e0(8000000433c000c5)
-> [   20.994138][ T4083] BUG: Bad rss-counter state mm:890a50d8 type:MM_ANONPAGES val:512
-> [   20.995441][ T4083] BUG: non-zero pgtables_bytes on freeing mm: 4096
-> [   20.997140][ T4083] mm/pgtable-generic.c:51: bad pmd 78b279e7(8000000433c000c5)
-> [   21.088268][ T3649] BUG: Bad rss-counter state mm:10e6eb4f type:MM_ANONPAGES val:512
-> [   21.089552][ T3649] BUG: non-zero pgtables_bytes on freeing mm: 4096
+Notes:
+    v2:
+    - Expand commit message.
+    - Define required clocks.
+
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 2940afb874b3..c2423144a4d6 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -20,6 +20,7 @@ properties:
+     items:
+       - enum:
+           - apple,s5l-uart
++          - axis,artpec8-uart
+           - samsung,s3c2410-uart
+           - samsung,s3c2412-uart
+           - samsung,s3c2440-uart
+@@ -110,6 +111,7 @@ allOf:
+           contains:
+             enum:
+               - apple,s5l-uart
++              - axis,artpec8-uart
+               - samsung,exynos4210-uart
+     then:
+       properties:
+-- 
+2.34.1
+
