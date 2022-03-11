@@ -2,84 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 06:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 06:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346800AbiCKGo7 (ORCPT
+        id S1346831AbiCKGpV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 01:44:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37042 "EHLO
+        Fri, 11 Mar 2022 01:45:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232738AbiCKGo5 (ORCPT
+        with ESMTP id S232738AbiCKGpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 01:44:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EE319CCCA;
-        Thu, 10 Mar 2022 22:43:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3534FB8299A;
-        Fri, 11 Mar 2022 06:43:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8722C340EC;
-        Fri, 11 Mar 2022 06:43:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646981032;
-        bh=TAmKSWfM8MT8+nWEF/VhEG/ZJrPdgq10gXaV9KWbhGY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=o+LTthpBiwXFgN2AXoXR3dkBllQINaKMB1MVLJ9fNYGsc33egvUleMos9C/Ers5Xy
-         0aEsi7MyMo1LTO9pReh2ngHcWv3tBkSMJs7arcNj5FfwvhZHpBeAcF2ucLoONOjTwm
-         lzB2WbNkenxYx1bvG4vVTVW8w6wx1VAlmaBnFX58=
-Date:   Fri, 11 Mar 2022 07:43:48 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     stephen@networkplumber.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] hv_netvsc: Add check for kvmalloc_array
-Message-ID: <YirvpH4+KTyH2xTe@kroah.com>
-References: <20220311032035.2037962-1-jiasheng@iscas.ac.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220311032035.2037962-1-jiasheng@iscas.ac.cn>
+        Fri, 11 Mar 2022 01:45:18 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7DC19D624
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 22:44:16 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id z16so7137631pfh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 22:44:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=MDO98zfNryitJLRORLTZ+LkzoKAWivGOSBuxXfv/2ck=;
+        b=B4CZ8EgN6uMCbIn+6jLTUOtMnFKQJlPVHxUEB1anNFRkeAQU7D1pR48cU1x1FAOW4+
+         LttwPdInXm84Pf6P7jBFjQSBuYRHVb77bqAMcQMe1tEc0aDJnQuC70dShY99dwNCkhMG
+         pgVq6IV2APHTyS0ZaxXPDPFphbfyT65OPlE3U9wgJAO5ghf9h6FWVCY9cAWB/SlZ+kjK
+         uqGhZuMZdhot7FvO+SwR6BOOiyXs8+GZZkz5Yj6OCDWcf0yu9Ss1A3/cb31T3SeSIVtp
+         goaoW9pE995+CXDXCXiN0qwmeC4CT8IFK+xXiynAArlaQ/LgI/qUTIyHr0EhwpJ8ti2O
+         jH8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MDO98zfNryitJLRORLTZ+LkzoKAWivGOSBuxXfv/2ck=;
+        b=3U6yr/0m1Q1WsgpI7WIGHmF08t9lShsVKZRYwwZxR5AGgukxCOJuWGXnitSsYTvk8P
+         nML+vnzA2y/dS7XODyCkWVqYGPFNH5FIt4P0RNe+BAEqaZdHVfJGNKE1FmwquMTzw1kn
+         sGAmna6Gqe2vLxvj+JLHnpH1I4GUH9VHRxnl/4FHOTqHr/BZ1QGsTlrTPTChnQZU55L2
+         qF7rMlFYrRk56H+BNAWKpibwmtxdupmaV3Gs4eOtz09VruvfDiFz+wL5xzrqevPpyZDN
+         QGdQqqA+4CFroXzzTLuSTTPaknCWP2xwjOcmnYMaqVDv6zM8dlKGPL8bu3ck7nfYaZs7
+         bKNg==
+X-Gm-Message-State: AOAM5310HvGAWRsZtZn6N262ZvOyYSY1VluRpb6GEG3NDwQjchV+simU
+        //j+oQ5raQmncunsV3y0jA==
+X-Google-Smtp-Source: ABdhPJyfTh88vZxDUKCRK1ck4KCNksRSrEqUQXlAmzBSd8cak9OJnx/xpAs+LUAQNBUNRUeIZPmKYA==
+X-Received: by 2002:a63:d642:0:b0:378:a4c2:7b94 with SMTP id d2-20020a63d642000000b00378a4c27b94mr7202499pgj.218.1646981055642;
+        Thu, 10 Mar 2022 22:44:15 -0800 (PST)
+Received: from sh08423pcu1.spreadtrum.com ([117.18.48.102])
+        by smtp.gmail.com with ESMTPSA id j13-20020a63594d000000b003639cf2f9c7sm7328628pgm.71.2022.03.10.22.44.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 10 Mar 2022 22:44:15 -0800 (PST)
+From:   Bruce Chen <brucechen251@gmail.com>
+To:     bruce.chen@unisoc.com, rogerq@kernel.org, myungjoo.ham@samsung.com,
+        cw00.choi@samsung.com, linux-kernel@vger.kernel.org
+Cc:     orsonzhai@gmail.com, gengcixi@gmail.com, baolin.wang7@gmail.com,
+        zhang.lyra@gmail.com
+Subject: [PATCH RESEND V2] extcon: usb-gpio: Remove disable irq operation in system sleep.
+Date:   Fri, 11 Mar 2022 14:42:18 +0800
+Message-Id: <1646980938-29982-1-git-send-email-brucechen251@gmail.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 11:20:35AM +0800, Jiasheng Jiang wrote:
-> As the potential failure of the kvmalloc_array(),
-> it should be better to check and restore the 'data'
-> if fails in order to avoid the dereference of the
-> NULL pointer.
-> 
-> Fixes: 6ae746711263 ("hv_netvsc: Add per-cpu ethtool stats for netvsc")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-> ---
->  drivers/net/hyperv/netvsc_drv.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-> index 3646469433b1..018c4a5f6f44 100644
-> --- a/drivers/net/hyperv/netvsc_drv.c
-> +++ b/drivers/net/hyperv/netvsc_drv.c
-> @@ -1587,6 +1587,12 @@ static void netvsc_get_ethtool_stats(struct net_device *dev,
->  	pcpu_sum = kvmalloc_array(num_possible_cpus(),
->  				  sizeof(struct netvsc_ethtool_pcpu_stats),
->  				  GFP_KERNEL);
-> +	if (!pcpu_sum) {
-> +		for (j = 0; j < i; j++)
-> +			data[j] = 0;
-> +		return;
-> +	}
+From: Bruce Chen <bruce.chen@unisoc.com>
 
-How did you test this to verify it is correct?
+If disable vbus/id irq, it will lead to wakeup system fail
+in unisoc platform. In unisoc platform, Irq enable and irq
+wakeup are the same interrupt line. So remove disable vbus/id
+irq operation is a way to solve the issue.
 
-thanks,
+Signed-off-by: Bruce Chen <bruce.chen@unisoc.com>
+Acked-by: Roger Quadros <rogerq@kernel.org>
+---
+ drivers/extcon/extcon-usb-gpio.c | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-greg k-h
+diff --git a/drivers/extcon/extcon-usb-gpio.c b/drivers/extcon/extcon-usb-gpio.c
+index f2b65d9..40d967a 100644
+--- a/drivers/extcon/extcon-usb-gpio.c
++++ b/drivers/extcon/extcon-usb-gpio.c
+@@ -226,16 +226,6 @@ static int usb_extcon_suspend(struct device *dev)
+ 		}
+ 	}
+ 
+-	/*
+-	 * We don't want to process any IRQs after this point
+-	 * as GPIOs used behind I2C subsystem might not be
+-	 * accessible until resume completes. So disable IRQ.
+-	 */
+-	if (info->id_gpiod)
+-		disable_irq(info->id_irq);
+-	if (info->vbus_gpiod)
+-		disable_irq(info->vbus_irq);
+-
+ 	if (!device_may_wakeup(dev))
+ 		pinctrl_pm_select_sleep_state(dev);
+ 
+@@ -267,11 +257,6 @@ static int usb_extcon_resume(struct device *dev)
+ 		}
+ 	}
+ 
+-	if (info->id_gpiod)
+-		enable_irq(info->id_irq);
+-	if (info->vbus_gpiod)
+-		enable_irq(info->vbus_irq);
+-
+ 	queue_delayed_work(system_power_efficient_wq,
+ 			   &info->wq_detcable, 0);
+ 
+-- 
+1.9.1
+
