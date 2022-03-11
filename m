@@ -2,75 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 495BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E387DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 07:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346528AbiCKH0f (ORCPT
+        id S1347174AbiCKH1O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 02:26:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
+        Fri, 11 Mar 2022 02:27:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240189AbiCKH0e (ORCPT
+        with ESMTP id S240189AbiCKH1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 02:26:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10CB1B6E1A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 23:25:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A987B82AD2
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B5C8C340E9;
-        Fri, 11 Mar 2022 07:25:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646983529;
-        bh=g84WdhT8WlUiVZ4Pe91HKYziG64yo/SO8s//Xpd2fk0=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=RYbR6QstwFDm4TM9v8bCHTbEje2eF314IM+w4i62zCcjy5CbFYtxmMOKpJl1xESrz
-         1BCXHnRkodtI0iUZHM1Id/Byrwtcth5mck8sVVve34jt7pFw08XUoAwxdlRGG/xbZs
-         bGgog83ItM1AGidvcly4RQhLWGsbx5S5WBDhGI8gTjLDYk4BnFir5Tq35/MNVNkeCB
-         MZKdaibOGRjUtHJ23sJKNEOyFufuv+omYan+GeYH1vI8J+HpgUmVsHy3lwtcYSGyly
-         XlKLxpYMmGv0fIXnXZ6OMuI4YvbBOwMIkd3EwnqMZLMsMZ1cY1GJ0qdxBsBliotM5X
-         x1JAFcmvQVRsg==
-Message-ID: <86d59c1d-b453-5ee2-4737-b4dd03829965@kernel.org>
-Date:   Fri, 11 Mar 2022 15:25:25 +0800
+        Fri, 11 Mar 2022 02:27:11 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108F81B6E1D;
+        Thu, 10 Mar 2022 23:26:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1646983552;
+        bh=tb9da2vliY1QQTm6kyIGSzjr3e4h0kXK9SeRdQvrfr8=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=i4fEm40CgZn7fcVYKtJObjuy0qSJvvuy/1qk4V3wue+LK7pgYyHmS5jFqBD3FlLzf
+         EWv4O/J6+VOBsnJhWJzAg5CzeWKKmj36pda7c+o+BeyEjsjWuSLubcxrdc/frPE1m5
+         jwp8pTUaTmoS/Lz8+inXBBLC+1OIT17mO+0lZxSQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.134.231]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MRmfi-1nYVy62kiQ-00TFb0; Fri, 11
+ Mar 2022 08:25:52 +0100
+Message-ID: <648cd020-a275-ea0b-e0bf-ff064dde16b0@gmx.de>
+Date:   Fri, 11 Mar 2022 08:24:24 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [f2fs-dev] [PATCH 1/2 v2] f2fs: don't get FREEZE lock in
- f2fs_evict_inode in frozen fs
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] video: fbdev: fix warning comparing pointer to 0
 Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-References: <20220309214834.3408741-1-jaegeuk@kernel.org>
- <Yircgd9d773xnk3+@google.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <Yircgd9d773xnk3+@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <1646967409-27868-1-git-send-email-baihaowen@meizu.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <1646967409-27868-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:9oHRzazegTYr+s16w14CND5n3RyXpeXOh+Y9VrQJYT7QBCkwN7D
+ NXyPXPpNvAipyCienSK4HucCXNaM6vB4+ngkxx/fHFap4JmUgs7JA5nm5pWbuOg2anoccpi
+ YUJV570vjxqDLFehKcewTagQsjQLTB+cRq0Q7s3G/WD2cLEWrGNzYHD0bzauyPs8+Ydg2C0
+ /cy+rcNy+7FaUjqcR1TaQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:VNOq6dyrtT8=:EmOPAaPuupqWtIOfvgapHL
+ FqBCLVShH5WDoTQn04cj+c+TeFajMbtN90vC0d4wce4jfNSqLjywCk9B5l7U9/vkb8arMudRh
+ 0H/AnBAGYdCugjfK6UqA+YMXNlgP6TLJYHDMI40yi0eruc+gIsEU7RPI+KfjW0EQU4Wg8uZRJ
+ B6ap2liCYZUnOFRhrrlRMkzU5uO+Wvu/t23i62aKWZcaG1eaUQVixNagNacpug8RPVJkWCFvo
+ 3GXVtlOXEEK1XzEVuWCMSJW5RZdRUPpIzPHm6g5aIcrNL618pWH+kZ7ZwUPfrS7skeLn6odYe
+ gy/prYGr/N44VB0srG9pp46fXKV4EAd4TxisMEeIFrpwoJ3KjWGvOakn6NgnY8xJwhhCLoPrA
+ mSy9ItlZVg7ec/X0oZJYqKHrZYakfrK5orYpIKVVLUp17TG9UvVtX3wiuAm7HRQmCbhvmqPD3
+ C4xgG1PQjTEIaZd4j9eXLHeuy9RGcaLS/rWkIB1X8zvbFLcuod50w5auiTS3jDY0XEaCkS/uJ
+ wu0t9ViOjR3ekFK4/J7SaHEAgS0bv1EPN9qMtUqlAsUIjXti+++jSSuM2n3sK9RWaEtjhL0a+
+ 8duHdsY49mUqKtcs5Jffg55+3JPXkQQ4EdN9SGTimFZ8DYJJq+TORiWmPDvJbwDlCLHy85myD
+ zUwc22WPgk6DMNDVyldX7lT4Q8Xn0rDaRhufXf3MkG2AwS0nE8UTZLVFkzO2N3oJIC+kxN14K
+ aXFeMHQAOr/3kEExH+LUdimaKJJGbu2EZycFfVSvx0q2DKE5w/tW2mGQE7HJJkYxrcHx+liIF
+ qlShWQ5nDYK7d+ceoogi3QxekzzS1Ukjo6T8AN9dqcAYmlfaTFlW/6Te4fHXVV97dCn70qX5N
+ xwQe7ew61b02tp4+WWyOsF7+k32O/dqmRCgYwcqB07kGIq5DtCKqpMZqpfVREpkj/iuM9N2oA
+ G1ba1aXAMhlXIYTNDY5INSEFHTiwNEtl4g7JvjB/DkP3tr1S8PYZw+JLzAspJR1VK7jD8pDDP
+ qahOC37lGt/V/VbCTeBdrQZpL/W68qx44U+PshgtFFZISUlFx+0sDLEBOtMCxK6Ta4mIwXexT
+ TR0Hejbcadi0pY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/11 13:22, Jaegeuk Kim wrote:
-> Let's purge inode cache in order to avoid the below deadlock.
-> 
-> [freeze test]                         shrinkder
-> freeze_super
->   - pwercpu_down_write(SB_FREEZE_FS)
->                                         - super_cache_scan
->                                           - down_read(&sb->s_umount)
->                                             - prune_icache_sb
->                                              - dispose_list
->                                               - evict
->                                                - f2fs_evict_inode
-> thaw_super
->   - down_write(&sb->s_umount);
->                                                - __percpu_down_read(SB_FREEZE_FS)
-> 
-> Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+On 3/11/22 03:56, Haowen Bai wrote:
+> Fix the following coccicheck warning:
+> drivers/video/fbdev/offb.c:415:13-14: WARNING comparing pointer to 0
+>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+applied.
 
-Thanks,
+Thanks!
+Helge
+
+> ---
+>  drivers/video/fbdev/offb.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/video/fbdev/offb.c b/drivers/video/fbdev/offb.c
+> index 4501e84..afdb6aa 100644
+> --- a/drivers/video/fbdev/offb.c
+> +++ b/drivers/video/fbdev/offb.c
+> @@ -412,7 +412,7 @@ static void __init offb_init_fb(const char *name,
+>
+>  	info =3D framebuffer_alloc(sizeof(u32) * 16, NULL);
+>
+> -	if (info =3D=3D 0) {
+> +	if (!info) {
+>  		release_mem_region(res_start, res_size);
+>  		return;
+>  	}
+
