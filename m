@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD293C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA00DC3525A
 	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347585AbiCKF6y (ORCPT
+        id S1347636AbiCKF7N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:58:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
+        Fri, 11 Mar 2022 00:59:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346692AbiCKFx4 (ORCPT
+        with ESMTP id S1346671AbiCKFyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:53:56 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3BA31220
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:51 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id u75-20020a63794e000000b003810e49ae0eso377234pgc.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:51 -0800 (PST)
+        Fri, 11 Mar 2022 00:54:01 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BE61263C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:57 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id x6-20020a1709029a4600b0014efe26b04fso3977626plv.21
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:52:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=md9Z2HGwLpUJPLh7hrz8fCfKl27Eqrxt7Q5qmGcaeqM=;
-        b=T7ysRkVQy8+4RfPFqNX9XQ2dnPsihGlYKnx4JPa1vkHeIo+fG6Z6wGXmkEIx8lJ/Yl
-         /H0nSxJPWBTClEbPFergwARs+GhSwwstsyKg9ngoj54fGpJANyUHPO8vbSgqFYOoMS5F
-         xAZKx1YwmtzijePIOVqThUlON3lqTOQmN2r07I2pxM5Fe8appemcOg2CPPu7vv+U1LxH
-         sBkXCQJWB3Oo1NY29VsmwmoSxlrkKCiiMc5GUNjbyehi+Q/SuOukOryQTijThKITozZX
-         9c7XRXGiWMPwmIKtmch6eTINlB9E6dHhsJXlOAQL9BVtgOVkC380UxC69iSrQ8sByjbG
-         JOHw==
+        bh=XUXPD0nWjg99B9sTK5klaYVXSQj8HOXxZq7Zxx2uYqs=;
+        b=q44++PDViHATwr4obLahML3WIIoMsZ0p5iHjjr4vMYBMmKZpOhsvKp7eKtflaFuNb0
+         oZZxf9x8Jn65vpk6Cc4xuVZl6wGmPIiBGNfEOSrPNmindXXdLEPBB02u4qouQYKBL10E
+         Ghreja17ykck+V5TvLCFoHnFj7nMtxv62jLbYDg4INNzM+Qom9sqxtN3hoaVAeej0Ymo
+         nKsHzP4vAgbjUgP48ztxbGUtY4AS01Rrc0mSYFDxGFUFEKYwwA2uKeyLJdAvebYvaijM
+         XIGQfU65o/LmkX0KxOedss1CgpPCTryt5G/R6UWmLJ+f5ftoaNQ5P8JVeRwo7qlAuw9W
+         rodQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=md9Z2HGwLpUJPLh7hrz8fCfKl27Eqrxt7Q5qmGcaeqM=;
-        b=JEgDXUU4dfdKSoeczhwyRRzTWcGUuwoUBa36bv58WJrBPeoRFopTP1PQ+DC0tbugAD
-         NwdiMxvS2YQlrXV4HvyrJ602RTU2cex+g3ScpZ4V79QMh1xM2uiaRC2oOq78DiBEex3i
-         KSPHap1DzY6FJlfMDxa+2qv0SFMAGDJq6V4Jc7AP1Oa6Wz37kYBVi5L/7cVUpo8edMX1
-         VdCTiR3rPzogKMK+mlW9eHS3RhTA1iHui+n5s2HETUgjmF8RHFrgliRTl/1/woPCgYeh
-         wAWXVSx+8uxjZaocsJWYEC8KOR/lnbVIsf5XBHf43r6/hjALnw9eXjNr/gMsTwMogeL1
-         kIJw==
-X-Gm-Message-State: AOAM530ltiEXlftGCCi1A5Kv1m4B6jckUdoYhoHxmeKQrM8P/3NdjsvF
-        +e64uyEVG4yvWeugfmFkH0d2Ye/DSwYBTo3YfALxv3kn5DmqtG0cNQHv7E+ZaN1BGrAnJL+9My4
-        IBQfjyJwoZiliyy+hSJigCpNltMGjE+kmEIum79xLpmEyNT4sfPB3gEZetGxoECJxlRb8mg==
-X-Google-Smtp-Source: ABdhPJyTMACpTql+gyx/pp8gmjenG4VnKafSVZnGtaRAiOzo9dn+wxq9zpGZC1ygQO3wxaBghTBxJLFVQ0c=
+        bh=XUXPD0nWjg99B9sTK5klaYVXSQj8HOXxZq7Zxx2uYqs=;
+        b=R5h098SvM5URMaGyDjpx0caxJoS/wadx1QyjKZe7a6cfjXjSjibhmeYNDzbxLr6BXO
+         8Be3oWCl1UmFN44XwrflMzktecuQf4Q+Ywinr9iE+rcyz4BArgDP9Eb/HIMyTdCbo+BD
+         fTeQZ7r6wwWAK61+6hgYJYkTvuYiLqyPvPTPKKdl+tOGryO944GdqQD3p35OUp9SVUKI
+         8mags2TPmUDiZGzO8/6jX6xW1itRgWZ6ZNZNa2CoQmrBRxpwm5qmZL1gYj6VNTgAGgv9
+         Aa4rDTs2cNoD3Qb86UYbyq2QzBCBePEWnIKK1VtDCJWj4jTWzSJx42ELTSi2LkwxUBGe
+         z4jw==
+X-Gm-Message-State: AOAM530DvY8XDl7GLu3p7l1roRmF0X8tsJsSQOIfWhTC0n6GFm4QSLH0
+        SD6LDuoqrrj4r/2jfP0xr4vTwo/h8CvDhz2XRiaXhPzIXWbkT6t6z96uDIw9R4Br3AzUziqjtTk
+        d2IvRJbBT9llgBQ0YVohcKjSR5u3SFmb3TPBu4QuRotIW3/PWXcRvM0LjDCzRRQ2cRturpg==
+X-Google-Smtp-Source: ABdhPJyh6KD+oga8p2s5R/j/GBTjxhNXb96cwa2RkrdjggzYtJr4uXfRQ8JH5Z5PYyvECqpCfdyM/17lSCM=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:aa7:8b14:0:b0:4f7:83b1:2e0b with SMTP id
- f20-20020aa78b14000000b004f783b12e0bmr4702259pfd.37.1646977970456; Thu, 10
- Mar 2022 21:52:50 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:788f:b0:1bd:59c5:748e with SMTP id
+ x15-20020a17090a788f00b001bd59c5748emr20071395pjk.158.1646977977332; Thu, 10
+ Mar 2022 21:52:57 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:13 +0000
+Date:   Fri, 11 Mar 2022 05:50:17 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-63-seanjc@google.com>
+Message-Id: <20220311055056.57265-67-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 062/105] KVM: selftests: Convert debug_regs away from VCPU_ID
+Subject: [RFC PATCH 066/105] KVM: selftests: Convert cpuid_test away from VCPU_ID
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,151 +66,114 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../testing/selftests/kvm/x86_64/debug_regs.c | 53 +++++++++----------
- 1 file changed, 25 insertions(+), 28 deletions(-)
+ .../testing/selftests/kvm/x86_64/cpuid_test.c | 29 +++++++++----------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/x86_64/debug_regs.c b/tools/testing/selftests/kvm/x86_64/debug_regs.c
-index 5f078db1bcba..b999c9753fc3 100644
---- a/tools/testing/selftests/kvm/x86_64/debug_regs.c
-+++ b/tools/testing/selftests/kvm/x86_64/debug_regs.c
-@@ -10,8 +10,6 @@
+diff --git a/tools/testing/selftests/kvm/x86_64/cpuid_test.c b/tools/testing/selftests/kvm/x86_64/cpuid_test.c
+index 16d2465c5634..76cdd0d10757 100644
+--- a/tools/testing/selftests/kvm/x86_64/cpuid_test.c
++++ b/tools/testing/selftests/kvm/x86_64/cpuid_test.c
+@@ -12,8 +12,6 @@
+ #include "kvm_util.h"
  #include "processor.h"
- #include "apic.h"
  
 -#define VCPU_ID 0
 -
- #define DR6_BD		(1 << 13)
- #define DR7_GD		(1 << 13)
- 
-@@ -66,13 +64,11 @@ static void guest_code(void)
- 	GUEST_DONE();
+ /* CPUIDs known to differ */
+ struct {
+ 	u32 function;
+@@ -118,13 +116,13 @@ static void compare_cpuids(struct kvm_cpuid2 *cpuid1, struct kvm_cpuid2 *cpuid2)
+ 		check_cpuid(cpuid1, &cpuid2->entries[i]);
  }
  
--#define  CLEAR_DEBUG()  memset(&debug, 0, sizeof(debug))
--#define  APPLY_DEBUG()  vcpu_set_guest_debug(vm, VCPU_ID, &debug)
- #define  CAST_TO_RIP(v)  ((unsigned long long)&(v))
- #define  SET_RIP(v)  do {				\
--		vcpu_regs_get(vm, VCPU_ID, &regs);	\
-+		vcpu_regs_get(vm, vcpu->id, &regs);	\
- 		regs.rip = (v);				\
--		vcpu_regs_set(vm, VCPU_ID, &regs);	\
-+		vcpu_regs_set(vm, vcpu->id, &regs);	\
- 	} while (0)
- #define  MOVE_RIP(v)  SET_RIP(regs.rip + (v));
- 
-@@ -80,6 +76,7 @@ int main(void)
+-static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid, int stage)
++static void run_vcpu(struct kvm_vcpu *vcpu, int stage)
  {
- 	struct kvm_guest_debug debug;
- 	unsigned long long target_dr6, target_rip;
+ 	struct ucall uc;
+ 
+-	_vcpu_run(vm, vcpuid);
++	vcpu_run(vcpu->vm, vcpu->id);
+ 
+-	switch (get_ucall(vm, vcpuid, &uc)) {
++	switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
+ 	case UCALL_SYNC:
+ 		TEST_ASSERT(!strcmp((const char *)uc.args[0], "hello") &&
+ 			    uc.args[1] == stage + 1,
+@@ -138,7 +136,7 @@ static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid, int stage)
+ 			    __FILE__, uc.args[1], uc.args[2], uc.args[3]);
+ 	default:
+ 		TEST_ASSERT(false, "Unexpected exit: %s",
+-			    exit_reason_str(vcpu_state(vm, vcpuid)->exit_reason));
++			    exit_reason_str(vcpu->run->exit_reason));
+ 	}
+ }
+ 
+@@ -154,21 +152,21 @@ struct kvm_cpuid2 *vcpu_alloc_cpuid(struct kvm_vm *vm, vm_vaddr_t *p_gva, struct
+ 	return guest_cpuids;
+ }
+ 
+-static void set_cpuid_after_run(struct kvm_vm *vm, struct kvm_cpuid2 *cpuid)
++static void set_cpuid_after_run(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid)
+ {
+ 	struct kvm_cpuid_entry2 *ent;
+ 	int rc;
+ 	u32 eax, ebx, x;
+ 
+ 	/* Setting unmodified CPUID is allowed */
+-	rc = __vcpu_set_cpuid(vm, VCPU_ID, cpuid);
++	rc = __vcpu_set_cpuid(vcpu->vm, vcpu->id, cpuid);
+ 	TEST_ASSERT(!rc, "Setting unmodified CPUID after KVM_RUN failed: %d", rc);
+ 
+ 	/* Changing CPU features is forbidden */
+ 	ent = get_cpuid(cpuid, 0x7, 0);
+ 	ebx = ent->ebx;
+ 	ent->ebx--;
+-	rc = __vcpu_set_cpuid(vm, VCPU_ID, cpuid);
++	rc = __vcpu_set_cpuid(vcpu->vm, vcpu->id, cpuid);
+ 	TEST_ASSERT(rc, "Changing CPU features should fail");
+ 	ent->ebx = ebx;
+ 
+@@ -177,7 +175,7 @@ static void set_cpuid_after_run(struct kvm_vm *vm, struct kvm_cpuid2 *cpuid)
+ 	eax = ent->eax;
+ 	x = eax & 0xff;
+ 	ent->eax = (eax & ~0xffu) | (x - 1);
+-	rc = __vcpu_set_cpuid(vm, VCPU_ID, cpuid);
++	rc = __vcpu_set_cpuid(vcpu->vm, vcpu->id, cpuid);
+ 	TEST_ASSERT(rc, "Changing MAXPHYADDR should fail");
+ 	ent->eax = eax;
+ }
+@@ -185,25 +183,26 @@ static void set_cpuid_after_run(struct kvm_vm *vm, struct kvm_cpuid2 *cpuid)
+ int main(void)
+ {
+ 	struct kvm_cpuid2 *supp_cpuid, *cpuid2;
 +	struct kvm_vcpu *vcpu;
- 	struct kvm_regs regs;
- 	struct kvm_run *run;
+ 	vm_vaddr_t cpuid_gva;
  	struct kvm_vm *vm;
-@@ -101,14 +98,14 @@ int main(void)
- 		return 0;
- 	}
+ 	int stage;
  
--	vm = vm_create_default(VCPU_ID, 0, guest_code);
--	run = vcpu_state(vm, VCPU_ID);
-+	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-+	run = vcpu->run;
+-	vm = vm_create_default(VCPU_ID, 0, guest_main);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_main);
  
- 	/* Test software BPs - int3 */
--	CLEAR_DEBUG();
-+	memset(&debug, 0, sizeof(debug));
- 	debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_SW_BP;
--	APPLY_DEBUG();
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_set_guest_debug(vm, vcpu->id, &debug);
-+	vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 		    run->debug.arch.exception == BP_VECTOR &&
- 		    run->debug.arch.pc == CAST_TO_RIP(sw_bp),
-@@ -119,12 +116,12 @@ int main(void)
+ 	supp_cpuid = kvm_get_supported_cpuid();
+-	cpuid2 = vcpu_get_cpuid(vm, VCPU_ID);
++	cpuid2 = vcpu_get_cpuid(vm, vcpu->id);
  
- 	/* Test instruction HW BP over DR[0-3] */
- 	for (i = 0; i < 4; i++) {
--		CLEAR_DEBUG();
-+		memset(&debug, 0, sizeof(debug));
- 		debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_HW_BP;
- 		debug.arch.debugreg[i] = CAST_TO_RIP(hw_bp);
- 		debug.arch.debugreg[7] = 0x400 | (1UL << (2*i+1));
--		APPLY_DEBUG();
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_set_guest_debug(vm, vcpu->id, &debug);
-+		vcpu_run(vm, vcpu->id);
- 		target_dr6 = 0xffff0ff0 | (1UL << i);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 			    run->debug.arch.exception == DB_VECTOR &&
-@@ -141,13 +138,13 @@ int main(void)
+ 	compare_cpuids(supp_cpuid, cpuid2);
  
- 	/* Test data access HW BP over DR[0-3] */
- 	for (i = 0; i < 4; i++) {
--		CLEAR_DEBUG();
-+		memset(&debug, 0, sizeof(debug));
- 		debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_HW_BP;
- 		debug.arch.debugreg[i] = CAST_TO_RIP(guest_value);
- 		debug.arch.debugreg[7] = 0x00000400 | (1UL << (2*i+1)) |
- 		    (0x000d0000UL << (4*i));
--		APPLY_DEBUG();
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_set_guest_debug(vm, vcpu->id, &debug);
-+		vcpu_run(vm, vcpu->id);
- 		target_dr6 = 0xffff0ff0 | (1UL << i);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 			    run->debug.arch.exception == DB_VECTOR &&
-@@ -167,15 +164,15 @@ int main(void)
- 	/* Test single step */
- 	target_rip = CAST_TO_RIP(ss_start);
- 	target_dr6 = 0xffff4ff0ULL;
--	vcpu_regs_get(vm, VCPU_ID, &regs);
-+	vcpu_regs_get(vm, vcpu->id, &regs);
- 	for (i = 0; i < (sizeof(ss_size) / sizeof(ss_size[0])); i++) {
- 		target_rip += ss_size[i];
--		CLEAR_DEBUG();
-+		memset(&debug, 0, sizeof(debug));
- 		debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_SINGLESTEP |
- 				KVM_GUESTDBG_BLOCKIRQ;
- 		debug.arch.debugreg[7] = 0x00000400;
--		APPLY_DEBUG();
--		vcpu_run(vm, VCPU_ID);
-+		vcpu_set_guest_debug(vm, vcpu->id, &debug);
-+		vcpu_run(vm, vcpu->id);
- 		TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 			    run->debug.arch.exception == DB_VECTOR &&
- 			    run->debug.arch.pc == target_rip &&
-@@ -188,11 +185,11 @@ int main(void)
- 	}
+ 	vcpu_alloc_cpuid(vm, &cpuid_gva, cpuid2);
  
- 	/* Finally test global disable */
--	CLEAR_DEBUG();
-+	memset(&debug, 0, sizeof(debug));
- 	debug.control = KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_USE_HW_BP;
- 	debug.arch.debugreg[7] = 0x400 | DR7_GD;
--	APPLY_DEBUG();
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_set_guest_debug(vm, vcpu->id, &debug);
-+	vcpu_run(vm, vcpu->id);
- 	target_dr6 = 0xffff0ff0 | DR6_BD;
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_DEBUG &&
- 		    run->debug.arch.exception == DB_VECTOR &&
-@@ -205,12 +202,12 @@ int main(void)
- 			    target_dr6);
+-	vcpu_args_set(vm, VCPU_ID, 1, cpuid_gva);
++	vcpu_args_set(vm, vcpu->id, 1, cpuid_gva);
  
- 	/* Disable all debug controls, run to the end */
--	CLEAR_DEBUG();
--	APPLY_DEBUG();
-+	memset(&debug, 0, sizeof(debug));
-+	vcpu_set_guest_debug(vm, vcpu->id, &debug);
+ 	for (stage = 0; stage < 3; stage++)
+-		run_vcpu(vm, VCPU_ID, stage);
++		run_vcpu(vcpu, stage);
  
--	vcpu_run(vm, VCPU_ID);
-+	vcpu_run(vm, vcpu->id);
- 	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO, "KVM_EXIT_IO");
--	cmd = get_ucall(vm, VCPU_ID, &uc);
-+	cmd = get_ucall(vm, vcpu->id, &uc);
- 	TEST_ASSERT(cmd == UCALL_DONE, "UCALL_DONE");
+-	set_cpuid_after_run(vm, cpuid2);
++	set_cpuid_after_run(vcpu, cpuid2);
  
  	kvm_vm_free(vm);
+ }
 -- 
 2.35.1.723.g4982287a31-goog
 
