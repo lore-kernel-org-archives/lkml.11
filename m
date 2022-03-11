@@ -2,126 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF255C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A72E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 15:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348744AbiCKPrK (ORCPT
+        id S1349103AbiCKPrS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 10:47:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
+        Fri, 11 Mar 2022 10:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348795AbiCKPrD (ORCPT
+        with ESMTP id S1348828AbiCKPrN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 10:47:03 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1564F1C6656
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:45:59 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id u7so12495158ljk.13
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:45:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=10XF3Sb+t0GCaPOcQ9XoyXqUIC9CjyYdWscRYcObAxw=;
-        b=MqSyuOe34h+f5EWwR/oM3slrJ38qINF04yiqUGK9i44Eg7rBVyesJHW1EnFC5kq8Fz
-         lk+2YfR6+b43HpQckMotOid77fcXOQCYnCzxj1VBwif0v7RCPtuA/XLZTOUL3TGLQ5aP
-         rQQEfHcA3U6Ckvf/b/iG+3oXnpYqaTOumz8wAkXkJ28WbzSqpcBZIFq8ncUer5twWgks
-         FOJuSVG0lF2of7EiLc6kYvyyb0pg3ayR7my6BVOGNSBBms3Z+ikWZdLDJdqgvWdJqhJe
-         L4QlwgEkOq4Qz46/Q/RRjPefsiQTSwFPLy5q6vZRgKOnqEz3+Npwf2GWlZojgDZgRcgm
-         baow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=10XF3Sb+t0GCaPOcQ9XoyXqUIC9CjyYdWscRYcObAxw=;
-        b=5GS6T+ai3QqN/PO7Phf4UhK9V5e2lBKMRZDRm9+15E383s8mTX7x0dYDLQea1K3tzY
-         /u5MdbV4cYyWdBEvtEKy82pMvyvpBogRe0x1f5x197VH4BPRU3LPY+cA1hHsR4CUB5uH
-         D0Bv/PhdeXXaOgCLnbGNL52Z9MPO5YTc15yR0lFu1wFRwo2fkypEZ60mx7C9IFVdKVj7
-         dpRkanjN6Qm/WcafGPwZCb5V7M8I38vJZnK5R1LGK/WIQ3dG/qCrXQ1zGM3iPgoUs35C
-         fHRsMTPVP2bP2hl+tIvj3kHbYMOvbKMfk3UrBuwGshyj2oA0Kvm4YLT/EcQEssY0ajgs
-         yZaw==
-X-Gm-Message-State: AOAM533OThM9m/TcyWE4fRZSy9Gkyjjvw6p+vlJbZVgTn0u1vumTif1O
-        e8KVvR20zyENRmwEry7OK3MQmHY+Bz8GG5wA76QfbA==
-X-Google-Smtp-Source: ABdhPJyKLXL/cjixS70H+wB5WRjtfcEBo2CKEa89VicVYZWBqrQ7uCDzqe5Ilvrer3zvBAGc4wkBHELro4zTjGulY/w=
-X-Received: by 2002:a2e:8603:0:b0:246:24c:b79c with SMTP id
- a3-20020a2e8603000000b00246024cb79cmr6543962lji.367.1647013557376; Fri, 11
- Mar 2022 07:45:57 -0800 (PST)
+        Fri, 11 Mar 2022 10:47:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201AE1B2AD9
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 07:46:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9710B61601
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73DF5C340E9;
+        Fri, 11 Mar 2022 15:46:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647013566;
+        bh=R9xtfqzOJ5cNELEx1IH5AV1hPzjKxVGWbPFCyUqJHQE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AJ88SaKaF/Lh7WipH+YmQih5Wp/Xv3BOw3mJ9mBzVWWxoSvAZ4oy3EfDBGKJ/skPz
+         pZM8jnL3s1X7xtAAuFJkFZiITbnAnZNvh34ZJCEKGaCks4QgxRFk2IChNNBNC1X2zv
+         5EBvUOH7ZsnwGHQ4nyZrXowQV4epZ5b4pJrrsq2pcRlvKQFe3f7V/4gpNzjWPd/rDo
+         JjkZaFOyYAJAxwPQ0/JeK5ALUpu/dtE4QlZboXpcmfGglyVH1wUpZxxUqHa8SxdqC3
+         S9/def0CHQ3QBdi6TTCXBd9kmZUH4sLg33SlS0sgbXDCOhp35ReHwGowAbGIP4yREY
+         yy7mEXbxYHyag==
+Date:   Fri, 11 Mar 2022 16:46:03 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: Scenario TREE07 with CONFIG_PREEMPT_DYNAMIC=n?
+Message-ID: <20220311154603.GC227945@lothringen>
+References: <20220310215630.GA3490034@paulmck-ThinkPad-P17-Gen-1>
+ <20220310224103.GA94994@lothringen>
+ <20220310225219.GE4285@paulmck-ThinkPad-P17-Gen-1>
+ <20220311130719.GC96127@lothringen>
+ <20220311152148.GF4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-References: <20220304135134.47827-1-yann.gautier@foss.st.com>
- <20220304135134.47827-2-yann.gautier@foss.st.com> <CAPDyKFq_TsBLjW2WxC-Fvu6qDs9MJ1=QPo9gOLRykJ5p2pJbGw@mail.gmail.com>
- <b465353f-9291-f159-ba0b-4cd9577fc676@foss.st.com>
-In-Reply-To: <b465353f-9291-f159-ba0b-4cd9577fc676@foss.st.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 11 Mar 2022 16:45:21 +0100
-Message-ID: <CAPDyKFqu_Y2ixbw380t5qA_rXTPLMWasqpBmaMqP0nHUOqzQhw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] dt-bindings: mmc: mmci: add a property to disable DMA LLI
-To:     Yann Gautier <yann.gautier@foss.st.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>, kernel@dh-electronics.com,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Grzegorz Szymaszek <gszymaszek@short.pl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311152148.GF4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Mar 2022 at 17:00, Yann Gautier <yann.gautier@foss.st.com> wrote:
->
-> On 3/8/22 11:57, Ulf Hansson wrote:
-> > Hi Yann,
-> >
-> > On Fri, 4 Mar 2022 at 14:52, Yann Gautier <yann.gautier@foss.st.com> wrote:
-> >>
-> >> On STMicroelectronics variant of PL18x, the DMA Linked Lists are supported
-> >> starting from revision v2 of the peripheral. But it has limitations,
-> >> as all the buffers should be aligned on block size (except the last one).
-> >> But this cannot be guaranteed with SDIO. We should then have a property
-> >> to disable the support of LLI.
-> >
-> > Indeed, the buffer handling with SDIO is somewhat special, which also
-> > has been discussed several times on LKML before. In principle, we need
-> > the SDIO func drivers to respect buffer limitations that should be
-> > specified by the mmc host drivers. Quite similar to what we already
-> > have for block devices, like ->max_seg_size, ->max_seg, etc, that is
-> > set per mmc host.
-> >
-> > I realize that implementing something like the above requires bigger
-> > changes, which is why mmc host drivers instead validates the sglists
-> > and the elements. In some cases that means returning an error code and
-> > in others it could mean falling back to a non-DMA based I/O mode.
-> >
-> > For the stm32_sdmmc variant, it looks like the sglist validation is
-> > being managed in sdmmc_idma_validate_data() already. Can it be
-> > extended to cover this case too, rather than using a DT property?
-> >
-> > Kind regards
-> > Uffe
->
-> Hi Ulf,
->
-> OK, I'll check what can be done for this. Patches 1 and 2 can be
-> dropped, they will be reworked.
+On Fri, Mar 11, 2022 at 07:21:48AM -0800, Paul E. McKenney wrote:
+> On Fri, Mar 11, 2022 at 02:07:19PM +0100, Frederic Weisbecker wrote:
+> > On Thu, Mar 10, 2022 at 02:52:19PM -0800, Paul E. McKenney wrote:
+> > > On Thu, Mar 10, 2022 at 11:41:03PM +0100, Frederic Weisbecker wrote:
+> > > > On Thu, Mar 10, 2022 at 01:56:30PM -0800, Paul E. McKenney wrote:
+> > > > > Hello, Frederic,
+> > > > > 
+> > > > > I recently added CONFIG_PREEMPT_DYNAMIC=n to the TREE07 file, and since
+> > > > > then am getting roughly one RCU CPU stall warning (or silent hang)
+> > > > > per few tens of hours of rcutorture testing on dual-socket systems.
+> > > > > The stall warnings feature starvation of RCU grace-period kthread.
+> > > > > 
+> > > > > Any advice on debugging this?
+> > > > 
+> > > > Oh, I'm testing that!
+> > > 
+> > > Even better, thank you!  ;-)
+> > 
+> > Here is what I'm testing below. If it happens to work though, it's still not
+> > the most optimized way of dealing with the UP on SMP situation as we still start
+> > an exp grace period when we could early return. But since we have a cookie
+> > to pass to poll_state_synchronize_rcu_expedited()...
+> > 
+> > Oh but if we were to early check a positive rcu_blocking_is_gp() from
+> > start_poll_synchronize_rcu_expedited(),
+> > we could simply return the current value of rcu_state.expedited_sequence without
+> > doing an rcu_exp_gp_seq_snap() and then pass that to
+> > poll_state_synchronize_rcu_expedited() which should then immediately return.
+> > 
+> > Now even if we do that, we still need the below in case the CPUs went offline
+> > in the middle of start_poll_synchronize_rcu_expedited() (again, assuming this
+> > fixes the issue. I'm running the test).
+> 
+> Color me slow and stupid!!!
+> 
+> So the reason that this works for CONFIG_PREEMPT_DYNAMIC=y is that
+> the rcu_blocking_is_gp() was never updated to account for this.
+> 
+> The first "if" in rcu_blocking_is_gp() needs to become something like
+> this:
+> 
+> 	if (!preemption_boot_enabled())
+> 
+> Where:
+> 
+> 	bool preemption_boot_enabled(void)
+> 	{
+> 	#ifdef CONFIG_PREEMPT_DYNAMIC
+> 		return preempt_dynamic_mode == preempt_dynamic_full;
+> 	#else
+> 		return IS_ENABLED(CONFIG_PREEMPTION);
+> 	#endif
+> 	}
+> 
+> Or am I missing something here?
 
-Okay.
+Oh right there is that too!
 
-> But patch 3 of this series could be taken, as not linked to LLI
-> management. Should I push it again alone, or could you review it directly?
+I think we need to apply this patch:
+https://lore.kernel.org/lkml/20211110202448.4054153-3-valentin.schneider@arm.com/
+and then your above change. I can cook a series with the below.
 
-I have some comments/questions on it, but perhaps it makes it easier
-for people to follow the discussion if it is done separately. So
-please push it alone, then I will review it.
+> 
+> > ---
+> > >From 3c9f5df000b9659edbcf38cb87136fea1f8ac682 Mon Sep 17 00:00:00 2001
+> > From: Frederic Weisbecker <frederic@kernel.org>
+> > Date: Fri, 11 Mar 2022 13:30:02 +0100
+> > Subject: [PATCH] rcu: Fix rcu exp polling
+> > 
+> > Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+> > ---
+> >  kernel/rcu/tree_exp.h | 52 ++++++++++++++++++++++++-------------------
+> >  1 file changed, 29 insertions(+), 23 deletions(-)
+> > 
+> > diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+> > index d5f30085b0cf..69c4dcc9159a 100644
+> > --- a/kernel/rcu/tree_exp.h
+> > +++ b/kernel/rcu/tree_exp.h
+> > @@ -794,27 +794,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp)
+> >  
+> >  #endif /* #else #ifdef CONFIG_PREEMPT_RCU */
+> >  
+> > -/**
+> > - * synchronize_rcu_expedited - Brute-force RCU grace period
+> > - *
+> > - * Wait for an RCU grace period, but expedite it.  The basic idea is to
+> > - * IPI all non-idle non-nohz online CPUs.  The IPI handler checks whether
+> > - * the CPU is in an RCU critical section, and if so, it sets a flag that
+> > - * causes the outermost rcu_read_unlock() to report the quiescent state
+> > - * for RCU-preempt or asks the scheduler for help for RCU-sched.  On the
+> > - * other hand, if the CPU is not in an RCU read-side critical section,
+> > - * the IPI handler reports the quiescent state immediately.
+> > - *
+> > - * Although this is a great improvement over previous expedited
+> > - * implementations, it is still unfriendly to real-time workloads, so is
+> > - * thus not recommended for any sort of common-case code.  In fact, if
+> > - * you are using synchronize_rcu_expedited() in a loop, please restructure
+> > - * your code to batch your updates, and then use a single synchronize_rcu()
+> > - * instead.
+> > - *
+> > - * This has the same semantics as (but is more brutal than) synchronize_rcu().
+> > - */
+> > -void synchronize_rcu_expedited(void)
+> 
+> We should have a header comment here.  Given that I missed the need for
+> this, for example.  ;-)
+> 
+> But feel free to send a formal patch without it, and I can add it.
+> 
+> Otherwise, it looks good.
 
-[...]
+Ok, preparing this.
 
-Kind regards
-Uffe
+Thanks!
