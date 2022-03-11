@@ -2,197 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D120C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 12:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235260AbiCKMGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 07:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43032 "EHLO
+        id S236031AbiCKMGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 07:06:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345671AbiCKMGJ (ORCPT
+        with ESMTP id S1348516AbiCKMGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 07:06:09 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44B11B01A4;
-        Fri, 11 Mar 2022 04:05:06 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id q7-20020a7bce87000000b00382255f4ca9so7358022wmj.2;
-        Fri, 11 Mar 2022 04:05:06 -0800 (PST)
+        Fri, 11 Mar 2022 07:06:11 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4521B0BC0;
+        Fri, 11 Mar 2022 04:05:08 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id q29so6321398pgn.7;
+        Fri, 11 Mar 2022 04:05:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EWRM1iehW2QlFjJ6a/GsqHD5P7ZNjnnWjj5xp2LrO+s=;
-        b=DKhrpLPrIgJuGgHIguuoxI8V0dW7v+68PZ91jEdT39lEJHubH1MCLfkdRTD/Dih+JJ
-         fvcO+N9PxYWSRQI5DqHQ5mFWRNApbazwMuv081wbziso8oGhT4lGMOXGvJ5/gg5JgugX
-         WyN9vTGRaQf+AKYGjxuvlEZK4GfjRkMEZs0DqdrYONFfmv1YTLtiy3Qk/ZzFd46b2IGm
-         P0IJz9a0VGW5eOKy+QfqUmNWASMJrMJG0Z3BZWeyhn6171MtbzupIeN0bBUSZcd+1QU0
-         gLaVxkWtkzyt/J+G7Q6sBEWLzLScSpcUdfqz6eFG5Wla1HuPAmpGhC6v4Ug6V1KzqZXt
-         XwUQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=CRZrxVCznRSFRiW8IRzuy7VCEoOd0f/N6kmnVLmNDCo=;
+        b=PIMumTL+lPiaLTDARKWQVdKtj36k1b+cDb4eko7v9IKCgaf3im7MLOYJq4n9sVJZoC
+         p9etEmA/GnBA1+zS6bTwNptNoDxQKvsHB2Icf3kGYTSZ+Jmkvo8WyXZK07iM10jR4H73
+         rk6IsQCBLfPlkSf30TwmGEDbHzmkXSnwhjfYJwmvofTiqGi0UmHMWrzMyagGXQ35w5zD
+         UHp2z+ahJPfNEyf6iiCaXG2iT+0V52ggpJTBfDWXWVU+5TCShdyxEZy5TZHGhlnQDgOY
+         Nz/xQBCf3SqOrQtGfU+on2Ybrf8Dw6s7aILP3nBATfBTvjUkdOFQqAtlixycwshVbPwq
+         1kEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EWRM1iehW2QlFjJ6a/GsqHD5P7ZNjnnWjj5xp2LrO+s=;
-        b=jHBcgFH3AfzH3CNB8zwOc/Zgzz82g0MqK8l3Xo54efMvcDz3g5GFR4RGSULyYDAPo8
-         YrY5c5Qo1XGN6IyKUstiO5kTebNe3YqCXkCJLdH/EeurgTjKWAZ0UVlMpiVhvaUrPm8w
-         Uc11wHwMlmXmJmJwyQ/H7kgXcQ4P6G3H0KlNt491I9GcvqwLlZPhxT6pJ5LTtiTBr+JI
-         JgtXxJI4XYOp5scoGMhptLkeY+wldOjfQWo8WqIe3DMQJpXIyW96tLLcu6CG/lVximWh
-         4eOWTe8/dS2VCIeMfgtQUTX4IKRCeA7VswO+Cp3LBqutcmq9IKlZwVh0heonTwuMZdKP
-         5tXQ==
-X-Gm-Message-State: AOAM533/fWMfDTK+/0DiB1KzhydgWUHvW9xLlrJOPhXUvH8VWYRpcuPo
-        2zZlHrUS+PPkVM1pfNHzui4=
-X-Google-Smtp-Source: ABdhPJzdfuwRQWx7MxXWL/1fsDajrWtltExaqCwYkO1x/MWogpzSbDMUlvVywl7CxOElZyM0r77yjA==
-X-Received: by 2002:a05:600c:4142:b0:389:a592:10ce with SMTP id h2-20020a05600c414200b00389a59210cemr7447421wmm.148.1647000305420;
-        Fri, 11 Mar 2022 04:05:05 -0800 (PST)
-Received: from monk.home ([2a01:cb10:430:ec00:4737:d56e:186b:af1])
-        by smtp.gmail.com with ESMTPSA id r20-20020adfa154000000b001f0326a23e1sm6595223wrr.88.2022.03.11.04.05.04
+         :references;
+        bh=CRZrxVCznRSFRiW8IRzuy7VCEoOd0f/N6kmnVLmNDCo=;
+        b=DEgyvlFsOWbrXSAGonpSpHber+/iFs9SziWLrbvV7uLVkT8bdszUiJSBt6kTzPjsxI
+         mSGDulqejjanMs4gpW4ntHC1lgYHe0L94TOjCjEnGoVJ6uCSUzeN3k/i5E3chAgKg4Kt
+         hiENJyDsq3ImH0pEPn1sF1trvJy7N0FiLTn30nzGuzCNcSO4GNQozKpc3y/f0PzUux4D
+         NCff/w1KKQCCFrn2F8FlO8EvfGaf3KD4pCLDOcABLPYvnNizqT+S8I1eZpaMaqWf/aBe
+         aOD8r2rJhk4Q7Hu9yydYxb8WajpQFq5/11E7vB7zQrSp/R6Hy9OuLDouXvqogvjvbfAs
+         76GA==
+X-Gm-Message-State: AOAM531KNzJjXp0Xh/mQtjok54LX6pq8WhM2jOVpkfmpFL8MaQhV85dV
+        VUMDhSGA9dCFERtkoVASOuY=
+X-Google-Smtp-Source: ABdhPJzh/eDMFQo02GzsyE2jTQcSk9b+KymAzlFOwPAbU3mmer/hQXlvh6fX1i7+fDCY0ACVm1lEBw==
+X-Received: by 2002:a62:1481:0:b0:4f6:38c0:ed08 with SMTP id 123-20020a621481000000b004f638c0ed08mr10030490pfu.86.1647000307460;
+        Fri, 11 Mar 2022 04:05:07 -0800 (PST)
+Received: from localhost.localdomain ([219.91.230.201])
+        by smtp.googlemail.com with ESMTPSA id lw18-20020a17090b181200b001bf057106ebsm13954488pjb.41.2022.03.11.04.05.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 04:05:04 -0800 (PST)
-From:   Christophe Branchereau <cbranchereau@gmail.com>
-To:     Paul Cercueil <paul@crapouillou.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org
-Subject: [PATCH v3 3/4] drm/panel : innolux-ej030na and abt-y030xx067a : add .enable and .disable
-Date:   Fri, 11 Mar 2022 13:04:52 +0100
-Message-Id: <20220311120453.163297-4-cbranchereau@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220311120453.163297-1-cbranchereau@gmail.com>
-References: <20220311120453.163297-1-cbranchereau@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 11 Mar 2022 04:05:07 -0800 (PST)
+From:   Dharmendra Singh <dharamhans87@gmail.com>
+To:     miklos@szeredi.hu
+Cc:     fuse-devel@lists.sourceforge.net, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bschubert@ddn.com,
+        amir73il@gmail.com, dharamhans87@gmail.com
+Subject: 'Re: [PATCH 0/2] FUSE: Implement atomic lookup + open'
+Date:   Fri, 11 Mar 2022 17:34:56 +0530
+Message-Id: <20220311120456.18298-1-dharamhans87@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <CAJfpegu4L6s9vR0FUuVuHfNpBM_PJuR8XJQsQnwRVFkZD4KJEQ@mail.gmail.com>
+References: <CAJfpegu4L6s9vR0FUuVuHfNpBM_PJuR8XJQsQnwRVFkZD4KJEQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following the introduction of bridge_atomic_enable in the ingenic
-drm driver, the crtc is enabled between .prepare and .enable, if
-it exists.
+Thanks, Miklos. For measuring the performance, bonnie++ was used over passthrough_ll mount on tmpfs.
+When taking numbers on vm, I could see non-deterministic behaviour in the results. Therefore core
+binding was used for passthrough_ll and bonnie++, keeping them on separate cores.
 
-Add it so the backlight is only enabled after the crtc is, to avoid
-graphical issues.
+Here are the google sheets having performance numbers.
+https://docs.google.com/spreadsheets/d/1JRgF8DTR9xk5zz3_azmLcyy5kW3bgjjItmS8CYsAoT4/edit#gid=0
+https://docs.google.com/spreadsheets/d/1JRgF8DTR9xk5zz3_azmLcyy5kW3bgjjItmS8CYsAoT4/edit#gid=1833203226
 
-Signed-off-by: Christophe Branchereau <cbranchereau@gmail.com>
----
- drivers/gpu/drm/panel/panel-abt-y030xx067a.c  | 23 ++++++++++++--
- drivers/gpu/drm/panel/panel-innolux-ej030na.c | 31 ++++++++++++++++---
- 2 files changed, 48 insertions(+), 6 deletions(-)
+Following are the libfuse patches(commit on March 7 and March 8 in first link) which were used to test
+these changes
+https://github.com/aakefbs/libfuse/commits/atomic-open-and-no-flush
+https://github.com/libfuse/libfuse/pull/644
 
-diff --git a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-index f043b484055b..b5736344e3ec 100644
---- a/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-+++ b/drivers/gpu/drm/panel/panel-abt-y030xx067a.c
-@@ -183,8 +183,6 @@ static int y030xx067a_prepare(struct drm_panel *panel)
- 		goto err_disable_regulator;
- 	}
- 
--	msleep(120);
--
- 	return 0;
- 
- err_disable_regulator:
-@@ -202,6 +200,25 @@ static int y030xx067a_unprepare(struct drm_panel *panel)
- 	return 0;
- }
- 
-+static int y030xx067a_enable(struct drm_panel *panel)
-+{
-+	if (panel->backlight) {
-+		/* Wait for the picture to be ready before enabling backlight */
-+		msleep(120);
-+	}
-+
-+	return 0;
-+}
-+
-+static int y030xx067a_disable(struct drm_panel *panel)
-+{
-+	struct y030xx067a *priv = to_y030xx067a(panel);
-+
-+	regmap_clear_bits(priv->map, 0x06, REG06_XPSAVE);
-+
-+	return 0;
-+}
-+
- static int y030xx067a_get_modes(struct drm_panel *panel,
- 				struct drm_connector *connector)
- {
-@@ -239,6 +256,8 @@ static int y030xx067a_get_modes(struct drm_panel *panel,
- static const struct drm_panel_funcs y030xx067a_funcs = {
- 	.prepare	= y030xx067a_prepare,
- 	.unprepare	= y030xx067a_unprepare,
-+	.enable		= y030xx067a_enable,
-+	.disable	= y030xx067a_disable,
- 	.get_modes	= y030xx067a_get_modes,
- };
- 
-diff --git a/drivers/gpu/drm/panel/panel-innolux-ej030na.c b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-index c558de3f99be..6de7370185cd 100644
---- a/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-+++ b/drivers/gpu/drm/panel/panel-innolux-ej030na.c
-@@ -80,8 +80,6 @@ static const struct reg_sequence ej030na_init_sequence[] = {
- 	{ 0x47, 0x08 },
- 	{ 0x48, 0x0f },
- 	{ 0x49, 0x0f },
--
--	{ 0x2b, 0x01 },
- };
- 
- static int ej030na_prepare(struct drm_panel *panel)
-@@ -109,8 +107,6 @@ static int ej030na_prepare(struct drm_panel *panel)
- 		goto err_disable_regulator;
- 	}
- 
--	msleep(120);
--
- 	return 0;
- 
- err_disable_regulator:
-@@ -128,6 +124,31 @@ static int ej030na_unprepare(struct drm_panel *panel)
- 	return 0;
- }
- 
-+static int ej030na_enable(struct drm_panel *panel)
-+{
-+	struct ej030na *priv = to_ej030na(panel);
-+
-+	/* standby off */
-+	regmap_write(priv->map, 0x2b, 0x01);
-+
-+	if (panel->backlight) {
-+		/* Wait for the picture to be ready before enabling backlight */
-+		msleep(120);
-+	}
-+
-+	return 0;
-+}
-+
-+static int ej030na_disable(struct drm_panel *panel)
-+{
-+	struct ej030na *priv = to_ej030na(panel);
-+
-+	/* standby on */
-+	regmap_write(priv->map, 0x2b, 0x00);
-+
-+	return 0;
-+}
-+
- static int ej030na_get_modes(struct drm_panel *panel,
- 			     struct drm_connector *connector)
- {
-@@ -165,6 +186,8 @@ static int ej030na_get_modes(struct drm_panel *panel,
- static const struct drm_panel_funcs ej030na_funcs = {
- 	.prepare	= ej030na_prepare,
- 	.unprepare	= ej030na_unprepare,
-+	.enable		= ej030na_enable,
-+	.disable	= ej030na_disable,
- 	.get_modes	= ej030na_get_modes,
- };
- 
--- 
-2.35.1
+Parameters used in mounting passthrough_ll:
+ numactl --localalloc --physcpubind=16-23 passthrough_ll -f -osource=/tmp/source,allow_other,allow_root,
+ cache=never -o max_idle_threads=1 /tmp/dest
+     (Here cache=never results in direct-io on the file)
 
+Parameters used in bonnie++:
+In sheet 0B:
+numactl --localalloc --physcpubind=0-7  bonnie++ -x 4 -q -s0  -d /tmp/dest/ -n 10:0:0:10 -r 0 -u 0 2>/dev/null
+
+in sheet 1B:
+numactl --localalloc --physcpubind=0-7 bonnie++ -x 4 -q -s0 -d /tmp/dest/ -n 10:1:1:10 -r 0 -u 0 2>/dev/null
+
+Additional settings done on the testing machine:
+cpupower frequency-set -g performance
+
+Running bonnie++ gives us results for Create/s,  Read/s and Delete/s. Below table summarises the numbers
+for  these three operations. Please note that for read of 0 bytes, bonnie++ does ops in order of create-open,
+close and stat but no atomic open.  Therefore performance results  in the sheet 0B had overhead of extra
+stat calls.  Whereas in sheet 1B, we directed bonnie++ to read 1 byte and this triggered atomic open call but
+numbers for this run involve overhead for read operation itself instead of just plain open/close.
+
+Here is the table summarising the performance numbers
+
+Table: 0B
+                                               Sequential                  |            Random
+                                           Creat/s       Read/s    Del/s   |    Creat/s     Read/s      Del/s
+Patched Libfuse                                -3.55%    -4.9%    -4.43%   |    -0.4%      -1.6%       -1.0%
+Patched Libfuse + No-Flush                     +22.3%    +6%       +5.15%  |    +27.9%     +14.5%       +2.8%
+Patched Libfuse + Patched FuseK                +22.9%    +6.1%     +5.3%   |    +28.3%     +14.5%       +2.3%
+Patched Libfuse + Patched FuseK + No-Flush     +33.4%    -4.4%     -3.73%  |    +38.8%     -2.5%        -2.0%
+
+
+
+ Table: 1B
+                                                  Sequential                    |                  Random
+                                           Create/s       Read/s       Del/s    |      Create/s     Read/s     Del/s
+Patched Libfuse                            -0.22%        -0.35%       -0.7%     |      -0.27%        -0.78%    -2.35%
+Patched Libfuse + No-Flush                 +2.5%         +2.6%        -9.6%     |      +2.5%         -8.6%     -6.26%
+Patched Libfuse + Patched FuseK            +1.63%        -1.0%        -11.45%   |      +4.48%        -6.84%    -4.0%
+Patched Libfuse + Patched FuseK + No-Flush  +32.43%      +26.61%      +076%     |      +33.2%       +14.7%     -0.40%
+
+Here
+No-Flush = No flush trigger from fuse kernel into libfuse
+
+In Table 1B, we see 4th row has good improvements for both create and Read whereas Del seems to be almost not
+changed. In Table 0B, 3rd row we have Read perf reduced, it was found out that this was caused by some changes
+in libfuse. So this was fixed and in Table 1B, same row, we can see increased numbers.
+
+In Table 0B, 3rd row, we have good numbers because bonnie++ used 0 bytes to read  and this changed behaviour
+and impacted perf whereas for the same row, Table 1B we have reduced numbers because it involved flush
+calls for 1 byte from the fuse kernel into libfuse.
+
+These changes are not for fuse kernel/users-space context switches only, but our main goal is to have improvement performance
+for network file systems
+   - Number network round trips
+   - Reduce load on meta servers with thousands of clients
+
+Reduced kernel/userspace context switches is 'just' a side effect.
+
+Thanks,
+Dharmendra
