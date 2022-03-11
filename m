@@ -2,103 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22093C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 04:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 04:36:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346444AbiCKEhD (ORCPT
+        id S1346383AbiCKEhI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 23:37:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
+        Thu, 10 Mar 2022 23:37:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346338AbiCKEgh (ORCPT
+        with ESMTP id S1346384AbiCKEg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 23:36:37 -0500
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2891A635A;
-        Thu, 10 Mar 2022 20:35:33 -0800 (PST)
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 22B4ZAqd019685;
-        Fri, 11 Mar 2022 13:35:10 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 22B4ZAqd019685
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1646973311;
-        bh=LjOGr0pIATee6R8ACoH57i1hpgApkEujUZuMS4lP7v8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rQcco8k5x7idvPaucbYhdy9OS4UGkaySWfHK/oPxSIKfKH9IkR/KCdlIbqE251Zjj
-         GUkAxnyBE/fDd4IPzxWx8odoVNMtti0u8tAPyGNbPSJpe50baxLlv3VgrxQt+Kct7c
-         thhiM2Z9tSZ4UZTWAkd12ToXtQcMlXWHdOc0beDnfR6n7flwGIeXMc+HpoJozxFkOJ
-         KzOy+dbS3AD0wO/8QsE580tgztKblTGu5ZI4Cyz0x0zcvWXzA5NfUENNSHnhp8itMX
-         z8okMuiUCokPndSTBRRkr3LKO9zQltOt+vrNB2iq8u6X30rXf8d0nnrumhnjPHFvM/
-         5RcYnD0JrfFag==
-X-Nifty-SrcIP: [209.85.214.177]
-Received: by mail-pl1-f177.google.com with SMTP id e2so6731238pls.10;
-        Thu, 10 Mar 2022 20:35:10 -0800 (PST)
-X-Gm-Message-State: AOAM533OJz2gN09FgpEXOn1Yg5EMosuB8EeL2yAOH3h2hfYyLrR0MXqD
-        MYmu1+DOjnRXu6JxDFHnPAMXE/+KWFnruY+AYs4=
-X-Google-Smtp-Source: ABdhPJyNCJkb3M7ukFi53zgoJUHhvSQ95COymbct3oUAAg6F4eHuljQlez2+7VK5S8Wkne54zlfb5/vEPBZyEYdE0jY=
-X-Received: by 2002:a17:902:b183:b0:14f:c266:20d5 with SMTP id
- s3-20020a170902b18300b0014fc26620d5mr8764545plr.136.1646973309837; Thu, 10
- Mar 2022 20:35:09 -0800 (PST)
+        Thu, 10 Mar 2022 23:36:57 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBFD1A8068
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 20:35:48 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id u17so4744874pfk.11
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 20:35:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ozlabs-ru.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=V1/TnLPrornoIN/WK1P7jxHhGPmmerjcFisapQwZfNE=;
+        b=SPKGt49qDswbf2PivcNvXaZJ62enQa2p8KpJzako40QAEEFJAF12UBaljhGOfFLz7h
+         l4Ifv4wgpLYh/BE3pvqcuz5Xkb4K/E12DRJzkEak0tnMAMaQSR4kCUJ2igcKqf30Qjfn
+         ojR5TJ2MKHni0RODfI65PdMT73Ksb44ff6kfNrY4vXSF07CB2qwnZcSjYww8HcGJMea9
+         k/q5jbxbVkExV+7GKBT5zfe7d/uCIFzf+p4IBkKanZx7A3gFMpKQM9t8gs3nDb+DHlad
+         kqFDSelbAqaKZuoAwqc0QbTSgTzbvpzm+3ruG8dXMcGV1F/38N1YpxBMgAJHcTMV2mqR
+         uPlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=V1/TnLPrornoIN/WK1P7jxHhGPmmerjcFisapQwZfNE=;
+        b=dJ4NO+NjGoq1wtZAmcwZ0FCW1bKSdQRDyc3wpWVrgqFrXZRPoHDlTsSmv/QGrexe6+
+         jtDCXfBNHY7xXHb4Q2B6fUp0IMvjHTXgUQDNAmlFFz/D/ja28gNeILyRNbpfgXjyp4jx
+         zx3TQcIkt2/OTIpHbtO8FOK9m4Ro5S1oF7cZBICoOM1nIxQlM7ElbvfYTMB6pNd9avTA
+         Ts6zol9SSqkf9HMthYwuclBpswq+OWLV2YJ6lv51512w1ZYNDaYWSo1/M3keQmlH4sYm
+         UCSVCtlGxM3qZSyN+h2nm2eAdNIUyeK2g3ThAsl1ekTuPKTiQaUYIYBraY4Hkr0lyAyJ
+         CYCw==
+X-Gm-Message-State: AOAM532MDS7NQPAERc7aQIykk8wGkGe9SpszCGV5voVCiT/szBFh04Gr
+        ck5IiAD8Pd2H2qcBKKmHuUU2Zw==
+X-Google-Smtp-Source: ABdhPJw1jjulB8lFEQ7TbEdQ+NxHJ+yLJT+gpcnsL8IO5hql9Q5QGjJnn8awRNRvVfABCnjn97tfgQ==
+X-Received: by 2002:a62:684:0:b0:4f7:803:d1b0 with SMTP id 126-20020a620684000000b004f70803d1b0mr8551366pfg.10.1646973348053;
+        Thu, 10 Mar 2022 20:35:48 -0800 (PST)
+Received: from [10.61.2.177] (110-175-254-242.static.tpgi.com.au. [110.175.254.242])
+        by smtp.gmail.com with ESMTPSA id j7-20020a637a47000000b003803fbcc005sm6829615pgn.59.2022.03.10.20.35.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 20:35:47 -0800 (PST)
+Message-ID: <03683f2e-4153-4b4d-fdc2-063aa10c24ac@ozlabs.ru>
+Date:   Fri, 11 Mar 2022 15:35:36 +1100
 MIME-Version: 1.0
-References: <20220310214450.676505-1-nayna@linux.ibm.com> <20220310214450.676505-4-nayna@linux.ibm.com>
-In-Reply-To: <20220310214450.676505-4-nayna@linux.ibm.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 11 Mar 2022 13:34:27 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQKqn1B=j2oeFb1r5oBrrcbJYrAQd0v2LqmqQT1F+1LLw@mail.gmail.com>
-Message-ID: <CAK7LNAQKqn1B=j2oeFb1r5oBrrcbJYrAQd0v2LqmqQT1F+1LLw@mail.gmail.com>
-Subject: Re: [PATCH v11 3/4] certs: conditionally build extract-cert if
- platform keyring is enabled
-To:     Nayna Jain <nayna@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        linux-security-module <linux-security-module@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        dimitri.ledkov@canonical.com, seth@forshee.me,
-        rnsastry@linux.ibm.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101
+ Thunderbird/98.0
+Subject: Re: [PATCH] powerpc: Replace ppc64 DT_RELACOUNT usage with
+ DT_RELASZ/24
+Content-Language: en-US
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        =?UTF-8?B?RsSBbmctcnXDrCBTw7Ju?= =?UTF-8?Q?g?= 
+        <maskray@google.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20220309055118.1551013-1-maskray@google.com>
+ <CAKwvOdmMS4=QAoBFvhAdXWaLHOwH2252FX9i_yZyiCOpOt=3Dw@mail.gmail.com>
+ <CAFP8O3+jJf=amTYjm6YQbJKAuK0XRNoG3Gwc6C+E0=CPd46ZAw@mail.gmail.com>
+ <87a6dxm8e8.fsf@mpe.ellerman.id.au>
+From:   Alexey Kardashevskiy <aik@ozlabs.ru>
+In-Reply-To: <87a6dxm8e8.fsf@mpe.ellerman.id.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 6:45 AM Nayna Jain <nayna@linux.ibm.com> wrote:
->
-> extract-cert is used outside certs/ by INTEGRITY_PLATFORM_KEYRING.
-> Also build extract-cert if INTEGRITY_PLATFORM_KEYRING is enabled.
-
-If really so, extract-cert should go back to scripts/ again.
-(i.e. revert 340a02535ee785c64c62a9c45706597a0139e972)
 
 
+On 3/11/22 15:15, Michael Ellerman wrote:
+> Fāng-ruì Sòng <maskray@google.com> writes:
+>> On Thu, Mar 10, 2022 at 11:48 AM Nick Desaulniers
+>> <ndesaulniers@google.com> wrote:
+>>>
+>>> On Tue, Mar 8, 2022 at 9:53 PM Fangrui Song <maskray@google.com> wrote:
+>>>>
+>>>> DT_RELACOUNT is an ELF dynamic tag inherited from SunOS indicating the
+>>>> number of R_*_RELATIVE relocations. It is optional but {ld.lld,ld.lld}
+>>>> -z combreloc always creates it (if non-zero) to slightly speed up glibc
+>>>> ld.so relocation resolving by avoiding R_*R_PPC64_RELATIVE type
+>>>> comparison. The tag is otherwise nearly unused in the wild and I'd
+>>>> recommend that software avoids using it.
+>>>>
+>>>> lld>=14.0.0 (since commit da0e5b885b25cf4ded0fa89b965dc6979ac02ca9)
+>>>> underestimates DT_RELACOUNT for ppc64 when position-independent long
+>>>> branch thunks are used. Correcting it needs non-trivial arch-specific
+>>>> complexity which I'd prefer to avoid. Since our code always compares the
+>>>> relocation type with R_PPC64_RELATIVE, replacing every occurrence of
+>>>> DT_RELACOUNT with DT_RELASZ/sizeof(Elf64_Rela)=DT_RELASZ/24 is a correct
+>>>> alternative.
+>>>
+>>> checking that sizeof(Elf64_Rela) == 24, yep: https://godbolt.org/z/bb4aKbo5T
+>>>
+>>>>
+>>>> DT_RELASZ is in practice bounded by an uint32_t. Dividing x by 24 can be
+>>>> implemented as (uint32_t)(x*0xaaaaaaab) >> 4.
+>>>
+>>> Yep: https://godbolt.org/z/x9445ePPv
+>>>
+>>>>
+>>>> Link: https://github.com/ClangBuiltLinux/linux/issues/1581
+>>>> Reported-by: Nathan Chancellor <nathan@kernel.org>
+>>>> Signed-off-by: Fangrui Song <maskray@google.com>
+>>>> ---
+>>>>   arch/powerpc/boot/crt0.S       | 28 +++++++++++++++++-----------
+>>>>   arch/powerpc/kernel/reloc_64.S | 15 +++++++++------
+>>>>   2 files changed, 26 insertions(+), 17 deletions(-)
+> ...
+> 
+>> I rebased the patch on
+>> git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+>> master and got a conflict.
+>> Seems that https://lore.kernel.org/linuxppc-dev/20220309061822.168173-1-aik@ozlabs.ru/T/#u
+>> ("[PATCH kernel v4] powerpc/64: Add UADDR64 relocation support") fixed
+>> the issue.
+>> It just doesn't change arch/powerpc/boot/crt0.S
+> 
+> Yeah sorry, I applied Alexey's v4 just before I saw your patch arrive on
+> the list.
+> 
+> If one of you can rework this so it applies on top that would be great :)
 
->
-> Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
-> ---
->  certs/Makefile | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/certs/Makefile b/certs/Makefile
-> index b92b6ff339d5..dfb48e043cfe 100644
-> --- a/certs/Makefile
-> +++ b/certs/Makefile
-> @@ -88,7 +88,11 @@ $(obj)/x509_revocation_list: $(CONFIG_SYSTEM_REVOCATION_KEYS) $(obj)/extract-cer
->
->  targets += x509_revocation_list
->
-> +ifeq ($(CONFIG_INTEGRITY_PLATFORM_KEYRING),y)
-> +hostprogs-always-y := extract-cert
-> +else
->  hostprogs := extract-cert
-> +endif
->
->  HOSTCFLAGS_extract-cert.o = $(shell pkg-config --cflags libcrypto 2> /dev/null)
->  HOSTLDLIBS_extract-cert = $(shell pkg-config --libs libcrypto 2> /dev/null || echo -lcrypto)
-> --
-> 2.27.0
->
+
+I guess it is me as now I have to add that UARRD64 thing to crt0.S as 
+well, don't I?
+
+And also we are giving up on the llvm ld having a bug with RELACOUNT?
 
 
---
-Best Regards
-Masahiro Yamada
