@@ -2,95 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB98FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 01:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4301C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 01:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345334AbiCKB1U (ORCPT
+        id S1345401AbiCKB15 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 20:27:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41236 "EHLO
+        Thu, 10 Mar 2022 20:27:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbiCKB1S (ORCPT
+        with ESMTP id S1345349AbiCKB1r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 20:27:18 -0500
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.66.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF75105AA4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 17:26:16 -0800 (PST)
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 5AD6D400F8ABB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:04:53 -0600 (CST)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id STi9nl92uRnrrSTi9nP8yM; Thu, 10 Mar 2022 19:04:53 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SqDO2ZUZk8kifGQzpxWjAQlGNI2XFgmlcIdncpnvD0E=; b=3eVthBUzKxa222FNZFqYi6m4q3
-        /c+Up0oj2TPN1QZJBXBaCtPyBRtUzQNTcgIchfdCs6VaMjkDZUxAVO7ioIocoS4yYfXtuPM0n9o8n
-        CfdROb2pjniR5pDnQOaeB110RggayjBoFyIjlQTyenXStdMsfFcn6BYo8nT8qJ6cj+L4Scn44fehO
-        FuYMcSfoAZlrPpKKWtqSRmC6QbxETXxBC4bIsC3huJADDpAZ9qOKU2lkahXEcZTSuULa9Ry14NPMX
-        O2jPefS9v1wcRvmcP7ClEOW+lSQuvlepMrFKdNnB3YfUaiqNbr5vCpd6uzbnE1GMbkxSSajmQSXSu
-        XLBYfslg==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57436 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nSTi8-001nuC-JZ; Fri, 11 Mar 2022 01:04:52 +0000
-Date:   Thu, 10 Mar 2022 17:04:51 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/58] 5.10.105-rc2 review
-Message-ID: <20220311010451.GA3881707@roeck-us.net>
-References: <20220310140812.869208747@linuxfoundation.org>
+        Thu, 10 Mar 2022 20:27:47 -0500
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE7719F464
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 17:26:45 -0800 (PST)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2e2ca8d7812so16851617b3.13
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 17:26:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KA9YZ/MGaQsalELOdrxAActwdu72Km42M2dgBlMQW0I=;
+        b=i9IMsBytaLTTr9sYHJVkreJBtCBSxZ1iU0kTG+0wX2HudhdQ9bqjpr5r43jDwCKWYy
+         DnJWHrt3lTbyvD26cdGAky0jqFf8LlNtf2/PNDTaftTL+aCZxxfgYAzBDp5dxLX7jkMb
+         7s3YzmXn+matyTMkz6DcQ2nFzsNbzzK0I5cFPfB1Mtu3xnmg8Nd0tNX8ox99ofyOq3/2
+         ME1fCdMn6mtI2yxDa1Bo8PU1Vug0eH5szAuk9w/xvwqD7dCxrBZSdlISGcufoHgLqzNd
+         CNYkoD6Vykui2LhibXDH+06bzU/mRoFVHHu0tmSdO3KoygjMWJGjLXjf3gj28TrJSM2g
+         Igcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KA9YZ/MGaQsalELOdrxAActwdu72Km42M2dgBlMQW0I=;
+        b=gi04H41Z4MSKZvYdogRbRAfYTWSIR7aUFuQiSvF07jJp4zuks8RBsqtiOy+B48ZRva
+         ojrJcsxhfc5pgySDJKKQoElgaQvini63sAeZA8BqWaEOo4Oj8zN1Ad5gSOgZU6PiusbS
+         zUledR1YAQjfNrRlPf5hbVYD3tNMZlT/2UUggN3LjJJxhQYzMzueG452UWqfMRAMvIjG
+         cW1YnAOjke5sE23MzPJE7atdoUXPqXmh8X6gjv5tL7WI/n7YScGnsDcTguyuMt9BaY4S
+         ccJ8lV5xpR81ZK4hf6GrEePXAtyvQgfY0wElC8O1ihN4VkCZh6FR0SX2xplVwv1/e19W
+         eOwQ==
+X-Gm-Message-State: AOAM533/aOQ9uBLhM1/Lwc4yY7NZhCcUjvMKJLC9vNRz+fCUDBTyj342
+        kb2u7xRIKbO3a4zGVGty8keBZNjLxcequDeMThwHOw==
+X-Google-Smtp-Source: ABdhPJxSofcm7lRCRp6xAfTgi9OIDSyZM9GgFv0Msotp0q/OKYFtxgvI7QElXdlaKgsrJFOXfsmpoTzWc9IAupp5Jeo=
+X-Received: by 2002:a81:6357:0:b0:2d7:2af4:6e12 with SMTP id
+ x84-20020a816357000000b002d72af46e12mr6679940ywb.317.1646962004594; Thu, 10
+ Mar 2022 17:26:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310140812.869208747@linuxfoundation.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nSTi8-001nuC-JZ
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57436
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 84
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+References: <20220310135012.175219-1-jiyong@google.com> <20220310141420.lsdchdfcybzmdhnz@sgarzare-redhat>
+ <20220310102636-mutt-send-email-mst@kernel.org> <20220310170853.0e07140f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220310170853.0e07140f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jiyong Park <jiyong@google.com>
+Date:   Fri, 11 Mar 2022 10:26:08 +0900
+Message-ID: <CALeUXe7OGUUt+5hpiLcg=1vWsOWkSRLN3Lb-ncpXZZjsgZntjQ@mail.gmail.com>
+Subject: Re: [PATCH v3] vsock: each transport cycles only on its own sockets
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, adelva@google.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 03:18:20PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.105 release.
-> There are 58 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 12 Mar 2022 14:07:58 +0000.
-> Anything received after that time might be too late.
-> 
-Build results:
-	total: 161 pass: 161 fail: 0
-Qemu test results:
-	total: 477 pass: 477 fail: 0
+First of all, sorry for the stupid breakage I made in V2. I forgot to turn
+CONFIG_VMWARE_VMCI_VSOCKETS on when I did the build by
+myself. I turned it on later and fixed the build error in V3.
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+> Jiyong, would you mind collecting the tags from Stefano and Michael
+> and reposting? I fixed our build bot, it should build test the patch
+> - I can't re-run on an already ignored patch, sadly.
 
-Guenter
+Jakub, please bear with me; Could you explain what you exactly want
+me to do? I'm new to kernel development and don't know how changes
+which Stefano and Machael maintain get tested and staged.
