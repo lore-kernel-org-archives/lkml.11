@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF773C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346628AbiCKGAS (ORCPT
+        id S1346529AbiCKGA0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 01:00:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34680 "EHLO
+        Fri, 11 Mar 2022 01:00:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242820AbiCKFzE (ORCPT
+        with ESMTP id S1346749AbiCKFzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:55:04 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B392FCB43
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:30 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id i4-20020a63b304000000b0038108d6e7cdso761761pgf.14
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:30 -0800 (PST)
+        Fri, 11 Mar 2022 00:55:05 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EC0EC5CC
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:33 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id n11-20020a170902d2cb00b0015331a5d02fso993297plc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=fJcjxxaNZsUzxQ7YsSiwfIENO7Kf+loL8mauwQgQyUk=;
-        b=KmMifenitTRX+EPj2GyGPqriFuTx+YIHqGEFXqeP8oE+8WDTxt+4TGZseINy+JmCfi
-         DrMs3vuh31aOWtmVyaTEJZWnMLyF7ZM3iyaRunynYe41yk2GidiOaWP3nn+fUe32KaBZ
-         gb17nWCRcW9y9pN6h8XZSJpq9IZXi8ZAlnoRLCpgORNEWmsjKosJHytU48DlO6TUMLFN
-         7xdtgiixFS+vZ7BB5ETdLsQ14/5oJI2U4mcjrObyFH4+dZnYo5p8Yb/XLgYjKVbpr/vq
-         q60xYQU+NDypzZUF4f27XXcUnWLrbj51TYuAPGAgZUlXvHq13FZdSwyQVmoGZphx2NNs
-         5xww==
+        bh=dbOZYIDkIB5UtzwmNzQd2PJFJKvUjWfX0QUBO7DMuHY=;
+        b=ZW7p3/empagVn6qWi2qV2Fw/Jea9KHyPEQ/vR2lLt7x5xQ/n9QFJgs20pAfrcFhOX5
+         Mg2VlAUZQUDCSPkkY/XK50S7uRv20+ltLZRzpwJtLZXcfmO5BcxfbSwUwVn0b1ZuC2Es
+         usMkbxzEHJ7QAQhg2z5MjIcEE15DRqRw14x7iO6wi/CENn8V2uHCxmJ+1ReWzKdUX7D9
+         za3uttdMRh7xJtfxr3sqKRwitHzUxd/yxh2SmBQcLLxIlK/abZ3E56em3/3n+ZRHFi+f
+         1tqiZRcsESrr0HQbBxeGxYr72C+N6KIkMs95vPa/uANoRwGkkWDKHAwURrj0LPA1sHLa
+         FOFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=fJcjxxaNZsUzxQ7YsSiwfIENO7Kf+loL8mauwQgQyUk=;
-        b=4wHFBYcZhcDqoJEUbs0OeK7sTcvmgRtkLecX06jgrkU3cTWmfwE72KHycPpTFk7mjb
-         XVdEThrTGTLNY+l2/Mp61L9HWIqzQTy6WluuuKPMZV2YWP/6Kbri4NihnKRXeHG3+xyn
-         iF15EEV1FXsWBgMWptDesvKF3bFAUmnn/PTpPAMtZBcLg5YaEyAGaFQTrdfIZdzc4EQ8
-         BGvcyFCZQOR5iU4h68wGJAWkVFqrdZIvFoU1UjNOrIWlxRFIjND3o28H7Cr3t0Y3ODLK
-         m/y1esdApSZ/y91gaf3OdKaGnQD07wNWzk2Zleme1ZK/JfIB9i+OHrlitReoHtAdO81D
-         PQ0Q==
-X-Gm-Message-State: AOAM533U8Y7Oayr+tTSwh2rk1fLsfAPN3BXRidAgzsRg5umGmdydETxO
-        escohN0yhMAU5a6Pw9tPhZUGnhBnacVK0zdEKpzU4PsD+IbrKsEQQ7cQl42F7DrZvvV+9zyXX0w
-        3dPAwrzunDiYk8iPm8588hyjm4HVOdjPJegn9n/NCLTOcF0EqjpHNPGYCl11C92arlQrdSA==
-X-Google-Smtp-Source: ABdhPJxkNLcfAj1SbQ8ffCFB2DJTzWt/d1BJ1ZLLykojRJxeERiZmyOucU+fxNVdb3kkbRqpUU8OljfVQWw=
+        bh=dbOZYIDkIB5UtzwmNzQd2PJFJKvUjWfX0QUBO7DMuHY=;
+        b=SX9ao2i8jPA7jbPfBv2Obw5pAjIGETfJuYh9zm9NPdngxa5Qc+feAwdAGnmbbMao9y
+         3WTG9ajHALUyu/sZMk4Up2P2fDquyXDZ++4ILMy4nCYfOZOPC0csZP+1hJ+8lcLGEUjp
+         Q+G4oNHW5QR3WdnCkFOT7pby3fyPps1cQbRvTE82q5ougrkNnCXrd23O6EdFe2Z0iKQS
+         zo41FOtdM5Bq11DpD4OCvdzKqHbpGNfvx3nQVm1UI3fG1CXEq6LxFw8c4gBF9xTDeQ2w
+         WXEZFpqpxebBXwhAePje431rPNjMAO7Uc/Vf4WRyi33+rFIMWA9HcJ/xISLh1KWvEcc+
+         8I2A==
+X-Gm-Message-State: AOAM5310hbYo45CFMjd4dB/9EiHMRQfOXRwao093HPLVC/pmy0Ul1vnv
+        NVQP5V53D3/IcKEs83n3VgdFC8cHZbTQIRNRqjXu4fouEfQqe369Gek3HBEUuhuX8Zgt/ovnXV7
+        EZnMFBJS20tkGRdCwgUiYGGFGhWRHXlkYpey2E95LABAZ5cXYblt96d7OsMh8I+VPZ9lpNA==
+X-Google-Smtp-Source: ABdhPJxYLaOH73e7m+mnSAZekPfjT2yy59uVJxgfjNuVkH+Ngsckb8WhTzoVwTs89r4J4osxvPLlWshdVnI=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:6b4a:b0:14d:474f:4904 with SMTP id
- g10-20020a1709026b4a00b0014d474f4904mr8943717plt.122.1646978009661; Thu, 10
- Mar 2022 21:53:29 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:2181:b0:4f6:f1b1:1ba7 with SMTP id
+ h1-20020a056a00218100b004f6f1b11ba7mr8300681pfi.73.1646978013119; Thu, 10 Mar
+ 2022 21:53:33 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 11 Mar 2022 05:50:36 +0000
+Date:   Fri, 11 Mar 2022 05:50:38 +0000
 In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
-Message-Id: <20220311055056.57265-86-seanjc@google.com>
+Message-Id: <20220311055056.57265-88-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220311055056.57265-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [RFC PATCH 085/105] KVM: selftests: Convert steal_time away from VCPU_ID
+Subject: [RFC PATCH 087/105] KVM: selftests: Fix typo in vgic_init test
 From:   Sean Christopherson <seanjc@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Sean Christopherson <seanjc@google.com>
@@ -66,223 +66,22 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/steal_time.c | 120 +++++++++++------------
- 1 file changed, 60 insertions(+), 60 deletions(-)
+ tools/testing/selftests/kvm/aarch64/vgic_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kvm/steal_time.c b/tools/testing/selftests/kvm/steal_time.c
-index 741892cec1ea..fe64fac0a5f4 100644
---- a/tools/testing/selftests/kvm/steal_time.c
-+++ b/tools/testing/selftests/kvm/steal_time.c
-@@ -58,36 +58,33 @@ static void guest_code(int cpu)
- 	GUEST_DONE();
- }
+diff --git a/tools/testing/selftests/kvm/aarch64/vgic_init.c b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+index 32dac03f5600..f8d41f12bdca 100644
+--- a/tools/testing/selftests/kvm/aarch64/vgic_init.c
++++ b/tools/testing/selftests/kvm/aarch64/vgic_init.c
+@@ -418,7 +418,7 @@ static void test_v3_typer_accesses(void)
+ 			    KVM_DEV_ARM_VGIC_CTRL_INIT, NULL);
  
--static void steal_time_init(struct kvm_vm *vm)
-+static bool is_steal_time_supported(struct kvm_vcpu *vcpu)
- {
--	int i;
-+	struct kvm_cpuid_entry2 *cpuid = kvm_get_supported_cpuid_entry(KVM_CPUID_FEATURES);
- 
--	if (!(kvm_get_supported_cpuid_entry(KVM_CPUID_FEATURES)->eax &
--	      KVM_FEATURE_STEAL_TIME)) {
--		print_skip("steal-time not supported");
--		exit(KSFT_SKIP);
--	}
-+	return cpuid && (cpuid->eax & KVM_FEATURE_STEAL_TIME);
-+}
- 
--	for (i = 0; i < NR_VCPUS; ++i) {
--		int ret;
-+static void steal_time_init(struct kvm_vcpu *vcpu, uint32_t i)
-+{
-+	int ret;
- 
--		/* ST_GPA_BASE is identity mapped */
--		st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
--		sync_global_to_guest(vm, st_gva[i]);
-+	/* ST_GPA_BASE is identity mapped */
-+	st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
-+	sync_global_to_guest(vcpu->vm, st_gva[i]);
- 
--		ret = _vcpu_set_msr(vm, i, MSR_KVM_STEAL_TIME, (ulong)st_gva[i] | KVM_STEAL_RESERVED_MASK);
--		TEST_ASSERT(ret == 0, "Bad GPA didn't fail");
-+	ret = _vcpu_set_msr(vcpu->vm, vcpu->id, MSR_KVM_STEAL_TIME, (ulong)st_gva[i] | KVM_STEAL_RESERVED_MASK);
-+	TEST_ASSERT(ret == 0, "Bad GPA didn't fail");
- 
--		vcpu_set_msr(vm, i, MSR_KVM_STEAL_TIME, (ulong)st_gva[i] | KVM_MSR_ENABLED);
--	}
-+	vcpu_set_msr(vcpu->vm, vcpu->id, MSR_KVM_STEAL_TIME, (ulong)st_gva[i] | KVM_MSR_ENABLED);
- }
- 
--static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpuid)
-+static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpu_idx)
- {
--	struct kvm_steal_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpuid]);
-+	struct kvm_steal_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpu_idx]);
- 	int i;
- 
--	pr_info("VCPU%d:\n", vcpuid);
-+	pr_info("VCPU%d:\n", vcpu_idx);
- 	pr_info("    steal:     %lld\n", st->steal);
- 	pr_info("    version:   %d\n", st->version);
- 	pr_info("    flags:     %d\n", st->flags);
-@@ -165,49 +162,50 @@ static void guest_code(int cpu)
- 	GUEST_DONE();
- }
- 
--static void steal_time_init(struct kvm_vm *vm)
-+static bool is_steal_time_supported(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_device_attr dev = {
- 		.group = KVM_ARM_VCPU_PVTIME_CTRL,
- 		.attr = KVM_ARM_VCPU_PVTIME_IPA,
- 	};
--	int i, ret;
- 
--	ret = __vcpu_ioctl(vm, 0, KVM_HAS_DEVICE_ATTR, &dev);
--	if (ret != 0 && errno == ENXIO) {
--		print_skip("steal-time not supported");
--		exit(KSFT_SKIP);
--	}
--
--	for (i = 0; i < NR_VCPUS; ++i) {
--		uint64_t st_ipa;
-+	return !__vcpu_ioctl(vcpu->vm, vcpu->id, KVM_HAS_DEVICE_ATTR, &dev);
-+}
- 
--		vcpu_ioctl(vm, i, KVM_HAS_DEVICE_ATTR, &dev);
-+static void steal_time_init(struct kvm_vcpu *vcpu, uint32_t i)
-+{
-+	struct kvm_vm *vm = vcpu->vm;
-+	uint64_t st_ipa;
-+	int ret;
- 
--		dev.addr = (uint64_t)&st_ipa;
-+	struct kvm_device_attr dev = {
-+		.group = KVM_ARM_VCPU_PVTIME_CTRL,
-+		.attr = KVM_ARM_VCPU_PVTIME_IPA,
-+		.addr = (uint64_t)&st_ipa,
-+	};
- 
--		/* ST_GPA_BASE is identity mapped */
--		st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
--		sync_global_to_guest(vm, st_gva[i]);
-+	vcpu_ioctl(vm, vcpu->id, KVM_HAS_DEVICE_ATTR, &dev);
- 
--		st_ipa = (ulong)st_gva[i] | 1;
--		ret = __vcpu_ioctl(vm, i, KVM_SET_DEVICE_ATTR, &dev);
--		TEST_ASSERT(ret == -1 && errno == EINVAL, "Bad IPA didn't report EINVAL");
-+	/* ST_GPA_BASE is identity mapped */
-+	st_gva[i] = (void *)(ST_GPA_BASE + i * STEAL_TIME_SIZE);
-+	sync_global_to_guest(vm, st_gva[i]);
- 
--		st_ipa = (ulong)st_gva[i];
--		vcpu_ioctl(vm, i, KVM_SET_DEVICE_ATTR, &dev);
-+	st_ipa = (ulong)st_gva[i] | 1;
-+	ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_DEVICE_ATTR, &dev);
-+	TEST_ASSERT(ret == -1 && errno == EINVAL, "Bad IPA didn't report EINVAL");
- 
--		ret = __vcpu_ioctl(vm, i, KVM_SET_DEVICE_ATTR, &dev);
--		TEST_ASSERT(ret == -1 && errno == EEXIST, "Set IPA twice without EEXIST");
-+	st_ipa = (ulong)st_gva[i];
-+	vcpu_ioctl(vm, vcpu->id, KVM_SET_DEVICE_ATTR, &dev);
- 
--	}
-+	ret = __vcpu_ioctl(vm, vcpu->id, KVM_SET_DEVICE_ATTR, &dev);
-+	TEST_ASSERT(ret == -1 && errno == EEXIST, "Set IPA twice without EEXIST");
- }
- 
--static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpuid)
-+static void steal_time_dump(struct kvm_vm *vm, uint32_t vcpu_idx)
- {
--	struct st_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpuid]);
-+	struct st_time *st = addr_gva2hva(vm, (ulong)st_gva[vcpu_idx]);
- 
--	pr_info("VCPU%d:\n", vcpuid);
-+	pr_info("VCPU%d:\n", vcpu_idx);
- 	pr_info("    rev:     %d\n", st->rev);
- 	pr_info("    attr:    %d\n", st->attr);
- 	pr_info("    st_time: %ld\n", st->st_time);
-@@ -231,15 +229,13 @@ static void *do_steal_time(void *arg)
- 	return NULL;
- }
- 
--static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid)
-+static void run_vcpu(struct kvm_vcpu *vcpu)
- {
- 	struct ucall uc;
- 
--	vcpu_args_set(vm, vcpuid, 1, vcpuid);
-+	vcpu_run(vcpu->vm, vcpu->id);
- 
--	vcpu_ioctl(vm, vcpuid, KVM_RUN, NULL);
--
--	switch (get_ucall(vm, vcpuid, &uc)) {
-+	switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
- 	case UCALL_SYNC:
- 	case UCALL_DONE:
- 		break;
-@@ -248,12 +244,13 @@ static void run_vcpu(struct kvm_vm *vm, uint32_t vcpuid)
- 			    __FILE__, uc.args[1]);
- 	default:
- 		TEST_ASSERT(false, "Unexpected exit: %s",
--			    exit_reason_str(vcpu_state(vm, vcpuid)->exit_reason));
-+			    exit_reason_str(vcpu->run->exit_reason));
+ 	for (i = 0; i < NR_VCPUS ; i++) {
+-		ret = v3_redist_reg_get(v.gic_fd, 0, GICR_TYPER, &val);
++		ret = v3_redist_reg_get(v.gic_fd, i, GICR_TYPER, &val);
+ 		TEST_ASSERT(!ret && !val, "read GICR_TYPER before rdist region setting");
  	}
- }
  
- int main(int ac, char **av)
- {
-+	struct kvm_vcpu *vcpus[NR_VCPUS];
- 	struct kvm_vm *vm;
- 	pthread_attr_t attr;
- 	pthread_t thread;
-@@ -274,25 +271,28 @@ int main(int ac, char **av)
- 	pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
- 
- 	/* Create a one VCPU guest and an identity mapped memslot for the steal time structure */
--	vm = vm_create_default(0, 0, guest_code);
-+	vm = vm_create_with_vcpus(NR_VCPUS, guest_code, vcpus);
- 	gpages = vm_calc_num_guest_pages(VM_MODE_DEFAULT, STEAL_TIME_SIZE * NR_VCPUS);
- 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, ST_GPA_BASE, 1, gpages, 0);
- 	virt_map(vm, ST_GPA_BASE, ST_GPA_BASE, gpages);
- 	ucall_init(vm, NULL);
- 
--	/* Add the rest of the VCPUs */
--	for (i = 1; i < NR_VCPUS; ++i)
--		vm_vcpu_add(vm, i, guest_code);
--
--	steal_time_init(vm);
-+	if (!is_steal_time_supported(vcpus[0])) {
-+		print_skip("steal-time not supported");
-+		exit(KSFT_SKIP);\
-+	}
- 
- 	/* Run test on each VCPU */
- 	for (i = 0; i < NR_VCPUS; ++i) {
-+		steal_time_init(vcpus[i], i);
-+		
-+		vcpu_args_set(vm, vcpus[i]->id, 1, i);
-+
- 		/* First VCPU run initializes steal-time */
--		run_vcpu(vm, i);
-+		run_vcpu(vcpus[i]);
- 
- 		/* Second VCPU run, expect guest stolen time to be <= run_delay */
--		run_vcpu(vm, i);
-+		run_vcpu(vcpus[i]);
- 		sync_global_from_guest(vm, guest_stolen_time[i]);
- 		stolen_time = guest_stolen_time[i];
- 		run_delay = get_run_delay();
-@@ -313,7 +313,7 @@ int main(int ac, char **av)
- 			    MIN_RUN_DELAY_NS, run_delay);
- 
- 		/* Run VCPU again to confirm stolen time is consistent with run_delay */
--		run_vcpu(vm, i);
-+		run_vcpu(vcpus[i]);
- 		sync_global_from_guest(vm, guest_stolen_time[i]);
- 		stolen_time = guest_stolen_time[i] - stolen_time;
- 		TEST_ASSERT(stolen_time >= run_delay,
 -- 
 2.35.1.723.g4982287a31-goog
 
