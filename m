@@ -2,150 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77C42C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF044C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231443AbiCKU56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 15:57:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43550 "EHLO
+        id S229460AbiCKW3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:29:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbiCKU5p (ORCPT
+        with ESMTP id S229447AbiCKW3P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 15:57:45 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2066.outbound.protection.outlook.com [40.107.237.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8912077B4;
-        Fri, 11 Mar 2022 12:56:31 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aK5Yp84vygy2MLiIBUqPhLHd3u9pH1xeEIwpykAJF15LiJENJ7RUbgCbmb31s+6enavHM/RDdhEhWt8leoYLnfwXhgVCHZKqW1YcJJ4fW/E62MNyvtYyfmZAqFk14AkuX2x0UOcj88V7wDwWNRj+tdom5wCdFcZmdwq3jCmlRQ2gOqn9e+Sxd+5ogPpJ5cfNy6dmw9BKUK7sxm9hnDF0w0gWFjXjhtIVC0/0I1VUxbdDb+RdqfeRb+cqVY69AngeV1jOt/RFkCKx5RG2G1mlGmv4FifPwHz2lXELThz8WyL/tc80ulmQc6KVBfZ1Nl9qujAXgKejdH07eyA4XS9THg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=coNJsRdR1FEi1Lj6f3oI4BUpX66SJtVhMCAe0BhmEeo=;
- b=Q29oRQVLmgSuXRbFgjHr5lTJHgDYbS1Pw6JSSt5udlmNAQyuzQiwGNeO1II7szOwAfxWtcUHw/9FU9anx0NA//ajlgZQYcfptugE/FdAJVCjDuSf5w9zm7veMzxUJ/F7D1OAUEeUX7DU/+0qKmdcc55IgJXoU+wUTfoVEJOYZ92hhHqc6+LoD5VETW1fCoG+17j2HXojwrCWsiKGd1GJTgxpzk1snnRhhKe1JszYKg4NKF8byUIGsKUaDggNLBSLofMegib0aS0go6GOZvweoaDMQc9BkYTbqkxKp4mA12mdCUujhk21ZOjzGntRtKwgxOW0GvXjJDTUqREdyhnEuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=coNJsRdR1FEi1Lj6f3oI4BUpX66SJtVhMCAe0BhmEeo=;
- b=FYWnbg1SNhhYJsAJG0CHdBOcTepKbDZXriQ31MgrHFW3TNBQRy4x8kWDQlzvuI7+JX3Ix4XqYob/IPjBbA4w2th4KFo/Ti24Z3fno1qDzQtV5hKNSF0XaQSYsdPUy4A2mc3KaOixXFSE89BtnHABLoYKnpKyBL9FUuhYZNOi3rY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BYAPR12MB2869.namprd12.prod.outlook.com (2603:10b6:a03:132::30)
- by DM6PR12MB4387.namprd12.prod.outlook.com (2603:10b6:5:2ac::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.21; Fri, 11 Mar
- 2022 20:55:42 +0000
-Received: from BYAPR12MB2869.namprd12.prod.outlook.com
- ([fe80::9df3:5cc7:c61e:ec6a]) by BYAPR12MB2869.namprd12.prod.outlook.com
- ([fe80::9df3:5cc7:c61e:ec6a%5]) with mapi id 15.20.5038.027; Fri, 11 Mar 2022
- 20:55:42 +0000
-Subject: Re: [PATCH v4 0/2] x86/mce: Handle error injection failure in
- mce-inject module
-To:     Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>,
-        x86@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Tony Luck <tony.luck@intel.com>, "H . Peter Anvin" <hpa@zytor.com>,
-        Yazen Ghannam <yazen.ghannam@amd.com>
-References: <20220214233640.70510-1-Smita.KoralahalliChannabasappa@amd.com>
-From:   "Koralahalli Channabasappa, Smita" <skoralah@amd.com>
-Message-ID: <f2d7c8fd-5178-a40b-7f15-5e0736388aa4@amd.com>
-Date:   Fri, 11 Mar 2022 14:55:39 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.1
-In-Reply-To: <20220214233640.70510-1-Smita.KoralahalliChannabasappa@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: BYAPR07CA0108.namprd07.prod.outlook.com
- (2603:10b6:a03:12b::49) To BYAPR12MB2869.namprd12.prod.outlook.com
- (2603:10b6:a03:132::30)
+        Fri, 11 Mar 2022 17:29:15 -0500
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B859C3D2337
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:18:26 -0800 (PST)
+Received: by mail-oi1-f173.google.com with SMTP id q189so10890269oia.9
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:18:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ouXKxtl+8G+GwtOSfWWV903AmhWVHKS99b2n31iKIp0=;
+        b=O1KTLBkViqTZcE4jO3SOzLYQ8Mei2Q0WFKGyWQ7q1Z8YSG0iZna9ofEhD8FI7UWF6z
+         tPER/jc5vn1cs81+THtmfmovsASEuu8cL32uJb60hesZuTGIhUY65eyZMFg2cc47Q73Q
+         FuhcV/gVHTTrsUcWIYK3CUEyun16UeMGBpUYAvy41TxF1qtIZaveH3q6GuDpVV7wiXnZ
+         i1dmjE90JWtGhYePMiyO51edeJlKCZz5Vea3iD7NHYxibiq//Ld9uhfyIyRWRQFWl/7P
+         tSq33q/j6F+ToeLOezKn+VNRlqO0s0NXR7GYYAyHhIcT6ZCffDol6e78+d61FdBJ6Ywf
+         VMQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ouXKxtl+8G+GwtOSfWWV903AmhWVHKS99b2n31iKIp0=;
+        b=xHCROHdPg/Um69LRCBoyryliSoorrR9ddjEGsBTgJVJnTgFcsFjjTA300PcvO+uMAR
+         sJvgz8Ygavk4iex0eYaQaxU+V11gTBHN0yJ3ZzGZz0dRlwGNBY9mIiPgJ91uU3dn7BgA
+         wsN78WUnCsvonirpWrXGcYFC3vRLYTqgZ8dxhrMMV+zRuwNUWME3q0QFPc04X2/Esd8z
+         NAc4Inva7wrNXj1Rt818m0Xbq215SdWs/7hVypWJWg2RMAhyFxFaJVCTKWlgIkzTUMyJ
+         0iQkXU1nUBkQGW8S+eBkpWkKVU6oo8MRult0xBkNa4iNtMMY5jE1Ls8UyDTmTZzAHiRm
+         3MXg==
+X-Gm-Message-State: AOAM533fADhK2bAGNYzwKGCzKQYiVDWmjM2cARit0mgfP4F1xVIC4Z3z
+        v19EUxbQKNnApUkAVmi3s6a961+evtTPlg==
+X-Google-Smtp-Source: ABdhPJy5imBF8v+itpeZObmG9hNl+BNIFPxFEpa5iCCi6LwHq9hqq00WyZ3eP2YdWvG14iZkBA/VnA==
+X-Received: by 2002:a05:6870:b42a:b0:d4:fc95:35e8 with SMTP id x42-20020a056870b42a00b000d4fc9535e8mr11876861oap.4.1647032510568;
+        Fri, 11 Mar 2022 13:01:50 -0800 (PST)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id j10-20020a4ad2ca000000b0031c515672d0sm4112516oos.23.2022.03.11.13.01.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 13:01:50 -0800 (PST)
+Date:   Fri, 11 Mar 2022 15:01:48 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Mukesh Ojha <quic_mojha@quicinc.com>
+Cc:     linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mathieu.poirier@linaro.org
+Subject: Re: [PATCH] remoteproc: Use unbounded/high priority workqueue for
+ recovery work
+Message-ID: <Yiu4vKuqWHQ5wfZ1@builder.lan>
+References: <1642620644-19297-1-git-send-email-quic_mojha@quicinc.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 271a7322-240f-4d93-879a-08da03a180e8
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4387:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB43875C1D396411406EAEE18B900C9@DM6PR12MB4387.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UXUNd9cmUjBUwcT0acoHOFWHZcTflE/NG+7MgcB+OsZwKTiKG6GKOsYzalps/WODXKMWQTbpA+BViIMKVaT4aRKvmX4S/Z/RsHag0LY5VO/vxNlxu6oPzBnwD6dzbWTNlArvP4Is4OiVFuDH2ViAB2ygwFqG8saKFbX8hZ9yZs0eAkSE7QZmai/pt14KIGn/g7/KsiORDka0d7jiqnviYzjhzx9PgJQmn12gczz929BsBE265aOUkVNsJepGqK+DQw2iqVFQEdNYFdv3GNeNFbLhj18QTce8z1fF6LWKzk8D80HhlPK8Zw+5qZj0ylUfn5NFOj1YBLXI/vmjMrXyY07+KLiK2fSc2spDxGL8JpwkE+p8rg1t33WVrS+z7+V76Q2H6chjBHwflbg3RnSeS+JpILVkKQ7FInoObQhAitbKVuv1+vyPRpl7Chby7SGdrYTzkIVNrzyLLfPz9+4CJLIyOpYJ33L7VIkh3JZGe/XBJPn2CKAiq0bi+LsYXkZ0+aI6tTqqJTBYYl+ghGa8kNk4kgkBvQyT2Q8t6DEmf2eIF/bjLrXx4oUJbaCkAHa6AVEtm2q3wUIx1KdTGz+Rv8b8mnZ/rJG6x9VzN3JUWGrLuWU3rGig1QzSyDY6I2TaX8ljrz4+CKvLdr9JdoFqYQmVU1yr2kf/qfVIGBVkmMUU20XgGt31stIAPi0wAaX4SjnaplWIKeOLFt5jNi8g5JgqdUOc+CfzW3zfa7CBs6aBckdNfSo2eSrv5bnUNJc0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(66946007)(83380400001)(8936002)(4744005)(6486002)(5660300002)(316002)(66476007)(66556008)(4326008)(54906003)(8676002)(2616005)(186003)(508600001)(6666004)(6512007)(6506007)(2906002)(53546011)(36756003)(31686004)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y2FTTlE2QWVEVjUvQUIzaVpGSlFxVzF3d0hKd3craWwyNUlKaEpuNm91OHpZ?=
- =?utf-8?B?UXUzaktKU0FGd2hNWGhGc3praUZqd2psQU1TRzNMVVlGd3F6ekdGY0hFV1BI?=
- =?utf-8?B?SCtGenpyOE5ncmhJa1FZbGJwa3FRRHpESWlFci9nYkVaK3FJYnR6TEdkNDBr?=
- =?utf-8?B?djFiN0lvYUR5SE4zaUZMbHRkOVlaQ2lRUHlZVXluM3ZxcnZoV0JpeHlyK2xh?=
- =?utf-8?B?SE5LMmJWNmF4UE96WEJNdnJnWCt0eHRJRjljOXE3SjAvMWtXS2V5S1JBaFBS?=
- =?utf-8?B?NTI2Sm13b3VRb1N0Rm9GWWV6UTVmUGlReGNocEUyVGF1bHZUdDNyS0ZlaWs1?=
- =?utf-8?B?cmdvVENUSTBCdTRWTGVBelRKd09KR1R4VkpxZFFmc09oU1BXYjdyQjNjVU9Q?=
- =?utf-8?B?dXR6T2EyREFBc1N2bDNUdHpmOFo1UjVjRzNWMS9vQkZjVzNuQWhBMkhUSzRT?=
- =?utf-8?B?aW56RkhrMHlNaUVHN25wZDdKSnJZK2RyUGx5TFdiOWV3YmRLbkEydFlMbzVM?=
- =?utf-8?B?ZmtjdC80OGJyejhWclB4VTJzcHk2ZzV2RE51MGNoVTNrMGU3VU9ubG9PQ1Bk?=
- =?utf-8?B?MzNjVHZhR2hMRXUwS3JXT280ZkhrZDdDNEtBNVBoUHlZTXRvNHZ5cFFJVmpI?=
- =?utf-8?B?WmxTY0hIT3hTNndvWDR1NHZVbE5WZEdFeUNyUjZiWHFoVGt4S2dDcnF4SnE2?=
- =?utf-8?B?S3FjTTNPejZrYTRuRWZpYXd2TEliT1Z3ZkFzS0JhdW5hS3JVMjYvdXJPRFZD?=
- =?utf-8?B?U01FWENmc0xpWUJlSjBXQy85QW1RSmNtK0JONTM3dTNrelZXYVdRZzMwbmtl?=
- =?utf-8?B?aWFpZ3p5aGRnNTFzSlB3dERtNGpSc1FOczBIRlJEUW1wSFBCRTVLaEM5cGxR?=
- =?utf-8?B?YzV4dStHclV3YkI5RlhkaStGa2s0cUcvbW5mTkVQVTh3aE5LNFZMUTFMaGlE?=
- =?utf-8?B?YWVWb0M1SjNpVzQzRGdIa2xELzJZc095K1JSb3Z6eXowWFlQWEZ4Y1J0blNv?=
- =?utf-8?B?Z0JRdldmNlhONUJ3enVmTHRlaVgxTzJURDRtNDdBYmNmTFN6aDdnbC9LWFNp?=
- =?utf-8?B?bjlkdVBFYWMzUFh3bXU2MW1aV3J1NDlPWVVMT2JpQXo3dzlDbVpSdzczUUtK?=
- =?utf-8?B?d0pNRGpHM29zUXlHL25zZ2crTUJVMDR1UkNVR3lHcllhNEpUd1hvNnF6ZEla?=
- =?utf-8?B?MkwxTHdKQnNkcU5oek1QTE10Q1dNcVFQZXhLK0w4NWd3UytSVFd5by9Td0Zu?=
- =?utf-8?B?Z2dSTllnRDhwWmVkajM4OXRBNFpsVVhXMkQ0T0RyOFc0enFWYzdzYjRwd1NO?=
- =?utf-8?B?d3RmMUlJVjNtdkY5U2FMWGZuRlJhSW9NdFlLYWNIdmx5b3Z2MjU4WnFDS0pG?=
- =?utf-8?B?YmVnSmxrc3BsWjRTTlg2RjdkcExrRHB6cU9UYkpwYW4yeVlUZWdWUklIUlEy?=
- =?utf-8?B?UmlVZm5CTXBiS1hYMzVpSnFLS0tPR3pBWG53TXh2aExBd0ZLQlJ1ejJSa1hF?=
- =?utf-8?B?REZPNnNSZ0ZjVytqdjNTM1VTaFAvM1NwSTlEcjdBTGdRVUZWT0p2bjB3eDBJ?=
- =?utf-8?B?aHplOXVpY2tTNEVtSE5TM1JOS2FrZ2dlWWtXZGdudHBoZFREMnc5RGpTRDcy?=
- =?utf-8?B?TEdNZDZhenlHTG5DdHh6b2JFbWoraTZwL1pDRjNzMytQT2JRTWYwNkpjY1FH?=
- =?utf-8?B?QmZsUmgrdm1qZmpUSFJHMnVENHhSTVllM0FSM1J1a295T2J1NTlJVmtnSTAv?=
- =?utf-8?B?eFkrSlp3YzVHSzJmYzBjdmNkNVlEZFVpNko1M3BGTnNmUWl2MzlqbVhnRkF4?=
- =?utf-8?B?QmpyOXpJVXRSMmpJQTZvVkZvVzllQ20xak1pU2xzVjdxYzJCVHRLQS90R2t6?=
- =?utf-8?B?ckJuRHdycDFRRUNwUDNZZG5UMy9FOTlBVG4rbEFVTk5naGw0dVJsNmpoMkZu?=
- =?utf-8?B?QUtjeFNvcnJJanYrWkpmbDdxZDI5RHFiWjBSQ2J4aHloNnhodlBocGpSNVZJ?=
- =?utf-8?B?RWJFaXd0bzdnR2xWSUJZT0xxdEpOTmJNQkdlaEtLOXRiQlRUR3Q3WTZmMk9p?=
- =?utf-8?Q?iQMUy+?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 271a7322-240f-4d93-879a-08da03a180e8
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 20:55:41.7749
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: InoeZARzUbMoDuRoNw2loZaJb6f3xprlsnxodamO8kx8vs4nL/j0ZmOCreABW78ZwlH23eu2nPxX06oH9HHSxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4387
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1642620644-19297-1-git-send-email-quic_mojha@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Wed 19 Jan 13:30 CST 2022, Mukesh Ojha wrote:
 
-Do you have any comments that needs to be addressed on these set of patches?
+> There could be a scenario where there is too much load(n number
+> of tasks which is affined) on a core on which rproc recovery
+> is queued. Due to which, it takes number of seconds to complete
+> the recovery.
+> 
+> If we make this queue unbounded and move it to high priority worker
+> pool then this work can be attempted to finished in less time.
+
+I unfortunately find this reasoning for adding WQ_HIGHPRI rather
+speculative. Please describe a concrete case that warrants the new
+work queue to be high priority.
+
+What is "number of seconds", what is "less time" and why is it more
+important to recover some remote processor than whatever else the system
+is busy doing?
 
 Thanks,
-Smita.
+Bjorn
 
-On 2/14/22 5:36 PM, Smita Koralahalli wrote:
-
-> This set of patches handles a scenario where error injection fails silently
-> on mce-inject module and returns appropriate error code to userspace.
->
-> Error injection fails if the platform enforces write ignored behavior on
-> status registers and the first patch checks for writes ignored from
-> MCA_STATUS register and returns appropriate error code to user.
->
-> The second patch assigns and returns the error code to userspace when none
-> of the CPUs are online.
->
-> Smita Koralahalli (2):
->    x86/mce: Check for writes ignored in MCA_STATUS register
->    x86/mce/mce-inject: Return appropriate error code if CPUs are offline
->
->   arch/x86/kernel/cpu/mce/core.c   |  1 +
->   arch/x86/kernel/cpu/mce/inject.c | 42 +++++++++++++++++++++++++++++---
->   2 files changed, 39 insertions(+), 4 deletions(-)
->
-
+> 
+> Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
+> ---
+>  drivers/remoteproc/remoteproc_core.c | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> index 69f51ac..efb6316 100644
+> --- a/drivers/remoteproc/remoteproc_core.c
+> +++ b/drivers/remoteproc/remoteproc_core.c
+> @@ -59,6 +59,7 @@ static int rproc_release_carveout(struct rproc *rproc,
+>  
+>  /* Unique indices for remoteproc devices */
+>  static DEFINE_IDA(rproc_dev_index);
+> +static struct workqueue_struct *rproc_recovery_wq;
+>  
+>  static const char * const rproc_crash_names[] = {
+>  	[RPROC_MMUFAULT]	= "mmufault",
+> @@ -2752,8 +2753,10 @@ void rproc_report_crash(struct rproc *rproc, enum rproc_crash_type type)
+>  	dev_err(&rproc->dev, "crash detected in %s: type %s\n",
+>  		rproc->name, rproc_crash_to_string(type));
+>  
+> -	/* Have a worker handle the error; ensure system is not suspended */
+> -	queue_work(system_freezable_wq, &rproc->crash_handler);
+> +	if (rproc_recovery_wq)
+> +		queue_work(rproc_recovery_wq, &rproc->crash_handler);
+> +	else
+> +		queue_work(system_freezable_wq, &rproc->crash_handler);
+>  }
+>  EXPORT_SYMBOL(rproc_report_crash);
+>  
+> @@ -2802,6 +2805,11 @@ static void __exit rproc_exit_panic(void)
+>  
+>  static int __init remoteproc_init(void)
+>  {
+> +	rproc_recovery_wq = alloc_workqueue("rproc_recovery_wq", WQ_UNBOUND |
+> +				WQ_HIGHPRI | WQ_FREEZABLE, 0);
+> +	if (!rproc_recovery_wq)
+> +		pr_err("remoteproc: creation of rproc_recovery_wq failed\n");
+> +
+>  	rproc_init_sysfs();
+>  	rproc_init_debugfs();
+>  	rproc_init_cdev();
+> @@ -2818,6 +2826,8 @@ static void __exit remoteproc_exit(void)
+>  	rproc_exit_panic();
+>  	rproc_exit_debugfs();
+>  	rproc_exit_sysfs();
+> +	if (rproc_recovery_wq)
+> +		destroy_workqueue(rproc_recovery_wq);
+>  }
+>  module_exit(remoteproc_exit);
+>  
+> -- 
+> 2.7.4
+> 
