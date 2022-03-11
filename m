@@ -2,199 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10DAFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349036AbiCKOCo (ORCPT
+        id S1349036AbiCKOFR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:02:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34682 "EHLO
+        Fri, 11 Mar 2022 09:05:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238102AbiCKOCl (ORCPT
+        with ESMTP id S239331AbiCKOFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:02:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 802321C57D0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:01:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647007297;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I+nWv4ywDxtdW2kAMKWAd/9h8AiRGVEXkvqyetpKnWc=;
-        b=Tq1z9Srzf6uzlrAUXqGZiT9bTfdi2YP+szhWq24H0sGNXeMb81xeATYDs5AZf32eS8ZoSu
-        r9LUA50/oedaSunzte3Qb5BC8+q6kdB14H7FGbCRUL36C2DGGXlEGZh1uvNgZzOHQzU58o
-        V/iZwrWtvgtPThsXF7C3qKePY9F8Ty4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-sly5me0lPe6uMFhCLHqmOA-1; Fri, 11 Mar 2022 09:01:36 -0500
-X-MC-Unique: sly5me0lPe6uMFhCLHqmOA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C64741854E21;
-        Fri, 11 Mar 2022 14:01:31 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.16.83])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 06A257AD1B;
-        Fri, 11 Mar 2022 14:01:30 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id 58049223A46; Fri, 11 Mar 2022 09:01:30 -0500 (EST)
-Date:   Fri, 11 Mar 2022 09:01:30 -0500
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        David Anderson <dvander@google.com>,
-        Mark Salyzyn <salyzyn@android.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        overlayfs <linux-unionfs@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>, selinux@vger.kernel.org,
-        paulmoore@microsoft.com, luca.boccassi@microsoft.com
-Subject: Re: [PATCH v19 0/4] overlayfs override_creds=off & nested get xattr
- fix
-Message-ID: <YitWOqzIRjnP1lok@redhat.com>
-References: <20211117015806.2192263-1-dvander@google.com>
- <CAOQ4uxjjapFeOAFGLmsXObdgFVYLfNer-rnnee1RR+joxK3xYg@mail.gmail.com>
- <Yao51m9EXszPsxNN@redhat.com>
- <CAOQ4uxjk4piLyx67Ena-FfypDVWzRqVN0xmFUXXPYa+SC4Q-vQ@mail.gmail.com>
- <YapjNRrjpDu2a5qQ@redhat.com>
- <CAHC9VhQTUgBRBEz_wFX8daSA70nGJCJLXj8Yvcqr5+DHcfDmwA@mail.gmail.com>
- <CA+FmFJA-r+JgMqObNCvE_X+L6jxWtDrczM9Jh0L38Fq-6mnbbA@mail.gmail.com>
- <CAHC9VhRer7UWdZyizWO4VuxrgQDnLCOyj8LO7P6T5BGjd=s9zQ@mail.gmail.com>
- <CAHC9VhQkLSBGQ-F5Oi9p3G6L7Bf_jQMWAxug_G4bSOJ0_cYXxQ@mail.gmail.com>
- <CAOQ4uxhfU+LGunL3cweorPPdoCXCZU0xMtF=MekOAe-F-68t_Q@mail.gmail.com>
+        Fri, 11 Mar 2022 09:05:15 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E47DF7464;
+        Fri, 11 Mar 2022 06:04:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1647007450; x=1678543450;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0g8YZ60F6koJZZ5mPXUhXc+2GWru9uudgvFhUcsgcW4=;
+  b=beaOKpnksohKcVErRoo+TAxzUQd9brxNpMSz18hd8ZD2iebgF+hMPbY2
+   5lXhekFSQCwzNPoNKBHqbnxqqnyrfT8ImW0kE3Iod071DB+CZA1e6lxC6
+   P96AK2H/Y+tvyGbLEHkfjmjejQs3Vbm4Dy69FyLk3Pba2Ly8PuYdx5uxV
+   Zss8RhhCcjOL1yT+q+2DoC1fvN5Vn/Zb3TnYllvVnA58ocbBzUNmm0BIg
+   xvgm4uMg/sW/cEeL0hpxMROiO/P0lBjlTuELY+iCmjxmmhcu4qRyFWW+d
+   B2fzmdSj2O1IRIYGAMIYgXbr4oZb+GaO6k5m92t5razpk+0TiAbvjxIY2
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.90,174,1643698800"; 
+   d="scan'208";a="151697579"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Mar 2022 07:04:08 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 11 Mar 2022 07:04:08 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 11 Mar 2022 07:04:08 -0700
+Date:   Fri, 11 Mar 2022 15:07:00 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>, <Divya.Koppera@microchip.com>,
+        <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <20220311140700.ibwyeu5bsz7tkibd@soft-dev3-1.localhost>
+References: <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
+ <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+ <YifoltDp4/Fs+9op@lunn.ch>
+ <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
+ <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <CAOQ4uxhfU+LGunL3cweorPPdoCXCZU0xMtF=MekOAe-F-68t_Q@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 06:09:56AM +0200, Amir Goldstein wrote:
-> On Fri, Mar 11, 2022 at 12:11 AM Paul Moore <paul@paul-moore.com> wrote:
-> >
-> > On Wed, Mar 9, 2022 at 4:13 PM Paul Moore <paul@paul-moore.com> wrote:
-> > > On Tue, Mar 1, 2022 at 12:05 AM David Anderson <dvander@google.com> wrote:
-> > > > On Mon, Feb 28, 2022 at 5:09 PM Paul Moore <paul@paul-moore.com> wrote:
-> >
-> > ...
-> >
-> > > >> This patchset may not have been The Answer, but surely there is
-> > > >> something we can do to support this use-case.
+The 03/09/2022 14:55, Russell King (Oracle) wrote:
+> 
+> On Wed, Mar 09, 2022 at 02:24:43PM +0100, Horatiu Vultur wrote:
+> > The 03/09/2022 00:36, Andrew Lunn wrote:
+> > >
+> > > On Tue, Mar 08, 2022 at 11:14:04PM +0100, Horatiu Vultur wrote:
+> > > > The 03/08/2022 19:10, Andrew Lunn wrote:
+> > > > >
+> > > > > > > So this is a function of the track length between the MAC and the PHY?
+> > > > > >
+> > > > > > Nope.
+> > > > > > This latency represents the time it takes for the frame to travel from RJ45
+> > > > > > module to the timestamping unit inside the PHY. To be more precisely,
+> > > > > > the timestamping unit will do the timestamp when it detects the end of
+> > > > > > the start of the frame. So it represents the time from when the frame
+> > > > > > reaches the RJ45 to when the end of start of the frame reaches the
+> > > > > > timestamping unit inside the PHY.
+> > > > >
+> > > > > I must be missing something here. How do you measure the latency
+> > > > > difference for a 1 meter cable vs a 100m cable?
 > > > >
-> > > > Yup exactly, and we still need patches 3 & 4 to deal with this. My current plan is to try and rework our sepolicy (we have some ideas on how it could be made compatible with how overlayfs works). If that doesn't pan out we'll revisit these patches and think harder about how to deal with the coherency issues.
+> > > > In the same way because the end result will be the same.
 > > >
-> > > Can you elaborate a bit more on the coherency issues?  Is this the dir
-> > > cache issue that is alluded to in the patchset?  Anything else that
-> > > has come up on review?
+> > > The latency from the RJ45 to the PHY will be the same. But the latency
+> > > from the link peer PHY to the local PHY will be much more, 500ns. In
+> > > order for this RJ45 to PHY delay to be meaningful, don't you also need
+> > > to know the length of the cable? Is there a configuration knob
+> > > somewhere for the cable length?
 > > >
-> > > Before I start looking at the dir cache in any detail, did you have
-> > > any thoughts on how to resolve the problems that have arisen?
+> > > I'm assuming the ptp protocol does not try to measure the cable delay,
+> > > since if it did, there would be no need to know the RJ45-PHY delay, it
+> > > would be part of that.
+> > >
+> > > > > Isn't this error all just in the noise?
+> > > >
+> > > > I am not sure I follow this question.
+> > >
+> > > At minimum, you expect to have a 1m cable. The RJ45-PHY track length
+> > > is maybe 2cm? So 2% of the overall length. So you are trying to
+> > > correct the error this 2% causes. If you have a 100m cable, 0.02% is
+> > > RJ45-PHY part that you are trying to correct the error on. These
+> > > numbers seem so small, it seems pointless. It only seems to make sense
+> > > if you know the length of the cable, and to an accuracy of a few cm.
 > >
-> > David, Vivek, Amir, Miklos, or anyone for that matter, can you please
-> > go into more detail on the cache issues?  I *think* I may have found a
-> > potential solution for an issue that could arise when the credential
-> > override is not in place, but I'm not certain it's the only issue :)
+> > I am not trying to adjust for the length of the cable.
+> > If we have the following drawing:
 > >
+> >  MAC                     PHY                    RJ45
+> > -----       --------------------------       --------
+> > |   |       |                        |       |       |
+> > |   |<----->|timestamp | FIFO | GPHY |<----->|       |<------> Peer
+> > |   |       |   unit                 |       |       |
+> > -----       --------------------------       --------
+> >                  ^                                   ^
+> >                  |            latency                |
+> >                  -------------------------------------
+> >
+> > I am trying to calculate this latency, which includes a 2cm of track +
+> > latency inside the PHY. As Richard mentioned also the PHY introduce some
+> > latency which can be microseconds.
 > 
-> Hi Paul,
+> I think we understand this, and compensating for the delay in the PHY
+> is quite reasonable, which surely will be a fixed amount irrespective
+> of the board.
 > 
-> In this thread I claimed that the authors of the patches did not present
-> a security model for overlayfs, such as the one currently in overlayfs.rst.
-> If we had a model we could have debated its correctness and review its
-> implementation.
+> However, Andrew's point is that the latency introduced by the copper
+> wire between the PHY and the RJ45 is insignificant, so insignificant
+> it's not worth bothering with - and I agree.
 
-Agreed. After going through the patch set, I was wondering what's the
-overall security model and how to visualize that.
-
-So probably there needs to be a documentation patch which explains
-what's the new security model and how does it work.
-
-Also think both in terms of DAC and MAC. (Instead of just focussing too
-hard on SELinux).
-
-My understanding is that in current model, some of the overlayfs
-operations require priviliges. So mounter is supposed to be priviliged
-and does the operation on underlying layers.
-
-Now in this new model, there will be two levels of check. Both overlay
-level and underlying layer checks will happen in the context of task
-which is doing the operation. So first of all, all tasks will need
-to have enough priviliges to be able to perform various operations
-on lower layer. 
-
-If we do checks at both the levels in with the creds of calling task,
-I guess that probably is fine. (But will require a closer code inspection
-to make sure there is no privilege escalation both for mounter as well
-calling task).
+OK, that is fine for me, we can ignore the latency introduced by the
+copper wire.
 
 > 
-> As a proof that there is no solid model, I gave an *example* regarding
-> the overlay readdir cache.
+> > I understand if we consider that this latency should not be in the DT
+> > and be part of the driver because the latency over the 2cm or 1.5cm of track
+> > is almost nothing. But then what about the case when we want to add these
+> > latencies to a MAC? They will depend on the latency inside the PHY so
+> > those should come from DT.
 > 
-> When listing a merged dir, meaning, a directory containing entries from
-> several overlay layers, ovl_permission() is called to check user's permission,
-> but ovl_permission() does not currently check permissions to read all layers,
-> because that is not the current overlayfs model.
+> If you want to measure it to the MAC, then yes, the latency through
+> the PHY needs to be considered, and we probably need some new
+> interfaces inside the kernel so that MAC drivers can query phylib
+> to discover what the delay is.
+
+Does that mean that each PHY needs to implement a new API? Because that
+would be a little bit of work to do there.
+
+> I don't think this is soemthing that
+> should be thrown into firmware, since the delay inside the PHY
+> should be constant (depending on what MAC side interface mode is
+> selected.)
 > 
-> Overlayfs has a readdir cache, so without override_cred, a user with high
-> credentials can populate the readdir cache and then a user will fewer
-> credentials, not enough to access the lower layers, but enough to access
-> the upper most layer, will pass ovl_permission() check and be allowed to
-> read from readdir cache.
+> Having it in firmware means that we're reliant on people ensuring
+> that they've looked up the right value for the PHY and its interface
+> mode not just once, but for every board out there - and if an error
+> is found, it brings up the question whether it should be corrected
+> on all boards or just one (and then there'll be questions why some
+> people have chosen randomly different values.)
+> 
+> > So it really doesn't matter to me if I use a 1m cable or 100m cable.
+> > What it matters is to see that mean path delay will be ~5ns for 1m cable
+> > and ~500ns for 100m cable. And if is not, then I need to update the
+> > register to calculate correctly the latency from RJ45 to timestamp unit
+> > in the PHY.
+> 
+> Does this mean you ask the user how long the cable is? Do you get them
+> to measure it to the nearest millimeter?
 
-I am not very familiar with dir caching code. When I read through the
-overlayfs.rst, it gave the impression that caching is per "struct file".
-
-"This merged name list is cached in the
-'struct file' and so remains as long as the file is kept open."
-
-And I was wondering if that's the case, then one user should not be able
-to access the cache built by another priviliged user (until and unless
-privileged user passed fd).
-
-But looks like we build this cache and store in ovl inode and that's
-why this issue of cache built by higher privileged process will be
-accessible to lower privileged process.
-
-With current model this is not an issue because "mounter" is providing
-those privileges to unprivileged process. So while unprivileged process
-can't do "readdir" on an underlying lower dir, it might still be able
-to do that through an overlay mount. But if we don't switch to mounter's
-creds, then we probably can't rely on this dir caching. Agreed that
-disabling dir caching seems simplest solution if we were to do
-override_creds=off.
-
-Thanks
-Vivek
+My expectation is that the end user should not care about the length of
+the cable. He just needs to start ptp4l and have some sane results.
+Only the board manufacture were supposed to know the length of the
+cable to set their latency values.
 
 > 
-> This specific problem can be solved in several ways - disable readdir
-> cache with override_cred=off, check all layers in ovl_permission().
-> That's not my point. My point is that I provided a proof that the current
-> model of override_cred=off is flawed and it is up to the authors of the
-> patch to fix the model and provide the analysis of overlayfs code to
-> prove the model's correctness.
-> 
-> The core of the matter is there is no easy way to "merge" the permissions
-> from all layers into a single permission blob that could be checked once.
-> 
-> Maybe the example I gave is the only flaw in the model, maybe not
-> I am not sure. I will be happy to help you in review of a model and the
-> solution that you may have found.
-> 
-> Thanks,
-> Amir.
-> 
+> What about the overlap in the RJ45 connectors, and the height of the
+> pins in the RJ45? Some RJ45 connectors have staggered lengths for
+> their pins which would affect the true length. What about the total
+> length of the conductors in the RJ45 socket to the point that the
+> RJ45 plug makes contact? What happens if production then has to
+> change the make of RJ45 socket due to supply issues (which given
+> what is going on in the world at the moment is not unlikely.)
 
+If they don't introduce any significat latency then we can ignore them.
+
+> 
+> If you care about the 20mm or so on the board, then you ought to care
+> about all these other factors as well, and I suspect you're going to
+> be hard pressed to gather all that.
+> 
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+-- 
+/Horatiu
