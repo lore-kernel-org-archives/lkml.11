@@ -2,110 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB702C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DBCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbiCKXz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:55:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
+        id S229864AbiCKX4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:56:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiCKXz1 (ORCPT
+        with ESMTP id S229808AbiCKX4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:55:27 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD40E6DBC;
-        Fri, 11 Mar 2022 14:23:24 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id k5-20020a17090a3cc500b001befa0d3102so9322725pjd.1;
-        Fri, 11 Mar 2022 14:23:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NRfHmLV6jC//S0JUnsW7EkyoAJl8Vb/or5+A/gBKAzM=;
-        b=KwPsT2XsrHShv56NDjUu3yvGQa1JlqCIdWproXqbg0elY5sxpXeo0jGIjpog1jChpi
-         l3dl2QAURioV1sWFgBC6rU++phG9LloQXtBVTzFVf9zjriVpimSq1gB881YT5sdLGfCm
-         f7MOSPCElXan/sdrSTwGt4sjsY7A1JBpgzh2Flwbq5F3z1mBemRaxQcxwKye6b8vOiDm
-         OTYLAvOcQTstwGN+sfa4LteZ6Tt4VPiJQdOYRdYfTwvbqxgiv7ZaD8cKJd+yD9V/BrFk
-         EEvv3Yxg92wD1nDc+lrdjhYVextf5yiEEd8VD6rbYEpvf3mCVrrOlr9zk2ldJeVW9BIl
-         kIjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NRfHmLV6jC//S0JUnsW7EkyoAJl8Vb/or5+A/gBKAzM=;
-        b=DW76xWJ0v2gdlCWZsCsOdD3LHfjp2VFmjucyvToYxBG5cPAGANISPku+fkOQDIzPuH
-         C+6qKtvSJLO+NLBNIIAjbGRrwM62gIZ4bi8FnOd6ZssUr0q4d3y11WZtArWIeblRJVOj
-         LAlzaam0RJ/YFfztOAPGHKw+qCBIHTqn8DMArIzOc33NdrmTH/rww7kMoNLi9IuRMTiQ
-         uCJtt2t0Jmdjc9dlsszsKEka/8ZboHTUcmvOSpNmHiDJ2c/rnP+gT6YcyN2yVgf1Ke90
-         i97+J79M20PP2UIJMqeORG/I1wBXh42x7F6IRmRSDtYf7+6IbDVMkHdtCPpCPnVQPRlI
-         hX0g==
-X-Gm-Message-State: AOAM531GXcfAy3vSVuC1FvD7iprLxvaPGA4JNx97Ywpl6LQAe+eue8Bh
-        +9o1Vm22AFSgTrYcchnSKxVU+MK/cvRPEGcLWQU=
-X-Google-Smtp-Source: ABdhPJx1WAK57P7gss50W9Beemu0j3TP092wJbDltjPnhLzW3G3PvAU64j0v2RUJlFUyoFI9PzM7BBFicNEKCvBtXJY=
-X-Received: by 2002:a17:902:e80d:b0:151:e043:a2c3 with SMTP id
- u13-20020a170902e80d00b00151e043a2c3mr12518835plg.64.1647037404220; Fri, 11
- Mar 2022 14:23:24 -0800 (PST)
+        Fri, 11 Mar 2022 18:56:37 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 225EFD81;
+        Fri, 11 Mar 2022 15:55:33 -0800 (PST)
+Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id AEEBD20B7178;
+        Fri, 11 Mar 2022 15:55:32 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AEEBD20B7178
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1647042932;
+        bh=6ZrDSYmvOkJ2v9dCqiXvjF1J0+mtHZ+4Ek2KC4gi76A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LmGw75nB1upmYXQfSTaJS2g/obC5mRoX6+8DlI2WGujX4olHKXtaqL5YU5rcfXCb7
+         O8UTDNYG9RoZvKlIPyV9w8wVAseYw/UDgPGdKgyCDIAD4NYWGbwVNHhw7c36XkFWaw
+         iKyuvTGGv/gyxPlSg57S4R2uQtYB4EWFx+arVAuI=
+Date:   Fri, 11 Mar 2022 15:55:30 -0800
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mhiramat@kernel.org, anders.roxell@linaro.org,
+        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org
+Subject: Re: [PATCH] user_events: Use alloc_pages instead of kzalloc for
+ register pages
+Message-ID: <20220311235530.GB2101@kbox>
+References: <20220311223028.1865-1-beaub@linux.microsoft.com>
+ <20220311183343.4d8c94a5@gandalf.local.home>
+ <20220311184440.537e9f83@gandalf.local.home>
 MIME-Version: 1.0
-References: <20220311032828.702392-1-imagedong@tencent.com>
- <20220310195429.4ba93edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CADxym3YybdOPMwHr3TOf0vxAN5W8mMdeQmQiQq_nr-1SSF5jMA@mail.gmail.com>
-In-Reply-To: <CADxym3YybdOPMwHr3TOf0vxAN5W8mMdeQmQiQq_nr-1SSF5jMA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 11 Mar 2022 14:23:13 -0800
-Message-ID: <CAADnVQ+XOqPXVaVVQ0HDtBob6Kv48AqEQrn8mS4rPyiNUGQXBw@mail.gmail.com>
-Subject: Re: [PATCH] net: skb: move enum skb_drop_reason to uapi
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Mengen Sun <mengensun@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311184440.537e9f83@gandalf.local.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 8:58 PM Menglong Dong <menglong8.dong@gmail.com> wrote:
->
-> On Fri, Mar 11, 2022 at 11:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Fri, 11 Mar 2022 11:28:28 +0800 menglong8.dong@gmail.com wrote:
-> > > From: Menglong Dong <imagedong@tencent.com>
-> > >
-> > > Move the definition of 'enum skb_drop_reason' in 'skbuff.h' to the uapi
-> > > header 'net_dropmon.h', therefore some users, such as eBPF program, can
-> > > make use of it.
-> >
-> > BPF does not need an enum definition to be part of the uAPI to make use
-> > of it. BTF should encode the values, and CO-RE can protect from them
-> > changing, AFAIU. I think we need a better example user / justification.
->
-> There is something wrong with my description, it's not the eBPF, but the user
-> program that loads eBPF.
->
-> In my case, I'll pass the packet info (protocol, ip, port, etc) and drop reason
-> to user space by eBPF that is attached on the kfree_skb() tracepoint.
->
-> In the user space, I'll custom the description for drop reasons and convert them
-> from int to string. Therefore, I need to use 'enum skb_drop_reason' in my
-> user space code.
+On Fri, Mar 11, 2022 at 06:44:40PM -0500, Steven Rostedt wrote:
+> On Fri, 11 Mar 2022 18:33:43 -0500
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+> > I tried it slightly differently. Why waist bits if MAX_EVENTS is greater
+> > than the order. That is, make MAX_EVENTS depend on the order, not the other
+> > way around.
+> 
+> Here's a version that keeps the reserving part as well as some bug fixes (I
+> didn't even compile the previous version ;-)
+> 
+> -- Steve
+> 
+> diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+> index 4febc1d6ae72..e10ad057e797 100644
+> --- a/kernel/trace/trace_events_user.c
+> +++ b/kernel/trace/trace_events_user.c
+> @@ -30,9 +30,10 @@
+>  
+>  /*
+>   * Limits how many trace_event calls user processes can create:
+> - * Must be multiple of PAGE_SIZE.
+> + * Must be a power of two of PAGE_SIZE.
+>   */
+> -#define MAX_PAGES 1
+> +#define MAX_PAGE_ORDER 0
+> +#define MAX_PAGES (1 << MAX_PAGE_ORDER)
+>  #define MAX_EVENTS (MAX_PAGES * PAGE_SIZE)
+>  
+>  /* Limit how long of an event name plus args within the subsystem. */
+> @@ -1622,16 +1623,17 @@ static void set_page_reservations(bool set)
+>  
+>  static int __init trace_events_user_init(void)
+>  {
+> +	struct page *pages;
+>  	int ret;
+>  
+>  	/* Zero all bits beside 0 (which is reserved for failures) */
+>  	bitmap_zero(page_bitmap, MAX_EVENTS);
+>  	set_bit(0, page_bitmap);
+>  
+> -	register_page_data = kzalloc(MAX_EVENTS, GFP_KERNEL);
+> -
+> -	if (!register_page_data)
+> +	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, MAX_PAGE_ORDER);
+> +	if (!pages)
+>  		return -ENOMEM;
+> +	register_page_data = page_address(pages);
+>  
+>  	set_page_reservations(true);
+>  
+> @@ -1640,7 +1642,7 @@ static int __init trace_events_user_init(void)
+>  	if (ret) {
+>  		pr_warn("user_events could not register with tracefs\n");
+>  		set_page_reservations(false);
+> -		kfree(register_page_data);
+> +		__free_pages(pages, MAX_PAGE_ORDER);
+>  		return ret;
+>  	}
+>  
 
-As Jakub said there is no reason to expose this in uapi.
+This looks good to me, I agree having the max events aligning to page
+order makes more sense going forward.
 
-> For now, I copied the definition of 'enum skb_drop_reason' to my code,
-> and I think it's better to make them uapi, considering someone else may
-> use it this way too.
-
-No. Please use CO-RE and vmlinux.h instead.
+Thanks,
+-Beau
