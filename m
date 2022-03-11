@@ -2,177 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1777EC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A202DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230029AbiCKXBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:01:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
+        id S229966AbiCKXCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:02:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230154AbiCKXBj (ORCPT
+        with ESMTP id S230114AbiCKXBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:01:39 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F32CD4CAF;
-        Fri, 11 Mar 2022 14:54:06 -0800 (PST)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BKJfOq013012;
-        Fri, 11 Mar 2022 21:03:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=AMfTQPWUKvQIp3nGKr1gvqWa8g4OU+tTTF1NxO5iCBw=;
- b=quf1nfXdI9fv3YZig4FtVW3NetDo+gTB0baRqAESMexUEBwK//ED/7yl6TJgwg3UwiWq
- 8VJs6HOk/IybdvCrfv+433ukp3q4rZZ7GeDP+MaS4OYP46HvzRIJc9kBDcNObF0PFGMc
- zvUwXV6JmVgGwMUpKG2xGoneRSEv5xoricxvsjlaJczedrMr1ikb2PJPxPQGheJJ8WVJ
- Qn4KexsvLsqErWxR/VnzzIHG/5jR84OpueX6Ufu3wZQehe/uJ8gV5r3HxWCVckR52N8E
- C9GqvUQjBjlN9IgyxztBynas/c4fXeIeyJOpRI0VgLcaNvDT1fTl0OsDPvbwjsmslcw3 fw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqfxgv0hf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:03:59 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22BKtLBA002633;
-        Fri, 11 Mar 2022 21:03:58 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqfxgv0gs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:03:58 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22BL3caM025881;
-        Fri, 11 Mar 2022 21:03:56 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma01fra.de.ibm.com with ESMTP id 3ekyg8njt0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:03:55 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22BL3qIc48169228
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Mar 2022 21:03:52 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 889094C040;
-        Fri, 11 Mar 2022 21:03:52 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CFA544C04E;
-        Fri, 11 Mar 2022 21:03:48 +0000 (GMT)
-Received: from li-4b5937cc-25c4-11b2-a85c-cea3a66903e4.ibm.com.com (unknown [9.211.110.168])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 11 Mar 2022 21:03:48 +0000 (GMT)
-From:   Nayna Jain <nayna@linux.ibm.com>
-To:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
-Cc:     dhowells@redhat.com, zohar@linux.ibm.com, jarkko@kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, rnsastry@linux.ibm.com, masahiroy@kernel.org,
-        Nayna Jain <nayna@linux.ibm.com>
-Subject: [PATCH v12 0/4] integrity: support including firmware ".platform" keys at build time 
-Date:   Fri, 11 Mar 2022 16:03:40 -0500
-Message-Id: <20220311210344.102396-1-nayna@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: vFj6BitYF0x-cbuTSlcAlvP41isWo2s8
-X-Proofpoint-ORIG-GUID: 29tSgp1oZs-enh7p1uMj0CP5vo99aQgQ
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 11 Mar 2022 18:01:47 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6409A24DD60
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:54:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647039298; x=1678575298;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=eKBtcpoHrPqlKqhYnJeiJbBZO+7HypJb6qXhbR6fhOA=;
+  b=BE+Y2Q3sDaMDsHHuAkmZfaCAFIBAOp+dOMnTRLJUVT2ReZiUPxaMuPEm
+   Op+/sBGvIridRm6qYNRb2mFq532vu9aHEJqJKTlZF3d1JMHIOorD3HTxp
+   zAbdELs8nY5Czb+3Su2v0xXd17BNsJyZX1kNpGya8yOwmzHb5VUjJ++Gm
+   /2ygUrFYcfIo9XMh/4RRdqYn9jQBX/4S9CgQfwGnAT711qO+A6s7VQrLC
+   hNAGlo92R1ljkZWOWIPPO3UVSdeQpPRMo5S1/8Co7VooKiKacWpWf8AvR
+   uWdLMTI6sltsfg4KF1Y3Llhmei7Qk4peobfy99G8Vsx3LMscj4JEATC44
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="235620724"
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="235620724"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 14:54:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="712995916"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 11 Mar 2022 14:54:54 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSo9u-0007DK-05; Fri, 11 Mar 2022 22:54:54 +0000
+Date:   Sat, 12 Mar 2022 06:54:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Pavel Tatashin <pasha.tatashin@soleen.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Matthias Brugger <mbrugger@suse.com>
+Subject: arch/arm64/kernel/hibernate.c:202:44: sparse: sparse: cast from
+ restricted gfp_t
+Message-ID: <202203120653.S3Am11od-lkp@intel.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-11_08,2022-03-11_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- lowpriorityscore=0 suspectscore=0 bulkscore=0 clxscore=1015 adultscore=0
- mlxscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203110103
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some firmware support secure boot by embedding static keys to verify the
-Linux kernel during boot. However, these firmware do not expose an
-interface for the kernel to load firmware keys onto the ".platform"
-keyring, preventing the kernel from verifying the kexec kernel image
-signature.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   68453767131a5deec1e8f9ac92a9042f929e585d
+commit: 50f53fb721817a6efa541cca24f1b7caa84801c1 arm64: trans_pgd: make trans_pgd_map_page generic
+date:   1 year, 1 month ago
+config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220312/202203120653.S3Am11od-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=50f53fb721817a6efa541cca24f1b7caa84801c1
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 50f53fb721817a6efa541cca24f1b7caa84801c1
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kernel/
 
-This patchset exports load_certificate_list() and defines a new function
-load_builtin_platform_cert() to load compiled in certificates onto the
-".platform" keyring.
-
-Changelog:
-v12:
-* Replace Patch 3/4 with reverting of the commit as suggested by
-Masahiro Yamada.
-
-v11:
-* Added a new patch to conditionally build extract-cert if
-PLATFORM_KEYRING is enabled.
-
-v10:
-* Fixed the externs warning for Patch 3.
-
-v9:
-* Rebased on Jarkko's repo - 
-git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
-
-v8:
-* Includes Jarkko's feedback on patch description and removed Reported-by
-for Patch 1.
-
-v7:
-* Incldues Jarkko's feedback on patch description for Patch 1 and 3.
-
-v6:
-* Includes Jarkko's feedback:
- * Split Patch 2 into two.
- * Update Patch description.
-
-v5:
-* Renamed load_builtin_platform_cert() to load_platform_certificate_list()
-and config INTEGRITY_PLATFORM_BUILTIN_KEYS to INTEGRITY_PLATFORM_KEYS, as
-suggested by Mimi Zohar.
-
-v4:
-* Split into two patches as per Mimi Zohar and Dimitri John Ledkov
-recommendation.
-
-v3:
-* Included Jarkko's feedback
- ** updated patch description to include approach.
- ** removed extern for function declaration in the .h file.
-* Included load_certificate_list() within #ifdef CONFIG_KEYS condition.
-
-v2:
-* Fixed the error reported by kernel test robot
-* Updated patch description based on Jarkko's feedback.
-
-Nayna Jain (4):
-  certs: export load_certificate_list() to be used outside certs/
-  integrity: make integrity_keyring_from_id() non-static
-  Revert "certs: move scripts/extract-cert to certs/"
-  integrity: support including firmware ".platform" keys at build time
-
- MAINTAINERS                                   |  1 +
- certs/.gitignore                              |  1 -
- certs/Makefile                                | 18 ++++++---------
- certs/blacklist.c                             |  1 -
- certs/common.c                                |  2 +-
- certs/common.h                                |  9 --------
- certs/system_keyring.c                        |  1 -
- include/keys/system_keyring.h                 |  6 +++++
- scripts/.gitignore                            |  1 +
- scripts/Makefile                              | 12 ++++++++--
- {certs => scripts}/extract-cert.c             |  2 +-
- scripts/remove-stale-files                    |  2 --
- security/integrity/Kconfig                    | 10 ++++++++
- security/integrity/Makefile                   | 15 +++++++++++-
- security/integrity/digsig.c                   |  2 +-
- security/integrity/integrity.h                |  9 ++++++++
- .../integrity/platform_certs/platform_cert.S  | 23 +++++++++++++++++++
- .../platform_certs/platform_keyring.c         | 23 +++++++++++++++++++
- 18 files changed, 107 insertions(+), 31 deletions(-)
- delete mode 100644 certs/common.h
- rename {certs => scripts}/extract-cert.c (98%)
- create mode 100644 security/integrity/platform_certs/platform_cert.S
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
-base-commit: fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9
--- 
-2.34.1
+sparse warnings: (new ones prefixed by >>)
+   arch/arm64/kernel/hibernate.c:181:39: sparse: sparse: cast to restricted gfp_t
+>> arch/arm64/kernel/hibernate.c:202:44: sparse: sparse: cast from restricted gfp_t
+
+vim +202 arch/arm64/kernel/hibernate.c
+
+   183	
+   184	/*
+   185	 * Copies length bytes, starting at src_start into an new page,
+   186	 * perform cache maintenance, then maps it at the specified address low
+   187	 * address as executable.
+   188	 *
+   189	 * This is used by hibernate to copy the code it needs to execute when
+   190	 * overwriting the kernel text. This function generates a new set of page
+   191	 * tables, which it loads into ttbr0.
+   192	 *
+   193	 * Length is provided as we probably only want 4K of data, even on a 64K
+   194	 * page system.
+   195	 */
+   196	static int create_safe_exec_page(void *src_start, size_t length,
+   197					 unsigned long dst_addr,
+   198					 phys_addr_t *phys_dst_addr)
+   199	{
+   200		struct trans_pgd_info trans_info = {
+   201			.trans_alloc_page	= hibernate_page_alloc,
+ > 202			.trans_alloc_arg	= (void *)GFP_ATOMIC,
+   203		};
+   204	
+   205		void *page = (void *)get_safe_page(GFP_ATOMIC);
+   206		pgd_t *trans_pgd;
+   207		int rc;
+   208	
+   209		if (!page)
+   210			return -ENOMEM;
+   211	
+   212		memcpy(page, src_start, length);
+   213		__flush_icache_range((unsigned long)page, (unsigned long)page + length);
+   214	
+   215		trans_pgd = (void *)get_safe_page(GFP_ATOMIC);
+   216		if (!trans_pgd)
+   217			return -ENOMEM;
+   218	
+   219		rc = trans_pgd_map_page(&trans_info, trans_pgd, page, dst_addr,
+   220					PAGE_KERNEL_EXEC);
+   221		if (rc)
+   222			return rc;
+   223	
+   224		/*
+   225		 * Load our new page tables. A strict BBM approach requires that we
+   226		 * ensure that TLBs are free of any entries that may overlap with the
+   227		 * global mappings we are about to install.
+   228		 *
+   229		 * For a real hibernate/resume cycle TTBR0 currently points to a zero
+   230		 * page, but TLBs may contain stale ASID-tagged entries (e.g. for EFI
+   231		 * runtime services), while for a userspace-driven test_resume cycle it
+   232		 * points to userspace page tables (and we must point it at a zero page
+   233		 * ourselves). Elsewhere we only (un)install the idmap with preemption
+   234		 * disabled, so T0SZ should be as required regardless.
+   235		 */
+   236		cpu_set_reserved_ttbr0();
+   237		local_flush_tlb_all();
+   238		write_sysreg(phys_to_ttbr(virt_to_phys(trans_pgd)), ttbr0_el1);
+   239		isb();
+   240	
+   241		*phys_dst_addr = virt_to_phys(page);
+   242	
+   243		return 0;
+   244	}
+   245	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
