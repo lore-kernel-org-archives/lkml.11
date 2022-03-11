@@ -2,40 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D64C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9620C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiCKXvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:51:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
+        id S230057AbiCKXvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:51:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiCKXux (ORCPT
+        with ESMTP id S229990AbiCKXuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:50:53 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD42647D
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:49:47 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 463EF20132A;
-        Sat, 12 Mar 2022 00:49:46 +0100 (CET)
+        Fri, 11 Mar 2022 18:50:54 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6C2E039;
+        Fri, 11 Mar 2022 15:49:46 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 5DCAE1A0FDC;
+        Sat, 12 Mar 2022 00:49:44 +0100 (CET)
 Received: from smtp.na-rdc02.nxp.com (usphx01srsp001v.us-phx01.nxp.com [134.27.49.11])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0801D201323;
-        Sat, 12 Mar 2022 00:49:46 +0100 (CET)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1FDB61A00A6;
+        Sat, 12 Mar 2022 00:49:44 +0100 (CET)
 Received: from right.am.freescale.net (right.am.freescale.net [10.81.116.142])
-        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id 0E67040579;
-        Fri, 11 Mar 2022 16:49:44 -0700 (MST)
+        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id DE0374043C;
+        Fri, 11 Mar 2022 16:49:42 -0700 (MST)
 From:   Li Yang <leoyang.li@nxp.com>
 To:     Bjorn Helgaas <bhelgaas@google.com>
 Cc:     Hou Zhiqiang <Zhiqiang.Hou@nxp.com>, Rob Herring <robh@kernel.org>,
         linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xiaowei Bao <xiaowei.bao@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>
-Subject: [PATCH v3 3/4] dt-bindings: pci: layerscape-pci: Add EP mode compatible strings for ls1028a
-Date:   Fri, 11 Mar 2022 17:49:37 -0600
-Message-Id: <20220311234938.8706-4-leoyang.li@nxp.com>
+        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>
+Subject: [PATCH v3 0/4] layerscape-pci binding updates
+Date:   Fri, 11 Mar 2022 17:49:34 -0600
+Message-Id: <20220311234938.8706-1-leoyang.li@nxp.com>
 X-Mailer: git-send-email 2.25.1.377.g2d2118b
-In-Reply-To: <20220311234938.8706-1-leoyang.li@nxp.com>
-References: <20220311234938.8706-1-leoyang.li@nxp.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: ClamAV using ClamSMTP
@@ -43,30 +40,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaowei Bao <xiaowei.bao@nxp.com>
+This series includes two binding changes from Zhiqiang's previous
+submission ("[PATCHv5 0/6] PCI: layerscape: Add power management
+support") and rebased to latest 5.17-rc1:
 
-Add EP mode compatible string for ls1028a.
+They describe the hardware and are not necessarily connected with the PM
+driver changes.  The series also includes two other binding updates to
+better describe the pcie hardware.
 
-Signed-off-by: Xiaowei Bao <xiaowei.bao@nxp.com>
-Signed-off-by: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
-Signed-off-by: Li Yang <leoyang.li@nxp.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/pci/layerscape-pci.txt | 1 +
- 1 file changed, 1 insertion(+)
+Updates in v3:
+- Change the example to ls1088a as recommended by Hou Zhiqiang
+- Change leading tabs in schema example to spaces
+- Added reviewed by from Rob.  Now all the patches in the series are
+  reviewed by DT maintainer.
 
-diff --git a/Documentation/devicetree/bindings/pci/layerscape-pci.txt b/Documentation/devicetree/bindings/pci/layerscape-pci.txt
-index f1115fcd8088..8fd6039a826b 100644
---- a/Documentation/devicetree/bindings/pci/layerscape-pci.txt
-+++ b/Documentation/devicetree/bindings/pci/layerscape-pci.txt
-@@ -23,6 +23,7 @@ Required properties:
-         "fsl,ls1012a-pcie"
-         "fsl,ls1028a-pcie"
-   EP mode:
-+	"fsl,ls1028a-pcie-ep", "fsl,ls-pcie-ep"
- 	"fsl,ls1046a-pcie-ep", "fsl,ls-pcie-ep"
- 	"fsl,ls1088a-pcie-ep", "fsl,ls-pcie-ep"
- 	"fsl,ls2088a-pcie-ep", "fsl,ls-pcie-ep"
+Updates in v2:
+- Refined the description of AER/PME in binding and updated commit
+  message
+- Changed AER/PME to upper case
+- Added Ack from Rob
+
+Hou Zhiqiang (2):
+  dt-bindings: pci: layerscape-pci: Add a optional property big-endian
+  dt-bindings: pci: layerscape-pci: Update the description of SCFG
+    property
+
+Li Yang (1):
+  dt-bindings: pci: layerscape-pci: define AER/PME interrupts
+
+Xiaowei Bao (1):
+  dt-bindings: pci: layerscape-pci: Add EP mode compatible strings for
+    ls1028a
+
+ .../bindings/pci/layerscape-pci.txt           | 65 +++++++++++--------
+ 1 file changed, 38 insertions(+), 27 deletions(-)
+
 -- 
 2.25.1
 
