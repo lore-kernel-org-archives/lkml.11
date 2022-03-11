@@ -2,152 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E512C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8FCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229490AbiCKWro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:47:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
+        id S229839AbiCKWr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:47:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiCKWr2 (ORCPT
+        with ESMTP id S229589AbiCKWrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:47:28 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704D3203BDB
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:22:24 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id p15so21946314ejc.7
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:22:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=BQM5s6KARQo6xsMTrgtyjfqQgxp9yGfc0ghCKKcQtf8=;
-        b=rW/V0Cqhy9qbkUdJ08Dw1HwcmmSatPyby1AlVx9WHUmj9YQZXnZI6RRhui0BKniegl
-         Bp4L5KkXUZfWD6SlN1Mvrh1Lvk3p0ITMLPhbZQCXgqS7Yq+2PZ6lA8nNYPL0qHRDFzT6
-         5FrpxfTqET6rhn/cJiLvzXJ0XafMN+n1STTLYYqei2QcB891AuBOiL0LtdufoxoieDmv
-         VhrwqolLTex1i3JOkNgCh/2wmS9XMMwGcMlZYG7X2l49KbEfZ6DjIIfZw62E5a+gVdTv
-         OwHdtrKmna54ohmVYQnBKcHjgaGCKQFMWyxt7uCVl4q0dm/OyD+28lS8CyPG2PRdOSWf
-         /nrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=BQM5s6KARQo6xsMTrgtyjfqQgxp9yGfc0ghCKKcQtf8=;
-        b=8Oo0Fey65HWeDHjudJ2H2HoO+1StrmSYdtkZSlKIi3g02cDA93VGh57205iA32aSxd
-         FedTZ2R/b6Xj7oeZKqwnENPuORyIz0LjN2IRTqzSUlFr3DB1D6tRIE8Jm8rBjJGfqSbP
-         BSse7rFBTG/D5aAR3K49rFQZCfQXIGM6NncQLXA1VT5JHJxMuyjOusjM4ixtUFl4AZbD
-         FUd7IWrqr1BuQtD6aMRRfJsmSizkWgmoRkdknUbWl2lmDhJPX90PFFsevFdQFA1CBkvM
-         UNl82GHyaAE3BWxC8GsnyCtNdqQ6WS+oEXz8izNl6yYJfvgpdf2V9EYoLxY7oZIV7UYC
-         qvVQ==
-X-Gm-Message-State: AOAM531zuz9WRoJ9egeThwJPPk7hqAfRpnjJJEB3zYA1CvMgbZtfqq0y
-        Cdqaqja00UCSU/jy6GaHEKgGxe0df8jNBCulVn5O90IGUg==
-X-Google-Smtp-Source: ABdhPJyYYX7Wm53Pi2h5di1/gf7hL0sQSYVXL0VPvZQ90klkGVBoawKXG5YHabI6/+DnOGW87KYt9/tNYbHqYtRdtZw=
-X-Received: by 2002:a05:6402:d2:b0:413:2e50:d6fd with SMTP id
- i18-20020a05640200d200b004132e50d6fdmr10938615edu.171.1647036912117; Fri, 11
- Mar 2022 14:15:12 -0800 (PST)
-MIME-Version: 1.0
-References: <20220228215935.748017-1-mic@digikod.net> <20220301092232.wh7m3fxbe7hyxmcu@wittgenstein>
- <f6b63133-d555-a77c-0847-de15a9302283@digikod.net> <CAHC9VhQd3rL-13k0u39Krkdjp2_dtPfgEPxr=kawWUM9FjjOsw@mail.gmail.com>
- <8d520529-4d3e-4874-f359-0ead9207cead@canonical.com>
-In-Reply-To: <8d520529-4d3e-4874-f359-0ead9207cead@canonical.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 11 Mar 2022 17:15:01 -0500
-Message-ID: <CAHC9VhRrjqe1AdZYtjpzLJyBF6FTeQ4EcEwsOd2YMimA5_tzEA@mail.gmail.com>
-Subject: Re: [PATCH v1] fs: Fix inconsistent f_mode
-To:     John Johansen <john.johansen@canonical.com>,
-        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        Eric Paris <eparis@parisplace.org>,
-        James Morris <jmorris@namei.org>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Steve French <sfrench@samba.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@linux.microsoft.com>,
-        selinux@vger.kernel.org, Casey Schaufler <casey@schaufler-ca.com>
+        Fri, 11 Mar 2022 17:47:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A905298F33;
+        Fri, 11 Mar 2022 14:22:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3A00B82D7E;
+        Fri, 11 Mar 2022 21:46:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A1EAC340E9;
+        Fri, 11 Mar 2022 21:46:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647035186;
+        bh=iXp2TGfLwLiTBFPs1pvk41RMObc7ZpenPk6oFMs3zGo=;
+        h=Subject:From:To:Date:From;
+        b=KyPuszPcw09aw7u5sDlCpBl3H7Su2CmudLK+mrTbuYPUXf11fpQFjTRN7iVlf3oN+
+         0TlC9FvN8kK9TC1yd2rF5hC7/NYn/gcED6bkBO60bEDjRFAbwyXT2wCvN0aeSVkXRk
+         PqpAysjHEx6qyly6XaFatX+CiWzEXiZe31PsXHLu/bHWU6vz4GpK6XrxVVNRRQPDik
+         uljSF5Ob+4a8Xv3hmnsiytjR9gXBPIZEIU5+uEcB4pjO69po5PXlNaHayFs4pYs+7P
+         pI0q1krEQWTc94D0U8FzBrRSeoeSyqm4sqjEmbO7WUqwvNYjuLafxYmyX2RHH/WllK
+         KquAhIuKakmEA==
+Message-ID: <0af02f70d3a0b3653bb3079266878f13e6682a69.camel@kernel.org>
+Subject: [ANNOUNCE] 5.4.182-rt71
+From:   Tom Zanussi <zanussi@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Wagner <wagi@monom.org>,
+        Clark Williams <williams@redhat.com>,
+        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
+        Tom Zanussi <zanussi@kernel.org>
+Date:   Fri, 11 Mar 2022 15:46:23 -0600
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 7:36 PM John Johansen
-<john.johansen@canonical.com> wrote:
-> On 3/9/22 13:31, Paul Moore wrote:
-> > On Tue, Mar 1, 2022 at 5:15 AM Micka=C3=ABl Sala=C3=BCn <mic@digikod.ne=
-t> wrote:
-> >> On 01/03/2022 10:22, Christian Brauner wrote:
-> >>> On Mon, Feb 28, 2022 at 10:59:35PM +0100, Micka=C3=ABl Sala=C3=BCn wr=
-ote:
-> >>>> From: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
-> >>>>
-> >>>> While transitionning to ACC_MODE() with commit 5300990c0370 ("Saniti=
-ze
-> >>>> f_flags helpers") and then fixing it with commit 6d125529c6cb ("Fix
-> >>>> ACC_MODE() for real"), we lost an open flags consistency check.  Ope=
-ning
-> >>>> a file with O_WRONLY | O_RDWR leads to an f_flags containing MAY_REA=
-D |
-> >>>> MAY_WRITE (thanks to the ACC_MODE() helper) and an empty f_mode.
-> >>>> Indeed, the OPEN_FMODE() helper transforms 3 (an incorrect value) to=
- 0.
-> >>>>
-> >>>> Fortunately, vfs_read() and vfs_write() both check for FMODE_READ, o=
-r
-> >>>> respectively FMODE_WRITE, and return an EBADF error if it is absent.
-> >>>> Before commit 5300990c0370 ("Sanitize f_flags helpers"), opening a f=
-ile
-> >>>> with O_WRONLY | O_RDWR returned an EINVAL error.  Let's restore this=
- safe
-> >>>> behavior.
-> >>>
-> >>> That specific part seems a bit risky at first glance. Given that the
-> >>> patch referenced is from 2009 this means we've been allowing O_WRONLY=
- |
-> >>> O_RDWR to succeed for almost 13 years now.
-> >>
-> >> Yeah, it's an old bug, but we should keep in mind that a file descript=
-or
-> >> created with such flags cannot be used to read nor write. However,
-> >> unfortunately, it can be used for things like ioctl, fstat, chdir=E2=
-=80=A6 I
-> >> don't know if there is any user of this trick.
-> >>
-> >> Either way, there is an inconsistency between those using ACC_MODE() a=
-nd
-> >> those using OPEN_FMODE(). If we decide to take a side for the behavior
-> >> of one or the other, without denying to create such FD, it could also
-> >> break security policies. We have to choose what to potentially break=
-=E2=80=A6
-> >
-> > I'm not really liking the idea that the empty/0 f_mode field leads to
-> > SELinux doing an ioctl access check as opposed to the expected
-> > read|write check.  Yes, other parts of the code catch the problem, but
-> > this is bad from a SELinux perspective.  Looking quickly at the other
-> > LSMs, it would appear that other LSMs are affected as well.
-> >
-> > If we're not going to fix file::f_mode, the LSMs probably need to
-> > consider using file::f_flags directly in conjunction with a correct
-> > OPEN_FMODE() macro (or better yet a small inline function that isn't
-> > as ugly).
-> >
-> yeah, I have to agree
+Hello RT Folks!
 
-The silence on this has been deafening :/  No thoughts on fixing, or
-not fixing OPEN_FMODE(), Al?
+I'm pleased to announce the 5.4.182-rt71 stable release.
 
-At this point I have to assume OPEN_FMODE() isn't changing so I'm
-going to go ahead with moving SELinux over to file::f_flags.  Once
-I've got something working I'll CC the LSM list on the patches in case
-the other LSMs want to do something similar.  Full disclosure, that
-might not happen until early-to-mid next week due to the weekend, new
-kernel expected on Sunday, etc.
+You can get this release via the git tree at:
 
---=20
-paul-moore.com
+  git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
+
+  branch: v5.4-rt
+  Head SHA1: 8f83fc7941f704f55939adaa778afd8ae76662e4
+
+Or to build 5.4.182-rt71 directly, the following patches should be applied:
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.tar.xz
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.4.182.xz
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/patch-5.4.182-rt71.patch.xz
+
+
+You can also build from 5.4.182-rt70 by applying the incremental patch:
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/incr/patch-5.4.182-rt70-rt71.patch.xz
+
+Enjoy!
+
+   Tom
+
+Changes from v5.4.182-rt70:
+---
+
+Thomas Gleixner (1):
+      eventfd: Make signal recursion protection a task bit
+
+Tom Zanussi (1):
+      Linux 5.4.182-rt71
+
+Xie Yongji (1):
+      aio: Fix incorrect usage of eventfd_signal_allowed()
+---
+fs/aio.c                |  2 +-
+ fs/eventfd.c            | 12 +++++-------
+ include/linux/eventfd.h | 11 +++++------
+ include/linux/sched.h   | 12 ++++++++++++
+ localversion-rt         |  2 +-
+ 5 files changed, 24 insertions(+), 15 deletions(-)
+---
+diff --git a/fs/aio.c b/fs/aio.c
+index fb92c32a6f1e..0bb9abf39065 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -1767,7 +1767,7 @@ static int aio_poll_wake(struct wait_queue_entry *wait, unsigned mode, int sync,
+ 		list_del_init(&req->wait.entry);
+ 		list_del(&iocb->ki_list);
+ 		iocb->ki_res.res = mangle_poll(mask);
+-		if (iocb->ki_eventfd && eventfd_signal_count()) {
++		if (iocb->ki_eventfd && !eventfd_signal_allowed()) {
+ 			iocb = NULL;
+ 			INIT_WORK(&req->work, aio_poll_put_work);
+ 			schedule_work(&req->work);
+diff --git a/fs/eventfd.c b/fs/eventfd.c
+index 78e41c7c3d05..661ccc45852b 100644
+--- a/fs/eventfd.c
++++ b/fs/eventfd.c
+@@ -24,8 +24,6 @@
+ #include <linux/seq_file.h>
+ #include <linux/idr.h>
+ 
+-DEFINE_PER_CPU(int, eventfd_wake_count);
+-
+ static DEFINE_IDA(eventfd_ida);
+ 
+ struct eventfd_ctx {
+@@ -66,21 +64,21 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
+ 	 * Deadlock or stack overflow issues can happen if we recurse here
+ 	 * through waitqueue wakeup handlers. If the caller users potentially
+ 	 * nested waitqueues with custom wakeup handlers, then it should
+-	 * check eventfd_signal_count() before calling this function. If
+-	 * it returns true, the eventfd_signal() call should be deferred to a
++	 * check eventfd_signal_allowed() before calling this function. If
++	 * it returns false, the eventfd_signal() call should be deferred to a
+ 	 * safe context.
+ 	 */
+-	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
++	if (WARN_ON_ONCE(current->in_eventfd_signal))
+ 		return 0;
+ 
+ 	spin_lock_irqsave(&ctx->wqh.lock, flags);
+-	this_cpu_inc(eventfd_wake_count);
++	current->in_eventfd_signal = 1;
+ 	if (ULLONG_MAX - ctx->count < n)
+ 		n = ULLONG_MAX - ctx->count;
+ 	ctx->count += n;
+ 	if (waitqueue_active(&ctx->wqh))
+ 		wake_up_locked_poll(&ctx->wqh, EPOLLIN);
+-	this_cpu_dec(eventfd_wake_count);
++	current->in_eventfd_signal = 0;
+ 	spin_unlock_irqrestore(&ctx->wqh.lock, flags);
+ 
+ 	return n;
+diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
+index dc4fd8a6644d..836b4c021a0a 100644
+--- a/include/linux/eventfd.h
++++ b/include/linux/eventfd.h
+@@ -14,6 +14,7 @@
+ #include <linux/err.h>
+ #include <linux/percpu-defs.h>
+ #include <linux/percpu.h>
++#include <linux/sched.h>
+ 
+ /*
+  * CAREFUL: Check include/uapi/asm-generic/fcntl.h when defining
+@@ -42,11 +43,9 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n);
+ int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_entry_t *wait,
+ 				  __u64 *cnt);
+ 
+-DECLARE_PER_CPU(int, eventfd_wake_count);
+-
+-static inline bool eventfd_signal_count(void)
++static inline bool eventfd_signal_allowed(void)
+ {
+-	return this_cpu_read(eventfd_wake_count);
++	return !current->in_eventfd_signal;
+ }
+ 
+ #else /* CONFIG_EVENTFD */
+@@ -77,9 +76,9 @@ static inline int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx,
+ 	return -ENOSYS;
+ }
+ 
+-static inline bool eventfd_signal_count(void)
++static inline bool eventfd_signal_allowed(void)
+ {
+-	return false;
++	return true;
+ }
+ 
+ #endif
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 79e34e98f812..e1dfb01f4623 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -802,6 +802,18 @@ struct task_struct {
+ 	/* to be used once the psi infrastructure lands upstream. */
+ 	unsigned			use_memdelay:1;
+ #endif
++#ifdef CONFIG_PSI
++	/* Stalled due to lack of memory */
++	unsigned			in_memstall:1;
++#endif
++#ifdef CONFIG_PAGE_OWNER
++	/* Used by page_owner=on to detect recursion in page tracking. */
++	unsigned			in_page_owner:1;
++#endif
++#ifdef CONFIG_EVENTFD
++	/* Recursion prevention for eventfd_signal() */
++	unsigned			in_eventfd_signal:1;
++#endif
+ 
+ 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
+ 
+diff --git a/localversion-rt b/localversion-rt
+index f36b5d418dd8..f38a3cc7f310 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt70
++-rt71
+
