@@ -2,118 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB702C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbiCKXyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:54:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S229805AbiCKXz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 18:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiCKXyr (ORCPT
+        with ESMTP id S229666AbiCKXz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:54:47 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9F3218CEE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:53:42 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id z26so14155375lji.8
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 15:53:42 -0800 (PST)
+        Fri, 11 Mar 2022 18:55:27 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD40E6DBC;
+        Fri, 11 Mar 2022 14:23:24 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id k5-20020a17090a3cc500b001befa0d3102so9322725pjd.1;
+        Fri, 11 Mar 2022 14:23:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=do39Oz4z5cm/eFjvgfCPpR0wRWkB79WWOdbN7dhR3Do=;
-        b=yBAaCwJ21lTh/ytTeuz+MWsQ+aJ8NseaoBhS+n8hX9EeqKirdxHeRE2E3uBKt16aFl
-         aW+kC4wCIlT9ARHvfzfcQ4tchn48iJjrQKNv5f1fiWj258/5Bacq2wAglr8gX2LcD0w0
-         g4Hdl5HgELBBlJQ33f25fjIgAZ+eT+tJhWyLahoEcYK2Wj+qjiRx6BGQbGFVsGbWOxiC
-         uO1sp4TM8h0dy4DFmXbvxDAqle/GhvQtpjlbtPkIk8fWh4q9qqTVFTq7hI8+5M6Y2xuK
-         HXJcFoxNQ+zRf69rVVzEdunRgFdYEqnYGyy4KyrsjvXBaFJ68w9AQfDD4Hl0hcZIIBz7
-         jvhQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NRfHmLV6jC//S0JUnsW7EkyoAJl8Vb/or5+A/gBKAzM=;
+        b=KwPsT2XsrHShv56NDjUu3yvGQa1JlqCIdWproXqbg0elY5sxpXeo0jGIjpog1jChpi
+         l3dl2QAURioV1sWFgBC6rU++phG9LloQXtBVTzFVf9zjriVpimSq1gB881YT5sdLGfCm
+         f7MOSPCElXan/sdrSTwGt4sjsY7A1JBpgzh2Flwbq5F3z1mBemRaxQcxwKye6b8vOiDm
+         OTYLAvOcQTstwGN+sfa4LteZ6Tt4VPiJQdOYRdYfTwvbqxgiv7ZaD8cKJd+yD9V/BrFk
+         EEvv3Yxg92wD1nDc+lrdjhYVextf5yiEEd8VD6rbYEpvf3mCVrrOlr9zk2ldJeVW9BIl
+         kIjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=do39Oz4z5cm/eFjvgfCPpR0wRWkB79WWOdbN7dhR3Do=;
-        b=IQLeFk9GzgjkmlurFALY3c9XEVapYZmIqJRB22KX2q19xkMvVvYMow8mN62rmV3sxQ
-         krc+YgztQcgj3IqRt1rLOy8BRpi1iqvTIjWYA6+bz+9ngLuSxD90ZVR9vpo988Z0GhYb
-         tSfldNRQPWOGd6d7zC6M1BYiy77oPMAHFhsSMkHDQqp4S6YMei7wWUQCWUPR3dyxS4Rs
-         QeHui3HJ4VoFvXsDrEDtjxKY9LYJD427lwYCTdxDOlHrP+BVkHzTNChZa/zl8qA9VBJV
-         A78iSCG0lVrSr3X4NFUaFL2rg6zIydKv5p8b8NDnP6d5UlMg+pM4l6VfwCua7EgUrP1k
-         NwnQ==
-X-Gm-Message-State: AOAM531LLvre0NP2troNoyQ1hPPKJ5PWO8dWl3cWoaoxuK3wU1fRrTgx
-        G/m3YRA6VA6/xGEcpvPKY4OCbg==
-X-Google-Smtp-Source: ABdhPJww2h5Jcm6Ny2GEicR7Ujuyvd8mKctvvXai+Ps8mrprX3DSdwK3lpQ9jN8m5UZga2XOr0APdQ==
-X-Received: by 2002:a05:651c:386:b0:246:c7e:bb1e with SMTP id e6-20020a05651c038600b002460c7ebb1emr7451654ljp.161.1647042820593;
-        Fri, 11 Mar 2022 15:53:40 -0800 (PST)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id 8-20020a2e1548000000b002463639d0f2sm1967691ljv.68.2022.03.11.15.53.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 15:53:40 -0800 (PST)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH 4/4] dt-bindings: gnss: Add two more chips
-Date:   Sat, 12 Mar 2022 00:51:19 +0100
-Message-Id: <20220311235119.523374-4-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220311235119.523374-1-linus.walleij@linaro.org>
-References: <20220311235119.523374-1-linus.walleij@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NRfHmLV6jC//S0JUnsW7EkyoAJl8Vb/or5+A/gBKAzM=;
+        b=DW76xWJ0v2gdlCWZsCsOdD3LHfjp2VFmjucyvToYxBG5cPAGANISPku+fkOQDIzPuH
+         C+6qKtvSJLO+NLBNIIAjbGRrwM62gIZ4bi8FnOd6ZssUr0q4d3y11WZtArWIeblRJVOj
+         LAlzaam0RJ/YFfztOAPGHKw+qCBIHTqn8DMArIzOc33NdrmTH/rww7kMoNLi9IuRMTiQ
+         uCJtt2t0Jmdjc9dlsszsKEka/8ZboHTUcmvOSpNmHiDJ2c/rnP+gT6YcyN2yVgf1Ke90
+         i97+J79M20PP2UIJMqeORG/I1wBXh42x7F6IRmRSDtYf7+6IbDVMkHdtCPpCPnVQPRlI
+         hX0g==
+X-Gm-Message-State: AOAM531GXcfAy3vSVuC1FvD7iprLxvaPGA4JNx97Ywpl6LQAe+eue8Bh
+        +9o1Vm22AFSgTrYcchnSKxVU+MK/cvRPEGcLWQU=
+X-Google-Smtp-Source: ABdhPJx1WAK57P7gss50W9Beemu0j3TP092wJbDltjPnhLzW3G3PvAU64j0v2RUJlFUyoFI9PzM7BBFicNEKCvBtXJY=
+X-Received: by 2002:a17:902:e80d:b0:151:e043:a2c3 with SMTP id
+ u13-20020a170902e80d00b00151e043a2c3mr12518835plg.64.1647037404220; Fri, 11
+ Mar 2022 14:23:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220311032828.702392-1-imagedong@tencent.com>
+ <20220310195429.4ba93edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CADxym3YybdOPMwHr3TOf0vxAN5W8mMdeQmQiQq_nr-1SSF5jMA@mail.gmail.com>
+In-Reply-To: <CADxym3YybdOPMwHr3TOf0vxAN5W8mMdeQmQiQq_nr-1SSF5jMA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 11 Mar 2022 14:23:13 -0800
+Message-ID: <CAADnVQ+XOqPXVaVVQ0HDtBob6Kv48AqEQrn8mS4rPyiNUGQXBw@mail.gmail.com>
+Subject: Re: [PATCH] net: skb: move enum skb_drop_reason to uapi
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Mengen Sun <mengensun@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The CSR GSD4t is a CSR product using the SiRFstarIV core, and
-the CSR CSRG05TA03-ICJE-R is a CSR product using the SiRFstarV
-core.
+On Thu, Mar 10, 2022 at 8:58 PM Menglong Dong <menglong8.dong@gmail.com> wrote:
+>
+> On Fri, Mar 11, 2022 at 11:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Fri, 11 Mar 2022 11:28:28 +0800 menglong8.dong@gmail.com wrote:
+> > > From: Menglong Dong <imagedong@tencent.com>
+> > >
+> > > Move the definition of 'enum skb_drop_reason' in 'skbuff.h' to the uapi
+> > > header 'net_dropmon.h', therefore some users, such as eBPF program, can
+> > > make use of it.
+> >
+> > BPF does not need an enum definition to be part of the uAPI to make use
+> > of it. BTF should encode the values, and CO-RE can protect from them
+> > changing, AFAIU. I think we need a better example user / justification.
+>
+> There is something wrong with my description, it's not the eBPF, but the user
+> program that loads eBPF.
+>
+> In my case, I'll pass the packet info (protocol, ip, port, etc) and drop reason
+> to user space by eBPF that is attached on the kfree_skb() tracepoint.
+>
+> In the user space, I'll custom the description for drop reasons and convert them
+> from int to string. Therefore, I need to use 'enum skb_drop_reason' in my
+> user space code.
 
-These chips have a SRESETN line that can be pulled low to hard
-reset the chip and in some designs this is connected to a GPIO,
-so add this as an optional property.
+As Jakub said there is no reason to expose this in uapi.
 
-Update the example with a reset line so users see that it need
-to be tagged as active low.
+> For now, I copied the definition of 'enum skb_drop_reason' to my code,
+> and I think it's better to make them uapi, considering someone else may
+> use it this way too.
 
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- Documentation/devicetree/bindings/gnss/sirfstar.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/gnss/sirfstar.yaml b/Documentation/devicetree/bindings/gnss/sirfstar.yaml
-index 91874241d0f3..e2ad1f01f9f3 100644
---- a/Documentation/devicetree/bindings/gnss/sirfstar.yaml
-+++ b/Documentation/devicetree/bindings/gnss/sirfstar.yaml
-@@ -25,6 +25,8 @@ description:
- properties:
-   compatible:
-     enum:
-+      - csr,gsd4t
-+      - csr,csrg05ta03-icje-r
-       - fastrax,uc430
-       - linx,r4
-       - wi2wi,w2sg0004
-@@ -39,6 +41,10 @@ properties:
-     description:
-       Main voltage regulator, pin names such as 3V3_IN, VCC, VDD.
- 
-+  reset-gpios:
-+    description: An optional active low reset line, should be flagged with
-+      GPIO_ACTIVE_LOW.
-+
-   timepulse-gpios:
-     description: Comes with pin names such as 1PPS or TM
- 
-@@ -66,6 +72,7 @@ examples:
-         gnss {
-             compatible = "wi2wi,w2sg0084i";
-             vcc-supply = <&gnss_vcc_reg>;
-+            reset-gpios = <&gpio0 15 GPIO_ACTIVE_LOW>;
-             sirf,onoff-gpios = <&gpio0 16 GPIO_ACTIVE_HIGH>;
-             sirf,wakeup-gpios = <&gpio0 17 GPIO_ACTIVE_HIGH>;
-             current-speed = <38400>;
--- 
-2.35.1
-
+No. Please use CO-RE and vmlinux.h instead.
