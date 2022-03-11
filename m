@@ -2,95 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842A9C352A8
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0032AC35296
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 05:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347757AbiCKF7i (ORCPT
+        id S1347912AbiCKGAG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 00:59:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60524 "EHLO
+        Fri, 11 Mar 2022 01:00:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346715AbiCKFyT (ORCPT
+        with ESMTP id S1346666AbiCKFyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 00:54:19 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD81F1E8F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:14 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id x4so9011341iom.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:14 -0800 (PST)
+        Fri, 11 Mar 2022 00:54:18 -0500
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5B2ECC63
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:10 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d7eaa730d9so60681557b3.13
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 21:53:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iH2ohTMZfPnRZ9E6jdBe6JKfO5koQv5qtiPS15nsl0I=;
-        b=lBLSNHNDBDLhECW+i7GItRVFc2s/fgUj/HMjqg84Xln7MQUu6DxpDIq7jdrZwx2YWB
-         HDmLI2wAzHNtmqomw5J3eD4YE0N+ivlLv1Er2iRuVUG3/ri6ZqhWubh8509kcBE3idYJ
-         QSA8JQqsfolKtgGCs518PBnajsSWdlErkZ82pu6WfzPooJzUIJTbF/7cexQ5S5Qzlfm4
-         T3VU65+SP5zmCBG6TatJtUP47W9CAUa1dZzaetX2Lj37T5DDBjKD1toIp6o1KdpvmHbF
-         sS2V5edCKN/TlpsmgAUVLXwVE/c7LQBrMEB794Vlthuht9Tw3zS8/YqcEUwo9Q6D9LGW
-         yd4g==
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=YwhyU05L7Ko0hIsmYp9gm9BkDv+Toat6glatzPogOBo=;
+        b=mL1zeahftIebrFmW45WnNK0m1a6a6j1NgihbFsPw/LJJG0x01QWqQZYTD4wtFSRfzg
+         91jT5Q0fxcBVJlSw85RRX+0SmohXjbxD/vKVwRHGQHnazR05DD6RTn9+r3aKJM4Sh7wi
+         Y1XJlDfx+WzpRbNVb958zuPvQm79CDeeirQ1zXQ9dhVtFn6qHEmuNrZrTWhfaBvxpbn2
+         hY3wkw4uOBp6qb5j8OfBaF8xjzNnYLPcNN3FklyScWskvN9Xj8shWZ08800K7rBb1PhE
+         hgeWXTNE3r18Lr8ECKcDVVkge8S7TTU7bUGK6YDqn0KQW7DQTb00BqdzDYC5ZJKZSKWG
+         akfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iH2ohTMZfPnRZ9E6jdBe6JKfO5koQv5qtiPS15nsl0I=;
-        b=MFV9eJSnm7/8G5Yh6B3+nqwHIOBVgN++NcG1hnEefuLMirb8GoT4sqOG76k08OICvq
-         5zS1iZfyllYg7OQQmFURSgB6aTlbxy0I8oeBgbSfZRhJlBiH7Q6Xb6NHnM3ik2BZub/t
-         oQXypv35Dw5k0AIS16qj4Q6MOF2URLpUWCHLteQjTOCxrfXt3RzdC073u7NpAgYQ1MKI
-         bMBC+1nuQ8FfJR763GpHGr9cKeicEpmIfHky/iCaEzC2HQAQ7A2Q5UZxGqkVyGIiqYLl
-         7uv+QKv3e2z6r1jhYV4bvfFsYAm7nmcmQ36wQqS3G99A8VI4/2ZB5OoDtFntJFfp1eu/
-         3WtA==
-X-Gm-Message-State: AOAM5320JmI6XzShPbBDcWjFzpupSwSSgJvl3kBK674zUlGj2eC1qtCk
-        ZOO+vdmHm64TMARKgEr97Ih/OyYtf2TGltldWCs=
-X-Google-Smtp-Source: ABdhPJyhB8o0PTCDqSOXDuEw7PVy6+1fE/kih9mRtFuqIls65qjo2Ut/x9nk2zkysjNJPIYFuuSGFOigSWM7dqpBCj0=
-X-Received: by 2002:a5d:8ace:0:b0:641:2a6e:471c with SMTP id
- e14-20020a5d8ace000000b006412a6e471cmr6896106iot.42.1646977993769; Thu, 10
- Mar 2022 21:53:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20220310081548.31846-1-steve.lee.analog@gmail.com>
- <SJ0PR03MB67794358405FA661992A206D990B9@SJ0PR03MB6779.namprd03.prod.outlook.com>
- <YinhDPrSvrYV5vKp@sirena.org.uk>
-In-Reply-To: <YinhDPrSvrYV5vKp@sirena.org.uk>
-From:   Lee Steve <steve.lee.analog@gmail.com>
-Date:   Fri, 11 Mar 2022 14:53:02 +0900
-Message-ID: <CA+Fz0PZN=aW=YQ=np=tbcJat-B7GR-DFeWKufABEJbPfOz9bpA@mail.gmail.com>
-Subject: Re: [PATCH] ASoC: max98390: Add reset gpio control
-To:     Mark Brown <broonie@kernel.org>
-Cc:     "Sa, Nuno" <Nuno.Sa@analog.com>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "perex@perex.cz" <perex@perex.cz>,
-        "tiwai@suse.com" <tiwai@suse.com>,
-        "ckeepax@opensource.cirrus.com" <ckeepax@opensource.cirrus.com>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>,
-        "rf@opensource.wolfsonmicro.com" <rf@opensource.wolfsonmicro.com>,
-        "shumingf@realtek.com" <shumingf@realtek.com>,
-        "srinivas.kandagatla@linaro.org" <srinivas.kandagatla@linaro.org>,
-        "krzk@kernel.org" <krzk@kernel.org>,
-        "dmurphy@ti.com" <dmurphy@ti.com>,
-        "jack.yu@realtek.com" <jack.yu@realtek.com>,
-        "steves.lee@maximintegrated.com" <steves.lee@maximintegrated.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=YwhyU05L7Ko0hIsmYp9gm9BkDv+Toat6glatzPogOBo=;
+        b=30K+d3asp4F6yzM7UO0t0gPtK9iJAzPi+GsrxS6CUWF+w0lb/o5wneN8z4cBmz12dS
+         MfSThWnMETeVWE0gqm4BTTIOHITfvmiAWeltEaF9NngMPAfpU7wRqKbjDlcNgO31mrWu
+         unlAxmsFuW30btm6Qu8HMcT57ZDXcMMSUhKr2pAVFzTh21KTTivQkjpmO62hOr0leRbl
+         PKvezM3WDH0KQpGBg1QxEk/5qos473RD6cOytYObOWjI0mQsLeUPSpwWngXQfzW8TxKz
+         EHb+iP0xx0aM4HPejzbep7qfycGCH2gR0KqnFtdxolfFYblZfs66ULm5i2bV65gOAYhU
+         yBiQ==
+X-Gm-Message-State: AOAM533k0xv5OZN7aNuvdBlM/mNZC5NJV7DbD4Rl37yOrnjw4sfs6Fez
+        K3tF1UPZoJPhKDw7bB2kRhyVP7xxPdSvQiEyGfrYyQpKIma0cKomOQx+oWViDo6lfCYsvRy8fx8
+        OeUqNdRjdj+Z2h2Qc7LnbaHNdxaZxPNNouBjwJ5rJTtZ1m6m2/LDebTnYJqNygDg5NJjC1g==
+X-Google-Smtp-Source: ABdhPJyYbSFXBd7kMqLEVN6dQnESGkxhq/0rS1nlftze0nl+kQuzzjMrdx/UCs1mxyV5DBQMYrpfgaFTOJw=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a25:b991:0:b0:610:bf4e:1b33 with SMTP id
+ r17-20020a25b991000000b00610bf4e1b33mr7044533ybg.352.1646977989530; Thu, 10
+ Mar 2022 21:53:09 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Fri, 11 Mar 2022 05:50:24 +0000
+In-Reply-To: <20220311055056.57265-1-seanjc@google.com>
+Message-Id: <20220311055056.57265-74-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220311055056.57265-1-seanjc@google.com>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [RFC PATCH 073/105] KVM: selftests: Convert system_counter_offset_test
+ away from VCPU_ID
+From:   Sean Christopherson <seanjc@google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 8:29 PM Mark Brown <broonie@kernel.org> wrote:
->
-> On Thu, Mar 10, 2022 at 08:48:09AM +0000, Sa, Nuno wrote:
->
-> > > +   max98390->reset_gpio = of_get_named_gpio(i2c-
-> > > >dev.of_node,
-> > > +                                           "maxim,reset-gpios", 0);
->
-> > Why not using devm_gpiod_get_optional()? We could request the pin
-> > already in the asserted state and make the code slightly better...
->
-> Yes, and it'd support other firmware interfaces too.  We also need an
-> update to the binding document covering the new property.
->
-> Might also be worth putting the device into reset when unloading the
-> driver, though that's not essential.
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ .../kvm/system_counter_offset_test.c          | 28 +++++++++----------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-I will check and update v2 patch.
+diff --git a/tools/testing/selftests/kvm/system_counter_offset_test.c b/tools/testing/selftests/kvm/system_counter_offset_test.c
+index 5dd9d28efb97..0690ce0ae4fa 100644
+--- a/tools/testing/selftests/kvm/system_counter_offset_test.c
++++ b/tools/testing/selftests/kvm/system_counter_offset_test.c
+@@ -14,8 +14,6 @@
+ #include "kvm_util.h"
+ #include "processor.h"
+ 
+-#define VCPU_ID 0
+-
+ #ifdef __x86_64__
+ 
+ struct test_case {
+@@ -28,18 +26,19 @@ static struct test_case test_cases[] = {
+ 	{ -180 * NSEC_PER_SEC },
+ };
+ 
+-static void check_preconditions(struct kvm_vm *vm)
++static void check_preconditions(struct kvm_vcpu *vcpu)
+ {
+-	if (!__vcpu_has_device_attr(vm, VCPU_ID, KVM_VCPU_TSC_CTRL, KVM_VCPU_TSC_OFFSET))
++	if (!__vcpu_has_device_attr(vcpu->vm, vcpu->id, KVM_VCPU_TSC_CTRL,
++				    KVM_VCPU_TSC_OFFSET))
+ 		return;
+ 
+ 	print_skip("KVM_VCPU_TSC_OFFSET not supported; skipping test");
+ 	exit(KSFT_SKIP);
+ }
+ 
+-static void setup_system_counter(struct kvm_vm *vm, struct test_case *test)
++static void setup_system_counter(struct kvm_vcpu *vcpu, struct test_case *test)
+ {
+-	vcpu_device_attr_set(vm, VCPU_ID, KVM_VCPU_TSC_CTRL,
++	vcpu_device_attr_set(vcpu->vm, vcpu->id, KVM_VCPU_TSC_CTRL,
+ 			     KVM_VCPU_TSC_OFFSET, &test->tsc_offset);
+ }
+ 
+@@ -91,7 +90,7 @@ static void handle_abort(struct ucall *uc)
+ 		  __FILE__, uc->args[1]);
+ }
+ 
+-static void enter_guest(struct kvm_vm *vm)
++static void enter_guest(struct kvm_vcpu *vcpu)
+ {
+ 	uint64_t start, end;
+ 	struct ucall uc;
+@@ -100,12 +99,12 @@ static void enter_guest(struct kvm_vm *vm)
+ 	for (i = 0; i < ARRAY_SIZE(test_cases); i++) {
+ 		struct test_case *test = &test_cases[i];
+ 
+-		setup_system_counter(vm, test);
++		setup_system_counter(vcpu, test);
+ 		start = host_read_guest_system_counter(test);
+-		vcpu_run(vm, VCPU_ID);
++		vcpu_run(vcpu->vm, vcpu->id);
+ 		end = host_read_guest_system_counter(test);
+ 
+-		switch (get_ucall(vm, VCPU_ID, &uc)) {
++		switch (get_ucall(vcpu->vm, vcpu->id, &uc)) {
+ 		case UCALL_SYNC:
+ 			handle_sync(&uc, start, end);
+ 			break;
+@@ -114,19 +113,20 @@ static void enter_guest(struct kvm_vm *vm)
+ 			return;
+ 		default:
+ 			TEST_ASSERT(0, "unhandled ucall %ld\n",
+-				    get_ucall(vm, VCPU_ID, &uc));
++				    get_ucall(vcpu->vm, vcpu->id, &uc));
+ 		}
+ 	}
+ }
+ 
+ int main(void)
+ {
++	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 
+-	vm = vm_create_default(VCPU_ID, 0, guest_main);
+-	check_preconditions(vm);
++	vm = vm_create_with_one_vcpu(&vcpu, guest_main);
++	check_preconditions(vcpu);
+ 	ucall_init(vm, NULL);
+ 
+-	enter_guest(vm);
++	enter_guest(vcpu);
+ 	kvm_vm_free(vm);
+ }
+-- 
+2.35.1.723.g4982287a31-goog
+
