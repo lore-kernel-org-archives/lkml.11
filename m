@@ -2,136 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A14C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 19:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC35C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 19:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350015AbiCKTJv (ORCPT
+        id S1345789AbiCKTKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 14:09:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54330 "EHLO
+        Fri, 11 Mar 2022 14:10:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237153AbiCKTJs (ORCPT
+        with ESMTP id S234133AbiCKTKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 14:09:48 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB77E1B8FF2
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:08:44 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id b8so8995643pjb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 11:08:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AUBsSaqnRWg4B0uOKbllkHk4Scdppop0KK0xMi3fHF0=;
-        b=PAbXkYu6bO5CXr9IedJ6KlSYT41m9t9e0QurfT3ujodBdLBV+DtO/BasHg04X5F54j
-         dpjmZViSKc7LwACuQN2p2nVCvDJpi6HPy+bO3hVy8oc7XXFpC67uM7/RbNZJt9DCevJ8
-         sR8s6D/vIDBptzP1nURtjV1KEfPhd3twjmLzjCQYXni/j8GfhNXqNrOtyK0wGpeEBfXO
-         ubWMK7PLb08B39jxdnlpnf6OBypo8xJ3YyWB3cW0XEmkpsYTWScUoAnuIn4l8tbMtQvr
-         f6fdCKZfIme6lT86B3YjtIix1YxCoTL0uJj0/1R847d6bQ/Qvg0kpAQn0k7i3ZJzI1v3
-         lD0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AUBsSaqnRWg4B0uOKbllkHk4Scdppop0KK0xMi3fHF0=;
-        b=uDguGBHOYL2o57Ik4KB3U3A1n5BWCAFLcfF64GHqtnjPh79TRYlrzTDoNLjncVHI7e
-         oINn3t4j5+ynK2UsgZwKbybhM3bBStk6t+la1AnST9wGLIySH0P+emKfgJdoaxpuZxRo
-         O74BbrpdsgO0BQX2FgNYqCYDpw5cb6j3HP0IhM6RGsOdJ+rUaksVFiprgGl9JqGewqtT
-         XKZyJ9+Qt1Kn3//efSIQUkhtx5d1a6KwBOgdMGMNgkQaY9jTdAdeu7Nt9SJxsdCKaeb6
-         6pPgejPDBj0M2tU6gYEp6aXc6tLZsivukEbhu99/AoNwunTx1L4aWnOGvL3JhwmzAieB
-         y7Pg==
-X-Gm-Message-State: AOAM533weU2pi+KNqmruS4bLsnUxW5hU3u5KJL0gCOMhQCv4jWz7ll9X
-        +UCwWkHMC9Ds3fGrAAQgGQxMD1ZxLRpAjE5f5VM=
-X-Google-Smtp-Source: ABdhPJwruMQQDmYQxzHZEyz8v1ZYnPpx8eYxrEgy5L6YvNnSQ/ihIh1qe8rCOQwZEPM/5ttb0ttPENHh8JC6xalucW4=
-X-Received: by 2002:a17:90b:4595:b0:1be:db22:8327 with SMTP id
- hd21-20020a17090b459500b001bedb228327mr23402186pjb.99.1647025724268; Fri, 11
- Mar 2022 11:08:44 -0800 (PST)
-MIME-Version: 1.0
-References: <20220311090119.2412738-1-maobibo@loongson.cn>
-In-Reply-To: <20220311090119.2412738-1-maobibo@loongson.cn>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Fri, 11 Mar 2022 11:08:32 -0800
-Message-ID: <CAHbLzkoiP+uRYGDm+FC_zg-LkPbTMFQ-wSzGMh0RPr-XP4_ciw@mail.gmail.com>
-Subject: Re: [PATCH] mm/khugepaged: sched to numa node when collapse huge page
-To:     Bibo Mao <maobibo@loongson.cn>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        Fri, 11 Mar 2022 14:10:45 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768A21B8FF2;
+        Fri, 11 Mar 2022 11:09:41 -0800 (PST)
+Date:   Fri, 11 Mar 2022 19:09:37 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647025779;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GqhfUnvgx3zutM5wq9PzoICDyE5PuKyGmo3SlOl+R+A=;
+        b=TfK5fXySwYR+amND7V+O3HNYsezzElFTg59kCq6IOjhYQy5WciVU2AW7pG2EX+9kAHNYSf
+        SyEbzy9C+jFBfyMiMKi1qVSmt4BMkk0QtRB3EFUgb/l75XO6f1/UG6HO8jmpkSiOz5fvmB
+        wb73uEYR674JBbjvtFBa945mPHMeUZa1Ix7JqDRi8+MReMq0GmRThe9+bVn5/pczeenYMk
+        sYG89moUuiJkDgLlIEmAQtcn/5xijsJpof/9cCIoeT0t3njsgKZpbfl1sigThFRfAovEeS
+        FlxUcZ0QlJ1qWqMXupFPRMJjQIzyr6NflkS76wNa9mziu0lFNmGRcU7mPR/0kA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647025779;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GqhfUnvgx3zutM5wq9PzoICDyE5PuKyGmo3SlOl+R+A=;
+        b=v5VweIFZGgYROgAHH6hqT+OkAjXYm/nZpmryaPti1qwYCyZmIYM9WuKRmpss7cAYxYOlHE
+        EfFY+zFDLy1M4sAQ==
+From:   "tip-bot2 for Jarkko Sakkinen" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/sgx: Free backing memory after faulting the
+ enclave page
+Cc:     stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220303223859.273187-1-jarkko@kernel.org>
+References: <20220303223859.273187-1-jarkko@kernel.org>
+MIME-Version: 1.0
+Message-ID: <164702577786.16921.17768116446491945567.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 1:01 AM Bibo Mao <maobibo@loongson.cn> wrote:
->
-> collapse huge page is slow, specially when khugepaged daemon runs
-> on different numa node with that of huge page. It suffers from
-> huge page copying across nodes, also cache is not used for target
-> node. With this patch, khugepaged daemon switches to the same numa
-> node with huge page. It saves copying time and makes use of local
-> cache better.
->
-> Signed-off-by: Bibo Mao <maobibo@loongson.cn>
-> ---
->  mm/khugepaged.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-> index 131492fd1148..460c285dc974 100644
-> --- a/mm/khugepaged.c
-> +++ b/mm/khugepaged.c
-> @@ -116,6 +116,7 @@ struct khugepaged_scan {
->         struct list_head mm_head;
->         struct mm_slot *mm_slot;
->         unsigned long address;
-> +       int node;
->  };
->
->  static struct khugepaged_scan khugepaged_scan = {
-> @@ -1066,6 +1067,7 @@ static void collapse_huge_page(struct mm_struct *mm,
->         struct vm_area_struct *vma;
->         struct mmu_notifier_range range;
->         gfp_t gfp;
-> +       const struct cpumask *cpumask;
->
->         VM_BUG_ON(address & ~HPAGE_PMD_MASK);
->
-> @@ -1079,6 +1081,13 @@ static void collapse_huge_page(struct mm_struct *mm,
->          * that. We will recheck the vma after taking it again in write mode.
->          */
->         mmap_read_unlock(mm);
-> +
-> +       /* sched to specified node before huage page memory copy */
-> +       cpumask = cpumask_of_node(node);
-> +       if ((khugepaged_scan.node != node) && !cpumask_empty(cpumask)) {
-> +               set_cpus_allowed_ptr(current, cpumask);
-> +               khugepaged_scan.node = node;
+The following commit has been merged into the x86/urgent branch of tip:
 
-What if khugepaged was scheduled to the other nodes after this, but
-khugepaged_scan.node still equals to node? It seems possible to me
-IIUC.
+Commit-ID:     08999b2489b4c9b939d7483dbd03702ee4576d96
+Gitweb:        https://git.kernel.org/tip/08999b2489b4c9b939d7483dbd03702ee4576d96
+Author:        Jarkko Sakkinen <jarkko@kernel.org>
+AuthorDate:    Fri, 04 Mar 2022 00:38:58 +02:00
+Committer:     Dave Hansen <dave.hansen@linux.intel.com>
+CommitterDate: Fri, 11 Mar 2022 10:31:06 -08:00
 
-TBH I'm not quite sure if migrating khugepaged is really worth it for
-everyone or not. The worst case is the locality of base pages are not
-obvious, for example, the base pages may be across all nodes, so you
-always get cross nodes memory copy. And khugepaged may get slower if
-cpu is contentious.
+x86/sgx: Free backing memory after faulting the enclave page
 
-In addition, I saw MIPS has its own copy_user_highpage(), is it a
-contributing factor too?
+There is a limited amount of SGX memory (EPC) on each system.  When that
+memory is used up, SGX has its own swapping mechanism which is similar
+in concept but totally separate from the core mm/* code.  Instead of
+swapping to disk, SGX swaps from EPC to normal RAM.  That normal RAM
+comes from a shared memory pseudo-file and can itself be swapped by the
+core mm code.  There is a hierarchy like this:
 
-> +       }
->         new_page = khugepaged_alloc_page(hpage, gfp, node);
->         if (!new_page) {
->                 result = SCAN_ALLOC_HUGE_PAGE_FAIL;
-> @@ -2380,6 +2389,7 @@ int start_stop_khugepaged(void)
->                 kthread_stop(khugepaged_thread);
->                 khugepaged_thread = NULL;
->         }
-> +       khugepaged_scan.node = NUMA_NO_NODE;
->         set_recommended_min_free_kbytes();
->  fail:
->         mutex_unlock(&khugepaged_mutex);
-> --
-> 2.31.1
->
->
+	EPC <-> shmem <-> disk
+
+After data is swapped back in from shmem to EPC, the shmem backing
+storage needs to be freed.  Currently, the backing shmem is not freed.
+This effectively wastes the shmem while the enclave is running.  The
+memory is recovered when the enclave is destroyed and the backing
+storage freed.
+
+Sort this out by freeing memory with shmem_truncate_range(), as soon as
+a page is faulted back to the EPC.  In addition, free the memory for
+PCMD pages as soon as all PCMD's in a page have been marked as unused
+by zeroing its contents.
+
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Reported-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220303223859.273187-1-jarkko@kernel.org
+---
+ arch/x86/kernel/cpu/sgx/encl.c | 57 +++++++++++++++++++++++++++------
+ 1 file changed, 48 insertions(+), 9 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/sgx/encl.c b/arch/x86/kernel/cpu/sgx/encl.c
+index 48afe96..7c63a19 100644
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -13,6 +13,30 @@
+ #include "sgx.h"
+ 
+ /*
++ * Calculate byte offset of a PCMD struct associated with an enclave page. PCMD's
++ * follow right after the EPC data in the backing storage. In addition to the
++ * visible enclave pages, there's one extra page slot for SECS, before PCMD
++ * structs.
++ */
++static inline pgoff_t sgx_encl_get_backing_page_pcmd_offset(struct sgx_encl *encl,
++							    unsigned long page_index)
++{
++	pgoff_t epc_end_off = encl->size + sizeof(struct sgx_secs);
++
++	return epc_end_off + page_index * sizeof(struct sgx_pcmd);
++}
++
++/*
++ * Free a page from the backing storage in the given page index.
++ */
++static inline void sgx_encl_truncate_backing_page(struct sgx_encl *encl, unsigned long page_index)
++{
++	struct inode *inode = file_inode(encl->backing);
++
++	shmem_truncate_range(inode, PFN_PHYS(page_index), PFN_PHYS(page_index) + PAGE_SIZE - 1);
++}
++
++/*
+  * ELDU: Load an EPC page as unblocked. For more info, see "OS Management of EPC
+  * Pages" in the SDM.
+  */
+@@ -22,9 +46,11 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ {
+ 	unsigned long va_offset = encl_page->desc & SGX_ENCL_PAGE_VA_OFFSET_MASK;
+ 	struct sgx_encl *encl = encl_page->encl;
++	pgoff_t page_index, page_pcmd_off;
+ 	struct sgx_pageinfo pginfo;
+ 	struct sgx_backing b;
+-	pgoff_t page_index;
++	bool pcmd_page_empty;
++	u8 *pcmd_page;
+ 	int ret;
+ 
+ 	if (secs_page)
+@@ -32,14 +58,16 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ 	else
+ 		page_index = PFN_DOWN(encl->size);
+ 
++	page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
++
+ 	ret = sgx_encl_get_backing(encl, page_index, &b);
+ 	if (ret)
+ 		return ret;
+ 
+ 	pginfo.addr = encl_page->desc & PAGE_MASK;
+ 	pginfo.contents = (unsigned long)kmap_atomic(b.contents);
+-	pginfo.metadata = (unsigned long)kmap_atomic(b.pcmd) +
+-			  b.pcmd_offset;
++	pcmd_page = kmap_atomic(b.pcmd);
++	pginfo.metadata = (unsigned long)pcmd_page + b.pcmd_offset;
+ 
+ 	if (secs_page)
+ 		pginfo.secs = (u64)sgx_get_epc_virt_addr(secs_page);
+@@ -55,11 +83,24 @@ static int __sgx_encl_eldu(struct sgx_encl_page *encl_page,
+ 		ret = -EFAULT;
+ 	}
+ 
+-	kunmap_atomic((void *)(unsigned long)(pginfo.metadata - b.pcmd_offset));
++	memset(pcmd_page + b.pcmd_offset, 0, sizeof(struct sgx_pcmd));
++
++	/*
++	 * The area for the PCMD in the page was zeroed above.  Check if the
++	 * whole page is now empty meaning that all PCMD's have been zeroed:
++	 */
++	pcmd_page_empty = !memchr_inv(pcmd_page, 0, PAGE_SIZE);
++
++	kunmap_atomic(pcmd_page);
+ 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
+ 
+ 	sgx_encl_put_backing(&b, false);
+ 
++	sgx_encl_truncate_backing_page(encl, page_index);
++
++	if (pcmd_page_empty)
++		sgx_encl_truncate_backing_page(encl, PFN_DOWN(page_pcmd_off));
++
+ 	return ret;
+ }
+ 
+@@ -579,7 +620,7 @@ static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
+ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 			 struct sgx_backing *backing)
+ {
+-	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
++	pgoff_t page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
+ 	struct page *contents;
+ 	struct page *pcmd;
+ 
+@@ -587,7 +628,7 @@ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 	if (IS_ERR(contents))
+ 		return PTR_ERR(contents);
+ 
+-	pcmd = sgx_encl_get_backing_page(encl, pcmd_index);
++	pcmd = sgx_encl_get_backing_page(encl, PFN_DOWN(page_pcmd_off));
+ 	if (IS_ERR(pcmd)) {
+ 		put_page(contents);
+ 		return PTR_ERR(pcmd);
+@@ -596,9 +637,7 @@ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 	backing->page_index = page_index;
+ 	backing->contents = contents;
+ 	backing->pcmd = pcmd;
+-	backing->pcmd_offset =
+-		(page_index & (PAGE_SIZE / sizeof(struct sgx_pcmd) - 1)) *
+-		sizeof(struct sgx_pcmd);
++	backing->pcmd_offset = page_pcmd_off & (PAGE_SIZE - 1);
+ 
+ 	return 0;
+ }
