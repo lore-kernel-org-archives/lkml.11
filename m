@@ -2,176 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAB3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238760AbiCKIno (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:43:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42406 "EHLO
+        id S239421AbiCKIn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238414AbiCKInk (ORCPT
+        with ESMTP id S239658AbiCKInx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:43:40 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3B73B3F4;
-        Fri, 11 Mar 2022 00:42:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646988157; x=1678524157;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=rnnCy0Hbi4uhBKWJV93SLPhz7c/vwnMymNdqjK9CGiI=;
-  b=TSElsKllxlM6Vbk/Yu5miqQ82L2dxUe/dDgksMB0D2EdOXf8XYk2WkEj
-   myfQNcCnR6zYAGT12LUIKb8v3YV9o/90cR3BDbuXEH+LX9DqDeVD32A1M
-   8rNxfacfmDOdjrJiizTANRs3sG23rLUpT9TSd9jxsx1ZO2+pX2Kxy+Cq8
-   nNPz0jbwJzTVG/OayqiycDDw3+vZOaAntqGF4w+S4wRM1YExYLl09AMQ6
-   vkqLelSenko/TAyf/FG1Ngp00gfmzfLgYgD4beHN9Op/lpMch9ZLhABxN
-   u1g/19eSh9AuGotby4eBXtAboRcwbyLK/1dgRkKnzlZJtpeEgILjBNmVD
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="341958572"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="341958572"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 00:42:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="538926645"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga007.jf.intel.com with ESMTP; 11 Mar 2022 00:42:24 -0800
-Date:   Fri, 11 Mar 2022 16:42:08 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, qemu-devel@nongnu.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v5 03/13] mm/shmem: Support memfile_notifier
-Message-ID: <20220311084208.GB56193@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220310140911.50924-1-chao.p.peng@linux.intel.com>
- <20220310140911.50924-4-chao.p.peng@linux.intel.com>
- <20220310230822.GO661808@dread.disaster.area>
+        Fri, 11 Mar 2022 03:43:53 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275CD14F2A2
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:42:50 -0800 (PST)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KFKCm4pgwzfYkZ;
+        Fri, 11 Mar 2022 16:41:24 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 16:42:48 +0800
+Received: from [10.174.178.220] (10.174.178.220) by
+ dggpemm500017.china.huawei.com (7.185.36.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 16:42:48 +0800
+Subject: Re: [PATCH v3 0/3] scsi:iscsi: handle iscsi_cls_conn device with
+ sysfs correctly
+To:     Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        <open-iscsi@googlegroups.com>, <linux-kernel@vger.kernel.org>
+CC:     Wu Bo <wubo40@huawei.com>, Zhiqiang Liu <liuzhiqiang26@huawei.com>,
+        <linfeilong@huawei.com>
+References: <20220310015759.3296841-1-haowenchao@huawei.com>
+From:   Wenchao Hao <haowenchao@huawei.com>
+Message-ID: <069ed5a6-0cba-195f-bab3-391514c55a97@huawei.com>
+Date:   Fri, 11 Mar 2022 16:42:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310230822.GO661808@dread.disaster.area>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220310015759.3296841-1-haowenchao@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.220]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500017.china.huawei.com (7.185.36.178)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 10:08:22AM +1100, Dave Chinner wrote:
-> On Thu, Mar 10, 2022 at 10:09:01PM +0800, Chao Peng wrote:
-> > From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-> > 
-> > It maintains a memfile_notifier list in shmem_inode_info structure and
-> > implements memfile_pfn_ops callbacks defined by memfile_notifier. It
-> > then exposes them to memfile_notifier via
-> > shmem_get_memfile_notifier_info.
-> > 
-> > We use SGP_NOALLOC in shmem_get_lock_pfn since the pages should be
-> > allocated by userspace for private memory. If there is no pages
-> > allocated at the offset then error should be returned so KVM knows that
-> > the memory is not private memory.
-> > 
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > ---
-> >  include/linux/shmem_fs.h |  4 +++
-> >  mm/shmem.c               | 76 ++++++++++++++++++++++++++++++++++++++++
-> >  2 files changed, 80 insertions(+)
-> > 
-> > diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
-> > index 2dde843f28ef..7bb16f2d2825 100644
-> > --- a/include/linux/shmem_fs.h
-> > +++ b/include/linux/shmem_fs.h
-> > @@ -9,6 +9,7 @@
-> >  #include <linux/percpu_counter.h>
-> >  #include <linux/xattr.h>
-> >  #include <linux/fs_parser.h>
-> > +#include <linux/memfile_notifier.h>
-> >  
-> >  /* inode in-kernel data */
-> >  
-> > @@ -28,6 +29,9 @@ struct shmem_inode_info {
-> >  	struct simple_xattrs	xattrs;		/* list of xattrs */
-> >  	atomic_t		stop_eviction;	/* hold when working on inode */
-> >  	unsigned int		xflags;		/* shmem extended flags */
-> > +#ifdef CONFIG_MEMFILE_NOTIFIER
-> > +	struct memfile_notifier_list memfile_notifiers;
-> > +#endif
-> >  	struct inode		vfs_inode;
-> >  };
-> >  
-> > diff --git a/mm/shmem.c b/mm/shmem.c
-> > index 9b31a7056009..7b43e274c9a2 100644
-> > --- a/mm/shmem.c
-> > +++ b/mm/shmem.c
-> > @@ -903,6 +903,28 @@ static struct folio *shmem_get_partial_folio(struct inode *inode, pgoff_t index)
-> >  	return page ? page_folio(page) : NULL;
-> >  }
-> >  
-> > +static void notify_fallocate(struct inode *inode, pgoff_t start, pgoff_t end)
-> > +{
-> > +#ifdef CONFIG_MEMFILE_NOTIFIER
-> > +	struct shmem_inode_info *info = SHMEM_I(inode);
-> > +
-> > +	memfile_notifier_fallocate(&info->memfile_notifiers, start, end);
-> > +#endif
-> > +}
+On 2022/3/10 9:57, Wenchao Hao wrote:
+> We found a NULL pointer dereference in iscsi_sw_tcp_conn_get_param(),
+> the root reason is we did sysfs addition wrong.
 > 
-> *notify_populate(), not fallocate.  This is a notification that a
-> range has been populated, not that the fallocate() syscall was run
-> to populate the backing store of a file.
+> The origin implement do device setup in iscsi_create_conn() which
+> bind the alloc/init and add in one function; do device teardown in
+> iscsi_destroy_conn() which bind remove and free in one function.
 > 
-> i.e.  fallocate is the name of a userspace filesystem API that can
-> be used to manipulate the backing store of a file in various ways.
-> It can both populate and punch away the backing store of a file, and
-> some operations that fallocate() can run will do both (e.g.
-> FALLOC_FL_ZERO_RANGE) and so could generate both
-> notify_invalidate() and a notify_populate() events.
+> This implement makes it impossible to initialize resources of device
+> before add it to sysfs during setup.
+> 
+> So this patchset splict both the setup and teradown of iscsi_cls_conn to
+> 2 steps.
+> 
+> For setup flow, we should call iscsi_alloc_conn() and initialize some
+> resources, then call iscsi_add_conn().
+> 
+> For teradown flow, we should call iscsi_remove_conn() to remove device
+> and free resources which related to iscsi_cls_conn, then call
+> iscsi_put_conn() to free iscsi_cls_conn.
+> 
 
-Yes, I fully agreed fallocate syscall has both populating and hole
-punching semantics so notify_fallocate can be misleading since we
-actually mean populate here.
+Friendly ping...
 
+> V2 -> V3:
+>    * Fix some bugs and optimization the code implement.
 > 
-> Hence "fallocate" as an internal mm namespace or operation does not
-> belong anywhere in core MM infrastructure - it should never get used
-> anywhere other than the VFS/filesystem layers that implement the
-> fallocate() syscall or use it directly.
+> V1 -> V2:
+>    * add two more iscsi_free_conn() and iscsi_remove_conn() than V1
+>    * change the teardown flow of iscsi_cls_conn
+> 
+> Wenchao Hao (3):
+>    scsi: iscsi: Add helper functions to manage iscsi_cls_conn
+>    scsi:libiscsi: Add iscsi_cls_conn to sysfs after been initialized
+>    scsi:libiscsi: teradown iscsi_cls_conn gracefully
+> 
+>   drivers/scsi/libiscsi.c             | 23 +++++---
+>   drivers/scsi/scsi_transport_iscsi.c | 90 +++++++++++++++--------------
+>   include/scsi/scsi_transport_iscsi.h |  5 +-
+>   3 files changed, 66 insertions(+), 52 deletions(-)
+> 
 
-Will use your suggestion through the series where applied. Thanks for
-your suggestion.
-
-Chao
-> 
-> Cheers,
-> 
-> Dave.
-> 
-> -- 
-> Dave Chinner
-> david@fromorbit.com
