@@ -2,120 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B87C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F2AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 02:14:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345565AbiCKCGT (ORCPT
+        id S1345565AbiCKCPr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 21:06:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
+        Thu, 10 Mar 2022 21:15:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236911AbiCKCGS (ORCPT
+        with ESMTP id S233354AbiCKCPo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 21:06:18 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44481A6149;
-        Thu, 10 Mar 2022 18:05:15 -0800 (PST)
+        Thu, 10 Mar 2022 21:15:44 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0C8C5DA9;
+        Thu, 10 Mar 2022 18:14:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646964315; x=1678500315;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=f7icsPcwe22Y3Rkg4PbfygTUhgxSU2Ht81aYqhv3kAM=;
-  b=LQu706m5eSHRFVvodmFkVn3k+F3PzQMBD8xTSnnE6Ia9rb5Ch00gbxdg
-   5RERn8qxCgTDVsrqBQI66+IMfLZ2JZUlsGDFQvWU1qN/3tcsSL0DTxEkc
-   QII3Q2KZvQ6Rp2XFRoX85ps8KK99C8UC2pbN/UBSMxXV455qcVVc5xruw
-   DMdEUjVsmDou9BM9k+e2u3hF4tBNDcDkHbiO0BEFMvcFTMsWctwZzCp2k
-   a4I7KEVmnH25YnAhELX60X5C/tb1eJOYB+P23LXAcaKD8eFkQlC/ohPFh
-   yjfwZqsOfKVkQHMlaz6PO4pKvbRwSPqWZTBG7aDJI4rbD6GFLmYvc7+VO
+  t=1646964883; x=1678500883;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Dv5GNx9VK3y1DpDwUXAucqtut9NvxauOUvgUnuU3e1w=;
+  b=EYtDVx1lbhYHY6uz750EBobkU1fo0j6iwMG8FC4w+tHDrVUR2nRfnxW/
+   XOMacHwf62YV2drKae9vwIeINwbe2H76CZiA3QDMQBkG6oj4XrZEPGWSV
+   7VtkYVmOf0Wy/MZglERq4dbpQaPmZ7BzuP1XjhTsr25jHcbGgG8ZfwI2u
+   0Iq3z5xdHkwH2ub6QxWpHMMJRjoTXP7kmetM7tRwVDD5kzEA0F1+EdEdi
+   JrIEAvC5PcTew/ZhLLu70POxb+ezHxl7mBRylD9QUZeqLqEORsy8MakPL
+   gaqQ6L07FM+MT71sES3aHL0kDv9cYPJ+nbHN8NUKF+wQSA76vHILgnxj8
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="316195969"
+X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="255667100"
 X-IronPort-AV: E=Sophos;i="5.90,172,1643702400"; 
-   d="scan'208";a="316195969"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 18:05:15 -0800
+   d="scan'208";a="255667100"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 18:14:40 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,172,1643702400"; 
-   d="scan'208";a="712675009"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 10 Mar 2022 18:05:13 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSUeW-0005hD-OH; Fri, 11 Mar 2022 02:05:12 +0000
-Date:   Fri, 11 Mar 2022 10:04:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Atish Patra <atish.patra@wdc.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>,
-        linux-doc@vger.kernel.org
-Subject: [ammarfaizi2-block:palmer/linux/riscv-pmu 4/10]
- drivers/perf/riscv_pmu_legacy.c:76: warning: This comment starts with '/**',
- but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-Message-ID: <202203110927.3ArrLPWM-lkp@intel.com>
+   d="scan'208";a="548318297"
+Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Mar 2022 18:14:38 -0800
+From:   Tianfei Zhang <tianfei.zhang@intel.com>
+To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
+        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     corbet@lwn.net, Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v3] fpga: dfl: check feature type before parse irq info
+Date:   Thu, 10 Mar 2022 21:11:21 -0500
+Message-Id: <20220311021121.1504442-1-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Atish,
-
-FYI, the error/warning still remains.
-
-tree:   https://github.com/ammarfaizi2/linux-block palmer/linux/riscv-pmu
-head:   7a94c6fb363cfe62906cb0503d763204b0fe32b8
-commit: e4d5f33e63b1260f378512c0f6e5a117ed6b894a [4/10] RISC-V: Add a simple platform driver for RISC-V legacy perf
-config: riscv-randconfig-r042-20211213 (https://download.01.org/0day-ci/archive/20220311/202203110927.3ArrLPWM-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/e4d5f33e63b1260f378512c0f6e5a117ed6b894a
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block palmer/linux/riscv-pmu
-        git checkout e4d5f33e63b1260f378512c0f6e5a117ed6b894a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash drivers/perf/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/perf/riscv_pmu_legacy.c:76: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * This is just a simple implementation to allow legacy implementations
-
-
-vim +76 drivers/perf/riscv_pmu_legacy.c
-
-    74	
-    75	/**
-  > 76	 * This is just a simple implementation to allow legacy implementations
-    77	 * compatible with new RISC-V PMU driver framework.
-    78	 * This driver only allows reading two counters i.e CYCLE & INSTRET.
-    79	 * However, it can not start or stop the counter. Thus, it is not very useful
-    80	 * will be removed in future.
-    81	 */
-    82	static void pmu_legacy_init(struct riscv_pmu *pmu)
-    83	{
-    84		pr_info("Legacy PMU implementation is available\n");
-    85	
-    86		pmu->num_counters = RISCV_PMU_LEGACY_NUM_CTR;
-    87		pmu->ctr_start = pmu_legacy_ctr_start;
-    88		pmu->ctr_stop = NULL;
-    89		pmu->event_map = pmu_legacy_event_map;
-    90		pmu->ctr_get_idx = pmu_legacy_ctr_get_idx;
-    91		pmu->ctr_get_width = NULL;
-    92		pmu->ctr_clear_idx = NULL;
-    93		pmu->ctr_read = pmu_legacy_read_ctr;
-    94	
-    95		perf_pmu_register(&pmu->pmu, "cpu", PERF_TYPE_RAW);
-    96	}
-    97	
+The feature ID of "Port User Interrupt" and the
+"PMCI Subsystem" are identical, 0x12, but one is for FME,
+other is for Port. It should check the feature type While
+parsing the irq info in parse_feature_irqs().
 
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+v3: Remove "Fixes" in commit log with Hao's comment, this is a
+    extension not a bug fix.
+
+v2: add DFL Feature ID Registry in documentation.
+
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+---
+ Documentation/fpga/dfl.rst | 11 +++++++++++
+ drivers/fpga/dfl.c         | 38 ++++++++++++++++++++++----------------
+ 2 files changed, 33 insertions(+), 16 deletions(-)
+
+diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+index ef9eec71f6f3..14f342bb85e4 100644
+--- a/Documentation/fpga/dfl.rst
++++ b/Documentation/fpga/dfl.rst
+@@ -502,6 +502,17 @@ Developer only needs to provide a sub feature driver with matched feature id.
+ FME Partial Reconfiguration Sub Feature driver (see drivers/fpga/dfl-fme-pr.c)
+ could be a reference.
+ 
++Individual DFL drivers are bound DFL devices based on Feature Type and Feature ID.
++The definition of Feature Type and Feature ID can be found:
++
++https://github.com/OPAE/linux-dfl-feature-id/blob/master/dfl-feature-ids.rst
++
++If you want to add a new feature ID for FPGA DFL feature device, we recommend that
++use a pull request to reserve a feature ID for DFL. Here is the DFL Feature ID
++Registry:
++
++https://github.com/OPAE/linux-dfl-feature-id
++
+ Location of DFLs on a PCI Device
+ ================================
+ The original method for finding a DFL on a PCI device assumed the start of the
+diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+index 599bb21d86af..6bff39ff21a0 100644
+--- a/drivers/fpga/dfl.c
++++ b/drivers/fpga/dfl.c
+@@ -940,9 +940,12 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
+ {
+ 	void __iomem *base = binfo->ioaddr + ofst;
+ 	unsigned int i, ibase, inr = 0;
++	enum dfl_id_type type;
+ 	int virq;
+ 	u64 v;
+ 
++	type = feature_dev_id_type(binfo->feature_dev);
++
+ 	/*
+ 	 * Ideally DFL framework should only read info from DFL header, but
+ 	 * current version DFL only provides mmio resources information for
+@@ -957,22 +960,25 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
+ 	 * code will be added. But in order to be compatible to old version
+ 	 * DFL, the driver may still fall back to these quirks.
+ 	 */
+-	switch (fid) {
+-	case PORT_FEATURE_ID_UINT:
+-		v = readq(base + PORT_UINT_CAP);
+-		ibase = FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
+-		inr = FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
+-		break;
+-	case PORT_FEATURE_ID_ERROR:
+-		v = readq(base + PORT_ERROR_CAP);
+-		ibase = FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
+-		inr = FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
+-		break;
+-	case FME_FEATURE_ID_GLOBAL_ERR:
+-		v = readq(base + FME_ERROR_CAP);
+-		ibase = FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
+-		inr = FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
+-		break;
++	if (type == PORT_ID) {
++		switch (fid) {
++		case PORT_FEATURE_ID_UINT:
++			v = readq(base + PORT_UINT_CAP);
++			ibase = FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
++			inr = FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
++			break;
++		case PORT_FEATURE_ID_ERROR:
++			v = readq(base + PORT_ERROR_CAP);
++			ibase = FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
++			inr = FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
++			break;
++		}
++	} else if (type == FME_ID) {
++		if (fid == FME_FEATURE_ID_GLOBAL_ERR) {
++			v = readq(base + FME_ERROR_CAP);
++			ibase = FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
++			inr = FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
++		}
+ 	}
+ 
+ 	if (!inr) {
+-- 
+2.26.2
+
