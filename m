@@ -2,82 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37068C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 14:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239339AbiCKOOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 09:14:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        id S1349103AbiCKOQf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 09:16:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349871AbiCKONi (ORCPT
+        with ESMTP id S229518AbiCKOQd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 09:13:38 -0500
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826C21C65CF
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:12:22 -0800 (PST)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 929C7C01B; Fri, 11 Mar 2022 15:12:20 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1647007940; bh=F9oTQJj/bOWo+DnmjeL79H/5Dvz3gPQThlOlCq8LXyg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BtQJETfV7ckRZaHu3+Pz0LoOZinNNMnVWZNnSWyvGsJOPkmUGMMfpxr2YRym04l9E
-         zQS5scHlHFAHZhhdNA9K54ROQbUv6U3vI+Cdw8YMFACYaqY3Ijg9epNzip/8v2xASv
-         smMWT4STe0H6bEhP/xAlTIb7XHv4H54IZosVXfhUBYL4nQkSeUOAbxj7Rt0n9tAg1T
-         iRLKSjvoo8ItbWshS2vrqO90w1qBDZSRgTxXqJQ3/lp/lGGA17dB8Xk1SwHSCSt7cc
-         Ft5Ij6xqk+OuMfxemEIFQWYnFgXYAHksYwPQ0HLi/uctAYuKKicksNUK0oxlXrEjI9
-         lIH+9PzldQPQw==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 046C5C009;
-        Fri, 11 Mar 2022 15:12:18 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1647007940; bh=F9oTQJj/bOWo+DnmjeL79H/5Dvz3gPQThlOlCq8LXyg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BtQJETfV7ckRZaHu3+Pz0LoOZinNNMnVWZNnSWyvGsJOPkmUGMMfpxr2YRym04l9E
-         zQS5scHlHFAHZhhdNA9K54ROQbUv6U3vI+Cdw8YMFACYaqY3Ijg9epNzip/8v2xASv
-         smMWT4STe0H6bEhP/xAlTIb7XHv4H54IZosVXfhUBYL4nQkSeUOAbxj7Rt0n9tAg1T
-         iRLKSjvoo8ItbWshS2vrqO90w1qBDZSRgTxXqJQ3/lp/lGGA17dB8Xk1SwHSCSt7cc
-         Ft5Ij6xqk+OuMfxemEIFQWYnFgXYAHksYwPQ0HLi/uctAYuKKicksNUK0oxlXrEjI9
-         lIH+9PzldQPQw==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 4c2ced64;
-        Fri, 11 Mar 2022 14:12:15 +0000 (UTC)
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     linux-cachefs@redhat.com, linux-kernel@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>
-Subject: [PATCH] fscache_aquire_cache: error instead of asserting name is set
-Date:   Fri, 11 Mar 2022 23:12:08 +0900
-Message-Id: <20220311141208.847320-1-asmadeus@codewreck.org>
-X-Mailer: git-send-email 2.35.1
+        Fri, 11 Mar 2022 09:16:33 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAE11C74C7
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:15:30 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id gj15-20020a17090b108f00b001bef86c67c1so8262745pjb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 06:15:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XZJctosDLei9tHFcPaHwOIETymJfkLOU84IX8rfwoMA=;
+        b=mlneQKeHJ/qSdm+TB7TDo/UG6ZhvlDTwVeHAuWr/hFTgu67cXJeHmVwQbJvWeP9VmV
+         79UrIYA6aZCl1jvyMjTLoeztHo/3zJkp8vvtLoZ2UZzLj17yVb6549Zf/dj2eJ/67ZZr
+         AEXyLwphI7tv0irobgWo1chw3ftIJrrayx24R3abyLF0EA7ryyorHfshGCGs3kfKNfD+
+         TkIFN4iHUcE7uiSXTS/dlTG5asehAtA9t/Z8iNckuS8yzESRghBxZxHrIs/fnRkMDi/b
+         TO3tBvagmQh+Rs/vsX9MDYm/Rx/KSVEMNV3bIBxKr9tYzJ9pJsVOPOoFP4JQnzSrxp9r
+         +ilw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XZJctosDLei9tHFcPaHwOIETymJfkLOU84IX8rfwoMA=;
+        b=XToLheCI27N3m+VRsoT2em9zlgndCfVm2v9dfEdioAyCBB0dfk/+nZPvhgIm2Nil7V
+         6/UQWnOog2b0eRjLyXX1ch9Wqh0eSmitk/F9YDYFgZ2096i1sP1b6RwCsTIY483cq2BC
+         P55BUN1APXpFN/0UipLjiJm9Kh8F7wsGuUIGoKPsLoSm24vie5J/3jvbxol2OqS4adiZ
+         U8bX5l0DpPyjQZfNxR4sBBNVVx5NAyNyAeoCzCXvcSg0izrvnwj9FJhGbeBM/BVuZnv9
+         OHvtWGGNbMsdwzsptPMHy4yF+4A9Apaz3qiSB7SpfnJCUwdQx62cSFwL7CJDesSFEM7+
+         xTEA==
+X-Gm-Message-State: AOAM530TuR7ywK29WlMBtCBExcd4zhoun3oXvZtVTPsSwTjpejGDyOE1
+        TDeMTV9mJ40JcgQLoE5DY6s=
+X-Google-Smtp-Source: ABdhPJzNXz6mffH6Eejx1Ocj6S+aaeYG+sSnd2LWtIQTiBQPjNe628xzHMHFb44//EEEGkMb7KdY/A==
+X-Received: by 2002:a17:902:bd95:b0:14f:40ab:270e with SMTP id q21-20020a170902bd9500b0014f40ab270emr10677648pls.101.1647008129627;
+        Fri, 11 Mar 2022 06:15:29 -0800 (PST)
+Received: from localhost.localdomain ([119.3.102.56])
+        by smtp.gmail.com with ESMTPSA id o3-20020a639203000000b003810e49ff4fsm2224810pgd.1.2022.03.11.06.15.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 06:15:29 -0800 (PST)
+From:   Bang Li <libang.linuxer@gmail.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Bang Li <libang.linuxer@gmail.com>
+Subject: [PATCH] mm/swap: fix confusing comment in folio_mark_accessed
+Date:   Fri, 11 Mar 2022 22:15:19 +0800
+Message-Id: <20220311141519.59948-1-libang.linuxer@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-name comes straight from the cachefilesd config file, so return an error that
-the daemon handles and reports instead of printing a kernel stack in dmesg
+For unevictable pages, we don't need mark them.
 
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Signed-off-by: Bang Li <libang.linuxer@gmail.com>
 ---
- fs/fscache/cache.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ mm/swap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/fscache/cache.c b/fs/fscache/cache.c
-index 2749933852a9..6115b974585d 100644
---- a/fs/fscache/cache.c
-+++ b/fs/fscache/cache.c
-@@ -150,7 +150,9 @@ struct fscache_cache *fscache_acquire_cache(const char *name)
- {
- 	struct fscache_cache *cache;
- 
--	ASSERT(name);
-+	if (!name)
-+		return ERR_PTR(-EINVAL);
-+
- 	cache = fscache_lookup_cache(name, true);
- 	if (IS_ERR(cache))
- 		return cache;
+diff --git a/mm/swap.c b/mm/swap.c
+index 00804ea244e1..9d91ce23ea18 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -423,7 +423,7 @@ void folio_mark_accessed(struct folio *folio)
+ 		/*
+ 		 * Unevictable pages are on the "LRU_UNEVICTABLE" list. But,
+ 		 * this list is never rotated or maintained, so marking an
+-		 * evictable page accessed has no effect.
++		 * unevictable page accessed has no effect.
+ 		 */
+ 	} else if (!folio_test_active(folio)) {
+ 		/*
 -- 
-2.35.1
+2.25.1
 
