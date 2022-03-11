@@ -2,131 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC9BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F749C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 11:30:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348244AbiCKLb2 (ORCPT
+        id S1348258AbiCKLb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 06:31:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
+        Fri, 11 Mar 2022 06:31:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233127AbiCKLbT (ORCPT
+        with ESMTP id S1348241AbiCKLbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 06:31:19 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3851BAF25
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 03:30:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646998215; x=1678534215;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NwK6+euv7dsBV1AttyeOR0Bgaq+zNotO35uZNwD3Rig=;
-  b=Yinb1efMpGV3iP7ucHVmgiiFpL492cSqrQ7i0056ghgrRHPEMc6CBKTR
-   PuovVBj/6Cx0M0LGyY1Kid5m0Uz713XyjT/LIuNmZvJej8P5qQRl3+Kva
-   huszzpM9/mvk/Da35QydqRtOCLkJcE9NNVTaKnOXMvksu0EIQx0Ow39aL
-   oJc/WiNIJXcP3JkFEQzMD04ntkNglZ9AYyS0CnSvoUSbHZLXBqo9NerxQ
-   opZWs8cgtQVXZUwcY6maoCbovDb9C+gSlL1PcRSAaLZzwoi8oEIGY3k8Y
-   fn98cFVil6q61wwYf5Lgm4MHzj0wVdqheuD6vnpGZa0vB9TDP/CxS9nxi
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="237728097"
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="237728097"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 03:29:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,173,1643702400"; 
-   d="scan'208";a="538969034"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 11 Mar 2022 03:29:56 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSdT1-0006Jf-Kl; Fri, 11 Mar 2022 11:29:55 +0000
-Date:   Fri, 11 Mar 2022 19:29:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        0day robot <lkp@intel.com>
-Subject: net/core/gro.c:290:9: error: implicit declaration of function
- 'list_for_each_entry_safe_reverse_inside'; did you mean
- 'list_for_each_entry_safe_reverse'?
-Message-ID: <202203111919.3iLzhcNo-lkp@intel.com>
+        Fri, 11 Mar 2022 06:31:55 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601FF1BA92B;
+        Fri, 11 Mar 2022 03:30:53 -0800 (PST)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BAMQaZ004098;
+        Fri, 11 Mar 2022 11:30:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=tq5qBKP12qa1xEBLrPEOAt0ZMKim5AtL1JadHMsSPNE=;
+ b=qDBkb9iRSvYgeJCE9DdCm7BCrUmE1yApRex/GL5NqNhk6E8266X1Jm3uCvVx6mXbX43A
+ pfvPX16X9MdI6qjJqG5xK7hQQQ2ueEA5g540yYLuaqzYug4JdVj7lT0BiODAJ2ST8azo
+ +uYe2Mii+aQash3hybprveiU0Twal8GP3Yijb1sOKs20i2HstxRQ/tdFFJgtKvDUhJ/g
+ RzHeYJgH+pH5oh1AvBgz+7g5IpZT22i4IyQd9Li5M1c3aQJ14ppJ1BRCQCakb9Rg5vpZ
+ UNuzptETGldpcSWiW9BFa3AHyqxauXdTNV087L9ZLGUbcfPTOmNX2CJ8h8C8+WAAcINI CA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3em0du8sac-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Mar 2022 11:30:32 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22BBHL3S192676;
+        Fri, 11 Mar 2022 11:30:22 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
+        by userp3020.oracle.com with ESMTP id 3envvp36u0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Mar 2022 11:30:22 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E9PpHPYRkK0BCdBZEtFiHf/W0v5d3mFy3Sl4RRW/rOilNJpavLxIo0X+Fr84a5atjS3PKTNT9R0RDnGLpWxP8OOQA7PjwmhyDNK2D9QUh4VdgV8/oB8DDkg98THPytzO++FukbTl+mGkVALM2H8d2KnEKdueYXIAs8gWZgJl636dM2lwke3cBDg0w5WK9L7OJxYuygGwstAZR7flocNG3cOec43ylaHYuCZv4lh5/YKF576Fj8dE7Cy9/bqqLbRE6Rk+41qvp0+YNISW2dMpKgjXmRH8LnB4xZOgRsYUNilixKs4NdNzL8Bq32iw7VINfa3n0HmSnTxnX1hJkMTxZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tq5qBKP12qa1xEBLrPEOAt0ZMKim5AtL1JadHMsSPNE=;
+ b=VP7WUmuVq3oVbps6zJsQCLAGzG8dfepyM9gHbgcpf3aLRtGddlEToxF4UTG4By7eA31J86+nVl4xeTsnZ1KxCJhYzRJlmbqXU/syfRrbSPQ7EVvLl8VPFkzd7+5ZWATv9lTXT7yiu+D4UCg5Ui1mO9gkGvIlUiHofsEZEd35suA8WntEVq9fuHsOjon4CMVeUB6CpvzNQg2BTqq5exN4w39mnEIEOV08ccxSYtZUUUAmECsIaCyYQFNsWr/69pGfbRFjwKTzHhobCsPPCzKordlU6y+oN+Wpsk4voGQGUafVCASjSw6nN3ky18iBY8E+8P8xBn660UxBKsW2Dgdbag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tq5qBKP12qa1xEBLrPEOAt0ZMKim5AtL1JadHMsSPNE=;
+ b=oEFwGcMyemYffNFhGh97CSy/h9G6ZovDvdH+/IhdvUz8E1RXSCAMOAvKYAkdL7aX2TT/X2eo0bwwo4cZx5PPkmBXG7qbiYurGvVfC4mu2UqGf5QULHEPbc32cIn74JS8LsK6h4wTuq3P9gRLJj+IEc+Z5uSLdqGt3yAyLwyt+4E=
+Received: from BN0PR10MB5030.namprd10.prod.outlook.com (2603:10b6:408:12a::18)
+ by CY4PR10MB1430.namprd10.prod.outlook.com (2603:10b6:903:26::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Fri, 11 Mar
+ 2022 11:30:19 +0000
+Received: from BN0PR10MB5030.namprd10.prod.outlook.com
+ ([fe80::b9d4:8912:7bf8:14fb]) by BN0PR10MB5030.namprd10.prod.outlook.com
+ ([fe80::b9d4:8912:7bf8:14fb%9]) with mapi id 15.20.5061.022; Fri, 11 Mar 2022
+ 11:30:19 +0000
+From:   Liam Merwick <liam.merwick@oracle.com>
+To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, x86@kernel.org
+Cc:     pbonzini@redhat.com, bp@alien8.de, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, krish.sadhukhan@oracle.com,
+        liam.merwick@oracle.com
+Subject: [PATCH 5.4 4/4] KVM: SVM: Don't flush cache if hardware enforces cache coherency across encryption domains
+Date:   Fri, 11 Mar 2022 11:29:27 +0000
+Message-Id: <20220311112927.8400-5-liam.merwick@oracle.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220311112927.8400-1-liam.merwick@oracle.com>
+References: <20220311112927.8400-1-liam.merwick@oracle.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: LO4P265CA0088.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:2bc::7) To BN0PR10MB5030.namprd10.prod.outlook.com
+ (2603:10b6:408:12a::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2b20373c-d8ee-4083-38f1-08da035285fa
+X-MS-TrafficTypeDiagnostic: CY4PR10MB1430:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR10MB1430079143A72B698A9AA051E80C9@CY4PR10MB1430.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: k6aFsiJpAl2LawNZ57UGZomszPt7+2b16MCZ7xTB4LmgUykIi5ILA6XBh26Ojtzff7uSy6suCCjOeZtTEUr21898yHHRoHGcmgNYQzSUKfwX7l0uyNFxS1vXHR69GBonBO3Nyv2WVvYdb9ilvCXAxX3jlpy72+qs8BQg4f0LPquRJm9q2AhAW/r/DBpt+Vgo9xzOQkt2WxDfcI5uE/x/EhzsuoHDqVwij7GX07Gw/NSj0oBSF0Y488ohiQBLDpKb/ewIwINYvehjbuBfKatFyIsB87pvMgYWD2EjYZoopwFmBkkTIJz/d6PYnUifn52rloshqLolOe1uBkn/1vT8CaSJ9v+2hk8p6uHybFD2KmOPl+xaRGeXmO+b0qHeKUC9J+BXBbRC4vXESg0AgBmKL9HgxoNSFL0hs9QsRPMGP39//Tx87drJBuub4Gorey+b29N0XRTE6A6QF/+PdLQbswxfthsrJR6xB6JQWiGUjFcxpAO94/zzq8onJLnmkZXVTxJFpTUvL7/jN7v9+3QZrvTr28z9VTrz5LE3/ui4FL8n7OzOE8lHGYW7a9gzQ5DpQPIktUE3kLBNGWiXYUVqyU6SmlhPZCfUU5Dj6A1i7Ukz2oVUPb49zULYjcdMhqJhL/bRhS6HyBNGqBiPpjXSABJWOLPwOvV5ly76hksfFw4HCS8Z+nFroAhC6L14DqRDrFy/IzYt7tapXwDr4KJKd5vkhYz9CHlR+3Y+krnfCjJkaIl16DaBfTxtCDfAlGfnQMzU80x0tgI5xIhkodw1dcqRuyvmw8YvctGH6CEfVkc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5030.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38100700002)(8936002)(4326008)(6666004)(5660300002)(8676002)(66556008)(66476007)(66946007)(508600001)(44832011)(316002)(52116002)(6512007)(6506007)(38350700002)(966005)(6486002)(107886003)(86362001)(1076003)(186003)(26005)(2616005)(36756003)(83380400001)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7gI9y8phHMD+jGmnS9v0KhU84FmuEnqtMEu4lP44UOP/AcYgPbFmNAXR4ytZ?=
+ =?us-ascii?Q?+ahkGOwfuY/+aFjPNysF0em3civw18L/6gUS+GL1pkMZCvH/TUhZS8txKMBp?=
+ =?us-ascii?Q?Ebv6bJsmXO8RMq8B3w0R33lsUw7tWDTm1YZ8z4zV4imhot53P3vO+2+wjim3?=
+ =?us-ascii?Q?kHDjyUau7Rj/C29kDdU9fUdPmDrqd1h450ZJj5EQf1Oek3rm/lDVO5Qt3WaA?=
+ =?us-ascii?Q?mYKrb9r6YcqnClTGwcHvcDES2nmp28jjC3gJXKR5QeFb15xSDGjTeADcnUzo?=
+ =?us-ascii?Q?5tt1Jn7e2VO88EHV9eSSrEfzpjzzkeE/S02Nsp/d85uo382r0fU3FL7KxIqB?=
+ =?us-ascii?Q?XLVvcv6iQntBJC78otzV3zl/Klrzz9zNuUYKiVfkhprZtLEYeOxAKTd4r1oP?=
+ =?us-ascii?Q?sAe97alZCyw1L4NvooW22tSfiJteLIPytZQGqp3j7yOc+060thTtQwYMREFT?=
+ =?us-ascii?Q?bQE95aozSpBNTTQXlmkuP+/W7W2MFl6mvt81PfBPQ9dugViLEcjpiV5VIQHN?=
+ =?us-ascii?Q?37n6LhIUDmv/cVOQ2NTeaxf/8tqb6h0ADB8AJkpzT5emSNGygjhhcXSOc528?=
+ =?us-ascii?Q?uFXO8emFLJeHFe04iWEBshA203EUM15aikcEr3uCAPZk9kNcbeCmEHQMCTDN?=
+ =?us-ascii?Q?21ZhQTI5bgtVWhFtturvZfvz0aBaR1TVfKdQlILZ1TmJYRuIwaPlDv1gvBz0?=
+ =?us-ascii?Q?CuCMXZ2u9qyrleG7r2W9P6zxFl0IAndTw+IfDLGdLvZO5MUpGjUHeMw4J3HO?=
+ =?us-ascii?Q?dLKp/gzs3pXH3WDPoqD2uP4yOwcf3Uje2sg7J1fOVsu/6V6Bhcb+Zd3qyc+l?=
+ =?us-ascii?Q?gk8+RKh7RPBGsCYAJVZJfPyctWcwf9q4Q5PbLhHH0hkpQDmo/v2//kBeMbBa?=
+ =?us-ascii?Q?1MxgTqx3CK442EzmJL9eBsIXnB61RtKJClhKFR/ymXdq+Fc33cmZMlJ1NMvd?=
+ =?us-ascii?Q?Dg+lAUtYFwL5ihtLvdEQKv3nfGu6FY3nzZ0aGO6pUrY51FqIK0/AgJ8mxspo?=
+ =?us-ascii?Q?GAjuFsEAafmjRNOJNy7u+JOnBcanYoSswZyPxVhdy8IS/CYRwMnw+7v1flaB?=
+ =?us-ascii?Q?rQBnhTLRUVE+DQdFd6FZDM5bUmNKINxqdFI/vnz3x5MYgK5Zql2M7Od04ohT?=
+ =?us-ascii?Q?a5+Yf0E1ErjFxWLiVSv9KUjZT+BUF+E+2+otkb0krjIPAXg3+xpldRhOT9XP?=
+ =?us-ascii?Q?bSXHar5MMjWc6QEPWSlouiXX4A+3uin3+/ApNOXYg8QRFOU1GWUjnokHelQN?=
+ =?us-ascii?Q?cYYB5jgVdptGJbAxIEyeN6OZLgs6fHtSOvbD4azKEYAAEgBCiNS+5vxYtXA6?=
+ =?us-ascii?Q?3mbxbLY6G4T/HGyqwN5lrtK5e+/m9eQNbL3RbfcKvicuSj4H/WDLO/0N1lYO?=
+ =?us-ascii?Q?UDpKWPKN2Z6Lrquf0kgGvMAftPDqmqPpJ/Ny7etvb0wQpkHaN1oQ53p8jufF?=
+ =?us-ascii?Q?lAoPrBz2KBjNcRqC4PpME996UcMst/eC3xjWhgUgnovo4sOXIVwi1luJPprL?=
+ =?us-ascii?Q?olSlRLxqNS4YbNQtDYaFVm1/xcrttrTsky+Z4bC4oZMRtqWpq55zb4YBnbFU?=
+ =?us-ascii?Q?n3O9fhr63yqGJyEePRz4XbbgAvZXS6DwBZIxFR+moac6FkW52yEMxnAVAcvQ?=
+ =?us-ascii?Q?4sxk5s/d3qSbLZx0Jjg4TmA=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b20373c-d8ee-4083-38f1-08da035285fa
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5030.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 11:30:19.8047
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rV1Z1loqvLcA9JrBKPMN8RBi45ya+ctWeyXmARNfA3ro9i1iaBtfcqJgvEqxgy9ybTbaoYRkc4vPjTE4qGgl8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1430
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10282 signatures=692556
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999 bulkscore=0
+ phishscore=0 malwarescore=0 suspectscore=0 mlxscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203110055
+X-Proofpoint-ORIG-GUID: f5VO2VnAsKEXHoIqy-vdF6E1xC-IwR7x
+X-Proofpoint-GUID: f5VO2VnAsKEXHoIqy-vdF6E1xC-IwR7x
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/0day-ci/linux/commits/UPDATE-20220311-151720/Xiaomeng-Tong/list_for_each_entry-make-iterator-invisiable-outside-the-loop/20220301-160113
-head:   54ae283053c127aac4b946dffa0f31f9885dbb77
-commit: c74b61caeb4780382f24aa0d6e0fabe81b703eac net/core: remove iterator use outside the loop
-date:   4 hours ago
-config: arm-buildonly-randconfig-r006-20220310 (https://download.01.org/0day-ci/archive/20220311/202203111919.3iLzhcNo-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/c74b61caeb4780382f24aa0d6e0fabe81b703eac
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review UPDATE-20220311-151720/Xiaomeng-Tong/list_for_each_entry-make-iterator-invisiable-outside-the-loop/20220301-160113
-        git checkout c74b61caeb4780382f24aa0d6e0fabe81b703eac
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash net/core/
+From: Krish Sadhukhan <krish.sadhukhan@oracle.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+commit e1ebb2b49048c4767cfa0d8466f9c701e549fa5e upstream.
 
-All errors (new ones prefixed by >>):
+In some hardware implementations, coherency between the encrypted and
+unencrypted mappings of the same physical page in a VM is enforced. In
+such a system, it is not required for software to flush the VM's page
+from all CPU caches in the system prior to changing the value of the
+C-bit for the page.
 
-   net/core/gro.c: In function '__napi_gro_flush_chain':
->> net/core/gro.c:290:9: error: implicit declaration of function 'list_for_each_entry_safe_reverse_inside'; did you mean 'list_for_each_entry_safe_reverse'? [-Werror=implicit-function-declaration]
-     290 |         list_for_each_entry_safe_reverse_inside(skb, p, struct sk_buff, head, list) {
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |         list_for_each_entry_safe_reverse
->> net/core/gro.c:290:49: error: 'skb' undeclared (first use in this function)
-     290 |         list_for_each_entry_safe_reverse_inside(skb, p, struct sk_buff, head, list) {
-         |                                                 ^~~
-   net/core/gro.c:290:49: note: each undeclared identifier is reported only once for each function it appears in
->> net/core/gro.c:290:54: error: 'p' undeclared (first use in this function); did you mean 'up'?
-     290 |         list_for_each_entry_safe_reverse_inside(skb, p, struct sk_buff, head, list) {
-         |                                                      ^
-         |                                                      up
->> net/core/gro.c:290:57: error: expected expression before 'struct'
-     290 |         list_for_each_entry_safe_reverse_inside(skb, p, struct sk_buff, head, list) {
-         |                                                         ^~~~~~
->> net/core/gro.c:290:84: error: expected ';' before '{' token
-     290 |         list_for_each_entry_safe_reverse_inside(skb, p, struct sk_buff, head, list) {
-         |                                                                                    ^~
-         |                                                                                    ;
-   net/core/gro.c:288:27: warning: unused variable 'head' [-Wunused-variable]
-     288 |         struct list_head *head = &napi->gro_hash[index].list;
-         |                           ^~~~
-   cc1: some warnings being treated as errors
+So check that bit before flushing the cache.
 
+Signed-off-by: Krish Sadhukhan <krish.sadhukhan@oracle.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lkml.kernel.org/r/20200917212038.5090-4-krish.sadhukhan@oracle.com
+Signed-off-by: Liam Merwick <liam.merwick@oracle.com>
 
-vim +290 net/core/gro.c
-
-   284	
-   285	static void __napi_gro_flush_chain(struct napi_struct *napi, u32 index,
-   286					   bool flush_old)
-   287	{
-   288		struct list_head *head = &napi->gro_hash[index].list;
-   289	
- > 290		list_for_each_entry_safe_reverse_inside(skb, p, struct sk_buff, head, list) {
-   291			if (flush_old && NAPI_GRO_CB(skb)->age == jiffies)
-   292				return;
-   293			skb_list_del_init(skb);
-   294			napi_gro_complete(napi, skb);
-   295			napi->gro_hash[index].count--;
-   296		}
-   297	
-   298		if (!napi->gro_hash[index].count)
-   299			__clear_bit(index, &napi->gro_bitmask);
-   300	}
-   301	
-
+Conflicts:
+	arch/x86/kvm/svm/sev.c
+[ The linux-5.4.y stable branch does not have the Linux 5.7 refactoring commit
+  eaf78265a4ab ("KVM: SVM: Move SEV code to separate file") so the
+  change was manually applied to sev_clflush_pages() in arch/x86/kvm/svm.c. ]
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/x86/kvm/svm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kvm/svm.c b/arch/x86/kvm/svm.c
+index 2f84509f2828..125970286f28 100644
+--- a/arch/x86/kvm/svm.c
++++ b/arch/x86/kvm/svm.c
+@@ -1904,7 +1904,8 @@ static void sev_clflush_pages(struct page *pages[], unsigned long npages)
+ 	uint8_t *page_virtual;
+ 	unsigned long i;
+ 
+-	if (npages == 0 || pages == NULL)
++	if (this_cpu_has(X86_FEATURE_SME_COHERENT) || npages == 0 ||
++	    pages == NULL)
+ 		return;
+ 
+ 	for (i = 0; i < npages; i++) {
+-- 
+2.27.0
+
