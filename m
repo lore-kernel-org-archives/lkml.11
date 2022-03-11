@@ -2,300 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F2D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 16:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350124AbiCKQCe (ORCPT
+        id S1350108AbiCKQDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:02:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
+        Fri, 11 Mar 2022 11:03:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350100AbiCKQCQ (ORCPT
+        with ESMTP id S1350427AbiCKQDk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 11:02:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF0F1D087F;
-        Fri, 11 Mar 2022 08:01:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 11 Mar 2022 11:03:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A61E4F44B
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 08:02:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647014555;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ilGm5MsrGcVXow52rFFtdj0YbYqX9AM62W1VECQWVlE=;
+        b=VAdC7GVjfnBwIbBms+7Kxz0rZf2/TIO6up3dNz+g644JMrVzZ50oABBspPvtI/Ox/vDdWI
+        9HHLSX8q+cxAFos1dK561ntbcK0JfBld87AFbnQ7SshmBAZ96Telyj7x01t6sxqMFT7tVI
+        qpXQj1ge8wzdwDi6meFURr8M25DOYps=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-99-Ng7loZ2EPzmp-sVX6vNM8w-1; Fri, 11 Mar 2022 11:02:31 -0500
+X-MC-Unique: Ng7loZ2EPzmp-sVX6vNM8w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48E26B82C18;
-        Fri, 11 Mar 2022 16:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02792C340E9;
-        Fri, 11 Mar 2022 16:01:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647014469;
-        bh=gYl4Kdz77UQE5JD3kUI4FvgjNtnkg0CruIjvyq/cUEQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UKJw97wZK4V7YOp3VsK+1HmB4OKYl7BpYoUO//hehYteaXGi/GasDEPu4o3D5jnem
-         G2DZTf1nVyfV7K/u+b5Fd9ljLQtMEFewlVCYDZ6o1BjnQMpMUveegSEPiF3h0F9+ky
-         sR1cQjtZ6Cvb+PM3Iz4RhNpmV5FlZ5O8hB8ZXLwmLk6WNxpVCQIEvgTnR0N/dntA0v
-         XgTap8XtvSUiaDqOYML7nts6BLbwPysw8jkvmeT5holXcgOQL7ALw7YfN4/wI9BmnR
-         OwirAAFrxLW+OzIj9/OVx/GbS//KDxFOUugOPKXv4NKZ6ufzPBG34zu+cXhi/0yChe
-         7FSIhUNi2S6Dw==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v11 12/12] fprobe: Add a selftest for fprobe
-Date:   Sat, 12 Mar 2022 01:01:03 +0900
-Message-Id: <164701446311.268462.11318780752089737818.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164701432038.268462.3329725152949938527.stgit@devnote2>
-References: <164701432038.268462.3329725152949938527.stgit@devnote2>
-User-Agent: StGit/0.19
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 19D60FC80;
+        Fri, 11 Mar 2022 16:02:30 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EB50F866D6;
+        Fri, 11 Mar 2022 16:02:18 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH] cachefiles: Fix volume coherency attribute
+From:   David Howells <dhowells@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     Rohith Surabattula <rohiths.msft@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Steve French <smfrench@gmail.com>, linux-cifs@vger.kernel.org,
+        linux-cachefs@redhat.com, dhowells@redhat.com,
+        rohiths.msft@gmail.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 11 Mar 2022 16:02:18 +0000
+Message-ID: <164701453798.2588911.12798385110642752783.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a KUnit based selftest for fprobe interface.
+A network filesystem may set coherency data on a volume cookie, and if
+given, cachefiles will store this in an xattr on the directory in the cache
+corresponding to the volume.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v11:
-  - Build selftest only if KUNIT=y.
- Changes in v9:
-  - Rename fprobe_target* to fprobe_selftest_target*.
-  - Find the correct expected ip by ftrace_location_range().
-  - Since the ftrace_location_range() is not exposed to module, make
-    this test only for embedded.
-  - Add entry only test.
-  - Reset the fprobe structure before reuse it.
----
- lib/Kconfig.debug |   12 ++++
- lib/Makefile      |    2 +
- lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 188 insertions(+)
- create mode 100644 lib/test_fprobe.c
+The function that sets the xattr just stores the contents of the volume
+coherency buffer directly into the xattr, with nothing added; the checking
+function, on the other hand, has a cut'n'paste error whereby it tries to
+interpret the xattr contents as would be the xattr on an ordinary file
+(using the cachefiles_xattr struct).  This results in a failure to match
+the coherency data because the buffer ends up being shifted by 18 bytes.
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 72ca4684beda..b0bf0d224b2c 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2118,6 +2118,18 @@ config KPROBES_SANITY_TEST
+Fix this by defining a structure specifically for the volume xattr and
+making both the setting and checking functions use it.
+
+Since the volume coherency doesn't work if used, take the opportunity to
+insert a reserved field for future use, set it to 0 and check that it is 0.
+Log mismatch through the appropriate tracepoint.
+
+Note that this only affects cifs; 9p, afs, ceph and nfs don't use the
+volume coherency data at the moment.
+
+Fixes: 32e150037dce ("fscache, cachefiles: Store the volume coherency data")
+Reported-by: Rohith Surabattula <rohiths.msft@gmail.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+cc: Steve French <smfrench@gmail.com>
+cc: linux-cifs@vger.kernel.org
+cc: linux-cachefs@redhat.com
+---
+
+ fs/cachefiles/xattr.c             |   23 ++++++++++++++++++++---
+ include/trace/events/cachefiles.h |    2 ++
+ 2 files changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/fs/cachefiles/xattr.c b/fs/cachefiles/xattr.c
+index 83f41bd0c3a9..35465109d9c4 100644
+--- a/fs/cachefiles/xattr.c
++++ b/fs/cachefiles/xattr.c
+@@ -28,6 +28,11 @@ struct cachefiles_xattr {
+ static const char cachefiles_xattr_cache[] =
+ 	XATTR_USER_PREFIX "CacheFiles.cache";
  
- 	  Say N if you are unsure.
++struct cachefiles_vol_xattr {
++	__be32	reserved;	/* Reserved, should be 0 */
++	__u8	data[];		/* netfs volume coherency data */
++} __packed;
++
+ /*
+  * set the state xattr on a cache file
+  */
+@@ -185,6 +190,7 @@ void cachefiles_prepare_to_write(struct fscache_cookie *cookie)
+  */
+ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+ {
++	struct cachefiles_vol_xattr *buf;
+ 	unsigned int len = volume->vcookie->coherency_len;
+ 	const void *p = volume->vcookie->coherency;
+ 	struct dentry *dentry = volume->dentry;
+@@ -192,10 +198,17 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
  
-+config FPROBE_SANITY_TEST
-+	bool "Self test for fprobe"
-+	depends on DEBUG_KERNEL
-+	depends on FPROBE
-+	depends on KUNIT=y
-+	help
-+	  This option will enable testing the fprobe when the system boot.
-+	  A series of tests are made to verify that the fprobe is functioning
-+	  properly.
+ 	_enter("%x,#%d", volume->vcookie->debug_id, len);
+ 
++	len += sizeof(*buf);
++	buf = kmalloc(len, GFP_KERNEL);
++	if (!buf)
++		return false;
++	buf->reserved = cpu_to_be32(0);
++	memcpy(buf->data, p, len);
 +
-+	  Say N if you are unsure.
-+
- config BACKTRACE_SELF_TEST
- 	tristate "Self test for the backtrace code"
- 	depends on DEBUG_KERNEL
-diff --git a/lib/Makefile b/lib/Makefile
-index 300f569c626b..154008764b16 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
- obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
- obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
- obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-+CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-+obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
- #
- # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
- # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-new file mode 100644
-index 000000000000..ed70637a2ffa
---- /dev/null
-+++ b/lib/test_fprobe.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * test_fprobe.c - simple sanity test for fprobe
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/fprobe.h>
-+#include <linux/random.h>
-+#include <kunit/test.h>
-+
-+#define div_factor 3
-+
-+static struct kunit *current_test;
-+
-+static u32 rand1, entry_val, exit_val;
-+
-+/* Use indirect calls to avoid inlining the target functions */
-+static u32 (*target)(u32 value);
-+static u32 (*target2)(u32 value);
-+static unsigned long target_ip;
-+static unsigned long target2_ip;
-+
-+static noinline u32 fprobe_selftest_target(u32 value)
-+{
-+	return (value / div_factor);
-+}
-+
-+static noinline u32 fprobe_selftest_target2(u32 value)
-+{
-+	return (value / div_factor) + 1;
-+}
-+
-+static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-+	if (ip != target_ip)
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+	entry_val = (rand1 / div_factor);
-+}
-+
-+static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	unsigned long ret = regs_return_value(regs);
-+
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	if (ip != target_ip) {
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-+	} else
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-+	KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-+	exit_val = entry_val + div_factor;
-+}
-+
-+/* Test entry only (no rethook) */
-+static void test_fprobe_entry(struct kunit *test)
-+{
-+	struct fprobe fp_entry = {
-+		.entry_handler = fp_entry_handler,
-+	};
-+
-+	current_test = test;
-+
-+	/* Before register, unregister should be failed. */
-+	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-+}
-+
-+static void test_fprobe(struct kunit *test)
-+{
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static void test_fprobe_syms(struct kunit *test)
-+{
-+	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static unsigned long get_ftrace_location(void *func)
-+{
-+	unsigned long size, addr = (unsigned long)func;
-+
-+	if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-+		return 0;
-+
-+	return ftrace_location_range(addr, addr + size - 1);
-+}
-+
-+static int fprobe_test_init(struct kunit *test)
-+{
-+	do {
-+		rand1 = prandom_u32();
-+	} while (rand1 <= div_factor);
-+
-+	target = fprobe_selftest_target;
-+	target2 = fprobe_selftest_target2;
-+	target_ip = get_ftrace_location(target);
-+	target2_ip = get_ftrace_location(target2);
-+
-+	return 0;
-+}
-+
-+static struct kunit_case fprobe_testcases[] = {
-+	KUNIT_CASE(test_fprobe_entry),
-+	KUNIT_CASE(test_fprobe),
-+	KUNIT_CASE(test_fprobe_syms),
-+	{}
-+};
-+
-+static struct kunit_suite fprobe_test_suite = {
-+	.name = "fprobe_test",
-+	.init = fprobe_test_init,
-+	.test_cases = fprobe_testcases,
-+};
-+
-+kunit_test_suites(&fprobe_test_suite);
-+
-+MODULE_LICENSE("GPL");
+ 	ret = cachefiles_inject_write_error();
+ 	if (ret == 0)
+ 		ret = vfs_setxattr(&init_user_ns, dentry, cachefiles_xattr_cache,
+-				   p, len, 0);
++				   buf, len, 0);
+ 	if (ret < 0) {
+ 		trace_cachefiles_vfs_error(NULL, d_inode(dentry), ret,
+ 					   cachefiles_trace_setxattr_error);
+@@ -209,6 +222,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+ 					       cachefiles_coherency_vol_set_ok);
+ 	}
+ 
++	kfree(buf);
+ 	_leave(" = %d", ret);
+ 	return ret == 0;
+ }
+@@ -218,7 +232,7 @@ bool cachefiles_set_volume_xattr(struct cachefiles_volume *volume)
+  */
+ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
+ {
+-	struct cachefiles_xattr *buf;
++	struct cachefiles_vol_xattr *buf;
+ 	struct dentry *dentry = volume->dentry;
+ 	unsigned int len = volume->vcookie->coherency_len;
+ 	const void *p = volume->vcookie->coherency;
+@@ -228,6 +242,7 @@ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
+ 
+ 	_enter("");
+ 
++	len += sizeof(*buf);
+ 	buf = kmalloc(len, GFP_KERNEL);
+ 	if (!buf)
+ 		return -ENOMEM;
+@@ -245,7 +260,9 @@ int cachefiles_check_volume_xattr(struct cachefiles_volume *volume)
+ 					"Failed to read xattr with error %zd", xlen);
+ 		}
+ 		why = cachefiles_coherency_vol_check_xattr;
+-	} else if (memcmp(buf->data, p, len) != 0) {
++	} else if (buf->reserved != cpu_to_be32(0)) {
++		why = cachefiles_coherency_vol_check_resv;
++	} else if (memcmp(buf->data, p, len - sizeof(*buf)) != 0) {
+ 		why = cachefiles_coherency_vol_check_cmp;
+ 	} else {
+ 		why = cachefiles_coherency_vol_check_ok;
+diff --git a/include/trace/events/cachefiles.h b/include/trace/events/cachefiles.h
+index 002d0ae4f9bc..311c14a20e70 100644
+--- a/include/trace/events/cachefiles.h
++++ b/include/trace/events/cachefiles.h
+@@ -56,6 +56,7 @@ enum cachefiles_coherency_trace {
+ 	cachefiles_coherency_set_ok,
+ 	cachefiles_coherency_vol_check_cmp,
+ 	cachefiles_coherency_vol_check_ok,
++	cachefiles_coherency_vol_check_resv,
+ 	cachefiles_coherency_vol_check_xattr,
+ 	cachefiles_coherency_vol_set_fail,
+ 	cachefiles_coherency_vol_set_ok,
+@@ -139,6 +140,7 @@ enum cachefiles_error_trace {
+ 	EM(cachefiles_coherency_set_ok,		"SET ok  ")		\
+ 	EM(cachefiles_coherency_vol_check_cmp,	"VOL BAD cmp ")		\
+ 	EM(cachefiles_coherency_vol_check_ok,	"VOL OK      ")		\
++	EM(cachefiles_coherency_vol_check_resv,	"VOL BAD resv")	\
+ 	EM(cachefiles_coherency_vol_check_xattr,"VOL BAD xatt")		\
+ 	EM(cachefiles_coherency_vol_set_fail,	"VOL SET fail")		\
+ 	E_(cachefiles_coherency_vol_set_ok,	"VOL SET ok  ")
+
 
