@@ -2,80 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A57DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237023AbiCKIlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:41:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39780 "EHLO
+        id S236636AbiCKIl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:41:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235377AbiCKIk7 (ORCPT
+        with ESMTP id S237503AbiCKIlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:40:59 -0500
-Received: from smtp.tom.com (smtprz01.163.net [106.3.154.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 314D51B98B6
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:39:56 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id AD0F044018B
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 16:39:54 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646987994; bh=yYffQcBKLRbGtRWbyWPUTkTs+t8t9AmrQpNgV1htlDc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GZjSzy0zP24OwZ+qpi7pjb4aWf7F87a9LUjOpyNvuP/KdBZ2Y/nmtGYisC20ux6Zp
-         0ZPPgUGgPsdS3Gocu7AsP7ysX7iBFNU9XgzmC7l0jg4ju0tQAvrxUJ1nUhObi0Mizg
-         OqGI4DY3HIq+AVBFXO9i5vUIt1nCM7nvKNUx9z3I=
-Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID -1071510655
-          for <linux-kernel@vger.kernel.org>;
-          Fri, 11 Mar 2022 16:39:54 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1646987994; bh=yYffQcBKLRbGtRWbyWPUTkTs+t8t9AmrQpNgV1htlDc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GZjSzy0zP24OwZ+qpi7pjb4aWf7F87a9LUjOpyNvuP/KdBZ2Y/nmtGYisC20ux6Zp
-         0ZPPgUGgPsdS3Gocu7AsP7ysX7iBFNU9XgzmC7l0jg4ju0tQAvrxUJ1nUhObi0Mizg
-         OqGI4DY3HIq+AVBFXO9i5vUIt1nCM7nvKNUx9z3I=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id 8D22615414F8;
-        Fri, 11 Mar 2022 16:39:49 +0800 (CST)
-Date:   Fri, 11 Mar 2022 16:39:48 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH 1/3] tcp: export symbol tcp_set_congestion_control
-Message-ID: <20220311163948.000064d4@tom.com>
-In-Reply-To: <20220311071319.GA18222@lst.de>
-References: <20220311030113.73384-1-sunmingbao@tom.com>
-        <20220311030113.73384-2-sunmingbao@tom.com>
-        <20220311071319.GA18222@lst.de>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        Fri, 11 Mar 2022 03:41:24 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105411BA15E
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:40:22 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id q13so7120963plk.12
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 00:40:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wwuk7jbsEHLeFz6+/LJoj/dUalVItLfs+0Q0dolP684=;
+        b=AscHYslyW40mq2rObPXzCvGCX+EoUScZoojvmNC7ldKXcJk1h/Wj4jkAA9eDsVibbI
+         wxtr9ieSMsc3g4KK+YNxI2L/I3k2J23Mn5cM9TgxWRW63yA8Y2T8Rd25fya+t/TUcdPC
+         VBjSu5sY9Fsk6jfHKGhnq3zE0I1Jx9eU32Gy7/QJX6n5GHWeV+s5xyFcXBpAgctZ9e1j
+         OnR5wMfeeJKau5C053ouHlcQER6qodF9fPvhK1XQ0qAd13Zq02C9ImJXa5cpq+NPU0w3
+         kp7JWxA6DUPLTpwKpcQNtp4/AT4fx2516iKJtjXHUNDOBHYHzvM7wcw8jcYakE50ZUoA
+         +JYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wwuk7jbsEHLeFz6+/LJoj/dUalVItLfs+0Q0dolP684=;
+        b=DQDdZB8EMlkyOgfMbTYoaADHokLRs2tRhtz9oXrIGacmp+KlYn2jng46vG1gn6tGZ+
+         fk64ARtoVq9fAjYW36qHreUOmwN6FjZjHz1leYCpqUsVnAis/oQFVSryqYeW5peV9ASu
+         2QUKG4fd5H9GA0aquDC2hcFt16jS/sockCTiO2gzi7ierRboiCF0ZAo9+VrUqQLCo4NW
+         1JK/7twfJOEws/yCYbjmGmfkSAFZGAVZpUE8XUR2ZE6a1AhzOXRUKRxpkzwdWNjFTTjp
+         hwQJj7qwx8mnh/wNPZH48MSRHTsgpkOoWVibaEFipDPP+hhQ3ZviIpSs+twPiFEUipob
+         BjNw==
+X-Gm-Message-State: AOAM530o994Bn55q3I3oLluf/rrKsm9nDoy569xwbYM4Bh8ie4+Vfc+H
+        /pvHhLOk8ZfFq6M3+SZ0MVyx0Id+ahD0Sw==
+X-Google-Smtp-Source: ABdhPJwMI9VDRfAs/35Zo71vuqOBm7lSCHJlhIDhSpWXI0sH8nY+eBpFvl4Zco19ACPc6BMoC1S5XA==
+X-Received: by 2002:a17:90a:9294:b0:1b9:48e9:a030 with SMTP id n20-20020a17090a929400b001b948e9a030mr20436733pjo.200.1646988021602;
+        Fri, 11 Mar 2022 00:40:21 -0800 (PST)
+Received: from localhost ([223.184.83.228])
+        by smtp.gmail.com with ESMTPSA id m11-20020a056a00080b00b004f791d0115esm1119613pfk.171.2022.03.11.00.40.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 00:40:21 -0800 (PST)
+Date:   Fri, 11 Mar 2022 14:10:19 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     vireshk@kernel.org, johan@kernel.org, elder@kernel.org,
+        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: greybus: Fix potential NULL dereference
+Message-ID: <20220311084019.w45kfluiamgosivu@vireshk-i7>
+References: <1646987730-7597-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1646987730-7597-1-git-send-email-baihaowen@meizu.com>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Mar 2022 08:13:19 +0100
-Christoph Hellwig <hch@lst.de> wrote:
-
-> Maybe add a kerneldoc comment now that this is an exported API?
+On 11-03-22, 16:35, Haowen Bai wrote:
+> Fix following coccicheck warning:
+> drivers/staging/greybus/bootrom.c:301:35-39: ERROR: fw is NULL but dereferenced.
 > 
-> Otherwise this looks fine to me:
-> 
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> When goto queue_work but dereference Uninitialized fw will trigger a NULL 
+> dereference.
 
-accept.
+Please have a look at earlier attempts like this:
 
-will add it in the next version.
-and will notice user "Must be called on a locked sock".
+https://lore.kernel.org/all/2015099.xVv48VzNit@linux.local/
+
+-- 
+viresh
