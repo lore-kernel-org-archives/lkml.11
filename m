@@ -2,164 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91AFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5092DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 08:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240109AbiCKIqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 03:46:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51056 "EHLO
+        id S240128AbiCKIqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 03:46:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiCKIqB (ORCPT
+        with ESMTP id S233411AbiCKIqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 03:46:01 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B118B1BA902;
-        Fri, 11 Mar 2022 00:44:58 -0800 (PST)
-Received: from [192.168.1.111] (91-156-85-209.elisa-laajakaista.fi [91.156.85.209])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 58E5D488;
-        Fri, 11 Mar 2022 09:44:55 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1646988296;
-        bh=KgOKt2nWZu2AcU+7tnzzHwEa8LX7GDuJltucb9VdrQY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=kda77LiVqWEGyPlTPFHynCYpX00jg8J58P6Cq24u4kK8kbz+78K81RNp01KgX9TP+
-         UyzfHke337r48ynzKle2oU/ugM+jo4awVYMp6ATZ+9tj0w5GaUdpl0ANtCgMzwXhRv
-         zs6Q2dFUwe2Yb/176LLov8WxhfGpP6+Ccmt2Ljx0=
-Message-ID: <00538a2f-fcbf-321a-1ce0-645913836e73@ideasonboard.com>
-Date:   Fri, 11 Mar 2022 10:44:52 +0200
+        Fri, 11 Mar 2022 03:46:43 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713B71BA91F;
+        Fri, 11 Mar 2022 00:45:40 -0800 (PST)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KFKC31TJRzcZyn;
+        Fri, 11 Mar 2022 16:40:47 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 16:45:38 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 1/2] net: macvlan: fix potential UAF problem for lowerdev
+Date:   Fri, 11 Mar 2022 17:03:26 +0800
+Message-ID: <5e4fa8717da38025cd353085d5733d1928b11b25.1646989143.git.william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1646989143.git.william.xuanziyang@huawei.com>
+References: <cover.1646989143.git.william.xuanziyang@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/2] arm64: dts: ti: k3-j721e-common-proc-board: add DP to
- j7 evm
-Content-Language: en-US
-To:     Rahul T R <r-ravikumar@ti.com>, nm@ti.com
-Cc:     vigneshr@ti.com, kristo@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski@canonical.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, laurent.pinchart@ideasonboard.com
-References: <20220222163230.1566-1-r-ravikumar@ti.com>
- <20220222163230.1566-3-r-ravikumar@ti.com>
-From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-In-Reply-To: <20220222163230.1566-3-r-ravikumar@ti.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/02/2022 18:32, Rahul T R wrote:
-> From: Tomi Valkeinen <tomi.valkeinen@ti.com>
-> 
-> Add the endpoint nodes to describe connection from
-> DSS => MHDP => DisplayPort connector.
-> Also add the required pinmux nodes for hotplug.
-> 
-> Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
-> Signed-off-by: Rahul T R <r-ravikumar@ti.com>
-> ---
->   .../dts/ti/k3-j721e-common-proc-board.dts     | 66 +++++++++++++++++--
->   1 file changed, 62 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-> index 2d7596911b27..fe20c193f299 100644
-> --- a/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-> +++ b/arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts
-> @@ -148,6 +148,28 @@
->   		pinctrl-0 = <&main_mcan2_gpio_pins_default>;
->   		standby-gpios = <&main_gpio0 127 GPIO_ACTIVE_HIGH>;
->   	};
-> +
-> +	dp_pwr_3v3: fixedregulator-dp-prw {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "dp-pwr";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		gpio = <&exp4 0 0>;	/* P0 - DP0_PWR_SW_EN */
-> +		enable-active-high;
-> +	};
-> +
-> +	dp0: connector {
-> +		compatible = "dp-connector";
-> +		label = "DP0";
-> +		type = "full-size";
-> +		dp-pwr-supply = <&dp_pwr_3v3>;
-> +
-> +		port {
-> +			dp_connector_in: endpoint {
-> +				remote-endpoint = <&dp0_out>;
-> +			};
-> +		};
-> +	};
->   };
->   
->   &main_pmx0 {
-> @@ -190,6 +212,12 @@
->   		>;
->   	};
->   
-> +	dp0_pins_default: dp0-pins-default {
-> +		pinctrl-single,pins = <
-> +			J721E_IOPAD(0x1c4, PIN_INPUT, 5) /* SPI0_CS1.DP0_HPD */
-> +		>;
-> +	};
-> +
->   	main_i2c1_exp4_pins_default: main-i2c1-exp4-pins-default {
->   		pinctrl-single,pins = <
->   			J721E_IOPAD(0x230, PIN_INPUT, 7) /* (U2) ECAP0_IN_APWM_OUT.GPIO1_11 */
-> @@ -660,6 +688,40 @@
->   				 <&k3_clks 152 18>;	/* PLL23_HSDIV0 */
->   };
->   
-> +&dss_ports {
-> +	port@0 {
-> +		reg = <0>;
-> +
-> +		dpi0_out: endpoint {
-> +			remote-endpoint = <&dp0_in>;
-> +		};
-> +	};
-> +};
-> +
-> +&mhdp {
-> +	pinctrl-names = "default";
-> +	pinctrl-0 = <&dp0_pins_default>;
-> +};
-> +
-> +&dp0_ports {
-> +	#address-cells = <1>;
-> +	#size-cells = <0>;
-> +
-> +	port@0 {
-> +		reg = <0>;
-> +		dp0_in: endpoint {
-> +			remote-endpoint = <&dpi0_out>;
-> +		};
-> +	};
-> +
-> +	port@4 {
-> +		reg = <4>;
-> +		dp0_out: endpoint {
-> +			remote-endpoint = <&dp_connector_in>;
-> +		};
-> +	};
-> +};
-> +
->   &mcasp0 {
->   	status = "disabled";
->   };
-> @@ -845,10 +907,6 @@
->   	status = "disabled";
->   };
->   
-> -&dss {
-> -	status = "disabled";
-> -};
-> -
->   &icssg0_mdio {
->   	status = "disabled";
->   };
+Add the reference operation to lowerdev of macvlan to avoid
+the potential UAF problem under the following known scenario:
 
-Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+Someone module puts the NETDEV_UNREGISTER event handler to a
+work, and lowerdev is accessed in the work handler. But when
+the work is excuted, lowerdev has been destroyed because upper
+macvlan did not get reference to lowerdev correctly.
 
-  Tomi
+That likes as the scenario occurred by
+commit 563bcbae3ba2 ("net: vlan: fix a UAF in vlan_dev_real_dev()").
+
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ drivers/net/macvlan.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 33753a2fde29..d36af413e372 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -889,7 +889,7 @@ static void macvlan_set_lockdep_class(struct net_device *dev)
+ static int macvlan_init(struct net_device *dev)
+ {
+ 	struct macvlan_dev *vlan = netdev_priv(dev);
+-	const struct net_device *lowerdev = vlan->lowerdev;
++	struct net_device *lowerdev = vlan->lowerdev;
+ 	struct macvlan_port *port = vlan->port;
+ 
+ 	dev->state		= (dev->state & ~MACVLAN_STATE_MASK) |
+@@ -911,6 +911,9 @@ static int macvlan_init(struct net_device *dev)
+ 
+ 	port->count += 1;
+ 
++	/* Get macvlan's reference to lowerdev */
++	dev_hold(lowerdev);
++
+ 	return 0;
+ }
+ 
+@@ -1173,6 +1176,14 @@ static const struct net_device_ops macvlan_netdev_ops = {
+ 	.ndo_features_check	= passthru_features_check,
+ };
+ 
++static void macvlan_dev_free(struct net_device *dev)
++{
++	struct macvlan_dev *vlan = netdev_priv(dev);
++
++	/* Get rid of the macvlan's reference to lowerdev */
++	dev_put(vlan->lowerdev);
++}
++
+ void macvlan_common_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
+@@ -1184,6 +1195,7 @@ void macvlan_common_setup(struct net_device *dev)
+ 	dev->priv_flags	       |= IFF_UNICAST_FLT | IFF_CHANGE_PROTO_DOWN;
+ 	dev->netdev_ops		= &macvlan_netdev_ops;
+ 	dev->needs_free_netdev	= true;
++	dev->priv_destructor	= macvlan_dev_free;
+ 	dev->header_ops		= &macvlan_hard_header_ops;
+ 	dev->ethtool_ops	= &macvlan_ethtool_ops;
+ }
+-- 
+2.25.1
+
