@@ -2,141 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE6D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 22:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiCKWqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 17:46:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
+        id S229563AbiCKWq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 17:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiCKWq0 (ORCPT
+        with ESMTP id S229490AbiCKWqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 17:46:26 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869082E86F6;
-        Fri, 11 Mar 2022 14:37:18 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22BJgiEv026670;
-        Fri, 11 Mar 2022 21:03:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=c4oKa8YHconhNmykPPJwtaqGobzI4xAAjjShykA4Yy4=;
- b=P4fMWLfPd6F+D1ws06rfxwKmj76Hh5u47Nmtjykkn7GbNk4rKldp0Wtb/BoInpxFw7dE
- TB9Cjmxd2a4ncFxSbAblt/yP5iPYXemyo3zBNSg34WgCbJO2cK0XZWDx8/AWgDse4vw5
- O0eZ1t1WTHP+QGAKfTQw5So2uX5dQYo40OuWgbNUebN7idHJf+CKIBVjYdlEZrhru9r/
- V5eHTGXnYQ3W99RzAgPX5dI8RT88dtg18iaMUYZKsRRfn2lW9z3N4l44eDyZFOaPvgiV
- FGAf9Hc8pwNXI8fz77iEYdRYL2YG77/p9/WbNeAvjJfC6UtBfSfAmoQ8B8I0D4SokxRP xQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqtfgpa6v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:03:20 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22BKpO7I020866;
-        Fri, 11 Mar 2022 21:03:19 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eqtfgpa6f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:03:19 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22BL3Gua024566;
-        Fri, 11 Mar 2022 21:03:18 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma01dal.us.ibm.com with ESMTP id 3emgamjwy0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Mar 2022 21:03:18 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22BL3Gxx38994426
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Mar 2022 21:03:16 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BB2B328059;
-        Fri, 11 Mar 2022 21:03:16 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 89C2B2805A;
-        Fri, 11 Mar 2022 21:03:13 +0000 (GMT)
-Received: from [9.211.110.168] (unknown [9.211.110.168])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 11 Mar 2022 21:03:13 +0000 (GMT)
-Message-ID: <f92ec4d8-47c0-ece5-3c52-caeb8265881c@linux.vnet.ibm.com>
-Date:   Fri, 11 Mar 2022 16:03:12 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v11 0/4] integrity: support including firmware ".platform"
- keys at build time
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Nageswara Sastry <rnsastry@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
-Cc:     dhowells@redhat.com, zohar@linux.ibm.com,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, Masahiro Yamada <masahiroy@kernel.org>
-References: <20220310214450.676505-1-nayna@linux.ibm.com>
- <4afae87c-2986-6b0e-07be-954dd4937afd@linux.ibm.com>
- <f78d11fefd13bd17748e36621acee9c2f27a77f6.camel@kernel.org>
-From:   Nayna <nayna@linux.vnet.ibm.com>
-In-Reply-To: <f78d11fefd13bd17748e36621acee9c2f27a77f6.camel@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Heow9UKywaWt9NTO6YuP7NDv5g_6SmDY
-X-Proofpoint-GUID: e7V-kq4jBh8gRnlsxn6EdPMwfBVMWcS8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 11 Mar 2022 17:46:39 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5363F187B82
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 14:21:54 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647037312;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GUT/XyD1JmdUBh6NMIEZcouy3zdM2rhgSG8nRivlBD4=;
+        b=nJOnpcpBPWfS58FCKN34a+fkJWfXBpXHZ41n0ZpHMtFnx7awS25HQM/+sGx70DpJxBz4Vp
+        18EF1A1IJfUCHEDZdVH19DkTg3y1P5JVoJrhuyQmu63BqAarIUy8oe1S2Dbk5NO1mbnVdB
+        bfQiuumu4eJygp3dKY3C+eTwY+QSxlyelnF52qWJNF4YRCNmJXALDhH67LNBebcicpvWxO
+        c6zNWVqp+6VU389hqdyGar0WsNnF9lTs39k47Ltr9VPXrA+qhcbZcMKN/WBHFHsB3PRqcC
+        DVp400en0JJBuuDGI+5vC4t2Gl//EDy/8edvvzDQBnna24ieFaaFFihWbTDDAA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647037312;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GUT/XyD1JmdUBh6NMIEZcouy3zdM2rhgSG8nRivlBD4=;
+        b=E0GPIWBfLQAFFedY+cXguy4HoKZBdGIOyjCZI5Ppe3ZWNuDA3V8lwvfeMuYxXiB3LxpRfP
+        Bh0XxJlKwgvcUPCg==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
+ proper kthread support
+In-Reply-To: <Yit2LN1nCaiUo5y4@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-12-john.ogness@linutronix.de>
+ <YhYKP/UuSKENGwfj@alley> <87tuc7xma0.fsf@jogness.linutronix.de>
+ <YioMcSe0P0Z7ksiW@alley> <87wnh14wp9.fsf@jogness.linutronix.de>
+ <Yisj2PEtjZfHMe6N@alley> <87czisbotz.fsf@jogness.linutronix.de>
+ <Yit2LN1nCaiUo5y4@alley>
+Date:   Fri, 11 Mar 2022 23:27:51 +0106
+Message-ID: <87tuc4yvsw.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-11_08,2022-03-11_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- bulkscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=0
- priorityscore=1501 malwarescore=0 adultscore=0 clxscore=1011 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203110103
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Petr,
 
-On 3/11/22 11:42, Jarkko Sakkinen wrote:
-> On Fri, 2022-03-11 at 10:11 +0530, Nageswara Sastry wrote:
->>
->> On 11/03/22 3:14 am, Nayna Jain wrote:
->>> Some firmware support secure boot by embedding static keys to verify the
->>> Linux kernel during boot. However, these firmware do not expose an
->>> interface for the kernel to load firmware keys onto the ".platform"
->>> keyring, preventing the kernel from verifying the kexec kernel image
->>> signature.
->>>
->>> This patchset exports load_certificate_list() and defines a new function
->>> load_builtin_platform_cert() to load compiled in certificates onto the
->>> ".platform" keyring.
->>>
->>> Changelog:
->>> v11:
->>> * Added a new patch to conditionally build extract-cert if
->>> PLATFORM_KEYRING is enabled.
->>>
->> Tested the following four patches with and with out setting
->> CONFIG_INTEGRITY_PLATFORM_KEYS
->>
->> Tested-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
-> OK, I added it:
+I do not think the example below is showing what you think it does, but
+it does shed light on an important point.
+
+On 2022-03-11, Petr Mladek <pmladek@suse.com> wrote:
+> CPU0			CPU1			CPU2
 >
-> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
+> printk()
+>   // direct mode allowed
 
-Thanks Jarkko. Masahiro Yamada would prefer to revert the original 
-commit 340a02535ee785c64c62a9c45706597a0139e972 i.e. move extract-cert 
-back to the scripts/ directory.
+OK, so @printk_direct is >= 1.
 
-I am just posting v12 which includes Masahiro feedback. Nageswara has 
-already tested v12 version as well.
+>   console_trylock()
+>   console_unlock()
+>     console_flush_all()
+>
+> 			printk_direct_enter()
 
-I am fine either way 1.) Adding v11 and then separately handling of 
-reverting of the commit or 2.) Adding v12 version which includes the 
-revert. I leave the decision on you as to which one to upstream.
+@printk_direct is now >= 2.
 
-Thanks & Regards,
+>
+>       allows_direct_printing() -> false;
 
-     - Nayna
+I do not understand why you say it returns false. @printk_direct is not
+zero. This returns _true_ and will print all records currently in the
+ringbuffer.
 
+>       break;
+>
+>       __console_unlock()
+>         wakeup_klogd()
+
+Note that all kthreads wake here. To keep it simple, let us assume there
+is only 1.
+
+> 						// woken printk_khread
+
+The kthread will only go into its printing loop if new records have
+appeared after the above __console_unlock(). If any did appear, _that_
+printk() will attempt to print them because direct printing is
+active. But let us assume that the kthread on CPU2 woke up before the
+new printk() context could attempt a console_lock() or
+console_trylock().
+
+> 						console_thread_printing_enter()
+
+@console_lock_count is now 1. Now console_lock() and console_trylock()
+will block or fail, respectively.
+
+> 			printk_direct_exit()
+
+@printk_direct is now >= 1.
+
+>       console_trylock()
+>         atomic_tryblock()
+> 	  //fails because thread active
+
+Correct. (Note that if CPU0 had been in a console_lock() context, it
+would _not_ fail because console_lock_reacquire() would wait for the
+active kthreads to finish their current record.)
+
+>    return;
+>
+> 			printk_direct_enter()
+
+@printk_direct is now >= 2.
+
+> 						console_thread_printing_exit()
+
+Note that CPU2 would have printed a single record.
+
+> 						// sleep because
+> 						atomic_read(&printk_direct) is not
+> 						zero
+
+No, the kthread does not sleep. It will continue printing until it is
+blocked via console_lock()/console_trylock() or until all the records
+are printed.
+
+> Result: nobody prints
+
+Sorry, but I have no idea how you came to that conclusion.
+
+> Note: The thread will actually not sleep because printk_should_wake()
+>       does not check atomic_read(&printk_direct).
+
+Exactly.
+
+>       But it is a bug. Active thread should check it and allow
+>       entering direct mode.
+
+We are in direct mode this entire example. I do not understand what you
+mean by "allow entering direct mode". Perhaps you mean "allow
+console_trylock() to succeed".
+
+If that is what you mean, then you are suggesting that the
+console_trylock() spins until all the kthreads have finished their
+current record. This could be a new variant of console_trylock().
+
+And then rather than continuing their printing loop, the kthreads all
+stay asleep as long as @printk_direct is non-zero (in addition to the
+existing sleep conditions).
+
+This could work if the kthreads disable preemption for the
+console_thread_printing_enter()/_exit() window.
+
+Although it should be noted that this still will not help if a
+console_lock() context is scheduled out.
+
+> Note2: Even when one printk thread flushes the messages. There might
+>        be other thread that will never get scheduled a nobody would
+>        printk the messages on the related console.
+
+That is what atomic consoles are for. Until atomic consoles are
+available, that situation is covered by @oops_in_progress and
+console_flush_on_panic().
+
+> This is the race that I see with console_trylock(). IMHO, if we solve
+> this race then we do not need console_lock_reacquire().
+
+I do not understand why you continue to mix console_trylock() and
+console_lock_reacquire(). console_lock_reacquire() is only for the
+console_lock() context.
+
+> Well, I might be wrong. It is Friday evening. I still do not have
+> the entire picture. I probably should have waited for Monday.
+
+I believe that you sense a danger with direct printing and
+console_trylock(). It allows for scenarios like your example that end up
+relying on kthreads to finish the printing (if there is no
+panic). Mainline already has this issue because console_lock() can also
+be scheduled away and console_trylock() has no chance to print. This
+really is the same issue and ultimately relies on @oops_in_progress and
+console_flush_on_panic() to get the messages out.
+
+I believe you are hinting at the worst-case scenario: a kthread getting
+scheduled out while printing and never seeing a CPU again because the
+system is so busy. Assuming the system does not panic, no printing would
+be seen on that console anymore, even if direct printing is enabled.
+
+The only solution I see (aside from atomic consoles) is to disable
+preemption during printing. Perhaps for non-atomic consoles, this is
+what we need to do. That, together with a new console_trylock() variant,
+should avoid this concern. Do you agree? Do we want to go that route?
+
+Disabling preemption would be a problem moving forward for the fbcon
+because, for the future, I really would like fbcon to live in a
+sleepable context. I already have some new ideas about this. But that is
+not a topic for this series.
+
+John
+
+P.S. By "new console_trylock() variant" I mean something for the
+console_trylock() context like:
+
+1. grab @console_sem with down_trylock_console_sem()
+
+2. spin on atomic_tryblock()
+
+If console_thread_printing_enter() disables preemption, this should work
+about as well as the current owner/waiter logic for @console_sem. I can
+do some prototype testing to see if there is some detail I am missing.
+
+John
