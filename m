@@ -2,127 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2683C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 598ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 03:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345999AbiCKD2X (ORCPT
+        id S1346005AbiCKD3H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Mar 2022 22:28:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39190 "EHLO
+        Thu, 10 Mar 2022 22:29:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239978AbiCKD2V (ORCPT
+        with ESMTP id S239978AbiCKD3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Mar 2022 22:28:21 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36B71A2735;
-        Thu, 10 Mar 2022 19:27:19 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id h5so5269279plf.7;
-        Thu, 10 Mar 2022 19:27:19 -0800 (PST)
+        Thu, 10 Mar 2022 22:29:06 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE25EAC83
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:04 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id u75-20020a63794e000000b003810e49ae0eso203409pgc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Mar 2022 19:28:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=c5IT3PbDgaeY8qmsercAMGNkkxjzO2Aj3HUs/2+UID8=;
-        b=I8gC/ZR5OTbu1QF7F/SSzj98hGkRp/bJfRkJTANyUlPrycfofYDfEF2fvzXH092+ki
-         +7t3oiMEjkt54UlIHrGLn4ZVbIAmOTLcFBb7ahVfHdNgLxWeA7vAbUR8BQSnooiXwQmy
-         xB6n606rXuBGu/GMhzRLGTjID8INq8IM/9Ds3CDjSlluyANsf6hs7eEyos+PIFd62b37
-         5PTPS8DY733+m4n61+1rLqwp49OP65JVyi4JFaa3YejC+nW6Q3o/j1k+zm4VAyzqcbRe
-         5WAlijr6xqwBZfBiI5uSH47YKANt+dPTm9itnVe4JUTEzt/1ukzM5sLsiuaslbWcZ5ow
-         c5Sw==
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=XKkoV9WqAMW6txuBkF5Wd3rs0lT6dWVS/pJ+2/MRtag=;
+        b=kufdfWVgYM9IzhcIFS2Zm75ZysbcrHo+Ft1gBPcwjP2xCCig08BOid5sNt+kBPWRCt
+         Ovz6oGnz2qY/BmB4MJJ6UNIZ/H8ietBfYnn5sVsOHxpNc6NScHhfFnq4RBZEl8hehthK
+         trb78KhZBvWAPpHIauti2B4oEYlX8VRIMdKqK9TcUZjfDEqlcGcrb1FeKztPVY/pOYf/
+         +a00MkCYl8XEqFqYIhj9SSHFrR02lJqzd4OSOOOyd0FfcAWXXF4yCKMU85lnOXpJEBCl
+         2cTtAImJkpdW04qL3ZFJe9E+JX4lhJcq8QiAauf9Re1Z7r1omuYMWrT3ntK69u4uP89q
+         SeTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c5IT3PbDgaeY8qmsercAMGNkkxjzO2Aj3HUs/2+UID8=;
-        b=Cdpyx/HTpGAGtaNyEL9Nx1boTmvw97Vd2cb554Nq6EKXvAqNoBj6J0ebD/g5ocq3ZX
-         mojkj9EoHlL6qPHIms3+WajsYxY7dCRdqq0z/U+RNbcfvvkStga+FCDwXNlD+ZNFrWtR
-         POhL0OizJFgjk8l0SJqb8lnpBPpOecge2KjeP5h+2O/J4M903QhTPzgThwNOSQI2KX3X
-         p72GRxBRo++0f64YS/tJqyaD5tHI+ERc8W1ZjRGnNAFP4nzsfoDFkj+9xoQi3AKbYF1r
-         C02yaO/8HDQ0dta88CwOlffmSfIf7xXQ8t9+M1TzgHI92ubiKdG68nWMJD6bgRcfdsqu
-         HdRQ==
-X-Gm-Message-State: AOAM532uXX9s6tsTt3CM8Xc7XXh2pGLXUejKYLxruBTN1fkmmQ9cT6aa
-        3dBtvV5JXVNRJ3phT6yBZfyfdCnLk49tcRvt
-X-Google-Smtp-Source: ABdhPJwpvxCPs2SW8c9kqutTJ7xqv6gUDFeCA7BBGdhC1jO22UCHLln3YDQPc/LJ6hMCC41F7Q2w0w==
-X-Received: by 2002:a17:902:ea0d:b0:151:df90:779f with SMTP id s13-20020a170902ea0d00b00151df90779fmr8608184plg.1.1646969238816;
-        Thu, 10 Mar 2022 19:27:18 -0800 (PST)
-Received: from localhost.localdomain (114-24-95-63.dynamic-ip.hinet.net. [114.24.95.63])
-        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004e1414f0bb1sm9204254pfl.135.2022.03.10.19.27.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 19:27:18 -0800 (PST)
-From:   Wei Ming Chen <jj251510319013@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     andreyknvl@gmail.com, balbi@kernel.org, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, Wei Ming Chen <jj251510319013@gmail.com>
-Subject: [PATCH v2] usb: raw-gadget: return -EINVAL if no proper ep address available
-Date:   Fri, 11 Mar 2022 11:22:38 +0800
-Message-Id: <20220311032238.3978-1-jj251510319013@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <CA+fCnZd2GoU6LVvT4eBT3w7TigRrp_9XcAGyL55K5nbi3yt4sA@mail.gmail.com>
-References: <CA+fCnZd2GoU6LVvT4eBT3w7TigRrp_9XcAGyL55K5nbi3yt4sA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=XKkoV9WqAMW6txuBkF5Wd3rs0lT6dWVS/pJ+2/MRtag=;
+        b=smYNc0XKhexPWVg6DjmLCZga/Uskde0nrTCd8DVG68wDJslxnWHMuIDunIxcvYkzOW
+         x5QYjo7L2gvCbcuXnS/TA0Kp84bgOk5WLgKK4K/AwZ9E1nZCr0ixH5LbqM+/uUchgAtW
+         ab2mOVH5M8daZtkBbRD8Hiq5us08QM1BiNDxWeN1cd4+eU6s2BQA4GJSHeQqmN22yt7R
+         F4sPnI/LlDoK+dcyAXMbRGzniTlc3k8fNgqATbA2kBS34+1s/H4fGErp3kRkrCtu0v1N
+         XkYcxAkd4KIeTbBf4I11A/zrYZ9RaqeEE2s4GJfVzF+5Ctr07OBL8e9+3lS+SS+yAWgV
+         oikw==
+X-Gm-Message-State: AOAM532TFecurmCovMAtqwW/m44/yj1lyTxZePQ7zfpw3goqr6N+ngWL
+        druWHPGv/mV1+44jy1yLq7VCd2HFwv8=
+X-Google-Smtp-Source: ABdhPJwIG2XZcUj85RKHGPmCh8wL09k3iIswXlIqpkv0ONOnCCRLF0z1lkYsbPsHDBhGQ3AIDKCVaQ/orcQ=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:130e:b0:4f3:9654:266d with SMTP id
+ j14-20020a056a00130e00b004f39654266dmr8042509pfu.59.1646969284051; Thu, 10
+ Mar 2022 19:28:04 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Fri, 11 Mar 2022 03:27:40 +0000
+Message-Id: <20220311032801.3467418-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH 00/21] KVM: x86: Event/exception fixes and cleanups
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If we try to use raw_ioctl_ep_enable() for ep5in on a hardware that
-only support from ep1-ep4 for both in and out direction, it will return
--EBUSY originally.
+The main goal of this series is to fix KVM's longstanding bug of not
+honoring L1's exception intercepts wants when handling an exception that
+occurs during delivery of a different exception.  E.g. if L0 and L1 are
+using shadow paging, and L2 hits a #PF, and then hits another #PF while
+vectoring the first #PF due to _L1_ not having a shadow page for the IDT,
+KVM needs to check L1's intercepts before morphing the #PF => #PF => #DF
+so that the #PF is routed to L1, not injected into L2 as a #DF.
 
-I think it will be more intuitive if we return -EINVAL, because -EBUSY
-sounds like ep5in is not available now, but might be available in the
-future.
+nVMX has hacked around the bug for years by overriding the #PF injector
+for shadow paging to go straight to VM-Exit, and nSVM has started doing
+the same.  The hacks mostly work, but they're incomplete, confusing, and
+lead to other hacky code, e.g. bailing from the emulator because #PF
+injection forced a VM-Exit and suddenly KVM is back in L1.
 
-Signed-off-by: Wei Ming Chen <jj251510319013@gmail.com>
----
- drivers/usb/gadget/legacy/raw_gadget.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+Everything leading up to that are related fixes and cleanups I encountered
+along the way; some through code inspection, some through tests (I truly
+thought this series was finished 10 commits and 3 days ago...).
 
-diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
-index d86c3a36441e..e5707626c4d4 100644
---- a/drivers/usb/gadget/legacy/raw_gadget.c
-+++ b/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -758,6 +758,7 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
- 	unsigned long flags;
- 	struct usb_endpoint_descriptor *desc;
- 	struct raw_ep *ep;
-+	bool ep_props_matched = false;
- 
- 	desc = memdup_user((void __user *)value, sizeof(*desc));
- 	if (IS_ERR(desc))
-@@ -787,13 +788,14 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
- 
- 	for (i = 0; i < dev->eps_num; i++) {
- 		ep = &dev->eps[i];
--		if (ep->state != STATE_EP_DISABLED)
--			continue;
- 		if (ep->addr != usb_endpoint_num(desc) &&
- 				ep->addr != USB_RAW_EP_ADDR_ANY)
- 			continue;
- 		if (!usb_gadget_ep_match_desc(dev->gadget, ep->ep, desc, NULL))
- 			continue;
-+		ep_props_matched = true;
-+		if (ep->state != STATE_EP_DISABLED)
-+			continue;
- 		ep->ep->desc = desc;
- 		ret = usb_ep_enable(ep->ep);
- 		if (ret < 0) {
-@@ -815,8 +817,13 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
- 		goto out_unlock;
- 	}
- 
--	dev_dbg(&dev->gadget->dev, "fail, no gadget endpoints available\n");
--	ret = -EBUSY;
-+	if (!ep_props_matched) {
-+		dev_dbg(&dev->gadget->dev, "fail, bad endpoint descriptor\n");
-+		ret = -EINVAL;
-+	} else {
-+		dev_dbg(&dev->gadget->dev, "fail, no endpoints available\n");
-+		ret = -EBUSY;
-+	}
- 
- out_free:
- 	kfree(desc);
+Nothing in here is all that urgent; all bugs tagged for stable have been
+around for multiple releases (years in most cases).
+
+Sean Christopherson (21):
+  KVM: x86: Return immediately from x86_emulate_instruction() on code
+    #DB
+  KVM: nVMX: Unconditionally purge queued/injected events on nested
+    "exit"
+  KVM: VMX: Drop bits 31:16 when shoving exception error code into VMCS
+  KVM: x86: Don't check for code breakpoints when emulating on exception
+  KVM: nVMX: Treat General Detect #DB (DR7.GD=1) as fault-like
+  KVM: nVMX: Prioritize TSS T-flag #DBs over Monitor Trap Flag
+  KVM: x86: Treat #DBs from the emulator as fault-like (code and
+    DR7.GD=1)
+  KVM: x86: Use DR7_GD macro instead of open coding check in emulator
+  KVM: nVMX: Ignore SIPI that arrives in L2 when vCPU is not in WFS
+  KVM: nVMX: Unconditionally clear mtf_pending on nested VM-Exit
+  KVM: VMX: Inject #PF on ENCLS as "emulated" #PF
+  KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
+  KVM: x86: Make kvm_queued_exception a properly named, visible struct
+  KVM: x86: Formalize blocking of nested pending exceptions
+  KVM: x86: Use kvm_queue_exception_e() to queue #DF
+  KVM: x86: Hoist nested event checks above event injection logic
+  KVM: x86: Evaluate ability to inject SMI/NMI/IRQ after potential
+    VM-Exit
+  KVM: x86: Morph pending exceptions to pending VM-Exits at queue time
+  KVM: VMX: Update MTF and ICEBP comments to document KVM's subtle
+    behavior
+  KVM: selftests: Use uapi header to get VMX and SVM exit reasons/codes
+  KVM: selftests: Add an x86-only test to verify nested exception
+    queueing
+
+ arch/x86/include/asm/kvm-x86-ops.h            |   2 +-
+ arch/x86/include/asm/kvm_host.h               |  33 +-
+ arch/x86/kvm/emulate.c                        |   3 +-
+ arch/x86/kvm/svm/nested.c                     | 100 ++---
+ arch/x86/kvm/svm/svm.c                        |  18 +-
+ arch/x86/kvm/vmx/nested.c                     | 322 +++++++++-----
+ arch/x86/kvm/vmx/sgx.c                        |   2 +-
+ arch/x86/kvm/vmx/vmx.c                        |  53 ++-
+ arch/x86/kvm/x86.c                            | 409 ++++++++++++------
+ arch/x86/kvm/x86.h                            |  10 +-
+ tools/testing/selftests/kvm/.gitignore        |   1 +
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ .../selftests/kvm/include/x86_64/svm_util.h   |   5 +-
+ .../selftests/kvm/include/x86_64/vmx.h        |  51 +--
+ .../kvm/x86_64/nested_exceptions_test.c       | 307 +++++++++++++
+ 15 files changed, 914 insertions(+), 403 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
+
+
+base-commit: 4a204f7895878363ca8211f50ec610408c8c70aa
 -- 
-2.25.1
+2.35.1.723.g4982287a31-goog
 
