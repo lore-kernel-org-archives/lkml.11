@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4811C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2674C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 20:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231376AbiCKUpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 15:45:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
+        id S231605AbiCKUpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 15:45:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbiCKUpt (ORCPT
+        with ESMTP id S229674AbiCKUpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Mar 2022 15:45:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9901EC26F
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F23B1EC26C
         for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 12:44:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EF9A61F92
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B1A161F72
         for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 20:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DFB45C340EC;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8FC52C340E9;
         Fri, 11 Mar 2022 20:44:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647031482;
-        bh=vDi2M9xuuoKAX94Xgn0xlD2AOH2r3dG2kCNUybD8kIY=;
+        bh=wcT5VChcLpkgrO2/xrZjU90vmYEXiIG/4aduJ2D2F+U=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=QsC5USRG3VhfOPcwsr/WNBv/Uhyeyw2skf3/wMHhZ3q+HTq84x5G8pT36T+TqR2Sr
-         npC2BVHiMv3/IeSWj/aEnQh+kdfpeCaIwYPPEsaM2jDCVN9k8TmLBM6U2HvRG2uq1h
-         wCei+9hqGdwoV/t6gQT8riqc+JtIOEypMeD4a99TP1fJFdwB2L5KUedI42KYKCAfyb
-         nbVouqscYJ3srpnSrkyWpbRzrl8xZiqswwD4TiUEuKvhblGSwbL5W1vlQcoAHhcl2E
-         /W2Nn2WcLhSCMlR/Cc4NI6Rx/ygEd+lGwXanaLhSSsVRI/bzzGnLcE7XMTlw0V0OYV
-         HwJ63waqIcITg==
+        b=R8yZf202nfB+xasoDGAKryJRUJn0KvDcu+GWDzwyP6JgJn0UooZvJBR+TnWmpLL2N
+         ht+WYyfQMlZz/R0TfnjIKNoDAlxfw0u4SVbutGTIcdG9kLtCrMSMtZudHG/Y5WzCA0
+         XlMdQYnTeD3bTQxACjbe4uDRmXkOpi9/4hnwMxXetW7RDTmDAt8JiT3I+Uvx9vIKYu
+         EP8S9j+xVNTeqy6TZIVmytTgPJuOjzZEqmJzirUB74MGe1oeOk1AJP14tObmGRUUL0
+         nK/Np+x/bPjFl2Te5NKNMSxiTByNZ/qxBH1Oq1qqtsp9z7DlvbTNO3MsF2eEKPlIuP
+         ukFlsG4ToOt8g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CB828E8DD5B;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7C940E6D3DD;
         Fri, 11 Mar 2022 20:44:42 +0000 (UTC)
-Subject: Re: [GIT PULL] RISC-V Fixes for 5.17-rc8
+Subject: Re: [GIT PULL] Please pull powerpc/linux.git powerpc-5.17-6 tag
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <mhng-1484f557-fd58-4fe3-afce-a630fac5c8b3@palmer-ri-x1c9>
-References: <mhng-1484f557-fd58-4fe3-afce-a630fac5c8b3@palmer-ri-x1c9>
+In-Reply-To: <874k45m3fg.fsf@mpe.ellerman.id.au>
+References: <874k45m3fg.fsf@mpe.ellerman.id.au>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <mhng-1484f557-fd58-4fe3-afce-a630fac5c8b3@palmer-ri-x1c9>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc8
-X-PR-Tracked-Commit-Id: 0966d385830de3470b7131db8e86c0c5bc9c52dc
+X-PR-Tracked-Message-Id: <874k45m3fg.fsf@mpe.ellerman.id.au>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.17-6
+X-PR-Tracked-Commit-Id: 48015b632f770c401f3816f144499a39f2884677
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 77fe1ba90241c2af6f14d53988bf0cd6b9586699
-Message-Id: <164703148283.12993.8501085816446276759.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 878409ecde7c89c9f3db76ff1ef9486c6ceed02c
+Message-Id: <164703148250.12993.11243673651989579046.pr-tracker-bot@kernel.org>
 Date:   Fri, 11 Mar 2022 20:44:42 +0000
-To:     Palmer Dabbelt <palmer@rivosinc.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 11 Mar 2022 09:18:12 -0800 (PST):
+The pull request you sent on Fri, 11 Mar 2022 17:03:15 +1100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc8
+> https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.17-6
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/77fe1ba90241c2af6f14d53988bf0cd6b9586699
+https://git.kernel.org/torvalds/c/878409ecde7c89c9f3db76ff1ef9486c6ceed02c
 
 Thank you!
 
