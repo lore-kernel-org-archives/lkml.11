@@ -2,160 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 18:43:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE92C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 18:55:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232482AbiCLSos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 13:44:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
+        id S232394AbiCLSzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 13:55:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232287AbiCLSoo (ORCPT
+        with ESMTP id S230452AbiCLSzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 13:44:44 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B95575C0B;
-        Sat, 12 Mar 2022 10:43:37 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 7AD3A8C4;
-        Sat, 12 Mar 2022 19:43:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1647110615;
-        bh=C8/4uNqE9SOK8e3iKf9Yp+FDIyoC3+n8dlsKXnWNR7k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KBaxek1GWMxa3WFPIj/VTxbAFToVKcnICSsq495bmSe5gBllVgnqe/EvM/UiYPr9J
-         JAkfWfJIdPqfiFLTy/kU32FfEX4F77swV78JvGmgVfixLvp9sITEd/LfuvfzGdZxia
-         VAQVqX9s0zmK0nuZrjuo38zfSeScftEkfUkKQ3no=
-Date:   Sat, 12 Mar 2022 20:43:18 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Michael Grzeschik <mgr@pengutronix.de>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sakari Ailus <sakari.ailus@iki.fi>,
-        linux-uvc-devel@lists.sourceforge.net, linux-usb@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v3 0/5] media: uvcvideo: Fix race conditions
-Message-ID: <YizpxhxPBxJ0EHQR@pendragon.ideasonboard.com>
-References: <20200917022547.198090-1-linux@roeck-us.net>
- <20220311202426.GE23776@pengutronix.de>
+        Sat, 12 Mar 2022 13:55:46 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41835674E
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 10:54:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647111280; x=1678647280;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=/C+X50XIym/9/G7FN2nAQTz/HBnTGMTkyOqZkGvP/vE=;
+  b=Ukm31gM7Au7LX8bBtI1R5heBE8fKAghfGTR1H8zccFgwAOhBc+nK/F90
+   9UgNU/24LlEDDg4sjvO9dk5sZxfrycJ9v0jSgKiFUDiSk7nW8CTglZZ0k
+   mWEnCT7wSaJgAaTJYx1GbCqRmtOiMZUYPhSMnQcb8BxPCRZOWjEOXVjbN
+   n9rsZlH05XIECapRN4xr7GFzMplhVqrEL6Fyibza+hivxhE4ZV+Bu7wbe
+   mF4iLzG1/VJUoki+M+3ozhqV8nRCYVzll6h2DZqfy5RdYTRY+pWlxalko
+   uArVUVDs7dDb6LJqO41jY2EV6TynPNECauzvj7m+bcPVOgzZBbWBCMxMr
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="319040431"
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="319040431"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 10:54:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="514923155"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 12 Mar 2022 10:54:38 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nT6sw-0008BA-3l; Sat, 12 Mar 2022 18:54:38 +0000
+Date:   Sun, 13 Mar 2022 02:53:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.10-2022-01
+ 1260/9999] drivers/base/core.c:1542:5: sparse: sparse: symbol
+ 'fw_devlink_relax_cycle' was not declared. Should it be static?
+Message-ID: <202203130202.16VYUo7S-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220311202426.GE23776@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10-2022-01
+head:   d262b276948e382dbaa38474845bac692bae4236
+commit: 1df699c140a778ed678d7d4b2fa8ffb2c62573e1 [1260/9999] UPSTREAM: driver core: Handle cycles in device links created by fw_devlink
+config: i386-randconfig-s001 (https://download.01.org/0day-ci/archive/20220313/202203130202.16VYUo7S-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/1df699c140a778ed678d7d4b2fa8ffb2c62573e1
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10-2022-01
+        git checkout 1df699c140a778ed678d7d4b2fa8ffb2c62573e1
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/base/ drivers/dma-buf/ drivers/gpu/drm/i915/
 
-On Fri, Mar 11, 2022 at 09:24:26PM +0100, Michael Grzeschik wrote:
-> Ping!
-> 
-> This series seems to be hanging around. It would be nice to get these
-> patches upstream, as they help my uvc-gadget workflow. Without them it
-> is likely that in the development cases my gadget won't start and then
-> leave the whole xhci controller broken.
-> 
-> @Laurent, what do you think?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I think I've explained before how this should be fixed at the V4L2
-level. The problem actually affects character devices globally, and Greg
-KH said he would have a go at fixing it there, but I don't think much
-happened. Starting with a V4L2-level fix is fine with me.
 
-There are a few patches in the series that are specific to uvcvideo,
-I'll have another look and merge those.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/base/core.c:1542:5: sparse: sparse: symbol 'fw_devlink_relax_cycle' was not declared. Should it be static?
 
-> On Wed, Sep 16, 2020 at 07:25:42PM -0700, Guenter Roeck wrote:
-> > Something seems to have gone wrong with v3 of this patch series.
-> > I am sure I sent it out, but I don't find it anywhere.
-> > Resending. Sorry for any duplicates.
-> > 
-> > The uvcvideo code has no lock protection against USB disconnects
-> > while video operations are ongoing. This has resulted in random
-> > error reports, typically pointing to a crash in usb_ifnum_to_if(),
-> > called from usb_hcd_alloc_bandwidth(). A typical traceback is as
-> > follows.
-> > 
-> > usb 1-4: USB disconnect, device number 3
-> > BUG: unable to handle kernel NULL pointer dereference at 0000000000000000
-> > PGD 0 P4D 0
-> > Oops: 0000 [#1] PREEMPT SMP PTI
-> > CPU: 0 PID: 5633 Comm: V4L2CaptureThre Not tainted 4.19.113-08536-g5d29ca36db06 #1
-> > Hardware name: GOOGLE Edgar, BIOS Google_Edgar.7287.167.156 03/25/2019
-> > RIP: 0010:usb_ifnum_to_if+0x29/0x40
-> > Code: <...>
-> > RSP: 0018:ffffa46f42a47a80 EFLAGS: 00010246
-> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff904a396c9000
-> > RDX: ffff904a39641320 RSI: 0000000000000001 RDI: 0000000000000000
-> > RBP: ffffa46f42a47a80 R08: 0000000000000002 R09: 0000000000000000
-> > R10: 0000000000009975 R11: 0000000000000009 R12: 0000000000000000
-> > R13: ffff904a396b3800 R14: ffff904a39e88000 R15: 0000000000000000
-> > FS: 00007f396448e700(0000) GS:ffff904a3ba00000(0000) knlGS:0000000000000000
-> > CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 0000000000000000 CR3: 000000016cb46000 CR4: 00000000001006f0
-> > Call Trace:
-> >  usb_hcd_alloc_bandwidth+0x1ee/0x30f
-> >  usb_set_interface+0x1a3/0x2b7
-> >  uvc_video_start_transfer+0x29b/0x4b8 [uvcvideo]
-> >  uvc_video_start_streaming+0x91/0xdd [uvcvideo]
-> >  uvc_start_streaming+0x28/0x5d [uvcvideo]
-> >  vb2_start_streaming+0x61/0x143 [videobuf2_common]
-> >  vb2_core_streamon+0xf7/0x10f [videobuf2_common]
-> >  uvc_queue_streamon+0x2e/0x41 [uvcvideo]
-> >  uvc_ioctl_streamon+0x42/0x5c [uvcvideo]
-> >  __video_do_ioctl+0x33d/0x42a
-> >  video_usercopy+0x34e/0x5ff
-> >  ? video_ioctl2+0x16/0x16
-> >  v4l2_ioctl+0x46/0x53
-> >  do_vfs_ioctl+0x50a/0x76f
-> >  ksys_ioctl+0x58/0x83
-> >  __x64_sys_ioctl+0x1a/0x1e
-> >  do_syscall_64+0x54/0xde
-> > 
-> > While there are not many references to this problem on mailing lists, it is
-> > reported on a regular basis on various Chromebooks (roughly 300 reports
-> > per month). The problem is relatively easy to reproduce by adding msleep()
-> > calls into the code.
-> > 
-> > I tried to reproduce the problem with non-uvcvideo webcams, but was
-> > unsuccessful. I was unable to get Philips (pwc) webcams to work. gspca
-> > based webcams don't experience the problem, or at least I was unable to
-> > reproduce it (The gspa driver does not trigger sending USB messages in the
-> > open function, and otherwise uses the locking mechanism provided by the
-> > v4l2/vb2 core).
-> > 
-> > I don't presume to claim that I found every issue, but this patch series
-> > should fix at least the major problems.
-> > 
-> > The patch series was tested exensively on a Chromebook running chromeos-4.19
-> > and on a Linux system running a v5.8.y based kernel.
-> > 
-> > v3:
-> > - In patch 5/5, add missing calls to usb_autopm_put_interface() and kfree()
-> >   to failure code path
-> > 
-> > v2:
-> > - Added details about problem frequency and testing with non-uvc webcams
-> >   to summary
-> > - In patch 4/5, return EPOLLERR instead of -ENODEV on poll errors
-> > - Fix description in patch 5/5
-> > 
-> > ----------------------------------------------------------------
-> > Guenter Roeck (5):
-> >       media: uvcvideo: Cancel async worker earlier
-> >       media: uvcvideo: Lock video streams and queues while unregistering
-> >       media: uvcvideo: Release stream queue when unregistering video device
-> >       media: uvcvideo: Protect uvc queue file operations against disconnect
-> >       media: uvcvideo: Abort uvc_v4l2_open if video device is unregistered
-> > 
-> >  drivers/media/usb/uvc/uvc_ctrl.c   | 11 ++++++----
-> >  drivers/media/usb/uvc/uvc_driver.c | 12 ++++++++++
-> >  drivers/media/usb/uvc/uvc_queue.c  | 32 +++++++++++++++++++++++++--
-> >  drivers/media/usb/uvc/uvc_v4l2.c   | 45 ++++++++++++++++++++++++++++++++++++--
-> >  drivers/media/usb/uvc/uvcvideo.h   |  1 +
-> >  5 files changed, 93 insertions(+), 8 deletions(-)
+vim +/fw_devlink_relax_cycle +1542 drivers/base/core.c
 
--- 
-Regards,
+  1527	
+  1528	/**
+  1529	 * fw_devlink_relax_cycle - Convert cyclic links to SYNC_STATE_ONLY links
+  1530	 * @con: Device to check dependencies for.
+  1531	 * @sup: Device to check against.
+  1532	 *
+  1533	 * Check if @sup depends on @con or any device dependent on it (its child or
+  1534	 * its consumer etc).  When such a cyclic dependency is found, convert all
+  1535	 * device links created solely by fw_devlink into SYNC_STATE_ONLY device links.
+  1536	 * This is the equivalent of doing fw_devlink=permissive just between the
+  1537	 * devices in the cycle. We need to do this because, at this point, fw_devlink
+  1538	 * can't tell which of these dependencies is not a real dependency.
+  1539	 *
+  1540	 * Return 1 if a cycle is found. Otherwise, return 0.
+  1541	 */
+> 1542	int fw_devlink_relax_cycle(struct device *con, void *sup)
+  1543	{
+  1544		struct device_link *link;
+  1545		int ret;
+  1546	
+  1547		if (con == sup)
+  1548			return 1;
+  1549	
+  1550		ret = device_for_each_child(con, sup, fw_devlink_relax_cycle);
+  1551		if (ret)
+  1552			return ret;
+  1553	
+  1554		list_for_each_entry(link, &con->links.consumers, s_node) {
+  1555			if ((link->flags & ~DL_FLAG_INFERRED) ==
+  1556			    (DL_FLAG_SYNC_STATE_ONLY | DL_FLAG_MANAGED))
+  1557				continue;
+  1558	
+  1559			if (!fw_devlink_relax_cycle(link->consumer, sup))
+  1560				continue;
+  1561	
+  1562			ret = 1;
+  1563	
+  1564			if (!(link->flags & DL_FLAG_INFERRED))
+  1565				continue;
+  1566	
+  1567			pm_runtime_drop_link(link);
+  1568			link->flags = DL_FLAG_MANAGED | FW_DEVLINK_FLAGS_PERMISSIVE;
+  1569			dev_dbg(link->consumer, "Relaxing link with %s\n",
+  1570				dev_name(link->supplier));
+  1571		}
+  1572		return ret;
+  1573	}
+  1574	
 
-Laurent Pinchart
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
