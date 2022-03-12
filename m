@@ -2,139 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 10:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 677A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 10:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231710AbiCLKZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 05:25:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
+        id S231722AbiCLK2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 05:28:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiCLKZx (ORCPT
+        with ESMTP id S229907AbiCLK2T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 05:25:53 -0500
-Received: from rere.qmqm.pl (rere.qmqm.pl [91.227.64.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD5217775A;
-        Sat, 12 Mar 2022 02:24:47 -0800 (PST)
-Received: from remote.user (localhost [127.0.0.1])
-        by rere.qmqm.pl (Postfix) with ESMTPSA id 4KFzSW2sKzzJS;
-        Sat, 12 Mar 2022 11:24:43 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
-        t=1647080684; bh=+QR/+RJkyH6iOL9WdEejK5XbutH1cp/++rV5+5TNCEU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fJup2gIGRswfLU52LqyF/nMo3l2iimuu1mZSzsQTuQKGumuX731elm4pQaQoiTA7R
-         MP+HtyE9Dd01XZHadk64vHmOtW7A/XXhdC00IVxtKHeUwUMK+Wmays+UTb155qlIRr
-         ERo2qs8gvRUeRgaHCGixncnt2KIuYg/0uqjni0UXn0NGN4a69IkL+NN0rhmhKXNWqn
-         VXp1Uibi8oRExJlWeKWM1RGkoMm61+GyqDBjYs4Ua8u1U1J1yLdyzWv8L2e0pOKHBr
-         9u5OEs+uczVfBM15y8Ps2Y7TkiyAyfEx917KnhoA0XXx6AnOvWUPIa7r4H4JgieC+1
-         2XDC/8ptw0Fgg==
-X-Virus-Status: Clean
-X-Virus-Scanned: clamav-milter 0.103.5 at mail
-Date:   Sat, 12 Mar 2022 11:24:40 +0100
-From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
-Message-ID: <Yix06B9rPaGh0dp8@qmqm.qmqm.pl>
-References: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
- <YiqPmIdZ/RGiaOei@qmqm.qmqm.pl>
- <CAADWXX-Pr-D3wSr5wsqTEOBSJzB9k7bSH+7hnCAj0AeL0=U4mg@mail.gmail.com>
+        Sat, 12 Mar 2022 05:28:19 -0500
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FE21E6951;
+        Sat, 12 Mar 2022 02:27:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Cf3d/zYyP1qElLyGMKalfDePFpmbmiLI2TKBOV9FAj8=;
+  b=r1LvOmlMPSBgD1ppTQls3Zx1NDsxNu/BY1x1IlAbU4VoDfy0tGxd7p1v
+   9UDwmqUuvBCgRGtSd5UR4X6K8V1l7ZtjpMe88rbvO2r3tgx9aaHYbrPK9
+   Ykws3igWEYUgiBIOhLGyjtnrOmUplk3NkoOiT9UGgxTAd3PvoI0hjW5nn
+   w=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.90,175,1643670000"; 
+   d="scan'208";a="25781347"
+Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 11:27:11 +0100
+From:   Julia Lawall <Julia.Lawall@inria.fr>
+To:     Steve French <sfrench@samba.org>
+Cc:     kernel-janitors@vger.kernel.org, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/6] cifs: use kzalloc
+Date:   Sat, 12 Mar 2022 11:27:00 +0100
+Message-Id: <20220312102705.71413-2-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220312102705.71413-1-Julia.Lawall@inria.fr>
+References: <20220312102705.71413-1-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAADWXX-Pr-D3wSr5wsqTEOBSJzB9k7bSH+7hnCAj0AeL0=U4mg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 04:46:33PM -0800, Linus Torvalds wrote:
-> On Thu, Mar 10, 2022 at 3:54 PM Micha³ Miros³aw <mirq-linux@rere.qmqm.pl> wrote:
-> >
-> > If the macro implementation doesn't have to be pretty, maybe it could go
-> > a step further and remember the list_head's offset? That would look
-> > something like following (expanding on your patch; not compile tested):
-> 
-> Oh, I thought of it.
-> 
-> It gets complicated.
-[...]
+Use kzalloc instead of kmalloc + memset.
 
-It seems that it's not that bad if we don't require checking whether
-a list_head of an entry is only ever used with a single list parent. The
-source type is not needed for the macros, and it turns out that pre-declaring
-the offset type is also not needed.
+The semantic patch that makes this change is:
+(https://coccinelle.gitlabpages.inria.fr/website/)
 
-I compile-tested the code below on godbolt.org with -std=c11:
+//<smpl>
+@@
+expression res, size, flag;
+@@
+- res = kmalloc(size, flag);
++ res = kzalloc(size, flag);
+  ...
+- memset(res, 0, size);
+//</smpl>
 
-struct list_head {
-	struct list_head *prev, *next;
-};
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-#define offsetof __builtin_offsetof
-#define typeof __typeof
+---
+ fs/cifs/transport.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-#define list_traversal_head(name,type,target_member) \
-	union { \
-		struct list_head name; \
-		type *name##_traversal_type; \
-		char (*name##_list_head_offset)[offsetof(type, target_member)];  \
-	}
+diff --git a/fs/cifs/transport.c b/fs/cifs/transport.c
+index eeb1a699bd6f..4ff8e165a180 100644
+--- a/fs/cifs/transport.c
++++ b/fs/cifs/transport.c
+@@ -464,13 +464,12 @@ smb_send_rqst(struct TCP_Server_Info *server, int num_rqst,
+ 		return -EIO;
+ 	}
+ 
+-	tr_hdr = kmalloc(sizeof(*tr_hdr), GFP_NOFS);
++	tr_hdr = kzalloc(sizeof(*tr_hdr), GFP_NOFS);
+ 	if (!tr_hdr)
+ 		return -ENOMEM;
+ 
+ 	memset(&cur_rqst[0], 0, sizeof(cur_rqst));
+ 	memset(&iov, 0, sizeof(iov));
+-	memset(tr_hdr, 0, sizeof(*tr_hdr));
+ 
+ 	iov.iov_base = tr_hdr;
+ 	iov.iov_len = sizeof(*tr_hdr);
 
-#define self_list_ref_offset_type(type,target_member) \
-	type##__##target_member##__offset__
-
-#define define_self_list_ref_offset(type,target_member) \
-	self_list_ref_offset_type(type,target_member) \
-	{ char ignoreme__[offsetof(type, target_member)]; }
-
-#define self_list_traversal_head(name,type,target_member) \
-	union { \
-		struct list_head name; \
-		type *name##_traversal_type; \
-		self_list_ref_offset_type(type,target_member) *name##_list_head_offset;  \
-	}
-
-#define list_traversal_entry(ptr, head) \
-	(typeof(*head##_traversal_type))((void *)ptr - sizeof(**head##_list_head_offset))
-
-#define list_traversal_entry_head(ptr, head) \
-	((struct list_head *)((void *)ptr + sizeof(**head##_list_head_offset)))
-
-#define list_traversal_entry_is_head(ptr, head) \
-	(list_traversal_entry_head(ptr, head) == (head))
-
-#define list_traversal_next_entry(ptr, head) \
-	list_traversal_entry(list_traversal_entry_head(ptr, head)->next, head)
-
-#define list_traverse(pos, head) \
-    for (typeof(*head##_traversal_type) pos = list_traversal_entry((head)->next, head); \
-    !list_traversal_entry_is_head(pos, head); \
-    pos = list_traversal_next_entry(pos,head))
-
-struct entry {
-    self_list_traversal_head(self_list, struct entry, child_head);
-    struct list_head child_head;
-};
-
-define_self_list_ref_offset(struct entry, child_head);
-
-
-void bar(struct entry *b);
-
-void foo(struct entry *a)
-{
-    list_traverse(pos, &a->self_list) {
-        bar(pos);
-    }
-}
-
--- 
-Micha³ Miros³aw
