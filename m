@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C38C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 23:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA56C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 23:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232979AbiCLX1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 18:27:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
+        id S232990AbiCLX1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 18:27:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232789AbiCLX07 (ORCPT
+        with ESMTP id S231277AbiCLX07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 12 Mar 2022 18:26:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFDB92D0F
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6FD9286A
         for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 15:25:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4617D608C3
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 23:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C2EC340F9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF931608C4
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 23:25:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43458C340EE;
         Sat, 12 Mar 2022 23:25:51 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nTB7O-000Wee-PH;
+        id 1nTB7O-000Wd0-7I;
         Sat, 12 Mar 2022 18:25:50 -0500
-Message-ID: <20220312232550.612955622@goodmis.org>
+Message-ID: <20220312232550.059993796@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Sat, 12 Mar 2022 18:25:29 -0500
+Date:   Sat, 12 Mar 2022 18:25:26 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>
-Subject: [for-next][PATCH 04/12] tracing: Allow custom events to be added to the tracefs directory
+        kernel test robot <lkp@intel.com>
+Subject: [for-next][PATCH 01/12] tracing: Fix allocation of last_cmd in last_cmd_set()
 References: <20220312232525.234705244@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,46 +44,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Allow custom events to be added to the events directory in the tracefs
-file system. For example, a module could be installed that attaches to an
-event and wants to be enabled and disabled via the tracefs file system. It
-would use trace_add_event_call() to add the event to the tracefs
-directory, and trace_remove_event_call() to remove it.
+The strncat() used in last_cmd_set() includes the nul byte of length of
+the string being copied in, when it should only hold the size of the
+string being copied (not the nul byte). Change it to subtract the length
+of the allocated space and the nul byte to pass that into the strncat().
 
-Make both those functions EXPORT_SYMBOL_GPL().
+Also, assign "len" instead of initializing it to zero and its first update
+is to do a "+=".
 
-Link: https://lkml.kernel.org/r/20220303220625.186988045@goodmis.org
+Link: https://lore.kernel.org/all/202202140628.fj6e4w4v-lkp@intel.com/
 
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Tom Zanussi <zanussi@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_events.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/trace/trace_events_hist.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 3147614c1812..38afd66d80e3 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -2758,6 +2758,7 @@ int trace_add_event_call(struct trace_event_call *call)
- 	mutex_unlock(&trace_types_lock);
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(trace_add_event_call);
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index 5e8970624bce..78788049f3d3 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -744,19 +744,20 @@ static void last_cmd_set(struct trace_event_file *file, char *str)
+ {
+ 	const char *system = NULL, *name = NULL;
+ 	struct trace_event_call *call;
+-	int len = 0;
++	int len;
  
- /*
-  * Must be called under locking of trace_types_lock, event_mutex and
-@@ -2819,6 +2820,7 @@ int trace_remove_event_call(struct trace_event_call *call)
+ 	if (!str)
+ 		return;
  
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(trace_remove_event_call);
+-	len += sizeof(HIST_PREFIX) + strlen(str) + 1;
++	len = sizeof(HIST_PREFIX) + strlen(str) + 1;
+ 	kfree(last_cmd);
+ 	last_cmd = kzalloc(len, GFP_KERNEL);
+ 	if (!last_cmd)
+ 		return;
  
- #define for_each_event(event, start, end)			\
- 	for (event = start;					\
+ 	strcpy(last_cmd, HIST_PREFIX);
+-	strncat(last_cmd, str, len - sizeof(HIST_PREFIX));
++	len -= sizeof(HIST_PREFIX) + 1;
++	strncat(last_cmd, str, len);
+ 
+ 	if (file) {
+ 		call = file->event_call;
 -- 
 2.35.1
