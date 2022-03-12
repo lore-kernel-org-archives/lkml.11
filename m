@@ -2,320 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9377AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 23:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 573A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 23:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232949AbiCLXj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 18:39:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
+        id S232995AbiCLXtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 18:49:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231414AbiCLXjw (ORCPT
+        with ESMTP id S231147AbiCLXtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 18:39:52 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C7250E11
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 15:38:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647128325; x=1678664325;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QJ/+PqpVljbt/f8lPpUL8qGsxRK349auSqBF7OwuQKQ=;
-  b=WaSVlrkVcB2ALxCHvKFuHv1E5+JtA6TZj1NP5Lc4oZXR0V+iiO3hZQ/F
-   ZZKdiCoDQTzDVLIIjGqAM7iD2mfjXvAPZOpr0yRz19d5eQa/TaPlWcyxn
-   gTglCXYJn1Jdy4GEgOqjcoocTL1v4c41rzOO6MTLpjwRniD86f29Z53Ks
-   gZDWbJzodcjmjmj6iO7ul9i7CXYQIxq3wudBsTu7d+uIhJbZh5djOrx7Y
-   jVR5Mp3ACCpK5uEmUqiujE7VOFNui4iOGg9GX9kATZCABNTowLagdxidh
-   bVY3yNm2GIcFUXGbvQ/+PxqyJ8eWjdGS8Lyy2XTYX89N2B+M1n3954Q/A
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="342252954"
-X-IronPort-AV: E=Sophos;i="5.90,177,1643702400"; 
-   d="scan'208";a="342252954"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 15:38:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,177,1643702400"; 
-   d="scan'208";a="514966658"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 12 Mar 2022 15:38:43 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nTBJq-0008MR-Jx; Sat, 12 Mar 2022 23:38:42 +0000
-Date:   Sun, 13 Mar 2022 07:37:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dai Ngo <dai.ngo@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [cel:nfsd-courteous-server 29/39] ebda.c:(.text+0x0): multiple
- definition of `locks_owner_has_blockers';
- arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-Message-ID: <202203130754.dGEnD5ty-lkp@intel.com>
+        Sat, 12 Mar 2022 18:49:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 563DD25EB7
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 15:48:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647128924;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=l2x5t1DTMrr+F4JZEN4o27QeKTa0qaAj+e9wVSLV6fQ=;
+        b=Bg9WBobaHZrn+u0tSAI9wdXV2fw2Mr2W6cNUTvV29Eya0P2rVllBje8cOLTx5qGCzEE9B+
+        092+TDYb6mVAR8M7at2/gPLh5B7xZhouFrj242Rv1CMwQlnx1PMGCDGG929UNBip0V4HOV
+        Cm2Z8iu2erOrm/Eab6U5dKfRamp4Rvo=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-563-LxCCAbVgPT2u00iGoTnd5w-1; Sat, 12 Mar 2022 18:48:43 -0500
+X-MC-Unique: LxCCAbVgPT2u00iGoTnd5w-1
+Received: by mail-qv1-f69.google.com with SMTP id x16-20020a0ce250000000b00432ec6eaf85so10750584qvl.15
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 15:48:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=l2x5t1DTMrr+F4JZEN4o27QeKTa0qaAj+e9wVSLV6fQ=;
+        b=t+3vAH4WiIDSfM3+uAsD4hPEZKvDG3oiWXwJI2OojOYYBBFRIgniFkbOKSMm5nhAoH
+         SEHApFA5Ir7r9DrUYbA+hMcwICUQw2RcRhehRWSV2GxKfB9/TjKkDpkQSPCyR9tYEzO/
+         uWLFul3L0MVCWI30zlPPHsaG7YoUg2D6JjsE8N46O2PwQk5KUJX12zFs/9tjZYo24tlt
+         c7bdfwLkvOrGrFYtnNkN0lTXeMzjWFyIFi1tGLmXTNDOgMiQMOHAjB5HBcWEdICfWHRq
+         XsJxejh6sg1yGnrv0FTacQKJUcyFT+N/TZjCAr8YF7xIhoha7u5bTiWIbSWfWSZffFfh
+         Et0g==
+X-Gm-Message-State: AOAM532PlE01R4VeyUhhSXxEXJaefp0xykRjbhXB+qoa4qFOL2naVL9q
+        UCrjD0+gOrqVX3qsR4xvN4Zv73xxzRNuCDU/gCYX6D151H51SckcCa3T70vwJ5m+RATbDD+wWfk
+        vlqPkxiVfISC6tegX4hfQdec5/xCTpcCtYZWBfCDS8yEDyAEW57kmYbpLbAxSmSwTC0QYPpc=
+X-Received: by 2002:a37:4550:0:b0:473:b21a:5c90 with SMTP id s77-20020a374550000000b00473b21a5c90mr10220979qka.158.1647128922397;
+        Sat, 12 Mar 2022 15:48:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwTmHxO4uNTRJa2T6jaaBQ3swvJN6GUQj6QJkiVPbAOilb5IQ0I7gj2PGDGbNE/dYh9g10U6A==
+X-Received: by 2002:a37:4550:0:b0:473:b21a:5c90 with SMTP id s77-20020a374550000000b00473b21a5c90mr10220965qka.158.1647128922110;
+        Sat, 12 Mar 2022 15:48:42 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id o21-20020ac85a55000000b002e16389b501sm8462867qta.96.2022.03.12.15.48.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Mar 2022 15:48:41 -0800 (PST)
+Subject: Re: [PATCH] media: stkwebcam: move stk_camera_read_reg() scratch
+ buffer to struct stk_camera
+To:     Pavel Skripkin <paskripkin@gmail.com>, mchehab@kernel.org,
+        hverkuil-cisco@xs4all.nl, cai.huoqing@linux.dev,
+        xose.vazquez@gmail.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220312173049.1410977-1-trix@redhat.com>
+ <65a1d178-8511-a023-2655-94540114086c@gmail.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <c3723690-cacb-0c42-cc5d-397a3363b4da@redhat.com>
+Date:   Sat, 12 Mar 2022 15:48:39 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <65a1d178-8511-a023-2655-94540114086c@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux nfsd-courteous-server
-head:   ca4d8c00bb753707519f438e5286b2349af53054
-commit: 3a59c0f1c4d6cb882410bfc086ad81458d4cbcaa [29/39] fs/lock: add helper locks_owner_has_blockers to check for blockers
-config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220313/202203130754.dGEnD5ty-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=3a59c0f1c4d6cb882410bfc086ad81458d4cbcaa
-        git remote add cel git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
-        git fetch --no-tags cel nfsd-courteous-server
-        git checkout 3a59c0f1c4d6cb882410bfc086ad81458d4cbcaa
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 3/12/22 11:58 AM, Pavel Skripkin wrote:
+> On 3/12/22 20:30, trix@redhat.com wrote:
+>> From: Tom Rix <trix@redhat.com>
+>>
+>> In stk_camera_read_reg() a single byte buffer is alloc-ed and
+>> freed on every function call.  Since the size is known,
+>> move the buffer to the struct stk_camera where it will be alloc-ed
+>> and freed once.
+>>
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>>   drivers/media/usb/stkwebcam/stk-webcam.c | 11 ++---------
+>>   drivers/media/usb/stkwebcam/stk-webcam.h |  2 ++
+>>   2 files changed, 4 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/media/usb/stkwebcam/stk-webcam.c 
+>> b/drivers/media/usb/stkwebcam/stk-webcam.c
+>> index 5b822214ccc5c..787edb3d47c23 100644
+>> --- a/drivers/media/usb/stkwebcam/stk-webcam.c
+>> +++ b/drivers/media/usb/stkwebcam/stk-webcam.c
+>> @@ -150,25 +150,18 @@ int stk_camera_write_reg(struct stk_camera 
+>> *dev, u16 index, u8 value)
+>>   int stk_camera_read_reg(struct stk_camera *dev, u16 index, u8 *value)
+>
+> And just random note: there are 4 possible uninit value bugs.
+>
+> stk_start_stream() calls stk_camera_read_reg 4 times, but ignores 
+> return values.
+>
+> stk_camera_read_reg() should have __must_check annotation and return 
+> value should be checked on each call.
+>
+>
+> If you have time you can take care of it :) Or I will fix it one day...
 
-All error/warnings (new ones prefixed by >>):
+These do show up in my usual static analysis and it why I was looking at 
+this file.
 
-   ld: arch/x86/kernel/ebda.o: in function `locks_owner_has_blockers':
->> ebda.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: init/main.o: in function `locks_owner_has_blockers':
-   main.c:(.text+0x32): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: init/do_mounts.o: in function `locks_owner_has_blockers':
-   do_mounts.c:(.text+0x5): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: init/noinitramfs.o: in function `locks_owner_has_blockers':
-   noinitramfs.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: init/init_task.o: in function `locks_owner_has_blockers':
-   init_task.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/entry/syscall_32.o: in function `locks_owner_has_blockers':
-   syscall_32.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/entry/common.o: in function `locks_owner_has_blockers':
-   common.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/entry/vdso/vma.o: in function `locks_owner_has_blockers':
-   vma.c:(.text+0x1d0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/entry/vdso/extable.o: in function `locks_owner_has_blockers':
-   extable.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/core.o: in function `locks_owner_has_blockers':
-   core.c:(.text+0x903): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/amd/core.o: in function `locks_owner_has_blockers':
-   core.c:(.text+0x70b): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/core.o: in function `locks_owner_has_blockers':
-   core.c:(.text+0x1cbc): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/bts.o: in function `locks_owner_has_blockers':
-   bts.c:(.text+0x6b2): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/ds.o: in function `locks_owner_has_blockers':
-   ds.c:(.text+0x14ad): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/knc.o: in function `locks_owner_has_blockers':
-   knc.c:(.text+0x2b1): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/lbr.o: in function `locks_owner_has_blockers':
-   lbr.c:(.text+0x6cd): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/p4.o: in function `locks_owner_has_blockers':
-   p4.c:(.text+0x5f8): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/p6.o: in function `locks_owner_has_blockers':
-   p6.c:(.text+0xc4): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/intel/pt.o: in function `locks_owner_has_blockers':
-   pt.c:(.text+0x641): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/events/zhaoxin/core.o: in function `locks_owner_has_blockers':
-   core.c:(.text+0x460): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/realmode/init.o: in function `locks_owner_has_blockers':
-   init.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/process_32.o: in function `locks_owner_has_blockers':
-   process_32.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/signal.o: in function `locks_owner_has_blockers':
-   signal.c:(.text+0x5b4): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/traps.o: in function `locks_owner_has_blockers':
-   traps.c:(.text+0x288): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/idt.o: in function `locks_owner_has_blockers':
-   idt.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/irq.o: in function `locks_owner_has_blockers':
-   irq.c:(.text+0x4f): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/irq_32.o: in function `locks_owner_has_blockers':
-   irq_32.c:(.text+0x1): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/dumpstack_32.o: in function `locks_owner_has_blockers':
-   dumpstack_32.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/ioport.o: in function `locks_owner_has_blockers':
-   ioport.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/dumpstack.o: in function `locks_owner_has_blockers':
-   dumpstack.c:(.text+0x11e): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/nmi.o: in function `locks_owner_has_blockers':
-   nmi.c:(.text+0x74): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/setup.o: in function `locks_owner_has_blockers':
-   setup.c:(.text+0x3): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/x86_init.o: in function `locks_owner_has_blockers':
-   x86_init.c:(.text+0x39): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/irqinit.o: in function `locks_owner_has_blockers':
-   irqinit.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/irq_work.o: in function `locks_owner_has_blockers':
-   irq_work.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/probe_roms.o: in function `locks_owner_has_blockers':
-   probe_roms.c:(.text+0x1a3): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/sys_ia32.o: in function `locks_owner_has_blockers':
-   sys_ia32.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/bootflag.o: in function `locks_owner_has_blockers':
-   bootflag.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/e820.o: in function `locks_owner_has_blockers':
-   e820.c:(.text+0xbf): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/pci-dma.o: in function `locks_owner_has_blockers':
-   pci-dma.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/quirks.o: in function `locks_owner_has_blockers':
-   quirks.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/kdebugfs.o: in function `locks_owner_has_blockers':
-   kdebugfs.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/alternative.o: in function `locks_owner_has_blockers':
-   alternative.c:(.text+0x320): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/hw_breakpoint.o: in function `locks_owner_has_blockers':
-   hw_breakpoint.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/rtc.o: in function `locks_owner_has_blockers':
-   rtc.c:(.text+0x41): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/pci-iommu_table.o: in function `locks_owner_has_blockers':
-   pci-iommu_table.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/process.o: in function `locks_owner_has_blockers':
-   process.c:(.text+0xcf): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/fpu/init.o: in function `locks_owner_has_blockers':
-   init.c:(.text+0x0): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/fpu/core.o: in function `locks_owner_has_blockers':
-   core.c:(.text+0x3a): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/fpu/regset.o: in function `locks_owner_has_blockers':
-   regset.c:(.text+0x198): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
-   ld: arch/x86/kernel/fpu/signal.o: in function `locks_owner_has_blockers':
-   signal.c:(.text+0x42d): multiple definition of `locks_owner_has_blockers'; arch/x86/kernel/head32.o:head32.c:(.text+0x0): first defined here
---
-   In file included from include/linux/cgroup.h:17,
-                    from include/linux/memcontrol.h:13,
-                    from include/linux/swap.h:9,
-                    from include/linux/suspend.h:5,
-                    from arch/x86/kernel/asm-offsets.c:13:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/proc_fs.h:10,
-                    from init/main.c:18:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   init/main.c:768:20: warning: no previous prototype for 'arch_post_acpi_subsys_init' [-Wmissing-prototypes]
-     768 | void __init __weak arch_post_acpi_subsys_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   init/main.c:780:20: warning: no previous prototype for 'mem_encrypt_init' [-Wmissing-prototypes]
-     780 | void __init __weak mem_encrypt_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from include/linux/pid_namespace.h:7,
-                    from include/linux/ptrace.h:10,
-                    from include/linux/tracehook.h:47,
-                    from include/linux/entry-common.h:6,
-                    from arch/x86/entry/common.c:13:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/entry/common.c:119:24: warning: no previous prototype for 'do_int80_syscall_32' [-Wmissing-prototypes]
-     119 | __visible noinstr void do_int80_syscall_32(struct pt_regs *regs)
-         |                        ^~~~~~~~~~~~~~~~~~~
-   arch/x86/entry/common.c:186:24: warning: no previous prototype for 'do_fast_syscall_32' [-Wmissing-prototypes]
-     186 | __visible noinstr long do_fast_syscall_32(struct pt_regs *regs)
-         |                        ^~~~~~~~~~~~~~~~~~
-   arch/x86/entry/common.c:238:24: warning: no previous prototype for 'do_SYSENTER_32' [-Wmissing-prototypes]
-     238 | __visible noinstr long do_SYSENTER_32(struct pt_regs *regs)
-         |                        ^~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from arch/x86/kernel/head32.c:11:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/kernel/head32.c:72:13: warning: no previous prototype for 'mk_early_pgtbl_32' [-Wmissing-prototypes]
-      72 | void __init mk_early_pgtbl_32(void)
-         |             ^~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from arch/x86/kernel/process.c:6:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/kernel/process.c:887:13: warning: no previous prototype for 'arch_post_acpi_subsys_init' [-Wmissing-prototypes]
-     887 | void __init arch_post_acpi_subsys_init(void)
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from arch/x86/kernel/doublefault_32.c:2:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/kernel/doublefault_32.c:23:36: warning: no previous prototype for 'doublefault_shim' [-Wmissing-prototypes]
-      23 | asmlinkage noinstr void __noreturn doublefault_shim(void)
-         |                                    ^~~~~~~~~~~~~~~~
-   arch/x86/kernel/doublefault_32.c:114:6: warning: no previous prototype for 'doublefault_init_cpu_tss' [-Wmissing-prototypes]
-     114 | void doublefault_init_cpu_tss(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from arch/x86/entry/vdso/vma.c:7:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/entry/vdso/vma.c:35:19: warning: no previous prototype for 'arch_get_vdso_data' [-Wmissing-prototypes]
-      35 | struct vdso_data *arch_get_vdso_data(void *vvar_page)
-         |                   ^~~~~~~~~~~~~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from arch/x86/include/asm/pci.h:5,
-                    from include/linux/pci.h:1901,
-                    from arch/x86/kernel/cpu/cacheinfo.c:17:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/x86/kernel/cpu/cacheinfo.c: In function 'init_intel_cacheinfo':
-   arch/x86/kernel/cpu/cacheinfo.c:727:26: warning: variable 'l3_id' set but not used [-Wunused-but-set-variable]
-     727 |  unsigned int l2_id = 0, l3_id = 0, num_threads_sharing, index_msb;
-         |                          ^~~~~
-   arch/x86/kernel/cpu/cacheinfo.c:727:15: warning: variable 'l2_id' set but not used [-Wunused-but-set-variable]
-     727 |  unsigned int l2_id = 0, l3_id = 0, num_threads_sharing, index_msb;
-         |               ^~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from include/linux/kallsyms.h:13,
-                    from include/linux/ftrace.h:12,
-                    from include/linux/kprobes.h:28,
-                    from include/linux/kgdb.h:19,
-                    from kernel/panic.c:15:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/panic.c:558:6: warning: no previous prototype for '__warn' [-Wmissing-prototypes]
-     558 | void __warn(const char *file, int line, void *caller, unsigned taint,
-         |      ^~~~~~
-   kernel/panic.c: In function '__warn':
-   kernel/panic.c:572:3: warning: function '__warn' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     572 |   vprintk(args->fmt, args->args);
-         |   ^~~~~~~
-   kernel/panic.c: At top level:
-   kernel/panic.c:623:6: warning: no previous prototype for '__warn_printk' [-Wmissing-prototypes]
-     623 | void __warn_printk(const char *fmt, ...)
-         |      ^~~~~~~~~~~~~
-   kernel/panic.c: In function '__warn_printk':
-   kernel/panic.c:630:2: warning: function '__warn_printk' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     630 |  vprintk(fmt, args);
-         |  ^~~~~~~
---
-   In file included from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from kernel/exit.c:8:
->> include/linux/fs.h:1340:13: warning: no previous prototype for 'locks_owner_has_blockers' [-Wmissing-prototypes]
-    1340 | extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-         |             ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/exit.c:1824:13: warning: no previous prototype for 'abort' [-Wmissing-prototypes]
-    1824 | __weak void abort(void)
-         |             ^~~~~
-..
+And was sidetracked by the short malloc.
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Unfortunately I looked and there are many other similar instances 
+treewide ~100
+
+These aren't caught in checkpatch, so working on that..
+
+Tom
+
+>
+>
+>
+>
+>
+> With regards,
+> Pavel Skripkin
+>
+
