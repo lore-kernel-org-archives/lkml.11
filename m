@@ -2,72 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB77C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D1EC433FE
 	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 16:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232209AbiCLQ4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 11:56:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43092 "EHLO
+        id S232192AbiCLQsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 11:48:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232193AbiCLQ4H (ORCPT
+        with ESMTP id S232144AbiCLQsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 11:56:07 -0500
-X-Greylist: delayed 1594 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 12 Mar 2022 08:55:00 PST
-Received: from tmailer.gwdg.de (tmailer.gwdg.de [134.76.10.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF5E5E771;
-        Sat, 12 Mar 2022 08:55:00 -0800 (PST)
-Received: from excmbx-17.um.gwdg.de ([134.76.9.228] helo=email.gwdg.de)
-        by mailer.gwdg.de with esmtp (GWDG Mailer)
-        (envelope-from <alexander.vorwerk@stud.uni-goettingen.de>)
-        id 1nT4bM-0008G0-Sr; Sat, 12 Mar 2022 17:28:20 +0100
-Received: from notebook.fritz.box (10.250.9.199) by excmbx-17.um.gwdg.de
- (134.76.9.228) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2375.24; Sat, 12
- Mar 2022 17:28:19 +0100
-From:   Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
-To:     <edumazet@google.com>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
-Subject: [PATCH] net: ipv4: tcp.c: fix an assignment in an if condition
-Date:   Sat, 12 Mar 2022 17:27:44 +0100
-Message-ID: <20220312162744.32318-1-alexander.vorwerk@stud.uni-goettingen.de>
-X-Mailer: git-send-email 2.17.1
+        Sat, 12 Mar 2022 11:48:53 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 117427A9BE
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 08:47:46 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id j26so17485335wrb.1
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 08:47:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fireburn-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9w/6bA1aoDkuJHS9K/TSkBOWaS4khHnnBbWGRmad4GA=;
+        b=kX8golIdtVAkBB6ZLCRB9mXOVYRu7qL+w+gaG/UC2GEXzB+k3ZzNYziZElwDT5HkFV
+         KD3W5VxxuCyy64hmDiXUv7e4DAvLYv6q2hGxOHdRmUGDbXhMwfFdkHqnfYdSa3BMNmVc
+         pUU4TinqRVEmwF3fpE3OnuBGO8m/VfnW8RpVxjJt71chm04YyjbQ+Ed/Ec6/T/RJNLGZ
+         o2XH2qxT5YO0Ye2SWI9gZcyzI8xguptKee4X5xjzwhQMuBdYy8+KAGWvdt7rSot3rIOc
+         vMC2D8a/XG8IvHDMJBTS+fh6cfizjyAa1B1O0D7t63cc9c01uzm0R2lnv+unShXC4dpG
+         fm+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9w/6bA1aoDkuJHS9K/TSkBOWaS4khHnnBbWGRmad4GA=;
+        b=vIUJ3rulT378yMEhR5qhqCegBjMH8M7SEVnsfmTFql4SeCPmxv8muXHAIaNwHaS+cC
+         io6GCJ0lVXkJB6nkY4xZgKaNyr/5170gDUOVJ87UhvZv4i1hqRMeqTFQsHfQNPbL9KJ4
+         Or9Or8Ho/wv2QwMF2rwg4kzT8lOlaYRIisR27rI1XiKOXioCZsyFFxj5guH4sEzqE1eq
+         yab4sSl74W282vKhcqC3ePS/ydsn93cCfzLWH0YXRSFfuSWspm+f6/JcA2Kte7R1DktI
+         Hf3QRB5pEJLGNvINSYUZ2/aLk/7Umdt66dC7d5C9CcmW+AZyGIwNZv/NL0MlcrQNX1xp
+         zpYA==
+X-Gm-Message-State: AOAM530tQHgwL3QkhPXUt1wyAWcHCKb5bo34eGDF2wD/rdJVSAUGsmOT
+        5QpQX+y4T54g/f/aIe6KKkGOkw==
+X-Google-Smtp-Source: ABdhPJyA0kGFQ3L/J2KAMLzwTEX3mpb7NfSn4ieEi+P9Pmntd3uMjnsV0BEOouselFo9ecimO19RHw==
+X-Received: by 2002:adf:d1c3:0:b0:203:8647:6fbe with SMTP id b3-20020adfd1c3000000b0020386476fbemr10323720wrd.65.1647103664396;
+        Sat, 12 Mar 2022 08:47:44 -0800 (PST)
+Received: from axion.fireburn.co.uk.fireburn.co.uk ([2a01:4b00:f40e:900::24e])
+        by smtp.gmail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm12760833wmp.44.2022.03.12.08.47.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Mar 2022 08:47:43 -0800 (PST)
+From:   Mike Lothian <mike@fireburn.co.uk>
+Cc:     Mike Lothian <mike@fireburn.co.uk>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Bluetooth: hci_event: Remove excessive bluetooth warning
+Date:   Sat, 12 Mar 2022 16:45:51 +0000
+Message-Id: <20220312164550.1810665-1-mike@fireburn.co.uk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.250.9.199]
-X-ClientProxiedBy: excmbx-28.um.gwdg.de (134.76.9.201) To excmbx-17.um.gwdg.de
- (134.76.9.228)
-X-Virus-Scanned: (clean) by clamav
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-reported by checkpatch.pl
-
-Signed-off-by: Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
+Fixes: 3e54c5890c87a ("Bluetooth: hci_event: Use of a function table to handle HCI events")
+Signed-off-by: Mike Lothian <mike@fireburn.co.uk>
 ---
- net/ipv4/tcp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/bluetooth/hci_event.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 28ff2a820f7c..7fa6e7e6ea80 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -959,10 +959,10 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- 	struct sk_buff *skb = tcp_write_queue_tail(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	bool can_coalesce;
--	int copy, i;
-+	int copy = size_goal - skb->len;
-+	int i;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index fc30f4c03d29..aa57fccd2e47 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -6818,14 +6818,6 @@ static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+ 		return;
+ 	}
  
--	if (!skb || (copy = size_goal - skb->len) <= 0 ||
--	    !tcp_skb_can_collapse_to(skb)) {
-+	if (!skb || copy <= 0 || !tcp_skb_can_collapse_to(skb)) {
- new_segment:
- 		if (!sk_stream_memory_free(sk))
- 			return NULL;
+-	/* Just warn if the length is over max_len size it still be
+-	 * possible to partially parse the event so leave to callback to
+-	 * decide if that is acceptable.
+-	 */
+-	if (skb->len > ev->max_len)
+-		bt_dev_warn(hdev, "unexpected event 0x%2.2x length: %u > %u",
+-			    event, skb->len, ev->max_len);
+-
+ 	data = hci_ev_skb_pull(hdev, skb, event, ev->min_len);
+ 	if (!data)
+ 		return;
 -- 
-2.17.1
+2.35.1
 
