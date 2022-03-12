@@ -2,129 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BE42C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 02:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A23C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 02:49:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230144AbiCLCuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 21:50:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+        id S230154AbiCLCuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 21:50:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiCLCuO (ORCPT
+        with ESMTP id S229505AbiCLCuO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Mar 2022 21:50:14 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC2411B5ED
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD4A117CB9
         for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 18:49:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647053349; x=1678589349;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=R0DDQeh5n1eKIZRB8ja0lP32SSnFOHfvnUG7+NokNh8=;
-  b=NdQY0Ermfci7qP0xowcEcLX2h3foiYNemgxU0VWqoZyYHOC6bJSIArk4
-   fbIg7BCbl1N53U1V/1Us/5g57iRP6WcaKYYpsnSM7OTwxipTNP5DP6Kff
-   YVX8E/2PMU3mLrPteWkA8UnfEPfgm0lYVz02L2T9aC7iOrJlRIfD1kbJZ
-   fzCeLjpOHT7dttchox8JTN6RnoETDSL4K6OH1snU3LqtRfAcNPaKAbSE0
-   bJpQGOjm7lnleeBJXyOZ0EKMtSNdIwL+5x8x4UwqGHCMKV3Q1oLIga/cI
-   N29jlR9CtOuP5V1/DYoZKLZxrn61OhnDJ85y/u0xT88DxK3qVAAgEoU7E
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bh/vl/5slwpWD89rHRoLv3V3kmSfGbWWI8kWD0Cu+/I=;
+  b=Qtn5TZ6tSGGf0phw8gqjIF72pmDlyiJqqejvnbr0Cr94/Wl9tfyS9IKE
+   XpUpSetloUSu0UfNYvpdgdWVi7xQ7lRNg+/Ilcq65lOC/KNNS+i/WBhB2
+   ayAsuaaEgl5ZFHWBkl+8ni2tAKjvrAmags+RtIXh7vkmcqjfKJ7CxVWS/
+   gMpNW6FTu6BU3LpIhnDXNQSmaWorDOqFMoC6vT9zJKZc49gw/NFX2DXrn
+   er8X+dAaDvyfWsZjtxImAzCHnqt+SeIelu+PQvdRqteX02IbgQqb+ouI+
+   bSXgjoABL/TGBXw6u0du5Im542JqiXZeCTshFPC/+81KHcjS5AD4Lpm2s
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="236325635"
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="255454712"
 X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="236325635"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 18:49:09 -0800
+   d="scan'208";a="255454712"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 18:49:08 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="511596133"
+   d="scan'208";a="496984962"
 Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 11 Mar 2022 18:49:07 -0800
+  by orsmga003.jf.intel.com with ESMTP; 11 Mar 2022 18:49:07 -0800
 Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nSroY-0007Qh-Vn; Sat, 12 Mar 2022 02:49:06 +0000
-Date:   Sat, 12 Mar 2022 10:48:52 +0800
+        id 1nSroY-0007Qf-VE; Sat, 12 Mar 2022 02:49:06 +0000
+Date:   Sat, 12 Mar 2022 10:48:08 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:crng/random/jd/vmid-poll 61/61]
- drivers/char/random.c:1182:17: error: implicit declaration of function
- 'proc_sys_poll_notify'; did you mean 'proc_sys_poll_event'?
-Message-ID: <202203121041.K4onshgj-lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:sched/core] BUILD SUCCESS
+ a0a7e453b502cbbf7ff372f907a4e27a2ebf5445
+Message-ID: <622c09e8.NEu6SThXYjclw7iv%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/vmid-poll
-head:   28f8622d20d2c090711dbb8bee93bd00a8bc0cd6
-commit: 28f8622d20d2c090711dbb8bee93bd00a8bc0cd6 [61/61] random: add vm_id sysctl for polling
-config: ia64-randconfig-r016-20220310 (https://download.01.org/0day-ci/archive/20220312/202203121041.K4onshgj-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/28f8622d20d2c090711dbb8bee93bd00a8bc0cd6
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block crng/random/jd/vmid-poll
-        git checkout 28f8622d20d2c090711dbb8bee93bd00a8bc0cd6
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/char/
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git sched/core
+branch HEAD: a0a7e453b502cbbf7ff372f907a4e27a2ebf5445  sched/preempt: Tell about PREEMPT_DYNAMIC on kernel headers
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+elapsed time: 720m
 
-All errors (new ones prefixed by >>):
+configs tested: 93
+configs skipped: 3
 
-   In file included from arch/ia64/include/asm/pgtable.h:153,
-                    from include/linux/pgtable.h:6,
-                    from arch/ia64/include/asm/uaccess.h:40,
-                    from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/poll.h:10,
-                    from drivers/char/random.c:38:
-   arch/ia64/include/asm/mmu_context.h: In function 'reload_context':
-   arch/ia64/include/asm/mmu_context.h:127:48: warning: variable 'old_rr4' set but not used [-Wunused-but-set-variable]
-     127 |         unsigned long rr0, rr1, rr2, rr3, rr4, old_rr4;
-         |                                                ^~~~~~~
-   drivers/char/random.c: In function 'add_vmfork_randomness':
->> drivers/char/random.c:1182:17: error: implicit declaration of function 'proc_sys_poll_notify'; did you mean 'proc_sys_poll_event'? [-Werror=implicit-function-declaration]
-    1182 |                 proc_sys_poll_notify(&sysctl_vmid_poll);
-         |                 ^~~~~~~~~~~~~~~~~~~~
-         |                 proc_sys_poll_event
-   cc1: some warnings being treated as errors
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+arm                           h3600_defconfig
+riscv                            allmodconfig
+powerpc                 mpc85xx_cds_defconfig
+mips                           gcw0_defconfig
+sh                        apsh4ad0a_defconfig
+m68k                           sun3_defconfig
+powerpc                 mpc834x_mds_defconfig
+sh                   sh7724_generic_defconfig
+m68k                          amiga_defconfig
+sh                            migor_defconfig
+m68k                        mvme16x_defconfig
+arc                           tb10x_defconfig
+arm                           viper_defconfig
+powerpc                       ppc64_defconfig
+ia64                      gensparse_defconfig
+mips                      fuloong2e_defconfig
+arm                  randconfig-c002-20220310
+arm                  randconfig-c002-20220312
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                                  kexec
 
-vim +1182 drivers/char/random.c
-
-  1167	
-  1168	/*
-  1169	 * Handle a new unique VM ID, which is unique, not secret, so we
-  1170	 * don't credit it, but we do immediately force a reseed after so
-  1171	 * that it's used by the crng posthaste.
-  1172	 */
-  1173	void add_vmfork_randomness(const void *unique_vm_id, size_t size)
-  1174	{
-  1175		add_device_randomness(unique_vm_id, size);
-  1176		if (crng_ready()) {
-  1177			crng_reseed(true);
-  1178			pr_notice("crng reseeded due to virtual machine fork\n");
-  1179		}
-  1180		blocking_notifier_call_chain(&vmfork_chain, 0, NULL);
-  1181		if (IS_ENABLED(CONFIG_SYSCTL))
-> 1182			proc_sys_poll_notify(&sysctl_vmid_poll);
-  1183	}
-  1184	#if IS_MODULE(CONFIG_VMGENID)
-  1185	EXPORT_SYMBOL_GPL(add_vmfork_randomness);
-  1186	#endif
-  1187	
+clang tested configs:
+arm                  randconfig-c002-20220310
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220310
+riscv                randconfig-c006-20220310
+mips                 randconfig-c004-20220310
+i386                          randconfig-c001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220310
+hexagon              randconfig-r041-20220310
+riscv                randconfig-r042-20220310
 
 ---
 0-DAY CI Kernel Test Service
