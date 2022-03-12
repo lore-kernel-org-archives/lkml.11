@@ -2,111 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7926C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 17:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A745C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 17:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232317AbiCLRXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 12:23:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48124 "EHLO
+        id S232322AbiCLRct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 12:32:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230525AbiCLRXo (ORCPT
+        with ESMTP id S229491AbiCLRco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 12:23:44 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CAD1FF43C
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 09:22:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647105759; x=1678641759;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ZM0gVtb7PI87L9rILciXCy/mrwMfDecRtaiITZvUlfc=;
-  b=e4wB5D+apNa8Lr1PGmFO5Z80Pvm21GD/HDBUShvl+mEfXHMLJCG9GCgM
-   +Tt4GXVsDQubMQfWbJk/mnLzkXmbFbzJWexY6+qfv/2WxsNHtn5p9Ul4/
-   H5OD4y8ChZamrA+1oUD5tBsZEJu1/ISHd/8Uz1t6nEMsAAD+KpYrwohNa
-   NOYhvp72/od2IDCur81/aKK49XJDQePhpDhr+j9Ty1EK3oPNsg5rP2vfE
-   Ehzbi4BdsqIsXV7h8FyGBXOyj8PNjl5mP5DoMcRrihpmOhS+XoRVf6nDm
-   DQolItTDPPd02pT4FWa+1affu+9AAZdo8uutN9uEmucR+xLQhaMFADfFz
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="254638190"
-X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="254638190"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 09:22:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="555788498"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 12 Mar 2022 09:22:37 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nT5Rs-000875-Mk; Sat, 12 Mar 2022 17:22:36 +0000
-Date:   Sun, 13 Mar 2022 01:22:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [rmk-arm:zii 183/199]
- drivers/net/ethernet/mediatek/mtk_eth_soc.c:378:1: error: non-void function
- does not return a value
-Message-ID: <202203130106.mIhChrsp-lkp@intel.com>
+        Sat, 12 Mar 2022 12:32:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E33C6D1A4
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 09:31:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647106296;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=OQDHbRK5h5hzHKCQDiG2Xi9MV3Kh7CjgfW1/1yG8i58=;
+        b=Tv+uLLhEep3UjQopCNW3XhbvsxzfrUptD6b50UsSdksIZE+2tYryCto3S9s3QWk2rHIna+
+        04hXDv9DWHmbd1pJ8H2kEQj92v4IaSN5Ey5nhH/Hpc4VBTO++nL4eXDjURDgwYlJ0IgqaL
+        2MNxQgCP4ymGga/rmLo3aoWE2i1WNWA=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-643-3qlx9y-uOxORA6moy21J0Q-1; Sat, 12 Mar 2022 12:31:35 -0500
+X-MC-Unique: 3qlx9y-uOxORA6moy21J0Q-1
+Received: by mail-qk1-f198.google.com with SMTP id m123-20020a375881000000b0067af33d4ac1so8468113qkb.4
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 09:31:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OQDHbRK5h5hzHKCQDiG2Xi9MV3Kh7CjgfW1/1yG8i58=;
+        b=4KUgfwrXUWupWB1NIYXEuYQOxZLgnElLTou3blsEKjVDN7T9udWCSk6mxWY2z/ts7l
+         i+pRaMUs5hUfYE/v/aLs81WhZUYHxi1W1fyH4FrDor1zNkVEv+THdq2TqLS0Q1E78Hlz
+         wQbEyXqZSBupRuJABLDQ+xSMAChkADTf2NbAHfctoWSjZkvT3HAoByw6Npkzc+aWbKJV
+         lq/YGUs7VPHcUtNkbVsyb4Eer8QJ9AycYUORHzhDy/FoXhmxoY200Thpjp7KkHA64knG
+         zHW42g8kbCbkfbZ613aDEMEmS8NjD7qaOJQN/+yIE0eZSiyGPxS3ic52by7jr44ejKi6
+         Fu+Q==
+X-Gm-Message-State: AOAM533UMjIqoi7og+qgSbd+cHp40yKPs9PbXKIWhl4rVPTuN9UwoePt
+        sPB6YqzGTWz+5rDIQoHMkSCPAXrHbCV1Za6YlmDj6MrSdLtmYCzUwD+M84rVM0Yjd2fSCfABh64
+        IozIbe5aLrLHRsrTi5nFkLWKq
+X-Received: by 2002:a05:620a:4442:b0:67d:b94a:8c6a with SMTP id w2-20020a05620a444200b0067db94a8c6amr46205qkp.569.1647106295010;
+        Sat, 12 Mar 2022 09:31:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxtnu94rjTmOi+1VORDdqL74UhgzCuwVSAqQfaBh5XrYQnCoZ1rChJn2tfiQdAuzAwWyfgQ1Q==
+X-Received: by 2002:a05:620a:4442:b0:67d:b94a:8c6a with SMTP id w2-20020a05620a444200b0067db94a8c6amr46188qkp.569.1647106294786;
+        Sat, 12 Mar 2022 09:31:34 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id v3-20020a05622a188300b002e1cbca8ea4sm1161476qtc.59.2022.03.12.09.31.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Mar 2022 09:31:34 -0800 (PST)
+From:   trix@redhat.com
+To:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl,
+        cai.huoqing@linux.dev, paskripkin@gmail.com, xose.vazquez@gmail.com
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] media: stkwebcam: move stk_camera_read_reg() scratch buffer to struct stk_camera
+Date:   Sat, 12 Mar 2022 09:30:49 -0800
+Message-Id: <20220312173049.1410977-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.armlinux.org.uk/~rmk/linux-arm zii
-head:   22f6fd6865d54d3632278e7f17bad52308e50311
-commit: b36d94695f6930a807fb5a6ed3dff972b9ea8c71 [183/199] net: mtk_eth_soc: move MAC_MCR setting to mac_finish()
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220313/202203130106.mIhChrsp-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 43f668b98e8d87290fc6bbf5ed13c3ab542e3497)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        git remote add rmk-arm git://git.armlinux.org.uk/~rmk/linux-arm
-        git fetch --no-tags rmk-arm zii
-        git checkout b36d94695f6930a807fb5a6ed3dff972b9ea8c71
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mediatek/
+From: Tom Rix <trix@redhat.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+In stk_camera_read_reg() a single byte buffer is alloc-ed and
+freed on every function call.  Since the size is known,
+move the buffer to the struct stk_camera where it will be alloc-ed
+and freed once.
 
-All errors (new ones prefixed by >>):
-
->> drivers/net/ethernet/mediatek/mtk_eth_soc.c:378:1: error: non-void function does not return a value [-Werror,-Wreturn-type]
-   }
-   ^
-   1 error generated.
-
-
-vim +378 drivers/net/ethernet/mediatek/mtk_eth_soc.c
-
-   361	
-   362	static int mtk_mac_finish(struct phylink_config *config, unsigned int mode,
-   363				  phy_interface_t interface)
-   364	{
-   365		struct mtk_mac *mac = container_of(config, struct mtk_mac,
-   366						   phylink_config);
-   367		u32 mcr_cur, mcr_new;
-   368	
-   369		/* Setup gmac */
-   370		mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
-   371		mcr_new = mcr_cur;
-   372		mcr_new |= MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
-   373			   MAC_MCR_BACKOFF_EN | MAC_MCR_BACKPR_EN | MAC_MCR_FORCE_LINK;
-   374	
-   375		/* Only update control register when needed! */
-   376		if (mcr_new != mcr_cur)
-   377			mtk_w32(mac->hw, mcr_new, MTK_MAC_MCR(mac->id));
- > 378	}
-   379	
-
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/media/usb/stkwebcam/stk-webcam.c | 11 ++---------
+ drivers/media/usb/stkwebcam/stk-webcam.h |  2 ++
+ 2 files changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/media/usb/stkwebcam/stk-webcam.c b/drivers/media/usb/stkwebcam/stk-webcam.c
+index 5b822214ccc5c..787edb3d47c23 100644
+--- a/drivers/media/usb/stkwebcam/stk-webcam.c
++++ b/drivers/media/usb/stkwebcam/stk-webcam.c
+@@ -150,25 +150,18 @@ int stk_camera_write_reg(struct stk_camera *dev, u16 index, u8 value)
+ int stk_camera_read_reg(struct stk_camera *dev, u16 index, u8 *value)
+ {
+ 	struct usb_device *udev = dev->udev;
+-	unsigned char *buf;
+ 	int ret;
+ 
+-	buf = kmalloc(sizeof(u8), GFP_KERNEL);
+-	if (!buf)
+-		return -ENOMEM;
+-
+ 	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
+ 			0x00,
+ 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+ 			0x00,
+ 			index,
+-			buf,
++			&dev->read_reg_scratch,
+ 			sizeof(u8),
+ 			500);
+ 	if (ret >= 0)
+-		*value = *buf;
+-
+-	kfree(buf);
++		*value = dev->read_reg_scratch;
+ 
+ 	if (ret < 0)
+ 		return ret;
+diff --git a/drivers/media/usb/stkwebcam/stk-webcam.h b/drivers/media/usb/stkwebcam/stk-webcam.h
+index 14519e5308b18..136decffe9ced 100644
+--- a/drivers/media/usb/stkwebcam/stk-webcam.h
++++ b/drivers/media/usb/stkwebcam/stk-webcam.h
+@@ -105,6 +105,8 @@ struct stk_camera {
+ 	struct list_head sio_avail;
+ 	struct list_head sio_full;
+ 	unsigned sequence;
++
++	u8 read_reg_scratch;
+ };
+ 
+ #define vdev_to_camera(d) container_of(d, struct stk_camera, vdev)
+-- 
+2.26.3
+
