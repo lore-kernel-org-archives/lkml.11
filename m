@@ -2,90 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 860BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 10:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 10:30:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231846AbiCLK2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 05:28:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
+        id S229847AbiCLKb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 05:31:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231758AbiCLK2Z (ORCPT
+        with ESMTP id S229492AbiCLKb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 05:28:25 -0500
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2151E6951;
-        Sat, 12 Mar 2022 02:27:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=stEf22hi8ODEHQdWrg8iLu47DwcXnuaCT7isJzYDhRA=;
-  b=deEbcJzgiOY2sCecLvFUg44QLuAtr9BErJnFjjX61WzAxxWAD+qCeUaH
-   z2Mz+OTRc86RDPtIsNA3EKoZAcwkC4E9EmcruQilgOLprVgF2A+e8qBFr
-   UbuP2lZhs94moodfwUuMtou2gQ9YUCOzNrNKogsYJk3QF8tsoxBpkHj4d
-   0=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,175,1643670000"; 
-   d="scan'208";a="25781352"
-Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 11:27:11 +0100
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Andrey Konovalov <andreyknvl@gmail.com>
-Cc:     kernel-janitors@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 6/6] usb: raw-gadget: use kzalloc
-Date:   Sat, 12 Mar 2022 11:27:05 +0100
-Message-Id: <20220312102705.71413-7-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220312102705.71413-1-Julia.Lawall@inria.fr>
-References: <20220312102705.71413-1-Julia.Lawall@inria.fr>
+        Sat, 12 Mar 2022 05:31:56 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E215823B4F1
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 02:30:50 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KFzbV61prz4xLY;
+        Sat, 12 Mar 2022 21:30:46 +1100 (AEDT)
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+To:     jing yangyang <cgel.zte@gmail.com>,
+        Geoff Levand <geoff@infradead.org>
+Cc:     Paul Mackerras <paulus@samba.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        jing yangyang <jing.yangyang@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+In-Reply-To: <01647102607ce9640c9f27786d976109a3c4ea7e.1629197153.git.jing.yangyang@zte.com.cn>
+References: <01647102607ce9640c9f27786d976109a3c4ea7e.1629197153.git.jing.yangyang@zte.com.cn>
+Subject: Re: [PATCH linux-next] ps3: remove unneeded semicolon
+Message-Id: <164708098933.827774.6685079426471019476.b4-ty@ellerman.id.au>
+Date:   Sat, 12 Mar 2022 21:29:49 +1100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use kzalloc instead of kmalloc + memset.
+On Thu, 19 Aug 2021 19:49:01 -0700, jing yangyang wrote:
+> Eliminate the following coccicheck warning:
+> 
+> ./arch/powerpc/platforms/ps3/system-bus.c:606:2-3: Unneeded semicolon
+> ./arch/powerpc/platforms/ps3/system-bus.c:765:2-3: Unneeded semicolon
+> 
+> 
 
-The semantic patch that makes this change is:
-(https://coccinelle.gitlabpages.inria.fr/website/)
+Applied to powerpc/next.
 
-//<smpl>
-@@
-expression res, size, flag;
-@@
-- res = kmalloc(size, flag);
-+ res = kzalloc(size, flag);
-  ...
-- memset(res, 0, size);
-//</smpl>
+[1/1] ps3: remove unneeded semicolon
+      https://git.kernel.org/powerpc/c/9f5196065eeb96fee1a15f2eae31fe1fc7623ade
 
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-
----
- drivers/usb/gadget/legacy/raw_gadget.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
-index d86c3a36441e..135e75b891f6 100644
---- a/drivers/usb/gadget/legacy/raw_gadget.c
-+++ b/drivers/usb/gadget/legacy/raw_gadget.c
-@@ -1157,7 +1157,7 @@ static int raw_ioctl_eps_info(struct raw_dev *dev, unsigned long value)
- 	struct usb_raw_eps_info *info;
- 	struct raw_ep *ep;
- 
--	info = kmalloc(sizeof(*info), GFP_KERNEL);
-+	info = kzalloc(sizeof(*info), GFP_KERNEL);
- 	if (!info) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -1177,7 +1177,6 @@ static int raw_ioctl_eps_info(struct raw_dev *dev, unsigned long value)
- 		goto out_free;
- 	}
- 
--	memset(info, 0, sizeof(*info));
- 	for (i = 0; i < dev->eps_num; i++) {
- 		ep = &dev->eps[i];
- 		strscpy(&info->eps[i].name[0], ep->ep->name,
-
+cheers
