@@ -2,142 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E8DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 15:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C72E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 15:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbiCLPLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 10:11:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59142 "EHLO
+        id S231425AbiCLPPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 10:15:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbiCLPLj (ORCPT
+        with ESMTP id S230322AbiCLPPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 10:11:39 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFE271EC8
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 07:10:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647097833; x=1678633833;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QwnU73SKGxv90bFeR3kPYdo+JxFder4HzAABlCz+DZY=;
-  b=n4k2VxL4b3xPZhmZ45/cHN+5FerNDqylq6vg6wtNV+ZQAKrYO1IG0BSG
-   BBp64UDsA+2dsoHUML3nX24bPjJ5wF6R9se+WxNskkDUymATtikrsz11D
-   Q1ZCcS3NZ+B2V9cTifJrIJYnHGfpx+rR9jaYh5M+7q8nzH2UxcEsnnfO3
-   I1j8RV0G5Q/c1Ow3cEBFxUqEh1apEP7s8nL765tWOx5GJEvxuc4Ij/ARI
-   VcVJgng29fzqj3ln2EFi3VJiKVwDkqXE1OcQWA/smJsOys/xbGOvT1DWt
-   dvs2UnkDfZDQ/cUcwzTWjelkzpKnKGGGjzh1y4mXw++Ws+UskT12DL/fV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="254629217"
-X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="254629217"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 07:10:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="645279576"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 12 Mar 2022 07:10:31 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nT3O2-0007zI-CW; Sat, 12 Mar 2022 15:10:30 +0000
-Date:   Sat, 12 Mar 2022 23:09:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Siddharth Gupta <sidgup@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rishabh Bhatnagar <rishabhb@codeaurora.org>,
-        Gurbir Arora <gurbaror@codeaurora.org>
-Subject: drivers/remoteproc/qcom_common.c:126:27: sparse: sparse: restricted
- __le32 degrades to integer
-Message-ID: <202203122312.Oo7An9yZ-lkp@intel.com>
+        Sat, 12 Mar 2022 10:15:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA0F14076D;
+        Sat, 12 Mar 2022 07:14:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C07DAB80184;
+        Sat, 12 Mar 2022 15:14:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86FF8C340EC;
+        Sat, 12 Mar 2022 15:14:01 +0000 (UTC)
+Date:   Sat, 12 Mar 2022 10:13:59 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Ritesh Harjani <riteshh@linux.ibm.com>
+Cc:     linux-ext4@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@kernel.org
+Subject: Re: [PATCHv3 02/10] ext4: Fix ext4_fc_stats trace point
+Message-ID: <20220312101359.27b713b8@rorschach.local.home>
+In-Reply-To: <b4b9691414c35c62e570b723e661c80674169f9a.1647057583.git.riteshh@linux.ibm.com>
+References: <cover.1647057583.git.riteshh@linux.ibm.com>
+        <b4b9691414c35c62e570b723e661c80674169f9a.1647057583.git.riteshh@linux.ibm.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   68453767131a5deec1e8f9ac92a9042f929e585d
-commit: 8ed8485c4f056d488d17a2b56581c86aeb42955d remoteproc: qcom: Add capability to collect minidumps
-date:   1 year, 3 months ago
-config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220312/202203122312.Oo7An9yZ-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8ed8485c4f056d488d17a2b56581c86aeb42955d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 8ed8485c4f056d488d17a2b56581c86aeb42955d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mach-imx/ arch/arm/mach-mvebu/ arch/arm/mach-rockchip/ arch/arm/mach-socfpga/ arch/arm/mach-tegra/ drivers/dma/ drivers/edac/ drivers/gpu/drm/msm/ drivers/gpu/drm/tegra/ drivers/interconnect/qcom/ drivers/irqchip/ drivers/mtd/nand/onenand/ drivers/net/ethernet/mediatek/ drivers/net/vmxnet3/ drivers/net/wireless/mediatek/mt76/mt7915/ drivers/remoteproc/ drivers/scsi/bnx2fc/ drivers/scsi/lpfc/ drivers/soc/bcm/brcmstb/pm/ drivers/staging/ fs/proc/ net/sched/
+On Sat, 12 Mar 2022 11:09:47 +0530
+Ritesh Harjani <riteshh@linux.ibm.com> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> ftrace's __print_symbolic() requires that any enum values used in the
+> symbol to string translation table be wrapped in a TRACE_DEFINE_ENUM
+> so that the enum value can be decoded from the ftrace ring buffer by
+> user space tooling.
+> 
+> This patch also fixes few other problems found in this trace point.
+> e.g. dereferencing structures in TP_printk which should not be done
+> at any cost.
+> 
+> Also to avoid checkpatch warnings, this patch removes those
+> whitespaces/tab stops issues.
+> 
+
+It is recommend now that when there's a fixes and a reported-by tag,
+you should include the link to the report when available.
+
+Link: https://lore.kernel.org/all/20220221160916.333e6491@rorschach.local.home/
+
+-- Steve
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/remoteproc/qcom_common.c:126:27: sparse: sparse: restricted __le32 degrades to integer
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast to restricted __le32
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast from restricted __le64
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast to restricted __le32
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast from restricted __le64
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast to restricted __le32
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast from restricted __le64
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast to restricted __le32
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast from restricted __le64
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast to restricted __le32
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast from restricted __le64
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast to restricted __le32
->> drivers/remoteproc/qcom_common.c:133:32: sparse: sparse: cast from restricted __le64
+> Cc: stable@kernel.org
+> Fixes: commit aa75f4d3daae ("ext4: main fast-commit commit path")
+> Reported-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+> Reviewed-by: Jan Kara <jack@suse.cz>
+> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+> ---
+>  include/trace/events/ext4.h | 78 +++++++++++++++++++++++--------------
+>  1 file changed, 49 insertions(+), 29 deletions(-)
+> 
+> diff --git a/include/trace/events/ext4.h b/include/trace/events/ext4.h
+> index 19e957b7f941..1a0b7030f72a 100644
+> --- a/include/trace/events/ext4.h
+> +++ b/include/trace/events/ext4.h
+> @@ -95,6 +95,17 @@ TRACE_DEFINE_ENUM(ES_REFERENCED_B);
+>  	{ FALLOC_FL_COLLAPSE_RANGE,	"COLLAPSE_RANGE"},	\
+>  	{ FALLOC_FL_ZERO_RANGE,		"ZERO_RANGE"})
+>  
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_XATTR);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_CROSS_RENAME);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_NOMEM);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_SWAP_BOOT);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_RESIZE);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_RENAME_DIR);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_FALLOC_RANGE);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_INODE_JOURNAL_DATA);
+> +TRACE_DEFINE_ENUM(EXT4_FC_REASON_MAX);
+> +
+>  #define show_fc_reason(reason)						\
+>  	__print_symbolic(reason,					\
+>  		{ EXT4_FC_REASON_XATTR,		"XATTR"},		\
+> @@ -2723,41 +2734,50 @@ TRACE_EVENT(ext4_fc_commit_stop,
+>  
+>  #define FC_REASON_NAME_STAT(reason)					\
+>  	show_fc_reason(reason),						\
+> -	__entry->sbi->s_fc_stats.fc_ineligible_reason_count[reason]
+> +	__entry->fc_ineligible_rc[reason]
+>  
+>  TRACE_EVENT(ext4_fc_stats,
+> -	    TP_PROTO(struct super_block *sb),
+> -
+> -	    TP_ARGS(sb),
+> +	TP_PROTO(struct super_block *sb),
+>  
+> -	    TP_STRUCT__entry(
+> -		    __field(dev_t, dev)
+> -		    __field(struct ext4_sb_info *, sbi)
+> -		    __field(int, count)
+> -		    ),
+> +	TP_ARGS(sb),
+>  
+> -	    TP_fast_assign(
+> -		    __entry->dev = sb->s_dev;
+> -		    __entry->sbi = EXT4_SB(sb);
+> -		    ),
+> +	TP_STRUCT__entry(
+> +		__field(dev_t, dev)
+> +		__array(unsigned int, fc_ineligible_rc, EXT4_FC_REASON_MAX)
+> +		__field(unsigned long, fc_commits)
+> +		__field(unsigned long, fc_ineligible_commits)
+> +		__field(unsigned long, fc_numblks)
+> +	),
+>  
+> -	    TP_printk("dev %d:%d fc ineligible reasons:\n"
+> -		      "%s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d; "
+> -		      "num_commits:%ld, ineligible: %ld, numblks: %ld",
+> -		      MAJOR(__entry->dev), MINOR(__entry->dev),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
+> -		      FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
+> -		      __entry->sbi->s_fc_stats.fc_num_commits,
+> -		      __entry->sbi->s_fc_stats.fc_ineligible_commits,
+> -		      __entry->sbi->s_fc_stats.fc_numblks)
+> +	TP_fast_assign(
+> +		int i;
+>  
+> +		__entry->dev = sb->s_dev;
+> +		for (i = 0; i < EXT4_FC_REASON_MAX; i++) {
+> +			__entry->fc_ineligible_rc[i] =
+> +				EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
+> +		}
+> +		__entry->fc_commits = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
+> +		__entry->fc_ineligible_commits =
+> +			EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
+> +		__entry->fc_numblks = EXT4_SB(sb)->s_fc_stats.fc_numblks;
+> +	),
+> +
+> +	TP_printk("dev %d,%d fc ineligible reasons:\n"
+> +		  "%s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u "
+> +		  "num_commits:%lu, ineligible: %lu, numblks: %lu",
+> +		  MAJOR(__entry->dev), MINOR(__entry->dev),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
+> +		  FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
+> +		  __entry->fc_commits, __entry->fc_ineligible_commits,
+> +		  __entry->fc_numblks)
+>  );
+>  
+>  #define DEFINE_TRACE_DENTRY_EVENT(__type)				\
 
-vim +126 drivers/remoteproc/qcom_common.c
-
-   103	
-   104	static int qcom_add_minidump_segments(struct rproc *rproc, struct minidump_subsystem *subsystem)
-   105	{
-   106		struct minidump_region __iomem *ptr;
-   107		struct minidump_region region;
-   108		int seg_cnt, i;
-   109		dma_addr_t da;
-   110		size_t size;
-   111		char *name;
-   112	
-   113		if (WARN_ON(!list_empty(&rproc->dump_segments))) {
-   114			dev_err(&rproc->dev, "dump segment list already populated\n");
-   115			return -EUCLEAN;
-   116		}
-   117	
-   118		seg_cnt = le32_to_cpu(subsystem->region_count);
-   119		ptr = ioremap((unsigned long)le64_to_cpu(subsystem->regions_baseptr),
-   120			      seg_cnt * sizeof(struct minidump_region));
-   121		if (!ptr)
-   122			return -EFAULT;
-   123	
-   124		for (i = 0; i < seg_cnt; i++) {
-   125			memcpy_fromio(&region, ptr + i, sizeof(region));
- > 126			if (region.valid == MD_REGION_VALID) {
-   127				name = kstrdup(region.name, GFP_KERNEL);
-   128				if (!name) {
-   129					iounmap(ptr);
-   130					return -ENOMEM;
-   131				}
-   132				da = le64_to_cpu(region.address);
- > 133				size = le32_to_cpu(region.size);
-   134				rproc_coredump_add_custom_segment(rproc, da, size, NULL, name);
-   135			}
-   136		}
-   137	
-   138		iounmap(ptr);
-   139		return 0;
-   140	}
-   141	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
