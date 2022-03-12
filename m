@@ -2,120 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F31C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 13:09:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE3AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 13:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231808AbiCLNKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 08:10:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
+        id S231823AbiCLN3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 08:29:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiCLNK2 (ORCPT
+        with ESMTP id S229681AbiCLN3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 08:10:28 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042D460079
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 05:09:22 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 43E491F38F;
-        Sat, 12 Mar 2022 13:09:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647090560; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/rDypST7vHgO9YGygPYsdyXk0mmoD/4eH6Om3TjYeYE=;
-        b=ZtgOSS6t3Ue+6wmUJRXBiBa8KTzizrF6C1R2OcKx666r2zhx85D7h5d4hdrTayM3envDrK
-        zjslz+sVVJA5TptlfvlAay0TKZ4oSL2hYS7J1PGHAJA2+Izh0XDsKbR7eOFye2HACBGImi
-        XuzaT8igttpQFG7/SrMk31qebJynobg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647090560;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/rDypST7vHgO9YGygPYsdyXk0mmoD/4eH6Om3TjYeYE=;
-        b=Hb9fGLpHUPCvAJp6m6x+ltGyRUN+dqY6TzYCLUsySiwCfe/VbL1bvGjXlL+NhmTEZ3sc+G
-        ef3C7u+/vdm5/8Bg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 19B7813AB8;
-        Sat, 12 Mar 2022 13:09:19 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 932eH3+bLGI8dQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Sat, 12 Mar 2022 13:09:19 +0000
-Message-ID: <ff4daab3-0ae6-65b9-dbc6-8033cf7ad6a7@suse.cz>
-Date:   Sat, 12 Mar 2022 14:08:16 +0100
+        Sat, 12 Mar 2022 08:29:38 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB561DA53
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 05:28:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647091711; x=1678627711;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lN2zXVmtYoxNKXB19+1YdjQmuTD84Gfz+wwuT706X30=;
+  b=jnk/NubPRkfIAohpYv7U7ZkavIZxbXcGe73d/RBECKmNWtLsO5cglGin
+   +FNyxwjxlm2E7L4E9xWI0w+K1SwduGeR4AJdfdkQCNkpHyXubyaUO2b4+
+   9+tC9qRyiUztehcuk5kJARbrhcaRTlq3cL5cWBTnj8pxbLuxeoVW+hLtz
+   HWLa69jVQSpAPgKkFK6JIVjKNlasExULKYpLhoQRl0HrPJTioOXTDt4DM
+   O5L9omRmuPulRowWeHSDFvqtbX1dbBmzlLV4lRfD8/EIBqp+beJA6B6V7
+   bHk7p27cwyJMWCfCf+eHq6PCqB6UuWrk+WO89wRmiJ8H1Awdiqj+IAvrb
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="255742901"
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="255742901"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 05:28:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="597413002"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 12 Mar 2022 05:28:29 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nT1nI-0007u3-Oo; Sat, 12 Mar 2022 13:28:28 +0000
+Date:   Sat, 12 Mar 2022 21:27:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Youghandhar Chintala <youghand@codeaurora.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [ammarfaizi2-block:netdev/net-next/master 41/77] ERROR: modpost:
+ "ieee80211_sta_restart" [net/mac80211/mac80211.ko] undefined!
+Message-ID: <202203122147.Q0VtHIf0-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [mm/slub] ae107fa919: BUG:unable_to_handle_page_fault_for_address
-Content-Language: en-US
-To:     Mike Rapoport <rppt@kernel.org>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Oliver Glitta <glittao@gmail.com>, lkp@lists.01.org,
-        lkp@intel.com, LKML <linux-kernel@vger.kernel.org>,
-        linux-mm@kvack.org
-References: <20220311145427.GA1227220@odroid>
- <667d594b-bdad-4082-09d5-7b0587af2ae3@suse.cz>
- <20220311164600.GA1234616@odroid>
- <YivzD7PYilkFwjFt@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <a8dc8bc4-9a00-b2f7-1f68-273f7a14a14c@suse.cz>
- <Yix+Pn9a9yKIiXC4@ip-172-31-19-208.ap-northeast-1.compute.internal>
- <YiyMvBouXGLk/xWP@kernel.org>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <YiyMvBouXGLk/xWP@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/12/22 13:06, Mike Rapoport wrote:
->>>> Ideas? implementing something like kmem_cache_init_early() again?
->>>
->>> I think we could simply make CONFIG_SLUB_DEBUG_ON select/depend on
->>> STACKDEPOT_ALWAYS_INIT?
->>
->> Oh, sounds better.
->>
->> If we make CONFIG_SLUB_DEBUG_ON select STACK_DEPOT_ALWAYS_INIT,
->> that is simple solution. but stackdepot will be initialized on
->> slub_debug=- too.
+tree:   https://github.com/ammarfaizi2/linux-block netdev/net-next/master
+head:   625788b5844511cf4c30cffa7fa0bc3a69cebc82
+commit: 7d352ccf1e9935b5222ca84e8baeb07a0c8f94b9 [41/77] mac80211: Add support to trigger sta disconnect on hardware restart
+config: mips-malta_defconfig (https://download.01.org/0day-ci/archive/20220312/202203122147.Q0VtHIf0-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 43f668b98e8d87290fc6bbf5ed13c3ab542e3497)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/ammarfaizi2/linux-block/commit/7d352ccf1e9935b5222ca84e8baeb07a0c8f94b9
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block netdev/net-next/master
+        git checkout 7d352ccf1e9935b5222ca84e8baeb07a0c8f94b9
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-Valid point.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->> But I think no one will set CONFIG_SLUB_DEBUG_ON=y if not debugging...
-> 
-> If memory wasted by stack_table is a real concern, we may free it after
-> parsing slub_debug or add a condition taking into account
-> CONFIG_SLUB_DEBUG_ON and slub_debug=- to the 
-> 
-> 	if (slub_debug & SLAB_STORE_USER)
-> 		stack_depot_want_early_init();
-> 
-> But I agree that if somebody runs a kernel with CONFIG_SLUB_DEBUG_ON=y, the
-> goal is to have slub debugging on, so making CONFIG_SLUB_DEBUG_ON select
-> STACK_DEPOT_ALWAYS_INIT totally makes sense to me.
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-Agree. We had to decouple stackdpepot init from CONFIG_SLUB_DEBUG
-because almost everyone enables CONFIG_SLUB_DEBUG by default, but on
-smaller systems doesn't want to always pay the price even if unused.
-But I don't expect anyone to enable CONFIG_SLUB_DEBUG_ON and then run
-with slub_debug=- by default, and complain. If anyone like that exists,
-they could also add the stackdepot_disable parameter.
+>> ERROR: modpost: "ieee80211_sta_restart" [net/mac80211/mac80211.ko] undefined!
 
->> I don't think making CONFIG_SLUB_DEBUG_ON depend on
->> CONFIG_STACKDEPOT_ALWAYS_INIT is good solution. only KASAN selects it.
->>
->> -- 
->> Thank you, You are awesome!
->> Hyeonggon :-)
-> 
-
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
