@@ -2,90 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DEBDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6BFC433EF
 	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 13:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbiCLNtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 08:49:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
+        id S232013AbiCLNtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 08:49:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231830AbiCLNth (ORCPT
+        with ESMTP id S231963AbiCLNth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 12 Mar 2022 08:49:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F66043ED7;
-        Sat, 12 Mar 2022 05:48:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F113B803F3;
-        Sat, 12 Mar 2022 13:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CC86C340EB;
-        Sat, 12 Mar 2022 13:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647092909;
-        bh=x3ngDXRTNxQtTUJ2tAIPdh6UG49UoIpaL6SxIce4GXo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ndaIzAlDCK5DV6QonZCCsR+Pk2vhz4Q4FLdLUjZaIEPYUbTz2kAnp84WGLruKqIy7
-         QIX5nuaQdK1xbmBUNlGq87dvUd8Z93vzKriNBq7UEdJsvDRyn//JiKyDEuO1rCWs8J
-         PIMuNclNJeXP10VuJ5b0tMkoIf82H5CgWClAcI2tDN6pK8+cHmhq6ugWV7Uou1UAsW
-         PBvGJyumGl7APHq6rwbNK9qxQ8VCJQbfFkxHP6HhUHMSEf/Cx8mgzR9f0FHS12qtWR
-         cM5fTUpU40cOzgkTeb7QphruAAY/TDs/sq+qHUu8hc0LeMk+S/Uq+xhqzsnVbdWNHB
-         I2ff9VBcYTkpw==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 78EB9403C8; Sat, 12 Mar 2022 10:48:26 -0300 (-03)
-Date:   Sat, 12 Mar 2022 10:48:26 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     John Garry <john.garry@huawei.com>
-Cc:     Weiguo Li <liwg06@foxmail.com>, peterz@infradead.org,
-        mingo@redhat.com, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] perf parse-events: Fix null check
-Message-ID: <YiykquZ6QK/294sl@kernel.org>
-References: <tencent_DF39269807EC9425E24787E6DB632441A405@qq.com>
- <a007c783-49a2-4ab3-a592-9f37ea41eaae@huawei.com>
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F62B41636
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 05:48:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647092912; x=1678628912;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=m0PMow11GgjybL+zR1EgyzARPWovbBXPkKqejp2s5ig=;
+  b=PxzDLFt5BSF1bBz82YORG+LsDlZxPGk0PJishvg0VcHIVKa5iYzlpl7I
+   CFw9euB+YYuga5aH6rsqyXKfbwApved6xQm2m/r7ETls11dT54KETnhgN
+   pBc2lh/0D2XfPfppJPfbIIBIICn1t/Gn6l6rAUQG908kSITiCdFHu2LJz
+   pNrs29j94+q+A+E8TUspKiJ7iKeSmsOoTeVcCGGELScRu4FGv1vSt1Vx8
+   WN1yTAjbJL5srGu/88ZPYsNS0EpIxOklHXD7VZP6A+w1hKGGskgyLdXHQ
+   CflNKwl28yP11L5Ap7tZwaukLldM90SNtjIQlV+QomqMRZ8SQXdl5LDDf
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="237965421"
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="237965421"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 05:48:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="817529627"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 12 Mar 2022 05:48:29 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nT26f-0007v3-4j; Sat, 12 Mar 2022 13:48:29 +0000
+Date:   Sat, 12 Mar 2022 21:48:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Prasad Sodagudi <psodagud@codeaurora.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Elliot Berman <eberman@codeaurora.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.10-2022-01
+ 129/9999] drivers/android/debug_symbols.c:11:10: fatal error:
+ asm/stacktrace.h: No such file or directory
+Message-ID: <202203122107.sTzN2ohn-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a007c783-49a2-4ab3-a592-9f37ea41eaae@huawei.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, Mar 11, 2022 at 02:00:13PM +0000, John Garry escreveu:
-> On 11/03/2022 13:06, Weiguo Li wrote:
-> > We did a null check after "tmp->symbol = strdup(...)", but we checked
-> > "list->symbol" other than "tmp->symbol".
-> > 
-> > Signed-off-by: Weiguo Li <liwg06@foxmail.com>
-> 
-> Reviewed-by: John Garry <john.garry@huawei.com>
+Hi Prasad,
 
-Thanks, applied.
+FYI, the error/warning still remains.
 
-- Arnaldo
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10-2022-01
+head:   d262b276948e382dbaa38474845bac692bae4236
+commit: 3fcbb15c1a91a318fb9367bee24603af24648a2d [129/9999] ANDROID: android: Create debug_symbols driver
+config: microblaze-allyesconfig (https://download.01.org/0day-ci/archive/20220312/202203122107.sTzN2ohn-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/3fcbb15c1a91a318fb9367bee24603af24648a2d
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10-2022-01
+        git checkout 3fcbb15c1a91a318fb9367bee24603af24648a2d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=microblaze SHELL=/bin/bash
 
- 
-> > ---
-> >   tools/perf/util/parse-events.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-> > index 9739b05b999e..dfb50a5f83d0 100644
-> > --- a/tools/perf/util/parse-events.c
-> > +++ b/tools/perf/util/parse-events.c
-> > @@ -2193,7 +2193,7 @@ int perf_pmu__test_parse_init(void)
-> >   	for (i = 0; i < ARRAY_SIZE(symbols); i++, tmp++) {
-> >   		tmp->type = symbols[i].type;
-> >   		tmp->symbol = strdup(symbols[i].symbol);
-> > -		if (!list->symbol)
-> > +		if (!tmp->symbol)
-> >   			goto err_free;
-> >   	}
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
--- 
+All errors (new ones prefixed by >>):
 
-- Arnaldo
+>> drivers/android/debug_symbols.c:11:10: fatal error: asm/stacktrace.h: No such file or directory
+      11 | #include <asm/stacktrace.h>
+         |          ^~~~~~~~~~~~~~~~~~
+   compilation terminated.
+
+
+vim +11 drivers/android/debug_symbols.c
+
+     2	
+     3	/*
+     4	 * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+     5	 */
+     6	
+     7	#include <linux/types.h>
+     8	#include <linux/kernel.h>
+     9	#include <linux/module.h>
+    10	#include <linux/android_debug_symbols.h>
+  > 11	#include <asm/stacktrace.h>
+    12	#include <asm/sections.h>
+    13	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
