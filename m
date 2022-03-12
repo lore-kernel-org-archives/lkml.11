@@ -2,137 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B68C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 15:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51550C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 15:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiCLPJb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 10:09:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
+        id S231542AbiCLPM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 10:12:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbiCLPJ2 (ORCPT
+        with ESMTP id S230322AbiCLPM4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 10:09:28 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0C03E0DF;
-        Sat, 12 Mar 2022 07:08:21 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id 25so15906609ljv.10;
-        Sat, 12 Mar 2022 07:08:21 -0800 (PST)
+        Sat, 12 Mar 2022 10:12:56 -0500
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D3A986C9;
+        Sat, 12 Mar 2022 07:11:51 -0800 (PST)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2e2ca8d7812so61141417b3.13;
+        Sat, 12 Mar 2022 07:11:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RMVbKUWJoamB63L91lhDISjUh7OaK8vRX+H8kEUqYOE=;
-        b=EjkTLmpAHX67yQM2n/+sUQihO7Fulp+NNSqyOGypiVqBU/dAfqzJF3yz8HT6KR1MbM
-         GbENIMt439W67jP7Ntb+BkGHnMo9kayaET6+DFIFeSGDqY0a4X6X2e64Iz21lINOcd5W
-         PyShUvDMFe0NgQlxbgDEu0llHvdFFxtK+T8M5sI7KEsihHIXPMNXNY0w6KP9XFNTsEYy
-         Aa9TAVhg3KWM3Fp8DkirQ2DoWkiGeKG3GRaLAtTIQvEmpoWnHrjkL5oA81tawkZFv6xY
-         xoaRDfEy0TUl4dJ/cLNgCaMc38U83SJpd58Xlc6c9+agu8xlCfgUxURP1im6jmjhpcUN
-         1fuQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K98030A73zLeeoJmJeXlU5g/68giFukC00BYhoPQePQ=;
+        b=PJWpgYp3y0X47kmD0RbKsQsv50e9EHMwVHy1fGRT7+xPaXqBBTyb8WJlhz4aXeUmX+
+         i/3bK+Je/HlZShOGXMYLYxN8oXmb99quNJJx73gq2YNhS/zrIYHouDgIdJbmubBv3OuI
+         CmqGu9lIl7ghHJWkSKX9hghFz17XkbYgrbjZwN4adnQB6VYn2hZxYkf3esSi2cizPCYO
+         x/lxj1iA4z9/8HKKCZ0vJ44SQwHL6aPsIBD+vkNEzWVlYfPHTyph1K/kXboaRa1azVti
+         dKpzLi75jl/Y9F8YUU0blFYSbja9ClzAVi4UWckQF+sgJUsoCyJRwIVjr3Uow+TxaeAz
+         O32Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RMVbKUWJoamB63L91lhDISjUh7OaK8vRX+H8kEUqYOE=;
-        b=rUXvms/8THLgUxB7rLanRTu7xlAyW4WUquRa91LuXYxb/zwxyaLOoHBIRxohm5zV++
-         uGkcy2jgTqVe8cZ6SmNfx9FA7KPWL2xYz9JlA1Fz2oGIc3y3krtRXb8j7S89XJRL1Hik
-         cKXRxWTQZzcw/mEoF+ORW0Gg8pJrOiIF3Ddc9uZGAdPpr2Zl/jVU4STj6hzZeRbnY26F
-         QHWJTcmKTfdDucCWuWCPEErsF6wUtR7RN17cv7FeQExO8g0WKSzzbgNInnvjaCORNP2b
-         ytCM6K4KJBb4/detvradC1iRZaD2YTmH8MVb63H6ZSoqNwwsNa01FDDq2VkuLXC1rQ8A
-         WJng==
-X-Gm-Message-State: AOAM530p1rRdqFHSwaXq/YWZuWy2xtuEPWLjX9Ye1yVTRBfhGiAD+3aT
-        RD72JXtHPn21JUQhQtofN8w=
-X-Google-Smtp-Source: ABdhPJzxT/GTuOUsrm+q1hjLcJeKu+0aFdKY79wyvFZTM9ptYNfnnAfkSB/maO55BFKdInm9jU8OMg==
-X-Received: by 2002:a2e:871a:0:b0:246:ee2:1109 with SMTP id m26-20020a2e871a000000b002460ee21109mr8909285lji.165.1647097699713;
-        Sat, 12 Mar 2022 07:08:19 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.229.107])
-        by smtp.gmail.com with ESMTPSA id o1-20020a2e7301000000b002461808ad8bsm2408984ljc.102.2022.03.12.07.08.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Mar 2022 07:08:19 -0800 (PST)
-Message-ID: <d17aef8a-adbe-9d90-3173-60eb2f0828a5@gmail.com>
-Date:   Sat, 12 Mar 2022 18:08:18 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K98030A73zLeeoJmJeXlU5g/68giFukC00BYhoPQePQ=;
+        b=18osgWswvog/8QmBv4l5Ub1ZOGv2t20r2nO15Q/9UESbAGClJtBvrECsHA0ozj0jaw
+         /TmYgyygyDzZhWvVKQ9mCSM1a07z6RmnwQUwMj7Pjt0pi2MNJJvZ5ybien0iGQ1eD64d
+         CznLyNid9e3EKxByw34U904WcRR+Ya6UXPwUxVDFakLwdgm/eJxtioAQBWywrgEXJ5eq
+         PsZF3YDDRNmTNlqyEaiYuY0ABVXXyxEv96Or1EUy7ItsEBXHX9SvdQQcxoa3avcM/9Ae
+         WYGIEc+EXIWTEAaGvOVrFfbid7qu6u/tx//IU2tdI7wECXMc1BXUkisXjW5WyWSC1Hov
+         rx/A==
+X-Gm-Message-State: AOAM53337sOGqRLiGxfjDicoh6liAadqGetdEsyS3Q0K/SbKaoiw6E3e
+        Buxq5a5BUU6o6g/nZ/ARKHk841RWcmtlzdPm37DgmgKD1fM=
+X-Google-Smtp-Source: ABdhPJx9jMKBuCWxF8MForqcYIH25wObesDaHt4kx/iw7ePlPHMda/GyAodFlasmPOzu/17EecxEpDx7Z8YGycLjFQ0=
+X-Received: by 2002:a81:9844:0:b0:2db:db74:f7db with SMTP id
+ p65-20020a819844000000b002dbdb74f7dbmr12407164ywg.359.1647097910104; Sat, 12
+ Mar 2022 07:11:50 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [syzbot] memory leak in usb_get_configuration
-Content-Language: en-US
-To:     Alan Stern <stern@rowland.harvard.edu>,
-        syzbot <syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, pavel.hofman@ivitera.com,
-        rob@robgreener.com, syzkaller-bugs@googlegroups.com
-References: <000000000000351b8605d9d1d1bf@google.com>
- <Yiu4tCONfHVH1Qfv@rowland.harvard.edu>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <Yiu4tCONfHVH1Qfv@rowland.harvard.edu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <3192BC90-D082-472B-B310-6E09A14A77C6@hust.edu.cn>
+ <CAD-N9QUqfq+0UeMjQALUmGpX5xgjS6=BXvsqcXQpJRzhB6hHLw@mail.gmail.com>
+ <CAKFNMokdB+Zph-1OyC1-Xnyi93r+yKSusgaEaa=CkuUBttwRZA@mail.gmail.com>
+ <CAD-N9QU8-Od3G+-=RHM5K7vR2-4Af+4t=XutJJVdmkKhH7OarA@mail.gmail.com>
+ <CAKFNMo=E8mMuY7Et0auH02fOzGKx04k2=LOj8mZJ6a-=J+sPzQ@mail.gmail.com>
+ <CAD-N9QWt=d2Vj2bevSzOPL4AWF08_zTyq=hHOcOOROCazNY4_A@mail.gmail.com>
+ <CAD-N9QWrBLygN24EC6QLRFF6uf7=PiTRdA4suKqEXJ7tk9aocA@mail.gmail.com> <dac7104a-21ac-24f4-6132-e51960fa0b7e@gmail.com>
+In-Reply-To: <dac7104a-21ac-24f4-6132-e51960fa0b7e@gmail.com>
+From:   Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Date:   Sun, 13 Mar 2022 00:11:38 +0900
+Message-ID: <CAKFNMon3=fFWtuUa1_wDyK9agpCXjbzA8b+rj=OYu=7Gs8nMqQ@mail.gmail.com>
+Subject: Re: Fw:Re: [PATCH] fs: nilfs2: fix memory leak in nilfs sysfs create
+ device group
+To:     Pavel Skripkin <paskripkin@gmail.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-nilfs <linux-nilfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Nanyong Sun <sunnanyong@huawei.com>,
+        =?UTF-8?B?5oWV5Yas5Lqu?= <dzm91@hust.edu.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alan,
+Hi Pavel,
 
-On 3/12/22 00:01, Alan Stern wrote:
-> On Wed, Mar 09, 2022 at 03:54:24PM -0800, syzbot wrote:
->> Hello,
->> 
->> syzbot found the following issue on:
->> 
->> HEAD commit:    0014404f9c18 Merge branch 'akpm' (patches from Andrew)
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=15864216700000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=3f0a704147ec8e32
->> dashboard link: https://syzkaller.appspot.com/bug?extid=f0fae482604e6d9a87c9
->> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13a63dbe700000
->> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10e150a1700000
->> 
->> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->> Reported-by: syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com
->> 
->> BUG: memory leak
->> unreferenced object 0xffff88810c0289e0 (size 32):
->>   comm "kworker/1:2", pid 139, jiffies 4294947862 (age 15.910s)
->>   hex dump (first 32 bytes):
->>     09 02 12 00 01 00 00 00 00 09 04 00 00 00 d0 bb  ................
->>     3a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  :...............
->>   backtrace:
->>     [<ffffffff82c98127>] kmalloc include/linux/slab.h:586 [inline]
->>     [<ffffffff82c98127>] usb_get_configuration+0x1c7/0x1cd0 drivers/usb/core/config.c:919
->>     [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
->>     [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
->>     [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
->>     [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
->>     [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
->>     [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
->>     [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
->>     [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
->>     [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
->>     [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> 
-> The console log shows that this is connected to gspca_dev_probe.  Let's
-> see who's calling it...
-> 
+On Sat, Mar 12, 2022 at 11:20 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+>
+> Hi Dongliang,
+>
+> On 3/9/22 11:30, Dongliang Mu wrote:
+> >> Now I am checking the log and trying to find error injection in the
+> >> log file, as said by Pavel.
+> >
+> > Attached is the report and log file.
+> >
+> > @Pavel Skripkin I don't find any useful error injection in the log file.
+> >
+> > In case I made some mistakes, I will clean up my local crash reports,
+> > update to the latest upstream kernel and restart the syzkaller. Let's
+> > see if the crash still occurs.
+>
+> The execution path is clear from the logs. Quick grep for nilfs shows
+> these lines
+>
+> [  886.701044][T25972] NILFS (loop2): broken superblock, retrying with
+> spare superblock (blocksize = 1024)
+> [  886.703251][T25972] NILFS (loop2): broken superblock, retrying with
+> spare superblock (blocksize = 4096)
+> [  886.706454][T25972] NILFS (loop2): error -4 creating segctord thread
+>
+> So here is calltrace:
+>
+> nilfs_fill_super
+>    nilfs_attach_log_writer
+>      nilfs_segctor_start_thread <- failed
+>
+>
+> In case of nilfs_attach_log_writer() error code jumps to
+> failed_checkpoint label and calls destroy_nilfs() which should call
+> nilfs_sysfs_delete_device_group().
 
-The execution path is more complicated. I've done some debugging, but no 
-luck with root case... Just want to share what I found and maybe it will 
-help.
+nilfs_sysfs_delete_device_group() is called in destroy_nilfs()
+if nilfs->ns_flags has THE_NILFS_INIT flag -- nilfs_init() inline
+function tests this flag.
 
-Firsly syzbot connects carl9170 device (usb ids from the log). 
-carl9170_usb_probe() calls usb_reset_device() which fails with -19. If I 
-remove this usb_reset_device() call then issue is no more reproducible.
+The flag is set after init_nilfs() succeeded at the beginning of
+nilfs_fill_super() because the set_nilfs_init() inline in init_nilfs() sets it.
 
-Then 2 other probes are called: usbtest and spca501. spca501 calls 
-gspca_dev_probe(), but it fails early and I do not suspect this driver.
-usbtest probe function also looks correct, so I do not suspect this 
-driver as well.
+So,  nilfs_sysfs_delete_group() seems to be called in case of
+the above failure.   Am I missing something?
 
-Looks like the issue either in usb_reset_device() call or somewhere in 
-usb internals
+Thanks,
+Ryusuke Konishi
 
 
-
-
-With regards,
-Pavel Skripkin
+>
+> So I can really see how this leak is possible on top of current Linus' HEAD.
+>
+>
+> Also in the log there are onlyh 4 syz_mount_image$nilfs2 programs, so
+> only one of them may be a reproducer. If you have spare time you can try
+> to execute them using syz-execprog and see if it works :))
+>
+>
+>
+> With regards,
+> Pavel Skripkin
