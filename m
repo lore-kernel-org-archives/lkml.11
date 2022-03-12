@@ -2,67 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 361F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 08:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A517C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 08:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231361AbiCLIYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 03:24:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
+        id S231367AbiCLI2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 03:28:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbiCLIYx (ORCPT
+        with ESMTP id S229518AbiCLI15 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 03:24:53 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A805F4E8
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 00:23:45 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KFwkd6nfzzBrJs;
-        Sat, 12 Mar 2022 16:21:45 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 12 Mar
- 2022 16:23:43 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <hughd@google.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm: shmem: use helper macro __ATTR_RW
-Date:   Sat, 12 Mar 2022 16:22:52 +0800
-Message-ID: <20220312082252.55586-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Sat, 12 Mar 2022 03:27:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E924B19259C
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 00:26:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647073610;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bOmlxQFnd+zuYEnurfNJceNYzy+E5RZ8J3vmwLJAIl0=;
+        b=AP7S5dZVXmOAY1+pNdVzF5NfT3IMMo5bjg4IWA6+BAFIp3PmGOrfLQv/PSqsgYw6zYqGeD
+        7T5aHZNDREYEpfZuM6jD96eOwdThYYiZD1SWCrStDOe4uU5ssHzfea0OOF7lMvUGiJ2220
+        SW+rwzr5Gig99OCII8b7CKC1309ezBA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-452-ndcGWc9zNamGHy9AGy_Y1w-1; Sat, 12 Mar 2022 03:26:49 -0500
+X-MC-Unique: ndcGWc9zNamGHy9AGy_Y1w-1
+Received: by mail-wm1-f71.google.com with SMTP id r133-20020a1c448b000000b00385c3f3defaso3439018wma.3
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 00:26:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=bOmlxQFnd+zuYEnurfNJceNYzy+E5RZ8J3vmwLJAIl0=;
+        b=1Zm+2iQO1WgyUgHGA5DFVezdCR6JADzMx7uA6NRJ9GoRC+/a8jQTYqLCj8B5RH84F0
+         vD7dXnthfhDoxwUv8INA8xJgEIY+pyNJ0POg2txkWIyVEcMDyhsSI+1d92UeGoGky/7u
+         azehdbvlFbn1lCY7m4ZzOvPwAEu9d37Ad/LsBF2xL7PAef+kjoTEbPsNtDfxLRyfFSlJ
+         Ol6dzHqOtP83d0+k+bcZbFuVcDXT70P6P31/1iSdS+wU6NrAdJnGBqWHHcMJAOYKGsfZ
+         ZBDqZf5KXU97WHOCc9wKOwTWAvcwqELUjAdfl01u9n35anCD/a5N1aN1gwDX6TSms3LC
+         B5nQ==
+X-Gm-Message-State: AOAM5319P63YQma0sZc//ko76sON+aSSUSw0jFiaYr2w30iR4AgN5iPl
+        hHHLFLD0O7t2cYS6VOozFWiD6kX/wTl4wa+0rDQBjnq4ZbnBWpTLMZcP/OzOGCoWfwcnwWvE+pW
+        muioDb2i2iz7eiQ0QrY0gzwi8
+X-Received: by 2002:adf:fb4e:0:b0:1e3:3e66:d5f6 with SMTP id c14-20020adffb4e000000b001e33e66d5f6mr10234160wrs.615.1647073608154;
+        Sat, 12 Mar 2022 00:26:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx6pCNrzBS5gHuwSLg45uz9evRExxAsiY3uVCgQXVOVBmSNztNJlOD1/5qe+WlsOx00+9Y93w==
+X-Received: by 2002:adf:fb4e:0:b0:1e3:3e66:d5f6 with SMTP id c14-20020adffb4e000000b001e33e66d5f6mr10234131wrs.615.1647073607842;
+        Sat, 12 Mar 2022 00:26:47 -0800 (PST)
+Received: from ?IPV6:2003:cb:c71e:1600:ad89:c64e:8371:c9c4? (p200300cbc71e1600ad89c64e8371c9c4.dip0.t-ipconnect.de. [2003:cb:c71e:1600:ad89:c64e:8371:c9c4])
+        by smtp.gmail.com with ESMTPSA id f22-20020a1cc916000000b00380d3e49e89sm8808771wmb.22.2022.03.12.00.26.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Mar 2022 00:26:47 -0800 (PST)
+Message-ID: <2bbe2f37-37af-664d-181f-034917b6bb93@redhat.com>
+Date:   Sat, 12 Mar 2022 09:26:45 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220308141437.144919-1-david@redhat.com>
+ <20220308141437.144919-11-david@redhat.com>
+ <a0bd6f52-7bb5-0c32-75c8-2c7c592c2d6d@redhat.com>
+ <Yiu400H9JNtC03Co@casper.infradead.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v1 10/15] mm/page-flags: reuse PG_slab as
+ PG_anon_exclusive for PageAnon() pages
+In-Reply-To: <Yiu400H9JNtC03Co@casper.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use helper macro __ATTR_RW to define shmem_enabled_attr to make code more
-clear.  Minor readability improvement.
+On 11.03.22 22:02, Matthew Wilcox wrote:
+> On Fri, Mar 11, 2022 at 07:46:39PM +0100, David Hildenbrand wrote:
+>> I'm currently testing with the following. My tests so far with a swapfile on
+>> all different kinds of weird filesystems (excluding networking fs, though)
+>> revealed no surprises so far:
+> 
+> I like this a lot better than reusing PG_swap.  Thanks!
+> 
+> I'm somewhat reluctant to introduce a new flag that can be set on tail
+> pages.  Do we lose much if it's always set only on the head page?
+After spending one month on getting THP to work without PF_ANY, I can
+say with confidence that the whole thing won't fly with THP when not
+tracking it on the minimum-mapping granularity. For a PTE-mapped THP,
+that's on the subpage level.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/shmem.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+The next patch in the series documents some details. Intuitively, if we
+could replace the pageflag by a PTE/PMD bit, we'd get roughly the same
+result.
 
-diff --git a/mm/shmem.c b/mm/shmem.c
-index 659bd599d731..01fd227b6947 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -3967,8 +3967,7 @@ static ssize_t shmem_enabled_store(struct kobject *kobj,
- 	return count;
- }
- 
--struct kobj_attribute shmem_enabled_attr =
--	__ATTR(shmem_enabled, 0644, shmem_enabled_show, shmem_enabled_store);
-+struct kobj_attribute shmem_enabled_attr = __ATTR_RW(shmem_enabled);
- #endif /* CONFIG_TRANSPARENT_HUGEPAGE && CONFIG_SYSFS */
- 
- #else /* !CONFIG_SHMEM */
+> 
+>> +++ b/include/linux/page-flags.h
+>> @@ -142,6 +142,60 @@ enum pageflags {
+>>  
+>>  	PG_readahead = PG_reclaim,
+>>  
+>> +	/*
+>> +	 * Depending on the way an anonymous folio can be mapped into a page
+>> +	 * table (e.g., single PMD/PUD/CONT of the head page vs. PTE-mapped
+>> +	 * THP), PG_anon_exclusive may be set only for the head page or for
+>> +	 * subpages of an anonymous folio.
+>> +	 *
+>> +	 * PG_anon_exclusive is *usually* only expressive in combination with a
+>> +	 * page table entry. Depending on the page table entry type it might
+>> +	 * store the following information:
+>> +	 *
+>> +	 *	Is what's mapped via this page table entry exclusive to the
+>> +	 *	single process and can be mapped writable without further
+>> +	 *	checks? If not, it might be shared and we might have to COW.
+>> +	 *
+>> +	 * For now, we only expect PTE-mapped THPs to make use of
+>> +	 * PG_anon_exclusive in subpages. For other anonymous compound
+>> +	 * folios (i.e., hugetlb), only the head page is logically mapped and
+>> +	 * holds this information.
+>> +	 *
+>> +	 * For example, an exclusive, PMD-mapped THP only has PG_anon_exclusive
+>> +	 * set on the head page. When replacing the PMD by a page table full
+>> +	 * of PTEs, PG_anon_exclusive, if set on the head page, will be set on
+>> +	 * all tail pages accordingly. Note that converting from a PTE-mapping
+>> +	 * to a PMD mapping using the same compound page is currently not
+>> +	 * possible and consequently doesn't require care.
+>> +	 *
+>> +	 * If GUP wants to take a reliable pin (FOLL_PIN) on an anonymous page,
+>> +	 * it should only pin if the relevant PG_anon_bit is set. In that case,
+>> +	 * the pin will be fully reliable and stay consistent with the pages
+>> +	 * mapped into the page table, as the bit cannot get cleared (e.g., by
+>> +	 * fork(), KSM) while the page is pinned. For anonymous pages that
+>> +	 * are mapped R/W, PG_anon_exclusive can be assumed to always be set
+>> +	 * because such pages cannot possibly be shared.
+>> +	 *
+>> +	 * The page table lock protecting the page table entry is the primary
+>> +	 * synchronization mechanism for PG_anon_exclusive; GUP-fast that does
+>> +	 * not take the PT lock needs special care when trying to clear the
+>> +	 * flag.
+>> +	 *
+>> +	 * Page table entry types and PG_anon_exclusive:
+>> +	 * * Present: PG_anon_exclusive applies.
+>> +	 * * Swap: the information is lost. PG_anon_exclusive was cleared.
+>> +	 * * Migration: the entry holds this information instead.
+>> +	 *		PG_anon_exclusive was cleared.
+>> +	 * * Device private: PG_anon_exclusive applies.
+>> +	 * * Device exclusive: PG_anon_exclusive applies.
+>> +	 * * HW Poison: PG_anon_exclusive is stale and not changed.
+>> +	 *
+>> +	 * If the page may be pinned (FOLL_PIN), clearing PG_anon_exclusive is
+>> +	 * not allowed and the flag will stick around until the page is freed
+>> +	 * and folio->mapping is cleared.
+>> +	 */
+> 
+> ... I also don't think this is the right place for this comment.  Not
+> sure where it should go.
+
+I went for "rather have some documentation at a sub-optimal place then
+no documentation at all". I'm thinking about writing a proper
+documentation once everything is in place, and moving some details from
+there into that document then.
+
+> 
+>> +static __always_inline void SetPageAnonExclusive(struct page *page)
+>> +{
+>> +	VM_BUG_ON_PGFLAGS(!PageAnon(page) || PageKsm(page), page);
+> 
+> hm.  seems to me like we should have a PageAnonNotKsm which just
+> does
+> 	return ((unsigned long)page->mapping & PAGE_MAPPING_FLAGS) ==
+> 			PAGE_MAPPING_ANON;
+> because that's "a bit" inefficient.  OK, that's just a VM_BUG_ON,
+> but we have other users in real code:
+> 
+> mm/migrate.c:   if (PageAnon(page) && !PageKsm(page))
+> mm/page_idle.c: need_lock = !PageAnon(page) || PageKsm(page);
+> mm/rmap.c:      if (!is_locked && (!PageAnon(page) || PageKsm(page))) {
+> 
+
+I'm wondering if the compiler won't be able to optimize that. Having
+that said, I can look into adding that outside of this series.
+
+Thanks!
+
 -- 
-2.23.0
+Thanks,
+
+David / dhildenb
 
