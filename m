@@ -2,101 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD7CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 21:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB400C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 21:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232781AbiCLVpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 16:45:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        id S232793AbiCLVqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 16:46:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232773AbiCLVpS (ORCPT
+        with ESMTP id S232730AbiCLVqQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 16:45:18 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BCC6E4D3
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 13:44:11 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id g17so20913246lfh.2
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 13:44:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Al6bnHgVgcqWGS7SzpEP6EcNnlitYzP4oWhkmGFLRYg=;
-        b=TUNQe6vdMdyq5Mk9RcZa0WrgFWSQNBekv3itbnQYPfxEcKkulC5M9G35QESGHx3lCs
-         CkiAAaqI2HmrSs4euU/9PrCa+nGQ4kj+UavhRfZqSrLFd9YMMCelxwBYrKyghkz/zT4k
-         cSm+n0RWPhJ3qKq/xEsoqAW/Ef3Ix0mfhyfWA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Al6bnHgVgcqWGS7SzpEP6EcNnlitYzP4oWhkmGFLRYg=;
-        b=G0ugqZOBgfeUWnE9VpaIyF9aa0arRul6/+/B8KPXUAx1nSuE8CXuqESRaYJdaF8xDU
-         ZwKXWfiAlNObzMpsdpPViv9U5ZBLZ6lyrDxmnFWcmzSgTGAPqRbftjifKNobafaERBcu
-         w4nWyN978xMTvAUMdgzfRhsbWJGd1PXvsdYilQ+VK8pc6EdNfqdjOMSiWUVTsHpHcCGo
-         GCNHtUHuD2twnD99S5zbDDTc+OtTc2F8ThLSPKQMUQYXFVBG2Ly7y8c51kF8Kj7uxsfG
-         0Xu4SCqWWpHGFfWPLFRkmoZcDf6NtGlgQ3eq/cbjglSVvqiOLeMeRBbOxt9ZL5U8+vNn
-         okGw==
-X-Gm-Message-State: AOAM5316N9g28xd1GNzLmQ2V9LnZU2hv/cp7AnjFNI1leIjyoli4P7Dl
-        2w5HrmXrRR4XG0KfpovWOHNcRWEXg8c17Qvek+I=
-X-Google-Smtp-Source: ABdhPJzkrPNyKc+apCw5CFb2a3t9WDQ1maJVPgWM3F44pPAJS1q6lUQCopoT2QCTCrm6gCrOLMeKrA==
-X-Received: by 2002:a19:f115:0:b0:448:277f:8e with SMTP id p21-20020a19f115000000b00448277f008emr9419260lfh.503.1647121449845;
-        Sat, 12 Mar 2022 13:44:09 -0800 (PST)
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
-        by smtp.gmail.com with ESMTPSA id w24-20020a194918000000b004488e49f2f7sm185210lfa.127.2022.03.12.13.44.06
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Mar 2022 13:44:07 -0800 (PST)
-Received: by mail-lf1-f43.google.com with SMTP id bt26so20921775lfb.3
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 13:44:06 -0800 (PST)
-X-Received: by 2002:a05:6512:b13:b0:448:90c6:dc49 with SMTP id
- w19-20020a0565120b1300b0044890c6dc49mr147974lfu.542.1647121446538; Sat, 12
- Mar 2022 13:44:06 -0800 (PST)
+        Sat, 12 Mar 2022 16:46:16 -0500
+Received: from relay.hostedemail.com (relay.a.hostedemail.com [64.99.140.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C496E4D3;
+        Sat, 12 Mar 2022 13:45:10 -0800 (PST)
+Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay07.hostedemail.com (Postfix) with ESMTP id 0F8BD20EF6;
+        Sat, 12 Mar 2022 21:45:09 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id 8F47420028;
+        Sat, 12 Mar 2022 21:45:02 +0000 (UTC)
+Message-ID: <846e22e76ba9e4c620df159b073bbf4e058a35f0.camel@perches.com>
+Subject: Re: [PATCH 4/6] scsi: lpfc: use kzalloc
+From:   Joe Perches <joe@perches.com>
+To:     Julia Lawall <Julia.Lawall@inria.fr>,
+        James Smart <james.smart@broadcom.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sat, 12 Mar 2022 13:45:01 -0800
+In-Reply-To: <20220312102705.71413-5-Julia.Lawall@inria.fr>
+References: <20220312102705.71413-1-Julia.Lawall@inria.fr>
+         <20220312102705.71413-5-Julia.Lawall@inria.fr>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-References: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
- <YiqPmIdZ/RGiaOei@qmqm.qmqm.pl> <CAADWXX-Pr-D3wSr5wsqTEOBSJzB9k7bSH+7hnCAj0AeL0=U4mg@mail.gmail.com>
- <Yix06B9rPaGh0dp8@qmqm.qmqm.pl>
-In-Reply-To: <Yix06B9rPaGh0dp8@qmqm.qmqm.pl>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 12 Mar 2022 13:43:50 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgxtcTbBdtm9ewarth476Wr5vYYnptaWpwdHcML8-xayA@mail.gmail.com>
-Message-ID: <CAHk-=wgxtcTbBdtm9ewarth476Wr5vYYnptaWpwdHcML8-xayA@mail.gmail.com>
-Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
-To:     =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: p6yih6y7q3hu9hsxzjjetq7mn7b659cd
+X-Rspamd-Server: rspamout07
+X-Rspamd-Queue-Id: 8F47420028
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19DJWJu0mr74IBHBM/nl8mkWSl5saQ3BR8=
+X-HE-Tag: 1647121502-545075
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 2:24 AM Micha=C5=82 Miros=C5=82aw <mirq-linux@rere.=
-qmqm.pl> wrote:
->
-> The source type is not needed for the macros [..]
+On Sat, 2022-03-12 at 11:27 +0100, Julia Lawall wrote:
+> Use kzalloc instead of kmalloc + memset.
+[]
+> diff --git a/drivers/scsi/lpfc/lpfc_debugfs.c b/drivers/scsi/lpfc/lpfc_debugfs.c
+[]
+> @@ -6272,10 +6272,8 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
+>  				 phba->hba_debugfs_root,
+>  				 phba, &lpfc_debugfs_op_slow_ring_trc);
+>  		if (!phba->slow_ring_trc) {
+> -			phba->slow_ring_trc = kmalloc(
+> -				(sizeof(struct lpfc_debugfs_trc) *
+> -				lpfc_debugfs_max_slow_ring_trc),
+> -				GFP_KERNEL);
+> +			phba->slow_ring_trc = kzalloc((sizeof(struct lpfc_debugfs_trc) * lpfc_debugfs_max_slow_ring_trc),
+> +						      GFP_KERNEL);
 
-Ahh. Yeah, as long as we don't do typedefs, it looks like we don't
-need to pre-declare the member access types.
+kcalloc
 
-I expected that to be required, because function declarations taking
-arguments need it, but that's because they create their own scope.
-Just doing it in a regular struct (or in this case union) declaration
-is fine.
 
-So we would only need that post-declaration.
-
-That said, your naming is wrong. It's not just about "self". It's any
-case where the type we iterate over is declared after the type that
-has the head.
-
-So I suspect it would be a lot better to just always do it, and not do
-that "self vs non-self" distinction.
-
-              Linus
