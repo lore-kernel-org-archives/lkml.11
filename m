@@ -2,108 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EB4C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 21:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F82C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 21:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232754AbiCLVoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 16:44:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
+        id S232768AbiCLVpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 16:45:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232749AbiCLVoU (ORCPT
+        with ESMTP id S232749AbiCLVpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 16:44:20 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5513EB82
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 13:43:12 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id g17so20910930lfh.2
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 13:43:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gkrxwfNAo+wqaPPhsyYAGfR02IOHUYddLvZA6FjMTBI=;
-        b=FxJI0HFe2HmQgNZiUkdK9qEcNJJeSgk4FpoWUuXVXhAG8PE6Z/+Wb1cQUhO8D8Oltz
-         gpa3xaJ5I7fTr48Jxvxm8vFopvlo5SnVkTZk5zQA3NjrSol6HjXqCryzaIJ+Jt3TBQqn
-         IePtH5560IjsGAuL0JrBmszuiytvSoJTC8hZ2cjUzx+qYnybpYijooYq5UH7JkZo/pjM
-         broSIP1ct1Rz7ddFtS/rUhUxLtIwPjZ810pO3bERK2Bv+jNzNuq9R4IKkAFOG59hXOyt
-         DYPiwdT6WPd4flHWLoEc+CxIAUC8YdNFHxBIHNBbAQY1+OFU/mp5dFWNMOc6RL0VuJDH
-         IWRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gkrxwfNAo+wqaPPhsyYAGfR02IOHUYddLvZA6FjMTBI=;
-        b=29pxryeeFtD5K0nOiP7KrSa0TN1CYUDfDvIZMc1okUjvQUtQuWNeIyqA9T45BCWHT8
-         BPBdfgVSTKJui+HY4lUQFqklKKLJczbk1DbtwFm/p+Kc5NwYQx2/Hbyx+CoyjGjbHFDY
-         Sy76vzkyIbn1D0vItmzTK8nCczgZkG7rdSB8cFi5Q1u5b7EH5qiig5e9YcAMKtmjabNr
-         5zS7lemXhx6idONoif86I/QLlG4hQn/lscE5pi2UXMwyzl3JV55jUuIuEi/BLwdgH5ar
-         mrvrX4Fg3XpiDTuk/eZe9vyxUXtbMdfcDcThyL/jehQMAf6KpODxZxh6bGjiv0WaWlpS
-         QN1g==
-X-Gm-Message-State: AOAM533M5gKF9+5NzrxyOQI39KstROgGmZlt6PlapH81W7noyDLhzWkh
-        oJoEacqtVf/yw3NecC/ge1uwCY983E0=
-X-Google-Smtp-Source: ABdhPJyU1EdFdwFwd3jDaeaQazah7k5dV1l8H1XNs9zkmyWxayD1F82B8UB6lKU9gFsSZO5K14fjiQ==
-X-Received: by 2002:a05:6512:2316:b0:446:a84a:173e with SMTP id o22-20020a056512231600b00446a84a173emr8994713lfu.73.1647121390992;
-        Sat, 12 Mar 2022 13:43:10 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.229.107])
-        by smtp.gmail.com with ESMTPSA id b1-20020ac247e1000000b0044842b76861sm2377192lfp.140.2022.03.12.13.43.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Mar 2022 13:43:10 -0800 (PST)
-Message-ID: <303ed0c8-8e2c-51a4-a4da-be973a25cdec@gmail.com>
-Date:   Sun, 13 Mar 2022 00:43:08 +0300
+        Sat, 12 Mar 2022 16:45:03 -0500
+Received: from relay3.hostedemail.com (relay3.hostedemail.com [64.99.140.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13C643EDE;
+        Sat, 12 Mar 2022 13:43:55 -0800 (PST)
+Received: from omf20.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay02.hostedemail.com (Postfix) with ESMTP id 9E35F23501;
+        Sat, 12 Mar 2022 21:43:54 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf20.hostedemail.com (Postfix) with ESMTPA id 5FE732002B;
+        Sat, 12 Mar 2022 21:43:53 +0000 (UTC)
+Message-ID: <2422fcc6d9a1e03e4dde90ea91327764ab5ee4b5.camel@perches.com>
+Subject: Re: [PATCH 3/6] ALSA: seq: oss: use kzalloc
+From:   Joe Perches <joe@perches.com>
+To:     Julia Lawall <Julia.Lawall@inria.fr>,
+        Jaroslav Kysela <perex@perex.cz>
+Cc:     kernel-janitors@vger.kernel.org, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Date:   Sat, 12 Mar 2022 13:43:52 -0800
+In-Reply-To: <20220312102705.71413-4-Julia.Lawall@inria.fr>
+References: <20220312102705.71413-1-Julia.Lawall@inria.fr>
+         <20220312102705.71413-4-Julia.Lawall@inria.fr>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] staging: android: ashmem: Declared file operation with
- const keyword Warning found by checkpatch.pl script.
-Content-Language: en-US
-To:     shaikh kamal <shaikhkamal2012@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Arve_Hj=c3=b8nnev=c3=a5g?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-References: <20220312204128.3942-1-shaikhkamal2012@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220312204128.3942-1-shaikhkamal2012@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Rspamd-Queue-Id: 5FE732002B
+X-Stat-Signature: rmt9obkyouuykyseiymery8o93ewmsek
+X-Rspamd-Server: rspamout01
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+wmoUH95/RP/dF0B8Uoo7RJ+6BRXnnwI0=
+X-HE-Tag: 1647121433-91170
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Shaikh,
+On Sat, 2022-03-12 at 11:27 +0100, Julia Lawall wrote:
+> Use kzalloc instead of kmalloc + memset.
+[]
+> diff --git a/sound/core/seq/oss/seq_oss_init.c b/sound/core/seq/oss/seq_oss_init.c
+[]
+> @@ -81,7 +81,6 @@ snd_seq_oss_create_client(void)
+>  	system_client = rc;
+>  
+>  	/* create annoucement receiver port */
 
-On 3/12/22 23:41, shaikh kamal wrote:
-> Signed-off-by: shaikh kamal <shaikhkamal2012@gmail.com>
-> ---
->   drivers/staging/android/ashmem.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+unrelated trivia: typo of announcement above
+
+> -	memset(port, 0, sizeof(*port));
+>  	strcpy(port->name, "Receiver");
+>  	port->addr.client = system_client;
+>  	port->capability = SNDRV_SEQ_PORT_CAP_WRITE; /* receive only */
 > 
-> diff --git a/drivers/staging/android/ashmem.c b/drivers/staging/android/ashmem.c
-> index ddbde3f8430e..4c6b420fbf4d 100644
-> --- a/drivers/staging/android/ashmem.c
-> +++ b/drivers/staging/android/ashmem.c
-> @@ -377,7 +377,7 @@ ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
->   
->   static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
->   {
-> -	static struct file_operations vmfile_fops;
-> +	static const struct file_operations vmfile_fops;
->   	struct ashmem_area *asma = file->private_data;
->   	int ret = 0;
->   
-
-Are you sure this patch compiles? vmfile_fops is overrided few lines below
-
-odd checkpatch.pl warning...
 
 
-
-
-With regards,
-Pavel Skripkin
