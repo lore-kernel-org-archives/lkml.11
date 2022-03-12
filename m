@@ -2,110 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D85C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 08:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 08:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231321AbiCLICL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 03:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
+        id S231337AbiCLICS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 03:02:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231285AbiCLICI (ORCPT
+        with ESMTP id S231311AbiCLICJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 03:02:08 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02AF1C60F7;
-        Sat, 12 Mar 2022 00:01:02 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id n15so9534916plh.2;
-        Sat, 12 Mar 2022 00:01:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aJ14arsAul3SlLt5mlCzJmi9KKQVjgoCLUM8tJyemVY=;
-        b=Rx0qKg3baqW/uNf8ysd4E/DRmNDFNzF6LEYtmukVJ3oV8H0UEDJjdnqPZeLu836L+s
-         Scu+YSLf1W26bk6SiFNLTMyUSynsX/14rAvQ8aeL5cafvxulb7iTABFmkJiskSKAfEx7
-         JJ/yPkI+dj8bP9twRnIUoz6kw7XosrRWZD6GUzNUlGyBtqH3ROy5FgPLmMZv8orHqjr9
-         zZBqAN2gQxmyPFo9yCutkvjuKM2eUx0nf7p5pC67VTFNvGCKDzYbDgusVNU43U11R+v8
-         ieh+ak9dD03iySRInaPpPc6dL6PtSDFTw2TLY7ynr91m4FJbcS4ohHaTGHdDG6sqQlE9
-         wDYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aJ14arsAul3SlLt5mlCzJmi9KKQVjgoCLUM8tJyemVY=;
-        b=Y70p1i0B+Cqp3i9mkXLMGC1DUv6N1INf2Jp0ei9OJJtLpjqtdqViz1dk3nE1hwhcS+
-         QlCKCnbdKGxpOvCH54SrhmYsJqPymA8CxvO8H2Ls3zK5hYhYWUdKfqJJNIjvPFHKWcF5
-         cjCXVqoSe/p5hSwUHIWoPBE4WrwFF/PtxMtR8BJiiAs1uYoyU/QJbq6HMBWDeDwgLf/u
-         ZSRn6a6vAcY6XUz9+XyzQMUQgeRsja+o/HAuQl1ymBOu6+qihj2ojk/t/ikS0RLg75Al
-         KUkyxXfqQlmFNSWKeAA0dMw1cgxP/EmR/s0wqw4aECGUWzgrWApFWNRkcoojHUCBNoFD
-         Cdqw==
-X-Gm-Message-State: AOAM5315azHNII175/e4D2D5emRErKtjYjgDvkcCGkrXg7IlnpAyY01I
-        I9QwvQIy57IS76ew1B7aGF+o4vNTi9wzEw==
-X-Google-Smtp-Source: ABdhPJyp2t3Ou5Q9cha/XqAUvJCGqRao8Ahz2XT5Cr7Sfta/1FzGxYP6hFEQ7Ze/GExzTvr62RIBHw==
-X-Received: by 2002:a17:903:41c8:b0:151:bf44:ba9d with SMTP id u8-20020a17090341c800b00151bf44ba9dmr14022641ple.160.1647072061976;
-        Sat, 12 Mar 2022 00:01:01 -0800 (PST)
-Received: from ubuntu.mate (subs02-180-214-232-88.three.co.id. [180.214.232.88])
-        by smtp.gmail.com with ESMTPSA id x33-20020a056a0018a100b004f71b6a8698sm13025141pfh.169.2022.03.12.00.00.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Mar 2022 00:01:01 -0800 (PST)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] Documentation: make option lists subsection of "Procedure for submitting patches to the -stable tree" in stable-kernel-rules.rst
-Date:   Sat, 12 Mar 2022 15:00:40 +0700
-Message-Id: <20220312080043.37581-2-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220312080043.37581-1-bagasdotme@gmail.com>
-References: <20220312080043.37581-1-bagasdotme@gmail.com>
+        Sat, 12 Mar 2022 03:02:09 -0500
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B485C1C60F9
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 00:01:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1647072064; x=1678608064;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=uvjzLtZ0QuVOYXq3pO1ebVjYlGHyAzBNRpNQOKxDX9s=;
+  b=LarX5XsXB8sPDo5gIMusJCmNLBvo685ybo6jIoezascjErK6ze0l4Nzy
+   CGRYn7GM8b4YTFVEBCVN4QiQwlb7NM1IuD3C1yqkTLopVjQwBnZ220+oC
+   /EtKqTih0myERr2z/lOobtqGfgh8IizeAYfcmIXLqE1F/d1UE9XqQHW6x
+   A7/DqCk7Mv5ZKdmYamxoscFH1lila4LxC2TW6qzNIgX6PBjOsUQqCwOHp
+   +AtWYa1LgCQooM33uCPIRSqXnlFlbQ/MY8kFXNPnC4afqHBkGDBF+3K1a
+   7UJm3o4y6DQXIWlSntjnGPlJ3k2sNx+oLDTfrfh1dxILehR8kKhQu2I52
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,175,1643644800"; 
+   d="scan'208";a="196114303"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 12 Mar 2022 16:01:00 +0800
+IronPort-SDR: ejP/UPf2BsZiUwFHaVf7ULZWYw2V453gPYOffJ6OTd9v2OB7zN7vFsL+dFvbyHv7GQccq53Z04
+ EbRSNuJm/ecslTTDtAo+noxlPWNYCieLV+fYuNyVnGKCcG48bMQ/LkrVLNM9tipODizAsG8tIe
+ 1mOOsXcdi1BYhYNyPd6XoVWc6hgYHaB/kD7jRxQhmZOVwFA4C5nhRfMaj0shz2FzNZk6iiujmR
+ qQ3ydRlwPdQDlBat+Xtp7ayOESRuoM5hsWGusLJvWtqOwIeY/z5ptE7AokalvYqKEJ0zM9E6LM
+ l3JMwlXw0WcKmcXd2Sn9j7Vy
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 23:32:11 -0800
+IronPort-SDR: ctcaBNOXndT3GdOsxrlAnHXrowdnF8dojeMo0z10iBxCv9vhKdeo5BN1v1GplUUID+nAOr/k36
+ aPnWN7VH1jar5c2YBh+pDdep8rWWDKpKKmCRx4M0YvLn+vYR13BUVbHvKFhoVDHtGnlFT6IkQ2
+ RNB36HTsk34yu6fkoPMhSAffc9oDb1CeMc3sZY2+7996aUWPzFaciZTunwGa36OmDemEkJMHey
+ gbEKmVxvi9p2gPiZnCBBcDBVbf6uCDpE2X3g+UuhbgdaaMBZPrAnAXduvTnjfn+fDcJv4S9x2l
+ uOA=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 00:01:01 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KFwGg2hZJz1SVp7
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 00:00:59 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1647072058; x=1649664059; bh=uvjzLtZ0QuVOYXq3pO1ebVjYlGHyAzBNRpN
+        QOKxDX9s=; b=iexa23W1/b63APqV1nvtJ167i3NiHrMLOssPjIe61Q5MWZCyrZC
+        T+x9sfu3duuK4dGzJ/3yFI4znEotyFG+2ctKGCKog6T3KNbxW/iWf11PVkr11nYy
+        H3PHQP7E/lr73gpt9IVMqsHP2NYYlcShwK9KcovY3U4FjufSGAXJ/nRq9uMS+Sud
+        R8XKypwhjWPNDMBt3AUJr44DaGNeVgPGd8OTXvwVMIo8L6qOtw5dTNYSDgAn8NZB
+        AWdLiFRqz/jgad+8/u7f5c2DeYqNuUbRweaCobNWnp8a7Bb8roPTnMJfiOuRaDIS
+        DbA1s65d0xHQgdeHrBWi3pCZ1N+aXwEurzA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id fQGoR0pfL38g for <linux-kernel@vger.kernel.org>;
+        Sat, 12 Mar 2022 00:00:58 -0800 (PST)
+Received: from [10.225.163.91] (unknown [10.225.163.91])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KFwGb0tYyz1Rvlx;
+        Sat, 12 Mar 2022 00:00:54 -0800 (PST)
+Message-ID: <05309a59-85cd-2434-6435-6fd956fa75d6@opensource.wdc.com>
+Date:   Sat, 12 Mar 2022 17:00:53 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v6 0/6] Add sata nodes to rk356x
+Content-Language: en-US
+To:     Frank Wunderlich <linux@fw-web.de>, devicetree@vger.kernel.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Viresh Kumar <vireshk@kernel.org>,
+        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+References: <20220311210357.222830-1-linux@fw-web.de>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220311210357.222830-1-linux@fw-web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The table of contents generated for stable-kernel-rules.rst contains
-"For all other submissions..." section, that includes options
-subsections. These options subsections should have been subsections of
-"Procedure for submitting patches..." section. Remove the redundant
-section.
+On 3/12/22 06:03, Frank Wunderlich wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> This Series converts the binding for ahci-platform to yaml and adds
+> sata nodes to rockchip rk356x device trees.
 
-Also, convert note about security patches to use `.. note::` block.
+Rob,
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/process/stable-kernel-rules.rst | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+I saw you took patches 1, 4 and 5. What about the others ? Are you
+taking them or should I take them through the ATA tree ?
 
-diff --git a/Documentation/process/stable-kernel-rules.rst b/Documentation/process/stable-kernel-rules.rst
-index 003c865e9c2..d8ce4c0c775 100644
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -35,12 +35,13 @@ Rules on what kind of patches are accepted, and which ones are not, into the
- Procedure for submitting patches to the -stable tree
- ----------------------------------------------------
- 
-- - Security patches should not be handled (solely) by the -stable review
-+.. note::
-+
-+   Security patches should not be handled (solely) by the -stable review
-    process but should follow the procedures in
-    :ref:`Documentation/admin-guide/security-bugs.rst <securitybugs>`.
- 
--For all other submissions, choose one of the following procedures
-------------------------------------------------------------------
-+There are three options:
- 
- .. _option_1:
- 
+
 -- 
-An old man doll... just what I always wanted! - Clara
-
+Damien Le Moal
+Western Digital Research
