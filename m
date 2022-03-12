@@ -2,70 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE20C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 17:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7926C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 17:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232297AbiCLRUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 12:20:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
+        id S232317AbiCLRXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 12:23:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiCLRUi (ORCPT
+        with ESMTP id S230525AbiCLRXo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 12:20:38 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB11ADF48E;
-        Sat, 12 Mar 2022 09:19:31 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nT5Og-00ALTz-6x; Sat, 12 Mar 2022 17:19:18 +0000
-Date:   Sat, 12 Mar 2022 17:19:18 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
-Cc:     edumazet@google.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, netdev@vger.kernel.org,
+        Sat, 12 Mar 2022 12:23:44 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CAD1FF43C
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 09:22:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647105759; x=1678641759;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ZM0gVtb7PI87L9rILciXCy/mrwMfDecRtaiITZvUlfc=;
+  b=e4wB5D+apNa8Lr1PGmFO5Z80Pvm21GD/HDBUShvl+mEfXHMLJCG9GCgM
+   +Tt4GXVsDQubMQfWbJk/mnLzkXmbFbzJWexY6+qfv/2WxsNHtn5p9Ul4/
+   H5OD4y8ChZamrA+1oUD5tBsZEJu1/ISHd/8Uz1t6nEMsAAD+KpYrwohNa
+   NOYhvp72/od2IDCur81/aKK49XJDQePhpDhr+j9Ty1EK3oPNsg5rP2vfE
+   Ehzbi4BdsqIsXV7h8FyGBXOyj8PNjl5mP5DoMcRrihpmOhS+XoRVf6nDm
+   DQolItTDPPd02pT4FWa+1affu+9AAZdo8uutN9uEmucR+xLQhaMFADfFz
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="254638190"
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="254638190"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 09:22:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="555788498"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 12 Mar 2022 09:22:37 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nT5Rs-000875-Mk; Sat, 12 Mar 2022 17:22:36 +0000
+Date:   Sun, 13 Mar 2022 01:22:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ipv4: tcp.c: fix an assignment in an if condition
-Message-ID: <YizWFod6LIhIWXmK@zeniv-ca.linux.org.uk>
-References: <20220312162744.32318-1-alexander.vorwerk@stud.uni-goettingen.de>
+Subject: [rmk-arm:zii 183/199]
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c:378:1: error: non-void function
+ does not return a value
+Message-ID: <202203130106.mIhChrsp-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220312162744.32318-1-alexander.vorwerk@stud.uni-goettingen.de>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 05:27:44PM +0100, Alexander Vorwerk wrote:
-> reported by checkpatch.pl
+tree:   git://git.armlinux.org.uk/~rmk/linux-arm zii
+head:   22f6fd6865d54d3632278e7f17bad52308e50311
+commit: b36d94695f6930a807fb5a6ed3dff972b9ea8c71 [183/199] net: mtk_eth_soc: move MAC_MCR setting to mac_finish()
+config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220313/202203130106.mIhChrsp-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 43f668b98e8d87290fc6bbf5ed13c3ab542e3497)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        git remote add rmk-arm git://git.armlinux.org.uk/~rmk/linux-arm
+        git fetch --no-tags rmk-arm zii
+        git checkout b36d94695f6930a807fb5a6ed3dff972b9ea8c71
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/mediatek/
 
-... nicely demonstrating why checkpatch.pl is a menace.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Signed-off-by: Alexander Vorwerk <alexander.vorwerk@stud.uni-goettingen.de>
-> ---
->  net/ipv4/tcp.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 28ff2a820f7c..7fa6e7e6ea80 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -959,10 +959,10 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
->  	struct sk_buff *skb = tcp_write_queue_tail(sk);
->  	struct tcp_sock *tp = tcp_sk(sk);
->  	bool can_coalesce;
-> -	int copy, i;
-> +	int copy = size_goal - skb->len;
-> +	int i;
->  
-> -	if (!skb || (copy = size_goal - skb->len) <= 0 ||
-> -	    !tcp_skb_can_collapse_to(skb)) {
-> +	if (!skb || copy <= 0 || !tcp_skb_can_collapse_to(skb)) {
+All errors (new ones prefixed by >>):
 
-	What is going to happen when you variant runs into
-skb == NULL?  And if for some reason that cannot happen, where
-is the explanation of that reason?
+>> drivers/net/ethernet/mediatek/mtk_eth_soc.c:378:1: error: non-void function does not return a value [-Werror,-Wreturn-type]
+   }
+   ^
+   1 error generated.
 
-	IOW, this patch ends up quietly introducing a bug, with
-no better rationale than "checkpatch.pl pointed me to that line".
 
-NAKed-by: Al Viro <viro@zeniv.linux.org.uk>
+vim +378 drivers/net/ethernet/mediatek/mtk_eth_soc.c
+
+   361	
+   362	static int mtk_mac_finish(struct phylink_config *config, unsigned int mode,
+   363				  phy_interface_t interface)
+   364	{
+   365		struct mtk_mac *mac = container_of(config, struct mtk_mac,
+   366						   phylink_config);
+   367		u32 mcr_cur, mcr_new;
+   368	
+   369		/* Setup gmac */
+   370		mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+   371		mcr_new = mcr_cur;
+   372		mcr_new |= MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
+   373			   MAC_MCR_BACKOFF_EN | MAC_MCR_BACKPR_EN | MAC_MCR_FORCE_LINK;
+   374	
+   375		/* Only update control register when needed! */
+   376		if (mcr_new != mcr_cur)
+   377			mtk_w32(mac->hw, mcr_new, MTK_MAC_MCR(mac->id));
+ > 378	}
+   379	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
