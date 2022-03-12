@@ -2,58 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6004C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 23:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C38C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 23:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232958AbiCLX0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 18:26:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33924 "EHLO
+        id S232979AbiCLX1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 18:27:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231277AbiCLX0N (ORCPT
+        with ESMTP id S232789AbiCLX07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 18:26:13 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8859285D;
-        Sat, 12 Mar 2022 15:25:06 -0800 (PST)
-X-UUID: 9e3d3b1c1f8f4912ab16b309384a6f2f-20220313
-X-UUID: 9e3d3b1c1f8f4912ab16b309384a6f2f-20220313
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 363234468; Sun, 13 Mar 2022 07:25:03 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Sun, 13 Mar 2022 07:25:02 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 13 Mar 2022 07:25:01 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <chun-jie.chen@mediatek.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>, <drinkcat@chromium.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-clk@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <robh+dt@kernel.org>, <sboyd@kernel.org>,
-        <srv_heupstream@mediatek.com>
-Subject: Re: [PATCH v3 14/15] clk: mediatek: Add MT8186 mdpsys clock support
-Date:   Sun, 13 Mar 2022 07:25:01 +0800
-Message-ID: <20220312232501.14710-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220311114229.32504-15-chun-jie.chen@mediatek.com>
-References: <20220311114229.32504-15-chun-jie.chen@mediatek.com>
+        Sat, 12 Mar 2022 18:26:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFDB92D0F
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 15:25:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4617D608C3
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 23:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C2EC340F9;
+        Sat, 12 Mar 2022 23:25:51 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1nTB7O-000Wee-PH;
+        Sat, 12 Mar 2022 18:25:50 -0500
+Message-ID: <20220312232550.612955622@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Sat, 12 Mar 2022 18:25:29 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: [for-next][PATCH 04/12] tracing: Allow custom events to be added to the tracefs directory
+References: <20220312232525.234705244@goodmis.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Add MT8186 mdpsys clock controller which provides clock gate
-> control in Multimedia Data Path.
-> 
-> Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-> Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Allow custom events to be added to the events directory in the tracefs
+file system. For example, a module could be installed that attaches to an
+event and wants to be enabled and disabled via the tracefs file system. It
+would use trace_add_event_call() to add the event to the tracefs
+directory, and trace_remove_event_call() to remove it.
+
+Make both those functions EXPORT_SYMBOL_GPL().
+
+Link: https://lkml.kernel.org/r/20220303220625.186988045@goodmis.org
+
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_events.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 3147614c1812..38afd66d80e3 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -2758,6 +2758,7 @@ int trace_add_event_call(struct trace_event_call *call)
+ 	mutex_unlock(&trace_types_lock);
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(trace_add_event_call);
+ 
+ /*
+  * Must be called under locking of trace_types_lock, event_mutex and
+@@ -2819,6 +2820,7 @@ int trace_remove_event_call(struct trace_event_call *call)
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(trace_remove_event_call);
+ 
+ #define for_each_event(event, start, end)			\
+ 	for (event = start;					\
+-- 
+2.35.1
