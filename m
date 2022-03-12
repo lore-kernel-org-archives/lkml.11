@@ -2,137 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 04:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 021DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 05:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbiCLFAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 00:00:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        id S230403AbiCLFLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 00:11:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiCLFAb (ORCPT
+        with ESMTP id S229379AbiCLFLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 00:00:31 -0500
-Received: from out29-149.mail.aliyun.com (out29-149.mail.aliyun.com [115.124.29.149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9C7369FF;
-        Fri, 11 Mar 2022 20:59:24 -0800 (PST)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07676834|-1;BR=01201311R121S41rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_alarm|0.00954498-0.000797976-0.989657;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047190;MF=kant@allwinnertech.com;NM=1;PH=DS;RN=7;RT=7;SR=0;TI=SMTPD_---.N2bFlkM_1647061161;
-Received: from sunxibot.allwinnertech.com(mailfrom:kant@allwinnertech.com fp:SMTPD_---.N2bFlkM_1647061161)
-          by smtp.aliyun-inc.com(10.147.40.233);
-          Sat, 12 Mar 2022 12:59:22 +0800
-From:   Kant Fan <kant@allwinnertech.com>
-To:     rafael@kernel.org (supporter:THERMAL),
-        daniel.lezcano@linaro.org (supporter:THERMAL)
-Cc:     Kant Fan <kant@allwinnertech.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        linux-pm@vger.kernel.org (open list:THERMAL),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] thermal: devfreq_cooling: use local ops instead of global ops
-Date:   Sat, 12 Mar 2022 12:59:21 +0800
-Message-Id: <20220312045922.9779-1-kant@allwinnertech.com>
-X-Mailer: git-send-email 2.29.0
+        Sat, 12 Mar 2022 00:11:02 -0500
+Received: from mail-vs1-xe31.google.com (mail-vs1-xe31.google.com [IPv6:2607:f8b0:4864:20::e31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527686CA45
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 21:09:57 -0800 (PST)
+Received: by mail-vs1-xe31.google.com with SMTP id z85so11622718vsz.5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 21:09:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=3jXD08skrPZKqzTSkABEDqn7CXZy2e+Noa+0zE1i5wg=;
+        b=A7cE5wvfrubOotIyaQ3917KStOx+SQpgwOOnBn7s9FiLSfJB+9oQCI1Mp8qFrPsUfs
+         HYvjHPbH+Gi3sDannqPAWgee1qIyJIkfT3U4owzr7Q/QUpczbXHrYsuIUZBSx8FSbnyw
+         kTjTgVIhKt7i7rnLE9VkNpuQSi8myvmgj95DVG67tQ7Hsx+jOdN/5Rn9IS05wV1gKe3o
+         NmfnWZk279nQE/qfnQyhM10AnV8FfEd2rwlFY+a6QzJgRbIVRYbB7Q8tKXW+7FobhFKK
+         x9pnjDFzEQKP8sbdU1uYwckNFv4EiZmA0zFvSAJrb6XhfrDaa3dEt8TiD5si1X2zAAky
+         V7Mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3jXD08skrPZKqzTSkABEDqn7CXZy2e+Noa+0zE1i5wg=;
+        b=W3tO+Bq1+zMhd9S3KPM63xJOnkNvjPhQNFYbgi1iZuIImHQZeSd9cKwB3VwCQwtk6C
+         Ob6+SeqJl5zguKsqh9CLoQMiWoAWgXMdaV/dR3iePWYQpiQQXzj+eErgZgY6E3s+mzDw
+         Im8jp97ZQ68c8+2oY3nUsBeS9026y7IBbxrTmKs2wxSb6CyXl/3nrn2Jjj0VVMKaxPeL
+         3+ihDUmySytehbIE/mUTMYcJVU65RAQpj8h4D/zx/9H5f4KjIbmiJBcnwVV7YJjzkzmN
+         P68gnDUGwzWNujh6er624asmlhIS9uy+AW066WoXrjX/NMmywWLtm9CXvyiexa8uXXjr
+         O1zw==
+X-Gm-Message-State: AOAM533JBOADBLw3zUzGr+qOJ05/SvMBJzv3xHbIX3HW2Rr8eKomfLhu
+        vdGU/ZdSLf0Ybfeve80YZS5FLsG03gwC9DpgTW8=
+X-Google-Smtp-Source: ABdhPJxXb6ejKuPJanJShCInWHdELwYTN8Y4FQz0TXfxUeOEDLpl80U+osjypbrZ0/EjP6JvKxKOEewG2vYEDusuWio=
+X-Received: by 2002:a05:6102:40d:b0:322:a0f5:c8fe with SMTP id
+ d13-20020a056102040d00b00322a0f5c8femr5510304vsq.40.1647061796417; Fri, 11
+ Mar 2022 21:09:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220311074413.14644-1-yusisamerican@gmail.com> <YisE6jjbzJyytqB8@kroah.com>
+In-Reply-To: <YisE6jjbzJyytqB8@kroah.com>
+From:   Yusuf Khan <yusisamerican@gmail.com>
+Date:   Fri, 11 Mar 2022 21:09:45 -0800
+Message-ID: <CAJoG2+9w=GP9=+d=pLuNRoR7USH1V7f=DSPURxnxotYs_CwW+w@mail.gmail.com>
+Subject: Re: [PATCH v7] drivers: ddcci: upstream DDCCI driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, javier@javigon.com,
+        Arnd Bergmann <arnd@arndb.de>, Will Deacon <will@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix access illegal address problem in following condition:
-There are muti devfreq cooling devices in system, some of them has
-em model but other does not, energy model ops such as state2power will
-append to global devfreq_cooling_ops when the cooling device with
-em model register. It makes the cooling device without em model
-also use devfreq_cooling_ops after appending when register later by
-of_devfreq_cooling_register_power() or of_devfreq_cooling_register().
-
-IPA governor regards the cooling devices without em model as a power actor
-because they also have energy model ops, and will access illegal address
-at dfc->em_pd when execute cdev->ops->get_requested_power,
-cdev->ops->state2power or cdev->ops->power2state.
-
-Signed-off-by: Kant Fan <kant@allwinnertech.com>
----
- drivers/thermal/devfreq_cooling.c | 25 ++++++++++++++++++-------
- 1 file changed, 18 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/thermal/devfreq_cooling.c b/drivers/thermal/devfreq_cooling.c
-index 4310cb342a9f..d38a80adec73 100644
---- a/drivers/thermal/devfreq_cooling.c
-+++ b/drivers/thermal/devfreq_cooling.c
-@@ -358,21 +358,28 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
- 	struct thermal_cooling_device *cdev;
- 	struct device *dev = df->dev.parent;
- 	struct devfreq_cooling_device *dfc;
-+	struct thermal_cooling_device_ops *ops;
- 	char *name;
- 	int err, num_opps;
- 
--	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
--	if (!dfc)
-+	ops = kmemdup(&devfreq_cooling_ops, sizeof(*ops), GFP_KERNEL);
-+	if (!ops)
- 		return ERR_PTR(-ENOMEM);
- 
-+	dfc = kzalloc(sizeof(*dfc), GFP_KERNEL);
-+	if (!dfc) {
-+		err = -ENOMEM;
-+		goto free_ops;
-+	}
-+
- 	dfc->devfreq = df;
- 
- 	dfc->em_pd = em_pd_get(dev);
- 	if (dfc->em_pd) {
--		devfreq_cooling_ops.get_requested_power =
-+		ops->get_requested_power =
- 			devfreq_cooling_get_requested_power;
--		devfreq_cooling_ops.state2power = devfreq_cooling_state2power;
--		devfreq_cooling_ops.power2state = devfreq_cooling_power2state;
-+		ops->state2power = devfreq_cooling_state2power;
-+		ops->power2state = devfreq_cooling_power2state;
- 
- 		dfc->power_ops = dfc_power;
- 
-@@ -407,8 +414,7 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
- 	if (!name)
- 		goto remove_qos_req;
- 
--	cdev = thermal_of_cooling_device_register(np, name, dfc,
--						  &devfreq_cooling_ops);
-+	cdev = thermal_of_cooling_device_register(np, name, dfc, ops);
- 	kfree(name);
- 
- 	if (IS_ERR(cdev)) {
-@@ -429,6 +435,8 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
- 	kfree(dfc->freq_table);
- free_dfc:
- 	kfree(dfc);
-+free_ops:
-+	kfree(ops);
- 
- 	return ERR_PTR(err);
- }
-@@ -510,11 +518,13 @@ EXPORT_SYMBOL_GPL(devfreq_cooling_em_register);
- void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
- {
- 	struct devfreq_cooling_device *dfc;
-+	const struct thermal_cooling_device_ops *ops;
- 	struct device *dev;
- 
- 	if (IS_ERR_OR_NULL(cdev))
- 		return;
- 
-+	ops = cdev->ops;
- 	dfc = cdev->devdata;
- 	dev = dfc->devfreq->dev.parent;
- 
-@@ -525,5 +535,6 @@ void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
- 
- 	kfree(dfc->freq_table);
- 	kfree(dfc);
-+	kfree(ops);
- }
- EXPORT_SYMBOL_GPL(devfreq_cooling_unregister);
--- 
-2.29.0
-
+> How can this ever fail?
+If ddcci_verify_device() fails
+> Not needed, just do not have it.
+I'm assuming you mean the locks?
+> This should not be needed in sysfs.  What tool wants this?
+Its for the idSerial and modalias part of the userland interface.
+> Why "_void"?
+suppressing "initialization of =E2=80=98void (*)(struct device *)=E2=80=99 =
+from
+incompatible pointer type =E2=80=98int (*)(struct device *)=E2=80=99"
