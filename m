@@ -2,181 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D03DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 00:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0386EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 00:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbiCLAIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 19:08:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
+        id S229648AbiCLAIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 19:08:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiCLAID (ORCPT
+        with ESMTP id S229448AbiCLAIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 19:08:03 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E54C14089
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 16:06:59 -0800 (PST)
+        Fri, 11 Mar 2022 19:08:37 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E6811E5331;
+        Fri, 11 Mar 2022 16:07:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647043619; x=1678579619;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=uP2bQMi7foToz6URoboXiSv1BaDOD/4DPEY+RqnK/qc=;
-  b=bdbfFaspXdue9aXWVoSeEduUoDKi9CSvaftdg83Rj+hezLz0XsxvlELH
-   56XUZOa0LJ4UbgkKUimNhLq6bLiTnEstDQF9UKfSNQeByX11oL8IT/VHO
-   cJmLGu29G/AKb5o8IW/lLpvD5Y71bEDounCMd4XU+ADofguL1Ybmw+3O3
-   1lj2sAHD9vrfOHeWLKSXZUO5gTK5C/N4qeKg+1nL42gBgjX823insNg6s
-   zHm2xrl+STzm/A5dMPYe2dgEbXXm2B/pWkni2zgr82b5eq5PgtvQbAJUR
-   lxww5QFzqLK8opLzXhqw1stIlkbroTCHpskGgPmUcPGfPgEERt44925Mp
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="342104585"
+  t=1647043653; x=1678579653;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Vzl/jEjfdsCi6JqP7iVxxwjdQOR17jrD8nYVD6RvPHA=;
+  b=RS/KgAwEd+Mov2hOOAyHN3+UCqpCEtW72RX10jIukZVgZxKN2xSHXZh2
+   UEJCobZkpqyecUcJ2IXPNGPUS0WaTBoMPwGlf1ouHK+EwtDmbgv0QY2lD
+   XBna1buC4EHc1uAyVcwPhFlBpv36FMtYTsds1n1WvGpsBGlxfS8UZ2NRG
+   nOq1smZvKYYM7uD+55JNQw/fHJVovmZtcrmvQBT5FIZkUHn/ms749Nq5j
+   I7cDk1OiQLvRaezWOyNlcEl0ZoywTGqDzBXBAuHuvdATaolarU6lP5+oV
+   AGUVgWMOqC0UC+9ysFljgqJQ8YBp3/CkiBYSls83AeBd+HPVPEO0gyn07
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="243124584"
 X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="342104585"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 16:06:59 -0800
+   d="scan'208";a="243124584"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 16:07:32 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="511546906"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 11 Mar 2022 16:06:57 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSpHc-0007J4-Tu; Sat, 12 Mar 2022 00:06:56 +0000
-Date:   Sat, 12 Mar 2022 08:06:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: src/utils.c:6:10: fatal error: proc/readproc.h: No such file or
- directory
-Message-ID: <202203120738.FgJwp7oP-lkp@intel.com>
+   d="scan'208";a="713012837"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.87])
+  by orsmga005.jf.intel.com with ESMTP; 11 Mar 2022 16:07:31 -0800
+From:   niravkumar.l.rabara@intel.com
+To:     dinguyen@kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     niravkumar.l.rabara@intel.com
+Subject: [PATCH] arm64: dts: intel: add device tree for n6010
+Date:   Sat, 12 Mar 2022 16:07:17 +0800
+Message-Id: <20220312080717.1528401-1-niravkumar.l.rabara@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   68453767131a5deec1e8f9ac92a9042f929e585d
-commit: e9380df851878cee71df5a1c7611584421527f7e ACPI: Add stubs for wakeup handler functions
-date:   4 months ago
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220312/202203120738.FgJwp7oP-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e9380df851878cee71df5a1c7611584421527f7e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e9380df851878cee71df5a1c7611584421527f7e
-        # save the config file to linux build tree
-        make W=1 ARCH=x86_64 SHELL=/bin/bash tools/all
+From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Add a dts file for the Silicom FPGA SmartNIC N6010/N6011,
+which is based on the Intel Agliex platform.
 
-All errors (new ones prefixed by >>):
-
->> src/utils.c:6:10: fatal error: proc/readproc.h: No such file or directory
-       6 | #include <proc/readproc.h>
-         |          ^~~~~~~~~~~~~~~~~
-   compilation terminated.
-   make[4]: *** [<builtin>: src/utils.o] Error 1
-   make[4]: *** Waiting for unfinished jobs....
-   src/osnoise.c: In function 'osnoise_init_trace_tool':
-   src/osnoise.c:805:11: warning: implicit declaration of function 'tracefs_event_enable'; did you mean 'tracefs_event_systems'? [-Wimplicit-function-declaration]
-     805 |  retval = tracefs_event_enable(trace->trace.inst, "osnoise", NULL);
-         |           ^~~~~~~~~~~~~~~~~~~~
-         |           tracefs_event_systems
-   src/trace.c: In function 'enable_tracer_by_name':
-   src/trace.c:18:23: error: storage size of 'tracer' isn't known
-      18 |  enum tracefs_tracers tracer;
-         |                       ^~~~~~
-   src/trace.c:21:11: error: 'TRACEFS_TRACER_CUSTOM' undeclared (first use in this function)
-      21 |  tracer = TRACEFS_TRACER_CUSTOM;
-         |           ^~~~~~~~~~~~~~~~~~~~~
-   src/trace.c:21:11: note: each undeclared identifier is reported only once for each function it appears in
-   src/trace.c:25:11: warning: implicit declaration of function 'tracefs_tracer_set'; did you mean 'tracefs_tracers'? [-Wimplicit-function-declaration]
-      25 |  retval = tracefs_tracer_set(inst, tracer, tracer_name);
-         |           ^~~~~~~~~~~~~~~~~~
-         |           tracefs_tracers
-   src/trace.c:18:23: warning: unused variable 'tracer' [-Wunused-variable]
-      18 |  enum tracefs_tracers tracer;
-         |                       ^~~~~~
-   src/trace.c: In function 'disable_tracer':
-   src/trace.c:42:7: error: variable 't' has initializer but incomplete type
-      42 |  enum tracefs_tracers t = TRACEFS_TRACER_NOP;
-         |       ^~~~~~~~~~~~~~~
-   src/trace.c:42:27: error: 'TRACEFS_TRACER_NOP' undeclared (first use in this function)
-      42 |  enum tracefs_tracers t = TRACEFS_TRACER_NOP;
-         |                           ^~~~~~~~~~~~~~~~~~
-   src/trace.c:42:23: error: storage size of 't' isn't known
-      42 |  enum tracefs_tracers t = TRACEFS_TRACER_NOP;
-         |                       ^
-   src/trace.c:42:23: warning: unused variable 't' [-Wunused-variable]
-   src/osnoise_hist.c: In function 'osnoise_destroy_trace_hist':
-   src/osnoise_hist.c:151:2: warning: implicit declaration of function 'tracefs_hist_pause'; did you mean 'tracefs_list_free'? [-Wimplicit-function-declaration]
-     151 |  tracefs_hist_pause(tool->trace.inst, data->trace_hist);
-         |  ^~~~~~~~~~~~~~~~~~
-         |  tracefs_list_free
-   src/trace.c: In function 'save_trace_to_file':
-   src/trace.c:78:10: warning: implicit declaration of function 'tracefs_instance_file_open'; did you mean 'tracefs_instance_file_read'? [-Wimplicit-function-declaration]
-      78 |  in_fd = tracefs_instance_file_open(inst, file, O_RDONLY);
-         |          ^~~~~~~~~~~~~~~~~~~~~~~~~~
-         |          tracefs_instance_file_read
-   src/osnoise_hist.c:152:2: warning: implicit declaration of function 'tracefs_hist_destroy'; did you mean 'tracefs_instance_destroy'? [-Wimplicit-function-declaration]
-     152 |  tracefs_hist_destroy(tool->trace.inst, data->trace_hist);
-         |  ^~~~~~~~~~~~~~~~~~~~
-         |  tracefs_instance_destroy
-   src/trace.c:78:49: error: 'O_RDONLY' undeclared (first use in this function)
-      78 |  in_fd = tracefs_instance_file_open(inst, file, O_RDONLY);
-         |                                                 ^~~~~~~~
-   src/osnoise_hist.c: In function 'osnoise_init_trace_hist':
-   src/osnoise_hist.c:172:21: warning: implicit declaration of function 'tracefs_hist_alloc'; did you mean 'tracefs_get_clock'? [-Wimplicit-function-declaration]
-     172 |  data->trace_hist = tracefs_hist_alloc(tool->trace.tep, "osnoise", "sample_threshold",
-         |                     ^~~~~~~~~~~~~~~~~~
-         |                     tracefs_get_clock
-   src/trace.c:84:11: warning: implicit declaration of function 'creat' [-Wimplicit-function-declaration]
-      84 |  out_fd = creat(filename, mode);
-         |           ^~~~~
-   src/trace.c: In function 'trace_instance_init':
-   src/trace.c:177:2: warning: implicit declaration of function 'tracefs_trace_off'; did you mean 'tracefs_tracers'? [-Wimplicit-function-declaration]
-     177 |  tracefs_trace_off(trace->inst);
-         |  ^~~~~~~~~~~~~~~~~
-         |  tracefs_tracers
-   src/trace.c: In function 'trace_instance_start':
-   src/trace.c:191:9: warning: implicit declaration of function 'tracefs_trace_on'; did you mean 'tracefs_tracers'? [-Wimplicit-function-declaration]
-     191 |  return tracefs_trace_on(trace->inst);
-         |         ^~~~~~~~~~~~~~~~
-         |         tracefs_tracers
-   src/osnoise_hist.c:173:10: error: 'TRACEFS_HIST_KEY_NORMAL' undeclared (first use in this function)
-     173 |    buff, TRACEFS_HIST_KEY_NORMAL);
-         |          ^~~~~~~~~~~~~~~~~~~~~~~
-   src/osnoise_hist.c:173:10: note: each undeclared identifier is reported only once for each function it appears in
-   src/osnoise_hist.c:177:11: warning: implicit declaration of function 'tracefs_hist_add_key'; did you mean 'tracefs_list_free'? [-Wimplicit-function-declaration]
-     177 |  retval = tracefs_hist_add_key(data->trace_hist, "cpu", 0);
-         |           ^~~~~~~~~~~~~~~~~~~~
-         |           tracefs_list_free
-   make[4]: *** [<builtin>: src/trace.o] Error 1
-   src/osnoise_hist.c:181:11: warning: implicit declaration of function 'tracefs_hist_start'; did you mean 'tracefs_list_free'? [-Wimplicit-function-declaration]
-     181 |  retval = tracefs_hist_start(tool->trace.inst, data->trace_hist);
-         |           ^~~~~~~~~~~~~~~~~~
-         |           tracefs_list_free
-   src/osnoise_hist.c: In function 'osnoise_read_trace_hist':
-   src/osnoise_hist.c:203:12: warning: implicit declaration of function 'tracefs_event_file_read'; did you mean 'tracefs_instance_file_read'? [-Wimplicit-function-declaration]
-     203 |  content = tracefs_event_file_read(tool->trace.inst, "osnoise",
-         |            ^~~~~~~~~~~~~~~~~~~~~~~
-         |            tracefs_instance_file_read
-   src/osnoise_hist.c:203:10: warning: assignment to 'char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     203 |  content = tracefs_event_file_read(tool->trace.inst, "osnoise",
-         |          ^
-   src/timerlat_hist.c: In function 'timerlat_hist_main':
-   src/timerlat_hist.c:798:8: warning: implicit declaration of function 'tracefs_trace_is_on'; did you mean 'tracefs_tracers'? [-Wimplicit-function-declaration]
-     798 |   if (!tracefs_trace_is_on(trace->inst))
-         |        ^~~~~~~~~~~~~~~~~~~
-         |        tracefs_tracers
-   src/osnoise_hist.c: In function 'osnoise_hist_main':
-   src/osnoise_hist.c:774:8: warning: implicit declaration of function 'tracefs_trace_is_on'; did you mean 'tracefs_tracers'? [-Wimplicit-function-declaration]
-     774 |   if (!tracefs_trace_is_on(trace->inst))
-
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/arm64/boot/dts/intel/Makefile            |  1 +
+ .../boot/dts/intel/socfpga_agilex_n6010.dts   | 83 +++++++++++++++++++
+ 2 files changed, 84 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts
+
+diff --git a/arch/arm64/boot/dts/intel/Makefile b/arch/arm64/boot/dts/intel/Makefile
+index 0b5477442263..a05a610a4006 100644
+--- a/arch/arm64/boot/dts/intel/Makefile
++++ b/arch/arm64/boot/dts/intel/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_agilex_socdk.dtb \
+ 				socfpga_agilex_socdk_nand.dtb \
++				socfpga_agilex_n6010.dtb \
+ 				socfpga_n5x_socdk.dtb
+ dtb-$(CONFIG_ARCH_KEEMBAY) += keembay-evm.dtb
+diff --git a/arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts b/arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts
+new file mode 100644
+index 000000000000..c105f0621eb4
+--- /dev/null
++++ b/arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts
+@@ -0,0 +1,83 @@
++// SPDX-License-Identifier:     GPL-2.0
++/*
++ * Copyright (C) 2022, Intel Corporation
++ */
++#include "socfpga_agilex.dtsi"
++
++/ {
++	model = "SoCFPGA Agilex n6010";
++
++	aliases {
++		serial0 = &uart0;
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
++		ethernet2 = &gmac2;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory {
++		device_type = "memory";
++		/* We expect the bootloader to fill in the reg */
++		reg = <0 0 0 0>;
++	};
++
++	soc {
++		clocks {
++			osc1 {
++				clock-frequency = <25000000>;
++			};
++		};
++                agilex_hps_bridges: bridge@80000000 {
++                        compatible = "simple-bus";
++                        reg = <0x80000000 0x60000000>,
++                                <0xf9000000 0x00100000>;
++                        reg-names = "axi_h2f", "axi_h2f_lw";
++                        #address-cells = <0x2>;
++                        #size-cells = <0x1>;
++                        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>,
++                                <0x00000001 0x02001000 0x82001000 0x00000800>,
++                                <0x00000001 0x02080000 0x82080000 0x00004000>,
++                                <0x00000001 0x02100000 0x82100000 0x00080000>,
++                                <0x00000001 0x02000040 0x82000040 0x00000020>,
++                                <0x00000001 0x02000800 0x82000800 0x00000020>,
++                                <0x00000001 0x02000820 0x82000820 0x00000020>,
++                                <0x00000001 0x02000900 0x82000900 0x00000020>,
++                                <0x00000001 0x02000920 0x82000920 0x00000020>,
++                                <0x00000001 0x02000940 0x82000940 0x00000020>,
++                                <0x00000001 0x00000300 0xf9000300 0x00000010>,
++                                <0x00000001 0x02000000 0x82000000 0x00000010>;
++
++                        uio_cp_eng@0xf9000000 {
++                                compatible = "generic-uio";
++                                reg = <0x00000000 0x00000000 0x00001000>;
++                                status = "okay";
++                        };
++		};
++	};
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&spi0 {
++	status = "okay";
++
++	spidev: spidev@0 {
++		status = "okay";
++		compatible = "linux,spidev";
++		spi-max-frequency = <25000000>;
++		reg = <0>;
++	};
++};
++
++&watchdog0 {
++	status = "okay";
++};
++
++&fpga_mgr {
++	status = "disabled";
++};
+-- 
+2.25.1
+
