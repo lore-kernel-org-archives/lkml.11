@@ -2,198 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9660C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Mar 2022 23:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 00:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbiCKX6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Mar 2022 18:58:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
+        id S229571AbiCLAF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Mar 2022 19:05:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbiCKX6H (ORCPT
+        with ESMTP id S229457AbiCLAF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Mar 2022 18:58:07 -0500
+        Fri, 11 Mar 2022 19:05:56 -0500
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E7E11AA1D;
-        Fri, 11 Mar 2022 15:57:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7A765B3;
+        Fri, 11 Mar 2022 16:04:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647043021; x=1678579021;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MabYLtoRr/27XJXS/axTXZVdr+xFb6V5oA8gJZ5La1M=;
-  b=Dp0GRTfzGZkLNL6q902peLhFn5RKyEyMiTB07kVuBaMxcpfsQwi3Q7mA
-   ERygEGDkCDcVbM2dFWLKhVSCYg/4I9cH2jhXhj84o+yowYiEq8+iQrrWk
-   2/AwX8JzmdYdiNFdjmG0VhRQyrET+u+tDROwdYKp7e6lv8HK5bh2w5Iu9
-   2SsmJ5UP2A/49K0ovvcMUcb7K43whOjUmwDhABJfbsjOWbvimiKd/QYSm
-   gw4SYP4+zWvFJgn8TY+B6X/B7zd8rWTG/0Aa/VmlzVT9YPWW96iCjGR/F
-   fH4rRfK1bgTO1YQEHPMsCrmNvf5iKZlG9MIt5q4Qj6fjXT6IE4iiXGCTN
+  t=1647043492; x=1678579492;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Vzl/jEjfdsCi6JqP7iVxxwjdQOR17jrD8nYVD6RvPHA=;
+  b=f80zCXrzovfVuIly0lqebq4dddAaAR0M4sqDbncJHMSsCg2hknRD8LK7
+   MdQQfjMrFe5xI+JPCP4ekSjIAmcqzNip69SloTg/CBIGpKjohpUgA1MR7
+   6qtdspWOrVBdHerzmDeEsWNSaTj5XlAv0keBO5a1Fs0aS3gV79nuQ8POV
+   FX6rnWvPRHaNzUigxHHNB62sQCRb9+pmfxZLq0xUZWPSe/logQ9X2sGzX
+   FisODOCGqWA3RPiXm7phD0nMyNw0mvW5BgmA+lrcm+uCfhTHyAk+QHVPH
+   SBMHjHWZ5GBxdiuSkyxYgOH+OTv6M+KIPq5Eg1tH7QniZkTN3CUWg8e/0
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="342103290"
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="342104383"
 X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="342103290"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 15:57:00 -0800
+   d="scan'208";a="342104383"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 16:04:52 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
-   d="scan'208";a="579455185"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 11 Mar 2022 15:56:57 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSp7w-0007Hk-9k; Fri, 11 Mar 2022 23:56:56 +0000
-Date:   Sat, 12 Mar 2022 07:56:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Tinghan Shen <tinghan.shen@mediatek.com>
-Subject: Re: [PATCH v2] remoteproc: mediatek: fix side effect of mt8195 sram
- power on
-Message-ID: <202203120744.6e2bnwRT-lkp@intel.com>
-References: <20220311123056.32689-1-tinghan.shen@mediatek.com>
+   d="scan'208";a="645097476"
+Received: from unknown (HELO localhost.localdomain) ([10.226.216.87])
+  by orsmga004.jf.intel.com with ESMTP; 11 Mar 2022 16:04:50 -0800
+From:   tien.sung.ang@intel.com
+To:     dinguyen@kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     niravkumar.l.rabara@intel.com
+Subject: [PATCH] arm64: dts: intel: add device tree for n6010
+Date:   Sat, 12 Mar 2022 16:01:27 +0800
+Message-Id: <20220312080127.1528190-1-tien.sung.ang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220311123056.32689-1-tinghan.shen@mediatek.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tinghan,
+From: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 
-Thank you for the patch! Yet something to improve:
+Add a dts file for the Silicom FPGA SmartNIC N6010/N6011,
+which is based on the Intel Agliex platform.
 
-[auto build test ERROR on remoteproc/rproc-next]
-[also build test ERROR on v5.17-rc7 next-20220310]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Tinghan-Shen/remoteproc-mediatek-fix-side-effect-of-mt8195-sram-power-on/20220311-203255
-base:   git://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git rproc-next
-config: s390-buildonly-randconfig-r004-20220310 (https://download.01.org/0day-ci/archive/20220312/202203120744.6e2bnwRT-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 276ca87382b8f16a65bddac700202924228982f6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://github.com/0day-ci/linux/commit/6d56ab3bae4e0d5e07d295169602883ba7d7de08
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Tinghan-Shen/remoteproc-mediatek-fix-side-effect-of-mt8195-sram-power-on/20220311-203255
-        git checkout 6d56ab3bae4e0d5e07d295169602883ba7d7de08
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/remoteproc/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/remoteproc/mtk_scp.c:7:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from drivers/remoteproc/mtk_scp.c:7:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from drivers/remoteproc/mtk_scp.c:7:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
->> drivers/remoteproc/mtk_scp.c:418:6: error: use of undeclared identifier 'MT8195_L1TCM_SRAM_PDN_RESERVED_BITS'
-                             MT8195_L1TCM_SRAM_PDN_RESERVED_BITS);
-                             ^
-   drivers/remoteproc/mtk_scp.c:592:7: error: use of undeclared identifier 'MT8195_L1TCM_SRAM_PDN_RESERVED_BITS'
-                              MT8195_L1TCM_SRAM_PDN_RESERVED_BITS);
-                              ^
-   12 warnings and 2 errors generated.
-
-
-vim +/MT8195_L1TCM_SRAM_PDN_RESERVED_BITS +418 drivers/remoteproc/mtk_scp.c
-
-   405	
-   406	static int mt8195_scp_before_load(struct mtk_scp *scp)
-   407	{
-   408		/* clear SPM interrupt, SCP2SPM_IPC_CLR */
-   409		writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
-   410	
-   411		writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
-   412	
-   413		/* enable SRAM clock */
-   414		scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
-   415		scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-   416		scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
-   417		scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
- > 418				  MT8195_L1TCM_SRAM_PDN_RESERVED_BITS);
-   419		scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
-   420	
-   421		/* enable MPU for all memory regions */
-   422		writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
-   423	
-   424		return 0;
-   425	}
-   426	
-
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Niravkumar L Rabara <niravkumar.l.rabara@intel.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/arm64/boot/dts/intel/Makefile            |  1 +
+ .../boot/dts/intel/socfpga_agilex_n6010.dts   | 83 +++++++++++++++++++
+ 2 files changed, 84 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts
+
+diff --git a/arch/arm64/boot/dts/intel/Makefile b/arch/arm64/boot/dts/intel/Makefile
+index 0b5477442263..a05a610a4006 100644
+--- a/arch/arm64/boot/dts/intel/Makefile
++++ b/arch/arm64/boot/dts/intel/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += socfpga_agilex_socdk.dtb \
+ 				socfpga_agilex_socdk_nand.dtb \
++				socfpga_agilex_n6010.dtb \
+ 				socfpga_n5x_socdk.dtb
+ dtb-$(CONFIG_ARCH_KEEMBAY) += keembay-evm.dtb
+diff --git a/arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts b/arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts
+new file mode 100644
+index 000000000000..c105f0621eb4
+--- /dev/null
++++ b/arch/arm64/boot/dts/intel/socfpga_agilex_n6010.dts
+@@ -0,0 +1,83 @@
++// SPDX-License-Identifier:     GPL-2.0
++/*
++ * Copyright (C) 2022, Intel Corporation
++ */
++#include "socfpga_agilex.dtsi"
++
++/ {
++	model = "SoCFPGA Agilex n6010";
++
++	aliases {
++		serial0 = &uart0;
++		ethernet0 = &gmac0;
++		ethernet1 = &gmac1;
++		ethernet2 = &gmac2;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory {
++		device_type = "memory";
++		/* We expect the bootloader to fill in the reg */
++		reg = <0 0 0 0>;
++	};
++
++	soc {
++		clocks {
++			osc1 {
++				clock-frequency = <25000000>;
++			};
++		};
++                agilex_hps_bridges: bridge@80000000 {
++                        compatible = "simple-bus";
++                        reg = <0x80000000 0x60000000>,
++                                <0xf9000000 0x00100000>;
++                        reg-names = "axi_h2f", "axi_h2f_lw";
++                        #address-cells = <0x2>;
++                        #size-cells = <0x1>;
++                        ranges = <0x00000000 0x00000000 0xf9000000 0x00001000>,
++                                <0x00000001 0x02001000 0x82001000 0x00000800>,
++                                <0x00000001 0x02080000 0x82080000 0x00004000>,
++                                <0x00000001 0x02100000 0x82100000 0x00080000>,
++                                <0x00000001 0x02000040 0x82000040 0x00000020>,
++                                <0x00000001 0x02000800 0x82000800 0x00000020>,
++                                <0x00000001 0x02000820 0x82000820 0x00000020>,
++                                <0x00000001 0x02000900 0x82000900 0x00000020>,
++                                <0x00000001 0x02000920 0x82000920 0x00000020>,
++                                <0x00000001 0x02000940 0x82000940 0x00000020>,
++                                <0x00000001 0x00000300 0xf9000300 0x00000010>,
++                                <0x00000001 0x02000000 0x82000000 0x00000010>;
++
++                        uio_cp_eng@0xf9000000 {
++                                compatible = "generic-uio";
++                                reg = <0x00000000 0x00000000 0x00001000>;
++                                status = "okay";
++                        };
++		};
++	};
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&spi0 {
++	status = "okay";
++
++	spidev: spidev@0 {
++		status = "okay";
++		compatible = "linux,spidev";
++		spi-max-frequency = <25000000>;
++		reg = <0>;
++	};
++};
++
++&watchdog0 {
++	status = "okay";
++};
++
++&fpga_mgr {
++	status = "disabled";
++};
+-- 
+2.25.1
+
