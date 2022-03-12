@@ -2,95 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB808C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 07:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B654DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 07:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbiCLHq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 02:46:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
+        id S231248AbiCLHrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 02:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiCLHq5 (ORCPT
+        with ESMTP id S229830AbiCLHrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 02:46:57 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3812C23404B
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 23:45:52 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id bi12so23592990ejb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 23:45:52 -0800 (PST)
+        Sat, 12 Mar 2022 02:47:37 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E9F234050
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 23:46:31 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id qa43so23374081ejc.12
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Mar 2022 23:46:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=4835zrpoRS2nrbhwxOavV/79b/8h8dZXR7yphVPqqJk=;
-        b=TGkV97FD5HKzfpXnmTpEW/Y3rJXTQToFDLlcpuzUs2cRYWDYXdNBRlYuU7df1EjlO6
-         Njo/xDuI1piuGPGhJMf/8NdaOOZUuysQQpFZB/EkFSsiljC/JpIQpRE+2j0GCgndKT1o
-         9re0gBbcqmUf3/Uh3xwhrvLSrmBVgVEQY+HkYS68T7FWgbow4wLJDEAJS2hBLRmRFb/W
-         +UOoMa8dLJQTHCi4eVmch/MsFWVEbzq41QFgnxYah6Gem1XhleS08pSQnBCO+VokkhQe
-         oTqqAZtE4/gvT+yEEJbQIHGkMNngM+i513CjOk6mwZ4HsonNW2ju8IjCAzFFAU/x0LK8
-         AgEQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=opm0RTYgKsezOjMybsaQMQvfYC2eFXeXWanMke4xljQ=;
+        b=doCEK9S9d11Ijh3AYCuvnbhhbjt1qtI9IrlKFVyEJL82m7ptsCxASUOlgeWaBQpEKQ
+         nj6OghomR4bQiFV/g7IDhRPKlaenccetxNreiB2DmLnlR44omRF0smVkECSNlSVgTjoV
+         gnv/L3jw2YY3mariSCK9RCrsjR4H6lX/F/MIwZYOsT9Uh/VJ9CGQ0fzpCxW56lTkKCQu
+         8FaHi3F25wOwSgdZMVHrxIHYDNg82VRLveU8q7NaF9QSW9+oL/A6BgVnMD2VdqJlVh+c
+         6XTcXoLfD+7Nd7wZr4FBCbhdKgMo78PFk2tx9Gl9eiaFjzAvNckPj/jjovp7y422kz6t
+         WfbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=4835zrpoRS2nrbhwxOavV/79b/8h8dZXR7yphVPqqJk=;
-        b=6sfKD9KYFpFQnatGRKMtXrgHvkDSN5zvT4iwgbYBIDMO74TvTBTQjCA39Vp4LANYtM
-         0/R+J8LOOa6AY+yFtLFOxsjt/gO3Dsn05S1526ud73qRbfp65Knct6iyb6+U83iGsT5r
-         FRWtdGCrFy8P9dCh6cxMq8JBR+HRQhG6MJkwWyiU9hjFPqZY4mt+G0JPdeeXpdB5nxt6
-         TTsI1IH5a0n/jALlOK2wtXXz9lQj+ACrp0KZ/h1bnR5k6WIEw1TME/cYkcoNxFiGX+D9
-         E/T6DNOI8uDKrgjUNg5blkWJRse9nuD+JlH02any/WHl1PjRjcTOWDNEqJKQLEpM49GH
-         i7gw==
-X-Gm-Message-State: AOAM531Xhq9Vs7uS8+tjLMWYCQW0yM15tnYuv0AIgmP5y9SXfxoDoTLc
-        VdF1+Ull/6/dOaxeFYBS9/9IkdTbLDfXyrufW8r8zHECQRo=
-X-Google-Smtp-Source: ABdhPJzjtbzf7x03rRzfOfAJe3TZUOVLe4N49aaVEBcQx3Ibw5YAowY/oMZlRD2XUwIFpJXYB297Yu/qIMmSeeNAt6s=
-X-Received: by 2002:a17:907:869f:b0:6da:888b:4258 with SMTP id
- qa31-20020a170907869f00b006da888b4258mr11695684ejc.720.1647071149837; Fri, 11
- Mar 2022 23:45:49 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=opm0RTYgKsezOjMybsaQMQvfYC2eFXeXWanMke4xljQ=;
+        b=JNKFpq/QKGvZmdpQZ+lvKN3jTp9UteIHfZ3XyY+PxY2Yc5zbQB6Jk/wbWGL0HqmYp5
+         DVkGNrcilkHP+Qgk9CzLg4WQGh6QQubWk19uL/bt1c2Hf5HNa5ROSmzwKtbLlrl0hzOj
+         zLuSplKOlTg+hCKJsBZbvXaJl4sJk8mi1JALFQvHi2h/gYq+QRnCwIePrMw1crbL/2Fq
+         RfHz89n/yvo6Bklvcg4aJpfoA+skkIjFyVhO86Z25KIz7TcrW99xHHmOGwzNcxwfDcxd
+         YBXdxivNsPD2cJIOTS/+ccbhWDDeVze7jAFmwIfocjn9wjyWMU2w4XID4eXzcgHrBbrf
+         /5Ug==
+X-Gm-Message-State: AOAM5311E+5I/pNINnP4gpxjxTWHufGe8JCZrkPpn74RUyS3N6AZnX/A
+        GcDYRglpbEyk/A+UNN04WZjW2r/CD1Slbigzg+0=
+X-Google-Smtp-Source: ABdhPJw1/g3wq98ZWZ7Mub/gSMRzcKLI2KSYxEUZBwFPH9q46gVskXknhgzycEgPOLrxJEcqlXSe/EjRm92OzoRwM0w=
+X-Received: by 2002:a17:907:968f:b0:6db:a3c5:ae3e with SMTP id
+ hd15-20020a170907968f00b006dba3c5ae3emr5601661ejc.770.1647071189988; Fri, 11
+ Mar 2022 23:46:29 -0800 (PST)
 MIME-Version: 1.0
+References: <CAPM=9txhThmkeKMjTVXGL+RYQDxBZv2c4syb_3V7WF=8sZhaHQ@mail.gmail.com>
+ <c5d6fd7b-54ff-e407-2da8-ea2a6157fbff@leemhuis.info>
+In-Reply-To: <c5d6fd7b-54ff-e407-2da8-ea2a6157fbff@leemhuis.info>
 From:   Dave Airlie <airlied@gmail.com>
-Date:   Sat, 12 Mar 2022 17:45:38 +1000
-Message-ID: <CAPM=9tyAqzcvaba2OffVt_EEP_1tQc3UV6h1J92An0uKOF1TJA@mail.gmail.com>
-Subject: [git pull] drm fixes for 5.17-rc8 (kconfig fix)
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        regressions@leemhuis.info, Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
+Date:   Sat, 12 Mar 2022 17:46:18 +1000
+Message-ID: <CAPM=9twQe2S11C+kLBLbqt1aabnu8x79BZugRnjg6aN4NBvw-A@mail.gmail.com>
+Subject: Re: [git pull] drm fixes for 5.17-rc8/final
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Fri, 11 Mar 2022 at 17:51, Thorsten Leemhuis
+<regressions@leemhuis.info> wrote:
+>
+> On 11.03.22 06:15, Dave Airlie wrote:
+> >
+> > As expected at this stage its pretty quiet, one sun4i mixer fix and
+> > one i915 display flicker fix.
+> >
+> > Thanks,
+> > Dave.
+> >
+> > drm-fixes-2022-03-11:
+> > drm fixes for v5.17-rc8/final
+> >
+> > i915:
+> > - psr fix screen flicker
+> >
+> > sun4i:
+> > - mixer format fix.
+> > The following changes since commit ffb217a13a2eaf6d5bd974fc83036a53ca69f1e2:
+> > [...]
+>
+> Out of curiosity: I might be missing something, but why wasn't the
+> (afaics simple) fix for a build problem caused by 9d6366e743f3 ("drm:
+> fb_helper: improve CONFIG_FB dependency") (merged for v5.16-rc1) not
+> among these fixes? I mean this one:
+> https://lore.kernel.org/lkml/20220203093922.20754-1-tzimmermann@suse.de/
+>
+> It's sitting in next for a few days already:
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=master&id=eea89dff4c39a106f98d1cb5e4d626f8c63908b9
+>
+> I already asked a few days ago why this fix was not on track for merging
+> in this cycle, but I didn't get an answer:
+> https://lore.kernel.org/lkml/782a683e-c625-8e68-899b-ce56939afece@leemhuis.info/
+>
+> Fun fact: It seems the problem and at a rough fix were already kinda
+> known mid November when 9d6366e743f3 was still in next:
+> https://lore.kernel.org/all/20211117062704.14671-1-rdunlap@infradead.org/
+>
+> Then the issue was reported again two times in February:
+> https://lore.kernel.org/dri-devel/CA+G9fYvN0NyaVkRQmA1O6rX7H8PPaZrUAD7=RDy33QY9rUU-9g@mail.gmail.com/
+> https://lore.kernel.org/lkml/YhofdlzadzRmy7tj@debian/
+>
+> And the fix is relative simple, that's why I wonder why merging is
+> delayed. What am I missing?
 
-Thorsten pointed out this had fallen down the cracks and was in -next
-only, I've picked it out, fixed up it's Fixes: line.
+My radar just missed it, though someone else should have realised it
+was necessary on fixes earlier, it also had incorrect Fixes: tagging,
+so I fixed that and sent it to Linus,
 
 Thanks,
 Dave.
-
-drm-fixes-2022-03-12:
-drm kconfig fix for 5.17-rc8
-
-- fix regression in Kconfig.
-The following changes since commit 30eb13a26014ca640b5eb57b6d010114084d5c92:
-
-  Merge tag 'drm-intel-fixes-2022-03-10' of
-git://anongit.freedesktop.org/drm/drm-intel into drm-fixes (2022-03-11
-13:26:19 +1000)
-
-are available in the Git repository at:
-
-  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-03-12
-
-for you to fetch changes up to 3755d35ee1d2454b20b8a1e20d790e56201678a4:
-
-  drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP (2022-03-12 17:41:30 +1000)
-
-----------------------------------------------------------------
-drm kconfig fix for 5.17-rc8
-
-- fix regression in Kconfig.
-
-----------------------------------------------------------------
-Thomas Zimmermann (1):
-      drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
-
- drivers/gpu/drm/panel/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
