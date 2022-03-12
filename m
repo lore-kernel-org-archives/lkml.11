@@ -2,119 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67136C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 18:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 362F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 18:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232455AbiCLSnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 13:43:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
+        id S232467AbiCLSom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 13:44:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232444AbiCLSnT (ORCPT
+        with ESMTP id S232457AbiCLSoi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 13:43:19 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0F46A038;
-        Sat, 12 Mar 2022 10:42:13 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id h11so16420994ljb.2;
-        Sat, 12 Mar 2022 10:42:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=g1uGOM5u14MmhWi9rlkVl0ueDCnCUd0QgmfYxjyLPSc=;
-        b=Z4FtFIHnrBs7Bo7clCb9t3fLwNx468Jj88pgZxP6sJMo4S5aiVj+ZE5Q+0kJ280rS1
-         zY3T8SzGFrB72+A4x9ZSpSql4Zn1C8waUytrhkahQQ/70zNjQuARP3r+UR/TDMQCUI0E
-         a/0N71LoJpc5yEZ3btQw1d+EvlNst37lVk8hnFEJfZxEcTeP1xbFI3AC//OeLNpdrhKY
-         AajyDBgEzz3XkJ+iMEobjGjCDi084v0vQKqFrCH7EHk5Mc/wH6hsZwJOaM+fMK5ukaLX
-         1h3j0RiaW7/Jxhzq4ip9HyrG8/tlEzvbYivJpENh+ekzTGEMZzTI8vWYxCEF+US6iTFg
-         ydiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g1uGOM5u14MmhWi9rlkVl0ueDCnCUd0QgmfYxjyLPSc=;
-        b=m35IyY40/oSDOIyGbSc5C+DtGkJoNkOSkPBt6cOU3pzP48bz/UUgko7zM2F8SA4+NY
-         RosyuAUXeiHSec+EOGy5eAeXCZ8b2svgNxNnfjjQqN3sry0SxNzZhZ5UC8GL2m8kMQQM
-         ff+8PvFMg2xBGnA+TG8S2DTEt60vNyaCIF1YGd5xI/hDXIkOnXD3ff3qCvgwIEiQmsWO
-         bFmTkS0oXS0msALp9i61ZkQcMSgjgxyMtuJwT3xz6rdEYIIxW8dHgNC6T2Vyh3guZmmJ
-         g5SrILHNuAnITVCN/rkuCuPLSXD5jlF4+rit3pjxxxI9cH9hDQH5YmZdLJyHhRsdVMKB
-         pIFA==
-X-Gm-Message-State: AOAM532Gr1SbizDaSeBpQMC21CQp4m4eIBahj21XlG06gIRIDrBkAjym
-        yGC7GvhEDhl0e6jI4cmdt/+WYHIq44LiO0zV
-X-Google-Smtp-Source: ABdhPJxNolyjlitctLsfFGw0Iq5X8GG9Jj2XPpzo27cyK/1MpnmQZpOOMTK9SCSE2ehkP6rkwejY3A==
-X-Received: by 2002:a05:651c:a08:b0:247:eb2e:fb04 with SMTP id k8-20020a05651c0a0800b00247eb2efb04mr9442297ljq.524.1647110531727;
-        Sat, 12 Mar 2022 10:42:11 -0800 (PST)
-Received: from localhost.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id b1-20020ac247e1000000b0044842b76861sm2311236lfp.140.2022.03.12.10.42.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Mar 2022 10:42:11 -0800 (PST)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, ~postmarketos-upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH v1 2/2] extcon: sm5502: Add support for SM5703
-Date:   Sat, 12 Mar 2022 20:41:54 +0200
-Message-Id: <20220312184156.24912-3-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220312184156.24912-1-markuss.broks@gmail.com>
-References: <20220312184156.24912-1-markuss.broks@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 12 Mar 2022 13:44:38 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB855723D4;
+        Sat, 12 Mar 2022 10:43:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 23B91CE0DC6;
+        Sat, 12 Mar 2022 18:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8CDA9C340EE;
+        Sat, 12 Mar 2022 18:43:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647110609;
+        bh=dun9hxN9g43cQ3j5ZU76+2IfU6GtG+uBgFxLzLlFA3g=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=IoWK3V7yNiQ8MZ3drHMIYE1+58QEsewFgqw5str1rf5LorYd9QrYKDWBLcvDYf0a3
+         V9MELln4ML0er5NPAap84Gs0wzc3SsAvymTAtqbw1gCFRiuOFSlzvjUVootXn5qZ+x
+         GBV0UIz3sARnF6+4bX8b2vEIPsWXZMiRBK1d+EB8LZYWqx9O+kfE+qoJvpnl3y2rs2
+         k7ulXxVRKdAADoX+/PAo1WLWyT6xODLZHSbkaJQcqauVI+WgsH1n+bSa+QucM+y6Or
+         nGhFwYAwsjQvAxYDZgpZ7IP5t/SM0w2UVtu5uj3HyNoDRba0k4PTeBB1oJTcw5UEhA
+         /r305N0NaeTPg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 784EBE73C2D;
+        Sat, 12 Mar 2022 18:43:29 +0000 (UTC)
+Subject: Re: [GIT PULL] perf tools fixes for v5.17: 4th batch
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220312155723.1149183-1-acme@kernel.org>
+References: <20220312155723.1149183-1-acme@kernel.org>
+X-PR-Tracked-List-Id: <linux-perf-users.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220312155723.1149183-1-acme@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.17-2022-03-12
+X-PR-Tracked-Commit-Id: 91c9923a473a694eb1c5c01ab778a77114969707
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: aad611a868d16cdc16a7d4a764cef955293e47e3
+Message-Id: <164711060948.14941.5750042589298580024.pr-tracker-bot@kernel.org>
+Date:   Sat, 12 Mar 2022 18:43:29 +0000
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Clark Williams <williams@redhat.com>,
+        Kate Carcia <kcarcia@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Weiguo Li <liwg06@foxmail.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SM5703 is another MFD from Silicon Mitus which has a very similar MUIC
-unit to the one in SM5502. The only difference I've noticed is slightly different
-configuration only enables the interrupts which are exactly the same as on SM5502.
-If we make use of different interrupts in the future, this can be improved by having
-a separate struct for SM5703, but the main functionality (detecting cable or OTG adapter)
-is working properly.
+The pull request you sent on Sat, 12 Mar 2022 12:57:23 -0300:
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- drivers/extcon/Kconfig         | 2 +-
- drivers/extcon/extcon-sm5502.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.17-2022-03-12
 
-diff --git a/drivers/extcon/Kconfig b/drivers/extcon/Kconfig
-index 0d42e49105dd..88a8b3d7d78a 100644
---- a/drivers/extcon/Kconfig
-+++ b/drivers/extcon/Kconfig
-@@ -156,7 +156,7 @@ config EXTCON_RT8973A
- 	  from abnormal high input voltage (up to 28V).
- 
- config EXTCON_SM5502
--	tristate "Silicon Mitus SM5502/SM5504 EXTCON support"
-+	tristate "Silicon Mitus SM5502/SM5504/SM5703 EXTCON support"
- 	depends on I2C
- 	select IRQ_DOMAIN
- 	select REGMAP_I2C
-diff --git a/drivers/extcon/extcon-sm5502.c b/drivers/extcon/extcon-sm5502.c
-index 93da2d8379b1..17a40c3782ee 100644
---- a/drivers/extcon/extcon-sm5502.c
-+++ b/drivers/extcon/extcon-sm5502.c
-@@ -798,6 +798,7 @@ static const struct sm5502_type sm5504_data = {
- static const struct of_device_id sm5502_dt_match[] = {
- 	{ .compatible = "siliconmitus,sm5502-muic", .data = &sm5502_data },
- 	{ .compatible = "siliconmitus,sm5504-muic", .data = &sm5504_data },
-+	{ .compatible = "siliconmitus,sm5703-muic", .data = &sm5502_data },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, sm5502_dt_match);
-@@ -830,6 +831,7 @@ static SIMPLE_DEV_PM_OPS(sm5502_muic_pm_ops,
- static const struct i2c_device_id sm5502_i2c_id[] = {
- 	{ "sm5502", (kernel_ulong_t)&sm5502_data },
- 	{ "sm5504", (kernel_ulong_t)&sm5504_data },
-+	{ "sm5703", (kernel_ulong_t)&sm5502_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, sm5502_i2c_id);
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/aad611a868d16cdc16a7d4a764cef955293e47e3
+
+Thank you!
+
 -- 
-2.35.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
