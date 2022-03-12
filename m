@@ -2,95 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E31C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 13:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A9E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 13:48:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231779AbiCLNsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 08:48:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
+        id S231955AbiCLNth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 08:49:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231699AbiCLNr5 (ORCPT
+        with ESMTP id S231699AbiCLNtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 08:47:57 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49C24F476;
-        Sat, 12 Mar 2022 05:46:49 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id e6so13068594lfc.1;
-        Sat, 12 Mar 2022 05:46:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YhT9hr883XEA4HVpbnlXz1RtCYAWAHmAITaWaM00IqQ=;
-        b=BUEZbTI4dUbp/fqGnLyBe/d8iC9iH2iOo3vURg8uqKUqZIye7/BiROG9+KqA/sBt/S
-         rGl2b5saJMnYHhAjICvm+TdNwkeqxVUly9yfZBdWMqZqVqqG+majtIEtGZYvliK7RISP
-         GGoRHPw/Qka96+3ilrUtCgACvVCnWl3nZ7tO4WIw0wLmL5RvHDYsKb9fu+O2zDo7R1jH
-         axSM/BSKStLoO9XPmftjkWM3evpfH9ls9m1WQnLECm+EvNku6KLgak9U1PBXNO/pBPvC
-         NL2Iw3bw6pYb68J8VtTq/d6Psja7ZoaMzeShpqgX35XZiY+9EaxmoIY57f2fKKF/HUeU
-         0COw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YhT9hr883XEA4HVpbnlXz1RtCYAWAHmAITaWaM00IqQ=;
-        b=PxBFWSOpGStTVE21V1G8f55aEdktA9Bx5QCBNz3NMIoajJFMOGMWSmKt8WzDP+MI+2
-         F7Ro1cjuT1fd4vpDLeABEMtGqpAEcYBMALw/ibp5jwSot28TyM2BXi2Bg62J5tPoUA2V
-         nAJ2fTZpdynex/+eYWQpb2jpTUtYHGXBwIxgt7gkfViSZdNyPe1P/gwbYcKgoogYL4vT
-         KnDoaLQo/slmfpEdUvliufqryx9YxZVRGA2QMYS+iBTMuyzcFLDXCATWbZWIVUqCX2YQ
-         aP675GzTzuUqiw9ARZ17exgLKxJFFdQyszHdK1r8q+pvIYL1os+02umlnzpiWXSyFF0F
-         HL+Q==
-X-Gm-Message-State: AOAM531km/D1p/4iaEuDz0DPPAeNZjVVgna+6PivlDfm1qCfcQw+6oP3
-        siKr4Mj6dShnMdv9tOhiJ+s=
-X-Google-Smtp-Source: ABdhPJy9p1jDB866V18WNktXttY5ah85fSiIpQ/ZJfPWDanT6KTGfuJygSUXZHUaQOYIP8FPen4Q/A==
-X-Received: by 2002:ac2:5598:0:b0:448:1c0f:b7db with SMTP id v24-20020ac25598000000b004481c0fb7dbmr8490016lfg.585.1647092807922;
-        Sat, 12 Mar 2022 05:46:47 -0800 (PST)
-Received: from [192.168.2.145] (109-252-136-171.dynamic.spd-mgts.ru. [109.252.136.171])
-        by smtp.googlemail.com with ESMTPSA id z10-20020a19504a000000b004483c8359f9sm2189035lfj.131.2022.03.12.05.46.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Mar 2022 05:46:47 -0800 (PST)
-Message-ID: <4968263c-b4c5-0e54-22f1-81cc43d93b83@gmail.com>
-Date:   Sat, 12 Mar 2022 16:46:46 +0300
+        Sat, 12 Mar 2022 08:49:36 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFE24132A
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 05:48:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647092911; x=1678628911;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=pktZjBrmCLIoDX7PEJiMf940Ias3pHV3h3Lksk4acnU=;
+  b=bFcKynMCrbBWHjXYfKrQU9Y7gDEeZer7rMrEdsYzhDazrCdhuQu3F6Ih
+   0TpQK3aSMMIUEExl7ifW3MGh2iG6AA4UqmgN1Egrz9KpYaDjyt+lUmZPu
+   6nFLAUEenUY2k4Z0lgLENBusy5smV7wjKxmxpUxqeklfAKok85p7dXMzz
+   sHwefeh7M3QDFjqjzMNGTb8h5kehL6Y7dO9N5MCeTmERh5a1qWN0iiGCr
+   Z78yCRSp+OyL+/DVVsn7MKQ1wLdf7Rp0HxFFw9JJWTzUGopCcTO/TZi7M
+   pEkho2NMRO9hyAz9Bl1V7mvdbff8CCre/ZPpmb8ZI/hinzdiJgWNOa89l
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="236396116"
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="236396116"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 05:48:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,175,1643702400"; 
+   d="scan'208";a="782163804"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 12 Mar 2022 05:48:29 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nT26f-0007v5-53; Sat, 12 Mar 2022 13:48:29 +0000
+Date:   Sat, 12 Mar 2022 21:48:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Youghandhar Chintala <youghand@codeaurora.org>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [ammarfaizi2-block:netdev/net-next/master 41/77] ERROR: modpost:
+ "ieee80211_sta_restart" [net/mac80211/mac80211.ko] undefined!
+Message-ID: <202203122112.fsBABwhb-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 30/38] media: platform: vde: move config to its own
- file
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     =?UTF-8?Q?Niklas_S=c3=b6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <cover.1647006877.git.mchehab@kernel.org>
- <ffd86389feee80c36309aab89c30990e4fd80f4b.1647006877.git.mchehab@kernel.org>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <ffd86389feee80c36309aab89c30990e4fd80f4b.1647006877.git.mchehab@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-11.03.2022 17:07, Mauro Carvalho Chehab пишет:
-> In order to better organize the platform/Kconfig, place
-> vde-specific config stuff on a separate Kconfig file.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH v2 00/38] at: https://lore.kernel.org/all/cover.1647006877.git.mchehab@kernel.org/
-> 
->  drivers/media/platform/Kconfig           | 19 +------------------
->  drivers/media/platform/tegra/vde/Kconfig | 17 +++++++++++++++++
->  2 files changed, 18 insertions(+), 18 deletions(-)
->  create mode 100644 drivers/media/platform/tegra/vde/Kconfig
+tree:   https://github.com/ammarfaizi2/linux-block netdev/net-next/master
+head:   625788b5844511cf4c30cffa7fa0bc3a69cebc82
+commit: 7d352ccf1e9935b5222ca84e8baeb07a0c8f94b9 [41/77] mac80211: Add support to trigger sta disconnect on hardware restart
+config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220312/202203122112.fsBABwhb-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/7d352ccf1e9935b5222ca84e8baeb07a0c8f94b9
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block netdev/net-next/master
+        git checkout 7d352ccf1e9935b5222ca84e8baeb07a0c8f94b9
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
 
-Acked-by: Dmitry Osipenko <digetx@gmail.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "ieee80211_sta_restart" [net/mac80211/mac80211.ko] undefined!
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
