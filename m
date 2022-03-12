@@ -2,112 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71890C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 15:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C5F5C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Mar 2022 15:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231862AbiCLP1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 10:27:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54008 "EHLO
+        id S231937AbiCLPcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 10:32:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231791AbiCLP06 (ORCPT
+        with ESMTP id S230460AbiCLPcV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 10:26:58 -0500
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id DA5855C35A
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 07:25:52 -0800 (PST)
-Received: (qmail 1618232 invoked by uid 1000); 12 Mar 2022 10:25:52 -0500
-Date:   Sat, 12 Mar 2022 10:25:52 -0500
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     syzbot <syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com>,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, pavel.hofman@ivitera.com,
-        rob@robgreener.com, syzkaller-bugs@googlegroups.com
-Subject: Re: [syzbot] memory leak in usb_get_configuration
-Message-ID: <Yiy7gEfSPZlfLHSY@rowland.harvard.edu>
-References: <000000000000351b8605d9d1d1bf@google.com>
- <Yiu4tCONfHVH1Qfv@rowland.harvard.edu>
- <d17aef8a-adbe-9d90-3173-60eb2f0828a5@gmail.com>
+        Sat, 12 Mar 2022 10:32:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E90F192580;
+        Sat, 12 Mar 2022 07:31:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3CBC60FE8;
+        Sat, 12 Mar 2022 15:31:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 014BBC340EB;
+        Sat, 12 Mar 2022 15:31:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647099073;
+        bh=bDZ5NHHcQ90J++YX6s/PLHNFT8CKgniuzbMo97CWXHQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KFQyc9EB4uB/9ZHnOI1jDok+Gtl1TMUJ1ME63v6hbGeEUMJO5Rx0H2Nvy8r0tf492
+         WMBc5KEx6EU/VLzOfqh6Q+1w1zN6JdSAOvZHbN8Ut0IQT/kEdq/97lQNUPHCjYdMH+
+         +Ym7J9B/4AOdIMXKGn6YtKypKIQHPaCLTwqRxXmsQHsusPxUA2IsZHjwfze4ENZVT9
+         IvVb8a4syaDHid5BWIouHIwzRA0ihrsEBl1GWRyFqT0ruXnozCHs17rI37AGp6QIo3
+         1Y2w0iQXo3bxFNxdv3dU56R3/eZ1qAthTHUSBlzTDmECsuKyugS/Z7WDUqx9vjSi8X
+         /pGNNd8de21gQ==
+Date:   Sat, 12 Mar 2022 16:31:05 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Dillon Min <dillon.minfei@gmail.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Mirela Rabulea <mirela.rabulea@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org
+Subject: Re: [PATCH v2 07/38] media: platform: place NXP drivers on a
+ separate dir
+Message-ID: <20220312163105.1e97ba0c@coco.lan>
+In-Reply-To: <7dedaf783d9bc7d26adb427003c17bcdc3f82193.camel@pengutronix.de>
+References: <cover.1647006877.git.mchehab@kernel.org>
+        <723fbc3e03d8817916a085e218befd6400d299a3.1647006877.git.mchehab@kernel.org>
+        <7dedaf783d9bc7d26adb427003c17bcdc3f82193.camel@pengutronix.de>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d17aef8a-adbe-9d90-3173-60eb2f0828a5@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 06:08:18PM +0300, Pavel Skripkin wrote:
-> Hi Alan,
-> 
-> On 3/12/22 00:01, Alan Stern wrote:
-> > On Wed, Mar 09, 2022 at 03:54:24PM -0800, syzbot wrote:
-> > > Hello,
-> > > 
-> > > syzbot found the following issue on:
-> > > 
-> > > HEAD commit:    0014404f9c18 Merge branch 'akpm' (patches from Andrew)
-> > > git tree:       upstream
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=15864216700000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=3f0a704147ec8e32
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=f0fae482604e6d9a87c9
-> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13a63dbe700000
-> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10e150a1700000
-> > > 
-> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > Reported-by: syzbot+f0fae482604e6d9a87c9@syzkaller.appspotmail.com
-> > > 
-> > > BUG: memory leak
-> > > unreferenced object 0xffff88810c0289e0 (size 32):
-> > >   comm "kworker/1:2", pid 139, jiffies 4294947862 (age 15.910s)
-> > >   hex dump (first 32 bytes):
-> > >     09 02 12 00 01 00 00 00 00 09 04 00 00 00 d0 bb  ................
-> > >     3a 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  :...............
-> > >   backtrace:
-> > >     [<ffffffff82c98127>] kmalloc include/linux/slab.h:586 [inline]
-> > >     [<ffffffff82c98127>] usb_get_configuration+0x1c7/0x1cd0 drivers/usb/core/config.c:919
-> > >     [<ffffffff82c863f9>] usb_enumerate_device drivers/usb/core/hub.c:2398 [inline]
-> > >     [<ffffffff82c863f9>] usb_new_device+0x1a9/0x2e0 drivers/usb/core/hub.c:2536
-> > >     [<ffffffff82c88ea4>] hub_port_connect drivers/usb/core/hub.c:5358 [inline]
-> > >     [<ffffffff82c88ea4>] hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
-> > >     [<ffffffff82c88ea4>] port_event drivers/usb/core/hub.c:5660 [inline]
-> > >     [<ffffffff82c88ea4>] hub_event+0x1364/0x21a0 drivers/usb/core/hub.c:5742
-> > >     [<ffffffff8126a41f>] process_one_work+0x2bf/0x600 kernel/workqueue.c:2307
-> > >     [<ffffffff8126ad49>] worker_thread+0x59/0x5b0 kernel/workqueue.c:2454
-> > >     [<ffffffff81274705>] kthread+0x125/0x160 kernel/kthread.c:377
-> > >     [<ffffffff810021ef>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-> > 
-> > The console log shows that this is connected to gspca_dev_probe.  Let's
-> > see who's calling it...
-> > 
-> 
-> The execution path is more complicated. I've done some debugging, but no
-> luck with root case... Just want to share what I found and maybe it will
-> help.
-> 
-> Firsly syzbot connects carl9170 device (usb ids from the log).
-> carl9170_usb_probe() calls usb_reset_device() which fails with -19. If I
-> remove this usb_reset_device() call then issue is no more reproducible.
-> 
-> Then 2 other probes are called: usbtest and spca501. spca501 calls
-> gspca_dev_probe(), but it fails early and I do not suspect this driver.
-> usbtest probe function also looks correct, so I do not suspect this driver
-> as well.
-> 
-> Looks like the issue either in usb_reset_device() call or somewhere in usb
-> internals
+Em Fri, 11 Mar 2022 15:33:36 +0100
+Philipp Zabel <p.zabel@pengutronix.de> escreveu:
 
-Okay, thanks for the information.
+> On Fr, 2022-03-11 at 15:07 +0100, Mauro Carvalho Chehab wrote:
+> > In order to cleanup the main platform media directory, move NXP
+> > driver to its own directory.
+> >=20
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> > ---
+> >=20
+> > To avoid mailbombing on a large number of people, only mailing lists
+> > were C/C on the cover.
+> > See [PATCH v2 00/38] at: =20
+> > https://lore.kernel.org/all/cover.1647006877.git.mchehab@kernel.org/
+> >  =20
+> [...]
+> > diff --git a/drivers/media/platform/nxp/Makefile
+> > b/drivers/media/platform/nxp/Makefile
+> > new file mode 100644
+> > index 000000000000..147bd7ad4ef4
+> > --- /dev/null
+> > +++ b/drivers/media/platform/nxp/Makefile
+> > @@ -0,0 +1,5 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +
+> > +obj-$(CONFIG_VIDEO_IMX_PXP)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0+=3D imx-pxp.o
+> > +obj-$(CONFIG_VIDEO_VIU)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0+=3D fsl-viu.o
+> > +obj-$(CONFIG_VIDEO_MX2_EMMAPRP)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0+=3D mx2_emmaprp.o=
+ =20
+>=20
+> Should these be sorted as well?
 
-Is there any reason for carl9170_usb_probe to do a reset?  I can't 
-imagine why that would be needed.  Maybe the simplest solution is just 
-to remove the reset.
+I'll sort and drop the extra whitespaces.
 
-Unfortunately, that won't tell us where the extra reference is coming 
-from.  Here's one thing you could do if you want to continue your 
-debugging: At the start of the probe routines for carl9170, usbtest, and 
-spca501, add code to print in the kernel log the reference count value 
-for the usb_device and usb_interface.  Maybe you'll be able to see where 
-the refcount goes up.
+>=20
+> regards
+> Philipp
 
-Alan Stern
+
+
+Thanks,
+Mauro
