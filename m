@@ -2,31 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 332D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 15:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8220C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 15:11:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234968AbiCMPMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 11:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
+        id S233172AbiCMPMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 11:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234843AbiCMPML (ORCPT
+        with ESMTP id S234828AbiCMPMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 11:12:11 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D701E8933E;
-        Sun, 13 Mar 2022 08:10:54 -0700 (PDT)
-X-UUID: 7858f9842ac7414e83452ae4b8859799-20220313
-X-UUID: 7858f9842ac7414e83452ae4b8859799-20220313
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        Sun, 13 Mar 2022 11:12:08 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8DD888D6;
+        Sun, 13 Mar 2022 08:10:53 -0700 (PDT)
+X-UUID: c6224603de6f45a1b82afd12952ba3ab-20220313
+X-UUID: c6224603de6f45a1b82afd12952ba3ab-20220313
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
         (envelope-from <jiaxin.yu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 501481428; Sun, 13 Mar 2022 23:10:43 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sun, 13 Mar 2022 23:10:41 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 118659618; Sun, 13 Mar 2022 23:10:46 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sun, 13 Mar 2022 23:10:44 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 13 Mar
+ 2022 23:10:44 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 13 Mar 2022 23:10:40 +0800
+ Transport; Sun, 13 Mar 2022 23:10:43 +0800
 From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
 To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
         <angelogioacchino.delregno@collabora.com>
@@ -39,9 +42,9 @@ CC:     <aaronyu@google.com>, <matthias.bgg@gmail.com>,
         <linux-kernel@vger.kernel.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Jiaxin Yu <jiaxin.yu@mediatek.com>
-Subject: [v3 16/19] dt-bindings: mediatek: mt8186: add mt8186-mt6366-da7219-max98357 document
-Date:   Sun, 13 Mar 2022 23:10:20 +0800
-Message-ID: <20220313151023.21229-17-jiaxin.yu@mediatek.com>
+Subject: [v3 19/19] ASoC: mediatek: mt6358: add missing EXPORT_SYMBOLs
+Date:   Sun, 13 Mar 2022 23:10:23 +0800
+Message-ID: <20220313151023.21229-20-jiaxin.yu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220313151023.21229-1-jiaxin.yu@mediatek.com>
 References: <20220313151023.21229-1-jiaxin.yu@mediatek.com>
@@ -53,67 +56,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add document for mt8186 board with mt6366, da7219 and max98357.
+This fixes the following build errors when mt6358 is configured as module:
+
+>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+>> [sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.ko] undefined!
+>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
+>> [sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.ko] undefined!
 
 Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 ---
- .../sound/mt8186-mt6366-da7219-max98357.yaml  | 47 +++++++++++++++++++
- 1 file changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
+ sound/soc/codecs/mt6358.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml b/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
-new file mode 100644
-index 000000000000..adef16a4630c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/mt8186-mt6366-da7219-max98357.yaml
-@@ -0,0 +1,47 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/mt8186-mt6366-da7219-max98357.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek MT8186 with MT6366, DA7219 and MAX98357 ASoC sound card driver
-+
-+maintainers:
-+  - Jiaxin Yu <jiaxin.yu@mediatek.com>
-+
-+description:
-+  This binding describes the MT8186 sound card.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mediatek,mt8186_mt6366_da7219_max98357_sound
-+
-+  mediatek,platform:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: The phandle of MT8186 ASoC platform.
-+
-+  mediatek,hdmi-codec:
-+    $ref: "/schemas/types.yaml#/definitions/phandle"
-+    description: The phandle of HDMI codec.
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - mediatek,platform
-+
-+examples:
-+  - |
-+
-+    sound: mt8192-sound {
-+        compatible = "mediatek,mt8186_mt6366_da7219_max98357_sound";
-+        mediatek,platform = <&afe>;
-+        mediatek,hdmi-codec = <&anx_bridge_dp>;
-+        pinctrl-names = "aud_clk_mosi_off",
-+                        "aud_clk_mosi_on";
-+        pinctrl-0 = <&aud_clk_mosi_off>;
-+        pinctrl-1 = <&aud_clk_mosi_on>;
-+    };
-+
-+...
+diff --git a/sound/soc/codecs/mt6358.c b/sound/soc/codecs/mt6358.c
+index 1fdd2f8cf877..61f2a7632fd4 100644
+--- a/sound/soc/codecs/mt6358.c
++++ b/sound/soc/codecs/mt6358.c
+@@ -107,6 +107,7 @@ int mt6358_set_mtkaif_protocol(struct snd_soc_component *cmpnt,
+ 	priv->mtkaif_protocol = mtkaif_protocol;
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_protocol);
+ 
+ static void playback_gpio_set(struct mt6358_priv *priv)
+ {
+@@ -273,6 +274,7 @@ int mt6358_mtkaif_calibration_enable(struct snd_soc_component *cmpnt)
+ 			   1 << RG_AUD_PAD_TOP_DAT_MISO_LOOPBACK_SFT);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_enable);
+ 
+ int mt6358_mtkaif_calibration_disable(struct snd_soc_component *cmpnt)
+ {
+@@ -296,6 +298,7 @@ int mt6358_mtkaif_calibration_disable(struct snd_soc_component *cmpnt)
+ 	capture_gpio_reset(priv);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_disable);
+ 
+ int mt6358_set_mtkaif_calibration_phase(struct snd_soc_component *cmpnt,
+ 					int phase_1, int phase_2)
+@@ -310,6 +313,7 @@ int mt6358_set_mtkaif_calibration_phase(struct snd_soc_component *cmpnt,
+ 			   phase_2 << RG_AUD_PAD_TOP_PHASE_MODE2_SFT);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_calibration_phase);
+ 
+ /* dl pga gain */
+ enum {
 -- 
 2.18.0
 
