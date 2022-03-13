@@ -2,54 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 484B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 22:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 22:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235606AbiCMWqt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 18:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58754 "EHLO
+        id S235638AbiCMWq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 18:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235585AbiCMWqr (ORCPT
+        with ESMTP id S235614AbiCMWqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 18:46:47 -0400
+        Sun, 13 Mar 2022 18:46:49 -0400
 Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2132.outbound.protection.outlook.com [40.107.244.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1967474616
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 15:45:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD9574628
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 15:45:41 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f0tz4GpDjYhkVNB7LZZC59nelFU7bkRP/IjlJ9ocdHxDhotefPmR/svTFw83UZwS/tq1gcCU5Cr8go6quyFSvZcDIg5QAv1lTQGUOQFmGRZPKSvg8+j5kX72I8N5TT4wVETcpGhj6cwO2h3LBt39iZ6K2oayTXCZ63ZInoCjcWRlDs6rhEx9DfNFV3XlLqleZHbIRh8ea3tg4om1Hc5m8bHnYRNLMYQGUiOPOs1WiAVBbgjq9BuXQ7qekBoQGJNyhBRUmhM3xkjhsgvtcmn0z++MKeSMUaYKVSKUUuHbheja2Xuu04S2lu5KB4krtD8PspFsXrbxu2nx+TQpPKDY+A==
+ b=RBS+wzDU9fTPS59kcIvEKnTgUiC8neVG+MzLQHzP5JRTxF9+8p5/qMm6TXzN+mMxE6PnbOx8hDjYS7nkKoWRQw6vFVdVQLo3fFuaN23evl2iBHQoZDgbhPH4Rhcd5zcgdqpvUDmemI90hbdcJ9UDmC16xS+vDBTUTBz6gwiMwYg+rGO3fZnZv59w5Fp/A5jDy2rywA2zmn7mrnJS1xh7NlruJb2zqcRuc4v06qndW9S6rcLxGyt6TU0/etGLlvVrzOqZJdvjJ5CAvqZKPKnDr+4xL2eYlZyhOiBIWhvrPId2npKlD6mVJu4SyDotx63xUwVN0Cfmx0u0tttr1YTvxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KeySgBclTvkWUy5IwTcS8H4IaM0bjl+/vdn644eCILg=;
- b=mf6GE8rnt6CRiIwAH3AI9ZN4poq+K/PznhKQX7o3glg8VWBsFUNO0F3sjJkBF4x+uyLqycP2c+pa/M0JwYtFv4nAdWuznd7BveNQNYVd4KxnFu3MZqeXz1SnrncprpT8sU8MgWZrUMlSXNkRyAhEm2A5+pCm20Gy/cV9QiobW+cBy+rg8VkAMaIkGFrraLci12lRsi4yqpfm0TjcQzOOHOKMbx2tXFUpjjrQacqYeuih+xeii035WcTel58PZfbQfSGFhT1Yq8Y8dyAhQM1bDSdqtr51kf8RF5A9n6JEYpDq9tmNsUqhhRuDKqoupQq5OrUCQ3m8kKv9X5LirkTZ/Q==
+ bh=lH7ZC0QqqpoiU4/EBEbLeSWFB/Jb+IHK4HCKbYx2nyI=;
+ b=jj+sOFo+45q4xtNNkAnljU0X/+3QbuCgw0D8e/xy7oOLBNxZs3Qpdh4U6U7Fi3uHs3UUg1Vtvkj1wzd78MgQrvRAL5v8yUhVZgVi3IKr412K5vfTP3rMZWbeNDQB9vK7ljzRkQLGvYu7Hn1FyiS+uFTZ6UDD1DbwnHnZaH77H7Zp5mdPXTSpbVNQJIRt74p9Nxic5nNw1roKro43v28oGY6dS9KJFupENUwjDd+wy0b8wvJTPHhVGNcF5xQzuMWAOouOVxQ2xRrxVgUIGoaJkNNtkQgZsA8/0Cedsd96ZOq0a0d3EZrI9FHOKY4GeDEmFzrAxIBmLxzR14eiCODkew==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KeySgBclTvkWUy5IwTcS8H4IaM0bjl+/vdn644eCILg=;
- b=of4zza35jqSErt8s2vNV2X7lNhXX8BdLyh0d9XGFUddJ0NALNum1+A+p8jNqW7sFX2QOWbt61BN5Uaa21Nq32zn9+VsRAUQy0q0PxKa2rWtXox1o9Peo3kaVCUhs7Qrb+bR+UAqBzVkO9nvSAo/GjUwqRENZD+dgejYkWXcqZwQ=
+ bh=lH7ZC0QqqpoiU4/EBEbLeSWFB/Jb+IHK4HCKbYx2nyI=;
+ b=mxXjGTgNJhI6/0q9busi+D2Fx9bPW9shzMIGvaMhnWJps07XN+bqUcp8EPWP89Tw2ZVjcxS51DPxvHktQIDSdG9G8pPJwQyzi1jiM6pCfuHABJIXeXYdUdz6naMrfGlRG9zixo5JK7X7Loeq2IsvG/OhuXX3PV9bDKdD9PO6CYo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by DM5PR1001MB2379.namprd10.prod.outlook.com
  (2603:10b6:4:30::24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.19; Sun, 13 Mar
- 2022 22:45:37 +0000
+ 2022 22:45:38 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::7c:dc80:7f24:67c5]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::7c:dc80:7f24:67c5%6]) with mapi id 15.20.5061.026; Sun, 13 Mar 2022
- 22:45:36 +0000
+ 22:45:38 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Mark Brown <broonie@kernel.org>
-Subject: [RFC v1 0/2] Add more detailed regmap formatting capabilities
-Date:   Sun, 13 Mar 2022 15:45:22 -0700
-Message-Id: <20220313224524.399947-1-colin.foster@in-advantage.com>
+Subject: [RFC v1 2/2] regmap: allow a defined reg_base to be added to every address
+Date:   Sun, 13 Mar 2022 15:45:24 -0700
+Message-Id: <20220313224524.399947-3-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220313224524.399947-1-colin.foster@in-advantage.com>
+References: <20220313224524.399947-1-colin.foster@in-advantage.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: MWHPR2001CA0013.namprd20.prod.outlook.com
@@ -57,153 +59,152 @@ X-ClientProxiedBy: MWHPR2001CA0013.namprd20.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 81b8e775-ccd8-4c7f-2e45-08da054330b7
+X-MS-Office365-Filtering-Correlation-Id: 7ada5f06-aa0a-4440-fb74-08da05433169
 X-MS-TrafficTypeDiagnostic: DM5PR1001MB2379:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1001MB2379180CAD1C1CB66A8F7F21A40E9@DM5PR1001MB2379.namprd10.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR1001MB23797A1675F179A0E2CB0E49A40E9@DM5PR1001MB2379.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: atzSj7nxvWXNjwQeEwo/Jic13YBH/br8Hd1yoJAWmoLW5Nl5mbw3nUG++0ri/6FmOgcpZOTfxTl8Fg2y5bdbfyeJH2HRnMnB8jPXrKqx4xAlHBOi3eurKoaOcDuCqFN9v1zY7UiBbuFPBHtdDpEIW6JkDCAu5Qgp1Lre9Lxps0YVLaamUrA9ffv98IbIrOEFx6wMvV7+0tI10k2tgowHQOym5RUoDD2dV4k3ibsRKVjFzNPHai3OI+/FYLzPEYeC+6ao1ahnr3MG4Hj/nWCw8x1t7PGZdYu/0osvdNTXqL9dnhBPkxuVNJlEkvwG4XwJUecsiCvYsh18XJbIop4XVxRjVPxWlm1kHkvCmBEEOde7fYg25kwhlzcKa6bPYUr1gHkEnGfQ//MjvkK1UAAIrouLAagGTRvW6f3VXHloVoP5MwVZzIeSzvadLadY8u1coS6ChzTBWm8mqTYSVwJFp4Gw7VS0HR97pCdtWduVwW2LkSuNmhsWGQs9JyskdfKhK9wAPep+hQBQfANGo9k7CPS60Qk3wBodE6nl6cLyXQDgaRDO0VlWTbZI8m5ZhiAxRQ9B44Zjp5/M+XR4BF9nHvn7RwIPLNIGExsDQl2+XW+RgTe9uBTnzoczI5K1M0Mm0k5pBv7772pzxQygkdhq2xzX1SkkP/un83lsDtd9xEAqremMwGl2F/afZMgHPSNj1TkOfHMyYToudatg6Iizxw==
+X-Microsoft-Antispam-Message-Info: 5z9mULaJYLgerI7QNb12mdCCLn/FDqysfJAb/cnTd7SGuwevW04m+5zEB2x13UQUV6cN+qKzhwDbz+3Fp1Q4wEBeKdxDc7Mv4Qf6dlgsm0qLCsx+huu6dr9Kt0yGYbK+gpMnN6LffcKaP+SWHXW/lUL4qyrYHFZPEjXoZJT8eyF8VmDUImJIERRLP0LAZycQ/F6I0JkBDNkZRKQYhFW7Zyc7zLoGcMAu6j3j59uv/B6RIFenj/NkuitisTpGPb7KSHH8QxBuNU0lINkt95davbZYzW5auNUduBh6+/fMs5xCaEykXWUjQC/9NFcphTPP067TQlzKrz4NhoO+JHL5a35ZFdOIVMTtD2w5mNCtgbv8rhsJmcoZziK7T2E0hHS10VuuVBYrzDTpo14HcJVQqcrTCWOUdtYVYaoHHr3fOvzy8Ih6TYHPrNCsV5UnMqdS2tem8jx23enQQenrP11icfVXxwb9PWKDDb3OcAQDYFDz/YkRDtewSPBuIypODB27pJE2esUPAwz1frpE64vEYy7XW1szPa1MHV0Y9F6xBD7v59cK09/1pS+7OCtKTMQCV12aZ6FZqThVGrNiSTZriAclgFktzz9I8i0t52+p59iTkzHUCOATbuoEV0tvVrJfQ+6J7CEfxSd3ch+yoyWad5TjBe/8ri8ZXFjO7EXzxq15IPs+LAhCfoh13Uuc2JfAAqO/CAlmWudqSdhImHtfJA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(136003)(346002)(396003)(366004)(376002)(1076003)(66946007)(6916009)(316002)(4326008)(8676002)(6506007)(66556008)(66476007)(2616005)(6486002)(36756003)(26005)(186003)(83380400001)(6666004)(52116002)(6512007)(86362001)(38350700002)(38100700002)(5660300002)(2906002)(8936002)(44832011)(508600001)(54906003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4K5tJiYm6Yez1YOM+ddjCSQtDhMtNKGRh7xPEoAw/1Ytr1HmUWbdS1MsCV9L?=
- =?us-ascii?Q?i01R+agaWt1G8O7vt58QaFRJEpvfGfIiFiJVjRF6cpiwxchOTig6AKMEaZND?=
- =?us-ascii?Q?hw/RyraQ/4mZLgwpTearZO47zjeQBB+XVgxHGeK2pItFW8GpYLrh9f9faa+C?=
- =?us-ascii?Q?3d7+AMwZRpe70/u/Tt2+f4gX6JMO2EtCI+quJwf2YC5CmYw1Xy6TanWnIutI?=
- =?us-ascii?Q?mWI/zkOZpilDHyRQ8fSUlcGVFt9FQokHIRabpTmPJnAJeuzHCwmXaYrrrDl0?=
- =?us-ascii?Q?b0k1PLtfRD0sY0sedCYesXCLUMxK17U9xVtpvXsGroRPJJRglqSeOymydFVP?=
- =?us-ascii?Q?KhseT4LkdkBpD+1GZAlG1wR58KRuXvf+wqLyU6evYO2fCxWlMYdZC3XulSay?=
- =?us-ascii?Q?83b06+Y+VYpTPW1YGJsFtMzAW5Ap76nB77x7+vQpDPZDCwkzOvG20ccF/Rbs?=
- =?us-ascii?Q?QjOcyBZqEQpUkzfMCkLFPD8+TmC8cQisYpyfQvb1s7CQLpAdjmLz0oHSW97m?=
- =?us-ascii?Q?NJ6E3iUkEDy6E/ffOykfJ0XX8ji0iIANCGtP6aIfei/lWae9C12KNqfVmFtR?=
- =?us-ascii?Q?tkF/i3/aUBRP1AJVjmSoJFja2qrdQDyDYtja5IcqLlvZT5husKJ0yquqsmhC?=
- =?us-ascii?Q?P+3/vWRzIAbq63PJsF8cNmCNQzYJ9I71iEmVreH/N5zkjRmZNiAEhppEE6jy?=
- =?us-ascii?Q?PaRAOQ6IQZGtOKkXgXamTGhYz3J3rnpeNAv4GqJPboQMIVIxrQm4QQ+YgE8n?=
- =?us-ascii?Q?feOnP2JM6X7Mce+LD3NQz5iEduc4HDIBW7Qm/BHY3hljZTIWRJb4BRVnFamX?=
- =?us-ascii?Q?Yr8CPLR6yFQHfNGOZ+poFWkcDOA2bhGGX20JXrVtyFBefutj9uhZkbNBzsTP?=
- =?us-ascii?Q?l/Kg69Hd9htMglfkgamfehlK4t5DZSrCQP3+NbeV8Sbki68+gMZRzKMExul9?=
- =?us-ascii?Q?bWnXUcLzDnK0GjwE1VftvAawkEKHCuRym6NjuEx7ZuTdXlnawEceBbRbwXO1?=
- =?us-ascii?Q?6HQ1/79jf11yIsYR2+qnGff9ZxisNvChhhsrOHkla1RvY/rXC6NhIavsYXVR?=
- =?us-ascii?Q?el0pHXRyGEn31SgwWeWPbXmiaczrOWTWj3HXK7plYRLAsyEturQxQK2uAB0m?=
- =?us-ascii?Q?2igoQb2mgYRRWXhVN2xIT2184jbDhJo6w9XXNPlnRu9OwPo2NrCcPB0s8CIW?=
- =?us-ascii?Q?W/hidkN4ILBx1hxrrVxMAOquVI1QaAOsJ+sXyCwagrWvVRir+d5sQ85DgaBC?=
- =?us-ascii?Q?PCvWXbs9jyivi9XVOchT8Zgs1wNxNVqp6fUKL+AlZEmBjlOtQk1CRUlINBVT?=
- =?us-ascii?Q?AjF3R74rK9hpNRbqj1D09R/36+NU7jGAEGSqpLVFzq9k2tbjAx0G3D98jVTU?=
- =?us-ascii?Q?7Eqd7mHOI0hSvlrODjE57rgokLZBPc8pOulG0dWE+TzlbCVy/u/hSWzFJoE9?=
- =?us-ascii?Q?LWqzfNLkeHWFyYt/rmckTmU4LgooTXFiCcqYxTmAX3Inr6zIRIx0Wurix/gM?=
- =?us-ascii?Q?aK8tpqIMwYVTCTGqvHzFCLTQS7dZ5Jym8G8+Be3zoBZ1GtQnQ/j1hX9pTco6?=
- =?us-ascii?Q?2EzMn/Z1d88MGEMcOt2TAIvn2nf9Bt7CSlMSq+yEXnW6/f1atwvz74iP+HEd?=
- =?us-ascii?Q?+1Sne4f5jOa6wbl+PAhlbMJOoP8o2hoI4PI3pgUBRtwOQlzx/dwD58v9oHbH?=
- =?us-ascii?Q?6BO4Vg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qntIW992OyZ09q4O27EdCPEpK/c3JGFcUk6Sx+1pL8fEXg+eWflUgIVMVg/h?=
+ =?us-ascii?Q?WhWH1R/uFk2sV9t9NxWEG+UBv6taDZPFWMIocmdASGi3ctJY2l2ax3t8sAdu?=
+ =?us-ascii?Q?Na1Cml6ZhJP5oWPRFVuAHEHvUta5ysA1p7g3CHlLdL5cSXmBf7gnQcYcMDlM?=
+ =?us-ascii?Q?6HDcki0vA930g9hnoUJwVsjWXOn5YeSo4BRfxZz3c5CUqEOMlqQlt7ztDg2J?=
+ =?us-ascii?Q?HFM387tXFAiuIWwCDiomia/KM5WdzcTtwmi5yAqA9cwq3CDaGIOi+BRg4Dd7?=
+ =?us-ascii?Q?pL0l3FNM5h5xXPcjQqnHRs8SGOkTorHxcC/MW41s8a02XPJSnKNodlI81nR6?=
+ =?us-ascii?Q?pSBdbWQuvgz2hrJtsBrJIR2lDKGBCfxwWrXuAfHZHWGVB8tyAjlavbzK2DW5?=
+ =?us-ascii?Q?ok9TMNncGX2oF6vX7/nayqK5lkJ6q8KeL46yWPXM0LZN6AnVW4R5bU2dOktt?=
+ =?us-ascii?Q?gR27laqX8NPljjuGAsnbWZgsE3U0ojlJiKYBTDyMpi+SBI5edg7XJCe234W8?=
+ =?us-ascii?Q?KoxhuYcm4qj2kRhaufs2UC544R4PGP5Ql38y+GZ4jt5fYmQv4o/88huQzlxX?=
+ =?us-ascii?Q?/2i7URBzvIQvZEUqH50iKixzaNPCC3VHjma1gfybZ6LmTKkvCnzVhzjnka4I?=
+ =?us-ascii?Q?gxUv0jdRO67+BB76fIqOdVZ+XbcsWFhECOOZIwApKqgftO5Bc8p6D5fpGksY?=
+ =?us-ascii?Q?E5LohHPFlzT+xHx2mecy0UVyoKWZg92QHfT/VziBwgzSDBhRhfx7OMfdxn8Q?=
+ =?us-ascii?Q?y6zAMZrmjwaKu+x7bxiEthNyvhGkOtLoUtKebG1jhvZqXCVnWofxWqdv3k//?=
+ =?us-ascii?Q?P6Gv8y8ZUeflaw4XZIht/xHracGbcIV6xzU19vMolxfFgT/GTSfxmTAGcdXG?=
+ =?us-ascii?Q?7YrzHCYIJ9Frp4Odzyn8iNtTFRgtYBb5P4d7kpV6MA80frEbOV8V5zDU9uYg?=
+ =?us-ascii?Q?lgj4TrBOkDWV3QKEMN6uaQtyh6efri7ouRfGOUq16EwtY4WfFk69H6MC1SPt?=
+ =?us-ascii?Q?kD0egg4n9aIWZqmyPJ+HCmpV8S3YUh6JB0JDMbj2XG/rawblaMr2ybgYcmBn?=
+ =?us-ascii?Q?ymH4BbH5bFW/X7EHEtZGpTlNQGbGOuXTMPMlnNneclZBWJ20X3Ps/o6fj+oU?=
+ =?us-ascii?Q?NzzTc3Up/i03l1FqTMtilx4fML58AQovS2Cw/qqlgHrqTmi5MROg8Mk6GgHG?=
+ =?us-ascii?Q?gSjLy/jLfRi1sFA4DI814gt0yB/BR9JnOHXRq/mYWiWWEiLOBqmYEP6k71zQ?=
+ =?us-ascii?Q?KuCXGRRYAk5Og8hNRYEo1wAS1lalHAwOuUVPGWwdtgnaE7ZrpvFxvSNpzMCr?=
+ =?us-ascii?Q?QZFbeT723BBgWJoJ8izuQ142UPphe4rxkGkPNAC37Mmxq//dmUFhZddjEjFr?=
+ =?us-ascii?Q?CptvI1RYESETcDKFStbK9RFLBvkALmDuj/2Gk4ek4t4K+mwx45PUzc0ZUDSY?=
+ =?us-ascii?Q?bUnmTcewBDrWDKJc/uxDttM7Zm+U8A3rOwMoRqUK6d6myskLU6OsP4GOsQCz?=
+ =?us-ascii?Q?7cpeumqSbXSiSnxpnVxzJZodbgnu4bsdzptMDIeWzIeV5aK6CNteg9y17y0J?=
+ =?us-ascii?Q?0n7+CKzafElAgxVQdGyHIFpT92/YkC/Mbp4aAF9rVHDlBov1ymG3hWYMCPFc?=
+ =?us-ascii?Q?2uuyoUcD+0QWl/TGsHKQCZMsW4tT28Z0UoH8WwECugdYQ06VUDimdghQtoGh?=
+ =?us-ascii?Q?ICnDC0414YpyOFm0NNy2Y5jcy8Q=3D?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81b8e775-ccd8-4c7f-2e45-08da054330b7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ada5f06-aa0a-4440-fb74-08da05433169
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2022 22:45:36.7261
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2022 22:45:37.8354
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: k9RIOEB7/BxLlvWIh70dkkSRZP0sGnWP6mz3WT/GBF8i4hjxjEFimqvDGVb8TUxh/WgSNHIIz0ttBYcJYZXPNIFHzFbE6MEzIxK4OM+vemY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0Y446/uTlmYnPMKZS1lH1oqm6KH8KozBlNIGtxN3TFzZKTDJMs9q8TPY61xiDpH9z0TilP9WSOQ9rPI8XJ33qNbB7URm5YX8Obr2PuxdYho=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1001MB2379
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Ocelot chips (specifically the VSC7512 I'm using) have a method of
-accessing their registers internally via MMIO, or externally via SPI.
-When accessing these registers externally, a 24-bit address is used and
-downshifted by two. The manual references it as:
+There's an inconsistency that arises when a register set can be accessed
+internally via MMIO, or externally via SPI. The VSC7514 chip allows both
+modes of operation. When internally accessed, the system utilizes __iomem,
+devm_ioremap_resource, and devm_regmap_init_mmio.
 
-SI_ADDR = (REG_ADDR & 0x00FFFFFF) >> 2;
+For SPI it isn't possible to utilize memory-mapped IO. To properly operate,
+the resource base must be added to the register before every operation.
 
-By adding this configurable downshift, and a configurable register base
-address, the regmap definitions can be shared between MMIO and SPI
-configurations.
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+---
+ drivers/base/regmap/internal.h | 1 +
+ drivers/base/regmap/regmap.c   | 6 ++++++
+ include/linux/regmap.h         | 3 +++
+ 3 files changed, 10 insertions(+)
 
-This also allows regmap to be used in a bus configuration. My initial
-testing shows that even at a much slower bus speed of 500KHz, I'm seeing
-an improvement of 10ms (was 14... now 4) to perform bulk read operations.
-
-The relevant MMIO code can be found in drivers/net/mscc/ocelot_io.c:
-
-static struct regmap_config ocelot_regmap_config = {
-        .reg_bits       = 32,
-        .val_bits       = 32,
-        .reg_stride     = 4,
-};
-
-struct regmap *ocelot_regmap_init(struct ocelot *ocelot, struct resource *res)
-{
-        void __iomem *regs;
-
-        regs = devm_ioremap_resource(ocelot->dev, res);
-        if (IS_ERR(regs))
-                return ERR_CAST(regs);
-
-        ocelot_regmap_config.name = res->name;
-
-        return devm_regmap_init_mmio(ocelot->dev, regs, &ocelot_regmap_config);
-}
-
-
-And the SPI counterpart is slightly more complex:
-
-
-static const struct regmap_config ocelot_spi_regmap_config = {
-        .reg_bits = 24,
-        .reg_stride = 4,
-        .reg_downshift = 2,
-        .val_bits = 32,
-
-        .write_flag_mask = 0x80,
-
-        .max_register = 0xffffffff,
-        .use_single_write = true,
-        .can_multi_write = false,
-
-        .reg_format_endian = REGMAP_ENDIAN_BIG,
-        .val_format_endian = REGMAP_ENDIAN_NATIVE,
-};
-
-static const struct regmap_bus ocelot_spi_regmap_bus = {
-       .write = ocelot_spi_regmap_bus_write,
-       .read = ocelot_spi_regmap_bus_read,
-};
-
-struct regmap *
-ocelot_spi_devm_get_regmap(struct ocelot_core *core, struct device *child,
-                           const struct resource *res)
-{
-        struct regmap_config regmap_config;
-
-        memcpy(&regmap_config, &ocelot_spi_regmap_config,
-               sizeof(ocelot_spi_regmap_config));
-
-        regmap_config.name = res->name;
-        regmap_config.max_register = res->end - res->start;
-        regmap_config.reg_base = res->start;
-
-        return devm_regmap_init(child, &ocelot_spi_regmap_bus, core,
-                                &regmap_config);
-}
-
-
-If there's anything I missed, or if there's a different way to go about
-this, please let me know. I can also drag this along with my VSC7512
-development or I can send this patch (or whatever it might become) after
-the merge window.
-
-
-Colin Foster (2):
-  regmap: add configurable downshift for addresses
-  regmap: allow a defined reg_base to be added to every address
-
- drivers/base/regmap/internal.h |  2 ++
- drivers/base/regmap/regmap.c   | 11 +++++++++++
- include/linux/regmap.h         |  6 ++++++
- 3 files changed, 19 insertions(+)
-
+diff --git a/drivers/base/regmap/internal.h b/drivers/base/regmap/internal.h
+index 88f710e7ce31..b4df36c7b17d 100644
+--- a/drivers/base/regmap/internal.h
++++ b/drivers/base/regmap/internal.h
+@@ -63,6 +63,7 @@ struct regmap {
+ 	regmap_unlock unlock;
+ 	void *lock_arg; /* This is passed to lock/unlock functions */
+ 	gfp_t alloc_flags;
++	unsigned int reg_base;
+ 
+ 	struct device *dev; /* Device we do I/O on */
+ 	void *work_buf;     /* Scratch buffer used to format I/O */
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 1c7c6d6361af..5e12f7cb5147 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -821,6 +821,8 @@ struct regmap *__regmap_init(struct device *dev,
+ 	else
+ 		map->alloc_flags = GFP_KERNEL;
+ 
++	map->reg_base = config->reg_base;
++
+ 	map->format.reg_bytes = DIV_ROUND_UP(config->reg_bits, 8);
+ 	map->format.pad_bytes = config->pad_bits / 8;
+ 	map->format.reg_downshift = config->reg_downshift;
+@@ -1736,6 +1738,7 @@ static int _regmap_raw_write_impl(struct regmap *map, unsigned int reg,
+ 			return ret;
+ 	}
+ 
++	reg += map->reg_base;
+ 	reg >>= map->format.reg_downshift;
+ 	map->format.format_reg(map->work_buf, reg, map->reg_shift);
+ 	regmap_set_work_buf_flag_mask(map, map->format.reg_bytes,
+@@ -1907,6 +1910,7 @@ static int _regmap_bus_formatted_write(void *context, unsigned int reg,
+ 			return ret;
+ 	}
+ 
++	reg += map->reg_base;
+ 	reg >>= map->format.reg_downshift;
+ 	map->format.format_write(map, reg, val);
+ 
+@@ -2349,6 +2353,7 @@ static int _regmap_raw_multi_reg_write(struct regmap *map,
+ 		unsigned int reg = regs[i].reg;
+ 		unsigned int val = regs[i].def;
+ 		trace_regmap_hw_write_start(map, reg, 1);
++		reg += map->reg_base;
+ 		reg >>= map->format.reg_downshift;
+ 		map->format.format_reg(u8, reg, map->reg_shift);
+ 		u8 += reg_bytes + pad_bytes;
+@@ -2677,6 +2682,7 @@ static int _regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
+ 			return ret;
+ 	}
+ 
++	reg += map->reg_base;
+ 	reg >>= map->format.reg_downshift;
+ 	map->format.format_reg(map->work_buf, reg, map->reg_shift);
+ 	regmap_set_work_buf_flag_mask(map, map->format.reg_bytes,
+diff --git a/include/linux/regmap.h b/include/linux/regmap.h
+index 40fb9399add6..de81a94d7b30 100644
+--- a/include/linux/regmap.h
++++ b/include/linux/regmap.h
+@@ -239,6 +239,8 @@ typedef void (*regmap_unlock)(void *);
+  *              used.
+  * @reg_downshift: The number of bits to downshift the register before
+  *		   performing any operations.
++ * @reg_base: Value to be added to every register address before performing any
++ *	      operation.
+  * @pad_bits: Number of bits of padding between register and value.
+  * @val_bits: Number of bits in a register value, mandatory.
+  *
+@@ -363,6 +365,7 @@ struct regmap_config {
+ 	int reg_bits;
+ 	int reg_stride;
+ 	int reg_downshift;
++	unsigned int reg_base;
+ 	int pad_bits;
+ 	int val_bits;
+ 
 -- 
 2.25.1
 
