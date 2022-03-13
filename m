@@ -2,369 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 017BEC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCCBC43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234985AbiCMQRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 12:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
+        id S235006AbiCMQbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 12:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiCMQRC (ORCPT
+        with ESMTP id S231217AbiCMQbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 12:17:02 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB40F38BDC;
-        Sun, 13 Mar 2022 09:15:53 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 35208475;
-        Sun, 13 Mar 2022 17:15:51 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1647188151;
-        bh=kDZteoz/vLxKC+dAc2am0kAxaFB6dCfEEzjUoN5FEUo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kQpErlASlVm7jSj0F9neo0lEN2wjXCTNUnaDvyeaUi2BI/dx4jn7AAUpcNFsC4Pk9
-         mc2xEv+/942NbznabvxF4qxzWyY+FSiMUkRSyPH08kkQTybqbif/AqMAQ2IoyOTVbx
-         iZykGMLNYTDnXyqt44OoTJBPrYn46pyObsQRhjoA=
-Date:   Sun, 13 Mar 2022 18:15:34 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 61/66] dt-bindings: media: Add Allwinner A31 ISP
- bindings documentation
-Message-ID: <Yi4YpnMWguEMWYaA@pendragon.ideasonboard.com>
-References: <YgE/+UmP4nJVxtRT@pendragon.ideasonboard.com>
- <YgqAv2vLimYgRwDS@aptenodytes>
- <YgqM3ZdMfEz+ZKo/@pendragon.ideasonboard.com>
- <Ygt8LF8qx3rnxlgp@aptenodytes>
- <Ygt9j+rwEC+2aUjH@pendragon.ideasonboard.com>
- <Yh4+E9el5NdQ7qJq@aptenodytes>
- <YiH/kLakb/GOaYIT@pendragon.ideasonboard.com>
- <YiIa1SRFhtvURTbN@aptenodytes>
- <YiIdo4PF/5smLocf@pendragon.ideasonboard.com>
- <YitZ6y2JoNzeHUrp@aptenodytes>
+        Sun, 13 Mar 2022 12:31:46 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5CD201AC;
+        Sun, 13 Mar 2022 09:30:38 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 2C07F22238;
+        Sun, 13 Mar 2022 17:30:36 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647189036;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mw7ua8bm47fSMOjBOWnSCPNMt3SK4yr5lqTmvLcR1t4=;
+        b=cF/58OMBU/4htvb/BgKkVeVxAhzy13qrKC37ZZ6qy+Uoyt4WoViG94H5fsPmpxBGr0tezn
+        hIwyc41YjBG9GtN5lCbU7tMN4b4q6+PxVB8qyKxNu5ZQk7KLh9ImY+bq8LwpBxSyZccbPA
+        GmX8asMq/Fmf8gQlBHNvTmZJoy2ml+U=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YitZ6y2JoNzeHUrp@aptenodytes>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sun, 13 Mar 2022 17:30:35 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Subject: Re: [PATCH net-next v2 1/3] dt-bindings: net: mscc-miim: add lan966x
+ compatible
+In-Reply-To: <2d35127c-d4ef-6644-289a-5c10bcbbbf84@kernel.org>
+References: <20220313002536.13068-1-michael@walle.cc>
+ <20220313002536.13068-2-michael@walle.cc>
+ <08b89b3f-d0d3-e96f-d1c3-80e8dfd0798f@kernel.org>
+ <d18291ff8d81f03a58900935d92115f2@walle.cc>
+ <2d35127c-d4ef-6644-289a-5c10bcbbbf84@kernel.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <145fc079ce8c266b8c2265aacfd3b077@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+[adding Horatiu and Kavyasree from Microchip]
 
-On Fri, Mar 11, 2022 at 03:17:15PM +0100, Paul Kocialkowski wrote:
-> On Fri 04 Mar 22, 16:09, Laurent Pinchart wrote:
-> > On Fri, Mar 04, 2022 at 02:57:41PM +0100, Paul Kocialkowski wrote:
-> > > On Fri 04 Mar 22, 14:01, Laurent Pinchart wrote:
-> > > > On Tue, Mar 01, 2022 at 04:38:59PM +0100, Paul Kocialkowski wrote:
-> > > > > On Tue 15 Feb 22, 12:16, Laurent Pinchart wrote:
-> > > > > > On Tue, Feb 15, 2022 at 11:10:52AM +0100, Paul Kocialkowski wrote:
-> > > > > > > On Mon 14 Feb 22, 19:09, Laurent Pinchart wrote:
-> > > > > > > > On Mon, Feb 14, 2022 at 05:18:07PM +0100, Paul Kocialkowski wrote:
-> > > > > > > > > On Mon 07 Feb 22, 17:51, Laurent Pinchart wrote:
-> > > > > > > > > > On Sat, Feb 05, 2022 at 07:54:24PM +0100, Paul Kocialkowski wrote:
-> > > > > > > > > > > This introduces YAML bindings documentation for the Allwinner A31 Image
-> > > > > > > > > > > Signal Processor (ISP).
-> > > > > > > > > > > 
-> > > > > > > > > > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > > > > > > > > > ---
-> > > > > > > > > > >  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++++++
-> > > > > > > > > > >  1 file changed, 117 insertions(+)
-> > > > > > > > > > >  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> > > > > > > > > > > 
-> > > > > > > > > > > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> > > > > > > > > > > new file mode 100644
-> > > > > > > > > > > index 000000000000..2d87022c43ce
-> > > > > > > > > > > --- /dev/null
-> > > > > > > > > > > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> > > > > > > > > > > @@ -0,0 +1,117 @@
-> > > > > > > > > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > > > > > > > > > > +%YAML 1.2
-> > > > > > > > > > > +---
-> > > > > > > > > > > +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
-> > > > > > > > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > > > > > > > > +
-> > > > > > > > > > > +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
-> > > > > > > > > > > +
-> > > > > > > > > > > +maintainers:
-> > > > > > > > > > > +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > > > > > > > > > +
-> > > > > > > > > > > +properties:
-> > > > > > > > > > > +  compatible:
-> > > > > > > > > > > +    enum:
-> > > > > > > > > > > +      - allwinner,sun6i-a31-isp
-> > > > > > > > > > > +      - allwinner,sun8i-v3s-isp
-> > > > > > > > > > > +
-> > > > > > > > > > > +  reg:
-> > > > > > > > > > > +    maxItems: 1
-> > > > > > > > > > > +
-> > > > > > > > > > > +  interrupts:
-> > > > > > > > > > > +    maxItems: 1
-> > > > > > > > > > > +
-> > > > > > > > > > > +  clocks:
-> > > > > > > > > > > +    items:
-> > > > > > > > > > > +      - description: Bus Clock
-> > > > > > > > > > > +      - description: Module Clock
-> > > > > > > > > > > +      - description: DRAM Clock
-> > > > > > > > > > 
-> > > > > > > > > > That's interesting, does the ISP have a dedicated DRAM ?
-> > > > > > > > > 
-> > > > > > > > > It doesn't, it actually uses the main DRAM with the "mbus" interconnect.
-> > > > > > > > > The clock is probably for the DMA engine.
-> > > > > > > > > 
-> > > > > > > > > > > +
-> > > > > > > > > > > +  clock-names:
-> > > > > > > > > > > +    items:
-> > > > > > > > > > > +      - const: bus
-> > > > > > > > > > > +      - const: mod
-> > > > > > > > > > > +      - const: ram
-> > > > > > > > > > > +
-> > > > > > > > > > > +  resets:
-> > > > > > > > > > > +    maxItems: 1
-> > > > > > > > > > > +
-> > > > > > > > > > > +  ports:
-> > > > > > > > > > > +    $ref: /schemas/graph.yaml#/properties/ports
-> > > > > > > > > > > +
-> > > > > > > > > > > +    properties:
-> > > > > > > > > > > +      port@0:
-> > > > > > > > > > > +        $ref: /schemas/graph.yaml#/$defs/port-base
-> > > > > > > > > > > +        description: CSI0 input port
-> > > > > > > > > > > +
-> > > > > > > > > > > +        properties:
-> > > > > > > > > > > +          reg:
-> > > > > > > > > > > +            const: 0
-> > > > > > > > > > > +
-> > > > > > > > > > > +          endpoint:
-> > > > > > > > > > > +            $ref: video-interfaces.yaml#
-> > > > > > > > > > > +            unevaluatedProperties: false
-> > > > > > > > > > 
-> > > > > > > > > > If no other property than remote-endpoint are allowed, I'd write
-> > > > > > > > > > 
-> > > > > > > > > >           endpoint:
-> > > > > > > > > >             $ref: video-interfaces.yaml#
-> > > > > > > > > > 	    remote-endpoint: true
-> > > > > > > > > >             additionalProperties: false
-> > > > > > > > > > 
-> > > > > > > > > > Same below.
-> > > > > > > > > > 
-> > > > > > > > > > > +
-> > > > > > > > > > > +        additionalProperties: false
-> > > > > > > > > > > +
-> > > > > > > > > > > +      port@1:
-> > > > > > > > > > > +        $ref: /schemas/graph.yaml#/$defs/port-base
-> > > > > > > > > > > +        description: CSI1 input port
-> > > > > > > > > > > +
-> > > > > > > > > > > +        properties:
-> > > > > > > > > > > +          reg:
-> > > > > > > > > > > +            const: 0
-> > > > > > > > > > 
-> > > > > > > > > > This should be 1.
-> > > > > > > > > 
-> > > > > > > > > Correct, thanks!
-> > > > > > > > > 
-> > > > > > > > > > > +
-> > > > > > > > > > > +          endpoint:
-> > > > > > > > > > > +            $ref: video-interfaces.yaml#
-> > > > > > > > > > > +            unevaluatedProperties: false
-> > > > > > > > > > > +
-> > > > > > > > > > > +        additionalProperties: false
-> > > > > > > > > > > +
-> > > > > > > > > > > +    anyOf:
-> > > > > > > > > > > +      - required:
-> > > > > > > > > > > +        - port@0
-> > > > > > > > > > > +      - required:
-> > > > > > > > > > > +        - port@1
-> > > > > > > > > > 
-> > > > > > > > > > As ports are an intrinsic property of the ISP, both should be required,
-> > > > > > > > > > but they don't have to be connected.
-> > > > > > > > > 
-> > > > > > > > > Well the ISP does have the ability to source from either CSI0 and CSI1
-> > > > > > > > > but I don't really get the point of declaring both ports when only one
-> > > > > > > > > of the two controllers is present.
-> > > > > > > > 
-> > > > > > > > If it's within an SoC I don't mind too much. What I usually insist on is
-> > > > > > > > declaring all ports even when no external devices are connected on the
-> > > > > > > > board. It may however be easier to implement things on the driver side
-> > > > > > > > when all the ports are declared, even for internal devices. I won't
-> > > > > > > > insist either way here.
-> > > > > > > > 
-> > > > > > > > > > By the way, how do you select at runtime which CSI-2 RX the ISP gets its
-> > > > > > > > > > image stream from ? Is it configured through registers of the ISP ?
-> > > > > > > > > 
-> > > > > > > > > Actually what the ISP gets is fully dependent on what is received by the
-> > > > > > > > > CSI controller it is connected to (which can be the mipi csi-2 controller
-> > > > > > > > > or its direct parallel pins), so the configuration happens on the CSI side.
-> > > > > > > > 
-> > > > > > > > OK, then how do you select at runtime which CSI the ISP gets its image
-> > > > > > > > stream from ? :-)
-> > > > > > > 
-> > > > > > > What is done in the driver is that all available csi(s) entities pads are linked
-> > > > > > > to a single csi sink media pad, which allows userspace to enable one or the
-> > > > > > > other. If there's only one, it's enabled by default.
-> > > > > > > 
-> > > > > > > The actual stream source (isp_dev->proc.source) is selected at link_validate
-> > > > > > > time and the source bit is set in sun6i_isp_proc_enable.
-> > > > > > > 
-> > > > > > > I hope this answers your question!
-> > > > > > 
-> > > > > > Yes it does, thank you.
-> > > > > > 
-> > > > > > While this works, it makes life a bit more complicated for userspace, as
-> > > > > > switching between the two sources require disabling the link first and
-> > > > > > then enabling the new one. This is something that caused issues in the
-> > > > > > libcamera simple pipeline handler, I ended up having to implement a
-> > > > > > workaround.
-> > > > > 
-> > > > > That surprises me a bit, I thought this was a typical use-case for links.
-> > > > > So the fact that it's a two-step process causes issues somehow?
-> > > > 
-> > > > It's not so much that the links have to be configured in two steps
-> > > > (although it would be nice if that could be fixed), but the fact that
-> > > > the order of the operations matter. Userspace has to know what
-> > > > combination of links is acceptable in order to determine the order of
-> > > > the enable/disable operations, otherwise errors may be returned. That
-> > > > makes it more difficult to write generic userspace code.
-> > > 
-> > > Ah right, I understand that. Now it's pretty much trial-and-error if userspace
-> > > doesn't have prior knowledge about the hardware. But to be honest I assumed
-> > > that it was more or less understood that there cannot be fully generic
-> > > userspace for this and that knowedlege about the driver and pipeline flow
-> > > is required to do things right.
-> > 
-> > You're right, and that's why we have device-specific code in libcamera.
-> > However, the more generic-friendly the APIs can be, the more the
-> > device-specific userspace code will be able to use generic helpers, so
-> > it still matters.
-> > 
-> > > > > > Could you instead have two sink pads for the ISP, and select the sensor
-> > > > > > at stream on time instead of link validation time by checking which link
-> > > > > > is enabled ? If no links or both links are enabled, you can then return
-> > > > > > an error.
-> > > > > 
-> > > > > Yes that's totally doable.
-> > > > > 
-> > > > > There's a similar situation with the sun6i-csi bridge where the source pad
-> > > > > has two possible links: one for routing to sun6i-csi capture (video device)
-> > > > > and one for routing to the isp entity.
-> > > > > 
-> > > > > Would that also be best represented as two pads?
-> > > > 
-> > > > Are the two outputs mutually exclusive ? Sorry if I've asked before.
-> > > 
-> > > I don't think you have. Yes they are mutually exclusive, only one source
-> > > can be selected at a time. Same situation as the ISP where the two CSI unit
-> > > inputs are mutually exclusive.
-> > 
-> > On the sink (input) side that's quite common, if you have two different
-> > sources but a single sink, the sink can't (usually) process both sources
-> > at the same time. I understand that for the sun6i-csi bridge it's the
-> > other way around, with the bridge can output to either a DMA engine or
-> > to the ISP, but not both at the same time. That's less common, but can
-> > certainly happen. I think I'd go for two source pads in that case too.
-> > Sakari, any opinion ?
+Am 2022-03-13 17:10, schrieb Krzysztof Kozlowski:
+> On 13/03/2022 11:47, Michael Walle wrote:
+>> Am 2022-03-13 10:47, schrieb Krzysztof Kozlowski:
+>>> On 13/03/2022 01:25, Michael Walle wrote:
+>>>> The MDIO controller has support to release the internal PHYs from
+>>>> reset
+>>>> by specifying a second memory resource. This is different between 
+>>>> the
+>>>> currently supported SparX-5 and the LAN966x. Add a new compatible to
+>>>> distiguish between these two.
 > 
-> As I was reading this thread again, I think there might be a misunderstanding
-> here when you said that "switching between the two sources require disabling
-> the link first and then enabling the new one".
+> Typo here, BTW.
 > 
-> The driver is currently not checking the validity of the setup at link_setup
-> but at link_validate (which is called at streamon time), so userspace can
-> effectively disable/enable links in whichever order and a valid setup is only
-> required when streaming starts. I think that's already the situation that you
-> want to achieve.
-
-That's right. link_validate is probably not the best place though, as
-it's meant to validate one link, while here you need to perform
-validation of the state of multiple links, right ?
-
-> To summarize, the following pads can have multiple links:
-> - csi sink (parallel sensor source or mipi csi-2 bridge source)
-> - csi source (isp sink or video capture sink)
-> - isp sink (csi0 source or csi1 source)
+>>>> 
+>>>> Signed-off-by: Michael Walle <michael@walle.cc>
+>>>> ---
+>>>>  Documentation/devicetree/bindings/net/mscc-miim.txt | 2 +-
+>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>> 
+>>>> diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt
+>>>> b/Documentation/devicetree/bindings/net/mscc-miim.txt
+>>>> index 7104679cf59d..a9efff252ca6 100644
+>>>> --- a/Documentation/devicetree/bindings/net/mscc-miim.txt
+>>>> +++ b/Documentation/devicetree/bindings/net/mscc-miim.txt
+>>>> @@ -2,7 +2,7 @@ Microsemi MII Management Controller (MIIM) / MDIO
+>>>>  =================================================
+>>>> 
+>>>>  Properties:
+>>>> -- compatible: must be "mscc,ocelot-miim"
+>>>> +- compatible: must be "mscc,ocelot-miim" or "mscc,lan966x-miim"
+>>> 
+>>> No wildcards, use one, specific compatible.
+>> 
+>> I'm in a kind of dilemma here, have a look yourself:
+>> grep -r "lan966[28x]-" Documentation
+>> 
+>> Should I deviate from the common "name" now? To make things
+>> worse, there was a similar request by Arnd [1]. But the
+>> solution feels like cheating ("lan966x" -> "lan966") ;)
 > 
-> I'll send my next versions without changes (one pad, multiple links)
-> but we can revisit this if there's an issue with that after all.
+> The previous 966x cases were added by one person from Microchip, so he
+> actually might know something. But do you know whether lan966x will
+> cover all current and future designs from Microchip? E.g. lan9669 (if
+> ever made) will be the same? Avoiding wildcard is the easiest, just
+> choose one implementation, e.g. "lan9662".
 
-OK.
+So if Microchip would review/ack this it would be ok? I don't really
+have a strong opinion, I just want to avoid any inconsistencies. If no
+one from Microchip will answer, I'll use microchip,lan9668-miim.
 
-> > > > > > Ideally I'd say such internal routing should use the new V4L2 subdev
-> > > > > > routing API that is currently being implemented (see [1]), but I don't
-> > > > > > know when it will land, and I don't want to delay your patch series.
-> > > > > > 
-> > > > > > [1] https://lore.kernel.org/linux-media/20211130141536.891878-28-tomi.valkeinen@ideasonboard.com
-> > > > > 
-> > > > > I'm still a bit confused what problem this is trying to solve.
-> > > > > My understanding was that the current pad/link API allows representing complex
-> > > > > topologies and switching different paths with link enable/disable.
-> > > > 
-> > > > That was the intent of the MEDIA_IOC_SETUP_LINK ioctl, but we ended up
-> > > > with something that is fairly ill-defined, and doesn't have the ability
-> > > > to set multiple links atomically. It turned out to be less usable for
-> > > > userspace than expected. Mistakes happen (and I'll blame myself here,
-> > > > having designed that API) when we don't have real test cases during
-> > > > kernel development.
-> > > 
-> > > Yeah it's hard to predict these kinds of things in advance I suppose.
-> > > Thanks for the heads up!
-> > > 
-> > > > > > > > > > > +
-> > > > > > > > > > > +required:
-> > > > > > > > > > > +  - compatible
-> > > > > > > > > > > +  - reg
-> > > > > > > > > > > +  - interrupts
-> > > > > > > > > > > +  - clocks
-> > > > > > > > > > > +  - clock-names
-> > > > > > > > > > > +  - resets
-> > > > > > > > > > > +
-> > > > > > > > > > > +additionalProperties: false
-> > > > > > > > > > > +
-> > > > > > > > > > > +examples:
-> > > > > > > > > > > +  - |
-> > > > > > > > > > > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > > > > > > > > > > +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
-> > > > > > > > > > > +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
-> > > > > > > > > > > +
-> > > > > > > > > > > +    isp: isp@1cb8000 {
-> > > > > > > > > > > +        compatible = "allwinner,sun8i-v3s-isp";
-> > > > > > > > > > > +        reg = <0x01cb8000 0x1000>;
-> > > > > > > > > > > +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-> > > > > > > > > > > +        clocks = <&ccu CLK_BUS_CSI>,
-> > > > > > > > > > > +             <&ccu CLK_CSI1_SCLK>,
-> > > > > > > > > > > +             <&ccu CLK_DRAM_CSI>;
-> > > > > > > > > > > +        clock-names = "bus", "mod", "ram";
-> > > > > > > > > > > +        resets = <&ccu RST_BUS_CSI>;
-> > > > > > > > > > > +
-> > > > > > > > > > > +        ports {
-> > > > > > > > > > > +            #address-cells = <1>;
-> > > > > > > > > > > +            #size-cells = <0>;
-> > > > > > > > > > > +
-> > > > > > > > > > > +            port@0 {
-> > > > > > > > > > > +                reg = <0>;
-> > > > > > > > > > > +
-> > > > > > > > > > > +                isp_in_csi0: endpoint {
-> > > > > > > > > > > +                    remote-endpoint = <&csi0_out_isp>;
-> > > > > > > > > > > +                };
-> > > > > > > > > > > +            };
-> > > > > > > > > > > +        };
-> > > > > > > > > > > +    };
-> > > > > > > > > > > +
-> > > > > > > > > > > +...
+> Different topic is that all current lan966[28] are from Microchip and
+> you still add Microsemi, even though it was acquired by Microchip.
+> That's an inconsistency which should be rather fixed.
 
--- 
-Regards,
+Agreed, that was an oversight by me.
 
-Laurent Pinchart
+>> On a side note, I understand that there should be no wildcards,
+>> because the compatible should target one specific implementation,
+>> right? But then the codename "ocelot" represents a whole series of
+>> chips. Therefore, names for whole families shouldn't be used neither,
+>> right?
+> 
+> You're not adding "ocelot" now, so it is separate topic. However a
+> compatible like "mscc,ocelot" feels wrong, unless it is used as a
+> fallback (see: git grep 'apple,').
+
+Sure, it was just a question for my understanding, not to make a
+point for a discussion.
+
+-michael
