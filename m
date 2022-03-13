@@ -2,99 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BAAC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 19:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46664C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 19:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235439AbiCMTIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 15:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45554 "EHLO
+        id S235489AbiCMTIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 15:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233757AbiCMTI3 (ORCPT
+        with ESMTP id S234705AbiCMTIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 15:08:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABC865D1B;
-        Sun, 13 Mar 2022 12:07:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3BBF6125C;
-        Sun, 13 Mar 2022 19:07:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8E59C340E8;
-        Sun, 13 Mar 2022 19:06:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647198420;
-        bh=sdT+tHxbpYLBX3wIqLLmHW1cCkkTCSKzp6egI0tq5QM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dddfGeyKDX4YZCkNYRtOsdXo//j74r/YpjNSJGuciz2bb19+4Wniy7YCjDE6ApY7n
-         s7lYbyem8qKoRgxfEHjI9pdevgTzSHPArrnuSbrzVbLSiVt6Nd5bPUVYl2Fo4+zmDc
-         OLySDj90EPsuKqcvSEJ+9ZgPI9SmJUGrI0Wvh+DqgP6grWZ0ILkLO8EvyryCF/s15U
-         CFTcMWDHbrNpSo71I3T8JUlyzwAjN464MfcoYXewQWsbF91WGQ66JXCrrhtCYBMK8d
-         ObmjjaRw+TjUEthmDAfPqAKsRZosSo9WvEhvFqlaCsEjPhOGBs4mPiQRKVDbv2d/CQ
-         A3fEcpCBD4/4Q==
-Date:   Sun, 13 Mar 2022 21:06:56 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yongzhi Liu <lyz_cs@pku.edu.cn>
-Cc:     jgg@ziepe.ca, yishaih@mellanox.com, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, fuyq@stu.pku.edu.cn
-Subject: Re: [PATCH] RDMA/mlx5: Fix memory leak
-Message-ID: <Yi5A0AkiVTLfkYFM@unreal>
-References: <1647018361-18266-1-git-send-email-lyz_cs@pku.edu.cn>
+        Sun, 13 Mar 2022 15:08:31 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBF5652FF;
+        Sun, 13 Mar 2022 12:07:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1647198423; x=1678734423;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3qnpGEDwzlBqk4oSVj6XhjSrpezFHas77xLMut5hfbw=;
+  b=UfMlsu89OEVit3eW3OQB30iBfBn29f73RvExYnKjKB09S1DKfZU9SUgG
+   YTiQUsM2VL9IGe7g75GePTcvzq85/VnobMQin4p0HZb+2C8/5Lfm/lhCg
+   sPUqG7rSjtqfNTRCt6/ZI4Jwa2f251th4FIZy1G9NJFYdyIAtIOEIlqX0
+   k=;
+X-IronPort-AV: E=Sophos;i="5.90,179,1643673600"; 
+   d="scan'208";a="201917501"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 13 Mar 2022 19:06:24 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com (Postfix) with ESMTPS id 968C63E1840;
+        Sun, 13 Mar 2022 19:06:24 +0000 (UTC)
+Received: from EX13D02UWB001.ant.amazon.com (10.43.161.240) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Sun, 13 Mar 2022 19:06:24 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D02UWB001.ant.amazon.com (10.43.161.240) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Sun, 13 Mar 2022 19:06:23 +0000
+Received: from dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com
+ (172.19.181.128) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server id 15.0.1497.28 via Frontend Transport; Sun, 13 Mar 2022 19:06:23
+ +0000
+Received: by dev-dsk-alisaidi-1d-b9a0e636.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id 5A23C17DB; Sun, 13 Mar 2022 19:06:22 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <leo.yan@linaro.org>
+CC:     <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
+        <alisaidi@amazon.com>, <andrew.kilroy@arm.com>,
+        <benh@kernel.crashing.org>, <german.gomez@arm.com>,
+        <james.clark@arm.com>, <john.garry@huawei.com>, <jolsa@redhat.com>,
+        <kjain@linux.ibm.com>, <lihuafei1@huawei.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>, <yao.jin@linux.intel.com>
+Subject: Re: [PATCH v2 1/2] perf arm-spe: Use SPE data source for neoverse cores
+Date:   Sun, 13 Mar 2022 19:06:19 +0000
+Message-ID: <20220313190619.18914-1-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220313114615.GA143848@leoy-ThinkPad-X240s>
+References: <20220313114615.GA143848@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1647018361-18266-1-git-send-email-lyz_cs@pku.edu.cn>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 09:06:01AM -0800, Yongzhi Liu wrote:
-> [why]
-> xa_insert is failed, so caller of subscribe_event_xa_alloc
-> cannot call other function to free obj_event. Therefore,
-> Resource release is needed on the error handling path to
-> prevent memory leak.
+On Sun, 13 Mar 2022 11:47:58 +0000 Leo Yan wrote:
+> Hi Ali, German,
 > 
-> [how]
-> Fix this by adding kfree on the error handling path.
+> On Wed, Mar 02, 2022 at 11:59:05AM +0000, German Gomez wrote:
+> > Hi Ali,
+> > 
+> > On 21/02/2022 22:47, Ali Saidi wrote:
+> > > When synthesizing data from SPE, augment the type with source information
+> > > for Arm Neoverse cores. The field is IMPLDEF but the Neoverse cores all use
+> > > the same encoding. I can't find encoding information for any other SPE
+> > > implementations to unify their choices with Arm's thus that is left for
+> > > future work.
+[snip]
+> > >  
+> > > +static void arm_spe__synth_data_source_neoverse(const struct arm_spe_record *record,
+> > > +						union perf_mem_data_src *data_src)
+> > > +{
+> > > +	switch (record->source) {
+> > > +	case ARM_SPE_NV_L1D:
+> > > +		data_src->mem_lvl = PERF_MEM_LVL_HIT;
+> > 
+> > I understand mem_lvl is deprecated but shouldn't we add the level bits here as well for backwards compat?
 > 
-> Fixes: 7597385 ("IB/mlx5: Enable subscription for device events over DEVX")
-> 
-> Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
-> ---
->  drivers/infiniband/hw/mlx5/devx.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-
-The change itself is correct one, but commit message needs to be improved.
-Something like that:
-
-------------------------------------------------------------------
-[PATCH] RDMA/mlx5: Fix memory leak in error subscribe event routine
-
-In case second xa_insert() fails, the obj_event is not released.
-Fix the error unwind flow to free that memory to avoid memory leak.
-
-Fixes: 7597385 ("IB/mlx5: Enable subscription for device events over DEVX")
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
--------------------------------------------------------------------
+> Thanks for pointing out this.  Yeah, I think German's suggestion is
+> valid, the commit 6ae5fa61d27d ("perf/x86: Fix data source decoding
+> for Skylake") introduces new field 'mem_lvl_num', but it also keeps
+> backwards compatible for the field 'mem_lvl'.
+I thought about that, but then I'm making some assumption about how to fit
+this into the old LVL framework, which is perhaps OK (afaik there are no
+Neoverse systems with more than 3 cache levels). What stopped me was that
+perf_mem__lvl_scnprintf() does the wrong thing when both are set so I
+assumed that setting both was not the right course of action.
 
 > 
-> diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-> index 08b7f6b..15c0884 100644
-> --- a/drivers/infiniband/hw/mlx5/devx.c
-> +++ b/drivers/infiniband/hw/mlx5/devx.c
-> @@ -1886,8 +1886,10 @@ subscribe_event_xa_alloc(struct mlx5_devx_event_table *devx_event_table,
->  				key_level2,
->  				obj_event,
->  				GFP_KERNEL);
-> -		if (err)
-> +		if (err) {
-> +			kfree(obj_event);
->  			return err;
-> +		}
->  		INIT_LIST_HEAD(&obj_event->obj_sub_list);
->  	}
->  
-> -- 
-> 2.7.4
+> > > +		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L1;
+> > > +		break;
+> > > +	case ARM_SPE_NV_L2:
+> > > +		data_src->mem_lvl = PERF_MEM_LVL_HIT;
+> > > +		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L2;
+> > > +		break;
+> > > +	case ARM_SPE_NV_PEER_CORE:
+> > > +		data_src->mem_lvl = PERF_MEM_LVL_HIT;
+> > > +		data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
+> > > +		data_src->mem_lvl_num = PERF_MEM_LVLNUM_ANY_CACHE;
 > 
+> For PEER_CORE data source, we don't know if it's coming from peer
+> core's L1 cache or L2 cache, right?
+We don't.
+
+> 
+> If so, do you think if it's possible to retrieve more accurate info
+> from the field "record->type"?
+No, we just don't know and it really doesn't matter. The main reason to
+understand the source is to understand the penalty of data coming from
+the source and that it's coming from a core should be sufficient.
+
+> 
+> > > +		break;
+> > > +	/*
+> > > +	 * We don't know if this is L1, L2, or even L3 (for the cases the system
+> > > +	 * has an L3, but we do know it was a cache-2-cache transfer, so set
+> > > +	 * SNOOP_HITM
+> > > +	 */
+> > > +	case ARM_SPE_NV_LCL_CLSTR:
+> > > +	case ARM_SPE_NV_PEER_CLSTR:
+> > > +		data_src->mem_lvl = PERF_MEM_LVL_HIT;
+> > > +		data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
+> > > +		data_src->mem_lvl_num = PERF_MEM_LVLNUM_ANY_CACHE;
+> 
+> Seems to me, we need to add attribution to indicate the difference
+> between ARM_SPE_NV_PEER_CORE and ARM_SPE_NV_LCL_CLSTR.
+I don't think we really do, see my reasoning above. 
+
+> 
+> For ARM_SPE_NV_PEER_CLSTR data source, should we set any "remote"
+> attribution as well?
+
+No, we should leave remote for data coming from another chip/socket
+which is really impactful. 
+
+> 
+> > > +		break;
+> > > +	/*
+> > > +	 * System cache is assumed to be L4, as cluster cache (if it exists)
+> > > +	 * would be L3 cache on Neoverse platforms
+> > > +	 */
+> > > +	case ARM_SPE_NV_SYS_CACHE:
+> > > +		data_src->mem_lvl = PERF_MEM_LVL_HIT;
+> > > +		data_src->mem_lvl_num = PERF_MEM_LVLNUM_L4;
+> > > +		break;
+> > > +	/*
+> > > +	 * We don't know what level it hit in, except it came from the other
+> > > +	 * socket
+> > > +	 */
+> > > +	case ARM_SPE_NV_REMOTE:
+> > > +		data_src->mem_snoop = PERF_MEM_SNOOP_HITM;
+> > > +		data_src->mem_remote = PERF_MEM_REMOTE_REMOTE;
+> > > +		break;
+> 
+> Just curious, is it possible that 'record->source' combines multiple
+> bits?  Like we can get a data source value with:
+> 
+>   ARM_SPE_NV_REMOTE | ARM_SPE_NV_REMOTE
+
+source encodes a single value (not bits that represent flags) on Neoverse
+cores.
+
+[snip]
+> > > @@ -796,6 +868,10 @@ static int arm_spe_process_event(struct perf_session *session,
+> > >  	u64 timestamp;
+> > >  	struct arm_spe *spe = container_of(session->auxtrace,
+> > >  			struct arm_spe, auxtrace);
+> > > +	const char *cpuid = perf_env__cpuid(session->evlist->env);
+> > > +	u64 midr = strtol(cpuid, NULL, 16);
+> > > +
+> > > +	spe->midr = midr;
+> > 
+> > I think this midr setup belongs in the arm_spe_process_auxtrace_info callback instead.
+> 
+> Yeah, arm_spe_process_event() would be invoked for multiple times for
+> processing perf events.  arm_spe_process_auxtrace_info() would be a
+> good place to initialize midr.
+
+Will do.
+
+Thanks,
+Ali
+
