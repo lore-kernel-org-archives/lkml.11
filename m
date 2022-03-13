@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10982C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F85EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234416AbiCMKxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 06:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        id S234319AbiCMKxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 06:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234429AbiCMKwx (ORCPT
+        with ESMTP id S232306AbiCMKwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 06:52:53 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A829E4AE1F;
-        Sun, 13 Mar 2022 03:51:26 -0700 (PDT)
+        Sun, 13 Mar 2022 06:52:46 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734821255AC;
+        Sun, 13 Mar 2022 03:51:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647168686; x=1678704686;
+  t=1647168669; x=1678704669;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=9l+LPMkLtqeMSWP1b4SOmyqedQ8aVLN9kIwR5ZjsVQI=;
-  b=FPIY3K61Wm18luhGAlMcGtML5U1+CJz/pJI+pPfM1iaov/ABZwJ4Wd5D
-   FzJ6SLL1ejjxNAWRa3ZLQb2TdrPm9NlqxS9cxf/6+7bOyy47Fb8jQJ5oI
-   uUOAPVhZvZbFMYorxjOI4o1Z6BxqNC3GXW9eowZVudogx9hr7zwHc/Nsq
-   XFK6waO/bUo3AksjjSGbRp2BJj1tL118fHWsLZvoiQxvQxIGp3yUTLwms
-   ItjT77AN5MHcgIvCoqjzMAb02XbjIyC3/lP3/8s7G24Rk2Qnulod25KZo
-   X0xwan0a4hDMEjwV+wcoM+oRQ5BYSz8blTzzc7MMTbuMH04KnGRkgRr2v
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="255590723"
+  bh=+k8+ff3MZT0dZaurFb5N+16+FvSx0d0LIcCmcswxmYM=;
+  b=Dm34jHGF57eBvtNhZCsR6gc2XCMCKuejuyNOr/cgJbjC9cc/GfxcBbi0
+   WnkLQdqTJwlWFJM3A/YH9yjUYgr97DR/28w3QHtVuZoYaNVKY5uMWsSYc
+   Z6vxfp6oHAiBq/88RI3/aK6fTwcpvCVA4ZohnGM+nnJlMjINrBAN37qve
+   WV+YxRf+lKOscJwaxgEeNcGndrPAoEmaYRQr5K2+g6eetYMlwqQP47s98
+   QU399hETOvn7f5O7E0dqtJWFLeR0lS/sUo+Z04fzxUQbJlv0i8dgehVPf
+   i/lgCRCif2VkYZZ1IJZh8OcMW8pRv94xk1X62zCQYg9y0mHxEhMlnDgRT
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="254689549"
 X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="255590723"
+   d="scan'208";a="254689549"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:15 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:00 -0700
 X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="645448251"
+   d="scan'208";a="645448184"
 Received: from mvideche-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.251.130.249])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:12 -0700
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:50:56 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     dave.hansen@intel.com, seanjc@google.com, pbonzini@redhat.com,
@@ -44,9 +44,9 @@ Cc:     dave.hansen@intel.com, seanjc@google.com, pbonzini@redhat.com,
         sathyanarayanan.kuppuswamy@linux.intel.com, peterz@infradead.org,
         tony.luck@intel.com, ak@linux.intel.com, dan.j.williams@intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v2 20/21] x86/virt/tdx: Add kernel command line to opt-in TDX host support
-Date:   Sun, 13 Mar 2022 23:50:00 +1300
-Message-Id: <97c3539843a2c9cfdfd4a4ba2786be9b76afdd78.1647167475.git.kai.huang@intel.com>
+Subject: [PATCH v2 15/21] x86/virt/tdx: Reserve TDX module global KeyID
+Date:   Sun, 13 Mar 2022 23:49:55 +1300
+Message-Id: <9166c08562dd141d4fce552725664a245cdbd34c.1647167475.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647167475.git.kai.huang@intel.com>
 References: <cover.1647167475.git.kai.huang@intel.com>
@@ -56,66 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enabling TDX consumes additional memory (used by TDX as metadata) and
-additional initialization time.  Introduce a kernel command line to
-allow to opt-in TDX host kernel support when user truly wants to use
-TDX.
+TDX module initialization requires to use one TDX private KeyID as the
+global KeyID to crypto protect TDX metadata.  The global KeyID is
+configured to the TDX module along with TDMRs.
+
+Just reserve the first TDX private KeyID as the global KeyID.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  6 ++++++
- arch/x86/virt/vmx/tdx.c                         | 14 ++++++++++++++
- 2 files changed, 20 insertions(+)
+ arch/x86/virt/vmx/tdx.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index f5a27f067db9..9f85cafd0c2d 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5707,6 +5707,12 @@
- 
- 	tdfx=		[HW,DRM]
- 
-+	tdx_host=	[X86-64, TDX]
-+			Format: {on|off}
-+			on: Enable TDX host kernel support
-+			off: Disable TDX host kernel support
-+			Default is off.
-+
- 	test_suspend=	[SUSPEND][,N]
- 			Specify "mem" (for Suspend-to-RAM) or "standby" (for
- 			standby suspend) or "freeze" (for suspend type freeze)
 diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
-index d9ad8dc7111e..2022f9c019b8 100644
+index f6345af29414..f70eee7df0c1 100644
 --- a/arch/x86/virt/vmx/tdx.c
 +++ b/arch/x86/virt/vmx/tdx.c
-@@ -116,6 +116,16 @@ static struct tdsysinfo_struct tdx_sysinfo;
- /* TDX global KeyID to protect TDX metadata */
- static u32 tdx_global_keyid;
+@@ -112,6 +112,9 @@ static struct cmr_info tdx_cmr_array[MAX_CMRS] __aligned(CMR_INFO_ARRAY_ALIGNMEN
+ static int tdx_cmr_num;
+ static struct tdsysinfo_struct tdx_sysinfo;
  
-+static bool enable_tdx_host;
-+
-+static int __init tdx_host_setup(char *s)
-+{
-+	if (!strcmp(s, "on"))
-+		enable_tdx_host = true;
-+	return 1;
-+}
-+__setup("tdx_host=", tdx_host_setup);
++/* TDX global KeyID to protect TDX metadata */
++static u32 tdx_global_keyid;
 +
  static bool __seamrr_enabled(void)
  {
  	return (seamrr_mask & SEAMRR_ENABLED_BITS) == SEAMRR_ENABLED_BITS;
-@@ -501,6 +511,10 @@ static int detect_p_seamldr(void)
+@@ -1316,6 +1319,12 @@ static int init_tdx_module(void)
+ 	if (ret)
+ 		goto out_free_tdmrs;
  
- static int __tdx_detect(void)
- {
-+	/* Disabled by kernel command line */
-+	if (!enable_tdx_host)
-+		goto no_tdx_module;
++	/*
++	 * Reserve the first TDX KeyID as global KeyID to protect
++	 * TDX module metadata.
++	 */
++	tdx_global_keyid = tdx_keyid_start;
 +
- 	/* The TDX module is not loaded if SEAMRR is disabled */
- 	if (!seamrr_enabled()) {
- 		pr_info("SEAMRR not enabled.\n");
+ 	/*
+ 	 * Return -EFAULT until all steps of TDX module
+ 	 * initialization are done.
 -- 
 2.35.1
 
