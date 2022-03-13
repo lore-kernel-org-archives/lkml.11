@@ -2,122 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 19:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C98C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 19:08:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232809AbiCMTIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 15:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        id S233003AbiCMTJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 15:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233408AbiCMTIr (ORCPT
+        with ESMTP id S235495AbiCMTJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 15:08:47 -0400
-Received: from mail-il1-x146.google.com (mail-il1-x146.google.com [IPv6:2607:f8b0:4864:20::146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB515EBE2
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 12:07:21 -0700 (PDT)
-Received: by mail-il1-x146.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so8028228ilc.17
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 12:07:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=hrG6Ki3aA8GUhdvCzu83x+7g5sqskeEOsHfTy29t4bQ=;
-        b=xnMW+B4YIqoekXzdwHXHaapDXVvaI9K8+DpD8WWxc5jstGbGoJvNDdR76Hx7VROs2K
-         7RYVJbfW84ZS+HHZetgMaXBLklXlm1PNB3lQw2ASUFAi0q0WgiGIBqKuCM9bWjeWhiUU
-         ThgPhGxu6LvwPsG4DYmNe4a+nFTUCcUQfTXMhZReitFm4lsFSyFP/91MWbz5G9MTG7zS
-         DB2gP5jqwkUQbg+oHvoxPm18xrUcujhQHA6o66U9QiV6UfV0sX22/9WOcXhQQ/vKCsZS
-         RFYqgd1q0VpPXZq/ycUwXkh30qXVeJB9B+Y88TszaKbvyRl1GCj6pcXmmNT9o5d2I2mg
-         GG1Q==
-X-Gm-Message-State: AOAM533KQFWpydD+NGYGm04iHAye+wO0GBAxYiC7RpMm8+2y/YjLw3Zt
-        IHAhbyEEWV0OFGpXV5OMpyr3n9wOF5Ud4yWcT+9icxQ9+b2d
-X-Google-Smtp-Source: ABdhPJy52cW2X75vVZN/Qp8fQW0mjgpEorMgwvmJGJ9IXYb2e9asY0cQIyZbCDcnDxdOubkkNtceCMO4uFw8Z/qci8JwOkZPxMF/
+        Sun, 13 Mar 2022 15:09:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CA224BED;
+        Sun, 13 Mar 2022 12:08:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBF4EB80C6D;
+        Sun, 13 Mar 2022 19:08:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8AA7C340E8;
+        Sun, 13 Mar 2022 19:07:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647198481;
+        bh=S85F7ZrTXTrFfys0rJRseAMPLnZqh6VsxjYx3rCW0qE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dmNaUYlaZzqRi5HFPSpsaDKlblQ3p5MVwueWdtZ27nwr8sXgDKGi2zeY/AjXhia3r
+         t3niMVPVw7ZMGjht2uPQpdIjDG4Xhh9RGBhkGpYYOvaUeyV1uyl7/Ooe5SRkYIpGeX
+         nPRzgYBl7I9TulXE9lJimj0/y8WedW4Wi+roZ8v+CzAwespYPgVioTi8rInofHYnIy
+         491oP//dd5FdrR2OaOwIhThTPNfNsfaRZeZ3HQhK2GC9Kcx+ke0YN8MaSRvnFceHGK
+         pt91NFQbpkfyZg/QEihqmYtQ09K3FaejAvhCvgIlhJQH+gCJk9QSEoxFWap65S3vAZ
+         MpeygeZQ1qMyA==
+Date:   Sun, 13 Mar 2022 20:07:55 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] media: Kconfig: cleanup VIDEO_DEV dependencies
+Message-ID: <20220313200755.0873537c@coco.lan>
+In-Reply-To: <Yi3ciCTbHrxYUatX@pendragon.ideasonboard.com>
+References: <42ae3d28d4d822f3e14db76b99f2f4c41688ae3e.1647155467.git.mchehab@kernel.org>
+        <Yi3ciCTbHrxYUatX@pendragon.ideasonboard.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3816:b0:31a:60:22c9 with SMTP id
- i22-20020a056638381600b0031a006022c9mr2318973jav.146.1647198380638; Sun, 13
- Mar 2022 12:06:20 -0700 (PDT)
-Date:   Sun, 13 Mar 2022 12:06:20 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005a48c405da1e42a7@google.com>
-Subject: [syzbot] WARNING in dev_shutdown (2)
-From:   syzbot <syzbot+b7f7bc8316a81a317025@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Em Sun, 13 Mar 2022 13:59:04 +0200
+Laurent Pinchart <laurent.pinchart@ideasonboard.com> escreveu:
 
-syzbot found the following issue on:
+> Hi Mauro,
+> 
+> Thank you for the patch.
+> 
+> Trimming the CC list to keep a few mailing lists only.
+> 
+> On Sun, Mar 13, 2022 at 08:12:05AM +0100, Mauro Carvalho Chehab wrote:
+> > media Kconfig has two entries associated to V4L API:
+> > VIDEO_DEV and VIDEO_V4L2.
+> > 
+> > On Kernel 2.6.x, there were two V4L APIs, each one with its own flag.
+> > VIDEO_DEV were meant to:
+> > 	1) enable Video4Linux and make its Kconfig options to appear;
+> > 	2) it makes the Kernel build the V4L core.
+> > 
+> > while VIDEO_V4L2 where used to distinguish between drivers that
+> > implement the newer API and drivers that implemented the former one.
+> > 
+> > With time, such meaning changed, specially after the removal of
+> > all V4L version 1 drivers.
+> > 
+> > At the current implementation, VIDEO_DEV only does (1): it enables
+> > the media options related to V4L, that now has:
+> > 
+> > 	menu "Video4Linux options"
+> > 		visible if VIDEO_DEV
+> > 
+> > 	source "drivers/media/v4l2-core/Kconfig"
+> > 	endmenu
+> > 
+> > but it doesn't affect anymore the V4L core drivers.
+> > 
+> > The rationale is that the V4L2 core has a "soft" dependency
+> > at the I2C bus, and now requires to select a number of other
+> > Kconfig options:
+> > 
+> > 	config VIDEO_V4L2
+> > 		tristate
+> > 		depends on (I2C || I2C=n) && VIDEO_DEV
+> > 		select RATIONAL
+> > 		select VIDEOBUF2_V4L2 if VIDEOBUF2_CORE
+> > 		default (I2C || I2C=n) && VIDEO_DEV
+> > 
+> > In the past, merging them would be tricky, but it seems that it is now
+> > possible to merge those symbols, in order to simplify V4L dependencies.
+> > 
+> > Let's keep VIDEO_DEV, as this one is used on some make *defconfig
+> > configurations.  
+> 
+> I would have gone for VIDEO_V4L2, but if it makes configuration changes
+> easier to handle, VIDEO_DEV is fine with me too.
 
-HEAD commit:    98d107b84614 usb: host: xhci: Remove some unnecessary retu..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=14e2cd45700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3c586df4d4c0a65
-dashboard link: https://syzkaller.appspot.com/bug?extid=b7f7bc8316a81a317025
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+That was actually my first option ;-) VIDEO_V4L2 (or VIDEO_V4L) is a much
+better name. From my side, I'm fine either way.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+As a plus, using VIDEO_V4L2 would produce a much smaller patch that won't be
+rejected by some ML servers, but maybe it would require distros and people 
+who have their own .config files stored somewhere to re-configure their
+Kernels.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b7f7bc8316a81a317025@syzkaller.appspotmail.com
+> [snip]
+> 
+> > diff --git a/drivers/media/pci/tw5864/Kconfig b/drivers/media/pci/tw5864/Kconfig
+> > index d376d4ed65b9..0a0f3191f238 100644
+> > --- a/drivers/media/pci/tw5864/Kconfig
+> > +++ b/drivers/media/pci/tw5864/Kconfig
+> > @@ -1,7 +1,7 @@
+> >  # SPDX-License-Identifier: GPL-2.0-only
+> >  config VIDEO_TW5864
+> >  	tristate "Techwell TW5864 video/audio grabber and encoder"
+> > -	depends on VIDEO_DEV && PCI && VIDEO_V4L2
+> > +	depends on VIDEO_DEV && PCI && VIDEO_DEV  
+> 
+> You can drop the second VIDEO_DEV.
+> 
+> >  	select VIDEOBUF2_DMA_CONTIG
+> >  	help
+> >  	  Support for boards based on Techwell TW5864 chip which provides
+> > diff --git a/drivers/media/pci/tw68/Kconfig b/drivers/media/pci/tw68/Kconfig
+> > index af0cb60337bb..ef29be7db493 100644
+> > --- a/drivers/media/pci/tw68/Kconfig
+> > +++ b/drivers/media/pci/tw68/Kconfig
+> > @@ -1,7 +1,7 @@
+> >  # SPDX-License-Identifier: GPL-2.0-only
+> >  config VIDEO_TW68
+> >  	tristate "Techwell tw68x Video For Linux"
+> > -	depends on VIDEO_DEV && PCI && VIDEO_V4L2
+> > +	depends on VIDEO_DEV && PCI && VIDEO_DEV  
+> 
+> Here too.
+> 
+> Apart from that, the patch looks good to me.
+> 
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-ax88179_178a 1-1:8.224 eth1: Failed to write reg index 0x0001: -19
-ax88179_178a 1-1:8.224 eth1: Failed to write reg index 0x0002: -19
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 5 at net/sched/sch_generic.c:1484 dev_shutdown+0x44f/0x520 net/sched/sch_generic.c:1484
-Modules linked in:
-CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.17.0-rc6-syzkaller-00100-g98d107b84614 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-RIP: 0010:dev_shutdown+0x44f/0x520 net/sched/sch_generic.c:1484
-Code: fc 48 c7 c2 20 40 d6 86 be 55 00 00 00 48 c7 c7 00 44 d6 86 c6 05 d6 6d ca 03 01 e8 98 96 c4 00 e9 76 fd ff ff e8 41 62 61 fc <0f> 0b e9 b8 fe ff ff 48 8b 7c 24 10 e8 30 83 90 fc e9 de fb ff ff
-RSP: 0018:ffffc9000005f598 EFLAGS: 00010246
-RAX: 0000000000040000 RBX: 0000000000000001 RCX: ffffc90007c12000
-RDX: 0000000000040000 RSI: ffffffff84e29def RDI: ffff888116c4c510
-RBP: ffff888116c4c000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff84e23f1a R11: 0000000000000000 R12: ffff888116c4c410
-R13: ffff888110ce4c18 R14: ffffed1022d89880 R15: 0000000000000001
-FS:  0000000000000000(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2bf24000 CR3: 000000010e37a000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- unregister_netdevice_many+0x816/0x1870 net/core/dev.c:10408
- unregister_netdevice_queue net/core/dev.c:10349 [inline]
- unregister_netdevice_queue+0x2dd/0x3c0 net/core/dev.c:10339
- unregister_netdevice include/linux/netdevice.h:2902 [inline]
- unregister_netdev+0x18/0x20 net/core/dev.c:10474
- usbnet_disconnect+0x139/0x270 drivers/net/usb/usbnet.c:1623
- usb_unbind_interface+0x1d8/0x8e0 drivers/usb/core/driver.c:458
- __device_release_driver+0x627/0x760 drivers/base/dd.c:1209
- device_release_driver_internal drivers/base/dd.c:1242 [inline]
- device_release_driver+0x26/0x40 drivers/base/dd.c:1265
- bus_remove_device+0x2eb/0x5a0 drivers/base/bus.c:529
- device_del+0x4f3/0xc80 drivers/base/core.c:3592
- usb_disable_device+0x35b/0x7b0 drivers/usb/core/message.c:1419
- usb_disconnect.cold+0x27a/0x78e drivers/usb/core/hub.c:2228
- hub_port_connect drivers/usb/core/hub.c:5207 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
- port_event drivers/usb/core/hub.c:5665 [inline]
- hub_event+0x1e39/0x44d0 drivers/usb/core/hub.c:5747
- process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
- process_scheduled_works kernel/workqueue.c:2370 [inline]
- worker_thread+0x833/0x1110 kernel/workqueue.c:2456
- kthread+0x2ef/0x3a0 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
+Thanks!
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Mauro
