@@ -2,108 +2,331 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A983BC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4868CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234018AbiCMQm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 12:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        id S234986AbiCMQwV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 12:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbiCMQmZ (ORCPT
+        with ESMTP id S234725AbiCMQwT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 12:42:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6DE856162
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:41:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647189675;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=bqoVTiTsGXXHBBRYe8M9hzomUWdwc4CvqTvtEGolwng=;
-        b=Lx9Z0SLRwS/w7zAHj59wmtZFpcxoKT8E6yAtjErySoJXQe6ixq2WWx91G0Bna3WE4Wc0Y3
-        KzHaXeyIglaiJYGQbnugrZQ5Wk9eK+B1QixA9yU6sFCfiDCQkJtZj4RUy8GVPoo98r4kpU
-        0Q2iG53qZnTCUIk9lGvPSIy9KU0TVlg=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-ZL0q2wkcPMu4G9Ypz5deuw-1; Sun, 13 Mar 2022 12:41:14 -0400
-X-MC-Unique: ZL0q2wkcPMu4G9Ypz5deuw-1
-Received: by mail-oo1-f69.google.com with SMTP id h42-20020a4a942d000000b00321739192d0so6978432ooi.8
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:41:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bqoVTiTsGXXHBBRYe8M9hzomUWdwc4CvqTvtEGolwng=;
-        b=D5bIcf8AD7rViKgNHmZiBVk3amInM3GTMObYV1V/F3pLc2S2VsdDeAVJzoF82uOZBo
-         up+iAMR+EYw6y4m8y55thiB9Mutx9LeR+HkZpG2UokjZxK1Wr9YD7+pbCmQjbbLB1uFV
-         vtuyatH5eeaUoaMDeUcUG5V28a0j8pRvKOyhiXTuc+haKJBBOqJIPYDsqrdAQLaiY6pI
-         4r5qrNLDDynzTkeChbGoU6t1FIMPyU6kkG70xJyVrFzSbV0svi/ZCzXWfkhTOoCRbBSd
-         E1vWVznQaBNTBF8ozmpK6hMIcoXkFCeIDMcG0YCkKoybLy1eI56YNOAfBq71xFV5oEi5
-         3nUg==
-X-Gm-Message-State: AOAM532wI+DpmckaMrvNWy8AD6tKpzZ3nVQozxSZw19t4xTOk7FyQdvb
-        HCMUCozfoHqEfhsQn2+RMFb81sGoSErqq2fH0OzoYIua4Nc/ZPsCRNR74QfdosYo8bHWNBKvL1M
-        wfnx75fA2l5q4Gedhed7U+MPK
-X-Received: by 2002:a4a:8c0a:0:b0:2dd:e256:88c8 with SMTP id u10-20020a4a8c0a000000b002dde25688c8mr8551825ooj.9.1647189673424;
-        Sun, 13 Mar 2022 09:41:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwCOOpV5kTWBACRUlg4bObdEcMfOX5390WS3Kv1BpjVdmUqwie4T3pC2DQr7CUxkbwB6+ko/Q==
-X-Received: by 2002:a4a:8c0a:0:b0:2dd:e256:88c8 with SMTP id u10-20020a4a8c0a000000b002dde25688c8mr8551818ooj.9.1647189673249;
-        Sun, 13 Mar 2022 09:41:13 -0700 (PDT)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id q62-20020a4a3341000000b00320f8a179d0sm6160816ooq.30.2022.03.13.09.41.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Mar 2022 09:41:12 -0700 (PDT)
-From:   trix@redhat.com
-To:     jacopo@jmondi.org, mchehab@kernel.org, hverkuil-cisco@xs4all.nl
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] media: i2c: cleanup comments
-Date:   Sun, 13 Mar 2022 09:04:57 -0700
-Message-Id: <20220313160457.1513543-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Sun, 13 Mar 2022 12:52:19 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F02B985A7;
+        Sun, 13 Mar 2022 09:51:08 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R381e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V70i25e_1647190256;
+Received: from localhost(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0V70i25e_1647190256)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 14 Mar 2022 00:51:04 +0800
+From:   Wen Yang <simon.wy@alibaba-inc.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Wen Yang <simon.wy@alibaba-inc.com>,
+        Stephane Eranian <eranian@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        Wen Yang <wenyang@linux.alibaba.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/3] perf/x86: extract code to assign perf events for both core and uncore
+Date:   Mon, 14 Mar 2022 00:50:45 +0800
+Message-Id: <20220313165047.77391-1-simon.wy@alibaba-inc.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Following two patterns in x86 perf code are used in multiple places where
+similar code is duplicated:
+- fast path, try to reuse previous register
+- slow path, assign a counter for each event
 
-For spdx, remove leading space
+In order to improve code quality and prepare for following patch series
+that also uses described patterns, extract the codes to perf_assign_events.
 
-Replacements
-parametrize to parameterize
+This commit doesn't change functionality.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: Wen Yang <simon.wy@alibaba-inc.com>
+Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: x86@kernel.org
+Cc: Wen Yang <wenyang@linux.alibaba.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: linux-perf-users@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 ---
- include/media/i2c/mt9t112.h | 2 +-
- include/media/i2c/wm8775.h  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/events/core.c         | 141 ++++++++++++++++++++++-------------------
+ arch/x86/events/intel/uncore.c |  31 +--------
+ arch/x86/events/perf_event.h   |   6 +-
+ 3 files changed, 82 insertions(+), 96 deletions(-)
 
-diff --git a/include/media/i2c/mt9t112.h b/include/media/i2c/mt9t112.h
-index e678b6ae8e2f5..825b4a169da81 100644
---- a/include/media/i2c/mt9t112.h
-+++ b/include/media/i2c/mt9t112.h
-@@ -1,4 +1,4 @@
--/*  SPDX-License-Identifier: GPL-2.0 */
-+/* SPDX-License-Identifier: GPL-2.0 */
- /* mt9t112 Camera
-  *
-  * Copyright (C) 2009 Renesas Solutions Corp.
-diff --git a/include/media/i2c/wm8775.h b/include/media/i2c/wm8775.h
-index 83675817639e3..6ccdeb3817ab0 100644
---- a/include/media/i2c/wm8775.h
-+++ b/include/media/i2c/wm8775.h
-@@ -23,7 +23,7 @@
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index e686c5e..b14fb1b 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -950,10 +950,7 @@ static bool perf_sched_next_event(struct perf_sched *sched)
+ 	return true;
+ }
  
- struct wm8775_platform_data {
+-/*
+- * Assign a counter for each event.
+- */
+-int perf_assign_events(struct event_constraint **constraints, int n,
++static int __perf_assign_events(struct event_constraint **constraints, int n,
+ 			int wmin, int wmax, int gpmax, int *assign)
+ {
+ 	struct perf_sched sched;
+@@ -969,16 +966,66 @@ int perf_assign_events(struct event_constraint **constraints, int n,
+ 
+ 	return sched.state.unassigned;
+ }
++
++/*
++ * Assign a counter for each event.
++ */
++int perf_assign_events(struct perf_event **event_list,
++		struct event_constraint **constraints, int n,
++		int wmin, int wmax, int gpmax, int *assign)
++{
++	struct event_constraint *c;
++	struct hw_perf_event *hwc;
++	u64 used_mask = 0;
++	int unsched = 0;
++	int i;
++
++	/*
++	 * fastpath, try to reuse previous register
++	 */
++	for (i = 0; i < n; i++) {
++		u64 mask;
++
++		hwc = &event_list[i]->hw;
++		c = constraints[i];
++
++		/* never assigned */
++		if (hwc->idx == -1)
++			break;
++
++		/* constraint still honored */
++		if (!test_bit(hwc->idx, c->idxmsk))
++			break;
++
++		mask = BIT_ULL(hwc->idx);
++		if (is_counter_pair(hwc))
++			mask |= mask << 1;
++
++		/* not already used */
++		if (used_mask & mask)
++			break;
++
++		used_mask |= mask;
++
++		if (assign)
++			assign[i] = hwc->idx;
++	}
++
++	/* slow path */
++	if (i != n)
++		unsched = __perf_assign_events(constraints, n,
++				wmin, wmax, gpmax, assign);
++
++	return unsched;
++}
+ EXPORT_SYMBOL_GPL(perf_assign_events);
+ 
+ int x86_schedule_events(struct cpu_hw_events *cpuc, int n, int *assign)
+ {
+ 	int num_counters = hybrid(cpuc->pmu, num_counters);
+-	struct event_constraint *c;
+-	struct perf_event *e;
+ 	int n0, i, wmin, wmax, unsched = 0;
+-	struct hw_perf_event *hwc;
+-	u64 used_mask = 0;
++	struct event_constraint *c;
++	int gpmax = num_counters;
+ 
  	/*
--	 * FIXME: Instead, we should parametrize the params
-+	 * FIXME: Instead, we should parameterize the params
- 	 * that need different settings between ivtv, pvrusb2, and Nova-S
+ 	 * Compute the number of events already present; see x86_pmu_add(),
+@@ -1017,66 +1064,30 @@ int x86_schedule_events(struct cpu_hw_events *cpuc, int n, int *assign)
+ 	}
+ 
+ 	/*
+-	 * fastpath, try to reuse previous register
++	 * Do not allow scheduling of more than half the available
++	 * generic counters.
++	 *
++	 * This helps avoid counter starvation of sibling thread by
++	 * ensuring at most half the counters cannot be in exclusive
++	 * mode. There is no designated counters for the limits. Any
++	 * N/2 counters can be used. This helps with events with
++	 * specific counter constraints.
  	 */
- 	bool is_nova_s;
+-	for (i = 0; i < n; i++) {
+-		u64 mask;
+-
+-		hwc = &cpuc->event_list[i]->hw;
+-		c = cpuc->event_constraint[i];
+-
+-		/* never assigned */
+-		if (hwc->idx == -1)
+-			break;
+-
+-		/* constraint still honored */
+-		if (!test_bit(hwc->idx, c->idxmsk))
+-			break;
+-
+-		mask = BIT_ULL(hwc->idx);
+-		if (is_counter_pair(hwc))
+-			mask |= mask << 1;
+-
+-		/* not already used */
+-		if (used_mask & mask)
+-			break;
++	if (is_ht_workaround_enabled() && !cpuc->is_fake &&
++			READ_ONCE(cpuc->excl_cntrs->exclusive_present))
++		gpmax /= 2;
+ 
+-		used_mask |= mask;
+-
+-		if (assign)
+-			assign[i] = hwc->idx;
++	/*
++	 * Reduce the amount of available counters to allow fitting
++	 * the extra Merge events needed by large increment events.
++	 */
++	if (x86_pmu.flags & PMU_FL_PAIR) {
++		gpmax = num_counters - cpuc->n_pair;
++		WARN_ON(gpmax <= 0);
+ 	}
+ 
+-	/* slow path */
+-	if (i != n) {
+-		int gpmax = num_counters;
+-
+-		/*
+-		 * Do not allow scheduling of more than half the available
+-		 * generic counters.
+-		 *
+-		 * This helps avoid counter starvation of sibling thread by
+-		 * ensuring at most half the counters cannot be in exclusive
+-		 * mode. There is no designated counters for the limits. Any
+-		 * N/2 counters can be used. This helps with events with
+-		 * specific counter constraints.
+-		 */
+-		if (is_ht_workaround_enabled() && !cpuc->is_fake &&
+-		    READ_ONCE(cpuc->excl_cntrs->exclusive_present))
+-			gpmax /= 2;
+-
+-		/*
+-		 * Reduce the amount of available counters to allow fitting
+-		 * the extra Merge events needed by large increment events.
+-		 */
+-		if (x86_pmu.flags & PMU_FL_PAIR) {
+-			gpmax = num_counters - cpuc->n_pair;
+-			WARN_ON(gpmax <= 0);
+-		}
+-
+-		unsched = perf_assign_events(cpuc->event_constraint, n, wmin,
+-					     wmax, gpmax, assign);
+-	}
++	unsched = perf_assign_events(cpuc->event_list, cpuc->event_constraint,
++			n, wmin, wmax, gpmax, assign);
+ 
+ 	/*
+ 	 * In case of success (unsched = 0), mark events as committed,
+@@ -1093,7 +1104,7 @@ int x86_schedule_events(struct cpu_hw_events *cpuc, int n, int *assign)
+ 			static_call_cond(x86_pmu_commit_scheduling)(cpuc, i, assign[i]);
+ 	} else {
+ 		for (i = n0; i < n; i++) {
+-			e = cpuc->event_list[i];
++			struct perf_event *e = cpuc->event_list[i];
+ 
+ 			/*
+ 			 * release events that failed scheduling
+diff --git a/arch/x86/events/intel/uncore.c b/arch/x86/events/intel/uncore.c
+index e497da9..101358a 100644
+--- a/arch/x86/events/intel/uncore.c
++++ b/arch/x86/events/intel/uncore.c
+@@ -442,12 +442,8 @@ static void uncore_put_event_constraint(struct intel_uncore_box *box,
+ 
+ static int uncore_assign_events(struct intel_uncore_box *box, int assign[], int n)
+ {
+-	unsigned long used_mask[BITS_TO_LONGS(UNCORE_PMC_IDX_MAX)];
+ 	struct event_constraint *c;
+ 	int i, wmin, wmax, ret = 0;
+-	struct hw_perf_event *hwc;
+-
+-	bitmap_zero(used_mask, UNCORE_PMC_IDX_MAX);
+ 
+ 	for (i = 0, wmin = UNCORE_PMC_IDX_MAX, wmax = 0; i < n; i++) {
+ 		c = uncore_get_event_constraint(box, box->event_list[i]);
+@@ -456,31 +452,8 @@ static int uncore_assign_events(struct intel_uncore_box *box, int assign[], int
+ 		wmax = max(wmax, c->weight);
+ 	}
+ 
+-	/* fastpath, try to reuse previous register */
+-	for (i = 0; i < n; i++) {
+-		hwc = &box->event_list[i]->hw;
+-		c = box->event_constraint[i];
+-
+-		/* never assigned */
+-		if (hwc->idx == -1)
+-			break;
+-
+-		/* constraint still honored */
+-		if (!test_bit(hwc->idx, c->idxmsk))
+-			break;
+-
+-		/* not already used */
+-		if (test_bit(hwc->idx, used_mask))
+-			break;
+-
+-		__set_bit(hwc->idx, used_mask);
+-		if (assign)
+-			assign[i] = hwc->idx;
+-	}
+-	/* slow path */
+-	if (i != n)
+-		ret = perf_assign_events(box->event_constraint, n,
+-					 wmin, wmax, n, assign);
++	ret = perf_assign_events(box->event_list,
++			box->event_constraint, n, wmin, wmax, n, assign);
+ 
+ 	if (!assign || ret) {
+ 		for (i = 0; i < n; i++)
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index 150261d..f1acd1d 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -1130,8 +1130,10 @@ static inline void __x86_pmu_enable_event(struct hw_perf_event *hwc,
+ 
+ void x86_pmu_enable_all(int added);
+ 
+-int perf_assign_events(struct event_constraint **constraints, int n,
+-			int wmin, int wmax, int gpmax, int *assign);
++int perf_assign_events(struct perf_event **event_list,
++		struct event_constraint **constraints, int n,
++		int wmin, int wmax, int gpmax, int *assign);
++
+ int x86_schedule_events(struct cpu_hw_events *cpuc, int n, int *assign);
+ 
+ void x86_pmu_stop(struct perf_event *event, int flags);
 -- 
-2.26.3
+1.8.3.1
 
