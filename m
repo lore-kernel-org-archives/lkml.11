@@ -2,84 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88AF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 09:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A195C43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 09:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234141AbiCMJ2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 05:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
+        id S234149AbiCMJaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 05:30:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231891AbiCMJ2X (ORCPT
+        with ESMTP id S231618AbiCMJaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 05:28:23 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD0A7FA22D;
-        Sun, 13 Mar 2022 01:27:16 -0800 (PST)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 6DA62492;
-        Sun, 13 Mar 2022 10:27:14 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1647163634;
-        bh=5fzYKPeKVvCjG/8w4Q5PwtknY0GBcf3hhFb+xSV4Duo=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=pqxofatWVI8GVPkQ0HFaYe4BvJ0C/aENfgfajKDN1vDh3Yo92r/8D6W8OeduuRIrv
-         gDc99C1vX1orqCtnI1z44XT5J7QQVe9A1aBCF61RdvV5R0qUg99F0WetZU2frbp9Br
-         4+MLCsPgv7AMnDfXoF/7uADBpvkx3Gfa7sCmkxDA=
-Content-Type: text/plain; charset="utf-8"
+        Sun, 13 Mar 2022 05:30:07 -0400
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2660824BE6;
+        Sun, 13 Mar 2022 01:29:00 -0800 (PST)
+Received: by mail-ej1-f45.google.com with SMTP id gb39so27820565ejc.1;
+        Sun, 13 Mar 2022 01:29:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NgQyfpQ5reEt2GXu9ddANeGGQrL1MxR6becPBkQwz1c=;
+        b=2kI5xGiB9ijkpgnPkIxNXb2wbqUHOwFO/VR9km70GcqWCwWLg/k88dYqI5A10CHSEk
+         rTAXU+0RMOPGA1cXXcehIUwgkJsf2ZHt7qE7aOQElcFfzl1s21TvbQ8dXpWnbjM1wVtq
+         zxfrogmgMiR7jrG6x5EtMB5EcBlFMwHvTO1mdN6Sy6O9FXRpr0fhidsBOG7/9lo6ATrl
+         FymS1CSZCyksxnmtnCqpR70aAl3k0M5E9S7rIxaO6ZRX9N8s80UtzKcyNKybO//mWrtT
+         tKmtQIYRHDCXOVzzYlje6+ofD6kdhytKe7hkAz5pY1ltsoc28GBZ1xybaJlZ9LBJ2u3w
+         5IZA==
+X-Gm-Message-State: AOAM531/mqxEHcg5PHlXLuvAC8UYH8za2o49GtxGRJ+s9spCyzZPSaOF
+        qiMWx2k3W/jc7AU9vHHiIUvVWsf2fbs=
+X-Google-Smtp-Source: ABdhPJzstF34aanf7kupJgg+MdwPHQyeYPdgPIv3qy+90mIiDQwpnr0MnWfi2lkSfGRZc0OG3yb8kw==
+X-Received: by 2002:a17:906:c10f:b0:6da:88aa:9d06 with SMTP id do15-20020a170906c10f00b006da88aa9d06mr15073786ejc.196.1647163738188;
+        Sun, 13 Mar 2022 01:28:58 -0800 (PST)
+Received: from [192.168.0.150] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.googlemail.com with ESMTPSA id k23-20020a1709062a5700b006ccd8fdc300sm5305148eje.180.2022.03.13.01.28.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Mar 2022 01:28:57 -0800 (PST)
+Message-ID: <78fc6b4d-ac26-43a5-8f45-6e9ea2c6eec8@kernel.org>
+Date:   Sun, 13 Mar 2022 10:28:56 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <Yi0IH48oA8ztvX8K@latitude>
-References: <20220312203323.626657-1-j.neuschaefer@gmx.net> <Yi0F6mUm7iCRGvCt@pendragon.ideasonboard.com> <Yi0IH48oA8ztvX8K@latitude>
-Subject: Re: [PATCH] docs: media: uvcvideo: Update mailing list address
-From:   Kieran Bingham <kieran.bingham@ideasonboard.com>
-Cc:     Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        linux-media@vger.kernel.org, linux-uvc-devel@lists.sourceforge.net,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 1/2] dt-bindings: extcon: bindings for SM5703
+Content-Language: en-US
+To:     Markuss Broks <markuss.broks@gmail.com>,
         linux-kernel@vger.kernel.org
-To:     Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Date:   Sun, 13 Mar 2022 09:27:12 +0000
-Message-ID: <164716363247.3407360.2736836911812651199@Monstersaurus>
-User-Agent: alot/0.10
+Cc:     phone-devel@vger.kernel.org, ~postmarketos-upstreaming@lists.sr.ht,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org
+References: <20220312184156.24912-1-markuss.broks@gmail.com>
+ <20220312184156.24912-2-markuss.broks@gmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220312184156.24912-2-markuss.broks@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Jonathan Neusch=C3=A4fer (2022-03-12 20:52:47)
-> On Sat, Mar 12, 2022 at 10:43:22PM +0200, Laurent Pinchart wrote:
-> > Hi Jonathan,
-> >=20
-> > Thank you for the patch.
-> >=20
-> > On Sat, Mar 12, 2022 at 09:33:22PM +0100, Jonathan Neusch=C3=A4fer wrot=
-e:
-> > > The mailing list address for UVC development has changed a while ago,
-> > > but it was only updated in MAINTAINERS, not in the documentation.
-> > > Update it there, too.
-> >=20
-> > Thanks for bringing this to my attention, I didn't know we were still
-> > referencing that old list.
-> >=20
-> > How about moving to the linux-media@vger.kernel.org mailing list instead
-> > ? I don't see many reasons to treat this driver with a special mailing
-> > list anymore.
->=20
-> Fine by me, but I'll wait for the opinion of others who more regularly
-> contribute to the media subsystem.
-
-Being subscribed to the linux-uvc-devel list, and seeing that it's a
-black hole where people post, and unfortunately get very little to no
-response I certainly concur that it needs to be changed.
-
-I don't think we can guarantee a better response with linux-media, but
-at least it's the right place, where the driver is actually maintained.
-
-So I also believe it should be moved to linux-media.
-
---
-Kieran
+On 12/03/2022 19:41, Markuss Broks wrote:
+> This patch adds device-tree bindings for Silicon Mitus SM5703 MUIC.
+> 
+> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+> ---
+>  .../devicetree/bindings/extcon/siliconmitus,sm5502-muic.yaml | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 
 
->=20
->=20
-> Jonathan
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+
+
+Best regards,
+Krzysztof
