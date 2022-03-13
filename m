@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 14:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF86CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 14:10:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234481AbiCMOKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 10:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57044 "EHLO
+        id S234471AbiCMOLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 10:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234468AbiCMOKE (ORCPT
+        with ESMTP id S231891AbiCMOLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 10:10:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1C6519C0A
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 07:08:52 -0700 (PDT)
+        Sun, 13 Mar 2022 10:11:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4258213F72
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 07:10:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647180531;
+        s=mimecast20190719; t=1647180622;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=aHlt3bx/6LYGuimvevPncXDwqXwsiWI/ZrNgqxl8liI=;
-        b=deluJyY8nQynQ9hHpkyJkCZlagunIaYsvXZtPTrhzuLfuiFIub7dyZGXY5QTjHa20xHmzN
-        b2kqiy1fvYXktSN11GVwMtcfQgr7NeRSpJ9nkcAB8jsqY3t6qR+t3x0yNJvWokEkjZWSRC
-        P4zBsFE/4hJYqpPWgfrIaOvrJpAvCVc=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=MMcgGN1d46ct1NbvGOl+Qm+VZTfIF+7Jk+6dqdt2QoE=;
+        b=XSlBmL3LhgBXS2zADSahDT7o6MN0IBuuxyv+b3iAix0hVPI178w1EYsAFYmZa/g40NsglM
+        UDPVf+9dWeg5wSxrwbntEhEZRaib58GxTThvyP5YPfD9ehNANsKUnF9ys1PhMMy09SIsQx
+        yhvmSCF/G87v5dOadjfY/5drmeb0dC8=
+Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
+ [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-367-xINCUeAtNWK2m7j4SgHtuQ-1; Sun, 13 Mar 2022 10:08:50 -0400
-X-MC-Unique: xINCUeAtNWK2m7j4SgHtuQ-1
-Received: by mail-ot1-f71.google.com with SMTP id 92-20020a9d0de5000000b005b2731fb946so8092413ots.4
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 07:08:50 -0700 (PDT)
+ us-mta-522-uxO8hkgFP8SHFH8_EICX8A-1; Sun, 13 Mar 2022 10:10:21 -0400
+X-MC-Unique: uxO8hkgFP8SHFH8_EICX8A-1
+Received: by mail-ot1-f70.google.com with SMTP id w7-20020a9d6747000000b005b25c9036fdso9980996otm.5
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 07:10:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=aHlt3bx/6LYGuimvevPncXDwqXwsiWI/ZrNgqxl8liI=;
-        b=fMZzY37TA5evf5qDbQI4t3x7+Fn7eybmDWeIiDGynf0oer5HCXVf5cBbimKKWlKz4s
-         KbVDC6VNO02mHiHCwOLnZ/wEXK/zP+QZ+I7rwUgXf96JsmymYuVLuypupHVQzoVlujNW
-         05Qg4JWxiMa0yXPmPboUOUJfCfbT3+4kz+WxYRuc7eRuJdiiIt6k/Fb1WI+7RBXOKfxD
-         Art2ehUGGkQIvg4cnnp/cmx6pqTcDiF24YZi++cClPHaZ8BbZryETmqNia+pRJpae198
-         gJyx8DJ6SJb+oUOy4BuqDEjUZGnJMo66X5264G7Q6N7hNZf6J13mjb4tAPSGGTnTRJRK
-         UrIQ==
-X-Gm-Message-State: AOAM530HIIidyBHb44It7uQfjtJQ7lDkRCVOw4sXKlcVTVUuOTEgiurg
-        f1Bq9vcSpZ7iYlF+ObjHCyGV6lIGCd+PBDni8COjEwVhMdgGjoqZ2Pgo2dIUIV6jzRwcUqyms7t
-        sBgdlds+tzjW1IS9Rxt4Nsglh
-X-Received: by 2002:aca:6548:0:b0:2d9:ce64:bead with SMTP id j8-20020aca6548000000b002d9ce64beadmr18328610oiw.109.1647180529140;
-        Sun, 13 Mar 2022 07:08:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyc8XSUz+AjUtGiKcs+f3Z4vpjgKBNiWmUQ8pnmOGRWYX3D48U8yyb2ePpbiLv1ij3UiCQ+pA==
-X-Received: by 2002:aca:6548:0:b0:2d9:ce64:bead with SMTP id j8-20020aca6548000000b002d9ce64beadmr18328589oiw.109.1647180528560;
-        Sun, 13 Mar 2022 07:08:48 -0700 (PDT)
+        bh=MMcgGN1d46ct1NbvGOl+Qm+VZTfIF+7Jk+6dqdt2QoE=;
+        b=uaXdXsWK9M5Z+3LXRUik8ZilEYnsasoLCoL8bP7zwLtf0nwwXvHEpcWlweUgVdOvZd
+         IvIeoiNCBo5enHjgsiIAenrdqJtEWTvbcx3mcxiyksQs1r1zXVB7muOh02MW4mVJaEn4
+         Xw3XyRoB0lP4fGWttU/mKF6xS2eVccaClQDa381RbFZZHJ8nQOizSns+ydQ/9jvt8Eg+
+         pEuJlSVcFmscgVNkCF/BCjYMb3Okw98eKCI+bHxERcm+cw8Kd31N1D+CzZ2ZlaD5sgtk
+         Im9PaI5UYY07mCXjBDBXdUAhFbj+uWb3KGrfSyEtrJNPjdKD/aEw5aseBOiUxnb+KzyL
+         0E6A==
+X-Gm-Message-State: AOAM532XX4+jGRd0Y70SxMOX3hJKKXfHZpRZJseYXq1O6Yh4FOYAA9RN
+        VFSdtCkAdvesI2eaUzcIZi9duXKpPOPbs4dUAcGyUg9uiIi4W8nx1UbFaK/fJoZ+CsJPdfPJdHa
+        VFGeF0dmpH3iBJg5lVH6T7SrR
+X-Received: by 2002:a05:6870:4210:b0:da:196d:a1fd with SMTP id u16-20020a056870421000b000da196da1fdmr14983877oac.224.1647180620316;
+        Sun, 13 Mar 2022 07:10:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxuAJNKiCUf9C/raP//IDNlp0tLxNgl5XjfJIqdIEs+cMF9S5wL9AzvDa1j2HVcO5dQD0AMpA==
+X-Received: by 2002:a05:6870:4210:b0:da:196d:a1fd with SMTP id u16-20020a056870421000b000da196da1fdmr14983867oac.224.1647180620019;
+        Sun, 13 Mar 2022 07:10:20 -0700 (PDT)
 Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id k13-20020a54470d000000b002d9b7fa03e1sm6379441oik.12.2022.03.13.07.08.47
+        by smtp.gmail.com with ESMTPSA id p4-20020a056870a54400b000da07609a6dsm5503105oal.22.2022.03.13.07.10.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Mar 2022 07:08:48 -0700 (PDT)
+        Sun, 13 Mar 2022 07:10:19 -0700 (PDT)
 From:   trix@redhat.com
-To:     apw@canonical.com, joe@perches.com, dwaipayanray1@gmail.com,
-        lukas.bulwahn@gmail.com
-Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] checkpatch: warn that small allocs should be combined
-Date:   Sun, 13 Mar 2022 07:08:27 -0700
-Message-Id: <20220313140827.1503359-1-trix@redhat.com>
+To:     noralf@tronnes.org, airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] drm/repaper: combine allocs in repaper_spi_transfer()
+Date:   Sun, 13 Mar 2022 07:10:08 -0700
+Message-Id: <20220313141008.1503638-1-trix@redhat.com>
 X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,34 +70,84 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Tom Rix <trix@redhat.com>
 
-A memory allocation has overhead.  When a
-small allocation is made the overhead dominates.
-By combining the fixed sized small allocations
-with others, the memory usage can be reduced
-by eliminating the overhead of the small allocs.
+repaper_spi_transfer() allocates a single byte
+for the spi header and then another buffer for
+the payload.  Combine the allocs into a single
+buffer with offsets.  To simplify the offsets
+put the header after the payload.
 
 Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- scripts/checkpatch.pl | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/tiny/repaper.c | 40 ++++++++++------------------------
+ 1 file changed, 12 insertions(+), 28 deletions(-)
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 577e029987011..605d5278677fc 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -7076,6 +7076,12 @@ sub process {
- 			     "$1 uses number as first arg, sizeof is generally wrong\n" . $herecurr);
- 		}
+diff --git a/drivers/gpu/drm/tiny/repaper.c b/drivers/gpu/drm/tiny/repaper.c
+index 37b6bb90e46e1..22a6732f35a01 100644
+--- a/drivers/gpu/drm/tiny/repaper.c
++++ b/drivers/gpu/drm/tiny/repaper.c
+@@ -100,50 +100,34 @@ static inline struct repaper_epd *drm_to_epd(struct drm_device *drm)
+ static int repaper_spi_transfer(struct spi_device *spi, u8 header,
+ 				const void *tx, void *rx, size_t len)
+ {
+-	void *txbuf = NULL, *rxbuf = NULL;
+ 	struct spi_transfer tr[2] = {};
+-	u8 *headerbuf;
++	u8 *buf;
+ 	int ret;
  
-+# check for small allocs
-+		if ($line =~ /\b(?:kv|k|v)[zm]alloc\s*\(\s*(\d|sizeof\s*\([su](8|16|32)s*\))\s*,/) {
-+			WARN("SMALL_ALLOC",
-+			     "Small allocs should be combined\n" . $herecurr);
-+		}
-+
- # check for multiple semicolons
- 		if ($line =~ /;\s*;\s*$/) {
- 			if (WARN("ONE_SEMICOLON",
+-	headerbuf = kmalloc(1, GFP_KERNEL);
+-	if (!headerbuf)
++	buf = kmalloc(1 + len, GFP_KERNEL);
++	if (!buf)
+ 		return -ENOMEM;
+ 
+-	headerbuf[0] = header;
+-	tr[0].tx_buf = headerbuf;
++	buf[len] = header;
++	tr[0].tx_buf = &buf[len];
+ 	tr[0].len = 1;
+ 
+-	/* Stack allocated tx? */
+-	if (tx && len <= 32) {
+-		txbuf = kmemdup(tx, len, GFP_KERNEL);
+-		if (!txbuf) {
+-			ret = -ENOMEM;
+-			goto out_free;
+-		}
++	if (tx) {
++		memcpy(buf, tx, len);
++		tr[1].tx_buf = buf;
+ 	}
+ 
+-	if (rx) {
+-		rxbuf = kmalloc(len, GFP_KERNEL);
+-		if (!rxbuf) {
+-			ret = -ENOMEM;
+-			goto out_free;
+-		}
+-	}
++	if (rx)
++		tr[1].rx_buf = buf;
+ 
+-	tr[1].tx_buf = txbuf ? txbuf : tx;
+-	tr[1].rx_buf = rxbuf;
+ 	tr[1].len = len;
+ 
+ 	ndelay(80);
+ 	ret = spi_sync_transfer(spi, tr, 2);
+ 	if (rx && !ret)
+-		memcpy(rx, rxbuf, len);
+-
+-out_free:
+-	kfree(headerbuf);
+-	kfree(txbuf);
+-	kfree(rxbuf);
++		memcpy(rx, buf, len);
+ 
++	kfree(buf);
+ 	return ret;
+ }
+ 
 -- 
 2.26.3
 
