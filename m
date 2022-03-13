@@ -2,345 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF01CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 046E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:53:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234377AbiCMKyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 06:54:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46792 "EHLO
+        id S232266AbiCMKyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 06:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233768AbiCMKxm (ORCPT
+        with ESMTP id S233163AbiCMKwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 06:53:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330CF119F1C;
-        Sun, 13 Mar 2022 03:52:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43A4DB80CAD;
-        Sun, 13 Mar 2022 10:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E51C340F5;
-        Sun, 13 Mar 2022 10:52:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647168729;
-        bh=rfDcIoqp2tGMvmOQbEgCFtaPOjgURb3ipd/yJK7UfsI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PMfG2oQ0fFiqexOiozq7XbiwPzMh4v7Es5DCBb+R7x/8CB9O7+6wH7+GNHwzZekPA
-         UwUGZLB0RmXLtpXKqcBgp61vsTre7SxRCXcVg3c9tGaA0yFzwId6oufDT1rMejbIQs
-         /YT2nQztF7pd9QxT4fjccJGMK8c2Xie2WOq6LTfCL834Az0ZneGWidCWC5iaqfZU34
-         2thxi7j5T+U4KQeCp0S6/cSqiGW1FcduGTStqyfFIwi0h79SxGKblwkeLOBtoXTAJB
-         S3ePUJunkXbjKYEemsl+IpTd9pEB0uqNLv+hf/nRe1VRUhjESlHG70AHGcR88Onfzo
-         37tiFscqx0f7A==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nTLpX-001I1k-2j; Sun, 13 Mar 2022 11:52:07 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Mikhail Rudenko <mike.rudenko@gmail.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Ondrej Jirman <megous@megous.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Yong Deng <yong.deng@magewell.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: [PATCH 08/24] media: platform: rename sunxi/ to allwinner/
-Date:   Sun, 13 Mar 2022 11:51:49 +0100
-Message-Id: <b9943cdcddf7f2251c582be318da76bc0974ee34.1647167750.git.mchehab@kernel.org>
+        Sun, 13 Mar 2022 06:52:47 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66FD31255A0;
+        Sun, 13 Mar 2022 03:51:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647168669; x=1678704669;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6ZRv+WOPesQ1kchQgRV/AzyEwsvdCFvGUJKYSSVphAA=;
+  b=EWvTbwZqQ16UT2iSyTaISXWY5r2bYhqqe/GY8bU9qes1/Dff6uCkrjro
+   HQJ+NinjD8KoIKqmheUo5KmUrJaRrks+W6nWvRVD3+aH3GHiI6KZ70LcT
+   n+GKKjdTY68x4jCtcDnVpgdwLN79mQ0d1i4XgN3aYyng5uNRd0idJ2Svc
+   HEZ3RBvMgFC03uUqawAwZ1WbPcBLh/YCw8r7G0l8ET+9KM+Yibiq4ybWr
+   G7QiJ+GMWzqpSKf+G2QmH6W5Csgb9qEWRQLtOTR9z6Vjbqx6rr51hi6BC
+   YtM4Hdy5GjdTRiqgVfA25OBlpB5zkom88CsDmfNwKi0ZS4MMl54if+w9q
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="255590702"
+X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
+   d="scan'208";a="255590702"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:03 -0700
+X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
+   d="scan'208";a="645448202"
+Received: from mvideche-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.251.130.249])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:50:59 -0700
+From:   Kai Huang <kai.huang@intel.com>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     dave.hansen@intel.com, seanjc@google.com, pbonzini@redhat.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, peterz@infradead.org,
+        tony.luck@intel.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        isaku.yamahata@intel.com, kai.huang@intel.com
+Subject: [PATCH v2 16/21] x86/virt/tdx: Configure TDX module with TDMRs and global KeyID
+Date:   Sun, 13 Mar 2022 23:49:56 +1300
+Message-Id: <52f8123ee1028549e1207b1582f00737c42ef2c2.1647167475.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1647167750.git.mchehab@kernel.org>
-References: <cover.1647167750.git.mchehab@kernel.org>
+In-Reply-To: <cover.1647167475.git.kai.huang@intel.com>
+References: <cover.1647167475.git.kai.huang@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the end goal is to have platform drivers split by vendor,
-rename sunxi/ to allwinner/.
+After the TDX usable memory regions are constructed in an array of TDMRs
+and the global KeyID is reserved, configure them to the TDX module.  The
+configuration is done via TDH.SYS.CONFIG, which is one call and can be
+done on any logical cpu.
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
+ arch/x86/virt/vmx/tdx.c | 42 +++++++++++++++++++++++++++++++++++++++++
+ arch/x86/virt/vmx/tdx.h |  2 ++
+ 2 files changed, 44 insertions(+)
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH 00/24] at: https://lore.kernel.org/all/cover.1647167750.git.mchehab@kernel.org/
-
- MAINTAINERS                                               | 8 ++++----
- drivers/media/platform/Kconfig                            | 2 +-
- drivers/media/platform/Makefile                           | 2 +-
- drivers/media/platform/allwinner/Kconfig                  | 6 ++++++
- drivers/media/platform/{sunxi => allwinner}/Makefile      | 0
- .../media/platform/{sunxi => allwinner}/sun4i-csi/Kconfig | 0
- .../platform/{sunxi => allwinner}/sun4i-csi/Makefile      | 0
- .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.c   | 0
- .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.h   | 0
- .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_dma.c   | 0
- .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_v4l2.c  | 0
- .../media/platform/{sunxi => allwinner}/sun6i-csi/Kconfig | 0
- .../platform/{sunxi => allwinner}/sun6i-csi/Makefile      | 0
- .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.c   | 0
- .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.h   | 0
- .../{sunxi => allwinner}/sun6i-csi/sun6i_csi_reg.h        | 0
- .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.c | 0
- .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.h | 0
- .../media/platform/{sunxi => allwinner}/sun8i-di/Kconfig  | 0
- .../media/platform/{sunxi => allwinner}/sun8i-di/Makefile | 0
- .../platform/{sunxi => allwinner}/sun8i-di/sun8i-di.c     | 0
- .../platform/{sunxi => allwinner}/sun8i-di/sun8i-di.h     | 0
- .../platform/{sunxi => allwinner}/sun8i-rotate/Kconfig    | 0
- .../platform/{sunxi => allwinner}/sun8i-rotate/Makefile   | 0
- .../{sunxi => allwinner}/sun8i-rotate/sun8i-formats.h     | 0
- .../{sunxi => allwinner}/sun8i-rotate/sun8i-rotate.h      | 0
- .../{sunxi => allwinner}/sun8i-rotate/sun8i_formats.c     | 0
- .../{sunxi => allwinner}/sun8i-rotate/sun8i_rotate.c      | 0
- drivers/media/platform/sunxi/Kconfig                      | 6 ------
- 29 files changed, 12 insertions(+), 12 deletions(-)
- create mode 100644 drivers/media/platform/allwinner/Kconfig
- rename drivers/media/platform/{sunxi => allwinner}/Makefile (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/Kconfig (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/Makefile (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.c (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.h (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_dma.c (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_v4l2.c (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/Kconfig (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/Makefile (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.c (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.h (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi_reg.h (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.c (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.h (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/Kconfig (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/Makefile (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/sun8i-di.c (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/sun8i-di.h (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/Kconfig (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/Makefile (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i-formats.h (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i-rotate.h (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i_formats.c (100%)
- rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i_rotate.c (100%)
- delete mode 100644 drivers/media/platform/sunxi/Kconfig
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 58e0d42b1278..f29195850c16 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -750,7 +750,7 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- T:	git git://linuxtv.org/media_tree.git
- F:	Documentation/devicetree/bindings/media/allwinner,sun4i-a10-csi.yaml
--F:	drivers/media/platform/sunxi/sun4i-csi/
-+F:	drivers/media/platform/allwinner/sun4i-csi/
+diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
+index f70eee7df0c1..e03dc3e420db 100644
+--- a/arch/x86/virt/vmx/tdx.c
++++ b/arch/x86/virt/vmx/tdx.c
+@@ -1280,6 +1280,42 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+ 	return ret;
+ }
  
- ALLWINNER CPUFREQ DRIVER
- M:	Yangtao Li <tiny.windzz@gmail.com>
-@@ -5114,7 +5114,7 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- T:	git git://linuxtv.org/media_tree.git
- F:	Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
--F:	drivers/media/platform/sunxi/sun6i-csi/
-+F:	drivers/media/platform/allwinner/sun6i-csi/
- 
- CW1200 WLAN driver
- M:	Solomon Peachy <pizza@shaftnet.org>
-@@ -5391,7 +5391,7 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- T:	git git://linuxtv.org/media_tree.git
- F:	Documentation/devicetree/bindings/media/allwinner,sun8i-h3-deinterlace.yaml
--F:	drivers/media/platform/sunxi/sun8i-di/
-+F:	drivers/media/platform/allwinner/sun8i-di/
- 
- DELL LAPTOP DRIVER
- M:	Matthew Garrett <mjg59@srcf.ucam.org>
-@@ -16746,7 +16746,7 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- T:	git git://linuxtv.org/media_tree.git
- F:	Documentation/devicetree/bindings/media/allwinner,sun8i-a83t-de2-rotate.yaml
--F:	drivers/media/platform/sunxi/sun8i-rotate/
-+F:	drivers/media/platform/allwinner/sun8i-rotate/
- 
- RPMSG TTY DRIVER
- M:	Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index 33f8f41b2771..5ffbbd6c6f91 100644
---- a/drivers/media/platform/Kconfig
-+++ b/drivers/media/platform/Kconfig
-@@ -66,6 +66,7 @@ config VIDEO_MUX
- # TODO: create per-manufacturer directories
- 
- source "drivers/media/platform/allegro-dvt/Kconfig"
-+source "drivers/media/platform/allwinner/Kconfig"
- source "drivers/media/platform/am437x/Kconfig"
- source "drivers/media/platform/amlogic/meson-ge2d/Kconfig"
- source "drivers/media/platform/amphion/Kconfig"
-@@ -94,7 +95,6 @@ source "drivers/media/platform/s5p-jpeg/Kconfig"
- source "drivers/media/platform/s5p-mfc/Kconfig"
- source "drivers/media/platform/sti/Kconfig"
- source "drivers/media/platform/stm32/Kconfig"
--source "drivers/media/platform/sunxi/Kconfig"
- source "drivers/media/platform/tegra/vde/Kconfig"
- source "drivers/media/platform/ti-vpe/Kconfig"
- source "drivers/media/platform/via/Kconfig"
-diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
-index 954ad8f2cde1..88519e902919 100644
---- a/drivers/media/platform/Makefile
-+++ b/drivers/media/platform/Makefile
-@@ -6,6 +6,7 @@
- # Place here, alphabetically sorted by directory
- # (e. g. LC_ALL=C sort Makefile)
- obj-y += allegro-dvt/
-+obj-y += allwinner/
- obj-y += am437x/
- obj-y += amlogic/meson-ge2d/
- obj-y += amphion/
-@@ -39,7 +40,6 @@ obj-y += sti/c8sectpfe/
- obj-y += sti/delta/
- obj-y += sti/hva/
- obj-y += stm32/
--obj-y += sunxi/
- obj-y += tegra/vde/
- obj-y += ti-vpe/
- obj-y += via/
-diff --git a/drivers/media/platform/allwinner/Kconfig b/drivers/media/platform/allwinner/Kconfig
-new file mode 100644
-index 000000000000..88bffb055528
---- /dev/null
-+++ b/drivers/media/platform/allwinner/Kconfig
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
++static int config_tdx_module(struct tdmr_info **tdmr_array, int tdmr_num,
++			     u64 global_keyid)
++{
++	u64 *tdmr_pa_array;
++	int i, array_sz;
++	int ret;
 +
-+source "drivers/media/platform/allwinner/sun4i-csi/Kconfig"
-+source "drivers/media/platform/allwinner/sun6i-csi/Kconfig"
-+source "drivers/media/platform/allwinner/sun8i-di/Kconfig"
-+source "drivers/media/platform/allwinner/sun8i-rotate/Kconfig"
-diff --git a/drivers/media/platform/sunxi/Makefile b/drivers/media/platform/allwinner/Makefile
-similarity index 100%
-rename from drivers/media/platform/sunxi/Makefile
-rename to drivers/media/platform/allwinner/Makefile
-diff --git a/drivers/media/platform/sunxi/sun4i-csi/Kconfig b/drivers/media/platform/allwinner/sun4i-csi/Kconfig
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun4i-csi/Kconfig
-rename to drivers/media/platform/allwinner/sun4i-csi/Kconfig
-diff --git a/drivers/media/platform/sunxi/sun4i-csi/Makefile b/drivers/media/platform/allwinner/sun4i-csi/Makefile
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun4i-csi/Makefile
-rename to drivers/media/platform/allwinner/sun4i-csi/Makefile
-diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c b/drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c
-rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.c
-diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.h b/drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.h
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.h
-rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.h
-diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_dma.c b/drivers/media/platform/allwinner/sun4i-csi/sun4i_dma.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_dma.c
-rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_dma.c
-diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_v4l2.c b/drivers/media/platform/allwinner/sun4i-csi/sun4i_v4l2.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_v4l2.c
-rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_v4l2.c
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/Kconfig b/drivers/media/platform/allwinner/sun6i-csi/Kconfig
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun6i-csi/Kconfig
-rename to drivers/media/platform/allwinner/sun6i-csi/Kconfig
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/Makefile b/drivers/media/platform/allwinner/sun6i-csi/Makefile
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun6i-csi/Makefile
-rename to drivers/media/platform/allwinner/sun6i-csi/Makefile
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
-rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.c
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.h
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
-rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.h
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_reg.h b/drivers/media/platform/allwinner/sun6i-csi/sun6i_csi_reg.h
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_reg.h
-rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_csi_reg.h
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c b/drivers/media/platform/allwinner/sun6i-csi/sun6i_video.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
-rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_video.c
-diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.h b/drivers/media/platform/allwinner/sun6i-csi/sun6i_video.h
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_video.h
-rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_video.h
-diff --git a/drivers/media/platform/sunxi/sun8i-di/Kconfig b/drivers/media/platform/allwinner/sun8i-di/Kconfig
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-di/Kconfig
-rename to drivers/media/platform/allwinner/sun8i-di/Kconfig
-diff --git a/drivers/media/platform/sunxi/sun8i-di/Makefile b/drivers/media/platform/allwinner/sun8i-di/Makefile
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-di/Makefile
-rename to drivers/media/platform/allwinner/sun8i-di/Makefile
-diff --git a/drivers/media/platform/sunxi/sun8i-di/sun8i-di.c b/drivers/media/platform/allwinner/sun8i-di/sun8i-di.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-di/sun8i-di.c
-rename to drivers/media/platform/allwinner/sun8i-di/sun8i-di.c
-diff --git a/drivers/media/platform/sunxi/sun8i-di/sun8i-di.h b/drivers/media/platform/allwinner/sun8i-di/sun8i-di.h
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-di/sun8i-di.h
-rename to drivers/media/platform/allwinner/sun8i-di/sun8i-di.h
-diff --git a/drivers/media/platform/sunxi/sun8i-rotate/Kconfig b/drivers/media/platform/allwinner/sun8i-rotate/Kconfig
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-rotate/Kconfig
-rename to drivers/media/platform/allwinner/sun8i-rotate/Kconfig
-diff --git a/drivers/media/platform/sunxi/sun8i-rotate/Makefile b/drivers/media/platform/allwinner/sun8i-rotate/Makefile
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-rotate/Makefile
-rename to drivers/media/platform/allwinner/sun8i-rotate/Makefile
-diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i-formats.h b/drivers/media/platform/allwinner/sun8i-rotate/sun8i-formats.h
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i-formats.h
-rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i-formats.h
-diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i-rotate.h b/drivers/media/platform/allwinner/sun8i-rotate/sun8i-rotate.h
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i-rotate.h
-rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i-rotate.h
-diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i_formats.c b/drivers/media/platform/allwinner/sun8i-rotate/sun8i_formats.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i_formats.c
-rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i_formats.c
-diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i_rotate.c b/drivers/media/platform/allwinner/sun8i-rotate/sun8i_rotate.c
-similarity index 100%
-rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i_rotate.c
-rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i_rotate.c
-diff --git a/drivers/media/platform/sunxi/Kconfig b/drivers/media/platform/sunxi/Kconfig
-deleted file mode 100644
-index a10032215b08..000000000000
---- a/drivers/media/platform/sunxi/Kconfig
-+++ /dev/null
-@@ -1,6 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--
--source "drivers/media/platform/sunxi/sun4i-csi/Kconfig"
--source "drivers/media/platform/sunxi/sun6i-csi/Kconfig"
--source "drivers/media/platform/sunxi/sun8i-di/Kconfig"
--source "drivers/media/platform/sunxi/sun8i-rotate/Kconfig"
++	/*
++	 * TDMR_INFO entries are configured to the TDX module via an
++	 * array of the physical address of each TDMR_INFO.  TDX requires
++	 * the array itself must be 512 aligned.  Round up the array size
++	 * to 512 aligned so the buffer allocated by kzalloc() meets the
++	 * alignment requirement.
++	 */
++	array_sz = ALIGN(tdmr_num * sizeof(u64), TDMR_INFO_PA_ARRAY_ALIGNMENT);
++	tdmr_pa_array = kzalloc(array_sz, GFP_KERNEL);
++	if (!tdmr_pa_array)
++		return -ENOMEM;
++
++	for (i = 0; i < tdmr_num; i++)
++		tdmr_pa_array[i] = __pa(tdmr_array[i]);
++
++	/*
++	 * TDH.SYS.CONFIG fails when TDH.SYS.LP.INIT is not done on all
++	 * BIOS-enabled cpus.  tdx_init() only disables CPU hotplug but
++	 * doesn't do early check whether all BIOS-enabled cpus are
++	 * online, so TDH.SYS.CONFIG can fail here.
++	 */
++	ret = seamcall(TDH_SYS_CONFIG, __pa(tdmr_pa_array), tdmr_num,
++				global_keyid, 0, NULL, NULL);
++	/* Free the array as it is not required any more. */
++	kfree(tdmr_pa_array);
++
++	return ret;
++}
++
+ static int init_tdx_module(void)
+ {
+ 	struct tdmr_info **tdmr_array;
+@@ -1325,11 +1361,17 @@ static int init_tdx_module(void)
+ 	 */
+ 	tdx_global_keyid = tdx_keyid_start;
+ 
++	/* Config the TDX module with TDMRs and global KeyID */
++	ret = config_tdx_module(tdmr_array, tdmr_num, tdx_global_keyid);
++	if (ret)
++		goto out_free_pamts;
++
+ 	/*
+ 	 * Return -EFAULT until all steps of TDX module
+ 	 * initialization are done.
+ 	 */
+ 	ret = -EFAULT;
++out_free_pamts:
+ 	/*
+ 	 * Free PAMTs allocated in construct_tdmrs() when TDX module
+ 	 * initialization fails.
+diff --git a/arch/x86/virt/vmx/tdx.h b/arch/x86/virt/vmx/tdx.h
+index 05bf9fe6bd00..d8e2800397af 100644
+--- a/arch/x86/virt/vmx/tdx.h
++++ b/arch/x86/virt/vmx/tdx.h
+@@ -95,6 +95,7 @@ struct tdmr_reserved_area {
+ } __packed;
+ 
+ #define TDMR_INFO_ALIGNMENT	512
++#define TDMR_INFO_PA_ARRAY_ALIGNMENT	512
+ 
+ struct tdmr_info {
+ 	u64 base;
+@@ -125,6 +126,7 @@ struct tdmr_info {
+ #define TDH_SYS_INIT		33
+ #define TDH_SYS_LP_INIT		35
+ #define TDH_SYS_LP_SHUTDOWN	44
++#define TDH_SYS_CONFIG		45
+ 
+ struct tdx_module_output;
+ u64 __seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
 -- 
 2.35.1
 
