@@ -2,123 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6640C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 14:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F07C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 14:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234686AbiCMOrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 10:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
+        id S234690AbiCMOx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 10:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234666AbiCMOrJ (ORCPT
+        with ESMTP id S230290AbiCMOxZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 10:47:09 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FDD74611
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 07:46:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647182762; x=1678718762;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=KKwtRSWVnFwNSS506od+1D99JOfTfSDCk7eL3HhUI2M=;
-  b=CGOIE+1r8W4PP815vPMnPRXIfJ5BMWQPkOhqJc5VaUuG54wwJ4ol2Fyg
-   xUvBZ1bbBUDPc0ekfgs/Aw9mw7vmQBgKTsVnP7yndAwY9LNbCD3TNW6xt
-   nQxXZ+PZQtmzbyDNtZ+0d6VGX/DP2sS+vHH0oEJSiO3LsYfn1AF0dSFmk
-   rOUTNK5oV43/CkN12wqPS5P9u3YIWSg8jt9X9syZApdFpxuEsleYGoJVN
-   mwRU/fqZXvqDYhPq/N0e/seuXsev5bxYyn4mc6Syk0VcfuAa0As/LejUy
-   oKmpIVg3g4MEFLBoLzWsU6Mr0njM+A9ZJ+C38jxk5w6L1WdKfxrmJbbAb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="235822602"
-X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="235822602"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 07:46:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="579851676"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 13 Mar 2022 07:45:59 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nTPTq-00092M-AY; Sun, 13 Mar 2022 14:45:58 +0000
-Date:   Sun, 13 Mar 2022 22:45:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [hare-scsi-devel:tls-upcall.v4 155/156] lib/iov_iter.c:1782:46:
- sparse: sparse: incorrect type in argument 2 (different address spaces)
-Message-ID: <202203132257.6GlVo2BL-lkp@intel.com>
+        Sun, 13 Mar 2022 10:53:25 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3663D8879A;
+        Sun, 13 Mar 2022 07:52:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=SYLJecFzMoXae9Yd63DSIRQsBWaqYrsKU+5452Z4zcQ=; b=AECFhEzbz4hZ9WbIJVzXpFpbKH
+        kidJPcYSinNrYvzgsSMIytPZjpRanYKa7XnHlYUxM2QtD/A3TK2LpQKi5q7PNg+mlwYh2LfC5Vvqu
+        JX55NxICbc6nzjMLUm/evTnRuIp+a0JiiPdOqBuzUxuwWax+z5zkCZuSpZgo0f2lmsGA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nTPZs-00AdA3-1f; Sun, 13 Mar 2022 15:52:12 +0100
+Date:   Sun, 13 Mar 2022 15:52:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: mdio: mscc-miim: replace magic numbers
+ for the bus reset
+Message-ID: <Yi4FHDz+ya8VZZDq@lunn.ch>
+References: <20220313002153.11280-1-michael@walle.cc>
+ <20220313002153.11280-3-michael@walle.cc>
+ <Yi1ALN6hN9aV1VrA@lunn.ch>
+ <7cbe529d46c64b01eb99c016d9f16f1a@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <7cbe529d46c64b01eb99c016d9f16f1a@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git tls-upcall.v4
-head:   d2416ecdb6b03fc2e4aa40b20cdf919322713224
-commit: 921f6399790df513118d6c1aa829d4e9fab5131c [155/156] lib/iov_iter: add hash_iov_iter()
-config: microblaze-randconfig-s032-20220313 (https://download.01.org/0day-ci/archive/20220313/202203132257.6GlVo2BL-lkp@intel.com/config)
-compiler: microblaze-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=921f6399790df513118d6c1aa829d4e9fab5131c
-        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
-        git fetch --no-tags hare-scsi-devel tls-upcall.v4
-        git checkout 921f6399790df513118d6c1aa829d4e9fab5131c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=microblaze SHELL=/bin/bash
+On Sun, Mar 13, 2022 at 02:17:55AM +0100, Michael Walle wrote:
+> Am 2022-03-13 01:51, schrieb Andrew Lunn:
+> > > diff --git a/drivers/net/mdio/mdio-mscc-miim.c
+> > > b/drivers/net/mdio/mdio-mscc-miim.c
+> > > index 64fb76c1e395..7773d5019e66 100644
+> > > --- a/drivers/net/mdio/mdio-mscc-miim.c
+> > > +++ b/drivers/net/mdio/mdio-mscc-miim.c
+> > > @@ -158,18 +158,18 @@ static int mscc_miim_reset(struct mii_bus *bus)
+> > >  {
+> > >  	struct mscc_miim_dev *miim = bus->priv;
+> > >  	int offset = miim->phy_reset_offset;
+> > > +	int mask = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
+> > > +		   PHY_CFG_PHY_RESET;
+> > 
+> > > -		ret = regmap_write(miim->phy_regs,
+> > > -				   MSCC_PHY_REG_PHY_CFG + offset, 0x1ff);
+> > > +		ret = regmap_write(miim->phy_regs, offset, mask);
+> > 
+> > Is mask the correct name? It is not being used in the typical way for
+> > a mask.
+> 
+> It is the mask of all the reset bits, see also patch 3/3. Either all
+> these bits are set or none.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes, it is you just don't use it in the typical way for a mask
 
+	foo = bar & mask;
 
-sparse warnings: (new ones prefixed by >>)
->> lib/iov_iter.c:1782:46: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const * @@     got void [noderef] __user * @@
-   lib/iov_iter.c:1782:46: sparse:     expected void const *
-   lib/iov_iter.c:1782:46: sparse:     got void [noderef] __user *
-   lib/iov_iter.c: note: in included file:
-   include/net/checksum.h:31:39: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] sum @@     got unsigned int @@
-   include/net/checksum.h:31:39: sparse:     expected restricted __wsum [usertype] sum
-   include/net/checksum.h:31:39: sparse:     got unsigned int
-   include/net/checksum.h:39:45: sparse: sparse: incorrect type in argument 3 (different base types) @@     expected restricted __wsum [usertype] sum @@     got unsigned int @@
-   include/net/checksum.h:39:45: sparse:     expected restricted __wsum [usertype] sum
-   include/net/checksum.h:39:45: sparse:     got unsigned int
+The name mask made me look for a read-modify-write or similar. And
+that then makes me thing of race conditions.
 
-vim +1782 lib/iov_iter.c
+> Do you haave any suggestion?
 
-  1767	
-  1768	size_t hash_iov_iter(void *hashp, const struct iov_iter *i)
-  1769	{
-  1770	#ifdef CONFIG_CRYPTO_HASH
-  1771		struct ahash_request *hash = hashp;
-  1772		size_t skip = i->iov_offset, size = i->count;
-  1773		const struct iovec *p;
-  1774	
-  1775		for (p = i->iov; size; skip = 0, p++) {
-  1776			struct scatterlist sg;
-  1777			unsigned offs = offset_in_page(p->iov_base + skip);
-  1778			size_t len = min(p->iov_len - skip, size);
-  1779	
-  1780			if (!len)
-  1781				continue;
-> 1782			sg_init_one(&sg, p->iov_base + offs, len);
-  1783			ahash_request_set_crypt(hash, &sg, NULL, len);
-  1784			crypto_ahash_update(hash);
-  1785			size -= len;
-  1786		}
-  1787		return i->count;
-  1788	#else
-  1789		return 0;
-  1790	#endif
-  1791	}
-  1792	EXPORT_SYMBOL(hash_iov_iter);
-  1793	
+value everywhere? Or phy_reset_bits?
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+      Andrew
