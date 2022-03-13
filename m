@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C190FC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 00:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C23C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 00:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233197AbiCMAXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 19:23:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S233210AbiCMAXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 19:23:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233165AbiCMAXL (ORCPT
+        with ESMTP id S233163AbiCMAXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 12 Mar 2022 19:23:11 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8B219BBB3;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EB79BBB7;
         Sat, 12 Mar 2022 16:22:04 -0800 (PST)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id B2D16223F0;
-        Sun, 13 Mar 2022 01:22:02 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D7C12223EA;
+        Sun, 13 Mar 2022 01:22:01 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
         t=1647130922;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ufBbvQAexSriWvMXZv4flnbt/7xBdIcOYOogujbLjik=;
-        b=BfHPAMIEaeGcamQgRCUDV1J5SGSmicKbpI4sNYxpxIkrNZwm7vVO1vQV5A5WLPSezxiOrw
-        Bq1s/hq6LzzqpGUnsmtvrwLKcErEDbhguD2ZkRW4ktiDvv+fqZI1GEK0PVv7a/AeFpdTXp
-        2azNCw9ev6h0qsdVojM7f1UJH5xEh7U=
+        bh=Om+Fp1RFdxau+QHT4ZTv6VQABvlFxAGNLV7Mt6x5j5M=;
+        b=RH0CKNA/NRqgj9PN58bZhc1GCtF/rkn830WfTKuznl4SzEOf0OYJWpkurYvm1YFQRi14UK
+        EImcdRkZtjK46cDel/5FyFt6akEv8sVwJssz2Pz9/t5HbOBYiUgm35vPFxPOnRgdoluHAg
+        eEo6sWDURQOZ9Nud/lB24PnNsADGkeE=
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -41,9 +41,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Russell King <linux@armlinux.org.uk>
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 3/3] et: mdio: mscc-miim: add lan966x internal phy reset support
-Date:   Sun, 13 Mar 2022 01:21:53 +0100
-Message-Id: <20220313002153.11280-4-michael@walle.cc>
+Subject: [PATCH net-next 1/3] dt-bindings: net: mscc-miim: add lan966x compatible
+Date:   Sun, 13 Mar 2022 01:21:51 +0100
+Message-Id: <20220313002153.11280-2-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220313002153.11280-1-michael@walle.cc>
 References: <20220313002153.11280-1-michael@walle.cc>
@@ -53,129 +53,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The LAN966x has two internal PHYs which are in reset by default. The
-driver already supported the internal PHYs of the SparX-5. Now add
-support for the LAN966x, too. Add a new compatible to distinguish them.
-
-The LAN966x has additional control bits in this register, thus convert
-the regmap_write() to regmap_update_bits() to leave the remaining bits
-untouched. This doesn't change anything for the SparX-5 SoC, because
-there, the register consists only of reset bits.
+The MDIO controller has support to release the internal PHYs from reset
+by specifying a second memory resource. This is different between the
+currently supported SparX-5 and the LAN966x. Add a new compatible to
+distiguish between these two.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/mdio/mdio-mscc-miim.c | 59 +++++++++++++++++++++----------
- 1 file changed, 41 insertions(+), 18 deletions(-)
+ Documentation/devicetree/bindings/net/mscc-miim.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 7773d5019e66..d082a13d9af3 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -15,6 +15,7 @@
- #include <linux/of_mdio.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
+diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt b/Documentation/devicetree/bindings/net/mscc-miim.txt
+index 7104679cf59d..a9efff252ca6 100644
+--- a/Documentation/devicetree/bindings/net/mscc-miim.txt
++++ b/Documentation/devicetree/bindings/net/mscc-miim.txt
+@@ -2,7 +2,7 @@ Microsemi MII Management Controller (MIIM) / MDIO
+ =================================================
  
- #define MSCC_MIIM_REG_STATUS		0x0
-@@ -36,11 +37,19 @@
- #define		PHY_CFG_PHY_RESET	(BIT(5) | BIT(6) | BIT(7) | BIT(8))
- #define MSCC_PHY_REG_PHY_STATUS	0x4
- 
-+#define LAN966X_CUPHY_COMMON_CFG	0x0
-+#define		CUPHY_COMMON_CFG_RESET_N	BIT(0)
-+
-+struct mscc_miim_info {
-+	unsigned int phy_reset_offset;
-+	unsigned int phy_reset_mask;
-+};
-+
- struct mscc_miim_dev {
- 	struct regmap *regs;
- 	int mii_status_offset;
- 	struct regmap *phy_regs;
--	int phy_reset_offset;
-+	const struct mscc_miim_info *info;
- };
- 
- /* When high resolution timers aren't built-in: we can't use usleep_range() as
-@@ -157,27 +166,29 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- static int mscc_miim_reset(struct mii_bus *bus)
- {
- 	struct mscc_miim_dev *miim = bus->priv;
--	int offset = miim->phy_reset_offset;
--	int mask = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
--		   PHY_CFG_PHY_RESET;
-+	unsigned int offset, mask;
- 	int ret;
- 
--	if (miim->phy_regs) {
--		ret = regmap_write(miim->phy_regs, offset, 0);
--		if (ret < 0) {
--			WARN_ONCE(1, "mscc reset set error %d\n", ret);
--			return ret;
--		}
-+	if (!miim->phy_regs || !miim->info)
-+		return 0;
- 
--		ret = regmap_write(miim->phy_regs, offset, mask);
--		if (ret < 0) {
--			WARN_ONCE(1, "mscc reset clear error %d\n", ret);
--			return ret;
--		}
-+	offset = miim->info->phy_reset_offset;
-+	mask = miim->info->phy_reset_mask;
-+
-+	ret = regmap_update_bits(miim->phy_regs, offset, mask, 0);
-+	if (ret < 0) {
-+		WARN_ONCE(1, "mscc reset set error %d\n", ret);
-+		return ret;
-+	}
- 
--		mdelay(500);
-+	ret = regmap_update_bits(miim->phy_regs, offset, mask, mask);
-+	if (ret < 0) {
-+		WARN_ONCE(1, "mscc reset clear error %d\n", ret);
-+		return ret;
- 	}
- 
-+	mdelay(500);
-+
- 	return 0;
- }
- 
-@@ -272,7 +283,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 
- 	miim = bus->priv;
- 	miim->phy_regs = phy_regmap;
--	miim->phy_reset_offset = MSCC_PHY_REG_PHY_CFG;
-+	miim->info = device_get_match_data(&pdev->dev);
- 
- 	ret = of_mdiobus_register(bus, pdev->dev.of_node);
- 	if (ret < 0) {
-@@ -294,8 +305,20 @@ static int mscc_miim_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct mscc_miim_info mscc_ocelot_miim_info = {
-+	.phy_reset_offset = MSCC_PHY_REG_PHY_CFG,
-+	.phy_reset_mask = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
-+			  PHY_CFG_PHY_RESET,
-+};
-+
-+static const struct mscc_miim_info mscc_lan966x_miim_info = {
-+	.phy_reset_offset = LAN966X_CUPHY_COMMON_CFG,
-+	.phy_reset_mask = CUPHY_COMMON_CFG_RESET_N,
-+};
-+
- static const struct of_device_id mscc_miim_match[] = {
--	{ .compatible = "mscc,ocelot-miim" },
-+	{ .compatible = "mscc,ocelot-miim", .data = &mscc_ocelot_miim_info },
-+	{ .compatible = "mscc,lan966x-miim", .data = &mscc_lan966x_miim_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, mscc_miim_match);
+ Properties:
+-- compatible: must be "mscc,ocelot-miim"
++- compatible: must be "mscc,ocelot-miim" or "mscc,lan966x-miim"
+ - reg: The base address of the MDIO bus controller register bank. Optionally, a
+   second register bank can be defined if there is an associated reset register
+   for internal PHYs
 -- 
 2.30.2
 
