@@ -2,231 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F012FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 13:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 476CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 13:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234023AbiCMNlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 09:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44344 "EHLO
+        id S234047AbiCMNpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 09:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiCMNla (ORCPT
+        with ESMTP id S231953AbiCMNpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 09:41:30 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F9444778;
-        Sun, 13 Mar 2022 06:40:22 -0700 (PDT)
+        Sun, 13 Mar 2022 09:45:09 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5481EC6B
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 06:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647178822; x=1678714822;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Tx8cXzXDDDYuTIhecej4Hm0R9TtX+lgqF2jmEwnAvdo=;
-  b=k9l/fECybO9UGG57vDLI1+WsJy68CZq5UJq8KiE+nymK9w46XsGcBsWJ
-   T0U8TEQAqc7y9qKjDFjNKVPSF0S8Egk112KtlpyWcLl9b6YfAJvstObgo
-   QQ+IOvq/utu+QJ+JwftEUjzED8DfO8V8O0CPnBN/yOSYgVp7h2Ke2tmqr
-   qFe1hEwCnOGQdmQN9S3CrRQKtopyXAE34wo+itB7v9vhgMtvRv4Y/a9m2
-   UiTyVkRIha0xWy2JCFnckWz97J5/H+UNyf86x2ciHwW6YkBG2q1majzNR
-   FviG2STTzd5dBK9dEAx0H35Ise5/G/xf6lAwi5Qlmtr6r49Nlk2GmStu6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="253429941"
+  t=1647179040; x=1678715040;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=JvKVg4wcPKmea1ASVxtdL9JeUS9CzbdD+MPD6OtB+z4=;
+  b=Dltkmgyfun882SdWh9DaiXUGR3oUmNrIYz+NqSjHI7Exz09WUxb3cEKw
+   KgEn3+hdu58GrnmJIev7dlipe4T5bHrjjHIa/2NViTtxtdLlqhtRulaMu
+   Fqb+5Ps1g8MACIrbI4zGECY+dS/paBfeVhB9WOY3tDMKVNnkkhLPIyfeJ
+   Dk9xA/1zgkk71dy6HCp01P5QPU4H6pDL+7idoX+8jbLNaZ3xTt72EP35X
+   Cj8ybpPmMGwmW2dEtncsli7nJvqZsbPncGEES5plH5xHH8yY/+gY4lYDh
+   0weiqYEYjugz0G/u/DJIaFdqb1x9MxwiE00IUkpanh1ydfOGirtS9yfGD
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="255822355"
 X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="253429941"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 06:40:11 -0700
+   d="scan'208";a="255822355"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 06:43:59 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="556030492"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 06:40:05 -0700
-Date:   Sun, 13 Mar 2022 21:53:36 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Zeng Guang <guang.zeng@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>
-Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
- unconditionally
-Message-ID: <20220313135335.GA18405@gao-cwp>
-References: <20220225082223.18288-1-guang.zeng@intel.com>
- <20220225082223.18288-7-guang.zeng@intel.com>
- <Yifg4bea6zYEz1BK@google.com>
- <20220309052013.GA2915@gao-cwp>
- <YihCtvDps/qJ2TOW@google.com>
- <6dc7cff15812864ed14b5c014769488d80ce7f49.camel@redhat.com>
- <YirPkr5efyylrD0x@google.com>
- <29c76393-4884-94a8-f224-08d313b73f71@intel.com>
- <01586c518de0c72ff3997d32654b8fa6e7df257d.camel@redhat.com>
- <2900660d947a878e583ebedf60e7332e74a1af5f.camel@redhat.com>
+   d="scan'208";a="515104015"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 13 Mar 2022 06:43:58 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nTOVp-0008zp-Jy; Sun, 13 Mar 2022 13:43:57 +0000
+Date:   Sun, 13 Mar 2022 21:43:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [hare-scsi-devel:tls-upcall.v4 127/156] net/tls/tls_main.c:1061:26:
+ warning: format '%lu' expects argument of type 'long unsigned int', but
+ argument 5 has type 'size_t' {aka 'unsigned int'}
+Message-ID: <202203132154.1wXAIs5b-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2900660d947a878e583ebedf60e7332e74a1af5f.camel@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 12:59:36PM +0200, Maxim Levitsky wrote:
->On Sun, 2022-03-13 at 11:19 +0200, Maxim Levitsky wrote:
->> On Fri, 2022-03-11 at 21:28 +0800, Zeng Guang wrote:
->> > On 3/11/2022 12:26 PM, Sean Christopherson wrote:
->> > > On Wed, Mar 09, 2022, Maxim Levitsky wrote:
->> > > > On Wed, 2022-03-09 at 06:01 +0000, Sean Christopherson wrote:
->> > > > > > Could you share the links?
->> > > > > 
->> > > > > Doh, sorry (they're both in this one).
->> > > > > 
->> > > > > https://lore.kernel.org/all/20220301135526.136554-5-mlevitsk@redhat.com
->> > > > > 
->> > > > > 
->> > > > 
->> > > > My opinion on this subject is very simple: we need to draw the line somewhere.
->> > > 
->> > > ...
->> > > 
->> > > 
->> > > Since the goal is to simplify KVM, can we try the inhibit route and see what the
->> > > code looks like before making a decision?  I think it might actually yield a less
->> > > awful KVM than the readonly approach, especially if the inhibit is "sticky", i.e.
->> > > we don't try to remove the inhibit on subsequent changes.
->> > > 
->> > > Killing the VM, as proposed, is very user unfriendly as the user will have no idea
->> > > why the VM was killed.  WARN is out of the question because this is user triggerable.
->> > > Returning an emulation error would be ideal, but getting that result up through
->> > > apic_mmio_write() could be annoying and end up being more complex.
->> > > 
->> > > The touchpoints will all be the same, unless I'm missing something the difference
->> > > should only be a call to set an inhibit instead killing the VM.
->> > 
->> > Introduce an inhibition - APICV_INHIBIT_REASON_APICID_CHG to deactivate
->> > APICv once KVM guest would try to change APIC ID in xapic mode, and same
->> > sanity check in KVM_{SET,GET}_LAPIC for live migration. KVM will keep
->> > alive but obviously lose benefit from hardware acceleration in this way.
->> > 
->> > So how do you think the proposal like this ?
->> > diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
->> > index 6dcccb304775..30d825c069be 100644
->> > --- a/arch/x86/include/asm/kvm_host.h
->> > +++ b/arch/x86/include/asm/kvm_host.h
->> > @@ -1046,6 +1046,7 @@ struct kvm_x86_msr_filter {
->> >  #define APICV_INHIBIT_REASON_X2APIC    5
->> >  #define APICV_INHIBIT_REASON_BLOCKIRQ  6
->> >  #define APICV_INHIBIT_REASON_ABSENT    7
->> > +#define APICV_INHIBIT_REASON_APICID_CHG 8
->> > 
->> >  struct kvm_arch {
->> >         unsigned long n_used_mmu_pages;
->> > diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
->> > index 22929b5b3f9b..66cd54fa4515 100644
->> > --- a/arch/x86/kvm/lapic.c
->> > +++ b/arch/x86/kvm/lapic.c
->> > @@ -2044,10 +2044,19 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
->> > 
->> >         switch (reg) {
->> >         case APIC_ID:           /* Local APIC ID */
->> > -               if (!apic_x2apic_mode(apic))
->> > -                       kvm_apic_set_xapic_id(apic, val >> 24);
->> > -               else
->> > +               if (apic_x2apic_mode(apic)) {
->> >                         ret = 1;
->> > +                       break;
->> > +               }
->> > +               /*
->> > +                * If changing APIC ID with any APIC acceleration enabled,
->> > +                * deactivate APICv to avoid unexpected issues.
->> > +                */
->> > +               if (enable_apicv && (val >> 24) != apic->vcpu->vcpu_id)
->> > +                       kvm_request_apicv_update(apic->vcpu->kvm,
->> > +                               false, APICV_INHIBIT_REASON_APICID_CHG);
->> > +
->> > +               kvm_apic_set_xapic_id(apic, val >> 24);
->> >                 break;
->> > 
->> >         case APIC_TASKPRI:
->> > @@ -2628,11 +2637,19 @@ int kvm_get_apic_interrupt(struct kvm_vcpu *vcpu)
->> >  static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
->> >                 struct kvm_lapic_state *s, bool set)
->> >  {
->> > -       if (apic_x2apic_mode(vcpu->arch.apic)) {
->> > -               u32 *id = (u32 *)(s->regs + APIC_ID);
->> > -               u32 *ldr = (u32 *)(s->regs + APIC_LDR);
->> > -               u64 icr;
->> > +       u32 *id = (u32 *)(s->regs + APIC_ID);
->> > +       u32 *ldr = (u32 *)(s->regs + APIC_LDR);
->> > +       u64 icr;
->> > +       if (!apic_x2apic_mode(vcpu->arch.apic)) {
->> > +               /*
->> > +                * If APIC ID changed with any APIC acceleration enabled,
->> > +                * deactivate APICv to avoid unexpected issues.
->> > +                */
->> > +               if (enable_apicv && (*id >> 24) != vcpu->vcpu_id)
->> > +                       kvm_request_apicv_update(vcpu->kvm,
->> > +                               false, APICV_INHIBIT_REASON_APICID_CHG);
->> > +       } else {
->> >                 if (vcpu->kvm->arch.x2apic_format) {
->> >                         if (*id != vcpu->vcpu_id)
->> >                                 return -EINVAL;
->> > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
->> > index 82d56f8055de..f78754bdc1d0 100644
->> > --- a/arch/x86/kvm/svm/avic.c
->> > +++ b/arch/x86/kvm/svm/avic.c
->> > @@ -931,7 +931,8 @@ bool svm_check_apicv_inhibit_reasons(ulong bit)
->> >                           BIT(APICV_INHIBIT_REASON_IRQWIN) |
->> >                           BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
->> >                           BIT(APICV_INHIBIT_REASON_X2APIC) |
->> > -                         BIT(APICV_INHIBIT_REASON_BLOCKIRQ);
->> > +                         BIT(APICV_INHIBIT_REASON_BLOCKIRQ) |
->> > +                         BIT(APICV_INHIBIT_REASON_APICID_CHG);
->> > 
->> >         return supported & BIT(bit);
->> >  }
->> > diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
->> > index 7beba7a9f247..91265f0784bd 100644
->> > --- a/arch/x86/kvm/vmx/vmx.c
->> > +++ b/arch/x86/kvm/vmx/vmx.c
->> > @@ -7751,7 +7751,8 @@ static bool vmx_check_apicv_inhibit_reasons(ulong bit)
->> >         ulong supported = BIT(APICV_INHIBIT_REASON_DISABLE) |
->> >                           BIT(APICV_INHIBIT_REASON_ABSENT) |
->> >                           BIT(APICV_INHIBIT_REASON_HYPERV) |
->> > -                         BIT(APICV_INHIBIT_REASON_BLOCKIRQ);
->> > +                         BIT(APICV_INHIBIT_REASON_BLOCKIRQ) |
->> > +                         BIT(APICV_INHIBIT_REASON_APICID_CHG);
->> > 
->> >         return supported & BIT(bit);
->> >  }
->> > 
->> > 
->> > 
->> 
->> This won't work with nested AVIC - we can't just inhibit a nested guest using its own AVIC,
->> because migration happens.
->
->I mean because host decided to change its apic id, which it can in theory do any time,
->even after the nested guest has started. Seriously, the only reason guest has to change apic id,
->is to try to exploit some security hole.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git tls-upcall.v4
+head:   d2416ecdb6b03fc2e4aa40b20cdf919322713224
+commit: 97a450fed0d4ce4978d51685dcca85f9e8b71811 [127/156] net/tls: register '.tls' keyring
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220313/202203132154.1wXAIs5b-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=97a450fed0d4ce4978d51685dcca85f9e8b71811
+        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
+        git fetch --no-tags hare-scsi-devel tls-upcall.v4
+        git checkout 97a450fed0d4ce4978d51685dcca85f9e8b71811
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh SHELL=/bin/bash net/tls/
 
-Hi
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks for the information.  
+All warnings (new ones prefixed by >>):
 
-IIUC, you mean KVM applies APICv inhibition only to L1 VM, leaving APICv
-enabled for L2 VM. Shouldn't KVM disable APICv for L2 VM in this case?
-It looks like a generic issue in dynamically toggling APICv scheme,
-e.g., qemu can set KVM_GUESTDBG_BLOCKIRQ after nested guest has started.
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c: In function 'tls_psk_identity_match':
+>> net/tls/tls_main.c:1061:26: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1061 |                 pr_debug("%s: non-matching src %s len %lu\n",
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:574:9: note: in expansion of macro 'dynamic_pr_debug'
+     574 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   net/tls/tls_main.c:1061:17: note: in expansion of macro 'pr_debug'
+    1061 |                 pr_debug("%s: non-matching src %s len %lu\n",
+         |                 ^~~~~~~~
+   net/tls/tls_main.c:1061:57: note: format string is defined here
+    1061 |                 pr_debug("%s: non-matching src %s len %lu\n",
+         |                                                       ~~^
+         |                                                         |
+         |                                                         long unsigned int
+         |                                                       %u
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c:1075:26: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1075 |                 pr_debug("%s: non-matching dst %s len %lu\n",
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:574:9: note: in expansion of macro 'dynamic_pr_debug'
+     574 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   net/tls/tls_main.c:1075:17: note: in expansion of macro 'pr_debug'
+    1075 |                 pr_debug("%s: non-matching dst %s len %lu\n",
+         |                 ^~~~~~~~
+   net/tls/tls_main.c:1075:57: note: format string is defined here
+    1075 |                 pr_debug("%s: non-matching dst %s len %lu\n",
+         |                                                       ~~^
+         |                                                         |
+         |                                                         long unsigned int
+         |                                                       %u
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c:1089:26: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1089 |                 pr_debug("%s: non-matching port %s len %lu\n",
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:574:9: note: in expansion of macro 'dynamic_pr_debug'
+     574 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   net/tls/tls_main.c:1089:17: note: in expansion of macro 'pr_debug'
+    1089 |                 pr_debug("%s: non-matching port %s len %lu\n",
+         |                 ^~~~~~~~
+   net/tls/tls_main.c:1089:58: note: format string is defined here
+    1089 |                 pr_debug("%s: non-matching port %s len %lu\n",
+         |                                                        ~~^
+         |                                                          |
+         |                                                          long unsigned int
+         |                                                        %u
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c:1104:18: warning: format '%lu' expects argument of type 'long unsigned int', but argument 6 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1104 |         pr_debug("%s: match '%s' '%s' len %lu\n",
+         |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+
+
+vim +1061 net/tls/tls_main.c
+
+  1013	
+  1014	static bool tls_psk_identity_match(const struct key *key,
+  1015					   const struct key_match_data *match_data)
+  1016	{
+  1017		const char *src = key->description;
+  1018		const char *dst = NULL, *port = NULL, *id = NULL;
+  1019		const char *match_src, *match_dst, *match_port, *match_id;
+  1020		size_t src_len, dst_len, port_len, id_len;
+  1021	
+  1022		dst = strchr(src, ';');
+  1023		id_len = strlen(src);
+  1024		if (dst) {
+  1025			src_len = dst - src;
+  1026			if (!src_len)
+  1027				src = NULL;
+  1028			id_len -= src_len + 1;
+  1029			dst++;
+  1030			port = strchr(dst, ';');
+  1031			if (port) {
+  1032				dst_len = port - dst;
+  1033				if (!dst_len)
+  1034					dst = NULL;
+  1035				id_len -= dst_len + 1;
+  1036				port++;
+  1037				id = strchr(port, ';');
+  1038				if (id) {
+  1039					port_len = id - port;
+  1040					if (!port_len)
+  1041						port = NULL;
+  1042					id_len -= port_len + 1;
+  1043					id++;
+  1044				}
+  1045			}
+  1046		}
+  1047		pr_debug("%s: src %s dst %s port %s\n", __func__, src, dst, port);
+  1048		/* simple string-based IP address matching */
+  1049		/* hare: convert to sockaddr matching */
+  1050		match_src = match_data->raw_data;
+  1051		match_dst = strchr(match_src, ';');
+  1052		/* Parsing error */
+  1053		if (!match_dst) {
+  1054			pr_debug("%s: match dst missing\n", __func__);
+  1055			return false;
+  1056		}
+  1057		match_dst++;
+  1058		pr_debug("%s: match src %s\n", __func__, match_src);
+  1059		if (src && (match_dst - match_src) > 0 &&
+  1060		    memcmp(src, match_src, src_len)) {
+> 1061			pr_debug("%s: non-matching src %s len %lu\n",
+  1062				 __func__, src, src_len);
+  1063				return false;
+  1064		}
+  1065	
+  1066		match_port = strchr(match_dst, ';');
+  1067		if (!match_port) {
+  1068			pr_debug("%s: match port missing\n", __func__);
+  1069			return false;
+  1070		}
+  1071		match_port++;
+  1072		pr_debug("%s: match dst %s\n", __func__, match_dst);
+  1073		if (dst && (match_port - match_dst) > 0 &&
+  1074		    memcmp(dst, match_dst, dst_len)) {
+  1075			pr_debug("%s: non-matching dst %s len %lu\n",
+  1076				 __func__, dst, dst_len);
+  1077			return false;
+  1078		}
+  1079	
+  1080		match_id = strchr(match_port, ';');
+  1081		if (!match_id) {
+  1082			pr_debug("%s: match identity missing\n", __func__);
+  1083			return false;
+  1084		}
+  1085		match_id++;
+  1086		pr_debug("%s: match port %s\n", __func__, match_port);
+  1087		if (port && (match_id - match_port) > 0 &&
+  1088		    memcmp(port, match_port, port_len)) {
+  1089			pr_debug("%s: non-matching port %s len %lu\n",
+  1090				 __func__, port, port_len);
+  1091			return false;
+  1092		}
+  1093	
+  1094		/* No match ID specified: match agains all IDs */
+  1095		if (!match_id || !strlen(match_id)) {
+  1096			pr_debug("%s: match w/ no identity\n", __func__);
+  1097			return true;
+  1098		}
+  1099		/* Match ID specified, but no key ID: no match */
+  1100		if (!id) {
+  1101			pr_debug("%s: no identity to match\n", __func__);
+  1102			return false;
+  1103		}
+  1104		pr_debug("%s: match '%s' '%s' len %lu\n",
+  1105			 __func__, match_id, id, id_len);
+  1106		return !memcmp(id, match_id, id_len);
+  1107	}
+  1108	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
