@@ -2,92 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92673C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 04:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB69EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 04:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233502AbiCMDqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 22:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
+        id S233518AbiCMEF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 23:05:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiCMDqU (ORCPT
+        with ESMTP id S229796AbiCMEFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 22:46:20 -0500
-Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A9D020191
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 19:45:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=K4DYT
-        Yamw5W482/bqkvKLO28oQ2hPpAmTuktLI5/W5A=; b=ZjC8pkJDSBqR2pMtGd/9T
-        jiCMmdr3w0NcTvjxpYfNanmNNMiFX2lDkUeGF+/+6NAnoIODWSyMQUoGKotFUkAR
-        wWPIbOkjrUee6aXdlvroSskMmqhQmircGauh7OlC2DRttvwEkplBJExGM8CWhYqD
-        N4s3NQXGz2Vy46ZIGvqemE=
-Received: from localhost (unknown [113.116.156.254])
-        by smtp10 (Coremail) with SMTP id DsCowABXnoGfaC1iaWA_BA--.17294S2;
-        Sun, 13 Mar 2022 11:44:31 +0800 (CST)
-From:   wudaemon <wudaemon@163.com>
-To:     tglx@linutronix.de
-Cc:     linux-kernel@vger.kernel.org, wudaemon <wudaemon@163.com>
-Subject: [RESEND] genirq: add log level to printk in print_irq_desc
-Date:   Sun, 13 Mar 2022 03:44:15 +0000
-Message-Id: <20220313034415.4110-1-wudaemon@163.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 12 Mar 2022 23:05:24 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5D28BF3A;
+        Sat, 12 Mar 2022 20:04:16 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id bx5so11542742pjb.3;
+        Sat, 12 Mar 2022 20:04:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uksUDscG18pH8EI9uIGKs4R4Dd0p9gKfak1RBaRXBys=;
+        b=AHhiVJ3UBkF49PV21p3KrPS9TLHac4Wb9F+3IGlTDZiDKwNLoLSCK7ymCrBjA/FB8g
+         ymqHVMjFIl9JYl7Iu1Ge3wb3XNw1xesgT+ryR1GjrpuDxeEHCCnl/042FiL+/OS2evHF
+         H2V5167S7Y3CWJhqaFveCWGFGyVfHP0NcfRZJhxMby5oCauTRuR1WBhhdjKstiqu2YSn
+         WPfwG36Ugd7IBxh6uLZbE5y06m7q3+bl68he0wEMpT387ke8irt00/kGEHuLMJjmB82o
+         qUlZlOvCSgw0wcF4AOuTUkD5jDpebm8oh77B/OQEvPMro3s/wrqUTUbCNGnRB9EeSHsJ
+         kuYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uksUDscG18pH8EI9uIGKs4R4Dd0p9gKfak1RBaRXBys=;
+        b=c8WkZiLo0k3jBta5YwQVQJ1rhPBO+Bw0yC2xA/8jbBgpfYmYfZqrFF8JQp5BLXNv1a
+         fOU1aeWRza6MGH+3qHby3+G5iVKZXv8A7t+GNhVbVCMtuXRl/MRjKVW4iSVqCBGPIM35
+         ZW4olnH2BPpD+u+K+Bp6J04bH6Sr5lwQv42MRs3VrOrU4OP6b1xPS4GlkoRJUOliAvk2
+         EjY/mQj1se9X4gcvJXtSSgheqn3YjY0m836/WTZF/oSR6NJv/Jw1klEi1kz3A9rqd+Oq
+         SFezF/uibq69uQSFz24vxel6zxsLaMJtZfhGbf8x0D4CsLLzdjYpKcsPACq1wEdgowA3
+         5ncw==
+X-Gm-Message-State: AOAM530LgWfI2jgjbvMih3+gjVHZ1bbtVMyiyhi6gbhyg+/Da1GrN3yE
+        xXlnhudAr9+dTTpnCb4/PRI=
+X-Google-Smtp-Source: ABdhPJwpTnJVzXK4pQicWpojH8vBxMFMcbQP0DV2GLcxezgDZ5yuqgt8CS65wXuElZO48wwKZGX+vg==
+X-Received: by 2002:a17:903:124a:b0:153:47d7:de49 with SMTP id u10-20020a170903124a00b0015347d7de49mr5921852plh.81.1647144256165;
+        Sat, 12 Mar 2022 20:04:16 -0800 (PST)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id oo17-20020a17090b1c9100b001bf0ccc59c2sm18337904pjb.16.2022.03.12.20.04.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Mar 2022 20:04:15 -0800 (PST)
+Date:   Sat, 12 Mar 2022 20:04:12 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Divya.Koppera@microchip.com,
+        netdev@vger.kernel.org, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Madhuri.Sripada@microchip.com, Manohar.Puri@microchip.com
+Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Message-ID: <20220313040412.GA30488@hoboy.vegasvil.org>
+References: <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+ <YifoltDp4/Fs+9op@lunn.ch>
+ <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
+ <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
+ <20220309195252.GB9663@hoboy.vegasvil.org>
+ <20220311142814.z3h5nystnrkvbzek@soft-dev3-1.localhost>
+ <20220311150842.GC7817@hoboy.vegasvil.org>
+ <20220312193620.owhfd43dzzxtytgs@den-dk-m31684h>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowABXnoGfaC1iaWA_BA--.17294S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7WF48GF43Zw1DKrW8Cr45Wrg_yoW8Cw17pF
-        y3Ja43JF48G3WUXayUA3Z5ury3Ca4UGrWUGFZ8CFWfWF1jgw4Fq3yay3yFgr4YqrWrZry3
-        XF45W3sFka1rArUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piHKZdUUUUU=
-X-Originating-IP: [113.116.156.254]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbisBXBbVUMSB6krwADsO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220312193620.owhfd43dzzxtytgs@den-dk-m31684h>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add KERN_DEBUG level for debuging purpose, use checkpatch.pl check prompt:
-ERROR: Macros starting with if should be enclosed by a do - while loop to avoid possible if/else logic defects
-so add do - while loop to Macros
-Signed-off-by: wudaemon <wudaemon@163.com>
----
- kernel/irq/debug.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+On Sat, Mar 12, 2022 at 08:36:20PM +0100, Allan W. Nielsen wrote:
+> I did skim through the articles, and as you hinted he does find small
+> latency differences across different packets. (but as I understood, very
+> few PHYs was tested).
 
-diff --git a/kernel/irq/debug.h b/kernel/irq/debug.h
-index 8ccb326d2977..ce0ec677bea0 100644
---- a/kernel/irq/debug.h
-+++ b/kernel/irq/debug.h
-@@ -3,8 +3,8 @@
-  * Debugging printout:
-  */
+There is also previous work cited in those articles.
  
--#define ___P(f) if (desc->status_use_accessors & f) printk("%14s set\n", #f)
--#define ___PS(f) if (desc->istate & f) printk("%14s set\n", #f)
-+#define ___P(f) do {if (desc->status_use_accessors & f) printk(KERN_DEBUG "%14s set\n", #f); } while (0)
-+#define ___PS(f) do {if (desc->istate & f) printk(KERN_DEBUG "%14s set\n", #f); } while (0)
- /* FIXME */
- #define ___PD(f) do { } while (0)
- 
-@@ -15,15 +15,15 @@ static inline void print_irq_desc(unsigned int irq, struct irq_desc *desc)
- 	if (!__ratelimit(&ratelimit))
- 		return;
- 
--	printk("irq %d, desc: %p, depth: %d, count: %d, unhandled: %d\n",
-+	printk(KERN_DEBUG "irq %d, desc: %p, depth: %d, count: %d, unhandled: %d\n",
- 		irq, desc, desc->depth, desc->irq_count, desc->irqs_unhandled);
--	printk("->handle_irq():  %p, %pS\n",
-+	printk(KERN_DEBUG "->handle_irq():  %p, %pS\n",
- 		desc->handle_irq, desc->handle_irq);
--	printk("->irq_data.chip(): %p, %pS\n",
-+	printk(KERN_DEBUG "->irq_data.chip(): %p, %pS\n",
- 		desc->irq_data.chip, desc->irq_data.chip);
--	printk("->action(): %p\n", desc->action);
-+	printk(KERN_DEBUG "->action(): %p\n", desc->action);
- 	if (desc->action) {
--		printk("->action->handler(): %p, %pS\n",
-+		printk(KERN_DEBUG "->action->handler(): %p, %pS\n",
- 			desc->action->handler, desc->action->handler);
- 	}
- 
--- 
-2.25.1
+> But this is not really an argument for not having _default_ values
+> hard-coded in the driver (or DT, but lets forget about DT for now).
+
+You put them in the DTS.  That means you expect them to need changes.
+
+DTS is the WRONG place for such things.
+
+If your numbers are perfect, then do the corrections in silicon/firmware.
+
+If the numbers aren't 100% perfect, then provide your customers with a
+test report providing the recommended numbers.  Include a proper
+explanation of the test methodology and assumptions used in your
+analysis.  Heck, you can even given them linuxptp config snippets (and
+other for other popular PTP stacks, Oregano, ixat, ptpd, etc)
+
+Don't hard code random, changing numbers into kernel drivers.
+
+Thanks,
+Richard
 
