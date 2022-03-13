@@ -2,144 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C597AC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 189C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:35:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235046AbiCMQdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 12:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35662 "EHLO
+        id S232283AbiCMQgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 12:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235025AbiCMQdk (ORCPT
+        with ESMTP id S231217AbiCMQgV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 12:33:40 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE95D53706
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:32:32 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id e6so16545206lfc.1
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:32:32 -0700 (PDT)
+        Sun, 13 Mar 2022 12:36:21 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9EA2C11F
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:35:13 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id ay7so14990283oib.8
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:35:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MgbGltuaJRuITqNo6niNlVF62PUXiwOYLBSZYU1DMZY=;
-        b=HavKRC7e7SCp/3v05JphI4/Yz7bPK7gwb8+Df9JEKBuE7/JkdMsZJSL9kMd2cn1Kjm
-         Glg7VkMXOTEPAMd2Yc3IXAZ1MdptomgRPgppe1ltEzHQTBbBDiL4oJKjoppDx1aoZOTD
-         341LeLMT7W8/nKRFkcv2QkUL0CWh9xnZOBw9E=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ob4h2d72COnkU3FY3eI+a2UFXuCW1/ScRGHi/UryDqA=;
+        b=TushXGzzRAzyI9MGE9XPNO4vBoxXifNjIKjCnoUkI+mEzZl6CZhW5uEBUDRGoJGHaD
+         yQBQqhTD3jqe3Itl2ih/VYfS2AVqG46q374zGDDL6gBW9JTc2T4zamHj1VeOliVF2mVe
+         Mqmi1px5JxbR15ozq99jBei8hZ++gA42ZIUv22DaY3YHKN7MSH1i0dMTim51IysvPyWn
+         +Gq7wMLMPYLJus5ZwQeaEpMbCZ2JUARUML+mTdMXf95/FsrZn42VmhERTaicPLLP/owq
+         ciqGfh1nxr0ORhDiIRQdbTxVCt0nq6AhVdIEdvPLp0OXeiH7hklifcXG8UdDVkB7o7r7
+         6HBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MgbGltuaJRuITqNo6niNlVF62PUXiwOYLBSZYU1DMZY=;
-        b=354b+9NZ2A1NUKACEQO0MyiagMI/HwCmHRflRrY0+joC9eTYAYJzG+GdTJyLC+VGNo
-         1efTgK6Q+rz4GVnomRJVv0mUQmxufEO8TDfZ8ZaKbc2nykX/iGN+pySIJD/GxaVGKYSg
-         Tnq32u670D/tYweRRnfBDNUiUlVe5cwwnTiuSV2t2anENyByCrqzms7vBdJkqEH6iSQU
-         E7/cU61Jn+MG06u3+pGKhNZcu0esWQ5+oYi5jcEvF8qFLNu9jXG5NqbfbxF+DeJBQzLi
-         QIqHq81wDtYh0rTExDfxNT7Zui64akFqUhHQXGLcEwi3NEeAicGjGTfjhi/olVpb/+JT
-         hbpQ==
-X-Gm-Message-State: AOAM531OGCOhqhS62cPhcC9d0RwY6v8ylFYuv8/YmyWOGd9kolH5qBNv
-        iL3FZliUceuvGBUDrx9JjV42vQJC1emijEpCEb9uUQ==
-X-Google-Smtp-Source: ABdhPJzST1eUNK0xE/Hz0ZdqgE+l5aHR3jttA2qgChiJRwiYskuy/WzQ5S7vXdDtSk9wjGiEFoZf5azBb3KRXlY9L6s=
-X-Received: by 2002:a05:6512:22d4:b0:448:61b9:e61d with SMTP id
- g20-20020a05651222d400b0044861b9e61dmr10744148lfu.662.1647189150954; Sun, 13
- Mar 2022 09:32:30 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ob4h2d72COnkU3FY3eI+a2UFXuCW1/ScRGHi/UryDqA=;
+        b=vwoysUMd3axnsohW0aAl+FDjijSvuuA/KOxs8q83xjmEevhrEZsFF3/DXE6qWKIrTO
+         y/vsp7/PM717mtKRByvFPgnFdi6kYPTgB8ggBazAUIfAR++4TFx1bdO4yn9un+ZjFqx5
+         n508eG5eqMstcBTeKNLyR4TJC4Qfw7FqrPLDp4g6wkq12CBSAlU/eTc8B+nt8sWDncH3
+         gvbqnYArj3FMyOsbDHEI5/2XyAGNof+gD8AZxz3JxQkwBFgqGywN1kubZcW0CVl1qUuV
+         yCIusuZr2fAm6d3zK7oLEyMyHmhDw8EFl/zFuU3qhL18SPCG9rZGuNOrKZpAw2xrPbAv
+         94kw==
+X-Gm-Message-State: AOAM531qfIn79x33gwplKGrX3GrAoZIWWg/I9Yh7vwuvdm1MstfQTZWG
+        qs+M6nJyoLnXFVGcGnZ4Aa+wtg==
+X-Google-Smtp-Source: ABdhPJyf3k5XJ/dltTqtkT8q4cm/xQn+rQVTI2+AHnpPI0GfXenHJMCY3JJm9uRIMdQCmtTZS4KxuA==
+X-Received: by 2002:a54:4e81:0:b0:2ec:ae99:e02d with SMTP id c1-20020a544e81000000b002ecae99e02dmr5435442oiy.261.1647189311060;
+        Sun, 13 Mar 2022 09:35:11 -0700 (PDT)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id e3-20020a056870450300b000da5424e4b0sm5514643oao.50.2022.03.13.09.35.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Mar 2022 09:35:10 -0700 (PDT)
+Date:   Sun, 13 Mar 2022 11:35:07 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v4 11/11] rpmsg: Fix kfree() of static memory on setting
+ driver_override
+Message-ID: <Yi4dOxArKLNyMFZy@builder.lan>
+References: <20220312132856.65163-1-krzysztof.kozlowski@canonical.com>
+ <20220312132856.65163-12-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-References: <20220217165559.313366-1-dario.binacchi@amarulasolutions.com>
- <20220217165559.313366-2-dario.binacchi@amarulasolutions.com> <YhgGZylBoxlou9ka@robh.at.kernel.org>
-In-Reply-To: <YhgGZylBoxlou9ka@robh.at.kernel.org>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Sun, 13 Mar 2022 17:32:20 +0100
-Message-ID: <CABGWkvqerAqEn4y-WHvxjhmZXtuiP8ptDib5qktso1BMnsMfhw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] dt-bindings: input: touchscreen: edt-ft5x06: add report-rate
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        devicetree@vger.kernel.org, linux-input@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220312132856.65163-12-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+On Sat 12 Mar 07:28 CST 2022, Krzysztof Kozlowski wrote:
 
-On Thu, Feb 24, 2022 at 11:27 PM Rob Herring <robh@kernel.org> wrote:
->
-> On Thu, Feb 17, 2022 at 05:55:53PM +0100, Dario Binacchi wrote:
-> > It allows to change the M06/M12 default scan rate.
-> >
-> > Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-> > Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> > ---
-> >
-> > (no changes since v1)
-> >
-> >  .../devicetree/bindings/input/touchscreen/edt-ft5x06.yaml | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >
-> > diff --git a/Documentation/devicetree/bindings/input/touchscreen/edt-ft5x06.yaml b/Documentation/devicetree/bindings/input/touchscreen/edt-ft5x06.yaml
-> > index 2e8da7470513..aa8517c6f65b 100644
-> > --- a/Documentation/devicetree/bindings/input/touchscreen/edt-ft5x06.yaml
-> > +++ b/Documentation/devicetree/bindings/input/touchscreen/edt-ft5x06.yaml
-> > @@ -85,6 +85,14 @@ properties:
-> >      minimum: 0
-> >      maximum: 80
-> >
-> > +  report-rate:
->
-> Use property unit suffix: report-rate-hz
->
-> This should probably be moved to touchscreen.yaml as it seems common.
+> The driver_override field from platform driver should not be initialized
+> from static memory (string literal) because the core later kfree() it,
+> for example when driver_override is set via sysfs.
+> 
+> Use dedicated helper to set driver_override properly.
+> 
+> Fixes: 950a7388f02b ("rpmsg: Turn name service into a stand alone driver")
+> Fixes: c0cdc19f84a4 ("rpmsg: Driver for user space endpoint interface")
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-I did some checks but IMHO I think it's better to consider it as a
-property of the
-driver.
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Thanks and regards
-Dario
+Regards,
+Bjorn
 
->
-> > +    description: Allows setting the scan rate.
-> > +                 M06 supports range from 3 (30 Hz) to 14 (140 Hz).
->
-> You're using 3 or 30 in this case? Should be 30, but it's not clear. I'd
-> just list the range in Hz and leave the conversion detail to the driver.
->
-> > +                 M12 supports range from 1 (1 Hz) to 255 (255 Hz).
->
-> Use '|' if formatting (newline) is significant.
->
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +    minimum: 1
-> > +    maximum: 255
-> > +
-> >    touchscreen-size-x: true
-> >    touchscreen-size-y: true
-> >    touchscreen-fuzz-x: true
-> > --
-> > 2.32.0
-> >
-> >
-
-
-
--- 
-
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
+> ---
+>  drivers/rpmsg/rpmsg_core.c     |  3 ++-
+>  drivers/rpmsg/rpmsg_internal.h | 13 +++++++++++--
+>  drivers/rpmsg/rpmsg_ns.c       | 14 ++++++++++++--
+>  include/linux/rpmsg.h          |  6 ++++--
+>  4 files changed, 29 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/rpmsg/rpmsg_core.c b/drivers/rpmsg/rpmsg_core.c
+> index d9e612f4f0f2..6e2bf2742973 100644
+> --- a/drivers/rpmsg/rpmsg_core.c
+> +++ b/drivers/rpmsg/rpmsg_core.c
+> @@ -397,7 +397,8 @@ field##_store(struct device *dev, struct device_attribute *attr,	\
+>  	      const char *buf, size_t sz)				\
+>  {									\
+>  	struct rpmsg_device *rpdev = to_rpmsg_device(dev);		\
+> -	char *new, *old;						\
+> +	const char *old;						\
+> +	char *new;							\
+>  									\
+>  	new = kstrndup(buf, sz, GFP_KERNEL);				\
+>  	if (!new)							\
+> diff --git a/drivers/rpmsg/rpmsg_internal.h b/drivers/rpmsg/rpmsg_internal.h
+> index b1245d3ed7c6..31345d6e9a7e 100644
+> --- a/drivers/rpmsg/rpmsg_internal.h
+> +++ b/drivers/rpmsg/rpmsg_internal.h
+> @@ -92,10 +92,19 @@ int rpmsg_release_channel(struct rpmsg_device *rpdev,
+>   */
+>  static inline int rpmsg_chrdev_register_device(struct rpmsg_device *rpdev)
+>  {
+> +	int ret;
+> +
+>  	strcpy(rpdev->id.name, "rpmsg_chrdev");
+> -	rpdev->driver_override = "rpmsg_chrdev";
+> +	ret = driver_set_override(&rpdev->dev, &rpdev->driver_override,
+> +				  "rpmsg_chrdev", strlen("rpmsg_chrdev"));
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = rpmsg_register_device(rpdev);
+> +	if (ret)
+> +		kfree(rpdev->driver_override);
+>  
+> -	return rpmsg_register_device(rpdev);
+> +	return ret;
+>  }
+>  
+>  #endif
+> diff --git a/drivers/rpmsg/rpmsg_ns.c b/drivers/rpmsg/rpmsg_ns.c
+> index 762ff1ae279f..95a51543f5ad 100644
+> --- a/drivers/rpmsg/rpmsg_ns.c
+> +++ b/drivers/rpmsg/rpmsg_ns.c
+> @@ -20,12 +20,22 @@
+>   */
+>  int rpmsg_ns_register_device(struct rpmsg_device *rpdev)
+>  {
+> +	int ret;
+> +
+>  	strcpy(rpdev->id.name, "rpmsg_ns");
+> -	rpdev->driver_override = "rpmsg_ns";
+> +	ret = driver_set_override(&rpdev->dev, &rpdev->driver_override,
+> +				  "rpmsg_ns", strlen("rpmsg_ns"));
+> +	if (ret)
+> +		return ret;
+> +
+>  	rpdev->src = RPMSG_NS_ADDR;
+>  	rpdev->dst = RPMSG_NS_ADDR;
+>  
+> -	return rpmsg_register_device(rpdev);
+> +	ret = rpmsg_register_device(rpdev);
+> +	if (ret)
+> +		kfree(rpdev->driver_override);
+> +
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL(rpmsg_ns_register_device);
+>  
+> diff --git a/include/linux/rpmsg.h b/include/linux/rpmsg.h
+> index 02fa9116cd60..20c8cd1cde21 100644
+> --- a/include/linux/rpmsg.h
+> +++ b/include/linux/rpmsg.h
+> @@ -41,7 +41,9 @@ struct rpmsg_channel_info {
+>   * rpmsg_device - device that belong to the rpmsg bus
+>   * @dev: the device struct
+>   * @id: device id (used to match between rpmsg drivers and devices)
+> - * @driver_override: driver name to force a match
+> + * @driver_override: driver name to force a match; do not set directly,
+> + *                   because core frees it; use driver_set_override() to
+> + *                   set or clear it.
+>   * @src: local address
+>   * @dst: destination address
+>   * @ept: the rpmsg endpoint of this channel
+> @@ -51,7 +53,7 @@ struct rpmsg_channel_info {
+>  struct rpmsg_device {
+>  	struct device dev;
+>  	struct rpmsg_device_id id;
+> -	char *driver_override;
+> +	const char *driver_override;
+>  	u32 src;
+>  	u32 dst;
+>  	struct rpmsg_endpoint *ept;
+> -- 
+> 2.32.0
+> 
