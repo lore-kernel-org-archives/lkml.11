@@ -2,146 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CEC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 17:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 680E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 17:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235150AbiCMR0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 13:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47692 "EHLO
+        id S235164AbiCMR3K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 13:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233422AbiCMR0w (ORCPT
+        with ESMTP id S231391AbiCMR3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 13:26:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3373E53717
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 10:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647192343;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mn0ofAxJNZv/2uo5vBgkjuwAgV3+0z/a9iEotzvvTQE=;
-        b=ggNHqWqSC7Uf0fYcPJOhP2HFn+Eoxk0laKQcsDNSj8/Yp66Ijdw24aYjuhri9VjWCe10qs
-        c5zu9WO+PBn/PGnP/5cGIoZ3UlXS2jEBm7PXdZSVx+B8S6JPCo9T1iLK+bIFVtTUArHkCB
-        jKeyXvGnABG2lrf5veaDdoDkHbUAM/I=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-4UINGTeHPvKulW_jhGWM9Q-1; Sun, 13 Mar 2022 13:25:42 -0400
-X-MC-Unique: 4UINGTeHPvKulW_jhGWM9Q-1
-Received: by mail-oo1-f69.google.com with SMTP id j18-20020a4ae852000000b003181c031d81so11299685ooj.22
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 10:25:42 -0700 (PDT)
+        Sun, 13 Mar 2022 13:29:08 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D86126576
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 10:27:59 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id q1-20020a056e02106100b002c600d44e11so7981340ilj.5
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 10:27:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=mn0ofAxJNZv/2uo5vBgkjuwAgV3+0z/a9iEotzvvTQE=;
-        b=fGNosILfAaLDmPcK48DWFRrNG3Q3S8t5lsfGb8BHjHOInMryvIql7Fr6PagN1UC5NX
-         u/H39Bq50ZfYKaixv0MjdfNke4RiL6yMgHHjHMriHsRYjtaW4dIfZ93zvib3xBLzRBbI
-         8+80TBDQBR2L5Rjg+NvJcmyuC8kvD14IiJWdQ2lLVOWBExH5oaEhSrZHuXLztQqyBUi5
-         PUiNQSNYwSBDrW/1u4B1GBedk8vq3w69DIybyXDWr5/ujV6fRm4BgWiCuKfnv3YO6f+f
-         BqRVC863dMVTNradGfvAZiiIknAJ9hW5vY5NvGq2lqWLjKDownfzz8q5ujeLjzx179A7
-         8IbQ==
-X-Gm-Message-State: AOAM53368nrlMKWRJVM+YjDf7d1nH/2Gc84U/67isx/Du7SwwC/nPrZA
-        6Tj4eTQpfInpq1ePiMU+7XT1o/hMWiY6zrAeRX1++PORXggfqQWxzgGnSzL1tSyavt5QAPw5wdV
-        4i1HwkmlV5Ucall0l57s3f557134e6tfacZj5/zOCqMgY9OOCOanX7QeF8OsyO5bKUIfHbvE=
-X-Received: by 2002:a9d:18e:0:b0:5b2:60a3:df31 with SMTP id e14-20020a9d018e000000b005b260a3df31mr9422836ote.251.1647192341083;
-        Sun, 13 Mar 2022 10:25:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxDRtAEOItqVfXBOcK5Q/GbO5z+zCivcrPSOHA871UqYPp60rMql/v/tWlrJBXy+L1wXPJ8Dw==
-X-Received: by 2002:a9d:18e:0:b0:5b2:60a3:df31 with SMTP id e14-20020a9d018e000000b005b260a3df31mr9422825ote.251.1647192340814;
-        Sun, 13 Mar 2022 10:25:40 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id b3-20020a056830310300b005c93d1cbb9fsm3469035ots.68.2022.03.13.10.25.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Mar 2022 10:25:40 -0700 (PDT)
-Subject: Re: [PATCH] checkpatch: warn that small allocs should be combined
-To:     Joe Perches <joe@perches.com>, apw@canonical.com,
-        dwaipayanray1@gmail.com, lukas.bulwahn@gmail.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220313140827.1503359-1-trix@redhat.com>
- <75480288322af54a589539d8296bd9a35a67dbca.camel@perches.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <d51c3c16-21fa-01c7-3faf-e96eb70c4721@redhat.com>
-Date:   Sun, 13 Mar 2022 10:25:38 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:cc;
+        bh=nkxZMlO8VyGWK7j6fOoE2bRgObi33Bn0TDG2ZS3w8Yc=;
+        b=UHIzUS7oiOEI/4S0dfqWV/hxBB3VdKsWZx8qy5hv0QH+8m2OXsArfTgINyBbx/9+0q
+         cPe+HP2nF43jLMz/Utj0lSAqCQB1aDFHl7sVf12EUc0kPIRL9i7g81uxriZlhPSaY1Fp
+         9RUU/ZnZNwA5YJ2XgNaaNegAePO+qSDcjCXibFifZgbipr5GKLoU6qmVNn+CuZSgHGrq
+         bavvdnqe1AwQOJf8y9qHoZiBXW9t6rB6+Ypa8cai8uu5UoiBl+5gvejtis/Dy/PpRlAM
+         WoKFg/owb48BMy707LQ67gehjJgYgQIPAJqQNKfh7PTM+5RkFBNV3zg/fshZqWoKEhXg
+         4J7A==
+X-Gm-Message-State: AOAM532qOiRmmxB4eWYawJQBWmfRpJAXnX7MIMD5dbaoKxWR72YnvY+T
+        UAeufTLuVYzgWZTCp6/65v/HgG8XvH7QzHmazWt9pgtHtpUX
+X-Google-Smtp-Source: ABdhPJycAJrA1vmL3pi0bVtscFr24KP8I5soXYdvxK35Tx/GKqgeOMn+92+vRd3vIgNzDcPuhTguZ1ZdDyvbL3Vb8SNwXRX7otxY
 MIME-Version: 1.0
-In-Reply-To: <75480288322af54a589539d8296bd9a35a67dbca.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+X-Received: by 2002:a05:6638:2505:b0:319:a7f4:131e with SMTP id
+ v5-20020a056638250500b00319a7f4131emr17448490jat.309.1647192478817; Sun, 13
+ Mar 2022 10:27:58 -0700 (PDT)
+Date:   Sun, 13 Mar 2022 10:27:58 -0700
+In-Reply-To: <79d2c7e0-c4ed-fa89-5d97-4b143356f814@gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000093a3f805da1ce2f7@google.com>
+Subject: Re: [syzbot] general protection fault in __pm_runtime_resume (2)
+From:   syzbot <syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     gregkh@linuxfoundation.org, len.brown@intel.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        paskripkin@gmail.com, pavel@ucw.cz, rafael@kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 3/13/22 9:09 AM, Joe Perches wrote:
-> On Sun, 2022-03-13 at 07:08 -0700, trix@redhat.com wrote:
->> From: Tom Rix <trix@redhat.com>
->>
->> A memory allocation has overhead.  When a
->> small allocation is made the overhead dominates.
->> By combining the fixed sized small allocations
->> with others, the memory usage can be reduced
->> by eliminating the overhead of the small allocs.
-> This will generate false positives as small allocs are
-> sometimes required for usb dma.
+> On 3/13/22 08:35, syzbot wrote:
+>> Hello,
+>> 
+>> syzbot found the following issue on:
+>> 
+>> HEAD commit:    92f90cc9fe0e Merge tag 'fuse-fixes-5.17-rc8' of git://git...
+>> git tree:       upstream
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=118cd3be700000
+>> kernel config:  https://syzkaller.appspot.com/x/.config?x=442f8ac61e60a75e
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=b9bd12fbed3485a3e51f
+>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b64e79700000
+>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1652811a700000
+>> 
+>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>> Reported-by: syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com
+>> 
 >
-> How many of these "small allocs" _could_ be combined and under
-> what circumstance?
+> hu->serdev should be checked before passing to pm functions
 >
-> Can you show me a current example in the kernel where this
-> is useful?
+> #syz test:
 
-Tracing what the memory is used for is not easy.
+want 2 args (repo, branch), got 3
 
-And opens a can of worms.
-
-Most/all of the alloc use only GFP_KERNEL.
-
-If this allocs implicitly align / size suites dma which i am
-
-guessing is (void *) aligned/size then then there will be some
-
-cases of overalignment.
-
-The addition of a GFP_DMA could indicate the memory was to be dma-ed, 
-but cause other breakage.
-
-So there is not a good way currently for checkpatch to figure this out.
-
->> diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-> []
->> @@ -7076,6 +7076,12 @@ sub process {
->>   			     "$1 uses number as first arg, sizeof is generally wrong\n" . $herecurr);
->>   		}
->>   
->> +# check for small allocs
->> +		if ($line =~ /\b(?:kv|k|v)[zm]alloc\s*\(\s*(\d|sizeof\s*\([su](8|16|32)s*\))\s*,/) {
->> +			WARN("SMALL_ALLOC",
->> +			     "Small allocs should be combined\n" . $herecurr);
->> +		}
->> +
-> Couple more comments:
+> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 >
-> Anyone using vmalloc variants for a small alloc is confused.
-> What defines "small"?
-> Why would a single decimal like 8 be small, but say 16 would not be?
 >
-> checkpatch has a couple of regexes that could be useful here
 >
-> Maybe instead of sizeof(your regex) use
 >
-> 	sizeof\s*\(\s*(?:\d|$C90_int_types|$typeTypedefs)\s*,
 >
-> as that will find more "small" uses of individual types like
-> "unsigned long", __s32, u_int_16, etc...
->
-ok
-
-Tom
-
->
-
+> With regards,
+> Pavel Skripkin
