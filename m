@@ -2,169 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED0D4C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB21C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232659AbiCMKxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 06:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
+        id S234253AbiCMKxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 06:53:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234416AbiCMKww (ORCPT
+        with ESMTP id S234466AbiCMKxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 06:52:52 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1CD47AD1;
-        Sun, 13 Mar 2022 03:51:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647168684; x=1678704684;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=APrZzjGrkRGG7Lr87LmTfqU/eGtk8ICoc5xUHBUFbwI=;
-  b=WE8aIdi5bVLQa8XXUK/9HiEPW5JEFK1A3lWh0QiQQilzrAdwV4tcbt4D
-   1D4AX4IpVsT/q9TAkzpuda8QtxqPkd7wpCJHTs9YrPZDaVfHbtkjJXzfE
-   z7CxdZYnd8gaEFiLsNzdisDaCMEbq9cYa1dFleWGRYXmr640VcgsvKUQq
-   OvtsHI5FI+dtVCz2k+yRzHQSSZciiX7kpPE8Yv/BkOwplPxoOZXgTrh4/
-   wpXUbsPu4Ew/2eddsXGwwxdmEoSS7Sdk3ExV++HXEpCaAo7FkdrDuXc2T
-   NGIbsQaXIscWjgwS+7VwbW1dNwyk4Q8zPT73i08mXplrpecXgTu7MGVQX
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="255590722"
-X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="255590722"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:12 -0700
-X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="645448243"
-Received: from mvideche-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.251.130.249])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:09 -0700
-From:   Kai Huang <kai.huang@intel.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     dave.hansen@intel.com, seanjc@google.com, pbonzini@redhat.com,
-        kirill.shutemov@linux.intel.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, peterz@infradead.org,
-        tony.luck@intel.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v2 19/21] x86: Flush cache of TDX private memory during kexec()
-Date:   Sun, 13 Mar 2022 23:49:59 +1300
-Message-Id: <e3db947d341ae544b236fa2e547fd98c63cc9626.1647167475.git.kai.huang@intel.com>
+        Sun, 13 Mar 2022 06:53:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF73412D23A;
+        Sun, 13 Mar 2022 03:52:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B456F60FDC;
+        Sun, 13 Mar 2022 10:52:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E126C340E8;
+        Sun, 13 Mar 2022 10:52:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647168729;
+        bh=CQ9LgKO1frbxjKVYlT5MfqhQYAIpf8icl+IVeeyHnfc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nss3uD+HzQzPCqQb9GU9AABubzjAR+XiWJftRvl12hnVtsSSwyOjqiYwtt6sdrj5H
+         EMQ3EGWTcvAibxIQubkTAwPStIKzUFNxUnuRQH9kxPiIY7UE4SDp/RckjdeFzoXduW
+         Odx7dCg6FvROt+fn2DcS+noZL0AklBqzrn+LXUShcr2IekY5oAyQw1VJt1eWiYLZbJ
+         gDyD19YSULU2ZNfZ66yVxUkNYNmzx2ll45aJ8W3K/NhJsNGMkjQgGyqXjsRE87EYWn
+         ZE8Y8qKgKYpb951l7IHFqar61eT0bQeCcCnAfnU1uQsaoqilnEnU7tYFxumzrqIhIo
+         iU3tuUKsOIHzg==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nTLpW-001I1L-PA; Sun, 13 Mar 2022 11:52:06 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Evgeny Novikov <novikov@ispras.ru>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Herman <yanshuaijun@yulong.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ming Qian <ming.qian@nxp.com>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH 02/24] media: platform: rename marvell-ccic/ to marvell/
+Date:   Sun, 13 Mar 2022 11:51:43 +0100
+Message-Id: <8e17438e4290f4e43addd4742d350748d4939f73.1647167750.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1647167475.git.kai.huang@intel.com>
-References: <cover.1647167475.git.kai.huang@intel.com>
+In-Reply-To: <cover.1647167750.git.mchehab@kernel.org>
+References: <cover.1647167750.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If TDX is ever enabled and/or used to run any TD guests, the cachelines
-of TDX private memory, including PAMTs, used by TDX module need to be
-flushed before transiting to the new kernel otherwise they may silently
-corrupt the new kernel.
+As the end goal is to have platform drivers split by vendor,
+rename marvell-ccic/ to marvell/.
 
-TDX module can only be initialized once during its lifetime.  TDX does
-not have interface to reset TDX module to an uninitialized state so it
-could be initialized again.  If the old kernel has enabled TDX, the new
-kernel won't be able to use TDX again.  Therefore, ideally the old
-kernel should shut down the TDX module if it is ever initialized so that
-no SEAMCALLs can be made to it again.
-
-However, shutting down the TDX module requires calling SEAMCALL, which
-requires cpu being in VMX operation (VMXON has been done).  Currently,
-only KVM does entering/leaving VMX operation, so there's no guarantee
-that all cpus are in VMX operation during kexec().  Therefore, this
-implementation doesn't shut down the TDX module, but only does cache
-flush and just leave the TDX module open.
-
-And it's fine to leave the module open.  If the new kernel wants to use
-TDX, it needs to go through the initialization process, and it will fail
-at the first SEAMCALL due to the TDX module is not in the uninitialized
-state.  If the new kernel doesn't want to use TDX, then the TDX module
-won't run at all.
-
-Following the implementation of SME support, use wbinvd() to flush cache
-in stop_this_cpu().  Introduce a new function platform_has_tdx() to only
-check whether the platform is TDX-capable and do wbinvd() when it is
-true.  platform_has_tdx() returns true when SEAMRR is enabled and there
-are enough TDX private KeyIDs to run at least one TD guest (both of
-which are detected at boot time).  TDX is enabled on demand at runtime
-and it has a state machine with mutex to protect multiple callers to
-initialize TDX in parallel.  Getting TDX module state needs to hold the
-mutex but stop_this_cpu() runs in interrupt context, so just check
-whether platform supports TDX and flush cache.
-
-Signed-off-by: Kai Huang <kai.huang@intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
- arch/x86/include/asm/tdx.h |  2 ++
- arch/x86/kernel/process.c  | 15 ++++++++++++++-
- arch/x86/virt/vmx/tdx.c    | 14 ++++++++++++++
- 3 files changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index b526d41c4bbf..24f2b7e8b280 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -85,10 +85,12 @@ static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
- void tdx_detect_cpu(struct cpuinfo_x86 *c);
- int tdx_detect(void);
- int tdx_init(void);
-+bool platform_has_tdx(void);
- #else
- static inline void tdx_detect_cpu(struct cpuinfo_x86 *c) { }
- static inline int tdx_detect(void) { return -ENODEV; }
- static inline int tdx_init(void) { return -ENODEV; }
-+static inline bool platform_has_tdx(void) { return false; }
- #endif /* CONFIG_INTEL_TDX_HOST */
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 00/24] at: https://lore.kernel.org/all/cover.1647167750.git.mchehab@kernel.org/
+
+ MAINTAINERS                                                    | 2 +-
+ drivers/media/platform/Kconfig                                 | 2 +-
+ drivers/media/platform/Makefile                                | 2 +-
+ drivers/media/platform/{marvell-ccic => marvell}/Kconfig       | 0
+ drivers/media/platform/{marvell-ccic => marvell}/Makefile      | 0
+ drivers/media/platform/{marvell-ccic => marvell}/cafe-driver.c | 0
+ drivers/media/platform/{marvell-ccic => marvell}/mcam-core.c   | 0
+ drivers/media/platform/{marvell-ccic => marvell}/mcam-core.h   | 0
+ drivers/media/platform/{marvell-ccic => marvell}/mmp-driver.c  | 0
+ 9 files changed, 3 insertions(+), 3 deletions(-)
+ rename drivers/media/platform/{marvell-ccic => marvell}/Kconfig (100%)
+ rename drivers/media/platform/{marvell-ccic => marvell}/Makefile (100%)
+ rename drivers/media/platform/{marvell-ccic => marvell}/cafe-driver.c (100%)
+ rename drivers/media/platform/{marvell-ccic => marvell}/mcam-core.c (100%)
+ rename drivers/media/platform/{marvell-ccic => marvell}/mcam-core.h (100%)
+ rename drivers/media/platform/{marvell-ccic => marvell}/mmp-driver.c (100%)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 84bc106acc57..b83cf0eb99ce 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4248,7 +4248,7 @@ L:	linux-media@vger.kernel.org
+ S:	Orphan
+ T:	git git://linuxtv.org/media_tree.git
+ F:	Documentation/admin-guide/media/cafe_ccic*
+-F:	drivers/media/platform/marvell-ccic/
++F:	drivers/media/platform/marvell/
  
- #endif /* !__ASSEMBLY__ */
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 71aa12082370..bf3d1c9cb00c 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -766,8 +766,21 @@ void stop_this_cpu(void *dummy)
- 	 * without the encryption bit, they don't race each other when flushed
- 	 * and potentially end up with the wrong entry being committed to
- 	 * memory.
-+	 *
-+	 * In case of kexec, similar to SME, if TDX is ever enabled, the
-+	 * cachelines of TDX private memory (including PAMTs) used by TDX
-+	 * module need to be flushed before transiting to the new kernel,
-+	 * otherwise they may silently corrupt the new kernel.
-+	 *
-+	 * Note TDX is enabled on demand at runtime, and enabling TDX has a
-+	 * state machine protected with a mutex to prevent concurrent calls
-+	 * from multiple callers.  Holding the mutex is required to get the
-+	 * TDX enabling status, but this function runs in interrupt context.
-+	 * So to make it simple, always flush cache when platform supports
-+	 * TDX (detected at boot time), regardless whether TDX is truly
-+	 * enabled by kernel.
- 	 */
--	if (boot_cpu_has(X86_FEATURE_SME))
-+	if (boot_cpu_has(X86_FEATURE_SME) || platform_has_tdx())
- 		native_wbinvd();
- 	for (;;) {
- 		/*
-diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
-index f2b9c98191ed..d9ad8dc7111e 100644
---- a/arch/x86/virt/vmx/tdx.c
-+++ b/arch/x86/virt/vmx/tdx.c
-@@ -1681,3 +1681,17 @@ int tdx_init(void)
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(tdx_init);
-+
-+/**
-+ * platform_has_tdx - Whether platform supports TDX
-+ *
-+ * Check whether platform supports TDX (i.e. TDX is enabled in BIOS),
-+ * regardless whether TDX is truly enabled by kernel.
-+ *
-+ * Return true if SEAMRR is enabled, and there are sufficient TDX private
-+ * KeyIDs to run TD guests.
-+ */
-+bool platform_has_tdx(void)
-+{
-+	return seamrr_enabled() && tdx_keyid_sufficient();
-+}
+ CAIF NETWORK LAYER
+ L:	netdev@vger.kernel.org
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index 615736ac117c..5e7cb24038fe 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -76,7 +76,7 @@ source "drivers/media/platform/davinci/Kconfig"
+ source "drivers/media/platform/exynos-gsc/Kconfig"
+ source "drivers/media/platform/exynos4-is/Kconfig"
+ source "drivers/media/platform/intel/Kconfig"
+-source "drivers/media/platform/marvell-ccic/Kconfig"
++source "drivers/media/platform/marvell/Kconfig"
+ source "drivers/media/platform/meson/ge2d/Kconfig"
+ source "drivers/media/platform/mtk-jpeg/Kconfig"
+ source "drivers/media/platform/mtk-mdp/Kconfig"
+diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
+index 8d6e15fad0b1..8b2deba4b62c 100644
+--- a/drivers/media/platform/Makefile
++++ b/drivers/media/platform/Makefile
+@@ -16,7 +16,7 @@ obj-y += davinci/
+ obj-y += exynos-gsc/
+ obj-y += exynos4-is/
+ obj-y += intel/
+-obj-y += marvell-ccic/
++obj-y += marvell/
+ obj-y += meson/ge2d/
+ obj-y += mtk-jpeg/
+ obj-y += mtk-mdp/
+diff --git a/drivers/media/platform/marvell-ccic/Kconfig b/drivers/media/platform/marvell/Kconfig
+similarity index 100%
+rename from drivers/media/platform/marvell-ccic/Kconfig
+rename to drivers/media/platform/marvell/Kconfig
+diff --git a/drivers/media/platform/marvell-ccic/Makefile b/drivers/media/platform/marvell/Makefile
+similarity index 100%
+rename from drivers/media/platform/marvell-ccic/Makefile
+rename to drivers/media/platform/marvell/Makefile
+diff --git a/drivers/media/platform/marvell-ccic/cafe-driver.c b/drivers/media/platform/marvell/cafe-driver.c
+similarity index 100%
+rename from drivers/media/platform/marvell-ccic/cafe-driver.c
+rename to drivers/media/platform/marvell/cafe-driver.c
+diff --git a/drivers/media/platform/marvell-ccic/mcam-core.c b/drivers/media/platform/marvell/mcam-core.c
+similarity index 100%
+rename from drivers/media/platform/marvell-ccic/mcam-core.c
+rename to drivers/media/platform/marvell/mcam-core.c
+diff --git a/drivers/media/platform/marvell-ccic/mcam-core.h b/drivers/media/platform/marvell/mcam-core.h
+similarity index 100%
+rename from drivers/media/platform/marvell-ccic/mcam-core.h
+rename to drivers/media/platform/marvell/mcam-core.h
+diff --git a/drivers/media/platform/marvell-ccic/mmp-driver.c b/drivers/media/platform/marvell/mmp-driver.c
+similarity index 100%
+rename from drivers/media/platform/marvell-ccic/mmp-driver.c
+rename to drivers/media/platform/marvell/mmp-driver.c
 -- 
 2.35.1
 
