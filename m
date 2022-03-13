@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F694C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED0D4C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbiCMKx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 06:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43578 "EHLO
+        id S232659AbiCMKxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 06:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234449AbiCMKwy (ORCPT
+        with ESMTP id S234416AbiCMKww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 06:52:54 -0400
+        Sun, 13 Mar 2022 06:52:52 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B8412F159;
-        Sun, 13 Mar 2022 03:51:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1CD47AD1;
+        Sun, 13 Mar 2022 03:51:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647168690; x=1678704690;
+  t=1647168684; x=1678704684;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SpjC3CbH42U1qa3ksr4Ka1FAutv97ZtYm4oaP1Da4rY=;
-  b=Qfs0OOtqsluBHxItZTVgZ/1T5hJixWtX5ewVe7zKYj6yGbuf2kODwraw
-   njb+VpOdq4EHvg1J8dcXHaMO1vTkIoeGRI1rZPiHkbNPsG0gTyN+DmxJM
-   0fzTmNX6TuMfW/91KVBUTCd7sdDBTJi3OK850nhsYbfLywCJsaLPp7DYO
-   gaLyo4ahNLOIeuuvatASEsdYGOhPHClqJWfgRadYlR7JfKE5PIAVb7wYF
-   XtEDNWKQAjujnwgmlKLdL5AZQIX4UBfTo2hr0BuOzTE87g+KAVExfFCyF
-   ++U1vNn+OXg34a58tONnKvVI8csP+uuxwIBNYYvZnDChjvzVpBwpvrCYJ
+  bh=APrZzjGrkRGG7Lr87LmTfqU/eGtk8ICoc5xUHBUFbwI=;
+  b=WE8aIdi5bVLQa8XXUK/9HiEPW5JEFK1A3lWh0QiQQilzrAdwV4tcbt4D
+   1D4AX4IpVsT/q9TAkzpuda8QtxqPkd7wpCJHTs9YrPZDaVfHbtkjJXzfE
+   z7CxdZYnd8gaEFiLsNzdisDaCMEbq9cYa1dFleWGRYXmr640VcgsvKUQq
+   OvtsHI5FI+dtVCz2k+yRzHQSSZciiX7kpPE8Yv/BkOwplPxoOZXgTrh4/
+   wpXUbsPu4Ew/2eddsXGwwxdmEoSS7Sdk3ExV++HXEpCaAo7FkdrDuXc2T
+   NGIbsQaXIscWjgwS+7VwbW1dNwyk4Q8zPT73i08mXplrpecXgTu7MGVQX
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="255590725"
+X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="255590722"
 X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="255590725"
+   d="scan'208";a="255590722"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:18 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:12 -0700
 X-IronPort-AV: E=Sophos;i="5.90,178,1643702400"; 
-   d="scan'208";a="645448259"
+   d="scan'208";a="645448243"
 Received: from mvideche-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.251.130.249])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:15 -0700
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 03:51:09 -0700
 From:   Kai Huang <kai.huang@intel.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     dave.hansen@intel.com, seanjc@google.com, pbonzini@redhat.com,
@@ -44,9 +44,9 @@ Cc:     dave.hansen@intel.com, seanjc@google.com, pbonzini@redhat.com,
         sathyanarayanan.kuppuswamy@linux.intel.com, peterz@infradead.org,
         tony.luck@intel.com, ak@linux.intel.com, dan.j.williams@intel.com,
         isaku.yamahata@intel.com, kai.huang@intel.com
-Subject: [PATCH v2 21/21] Documentation/x86: Add documentation for TDX host support
-Date:   Sun, 13 Mar 2022 23:50:01 +1300
-Message-Id: <e94f17682960fe9e40c255e7bbd3de6855325a01.1647167475.git.kai.huang@intel.com>
+Subject: [PATCH v2 19/21] x86: Flush cache of TDX private memory during kexec()
+Date:   Sun, 13 Mar 2022 23:49:59 +1300
+Message-Id: <e3db947d341ae544b236fa2e547fd98c63cc9626.1647167475.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647167475.git.kai.huang@intel.com>
 References: <cover.1647167475.git.kai.huang@intel.com>
@@ -56,333 +56,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add <Documentation/x86/tdx_host.rst> for TDX host support.
+If TDX is ever enabled and/or used to run any TD guests, the cachelines
+of TDX private memory, including PAMTs, used by TDX module need to be
+flushed before transiting to the new kernel otherwise they may silently
+corrupt the new kernel.
+
+TDX module can only be initialized once during its lifetime.  TDX does
+not have interface to reset TDX module to an uninitialized state so it
+could be initialized again.  If the old kernel has enabled TDX, the new
+kernel won't be able to use TDX again.  Therefore, ideally the old
+kernel should shut down the TDX module if it is ever initialized so that
+no SEAMCALLs can be made to it again.
+
+However, shutting down the TDX module requires calling SEAMCALL, which
+requires cpu being in VMX operation (VMXON has been done).  Currently,
+only KVM does entering/leaving VMX operation, so there's no guarantee
+that all cpus are in VMX operation during kexec().  Therefore, this
+implementation doesn't shut down the TDX module, but only does cache
+flush and just leave the TDX module open.
+
+And it's fine to leave the module open.  If the new kernel wants to use
+TDX, it needs to go through the initialization process, and it will fail
+at the first SEAMCALL due to the TDX module is not in the uninitialized
+state.  If the new kernel doesn't want to use TDX, then the TDX module
+won't run at all.
+
+Following the implementation of SME support, use wbinvd() to flush cache
+in stop_this_cpu().  Introduce a new function platform_has_tdx() to only
+check whether the platform is TDX-capable and do wbinvd() when it is
+true.  platform_has_tdx() returns true when SEAMRR is enabled and there
+are enough TDX private KeyIDs to run at least one TD guest (both of
+which are detected at boot time).  TDX is enabled on demand at runtime
+and it has a state machine with mutex to protect multiple callers to
+initialize TDX in parallel.  Getting TDX module state needs to hold the
+mutex but stop_this_cpu() runs in interrupt context, so just check
+whether platform supports TDX and flush cache.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- Documentation/x86/index.rst    |   1 +
- Documentation/x86/tdx_host.rst | 300 +++++++++++++++++++++++++++++++++
- 2 files changed, 301 insertions(+)
- create mode 100644 Documentation/x86/tdx_host.rst
+ arch/x86/include/asm/tdx.h |  2 ++
+ arch/x86/kernel/process.c  | 15 ++++++++++++++-
+ arch/x86/virt/vmx/tdx.c    | 14 ++++++++++++++
+ 3 files changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/x86/index.rst b/Documentation/x86/index.rst
-index 382e53ca850a..145fc251fbfc 100644
---- a/Documentation/x86/index.rst
-+++ b/Documentation/x86/index.rst
-@@ -25,6 +25,7 @@ x86-specific Documentation
-    intel_txt
-    amd-memory-encryption
-    tdx
-+   tdx_host
-    pti
-    mds
-    microcode
-diff --git a/Documentation/x86/tdx_host.rst b/Documentation/x86/tdx_host.rst
-new file mode 100644
-index 000000000000..a843ede9d45c
---- /dev/null
-+++ b/Documentation/x86/tdx_host.rst
-@@ -0,0 +1,300 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=========================================================
-+Intel Trusted Domain Extensions (TDX) host kernel support
-+=========================================================
-+
-+Intel Trusted Domain Extensions (TDX) protects guest VMs from malicious
-+host and certain physical attacks. To support TDX, a new CPU mode called
-+Secure Arbitration Mode (SEAM) is added to Intel processors.
-+
-+SEAM is an extension to the VMX architecture to define a new VMX root
-+operation called 'SEAM VMX root' and a new VMX non-root operation called
-+'VMX non-root'. Collectively, the SEAM VMX root and SEAM VMX non-root
-+execution modes are called operation in SEAM.
-+
-+SEAM VMX root operation is designed to host a CPU-attested, software
-+module called 'Intel TDX module' to manage virtual machine (VM) guests
-+called Trust Domains (TD). The TDX module implements the functions to
-+build, tear down, and start execution of TD VMs. SEAM VMX root is also
-+designed to additionally host a CPU-attested, software module called the
-+'Intel Persistent SEAMLDR (Intel P-SEAMLDR)' module to load and update
-+the Intel TDX module.
-+
-+The software in SEAM VMX root runs in the memory region defined by the
-+SEAM range register (SEAMRR). Access to this range is restricted to SEAM
-+VMX root operation. Code fetches outside of SEAMRR when in SEAM VMX root
-+operation are meant to be disallowed and lead to an unbreakable shutdown.
-+
-+TDX leverages Intel Multi-Key Total Memory Encryption (MKTME) to crypto
-+protect TD guests. TDX reserves part of MKTME KeyID space as TDX private
-+KeyIDs, which can only be used by software runs in SEAM. The physical
-+address bits reserved for encoding TDX private KeyID are treated as
-+reserved bits when not in SEAM operation. The partitioning of MKTME
-+KeyIDs and TDX private KeyIDs is configured by BIOS.
-+
-+Host kernel transits to either P-SEAMLDR or TDX module via the new
-+SEAMCALL instruction. SEAMCALLs are host-side interface functions
-+defined by P-SEAMLDR and TDX module around the new SEAMCALL instruction.
-+They are similar to a hypercall, except they are made by host kernel to
-+the SEAM software modules.
-+
-+Before being able to manage TD guests, the TDX module must be loaded
-+into SEAMRR and properly initialized using SEAMCALLs defined by TDX
-+architecture. The current implementation assumes both P-SEAMLDR and
-+TDX module are loaded by BIOS before the kernel boots.
-+
-+Detection and Initialization
-+----------------------------
-+
-+The presence of SEAMRR is reported via a new SEAMRR bit (15) of the
-+IA32_MTRRCAP MSR. The SEAMRR range registers consist of a pair of MSRs:
-+IA32_SEAMRR_PHYS_BASE (0x1400) and IA32_SEAMRR_PHYS_MASK (0x1401).
-+SEAMRR is enabled when bit 3 of IA32_SEAMRR_PHYS_BASE is set and
-+bit 10/11 of IA32_SEAMRR_PHYS_MASK are set.
-+
-+However, there is no CPUID or MSR for querying the presence of the TDX
-+module or the P-SEAMLDR. SEAMCALL fails with VMfailInvalid when SEAM
-+software is not loaded, so SEAMCALL can be used to detect P-SEAMLDR and
-+TDX module. SEAMLDR.INFO SEAMCALL is used to detect both P-SEAMLDR and
-+TDX module.  Success of the SEAMCALL means P-SEAMLDR is loaded, and the
-+P-SEAMLDR information returned by the SEAMCALL further tells whether TDX
-+module is loaded or not.
-+
-+User can check whether the TDX module is initialized via dmesg:
-+
-+  [..] tdx: P-SEAMLDR: version 0x0, vendor_id: 0x8086, build_date: 20211209, build_num 160, major 1, minor 0
-+  [..] tdx: TDX module detected.
-+  [..] tdx: TDX module: vendor_id 0x8086, major_version 1, minor_version 0, build_date 20211209, build_num 160
-+  [..] tdx: TDX module initialized.
-+
-+Initializing TDX takes time (in seconds) and additional memory space (for
-+metadata). Both are affected by the size of total usable memory which the
-+TDX module is configured with. In particular, the TDX metadata consumes
-+~1/256 of TDX usable memory. This leads to a non-negligible burden as the
-+current implementation simply treats all E820 RAM ranges as TDX usable
-+memory (all system RAM meets the security requirements on the first
-+generation of TDX-capable platforms).
-+
-+Therefore, kernel uses lazy TDX initialization to avoid such burden for
-+all users on a TDX-capable platform. The software component (e.g. KVM)
-+which wants to use TDX is expected to call two helpers below to detect
-+and initialize the TDX module until TDX is truly needed:
-+
-+        if (tdx_detect())
-+                goto no_tdx;
-+        if (tdx_init())
-+                goto no_tdx;
-+
-+TDX detection and initialization are done via SEAMCALLs which require the
-+CPU in VMX operation. The caller of the above two helpers should ensure
-+that condition.
-+
-+Currently, only KVM is the only user of TDX and KVM already handles
-+entering/leaving VMX operation. Letting KVM initialize TDX on demand
-+avoids handling entering/leaving VMX operation, which isn't trivial, in
-+core-kernel.
-+
-+In addition, a new kernel parameter 'tdx_host={on/off}' can be used to
-+force disabling the TDX capability by the admin.
-+
-+TDX Memory Management
-+---------------------
-+
-+TDX architecture manages TDX memory via below data structures:
-+
-+1) Convertible Memory Regions (CMRs)
-+
-+TDX provides increased levels of memory confidentiality and integrity.
-+This requires special hardware support for features like memory
-+encryption and storage of memory integrity checksums. A CMR represents a
-+memory range that meets those requirements and can be used as TDX memory.
-+The list of CMRs can be queried from TDX module.
-+
-+2) TD Memory Regions (TDMRs)
-+
-+The TDX module manages TDX usable memory via TD Memory Regions (TDMR).
-+Each TDMR has information of its base and size, its metadata (PAMT)'s
-+base and size, and an array of reserved areas to hold the memory region
-+address holes and PAMTs. TDMR must be 1G aligned and in 1G granularity.
-+
-+Host kernel is responsible for choosing which convertible memory regions
-+(reside in CMRs) to use as TDX memory, and constructing a list of TDMRs
-+to cover all those memory regions, and configure the TDMRs to TDX module.
-+
-+3) Physical Address Metadata Tables (PAMTs)
-+
-+This metadata essentially serves as the 'struct page' for the TDX module,
-+recording things like which TD guest 'owns' a given page of memory. Each
-+TDMR has a dedicated PAMT.
-+
-+PAMT is not reserved by the hardware upfront and must be allocated by the
-+kernel and given to the TDX module. PAMT for a given TDMR doesn't have
-+to be within that TDMR, but a PAMT must be within one CMR.  Additionally,
-+if a PAMT overlaps with a TDMR, the overlapping part must be marked as
-+reserved in that particular TDMR.
-+
-+Kernel Policy of TDX Memory
-+---------------------------
-+
-+The first generation of TDX essentially guarantees that all system RAM
-+memory regions (excluding the memory below 1MB) are covered by CMRs.
-+Currently, to avoid having to modify the page allocator to support both
-+TDX and non-TDX allocation, the kernel choose to use all system RAM as
-+TDX memory. A list of TDMRs are constructed based on all RAM entries in
-+e820 table and configured to the TDX module.
-+
-+Limitations
-+-----------
-+
-+1. Constructing TDMRs
-+
-+Currently, the kernel tries to create one TDMR for each RAM entry in
-+e820. 'e820_table' is used to find all RAM entries to honor 'mem' and
-+'memmap' kernel command line. However, 'memmap' command line may also
-+result in many discrete RAM entries. TDX architecturally only supports a
-+limited number of TDMRs (currently 64). In this case, constructing TDMRs
-+may fail due to exceeding the maximum number of TDMRs. The user is
-+responsible for not doing so otherwise TDX may not be available. This
-+can be further enhanced by supporting merging adjacent TDMRs.
-+
-+2. PAMT allocation
-+
-+Currently, the kernel allocates PAMT for each TDMR separately using
-+alloc_contig_pages(). alloc_contig_pages() only guarantees the PAMT is
-+allocated from a given NUMA node, but doesn't have control over
-+allocating PAMT from a given TDMR range. This may result in all PAMTs
-+on one NUMA node being within one single TDMR. PAMTs overlapping with
-+a given TDMR must be put into the TDMR's reserved areas too. However TDX
-+only supports a limited number of reserved areas per TDMR (currently 16),
-+thus too many PAMTs in one NUMA node may result in constructing TDMR
-+failure due to exceeding TDMR's maximum reserved areas.
-+
-+The user is responsible for not creating too many discrete RAM entries
-+on one NUMA node, which may result in having too many TDMRs on one node,
-+which eventually results in constructing TDMR failure due to exceeding
-+the maximum reserved areas. This can be further enhanced to support
-+per-NUMA-node PAMT allocation, which could reduce the number of PAMT to
-+1 for each node.
-+
-+3. TDMR initialization
-+
-+Currently, the kernel initialize TDMRs one by one. This may take couple
-+of seconds to finish on large memory systems (TBs). This can be further
-+enhanced by allowing initializing different TDMRs in parallel on multiple
-+cpus.
-+
-+4. CPU hotplug
-+
-+The first generation of TDX architecturally doesn't support ACPI CPU
-+hotplug. All logical cpus are enabled by BIOS in MADT table. Also, the
-+first generation of TDX-capable platforms don't support ACPI CPU hotplug
-+either. Since this physically cannot happen, currently kernel doesn't
-+have any check in ACPI CPU hotplug code path to disable it.
-+
-+Also, only TDX module initialization requires all BIOS-enabled cpus are
-+online. After the initialization, any logical cpu can be brought down
-+and brought up to online again later. Therefore this series doesn't
-+change logical CPU hotplug either.
-+
-+This can be enhanced when any future generation of TDX starts to support
-+ACPI cpu hotplug.
-+
-+5. Memory hotplug
-+
-+The first generation of TDX architecturally doesn't support memory
-+hotplug. The CMRs are generated by BIOS during boot and it is fixed
-+during machine's runtime.
-+
-+However, the first generation of TDX-capable platforms don't support ACPI
-+memory hotplug. Since it physically cannot happen, currently kernel
-+doesn't have any check in ACPI memory hotplug code path to disable it.
-+
-+A special case of memory hotplug is adding NVDIMM as system RAM using
-+kmem driver. However the first generation of TDX-capable platforms
-+cannot turn on TDX and NVDIMM simultaneously, so in practice this cannot
-+happen either.
-+
-+Another case is admin can use 'memmap' kernel command line to create
-+legacy PMEMs and use them as TD guest memory, or theoretically, can use
-+kmem driver to add them as system RAM. Current implementation always
-+includes legacy PMEMs when constructing TDMRs so they are also TDX memory.
-+So legacy PMEMs can either be used as TD guest memory directly or can be
-+converted to system RAM via kmem driver.
-+
-+This can be enhanced when future generation of TDX starts to support ACPI
-+memory hotplug, or NVDIMM and TDX can be enabled simultaneously on the
-+same platform.
-+
-+6. Online CPUs
-+
-+TDX initialization includes a step where certain SEAMCALL must be called
-+on every BIOS-enabled CPU (with a ACPI MADT entry marked as enabled).
-+Otherwise, the initialization process aborts at a later step.
-+
-+The user should avoid using boot parameters (such as maxcpus, nr_cpus,
-+possible_cpus) or offlining CPUs before initializing TDX. Doing so will
-+lead to the mismatch between online CPUs and BIOS-enabled CPUs, resulting
-+TDX module initialization failure.
-+
-+It is ok to offline CPUs after TDX initialization is completed.
-+
-+7. Kexec
-+
-+The TDX module can be initialized only once during its lifetime. The
-+first generation of TDX doesn't have interface to reset TDX module to
-+uninitialized state so it can be initialized again.
-+
-+This implies:
-+
-+  - If the old kernel fails to initialize TDX, the new kernel cannot
-+    use TDX too unless the new kernel fixes the bug which leads to
-+    initialization failure in the old kernel and can resume from where
-+    the old kernel stops. This requires certain coordination between
-+    the two kernels.
-+
-+  - If the old kernel has initialized TDX successfully, the new kernel
-+    may be able to use TDX if the two kernels have exactly the same
-+    configurations on the TDX module. It further requires the new kernel
-+    to reserve the TDX metadata pages (allocated by the old kernel) in
-+    its page allocator. It also requires coordination between the two
-+    kernels. Furthermore, if kexec() is done when there are active TD
-+    guests running, the new kernel cannot use TDX because it's extremely
-+    hard for the old kernel to pass all TDX private pages to the new
-+    kernel.
-+
-+Given that, the current implementation doesn't support TDX after kexec()
-+(except the old kernel hasn't initialized TDX at all).
-+
-+The current implementation doesn't shut down TDX module but leaves it
-+open during kexec().  This is because shutting down TDX module requires
-+CPU being in VMX operation but there's no guarantee of this during
-+kexec(). Leaving the TDX module open is not the best case, but it is OK
-+since the new kernel won't be able to use TDX anyway (therefore TDX
-+module won't run at all).
-+
-+This can be further enhanced when core-kernele (non-KVM) can handle
-+VMXON.
-+
-+If TDX is ever enabled and/or used to run any TD guests, the cachelines
-+of TDX private memory, including PAMTs, used by TDX module need to be
-+flushed before transiting to the new kernel otherwise they may silently
-+corrupt the new kernel. Similar to SME, the current implementation
-+flushes cache in stop_this_cpu().
-+
-+8. Initialization error
-+
-+Currently, any error happened during TDX initialization moves the TDX
-+module to the SHUTDOWN state. No SEAMCALL is allowed in this state, and
-+the TDX module cannot be re-initialized without a hard reset.
-+
-+This can be further enhanced to treat some errors as recoverable errors
-+and let the caller retry later. A more detailed state machine can be
-+added to record the internal state of TDX module, and the initialization
-+can resume from that state in the next try.
-+
-+Specifically, there are three cases that can be treated as recoverable
-+error: 1) -ENOMEM (i.e. due to PAMT allocation); 2) TDH.SYS.CONFIG error
-+due to TDH.SYS.LP.INIT is not called on all cpus (i.e. due to offline
-+cpus); 3) -EPERM when the caller doesn't guarantee all cpus are in VMX
-+operation.
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index b526d41c4bbf..24f2b7e8b280 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -85,10 +85,12 @@ static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
+ void tdx_detect_cpu(struct cpuinfo_x86 *c);
+ int tdx_detect(void);
+ int tdx_init(void);
++bool platform_has_tdx(void);
+ #else
+ static inline void tdx_detect_cpu(struct cpuinfo_x86 *c) { }
+ static inline int tdx_detect(void) { return -ENODEV; }
+ static inline int tdx_init(void) { return -ENODEV; }
++static inline bool platform_has_tdx(void) { return false; }
+ #endif /* CONFIG_INTEL_TDX_HOST */
+ 
+ #endif /* !__ASSEMBLY__ */
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 71aa12082370..bf3d1c9cb00c 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -766,8 +766,21 @@ void stop_this_cpu(void *dummy)
+ 	 * without the encryption bit, they don't race each other when flushed
+ 	 * and potentially end up with the wrong entry being committed to
+ 	 * memory.
++	 *
++	 * In case of kexec, similar to SME, if TDX is ever enabled, the
++	 * cachelines of TDX private memory (including PAMTs) used by TDX
++	 * module need to be flushed before transiting to the new kernel,
++	 * otherwise they may silently corrupt the new kernel.
++	 *
++	 * Note TDX is enabled on demand at runtime, and enabling TDX has a
++	 * state machine protected with a mutex to prevent concurrent calls
++	 * from multiple callers.  Holding the mutex is required to get the
++	 * TDX enabling status, but this function runs in interrupt context.
++	 * So to make it simple, always flush cache when platform supports
++	 * TDX (detected at boot time), regardless whether TDX is truly
++	 * enabled by kernel.
+ 	 */
+-	if (boot_cpu_has(X86_FEATURE_SME))
++	if (boot_cpu_has(X86_FEATURE_SME) || platform_has_tdx())
+ 		native_wbinvd();
+ 	for (;;) {
+ 		/*
+diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
+index f2b9c98191ed..d9ad8dc7111e 100644
+--- a/arch/x86/virt/vmx/tdx.c
++++ b/arch/x86/virt/vmx/tdx.c
+@@ -1681,3 +1681,17 @@ int tdx_init(void)
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(tdx_init);
++
++/**
++ * platform_has_tdx - Whether platform supports TDX
++ *
++ * Check whether platform supports TDX (i.e. TDX is enabled in BIOS),
++ * regardless whether TDX is truly enabled by kernel.
++ *
++ * Return true if SEAMRR is enabled, and there are sufficient TDX private
++ * KeyIDs to run TD guests.
++ */
++bool platform_has_tdx(void)
++{
++	return seamrr_enabled() && tdx_keyid_sufficient();
++}
 -- 
 2.35.1
 
