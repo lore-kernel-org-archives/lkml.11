@@ -2,92 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE11C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 06:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4065EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 06:47:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233707AbiCMGZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 01:25:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50448 "EHLO
+        id S233722AbiCMGsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 01:48:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbiCMGZB (ORCPT
+        with ESMTP id S231217AbiCMGs0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 01:25:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6451642A;
-        Sat, 12 Mar 2022 22:23:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE8C60F1C;
-        Sun, 13 Mar 2022 06:23:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84B1BC340F3;
-        Sun, 13 Mar 2022 06:23:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1647152632;
-        bh=r5ve3QQqDztmWSyNqt57pEYrCXV23g3Xex3BHLDSgQ4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=W9tERT6YvLQm6gvnCZbmJtXcLrBMD4jj5tWre40pwg48xvw0Bd7Ioe/L9XpA76+4N
-         aDH/1GZidcyjB1POUFkZ6ChGABFbkE2wqJCNwNwrFRQnCtX829mj2zX9YRiGcpYn0O
-         LonVH573IL59gJhV6OXdmdoGZpSgOgV+1fRSt78U=
-Date:   Sat, 12 Mar 2022 22:23:51 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-nilfs <linux-nilfs@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: nilfs: WARNING: CPU: 2 PID: 1510 at
- include/linux/backing-dev.h:269 __folio_mark_dirty+0x31d/0x3b0
-Message-Id: <20220312222351.89844f74d3cf10212f308caf@linux-foundation.org>
-In-Reply-To: <CAKFNMonQtBe=pjrUuACqzKL36RTWmvoULwzD9NCP7PET8B73bQ@mail.gmail.com>
-References: <9a20b33d-b38f-b4a2-4742-c1eb5b8e4d6c@redhat.com>
-        <YivTnPMUpvX8ivpj@casper.infradead.org>
-        <CAKFNMonQtBe=pjrUuACqzKL36RTWmvoULwzD9NCP7PET8B73bQ@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Sun, 13 Mar 2022 01:48:26 -0500
+X-Greylist: delayed 120 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 12 Mar 2022 22:47:18 PST
+Received: from swift.blarg.de (swift.blarg.de [IPv6:2a01:4f8:c17:52a8::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8CF56E343;
+        Sat, 12 Mar 2022 22:47:18 -0800 (PST)
+Received: by swift.blarg.de (Postfix, from userid 1000)
+        id E67FD41027; Sun, 13 Mar 2022 07:47:17 +0100 (CET)
+Date:   Sun, 13 Mar 2022 07:47:17 +0100
+From:   Max Kellermann <max@blarg.de>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] pipe_fs_i.h: add pipe_buf_init()
+Message-ID: <Yi2TdX1MdF+xXuU5@swift.blarg.de>
+Mail-Followup-To: Al Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220225185431.2617232-1-max.kellermann@gmail.com>
+ <20220225185431.2617232-4-max.kellermann@gmail.com>
+ <Yi1Y99MX7yxD2k6m@zeniv-ca.linux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yi1Y99MX7yxD2k6m@zeniv-ca.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 13 Mar 2022 15:09:27 +0900 Ryusuke Konishi <konishi.ryusuke@gmail.com> wrote:
+On 2022/03/13 03:37, Al Viro <viro@zeniv.linux.org.uk> wrote:
+> *cringe*
+> FWIW, packetized case is very rare, so how about turning that into
 
-> Hi Matthew, and Andrew,
-> 
-> On Sat, Mar 12, 2022 at 7:56 AM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Fri, Mar 11, 2022 at 08:43:57PM +0100, David Hildenbrand wrote:
-> > > Hi,
-> > >
-> > > playing with swapfiles on random file systems, I stumbled over the
-> > > following nilfs issue (and reproduced it on latest greatest
-> > > linux/master -- v5.17-rc7+). I did not try finding out when this
-> > > was introduced and I did not run into this issue on other file
-> > > systems I tried.
-> >
-> > It's a known bug in NILFS, and I think yours is the fifth report
-> > of it dating back eight months.
-> 
-> The root cause of this issue is that NILFS uses two page caches
-> per inode, one for data blocks and another for b-tree node blocks.
-> 
-> Even though __folio_end_writeback(), __folio_start_writeback(), and
-> __folio_mark_dirty() acquire lock for mapping->i_pages,
-> inode_to_wb(inode) inside them performs lockdep test for the former one
-> (i.e. inode->i_mapping->i_pages.xa_lock).
-> 
-> So, mark_buffer_dirty(), end_page_writeback(), and set_page_writeback()
-> for pages in the latter NILFS specific page cache hit the LOCKDEP warning.
-> 
-> I tried to find a way to  resolve this, but have no good idea so far.
-
-If things are set up appropriately, inode_to_wb() should be able to
-test inode->i_mapping->host->i_mapping->i_pages.xa_lock and get the
-desired result.
-
-At least, that's the case with blockdevs.  I don't know if nilfs2 sets
-things up that way.
-
+I have no hard feelings how this API must look like, I only want it to
+exist, to reduce code fragility a bit.  Tell me how you want it, and
+I'll resubmit.
