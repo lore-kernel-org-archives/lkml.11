@@ -2,268 +2,345 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B918DC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF01CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234380AbiCMKyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 06:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        id S234377AbiCMKyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 06:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234465AbiCMKxk (ORCPT
+        with ESMTP id S233768AbiCMKxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 06:53:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD33112D212
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 03:52:16 -0700 (PDT)
+        Sun, 13 Mar 2022 06:53:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330CF119F1C;
+        Sun, 13 Mar 2022 03:52:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 556F560EC5
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 10:51:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C0FDC340E8;
-        Sun, 13 Mar 2022 10:51:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43A4DB80CAD;
+        Sun, 13 Mar 2022 10:52:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E51C340F5;
+        Sun, 13 Mar 2022 10:52:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647168718;
-        bh=eewEAPuCCiKFpQs1yXVAy8eiRfWQlN62XY/fNZJ8AL4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=asXlyLNT/Po9i0rQY57GOF7XMgFKVlCOCkHtqDV2AqDfS6cqAYdkAmGkxD8Q+5WDu
-         U7wncyqMyrZ5u0uLyYnN9Cj34shxBp2E6/564GDIyjal7eAFE4Ai0uLZ52UcFTHW/8
-         LUH2Dq0TwQfqULSofnIORRLP3OizlWcX2eTPoHc3KVgYBv8h++w3tLlr6lcQjAv1XP
-         GYZgRlVgiRMhdHTqEVMXFpX1NhDoPRV6G0q/nFDIQFHA686DmQrP6jm6pW8FF25Ywj
-         H+u2prPsYyoSZlOjEpFU7nSxolFb2zJbb405e35SedkVcLwfCbs5huQGk5jZvS52E7
-         YvWnBNAOgOx6w==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nTLpM-00E8XJ-2b; Sun, 13 Mar 2022 10:51:56 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Anup Patel <anup@brainfault.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Hector Martin <marcan@marcan.st>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Qianggui Song <qianggui.song@amlogic.com>,
-        Rob Herring <robh@kernel.org>,
-        Shawn Guo <shawn.guo@linaro.org>,
-        Souptick Joarder <jrdr.linux@gmail.com>,
-        Stefan Asserhall <stefan.asserhall@xilinx.com>,
-        Tony Lindgren <tony@atomide.com>, linux-kernel@vger.kernel.org,
-        kernel-team@android.com
-Subject: [GIT PULL] irqchip updates for 5.18
-Date:   Sun, 13 Mar 2022 10:51:42 +0000
-Message-Id: <20220313105142.704579-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        s=k20201202; t=1647168729;
+        bh=rfDcIoqp2tGMvmOQbEgCFtaPOjgURb3ipd/yJK7UfsI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PMfG2oQ0fFiqexOiozq7XbiwPzMh4v7Es5DCBb+R7x/8CB9O7+6wH7+GNHwzZekPA
+         UwUGZLB0RmXLtpXKqcBgp61vsTre7SxRCXcVg3c9tGaA0yFzwId6oufDT1rMejbIQs
+         /YT2nQztF7pd9QxT4fjccJGMK8c2Xie2WOq6LTfCL834Az0ZneGWidCWC5iaqfZU34
+         2thxi7j5T+U4KQeCp0S6/cSqiGW1FcduGTStqyfFIwi0h79SxGKblwkeLOBtoXTAJB
+         S3ePUJunkXbjKYEemsl+IpTd9pEB0uqNLv+hf/nRe1VRUhjESlHG70AHGcR88Onfzo
+         37tiFscqx0f7A==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nTLpX-001I1k-2j; Sun, 13 Mar 2022 11:52:07 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Dinghao Liu <dinghao.liu@zju.edu.cn>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Mikhail Rudenko <mike.rudenko@gmail.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Ondrej Jirman <megous@megous.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Yong Deng <yong.deng@magewell.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev
+Subject: [PATCH 08/24] media: platform: rename sunxi/ to allwinner/
+Date:   Sun, 13 Mar 2022 11:51:49 +0100
+Message-Id: <b9943cdcddf7f2251c582be318da76bc0974ee34.1647167750.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1647167750.git.mchehab@kernel.org>
+References: <cover.1647167750.git.mchehab@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: tglx@linutronix.de, alexandre.torgue@foss.st.com, anup@brainfault.org, song.bao.hua@hisilicon.com, brgl@bgdev.pl, dan.carpenter@oracle.com, kernel@esmil.dk, geert+renesas@glider.be, gregory.clement@bootlin.com, marcan@marcan.st, linus.walleij@linaro.org, quic_mkshah@quicinc.com, michal.simek@xilinx.com, niklas.cassel@wdc.com, qianggui.song@amlogic.com, robh@kernel.org, shawn.guo@linaro.org, jrdr.linux@gmail.com, stefan.asserhall@xilinx.com, tony@atomide.com, linux-kernel@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+As the end goal is to have platform drivers split by vendor,
+rename sunxi/ to allwinner/.
 
-Here's the set of irqchip updates for 5.18, slightly larger than the
-past couple of cycles. The highlights are:
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-- support for a bunch of new (and not so new) HW (STM32, AICv2, MPM,
-  Meson GPIO)
-- the first drop of my work trying to make the irq_chip structure const
-- a bunch of cleanups (QDC, Xilinx, PLIC...)
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 00/24] at: https://lore.kernel.org/all/cover.1647167750.git.mchehab@kernel.org/
 
-Note that the AIC PMU branch is shared with the arm64 tree, as it has
-pretty invasive ramifications. There is also a small conflict between
-this branch (based on 5.17-rc3) and a fix that went that went in -rc5
-(the resolution is trivial).
+ MAINTAINERS                                               | 8 ++++----
+ drivers/media/platform/Kconfig                            | 2 +-
+ drivers/media/platform/Makefile                           | 2 +-
+ drivers/media/platform/allwinner/Kconfig                  | 6 ++++++
+ drivers/media/platform/{sunxi => allwinner}/Makefile      | 0
+ .../media/platform/{sunxi => allwinner}/sun4i-csi/Kconfig | 0
+ .../platform/{sunxi => allwinner}/sun4i-csi/Makefile      | 0
+ .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.c   | 0
+ .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.h   | 0
+ .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_dma.c   | 0
+ .../platform/{sunxi => allwinner}/sun4i-csi/sun4i_v4l2.c  | 0
+ .../media/platform/{sunxi => allwinner}/sun6i-csi/Kconfig | 0
+ .../platform/{sunxi => allwinner}/sun6i-csi/Makefile      | 0
+ .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.c   | 0
+ .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.h   | 0
+ .../{sunxi => allwinner}/sun6i-csi/sun6i_csi_reg.h        | 0
+ .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.c | 0
+ .../platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.h | 0
+ .../media/platform/{sunxi => allwinner}/sun8i-di/Kconfig  | 0
+ .../media/platform/{sunxi => allwinner}/sun8i-di/Makefile | 0
+ .../platform/{sunxi => allwinner}/sun8i-di/sun8i-di.c     | 0
+ .../platform/{sunxi => allwinner}/sun8i-di/sun8i-di.h     | 0
+ .../platform/{sunxi => allwinner}/sun8i-rotate/Kconfig    | 0
+ .../platform/{sunxi => allwinner}/sun8i-rotate/Makefile   | 0
+ .../{sunxi => allwinner}/sun8i-rotate/sun8i-formats.h     | 0
+ .../{sunxi => allwinner}/sun8i-rotate/sun8i-rotate.h      | 0
+ .../{sunxi => allwinner}/sun8i-rotate/sun8i_formats.c     | 0
+ .../{sunxi => allwinner}/sun8i-rotate/sun8i_rotate.c      | 0
+ drivers/media/platform/sunxi/Kconfig                      | 6 ------
+ 29 files changed, 12 insertions(+), 12 deletions(-)
+ create mode 100644 drivers/media/platform/allwinner/Kconfig
+ rename drivers/media/platform/{sunxi => allwinner}/Makefile (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/Kconfig (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/Makefile (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.c (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_csi.h (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_dma.c (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun4i-csi/sun4i_v4l2.c (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/Kconfig (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/Makefile (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.c (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi.h (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_csi_reg.h (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.c (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun6i-csi/sun6i_video.h (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/Kconfig (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/Makefile (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/sun8i-di.c (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-di/sun8i-di.h (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/Kconfig (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/Makefile (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i-formats.h (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i-rotate.h (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i_formats.c (100%)
+ rename drivers/media/platform/{sunxi => allwinner}/sun8i-rotate/sun8i_rotate.c (100%)
+ delete mode 100644 drivers/media/platform/sunxi/Kconfig
 
-Please pull,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 58e0d42b1278..f29195850c16 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -750,7 +750,7 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
+ F:	Documentation/devicetree/bindings/media/allwinner,sun4i-a10-csi.yaml
+-F:	drivers/media/platform/sunxi/sun4i-csi/
++F:	drivers/media/platform/allwinner/sun4i-csi/
+ 
+ ALLWINNER CPUFREQ DRIVER
+ M:	Yangtao Li <tiny.windzz@gmail.com>
+@@ -5114,7 +5114,7 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
+ F:	Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+-F:	drivers/media/platform/sunxi/sun6i-csi/
++F:	drivers/media/platform/allwinner/sun6i-csi/
+ 
+ CW1200 WLAN driver
+ M:	Solomon Peachy <pizza@shaftnet.org>
+@@ -5391,7 +5391,7 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
+ F:	Documentation/devicetree/bindings/media/allwinner,sun8i-h3-deinterlace.yaml
+-F:	drivers/media/platform/sunxi/sun8i-di/
++F:	drivers/media/platform/allwinner/sun8i-di/
+ 
+ DELL LAPTOP DRIVER
+ M:	Matthew Garrett <mjg59@srcf.ucam.org>
+@@ -16746,7 +16746,7 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
+ F:	Documentation/devicetree/bindings/media/allwinner,sun8i-a83t-de2-rotate.yaml
+-F:	drivers/media/platform/sunxi/sun8i-rotate/
++F:	drivers/media/platform/allwinner/sun8i-rotate/
+ 
+ RPMSG TTY DRIVER
+ M:	Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index 33f8f41b2771..5ffbbd6c6f91 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -66,6 +66,7 @@ config VIDEO_MUX
+ # TODO: create per-manufacturer directories
+ 
+ source "drivers/media/platform/allegro-dvt/Kconfig"
++source "drivers/media/platform/allwinner/Kconfig"
+ source "drivers/media/platform/am437x/Kconfig"
+ source "drivers/media/platform/amlogic/meson-ge2d/Kconfig"
+ source "drivers/media/platform/amphion/Kconfig"
+@@ -94,7 +95,6 @@ source "drivers/media/platform/s5p-jpeg/Kconfig"
+ source "drivers/media/platform/s5p-mfc/Kconfig"
+ source "drivers/media/platform/sti/Kconfig"
+ source "drivers/media/platform/stm32/Kconfig"
+-source "drivers/media/platform/sunxi/Kconfig"
+ source "drivers/media/platform/tegra/vde/Kconfig"
+ source "drivers/media/platform/ti-vpe/Kconfig"
+ source "drivers/media/platform/via/Kconfig"
+diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
+index 954ad8f2cde1..88519e902919 100644
+--- a/drivers/media/platform/Makefile
++++ b/drivers/media/platform/Makefile
+@@ -6,6 +6,7 @@
+ # Place here, alphabetically sorted by directory
+ # (e. g. LC_ALL=C sort Makefile)
+ obj-y += allegro-dvt/
++obj-y += allwinner/
+ obj-y += am437x/
+ obj-y += amlogic/meson-ge2d/
+ obj-y += amphion/
+@@ -39,7 +40,6 @@ obj-y += sti/c8sectpfe/
+ obj-y += sti/delta/
+ obj-y += sti/hva/
+ obj-y += stm32/
+-obj-y += sunxi/
+ obj-y += tegra/vde/
+ obj-y += ti-vpe/
+ obj-y += via/
+diff --git a/drivers/media/platform/allwinner/Kconfig b/drivers/media/platform/allwinner/Kconfig
+new file mode 100644
+index 000000000000..88bffb055528
+--- /dev/null
++++ b/drivers/media/platform/allwinner/Kconfig
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0
++
++source "drivers/media/platform/allwinner/sun4i-csi/Kconfig"
++source "drivers/media/platform/allwinner/sun6i-csi/Kconfig"
++source "drivers/media/platform/allwinner/sun8i-di/Kconfig"
++source "drivers/media/platform/allwinner/sun8i-rotate/Kconfig"
+diff --git a/drivers/media/platform/sunxi/Makefile b/drivers/media/platform/allwinner/Makefile
+similarity index 100%
+rename from drivers/media/platform/sunxi/Makefile
+rename to drivers/media/platform/allwinner/Makefile
+diff --git a/drivers/media/platform/sunxi/sun4i-csi/Kconfig b/drivers/media/platform/allwinner/sun4i-csi/Kconfig
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun4i-csi/Kconfig
+rename to drivers/media/platform/allwinner/sun4i-csi/Kconfig
+diff --git a/drivers/media/platform/sunxi/sun4i-csi/Makefile b/drivers/media/platform/allwinner/sun4i-csi/Makefile
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun4i-csi/Makefile
+rename to drivers/media/platform/allwinner/sun4i-csi/Makefile
+diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c b/drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c
+rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.c
+diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.h b/drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.h
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.h
+rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_csi.h
+diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_dma.c b/drivers/media/platform/allwinner/sun4i-csi/sun4i_dma.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_dma.c
+rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_dma.c
+diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_v4l2.c b/drivers/media/platform/allwinner/sun4i-csi/sun4i_v4l2.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun4i-csi/sun4i_v4l2.c
+rename to drivers/media/platform/allwinner/sun4i-csi/sun4i_v4l2.c
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/Kconfig b/drivers/media/platform/allwinner/sun6i-csi/Kconfig
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun6i-csi/Kconfig
+rename to drivers/media/platform/allwinner/sun6i-csi/Kconfig
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/Makefile b/drivers/media/platform/allwinner/sun6i-csi/Makefile
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun6i-csi/Makefile
+rename to drivers/media/platform/allwinner/sun6i-csi/Makefile
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.c
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h b/drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.h
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.h
+rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_csi.h
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_reg.h b/drivers/media/platform/allwinner/sun6i-csi/sun6i_csi_reg.h
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_reg.h
+rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_csi_reg.h
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c b/drivers/media/platform/allwinner/sun6i-csi/sun6i_video.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_video.c
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.h b/drivers/media/platform/allwinner/sun6i-csi/sun6i_video.h
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun6i-csi/sun6i_video.h
+rename to drivers/media/platform/allwinner/sun6i-csi/sun6i_video.h
+diff --git a/drivers/media/platform/sunxi/sun8i-di/Kconfig b/drivers/media/platform/allwinner/sun8i-di/Kconfig
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-di/Kconfig
+rename to drivers/media/platform/allwinner/sun8i-di/Kconfig
+diff --git a/drivers/media/platform/sunxi/sun8i-di/Makefile b/drivers/media/platform/allwinner/sun8i-di/Makefile
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-di/Makefile
+rename to drivers/media/platform/allwinner/sun8i-di/Makefile
+diff --git a/drivers/media/platform/sunxi/sun8i-di/sun8i-di.c b/drivers/media/platform/allwinner/sun8i-di/sun8i-di.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-di/sun8i-di.c
+rename to drivers/media/platform/allwinner/sun8i-di/sun8i-di.c
+diff --git a/drivers/media/platform/sunxi/sun8i-di/sun8i-di.h b/drivers/media/platform/allwinner/sun8i-di/sun8i-di.h
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-di/sun8i-di.h
+rename to drivers/media/platform/allwinner/sun8i-di/sun8i-di.h
+diff --git a/drivers/media/platform/sunxi/sun8i-rotate/Kconfig b/drivers/media/platform/allwinner/sun8i-rotate/Kconfig
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-rotate/Kconfig
+rename to drivers/media/platform/allwinner/sun8i-rotate/Kconfig
+diff --git a/drivers/media/platform/sunxi/sun8i-rotate/Makefile b/drivers/media/platform/allwinner/sun8i-rotate/Makefile
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-rotate/Makefile
+rename to drivers/media/platform/allwinner/sun8i-rotate/Makefile
+diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i-formats.h b/drivers/media/platform/allwinner/sun8i-rotate/sun8i-formats.h
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i-formats.h
+rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i-formats.h
+diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i-rotate.h b/drivers/media/platform/allwinner/sun8i-rotate/sun8i-rotate.h
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i-rotate.h
+rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i-rotate.h
+diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i_formats.c b/drivers/media/platform/allwinner/sun8i-rotate/sun8i_formats.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i_formats.c
+rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i_formats.c
+diff --git a/drivers/media/platform/sunxi/sun8i-rotate/sun8i_rotate.c b/drivers/media/platform/allwinner/sun8i-rotate/sun8i_rotate.c
+similarity index 100%
+rename from drivers/media/platform/sunxi/sun8i-rotate/sun8i_rotate.c
+rename to drivers/media/platform/allwinner/sun8i-rotate/sun8i_rotate.c
+diff --git a/drivers/media/platform/sunxi/Kconfig b/drivers/media/platform/sunxi/Kconfig
+deleted file mode 100644
+index a10032215b08..000000000000
+--- a/drivers/media/platform/sunxi/Kconfig
++++ /dev/null
+@@ -1,6 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-
+-source "drivers/media/platform/sunxi/sun4i-csi/Kconfig"
+-source "drivers/media/platform/sunxi/sun6i-csi/Kconfig"
+-source "drivers/media/platform/sunxi/sun8i-di/Kconfig"
+-source "drivers/media/platform/sunxi/sun8i-rotate/Kconfig"
+-- 
+2.35.1
 
-	M.
-
-The following changes since commit dfd42facf1e4ada021b939b4e19c935dcdd55566:
-
-  Linux 5.17-rc3 (2022-02-06 12:20:50 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git tags/irqchip-5.18
-
-for you to fetch changes up to de26a7424331493311c08625a700cf45d1eaf151:
-
-  Merge branch irq/qcom-mpm into irq/irqchip-next (2022-03-11 19:22:24 +0000)
-
-----------------------------------------------------------------
-irqchip updates for 5.18
-
-- Add support for the STM32MP13 variant
-
-- Move parent device away from struct irq_chip
-
-- Remove all instances of non-const strings assigned to
-  struct irq_chip::name, enabling a nice cleanup for VIC and GIC)
-
-- Simplify the Qualcomm PDC driver
-
-- A bunch of SiFive PLIC cleanups
-
-- Add support for a new variant of the Meson GPIO block
-
-- Add support for the irqchip side of the Apple M1 PMU
-
-- Add support for the Apple M1 Pro/Max AICv2 irqchip
-
-- Add support for the Qualcomm MPM wakeup gadget
-
-- Move the Xilinx driver over to the generic irqdomain handling
-
-- Tiny speedup for IPIs on GICv3 systems
-
-- The usual odd cleanups
-
-----------------------------------------------------------------
-Alexandre Torgue (2):
-      dt-bindings: interrupt-controller: stm32-exti: document st,stm32mp13-exti
-      irqchip/stm32-exti: Add STM32MP13 support
-
-Barry Song (1):
-      irqchip/gic-v3: Use dsb(ishst) to order writes with ICC_SGI1R_EL1 accesses
-
-Hector Martin (7):
-      PCI: apple: Change MSI handling to handle 4-cell AIC fwspec form
-      dt-bindings: interrupt-controller: apple,aic2: New binding for AICv2
-      irqchip/apple-aic: Add Fast IPI support
-      irqchip/apple-aic: Switch to irq_domain_create_tree and sparse hwirqs
-      irqchip/apple-aic: Dynamically compute register offsets
-      irqchip/apple-aic: Support multiple dies
-      irqchip/apple-aic: Add support for AICv2
-
-Marc Zyngier (44):
-      dt-bindings: arm-pmu: Document Apple PMU compatible strings
-      dt-bindings: apple,aic: Add CPU PMU per-cpu pseudo-interrupts
-      dt-bindings: apple,aic: Add affinity description for per-cpu pseudo-interrupts
-      irqchip/apple-aic: Parse FIQ affinities from device-tree
-      irqchip/apple-aic: Wire PMU interrupts
-      arm64: dts: apple: Add t8103 PMU interrupt affinities
-      arm64: dts: apple: Add t8303 PMU nodes
-      irqchip/apple-aic: Move PMU-specific registers to their own include file
-      genirq: Allow the PM device to originate from irq domain
-      irqchip/gic: Move PM device over to irq domain
-      irqchip/renesas-intc-irqpin: Move PM device over to irq domain
-      irqchip/renesas-irqc: Move PM device over to irq domain
-      irqchip/imx-intmux: Move PM device over to irq domain
-      gpio: mt7621: Kill parent_device usage
-      gpio: omap: Move PM device over to irq domain
-      gpio: rcar: Move PM device over to irq domain
-      gpio: tpmx86: Move PM device over to irq domain
-      pinctrl: npcm: Fix broken references to chip->parent_device
-      pinctrl: starfive: Move PM device over to irq domain
-      genirq: Kill irq_chip::parent_device
-      Merge branch irq/stm32mp13 into irq/irqchip-next
-      Merge branch irq/parent_device into irq/irqchip-next
-      irqdomain: Let irq_domain_set_{info,hwirq_and_chip} take a const irq_chip
-      genirq: Allow irq_chip registration functions to take a const irq_chip
-      genirq/debugfs: Use irq_print_chip() when provided by irqchip
-      irqchip/gic: Switch to dynamic chip name output
-      irqchip/lpc32xx: Switch to dynamic chip name output
-      irqchip/mvebu-pic: Switch to dynamic chip name output
-      irqchip/ts4800: Switch to dynamic chip name output
-      irqchip/versatile-fpga: Switch to dynamic chip name output
-      Merge branch irq/print_chip into irq/irqchip-next
-      irqchip/qcom-pdc: Kill PDC_NO_PARENT_IRQ
-      irqchip/qcom-pdc: Kill non-wakeup irqdomain
-      irqchip/qcom-pdc: Kill qcom_pdc_translate helper
-      irqchip/qcom-pdc: Fix broken locking
-      irqchip/qcom-pdc: Drop open coded version of __assign_bit()
-      Merge branch irq/qcom-pdc-cleanup into irq/irqchip-next
-      Merge branch irq/plic-cleanups into irq/irqchip-next
-      Merge branch irq/misc-5.18 into irq/irqchip-next
-      Merge branch irq/meson-gpio into irq/irqchip-next
-      irqchip/apple-aic: Fix cpumask allocation for FIQs
-      Merge branch irq/aic-pmu into irq/irqchip-next
-      Merge branch irq/aic-v2 into irq/irqchip-next
-      Merge branch irq/qcom-mpm into irq/irqchip-next
-
-Michal Simek (1):
-      irqchip/xilinx: Switch to GENERIC_IRQ_MULTI_HANDLER
-
-Niklas Cassel (2):
-      irqchip/sifive-plic: Improve naming scheme for per context offsets
-      irqchip/sifive-plic: Disable S-mode IRQs if running in M-mode
-
-Qianggui Song (4):
-      dt-bindings: interrupt-controller: New binding for Meson-S4 SoCs
-      irqchip/meson-gpio: support more than 8 channels gpio irq
-      irqchip/meson-gpio: add select trigger type callback
-      irqchip/meson-gpio: Add support for meson s4 SoCs
-
-Shawn Guo (2):
-      dt-bindings: interrupt-controller: Add Qualcomm MPM support
-      irqchip: Add Qualcomm MPM controller driver
-
-Souptick Joarder (HPE) (1):
-      irqchip/nvic: Release nvic_base upon failure
-
- Documentation/devicetree/bindings/arm/pmu.yaml     |   2 +
- .../amlogic,meson-gpio-intc.txt                    |   1 +
- .../bindings/interrupt-controller/apple,aic.yaml   |  31 ++
- .../bindings/interrupt-controller/apple,aic2.yaml  |  98 ++++
- .../bindings/interrupt-controller/qcom,mpm.yaml    |  96 ++++
- .../interrupt-controller/st,stm32-exti.yaml        |   1 +
- MAINTAINERS                                        |   2 +-
- arch/arm64/boot/dts/apple/t8103.dtsi               |  24 +
- arch/arm64/include/asm/apple_m1_pmu.h              |  19 +
- arch/microblaze/Kconfig                            |   2 +
- arch/microblaze/include/asm/irq.h                  |   3 -
- arch/microblaze/kernel/irq.c                       |  16 +-
- drivers/gpio/gpio-mt7621.c                         |   1 -
- drivers/gpio/gpio-omap.c                           |   7 +-
- drivers/gpio/gpio-rcar.c                           |   2 +-
- drivers/gpio/gpio-tqmx86.c                         |   3 +-
- drivers/irqchip/Kconfig                            |   8 +
- drivers/irqchip/Makefile                           |   1 +
- drivers/irqchip/irq-apple-aic.c                    | 551 +++++++++++++++++----
- drivers/irqchip/irq-ftintc010.c                    |   1 -
- drivers/irqchip/irq-gic-v3.c                       |   2 +-
- drivers/irqchip/irq-gic.c                          | 104 ++--
- drivers/irqchip/irq-imx-intmux.c                   |   8 +-
- drivers/irqchip/irq-lpc32xx.c                      |  34 +-
- drivers/irqchip/irq-meson-gpio.c                   | 106 +++-
- drivers/irqchip/irq-mvebu-pic.c                    |  28 +-
- drivers/irqchip/irq-nvic.c                         |   2 +
- drivers/irqchip/irq-qcom-mpm.c                     | 461 +++++++++++++++++
- drivers/irqchip/irq-renesas-intc-irqpin.c          |   3 +-
- drivers/irqchip/irq-renesas-irqc.c                 |   3 +-
- drivers/irqchip/irq-sifive-plic.c                  |  38 +-
- drivers/irqchip/irq-stm32-exti.c                   |  50 ++
- drivers/irqchip/irq-ts4800.c                       |  25 +-
- drivers/irqchip/irq-versatile-fpga.c               |  46 +-
- drivers/irqchip/irq-xilinx-intc.c                  |  30 +-
- drivers/irqchip/qcom-pdc.c                         | 137 ++---
- drivers/pci/controller/pcie-apple.c                |   2 +-
- drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c          |  25 +-
- drivers/pinctrl/pinctrl-starfive.c                 |   3 +-
- .../dt-bindings/interrupt-controller/apple-aic.h   |   2 +
- include/linux/irq.h                                |   9 +-
- include/linux/irqchip/versatile-fpga.h             |  14 -
- include/linux/irqdomain.h                          |  15 +-
- kernel/irq/chip.c                                  |  29 +-
- kernel/irq/debugfs.c                               |   8 +-
- kernel/irq/irqdomain.c                             |   9 +-
- 46 files changed, 1618 insertions(+), 444 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/apple,aic2.yaml
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/qcom,mpm.yaml
- create mode 100644 arch/arm64/include/asm/apple_m1_pmu.h
- create mode 100644 drivers/irqchip/irq-qcom-mpm.c
- delete mode 100644 include/linux/irqchip/versatile-fpga.h
