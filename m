@@ -2,126 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 09:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5475C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 09:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234152AbiCMJaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 05:30:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51072 "EHLO
+        id S234159AbiCMJbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 05:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231618AbiCMJaM (ORCPT
+        with ESMTP id S231469AbiCMJbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 05:30:12 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F35B24BF4
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 01:29:05 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 15A9A212C6;
-        Sun, 13 Mar 2022 09:29:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647163744; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TxRoN/SCo8JBsxnAVBwFFNncl4nnOM9zqtVpxRJ+AkY=;
-        b=m4/NQSkf5EBTTx9DYFtPAAJeAPwa0EeTYfEpr/ZlWdrPtPwKiAozTkeUD3syqHhrAgqDrL
-        sOwtMAam3t4Wtn6NGL0w5IJpvWsqSY3LtYZitYlR962Frv9ZEeEZLh26zs2oxvVOX6P2eS
-        Eoxahk+LuCfB8i2JOr98rL3Rgku/o8c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647163744;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TxRoN/SCo8JBsxnAVBwFFNncl4nnOM9zqtVpxRJ+AkY=;
-        b=FQpqtizeDTZR7QfMWy6elHdtC3qMrTsqJytXvSTmp1iKPu2tI6rmmQSmMX591AFQimVNYd
-        Et5i0cm9DsayA5Dg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B288F13A96;
-        Sun, 13 Mar 2022 09:29:03 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 7aQLKl+5LWL0BwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Sun, 13 Mar 2022 09:29:03 +0000
-Message-ID: <8f499c76-68cb-a2c3-01fd-c8759e2fd317@suse.cz>
-Date:   Sun, 13 Mar 2022 10:28:01 +0100
+        Sun, 13 Mar 2022 05:31:42 -0400
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F03524BE6;
+        Sun, 13 Mar 2022 01:30:35 -0800 (PST)
+Received: by mail-ej1-f47.google.com with SMTP id d10so27928580eje.10;
+        Sun, 13 Mar 2022 01:30:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fmkH3wByQJwzfCIF5YG1OcruHQz6/XV1xWswn1DFZ3g=;
+        b=5FbH6AMnLwMK4YG5VZUBk2iEVFSio9ytwc7jQwwbdJjtI3gn4Ww9+gsh8Rd4/L+eN5
+         7DcB/Y+vktEe5TPW1WKlzXosCLLX4cBbJ6fOxzMrP+wsslUA9HOVLAbLhBBYbcEnMAQU
+         i9AUtrMuNalevQqchwBzhT7WVyIMlMtvYqhoipZNLm8fYoTuriTlBLVy7Ug9URokaon2
+         rX/k8zzZTowxp7ryyDrcRfMZB/TFQ4rCHx5MQTpCzXdPKLHHuXp0ewO5UV99FwYHmTsg
+         lX1s8iGAW+W5cxSiQIkbcvbrtHSXiCvEVtd6jWMRt4WXha96ZajbjwkG5JTzkZSoQbU3
+         fMNA==
+X-Gm-Message-State: AOAM531VWX+dnyRmiFfgFvTn8z7Bjgkmv8RitPv16xLFGY3zCnt05lPa
+        Ye9CxTfSxr+YaX3+dkvLIrQ=
+X-Google-Smtp-Source: ABdhPJyTuDlCwrQNfpJelfW2ucJb6Q2xSf4dC2IsarbEL7/GKMZuBkZrZ+pPf9/eCB3XZHFmKMfVAg==
+X-Received: by 2002:a17:906:280b:b0:6ce:f3c7:688f with SMTP id r11-20020a170906280b00b006cef3c7688fmr15156811ejc.468.1647163833526;
+        Sun, 13 Mar 2022 01:30:33 -0800 (PST)
+Received: from [192.168.0.150] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm5402951ejz.57.2022.03.13.01.30.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Mar 2022 01:30:32 -0800 (PST)
+Message-ID: <9387e3f7-f7f0-41cf-f66c-728734bca653@kernel.org>
+Date:   Sun, 13 Mar 2022 10:30:32 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [mm/page_alloc] 8212a964ee: vm-scalability.throughput 30.5%
- improvement
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: mfd: syscon: add
+ microchip,lan966x-cpu-syscon compatible
 Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        0day robot <lkp@intel.com>, Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Hugh Dickins <hughd@google.com>,
-        David Rientjes <rientjes@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        "Huang, Ying" <ying.huang@intel.com>,
-        "Tang, Feng" <feng.tang@intel.com>, zhengjun.xing@linux.intel.com,
-        fengwei.yin@intel.com, Eric Dumazet <eric.dumazet@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>
-References: <20220312154321.GC1189@xsang-OptiPlex-9020>
- <15307f8a-c202-75d8-1361-dae0146df734@suse.cz>
- <CANn89i+fM0k+=Qw0M0fso1f-Ya8--5+==gtcWqCpo=Gu-ca1Ow@mail.gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <CANn89i+fM0k+=Qw0M0fso1f-Ya8--5+==gtcWqCpo=Gu-ca1Ow@mail.gmail.com>
+To:     Michael Walle <michael@walle.cc>, Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220313003122.19155-1-michael@walle.cc>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220313003122.19155-1-michael@walle.cc>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/13/22 00:26, Eric Dumazet wrote:
-> On Sat, Mar 12, 2022 at 10:59 AM Vlastimil Babka <vbabka@suse.cz> wrote:
->>
->> On 3/12/22 16:43, kernel test robot wrote:
->>>
->>>
->>> Greeting,
->>>
->>> FYI, we noticed a 30.5% improvement of vm-scalability.throughput due to commit:
->>>
->>>
->>> commit: 8212a964ee020471104e34dce7029dec33c218a9 ("Re: [PATCH v2] mm/page_alloc: call check_new_pages() while zone spinlock is not held")
->>> url: https://github.com/0day-ci/linux/commits/Mel-Gorman/Re-PATCH-v2-mm-page_alloc-call-check_new_pages-while-zone-spinlock-is-not-held/20220309-203504
->>> patch link: https://lore.kernel.org/lkml/20220309123245.GI15701@techsingularity.net
->>
->> Heh, that's weird. I would expect some improvement from Eric's patch,
->> but this seems to be actually about Mel's "mm/page_alloc: check
->> high-order pages for corruption during PCP operations" applied directly
->> on 5.17-rc7 per the github url above. This was rather expected to make
->> performance worse if anything, so maybe the improvement is due to some
->> unexpected side-effect of different inlining decisions or cache alignment...
->>
+On 13/03/2022 01:31, Michael Walle wrote:
+> Add the Microchip LAN966x CPU system registers compatible.
 > 
-> I doubt this has anything to do with inlining or cache alignment.
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  Documentation/devicetree/bindings/mfd/syscon.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> I am not familiar with the benchmark, but its name
-> (anon-w-rand-hugetlb) hints at hugetlb ?
-> 
-> After Mel fix, we go over 512 'struct page' to perform sanity checks,
-> thus loading into cpu caches the 512 cache lines.
 
-Ah, that's true.
 
-> This caching is done while no lock is held.
+Acked-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-But I don't think this is. The test was AFAICS done without your patch,
-so the lock is still held in rmqueue(). And it's also held in
-rmqueue_bulk() -> check_pcp_refill().
 
-> If after this huge page allocation some mm operation needs to access
-> these 512 struct pages,
-> while holding a lock, then sure, there is a huge gain.
-
+Best regards,
+Krzysztof
