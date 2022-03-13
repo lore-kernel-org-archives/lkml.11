@@ -2,94 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E29C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 04:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 04:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233525AbiCME0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Mar 2022 23:26:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36548 "EHLO
+        id S233544AbiCME2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Mar 2022 23:28:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiCMEZ6 (ORCPT
+        with ESMTP id S229796AbiCME2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Mar 2022 23:25:58 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13F3255B6
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Mar 2022 20:24:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647145491; x=1678681491;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9J8S9D3tolT3syBEsNBVrXwYMktTH47yOb3kKFdt1fc=;
-  b=OdZdc5CJ57eVUMaDhWGDszuHwYLaC5NkXzEwVtC6GORbqiXchVzhsep+
-   GIsUBuS5Dr195juILbVaNEqCU1XpjFhbomJrOVKFTayEOsH30oZ14XqLK
-   wv5NIAzBq7PcrrO0O8YkHIUaq1QQkYcQVOEV/TtICBy1RxMReqWywEvcr
-   lYT8kVC9tW2Ix6yvPzFdbcSQHy94i68X0iCNK1GxTccvbuxrkqz0q7xeu
-   u+7UndgdtIDH6ZATqQ0UH3DzQKsBZ3Cv0FV7PFxZDPs1XpCqXuVPmlic6
-   FD2X7K2K8bPnMUka29uUZ+hFl6TdVMvjnWsYp6uVf0VulWrcqMYRbemm8
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10284"; a="255791500"
-X-IronPort-AV: E=Sophos;i="5.90,177,1643702400"; 
-   d="scan'208";a="255791500"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2022 20:24:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,177,1643702400"; 
-   d="scan'208";a="713326550"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 12 Mar 2022 20:24:49 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nTFmi-0008aw-Tv; Sun, 13 Mar 2022 04:24:48 +0000
-Date:   Sun, 13 Mar 2022 12:23:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Kees Cook <keescook@chromium.org>
-Subject: ERROR: modpost: "__divsi3_table" [lib/lz4/lz4_compress.ko] undefined!
-Message-ID: <202203131256.9dyj6eO2-lkp@intel.com>
+        Sat, 12 Mar 2022 23:28:09 -0500
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1F86115961;
+        Sat, 12 Mar 2022 20:27:00 -0800 (PST)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Sun, 13 Mar 2022 12:26:45
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.190.69.222]
+Date:   Sun, 13 Mar 2022 12:26:45 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
+To:     "Dan Carpenter" <dan.carpenter@oracle.com>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jreuter@yaina.de, kuba@kernel.org,
+        davem@davemloft.net, ralf@linux-mips.org
+Subject: Re: Re: [PATCH V3] ax25: Fix refcount leaks caused by ax25_cb_del()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220311105344.GI3293@kadam>
+References: <20220311014624.51117-1-duoming@zju.edu.cn>
+ <20220311105344.GI3293@kadam>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-ID: <4364e68e.77f.17f81875881.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgC3L2uFci1ieYUFAA--.450W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgEIAVZdtYpS1wABs6
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
-
-First bad commit (maybe != root cause):
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   aad611a868d16cdc16a7d4a764cef955293e47e3
-commit: 606b102876e3741851dfb09d53f3ee57f650a52c drm: fb_helper: fix CONFIG_FB dependency
-date:   5 months ago
-config: nios2-randconfig-r014-20220313 (https://download.01.org/0day-ci/archive/20220313/202203131256.9dyj6eO2-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=606b102876e3741851dfb09d53f3ee57f650a52c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 606b102876e3741851dfb09d53f3ee57f650a52c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "__divsi3_table" [lib/lz4/lz4_compress.ko] undefined!
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for SERIAL_CORE_CONSOLE
-   Depends on TTY && HAS_IOMEM
-   Selected by
-   - EARLY_PRINTK
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+SGVsbG8sCgpPbiBGcmksIE1hciAxMSwgMjAyMiBEYW4gQ2FycGVuIHdyb3RlOgoKPiBCdXQgZXZl
+biBoZXJlLCBteSBpbnN0aW5jdCBpcyB0aGF0IGlmIHRoZSByZWZjb3VudGluZyBpcyB3ZXJlIGRv
+bmUgaW4KPiB0aGUgY29ycmVjdCBwbGFjZSB3ZSB3b3VsZCBub3QgbmVlZCBhbnkgYWRkaXRpb25h
+bCB2YXJpYWJsZXMuICBJcyB0aGVyZQo+IG5vIHNpbXBsZXIgc29sdXRpb24/CgpJIHNlbnQgIltQ
+QVRDSCBuZXQgVjIgMS8yXSBheDI1OiBGaXggcmVmY291bnQgbGVha3MgY2F1c2VkIGJ5IGF4MjVf
+Y2JfZGVsKCkiCm9uIE9uIEZyaSwgTWFyIDExLCAyMDIyLiBDb3VsZCB0aGlzIHBhdGNoIHNvbHZl
+IHlvdXIgcXVlc3Rpb24/CgpCZXN0IHdpc2hlcywKRHVvbWluZyBaaG91CgoK
