@@ -2,124 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D890C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:36:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9555C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 16:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234169AbiCMQh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 12:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
+        id S234888AbiCMQht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 12:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiCMQh0 (ORCPT
+        with ESMTP id S233595AbiCMQhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 12:37:26 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C91F2C11F
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:36:17 -0700 (PDT)
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 22DGZfZD007647
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 01:35:42 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 22DGZfZD007647
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1647189342;
-        bh=cl5EZIZji6pwKaRvzWqBIuMA6UDOCMDjUF+UkD+yEIQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=H0/1e5UgD8xsh3QuBpExc4ri+FtKfT3TGYWernbeRHC/JgULZvblrkXGqv0C4q4JB
-         AvohwxzJeAtHzzkc6HyiyAWYG4qFNl0j+y2f7+M8/CYhHDJpIG2ww1h87s5veE3mZ6
-         IPYXWm4vFohSzCSLIIPULQH0V89ZRtv6yDexyj1N6uCSeWZzFTzh4x6w8MpK4GWcpo
-         aJ5aiLaLqcZjHxTyssCJaUb+flKEWfXBIPRw38eXWQJNs+vj8Q+hYCRzFYJSJZ1CU0
-         FWErU+6ZE6sse/4jKuzzQqtRzP79RB0aXxsqJrdMcUnEJNMR775Ujb9C1k6BWWofZk
-         iO0IZAhc8lA7w==
-X-Nifty-SrcIP: [209.85.215.182]
-Received: by mail-pg1-f182.google.com with SMTP id c11so11750507pgu.11
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 09:35:42 -0700 (PDT)
-X-Gm-Message-State: AOAM532iQ2NSV3/1wIrWdz+cAsEwjzrzoKahxb2MsILMwLYf3m2qTL0d
-        4Jf35VcYDYj8zvAf54gOLH5xq4PM0J5r7cz4nAs=
-X-Google-Smtp-Source: ABdhPJwdwdZcJbTaikr/hlEWY5nr/JVoVODYOoyzNQpQ2GVGzq2BdGvyFDWtMkfHh29UtALrmk7vzfcmIUx1q8f71tY=
-X-Received: by 2002:a63:ce04:0:b0:381:3e22:4e74 with SMTP id
- y4-20020a63ce04000000b003813e224e74mr380242pgf.352.1647189341167; Sun, 13 Mar
- 2022 09:35:41 -0700 (PDT)
+        Sun, 13 Mar 2022 12:37:46 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC422C11F;
+        Sun, 13 Mar 2022 09:36:37 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 2AB3F22238;
+        Sun, 13 Mar 2022 17:36:36 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647189396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iEjq0imQFykd7GI4p10NRKGPfBCDMMpKEt8LIz7yMt0=;
+        b=KQXq5foh3TIjzuxmkMUH+N6td37iTqIQ2xkvE31VcfXQ+LWRwnsquCVudUHZbyWc8fzjMZ
+        xW81Ad/1a//eNJOz6Bgaw/tsDqk1WJeFTVlh3jtNTFtJ6Z5QFd/bTzrowocsnMP7UapBE4
+        wfPagK+PxnXFlwkyUTR5Y8ykQ40AcbQ=
 MIME-Version: 1.0
-References: <20211030175258.1716178-1-masahiroy@kernel.org> <Yis7Z90qvPz+EcTk@shell.armlinux.org.uk>
-In-Reply-To: <Yis7Z90qvPz+EcTk@shell.armlinux.org.uk>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 14 Mar 2022 01:35:04 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAT4k=Cseox6jEunLxU+w=VTQ08c9gdmt6=K2vvvSL49bg@mail.gmail.com>
-Message-ID: <CAK7LNAT4k=Cseox6jEunLxU+w=VTQ08c9gdmt6=K2vvvSL49bg@mail.gmail.com>
-Subject: Re: [PATCH] ARM: decompressor: do not copy source files while building
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     patches@arm.linux.org.uk,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sun, 13 Mar 2022 17:36:36 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Paul Burton <paulburton@kernel.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        UNGLinuxDriver@microchip.com, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH v1 8/8] dt-bindings: pinctrl: convert ocelot-pinctrl to
+ YAML format
+In-Reply-To: <869d4fda-e943-1817-17cd-df7b323a1fef@kernel.org>
+References: <20220313152924.61931-1-michael@walle.cc>
+ <20220313152924.61931-9-michael@walle.cc>
+ <869d4fda-e943-1817-17cd-df7b323a1fef@kernel.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <b5a33a3441f829638740204e0c4dc938@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 9:07 PM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Sun, Oct 31, 2021 at 02:52:58AM +0900, Masahiro Yamada wrote:
-> > As commit 7ae4a78daacf ("ARM: 8969/1: decompressor: simplify libfdt
-> > builds") stated, copying source files during the build time may not
-> > end up with as clean code as expected.
-> >
-> > Do similar for the other library files for further cleanups of the
-> > Makefile and .gitignore.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
->
-> Hi,
->
-> I am now seeing the following every time I run a build:
->
->   GEN     Makefile
->   CALL    .../linux-rmk/scripts/atomic/check-atomics.sh
->   CALL    .../linux-rmk/scripts/checksyscalls.sh
->   CHK     include/generated/compile.h
->   Kernel: arch/arm/boot/Image is ready
->   AS      arch/arm/boot/compressed/lib1funcs.o
->   AS      arch/arm/boot/compressed/ashldi3.o
->   AS      arch/arm/boot/compressed/bswapsdi2.o
->   LD      arch/arm/boot/compressed/vmlinux
->   OBJCOPY arch/arm/boot/zImage
->   Kernel: arch/arm/boot/zImage is ready
->
-> In other words, those three objects are always rebuilt even though
-> they haven't changed.
->
-> I've tried removing the arch/arm/boot/compressed directory in the
-> build tree, but that doesn't make any difference.
->
-> Running with V=2 shows:
->
->   AS      arch/arm/boot/compressed/lib1funcs.o - due to lib1funcs.o not in $(tar
-> gets)
->   AS      arch/arm/boot/compressed/ashldi3.o - due to ashldi3.o not in $(targets)
->   AS      arch/arm/boot/compressed/bswapsdi2.o - due to bswapsdi2.o not in $(targets)
->
-> It looks to me like:
-> OBJS    += lib1funcs.o ashldi3.o bswapsdi2.o
->
-> in your patch should have been added before:
->
-> targets       := vmlinux vmlinux.lds piggy_data piggy.o \
->                  head.o $(OBJS)
->
-> Please confirm.
+Hi,
 
+wow, you're fast!
 
-Sorry for my late reply.
+Am 2022-03-13 16:55, schrieb Krzysztof Kozlowski:
 
-Yes, you are right.
+>> +  reg: true
+> 
+> maxItems
 
-OBJS    += lib1funcs.o ashldi3.o bswapsdi2.o
+There are up to two address ranges. The second one is only needed for
+particular controllers (the sparx5 and the lan966x).
 
-should come before the 'targets' assignment.
+Is the following snippet the correct form?
 
+   reg:
+     items:
+       - description: Base address
+       - description: Extended pin configuration registers
+     minItems: 1
 
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+-michael
