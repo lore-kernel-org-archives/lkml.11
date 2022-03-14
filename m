@@ -2,185 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24341C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14366C47085
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:38:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244238AbiCNQjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45030 "EHLO
+        id S244205AbiCNQjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243202AbiCNQgc (ORCPT
+        with ESMTP id S243205AbiCNQgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 12:36:32 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1B6013E23;
-        Mon, 14 Mar 2022 09:35:15 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9D1D9D6E;
-        Mon, 14 Mar 2022 09:35:15 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 322D63F766;
-        Mon, 14 Mar 2022 09:35:13 -0700 (PDT)
-Message-ID: <9398d7ad-30e7-890a-3e18-c3011c383585@arm.com>
-Date:   Mon, 14 Mar 2022 17:35:05 +0100
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA781EED2;
+        Mon, 14 Mar 2022 09:35:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C87461466;
+        Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD2CFC36AFB;
+        Mon, 14 Mar 2022 16:35:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647275709;
+        bh=hQD9ONOl5WXP8OLmTwqlzucf8/noeaEmBZnVG9VfKEU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OiOnt3YzrD1gBcriZleCrHhiEi/g1KQYvVYGadZAXTlfkebLh8qx9l1CrmHSHJ2TQ
+         eVNz7AoMz1C4QTgyJmXi/mpw5PghIhFj4xPEgaogURihOqH4ASCbLQP1MqwYO0zTBr
+         LWDj161O5Hq+VZp1E7zEH23VCduZKg+iRyVrEQPfOAD5x7JA8cZUXJx9EgGWJpWa3v
+         L1h2odQTrc6Yc03OK30FfufXvaR3F59GT2v1t1iS4Tg33t/bQK7GCRn1U8/of34/jm
+         qL09fE2LoMYLIdpi2hf5wjNipLv6NdxIn2m0TrmGGNk/uGe/sd5BWmsrfkhgfLR6NG
+         ScZwI+xcoqzGQ==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nTnf0-001wyy-Iu; Mon, 14 Mar 2022 17:35:06 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Evan Green <evgreen@chromium.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Houlong Wei <houlong.wei@mediatek.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Ming Qian <ming.qian@nxp.com>, Xu Wang <vulab@iscas.ac.cn>,
+        Yong Wu <yong.wu@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: [PATCH v2 44/67] media: platform: rename mtk-mdp/ to mediatek/mtk-mdp/
+Date:   Mon, 14 Mar 2022 17:34:39 +0100
+Message-Id: <8a2f9f065b1a38e3d444ad5408c809f339cbecdd.1647274407.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1647274406.git.mchehab@kernel.org>
+References: <cover.1647274406.git.mchehab@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3] topology: make core_mask include at least
- cluster_siblings
-Content-Language: en-US
-To:     Darren Hart <darren@os.amperecomputing.com>
-Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
-        Will Deacon <will@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Arm <linux-arm-kernel@lists.infradead.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Catalin Marinas <Catalin.Marinas@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Valentin Schneider <Valentin.Schneider@arm.com>,
-        "D . Scott Phillips" <scott@os.amperecomputing.com>,
-        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
-        stable@vger.kernel.org
-References: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
- <20220308103012.GA31267@willie-the-truck>
- <CAKfTPtDe+i0fwV10m2sX2xkJGBrO8B+RQogDDij8ioJAT5+wAw@mail.gmail.com>
- <e91bcc83-37c8-dcca-e088-8b3fcd737b2c@arm.com> <YieXQD7uG0+R5QBq@fedora>
- <7ac47c67-0b5e-5caa-20bb-a0100a0cb78f@arm.com> <YijxUAuufpBKLtwy@fedora>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <YijxUAuufpBKLtwy@fedora>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/03/2022 19:26, Darren Hart wrote:
-> On Wed, Mar 09, 2022 at 01:50:07PM +0100, Dietmar Eggemann wrote:
->> On 08/03/2022 18:49, Darren Hart wrote:
->>> On Tue, Mar 08, 2022 at 05:03:07PM +0100, Dietmar Eggemann wrote:
->>>> On 08/03/2022 12:04, Vincent Guittot wrote:
->>>>> On Tue, 8 Mar 2022 at 11:30, Will Deacon <will@kernel.org> wrote:
+As the end goal is to have platform drivers split by vendor,
+rename mtk-mdp/ to mediatek/mtk-mdp/.
 
-[...]
-
->>>> I do not have any better idea than this tweak here either in case the
->>>> platform can't provide a cleaner setup.
->>>
->>> I'd argue The platform is describing itself accurately in ACPI PPTT
->>> terms. The topology doesn't fit nicely within the kernel abstractions
->>> today. This is an area where I hope to continue to improve things going
->>> forward.
->>
->> I see. And I assume lying about SCU/LLC boundaries in ACPI is not an
->> option since it messes up /sys/devices/system/cpu/cpu0/cache/index*/.
->>
->> [...]
-> 
-> I'm not aware of a way to accurately describe the SCU topology in the PPTT, and
-> the risk we run with lying about LLC topology is that lie has to be comprehended
-> by all OSes and not conflict with other lies people may ask for. In general, I
-> think it is preferable and more maintainable to describe the topology as
-> accurately and honestly as we can within the existing platform mechanisms (PPTT,
-> HMAT, etc) and work on the higher level abstractions to accommodate a broader
-> set of topologies as they emerge (as well as working to more fully describe the
-> topology with new platform level mechanisms as needed).
-> 
-> As I mentioned, I intend to continue looking in to how to improve the current
-> abstractions. For now, it sounds like we have agreement that this patch can be
-> merged to address the BUG?
-
-What about swapping the CLS and MC cpumasks for such a machine? This
-would avoid that the task scheduler has to deal with a system which has
-CLS but no MC. We essentially promote the CLS cpumask up to MC in this
-case.
-
-cat /sys/kernel/debug/sched/domains/cpu0/domain*/name
-MC
-^^
-DIE
-NUMA
-
-cat /sys/kernel/debug/sched/domains/cpu0# cat domain*/flags
-SD_BALANCE_NEWIDLE SD_BALANCE_EXEC SD_BALANCE_FORK SD_WAKE_AFFINE SD_SHARE_PKG_RESOURCES SD_PREFER_SIBLING
-                                                                  ^^^^^^^^^^^^^^^^^^^^^^ 
-SD_BALANCE_NEWIDLE SD_BALANCE_EXEC SD_BALANCE_FORK SD_WAKE_AFFINE SD_PREFER_SIBLING 
-SD_BALANCE_NEWIDLE SD_BALANCE_EXEC SD_BALANCE_FORK SD_WAKE_AFFINE SD_SERIALIZE SD_OVERLAP SD_NUMA
-
-Only very lightly tested on Altra and Juno-r0 (DT).
-
---->8---
-
-From 54bef59e7f50fa41b7ae39190fd71af57209c27d Mon Sep 17 00:00:00 2001
-From: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Date: Mon, 14 Mar 2022 15:08:23 +0000
-Subject: [PATCH] arch_topology: Swap MC & CLS SD mask if MC weight==1 &
- subset(MC,CLS)
-
-This avoids the issue of having a system with a CLS SD but no MC SD.
-CLS should be sub-SD of MC.
-
-The cpumask under /sys/devices/system/cpu/cpu*/cache/index* and
-/sys/devices/system/cpu/cpu*/topology are not changed by this.
-
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
- drivers/base/arch_topology.c | 30 ++++++++++++++++++++++++++++--
- 1 file changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-index 976154140f0b..9af90a5625c7 100644
---- a/drivers/base/arch_topology.c
-+++ b/drivers/base/arch_topology.c
-@@ -614,7 +614,7 @@ static int __init parse_dt_topology(void)
- struct cpu_topology cpu_topology[NR_CPUS];
- EXPORT_SYMBOL_GPL(cpu_topology);
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH v2 00/67] at: https://lore.kernel.org/all/cover.1647274406.git.mchehab@kernel.org/
+
+ MAINTAINERS                                                  | 2 +-
+ drivers/media/platform/Kconfig                               | 2 +-
+ drivers/media/platform/Makefile                              | 2 +-
+ drivers/media/platform/{ => mediatek}/mtk-mdp/Kconfig        | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/Makefile       | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_comp.c | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_comp.h | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_core.c | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_core.h | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_ipi.h  | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_m2m.c  | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_m2m.h  | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_regs.c | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_regs.h | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_vpu.c  | 0
+ drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_vpu.h  | 0
+ 16 files changed, 3 insertions(+), 3 deletions(-)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/Kconfig (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/Makefile (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_comp.c (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_comp.h (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_core.c (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_core.h (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_ipi.h (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_m2m.c (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_m2m.h (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_regs.c (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_regs.h (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_vpu.c (100%)
+ rename drivers/media/platform/{ => mediatek}/mtk-mdp/mtk_mdp_vpu.h (100%)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fa0a3de3865f..2203d98bbcf1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12138,7 +12138,7 @@ M:	Houlong Wei <houlong.wei@mediatek.com>
+ M:	Andrew-CT Chen <andrew-ct.chen@mediatek.com>
+ S:	Supported
+ F:	Documentation/devicetree/bindings/media/mediatek-mdp.txt
+-F:	drivers/media/platform/mtk-mdp/
++F:	drivers/media/platform/mediatek/mtk-mdp/
+ F:	drivers/media/platform/mtk-vpu/
  
--const struct cpumask *cpu_coregroup_mask(int cpu)
-+const struct cpumask *_cpu_coregroup_mask(int cpu)
- {
- 	const cpumask_t *core_mask = cpumask_of_node(cpu_to_node(cpu));
- 
-@@ -631,11 +631,37 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
- 	return core_mask;
- }
- 
--const struct cpumask *cpu_clustergroup_mask(int cpu)
-+const struct cpumask *_cpu_clustergroup_mask(int cpu)
- {
- 	return &cpu_topology[cpu].cluster_sibling;
- }
- 
-+static int
-+swap_masks(const cpumask_t *core_mask, const cpumask_t *cluster_mask)
-+{
-+	if (cpumask_weight(core_mask) == 1 &&
-+	    cpumask_subset(core_mask, cluster_mask))
-+		return 1;
-+
-+	return 0;
-+}	
-+
-+const struct cpumask *cpu_coregroup_mask(int cpu)
-+{
-+	const cpumask_t *cluster_mask = _cpu_clustergroup_mask(cpu);
-+	const cpumask_t *core_mask = _cpu_coregroup_mask(cpu);
-+	
-+	return swap_masks(core_mask, cluster_mask) ? cluster_mask : core_mask;
-+}
-+
-+const struct cpumask *cpu_clustergroup_mask(int cpu)
-+{
-+	const cpumask_t *cluster_mask = _cpu_clustergroup_mask(cpu);
-+	const cpumask_t *core_mask = _cpu_coregroup_mask(cpu);
-+
-+	return swap_masks(core_mask, cluster_mask) ? core_mask : cluster_mask;
-+}
-+
- void update_siblings_masks(unsigned int cpuid)
- {
- 	struct cpu_topology *cpu_topo, *cpuid_topo = &cpu_topology[cpuid];
+ MEDIATEK MEDIA DRIVER
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index f1746529e763..8a7ac0b8e09f 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -79,7 +79,7 @@ source "drivers/media/platform/exynos4-is/Kconfig"
+ source "drivers/media/platform/intel/Kconfig"
+ source "drivers/media/platform/marvell/Kconfig"
+ source "drivers/media/platform/mediatek/mtk-jpeg/Kconfig"
+-source "drivers/media/platform/mtk-mdp/Kconfig"
++source "drivers/media/platform/mediatek/mtk-mdp/Kconfig"
+ source "drivers/media/platform/mtk-vcodec/Kconfig"
+ source "drivers/media/platform/mtk-vpu/Kconfig"
+ source "drivers/media/platform/nxp/Kconfig"
+diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
+index c792f6216918..6f5d09cd8f9b 100644
+--- a/drivers/media/platform/Makefile
++++ b/drivers/media/platform/Makefile
+@@ -19,7 +19,7 @@ obj-y += exynos4-is/
+ obj-y += intel/
+ obj-y += marvell/
+ obj-y += mediatek/mtk-jpeg/
+-obj-y += mtk-mdp/
++obj-y += mediatek/mtk-mdp/
+ obj-y += mtk-vcodec/
+ obj-y += mtk-vpu/
+ obj-y += nxp/
+diff --git a/drivers/media/platform/mtk-mdp/Kconfig b/drivers/media/platform/mediatek/mtk-mdp/Kconfig
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/Kconfig
+rename to drivers/media/platform/mediatek/mtk-mdp/Kconfig
+diff --git a/drivers/media/platform/mtk-mdp/Makefile b/drivers/media/platform/mediatek/mtk-mdp/Makefile
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/Makefile
+rename to drivers/media/platform/mediatek/mtk-mdp/Makefile
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.c b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_comp.c
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_comp.c
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_comp.c
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_comp.h b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_comp.h
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_comp.h
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_comp.h
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_core.c b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_core.c
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_core.c
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_core.c
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_core.h b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_core.h
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_core.h
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_core.h
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_ipi.h
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_ipi.h
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_ipi.h
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_m2m.c b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_m2m.c
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_m2m.c
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_m2m.c
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_m2m.h b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_m2m.h
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_m2m.h
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_m2m.h
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_regs.c b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_regs.c
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_regs.c
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_regs.c
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_regs.h b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_regs.h
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_regs.h
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_regs.h
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_vpu.c b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_vpu.c
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_vpu.c
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_vpu.c
+diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_vpu.h b/drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_vpu.h
+similarity index 100%
+rename from drivers/media/platform/mtk-mdp/mtk_mdp_vpu.h
+rename to drivers/media/platform/mediatek/mtk-mdp/mtk_mdp_vpu.h
 -- 
-2.25.1
+2.35.1
+
