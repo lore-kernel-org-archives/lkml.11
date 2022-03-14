@@ -2,178 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD15C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0290CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237684AbiCNIZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        id S237696AbiCNI0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231159AbiCNIZW (ORCPT
+        with ESMTP id S231159AbiCNIZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:25:22 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8C9E036;
-        Mon, 14 Mar 2022 01:24:12 -0700 (PDT)
+        Mon, 14 Mar 2022 04:25:53 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF2DE092;
+        Mon, 14 Mar 2022 01:24:43 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id q10so20668733ljc.7;
+        Mon, 14 Mar 2022 01:24:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647246252; x=1678782252;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9M2dGLZHOzlDI1I7rEFcYQKVj/YSgpw5OURbl0Zah84=;
-  b=fWMaf1IYEMg89x9rtpKJT2danIbOs9bahaDYOpOJEzVTiMrsBZS3Of3i
-   CQ+6/VqJ31gSFIp1vyyuWFIPIu1REUF6q/LnLmsjyRqYQX4lFB3zfuYj7
-   uG7GpVfdfs4x4t+Y2eXeiiOkMXuz0woMAoZT+u7wQv62OHEDN6QhjpITa
-   w=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Mar 2022 01:24:11 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 01:24:10 -0700
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 14 Mar 2022 01:24:10 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 14 Mar 2022 01:16:17 -0700
-Date:   Mon, 14 Mar 2022 13:46:13 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
-        Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Kishon Vijay Abraham I" <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Wesley Cheng <wcheng@codeaurora.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-phy@lists.infradead.org>,
-        <linux-usb@vger.kernel.org>, <quic_ppratap@quicinc.com>,
-        <quic_kriskura@quicinc.com>
-Subject: Re: [PATCH v2 1/3] dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy
- override params bindings
-Message-ID: <20220314081613.GA28402@hu-pkondeti-hyd.qualcomm.com>
-References: <1646288011-32242-1-git-send-email-quic_c_sanm@quicinc.com>
- <1646288011-32242-2-git-send-email-quic_c_sanm@quicinc.com>
- <b793195b-1d3d-63b2-19d2-72ae2aec8c0f@canonical.com>
- <20220314032952.GA27561@hu-pkondeti-hyd.qualcomm.com>
- <f1621a67-a0ff-f111-c4da-9401924e7f4a@canonical.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Iq78d1j2Ue+2y6u1MiPwO8kxCr3UFeP2P8LyryGJ4Ic=;
+        b=Dws+yd7pP/4j0pJJ3NzE1FS+WEUDWo+U39fxUZEgwR/+CZjtWUFtDvpHGPP1Opi1d3
+         K8JgF8oICvaNNXvW3XJDL1sVNJvKBYy3Ad5urfijjOX24uX1AcF2hsAdIu5yNsuQx47c
+         +Ze4OWmVoR7A+h9PG1l8C+dHry7A7z0elHPZDRNEHWcUUU+aAmlsdIttF7nK/HXGlb8U
+         G1iiCd6lZ0tGbayACmVI3Yh55JwdqHQZGoL6W1grXKKE7YJc9EJnom6CwTpSr8VBBue8
+         13MHXJH/MeYe9AFjf9cyZLu3bGjKGHyYPfhcDfjJQ3ac75LrWPWdYE1utmyy6lZJ8rE0
+         BBYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Iq78d1j2Ue+2y6u1MiPwO8kxCr3UFeP2P8LyryGJ4Ic=;
+        b=RpZUcTACimeZPYSjYSVPKbLKRQTCORkfOYRYCf56falOO8CT19QjuR6puP9DX4n91C
+         WNR4zNFj3JLgtxVVtIp30yt+k+l3K/XTJN959yfVwpZkpkX6iBaDPb5ItPlM87jnf+AA
+         iymns7x47Fj8sbNzzXBrtol0yy8HTzfpeB1g5B7tLzGD0vcDDT4hg7wXA4oxmHP1/HWk
+         e5TX2pcX/J9bp6SLoKNe7A4yY4pfEKgkHF+scOrEWW3GRbMRSSYzbR1hXPxVjJzrCdRz
+         pAal/5T+DfaIEACWp0FAd8drgEEBn3licnc6X1U7517YvT0XCw+4LrUPJC26XnnTrvsQ
+         7vMw==
+X-Gm-Message-State: AOAM531m0R6Nyaubj0Bkr5li88bq6Wve7Lg4AHYJB4rTQA7CN0gotCqs
+        ibyIcrugTzUKK5WjA9wp9pYpb8GI+EyamfpOUzA=
+X-Google-Smtp-Source: ABdhPJzxE2RH8clRVTd3DJzDgV4Zn7Rxw0lvZpFtJUyiP64C1vhUYmtEx0zSbl5qIqZzxSeicOylaVy5JTHvrT+jWUQ=
+X-Received: by 2002:a2e:2202:0:b0:248:684:4476 with SMTP id
+ i2-20020a2e2202000000b0024806844476mr13871061lji.64.1647246281586; Mon, 14
+ Mar 2022 01:24:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <f1621a67-a0ff-f111-c4da-9401924e7f4a@canonical.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+References: <20220311014245.4612-1-ctcchien@nuvoton.com> <20220311014245.4612-4-ctcchien@nuvoton.com>
+ <1f5e1e49-4ab0-5e06-fa8f-2a11b0fd1df9@canonical.com> <CAHpyw9dHau348qJB6g+fCcKqWByUsRHAGwb_mdUg=hjhW+xNsw@mail.gmail.com>
+ <143db512-0223-1553-c141-2dc24a23c430@canonical.com>
+In-Reply-To: <143db512-0223-1553-c141-2dc24a23c430@canonical.com>
+From:   Medad Young <medadyoung@gmail.com>
+Date:   Mon, 14 Mar 2022 16:24:30 +0800
+Message-ID: <CAHpyw9dn=3sGfjcqtQN-GwdoCo=dfhOrofTGMZJc+2Jjpr7pAw@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] EDAC: nuvoton: Add NPCM memory controller driver
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     rric@kernel.org, James Morse <james.morse@arm.com>,
+        tony.luck@intel.com, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Patrick Venture <venture@google.com>, KWLIU@nuvoton.com,
+        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING <KFTING@nuvoton.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>, ctcchien@nuvoton.com,
+        linux-edac <linux-edac@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-
-On Mon, Mar 14, 2022 at 08:39:57AM +0100, Krzysztof Kozlowski wrote:
-> On 14/03/2022 04:29, Pavan Kondeti wrote:
-> > Hi Krzysztof,
-> > 
-> > On Thu, Mar 03, 2022 at 04:59:22PM +0100, Krzysztof Kozlowski wrote:
-> >> On 03/03/2022 07:13, Sandeep Maheswaram wrote:
-> >>> Add device tree bindings for SNPS phy tuning parameters.
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> =E6=96=BC 2022=E5=
+=B9=B43=E6=9C=8814=E6=97=A5
+=E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=883:36=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On 14/03/2022 06:32, Medad Young wrote:
+> > Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> =E6=96=BC 2022=
+=E5=B9=B43=E6=9C=8811=E6=97=A5
+> > =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=885:15=E5=AF=AB=E9=81=93=EF=BC=9A
+> >>
+> >> On 11/03/2022 02:42, Medad CChien wrote:
+> >>> Add support for Nuvoton NPCM SoC.
 > >>>
-> >>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+> >>> Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
 > >>> ---
-> >>>  .../bindings/phy/qcom,usb-snps-femto-v2.yaml       | 125 +++++++++++++++++++++
-> >>>  1 file changed, 125 insertions(+)
+> >>>  drivers/edac/Kconfig     |   9 +
+> >>>  drivers/edac/Makefile    |   1 +
+> >>>  drivers/edac/npcm_edac.c | 714 +++++++++++++++++++++++++++++++++++++=
+++
+> >>>  3 files changed, 724 insertions(+)
+> >>>  create mode 100644 drivers/edac/npcm_edac.c
 > >>>
-> >>> diff --git a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
-> >>> index 0dfe691..227c097 100644
-> >>> --- a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
-> >>> +++ b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
-> >>> @@ -50,6 +50,131 @@ properties:
-> >>>    vdda33-supply:
-> >>>      description: phandle to the regulator 3.3V supply node.
-> >>>  
-> >>> +  qcom,hs-disconnect:
-> >>> +    $ref: /schemas/types.yaml#/definitions/uint32
-> >>> +    description:
-> >>> +      This adjusts the voltage level for the threshold used to
-> >>> +      detect a disconnect event at the host. Possible values are.
+> >>> diff --git a/drivers/edac/Kconfig b/drivers/edac/Kconfig
+> >>> index 58ab63642e72..757e1d160640 100644
+> >>> --- a/drivers/edac/Kconfig
+> >>> +++ b/drivers/edac/Kconfig
+> >>> @@ -539,4 +539,13 @@ config EDAC_DMC520
+> >>>         Support for error detection and correction on the
+> >>>         SoCs with ARM DMC-520 DRAM controller.
+> >>>
+> >>> +config EDAC_NPCM
+> >>> +     tristate "Nuvoton NPCM DDR Memory Controller"
+> >>> +     depends on ARCH_NPCM
 > >>
-> >> ':', instead of full stop.
+> >> || COMPILE_TEST
+> >> (and test if it compiles)
 > >>
-> >>> +      7 -> +21.56%
-> >>> +      6 -> +17.43%
-> >>> +      5 -> +13.32%
-> >>> +      4 -> +9.73%
-> >>> +      3 -> +6.3
-> >>> +      2 -> +3.17%
-> >>> +      1 -> 0, Design default%
+> >> (...)
 > >>
-> >> Use "default:" instead. Here and in other places.
+> >>> +
+> >>> +MODULE_DEVICE_TABLE(of, npcm_edac_of_match);
+> >>> +
+> >>> +static int npcm_edac_mc_probe(struct platform_device *pdev)
+> >>> +{
+> >>> +     const struct npcm_edac_platform_data *npcm_chip;
+> >>> +     struct device *dev =3D &pdev->dev;
+> >>> +     struct edac_mc_layer layers[1];
+> >>> +     const struct of_device_id *id;
+> >>> +     struct priv_data *priv_data;
+> >>> +     struct mem_ctl_info *mci;
+> >>> +     struct resource *res;
+> >>> +     void __iomem *reg;
+> >>> +     int ret =3D -ENODEV;
+> >>> +     int irq;
+> >>> +
+> >>> +     id =3D of_match_device(npcm_edac_of_match, &pdev->dev);
+> >>> +     if (!id)
+> >>> +             return -ENODEV;
 > >>
-> >>> +      0 -> -2.72%
-> >>
-> >> In current form this should be an enum... but actually current form is
-> >> wrong. You should not store register values in DT. What if next version
-> >> of hardware has a different meaning of these values?
-> >>
-> >> Instead, you should store here meaningful values, not register values.
-> >>
-> > 
-> > Thanks for the feedback.
-> > 
-> > The values in % really makes the tuning easy. People look at the eye diagram
-> > and decided whether to increase/decrease the margin. The absolute values
-> > may not be that useful. All we need is an "adjustment" here. The databook
-> > it self does not give any absolute values.
-> > 
-> > I agree to the "enum" suggestion which we have been following for the
-> > qusb2 driver already. 
-> > 
-> > The values have not changed in the last 5 years for this hardware block, so
-> > defining enums for the % values would be really helpful. 
-> 
-> I did not say you cannot store here percentages. Quite opposite - store
-> here the percentages. Just do not store register value. No. Please read
-> my comment again - meaningful values are needed.
-> 
+> >> Why do you need it? How such case is even possible?
+> > this driver is used for two nuvoton SOCs, one is NPCM845 and the other
+> > is NPCM750
+>
+> Yes and how NULL can happen for OF-only driver? Unless I missed
+> something and this is not an OF-only driver? Do you allow any other
+> matching methods?
 
-IIUC, you are asking us to come up with a meaningful values to encode the
-percentage values. However, all the % increments are not linear, so we can't
-come up with {min, max} scheme. Lets take an example of hostdisconnect
-threshold.
+I got your point, thanks
 
-As per the data book,
-
-+      7 -> +21.56%
-+      6 -> +17.43%
-+      5 -> +13.32%
-+      4 -> +9.73%
-+      3 -> +6.3
-+      2 -> +3.17%
-+      1 -> 0, Design default%
-+      0 -> -2.72%
-
-so how do we give meaningful values here? Does the below scheme make sense
-to you?
-
-#define QCOM_SNPS_FEMTO_HS_DISCONNECT_NEG_2P72	(-272)
-#define QCOM_SNPS_FEMTO_HS_DISCONNECT_DEFAULT	0
-#define QCOM_SNPS_FEMTO_HS_DISCONNECT_3P17	317
-#define QCOM_SNPS_FEMTO_HS_DISCONNECT_6P3	63
-..
-..
-
-In the driver, we have a mapping (which can be per SoC if required in future)
-that takes these values and convert to the correct values for a given
-register.
-
-Thanks,
-Pavan
+> Best regards,
+> Krzysztof
