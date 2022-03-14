@@ -2,116 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50720C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 13:10:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 13:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241565AbiCNNLd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 09:11:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
+        id S241655AbiCNNN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 09:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232431AbiCNNLa (ORCPT
+        with ESMTP id S241516AbiCNNNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 09:11:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3DA26E6;
-        Mon, 14 Mar 2022 06:10:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6936661181;
-        Mon, 14 Mar 2022 13:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CD52C340F4;
-        Mon, 14 Mar 2022 13:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647263416;
-        bh=OBsH32SjfImTKdIFeqvuOy2qDlC46bBa8wDT6FSKdbM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DAVj1ByBt79KtNtPHtU5zXvZRDutA5kApkHANV/eigsree1RcJAEuSX6H4IYyb2aW
-         vYNIA52qquCy91eM4cnDHyMhx/806ak8xEjzbKL++6rzx+LSLP/ejxcu9ET/DVcNRp
-         KBALhthOq0JA6VPFJrDRrvAAsxH/ZxmqSNV4MUphu1tJNCtSfHqTApO4PkYWGjwbMV
-         Xp+zb+EdiqsR7Zx14HYkLLLiPFcM1c5ONLwazaLSSgoBbqDHyy4GFrnR60z360RqRA
-         oCDCGrJ2oxrNDMUx6+KVJ5SUDAl+HBLpjSL4zFScwIBFW/NSYCKGVLPKoDN74lFdqA
-         TkBaZomph875w==
-Date:   Mon, 14 Mar 2022 14:10:08 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Hugues FRUCHET - FOSS <hugues.fruchet@foss.st.com>
-Cc:     Alain Volmat <alain.volmat@foss.st.com>,
-        Niklas =?UTF-8?B?U8O2ZGVybHVu?= =?UTF-8?B?ZA==?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        Dmitriy Ulitin <ulitin@ispras.ru>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: Re: [PATCH 17/24] media: platform: rename stm32/ to sti/stm32/
-Message-ID: <20220314141008.13e32acd@coco.lan>
-In-Reply-To: <1122a956-0650-f948-512b-d3447e34df30@foss.st.com>
-References: <cover.1647167750.git.mchehab@kernel.org>
-        <dc5be62a56ac19c6f49f4c8432558fd7b0efe7e6.1647167750.git.mchehab@kernel.org>
-        <20220314083942.GA526468@gnbcxd0016.gnb.st.com>
-        <20220314121454.7432e231@coco.lan>
-        <1122a956-0650-f948-512b-d3447e34df30@foss.st.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Mon, 14 Mar 2022 09:13:24 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10CDA1D0DE
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 06:12:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647263534;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BfrmpYIpBAIQM1+Gt9Phq5AOoHKq7aRJ010EA06rYLU=;
+        b=YkK2u4ua2ItTwZ+Oxu1jmK+LGAUZycZDqrVHiY+i5bUSUZPJA1VdeJGGOM6avXoUPkrbrT
+        I2PfV1iwINea1rGqB8bNnDQJjHROQpZbNRI5Qh0jvv8vcDSc1ttY0gbL9eRPPbmLrovXCE
+        Xu4tT24OOLk7EnKfpXDhBWtAzANjh9o=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-614-43vqek-rNWihQVMCtyTaPw-1; Mon, 14 Mar 2022 09:12:12 -0400
+X-MC-Unique: 43vqek-rNWihQVMCtyTaPw-1
+Received: by mail-wr1-f71.google.com with SMTP id m18-20020a5d4a12000000b00203731460e6so4348451wrq.3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 06:12:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=BfrmpYIpBAIQM1+Gt9Phq5AOoHKq7aRJ010EA06rYLU=;
+        b=IOesXGLl55Nl+7sLnmFgjJSfLDiYSb2NZUbZYWGstjLAjr9xjzISorVVvXx9BpjMXe
+         XXa37lMSAY7w5TJ7NhxxvHzadjZcJlXeKC2ipsbjcQFHjGDf4eZrnT3IgYXqdYC/J0ni
+         Lt7l5HzFwnN+ug0gP2EVmuBFo6nJfynxKTnBVEbbi9iGzGxKdLYkXV77n5K+mdl48f9E
+         e2439Tq0lbOvb63/eirt1Oaep/ALjfbwFL0AYS1HFkzQcj14WmiG5l6eaCYvD2knZ/MO
+         rdw7m4N0l1FyfGvZlRngmfBnidQ2IKdlaSIV6gQ1+5r/15EucpbZAiYDby1pUtGF65DJ
+         Lasw==
+X-Gm-Message-State: AOAM53396JgG5wzNP28cHh8gEzkCK5OGpfljH0R1/Yp9twdZZRT6TffL
+        4ht8urDWfQYJUldot9JH1sKKkWqm43j2/C2UXBe+FsXkFyp94JaP02hYpI8vuTXCOV3CfpEk/q5
+        nBBt6m06jYuU2PbR+s3aw3Myo
+X-Received: by 2002:a5d:4992:0:b0:1f0:68bd:4c34 with SMTP id r18-20020a5d4992000000b001f068bd4c34mr17064596wrq.670.1647263531485;
+        Mon, 14 Mar 2022 06:12:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy3mZ0+w8htNAo5t0qhYrTrRDOxGC7G6tNWZztZlmqcfmQXvFb0I4unRmYEI5Q5T6ypHhtxMQ==
+X-Received: by 2002:a5d:4992:0:b0:1f0:68bd:4c34 with SMTP id r18-20020a5d4992000000b001f068bd4c34mr17064584wrq.670.1647263531261;
+        Mon, 14 Mar 2022 06:12:11 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c704:9a00:b2c1:8682:b807:e870? (p200300cbc7049a00b2c18682b807e870.dip0.t-ipconnect.de. [2003:cb:c704:9a00:b2c1:8682:b807:e870])
+        by smtp.gmail.com with ESMTPSA id w9-20020a5d6089000000b001f0256761b9sm20912217wrt.45.2022.03.14.06.12.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 06:12:10 -0700 (PDT)
+Message-ID: <9cb7c909-eded-4933-c7a5-a7aa5a5221da@redhat.com>
+Date:   Mon, 14 Mar 2022 14:12:10 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] mm/mremap:: Use vma_lookup() instead of find_vma()
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220312083118.48284-1-linmiaohe@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220312083118.48284-1-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, 14 Mar 2022 12:34:47 +0100
-Hugues FRUCHET - FOSS <hugues.fruchet@foss.st.com> escreveu:
+On 12.03.22 09:31, Miaohe Lin wrote:
+> Using vma_lookup() verifies the address is contained in the found vma.
+> This results in easier to read the code.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/mremap.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/mremap.c b/mm/mremap.c
+> index 002eec83e91e..9d76da79594d 100644
+> --- a/mm/mremap.c
+> +++ b/mm/mremap.c
+> @@ -942,8 +942,8 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
+>  
+>  	if (mmap_write_lock_killable(current->mm))
+>  		return -EINTR;
+> -	vma = find_vma(mm, addr);
+> -	if (!vma || vma->vm_start > addr) {
+> +	vma = vma_lookup(mm, addr);
+> +	if (!vma) {
+>  		ret = EFAULT;
+>  		goto out;
+>  	}
 
-> Hi Mauro,
-> 
-> Ideally we would like to stick to sti/ and stm32/ at same level, as it 
-> is done in various other locations:
-> 
-> ./Documentation/arm/sti/
-> ./Documentation/arm/stm32/
-> 
-> ./arch/arm/mach-sti
-> ./arch/arm/mach-stm32
-> 
-> ./drivers/media/cec/platform/sti/
-> ./drivers/media/cec/platform/stm32/
-> 
-> ./drivers/gpu/drm/sti/
-> ./drivers/gpu/drm/stm/
-> 
-> ./sound/soc/sti/
-> ./sound/soc/stm/
-> 
-> Is this possible to keep those media folders as is ?
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-If we add them under:
-	./drivers/media/platform/stm/sti/
-	./drivers/media/platform/stm/stm32/
-
-They'll both be at the same level. 
-
-It has been increasingly hard to maintain media/platform, as the file
-become too big and disorganized. Sorting it per-vendor seems to be the
-best thing, as it will keep things better organized. 
-
-As a side effect, with such kind of change, it is now possible to 
-have a MAINTAINERS entry that would point to a mailing list and/or 
-some SoC maintainers/reviewers that should be c/c to all patches 
-affecting drivers/media/platform/<vendor>.
-
+-- 
 Thanks,
-Mauro
+
+David / dhildenb
+
