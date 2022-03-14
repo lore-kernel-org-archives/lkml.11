@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC231C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7708C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:29:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238179AbiCNJav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45824 "EHLO
+        id S238186AbiCNJax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238059AbiCNJ3t (ORCPT
+        with ESMTP id S238056AbiCNJ3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 05:29:49 -0400
+        Mon, 14 Mar 2022 05:29:48 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBF64476C;
-        Mon, 14 Mar 2022 02:28:36 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 09:28:34 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B724C443D8;
+        Mon, 14 Mar 2022 02:28:33 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 09:28:31 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647250115;
+        s=2020; t=1647250112;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GQa2cda/jteCKccxrl8iyR7/LSZOxMWiEEqfqQOZOUA=;
-        b=sVwB1BuefDt0SFIxpfgIx28+nfWDtiqXzV8hWS/uRjAaoIgCsjCAR4Bi6v+GXRvSFHrJMp
-        qQoX67SC7sIimVTfnKp3TGqxLi/ypl2oKOiKEBPIdlZyncEIitN5in2T/qaHNZ9Qf3puyv
-        AZ/Jjc3L1cfv39k2M+UK59kUQ2MImOfwt/Y9cvHR7+DYX0tkVYR72sC9WE9RshSbYFZtx7
-        u2UZE1VMuPgGMNl5J1/olRRt2l4hAEic7VofkFlT0O/+oiv414x5XF2+KWt2zFQhVJwOyh
-        pBtw+ZeRbm+N08x+AUVLpWHyhQnAP6B4LgCdKwW9Z6+Y2E+8JSqMAIbFBDvZOA==
+        bh=p8xHN8aCpCJbBJdzn4gr64qUx2dODxv0lbSbUX8/eps=;
+        b=RyYd5mNNxXltipHcfKhfQa3Y3Phyvg7OrBHDtMcWXcx0WhEx7SNShb8A8euWGKIYsAwMAb
+        lczNoyQTM0DsWPCyxjt+GZ5axidCjPTf6/g0FA8U7RmRWV6clx54j2Ix/ecYt/B3Tgz49R
+        BTCn0nyushafL8xLZTcISNs+yuh63bEDtlEeP4m7Yzrmo2gZV96YxUqDnvV47Y5KKA8Wfy
+        3sbEazsew+OAVucMdYIm6Sm9bBMnzyIVXwZ8kI+JhSvybVwZtHnewSugl+3MpQH6RS/7mQ
+        +E8CI1j8chVOefmNnUWdLb7JMt4uyf2T5CHzmDlVcdykP0mqimuduxjanqaHDA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647250115;
+        s=2020e; t=1647250112;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GQa2cda/jteCKccxrl8iyR7/LSZOxMWiEEqfqQOZOUA=;
-        b=p8Ras7tQ0p4InizJab624wQnukVECiFYRAZVNxgMm/xMsQ2E70roh3eZaSaH0egyG6DtpW
-        bd+iymu0f8kghTDg==
+        bh=p8xHN8aCpCJbBJdzn4gr64qUx2dODxv0lbSbUX8/eps=;
+        b=MnOgbtAl3vVFNcwrY8spo2VNph+9jyII0iQQHigpDxmawNiA6TgiVOgj4l35Shfzf26/Kk
+        uJEslN82zIninjDg==
 From:   "tip-bot2 for Peng Fan" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] clocksource/drivers/imx-tpm: Drop IRQF_IRQPOLL
+Subject: [tip: timers/core] clocksource/drivers/imx-tpm: Update name of clkevt
 Cc:     Peng Fan <peng.fan@nxp.com>,
         Daniel Lezcano <daniel.lezcano@linaro.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20211214120737.1611955-3-peng.fan@oss.nxp.com>
-References: <20211214120737.1611955-3-peng.fan@oss.nxp.com>
+In-Reply-To: <20211214120737.1611955-6-peng.fan@oss.nxp.com>
+References: <20211214120737.1611955-6-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Message-ID: <164725011451.16921.5795659129068966943.tip-bot2@tip-bot2>
+Message-ID: <164725011154.16921.14825368276621958347.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,38 +61,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     59e2bcd8a95b4cc5a04809b6d2ee337e81b47f57
-Gitweb:        https://git.kernel.org/tip/59e2bcd8a95b4cc5a04809b6d2ee337e81b47f57
+Commit-ID:     e547ffe9e6f497e36bde9d86dbcfbc781946752b
+Gitweb:        https://git.kernel.org/tip/e547ffe9e6f497e36bde9d86dbcfbc781946752b
 Author:        Peng Fan <peng.fan@nxp.com>
-AuthorDate:    Tue, 14 Dec 2021 20:07:34 +08:00
+AuthorDate:    Tue, 14 Dec 2021 20:07:37 +08:00
 Committer:     Daniel Lezcano <daniel.lezcano@linaro.org>
-CommitterDate: Wed, 26 Jan 2022 10:00:45 +01:00
+CommitterDate: Wed, 26 Jan 2022 10:01:05 +01:00
 
-clocksource/drivers/imx-tpm: Drop IRQF_IRQPOLL
+clocksource/drivers/imx-tpm: Update name of clkevt
 
-Per the Documentation,
-IRQF_IRQPOLL is used for polling (only the interrupt that is registered
-first in a shared interrupt is considered for performance reasons)
-The TPM timer is not sharing interrupt with others, and pass irqpoll
-not make sense for i.MX platform.
+The tpm driver is not only for i.MX7ULP now, i.MX8ULP also use it. It
+maybe also used by other i.MX variants, so update name to reflect it.
 
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20211214120737.1611955-3-peng.fan@oss.nxp.com
+Link: https://lore.kernel.org/r/20211214120737.1611955-6-peng.fan@oss.nxp.com
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
  drivers/clocksource/timer-imx-tpm.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/clocksource/timer-imx-tpm.c b/drivers/clocksource/timer-imx-tpm.c
-index 2cdc077..2c0b0d4 100644
+index 578fe16..df80641 100644
 --- a/drivers/clocksource/timer-imx-tpm.c
 +++ b/drivers/clocksource/timer-imx-tpm.c
-@@ -137,7 +137,7 @@ static struct timer_of to_tpm = {
- 	},
- 	.of_irq = {
- 		.handler		= tpm_timer_interrupt,
--		.flags			= IRQF_TIMER | IRQF_IRQPOLL,
-+		.flags			= IRQF_TIMER,
- 	},
- 	.of_clk = {
- 		.name = "per",
+@@ -127,7 +127,7 @@ static irqreturn_t tpm_timer_interrupt(int irq, void *dev_id)
+ static struct timer_of to_tpm = {
+ 	.flags = TIMER_OF_IRQ | TIMER_OF_BASE | TIMER_OF_CLOCK,
+ 	.clkevt = {
+-		.name			= "i.MX7ULP TPM Timer",
++		.name			= "i.MX TPM Timer",
+ 		.rating			= 200,
+ 		.features		= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_DYNIRQ,
+ 		.set_state_shutdown	= tpm_set_state_shutdown,
