@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14447C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 612A5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:23:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238858AbiCNMYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50576 "EHLO
+        id S241304AbiCNMYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241067AbiCNMR3 (ORCPT
+        with ESMTP id S241303AbiCNMRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:17:29 -0400
+        Mon, 14 Mar 2022 08:17:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F090E4925E;
-        Mon, 14 Mar 2022 05:12:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0194B369E0;
+        Mon, 14 Mar 2022 05:12:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CD9161387;
-        Mon, 14 Mar 2022 12:12:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E291C340F6;
-        Mon, 14 Mar 2022 12:12:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70F7261315;
+        Mon, 14 Mar 2022 12:12:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3190EC340E9;
+        Mon, 14 Mar 2022 12:12:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259940;
-        bh=VOh4WZWDHbvl0DVM0VCouT/2UyXl+kHCC7NlZIFYlBw=;
+        s=korg; t=1647259936;
+        bh=YGDCMuwrUahh+Ocfj5rpl5YvgAJSu76Qii8l0ri9tGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wMQpgGnJWp8345qD7boJaxDiNLiEG+DReKyzRBLp/UHAo28OMBWnieGbliXV1uQwJ
-         MzLEPh5ooT6Unos4Ifw1ImloD3J8ew4jvSO2PG6vkUD7mbr+uGWosa5upaHQMNT1a4
-         6KgVaM/YiZRLBCR00Dt6LSDRTrvNeEMwZW2sGRtM=
+        b=d//OdAmPBZxCsmJU3n5/oZBVmHI+r39mlt3qpnxFi2kDFETQpGJgO2Qmaq+up7I1N
+         TkjW+zqkqM9FWWF8uV7X5AUcBY9GYwBO/7Cs/dpMHVHTl8V2YrQZNhIJXBMEZvm8gP
+         pIgLy3wxxaHpT7IbC5ZIq8Ewwv7fI6aP03s4J5vE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
         Jason Wang <jasowang@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 014/121] vduse: Fix returning wrong type in vduse_domain_alloc_iova()
-Date:   Mon, 14 Mar 2022 12:53:17 +0100
-Message-Id: <20220314112744.524268764@linuxfoundation.org>
+Subject: [PATCH 5.16 013/121] vdpa/mlx5: add validation for VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command
+Date:   Mon, 14 Mar 2022 12:53:16 +0100
+Message-Id: <20220314112744.496974287@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -52,39 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Si-Wei Liu <si-wei.liu@oracle.com>
 
-[ Upstream commit b9d102dafec6af1c07b610faf0a6d4e8aee14ae0 ]
+[ Upstream commit ed0f849fc3a63ed2ddf5e72cdb1de3bdbbb0f8eb ]
 
-This fixes the following smatch warnings:
+When control vq receives a VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command
+request from the driver, presently there is no validation against the
+number of queue pairs to configure, or even if multiqueue had been
+negotiated or not is unverified. This may lead to kernel panic due to
+uninitialized resource for the queues were there any bogus request
+sent down by untrusted driver. Tie up the loose ends there.
 
-drivers/vdpa/vdpa_user/iova_domain.c:305 vduse_domain_alloc_iova() warn: should 'iova_pfn << shift' be a 64 bit type?
-
-Fixes: 8c773d53fb7b ("vduse: Implement an MMU-based software IOTLB")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Link: https://lore.kernel.org/r/20220121083940.102-1-xieyongji@bytedance.com
+Fixes: 52893733f2c5 ("vdpa/mlx5: Add multiqueue support")
+Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Link: https://lore.kernel.org/r/1642206481-30721-4-git-send-email-si-wei.liu@oracle.com
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Eli Cohen <elic@nvidia.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/vdpa_user/iova_domain.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
-index 1daae2608860..0678c2514197 100644
---- a/drivers/vdpa/vdpa_user/iova_domain.c
-+++ b/drivers/vdpa/vdpa_user/iova_domain.c
-@@ -302,7 +302,7 @@ vduse_domain_alloc_iova(struct iova_domain *iovad,
- 		iova_len = roundup_pow_of_two(iova_len);
- 	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index ef6da39ccb3f..7b4ab7cfc359 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1571,11 +1571,27 @@ static virtio_net_ctrl_ack handle_ctrl_mq(struct mlx5_vdpa_dev *mvdev, u8 cmd)
  
--	return iova_pfn << shift;
-+	return (dma_addr_t)iova_pfn << shift;
- }
+ 	switch (cmd) {
+ 	case VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET:
++		/* This mq feature check aligns with pre-existing userspace
++		 * implementation.
++		 *
++		 * Without it, an untrusted driver could fake a multiqueue config
++		 * request down to a non-mq device that may cause kernel to
++		 * panic due to uninitialized resources for extra vqs. Even with
++		 * a well behaving guest driver, it is not expected to allow
++		 * changing the number of vqs on a non-mq device.
++		 */
++		if (!MLX5_FEATURE(mvdev, VIRTIO_NET_F_MQ))
++			break;
++
+ 		read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->riov, (void *)&mq, sizeof(mq));
+ 		if (read != sizeof(mq))
+ 			break;
  
- static void vduse_domain_free_iova(struct iova_domain *iovad,
+ 		newqps = mlx5vdpa16_to_cpu(mvdev, mq.virtqueue_pairs);
++		if (newqps < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
++		    newqps > mlx5_vdpa_max_qps(mvdev->max_vqs))
++			break;
++
+ 		if (ndev->cur_num_vqs == 2 * newqps) {
+ 			status = VIRTIO_NET_OK;
+ 			break;
 -- 
 2.34.1
 
