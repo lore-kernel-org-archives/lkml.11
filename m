@@ -2,234 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA2D7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF45C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240974AbiCNM1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
+        id S236608AbiCNM1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242905AbiCNMTw (ORCPT
+        with ESMTP id S242931AbiCNMTy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:19:52 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8BD51331;
-        Mon, 14 Mar 2022 05:14:58 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id r29so10364928edc.0;
-        Mon, 14 Mar 2022 05:14:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=3WC+TD4FBHpBLqCHsa4MOv+icPwxDrsEqLNk4zGZrRE=;
-        b=b0sbcvpSyTk6Yd7RLbcN4nLTjeM47lwPzKWkkHaJJV0XubYWPjOeiV1JdQU/gFcglg
-         P3Gy9eEo5MEZz7betclE3Bl/8UxBgJkXURcQmlAuE3JWfh4X70uBPLP2WJp+8MwO0qhZ
-         s9H3cvPK/f46gOW5El0ShWW2Ud5ak1/rEubv0WYMrEFlXhyihdD9rowTP0d2/480Zhxg
-         ocDa1yncQU8iCRXcXRCDCozZYm8RC5BED/s5WPkJ2zzrKeOEJqbjmB2gcO7+kf6Ogr7a
-         CJPI2qq9HpFvKMQKz9q65VPuY8/kX4w+Oiz0zSfLUBGL89wo4Un20PCeHRyPJ6DZBQ2I
-         K5Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=3WC+TD4FBHpBLqCHsa4MOv+icPwxDrsEqLNk4zGZrRE=;
-        b=CJseypwH9uza4+0kh1/Lq05E9Aj7EUIRjqwkruQo/IiLp3qXFcc1+dromXF/2yyLnV
-         3bBW7YSWV2UoEx2hDG61I+KDEMfiZvcpAj2/8W9L49fRPoiqudJo1M2UrokZl0JiPANm
-         B8Psx545m38MYPMe+d7jsivpWHrwcdYYX7q/5YlqH1JLKCkWG2o8Qfguk6yvnqUYwm7Z
-         PK7BjvXirMt1qflwZXeMrNYqHjo/r6iB9M1IB4phLdDUiHC1TwoPWqfbpyicmYo1k234
-         EhQ82PnqOShazWi+PjmRd4nYH5PCh9oVQTTnPr0UV055GmnvF4lSHwRT1jRGXHW6JfMA
-         ou7w==
-X-Gm-Message-State: AOAM532icsLZcyJe/BHI78HiYbLuTUmnrPGGvldlxh/Mb6SgkUTdEKtl
-        YgkoA8BdlSE3X2SshU/wKmA=
-X-Google-Smtp-Source: ABdhPJygdbGsXpWU4NE9iSyaPTriEuM8Fw8twEq7ip4rW4QKiKvgjy5ItZGSlfW9vb+avg8C6oAsSA==
-X-Received: by 2002:a05:6402:27ce:b0:416:9d78:9f1f with SMTP id c14-20020a05640227ce00b004169d789f1fmr20157095ede.356.1647260096658;
-        Mon, 14 Mar 2022 05:14:56 -0700 (PDT)
-Received: from omen ([188.127.98.149])
-        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006d229436793sm6710852ejp.223.2022.03.14.05.14.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 05:14:55 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 13:14:53 +0100
-From:   Enver Balalic <balalic.enver@gmail.com>
-To:     hdegoede@redhat.com, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pobrn@protonmail.com
-Subject: [PATCH v2] platform/x86: hp-wmi: support omen thermal profile policy
- v1
-Message-ID: <20220314121453.kjszdciymtg6ctbq@omen>
+        Mon, 14 Mar 2022 08:19:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 115B5517FC;
+        Mon, 14 Mar 2022 05:15:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39C3960919;
+        Mon, 14 Mar 2022 12:15:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44001C340E9;
+        Mon, 14 Mar 2022 12:15:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647260100;
+        bh=3FhezaPON0nLfiY9z9jFopos8vB+LldRGOfGCo24UzA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YkMtU9N20ZW4fQIhkt+dgWYkFfn070xcGBf5QGtqP08+dfRY4+Tnv41FBtgRxpTga
+         J99hPPV9Z/Mh1pVFEq/W9p0YH4q6x1l12vijuu2LUOw7d5RMR2AclI5j2ANUnJ3MPP
+         lLHC7uOU2/ZBA5EAF2PkoysA+BQ4SjpgeTnN0uJQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 056/121] sctp: fix kernel-infoleak for SCTP sockets
+Date:   Mon, 14 Mar 2022 12:53:59 +0100
+Message-Id: <20220314112745.690027120@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
+References: <20220314112744.120491875@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As it turns out, these laptops have 2 thermal profile versions.
-A previous patch added support for v0, this patch adds support
-for v1 thermal policies that are in use on some devices.
-We obtain the thermal policy version by querying the get system
-design data WMI call and looking at the fourth byte it returns,
-except if the system board DMI Board ID is in a specific array
-that the windows command center app overrides to thermal policy
-v0 for some reason.
+From: Eric Dumazet <edumazet@google.com>
 
-- V1
-  Initial Patch
-- V2
-  Rename V0 thermal policy values to HP_OMEN_V0_THERMAL_PROFILE_
-  for consistency with the V1 thermal policy values.
-  Fix issue where instead of forcing certain boards to V0, they
-  were being forced to V1.
-  Drop unnecessary newline additions.
+[ Upstream commit 633593a808980f82d251d0ca89730d8bb8b0220c ]
 
-Signed-off-by: Enver Balalic <balalic.enver@gmail.com>
+syzbot reported a kernel infoleak [1] of 4 bytes.
+
+After analysis, it turned out r->idiag_expires is not initialized
+if inet_sctp_diag_fill() calls inet_diag_msg_common_fill()
+
+Make sure to clear idiag_timer/idiag_retrans/idiag_expires
+and let inet_diag_msg_sctpasoc_fill() fill them again if needed.
+
+[1]
+
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+BUG: KMSAN: kernel-infoleak in copyout lib/iov_iter.c:154 [inline]
+BUG: KMSAN: kernel-infoleak in _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+ copyout lib/iov_iter.c:154 [inline]
+ _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
+ copy_to_iter include/linux/uio.h:162 [inline]
+ simple_copy_to_iter+0xf3/0x140 net/core/datagram.c:519
+ __skb_datagram_iter+0x2d5/0x11b0 net/core/datagram.c:425
+ skb_copy_datagram_iter+0xdc/0x270 net/core/datagram.c:533
+ skb_copy_datagram_msg include/linux/skbuff.h:3696 [inline]
+ netlink_recvmsg+0x669/0x1c80 net/netlink/af_netlink.c:1977
+ sock_recvmsg_nosec net/socket.c:948 [inline]
+ sock_recvmsg net/socket.c:966 [inline]
+ __sys_recvfrom+0x795/0xa10 net/socket.c:2097
+ __do_sys_recvfrom net/socket.c:2115 [inline]
+ __se_sys_recvfrom net/socket.c:2111 [inline]
+ __x64_sys_recvfrom+0x19d/0x210 net/socket.c:2111
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:737 [inline]
+ slab_alloc_node mm/slub.c:3247 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4975
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1158 [inline]
+ netlink_dump+0x3e5/0x16c0 net/netlink/af_netlink.c:2248
+ __netlink_dump_start+0xcf8/0xe90 net/netlink/af_netlink.c:2373
+ netlink_dump_start include/linux/netlink.h:254 [inline]
+ inet_diag_handler_cmd+0x2e7/0x400 net/ipv4/inet_diag.c:1341
+ sock_diag_rcv_msg+0x24a/0x620
+ netlink_rcv_skb+0x40c/0x7e0 net/netlink/af_netlink.c:2494
+ sock_diag_rcv+0x63/0x80 net/core/sock_diag.c:277
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x1093/0x1360 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x14d9/0x1720 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ sock_write_iter+0x594/0x690 net/socket.c:1061
+ do_iter_readv_writev+0xa7f/0xc70
+ do_iter_write+0x52c/0x1500 fs/read_write.c:851
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Bytes 68-71 of 2508 are uninitialized
+Memory access of size 2508 starts at ffff888114f9b000
+Data copied to user address 00007f7fe09ff2e0
+
+CPU: 1 PID: 3478 Comm: syz-executor306 Not tainted 5.17.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 8f840e47f190 ("sctp: add the sctp_diag.c file")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Vlad Yasevich <vyasevich@gmail.com>
+Cc: Neil Horman <nhorman@tuxdriver.com>
+Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Link: https://lore.kernel.org/r/20220310001145.297371-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/hp-wmi.c | 81 +++++++++++++++++++++++++++++------
- 1 file changed, 67 insertions(+), 14 deletions(-)
+ net/sctp/diag.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index c56c8864961d..0109ddc84be7 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -57,6 +57,14 @@ static const char * const omen_thermal_profile_boards[] = {
- 	"8917", "8918", "8949", "894A", "89EB"
- };
- 
-+/* DMI Board names of Omen laptops that are specifically set to be thermal
-+ * profile version 0 by the Omen Command Center app, regardless of what
-+ * the get system design information WMI call returns
-+ */
-+static const char *const omen_thermal_profile_force_v0_boards[] = {
-+	"8607", "8746", "8747", "8749", "874A", "8748"
-+};
-+
- enum hp_wmi_radio {
- 	HPWMI_WIFI	= 0x0,
- 	HPWMI_BLUETOOTH	= 0x1,
-@@ -117,6 +125,7 @@ enum hp_wmi_gm_commandtype {
- 	HPWMI_SET_PERFORMANCE_MODE = 0x1A,
- 	HPWMI_FAN_SPEED_MAX_GET_QUERY = 0x26,
- 	HPWMI_FAN_SPEED_MAX_SET_QUERY = 0x27,
-+	HPWMI_GET_SYSTEM_DESIGN_DATA = 0x28,
- };
- 
- enum hp_wmi_command {
-@@ -151,10 +160,16 @@ enum hp_wireless2_bits {
- 	HPWMI_POWER_FW_OR_HW	= HPWMI_POWER_BIOS | HPWMI_POWER_HARD,
- };
- 
--enum hp_thermal_profile_omen {
--	HP_OMEN_THERMAL_PROFILE_DEFAULT     = 0x00,
--	HP_OMEN_THERMAL_PROFILE_PERFORMANCE = 0x01,
--	HP_OMEN_THERMAL_PROFILE_COOL        = 0x02,
-+enum hp_thermal_profile_omen_v1 {
-+	HP_OMEN_V1_THERMAL_PROFILE_DEFAULT	= 0x30,
-+	HP_OMEN_V1_THERMAL_PROFILE_PERFORMANCE	= 0x31,
-+	HP_OMEN_V1_THERMAL_PROFILE_COOL		= 0x50,
-+};
-+
-+enum hp_thermal_profile_omen_v0 {
-+	HP_OMEN_V0_THERMAL_PROFILE_DEFAULT     = 0x00,
-+	HP_OMEN_V0_THERMAL_PROFILE_PERFORMANCE = 0x01,
-+	HP_OMEN_V0_THERMAL_PROFILE_COOL        = 0x02,
- };
- 
- enum hp_thermal_profile {
-@@ -407,9 +422,6 @@ static int omen_thermal_profile_set(int mode)
- 	char buffer[2] = {0, mode};
- 	int ret;
- 
--	if (mode < 0 || mode > 2)
--		return -EINVAL;
--
- 	ret = hp_wmi_perform_query(HPWMI_SET_PERFORMANCE_MODE, HPWMI_GM,
- 				   &buffer, sizeof(buffer), 0);
- 
-@@ -431,6 +443,30 @@ static bool is_omen_thermal_profile(void)
- 			    board_name) >= 0;
+diff --git a/net/sctp/diag.c b/net/sctp/diag.c
+index 034e2c74497d..d9c6d8f30f09 100644
+--- a/net/sctp/diag.c
++++ b/net/sctp/diag.c
+@@ -61,10 +61,6 @@ static void inet_diag_msg_sctpasoc_fill(struct inet_diag_msg *r,
+ 		r->idiag_timer = SCTP_EVENT_TIMEOUT_T3_RTX;
+ 		r->idiag_retrans = asoc->rtx_data_chunks;
+ 		r->idiag_expires = jiffies_to_msecs(t3_rtx->expires - jiffies);
+-	} else {
+-		r->idiag_timer = 0;
+-		r->idiag_retrans = 0;
+-		r->idiag_expires = 0;
+ 	}
  }
  
-+static int omen_get_thermal_policy_version(void)
-+{
-+	unsigned char buffer[8] = { 0 };
-+	int ret;
-+
-+	const char *board_name = dmi_get_system_info(DMI_BOARD_NAME);
-+
-+	if (board_name) {
-+		int matches = match_string(omen_thermal_profile_force_v0_boards,
-+			ARRAY_SIZE(omen_thermal_profile_force_v0_boards),
-+			board_name);
-+		if (matches >= 0)
-+			return 0;
-+	}
-+
-+	ret = hp_wmi_perform_query(HPWMI_GET_SYSTEM_DESIGN_DATA, HPWMI_GM,
-+				   &buffer, sizeof(buffer), sizeof(buffer));
-+
-+	if (ret)
-+		return ret < 0 ? ret : -EINVAL;
-+
-+	return buffer[3];
-+}
-+
- static int omen_thermal_profile_get(void)
- {
- 	u8 data;
-@@ -1053,13 +1089,16 @@ static int platform_profile_omen_get(struct platform_profile_handler *pprof,
- 		return tp;
+@@ -144,13 +140,14 @@ static int inet_sctp_diag_fill(struct sock *sk, struct sctp_association *asoc,
+ 	r = nlmsg_data(nlh);
+ 	BUG_ON(!sk_fullsock(sk));
  
- 	switch (tp) {
--	case HP_OMEN_THERMAL_PROFILE_PERFORMANCE:
-+	case HP_OMEN_V0_THERMAL_PROFILE_PERFORMANCE:
-+	case HP_OMEN_V1_THERMAL_PROFILE_PERFORMANCE:
- 		*profile = PLATFORM_PROFILE_PERFORMANCE;
- 		break;
--	case HP_OMEN_THERMAL_PROFILE_DEFAULT:
-+	case HP_OMEN_V0_THERMAL_PROFILE_DEFAULT:
-+	case HP_OMEN_V1_THERMAL_PROFILE_DEFAULT:
- 		*profile = PLATFORM_PROFILE_BALANCED;
- 		break;
--	case HP_OMEN_THERMAL_PROFILE_COOL:
-+	case HP_OMEN_V0_THERMAL_PROFILE_COOL:
-+	case HP_OMEN_V1_THERMAL_PROFILE_COOL:
- 		*profile = PLATFORM_PROFILE_COOL;
- 		break;
- 	default:
-@@ -1072,17 +1111,31 @@ static int platform_profile_omen_get(struct platform_profile_handler *pprof,
- static int platform_profile_omen_set(struct platform_profile_handler *pprof,
- 				     enum platform_profile_option profile)
- {
--	int err, tp;
-+	int err, tp, tp_version;
-+
-+	tp_version = omen_get_thermal_policy_version();
-+
-+	if (tp_version < 0 || tp_version > 1)
-+		return -EOPNOTSUPP;
++	r->idiag_timer = 0;
++	r->idiag_retrans = 0;
++	r->idiag_expires = 0;
+ 	if (asoc) {
+ 		inet_diag_msg_sctpasoc_fill(r, sk, asoc);
+ 	} else {
+ 		inet_diag_msg_common_fill(r, sk);
+ 		r->idiag_state = sk->sk_state;
+-		r->idiag_timer = 0;
+-		r->idiag_retrans = 0;
+ 	}
  
- 	switch (profile) {
- 	case PLATFORM_PROFILE_PERFORMANCE:
--		tp = HP_OMEN_THERMAL_PROFILE_PERFORMANCE;
-+		if (tp_version == 0)
-+			tp = HP_OMEN_V0_THERMAL_PROFILE_PERFORMANCE;
-+		else
-+			tp = HP_OMEN_V1_THERMAL_PROFILE_PERFORMANCE;
- 		break;
- 	case PLATFORM_PROFILE_BALANCED:
--		tp = HP_OMEN_THERMAL_PROFILE_DEFAULT;
-+		if (tp_version == 0)
-+			tp = HP_OMEN_V0_THERMAL_PROFILE_DEFAULT;
-+		else
-+			tp = HP_OMEN_V1_THERMAL_PROFILE_DEFAULT;
- 		break;
- 	case PLATFORM_PROFILE_COOL:
--		tp = HP_OMEN_THERMAL_PROFILE_COOL;
-+		if (tp_version == 0)
-+			tp = HP_OMEN_V0_THERMAL_PROFILE_COOL;
-+		else
-+			tp = HP_OMEN_V1_THERMAL_PROFILE_COOL;
- 		break;
- 	default:
- 		return -EOPNOTSUPP;
+ 	if (inet_diag_msg_attrs_fill(sk, skb, r, ext, user_ns, net_admin))
 -- 
-2.35.1
+2.34.1
+
+
 
