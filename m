@@ -2,177 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93071C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A47C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244642AbiCNTvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
+        id S244611AbiCNTwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:52:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244614AbiCNTvp (ORCPT
+        with ESMTP id S244628AbiCNTvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:51:45 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE90CD0;
-        Mon, 14 Mar 2022 12:50:10 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlU6m028547;
-        Mon, 14 Mar 2022 19:49:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=SWc6MuMSC9w8oU6vRRvUPONvCvFrwclXYK3FlPs/4gc=;
- b=EffB0VFihZDT+oRLFGBEmUbXQkVzLWSIlx2aT/89OSt58qm3DlHmeOKGryEmmM9IrS5m
- NfmVDL7ZxGcSPkw3xnRFe/4d1kELKnMbd/E/B/27RiWe89UAEBri74SL8zVo4FmFs6tB
- 7jNxHKfJW4byfIWDMoWx63EZTuvw78e+QKlWo3U5VR0zp+R+GZtKtofv9OCGtUJ7UmRj
- fSLuzuWDPi6kinxrSSkJ1NNOlTRUCmpjwHA6AlZg1/GJybn2fRk9nQ+LaFRQcJQz8ixb
- RRLLYUC4YeDLkJ7FRozHNKmjVQjuUhncqxHeis+2wMC03ixQ7oTRfSEqC1TwV/Xzqazl Zw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6d7rpy4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:49:34 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJm7LW030677;
-        Mon, 14 Mar 2022 19:49:33 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6d7rpxq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:49:33 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJl8Bd005348;
-        Mon, 14 Mar 2022 19:49:33 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma01wdc.us.ibm.com with ESMTP id 3erk5989fy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:49:33 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EJnV3T18874628
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Mar 2022 19:49:31 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AFCE6112062;
-        Mon, 14 Mar 2022 19:49:31 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1672A11206F;
-        Mon, 14 Mar 2022 19:49:25 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.184])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Mar 2022 19:49:24 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
-Subject: [PATCH v4 27/32] KVM: s390: intercept the rpcit instruction
-Date:   Mon, 14 Mar 2022 15:44:46 -0400
-Message-Id: <20220314194451.58266-28-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
-References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+        Mon, 14 Mar 2022 15:51:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D922C3EF01;
+        Mon, 14 Mar 2022 12:50:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E17BB80F96;
+        Mon, 14 Mar 2022 19:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AF52C340EE;
+        Mon, 14 Mar 2022 19:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647287421;
+        bh=pyw+uUsWl3RVdP8v6qowJOWyQJdm2VaPP/Bj2TK1ByM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V35xPzC0SANL4OOpntptnxwfH3nLIYI5VEaA9BrwfwAu8bvPOHyAqVUw21vYwVrAk
+         BE5/t7c15HReRasVusQQv81fElEBG3vFWSvir6e8NJI0FHrAmInGhKkxkr64Ge2tSt
+         3Y5mzD6EWbBR2HGUd2PvFkmH64XSZ6Ije2djTBcdzpvhRp/Y+bGCgBRz4Q0WVx9TqW
+         O4H6xttVahB95D7TRtPhoEdwKcjVctFHjWNYaQazpf9nZQlppkShxTpdFuo2PA2xNb
+         FmQWRJtWbFVp4Pz8M8/ZiWhPityGzRb61SWCJO6KTXLpHDReAXGSpmLEadGt/jWb01
+         VkyTxadUGALpQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 2/2] x86/Kconfig: Do not allow CONFIG_X86_X32_ABI=y with llvm-objcopy
+Date:   Mon, 14 Mar 2022 12:48:42 -0700
+Message-Id: <20220314194842.3452-3-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314194842.3452-1-nathan@kernel.org>
+References: <20220314194842.3452-1-nathan@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: riGnR9-O1SW95wh5PuJ0eEFFQ_lVtcIH
-X-Proofpoint-ORIG-GUID: 72FXc0OO0PISfWeRqbD5ARFbLQC2DMsU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
- phishscore=0 impostorscore=0 adultscore=0 mlxlogscore=845 malwarescore=0
- bulkscore=0 spamscore=0 lowpriorityscore=0 clxscore=1015 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203140116
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For faster handling of PCI translation refreshes, intercept in KVM
-and call the associated handler.
+There are two outstanding issues with CONFIG_X86_X32_ABI and
+llvm-objcopy, with similar root causes:
 
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+1. llvm-objcopy does not properly convert .note.gnu.property when going
+   from x86_64 to x86_x32, resulting in a corrupted section when
+   linking:
+
+   https://github.com/ClangBuiltLinux/linux/issues/1141
+
+2. llvm-objcopy produces corrupted compressed debug sections when going
+   from x86_64 to x86_x32, also resulting in an error when linking:
+
+   https://github.com/ClangBuiltLinux/linux/issues/514
+
+After commit 41c5ef31ad71 ("x86/ibt: Base IBT bits"), the
+.note.gnu.property section is always generated when
+CONFIG_X86_KERNEL_IBT is enabled, which causes the first issue to become
+visible with an allmodconfig build:
+
+  ld.lld: error: arch/x86/entry/vdso/vclock_gettime-x32.o:(.note.gnu.property+0x1c): program property is too short
+
+To avoid this error, do not allow CONFIG_X86_X32_ABI to be selected when
+using llvm-objcopy. If the two issues ever get fixed in llvm-objcopy,
+this can be turned into a feature check.
+
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 ---
- arch/s390/kvm/priv.c | 46 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
+ arch/x86/Kconfig | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/s390/kvm/priv.c b/arch/s390/kvm/priv.c
-index 417154b314a6..546c99a0e0b6 100644
---- a/arch/s390/kvm/priv.c
-+++ b/arch/s390/kvm/priv.c
-@@ -29,6 +29,7 @@
- #include <asm/ap.h>
- #include "gaccess.h"
- #include "kvm-s390.h"
-+#include "pci.h"
- #include "trace.h"
- 
- static int handle_ri(struct kvm_vcpu *vcpu)
-@@ -335,6 +336,49 @@ static int handle_rrbe(struct kvm_vcpu *vcpu)
- 	return 0;
- }
- 
-+static int handle_rpcit(struct kvm_vcpu *vcpu)
-+{
-+	int reg1, reg2;
-+	int rc;
-+
-+	if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_PSTATE)
-+		return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
-+
-+	/* KVM can only handle if we support KVM-managed IOMMU */
-+	if (!IS_ENABLED(CONFIG_S390_KVM_IOMMU))
-+		return -EOPNOTSUPP;
-+
-+	kvm_s390_get_regs_rre(vcpu, &reg1, &reg2);
-+
-+	/* If the device has a SHM bit on, let userspace take care of this */
-+	if (((vcpu->run->s.regs.gprs[reg1] >> 32) & aift->mdd) != 0)
-+		return -EOPNOTSUPP;
-+
-+	rc = kvm_s390_pci_refresh_trans(vcpu, vcpu->run->s.regs.gprs[reg1],
-+					vcpu->run->s.regs.gprs[reg2],
-+					vcpu->run->s.regs.gprs[reg2 + 1]);
-+
-+	switch (rc) {
-+	case 0:
-+		kvm_s390_set_psw_cc(vcpu, 0);
-+		break;
-+	case -ENOMEM:
-+		vcpu->run->s.regs.gprs[reg1] &= 0xffffffff00ffffffUL;
-+		vcpu->run->s.regs.gprs[reg1] |= (u64)4 << 24;
-+		kvm_s390_set_psw_cc(vcpu, 1);
-+		break;
-+	case -EIO:
-+		vcpu->run->s.regs.gprs[reg1] &= 0xffffffff00ffffffUL;
-+		vcpu->run->s.regs.gprs[reg1] |= (u64)16 << 24;
-+		kvm_s390_set_psw_cc(vcpu, 1);
-+		break;
-+	default:
-+		kvm_s390_set_psw_cc(vcpu, 3);
-+	}
-+
-+	return 0;
-+}
-+
- #define SSKE_NQ 0x8
- #define SSKE_MR 0x4
- #define SSKE_MC 0x2
-@@ -1275,6 +1319,8 @@ int kvm_s390_handle_b9(struct kvm_vcpu *vcpu)
- 		return handle_essa(vcpu);
- 	case 0xaf:
- 		return handle_pfmf(vcpu);
-+	case 0xd3:
-+		return handle_rpcit(vcpu);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index b903bfcd713c..0f0672d2c816 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2864,6 +2864,11 @@ config IA32_AOUT
+ config X86_X32_ABI
+ 	bool "x32 ABI for 64-bit mode"
+ 	depends on X86_64
++	# llvm-objcopy does not convert x86_64 .note.gnu.property or
++	# compressed debug sections to x86_x32 properly:
++	# https://github.com/ClangBuiltLinux/linux/issues/514
++	# https://github.com/ClangBuiltLinux/linux/issues/1141
++	depends on $(success,$(OBJCOPY) --version | head -n1 | grep -qv llvm)
+ 	help
+ 	  Include code to run binaries for the x32 native 32-bit ABI
+ 	  for 64-bit processors.  An x32 process gets access to the
 -- 
-2.27.0
+2.35.1
 
