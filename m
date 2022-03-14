@@ -2,61 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB68C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237148AbiCNH7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 03:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41898 "EHLO
+        id S237276AbiCNH7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 03:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236923AbiCNH5f (ORCPT
+        with ESMTP id S236922AbiCNH5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 03:57:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1678F4132D;
-        Mon, 14 Mar 2022 00:56:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D39F4133B;
+        Mon, 14 Mar 2022 00:56:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CBB6B80D52;
-        Mon, 14 Mar 2022 07:56:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB02C341E4;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD9C5B80D49;
         Mon, 14 Mar 2022 07:56:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72F04C3411D;
+        Mon, 14 Mar 2022 07:56:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647244563;
-        bh=NUWZ3FrsjEU1KQK0UFRKOIlNOBV2tg90c49kOIeAcx0=;
+        s=k20201202; t=1647244561;
+        bh=hLXlZDsANXrQDNOF5BHnehyTUuhg/sL1AnjnfHoobO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SRS/v5RdHkMQIvcur+1IsoQ3k3FsVxkNsIf1SOB5+gztEp2R5k1qPVBI9AvUTnYm1
-         asVTnNL+D1aeKa8L6g+uEXv3FHO8mKNW0b8ro+U6J89dc4FKuxYbH4VyNCi+58p+yL
-         uCKVmo9Wzt+ALMFP7APKHPnG1JjY302EkpxYsuA2s9XThz+Un7CFFg1Mdl69Hy6ysx
-         XgxQud5dkBkaHnv7oAndCYyY+PR5saXZj+I2Q4pz5p2NptxAayA7VZk6xZ4ga/bhId
-         4LtIA1UHZwixLEaQQ9NVrCu+DIRcufgA/ruossIPGSLP7ci52w7YkHUOomaHvBDkys
-         mg/WEU8BrFyVQ==
+        b=hKbkseoZgTmkhbIJDaWcYf0/bwJI1XXMSGfndwA3bQXcYcpzWuC0nsMjDHaHK1iC6
+         i0SVyJ2/OporjtuQHSTVbhlKzICmv7Y5sCZCuoyA2MaK+iwqCT7kGX2SPU+l/XrWrw
+         Kz1y7icf0LDivII0qPHbz9EzR7mBOZmAy/K8XP0YgHASQTilHtNPtRqxTMoF+SwXFa
+         zSE/jZbUny9/UwfPX38j4hyv62istqngymjyOtSyq2vY6MEuAgl1MQbYmTerLEAbu1
+         jfP17lEEnXa9CbTHbFdmnRIjJeVxIKP7oQNMlR6Qz95MoWXqwmHaI9XbQ+KVe23k6r
+         O9+zwZK0o7iFA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nTfYe-001kXT-FS; Mon, 14 Mar 2022 08:56:00 +0100
+        id 1nTfYd-001kVb-7u; Mon, 14 Mar 2022 08:55:59 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
         <niklas.soderlund+renesas@ragnatech.se>,
-        Cai Huoqing <caihuoqing@baidu.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         Ming Qian <ming.qian@nxp.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-samsung-soc@vger.kernel.org
-Subject: [PATCH 51/64] media: platform: rename exynos-gsc/ to samsung/exynos-gsc/
-Date:   Mon, 14 Mar 2022 08:55:43 +0100
-Message-Id: <079d0d718c65424edd82e5b094211f1433094c93.1647242579.git.mchehab@kernel.org>
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org
+Subject: [PATCH 22/64] media: platform: venus: move config to its own file
+Date:   Mon, 14 Mar 2022 08:55:14 +0100
+Message-Id: <54e5d62d97b01544d78619605eebe533993bb2fb.1647242579.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647242578.git.mchehab@kernel.org>
 References: <cover.1647242578.git.mchehab@kernel.org>
@@ -67,8 +62,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the end goal is to have platform drivers split by vendor,
-rename exynos-gsc/ to samsung/exynos-gsc/.
+In order to better organize the platform/Kconfig, place
+venus-specific config stuff on a separate Kconfig file.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -76,92 +71,65 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/64] at: https://lore.kernel.org/all/cover.1647242578.git.mchehab@kernel.org/
 
- drivers/media/platform/Kconfig                             | 2 +-
- drivers/media/platform/Makefile                            | 2 +-
- drivers/media/platform/{ => samsung}/exynos-gsc/Kconfig    | 0
- drivers/media/platform/{ => samsung}/exynos-gsc/Makefile   | 0
- drivers/media/platform/{ => samsung}/exynos-gsc/gsc-core.c | 0
- drivers/media/platform/{ => samsung}/exynos-gsc/gsc-core.h | 0
- drivers/media/platform/{ => samsung}/exynos-gsc/gsc-m2m.c  | 0
- drivers/media/platform/{ => samsung}/exynos-gsc/gsc-regs.c | 0
- drivers/media/platform/{ => samsung}/exynos-gsc/gsc-regs.h | 0
- 9 files changed, 2 insertions(+), 2 deletions(-)
- rename drivers/media/platform/{ => samsung}/exynos-gsc/Kconfig (100%)
- rename drivers/media/platform/{ => samsung}/exynos-gsc/Makefile (100%)
- rename drivers/media/platform/{ => samsung}/exynos-gsc/gsc-core.c (100%)
- rename drivers/media/platform/{ => samsung}/exynos-gsc/gsc-core.h (100%)
- rename drivers/media/platform/{ => samsung}/exynos-gsc/gsc-m2m.c (100%)
- rename drivers/media/platform/{ => samsung}/exynos-gsc/gsc-regs.c (100%)
- rename drivers/media/platform/{ => samsung}/exynos-gsc/gsc-regs.h (100%)
+ drivers/media/platform/Kconfig            | 16 +---------------
+ drivers/media/platform/qcom/venus/Kconfig | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+), 15 deletions(-)
+ create mode 100644 drivers/media/platform/qcom/venus/Kconfig
 
 diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index 6d2221a9c6ee..dca53f6a1b33 100644
+index b5a1cb0d62c2..5a8495338fd4 100644
 --- a/drivers/media/platform/Kconfig
 +++ b/drivers/media/platform/Kconfig
-@@ -74,7 +74,6 @@ source "drivers/media/platform/atmel/Kconfig"
- source "drivers/media/platform/cadence/Kconfig"
- source "drivers/media/platform/chips-media/Kconfig"
- source "drivers/media/platform/davinci/Kconfig"
--source "drivers/media/platform/exynos-gsc/Kconfig"
- source "drivers/media/platform/intel/Kconfig"
- source "drivers/media/platform/marvell/Kconfig"
- source "drivers/media/platform/mediatek/mtk-jpeg/Kconfig"
-@@ -93,6 +92,7 @@ source "drivers/media/platform/s3c-camif/Kconfig"
- source "drivers/media/platform/s5p-g2d/Kconfig"
- source "drivers/media/platform/s5p-jpeg/Kconfig"
- source "drivers/media/platform/s5p-mfc/Kconfig"
-+source "drivers/media/platform/samsung/exynos-gsc/Kconfig"
- source "drivers/media/platform/samsung/exynos4-is/Kconfig"
- source "drivers/media/platform/sti/Kconfig"
- source "drivers/media/platform/stm32/Kconfig"
-diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
-index 613ca6a3efa7..848cbd6147ae 100644
---- a/drivers/media/platform/Makefile
-+++ b/drivers/media/platform/Makefile
-@@ -14,7 +14,6 @@ obj-y += atmel/
- obj-y += cadence/
- obj-y += chips-media/
- obj-y += davinci/
--obj-y += exynos-gsc/
- obj-y += intel/
- obj-y += marvell/
- obj-y += mediatek/mtk-jpeg/
-@@ -35,6 +34,7 @@ obj-y += s3c-camif/
- obj-y += s5p-g2d/
- obj-y += s5p-jpeg/
- obj-y += s5p-mfc/
-+obj-y += samsung/exynos-gsc/
- obj-y += samsung/exynos4-is/
- obj-y += sti/bdisp/
- obj-y += sti/c8sectpfe/
-diff --git a/drivers/media/platform/exynos-gsc/Kconfig b/drivers/media/platform/samsung/exynos-gsc/Kconfig
-similarity index 100%
-rename from drivers/media/platform/exynos-gsc/Kconfig
-rename to drivers/media/platform/samsung/exynos-gsc/Kconfig
-diff --git a/drivers/media/platform/exynos-gsc/Makefile b/drivers/media/platform/samsung/exynos-gsc/Makefile
-similarity index 100%
-rename from drivers/media/platform/exynos-gsc/Makefile
-rename to drivers/media/platform/samsung/exynos-gsc/Makefile
-diff --git a/drivers/media/platform/exynos-gsc/gsc-core.c b/drivers/media/platform/samsung/exynos-gsc/gsc-core.c
-similarity index 100%
-rename from drivers/media/platform/exynos-gsc/gsc-core.c
-rename to drivers/media/platform/samsung/exynos-gsc/gsc-core.c
-diff --git a/drivers/media/platform/exynos-gsc/gsc-core.h b/drivers/media/platform/samsung/exynos-gsc/gsc-core.h
-similarity index 100%
-rename from drivers/media/platform/exynos-gsc/gsc-core.h
-rename to drivers/media/platform/samsung/exynos-gsc/gsc-core.h
-diff --git a/drivers/media/platform/exynos-gsc/gsc-m2m.c b/drivers/media/platform/samsung/exynos-gsc/gsc-m2m.c
-similarity index 100%
-rename from drivers/media/platform/exynos-gsc/gsc-m2m.c
-rename to drivers/media/platform/samsung/exynos-gsc/gsc-m2m.c
-diff --git a/drivers/media/platform/exynos-gsc/gsc-regs.c b/drivers/media/platform/samsung/exynos-gsc/gsc-regs.c
-similarity index 100%
-rename from drivers/media/platform/exynos-gsc/gsc-regs.c
-rename to drivers/media/platform/samsung/exynos-gsc/gsc-regs.c
-diff --git a/drivers/media/platform/exynos-gsc/gsc-regs.h b/drivers/media/platform/samsung/exynos-gsc/gsc-regs.h
-similarity index 100%
-rename from drivers/media/platform/exynos-gsc/gsc-regs.h
-rename to drivers/media/platform/samsung/exynos-gsc/gsc-regs.h
+@@ -55,6 +55,7 @@ source "drivers/media/platform/mtk-vpu/Kconfig"
+ source "drivers/media/platform/omap3isp/Kconfig"
+ source "drivers/media/platform/omap/Kconfig"
+ source "drivers/media/platform/qcom/camss/Kconfig"
++source "drivers/media/platform/qcom/venus/Kconfig"
+ 
+ source "drivers/media/platform/aspeed/Kconfig"
+ 
+@@ -319,21 +320,6 @@ config VIDEO_TI_VPE_DEBUG
+ 	help
+ 	  Enable debug messages on VPE driver.
+ 
+-config VIDEO_QCOM_VENUS
+-	tristate "Qualcomm Venus V4L2 encoder/decoder driver"
+-	depends on V4L_MEM2MEM_DRIVERS
+-	depends on VIDEO_DEV && VIDEO_V4L2 && QCOM_SMEM
+-	depends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST
+-	select QCOM_MDT_LOADER if ARCH_QCOM
+-	select QCOM_SCM
+-	select VIDEOBUF2_DMA_CONTIG
+-	select V4L2_MEM2MEM_DEV
+-	help
+-	  This is a V4L2 driver for Qualcomm Venus video accelerator
+-	  hardware. It accelerates encoding and decoding operations
+-	  on various Qualcomm SoCs.
+-	  To compile this driver as a module choose m here.
+-
+ config VIDEO_SUN8I_DEINTERLACE
+ 	tristate "Allwinner Deinterlace driver"
+ 	depends on V4L_MEM2MEM_DRIVERS
+diff --git a/drivers/media/platform/qcom/venus/Kconfig b/drivers/media/platform/qcom/venus/Kconfig
+new file mode 100644
+index 000000000000..de0fe3f7be5f
+--- /dev/null
++++ b/drivers/media/platform/qcom/venus/Kconfig
+@@ -0,0 +1,14 @@
++config VIDEO_QCOM_VENUS
++	tristate "Qualcomm Venus V4L2 encoder/decoder driver"
++	depends on V4L_MEM2MEM_DRIVERS
++	depends on VIDEO_DEV && VIDEO_V4L2 && QCOM_SMEM
++	depends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST
++	select QCOM_MDT_LOADER if ARCH_QCOM
++	select QCOM_SCM
++	select VIDEOBUF2_DMA_CONTIG
++	select V4L2_MEM2MEM_DEV
++	help
++	  This is a V4L2 driver for Qualcomm Venus video accelerator
++	  hardware. It accelerates encoding and decoding operations
++	  on various Qualcomm SoCs.
++	  To compile this driver as a module choose m here.
 -- 
 2.35.1
 
