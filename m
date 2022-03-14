@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B9CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A55BC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240152AbiCNMDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        id S240260AbiCNMDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240420AbiCNMCw (ORCPT
+        with ESMTP id S240441AbiCNMCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:02:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF984AE1A;
-        Mon, 14 Mar 2022 05:00:14 -0700 (PDT)
+        Mon, 14 Mar 2022 08:02:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82211EC55;
+        Mon, 14 Mar 2022 05:00:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA068B80DED;
-        Mon, 14 Mar 2022 12:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30581C340E9;
-        Mon, 14 Mar 2022 12:00:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDC56B80DF3;
+        Mon, 14 Mar 2022 11:59:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C6AC340E9;
+        Mon, 14 Mar 2022 11:59:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259211;
-        bh=bdFL2p6Uh3FS0ZBBSN7cWAcwiXonpScEdh2pPj85trA=;
+        s=korg; t=1647259192;
+        bh=TqKFtjgXN3ErMrPJUo3AQq/1Nc3i24dF1IcWtRKWD2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cbgSVw7V3B8PpHIPOjjeA4RZUoi/B/3rwiNF8dkZ5C+TR6zml+RMUbyrL2CV5bD4J
-         TKhmXY5kXfKrNT+oouzmL2xjBIRl0KCKHmZVyHrEr4YBmUUKuqZuAgXdwNV52nh2q7
-         J49cjDF6Pa76SWZOpCTdw2QQiRs3fmnaW6BEuTew=
+        b=jk9J4yh+LhdJXvu4+3z9+rSJJKE1ttwkvUGYd0ACm9F66VsFLrxI7gvhJ8yt+qSgJ
+         dN7ZcqbxwhumGJA9aDsWAD4RgKFoNIleP6Tl2i21QG/CI0kkDc0vjZTF6y4YwV5IMf
+         75/6aQBiJCMnnUEWqjennNqHmyoY3X/lI8Bisp+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mohammad Kabat <mohammadkab@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 27/71] net/mlx5: Fix size field in bufferx_reg struct
-Date:   Mon, 14 Mar 2022 12:53:20 +0100
-Message-Id: <20220314112738.692696662@linuxfoundation.org>
+Subject: [PATCH 5.10 23/71] tipc: fix incorrect order of state message data sanity check
+Date:   Mon, 14 Mar 2022 12:53:16 +0100
+Message-Id: <20220314112738.582757933@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,37 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mohammad Kabat <mohammadkab@nvidia.com>
+From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
 
-[ Upstream commit ac77998b7ac3044f0509b097da9637184598980d ]
+[ Upstream commit c79fcc27be90b308b3fa90811aefafdd4078668c ]
 
-According to HW spec the field "size" should be 16 bits
-in bufferx register.
+When receiving a state message, function tipc_link_validate_msg()
+is called to validate its header portion. Then, its data portion
+is validated before it can be accessed correctly. However, current
+data sanity  check is done after the message header is accessed to
+update some link variables.
 
-Fixes: e281682bf294 ("net/mlx5_core: HW data structs/types definitions cleanup")
-Signed-off-by: Mohammad Kabat <mohammadkab@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+This commit fixes this issue by moving the data sanity check to
+the beginning of state message handling and right after the header
+sanity check.
+
+Fixes: 9aa422ad3266 ("tipc: improve size validations for received domain records")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Link: https://lore.kernel.org/r/20220308021200.9245-1-tung.q.nguyen@dektech.com.au
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mlx5/mlx5_ifc.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/tipc/link.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index f5e829e12a76..eba1f1cbc9fb 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -9307,8 +9307,8 @@ struct mlx5_ifc_bufferx_reg_bits {
- 	u8         reserved_at_0[0x6];
- 	u8         lossy[0x1];
- 	u8         epsb[0x1];
--	u8         reserved_at_8[0xc];
--	u8         size[0xc];
-+	u8         reserved_at_8[0x8];
-+	u8         size[0x10];
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index fb835a3822f4..7a353ff62844 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -2245,6 +2245,11 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 		break;
  
- 	u8         xoff_threshold[0x10];
- 	u8         xon_threshold[0x10];
+ 	case STATE_MSG:
++		/* Validate Gap ACK blocks, drop if invalid */
++		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
++		if (glen > dlen)
++			break;
++
+ 		l->rcv_nxt_state = msg_seqno(hdr) + 1;
+ 
+ 		/* Update own tolerance if peer indicates a non-zero value */
+@@ -2270,10 +2275,6 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 			break;
+ 		}
+ 
+-		/* Receive Gap ACK blocks from peer if any */
+-		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
+-		if(glen > dlen)
+-			break;
+ 		tipc_mon_rcv(l->net, data + glen, dlen - glen, l->addr,
+ 			     &l->mon_state, l->bearer_id);
+ 
 -- 
 2.34.1
 
