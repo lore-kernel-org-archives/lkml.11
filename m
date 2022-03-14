@@ -2,114 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9156DC47089
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A16C47085
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245519AbiCNMdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
+        id S245164AbiCNMcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243941AbiCNMVZ (ORCPT
+        with ESMTP id S243926AbiCNMVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:25 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D49E13D24;
-        Mon, 14 Mar 2022 05:19:08 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id v14so8582827qta.2;
-        Mon, 14 Mar 2022 05:19:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MVYKucc+mwxRpju7dONX1SpktjTFhTUwy2wjrEfefyQ=;
-        b=n0shuxfyOM8Zda4w8ipEKK8UObmHK3LmrpQ3t+xg0Jj9XkRebEcQhgE9fw4MBbnLRh
-         pcXjvEMVUy+fsgwGqDSA/XrcoUoaFK7DSJfCjCkxVQ+VxWzg6KvCrnORuBMqI97dYnQh
-         7trdl8csfaPCjXopD89hVBdF4f4O69mgHijQ/8+R2Pr213wbGRVi8zC0nDWicljzZNsA
-         i1NS1jI6UZXAnXJLSKxkNzT7Jst8xmZR0j5bIt4L/e24ey/nFEMEoyk3+kbKzLcjVvmp
-         hcbWOiG6OGFGSdBCQG39mMosO9kof/QEQa5rhdcE1y3sk5qMX+mneuZ9HIFYMuWv01pj
-         Pmqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MVYKucc+mwxRpju7dONX1SpktjTFhTUwy2wjrEfefyQ=;
-        b=EpLXBbZ5lfwgJ3Up+vS4ki2FabbFLgJGSkqnWO/6gMA49sVbSuZJNjtaellw4pCu+M
-         g4B1SFxfuUoJJ6WmP5kJ2kcq6uVIGxUGdgeMtBO+RFOKpVlIjpRLYJas/G3QKt1AWzSS
-         Ae+PQ69X0rqdBYiXrAeaL7Oak/orIXngbeBSIXJCBOBamc3Twbo1pvHYtVY1p0YRMTk/
-         FdjqauiPXAUuplchTgDm/pMbU09y3U3719z78Oqr6n1maIhB5VOvLIMcgCMz0a2vx/8Z
-         AG2WztMMQXUEIs214Rt4OCh5RrSId7F7Q3x4TWjjSbi7ifr34kSVSeknIiptxyccDFGm
-         vK0g==
-X-Gm-Message-State: AOAM5336NWIYFDksY8s0cWy7Fx6b7hqxyPG5fYXz9Os7rysP76A9RJGZ
-        ZA0c/2IzDaii0BgVN46mQG5BOiGU2Dk=
-X-Google-Smtp-Source: ABdhPJxSZ4mzrAEulUGO1qJ/XWF06fSdwlNNmz59bevtMoPaToPh7VyN3clT9vrfsUBK5u285uPDhg==
-X-Received: by 2002:a05:622a:40e:b0:2e1:d4cc:88bb with SMTP id n14-20020a05622a040e00b002e1d4cc88bbmr3180031qtx.595.1647260347262;
-        Mon, 14 Mar 2022 05:19:07 -0700 (PDT)
-Received: from localhost.localdomain (pppoe-209-91-167-254.vianet.ca. [209.91.167.254])
-        by smtp.gmail.com with ESMTPSA id p13-20020a05622a048d00b002e1ce0c627csm2945349qtx.58.2022.03.14.05.19.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 05:19:06 -0700 (PDT)
-From:   Trevor Woerner <twoerner@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-serial@vger.kernel.org
-Subject: [PATCH v2 1/3] serial: 8250_fintek: Finish support for the F81865
-Date:   Mon, 14 Mar 2022 08:18:56 -0400
-Message-Id: <20220314121856.10112-1-twoerner@gmail.com>
-X-Mailer: git-send-email 2.35.1.455.g1a4874565f
+        Mon, 14 Mar 2022 08:21:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B2713CE1;
+        Mon, 14 Mar 2022 05:18:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AECCB80DF2;
+        Mon, 14 Mar 2022 12:18:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A82EFC340ED;
+        Mon, 14 Mar 2022 12:18:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647260304;
+        bh=5+Ft8NqKxW8P9GQwxVhJpiNyjBI1KpvTOwGzitr6tus=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Q6JZWC94C6eeUGXfk1b/DJBMIN0ksZ8cC9vR09lhXJDtTHEnH0N6x1jLVe1+f4PK7
+         kovJqKA7AZ/ZxTtoi5LoQ1Ze9VRxz1M0lE5K5f+btdYO22Vm6cdA1whVBoVS5DXtzj
+         mp8+vqjyt7PkO1i1rFjS3Htv+Y6fRYL0WlcP37ss=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 070/121] x86/kvm: Dont use pv tlb/ipi/sched_yield if on 1 vCPU
+Date:   Mon, 14 Mar 2022 12:54:13 +0100
+Message-Id: <20220314112746.077423912@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
+References: <20220314112744.120491875@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This driver only partially supports the F81865 device. The UART portions of
-this SuperIO chip behave very similarly to the UART of the F81866, except
-that the F81866 has 128-byte FIFOs whereas the F81865 has 16-byte FIFOs,
-and the IRQ configuration is different. Therefore fill out the support for
-the F81865 in the places where it is missing.
+From: Wanpeng Li <wanpengli@tencent.com>
 
-Tested at 1500000 baud on the iEi NANO-PV-D5251-R10 board.
+[ Upstream commit ec756e40e271866f951d77c5e923d8deb6002b15 ]
 
-Signed-off-by: Trevor Woerner <twoerner@gmail.com>
+Inspired by commit 3553ae5690a (x86/kvm: Don't use pvqspinlock code if
+only 1 vCPU), on a VM with only 1 vCPU, there is no need to enable
+pv tlb/ipi/sched_yield and we can save the memory for __pv_cpu_mask.
+
+Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+Message-Id: <1645171838-2855-1-git-send-email-wanpengli@tencent.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ arch/x86/kernel/kvm.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 251f0018ae8c..47b15d2d9901 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -63,7 +63,12 @@
- #define F81216_LDN_HIGH	0x4
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index 59abbdad7729..ff3db164e52c 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -462,19 +462,22 @@ static bool pv_tlb_flush_supported(void)
+ {
+ 	return (kvm_para_has_feature(KVM_FEATURE_PV_TLB_FLUSH) &&
+ 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
+-		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
++		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
++		(num_possible_cpus() != 1));
+ }
  
- /*
-- * F81866/966 registers
-+ * F81866/865/966 registers
-+ *
-+ * The UART portion of the F81865 functions very similarly to the UART
-+ * portion of the F81866, so there's no need to duplicate all the #defines
-+ * etc. The only differences are: the F81866 has 128-byte FIFOs whereas the
-+ * F81865 has 16-byte FIFOs, and the IRQ configuration is different.
-  *
-  * The IRQ setting mode of F81866/966 is not the same with F81216 series.
-  *	Level/Low: IRQ_MODE0:0, IRQ_MODE1:0
-@@ -316,6 +321,7 @@ static void fintek_8250_set_termios(struct uart_port *port,
- 		break;
- 	case CHIP_ID_F81966:
- 	case CHIP_ID_F81866:
-+	case CHIP_ID_F81865:
- 		reg = F81866_UART_CLK;
- 		break;
- 	default:
-@@ -363,6 +369,7 @@ static void fintek_8250_set_termios_handler(struct uart_8250_port *uart)
- 	case CHIP_ID_F81216H:
- 	case CHIP_ID_F81966:
- 	case CHIP_ID_F81866:
-+	case CHIP_ID_F81865:
- 		uart->port.set_termios = fintek_8250_set_termios;
- 		break;
+ static bool pv_ipi_supported(void)
+ {
+-	return kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI);
++	return (kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI) &&
++	       (num_possible_cpus() != 1));
+ }
  
+ static bool pv_sched_yield_supported(void)
+ {
+ 	return (kvm_para_has_feature(KVM_FEATURE_PV_SCHED_YIELD) &&
+ 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
+-	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
++	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
++	    (num_possible_cpus() != 1));
+ }
+ 
+ #define KVM_IPI_CLUSTER_SIZE	(2 * BITS_PER_LONG)
 -- 
-2.35.1.455.g1a4874565f
+2.34.1
+
+
 
