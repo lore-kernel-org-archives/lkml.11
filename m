@@ -2,144 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B84C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 048FBC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235554AbiCNQfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
+        id S243076AbiCNQgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232757AbiCNQfl (ORCPT
+        with ESMTP id S235820AbiCNQgS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:35:41 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25EF8627D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:34:31 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6E5ED6E;
-        Mon, 14 Mar 2022 09:34:30 -0700 (PDT)
-Received: from [10.57.42.204] (unknown [10.57.42.204])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3C0F63F766;
-        Mon, 14 Mar 2022 09:34:28 -0700 (PDT)
-Message-ID: <74afb713-0413-bd49-c3f1-f6a094df2e17@arm.com>
-Date:   Mon, 14 Mar 2022 16:34:23 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] drm/bridge: synopsys/dw-hdmi: set cec clock rate
-Content-Language: en-GB
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     Peter Geis <pgwipeout@gmail.com>,
-        Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
+        Mon, 14 Mar 2022 12:36:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1594311C24;
+        Mon, 14 Mar 2022 09:35:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 656096138B;
+        Mon, 14 Mar 2022 16:35:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6711C340F7;
+        Mon, 14 Mar 2022 16:35:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647275706;
+        bh=pGdMVo81L21nG9yhzpJ4FAUxkhj+Km9odTkR6fwp/F4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=C7VEwuHpUixh3uASPaVRn5XFgd9qBRGXm2InpJIZ6XfvvsjPjR+9ZrW6HcrrFjoOg
+         MV3gZsgIY1iiIDA5KNGwjl/6OtPcVtZhV8n7KMSgpImb3Q1nJJzEUhO2fOg+T5Qw59
+         MggUQx1UmhRUcfSbtBKHnphRcKDJrItHbd3D11ntzxNW7DL8rfrI1Te4rP3GJF9CqU
+         T44iUq2ojBID43uO+t+LXsmiRdh/N4r4LjuFgVNPFiAcBZ2owDvLKMlxheRYSTkrI+
+         V30v3Gr9KM8I+COGWzXZrhVgIqnP7IRQEmQOyzaSKC9uBk9czJLczK4gZW3o4Krtwo
+         hhFow68/jywhw==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nTney-001wwU-Gb; Mon, 14 Mar 2022 17:35:04 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eddie James <eajames@linux.ibm.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jammy Huang <jammy_huang@aspeedtech.com>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Pierre-Hugues Husson <phh@phh.me>,
-        Archit Taneja <architt@codeaurora.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
-        dri-devel@lists.freedesktop.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220126202427.3047814-1-pgwipeout@gmail.com>
- <3AFD1DD4-AF0A-4ECC-B4F5-E6BD6B9F1BB7@gmail.com>
- <CAMdYzYq06QSmFAwCuTmBYy4LfQAQDxzx2PGc8HOB1iEjxXHGyg@mail.gmail.com>
- <c6766e6e-3c90-f0e6-86b3-4afdf41fbbb1@arm.com>
-In-Reply-To: <c6766e6e-3c90-f0e6-86b3-4afdf41fbbb1@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Joel Stanley <joel@jms.id.au>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Zev Weiss <zev@bewilderbeest.net>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: [PATCH v2 06/67] media: platform: place Aspeed driver on a separate dir
+Date:   Mon, 14 Mar 2022 17:34:01 +0100
+Message-Id: <69c5ee8aae03bb9f9a8a825175a1cd0644eaf20c.1647274406.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1647274406.git.mchehab@kernel.org>
+References: <cover.1647274406.git.mchehab@kernel.org>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-14 11:31, Robin Murphy wrote:
-> On 2022-03-13 12:56, Peter Geis wrote:
->> On Sun, Mar 13, 2022 at 6:13 AM Piotr Oniszczuk
->> <piotr.oniszczuk@gmail.com> wrote:
->>>
->>>
->>>
->>>> Wiadomość napisana przez Peter Geis <pgwipeout@gmail.com> w dniu 
->>>> 26.01.2022, o godz. 21:24:
->>>>
->>>> The hdmi-cec clock must be 32khz in order for cec to work correctly.
->>>> Ensure after enabling the clock we set it in order for the hardware to
->>>> work as expected.
->>>> Warn on failure, in case this is a static clock that is slighty off.
->>>> Fixes hdmi-cec support on Rockchip devices.
->>>>
->>>> Fixes: ebe32c3e282a ("drm/bridge: synopsys/dw-hdmi: Enable cec clock")
->>>>
->>>> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
->>>> ---
->>>> drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 7 +++++++
->>>> 1 file changed, 7 insertions(+)
->>>>
->>>> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c 
->>>> b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
->>>> index 54d8fdad395f..1a96da60e357 100644
->>>> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
->>>> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
->>>> @@ -48,6 +48,9 @@
->>>>
->>>> #define HDMI14_MAX_TMDSCLK    340000000
->>>>
->>>> +/* HDMI CEC needs a clock rate of 32khz */
->>>> +#define HDMI_CEC_CLK_RATE    32768
->>>> +
->>>> enum hdmi_datamap {
->>>>        RGB444_8B = 0x01,
->>>>        RGB444_10B = 0x03,
->>>> @@ -3347,6 +3350,10 @@ struct dw_hdmi *dw_hdmi_probe(struct 
->>>> platform_device *pdev,
->>>>                                ret);
->>>>                        goto err_iahb;
->>>>                }
->>>> +
->>>> +             ret = clk_set_rate(hdmi->cec_clk, HDMI_CEC_CLK_RATE);
->>>> +             if (ret)
->>>> +                     dev_warn(hdmi->dev, "Cannot set HDMI cec clock 
->>>> rate: %d\n", ret);
->>>>        }
->>>>
->>>>        /* Product and revision IDs */
->>>> -- 
->>>> 2.25.1
->>>>
->>>>
->>>> _______________________________________________
->>>> Linux-rockchip mailing list
->>>> Linux-rockchip@lists.infradead.org
->>>> http://lists.infradead.org/mailman/listinfo/linux-rockchip
->>>
->>> Peter,
->>>
->>> On my 5.17-rc7 with applied rk356x VOP2 v8 series - this patch makes 
->>> CEC working on rk3566.
->>> Unfortunately it breaks working ok CEC on rk3399 rockpi-4b.
->>>
->>> Reverting this patch brings back CEC on rk3399 - but rk3366 becomes 
->>> with non working CEC
->>>
->>> I'm not sure how to move forward with this....
->>
->> I was worried about that, thanks for testing it.
->> Can you send me the cec_clk rate before and after this patch?
-> 
-> Hmm, looks like there might be a bug in the RK3399 clock driver - 
-> although it's treated as having mux_pll_p as parents, according to the 
-> public TRM the CEC clock appears unique in being backwards compared to 
-> every other mux of those two inputs. I'm now tempted to test this on my 
-> board tonight and see if I can see 24MHz on the CEC pin... :)
+In order to cleanup the main platform media directory, move Aspeed
+driver to its own directory.
 
-Nope, turns out that's an error in the TRM and the mux is fine. The bug 
-is between the clock driver blindly assuming xin32k is usable, and 
-nearly all RK3399 boards forgetting to claim the pinctrl to actually 
-enable the input :/
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-Robin.
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH v2 00/67] at: https://lore.kernel.org/all/cover.1647274406.git.mchehab@kernel.org/
+
+ MAINTAINERS                                        |  2 +-
+ drivers/media/platform/Kconfig                     | 10 +---------
+ drivers/media/platform/Makefile                    |  2 +-
+ drivers/media/platform/aspeed/Kconfig              | 10 ++++++++++
+ drivers/media/platform/aspeed/Makefile             |  2 ++
+ drivers/media/platform/{ => aspeed}/aspeed-video.c |  0
+ 6 files changed, 15 insertions(+), 11 deletions(-)
+ create mode 100644 drivers/media/platform/aspeed/Kconfig
+ create mode 100644 drivers/media/platform/aspeed/Makefile
+ rename drivers/media/platform/{ => aspeed}/aspeed-video.c (100%)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1a9fb0615925..1b6f48a660de 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3026,7 +3026,7 @@ L:	linux-media@vger.kernel.org
+ L:	openbmc@lists.ozlabs.org (moderated for non-subscribers)
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/media/aspeed-video.txt
+-F:	drivers/media/platform/aspeed-video.c
++F:	drivers/media/platform/aspeed/
+ 
+ ASUS NOTEBOOKS AND EEEPC ACPI/WMI EXTRAS DRIVERS
+ M:	Corentin Chary <corentin.chary@gmail.com>
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index 1446a99159c5..10f453ff2717 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -50,15 +50,7 @@ source "drivers/media/platform/davinci/Kconfig"
+ 
+ source "drivers/media/platform/omap/Kconfig"
+ 
+-config VIDEO_ASPEED
+-	tristate "Aspeed AST2400 and AST2500 Video Engine driver"
+-	depends on V4L_PLATFORM_DRIVERS
+-	depends on VIDEO_V4L2
+-	select VIDEOBUF2_DMA_CONTIG
+-	help
+-	  Support for the Aspeed Video Engine (VE) embedded in the Aspeed
+-	  AST2400 and AST2500 SOCs. The VE can capture and compress video data
+-	  from digital or analog sources.
++source "drivers/media/platform/aspeed/Kconfig"
+ 
+ config VIDEO_SH_VOU
+ 	tristate "SuperH VOU video output driver"
+diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
+index e319044c57e9..18ec3d208483 100644
+--- a/drivers/media/platform/Makefile
++++ b/drivers/media/platform/Makefile
+@@ -6,6 +6,7 @@
+ # Place here, alphabetically sorted by directory
+ # (e. g. LC_ALL=C sort Makefile)
+ obj-y += allegro-dvt/
++obj-y += aspeed/
+ obj-y += am437x/
+ obj-y += amphion/
+ obj-y += atmel/
+@@ -47,7 +48,6 @@ obj-y += xilinx/
+ # Please place here only ancillary drivers that aren't SoC-specific
+ # Please keep it alphabetically sorted by Kconfig name
+ # (e. g. LC_ALL=C sort Makefile)
+-obj-$(CONFIG_VIDEO_ASPEED)		+= aspeed-video.o
+ obj-$(CONFIG_VIDEO_IMX_PXP)		+= imx-pxp.o
+ obj-$(CONFIG_VIDEO_MEM2MEM_DEINTERLACE)	+= m2m-deinterlace.o
+ obj-$(CONFIG_VIDEO_MUX)			+= video-mux.o
+diff --git a/drivers/media/platform/aspeed/Kconfig b/drivers/media/platform/aspeed/Kconfig
+new file mode 100644
+index 000000000000..5025e892844c
+--- /dev/null
++++ b/drivers/media/platform/aspeed/Kconfig
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: GPL-2.0-only
++config VIDEO_ASPEED
++	tristate "Aspeed AST2400 and AST2500 Video Engine driver"
++	depends on V4L_PLATFORM_DRIVERS
++	depends on VIDEO_V4L2
++	select VIDEOBUF2_DMA_CONTIG
++	help
++	  Support for the Aspeed Video Engine (VE) embedded in the Aspeed
++	  AST2400 and AST2500 SOCs. The VE can capture and compress video data
++	  from digital or analog sources.
+diff --git a/drivers/media/platform/aspeed/Makefile b/drivers/media/platform/aspeed/Makefile
+new file mode 100644
+index 000000000000..1979af63dadd
+--- /dev/null
++++ b/drivers/media/platform/aspeed/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++obj-$(CONFIG_VIDEO_ASPEED) += aspeed-video.o
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed/aspeed-video.c
+similarity index 100%
+rename from drivers/media/platform/aspeed-video.c
+rename to drivers/media/platform/aspeed/aspeed-video.c
+-- 
+2.35.1
+
