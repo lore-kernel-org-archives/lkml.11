@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:38:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA05EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236072AbiCNLjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:39:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40216 "EHLO
+        id S239240AbiCNLhp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239235AbiCNLin (ORCPT
+        with ESMTP id S239235AbiCNLha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:38:43 -0400
+        Mon, 14 Mar 2022 07:37:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880BA42A21;
-        Mon, 14 Mar 2022 04:37:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9155743384;
+        Mon, 14 Mar 2022 04:36:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2553661178;
-        Mon, 14 Mar 2022 11:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F16C2C340F6;
-        Mon, 14 Mar 2022 11:37:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2419961152;
+        Mon, 14 Mar 2022 11:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 080F1C340E9;
+        Mon, 14 Mar 2022 11:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257852;
-        bh=iN7HimTURbw5M6FGLDWua52kQmbMKl/8KG9Qr9bGmqI=;
+        s=korg; t=1647257766;
+        bh=PCU4tjgH5YRyVf2otL/ejdTi5bLTC8Gb0liGsC8OrOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aja467ZSGknVkleYU82zTdR+Tp5rRr4H7gu1eM2O9bV1TPYVKWpkKvvYTmsBvE7BC
-         kVKrt+ZghsUFVpyTgBrdflRYmk0zzxT/TU+PnPlBYz+fc+lUkUS4tL7e5U/k4Rj9Zc
-         L2UFUk1gHi3i/MRZH98/84w1T773hAWhOj0nBghc=
+        b=I8VC4lSJuhT1wsWnuV+2Ynm2psttPO0SeE57wWbdnwHdt4zRuTSjnbigo3zCTHjh9
+         EfOHgPf0wtFPNf3k+RGEYkn0C1gR/HgY+a7N6yUmKdIyN6wHECr7Fotk7gHDcXCQXu
+         Qpw2VmtzaZvHBKfOWS8+bV6xga3ce/nZyd2sTZBU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 21/23] ARM: fix Thumb2 regression with Spectre BHB
-Date:   Mon, 14 Mar 2022 12:34:34 +0100
-Message-Id: <20220314112731.671228748@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 01/23] net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
+Date:   Mon, 14 Mar 2022 12:34:14 +0100
+Message-Id: <20220314112731.095604657@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112731.050583127@linuxfoundation.org>
 References: <20220314112731.050583127@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,37 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-commit 6c7cb60bff7aec24b834343ff433125f469886a3 upstream.
+[ Upstream commit e0058f0fa80f6e09c4d363779c241c45a3c56b94 ]
 
-When building for Thumb2, the vectors make use of a local label. Sadly,
-the Spectre BHB code also uses a local label with the same number which
-results in the Thumb2 reference pointing at the wrong place. Fix this
-by changing the number used for the Spectre BHB local label.
+The function dma_alloc_coherent() in qed_vf_hw_prepare() can fail, so
+its return value should be checked.
 
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1408cc1fa48c ("qed: Introduce VFs")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-armv.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_vf.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1071,9 +1071,9 @@ vector_bhb_loop8_\name:
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.c b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+index 693f2a039383..848a6574c0b2 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_vf.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+@@ -539,6 +539,9 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
+ 						    p_iov->bulletin.size,
+ 						    &p_iov->bulletin.phys,
+ 						    GFP_KERNEL);
++	if (!p_iov->bulletin.p_virt)
++		goto free_pf2vf_reply;
++
+ 	DP_VERBOSE(p_hwfn, QED_MSG_IOV,
+ 		   "VF's bulletin Board [%p virt 0x%llx phys 0x%08x bytes]\n",
+ 		   p_iov->bulletin.p_virt,
+@@ -578,6 +581,10 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
  
- 	@ bhb workaround
- 	mov	r0, #8
--1:	b	. + 4
-+3:	b	. + 4
- 	subs	r0, r0, #1
--	bne	1b
-+	bne	3b
- 	dsb
- 	isb
- 	b	2b
+ 	return rc;
+ 
++free_pf2vf_reply:
++	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
++			  sizeof(union pfvf_tlvs),
++			  p_iov->pf2vf_reply, p_iov->pf2vf_reply_phys);
+ free_vf2pf_request:
+ 	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
+ 			  sizeof(union vfpf_tlvs),
+-- 
+2.34.1
+
 
 
