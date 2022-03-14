@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F582C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1B6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239832AbiCNL4x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
+        id S239881AbiCNL5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238323AbiCNL4i (ORCPT
+        with ESMTP id S239813AbiCNL4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:56:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C76D65C1;
-        Mon, 14 Mar 2022 04:55:29 -0700 (PDT)
+        Mon, 14 Mar 2022 07:56:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD5C65DA;
+        Mon, 14 Mar 2022 04:55:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0CA560FF3;
-        Mon, 14 Mar 2022 11:55:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DABBC340E9;
-        Mon, 14 Mar 2022 11:55:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6321B80DE1;
+        Mon, 14 Mar 2022 11:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A56C36AED;
+        Mon, 14 Mar 2022 11:55:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647258928;
-        bh=X4C+EAnv+5PsvS5bhnuMIuDGUfEfKplyG40If4A0F78=;
+        s=korg; t=1647258932;
+        bh=t36RsXQeqEGKrpyuVG4PjsX7Di0UiLb6ay+foi3JY3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PMPXsoK9M12Pgol0cpmzTlJ6ziuF7APLLLiRqapZgpQWjxbzPHRv9mnnimfx/RGRm
-         HT3Z+sKWI/MdipDf95GhPYsqdRsOS9wu0nvZzyzqN5foVZBKkgLALA1ARrKuggEftX
-         C79oja/LDVVDwJATgjAwmZv1JRmnOvxYO9hVpPU4=
+        b=b2OTiIrMLYhCkSx/EueONjRhmBxmmaz15yuFD3V1LFxGf6YapOoY36IMf+VuPEMHL
+         xif/O4WIj+vYsD7TUXiQW9klqVpA7vBjJqjIqHkMZdU/XSwLy0nJKNZlAMV6F3NhqA
+         ReXXMgzIeAdfdBqC5QKkRDit7JIM9AmkeGnvrBEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Osterried <thomas@osterried.de>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mohammad Kabat <mohammadkab@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 11/43] ax25: Fix NULL pointer dereference in ax25_kill_by_device
-Date:   Mon, 14 Mar 2022 12:53:22 +0100
-Message-Id: <20220314112734.736241254@linuxfoundation.org>
+Subject: [PATCH 5.4 12/43] net/mlx5: Fix size field in bufferx_reg struct
+Date:   Mon, 14 Mar 2022 12:53:23 +0100
+Message-Id: <20220314112734.763642642@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -50,63 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Mohammad Kabat <mohammadkab@nvidia.com>
 
-[ Upstream commit 71171ac8eb34ce7fe6b3267dce27c313ab3cb3ac ]
+[ Upstream commit ac77998b7ac3044f0509b097da9637184598980d ]
 
-When two ax25 devices attempted to establish connection, the requester use ax25_create(),
-ax25_bind() and ax25_connect() to initiate connection. The receiver use ax25_rcv() to
-accept connection and use ax25_create_cb() in ax25_rcv() to create ax25_cb, but the
-ax25_cb->sk is NULL. When the receiver is detaching, a NULL pointer dereference bug
-caused by sock_hold(sk) in ax25_kill_by_device() will happen. The corresponding
-fail log is shown below:
+According to HW spec the field "size" should be 16 bits
+in bufferx register.
 
-===============================================================
-BUG: KASAN: null-ptr-deref in ax25_device_event+0xfd/0x290
-Call Trace:
-...
-ax25_device_event+0xfd/0x290
-raw_notifier_call_chain+0x5e/0x70
-dev_close_many+0x174/0x220
-unregister_netdevice_many+0x1f7/0xa60
-unregister_netdevice_queue+0x12f/0x170
-unregister_netdev+0x13/0x20
-mkiss_close+0xcd/0x140
-tty_ldisc_release+0xc0/0x220
-tty_release_struct+0x17/0xa0
-tty_release+0x62d/0x670
-...
-
-This patch add condition check in ax25_kill_by_device(). If s->sk is
-NULL, it will goto if branch to kill device.
-
-Fixes: 4e0f718daf97 ("ax25: improve the incomplete fix to avoid UAF and NPD bugs")
-Reported-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e281682bf294 ("net/mlx5_core: HW data structs/types definitions cleanup")
+Signed-off-by: Mohammad Kabat <mohammadkab@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ax25/af_ax25.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/linux/mlx5/mlx5_ifc.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 184af6da0def..093b73c454d2 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -87,6 +87,13 @@ static void ax25_kill_by_device(struct net_device *dev)
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
- 			sk = s->sk;
-+			if (!sk) {
-+				spin_unlock_bh(&ax25_list_lock);
-+				s->ax25_dev = NULL;
-+				ax25_disconnect(s, ENETUNREACH);
-+				spin_lock_bh(&ax25_list_lock);
-+				goto again;
-+			}
- 			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 641a01bc5f6f..031022e32635 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -8975,8 +8975,8 @@ struct mlx5_ifc_bufferx_reg_bits {
+ 	u8         reserved_at_0[0x6];
+ 	u8         lossy[0x1];
+ 	u8         epsb[0x1];
+-	u8         reserved_at_8[0xc];
+-	u8         size[0xc];
++	u8         reserved_at_8[0x8];
++	u8         size[0x10];
+ 
+ 	u8         xoff_threshold[0x10];
+ 	u8         xon_threshold[0x10];
 -- 
 2.34.1
 
