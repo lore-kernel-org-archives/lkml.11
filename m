@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E8CC35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B936C47081
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244597AbiCNMcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49558 "EHLO
+        id S244223AbiCNMbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243836AbiCNMVS (ORCPT
+        with ESMTP id S243473AbiCNMUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D5537017;
-        Mon, 14 Mar 2022 05:17:11 -0700 (PDT)
+        Mon, 14 Mar 2022 08:20:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B218546A1;
+        Mon, 14 Mar 2022 05:16:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F739608C4;
-        Mon, 14 Mar 2022 12:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C2A4C340E9;
-        Mon, 14 Mar 2022 12:17:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D383860929;
+        Mon, 14 Mar 2022 12:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2EBC340E9;
+        Mon, 14 Mar 2022 12:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260230;
-        bh=geHGzriX4PGV6WZTOfnWNbzTkroyn7NhS+GPkc5qQwU=;
+        s=korg; t=1647260167;
+        bh=ElunhrL+NnN9HybiB6bM+2vs16utvqSOjpdCWcmh+X4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mjR/QvTA/Sb12q4IHKdII45XKg61HumPu3es23mQTfGuHRDut0g79N79oA66L/WXb
-         77QBxuvGX6kiuVTi49MD+UvBI1DkQ3F2NDhhiRkQHvQ0QWzs75SQ4fYUQIHv5vjH1i
-         MP0yoRRRi/qQ2FsHM9910l4s/+W7d9iop2kwHm/g=
+        b=ILbsmcwL0XQkXwNPlMAHJt6GMHJaJ+NFWXTSPifAGjS61fFoB7hSo1ZsU5Cn2AK1Y
+         RVI4W/s4hC2+2mnT2f3P3bA/sPl8x6KLBdowweulBLIbpPLkYK0P84zdE9XKQ/+WtM
+         5mCq1f7YVXC0F+YvX27xzAmmk6VlmZNAc4QCc2k4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 092/121] riscv: alternative only works on !XIP_KERNEL
-Date:   Mon, 14 Mar 2022 12:54:35 +0100
-Message-Id: <20220314112746.684663854@linuxfoundation.org>
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 076/121] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
+Date:   Mon, 14 Mar 2022 12:54:19 +0100
+Message-Id: <20220314112746.242564960@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -48,47 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Shreeya Patel <shreeya.patel@collabora.com>
 
-commit c80ee64a8020ef1a6a92109798080786829b8994 upstream.
+[ Upstream commit ae42f9288846353982e2eab181fb41e7fd8bf60f ]
 
-The alternative mechanism needs runtime code patching, it can't work
-on XIP_KERNEL. And the errata workarounds are implemented via the
-alternative mechanism. So add !XIP_KERNEL dependency for alternative
-and erratas.
+We are racing the registering of .to_irq when probing the
+i2c driver. This results in random failure of touchscreen
+devices.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Fixes: 44c922572952 ("RISC-V: enable XIP")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Following explains the race condition better.
+
+[gpio driver] gpio driver registers gpio chip
+[gpio consumer] gpio is acquired
+[gpio consumer] gpiod_to_irq() fails with -ENXIO
+[gpio driver] gpio driver registers irqchip
+gpiod_to_irq works at this point, but -ENXIO is fatal
+
+We could see the following errors in dmesg logs when gc->to_irq is NULL
+
+[2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
+[2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
+
+To avoid this situation, defer probing until to_irq is registered.
+Returning -EPROBE_DEFER would be the first step towards avoiding
+the failure of devices due to the race in registration of .to_irq.
+Final solution to this issue would be to avoid using gc irq members
+until they are fully initialized.
+
+This issue has been reported many times in past and people have been
+using workarounds like changing the pinctrl_amd to built-in instead
+of loading it as a module or by adding a softdep for pinctrl_amd into
+the config file.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/Kconfig.erratas |    1 +
- arch/riscv/Kconfig.socs    |    4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpio/gpiolib.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/arch/riscv/Kconfig.erratas
-+++ b/arch/riscv/Kconfig.erratas
-@@ -2,6 +2,7 @@ menu "CPU errata selection"
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index a1dca6dc03b4..dcb0dca651ac 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -3121,6 +3121,16 @@ int gpiod_to_irq(const struct gpio_desc *desc)
  
- config RISCV_ERRATA_ALTERNATIVE
- 	bool "RISC-V alternative scheme"
-+	depends on !XIP_KERNEL
- 	default y
- 	help
- 	  This Kconfig allows the kernel to automatically patch the
---- a/arch/riscv/Kconfig.socs
-+++ b/arch/riscv/Kconfig.socs
-@@ -14,8 +14,8 @@ config SOC_SIFIVE
- 	select CLK_SIFIVE
- 	select CLK_SIFIVE_PRCI
- 	select SIFIVE_PLIC
--	select RISCV_ERRATA_ALTERNATIVE
--	select ERRATA_SIFIVE
-+	select RISCV_ERRATA_ALTERNATIVE if !XIP_KERNEL
-+	select ERRATA_SIFIVE if !XIP_KERNEL
- 	help
- 	  This enables support for SiFive SoC platform hardware.
- 
+ 		return retirq;
+ 	}
++#ifdef CONFIG_GPIOLIB_IRQCHIP
++	if (gc->irq.chip) {
++		/*
++		 * Avoid race condition with other code, which tries to lookup
++		 * an IRQ before the irqchip has been properly registered,
++		 * i.e. while gpiochip is still being brought up.
++		 */
++		return -EPROBE_DEFER;
++	}
++#endif
+ 	return -ENXIO;
+ }
+ EXPORT_SYMBOL_GPL(gpiod_to_irq);
+-- 
+2.34.1
+
 
 
