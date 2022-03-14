@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04BF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF546C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240852AbiCNMMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        id S240919AbiCNMMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240608AbiCNMHo (ORCPT
+        with ESMTP id S241351AbiCNMIi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:07:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5997525E89;
-        Mon, 14 Mar 2022 05:03:48 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BCC4C439;
+        Mon, 14 Mar 2022 05:05:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 895A4612FC;
-        Mon, 14 Mar 2022 12:03:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59FAEC340E9;
-        Mon, 14 Mar 2022 12:03:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04E8B612FF;
+        Mon, 14 Mar 2022 12:05:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36201C36AE2;
+        Mon, 14 Mar 2022 12:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259428;
-        bh=NuDrYjk6KqOnjT4mFjDBvDlCwZpllFFhwKqWbiYw1/U=;
+        s=korg; t=1647259500;
+        bh=RsFZTWnfjmpT6i3ems5I0UMcIWdeQ2t770YuUzve0og=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r45OMfHwNBeBK1G83k+G7xAHn3+whPOEPqw0py0mZS83gbeKamiZR51G3lBYbSP4o
-         9XVuWm4Qavk9JCMuwrM7726yUv8XGSUvxhItqate8NUlfKKbMxrvsmkSSz1wg2fYzR
-         Cf31zU52JF9pT1FEYrBzxQOyyNGjOAnesPMPh2QY=
+        b=AI2ClrVzUm7PoJ+nbbAVOgtfO77fOOnlikKtpcLhjfe9IVnFppojHJ6t2BDWZvZlw
+         f1gWAjI0mWudXl3p17SVPW+CWi93xcuikiXsm9iXI1cODZIhbTb0f9YDI6sLVosxm8
+         9yNEfNX82P0w0vV7WS2Jbqa8Vu79/f9BLN43UmKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Niels Dossche <niels.dossche@ugent.be>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, valis <sec@valis.email>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 45/71] ipv6: prevent a possible race condition with lifetimes
-Date:   Mon, 14 Mar 2022 12:53:38 +0100
-Message-Id: <20220314112739.192035540@linuxfoundation.org>
+Subject: [PATCH 5.15 020/110] esp: Fix possible buffer overflow in ESP transformation
+Date:   Mon, 14 Mar 2022 12:53:22 +0100
+Message-Id: <20220314112743.599549873@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
-References: <20220314112737.929694832@linuxfoundation.org>
+In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
+References: <20220314112743.029192918@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,45 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Steffen Klassert <steffen.klassert@secunet.com>
 
-[ Upstream commit 6c0d8833a605e195ae219b5042577ce52bf71fff ]
+[ Upstream commit ebe48d368e97d007bfeb76fcb065d6cfc4c96645 ]
 
-valid_lft, prefered_lft and tstamp are always accessed under the lock
-"lock" in other places. Reading these without taking the lock may result
-in inconsistencies regarding the calculation of the valid and preferred
-variables since decisions are taken on these fields for those variables.
+The maximum message size that can be send is bigger than
+the  maximum site that skb_page_frag_refill can allocate.
+So it is possible to write beyond the allocated buffer.
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
-Link: https://lore.kernel.org/r/20220223131954.6570-1-niels.dossche@ugent.be
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fix this by doing a fallback to COW in that case.
+
+v2:
+
+Avoid get get_order() costs as suggested by Linus Torvalds.
+
+Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
+Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
+Reported-by: valis <sec@valis.email>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/net/esp.h | 2 ++
+ net/ipv4/esp4.c   | 5 +++++
+ net/ipv6/esp6.c   | 5 +++++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 072c34823753..7c5bf39dca5d 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4979,6 +4979,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
- 		goto error;
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 9c5637d41d95..90cd02ff77ef 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -4,6 +4,8 @@
  
-+	spin_lock_bh(&ifa->lock);
- 	if (!((ifa->flags&IFA_F_PERMANENT) &&
- 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
- 		preferred = ifa->prefered_lft;
-@@ -5000,6 +5001,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 		preferred = INFINITY_LIFE_TIME;
- 		valid = INFINITY_LIFE_TIME;
+ #include <linux/skbuff.h>
+ 
++#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
++
+ struct ip_esp_hdr;
+ 
+ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index e1b1d080e908..70e6c87fbe3d 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -446,6 +446,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
++	unsigned int allocsz;
+ 
+ 	/* this is non-NULL only with TCP/UDP Encapsulation */
+ 	if (x->encap) {
+@@ -455,6 +456,10 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 			return err;
  	}
-+	spin_unlock_bh(&ifa->lock);
  
- 	if (!ipv6_addr_any(&ifa->peer_addr)) {
- 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
++	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
++	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++		goto cow;
++
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
+ 			nfrags = 1;
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 883b53fd7846..b7b573085bd5 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -483,6 +483,7 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
++	unsigned int allocsz;
+ 
+ 	if (x->encap) {
+ 		int err = esp6_output_encap(x, skb, esp);
+@@ -491,6 +492,10 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 			return err;
+ 	}
+ 
++	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
++	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++		goto cow;
++
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
+ 			nfrags = 1;
 -- 
 2.34.1
 
