@@ -2,139 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9959EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238910AbiCNL1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41234 "EHLO
+        id S238930AbiCNLai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238912AbiCNL1L (ORCPT
+        with ESMTP id S237023AbiCNLag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:27:11 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF44A3B280
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:26:01 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id b8so14262550pjb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:26:01 -0700 (PDT)
+        Mon, 14 Mar 2022 07:30:36 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE98419BE;
+        Mon, 14 Mar 2022 04:29:26 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id qx21so33070034ejb.13;
+        Mon, 14 Mar 2022 04:29:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=o+I3gcydvpgsmI9xrJbonqfw/abZjMM8fb3Nm3LnnaY=;
-        b=pq+bojTShDrNULnHGc2tXu0mQO7B8YiI0O5rAp52/+6qkCZPTNAMbw5xoo6QdjIS70
-         5f9bG5x/Mh7C04Ui7xfIfIEDlGySlwtDu4HJqDLOrEtmesalv8Whydt89mFX6MUyINsY
-         fE91wFTBExhWtgjYmJBE7PetbeUkIxhe5dODcWwACMZD8l9Q12GVqdjGeJBk8NYC/EtR
-         sJiLsg6QlcAQXPqq7Vi4diQlPTwwek4KG01GI7+wG0SMDz1N5W8tRGjw9/nQfMM3Cw/W
-         jQo67ypirRrcCBysyJ6/4EcuvYwNPl+xJHOa3HpPzf4yhsJXPYj1SEdre/29iSzeNK/y
-         Zbhw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bhZboEGor3WhFks+q9rVZMWPKTrT8VjxffJKlKlNrSA=;
+        b=iNgVU/ifAE2qoVnxLr9n5bHDcy4P/Loj04+tqgvQiJFxivo+XarOr1mIffGbXBaY2v
+         h1WwpoPs3indrp0qdY0hMz1Qf/Qw6+dY/BC5er4AO5AYDbnHQTpBLzYc8mY95RfEmNBB
+         Qw2IBBLrvz+7M3kFvBgF5lion5Bc+/MeNMdqeo2FcmOtTHSQCzfm7hVefzXbI4cb0o6r
+         D8BaeF3bd4vhzE8fbsg7ZbYBLOIUxRhGOl5/XRayhq/Dkm1GtR6N4Oy0Hs9WQW2WkW7t
+         ur1weVOn56BMjaNTSF5DyHXilWXeLXzQED20SzOp8SLLdo7UsAYyg9mGphjj2lcHhPJw
+         Vq1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=o+I3gcydvpgsmI9xrJbonqfw/abZjMM8fb3Nm3LnnaY=;
-        b=HOVp6nh1XO0rwZkvDmE00AyzwTMbqb0vvKrcy32FALeuR+jCCIceU2BMnKouI6evkt
-         +3F2O9Bg6ZZRZRSfbKdR23Fwoodjvtjh3ylMHgqd2ApWaR0fv7NF6nFkmKvT0+zw0J8L
-         t+eBC6LYPu+E3n0Qu5oVzKRvYUmsJX3jvvaekrG9labLbik7Xz0PeYzKv8YnYojk1Kyl
-         IG7bilnrvf8Lb5mprDo1wHuCZZmAMUsMZxg6/Wwq/IgNPnJbB9WfUPNMslT7t1aGUl9k
-         bHlpQgozp4baCyNz0dvg7VimbdRR9KzaqVJjYwUKNzyGAhaJWkyScrJUaNT1r9zfL1M/
-         yoCQ==
-X-Gm-Message-State: AOAM532vxVseA9/0h1/ObjjHoTgcBU27qzmyu4a3hzqtJ9gWWpXlDtt+
-        YEVKAvapXoM1sS7fsNCIeBp5f8oIjIPi6BQJ+Kk=
-X-Google-Smtp-Source: ABdhPJyVSK8GHgVSt6s5fJFM0Q75z+o93j5EUPjPPSuXmSEnRXPVMQ5JJdD/pp1A6fCl5z4/daL16w==
-X-Received: by 2002:a17:902:f70a:b0:153:88c7:774 with SMTP id h10-20020a170902f70a00b0015388c70774mr1013596plo.166.1647257161117;
-        Mon, 14 Mar 2022 04:26:01 -0700 (PDT)
-Received: from [192.168.1.102] ([45.250.64.116])
-        by smtp.gmail.com with ESMTPSA id i11-20020a63bf4b000000b00380d3454c38sm13381561pgo.13.2022.03.14.04.25.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 04:26:00 -0700 (PDT)
-Message-ID: <bf27518d-4990-8b0e-c6ea-26a658ce2e54@gmail.com>
-Date:   Mon, 14 Mar 2022 16:55:55 +0530
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bhZboEGor3WhFks+q9rVZMWPKTrT8VjxffJKlKlNrSA=;
+        b=15tExI828aOAbkfNtCG/4Oq0H2fc1gjnziKcx0/w5tz7pmQWAiJzmFTYkl2dEkRHLb
+         cB+gUznPxT2Slg41OAdzZKyswfrwH2RChTOxT1ELQU3hvk/bIrcBERi4KGfkqWPLfGo4
+         CoxCCq3PzBv3aGAqj5kPs2r78J1iWYZFYEm/rF19n21JdErZD/76h+DElAfBS3nDFcpq
+         EXlx8YNv1qLbwFtcP20CeLXdGH/a3HcXzuQAtcu7vN2/xwvveXa0HAni4WOy7WBUDi2h
+         yC6x8SsejndG2ol8wDkmGEfudEZ7/+K2l/hu/TNzLIqr3H5Sddacc/GJlJXKrszbc7AE
+         jQmA==
+X-Gm-Message-State: AOAM531r7LBAxCX+Ut5GkObkqb64mvuPo+xFjpdxsF5P+s7nYQbL8sdE
+        gpmiLlrUIx8az47VdalTgKtydUY/9Q4knVHQeDs=
+X-Google-Smtp-Source: ABdhPJy/8E2CPk5uCPa2ap1Qu1pp9p5kr/egPjM2OQIBP4g8LprXYfCdHo8LJILvqqeid1Jnms4ry3yVqpZTZ49Yviw=
+X-Received: by 2002:a17:906:3a4f:b0:6cf:86e0:586c with SMTP id
+ a15-20020a1709063a4f00b006cf86e0586cmr18315950ejf.626.1647257364864; Mon, 14
+ Mar 2022 04:29:24 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] staging: android: ashmem: Declared file operation with
- const keyword Warning found by checkpatch.pl script.
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Arve_Hj=c3=b8nnev=c3=a5g?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-References: <20220312204128.3942-1-shaikhkamal2012@gmail.com>
- <303ed0c8-8e2c-51a4-a4da-be973a25cdec@gmail.com>
-From:   shaikh kamaluddin <shaikhkamal2012@gmail.com>
-In-Reply-To: <303ed0c8-8e2c-51a4-a4da-be973a25cdec@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <cover.1647242578.git.mchehab@kernel.org> <bb359b4709ceb1112813965237d153cd366cae2d.1647242579.git.mchehab@kernel.org>
+In-Reply-To: <bb359b4709ceb1112813965237d153cd366cae2d.1647242579.git.mchehab@kernel.org>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 14 Mar 2022 08:29:14 -0300
+Message-ID: <CAOMZO5CHPYR+sdSS1ay_Zr1qL0XCGCJ2kqMxK3JxDuxDtjFCtA@mail.gmail.com>
+Subject: Re: [PATCH 49/64] media: platform: rename amphion/ to nxp/amphion/
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     =?UTF-8?Q?Niklas_S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Shijie Qin <shijie.qin@nxp.com>,
+        Zhou Peng <eagle.zhou@nxp.com>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-media <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/13/2022 3:13 AM, Pavel Skripkin wrote:
-> Hi Shaikh,
-> 
-> On 3/12/22 23:41, shaikh kamal wrote:
->> Signed-off-by: shaikh kamal <shaikhkamal2012@gmail.com>
->> ---
->>   drivers/staging/android/ashmem.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/staging/android/ashmem.c 
->> b/drivers/staging/android/ashmem.c
->> index ddbde3f8430e..4c6b420fbf4d 100644
->> --- a/drivers/staging/android/ashmem.c
->> +++ b/drivers/staging/android/ashmem.c
->> @@ -377,7 +377,7 @@ ashmem_vmfile_get_unmapped_area(struct file *file, 
->> unsigned long addr,
->>   static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
->>   {
->> -    static struct file_operations vmfile_fops;
->> +    static const struct file_operations vmfile_fops;
->>       struct ashmem_area *asma = file->private_data;
->>       int ret = 0;
-> 
-> Are you sure this patch compiles? vmfile_fops is overrided few lines below
-> 
-> odd checkpatch.pl warning...
-> 
-> 
-> 
-> 
-> With regards,
-> Pavel Skripkin
+Hi Mauro,
 
-Thank you,yes vmfile_fops is overrided in below code.
-Building the kernel - make -j4,
-drivers/staging/android/ashmem.c: In function ‘ashmem_mmap’:
-drivers/staging/android/ashmem.c:431:16: error: assignment of read-only 
-variable ‘vmfile_fops’
-     vmfile_fops = *vmfile->f_op;
-                 ^
-drivers/staging/android/ashmem.c:432:21: error: assignment of member 
-‘mmap’ in read-only object
-     vmfile_fops.mmap = ashmem_vmfile_mmap;
-                      ^
-drivers/staging/android/ashmem.c:433:34: error: assignment of member 
-‘get_unmapped_area’ in read-only object
-     vmfile_fops.get_unmapped_area =
-                                   ^
-scripts/Makefile.build:288: recipe for target 
-'drivers/staging/android/ashmem.o' failed
-make[3]: *** [drivers/staging/android/ashmem.o] Error 1
-scripts/Makefile.build:550: recipe for target 'drivers/staging/android' 
-failed
-make[2]: *** [drivers/staging/android] Error 2
-scripts/Makefile.build:550: recipe for target 'drivers/staging' failed
-make[1]: *** [drivers/staging] Error 2
-Makefile:1831: recipe for target 'drivers' failed
+On Mon, Mar 14, 2022 at 4:56 AM Mauro Carvalho Chehab
+<mchehab@kernel.org> wrote:
+>
+> As the end goal is to have platform drivers split by vendor,
+> rename amphion/ to nxp/amphion/.
 
-
-Thanks & Regards,
-Shaikh Kamaluddin
+Amphion is the vendor itself, so the current naming scheme is correct.
