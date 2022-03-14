@@ -2,130 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A61C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB3B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240891AbiCNMQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S240918AbiCNMQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242232AbiCNMJp (ORCPT
+        with ESMTP id S241312AbiCNMIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09ECE50B0E;
-        Mon, 14 Mar 2022 05:06:55 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC6A4BBB1;
+        Mon, 14 Mar 2022 05:04:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB58E61319;
-        Mon, 14 Mar 2022 12:06:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0120AC340E9;
-        Mon, 14 Mar 2022 12:06:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259600;
-        bh=YfpmRIDi6jRVe/IYxm/SbOg5cyruW3iEv4Tg+KggpLQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=10/UpRbBENrQtegLjmJMzXe+vq4yBqTi4VYzrVssHNfEKdJId/ElWShL8DgNnx3+t
-         kZ/ZQvdQMJZeG2XHzthft12TDX7N8rBQ7T/IhQZ373tlRVOM+yY6t9rXB5Mr+KLc/q
-         Yg+NU54Gao8ve6rq7bL1eyu0UfPRPdD6herUJ36c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Featherston <mark@embeddedTS.com>,
-        Kris Bahnsen <kris@embeddedTS.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 046/110] gpio: ts4900: Do not set DAT and OE together
-Date:   Mon, 14 Mar 2022 12:53:48 +0100
-Message-Id: <20220314112744.322917468@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
-References: <20220314112743.029192918@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB41FB80DEC;
+        Mon, 14 Mar 2022 12:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABCB0C340EC;
+        Mon, 14 Mar 2022 12:04:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647259494;
+        bh=tV82BqDO0AsjvHNlIhCJicG5lFAeNtcRzJzz1XpeSds=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qYFlmSkdisUfwzRsUpQ1ZJH7Ei1DCePaIe3y4UVsIryWRl6HDJ4B3kqwp5Jg9JiW5
+         sJpyctpVBJ1rU2W+uK7PUzg2aG15UJj1a5rYGmgb7hcZVP1rWpvObl4JrY9RSQj/nO
+         oE42bLIJ4j13VitrmJ6XPbVqZcGhrlKXBrjyMAvJWHZUgpyZn7f/7O+yUSQft1veI7
+         8t9n14bDMkFQVU4dNZg446VPLzZDU0+u7CcQCQsAPvZEhMm4rpbba8+bhgF8IaKXo4
+         ZU6Y/pd8l3PutJ1e9YQdLxRHhP9anv5ZWokMA4b+FEs3NNNlF2UFbyFoAwWsVdTHpL
+         tYoX+ZrJ6nH+g==
+Date:   Mon, 14 Mar 2022 13:04:47 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Shijie Qin <shijie.qin@nxp.com>,
+        Zhou Peng <eagle.zhou@nxp.com>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-media <linux-media@vger.kernel.org>
+Subject: Re: [PATCH 49/64] media: platform: rename amphion/ to nxp/amphion/
+Message-ID: <20220314130447.7f03f726@coco.lan>
+In-Reply-To: <CAOMZO5CHPYR+sdSS1ay_Zr1qL0XCGCJ2kqMxK3JxDuxDtjFCtA@mail.gmail.com>
+References: <cover.1647242578.git.mchehab@kernel.org>
+        <bb359b4709ceb1112813965237d153cd366cae2d.1647242579.git.mchehab@kernel.org>
+        <CAOMZO5CHPYR+sdSS1ay_Zr1qL0XCGCJ2kqMxK3JxDuxDtjFCtA@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Featherston <mark@embeddedTS.com>
+Em Mon, 14 Mar 2022 08:29:14 -0300
+Fabio Estevam <festevam@gmail.com> escreveu:
 
-[ Upstream commit 03fe003547975680fdb9ff5ab0e41cb68276c4f2 ]
+> Hi Mauro,
+> 
+> On Mon, Mar 14, 2022 at 4:56 AM Mauro Carvalho Chehab
+> <mchehab@kernel.org> wrote:
+> >
+> > As the end goal is to have platform drivers split by vendor,
+> > rename amphion/ to nxp/amphion/.  
+> 
+> Amphion is the vendor itself, so the current naming scheme is correct.
 
-This works around an issue with the hardware where both OE and
-DAT are exposed in the same register. If both are updated
-simultaneously, the harware makes no guarantees that OE or DAT
-will actually change in any given order and may result in a
-glitch of a few ns on a GPIO pin when changing direction and value
-in a single write.
+Ok, I'll fix it on the next series.
 
-Setting direction to input now only affects OE bit. Setting
-direction to output updates DAT first, then OE.
-
-Fixes: 9c6686322d74 ("gpio: add Technologic I2C-FPGA gpio support")
-Signed-off-by: Mark Featherston <mark@embeddedTS.com>
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpio/gpio-ts4900.c | 24 +++++++++++++++++++-----
- 1 file changed, 19 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
-index d885032cf814..d918d2df4de2 100644
---- a/drivers/gpio/gpio-ts4900.c
-+++ b/drivers/gpio/gpio-ts4900.c
-@@ -1,7 +1,7 @@
- /*
-  * Digital I/O driver for Technologic Systems I2C FPGA Core
-  *
-- * Copyright (C) 2015 Technologic Systems
-+ * Copyright (C) 2015, 2018 Technologic Systems
-  * Copyright (C) 2016 Savoir-Faire Linux
-  *
-  * This program is free software; you can redistribute it and/or
-@@ -55,19 +55,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
- {
- 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
- 
--	/*
--	 * This will clear the output enable bit, the other bits are
--	 * dontcare when this is cleared
-+	/* Only clear the OE bit here, requires a RMW. Prevents potential issue
-+	 * with OE and data getting to the physical pin at different times.
- 	 */
--	return regmap_write(priv->regmap, offset, 0);
-+	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
- }
- 
- static int ts4900_gpio_direction_output(struct gpio_chip *chip,
- 					unsigned int offset, int value)
- {
- 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
-+	unsigned int reg;
- 	int ret;
- 
-+	/* If changing from an input to an output, we need to first set the
-+	 * proper data bit to what is requested and then set OE bit. This
-+	 * prevents a glitch that can occur on the IO line
-+	 */
-+	regmap_read(priv->regmap, offset, &reg);
-+	if (!(reg & TS4900_GPIO_OE)) {
-+		if (value)
-+			reg = TS4900_GPIO_OUT;
-+		else
-+			reg &= ~TS4900_GPIO_OUT;
-+
-+		regmap_write(priv->regmap, offset, reg);
-+	}
-+
- 	if (value)
- 		ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
- 							 TS4900_GPIO_OUT);
--- 
-2.34.1
-
-
-
+Thanks,
+Mauro
