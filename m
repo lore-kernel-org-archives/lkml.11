@@ -2,137 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 239C5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243330AbiCNRrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 13:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32776 "EHLO
+        id S243478AbiCNRwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238425AbiCNRrO (ORCPT
+        with ESMTP id S242506AbiCNRwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 13:47:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E891BF5F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:46:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647279963;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YEJG0IObRkUr69r2f7J23FXjPgRCTJSeRdoCwh8LUrA=;
-        b=FjY3WnLXJFEGZDsR8GU0MH+aJTMb8Tq2Lj2HHQRn+Pg8zKBFJccv7hQBEZMtCT5huAtUOV
-        cdMvdK/DXjUfXd/MH8vDS0SRYezuxElCpkG02S6N4zTZofIyKUQzEPbdqQsZRy06L7v7+t
-        LZVe3T23HOOzC9STZ2KyQ43zAM2+uhA=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556-P9QDZGrLPk2rNMTIWU-GZA-1; Mon, 14 Mar 2022 13:46:02 -0400
-X-MC-Unique: P9QDZGrLPk2rNMTIWU-GZA-1
-Received: by mail-il1-f197.google.com with SMTP id 5-20020a056e0211a500b002c6552a9c5fso9692696ilj.22
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:46:01 -0700 (PDT)
+        Mon, 14 Mar 2022 13:52:32 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF1B13F28;
+        Mon, 14 Mar 2022 10:51:21 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id m12so20993647edc.12;
+        Mon, 14 Mar 2022 10:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=K+QzBYfwm0KBPQGCnXunte5ZDjBtvy4RzhVp5w57kMg=;
+        b=M/RgnQtyHwMeBGs6ZTShnPjz0GwpDCtlAk8qLTaCj3CBf3lqkVGgBUfYjW/5rnhj6w
+         F471RcppKHuyJOL43RvWaNPZl7vKfBE5xbkh33zJQFVVxpMl0UnALnMEKRtT9a2jQane
+         xuLDh5HN6EvmrSuOlGtT2P6D9vGmaAUDZ92k2//CGuGtpHvYXDGCr9O3UZZP26Zqsr5W
+         BDBd71AkBAPiUW3yMN1A18XYZVyHfXr6Moh/uffalzPzOLEprYuOO8ey879wYry3Y02I
+         y2GHHmCjuMcvX+exgR46gfZQXbxqL5ErW5Ty3h/GDkGt39qm8OPKB021tktb0OiReuUW
+         JC8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YEJG0IObRkUr69r2f7J23FXjPgRCTJSeRdoCwh8LUrA=;
-        b=QlF4i5VzBPWyQjM9Pl/gVBa/duhUwzOtMHGn53EKiLmNctz+9UQ2qHRTgQx5Mx2JLb
-         +z9V+1BCKf+6PWXA6dgs/381THYBF+GcZ1I557d3CTC48uQd+duaQDNaQ784AtTSlywt
-         hwRMCUwzEMtDD5ozRhmt4C0vXaNC07iegHNuyLM9uOGRotCvbii3GqCymaNTv1+wqh9E
-         93Jyiax+Ue3MBTKnhVGkmvxVQcMlq4mfU87P7W27ItvVQ18D7X946WkWUW4GphNSesrZ
-         gWM4+m9mVxEabvM71+1ga1We6oYhtqgxC1EWKNMvZxUCxxk3cD5BNISIPP8cH+i3O7hT
-         CW1Q==
-X-Gm-Message-State: AOAM531H5KrQ6tlpo31YnWf79Ar01chCleEpQVyEtK1uScLCJEfmWW1K
-        exF3lvukbCEjyH6kiOFw/4W0cisEyFx1mIy/HzA7Dc/z8vkSEeY9J8UovlAYBxs20RQAvE0jFDP
-        PZFhOAa6tAjwDz+RCVkhAKTSS
-X-Received: by 2002:a05:6602:3c5:b0:613:8644:591c with SMTP id g5-20020a05660203c500b006138644591cmr20675142iov.161.1647279961389;
-        Mon, 14 Mar 2022 10:46:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxZJJA4WojvmGdmtZ74f1wNxVgekXaAUaGHvuviIsQF6/0w1VCSMfKnNrXxBYkfIXxrO2Rn+w==
-X-Received: by 2002:a05:6602:3c5:b0:613:8644:591c with SMTP id g5-20020a05660203c500b006138644591cmr20675084iov.161.1647279960174;
-        Mon, 14 Mar 2022 10:46:00 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id b2-20020a923402000000b002c25b16552fsm9227068ila.14.2022.03.14.10.45.59
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=K+QzBYfwm0KBPQGCnXunte5ZDjBtvy4RzhVp5w57kMg=;
+        b=shgZUgy1T5FofVxnlsJQQIzLqvNz3oJcHxX5HKCId666IUcHhaiZ4b79Lm0wfbfPuM
+         Xc++ipHd0po89iANJuNfY0SEOUThjZAM3XU+sBhS11AZDO+ZDiwe5F1udsSCNiQ5uE2I
+         PCVWkZIUTTWc1+WGuwhz0KnRz84vPGBHB+NoCg2lk8znK4PM31+TMZzSiXf7Ww87BmMr
+         LMKA37CSPBDBJEXxv56Q3tUfT7TRJ9iuDpv/PbKPkj/jwEql49hvN1WUfmrzRrE2pBxi
+         DEzLxs7xcNBbSw4uNv+axELmQgzxmc3zjv12xb9ExPw/00nbKIcPeC/EEdhjGfIpRz+z
+         qmcQ==
+X-Gm-Message-State: AOAM532MBaUDRb97lsYvOpEs//tRxAOn96jGu9xBrNH8DvvL7PSOLLJF
+        xz02ZI0ZxmEj0KKBgtJ+oCI=
+X-Google-Smtp-Source: ABdhPJzZ7adnceVULLcpDzwBytwFNDA6cwAaMluqHekt/uFLE4gDihE6mCj1a9IEQdaxfIdH9HHp8Q==
+X-Received: by 2002:a05:6402:5208:b0:416:ce01:f9b5 with SMTP id s8-20020a056402520800b00416ce01f9b5mr16224792edd.275.1647280280357;
+        Mon, 14 Mar 2022 10:51:20 -0700 (PDT)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id z92-20020a509e65000000b00416466dc220sm8414953ede.87.2022.03.14.10.51.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 10:45:59 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 11:45:58 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
-        "yishaih@nvidia.com" <yishaih@nvidia.com>,
-        "kevin.tian@intel.com" <kevin.tian@intel.com>,
-        liulongfang <liulongfang@huawei.com>,
-        "Zengtao (B)" <prime.zeng@hisilicon.com>,
-        Jonathan Cameron <jonathan.cameron@huawei.com>,
-        "Wangzhou (B)" <wangzhou1@hisilicon.com>,
-        Linuxarm <linuxarm@huawei.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v9 0/9] vfio/hisilicon: add ACC live migration driver
-Message-ID: <20220314114558.2cdd57fc.alex.williamson@redhat.com>
-In-Reply-To: <df217839a41b47dc94ef201dfe379e4e@huawei.com>
-References: <20220308184902.2242-1-shameerali.kolothum.thodi@huawei.com>
-        <df217839a41b47dc94ef201dfe379e4e@huawei.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Mon, 14 Mar 2022 10:51:19 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 19:51:18 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
+ for MST
+Message-ID: <20220314175118.w4plirtshhzgujn3@skbuf>
+References: <20220314095231.3486931-1-tobias@waldekranz.com>
+ <20220314095231.3486931-10-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314095231.3486931-10-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 17:26:59 +0000
-Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com> wrote:
+On Mon, Mar 14, 2022 at 10:52:26AM +0100, Tobias Waldekranz wrote:
+> When joining a bridge where MST is enabled, we validate that the
+> proper offloading support is in place, otherwise we fallback to
+> software bridging.
+> 
+> When then mode is changed on a bridge in which we are members, we
+> refuse the change if offloading is not supported.
+> 
+> At the moment we only check for configurable learning, but this will
+> be further restricted as we support more MST related switchdev events.
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  net/dsa/dsa_priv.h |  2 ++
+>  net/dsa/port.c     | 20 ++++++++++++++++++++
+>  net/dsa/slave.c    |  6 ++++++
+>  3 files changed, 28 insertions(+)
+> 
+> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+> index f20bdd8ea0a8..2aba420696ef 100644
+> --- a/net/dsa/dsa_priv.h
+> +++ b/net/dsa/dsa_priv.h
+> @@ -234,6 +234,8 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+>  			    struct netlink_ext_ack *extack);
+>  bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+>  int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
+> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
+> +			struct netlink_ext_ack *extack);
+>  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
+>  			bool targeted_match);
+>  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+> diff --git a/net/dsa/port.c b/net/dsa/port.c
+> index 58291df14cdb..1a17a0efa2fa 100644
+> --- a/net/dsa/port.c
+> +++ b/net/dsa/port.c
+> @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
+>  	if (err && err != -EOPNOTSUPP)
+>  		return err;
+>  
+> +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
+> +	if (err && err != -EOPNOTSUPP)
+> +		return err;
 
-> Hi Alex,
->=20
-> > -----Original Message-----
-> > From: Shameerali Kolothum Thodi
-> > Sent: 08 March 2022 18:49
-> > To: kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > linux-crypto@vger.kernel.org
-> > Cc: linux-pci@vger.kernel.org; alex.williamson@redhat.com; jgg@nvidia.c=
-om;
-> > cohuck@redhat.com; mgurtovoy@nvidia.com; yishaih@nvidia.com;
-> > kevin.tian@intel.com; Linuxarm <linuxarm@huawei.com>; liulongfang
-> > <liulongfang@huawei.com>; Zengtao (B) <prime.zeng@hisilicon.com>;
-> > Jonathan Cameron <jonathan.cameron@huawei.com>; Wangzhou (B)
-> > <wangzhou1@hisilicon.com>
-> > Subject: [PATCH v9 0/9] vfio/hisilicon: add ACC live migration driver
-> >=20
-> > Hi,
-> >=20
-> > This series attempts to add vfio live migration support for HiSilicon
-> > ACC VF devices based on the new v2 migration protocol definition and
-> > mlx5 v9 series discussed here[0].
-> >=20
-> > v8 --> v9
-> > =C2=A0- Added acks by Wangzhou/Longfang/Yekai
-> > =C2=A0- Added R-by tags by Jason.
-> > =C2=A0- Addressed comments=C2=A0by Alex on v8.
-> > =C2=A0- Fixed the pf_queue pointer assignment error in patch #8.
-> > =C2=A0- Addressed=C2=A0comments from Kevin,
-> >  =C2=A0 =C2=A0-Updated patch #5 commit log msg with a clarification tha=
-t VF
-> > =C2=A0 =C2=A0 =C2=A0migration BAR assignment is fine if migration suppo=
-rt is not there.
-> >  =C2=A0 =C2=A0-Added QM description to patch #8 commit msg. =20
->=20
-> Hope there is nothing pending for this series now to make it to next.
-> I know ack from Bjorn is still pending for patch #3, and I have
-> sent a ping last week and also CCd him on that patch.
->=20
-> Please let me know if there is anything I missed.=20
+The "err && err != -EOPNOTSUPP" scheme is in place for compatibility
+with drivers that don't all support the bridge port attributes, but used
+to work prior to dsa_port_switchdev_sync_attrs()'s existence.
 
-Hi Shameer,
+I don't think this scheme is necessary for dsa_port_mst_enable(), you
+can just return -EOPNOTSUPP and remove the special handling for this code.
 
-Nothing still pending from my end, as soon as we can get an ack on
-patch #3 and barring issues in the interim, I'll merge it.  Thanks,
-
-Alex
-
+> +
+>  	return 0;
+>  }
+>  
+> @@ -735,6 +739,22 @@ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
+>  	return 0;
+>  }
+>  
+> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
+> +			struct netlink_ext_ack *extack)
+> +{
+> +	struct dsa_switch *ds = dp->ds;
+> +
+> +	if (!on)
+> +		return 0;
+> +
+> +	if (!dsa_port_can_configure_learning(dp)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Hardware does not support MST");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
+>  			      struct switchdev_brport_flags flags,
+>  			      struct netlink_ext_ack *extack)
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index a61a7c54af20..333f5702ea4f 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -463,6 +463,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
+>  
+>  		ret = dsa_port_ageing_time(dp, attr->u.ageing_time);
+>  		break;
+> +	case SWITCHDEV_ATTR_ID_BRIDGE_MST:
+> +		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
+> +			return -EOPNOTSUPP;
+> +
+> +		ret = dsa_port_mst_enable(dp, attr->u.mst, extack);
+> +		break;
+>  	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
+>  		if (!dsa_port_offloads_bridge_port(dp, attr->orig_dev))
+>  			return -EOPNOTSUPP;
+> -- 
+> 2.25.1
+> 
