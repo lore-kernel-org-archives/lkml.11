@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 203F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E36C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234672AbiCNMs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        id S236092AbiCNMtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237123AbiCNMry (ORCPT
+        with ESMTP id S238201AbiCNMr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:47:54 -0400
+        Mon, 14 Mar 2022 08:47:57 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2A638BCC;
-        Mon, 14 Mar 2022 05:41:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978233917E;
+        Mon, 14 Mar 2022 05:41:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ydan4DcFWSqbAVwutC+rrcavDBQ1Llz9s3pxcPtxROk=;
-  b=NVZvyqGzeDgz6fVAat5ruw+l13ThAvGEZes/BTGBhOmDh6Na4lMuZcvY
-   vN7nHEqhzJl1s6x6G4HwpeV1DKXCJEyvct7hxj4hRkL0bEJEsJvugAb/q
-   zDmyxHqHHACtbsYT/jaIfCC4PBNDQG9nGYf6KIhQVGQhiShgqHbeqhDuK
-   o=;
+  bh=hkSvYg+QhqgFZs/M00yfIFpfr0WP6sk4OF7YMdOXfzM=;
+  b=cAIVo/VSoFJ93ordGoT7KpoGY4itLt7GuKTgBDMzcvn0vvhHNiXO85XV
+   NKck4K9KZuU/STC8Z4bOBtD9EQ93cvGlW+vLZ+lyBlTaAv8HJznQqu8Zo
+   SXP2YNagNcNJMD4treHXZzuintqxmGcTq9yGWrB7/SCXoT5Tm/iEkZmXz
+   Q=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997364"
+   d="scan'208";a="25997348"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kernel-janitors@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 30/30] perf/core: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:54 +0100
-Message-Id: <20220314115354.144023-31-Julia.Lawall@inria.fr>
+To:     Andy Gross <agross@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 15/30] clk: qcom: sm6125-gcc: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:39 +0100
+Message-Id: <20220314115354.144023-16-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -56,20 +54,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- kernel/events/core.c |    2 +-
+ drivers/clk/qcom/gcc-sm6125.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index cfde994ce61c..25fcd4cca0d7 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -872,7 +872,7 @@ static void perf_cgroup_switch(struct task_struct *task, int mode)
- 			 * event_filter_match() to not have to pass
- 			 * task around
- 			 * we pass the cpuctx->ctx to perf_cgroup_from_task()
--			 * because cgorup events are only per-cpu
-+			 * because cgroup events are only per-cpu
- 			 */
- 			cpuctx->cgrp = perf_cgroup_from_task(task,
- 							     &cpuctx->ctx);
+diff --git a/drivers/clk/qcom/gcc-sm6125.c b/drivers/clk/qcom/gcc-sm6125.c
+index 431b55bb0d2f..cf3af88d4021 100644
+--- a/drivers/clk/qcom/gcc-sm6125.c
++++ b/drivers/clk/qcom/gcc-sm6125.c
+@@ -4151,7 +4151,7 @@ static int gcc_sm6125_probe(struct platform_device *pdev)
+ 
+ 	/*
+ 	 * Enable DUAL_EDGE mode for MCLK RCGs
+-	 * This is requierd to enable MND divider mode
++	 * This is required to enable MND divider mode
+ 	 */
+ 	regmap_update_bits(regmap, 0x51004, 0x3000, 0x2000);
+ 	regmap_update_bits(regmap, 0x51020, 0x3000, 0x2000);
 
