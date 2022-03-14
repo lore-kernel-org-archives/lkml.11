@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F573C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231727AbiCNMGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S240547AbiCNMGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240548AbiCNMFT (ORCPT
+        with ESMTP id S240555AbiCNMFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:05:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495B11E3C0;
-        Mon, 14 Mar 2022 05:02:25 -0700 (PDT)
+        Mon, 14 Mar 2022 08:05:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF73846173;
+        Mon, 14 Mar 2022 05:02:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5E10612DD;
-        Mon, 14 Mar 2022 12:02:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F61C340E9;
-        Mon, 14 Mar 2022 12:02:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15FDCB80D24;
+        Mon, 14 Mar 2022 12:02:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5446AC340ED;
+        Mon, 14 Mar 2022 12:02:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259344;
-        bh=m6zHTGYUvZzVjWIdetxfz6Kbw/pa9l/jnbZEEOMHaYE=;
+        s=korg; t=1647259347;
+        bh=qlgUNIR5LdJ8E/CVar6iRKrlBhipwT0fC3JfdrsqBjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xzgnfQNauzZHpLQ/o+z1RwPcGltdH2m5O6f5e4BK9hokB4cRQsk2WWHaiqQrwUJLc
-         /TQvoIzZyS5wvJAJyDDeSV1sAFEVeVfiQTZIqZfDy+7injj71WFKmXQqedZ9U3iAnv
-         BGCZHhVF6SFsSbV3Eh6CTP3iC+JXNp+HknOS1TF0=
+        b=c4t0/nGf0awnKW5A8PWRTwNZput64heNzgMNzFXuXX6eCrDhBuwJZcWzcwsUTz998
+         lqwyNwjhWivKZvqF9HP5NiZZnuKrJDBq6xsw/tG0R65E+3tkcIODQOmAQpou8k5Hfs
+         ZvANbyWmoKtPG7f3Uo6gDahe5fkONEZ1s3WnVRyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Halil Pasic" <pasic@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.10 58/71] virtio: acknowledge all features before access
-Date:   Mon, 14 Mar 2022 12:53:51 +0100
-Message-Id: <20220314112739.554442527@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Vikash Chandola <vikash.chandola@linux.intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 41/71] hwmon: (pmbus) Clear pmbus fault/warning bits after read
+Date:   Mon, 14 Mar 2022 12:53:34 +0100
+Message-Id: <20220314112739.082070941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -49,141 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Vikash Chandola <vikash.chandola@linux.intel.com>
 
-commit 4fa59ede95195f267101a1b8916992cf3f245cdb upstream.
+[ Upstream commit 35f165f08950a876f1b95a61d79c93678fba2fd6 ]
 
-The feature negotiation was designed in a way that
-makes it possible for devices to know which config
-fields will be accessed by drivers.
+Almost all fault/warning bits in pmbus status registers remain set even
+after fault/warning condition are removed. As per pmbus specification
+these faults must be cleared by user.
+Modify hwmon behavior to clear fault/warning bit after fetching data if
+fault/warning bit was set. This allows to get fresh data in next read.
 
-This is broken since commit 404123c2db79 ("virtio: allow drivers to
-validate features") with fallout in at least block and net.  We have a
-partial work-around in commit 2f9a174f918e ("virtio: write back
-F_VERSION_1 before validate") which at least lets devices find out which
-format should config space have, but this is a partial fix: guests
-should not access config space without acknowledging features since
-otherwise we'll never be able to change the config space format.
-
-To fix, split finalize_features from virtio_finalize_features and
-call finalize_features with all feature bits before validation,
-and then - if validation changed any bits - once again after.
-
-Since virtio_finalize_features no longer writes out features
-rename it to virtio_features_ok - since that is what it does:
-checks that features are ok with the device.
-
-As a side effect, this also reduces the amount of hypervisor accesses -
-we now only acknowledge features once unless we are clearing any
-features when validating (which is uncommon).
-
-IRC I think that this was more or less always the intent in the spec but
-unfortunately the way the spec is worded does not say this explicitly, I
-plan to address this at the spec level, too.
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-Cc: stable@vger.kernel.org
-Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
-Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
-Cc: "Halil Pasic" <pasic@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vikash Chandola <vikash.chandola@linux.intel.com>
+Link: https://lore.kernel.org/r/20220222131253.2426834-1-vikash.chandola@linux.intel.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio.c       |   39 ++++++++++++++++++++++-----------------
- include/linux/virtio_config.h |    3 ++-
- 2 files changed, 24 insertions(+), 18 deletions(-)
+ drivers/hwmon/pmbus/pmbus_core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -167,14 +167,13 @@ void virtio_add_status(struct virtio_dev
- }
- EXPORT_SYMBOL_GPL(virtio_add_status);
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index b0e2820a2d57..71798fde2ef0 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -898,6 +898,11 @@ static int pmbus_get_boolean(struct i2c_client *client, struct pmbus_boolean *b,
+ 		pmbus_update_sensor_data(client, s2);
  
--static int virtio_finalize_features(struct virtio_device *dev)
-+/* Do some validation, then set FEATURES_OK */
-+static int virtio_features_ok(struct virtio_device *dev)
- {
--	int ret = dev->config->finalize_features(dev);
- 	unsigned status;
-+	int ret;
+ 	regval = status & mask;
++	if (regval) {
++		ret = pmbus_write_byte_data(client, page, reg, regval);
++		if (ret)
++			goto unlock;
++	}
+ 	if (s1 && s2) {
+ 		s64 v1, v2;
  
- 	might_sleep();
--	if (ret)
--		return ret;
- 
- 	ret = arch_has_restricted_virtio_memory_access();
- 	if (ret) {
-@@ -239,17 +238,6 @@ static int virtio_dev_probe(struct devic
- 		driver_features_legacy = driver_features;
- 	}
- 
--	/*
--	 * Some devices detect legacy solely via F_VERSION_1. Write
--	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
--	 * these when needed.
--	 */
--	if (drv->validate && !virtio_legacy_is_little_endian()
--			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
--		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
--		dev->config->finalize_features(dev);
--	}
--
- 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
- 		dev->features = driver_features & device_features;
- 	else
-@@ -260,13 +248,26 @@ static int virtio_dev_probe(struct devic
- 		if (device_features & (1ULL << i))
- 			__virtio_set_bit(dev, i);
- 
-+	err = dev->config->finalize_features(dev);
-+	if (err)
-+		goto err;
-+
- 	if (drv->validate) {
-+		u64 features = dev->features;
-+
- 		err = drv->validate(dev);
- 		if (err)
- 			goto err;
-+
-+		/* Did validation change any features? Then write them again. */
-+		if (features != dev->features) {
-+			err = dev->config->finalize_features(dev);
-+			if (err)
-+				goto err;
-+		}
- 	}
- 
--	err = virtio_finalize_features(dev);
-+	err = virtio_features_ok(dev);
- 	if (err)
- 		goto err;
- 
-@@ -437,7 +438,11 @@ int virtio_device_restore(struct virtio_
- 	/* We have a driver! */
- 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
- 
--	ret = virtio_finalize_features(dev);
-+	ret = dev->config->finalize_features(dev);
-+	if (ret)
-+		goto err;
-+
-+	ret = virtio_features_ok(dev);
- 	if (ret)
- 		goto err;
- 
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -62,8 +62,9 @@ struct virtio_shm_region {
-  *	Returns the first 64 feature bits (all we currently need).
-  * @finalize_features: confirm what device features we'll be using.
-  *	vdev: the virtio_device
-- *	This gives the final feature bits for the device: it can change
-+ *	This sends the driver feature bits to the device: it can change
-  *	the dev->feature bits if it wants.
-+ * Note: despite the name this can be called any number of times.
-  *	Returns 0 on success or error status
-  * @bus_name: return the bus name associated with the device (optional)
-  *	vdev: the virtio_device
+-- 
+2.34.1
+
 
 
