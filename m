@@ -2,229 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5926AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF90BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244852AbiCNUD6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 16:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
+        id S244855AbiCNUEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 16:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244694AbiCNUDz (ORCPT
+        with ESMTP id S244853AbiCNUD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 16:03:55 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29DA73EAA2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:02:44 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2dcd6a5e4b6so141149877b3.4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:02:44 -0700 (PDT)
+        Mon, 14 Mar 2022 16:03:59 -0400
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F5D11F
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:02:46 -0700 (PDT)
+Received: by mail-io1-xd2f.google.com with SMTP id r11so19670886ioh.10
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:02:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=fM7xdaekwmagyuKy0kdx3p5v2FfzYu7Y7vGXarjRfKM=;
-        b=Jju9oT+vQW6Extb2//d+2hPcrzdqRTRz8LLvYdwkCzvVoHbTYTsLeq6DDN9pwSg4ex
-         dJuDeCwtJBErKNwSBqyIMYZ6AFZs+yiF2LMOhtVE+Cb37YqZS3LzXs37tEsjiA8u3Vsn
-         RMHL0VeQfR4FN1Xux9ZdmyC65BaUdLmGfAI+3qxiGPwG/xUCjE9QBN701VL5QjJIAUK2
-         sZcfFSMlrS9+17Y5ylq6szGPggUXnm/2kkUQ32XTCsVEKMh+gx80kgkhvJ6ikwn8kqNU
-         GAoNNxigrbH/N2vf6cWg6NpJhPXDn4FL/pVYIKx5ca8jpSu3DjX0MUTI1xeaBoH/PlkP
-         kahg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5f2/HoIwu4j9nQu9qTBXrIZ6NMk6olPlLIzOEbYSwZw=;
+        b=YSdWC5rvFf1g8ioBrwOR3I4g6iXlWuZTXYZmkB/YQq1F1LrcUaSd/IQL+JvtW6ihSp
+         oQaeInLjTzG/E53npJN0joUHNTo51L0lUAbybFrGGy5h1XilJkR03a6LOeR1W6M85NDw
+         P7mQ1C/yLXctxm7ySS07JsZcTqIrLfPQo031NqWsuNEIjJHqw9V4GydqW30p1Zya0c1K
+         ZwDP19hMy8Qj4hekRHBCFttQRHyES8t1BcI1ERp2y6JBS5pxUC1EbIe4MEMkoI0rpq90
+         NUTTKj2kIS88DkRO7tkBQ/gT5XSv4rVJd4VuWAIIiRZQFiudmldpM26HeG4gPWGw4D1b
+         lyFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=fM7xdaekwmagyuKy0kdx3p5v2FfzYu7Y7vGXarjRfKM=;
-        b=AuMGN82aOHJOhRgjMx0MedjwB20ZICWn8VG6vEz1NGrx1vjRR5ISg6H4675IU/y2pA
-         NPRypHu8w2BHhB0mCUiTZRDYe/m/Whs5ebctvyE+AiCXbmfgIA+kHl+pxmx+52DbQrjg
-         fpj4qmZa0dCH4amVg1GRK79OPyBuU2kdejoAqjIchak3rfiQ3LCweKc5f1ypM9nQzDRe
-         fa3hWnrtcQlJIgsX2SHqRDFH5O4QvFrI0bIjOIba0C6De10j48ox8AJl5vkWhTkwlIui
-         JlrHzsCU4F71pbj0E5P+Y7MW5h9VlUwr/RuNw/u89O6zGUsWC2CTnKkoR9Z/hv+zDD0Z
-         vTPQ==
-X-Gm-Message-State: AOAM531TVA1IdnwgyWT3jg5Vs3BCDB8k2UH2OwXg20b/ebC6qKjp5Pqa
-        1rVSO4orY/wh+KbrlGpeckSE7s9fT4/34+sFmA==
-X-Google-Smtp-Source: ABdhPJx9FWdZStCzmeuHXnB38FrYj2l6xi5QsttqJvp/Oho17IbEa6feRFDkIv3tMXYmLFL0VOkW/PwFarS6dq/e3Q==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:500a:9ac2:e73e:69e3])
- (user=kaleshsingh job=sendgmr) by 2002:a0d:d546:0:b0:2dc:5667:8642 with SMTP
- id x67-20020a0dd546000000b002dc56678642mr20779116ywd.111.1647288163318; Mon,
- 14 Mar 2022 13:02:43 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 13:01:10 -0700
-In-Reply-To: <20220314200148.2695206-1-kaleshsingh@google.com>
-Message-Id: <20220314200148.2695206-2-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220314200148.2695206-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH v6 1/8] KVM: arm64: Introduce hyp_alloc_private_va_range()
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5f2/HoIwu4j9nQu9qTBXrIZ6NMk6olPlLIzOEbYSwZw=;
+        b=4g/ILwNAtrEGQbh1K5u4OpOm5K+whpkjoygMeXjFnHNntknUOIniCtKPvwycc0sweN
+         wiGpDIn6PbKGeIpmZFxMsPNenQKoi3c70yHA/ZPwRdyKlRV1HHsEieFmVfP1T1qJIpCe
+         IiDGbTBKqrI1TS8AIbXTh+tSYxs7+j2q3EmyagjYwTqx5W+oFhOJ5VW9CcJu6PhB8gLE
+         ThhbjMGS7WbJBUFfqn7qPugT596DJubwlTXc1WOZlSXx/xs4tV6bvu1b4e1uCaAnWO8F
+         WHEiKnf4PF6AE2uXVD2HeeG6+SfSP3R/Oe22cZpjLc1Gem1j7LCBd5ExSnaGzXgCub9V
+         9+xg==
+X-Gm-Message-State: AOAM53175Qxgln1gSzKQJyDGU/8BRJbMsWnT02L7aAfWnrv/IlitjeGK
+        5hSRfRQFT16pq8gZ1zsAHcYrtA==
+X-Google-Smtp-Source: ABdhPJzeQC03D9/rf02Bht8goOg45eN2rPjgNoqhJu/PvxB2PzO/F0nX9G85uS1FXW19T23DPBCxaw==
+X-Received: by 2002:a05:6638:16c5:b0:319:e32b:98e3 with SMTP id g5-20020a05663816c500b00319e32b98e3mr12201874jat.123.1647288165969;
+        Mon, 14 Mar 2022 13:02:45 -0700 (PDT)
+Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
+        by smtp.gmail.com with ESMTPSA id x14-20020a056e021bce00b002c7ada1bec5sm943788ilv.88.2022.03.14.13.02.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 13:02:45 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 20:02:42 +0000
+From:   Oliver Upton <oupton@google.com>
+To:     Raghavendra Rao Ananta <rananta@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
         James Morse <james.morse@arm.com>,
         Alexandru Elisei <alexandru.elisei@arm.com>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andrew Scull <ascull@google.com>,
-        Andrew Jones <drjones@redhat.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
         linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v4 13/13] selftests: KVM: aarch64: Add the bitmap
+ firmware registers to get-reg-list
+Message-ID: <Yi+fYt3MhMoZbN+T@google.com>
+References: <20220224172559.4170192-1-rananta@google.com>
+ <20220224172559.4170192-14-rananta@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224172559.4170192-14-rananta@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hyp_alloc_private_va_range() can be used to reserve private VA ranges
-in the nVHE hypervisor. Allocations are aligned based on the order of
-the requested size.
+On Thu, Feb 24, 2022 at 05:25:59PM +0000, Raghavendra Rao Ananta wrote:
+> Add the psuedo-firmware registers KVM_REG_ARM_STD_BMAP,
+> KVM_REG_ARM_STD_HYP_BMAP, and KVM_REG_ARM_VENDOR_HYP_BMAP to
+> the base_regs[] list.
+> 
+> Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
 
-This will be used to implement stack guard pages for KVM nVHE hypervisor
-(nVHE Hyp mode / not pKVM), in a subsequent patch in the series.
+Reviewed-by: Oliver Upton <oupton@google.com>
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
-
-Changes in v6:
-  - Update kernel-doc for hyp_alloc_private_va_range()
-    and add return description, per Stephen
-  - Update hyp_alloc_private_va_range() to return an int error code,
-    per Stephen
-  - Replace IS_ERR() checks with IS_ERR_VALUE() check, per Stephen
-  - Clean up goto, per Stephen
-
-Changes in v5:
-  - Align private allocations based on the order of their size, per Marc
-
-Changes in v4:
-  - Handle null ptr in hyp_alloc_private_va_range() and replace
-    IS_ERR_OR_NULL checks in callers with IS_ERR checks, per Fuad
-  - Fix kernel-doc comments format, per Fuad
-
-Changes in v3:
-  - Handle null ptr in IS_ERR_OR_NULL checks, per Mark
-
-
- arch/arm64/include/asm/kvm_mmu.h |  1 +
- arch/arm64/kvm/mmu.c             | 66 +++++++++++++++++++++-----------
- 2 files changed, 45 insertions(+), 22 deletions(-)
-
-diff --git a/arch/arm64/include/asm/kvm_mmu.h b/arch/arm64/include/asm/kvm_mmu.h
-index 81839e9a8a24..3cc9aa25f510 100644
---- a/arch/arm64/include/asm/kvm_mmu.h
-+++ b/arch/arm64/include/asm/kvm_mmu.h
-@@ -153,6 +153,7 @@ static __always_inline unsigned long __kern_hyp_va(unsigned long v)
- int kvm_share_hyp(void *from, void *to);
- void kvm_unshare_hyp(void *from, void *to);
- int create_hyp_mappings(void *from, void *to, enum kvm_pgtable_prot prot);
-+int hyp_alloc_private_va_range(size_t size, unsigned long *haddr);
- int create_hyp_io_mappings(phys_addr_t phys_addr, size_t size,
- 			   void __iomem **kaddr,
- 			   void __iomem **haddr);
-diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
-index bc2aba953299..7326d683c500 100644
---- a/arch/arm64/kvm/mmu.c
-+++ b/arch/arm64/kvm/mmu.c
-@@ -457,23 +457,22 @@ int create_hyp_mappings(void *from, void *to, enum kvm_pgtable_prot prot)
- 	return 0;
- }
- 
--static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
--					unsigned long *haddr,
--					enum kvm_pgtable_prot prot)
-+
-+/**
-+ * hyp_alloc_private_va_range - Allocates a private VA range.
-+ * @size:	The size of the VA range to reserve.
-+ * @haddr:	The hypervisor virtual start address of the allocation.
-+ *
-+ * The private virtual address (VA) range is allocated below io_map_base
-+ * and aligned based on the order of @size.
-+ *
-+ * Return: 0 on success or negative error code on failure.
-+ */
-+int hyp_alloc_private_va_range(size_t size, unsigned long *haddr)
- {
- 	unsigned long base;
- 	int ret = 0;
- 
--	if (!kvm_host_owns_hyp_mappings()) {
--		base = kvm_call_hyp_nvhe(__pkvm_create_private_mapping,
--					 phys_addr, size, prot);
--		if (IS_ERR_OR_NULL((void *)base))
--			return PTR_ERR((void *)base);
--		*haddr = base;
--
--		return 0;
--	}
--
- 	mutex_lock(&kvm_hyp_pgd_mutex);
- 
- 	/*
-@@ -484,30 +483,53 @@ static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
- 	 *
- 	 * The allocated size is always a multiple of PAGE_SIZE.
- 	 */
--	size = PAGE_ALIGN(size + offset_in_page(phys_addr));
--	base = io_map_base - size;
-+	base = io_map_base - PAGE_ALIGN(size);
-+
-+	/* Align the allocation based on the order of its size */
-+	base = ALIGN_DOWN(base, PAGE_SIZE << get_order(size));
- 
- 	/*
- 	 * Verify that BIT(VA_BITS - 1) hasn't been flipped by
- 	 * allocating the new area, as it would indicate we've
- 	 * overflowed the idmap/IO address range.
- 	 */
--	if ((base ^ io_map_base) & BIT(VA_BITS - 1))
-+	if (!base || (base ^ io_map_base) & BIT(VA_BITS - 1))
- 		ret = -ENOMEM;
- 	else
--		io_map_base = base;
-+		*haddr = io_map_base = base;
- 
- 	mutex_unlock(&kvm_hyp_pgd_mutex);
- 
-+	return ret;
-+}
-+
-+static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
-+					unsigned long *haddr,
-+					enum kvm_pgtable_prot prot)
-+{
-+	unsigned long addr;
-+	int ret = 0;
-+
-+	if (!kvm_host_owns_hyp_mappings()) {
-+		addr = kvm_call_hyp_nvhe(__pkvm_create_private_mapping,
-+					 phys_addr, size, prot);
-+		if (IS_ERR_VALUE(addr))
-+			return addr;
-+		*haddr = addr;
-+
-+		return 0;
-+	}
-+
-+	size += offset_in_page(phys_addr);
-+	ret = hyp_alloc_private_va_range(size, &addr);
- 	if (ret)
--		goto out;
-+		return ret;
- 
--	ret = __create_hyp_mappings(base, size, phys_addr, prot);
-+	ret = __create_hyp_mappings(addr, size, phys_addr, prot);
- 	if (ret)
--		goto out;
-+		return ret;
- 
--	*haddr = base + offset_in_page(phys_addr);
--out:
-+	*haddr = addr + offset_in_page(phys_addr);
- 	return ret;
- }
- 
--- 
-2.35.1.723.g4982287a31-goog
-
+> ---
+>  tools/testing/selftests/kvm/aarch64/get-reg-list.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/kvm/aarch64/get-reg-list.c b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+> index f769fc6cd927..42e613a7bb6a 100644
+> --- a/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+> +++ b/tools/testing/selftests/kvm/aarch64/get-reg-list.c
+> @@ -686,6 +686,9 @@ static __u64 base_regs[] = {
+>  	KVM_REG_ARM_FW_REG(0),
+>  	KVM_REG_ARM_FW_REG(1),
+>  	KVM_REG_ARM_FW_REG(2),
+> +	KVM_REG_ARM_FW_BMAP_REG(0),	/* KVM_REG_ARM_STD_BMAP */
+> +	KVM_REG_ARM_FW_BMAP_REG(1),	/* KVM_REG_ARM_STD_HYP_BMAP */
+> +	KVM_REG_ARM_FW_BMAP_REG(2),	/* KVM_REG_ARM_VENDOR_HYP_BMAP */
+>  	ARM64_SYS_REG(3, 3, 14, 3, 1),	/* CNTV_CTL_EL0 */
+>  	ARM64_SYS_REG(3, 3, 14, 3, 2),	/* CNTV_CVAL_EL0 */
+>  	ARM64_SYS_REG(3, 3, 14, 0, 2),
+> -- 
+> 2.35.1.473.g83b2b277ed-goog
+> 
