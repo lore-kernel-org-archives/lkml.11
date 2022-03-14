@@ -2,114 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C96C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D26C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242884AbiCNQDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
+        id S234237AbiCNQE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236530AbiCNQDX (ORCPT
+        with ESMTP id S240452AbiCNQEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:03:23 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D520E45ACD;
-        Mon, 14 Mar 2022 09:02:13 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id r12so13931219pla.1;
-        Mon, 14 Mar 2022 09:02:13 -0700 (PDT)
+        Mon, 14 Mar 2022 12:04:16 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A78823BE5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:02:59 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id 15-20020a17090a098f00b001bef0376d5cso15058017pjo.5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:02:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PcvQcPN5XoKvKQxrvFmbQntxTbKqV4dSuPUsUyk1/VU=;
-        b=loHgcdmDNyqZUA5/3x9feCiH8Ec3JeAmEtwKAF4HAFZent55/QExx9FK4FQT5X6JzT
-         aPkeG6j9eH4bffZpllzupw/Nmg/nn37qeBADEp8Ui+lQFAmxYzCvxKMfXdwJ8Y4+Gq8k
-         +0w2MS9lw56fRluUZSEJgViVv0K5Hh7OUxGZw8eKTey0GtnfS9z8SWjHQlzf2MN7c1Hr
-         U6HWPOjQyyeusLHpfroC98VTMgYFd5T6MC5QB9dGdfU6b3O0rac0BBis0IUT2hW7a18x
-         Lwav9aZHiJtVhLBwmvbv3zpLWN/WToQnHmBnotVOlAkfiIB4Q5+obxj9M10/IIVpUA2a
-         CPnA==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1iT022fIKxpXmN8c755nbteZp5bmgr4mJqOC9s4pU+M=;
+        b=YszkTIZuKwUzUrrO+088AWNuLXa2SqygoFgan2PIzRf2h5EM5YACyz09I77TN17p7t
+         iZ/DsI06OGIiSEZA/I6LCxli0z0BVOJKcxfgnjjwMNc/Aw9WH9P21BTqg226W7WucAfY
+         ZHWnzr9RhTur1ZHdsMdDU8kx4KivbhdhdgJ1sKjhlgitHmo7StU62OhJV7XOCEcaPvIq
+         DIL/30bX/kiyeDLz3IeMWagJa+RJDRVtQsIRQZEZZNmGF3ogfExSKQFWO4MElDqetSfB
+         7nRnQbBBND8SLmdU7s93FEzLiOeR5hCbrutJRfrZGneG1S09q9ul0C2U/Mk6VsMz6A4w
+         vbMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PcvQcPN5XoKvKQxrvFmbQntxTbKqV4dSuPUsUyk1/VU=;
-        b=D/YN3Bj7N4A0r2xZDtl17bx5nlKZcR+UoMtJhE7K6SjxqAyoc0Wt5ZUbIIokbqYf0h
-         3/BIMXucG6I5l4LIB+tKnluXDB9arxkReXzEBga/y3fud08m4zyanWYzPsHJuMLOSlVm
-         1XoyPwN1dHSQaaBzD7jPHmBa6aURCkz8hm9m6f/Usgx6361Mc+iuh5kgm3GJ1vGBO+9I
-         9oxvBFvf46prcGBdGEbiItxiHPvT+7czOYtCYar+pbmJtD0MT/whiKR54wKxFbxoUVXa
-         O+rmSccWJkFXyJaq0tFCrpAN1CW0Yb15FhpsgNeEOPTv3fZ6alpNbsp7vSjNFevyHRG8
-         8Q6g==
-X-Gm-Message-State: AOAM532jyW9SZLP2R3m9LW0LXsmIYyd3iWGZQ91JZ7qmXayaAk89dAIC
-        G5L0AKcaqvDNCjboeXf/Guk=
-X-Google-Smtp-Source: ABdhPJwjdy4jTXNMl0tz+SzVz6fwoQH5DqEth/4JnvhoImqAipGstlKJCFk9sLUX4ZHW10XUeilIYw==
-X-Received: by 2002:a17:90a:178f:b0:1bf:5f5a:728 with SMTP id q15-20020a17090a178f00b001bf5f5a0728mr26399573pja.171.1647273733246;
-        Mon, 14 Mar 2022 09:02:13 -0700 (PDT)
-Received: from localhost.localdomain (2001-b011-20e0-3483-4350-64e3-9d63-74cc.dynamic-ip6.hinet.net. [2001:b011:20e0:3483:4350:64e3:9d63:74cc])
-        by smtp.googlemail.com with ESMTPSA id x15-20020a056a00188f00b004f7675962d5sm19022584pfh.175.2022.03.14.09.02.11
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=1iT022fIKxpXmN8c755nbteZp5bmgr4mJqOC9s4pU+M=;
+        b=tX3dTxdeFh0dcu4ySTTTaz4nPNOqa4jLVy3BwN4poPUj7iH4EOJFdX/4UneGPLZNSG
+         3qX1G4Mjcv8NHQ4prerKnHvvrl0iZ7WGy1qdydh3bdQWrrFDZIpdKaSUAib45emsXIoA
+         bwaL277klDbZwVFyTtxGaFtttjAGFSXR5NYTMu5XCkKnxWWKYncAEHmOgJS9GVYkmcw0
+         hQOFUnfjuHiyqOc/KTBmJPeseXjjybes9B9qgSKHGUyoAC4EvVWBDNwDJVib6nlJ88p7
+         0Ql8Jnt6X1+PVfC59ru2kCXjlXeRox+e4Sl081lgkncLp4HMkcXn+lafX2ozHedMOIdi
+         h4ig==
+X-Gm-Message-State: AOAM532CRAtKFN11kQFV3cZNdS5Z8xRxj0PLuZ9HVdX7hCWSWXb+f6uh
+        Hf47hySHGbPVbiQmYuwj7tM=
+X-Google-Smtp-Source: ABdhPJy2IzCO66f+V0fQdvwZ7Wl67owDcFCFksRCr/5jDaScEoqgLkTZGGxohQrvNOubydApI9cKfw==
+X-Received: by 2002:a17:90b:1c03:b0:1bf:5720:f8a1 with SMTP id oc3-20020a17090b1c0300b001bf5720f8a1mr25979428pjb.100.1647273778648;
+        Mon, 14 Mar 2022 09:02:58 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id g6-20020a056a001a0600b004f7bd56cc08sm6375600pfv.123.2022.03.14.09.02.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 09:02:12 -0700 (PDT)
-From:   Chin En Lin <shiyn.lin@gmail.com>
-To:     corbet@lwn.net
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        Chin En Lin <shiyn.lin@gmail.com>
-Subject: [PATCH] Documentation: x86: Fix obsolete name of page fault handler
-Date:   Mon, 14 Mar 2022 23:59:01 +0800
-Message-Id: <20220314155901.227257-1-shiyn.lin@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 14 Mar 2022 09:02:58 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 14 Mar 2022 06:02:56 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        David Hildenbrand <david@redhat.com>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] linux/kthread.h: remove unused macros
+Message-ID: <Yi9nMDGQGKIr8Wms@slm.duckdns.org>
+References: <20220314145343.494694-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314145343.494694-1-linux@rasmusvillemoes.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 91eeafea1e4b ("x86/entry: Switch page fault
-exception to IDTENTRY_RAW"), the function name of page
-fault handler is out of date. This patch change
-do_page_fault() to exc_page_fault().
+On Mon, Mar 14, 2022 at 03:53:42PM +0100, Rasmus Villemoes wrote:
+> Ever since these macros were introduced in commit b56c0d8937e6
+> ("kthread: implement kthread_worker"), there has been precisely one
+> user (commit 4d115420707a, "NVMe: Async IO queue deletion"), and that
+> user went away in 2016 with db3cbfff5bcc ("NVMe: IO queue deletion
+> re-write").
+> 
+> Apart from being unused, these macros are also awkward to use (which
+> may contribute to them not being used): Having a way to statically (or
+> on-stack) allocating the storage for the struct kthread_worker itself
+> doesn't help much, since obviously one needs to have some code for
+> actually _spawning_ the worker thread, which must have error
+> checking. And these days we have the kthread_create_worker() interface
+> which both allocates the struct kthread_worker and spawns the kthread.
+> 
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-Signed-off-by: Chin En Lin <shiyn.lin@gmail.com>
----
- Documentation/x86/exception-tables.rst | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Acked-by: Tejun Heo <tj@kernel.org>
 
-diff --git a/Documentation/x86/exception-tables.rst b/Documentation/x86/exception-tables.rst
-index de58110c5ffd..0140a06b2705 100644
---- a/Documentation/x86/exception-tables.rst
-+++ b/Documentation/x86/exception-tables.rst
-@@ -32,14 +32,14 @@ Whenever the kernel tries to access an address that is currently not
- accessible, the CPU generates a page fault exception and calls the
- page fault handler::
- 
--  void do_page_fault(struct pt_regs *regs, unsigned long error_code)
-+  void exc_page_fault(struct pt_regs *regs, unsigned long error_code)
- 
- in arch/x86/mm/fault.c. The parameters on the stack are set up by
- the low level assembly glue in arch/x86/entry/entry_32.S. The parameter
- regs is a pointer to the saved registers on the stack, error_code
- contains a reason code for the exception.
- 
--do_page_fault first obtains the unaccessible address from the CPU
-+exc_page_fault first obtains the unaccessible address from the CPU
- control register CR2. If the address is within the virtual address
- space of the process, the fault probably occurred, because the page
- was not swapped in, write protected or something similar. However,
-@@ -281,12 +281,12 @@ vma occurs?
- 
-     > c017e7a5 <do_con_write+e1> movb   (%ebx),%dl
- #. MMU generates exception
--#. CPU calls do_page_fault
-+#. CPU calls exc_page_fault
- #. do page fault calls search_exception_table (regs->eip == c017e7a5);
- #. search_exception_table looks up the address c017e7a5 in the
-    exception table (i.e. the contents of the ELF section __ex_table)
-    and returns the address of the associated fault handle code c0199ff5.
--#. do_page_fault modifies its own return address to point to the fault
-+#. exc_page_fault modifies its own return address to point to the fault
-    handle code and returns.
- #. execution continues in the fault handling code.
- #. a) EAX becomes -EFAULT (== -14)
+Thanks.
+
 -- 
-2.25.1
-
+tejun
