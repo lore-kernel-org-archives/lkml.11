@@ -2,129 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F0DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ACBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237526AbiCNIC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        id S237373AbiCNIGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237424AbiCNIBE (ORCPT
+        with ESMTP id S237535AbiCNIC4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:01:04 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9931B2A24A;
-        Mon, 14 Mar 2022 00:58:09 -0700 (PDT)
-X-UUID: 87696065089142a08d64aced8fec0026-20220314
-X-UUID: 87696065089142a08d64aced8fec0026-20220314
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 563562564; Mon, 14 Mar 2022 15:57:20 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 14 Mar 2022 15:57:19 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Mar 2022 15:57:18 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <angelogioacchino.delregno@collabora.com>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <dkirjanov@suse.de>
-Subject: [PATCH net-next v13 2/7] stmmac: dwmac-mediatek: Reuse more common features
-Date:   Mon, 14 Mar 2022 15:57:08 +0800
-Message-ID: <20220314075713.29140-3-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220314075713.29140-1-biao.huang@mediatek.com>
-References: <20220314075713.29140-1-biao.huang@mediatek.com>
+        Mon, 14 Mar 2022 04:02:56 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C304339B90
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 00:58:43 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id h15so22432793wrc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 00:58:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=/5Zssy/qjVUOmPsZXKpDZoEyYQBzcz5Dm2scyxNbSsA=;
+        b=n3RGtDc2CCcmEaO+ZmuOAdVGFk3zitR0zNUbdXbyUn0BHStT95/PKeqMMtVymaSvd/
+         yiaogIAhl+c4P1WkXsTL0UFhQXZhr7EGQR8HgOI3jDXe3ZXTMHIXUxUXkgP5tAk0Mbkj
+         kebtY+mS33Xud1OYXhlHhn6kUyGAp2PVynNhGneppc4CMlXftscaILOlvFoJE+ecG9Cz
+         k5YC0UF/2ev7YNvGPDoZgOhMWOAmIpb/Pz/sCPechPg52p5uLq6cmUY1CDgenn7daE/L
+         082zn8NLzg2Pacm5UPD0AB3m/uEiG09/YASrX4XcSjw7TzBCCuPkXwFpx+tsofMluZqe
+         vECg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=/5Zssy/qjVUOmPsZXKpDZoEyYQBzcz5Dm2scyxNbSsA=;
+        b=hkOjnpsSGwgE5RYCRAWjNDKjvaClTRG7civ0EsIDNdx0OD63ZRlsd2UWp4nilnwCX3
+         dHPRT5x/0VIrdXeEm5V3egOq51J94/s9qjtoh9CvspH4as7RxsRhP9P9pxnvY2phF5ij
+         GKur9waOWtT454ZkgyIg6bPMk14bKU6b34Xo4VkhAropZjOmfAn3H8vdhU5MpE54WcZE
+         1XGPqwaAtsyTwA97YxnQOgRWAI5Y/RJak1INQC+iqAMdCrmdBXgIWqFEFbZHgJd/pVLq
+         m86bVwOiOGa5d9hckeJn1dinYKObK0eNy3wkFhtaerle6WxUhwbL2n0NymmLoAr+zdVv
+         RI2A==
+X-Gm-Message-State: AOAM531j3ESnapLLDsSyKNss3WjDwsmMdDQxh1Xi9H66FVJiVGb/HVIF
+        aRLVH7dePDAb5oxOGw3VFVki1Q==
+X-Google-Smtp-Source: ABdhPJw1z7cYzXUMIL5+a9eG7REnc743MAoQ09qp8cu1JHEUssDSrlUz7mcW02Gv4wBksBmSahqjeA==
+X-Received: by 2002:a5d:64e5:0:b0:1f1:fa31:e7d3 with SMTP id g5-20020a5d64e5000000b001f1fa31e7d3mr16190255wri.573.1647244720101;
+        Mon, 14 Mar 2022 00:58:40 -0700 (PDT)
+Received: from ?IPV6:2001:861:44c0:66c0:67f0:57f7:2185:6d18? ([2001:861:44c0:66c0:67f0:57f7:2185:6d18])
+        by smtp.gmail.com with ESMTPSA id g6-20020a5d5406000000b001f049726044sm12670304wrv.79.2022.03.14.00.58.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 00:58:39 -0700 (PDT)
+Message-ID: <01247ed7-16ef-e4bc-8745-a8fc5bfa1818@baylibre.com>
+Date:   Mon, 14 Mar 2022 08:58:44 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 15/64] media: platform: ge2d: move config to its own file
+Content-Language: en-US
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     =?UTF-8?Q?Niklas_S=c3=b6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org
+References: <cover.1647242578.git.mchehab@kernel.org>
+ <fe12b0fc0692a8d31b7461d57ca8874eeeb7e45a.1647242579.git.mchehab@kernel.org>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+In-Reply-To: <fe12b0fc0692a8d31b7461d57ca8874eeeb7e45a.1647242579.git.mchehab@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch makes dwmac-mediatek reuse more features
-supported by stmmac_platform.c.
+On 14/03/2022 08:55, Mauro Carvalho Chehab wrote:
+> In order to better organize the platform/Kconfig, place
+> ge2d-specific config stuff on a separate Kconfig file.
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> ---
+> 
+> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> See [PATCH 00/64] at: https://lore.kernel.org/all/cover.1647242578.git.mchehab@kernel.org/
+> 
+>   drivers/media/platform/Kconfig            | 15 +--------------
+>   drivers/media/platform/meson/ge2d/Kconfig | 14 ++++++++++++++
+>   2 files changed, 15 insertions(+), 14 deletions(-)
+>   create mode 100644 drivers/media/platform/meson/ge2d/Kconfig
+> 
+> diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+> index 57ca2426a83b..d3b7bef19237 100644
+> --- a/drivers/media/platform/Kconfig
+> +++ b/drivers/media/platform/Kconfig
+> @@ -47,6 +47,7 @@ source "drivers/media/platform/coda/Kconfig"
+>   source "drivers/media/platform/davinci/Kconfig"
+>   
+>   source "drivers/media/platform/exynos-gsc/Kconfig"
+> +source "drivers/media/platform/meson/ge2d/Kconfig"
+>   source "drivers/media/platform/omap/Kconfig"
+>   
+>   source "drivers/media/platform/aspeed/Kconfig"
+> @@ -273,20 +274,6 @@ config VIDEO_MEM2MEM_DEINTERLACE
+>   	help
+>   	    Generic deinterlacing V4L2 driver.
+>   
+> -config VIDEO_MESON_GE2D
+> -	tristate "Amlogic 2D Graphic Acceleration Unit"
+> -	depends on V4L_MEM2MEM_DRIVERS
+> -	depends on VIDEO_DEV && VIDEO_V4L2
+> -	depends on ARCH_MESON || COMPILE_TEST
+> -	select VIDEOBUF2_DMA_CONTIG
+> -	select V4L2_MEM2MEM_DEV
+> -	help
+> -	  This is a v4l2 driver for Amlogic GE2D 2D graphics accelerator.
+> -	  GE2D is a standalone 2D graphic acceleration unit, with color converter,
+> -	  image scaling, BitBLT & alpha blending operations.
+> -
+> -	  To compile this driver as a module choose m here.
+> -
+>   config VIDEO_SAMSUNG_S5P_G2D
+>   	tristate "Samsung S5P and EXYNOS4 G2D 2d graphics accelerator driver"
+>   	depends on V4L_MEM2MEM_DRIVERS
+> diff --git a/drivers/media/platform/meson/ge2d/Kconfig b/drivers/media/platform/meson/ge2d/Kconfig
+> new file mode 100644
+> index 000000000000..8c3f3b1b6b05
+> --- /dev/null
+> +++ b/drivers/media/platform/meson/ge2d/Kconfig
+> @@ -0,0 +1,14 @@
+> +config VIDEO_MESON_GE2D
+> +	tristate "Amlogic 2D Graphic Acceleration Unit"
+> +	depends on V4L_MEM2MEM_DRIVERS
+> +	depends on VIDEO_DEV && VIDEO_V4L2
+> +	depends on ARCH_MESON || COMPILE_TEST
+> +	select VIDEOBUF2_DMA_CONTIG
+> +	select V4L2_MEM2MEM_DEV
+> +	help
+> +	  This is a v4l2 driver for Amlogic GE2D 2D graphics accelerator.
+> +	  GE2D is a standalone 2D graphic acceleration unit, with color converter,
+> +	  image scaling, BitBLT & alpha blending operations.
+> +
+> +	  To compile this driver as a module choose m here.
+> +
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 32 +++++++++----------
- 1 file changed, 15 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 0ff57c268dca..8747aa4403e8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -334,22 +334,20 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
- 	const struct mediatek_dwmac_variant *variant = plat->variant;
- 	int ret;
- 
--	ret = dma_set_mask_and_coherent(plat->dev, DMA_BIT_MASK(variant->dma_bit_mask));
--	if (ret) {
--		dev_err(plat->dev, "No suitable DMA available, err = %d\n", ret);
--		return ret;
--	}
--
--	ret = variant->dwmac_set_phy_interface(plat);
--	if (ret) {
--		dev_err(plat->dev, "failed to set phy interface, err = %d\n", ret);
--		return ret;
-+	if (variant->dwmac_set_phy_interface) {
-+		ret = variant->dwmac_set_phy_interface(plat);
-+		if (ret) {
-+			dev_err(plat->dev, "failed to set phy interface, err = %d\n", ret);
-+			return ret;
-+		}
- 	}
- 
--	ret = variant->dwmac_set_delay(plat);
--	if (ret) {
--		dev_err(plat->dev, "failed to set delay value, err = %d\n", ret);
--		return ret;
-+	if (variant->dwmac_set_delay) {
-+		ret = variant->dwmac_set_delay(plat);
-+		if (ret) {
-+			dev_err(plat->dev, "failed to set delay value, err = %d\n", ret);
-+			return ret;
-+		}
- 	}
- 
- 	ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
-@@ -422,15 +420,15 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
- 		return PTR_ERR(plat_dat);
- 
- 	plat_dat->interface = priv_plat->phy_mode;
--	plat_dat->has_gmac4 = 1;
--	plat_dat->has_gmac = 0;
--	plat_dat->pmt = 0;
-+	plat_dat->use_phy_wol = 1;
- 	plat_dat->riwt_off = 1;
- 	plat_dat->maxmtu = ETH_DATA_LEN;
-+	plat_dat->addr64 = priv_plat->variant->dma_bit_mask;
- 	plat_dat->bsp_priv = priv_plat;
- 	plat_dat->init = mediatek_dwmac_init;
- 	plat_dat->exit = mediatek_dwmac_exit;
- 	plat_dat->clks_config = mediatek_dwmac_clks_config;
-+
- 	mediatek_dwmac_init(pdev, priv_plat);
- 
- 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
--- 
-2.25.1
-
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
