@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D89C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241256AbiCNMRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        id S241283AbiCNMRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241632AbiCNMI6 (ORCPT
+        with ESMTP id S241991AbiCNMJa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:58 -0400
+        Mon, 14 Mar 2022 08:09:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74B94F9E8;
-        Mon, 14 Mar 2022 05:05:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CD0506CC;
+        Mon, 14 Mar 2022 05:06:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAAAE612FF;
-        Mon, 14 Mar 2022 12:05:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D959C340E9;
-        Mon, 14 Mar 2022 12:05:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A56456130F;
+        Mon, 14 Mar 2022 12:06:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CCFCC340EC;
+        Mon, 14 Mar 2022 12:06:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259533;
-        bh=28SPUArqDgaK25r/9hWPvGSOJw/nk2nxaabMQ4/Rt7U=;
+        s=korg; t=1647259567;
+        bh=695fRFK6UBQw7psiftcrXBRwm5OsrMkS7yjsQnbHR+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dFDt5K/Vh3K3CzRwhu6t+3MnPPAavFUho9gbTo+dYPHiYhrswKF/Vg1ZAvMZZzzze
-         Ik3SJ9lwDYEgJhzJ8cWGoNz6nsxSBOQ+YOmf16SecNmYeBjN6f18xgcnlquLb9waJQ
-         Ncgch3k9G9pZnGWrHHNLkwWdamoTyGoH2Ru2Oc6Y=
+        b=qLhO/bnZ23ZIiRWMnB/NKB0fcGW+VSPFOvFj6OiUivLgoUZ0ugTaipkM0RWG8Im4D
+         fwclWewOBvpzoyYd9AvcJpa8TZ9QX7ZBfeLJwVysfW9w9aldxz88RNXGoubvI8q4br
+         +TxilyZuolZ9mG0S+w3U50jKi6QlIyvkJ40CCF9I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 029/110] i40e: stop disabling VFs due to PF error responses
-Date:   Mon, 14 Mar 2022 12:53:31 +0100
-Message-Id: <20220314112743.849182156@linuxfoundation.org>
+Subject: [PATCH 5.15 007/110] clk: qcom: dispcc: Update the transition delay for MDSS GDSC
+Date:   Mon, 14 Mar 2022 12:53:09 +0100
+Message-Id: <20220314112743.237916469@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -50,236 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Taniya Das <tdas@codeaurora.org>
 
-[ Upstream commit 5710ab79166504013f7c0ae6a57e7d2fd26e5c43 ]
+[ Upstream commit 6e6fec3f961c00ca34ffb4bf2ad9febb4b499f8d ]
 
-The i40e_vc_send_msg_to_vf_ex (and its wrapper i40e_vc_send_msg_to_vf)
-function has logic to detect "failure" responses sent to the VF. If a VF
-is sent more than I40E_DEFAULT_NUM_INVALID_MSGS_ALLOWED, then the VF is
-marked as disabled. In either case, a dev_info message is printed
-stating that a VF opcode failed.
+On SC7180 we observe black screens because the gdsc is being
+enabled/disabled very rapidly and the GDSC FSM state does not work as
+expected. This is due to the fact that the GDSC reset value is being
+updated from SW.
 
-This logic originates from the early implementation of VF support in
-commit 5c3c48ac6bf5 ("i40e: implement virtual device interface").
+The recommended transition delay for mdss core gdsc updated for
+SC7180/SC7280/SM8250.
 
-That commit did not go far enough. The "logic" for this behavior seems
-to be that error responses somehow indicate a malicious VF. This is not
-really true. The PF might be sending an error for any number of reasons
-such as lacking resources, an unsupported operation, etc. This does not
-indicate a malicious VF. We already have a separate robust malicious VF
-detection which relies on hardware logic to detect and prevent a variety
-of behaviors.
-
-There is no justification for this behavior in the original
-implementation. In fact, a later commit 18b7af57d9c1 ("i40e: Lower some
-message levels") reduced the opcode failure message from a dev_err to a
-dev_info. In addition, recent commit 01cbf50877e6 ("i40e: Fix to not
-show opcode msg on unsuccessful VF MAC change") changed the logic to
-allow quieting it for expected failures.
-
-That commit prevented this logic from kicking in for specific
-circumstances. This change did not go far enough. The behavior is not
-documented nor is it part of any requirement for our products. Other
-operating systems such as the FreeBSD implementation of our driver do
-not include this logic.
-
-It is clear this check does not make sense, and causes problems which
-led to ugly workarounds.
-
-Fix this by just removing the entire logic and the need for the
-i40e_vc_send_msg_to_vf_ex function.
-
-Fixes: 01cbf50877e6 ("i40e: Fix to not show opcode msg on unsuccessful VF MAC change")
-Fixes: 5c3c48ac6bf5 ("i40e: implement virtual device interface")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: dd3d06622138 ("clk: qcom: Add display clock controller driver for SC7180")
+Fixes: 1a00c962f9cd ("clk: qcom: Add display clock controller driver for SC7280")
+Fixes: 80a18f4a8567 ("clk: qcom: Add display clock controller driver for SM8150 and SM8250")
+Signed-off-by: Taniya Das <tdas@codeaurora.org>
+Link: https://lore.kernel.org/r/20220223185606.3941-2-tdas@codeaurora.org
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+[sboyd@kernel.org: lowercase hex]
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/intel/i40e/i40e_debugfs.c    |  6 +-
- .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 57 +++----------------
- .../ethernet/intel/i40e/i40e_virtchnl_pf.h    |  5 --
- 3 files changed, 9 insertions(+), 59 deletions(-)
+ drivers/clk/qcom/dispcc-sc7180.c | 5 ++++-
+ drivers/clk/qcom/dispcc-sc7280.c | 5 ++++-
+ drivers/clk/qcom/dispcc-sm8250.c | 5 ++++-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-index 1e57cc8c47d7..9db5001297c7 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-@@ -742,10 +742,8 @@ static void i40e_dbg_dump_vf(struct i40e_pf *pf, int vf_id)
- 		vsi = pf->vsi[vf->lan_vsi_idx];
- 		dev_info(&pf->pdev->dev, "vf %2d: VSI id=%d, seid=%d, qps=%d\n",
- 			 vf_id, vf->lan_vsi_id, vsi->seid, vf->num_queue_pairs);
--		dev_info(&pf->pdev->dev, "       num MDD=%lld, invalid msg=%lld, valid msg=%lld\n",
--			 vf->num_mdd_events,
--			 vf->num_invalid_msgs,
--			 vf->num_valid_msgs);
-+		dev_info(&pf->pdev->dev, "       num MDD=%lld\n",
-+			 vf->num_mdd_events);
- 	} else {
- 		dev_info(&pf->pdev->dev, "invalid VF id %d\n", vf_id);
- 	}
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index c6f643e54c4f..babf8b7fa767 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -1917,19 +1917,17 @@ int i40e_pci_sriov_configure(struct pci_dev *pdev, int num_vfs)
- /***********************virtual channel routines******************/
+diff --git a/drivers/clk/qcom/dispcc-sc7180.c b/drivers/clk/qcom/dispcc-sc7180.c
+index 538e4963c915..5d2ae297e741 100644
+--- a/drivers/clk/qcom/dispcc-sc7180.c
++++ b/drivers/clk/qcom/dispcc-sc7180.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2019, 2022, The Linux Foundation. All rights reserved.
+  */
  
- /**
-- * i40e_vc_send_msg_to_vf_ex
-+ * i40e_vc_send_msg_to_vf
-  * @vf: pointer to the VF info
-  * @v_opcode: virtual channel opcode
-  * @v_retval: virtual channel return value
-  * @msg: pointer to the msg buffer
-  * @msglen: msg length
-- * @is_quiet: true for not printing unsuccessful return values, false otherwise
-  *
-  * send msg to VF
-  **/
--static int i40e_vc_send_msg_to_vf_ex(struct i40e_vf *vf, u32 v_opcode,
--				     u32 v_retval, u8 *msg, u16 msglen,
--				     bool is_quiet)
-+static int i40e_vc_send_msg_to_vf(struct i40e_vf *vf, u32 v_opcode,
-+				  u32 v_retval, u8 *msg, u16 msglen)
- {
- 	struct i40e_pf *pf;
- 	struct i40e_hw *hw;
-@@ -1944,25 +1942,6 @@ static int i40e_vc_send_msg_to_vf_ex(struct i40e_vf *vf, u32 v_opcode,
- 	hw = &pf->hw;
- 	abs_vf_id = vf->vf_id + hw->func_caps.vf_base_id;
+ #include <linux/clk-provider.h>
+@@ -625,6 +625,9 @@ static struct clk_branch disp_cc_mdss_vsync_clk = {
  
--	/* single place to detect unsuccessful return values */
--	if (v_retval && !is_quiet) {
--		vf->num_invalid_msgs++;
--		dev_info(&pf->pdev->dev, "VF %d failed opcode %d, retval: %d\n",
--			 vf->vf_id, v_opcode, v_retval);
--		if (vf->num_invalid_msgs >
--		    I40E_DEFAULT_NUM_INVALID_MSGS_ALLOWED) {
--			dev_err(&pf->pdev->dev,
--				"Number of invalid messages exceeded for VF %d\n",
--				vf->vf_id);
--			dev_err(&pf->pdev->dev, "Use PF Control I/F to enable the VF\n");
--			set_bit(I40E_VF_STATE_DISABLED, &vf->vf_states);
--		}
--	} else {
--		vf->num_valid_msgs++;
--		/* reset the invalid counter, if a valid message is received. */
--		vf->num_invalid_msgs = 0;
--	}
--
- 	aq_ret = i40e_aq_send_msg_to_vf(hw, abs_vf_id,	v_opcode, v_retval,
- 					msg, msglen, NULL);
- 	if (aq_ret) {
-@@ -1975,23 +1954,6 @@ static int i40e_vc_send_msg_to_vf_ex(struct i40e_vf *vf, u32 v_opcode,
- 	return 0;
- }
+ static struct gdsc mdss_gdsc = {
+ 	.gdscr = 0x3000,
++	.en_rest_wait_val = 0x2,
++	.en_few_wait_val = 0x2,
++	.clk_dis_wait_val = 0xf,
+ 	.pd = {
+ 		.name = "mdss_gdsc",
+ 	},
+diff --git a/drivers/clk/qcom/dispcc-sc7280.c b/drivers/clk/qcom/dispcc-sc7280.c
+index 4ef4ae231794..ad596d567f6a 100644
+--- a/drivers/clk/qcom/dispcc-sc7280.c
++++ b/drivers/clk/qcom/dispcc-sc7280.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2021-2022, The Linux Foundation. All rights reserved.
+  */
  
--/**
-- * i40e_vc_send_msg_to_vf
-- * @vf: pointer to the VF info
-- * @v_opcode: virtual channel opcode
-- * @v_retval: virtual channel return value
-- * @msg: pointer to the msg buffer
-- * @msglen: msg length
-- *
-- * send msg to VF
-- **/
--static int i40e_vc_send_msg_to_vf(struct i40e_vf *vf, u32 v_opcode,
--				  u32 v_retval, u8 *msg, u16 msglen)
--{
--	return i40e_vc_send_msg_to_vf_ex(vf, v_opcode, v_retval,
--					 msg, msglen, false);
--}
--
- /**
-  * i40e_vc_send_resp_to_vf
-  * @vf: pointer to the VF info
-@@ -2813,7 +2775,6 @@ static int i40e_vc_get_stats_msg(struct i40e_vf *vf, u8 *msg)
-  * i40e_check_vf_permission
-  * @vf: pointer to the VF info
-  * @al: MAC address list from virtchnl
-- * @is_quiet: set true for printing msg without opcode info, false otherwise
-  *
-  * Check that the given list of MAC addresses is allowed. Will return -EPERM
-  * if any address in the list is not valid. Checks the following conditions:
-@@ -2828,15 +2789,13 @@ static int i40e_vc_get_stats_msg(struct i40e_vf *vf, u8 *msg)
-  * addresses might not be accurate.
-  **/
- static inline int i40e_check_vf_permission(struct i40e_vf *vf,
--					   struct virtchnl_ether_addr_list *al,
--					   bool *is_quiet)
-+					   struct virtchnl_ether_addr_list *al)
- {
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_vsi *vsi = pf->vsi[vf->lan_vsi_idx];
- 	int mac2add_cnt = 0;
- 	int i;
+ #include <linux/clk-provider.h>
+@@ -787,6 +787,9 @@ static struct clk_branch disp_cc_sleep_clk = {
  
--	*is_quiet = false;
- 	for (i = 0; i < al->num_elements; i++) {
- 		struct i40e_mac_filter *f;
- 		u8 *addr = al->list[i].addr;
-@@ -2860,7 +2819,6 @@ static inline int i40e_check_vf_permission(struct i40e_vf *vf,
- 		    !ether_addr_equal(addr, vf->default_lan_addr.addr)) {
- 			dev_err(&pf->pdev->dev,
- 				"VF attempting to override administratively set MAC address, bring down and up the VF interface to resume normal operation\n");
--			*is_quiet = true;
- 			return -EPERM;
- 		}
+ static struct gdsc disp_cc_mdss_core_gdsc = {
+ 	.gdscr = 0x1004,
++	.en_rest_wait_val = 0x2,
++	.en_few_wait_val = 0x2,
++	.clk_dis_wait_val = 0xf,
+ 	.pd = {
+ 		.name = "disp_cc_mdss_core_gdsc",
+ 	},
+diff --git a/drivers/clk/qcom/dispcc-sm8250.c b/drivers/clk/qcom/dispcc-sm8250.c
+index bf9ffe1a1cf4..73c5feea9818 100644
+--- a/drivers/clk/qcom/dispcc-sm8250.c
++++ b/drivers/clk/qcom/dispcc-sm8250.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2018-2020, 2022, The Linux Foundation. All rights reserved.
+  */
  
-@@ -2897,7 +2855,6 @@ static int i40e_vc_add_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
- 	    (struct virtchnl_ether_addr_list *)msg;
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_vsi *vsi = NULL;
--	bool is_quiet = false;
- 	i40e_status ret = 0;
- 	int i;
+ #include <linux/clk-provider.h>
+@@ -1125,6 +1125,9 @@ static struct clk_branch disp_cc_mdss_vsync_clk = {
  
-@@ -2914,7 +2871,7 @@ static int i40e_vc_add_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
- 	 */
- 	spin_lock_bh(&vsi->mac_filter_hash_lock);
- 
--	ret = i40e_check_vf_permission(vf, al, &is_quiet);
-+	ret = i40e_check_vf_permission(vf, al);
- 	if (ret) {
- 		spin_unlock_bh(&vsi->mac_filter_hash_lock);
- 		goto error_param;
-@@ -2952,8 +2909,8 @@ static int i40e_vc_add_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
- 
- error_param:
- 	/* send the response to the VF */
--	return i40e_vc_send_msg_to_vf_ex(vf, VIRTCHNL_OP_ADD_ETH_ADDR,
--				       ret, NULL, 0, is_quiet);
-+	return i40e_vc_send_msg_to_vf(vf, VIRTCHNL_OP_ADD_ETH_ADDR,
-+				      ret, NULL, 0);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h
-index 03c42fd0fea1..a554d0a0b09b 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h
-@@ -10,8 +10,6 @@
- 
- #define I40E_VIRTCHNL_SUPPORTED_QTYPES 2
- 
--#define I40E_DEFAULT_NUM_INVALID_MSGS_ALLOWED	10
--
- #define I40E_VLAN_PRIORITY_SHIFT	13
- #define I40E_VLAN_MASK			0xFFF
- #define I40E_PRIORITY_MASK		0xE000
-@@ -92,9 +90,6 @@ struct i40e_vf {
- 	u8 num_queue_pairs;	/* num of qps assigned to VF vsis */
- 	u8 num_req_queues;	/* num of requested qps */
- 	u64 num_mdd_events;	/* num of mdd events detected */
--	/* num of continuous malformed or invalid msgs detected */
--	u64 num_invalid_msgs;
--	u64 num_valid_msgs;	/* num of valid msgs detected */
- 
- 	unsigned long vf_caps;	/* vf's adv. capabilities */
- 	unsigned long vf_states;	/* vf's runtime states */
+ static struct gdsc mdss_gdsc = {
+ 	.gdscr = 0x3000,
++	.en_rest_wait_val = 0x2,
++	.en_few_wait_val = 0x2,
++	.clk_dis_wait_val = 0xf,
+ 	.pd = {
+ 		.name = "mdss_gdsc",
+ 	},
 -- 
 2.34.1
 
