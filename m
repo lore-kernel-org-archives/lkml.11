@@ -2,144 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 05:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 05:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236235AbiCNFwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 01:52:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
+        id S236200AbiCNGA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 02:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236220AbiCNFwi (ORCPT
+        with ESMTP id S229688AbiCNGAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 01:52:38 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEBC3FBFF;
-        Sun, 13 Mar 2022 22:51:23 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id q19so12835998pgm.6;
-        Sun, 13 Mar 2022 22:51:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ok63ibqhQr0VYYi+54LHwL4GBcWoRtMufsgDu+h2rCE=;
-        b=fP36lqnEuVspDIchzbbmofPO5erDkZv3S5B8qg8QC63iDlfbzTMcM+CPtAqNJ6xmXj
-         YFQcHG91odGTT8/zs/eIxkypL4z4IXpOM+7df11hEzK+BWk/sEM0TUl+Xp4KPQSYZ7DQ
-         DFJLqR6LbVFQeso7yF8vWl6xjsrH5L4fMlumGcZTy7ovvY29NL0xrkru+yZUerKkcwJm
-         oyn5xFoTRNsL7tvtgVXmViWN3ZbdLPanG32zZ6H3fL5ZqkG9+lZNJ9kqPy1GN3EiwrHu
-         Ip0DkHAboWp2DSYTzbv6ouYsWlVvNKo9hpxH5hz+XsMMZSQuqmN9YYJPiROz4loU1aly
-         H+pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Ok63ibqhQr0VYYi+54LHwL4GBcWoRtMufsgDu+h2rCE=;
-        b=Mkfm718wQ42J1fIriRQV/N6FKctd9tDifDiWcuvuomYyGe7+n8jG9gzZ4QzwEWVm8Q
-         qH5NRrr3iGE0hVHPzlVt9hHRe89GpqbrAgHS7cwD2eqse1Sa+CiDE5fiQjdxVYYVmROW
-         wBCCOm3sbzdYgna3zrpOxGmMljLas4jgiZzwirdf7DT949lyy3iwVbAPAPEnT/okS2Vp
-         x8JrCxUrdJkyYmlCtjYKQbqShUGP1K597kYBN7szBZZ/Vxkm63TMFkNWFP/IFDz5uGAV
-         QYffElIhcGZCb1ZfS92kffbrHV4A7MJnYGNWJPoryQ0nPUPAk516+ZK2vDNjghHdm+ol
-         N/Mg==
-X-Gm-Message-State: AOAM533nPy/yRrdHpc6J9Wul88fh26q8WFhNq59J/lLH5FVtcwTq1vpq
-        y8bWOtPU/lneG8BGE0sQaTA=
-X-Google-Smtp-Source: ABdhPJw2nXmy2mg5dZf9AGWbOFePXCIY9WiNi3kvqsM9ayfpY4AIIIhi9OO76smRLHvP69PQMAk9Ow==
-X-Received: by 2002:a63:d74f:0:b0:374:5bda:909d with SMTP id w15-20020a63d74f000000b003745bda909dmr18750453pgi.215.1647237082510;
-        Sun, 13 Mar 2022 22:51:22 -0700 (PDT)
-Received: from scdiu3.sunplus.com ([113.196.136.192])
-        by smtp.googlemail.com with ESMTPSA id h17-20020a63df51000000b0036b9776ae5bsm15238115pgj.85.2022.03.13.22.51.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 13 Mar 2022 22:51:22 -0700 (PDT)
-From:   Hammer Hsieh <hammerh0314@gmail.com>
-To:     thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org, robh+dt@kernel.org,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
-        Hammer Hsieh <hammerh0314@gmail.com>
-Subject: [PATCH v3 1/2] dt-bindings: pwm: Add bindings doc for Sunplus SoC SP7021 PWM Driver
-Date:   Mon, 14 Mar 2022 13:51:36 +0800
-Message-Id: <1647237097-29172-2-git-send-email-hammerh0314@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647237097-29172-1-git-send-email-hammerh0314@gmail.com>
-References: <1647237097-29172-1-git-send-email-hammerh0314@gmail.com>
+        Mon, 14 Mar 2022 02:00:23 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D82F186FD;
+        Sun, 13 Mar 2022 22:59:12 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8CA811042;
+        Sun, 13 Mar 2022 22:59:12 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.33.185])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5E1E53F7D7;
+        Sun, 13 Mar 2022 22:59:04 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org, acme@kernel.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH V3 00/10] perf: Expand perf_branch_entry
+Date:   Mon, 14 Mar 2022 11:28:47 +0530
+Message-Id: <20220314055857.125421-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add bindings doc for Sunplus SoC SP7021 PWM Driver
+Branch Record Buffer Extension (BRBE) implementation on arm64 captures more
+branch type classification which cannot be accommodated in the current perf
+branch record format via perf_branch_entry.type element (4 bit field). Also
+it captures privilege information which does not have a corresponding slot
+in perf_branch_entry. This series expands struct perf_branch_entry, to meet
+both these requirements without breaking the existing user space ABI for
+perf tools.
 
-Signed-off-by: Hammer Hsieh <hammerh0314@gmail.com>
----
-Changes in v3:
- - Addressed all comments from Krzysztof Kozlowski.
+All architecture specific branch types added via perf_branch_entry.new_type
+field in [PATCH 3/4] will be used in BRBE implementation on arm64 platform
+later on with the following map.
 
- .../bindings/pwm/sunplus,sp7021-pwm.yaml           | 42 ++++++++++++++++++++++
- MAINTAINERS                                        |  5 +++
- 2 files changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
+#ifdef CONFIG_ARM64
+#define PERF_BR_FIQ		PERF_BR_NEW_ARCH_1
+#define PERF_BR_DEBUG_HALT	PERF_BR_NEW_ARCH_2
+#define PERF_BR_DEBUG_EXIT	PERF_BR_NEW_ARCH_3
+#define PERF_BR_DEBUG_INST	PERF_BR_NEW_ARCH_4
+#define PERF_BR_DEBUG_DATA	PERF_BR_NEW_ARCH_5
+#endif
 
-diff --git a/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml b/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
-new file mode 100644
-index 0000000..d4fc9e8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
-@@ -0,0 +1,42 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) Sunplus Co., Ltd. 2021
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/sunplus,sp7021-pwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Sunplus SoC SP7021 PWM Controller
-+
-+maintainers:
-+  - Hammer Hsieh <hammerh0314@gmail.com>
-+
-+allOf:
-+  - $ref: pwm.yaml#
-+
-+properties:
-+  compatible:
-+    const: sunplus,sp7021-pwm
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  '#pwm-cells':
-+    const: 2
-+
-+unevaluatedProperties: false
-+
-+required:
-+  - reg
-+  - clocks
-+
-+examples:
-+  - |
-+    pwm: pwm@9c007a00 {
-+      compatible = "sunplus,sp7021-pwm";
-+      reg = <0x9c007a00 0x80>;
-+      clocks = <&clkc 0xa2>;
-+      #pwm-cells = <2>;
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2524b75..e1cb7eb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18531,6 +18531,11 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/dlink/sundance.c
- 
-+SUNPLUS PWM DRIVER
-+M:	Hammer Hsieh <hammerh0314@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/pwm/sunplus,sp7021-pwm.yaml
-+
- SUNPLUS RTC DRIVER
- M:	Vincent Shih <vincent.sunplus@gmail.com>
- L:	linux-rtc@vger.kernel.org
+This actually combines following patches and series into a single series.
+
+- https://lore.kernel.org/all/1642998653-21377-12-git-send-email-anshuman.khandual@arm.com/
+- https://lore.kernel.org/all/1643348653-24367-1-git-send-email-anshuman.khandual@arm.com/
+- https://lore.kernel.org/all/1645681014-3346-1-git-send-email-anshuman.khandual@arm.com/
+
+This series applies on v5.17-rc8
+
+perf API
+
+The series being applied
+
+- Clean : tools/perf/check-headers.sh
+- Clean : diff -u tools/include/uapi/linux/perf_event.h include/uapi/linux/perf_event.h
+
+Todo
+
+- Update perf report tool to process PERF_BR_EXTEND_ABI (when available),
+  then fetch and report branch types from perf_branch_entry.new_type field.
+
+References
+
+- BRBE captured branch record information
+
+https://developer.arm.com/documentation/ddi0601/2021-12/AArch64-Registers/BRBINF-n--EL1--Branch-Record-Buffer-Information-Register--n-?lang=en
+
+- BRBE based perf branch stack implementation on arm64 platform
+
+https://lore.kernel.org/all/1642998653-21377-1-git-send-email-anshuman.khandual@arm.com/
+
+Changes in V3:
+
+- Fixed small typo s/privillege/privilege in include/uapi/linux/perf_event.h
+- Added PRIV_SHIFT in __p_branch_sample_type()
+- Added arm64 platform override of the new arch specific branch types
+- Renamed s/PERF_BR_XXX/PERF_BR_PRIV_XXX/ for privilege level branch types
+- Added PERF_BR_PRIV_UNKNOWN as the starting value
+- Expanded perf_branch_entry.priv into a 3 bits field 
+
+Changes in V2:
+
+https://lore.kernel.org/all/20220309033642.144769-1-anshuman.khandual@arm.com/
+
+Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+Cc: James Clark <james.clark@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-perf-users@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Anshuman Khandual (10):
+  perf: Add irq and exception return branch types
+  perf: Add system error and not in transaction branch types
+  perf: Extend branch type classification
+  perf: Capture branch privilege information
+  perf: Add PERF_BR_NEW_ARCH_[N] map for BRBE on arm64 platform
+  perf/tools: Add irq and exception return branch types
+  perf/tools: Add system error and not in transaction branch types
+  perf/tools: Extend branch type classification
+  perf/tools: Add branch privilege information request flag
+  perf/tools: Add PERF_BR_NEW_ARCH_[N] map for BRBE on arm64 platform
+
+ arch/x86/events/intel/lbr.c               |  6 ++--
+ include/uapi/linux/perf_event.h           | 40 ++++++++++++++++++++++-
+ tools/include/uapi/linux/perf_event.h     | 40 ++++++++++++++++++++++-
+ tools/perf/Documentation/perf-record.txt  |  1 +
+ tools/perf/util/branch.c                  |  7 +++-
+ tools/perf/util/parse-branch-options.c    |  1 +
+ tools/perf/util/perf_event_attr_fprintf.c |  2 +-
+ 7 files changed, 90 insertions(+), 7 deletions(-)
+
 -- 
-2.7.4
+2.25.1
 
