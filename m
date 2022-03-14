@@ -2,113 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 283A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64ED0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244026AbiCNT1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
+        id S237976AbiCNTcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244020AbiCNT1G (ORCPT
+        with ESMTP id S231858AbiCNTcP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:27:06 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D593B3C3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:25:56 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id r127so13647530qke.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:25:55 -0700 (PDT)
+        Mon, 14 Mar 2022 15:32:15 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AFEA344DC
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:31:05 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id h13so21378230ede.5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:31:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ghXEBznY5vyHF7+fdWoY5v3OsItcalBlY/KG9K7yOhU=;
-        b=e2Ud08S0Q7pZF215eRKz7vixHUKMgQNfUK9aOMWNfqStkSdZvWC5Mszd1gEoj/cIZz
-         IrZAiRKPJytuFVu+isbnZ5e2rAWsyFV79zcMh9/gmlkX6+VS8y5uGJTay/iSQjW/XKar
-         ayFug9ECos7jYnvjtc0aR6Qmtns5qgU5i4/dof+t3R4fwNzT32kHj5wHd1lmFVGOpo3c
-         VzjLN9YEOS+PZOQ5vDnQHZ+wSvqk5QfEgoYhbfvKDBo0BAVVKdSnMYOyilpqGop0zHsL
-         5HjdxNO1dsVE598rdiHBPM9joHRTxK2XG7aFr29FLlMOR3LRz/PPhkSKnpJmFSQHlnr4
-         N8sw==
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=a7HRwjDEJxx5yg811uZ+El9Irh6PSqQjZkDfhBzyEJc=;
+        b=IkPMoMgeiWX9euzrEh34idXsewhkiTsDMfQ4x8fRuLFJvG9pkDB+Ej6bDJHbiXiT79
+         5pXld5HpJfCGZ2zHsa10iVQA1Fr3wPQOO4wXOQP6wkUhPEF3vrLUN7YwOEKWhUU3qiS9
+         d3WZQZw8yJd7xZeupkYX1MQeZQT3j3Ss+NkALo1eO1H2AsZp5XAAfCyecn314RxQ+ct1
+         iiGjSKDWcelHW5gdiDwfTFiYIcbwMr0VKQnrtvv24RcR5QGQNEO8cga3HfAr4x5nCQBN
+         X/b9/CsLo9ES85BCdLCbc/OrpydZ1Y6Atoted9VZla7MHkrmb43BePn7DgxHpItnopa9
+         10wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ghXEBznY5vyHF7+fdWoY5v3OsItcalBlY/KG9K7yOhU=;
-        b=FCJh1Vfxwo1wGW0SJ+M7BEJCrUoR7DSqIf+VRKoOUiuQKp1qs6/Po3596y2/w9ZwNC
-         rj/FAhbUNtszdV1IWz7tGnwiBAAa9fKrSDhx1iJ/PGFhFHj5DMRpZXFU5n6c6jZZQgjO
-         nV7PdXTsvxWRSBVUvH/AIek3E9ZutDnSxDgSaid6QO+NX6E7u0M80HZTa3miKp4YR2SZ
-         8WVQ+pp3YfIsk1LkyZxPTWvRilUOm0n7CTk5/QJYymE7hs21eeddmaNDdhhQ45C47etR
-         TCyC+MbAQA/s7XD7NEU8uNA19Iva9wkjSGYA8O0AdBRqj2HOukFdu16JDesAeGeJHFrL
-         0e7w==
-X-Gm-Message-State: AOAM532b1a0HplJjkvX2/LV3myBgx2n5FhZnBGB2cDvo4QCWGx9+3I3C
-        0Ci9KVWYO2f2hNn+tSbCHNfNOFb/UTEYLhQHuLBPZw==
-X-Google-Smtp-Source: ABdhPJyQEYq/aa0gjJEO9Tga4REDnt5I6yrfTmBRW4eRCznjlBUHHMh0lYM73RO7oxgtpMzyqDMXDoNaOp6yMHVijEk=
-X-Received: by 2002:a05:620a:170a:b0:67d:be5c:204a with SMTP id
- az10-20020a05620a170a00b0067dbe5c204amr5211992qkb.593.1647285955193; Mon, 14
- Mar 2022 12:25:55 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=a7HRwjDEJxx5yg811uZ+El9Irh6PSqQjZkDfhBzyEJc=;
+        b=uHzm0Vr9OmikdVHS3/OTPTjBsDA4tW6+QlG8TvDt7zq+XVwNPWuSRjHBfAKRvxe7Ap
+         Je2mjEvJbopoetUU+Xq8SHUj2ODSA/khjT482yu64Kw8WwEnucnf01Pdq3qP9gi/Tnud
+         BNAg6qmViFu02FRElUbKNG3k/TsLqtqq625WtDHx1soWGVU+hB3euSenvx2KdeX+uOdv
+         bd2b6Dv3wPKNmZ0TA0TFmZBDQ9q3ITdRXnKA8ugvpOyTUr53bdmzt7ED89aj3rbaZ2KI
+         tYXGzaojp8KzciGbfnyCVNw37d8qi7jedyZbjbXIGvpo7tnT65+UaApBAnK0oFNeeiyT
+         eKxw==
+X-Gm-Message-State: AOAM532/whfBzhmP/XZksSf25rRshMxVnN8PdknSwQJJz+hTQeiFz2xY
+        XF965PbopoxeJ7Fkx5iahWtqeur4kt0V4w==
+X-Google-Smtp-Source: ABdhPJznxEeaNX3jPoinMgMsuNlfxcF+mxXZYgiZDGvyjfezB5HidM24ew+6yv8Vwildii8rh4dTWQ==
+X-Received: by 2002:a05:6402:b78:b0:416:171e:835d with SMTP id cb24-20020a0564020b7800b00416171e835dmr21786233edb.270.1647286263620;
+        Mon, 14 Mar 2022 12:31:03 -0700 (PDT)
+Received: from matrix-ESPRIMO-P710 (p57935aa6.dip0.t-ipconnect.de. [87.147.90.166])
+        by smtp.gmail.com with ESMTPSA id n6-20020aa7c786000000b00410d2403ccfsm8638437eds.21.2022.03.14.12.31.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 12:31:02 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 20:31:00 +0100
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+To:     Forest Bond <forest@alittletooquiet.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] staging: vt6656: Remove unused bb_vga_0 and
+ vt3342_vnt_threshold
+Message-ID: <cover.1647284830.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
-References: <1647269217-14064-1-git-send-email-quic_vpolimer@quicinc.com> <1647269217-14064-2-git-send-email-quic_vpolimer@quicinc.com>
-In-Reply-To: <1647269217-14064-2-git-send-email-quic_vpolimer@quicinc.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Mon, 14 Mar 2022 22:25:44 +0300
-Message-ID: <CAA8EJpr2rw4eSA+PViW7UZ2rVLLDS+ipcuo-1dzOargTcbE2hA@mail.gmail.com>
-Subject: Re: [PATCH v6 1/5] drm/msm/disp/dpu1: set mdp clk to the maximum
- frequency in opp table during probe
-To:     Vinod Polimera <quic_vpolimer@quicinc.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, quic_kalyant@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 at 17:47, Vinod Polimera <quic_vpolimer@quicinc.com> wrote:
->
-> use max clock during probe/bind sequence from the opp table.
-> The clock will be scaled down when framework sends an update.
->
-> Fixes: 25fdd5933("drm/msm: Add SDM845 DPU support")
-> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Remove unused variables bb_vga_0 and vt3342_vnt_threshold
+missing in staging: vt6656: Remove unused 5GHz support
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+---
+Tested with vt6656 on mini PCIe card (connected over USB)
+which is using rf_type: RF_VT3226D0 (2.4GHz only)
 
-> ---
->  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index e29796c..9c346ce 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -1202,7 +1202,9 @@ static int dpu_bind(struct device *dev, struct device *master, void *data)
->         struct platform_device *pdev = to_platform_device(dev);
->         struct drm_device *ddev = priv->dev;
->         struct dpu_kms *dpu_kms;
-> +       struct dev_pm_opp *opp;
->         int ret = 0;
-> +       unsigned long max_freq = ULONG_MAX;
->
->         dpu_kms = devm_kzalloc(&pdev->dev, sizeof(*dpu_kms), GFP_KERNEL);
->         if (!dpu_kms)
-> @@ -1225,6 +1227,12 @@ static int dpu_bind(struct device *dev, struct device *master, void *data)
->         }
->         dpu_kms->num_clocks = ret;
->
-> +       opp = dev_pm_opp_find_freq_floor(dev, &max_freq);
-> +       if (!IS_ERR(opp))
-> +               dev_pm_opp_put(opp);
-> +
-> +       dev_pm_opp_set_rate(dev, max_freq);
-> +
->         platform_set_drvdata(pdev, dpu_kms);
->
->         ret = msm_kms_init(&dpu_kms->base, &kms_funcs);
-> --
-> 2.7.4
->
+Philipp Hortmann (2):
+  staging: vt6656: Removed unused variable bb_vga_0
+  staging: vt6656: Removed unused variable vt3342_vnt_threshold
 
+ drivers/staging/vt6656/baseband.c | 24 ------------------------
+ drivers/staging/vt6656/card.c     |  2 --
+ 2 files changed, 26 deletions(-)
 
 -- 
-With best wishes
-Dmitry
+2.25.1
+
