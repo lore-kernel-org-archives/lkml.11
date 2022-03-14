@@ -2,85 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D51C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38088C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240603AbiCNMGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
+        id S240457AbiCNMGI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240423AbiCNMFP (ORCPT
+        with ESMTP id S240421AbiCNMFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:05:15 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8778848E7B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:02:03 -0700 (PDT)
-Received: from zn.tnic (p5de8e440.dip0.t-ipconnect.de [93.232.228.64])
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2942149241;
+        Mon, 14 Mar 2022 05:02:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A37BB1EC01CE;
-        Mon, 14 Mar 2022 13:01:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1647259317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=EXzvUYnVA1bHebasBXnECfFY2YfAaZOPqS4CjTkMFw4=;
-        b=ZdTRD+gl824VDlabbTXdlHHx3TMzcbUecmjNNGhO+H1Mm3SWwi52CpsSCVaf1ZBah2BEip
-        +G+qMtrN9u2V5aBlAVlH3xMe9D/o53X56Wz2M7Ozo5sUz3EHML+WNDNt+d1CTd9gCG+QIX
-        JowryStWJkJv1T7G75KqpfA2kaFoLEk=
-Date:   Mon, 14 Mar 2022 13:01:51 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [tip:locking/core 4/5] vmlinux.o: warning: objtool:
- do_machine_check()+0x419: call to mca_msr_reg() leaves .noinstr.text section
-Message-ID: <Yi8ur4I5RJ2CT0Rx@zn.tnic>
-References: <202203141947.9KhIyyR7-lkp@intel.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5C0061260;
+        Mon, 14 Mar 2022 12:02:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40FC7C340E9;
+        Mon, 14 Mar 2022 12:02:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647259324;
+        bh=UyCtQWl67fX8xmmCx85LQ2WETmjPJSDy8cN0/Tj/lPI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pQdtL5sGfvE2kE1vLsfDJRX2jJ7vK+k6yiF6tEyA0Roy8CGPcPpoxDTWULiMeTsns
+         2BO5VB7dHxOCX1o8+Ots/Jb+JwmJHpnvAeweFc1GLs+QTDt6Jr6jrV4/a45ly+X0rJ
+         7fVuBweUcQmH8sj7rsJiEzaJe6e9WGvEChePSXhY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Scott McNutt <scott.mcnutt@siriusxm.com>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 53/71] net: macb: Fix lost RX packet wakeup race in NAPI receive
+Date:   Mon, 14 Mar 2022 12:53:46 +0100
+Message-Id: <20220314112739.414191650@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
+References: <20220314112737.929694832@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <202203141947.9KhIyyR7-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 07:40:08PM +0800, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking/core
-> head:   cd27ccfc727e99352321c0c75012ab9c5a90321e
-> commit: acb13ea0baf8db8d05a3910c06e997c90825faad [4/5] asm-generic/bitops: Always inline all bit manipulation helpers
-> config: x86_64-randconfig-a005-20220314 (https://download.01.org/0day-ci/archive/20220314/202203141947.9KhIyyR7-lkp@intel.com/config)
-> compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-> reproduce (this is a W=1 build):
->         # https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=acb13ea0baf8db8d05a3910c06e997c90825faad
->         git remote add tip https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
->         git fetch --no-tags tip locking/core
->         git checkout acb13ea0baf8db8d05a3910c06e997c90825faad
->         # save the config file to linux build tree
->         mkdir build_dir
->         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
->    vmlinux.o: warning: objtool: mce_read_aux()+0x42: call to mca_msr_reg() leaves .noinstr.text section
-> >> vmlinux.o: warning: objtool: do_machine_check()+0x419: call to mca_msr_reg() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: enter_from_user_mode()+0x4a: call to on_thread_stack() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: syscall_enter_from_user_mode()+0x53: call to on_thread_stack() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare()+0x4a: call to on_thread_stack() leaves .noinstr.text section
->    vmlinux.o: warning: objtool: irqentry_enter_from_user_mode()+0x4a: call to on_thread_stack() leaves .noinstr.text section
+From: Robert Hancock <robert.hancock@calian.com>
 
-You need to test tip/ras/core with that .config - not some random
-patches inside of locking/core. Fixing the noinstr issues is split into
-a couple of patches in locking/core and ras/core.
+commit 0bf476fc3624e3a72af4ba7340d430a91c18cd67 upstream.
 
-Thx.
+There is an oddity in the way the RSR register flags propagate to the
+ISR register (and the actual interrupt output) on this hardware: it
+appears that RSR register bits only result in ISR being asserted if the
+interrupt was actually enabled at the time, so enabling interrupts with
+RSR bits already set doesn't trigger an interrupt to be raised. There
+was already a partial fix for this race in the macb_poll function where
+it checked for RSR bits being set and re-triggered NAPI receive.
+However, there was a still a race window between checking RSR and
+actually enabling interrupts, where a lost wakeup could happen. It's
+necessary to check again after enabling interrupts to see if RSR was set
+just prior to the interrupt being enabled, and re-trigger receive in that
+case.
 
--- 
-Regards/Gruss,
-    Boris.
+This issue was noticed in a point-to-point UDP request-response protocol
+which periodically saw timeouts or abnormally high response times due to
+received packets not being processed in a timely fashion. In many
+applications, more packets arriving, including TCP retransmissions, would
+cause the original packet to be processed, thus masking the issue.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Fixes: 02f7a34f34e3 ("net: macb: Re-enable RX interrupt only when RX is done")
+Cc: stable@vger.kernel.org
+Co-developed-by: Scott McNutt <scott.mcnutt@siriusxm.com>
+Signed-off-by: Scott McNutt <scott.mcnutt@siriusxm.com>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/cadence/macb_main.c |   25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1448,7 +1448,14 @@ static int macb_poll(struct napi_struct
+ 	if (work_done < budget) {
+ 		napi_complete_done(napi, work_done);
+ 
+-		/* Packets received while interrupts were disabled */
++		/* RSR bits only seem to propagate to raise interrupts when
++		 * interrupts are enabled at the time, so if bits are already
++		 * set due to packets received while interrupts were disabled,
++		 * they will not cause another interrupt to be generated when
++		 * interrupts are re-enabled.
++		 * Check for this case here. This has been seen to happen
++		 * around 30% of the time under heavy network load.
++		 */
+ 		status = macb_readl(bp, RSR);
+ 		if (status) {
+ 			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+@@ -1456,6 +1463,22 @@ static int macb_poll(struct napi_struct
+ 			napi_reschedule(napi);
+ 		} else {
+ 			queue_writel(queue, IER, bp->rx_intr_mask);
++
++			/* In rare cases, packets could have been received in
++			 * the window between the check above and re-enabling
++			 * interrupts. Therefore, a double-check is required
++			 * to avoid losing a wakeup. This can potentially race
++			 * with the interrupt handler doing the same actions
++			 * if an interrupt is raised just after enabling them,
++			 * but this should be harmless.
++			 */
++			status = macb_readl(bp, RSR);
++			if (unlikely(status)) {
++				queue_writel(queue, IDR, bp->rx_intr_mask);
++				if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
++					queue_writel(queue, ISR, MACB_BIT(RCOMP));
++				napi_schedule(napi);
++			}
+ 		}
+ 	}
+ 
+
+
