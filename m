@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE687C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3A3C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240865AbiCNMLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
+        id S240440AbiCNMLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:11:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242355AbiCNMJx (ORCPT
+        with ESMTP id S240968AbiCNMIK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9262715E;
-        Mon, 14 Mar 2022 05:07:19 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013652AE02;
+        Mon, 14 Mar 2022 05:04:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED626130D;
-        Mon, 14 Mar 2022 12:07:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D89FC340E9;
-        Mon, 14 Mar 2022 12:07:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45D1D6130D;
+        Mon, 14 Mar 2022 12:04:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DD0C340E9;
+        Mon, 14 Mar 2022 12:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259638;
-        bh=2o1LoqJAtWoL5H0rIhGX0s5a1sOKR+z79T2uz71pT8A=;
+        s=korg; t=1647259451;
+        bh=bqsgv4wYRlRAXFN2jwy/To0VbWXSYoahODxLG/Pqnl0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hf96/YFAnrlnO0EHA8dRH8J/gT5bO21Uw/slO7FHhjcTPa9XbakqM7DG8mJzyfUZf
-         1P3Pb4YGCR75twjE8OzNs44dO7Qaju2iODgO0q1mCXYcRhB6BN3BdjwlmmJ7aJWZ/H
-         1u3AJ5BGKC36CfK2h5SwPWHKpaitpM9Zu/HmPR9Q=
+        b=p3SH04pEZK0e+deVykMjji5sJ7xu/ZK+fgy//QqpUgt+kqOVUgtveDv6sFjYPLYra
+         ss+hUYAhFxbFaNxYoJvi2sPKWAgkkDGjUz8Ly30MqUqr2inwaPaZR+jjm/EstijnFY
+         oHc0/4XuJvu97STG/Rk839hy0arp0sIT7GEQcj0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Shuang Li <shuali@redhat.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 055/110] pinctrl: tigerlake: Revert "Add Alder Lake-M ACPI ID"
-Date:   Mon, 14 Mar 2022 12:53:57 +0100
-Message-Id: <20220314112744.571590223@linuxfoundation.org>
+Subject: [PATCH 5.15 010/110] tipc: fix kernel panic when enabling bearer
+Date:   Mon, 14 Mar 2022 12:53:12 +0100
+Message-Id: <20220314112743.320738039@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,35 +51,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
 
-[ Upstream commit 6f66db29e2415cbe8759c48584f9cae19b3c2651 ]
+[ Upstream commit be4977b847f5d5cedb64d50eaaf2218c3a55a3a3 ]
 
-It appears that last minute change moved ACPI ID of Alder Lake-M
-to the INTC1055, which is already in the driver.
+When enabling a bearer on a node, a kernel panic is observed:
 
-This ID on the other hand will be used elsewhere.
+[    4.498085] RIP: 0010:tipc_mon_prep+0x4e/0x130 [tipc]
+...
+[    4.520030] Call Trace:
+[    4.520689]  <IRQ>
+[    4.521236]  tipc_link_build_proto_msg+0x375/0x750 [tipc]
+[    4.522654]  tipc_link_build_state_msg+0x48/0xc0 [tipc]
+[    4.524034]  __tipc_node_link_up+0xd7/0x290 [tipc]
+[    4.525292]  tipc_rcv+0x5da/0x730 [tipc]
+[    4.526346]  ? __netif_receive_skb_core+0xb7/0xfc0
+[    4.527601]  tipc_l2_rcv_msg+0x5e/0x90 [tipc]
+[    4.528737]  __netif_receive_skb_list_core+0x20b/0x260
+[    4.530068]  netif_receive_skb_list_internal+0x1bf/0x2e0
+[    4.531450]  ? dev_gro_receive+0x4c2/0x680
+[    4.532512]  napi_complete_done+0x6f/0x180
+[    4.533570]  virtnet_poll+0x29c/0x42e [virtio_net]
+...
 
-This reverts commit 258435a1c8187f559549e515d2f77fa0b57bcd27.
+The node in question is receiving activate messages in another
+thread after changing bearer status to allow message sending/
+receiving in current thread:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+         thread 1           |              thread 2
+         --------           |              --------
+                            |
+tipc_enable_bearer()        |
+  test_and_set_bit_lock()   |
+    tipc_bearer_xmit_skb()  |
+                            | tipc_l2_rcv_msg()
+                            |   tipc_rcv()
+                            |     __tipc_node_link_up()
+                            |       tipc_link_build_state_msg()
+                            |         tipc_link_build_proto_msg()
+                            |           tipc_mon_prep()
+                            |           {
+                            |             ...
+                            |             // null-pointer dereference
+                            |             u16 gen = mon->dom_gen;
+                            |             ...
+                            |           }
+  // Not being executed yet |
+  tipc_mon_create()         |
+  {                         |
+    ...                     |
+    // allocate             |
+    mon = kzalloc();        |
+    ...                     |
+  }                         |
+
+Monitoring pointer in thread 2 is dereferenced before monitoring data
+is allocated in thread 1. This causes kernel panic.
+
+This commit fixes it by allocating the monitoring data before enabling
+the bearer to receive messages.
+
+Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
+Reported-by: Shuang Li <shuali@redhat.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/intel/pinctrl-tigerlake.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/tipc/bearer.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pinctrl/intel/pinctrl-tigerlake.c b/drivers/pinctrl/intel/pinctrl-tigerlake.c
-index 0bcd19597e4a..3ddaeffc0415 100644
---- a/drivers/pinctrl/intel/pinctrl-tigerlake.c
-+++ b/drivers/pinctrl/intel/pinctrl-tigerlake.c
-@@ -749,7 +749,6 @@ static const struct acpi_device_id tgl_pinctrl_acpi_match[] = {
- 	{ "INT34C5", (kernel_ulong_t)&tgllp_soc_data },
- 	{ "INT34C6", (kernel_ulong_t)&tglh_soc_data },
- 	{ "INTC1055", (kernel_ulong_t)&tgllp_soc_data },
--	{ "INTC1057", (kernel_ulong_t)&tgllp_soc_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, tgl_pinctrl_acpi_match);
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 443f8e5b9477..36b466cfd9e1 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -352,16 +352,18 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 		goto rejected;
+ 	}
+ 
+-	test_and_set_bit_lock(0, &b->up);
+-	rcu_assign_pointer(tn->bearer_list[bearer_id], b);
+-	if (skb)
+-		tipc_bearer_xmit_skb(net, bearer_id, skb, &b->bcast_addr);
+-
++	/* Create monitoring data before accepting activate messages */
+ 	if (tipc_mon_create(net, bearer_id)) {
+ 		bearer_disable(net, b);
++		kfree_skb(skb);
+ 		return -ENOMEM;
+ 	}
+ 
++	test_and_set_bit_lock(0, &b->up);
++	rcu_assign_pointer(tn->bearer_list[bearer_id], b);
++	if (skb)
++		tipc_bearer_xmit_skb(net, bearer_id, skb, &b->bcast_addr);
++
+ 	pr_info("Enabled bearer <%s>, priority %u\n", name, prio);
+ 
+ 	return res;
 -- 
 2.34.1
 
