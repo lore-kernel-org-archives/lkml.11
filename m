@@ -2,84 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 041A1C388F3
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8172C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245652AbiCNMd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
+        id S242479AbiCNMaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243952AbiCNMVZ (ORCPT
+        with ESMTP id S243869AbiCNMVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B12713D41;
-        Mon, 14 Mar 2022 05:19:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF9FAB80DF5;
-        Mon, 14 Mar 2022 12:19:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5D24C340EC;
-        Mon, 14 Mar 2022 12:19:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260368;
-        bh=biVQO26JNhnpkhW6bbPtwyeL1122P5bPQiLIBuM1CHQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lYJg1yQ1+5/QRk73AL70nIGbzbF0ByrdVIFwoHjcxEp4s/KG3wJwbD1JbKaxdHtBI
-         zHnTALWDCCEqeUmEiKEwam6xLEMSAa+ML7XpTeKTJMpOSIWvX8bP6q/aEbK0AiH0VQ
-         U+EbyCAPbvmryB6hp7MuFobPcU9BIUkcCD3DrWZ4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 112/121] watch_queue: Make comment about setting ->defunct more accurate
-Date:   Mon, 14 Mar 2022 12:54:55 +0100
-Message-Id: <20220314112747.234658959@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
-References: <20220314112744.120491875@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Mar 2022 08:21:21 -0400
+X-Greylist: delayed 1408 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 05:17:30 PDT
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFCF1030;
+        Mon, 14 Mar 2022 05:17:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=TstykKkU8UiYmac2M4JtdidjM5ToasXW3oJnVLqn9vc=;
+  b=uZzqcfNxXJOrnqiHy4dxBPEniXBeG9MHrl0ZszKiBL28QGGlpwFHTMjF
+   loVpcgV/rW9yM/CyACnLPSer0B4BmLiaeINYnwYmVfsjN8moHt0A+kD0z
+   +zUVg7IyX0JWs0U1lX5a8D9OyAhUqXLaK8QS62Xj/Adbc3xtMZRueg8OR
+   8=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
+   d="scan'208";a="25997361"
+Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
+From:   Julia Lawall <Julia.Lawall@inria.fr>
+To:     Wolfgang Grandegger <wg@grandegger.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 27/30] can: ucan: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:51 +0100
+Message-Id: <20220314115354.144023-28-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+Various spelling mistakes in comments.
+Detected with the help of Coccinelle.
 
-commit 4edc0760412b0c4ecefc7e02cb855b310b122825 upstream.
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-watch_queue_clear() has a comment stating that setting ->defunct to true
-preventing new additions as well as preventing notifications.  Whilst
-the latter is true, the first bit is superfluous since at the time this
-function is called, the pipe cannot be accessed to add new event
-sources.
-
-Remove the "new additions" bit from the comment.
-
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/watch_queue.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/usb/ucan.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -569,7 +569,7 @@ void watch_queue_clear(struct watch_queu
- 	rcu_read_lock();
- 	spin_lock_bh(&wqueue->lock);
+diff --git a/drivers/net/can/usb/ucan.c b/drivers/net/can/usb/ucan.c
+index c7c41d1fd038..5ae0d7c017cc 100644
+--- a/drivers/net/can/usb/ucan.c
++++ b/drivers/net/can/usb/ucan.c
+@@ -1392,7 +1392,7 @@ static int ucan_probe(struct usb_interface *intf,
+ 	 * Stage 3 for the final driver initialisation.
+ 	 */
  
--	/* Prevent new additions and prevent notifications from happening */
-+	/* Prevent new notifications from being stored. */
- 	wqueue->defunct = true;
- 
- 	while (!hlist_empty(&wqueue->watches)) {
-
+-	/* Prepare Memory for control transferes */
++	/* Prepare Memory for control transfers */
+ 	ctl_msg_buffer = devm_kzalloc(&udev->dev,
+ 				      sizeof(union ucan_ctl_payload),
+ 				      GFP_KERNEL);
+@@ -1526,7 +1526,7 @@ static int ucan_probe(struct usb_interface *intf,
+ 	ret = ucan_device_request_in(up, UCAN_DEVICE_GET_FW_STRING, 0,
+ 				     sizeof(union ucan_ctl_payload));
+ 	if (ret > 0) {
+-		/* copy string while ensuring zero terminiation */
++		/* copy string while ensuring zero termination */
+ 		strncpy(firmware_str, up->ctl_msg_buffer->raw,
+ 			sizeof(union ucan_ctl_payload));
+ 		firmware_str[sizeof(union ucan_ctl_payload)] = '\0';
 
