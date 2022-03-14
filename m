@@ -2,107 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C19E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85838C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240988AbiCNMRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
+        id S241190AbiCNMRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242292AbiCNMJu (ORCPT
+        with ESMTP id S241505AbiCNMIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A111D26558;
-        Mon, 14 Mar 2022 05:07:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2E92B80DED;
-        Mon, 14 Mar 2022 12:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48CF0C340E9;
-        Mon, 14 Mar 2022 12:06:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259616;
-        bh=i7xv0jglIHn4FUUINh7I6a5MJYZqrXrWYxEtF5hnFLA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gsP2ODDZfTww0d0Op/XUZl0cVg45FWqxFjfxbNuXZuFsE02yAvmqBPoaOyqanExn1
-         pWAvY/DRJNldsSqENMGWBs230Ni3+CAVL1b9syghAqSrYKD9O++SPOCkBKoE+UMDEU
-         SCB4VHnJZOPpO1yHG6Mb4Zu2GdvQXK21pypj5L5g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>,
-        Peter Robinson <pbrobinson@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 050/110] net: bcmgenet: Dont claim WOL when its not available
-Date:   Mon, 14 Mar 2022 12:53:52 +0100
-Message-Id: <20220314112744.433400772@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
-References: <20220314112743.029192918@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Mar 2022 08:08:48 -0400
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556E24ECC1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:05:25 -0700 (PDT)
+Received: by mail-oo1-xc35.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so19815607oos.9
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:05:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pU9uPGpxANVVIsgcKvz7K/tE4whMaqHpIgoLY54UlzI=;
+        b=fFBE2zBqOW+xujSQr8CaSD78WW9sRE+zJEFn/EDFTxjhCNW8VpKV1g41OMj7TiyZAu
+         iUBbomn/izP5EZEVMdsumuc+XGcHrI8+CXNdDRIkO/IfB0/qUbYNEEnFtwHIise1Q/vA
+         wauwo733B8lvPOUUr/EyBpPbLxW4CdGY2FGT8DD9eMEI2XpqTLLU4UDnKSY7A4ZNgfcW
+         czck7SIybF6Vq99KSErtsu6tlPRmIJZ4X8fXMdfTxDQKKi0RplLWE/fkatQ+kuc13vzF
+         +1hkviP8Dl/j26McxJW9pXn3pNPfA/SHfFoX8el8wOlQsg/YzI8NJi3rImz7uoTq1EfH
+         HREw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pU9uPGpxANVVIsgcKvz7K/tE4whMaqHpIgoLY54UlzI=;
+        b=eyDKcEXQB8FCk/U3Z7bhtFMG7/rwSjZezfShLXxdBV/dHt7is19kriErhVRrgOrLsx
+         kOfDRTSi6AVrSCNI/1+r5lTZiyKYCITkTl1p0ayr3PRbT1p0R7k+u+/5slASfD6sNl/J
+         LO2fptFmxOOfR1YC7SqUSuqKeOHNSS54e+hFRvbkDppTm3KgjrJ0Dxgdub1GuwUPFD6x
+         a5gqMm3NYxI08ifph5b5Wh1iMEqIdAhL5pJQXNVn24OCZO34VflzMqJ0YafOYcAcjse0
+         SCCz5an71+GV62PnrDUl7p/PQiQdBUsW4sdL75SCqWMjkZAHB/42mGcpIrzOg5qZwTlY
+         ea6Q==
+X-Gm-Message-State: AOAM531vgh+zqhUiNnvEf4tGyg9oLIWTd8ujVRHzBxEYux9zbMcunoIq
+        xh9nXvi+9VCP/nplEFBK0+cEb+hJ7unABTW5qDvzWQ==
+X-Google-Smtp-Source: ABdhPJw1RA8znJT/hN+bAS4MYap2EO+2EYDpBtnfmfEOGkxzFMtWAaxnlgzhcuEKmiInZcwpRIjPFkYbZvZ8lhZbGiI=
+X-Received: by 2002:a05:6870:d254:b0:db:12b5:da3 with SMTP id
+ h20-20020a056870d25400b000db12b50da3mr2285214oac.211.1647259518800; Mon, 14
+ Mar 2022 05:05:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <0000000000008ec53005da294fe9@google.com> <CACT4Y+YXzBGuj4mn2fnBWw4szbb4MsAvNScbyNXi1S21MXm8ig@mail.gmail.com>
+ <CACT4Y+a1AvU4ZA3BXPpQMQ15A2T0CT_mrNTXv0NttJ0B06fH=w@mail.gmail.com> <fb12b19d57c34928895e0faa8067f64c@AcuMS.aculab.com>
+In-Reply-To: <fb12b19d57c34928895e0faa8067f64c@AcuMS.aculab.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 14 Mar 2022 13:05:07 +0100
+Message-ID: <CACT4Y+ae7WRhnmiTuFg6zrL7z_8rUrmWzopOGMZv6f0ONmd3yg@mail.gmail.com>
+Subject: Re: [syzbot] kernel panic: corrupted stack end in rtnl_newlink
+To:     David Laight <David.Laight@aculab.com>
+Cc:     syzbot <syzbot+0600986d88e2d4d7ebb8@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dsahern@kernel.org" <dsahern@kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Linton <jeremy.linton@arm.com>
+On Mon, 14 Mar 2022 at 11:44, David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Dmitry Vyukov
+> > Sent: 14 March 2022 09:09
+> >
+> > On Mon, 14 Mar 2022 at 09:22, Dmitry Vyukov <dvyukov@google.com> wrote:
+> > >
+> > > On Mon, 14 Mar 2022 at 09:17, syzbot
+> > > <syzbot+0600986d88e2d4d7ebb8@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > syzbot found the following issue on:
+> > > >
+> > > > HEAD commit:    0966d385830d riscv: Fix auipc+jalr relocation range checks
+> > > > git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git fixes
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=17fe80c5700000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=6295d67591064921
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=0600986d88e2d4d7ebb8
+> > > > compiler:       riscv64-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for
+> > Debian) 2.35.2
+> > > > userspace arch: riscv64
+> > >
+> > > +linux-riscv
+> > >
+> > > Riscv needs to increase stack size under KASAN.
+> > > I will send a patch.
+>
+> With vmalloc()ed stacks is it possible to allocate an extra page
+> of KVA that isn't backed by memory as a 'guard page' so that
+> stack overflow faults immediately?
+>
+> Probably worth enforcing for KASAN builds where the compilers
+> have a nasty habit of using lot more stack space that might
+> be expected.
 
-[ Upstream commit 00b022f8f876a3a036b0df7f971001bef6398605 ]
-
-Some of the bcmgenet platforms don't correctly support WOL, yet
-ethtool returns:
-
-"Supports Wake-on: gsf"
-
-which is false.
-
-Ideally if there isn't a wol_irq, or there is something else that
-keeps the device from being able to wakeup it should display:
-
-"Supports Wake-on: d"
-
-This patch checks whether the device can wakup, before using the
-hard-coded supported flags. This corrects the ethtool reporting, as
-well as the WOL configuration because ethtool verifies that the mode
-is supported before attempting it.
-
-Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Tested-by: Peter Robinson <pbrobinson@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220310045535.224450-1-jeremy.linton@arm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-index e31a5a397f11..f55d9d9c01a8 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-@@ -40,6 +40,13 @@
- void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
-+	struct device *kdev = &priv->pdev->dev;
-+
-+	if (!device_can_wakeup(kdev)) {
-+		wol->supported = 0;
-+		wol->wolopts = 0;
-+		return;
-+	}
- 
- 	wol->supported = WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_FILTER;
- 	wol->wolopts = priv->wolopts;
--- 
-2.34.1
-
-
-
+Yes, this would be useful. At least for x86 we use and rely on this.
