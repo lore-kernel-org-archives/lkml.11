@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73257C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31F4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240219AbiCNMBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
+        id S240262AbiCNMBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240093AbiCNMBN (ORCPT
+        with ESMTP id S240220AbiCNMBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:01:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6201EC66;
+        Mon, 14 Mar 2022 08:01:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06BA29C9D;
         Mon, 14 Mar 2022 04:59:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7218261298;
-        Mon, 14 Mar 2022 11:58:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47BA2C340E9;
-        Mon, 14 Mar 2022 11:58:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 326F661251;
+        Mon, 14 Mar 2022 11:59:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27285C340EC;
+        Mon, 14 Mar 2022 11:59:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259129;
-        bh=61uHkFMGvJanV3OCIKdUfTS/GzNdm0plwIvcxdlPqHg=;
+        s=korg; t=1647259154;
+        bh=HOjxcHufxyRTfpHSShWWcmsQrE1BqgUePpUDYNwRE6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hECu76bRZaS22ptaerAolp5pWHsfRoxo5OHyF3uTATZZm6DWF5SrlJ/eAHmq6tb6d
-         SciuZ9Ku/7IUG9//zhJZyA5j/DPUvckc/7WkHAmwgyb+jaGC/qarWPCuktdw0vzj3v
-         PV0g7mTBlRp26UxfqtAO6jxhnlA4ClulfR4MuLoY=
+        b=qQAjFgcspB7Y+UfTygkqmvuYIvpp06JhYwup9rn0m+b0ds9ZlOjmc0RqlV12UmJZC
+         Usq6bnuTh5NFS/+hJweZ2pzGNQMNJV7nCbsK1fMBHlZy7EKrbwTNlRZeWtvV/+O7dY
+         +rbbMzZrHiMzh2WYq6LSJseAmB2QbdZaMk0ULSv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 10/71] net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
-Date:   Mon, 14 Mar 2022 12:53:03 +0100
-Message-Id: <20220314112738.222654075@linuxfoundation.org>
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 15/71] ARM: dts: aspeed: Fix AST2600 quad spi group
+Date:   Mon, 14 Mar 2022 12:53:08 +0100
+Message-Id: <20220314112738.360531242@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,47 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Joel Stanley <joel@jms.id.au>
 
-[ Upstream commit e0058f0fa80f6e09c4d363779c241c45a3c56b94 ]
+[ Upstream commit 2f6edb6bcb2f3f41d876e0eba2ba97f87a0296ea ]
 
-The function dma_alloc_coherent() in qed_vf_hw_prepare() can fail, so
-its return value should be checked.
+Requesting quad mode for the FMC resulted in an error:
 
-Fixes: 1408cc1fa48c ("qed: Introduce VFs")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  &fmc {
+         status = "okay";
+ +       pinctrl-names = "default";
+ +       pinctrl-0 = <&pinctrl_fwqspi_default>'
+
+[    0.742963] aspeed-g6-pinctrl 1e6e2000.syscon:pinctrl: invalid function FWQSPID in map table
+￼
+
+This is because the quad mode pins are a group of pins, not a function.
+
+After applying this patch we can request the pins and the QSPI data
+lines are muxed:
+
+ # cat /sys/kernel/debug/pinctrl/1e6e2000.syscon\:pinctrl-aspeed-g6-pinctrl/pinmux-pins |grep 1e620000.spi
+ pin 196 (AE12): device 1e620000.spi function FWSPID group FWQSPID
+ pin 197 (AF12): device 1e620000.spi function FWSPID group FWQSPID
+ pin 240 (Y1): device 1e620000.spi function FWSPID group FWQSPID
+ pin 241 (Y2): device 1e620000.spi function FWSPID group FWQSPID
+ pin 242 (Y3): device 1e620000.spi function FWSPID group FWQSPID
+ pin 243 (Y4): device 1e620000.spi function FWSPID group FWQSPID
+
+Fixes: f510f04c8c83 ("ARM: dts: aspeed: Add AST2600 pinmux nodes")
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+Link: https://lore.kernel.org/r/20220304011010.974863-1-joel@jms.id.au
+Link: https://lore.kernel.org/r/20220304011010.974863-1-joel@jms.id.au'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_vf.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.c b/drivers/net/ethernet/qlogic/qed/qed_vf.c
-index 72a38d53d33f..e2a5a6a373cb 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_vf.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_vf.c
-@@ -513,6 +513,9 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
- 						    p_iov->bulletin.size,
- 						    &p_iov->bulletin.phys,
- 						    GFP_KERNEL);
-+	if (!p_iov->bulletin.p_virt)
-+		goto free_pf2vf_reply;
-+
- 	DP_VERBOSE(p_hwfn, QED_MSG_IOV,
- 		   "VF's bulletin Board [%p virt 0x%llx phys 0x%08x bytes]\n",
- 		   p_iov->bulletin.p_virt,
-@@ -552,6 +555,10 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
+diff --git a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
+index 910eacc8ad3b..a362714ae9fc 100644
+--- a/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
++++ b/arch/arm/boot/dts/aspeed-g6-pinctrl.dtsi
+@@ -118,7 +118,7 @@ pinctrl_fwspid_default: fwspid_default {
+ 	};
  
- 	return rc;
+ 	pinctrl_fwqspid_default: fwqspid_default {
+-		function = "FWQSPID";
++		function = "FWSPID";
+ 		groups = "FWQSPID";
+ 	};
  
-+free_pf2vf_reply:
-+	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
-+			  sizeof(union pfvf_tlvs),
-+			  p_iov->pf2vf_reply, p_iov->pf2vf_reply_phys);
- free_vf2pf_request:
- 	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
- 			  sizeof(union vfpf_tlvs),
 -- 
 2.34.1
 
