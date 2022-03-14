@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E65C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73257C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240153AbiCNMBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
+        id S240219AbiCNMBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240140AbiCNMBK (ORCPT
+        with ESMTP id S240093AbiCNMBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:01:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C59849901;
-        Mon, 14 Mar 2022 04:59:12 -0700 (PDT)
+        Mon, 14 Mar 2022 08:01:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6201EC66;
+        Mon, 14 Mar 2022 04:59:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 783B9B80D24;
-        Mon, 14 Mar 2022 11:59:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1120C340E9;
-        Mon, 14 Mar 2022 11:59:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7218261298;
+        Mon, 14 Mar 2022 11:58:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47BA2C340E9;
+        Mon, 14 Mar 2022 11:58:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259145;
-        bh=50KT56SznbWhswf1Ux0JcLOoVUENyCLZpDCvz4SxoxA=;
+        s=korg; t=1647259129;
+        bh=61uHkFMGvJanV3OCIKdUfTS/GzNdm0plwIvcxdlPqHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GHXugY5P4fYC9RWLDWlHEyjZ1/pBFDpAc1aWhEtfaBQCN8ZyHsZ8aYTQImg+AOrUK
-         edmoUh6B4oFs/Wq0otO6V45DvcCJ84mqGW8DuP5lEBgCD3yQIpmM9v89UCGJzX9RfB
-         hmRsP45IHytx3XqpDMtjgxiZtair4fEkXckFwyYM=
+        b=hECu76bRZaS22ptaerAolp5pWHsfRoxo5OHyF3uTATZZm6DWF5SrlJ/eAHmq6tb6d
+         SciuZ9Ku/7IUG9//zhJZyA5j/DPUvckc/7WkHAmwgyb+jaGC/qarWPCuktdw0vzj3v
+         PV0g7mTBlRp26UxfqtAO6jxhnlA4ClulfR4MuLoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 13/71] drm/sun4i: mixer: Fix P010 and P210 format numbers
-Date:   Mon, 14 Mar 2022 12:53:06 +0100
-Message-Id: <20220314112738.305413197@linuxfoundation.org>
+Subject: [PATCH 5.10 10/71] net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
+Date:   Mon, 14 Mar 2022 12:53:03 +0100
+Message-Id: <20220314112738.222654075@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -49,44 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 9470c29faa91c804aa04de4c10634bf02462bfa5 ]
+[ Upstream commit e0058f0fa80f6e09c4d363779c241c45a3c56b94 ]
 
-It turns out that DE3 manual has inverted YUV and YVU format numbers for
-P010 and P210. Invert them.
+The function dma_alloc_coherent() in qed_vf_hw_prepare() can fail, so
+its return value should be checked.
 
-This was tested by playing video decoded to P010 and additionally
-confirmed by looking at BSP driver source.
-
-Fixes: 169ca4b38932 ("drm/sun4i: Add separate DE3 VI layer formats")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220228181436.1424550-1-jernej.skrabec@gmail.com
+Fixes: 1408cc1fa48c ("qed: Introduce VFs")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun8i_mixer.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_vf.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-index 7576b523fdbb..b0178c045267 100644
---- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
-+++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-@@ -113,10 +113,10 @@
- /* format 13 is semi-planar YUV411 VUVU */
- #define SUN8I_MIXER_FBFMT_YUV411	14
- /* format 15 doesn't exist */
--/* format 16 is P010 YVU */
--#define SUN8I_MIXER_FBFMT_P010_YUV	17
--/* format 18 is P210 YVU */
--#define SUN8I_MIXER_FBFMT_P210_YUV	19
-+#define SUN8I_MIXER_FBFMT_P010_YUV	16
-+/* format 17 is P010 YVU */
-+#define SUN8I_MIXER_FBFMT_P210_YUV	18
-+/* format 19 is P210 YVU */
- /* format 20 is packed YVU444 10-bit */
- /* format 21 is packed YUV444 10-bit */
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.c b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+index 72a38d53d33f..e2a5a6a373cb 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_vf.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+@@ -513,6 +513,9 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
+ 						    p_iov->bulletin.size,
+ 						    &p_iov->bulletin.phys,
+ 						    GFP_KERNEL);
++	if (!p_iov->bulletin.p_virt)
++		goto free_pf2vf_reply;
++
+ 	DP_VERBOSE(p_hwfn, QED_MSG_IOV,
+ 		   "VF's bulletin Board [%p virt 0x%llx phys 0x%08x bytes]\n",
+ 		   p_iov->bulletin.p_virt,
+@@ -552,6 +555,10 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
  
+ 	return rc;
+ 
++free_pf2vf_reply:
++	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
++			  sizeof(union pfvf_tlvs),
++			  p_iov->pf2vf_reply, p_iov->pf2vf_reply_phys);
+ free_vf2pf_request:
+ 	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
+ 			  sizeof(union vfpf_tlvs),
 -- 
 2.34.1
 
