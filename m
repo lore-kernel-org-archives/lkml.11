@@ -2,142 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B528CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237535AbiCNIGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45364 "EHLO
+        id S237570AbiCNIG1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238194AbiCNIDl (ORCPT
+        with ESMTP id S238561AbiCNIEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:03:41 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD98845500
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 01:00:37 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id r190-20020a1c2bc7000000b0038a1013241dso1118875wmr.1
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 01:00:37 -0700 (PDT)
+        Mon, 14 Mar 2022 04:04:13 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642094738E;
+        Mon, 14 Mar 2022 01:01:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=Cfv85awAmoyZzNe4XhXxrHLPFirYqlR4GxEuXMqMPG0=;
-        b=DpH1bJNPog08D3meVY94qXN/ZTbqAbz22x6qEBi18AI0VYBHw6WBAPeMRRQHnLK3ar
-         6HYGEv/sONT9p/YzmzdZ6x0n5bTSIzEpRrq8evBqUfUerZXm9mDecwejCayDb70xdG7A
-         si5mAoEzOlZ9dvqP5coB2biSOtdVjibaVqwRORZpNfXQ1Guq+mQvlEsWdnkKdQ0KiIRS
-         Cw8OHPaLOI7KY6AZESsF9Pl7sTyfKGx+6PnvoM0AbaY+3rToip30Sp2dwCH4yZO/XLXZ
-         n3baygYKvIa3OTUtAteiF+YGnrI3kDcuOZyiUdN+6MMRuuF0d/Ik0M4DmI6pU7V3rkmD
-         HSdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Cfv85awAmoyZzNe4XhXxrHLPFirYqlR4GxEuXMqMPG0=;
-        b=MoEwszu7vBe03y3if7yBewfizKoTxlbHzW1A+T40MWPgJ0ADlkow8civhfAaDTTEZ1
-         bfs84qzgrayO+2cFJ9xl1q3ysTcfi9YiClmum2Y2GyS8hVfOTHbNlEJQKNlOAw6U3HOe
-         whVXmEOLeGFEttomRCdiUTGfWTtoGzpxv+kLfUj0prn7sv0CCTp1WvXBUwlCXDVsehO1
-         cX6MSQTTYlmeaxGYHcxmZUk/rbwXUn6b/DYLmG2opNxshyhKKVk923UXu2oTuMBGdZnG
-         xMC+9H5QopvvePw2tjTnjRrR+EGCCmU7YDxP3A6tcYUr6McNZ2zgljVbLWoRXs5GkxrE
-         AqNA==
-X-Gm-Message-State: AOAM531iWKvbpOAnCcr9HsXEiW+1lDDUDe9DlhrVAk5BejmhgwwegOBC
-        QjY4g0OLY1tBtXLy2/m9up+fmw==
-X-Google-Smtp-Source: ABdhPJzbOI0b73c/qadaAd7iEJGOVJ5hLgp/CgtYvpQSgMgQpjxw37Y+EMVduvNyqB6rfHgzaz11tw==
-X-Received: by 2002:a05:600c:4a12:b0:389:9c7d:5917 with SMTP id c18-20020a05600c4a1200b003899c7d5917mr16243062wmp.0.1647244819585;
-        Mon, 14 Mar 2022 01:00:19 -0700 (PDT)
-Received: from localhost ([2a01:cb19:826e:8e00:bcd3:63d9:c9dc:840d])
-        by smtp.gmail.com with ESMTPSA id 10-20020adf808a000000b001edd413a952sm12568861wrl.95.2022.03.14.01.00.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 01:00:19 -0700 (PDT)
-From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Fengping Yu <fengping.yu@mediatek.com>,
-        Yingjoe Chen <yingjoe.chen@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v21 2/3] Input: mt6779-keypad - Add MediaTek keypad driver
-In-Reply-To: <YiIINpi4zbJq/AZE@smile.fi.intel.com>
-References: <20220303154302.252041-1-mkorpershoek@baylibre.com>
- <20220303154302.252041-3-mkorpershoek@baylibre.com>
- <300114e2-6794-db3c-a51c-3f900b6476f9@collabora.com>
- <YiIINpi4zbJq/AZE@smile.fi.intel.com>
-Date:   Mon, 14 Mar 2022 09:00:18 +0100
-Message-ID: <87ee35rmjx.fsf@baylibre.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647244906; x=1678780906;
+  h=from:to:cc:subject:date:message-id;
+  bh=DqWxpScnBDztL5jnHz6eeDB3KndGF4j2DaOaSkh8I1w=;
+  b=otag3tedl+y97xCfI/nB3nEvNGQ8yKSF1dq65hW+G/OyycJhgQUjR2eD
+   NaGHO2kBMgLlORsRYwnphZIFyqat9VQ08GAcMsMQGcDllYIWP9nMYbM/4
+   OuvpMQzPuRgRDJn3jxkvKGuogh4psMJmM1F+klg2pDLk1R7EyHuV4oi5G
+   g=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 14 Mar 2022 01:00:17 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 14 Mar 2022 01:00:16 -0700
+X-QCInternal: smtphost
+Received: from hu-dikshita-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.13])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 14 Mar 2022 13:30:13 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 347544)
+        id 7A5144679; Mon, 14 Mar 2022 13:30:12 +0530 (+0530)
+From:   quic_dikshita@quicinc.com
+To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hverkuil-cisco@xs4all.nl
+Cc:     linux-arm-msm@vger.kernel.org, ezequiel@collabora.com,
+        stanimir.varbanov@linaro.org, quic_vgarodia@quicinc.com,
+        quic_majja@quicinc.com, quic_jdas@quicinc.com,
+        Dikshita Agarwal <quic_dikshita@quicinc.com>
+Subject: [PATCH v3 0/2] Intra-refresh type control
+Date:   Mon, 14 Mar 2022 13:30:07 +0530
+Message-Id: <1647244809-25340-1-git-send-email-quic_dikshita@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On ven., mars 04, 2022 at 14:38, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+From: Dikshita Agarwal <quic_dikshita@quicinc.com>
 
-> On Fri, Mar 04, 2022 at 11:31:38AM +0100, AngeloGioacchino Del Regno wrote:
->> Il 03/03/22 16:43, Mattijs Korpershoek ha scritto:
->> > From: "fengping.yu" <fengping.yu@mediatek.com>
->> > 
->> > This patch adds matrix keypad support for Mediatek SoCs.
->
->> > +struct mt6779_keypad {
->> > +	struct regmap *regmap;
->> > +	struct input_dev *input_dev;
->> > +	struct clk *clk;
->
->> > +	void __iomem *base;
->
-> Not sure why you need this here.
-You are right. There is no point of keeping this __iomem region as part
-of the structure, since it's only used in the probe() function to create
-the regmap.
+Hi,
 
-Will send an improvement part of a later series.
+This series add a new intra-refresh type control for encoders.
+this can be used to specify which intra refresh to be enabled, random, cyclic or none.
 
->
->> > +	u32 n_rows;
->> > +	u32 n_cols;
->> > +	DECLARE_BITMAP(keymap_state, MTK_KPD_NUM_BITS);
->> > +};
->> > +
->> > +static const struct regmap_config mt6779_keypad_regmap_cfg = {
->> > +	.reg_bits = 32,
->> > +	.val_bits = 32,
->> > +	.reg_stride = sizeof(u32),
->> > +	.max_register = 36,
->> 
->> Are you sure that you can't use .fast_io = true?
->> 
->> Another version for the same question:
->> Are you sure that you need to lock with a mutex here, and not with a spinlock?
->> 
->> Since you're performing reads over a MMIO, I think that there's a very good
->> chance that you can use fast_io.
->> 
->> > +};
->
-> ...
->
->> Please use dev_err_probe() to simplify error handling in probe functions: you've
->> done a great job with adding a devm action for the error cases, avoiding gotos to
->> get out cleanly.. it would be a pity to not finish this to perfection.
->> 
->> I'll give you two examples for this, so that you'll be all set.
->> 
->> 	if (IS_ERR(keypad->regmap))
->> 		return dev_err_probe(&pdev->dev, PTR_ERR(keypad->regmap),
->> 				     "regmap init failed\n");
->> 
->> P.S.: No need for %pe here, as dev_err_probe prints the error number for you!
->
-> Maintainer of the input subsystem is strongly against dev_err_probe() API. See
-> other files there. Ditto for other cases you mentioned below.
->
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+Change since v0:
+ Dropped INTRA_REFRESH_TYPE_NONE as it was not needed.
+ Intra refresh period value as zero will disable the intra  refresh.
+
+Change since v1:
+ Updated the control name for better undestanding.
+ Also updated the documentation accordingly.
+
+Change since v2:
+ Updated the venus driver implementation as well to use the
+ correct control name. Missed in v2.
+
+Thanks,
+Dikshita
+
+
+Dikshita Agarwal (2):
+  media: v4l2-ctrls: Add intra-refresh type control
+  venus: venc: Add support for intra-refresh mode
+
+ .../userspace-api/media/v4l/ext-ctrls-codec.rst    | 27 ++++++++++++++++++++++
+ drivers/media/platform/qcom/venus/core.h           |  1 +
+ drivers/media/platform/qcom/venus/venc.c           |  4 +++-
+ drivers/media/platform/qcom/venus/venc_ctrls.c     |  8 +++++++
+ drivers/media/v4l2-core/v4l2-ctrls-defs.c          |  9 ++++++++
+ include/uapi/linux/v4l2-controls.h                 |  5 ++++
+ 6 files changed, 53 insertions(+), 1 deletion(-)
+
+-- 
+2.7.4
+
