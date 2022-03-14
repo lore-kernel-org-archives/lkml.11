@@ -2,105 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9EDC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EADDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 13:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238541AbiCNM6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59442 "EHLO
+        id S239181AbiCNNEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 09:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238582AbiCNM6W (ORCPT
+        with ESMTP id S231416AbiCNNET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:58:22 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CD21261E;
-        Mon, 14 Mar 2022 05:57:12 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 3DEED1F391;
-        Mon, 14 Mar 2022 12:57:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1647262631; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rDnjmno3RNaHoqZQk8WStttjohZNlh5HTFSnG4DmMuc=;
-        b=mY8tCJ8kdj2//VBcpDAmvBBhExrUmqIb9QskcfqVQbsBuGJos52kN/oZy8yP8s3R3YkMAT
-        55/zyV4NfDXeabMudRc7XBOL6SWU7OgUWrhN5/gRR9UioEoI1goBUSum1ejzdOss6B/OHt
-        9gluR5EzP1m6EZGprUljPNBmw0yLXtU=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1825D13ADA;
-        Mon, 14 Mar 2022 12:57:11 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Ua8+Bac7L2KtTgAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 14 Mar 2022 12:57:11 +0000
-Date:   Mon, 14 Mar 2022 13:57:09 +0100
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Ivan Babrou <ivan@cloudflare.com>,
-        Frank Hofmann <fhofmann@cloudflare.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Daniel Dao <dqminh@cloudflare.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] memcg: sync flush only if periodic flush is delayed
-Message-ID: <20220314125709.GA12347@blackbody.suse.cz>
-References: <20220304184040.1304781-1-shakeelb@google.com>
- <20220311160051.GA24796@blackbody.suse.cz>
- <20220312190715.cx4aznnzf6zdp7wv@google.com>
+        Mon, 14 Mar 2022 09:04:19 -0400
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C4B2BC8;
+        Mon, 14 Mar 2022 06:03:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=sZGCWDh0dfZ+WLDvLb/SCotSw5Z7sq0gZZDxSTkfyJo=;
+  b=fbq7d3sCUpERkXkj8lEkFFwZhvtPpyB6uiTLBhL/3Gt9IccehSvO7YZ6
+   2bm/d2XdrHaIEMdFLEUG7C5x1PmbMJ9nLezz+kaCvFDfuQvyPOCrSpEEq
+   6B4zaFZUvtvqoiJNjH1x5r6OgT0kGVUAwn3wXOYIGzj5tafxGl606BVWK
+   c=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
+   d="scan'208";a="26014036"
+Received: from dt-lawall.paris.inria.fr ([128.93.67.65])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 14:03:02 +0100
+Date:   Mon, 14 Mar 2022 14:03:01 +0100 (CET)
+From:   Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: julia@hadrien
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        kernel-janitors@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 27/30] can: ucan: fix typos in comments
+In-Reply-To: <20220314120502.kpc27kzk2dnou2td@pengutronix.de>
+Message-ID: <alpine.DEB.2.22.394.2203141402480.2561@hadrien>
+References: <20220314115354.144023-1-Julia.Lawall@inria.fr> <20220314115354.144023-28-Julia.Lawall@inria.fr> <20220314120502.kpc27kzk2dnou2td@pengutronix.de>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220312190715.cx4aznnzf6zdp7wv@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi 2.
-
-On Sat, Mar 12, 2022 at 07:07:15PM +0000, Shakeel Butt <shakeelb@google.com> wrote:
-> It is (b) that I am aiming for in this patch. At least (a) was not
-> happening in the cloudflare experiments. Are you suggesting having a
-> dedicated high priority wq would solve both (a) and (b)?
-> [...]
-> > We can't argue what's the effect of periodic only flushing so this
-> > newly introduced factor would inherit that too. I find it superfluous.
-> 
-> 
-> Sorry I didn't get your point. What is superfluous?
-
-Let me retell my understanding.
-The current implementation flushes based on cumulated error and time.
-Your patch proposes conditioning the former with another time-based
-flushing, whose duration can be up to 2 times longer than the existing
-periodic flush.
-
-Assuming the periodic flush is working, the reader won't see data older
-than 2 seconds, so the additional sync-flush after (possible) 4 seconds
-seems superfluous.
-
-(In the case of periodic flush being stuck, I thought the factor 2=4s/2s
-was superfluous, another magic parameter.)
-
-I'm comparing here your proposal vs no synchronous flushing in
-workingset_refault().
-
-> Do you have any strong concerns with the currect patch?
-
-Does that clarify?
-
-(I agree with your initial thesis this can be iterated before it evolves
-to everyone's satisfaction.)
 
 
-Michal
+On Mon, 14 Mar 2022, Marc Kleine-Budde wrote:
 
+> On 14.03.2022 12:53:51, Julia Lawall wrote:
+> > Various spelling mistakes in comments.
+> > Detected with the help of Coccinelle.
+> >
+> > Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+>
+> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+>
+> Should I take this, or are you going to upstream this?
+
+You can take it.
+
+thanks,
+julia
+
+>
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+>
