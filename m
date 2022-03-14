@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A6FC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 21:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9632C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 21:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245328AbiCNVde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 17:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
+        id S245333AbiCNVdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 17:33:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245265AbiCNVdX (ORCPT
+        with ESMTP id S245280AbiCNVdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 17:33:23 -0400
+        Mon, 14 Mar 2022 17:33:24 -0400
 Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3CD338BE
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 14:32:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A4C33E3D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 14:32:13 -0700 (PDT)
 Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id EC1B32C0C23;
-        Mon, 14 Mar 2022 21:32:07 +0000 (UTC)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 1A74B2C0C35;
+        Mon, 14 Mar 2022 21:32:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1647293527;
-        bh=L4VCOUAX7o5pSVh/zKud04ppcqVy8H/eB4l1M5HSVy0=;
+        s=mail181024; t=1647293528;
+        bh=CCslJI4Upt9ti4sTFV0dF2UZUVjFxXqK24Ghz+BqxaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AGU44anjyAvxn1CkK7IQsm9DXOwsSNvpHEs6TWsiueC2vDsZOp4R29uB2SOePwlB2
-         kB/eY116C5kpjzfodqts9x9NeEIx1DmUhBvd1ep87lEeX1Q2ycruZSPB0veTQGZlEZ
-         Max+dhTprmWYDJLVRvpbocBxHlF2Y/5X7DLxvAtVhrCZ4DhQ4RvKTJJt/308CjVDfU
-         Xt+j6kX0ksC0Ten2FDDgxkXPSjDvfWRZvsjxdWRuIFUTdRG2mJEKEexwRvfgZh2y2H
-         Xq06OfDLgvhdQ3Z4sQJTJBCuuKUEn/xf7DICfFZeSj8RnmWbNx59fut1k1Y2ccG2Ca
-         C10nZ9mzWsESg==
+        b=KG9fXNXlKNU+snjweKpKj3+rkFkFLy5sEzLpwJKppiUh9KDfKiQ9BWNXy+7c8798A
+         pbbSgP6ErCgJ/U4HzZtVi5oFmFdXrBggmuYeqbedgtzjnxpOqin8pBYR3cJ5d+7zpR
+         gEqXuhDJBMek7iQRpvbo3v2/dXrTr48FQLpFePVO/KCLS7+vZoHBm2NranximxGMiV
+         nPpVgoxTUyiXUyygU0H+tH2zcLXpFFwcyQ8Ktt2sTAOwakCMJwZXIYfxdLqAmFiRRY
+         H1otMOk4Ox1s6XRWJnWEYQfCOjGS38xfQWRunvGqTWNSg9ROlTxlmY8ZllG70auv3J
+         7QzYDPiu/7u2w==
 Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B622fb4570002>; Tue, 15 Mar 2022 10:32:07 +1300
+        id <B622fb4570007>; Tue, 15 Mar 2022 10:32:07 +1300
 Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 0B2D013EE56;
+        by pat.atlnz.lc (Postfix) with ESMTP id 1DA3313EE36;
         Tue, 15 Mar 2022 10:32:07 +1300 (NZDT)
 Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id E541D2A267A; Tue, 15 Mar 2022 10:32:03 +1300 (NZDT)
+        id 0458E2A2678; Tue, 15 Mar 2022 10:32:04 +1300 (NZDT)
 From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
 To:     huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
         davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
@@ -49,48 +49,52 @@ Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v2 2/8] dt-bindings: net: mvneta: Add marvell,armada-ac5-neta
-Date:   Tue, 15 Mar 2022 10:31:37 +1300
-Message-Id: <20220314213143.2404162-3-chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v2 8/8] arm64: marvell: enable the 98DX2530 pinctrl driver
+Date:   Tue, 15 Mar 2022 10:31:43 +1300
+Message-Id: <20220314213143.2404162-9-chris.packham@alliedtelesis.co.nz>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
 References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=GiZJWJlgZr2mIF3OtF0A:9
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=XQcNo-tEeLJW46c85tUA:9
 X-SEG-SpamProfiler-Score: 0
 x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The out of band port on the 98DX2530 SoC is similar to the armada-3700
-except it requires a slightly different MBUS window configuration. Add a
-new compatible string so this difference can be accounted for.
+This commit makes sure the drivers for the 98DX2530 pin controller is
+enabled.
 
 Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 ---
 
 Notes:
     Changes in v2:
-    - New
+    - None
 
- .../devicetree/bindings/net/marvell-armada-370-neta.txt          | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/Kconfig.platforms | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/marvell-armada-370-net=
-a.txt b/Documentation/devicetree/bindings/net/marvell-armada-370-neta.txt
-index 691f886cfc4a..2bf31572b08d 100644
---- a/Documentation/devicetree/bindings/net/marvell-armada-370-neta.txt
-+++ b/Documentation/devicetree/bindings/net/marvell-armada-370-neta.txt
-@@ -5,6 +5,7 @@ Required properties:
- 	"marvell,armada-370-neta"
- 	"marvell,armada-xp-neta"
- 	"marvell,armada-3700-neta"
-+	"marvell,armada-ac5-neta"
- - reg: address and length of the register set for the device.
- - interrupts: interrupt for the device
- - phy: See ethernet.txt file in the same directory.
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index 21697449d762..6bbb56901794 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -183,11 +183,13 @@ config ARCH_MVEBU
+ 	select PINCTRL_ARMADA_37XX
+ 	select PINCTRL_ARMADA_AP806
+ 	select PINCTRL_ARMADA_CP110
++	select PINCTRL_AC5
+ 	help
+ 	  This enables support for Marvell EBU familly, including:
+ 	   - Armada 3700 SoC Family
+ 	   - Armada 7K SoC Family
+ 	   - Armada 8K SoC Family
++	   - 98DX2530 SoC Family
+=20
+ config ARCH_MXC
+ 	bool "ARMv8 based NXP i.MX SoC family"
 --=20
 2.35.1
 
