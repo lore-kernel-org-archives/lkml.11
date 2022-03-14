@@ -2,126 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B523DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 02:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E67C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 02:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbiCNCnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 22:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34758 "EHLO
+        id S235847AbiCNCrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 22:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235923AbiCNCm7 (ORCPT
+        with ESMTP id S231935AbiCNCrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 22:42:59 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D55B205E2;
-        Sun, 13 Mar 2022 19:41:50 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id r12so12349886pla.1;
-        Sun, 13 Mar 2022 19:41:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xMR3gdW7BLrew3/OAPNy28mUhLn0EbRf6Sq9j+wj9Fw=;
-        b=P7wFRUrDfFkCmt8FoW2Dewmyt2jkHRvZcCqB+ziLG+MUNvZ/HDu7Im6tTo9WgQtwyH
-         9Fu1CqctAi+raak0lF/M6yuPt3YzhHekqZwMivR2Mr/X6UHRRpDhqzxa2tQyjSyPTn7I
-         NVKShBZMhv7pUBubSXT1V9B4/QK+7p6v+THXg3um3JXgKbBek/dqM7tA6vlFypviMLij
-         Sp7GThydf5VHYYg78Pr0mOIr2gw/0ZuCb6dSOlte12SP7jU+pklsQ9VZFQ8PWUIdej2M
-         YVXrAqt15hSXbX/Z6XtuKFi9KU61y+6nAx01YvJ3kAniubPNAjxpqzQGRLtyJ3Aj4c2z
-         FV/g==
+        Sun, 13 Mar 2022 22:47:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F355F3204E
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 19:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647225957;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PA0VKpTZRusSYxnkTFa+BpKk4R0ThDUn2vzzz9+Rddc=;
+        b=XoeItNkcO9VukiFWb8YLEijzROoDAX14Pmg8sZsDgIdT+jxtC2MR97PpGmaAw+KGJA9ETt
+        d5ekAq+j+AtVf1zxSi7wdl3NhV/svyPk+DCM+7vvTYZoSJDOTR65jbK48uutDaOKkeXMt8
+        bJR3AMD2L0Mkmha3YX9ErWfAs9XbLp8=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-167-5htL71PSMGK6Px3I45qlcg-1; Sun, 13 Mar 2022 22:45:56 -0400
+X-MC-Unique: 5htL71PSMGK6Px3I45qlcg-1
+Received: by mail-pj1-f72.google.com with SMTP id t12-20020a17090a448c00b001b9cbac9c43so9425285pjg.2
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 19:45:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xMR3gdW7BLrew3/OAPNy28mUhLn0EbRf6Sq9j+wj9Fw=;
-        b=5Oryze7ygYGz87SCet455CQyoVuHqsDDW0c9v9PIcmRTETVWl3rWRId3ScPhmmmasb
-         /oJPaKV3RhlXmwaXiVyBwGmtzzqzOsT/UkV8vK723hYcVBFO6cb6QmnvE0N0B2VcbA5W
-         FoEI06wfyQBCnHUCznzEKIAiiqxBrjq1jNEmDOd3bjwN7FkesFUrEulhu2eaWBpIhzdL
-         Lk25CpiVumBLjc/4ZDqCYyiwaxTzLoJf6Ic6GHAdwp3e6V2OkC2BfpYkg991cDhWZJsp
-         q/Yv/xeecXQZJXnM5sOasyL7R+3aKUPR0ll4Juw0tx9Gs/eKsOaJKjsBlpRMoiOurloo
-         dshw==
-X-Gm-Message-State: AOAM5300A+a8uxvOOOyXiLDFYMmyqEei05OoiCxMOyW35eeLRco+o8A2
-        6uvX7Kflh7WpK7aVC0TTJzy85Mlalg0=
-X-Google-Smtp-Source: ABdhPJzF1ibfmKhO0gwm/jTPkr3fjZadUySO8H9OHB/KxL5rlkFfeBw48zSfDTRQHpU+H2vuOvrHcQ==
-X-Received: by 2002:a17:90b:3a91:b0:1bf:261e:7773 with SMTP id om17-20020a17090b3a9100b001bf261e7773mr33798841pjb.155.1647225709702;
-        Sun, 13 Mar 2022 19:41:49 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id g12-20020a056a001a0c00b004e1307b249csm18055684pfv.69.2022.03.13.19.41.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Mar 2022 19:41:48 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kuba@kernel.org
-Cc:     cgel.zte@gmail.com, chi.minghao@zte.com.cn, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        sebastian.hesselbarth@gmail.com, zealci@zte.com.cn
-Subject: [PATCH V3] net: mv643xx_eth: use platform_get_irq() instead of platform_get_resource()
-Date:   Mon, 14 Mar 2022 02:41:44 +0000
-Message-Id: <20220314024144.2112308-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220311082051.783b7c0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220311082051.783b7c0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=PA0VKpTZRusSYxnkTFa+BpKk4R0ThDUn2vzzz9+Rddc=;
+        b=TtHptdZY/0If7jt7exAuxbg8Ji4LpUNdargTphXaUF7j07RjptXABz4+Z4qMWTiHCK
+         nA9zxdnImSppgOZsIGO5k9g/pMwYdGWEyyz6dBxhCL8Wkco9WguUKPVWyvnsDbkRit5y
+         fr5hzVVl1FxQYHKI5Yc8Qt54kpU09vZfo9WdEwWZTCJcbky5K9/uHeEuEi0NoiociFhn
+         MNHFMevv5Ei7/B6wBq3dfcR4VPUdy1hDXpmRZMuHW5DZhQnS1y2ebsQ0mO4tWciqUWg1
+         2od59PgXWKW5SGY1RWMyyPQRKWtDMedZhWAOgPuF+pDiv6cq7Ub/2J7SEzlgERMa3ebq
+         ErXw==
+X-Gm-Message-State: AOAM532wh4sMir+ITMWxQuJkXXwLhj1J1uLdNWU+JM2gXxj/jwCWXzhi
+        v47JuDMrBdiGYfTYkMVeIilxqsnxz0UNoFdXmjMxVIXx21ymdcATLQq9Q5NYfUdVbBM4mzH9ES7
+        E3q67WcVlhSdCU9OIisk5RrB9Fq1HNzdj7trLMOheIlf7g+dX6zJfGZwUeQqyeP1z4Y+YI/fS0Q
+        ==
+X-Received: by 2002:a63:82c3:0:b0:37c:7976:4dc2 with SMTP id w186-20020a6382c3000000b0037c79764dc2mr18552781pgd.477.1647225954490;
+        Sun, 13 Mar 2022 19:45:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwJNNorOjkRCTuI5siUGt4cKotsIuDWPDtQAABXhpTJrGiw2W+JtU0whwQqrkaAp4Ks/BM9hA==
+X-Received: by 2002:a63:82c3:0:b0:37c:7976:4dc2 with SMTP id w186-20020a6382c3000000b0037c79764dc2mr18552755pgd.477.1647225954135;
+        Sun, 13 Mar 2022 19:45:54 -0700 (PDT)
+Received: from [10.72.12.110] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b9-20020a056a000cc900b004f7a986fc78sm6583042pfv.11.2022.03.13.19.45.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Mar 2022 19:45:53 -0700 (PDT)
+From:   Xiubo Li <xiubli@redhat.com>
+Subject: Re: [RFC PATCH 1/2] ceph: add support for encrypted snapshot names
+To:     =?UTF-8?Q?Lu=c3=ads_Henriques?= <lhenriques@suse.de>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220310172616.16212-1-lhenriques@suse.de>
+ <20220310172616.16212-2-lhenriques@suse.de>
+ <fdf774cd-3cca-14e5-d5aa-44de70bb89f0@redhat.com>
+Message-ID: <2d69e6dd-b047-13fe-7dc5-2c64190e0e8a@redhat.com>
+Date:   Mon, 14 Mar 2022 10:45:46 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
+In-Reply-To: <fdf774cd-3cca-14e5-d5aa-44de70bb89f0@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
 
-It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
-for requesting IRQ's resources any more, as they can be not ready yet in
-case of DT-booting.
+On 3/12/22 4:30 PM, Xiubo Li wrote:
+>
+> On 3/11/22 1:26 AM, Luís Henriques wrote:
+>> Since filenames in encrypted directories are already encrypted and shown
+>> as a base64-encoded string when the directory is locked, snapshot names
+>> should show a similar behaviour.
+>>
+>> Signed-off-by: Luís Henriques <lhenriques@suse.de>
+>> ---
+>>   fs/ceph/dir.c   |  9 +++++++++
+>>   fs/ceph/inode.c | 13 +++++++++++++
+>>   2 files changed, 22 insertions(+)
+>>
+>> diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+>> index 6df2a91af236..123e3b9c8161 100644
+>> --- a/fs/ceph/dir.c
+>> +++ b/fs/ceph/dir.c
+>> @@ -1075,6 +1075,15 @@ static int ceph_mkdir(struct user_namespace 
+>> *mnt_userns, struct inode *dir,
+>>           op = CEPH_MDS_OP_MKSNAP;
+>>           dout("mksnap dir %p snap '%pd' dn %p\n", dir,
+>>                dentry, dentry);
+>> +        /*
+>> +         * Encrypted snapshots require d_revalidate to force a
+>> +         * LOOKUPSNAP to cleanup dcache
+>> +         */
+>> +        if (IS_ENCRYPTED(dir)) {
+>> +            spin_lock(&dentry->d_lock);
+>> +            dentry->d_flags |= DCACHE_NOKEY_NAME;
+>
+> I think this is not correct fix of this issue.
+>
+> Actually this dentry's name is a KEY NAME, which is human readable name.
+>
+> DCACHE_NOKEY_NAME means the base64_encoded names. This usually will be 
+> set when filling a new dentry if the directory is locked. If the 
+> directory is unlocked the directory inode will be set with the key.
+>
+> The root cause should be the snapshot's inode doesn't correctly set 
+> the encrypt stuff when you are reading from it.
+>
+> NOTE: when you are 'ls -l .snap/snapXXX' the snapXXX dentry name is 
+> correct, it's just corrupted for the file or directory names under 
+> snapXXX/.
+>
+When mksnap in ceph_mkdir() before sending the request out it will 
+create a new inode for the snapshot dentry and then will fill the 
+ci->fscrypt_auth from .snap's inode, please see 
+ceph_mkdir()->ceph_new_inode().
 
-platform_get_irq() instead is a recommended way for getting IRQ even if
-it was not retrieved earlier.
+And in the mksnap request reply it will try to fill the ci->fscrypt_auth 
+again but failed because it was already filled. This time the auth info 
+is from .snap's parent dir from MDS side. In this patch in theory they 
+should be the same, but I am still not sure why when decrypting the 
+dentry names in snapXXX will fail.
 
-It also makes code simpler because we're getting "int" value right away
-and no conversion from resource to int is required.
+I just guess it possibly will depend on the inode number from the 
+related inode or something else. Before the request reply it seems the 
+inode isn't set the inode number ?
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
-v1->v2:
-  - Add a space after "net:".
-  - Use WARN_ON instead of BUG_ON.
-v2->v3:
-  - Release some operations.
+- Xiubo
 
- drivers/net/ethernet/marvell/mv643xx_eth.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
-index c31cbbae0eca..d75cf9097c7a 100644
---- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-+++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-@@ -3092,8 +3092,7 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
- 	struct mv643xx_eth_private *mp;
- 	struct net_device *dev;
- 	struct phy_device *phydev = NULL;
--	struct resource *res;
--	int err;
-+	int err, irq;
- 
- 	pd = dev_get_platdata(&pdev->dev);
- 	if (pd == NULL) {
-@@ -3189,9 +3188,14 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
- 	timer_setup(&mp->rx_oom, oom_timer_wrapper, 0);
- 
- 
--	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	BUG_ON(!res);
--	dev->irq = res->start;
-+	irq = platform_get_irq(pdev, 0);
-+	if (WARN_ON(irq < 0)) {
-+		if (!IS_ERR(mp->clk))
-+			clk_disable_unprepare(mp->clk);
-+		free_netdev(dev);
-+		return irq;
-+	}
-+	dev->irq = irq;
- 
- 	dev->netdev_ops = &mv643xx_eth_netdev_ops;
- 
--- 
-2.25.1
+>
+>> + spin_unlock(&dentry->d_lock);
+>> +        }
+>>       } else if (ceph_snap(dir) == CEPH_NOSNAP) {
+>>           dout("mkdir dir %p dn %p mode 0%ho\n", dir, dentry, mode);
+>>           op = CEPH_MDS_OP_MKDIR;
+>> diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+>> index b573a0f33450..81d3d554d261 100644
+>> --- a/fs/ceph/inode.c
+>> +++ b/fs/ceph/inode.c
+>> @@ -182,6 +182,19 @@ struct inode *ceph_get_snapdir(struct inode 
+>> *parent)
+>>       ci->i_rbytes = 0;
+>>       ci->i_btime = ceph_inode(parent)->i_btime;
+>>   +    /* if encrypted, just borrow fscrypt_auth from parent */
+>> +    if (IS_ENCRYPTED(parent)) {
+>> +        struct ceph_inode_info *pci = ceph_inode(parent);
+>> +
+>> +        ci->fscrypt_auth = kmemdup(pci->fscrypt_auth,
+>> +                       pci->fscrypt_auth_len,
+>> +                       GFP_KERNEL);
+>> +        if (ci->fscrypt_auth) {
+>> +            inode->i_flags |= S_ENCRYPTED;
+>> +            ci->fscrypt_auth_len = pci->fscrypt_auth_len;
+>> +        } else
+>> +            dout("Failed to alloc memory for fscrypt_auth in 
+>> snapdir\n");
+>> +    }
+>
+> Here I think Jeff has already commented it in your last version, it 
+> should fail by returning NULL ?
+>
+> - Xiubo
+>
+>>       if (inode->i_state & I_NEW) {
+>>           inode->i_op = &ceph_snapdir_iops;
+>>           inode->i_fop = &ceph_snapdir_fops;
+>>
 
