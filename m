@@ -2,121 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 797C8C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:09:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF64C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237544AbiCNIKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
+        id S237615AbiCNILu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237611AbiCNIKO (ORCPT
+        with ESMTP id S235426AbiCNILs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:10:14 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A9D38A1;
-        Mon, 14 Mar 2022 01:09:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647245344; x=1678781344;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=9Z61s4WrZYBzdlpRR1dd1tEn6cmlD3NbOa2aklTM3Zk=;
-  b=Z/nyyWQJ4Q6tn5rN7abW/7gLy9E0mmPXAfcIkJIxAeDmfvOf6nxpYomT
-   RFfA8kZaRbidL2/DVs4uFOPJZXjldStVBIKkWhnMA1K9HO9q3Xna99Z/o
-   2PjiBBRJU6cVLFedILzDzkMyAUHKWBIlwYG05N7bJ6MH/IQDmIIfkZ2qJ
-   O5Z6cFVw1UfxGlmS4HRBVhwmMsFgNkqOufnwKHdHfj65UeFQW7aarodtA
-   gNbWGiby40nmfnyGtRX7YXleZVztYY9RCkaTj2Tht3ntbGD7JUme7MlaU
-   al0j0rRnHpcbdAzrJf7H2racrhjAgREdz93S9mJBaz2Ikf40f/RAvU3Wx
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="342390612"
-X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
-   d="scan'208";a="342390612"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 01:09:04 -0700
-X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
-   d="scan'208";a="556298140"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 01:08:55 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?utf-8?Q?Hol?= =?utf-8?Q?ger_Hoffst=C3=A4tte?= 
-        <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Subject: Re: [PATCH v9 05/14] mm: multi-gen LRU: groundwork
-References: <20220309021230.721028-1-yuzhao@google.com>
-        <20220309021230.721028-6-yuzhao@google.com>
-Date:   Mon, 14 Mar 2022 16:08:53 +0800
-In-Reply-To: <20220309021230.721028-6-yuzhao@google.com> (Yu Zhao's message of
-        "Tue, 8 Mar 2022 19:12:22 -0700")
-Message-ID: <875yoh552i.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 14 Mar 2022 04:11:48 -0400
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 01:10:38 PDT
+Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D39B2BE6;
+        Mon, 14 Mar 2022 01:10:38 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
+ (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Mon, 14 Mar
+ 2022 15:58:33 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Mon, 14 Mar
+ 2022 15:58:33 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Haowen Bai <baihaowen@meizu.com>
+Subject: [PATCH] scsi: mac53c94: fix warning comparing pointer to 0
+Date:   Mon, 14 Mar 2022 15:58:31 +0800
+Message-ID: <1647244711-31575-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Yu,
+Fix the following coccicheck warning:
+drivers/scsi/mac53c94.c:237:12-13: WARNING comparing pointer to 0
 
-Yu Zhao <yuzhao@google.com> writes:
-> diff --git a/mm/Kconfig b/mm/Kconfig
-> index 3326ee3903f3..747ab1690bcf 100644
-> --- a/mm/Kconfig
-> +++ b/mm/Kconfig
-> @@ -892,6 +892,16 @@ config ANON_VMA_NAME
->  	  area from being merged with adjacent virtual memory areas due to the
->  	  difference in their name.
->  
-> +# the multi-gen LRU {
-> +config LRU_GEN
-> +	bool "Multi-Gen LRU"
-> +	depends on MMU
-> +	# the following options can use up the spare bits in page flags
-> +	depends on !MAXSMP && (64BIT || !SPARSEMEM || SPARSEMEM_VMEMMAP)
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+---
+ drivers/scsi/mac53c94.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-LRU_GEN depends on !MAXSMP.  So, What is the maximum NR_CPUS supported
-by LRU_GEN?
+diff --git a/drivers/scsi/mac53c94.c b/drivers/scsi/mac53c94.c
+index 3976a18..a087f82 100644
+--- a/drivers/scsi/mac53c94.c
++++ b/drivers/scsi/mac53c94.c
+@@ -234,7 +234,7 @@ static void mac53c94_interrupt(int irq, void *dev_id)
+ 		++mac53c94_errors;
+ 		writeb(CMD_NOP + CMD_DMA_MODE, &regs->command);
+ 	}
+-	if (cmd == 0) {
++	if (!cmd) {
+ 		printk(KERN_DEBUG "53c94: interrupt with no command active?\n");
+ 		return;
+ 	}
+-- 
+2.7.4
 
-> +	help
-> +	  A high performance LRU implementation for memory overcommit.
-> +# }
-> +
->  source "mm/damon/Kconfig"
->  
->  endmenu
-
-Best Regards,
-Huang, Ying
-
-[snip]
