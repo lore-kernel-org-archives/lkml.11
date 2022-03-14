@@ -2,440 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F47C35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD04C38A2D
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245637AbiCNMd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:33:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
+        id S236752AbiCNMez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243957AbiCNMVZ (ORCPT
+        with ESMTP id S245463AbiCNMdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E07D13D45;
-        Mon, 14 Mar 2022 05:19:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D8E6608C4;
-        Mon, 14 Mar 2022 12:19:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82331C340E9;
-        Mon, 14 Mar 2022 12:19:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260372;
-        bh=eFpa8pjJJG9srWqOtE6cT5zheTL9nDd5I6JxvyX1VSM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NVeD4nR3l5gxL+r8ac+xzK6gWJRR0JuQmwZJkBrGv78+nEyH5OK5aNjBRuq3zRVnh
-         hcKLlrEqMQ0qgG5i4r4VIJyNVDybqsiQqKihepBX5Y+W/9RdYN61KnIYTiSU+RMRoU
-         Fxm4Pm7m+BsWJAWArvNp68ppbIlV3ct/GL2DxQ8U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ross Philipson <ross.philipson@oracle.com>,
-        Borislav Petkov <bp@suse.de>,
-        Daniel Kiper <daniel.kiper@oracle.com>
-Subject: [PATCH 5.16 113/121] x86/boot: Fix memremap of setup_indirect structures
-Date:   Mon, 14 Mar 2022 12:54:56 +0100
-Message-Id: <20220314112747.262391105@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
-References: <20220314112744.120491875@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Mar 2022 08:33:03 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA51140CC;
+        Mon, 14 Mar 2022 05:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647261078; x=1678797078;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Uk40I5JPAuKTeUDKbFKLzPBxKRBgK3se0kAQvR9DnsI=;
+  b=bZQuUirVK5p3Z9dAbckXzpJjuJ5Sz01WUFxjd0Sh1vJ0vTOuRw4IvrGx
+   k6hNaeiCmlEqMGnMhml+1+CbhNwgSx5O+2rPXluaxvZBpF7eGuP3sVotN
+   WJhzNCEnwUD6qOsEtXXS4fHvpcTCbDfixCgQFqKeyKf/yFNV29GuPAnZT
+   pMaqMlM92AT5RQImAMG9FNlUJs1ScGdMXHSUZUHbdNLBqbYXKEuV6TIsl
+   0IOU4xx9UdnY06agP4RNbnN+CEpgmBNi0ekKGiLMcpTpz1mqw5S66LK/C
+   R71yB2wpZy2CZmu6WH5nCXJ+pt0fRGTmoteEWLvSnXUOLEkZUu6pe3Ewd
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="342438526"
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="342438526"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 05:31:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="597871762"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Mar 2022 05:31:13 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nTjqz-0009r8-4f; Mon, 14 Mar 2022 12:31:13 +0000
+Date:   Mon, 14 Mar 2022 20:31:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v3 net-next 01/14] net: bridge: mst: Multiple Spanning
+ Tree (MST) mode
+Message-ID: <202203142009.7OAfQ0fR-lkp@intel.com>
+References: <20220314095231.3486931-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314095231.3486931-2-tobias@waldekranz.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ross Philipson <ross.philipson@oracle.com>
+Hi Tobias,
 
-commit 7228918b34615ef6317edcd9a058a057bc54aa32 upstream.
+I love your patch! Yet something to improve:
 
-As documented, the setup_indirect structure is nested inside
-the setup_data structures in the setup_data list. The code currently
-accesses the fields inside the setup_indirect structure but only
-the sizeof(struct setup_data) is being memremapped. No crash
-occurred but this is just due to how the area is remapped under the
-covers.
+[auto build test ERROR on net-next/master]
 
-Properly memremap both the setup_data and setup_indirect structures
-in these cases before accessing them.
+url:    https://github.com/0day-ci/linux/commits/Tobias-Waldekranz/net-bridge-Multiple-Spanning-Trees/20220314-175717
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git de29aff976d3216e7f3ab41fcd7af46fa8f7eab7
+config: xtensa-randconfig-m031-20220313 (https://download.01.org/0day-ci/archive/20220314/202203142009.7OAfQ0fR-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/702c502efb27c12860bc55fc8d9b1bfd99466623
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Tobias-Waldekranz/net-bridge-Multiple-Spanning-Trees/20220314-175717
+        git checkout 702c502efb27c12860bc55fc8d9b1bfd99466623
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash net/bridge/
 
-Fixes: b3c72fc9a78e ("x86/boot: Introduce setup_indirect")
-Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/1645668456-22036-2-git-send-email-ross.philipson@oracle.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   net/bridge/br.c: In function 'br_boolopt_toggle':
+>> net/bridge/br.c:269:23: error: implicit declaration of function 'br_mst_set_enabled'; did you mean 'br_stp_set_enabled'? [-Werror=implicit-function-declaration]
+     269 |                 err = br_mst_set_enabled(br, on, extack);
+         |                       ^~~~~~~~~~~~~~~~~~
+         |                       br_stp_set_enabled
+   cc1: some warnings being treated as errors
+
+
+vim +269 net/bridge/br.c
+
+   245	
+   246	/* br_boolopt_toggle - change user-controlled boolean option
+   247	 *
+   248	 * @br: bridge device
+   249	 * @opt: id of the option to change
+   250	 * @on: new option value
+   251	 * @extack: extack for error messages
+   252	 *
+   253	 * Changes the value of the respective boolean option to @on taking care of
+   254	 * any internal option value mapping and configuration.
+   255	 */
+   256	int br_boolopt_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on,
+   257			      struct netlink_ext_ack *extack)
+   258	{
+   259		int err = 0;
+   260	
+   261		switch (opt) {
+   262		case BR_BOOLOPT_NO_LL_LEARN:
+   263			br_opt_toggle(br, BROPT_NO_LL_LEARN, on);
+   264			break;
+   265		case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
+   266			err = br_multicast_toggle_vlan_snooping(br, on, extack);
+   267			break;
+   268		case BR_BOOLOPT_MST_ENABLE:
+ > 269			err = br_mst_set_enabled(br, on, extack);
+   270			break;
+   271		default:
+   272			/* shouldn't be called with unsupported options */
+   273			WARN_ON(1);
+   274			break;
+   275		}
+   276	
+   277		return err;
+   278	}
+   279	
+
 ---
- arch/x86/kernel/e820.c     |   41 +++++++++++++++++------
- arch/x86/kernel/kdebugfs.c |   35 +++++++++++++++-----
- arch/x86/kernel/ksysfs.c   |   77 +++++++++++++++++++++++++++++++++++----------
- arch/x86/kernel/setup.c    |   34 +++++++++++++++----
- arch/x86/mm/ioremap.c      |   24 +++++++++++---
- 5 files changed, 165 insertions(+), 46 deletions(-)
-
---- a/arch/x86/kernel/e820.c
-+++ b/arch/x86/kernel/e820.c
-@@ -995,8 +995,10 @@ early_param("memmap", parse_memmap_opt);
-  */
- void __init e820__reserve_setup_data(void)
- {
-+	struct setup_indirect *indirect;
- 	struct setup_data *data;
--	u64 pa_data;
-+	u64 pa_data, pa_next;
-+	u32 len;
- 
- 	pa_data = boot_params.hdr.setup_data;
- 	if (!pa_data)
-@@ -1004,6 +1006,14 @@ void __init e820__reserve_setup_data(voi
- 
- 	while (pa_data) {
- 		data = early_memremap(pa_data, sizeof(*data));
-+		if (!data) {
-+			pr_warn("e820: failed to memremap setup_data entry\n");
-+			return;
-+		}
-+
-+		len = sizeof(*data);
-+		pa_next = data->next;
-+
- 		e820__range_update(pa_data, sizeof(*data)+data->len, E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
- 
- 		/*
-@@ -1015,18 +1025,27 @@ void __init e820__reserve_setup_data(voi
- 						 sizeof(*data) + data->len,
- 						 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
- 
--		if (data->type == SETUP_INDIRECT &&
--		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
--			e820__range_update(((struct setup_indirect *)data->data)->addr,
--					   ((struct setup_indirect *)data->data)->len,
--					   E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
--			e820__range_update_kexec(((struct setup_indirect *)data->data)->addr,
--						 ((struct setup_indirect *)data->data)->len,
--						 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
-+		if (data->type == SETUP_INDIRECT) {
-+			len += data->len;
-+			early_memunmap(data, sizeof(*data));
-+			data = early_memremap(pa_data, len);
-+			if (!data) {
-+				pr_warn("e820: failed to memremap indirect setup_data\n");
-+				return;
-+			}
-+
-+			indirect = (struct setup_indirect *)data->data;
-+
-+			if (indirect->type != SETUP_INDIRECT) {
-+				e820__range_update(indirect->addr, indirect->len,
-+						   E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
-+				e820__range_update_kexec(indirect->addr, indirect->len,
-+							 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
-+			}
- 		}
- 
--		pa_data = data->next;
--		early_memunmap(data, sizeof(*data));
-+		pa_data = pa_next;
-+		early_memunmap(data, len);
- 	}
- 
- 	e820__update_table(e820_table);
---- a/arch/x86/kernel/kdebugfs.c
-+++ b/arch/x86/kernel/kdebugfs.c
-@@ -88,11 +88,13 @@ create_setup_data_node(struct dentry *pa
- 
- static int __init create_setup_data_nodes(struct dentry *parent)
- {
-+	struct setup_indirect *indirect;
- 	struct setup_data_node *node;
- 	struct setup_data *data;
--	int error;
-+	u64 pa_data, pa_next;
- 	struct dentry *d;
--	u64 pa_data;
-+	int error;
-+	u32 len;
- 	int no = 0;
- 
- 	d = debugfs_create_dir("setup_data", parent);
-@@ -112,12 +114,29 @@ static int __init create_setup_data_node
- 			error = -ENOMEM;
- 			goto err_dir;
- 		}
-+		pa_next = data->next;
- 
--		if (data->type == SETUP_INDIRECT &&
--		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
--			node->paddr = ((struct setup_indirect *)data->data)->addr;
--			node->type  = ((struct setup_indirect *)data->data)->type;
--			node->len   = ((struct setup_indirect *)data->data)->len;
-+		if (data->type == SETUP_INDIRECT) {
-+			len = sizeof(*data) + data->len;
-+			memunmap(data);
-+			data = memremap(pa_data, len, MEMREMAP_WB);
-+			if (!data) {
-+				kfree(node);
-+				error = -ENOMEM;
-+				goto err_dir;
-+			}
-+
-+			indirect = (struct setup_indirect *)data->data;
-+
-+			if (indirect->type != SETUP_INDIRECT) {
-+				node->paddr = indirect->addr;
-+				node->type  = indirect->type;
-+				node->len   = indirect->len;
-+			} else {
-+				node->paddr = pa_data;
-+				node->type  = data->type;
-+				node->len   = data->len;
-+			}
- 		} else {
- 			node->paddr = pa_data;
- 			node->type  = data->type;
-@@ -125,7 +144,7 @@ static int __init create_setup_data_node
- 		}
- 
- 		create_setup_data_node(d, no, node);
--		pa_data = data->next;
-+		pa_data = pa_next;
- 
- 		memunmap(data);
- 		no++;
---- a/arch/x86/kernel/ksysfs.c
-+++ b/arch/x86/kernel/ksysfs.c
-@@ -91,26 +91,41 @@ static int get_setup_data_paddr(int nr,
- 
- static int __init get_setup_data_size(int nr, size_t *size)
- {
--	int i = 0;
-+	u64 pa_data = boot_params.hdr.setup_data, pa_next;
-+	struct setup_indirect *indirect;
- 	struct setup_data *data;
--	u64 pa_data = boot_params.hdr.setup_data;
-+	int i = 0;
-+	u32 len;
- 
- 	while (pa_data) {
- 		data = memremap(pa_data, sizeof(*data), MEMREMAP_WB);
- 		if (!data)
- 			return -ENOMEM;
-+		pa_next = data->next;
-+
- 		if (nr == i) {
--			if (data->type == SETUP_INDIRECT &&
--			    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT)
--				*size = ((struct setup_indirect *)data->data)->len;
--			else
-+			if (data->type == SETUP_INDIRECT) {
-+				len = sizeof(*data) + data->len;
-+				memunmap(data);
-+				data = memremap(pa_data, len, MEMREMAP_WB);
-+				if (!data)
-+					return -ENOMEM;
-+
-+				indirect = (struct setup_indirect *)data->data;
-+
-+				if (indirect->type != SETUP_INDIRECT)
-+					*size = indirect->len;
-+				else
-+					*size = data->len;
-+			} else {
- 				*size = data->len;
-+			}
- 
- 			memunmap(data);
- 			return 0;
- 		}
- 
--		pa_data = data->next;
-+		pa_data = pa_next;
- 		memunmap(data);
- 		i++;
- 	}
-@@ -120,9 +135,11 @@ static int __init get_setup_data_size(in
- static ssize_t type_show(struct kobject *kobj,
- 			 struct kobj_attribute *attr, char *buf)
- {
-+	struct setup_indirect *indirect;
-+	struct setup_data *data;
- 	int nr, ret;
- 	u64 paddr;
--	struct setup_data *data;
-+	u32 len;
- 
- 	ret = kobj_to_setup_data_nr(kobj, &nr);
- 	if (ret)
-@@ -135,10 +152,20 @@ static ssize_t type_show(struct kobject
- 	if (!data)
- 		return -ENOMEM;
- 
--	if (data->type == SETUP_INDIRECT)
--		ret = sprintf(buf, "0x%x\n", ((struct setup_indirect *)data->data)->type);
--	else
-+	if (data->type == SETUP_INDIRECT) {
-+		len = sizeof(*data) + data->len;
-+		memunmap(data);
-+		data = memremap(paddr, len, MEMREMAP_WB);
-+		if (!data)
-+			return -ENOMEM;
-+
-+		indirect = (struct setup_indirect *)data->data;
-+
-+		ret = sprintf(buf, "0x%x\n", indirect->type);
-+	} else {
- 		ret = sprintf(buf, "0x%x\n", data->type);
-+	}
-+
- 	memunmap(data);
- 	return ret;
- }
-@@ -149,9 +176,10 @@ static ssize_t setup_data_data_read(stru
- 				    char *buf,
- 				    loff_t off, size_t count)
- {
-+	struct setup_indirect *indirect;
-+	struct setup_data *data;
- 	int nr, ret = 0;
- 	u64 paddr, len;
--	struct setup_data *data;
- 	void *p;
- 
- 	ret = kobj_to_setup_data_nr(kobj, &nr);
-@@ -165,10 +193,27 @@ static ssize_t setup_data_data_read(stru
- 	if (!data)
- 		return -ENOMEM;
- 
--	if (data->type == SETUP_INDIRECT &&
--	    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
--		paddr = ((struct setup_indirect *)data->data)->addr;
--		len = ((struct setup_indirect *)data->data)->len;
-+	if (data->type == SETUP_INDIRECT) {
-+		len = sizeof(*data) + data->len;
-+		memunmap(data);
-+		data = memremap(paddr, len, MEMREMAP_WB);
-+		if (!data)
-+			return -ENOMEM;
-+
-+		indirect = (struct setup_indirect *)data->data;
-+
-+		if (indirect->type != SETUP_INDIRECT) {
-+			paddr = indirect->addr;
-+			len = indirect->len;
-+		} else {
-+			/*
-+			 * Even though this is technically undefined, return
-+			 * the data as though it is a normal setup_data struct.
-+			 * This will at least allow it to be inspected.
-+			 */
-+			paddr += sizeof(*data);
-+			len = data->len;
-+		}
- 	} else {
- 		paddr += sizeof(*data);
- 		len = data->len;
---- a/arch/x86/kernel/setup.c
-+++ b/arch/x86/kernel/setup.c
-@@ -368,21 +368,41 @@ static void __init parse_setup_data(void
- 
- static void __init memblock_x86_reserve_range_setup_data(void)
- {
-+	struct setup_indirect *indirect;
- 	struct setup_data *data;
--	u64 pa_data;
-+	u64 pa_data, pa_next;
-+	u32 len;
- 
- 	pa_data = boot_params.hdr.setup_data;
- 	while (pa_data) {
- 		data = early_memremap(pa_data, sizeof(*data));
-+		if (!data) {
-+			pr_warn("setup: failed to memremap setup_data entry\n");
-+			return;
-+		}
-+
-+		len = sizeof(*data);
-+		pa_next = data->next;
-+
- 		memblock_reserve(pa_data, sizeof(*data) + data->len);
- 
--		if (data->type == SETUP_INDIRECT &&
--		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT)
--			memblock_reserve(((struct setup_indirect *)data->data)->addr,
--					 ((struct setup_indirect *)data->data)->len);
-+		if (data->type == SETUP_INDIRECT) {
-+			len += data->len;
-+			early_memunmap(data, sizeof(*data));
-+			data = early_memremap(pa_data, len);
-+			if (!data) {
-+				pr_warn("setup: failed to memremap indirect setup_data\n");
-+				return;
-+			}
-+
-+			indirect = (struct setup_indirect *)data->data;
-+
-+			if (indirect->type != SETUP_INDIRECT)
-+				memblock_reserve(indirect->addr, indirect->len);
-+		}
- 
--		pa_data = data->next;
--		early_memunmap(data, sizeof(*data));
-+		pa_data = pa_next;
-+		early_memunmap(data, len);
- 	}
- }
- 
---- a/arch/x86/mm/ioremap.c
-+++ b/arch/x86/mm/ioremap.c
-@@ -615,6 +615,7 @@ static bool memremap_is_efi_data(resourc
- static bool memremap_is_setup_data(resource_size_t phys_addr,
- 				   unsigned long size)
- {
-+	struct setup_indirect *indirect;
- 	struct setup_data *data;
- 	u64 paddr, paddr_next;
- 
-@@ -627,6 +628,10 @@ static bool memremap_is_setup_data(resou
- 
- 		data = memremap(paddr, sizeof(*data),
- 				MEMREMAP_WB | MEMREMAP_DEC);
-+		if (!data) {
-+			pr_warn("failed to memremap setup_data entry\n");
-+			return false;
-+		}
- 
- 		paddr_next = data->next;
- 		len = data->len;
-@@ -636,10 +641,21 @@ static bool memremap_is_setup_data(resou
- 			return true;
- 		}
- 
--		if (data->type == SETUP_INDIRECT &&
--		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
--			paddr = ((struct setup_indirect *)data->data)->addr;
--			len = ((struct setup_indirect *)data->data)->len;
-+		if (data->type == SETUP_INDIRECT) {
-+			memunmap(data);
-+			data = memremap(paddr, sizeof(*data) + len,
-+					MEMREMAP_WB | MEMREMAP_DEC);
-+			if (!data) {
-+				pr_warn("failed to memremap indirect setup_data\n");
-+				return false;
-+			}
-+
-+			indirect = (struct setup_indirect *)data->data;
-+
-+			if (indirect->type != SETUP_INDIRECT) {
-+				paddr = indirect->addr;
-+				len = indirect->len;
-+			}
- 		}
- 
- 		memunmap(data);
-
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
