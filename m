@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 062AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 268DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240932AbiCNMMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
+        id S240713AbiCNMMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241371AbiCNMIj (ORCPT
+        with ESMTP id S242214AbiCNMJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CFC4CD7D;
-        Mon, 14 Mar 2022 05:05:05 -0700 (PDT)
+        Mon, 14 Mar 2022 08:09:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC6C50B01;
+        Mon, 14 Mar 2022 05:06:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 777BE61251;
-        Mon, 14 Mar 2022 12:05:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFA2C36AFA;
-        Mon, 14 Mar 2022 12:05:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DB12B80CDE;
+        Mon, 14 Mar 2022 12:06:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6AF0C340E9;
+        Mon, 14 Mar 2022 12:06:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259503;
-        bh=r4aKVxRcS5UDMIkz1JVImxpE6sxrwYcacVNnbS5lCcE=;
+        s=korg; t=1647259610;
+        bh=GZLKigzq4Gitbm9huNUFHN9WWFAWoxqfadSve0/aCJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fh2V0KS+SxfZmX6Z2q6uvRc1QokdeVTZ6aAOHLq3VoHgUiE3eQyz0xHrzOXOSPLgJ
-         1Gey2/4d8zG619NI4JlND3uhrDWR0SC1juZbc7m24BE16pNi2VdVTAc8f+flxyYFqe
-         Q/BAUD/jrpOWy4YxyBgIGR7i6NxyajYsl5JS52Y4=
+        b=xpggnBQdaBem9LTX0D7iJGBe63TIOyp8egk48sYebSvKkjfIql5Ya53Wqbabl8cep
+         Z+bK2SCjCIlUEWlklFsa9HizG2xo9qfd2gTo0T337uu4pXLaU1/5BfypDyOgrfiymp
+         /dlMdtYeg0xT3O+Y88kZR3gvH/9EckzKvGcR0OGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 021/110] esp: Fix BEET mode inter address family tunneling on GSO
-Date:   Mon, 14 Mar 2022 12:53:23 +0100
-Message-Id: <20220314112743.627393509@linuxfoundation.org>
+Subject: [PATCH 5.15 048/110] net: phy: DP83822: clear MISR2 register to disable interrupts
+Date:   Mon, 14 Mar 2022 12:53:50 +0100
+Message-Id: <20220314112744.377863951@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,51 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steffen Klassert <steffen.klassert@secunet.com>
+From: Clément Léger <clement.leger@bootlin.com>
 
-[ Upstream commit 053c8fdf2c930efdff5496960842bbb5c34ad43a ]
+[ Upstream commit 37c9d66c95564c85a001d8a035354f0220a1e1c3 ]
 
-The xfrm{4,6}_beet_gso_segment() functions did not correctly set the
-SKB_GSO_IPXIP4 and SKB_GSO_IPXIP6 gso types for the address family
-tunneling case. Fix this by setting these gso types.
+MISR1 was cleared twice but the original author intention was probably
+to clear MISR1 & MISR2 to completely disable interrupts. Fix it to
+clear MISR2.
 
-Fixes: 384a46ea7bdc7 ("esp4: add gso_segment for esp4 beet mode")
-Fixes: 7f9e40eb18a99 ("esp6: add gso_segment for esp6 beet mode")
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220309142228.761153-1-clement.leger@bootlin.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/esp4_offload.c | 3 +++
- net/ipv6/esp6_offload.c | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/net/phy/dp83822.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-index 8e4e9aa12130..dad5d29a6a8d 100644
---- a/net/ipv4/esp4_offload.c
-+++ b/net/ipv4/esp4_offload.c
-@@ -159,6 +159,9 @@ static struct sk_buff *xfrm4_beet_gso_segment(struct xfrm_state *x,
- 			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV4;
- 	}
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index 211b5476a6f5..ce17b2af3218 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -274,7 +274,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
+ 		if (err < 0)
+ 			return err;
  
-+	if (proto == IPPROTO_IPV6)
-+		skb_shinfo(skb)->gso_type |= SKB_GSO_IPXIP4;
-+
- 	__skb_pull(skb, skb_transport_offset(skb));
- 	ops = rcu_dereference(inet_offloads[proto]);
- 	if (likely(ops && ops->callbacks.gso_segment))
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index a349d4798077..302170882382 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -198,6 +198,9 @@ static struct sk_buff *xfrm6_beet_gso_segment(struct xfrm_state *x,
- 			ipv6_skip_exthdr(skb, 0, &proto, &frag);
- 	}
+-		err = phy_write(phydev, MII_DP83822_MISR1, 0);
++		err = phy_write(phydev, MII_DP83822_MISR2, 0);
+ 		if (err < 0)
+ 			return err;
  
-+	if (proto == IPPROTO_IPIP)
-+		skb_shinfo(skb)->gso_type |= SKB_GSO_IPXIP6;
-+
- 	__skb_pull(skb, skb_transport_offset(skb));
- 	ops = rcu_dereference(inet6_offloads[proto]);
- 	if (likely(ops && ops->callbacks.gso_segment))
 -- 
 2.34.1
 
