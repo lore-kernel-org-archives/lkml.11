@@ -2,345 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1424C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 21:33:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 21:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245397AbiCNVeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 17:34:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
+        id S237210AbiCNViP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 17:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245351AbiCNVd6 (ORCPT
+        with ESMTP id S245422AbiCNViL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 17:33:58 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001C633E3F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 14:32:16 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 00B942C0C2A;
-        Mon, 14 Mar 2022 21:32:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1647293528;
-        bh=fyeaQDUHhP/ZXergWd2lC+OvXrTtCNTg4n9clMIJ8Sc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UHxbeSG2SUfHH0t7EG0pEueewAM0BHGhn2apaXbIOnCaLJ1fxDfwcDPfACU5DRiXj
-         WR/je/TcJRDj2GduQn82nD4hlEGij6qw4J7vmGsrL+IgI7BjAHUBs6sYvDZuTRS0Li
-         UP3tG4ZMDKG+zJK2jimN9XS0sR6QmIAIEY/HqVH77iBuiaIlIXze8G6W+SvCJllKNS
-         HpazooKWLd9UwW5QpPLRd1m70k6G89EhWKM+WbKvq6dbLhTvKbUi+oiVAILCfqmgSz
-         cwnT2e2uw425D6GFVI4/LFk45mrFrsz2zVD0G1XJ/MlieBgZueWDClpbIlrvAPzu/J
-         4UgxnwoWxNWjg==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B622fb4570004>; Tue, 15 Mar 2022 10:32:07 +1300
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 10FA313EEA1;
-        Tue, 15 Mar 2022 10:32:07 +1300 (NZDT)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id EBE402A2678; Tue, 15 Mar 2022 10:32:03 +1300 (NZDT)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
-        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
-        kostap@marvell.com, robert.marko@sartura.hr
-Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v2 4/8] pinctrl: mvebu: pinctrl driver for 98DX2530 SoC
-Date:   Tue, 15 Mar 2022 10:31:39 +1300
-Message-Id: <20220314213143.2404162-5-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
-References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+        Mon, 14 Mar 2022 17:38:11 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7980D3E0D7;
+        Mon, 14 Mar 2022 14:36:58 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nwuFUdPqoClDFAFh+2fOktyfLru8evFg09atgb2U27uJbhsB9mFCAtdrpJ13FO27nHZYuXXPZMetw/z2vSqldzghgY8PiIndLJH2DkbEopfRCDUgNAlVp+ifXrLeFMdrbjKrFfZcYbvLa4vWwOhaXUWOGj5WvTN8dqNq504f5CdOYr1suLdPyVAnNDccGxEW3pfSLAecB1ls1I07+S8/h9saJ5zLnB/VA5JU1DCmwMj7wunNNdbsIqgH7Wr3j5TO9mYzRNZwDj/dDYyy9XpMj9PX1jNzCNiIewXsPItiASwlI1LhLUIpzNtYtjNKltDQ8fyTIOrcmabp0R0DvYCn9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zoZjdsQM5EUxTwQICO2RzIRGKB0KqFp/hjtyUcXhKA0=;
+ b=IEOMBAE2JZqn1cNREAhPY0wLwe15jsP0B+K5vwKtPL1MtyNS0A0G2orxXcXDzqlUfhEatvFvgfUwT0yGJPiCtpP0e+3TUtLO+sTGCcTEs4Pt8KyLTHoJsh8AJmVBq1AurIAy5LPk8sk30gt91FmCFhjewn7fq+PP7Ho2VVbeSr78KQfNqczo+lDME38wQrsQT7mWwzL8TbtqDjsDhFmHewYYTdy2hwc3UTH31JuuYrcEck0GP2L5wRDb28Nkr80RraUrJyyWWKh/Fypx4CJPiSkJhxc5rArqElxM211qAdysyamYki4VEEpXcJM+hpdql4TUPeFgFBmWqzaOgZRbMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zoZjdsQM5EUxTwQICO2RzIRGKB0KqFp/hjtyUcXhKA0=;
+ b=kCHicBkMi0sL7j5XD0huoSYcEq+HE0CeJT1i2e3Xl6CFzJixW+2GACKCuV60dH1jmb1Tg7Ypuey+eeHQJeE4SteUCbVtITjTS9QwARQA3rHo33p7uF5g6MtPUxCOw/YwpD6gPGK8HiV0p08hGmfLr8gTLfH41CrvANHJFK1BU8Oa2T8LAamAWIl22uoXJ+JIT0lGUqsT3ANKaxHRlrIoV6pXrOncaErwDSoPWoWwwXkmpDBiZhwlBSfUvEDxXTFS1ye5i0jtSM9GlRC1ODklYPGQN+FXgPenfTeB5sNI+Tn7aUPN5TrD8PcqE9IQzgZVoH4nu4g1KRsdwO4p425IpQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by PH7PR12MB5805.namprd12.prod.outlook.com (2603:10b6:510:1d1::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25; Mon, 14 Mar
+ 2022 21:36:56 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28%4]) with mapi id 15.20.5061.028; Mon, 14 Mar 2022
+ 21:36:56 +0000
+Date:   Mon, 14 Mar 2022 18:36:55 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     linux-s390@vger.kernel.org, alex.williamson@redhat.com,
+        cohuck@redhat.com, schnelle@linux.ibm.com, farman@linux.ibm.com,
+        pmorel@linux.ibm.com, borntraeger@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, gerald.schaefer@linux.ibm.com,
+        agordeev@linux.ibm.com, svens@linux.ibm.com, frankja@linux.ibm.com,
+        david@redhat.com, imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
+        pbonzini@redhat.com, corbet@lwn.net, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH v4 14/32] iommu: introduce iommu_domain_alloc_type and
+ the KVM type
+Message-ID: <20220314213655.GH11336@nvidia.com>
+References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+ <20220314194451.58266-15-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314194451.58266-15-mjrosato@linux.ibm.com>
+X-ClientProxiedBy: BLAPR03CA0066.namprd03.prod.outlook.com
+ (2603:10b6:208:329::11) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=M5GUcnROAAAA:8 a=gBXrc1Pfy3FSj49WI4IA:9 a=OBjm3rFKGHvpk9ecZwUJ:22
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c33b55f9-9a30-4926-c6ee-08da0602c35e
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5805:EE_
+X-Microsoft-Antispam-PRVS: <PH7PR12MB5805A2AAF5246DA8E9DA8166C20F9@PH7PR12MB5805.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: g/O93nSJSHOY41LsTLVwz5jKhnzI5XfzwvO+lkcgibsiBt+cqR4U0rBG1yk42nSPqq5lnoxK5YVr6Lh964h2Yero+BYizBa1Rc+d+B7vdqpq9GJgSU0DgWakWrU4JE3JNAMQLUKOnizf3OM6hQM6+gqUDESPtXfrLPJ42rbvGRvFAftIIZ6pK3Z7Okfap152/2L/9Sp/0lj2lRcp9r63pJnwrRX3AY3IUbUhh8pyPJyIDZTiCh6ReBgKEbg8Sc3FnqXKWsLM+JaNB2pkMgi0hcbrIQvipo96/nCh0YZnMJONbAknaCG9NeGATffHY8zm1qp4abjk4KJZcytpLLSwSRPhQDW0eeO+80TJZYzdasHxE5UoQbidVMASGoyr1Jp5GHNBYBswLK8xlbOd4F1yL91TX5XHiJ5Q/YYefvTq79Pe2rOWTr1z9kGK+a5ksj+3BbgtUJLlykdPNFE7Vl9+QVvfec558CWrlAqJKklAfCGGPXaBinGtruamWVKlbfI4ga9FseRRhxTg/L1ykCL2abNot2+WH1Io0UXMbIXPk9SHIFRmmlOy8OULK4cH1ReTrxMUBT6SSwDkUp0dsu4uy/gx13RPOv9hRht+ZyMISYRGzB+WRgM8u/xlQN9nHW+zlCz9FdcqEkFkZrKyZ0iwrg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(33656002)(6506007)(86362001)(6486002)(6512007)(66476007)(66556008)(66946007)(4326008)(8676002)(316002)(36756003)(4744005)(38100700002)(7416002)(6916009)(2906002)(5660300002)(508600001)(26005)(2616005)(1076003)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9LAWV3LDIOSoEzp3obm4XfZyrhwwu8hsLAh/F6QRC2UZZ+7wyd3AFWDxxTBI?=
+ =?us-ascii?Q?0oF8O3FYNSEgbRjZdlKfD986HoOBQNKVE5ZS6atQT/wvztqtv17TWAxwkDvp?=
+ =?us-ascii?Q?FyZGjb0sznO2fzK2HYJWQS1gJMHRuGCL62c0o9HBRt31dTcdaLU3S+DSBMT8?=
+ =?us-ascii?Q?Ud8fxLQCLIAjplxDrslbmgchvS8OOZrYTZNJWUGdabIHWbxN3JjJifwaA/Yx?=
+ =?us-ascii?Q?GuAJiy/SYxaIdhVeihhsTBlGoo/vb/fhABFRWneYti5QPyfvRd01ZAab2wOs?=
+ =?us-ascii?Q?mE5e58JCFhMmw1iJYUgPqJjcqhEZ1A/m7Y/xTxY+l0oxCtbtdS4I/11LVOUc?=
+ =?us-ascii?Q?L8oigVmqMjPkJg1n7vpH5RxS+7Tx55xtBF1jdIF0tlwhAtCvFozBP42s8ImJ?=
+ =?us-ascii?Q?S4rT18umQ5YRsRGojR+f6rwRf+xeBDohlUi4BYC2LmgLaBhy3KgEs6A6Lr9U?=
+ =?us-ascii?Q?ccUvyUsTQ9mj9OXOhp9cAR2rC3MPhhD4FQVRxotlK1kj7+alV8zzdvvYV4yJ?=
+ =?us-ascii?Q?LKHwBUh1LO8MsC7jGZyv7F4+/pemTih8QH6uQnWPSqqN6o+kdcL4k+3lPFTr?=
+ =?us-ascii?Q?PYV14AEFGvxcYeSNotIbZ5M3CInHNW8mPNv8b2QKeNK+YmzW7dlqzvsY0zbn?=
+ =?us-ascii?Q?5C19DZhqAhLjfHVFGGG9TTWv66AwPiBySlrhidEpHb3gj4nB0ZCtkO79uBZG?=
+ =?us-ascii?Q?25HOD+M82PFeyxyay3zXT+M4NOuLB3a0duFSBOESifje2dV3tvW0X9ZkmwRL?=
+ =?us-ascii?Q?nl80UmmrbsxeZOyDKFRATW/TbeeFrlNiU2X6JwF8jW6Pu4Y+os0JwYUFW/Yd?=
+ =?us-ascii?Q?muk4CG4w3A30DrWoYdwlWA0YPecyVL81BVZVaBFP1L+4S4Nsrz5QHdHZBA5U?=
+ =?us-ascii?Q?eqLA0R4GsecCSZWqrOFSj31tUau8TmuKya93LsgwXooagZS70Mt8jX7C4brX?=
+ =?us-ascii?Q?3wE4mNXa80UmhFJDkMQNFXYcZDYWI+152Ykez4NRSawPPy0WrdhpnhakXIhW?=
+ =?us-ascii?Q?bt35qPW6+zeTiVLGfLeLEoL4sOnxZyf1RhaEBn4zUf2T9ImbTsu5b9Ei+lPT?=
+ =?us-ascii?Q?Hpa6gWioq37fBMv4cLiaXmOrgnSqI9VU8bS3UuKWMG7jpjlVaWVlGwSMXTH0?=
+ =?us-ascii?Q?DaKoO2F0rHYZhrb+AYf6T2snEjPzF78M0N6jGKWiV5RTxl5vmuajClhVRe+l?=
+ =?us-ascii?Q?niIPfKSEu03qu6MxKM+CcC+89Ua5YFFqgjihFP2M9jSM1jq2kBr8W3cZTYZt?=
+ =?us-ascii?Q?CbSG53wGnrTdFtMvKGhCH2azJI07DztiTi8mxa008Xg+BuSVGIfOVLjwLIfL?=
+ =?us-ascii?Q?ifvfAcA9R2c6DrTFMYbWiFAfX1FRtKo7EcEED97myP8mZqPdgteRVQ9CJu1w?=
+ =?us-ascii?Q?LnwkC9FJ3lpBa9e9HM0q0luhrExbs7TvxVjia9/c1uzgOtzUNKr3xLHLPkOQ?=
+ =?us-ascii?Q?D4PMHYKS1pbKiABj/D9W/K6oGYjS9/hu?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c33b55f9-9a30-4926-c6ee-08da0602c35e
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2022 21:36:56.5222
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LUDLicngyasqJDvTnBjUE6XqZ91FSysnA73zOMKl1mq4kdoaY2uYv0yUeoIvfiak
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5805
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This pinctrl driver supports the 98DX25xx and 98DX35xx family of chips
-from Marvell. It is based on the Marvell SDK with additions for various
-(non-gpio) pin configurations based on the datasheet.
+On Mon, Mar 14, 2022 at 03:44:33PM -0400, Matthew Rosato wrote:
+> s390x will introduce an additional domain type that is used for
+> managing IOMMU owned by KVM.  Define the type here and add an
+> interface for allocating a specified type vs the default type.
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>  drivers/iommu/iommu.c |  7 +++++++
+>  include/linux/iommu.h | 12 ++++++++++++
+>  2 files changed, 19 insertions(+)
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
----
+I think the general idea is right, but I'm not keen on this as an
+interface at all.
 
-Notes:
-    Changes in v2:
-    - Make pinctrl a child of a syscon node like the armada-7k-pinctrl
+We are trying to build in iommufd a generic interface for an IOMMU
+driver to expose IOMMU-device-specific domains such as this in a
+general purpose way so all the platforms can get what they need.
 
- drivers/pinctrl/mvebu/Kconfig       |   4 +
- drivers/pinctrl/mvebu/Makefile      |   1 +
- drivers/pinctrl/mvebu/pinctrl-ac5.c | 226 ++++++++++++++++++++++++++++
- 3 files changed, 231 insertions(+)
- create mode 100644 drivers/pinctrl/mvebu/pinctrl-ac5.c
-
-diff --git a/drivers/pinctrl/mvebu/Kconfig b/drivers/pinctrl/mvebu/Kconfi=
-g
-index 0d12894d3ee1..aa5883f09d7b 100644
---- a/drivers/pinctrl/mvebu/Kconfig
-+++ b/drivers/pinctrl/mvebu/Kconfig
-@@ -45,6 +45,10 @@ config PINCTRL_ORION
- 	bool
- 	select PINCTRL_MVEBU
-=20
-+config PINCTRL_AC5
-+	bool
-+	select PINCTRL_MVEBU
-+
- config PINCTRL_ARMADA_37XX
- 	bool
- 	select GENERIC_PINCONF
-diff --git a/drivers/pinctrl/mvebu/Makefile b/drivers/pinctrl/mvebu/Makef=
-ile
-index cd082dca4482..23458ab17c53 100644
---- a/drivers/pinctrl/mvebu/Makefile
-+++ b/drivers/pinctrl/mvebu/Makefile
-@@ -11,3 +11,4 @@ obj-$(CONFIG_PINCTRL_ARMADA_CP110) +=3D pinctrl-armada-=
-cp110.o
- obj-$(CONFIG_PINCTRL_ARMADA_XP)  +=3D pinctrl-armada-xp.o
- obj-$(CONFIG_PINCTRL_ARMADA_37XX)  +=3D pinctrl-armada-37xx.o
- obj-$(CONFIG_PINCTRL_ORION)  +=3D pinctrl-orion.o
-+obj-$(CONFIG_PINCTRL_AC5) +=3D pinctrl-ac5.o
-diff --git a/drivers/pinctrl/mvebu/pinctrl-ac5.c b/drivers/pinctrl/mvebu/=
-pinctrl-ac5.c
-new file mode 100644
-index 000000000000..8bc0bbff7c1b
---- /dev/null
-+++ b/drivers/pinctrl/mvebu/pinctrl-ac5.c
-@@ -0,0 +1,226 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Marvell ac5 pinctrl driver based on mvebu pinctrl core
-+ *
-+ * Copyright (C) 2021 Marvell
-+ *
-+ * Noam Liron <lnoam@marvell.com>
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/platform_device.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/pinctrl/pinctrl.h>
-+
-+#include "pinctrl-mvebu.h"
-+
-+static struct mvebu_mpp_mode ac5_mpp_modes[] =3D {
-+	MPP_MODE(0,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d0"),
-+		 MPP_FUNCTION(2, "nand",  "io4")),
-+	MPP_MODE(1,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d1"),
-+		 MPP_FUNCTION(2, "nand",  "io3")),
-+	MPP_MODE(2,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d2"),
-+		 MPP_FUNCTION(2, "nand",  "io2")),
-+	MPP_MODE(3,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d3"),
-+		 MPP_FUNCTION(2, "nand",  "io7")),
-+	MPP_MODE(4,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d4"),
-+		 MPP_FUNCTION(2, "nand",  "io6"),
-+		 MPP_FUNCTION(3, "uart3", "txd"),
-+		 MPP_FUNCTION(4, "uart2", "txd")),
-+	MPP_MODE(5,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d5"),
-+		 MPP_FUNCTION(2, "nand",  "io5"),
-+		 MPP_FUNCTION(3, "uart3", "rxd"),
-+		 MPP_FUNCTION(4, "uart2", "rxd")),
-+	MPP_MODE(6,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d6"),
-+		 MPP_FUNCTION(2, "nand",  "io0"),
-+		 MPP_FUNCTION(3, "i2c1",  "sck")),
-+	MPP_MODE(7,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "d7"),
-+		 MPP_FUNCTION(2, "nand",  "io1"),
-+		 MPP_FUNCTION(3, "i2c1",  "sda")),
-+	MPP_MODE(8,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "clk"),
-+		 MPP_FUNCTION(2, "nand",  "wen")),
-+	MPP_MODE(9,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "cmd"),
-+		 MPP_FUNCTION(2, "nand",  "ale")),
-+	MPP_MODE(10,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "ds"),
-+		 MPP_FUNCTION(2, "nand",  "cle")),
-+	MPP_MODE(11,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "sdio",  "rst"),
-+		 MPP_FUNCTION(2, "nand",  "cen")),
-+	MPP_MODE(12,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "spi0",  "clk")),
-+	MPP_MODE(13,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "spi0",  "csn")),
-+	MPP_MODE(14,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "spi0",  "mosi")),
-+	MPP_MODE(15,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "spi0",  "miso")),
-+	MPP_MODE(16,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "spi0",  "wpn"),
-+		 MPP_FUNCTION(2, "nand",  "ren"),
-+		 MPP_FUNCTION(3, "uart1", "txd")),
-+	MPP_MODE(17,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "spi0",  "hold"),
-+		 MPP_FUNCTION(2, "nand",  "rb"),
-+		 MPP_FUNCTION(3, "uart1", "rxd")),
-+	MPP_MODE(18,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "uart2", "rxd")),
-+	MPP_MODE(19,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "uart2", "txd")),
-+	MPP_MODE(20,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "i2c1",  "sck"),
-+		 MPP_FUNCTION(3, "spi1",  "clk"),
-+		 MPP_FUNCTION(4, "uart3", "txd")),
-+	MPP_MODE(21,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "i2c1",  "sda"),
-+		 MPP_FUNCTION(3, "spi1",  "csn"),
-+		 MPP_FUNCTION(4, "uart3", "rxd")),
-+	MPP_MODE(22,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(3, "spi1",  "mosi")),
-+	MPP_MODE(23,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(3, "spi1",  "miso")),
-+	MPP_MODE(24,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "uart2", "txd")),
-+	MPP_MODE(25,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "uart2", "rxd")),
-+	MPP_MODE(26,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "i2c0",  "sck"),
-+		 MPP_FUNCTION(3, "uart3", "txd")),
-+	MPP_MODE(27,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "i2c0",  "sda"),
-+		 MPP_FUNCTION(3, "uart3", "rxd")),
-+	MPP_MODE(28,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(3, "uart3", "txd")),
-+	MPP_MODE(29,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(3, "uart3", "rxd")),
-+	MPP_MODE(30,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(31,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(32,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "uart0", "txd")),
-+	MPP_MODE(33,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(1, "uart0", "rxd")),
-+	MPP_MODE(34,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "uart3", "rxd")),
-+	MPP_MODE(35,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(2, "uart3", "txd")),
-+	MPP_MODE(36,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(37,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(38,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(39,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(40,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(41,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(4, "uart2", "txd"),
-+		 MPP_FUNCTION(5, "i2c1",  "sck")),
-+	MPP_MODE(42,
-+		 MPP_FUNCTION(0, "gpio",  NULL),
-+		 MPP_FUNCTION(4, "uart2", "rxd"),
-+		 MPP_FUNCTION(5, "i2c1",  "sda")),
-+	MPP_MODE(43,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(44,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+	MPP_MODE(45,
-+		 MPP_FUNCTION(0, "gpio",  NULL)),
-+};
-+
-+static struct mvebu_pinctrl_soc_info ac5_pinctrl_info;
-+
-+static const struct of_device_id ac5_pinctrl_of_match[] =3D {
-+	{
-+		.compatible =3D "marvell,ac5-pinctrl",
-+	},
-+	{ },
-+};
-+
-+static const struct mvebu_mpp_ctrl ac5_mpp_controls[] =3D {
-+	MPP_FUNC_CTRL(0, 45, NULL, mvebu_regmap_mpp_ctrl), };
-+
-+static struct pinctrl_gpio_range ac5_mpp_gpio_ranges[] =3D {
-+	MPP_GPIO_RANGE(0,   0,  0, 46), };
-+
-+static int ac5_pinctrl_probe(struct platform_device *pdev)
-+{
-+	struct mvebu_pinctrl_soc_info *soc =3D &ac5_pinctrl_info;
-+	const struct of_device_id *match =3D
-+		of_match_device(ac5_pinctrl_of_match, &pdev->dev);
-+
-+	if (!match || !pdev->dev.parent)
-+		return -ENODEV;
-+
-+	soc->variant =3D 0; /* no variants for ac5 */
-+	soc->controls =3D ac5_mpp_controls;
-+	soc->ncontrols =3D ARRAY_SIZE(ac5_mpp_controls);
-+	soc->gpioranges =3D ac5_mpp_gpio_ranges;
-+	soc->ngpioranges =3D ARRAY_SIZE(ac5_mpp_gpio_ranges);
-+	soc->modes =3D ac5_mpp_modes;
-+	soc->nmodes =3D ac5_mpp_controls[0].npins;
-+
-+	pdev->dev.platform_data =3D soc;
-+
-+	return mvebu_pinctrl_simple_regmap_probe(pdev, pdev->dev.parent, 0);
-+}
-+
-+static struct platform_driver ac5_pinctrl_driver =3D {
-+	.driver =3D {
-+		.name =3D "ac5-pinctrl",
-+		.of_match_table =3D of_match_ptr(ac5_pinctrl_of_match),
-+	},
-+	.probe =3D ac5_pinctrl_probe,
-+};
-+
-+builtin_platform_driver(ac5_pinctrl_driver);
---=20
-2.35.1
-
+Jason
