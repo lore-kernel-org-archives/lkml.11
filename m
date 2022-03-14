@@ -2,197 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1254C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242419AbiCNPHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 11:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        id S242364AbiCNPLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 11:11:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242409AbiCNPHD (ORCPT
+        with ESMTP id S233706AbiCNPLE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 11:07:03 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F7641F85;
-        Mon, 14 Mar 2022 08:05:52 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id w27so27741799lfa.5;
-        Mon, 14 Mar 2022 08:05:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version;
-        bh=CxKS4vf3LBZ0P9NuD5cqIWteJHioyMZPeyVmyPljpRw=;
-        b=oa3EGNgEUsDhIWXUBLOAY449V2R/hTnXlm8IUsWlSGouPyQo3Jjgb8U11sEl8tbPKU
-         CS0W/TVZFNk9ow7xMvEcGIM9OfjQ/urSTMGQHmK/PcEnJX/Kgqr5Xqx3tv6HRoGBy+vW
-         Vtqpuvw+wc5VwQc6covh8nFsrDpUiXctRmGfBF7s6oDMHuAy+h7TFJYbuZc6vlvxQc8U
-         ImaCGvY7emJ0ijc3xtjqVgqvzOH8FXm61hLqILjlteIxSPm0VwQfqIVkeijVqca3y7uu
-         7LIIOXJPwUfw4JtC8RNEX2XSGzjTGPBKUy8rYp3TguX6Shn7+6WnG52/OUUHz7KYJV1U
-         29JQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version;
-        bh=CxKS4vf3LBZ0P9NuD5cqIWteJHioyMZPeyVmyPljpRw=;
-        b=NkA15HpxVC3oq3EAhlxCj2wJWoMJsIGmsLl/HtMCCa3PRzQtqLqtdoQntyfunVGoSI
-         lIEDHO6Oxxb9CXCt+JjE9ZpCbPAIdBKcWwRVSBjtrjjS2gKeD4H1cGbRZXb+peuS3s+z
-         qE69yN3IBW3xM8wPkCf4PE72o8kIxAUzh5VNWnW8Du6MeSuqLWAPjkOF7sFeuxoNXyVP
-         OXjTxL9rOGPQ2RJ9VjjTxDL6uA9wz1NcgdaZ7rU04DE+7BSBsUFML5TdWlN6IA6rsgzD
-         m/d7wY1K507nXYbVndQuJ408x4oPlQNutivWfaKg1KCvAyzsCP8zb16AzsMrjUIyEyWF
-         pRCA==
-X-Gm-Message-State: AOAM5330/5RCh+V5KqmvT3PLtpnj+kSC8OPMiCAkcUl05k4jJ8HC2dPu
-        YhvU57fHRusuUu0wOJKxL1M=
-X-Google-Smtp-Source: ABdhPJympt8IztXzbSAF44xWmW5WNMlPlHXRGdCNPqrccwiPz0YDLyvQ93ZECixu5gb0lAn94tT46Q==
-X-Received: by 2002:a19:430a:0:b0:445:b7f5:de35 with SMTP id q10-20020a19430a000000b00445b7f5de35mr13423435lfa.41.1647270350388;
-        Mon, 14 Mar 2022 08:05:50 -0700 (PDT)
-Received: from eldfell ([194.136.85.206])
-        by smtp.gmail.com with ESMTPSA id t2-20020a2e2d02000000b00244dc8ba5absm4017773ljt.117.2022.03.14.08.05.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 08:05:50 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 17:05:39 +0200
-From:   Pekka Paalanen <ppaalanen@gmail.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linux/m68k <linux-m68k@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 05/10] drm/fourcc: Add DRM_FORMAT_C[124]
-Message-ID: <20220314170539.17400f93@eldfell>
-In-Reply-To: <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
-References: <cover.1646683502.git.geert@linux-m68k.org>
-        <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
-        <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 14 Mar 2022 11:11:04 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A223D4A6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 08:09:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 10E0A212C6;
+        Mon, 14 Mar 2022 15:09:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647270593; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=xv0XMOjzc2nVpzPaqM8A8/JAUFAEHxwN81VOoXfUJm0=;
+        b=UuPE8ovyv3AHNXefwNj5dERkdHwsiy4gK9mDdaHy6sRlGh8V9qFwl7xbzrIVaXXWc9OznT
+        6Fdy1gfhQ2WuPLUlgKiRFzFrko5N6yCUlZ6kdid8k7FRUHVlOEHaBYYyAy6zMirQANxhDn
+        ZNTLoTMiMQbyuDdhgR+8QHURAUlQCgY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647270593;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=xv0XMOjzc2nVpzPaqM8A8/JAUFAEHxwN81VOoXfUJm0=;
+        b=+uA8a9HutVuOQkZnribjD1/nuDLfMzACUmxac+i+xtRNuDGrR6leocmXXnrjVq1GIs/af9
+        4GZv2DJI4p/IarAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8612D13B35;
+        Mon, 14 Mar 2022 15:09:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id se2uHcBaL2LyCwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Mon, 14 Mar 2022 15:09:52 +0000
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "Huang, Ying" <ying.huang@intel.com>,
+        Abhishek Goel <huntbag@linux.vnet.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Oscar Salvador <osalvador@suse.de>
+Subject: [PATCH v3] mm: Only re-generate demotion targets when a numa node changes its N_CPU state
+Date:   Mon, 14 Mar 2022 16:09:45 +0100
+Message-Id: <20220314150945.12694-1-osalvador@suse.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/m.YG_1yyujXTxoe21w.WtAn";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/m.YG_1yyujXTxoe21w.WtAn
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Abhishek reported that after patch [1], hotplug operations are
+taking ~double the expected time. [2]
 
-On Mon, 14 Mar 2022 14:30:18 +0100
-Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+The reason behind is that the CPU callbacks that migrate_on_reclaim_init()
+sets always call set_migration_target_nodes() whenever a CPU is brought
+up/down.
+But we only care about numa nodes going from having cpus to become
+cpuless, and vice versa, as that influences the demotion_target order.
 
-> On Mon, Mar 7, 2022 at 9:53 PM Geert Uytterhoeven <geert@linux-m68k.org> =
-wrote:
-> > Introduce fourcc codes for color-indexed frame buffer formats with two,
-> > four, and sixteen colors, and provide a mapping from bit per pixel and
-> > depth to fourcc codes.
-> >
-> > As the number of bits per pixel is less than eight, these rely on proper
-> > block handling for the calculation of bits per pixel and pitch.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org> =20
->=20
-> > --- a/include/uapi/drm/drm_fourcc.h
-> > +++ b/include/uapi/drm/drm_fourcc.h
-> > @@ -99,7 +99,10 @@ extern "C" {
-> >  #define DRM_FORMAT_INVALID     0
-> >
-> >  /* color index */
-> > -#define DRM_FORMAT_C8          fourcc_code('C', '8', ' ', ' ') /* [7:0=
-] C */
-> > +#define DRM_FORMAT_C1          fourcc_code('C', '1', ' ', ' ') /* [7:0=
-] C0:C1:C2:C3:C4:C5:C6:C7 1:1:1:1:1:1:1:1 eight pixels/byte */
-> > +#define DRM_FORMAT_C2          fourcc_code('C', '2', ' ', ' ') /* [7:0=
-] C0:C1:C2:C3 2:2:2:2 four pixels/byte */
-> > +#define DRM_FORMAT_C4          fourcc_code('C', '4', ' ', ' ') /* [7:0=
-] C0:C1 4:4 two pixels/byte */
-> > +#define DRM_FORMAT_C8          fourcc_code('C', '8', ' ', ' ') /* [7:0=
-] C 8 one pixel/byte */
-> >
-> >  /* 8 bpp Red */
-> >  #define DRM_FORMAT_R8          fourcc_code('R', '8', ' ', ' ') /* [7:0=
-] R */ =20
->=20
-> After replying to Ilia's comment[1], I realized the CFB drawing
-> operations use native byte and bit ordering, unless
-> FBINFO_FOREIGN_ENDIAN is set.
-> While Amiga, Atari, and Sun-3 use big-endian bit ordering,
-> e.g. Acorn VIDC[2] uses little endian, and SH7760[3] is configurable
-> (sh7760fb configures ordering to match host order).
-> BTW, ssd130{7fb,x}_update_rect() both assume little-endian, so I
-> guess they are broken on big-endian.
-> Fbtest uses big-endian bit ordering, so < 8 bpp is probably broken
-> on little-endian.
->=20
-> Hence the above should become:
->=20
->     #define DRM_FORMAT_C1          fourcc_code('C', '1', ' ', ' ') /*
-> [7:0] C7:C6:C5:C4:C3:C2:C1:C0 1:1:1:1:1:1:1:1 eight pixels/byte */
->     #define DRM_FORMAT_C2          fourcc_code('C', '2', ' ', ' ') /*
-> [7:0] C3:C2:C1:C0 2:2:2:2 four pixels/byte */
->     #define DRM_FORMAT_C4          fourcc_code('C', '4', ' ', ' ') /*
-> [7:0] C1:C0 4:4 two pixels/byte */
->=20
-> The same changes should be made for DRM_FORMAT_[RD][124].
->=20
-> The fbdev emulation code should gain support for these with and without
-> DRM_FORMAT_BIG_ENDIAN, the latter perhaps only on big-endian platforms?
->=20
-> [1] https://lore.kernel.org/r/CAKb7UvgEdm9U=3D+RyRwL0TGRfA_Qc7NbhCWoZOft2=
-DKdXggtKYw@mail.gmail.com/
-> [2] See p.30 of the VIDC datasheet
->     http://chrisacorns.computinghistory.org.uk/docs/Acorn/Misc/Acorn_VIDC=
-_Datasheet.pdf
-> [3] See p.1178 of the SH7660 datasheet
->     https://datasheet.octopart.com/HD6417760BL200AV-Renesas-datasheet-141=
-05759.pdf
+We do already have two CPU callbacks (vmstat_cpu_online() and vmstat_cpu_dead())
+that check exactly that, so get rid of the CPU callbacks in
+migrate_on_reclaim_init() and only call set_migration_target_nodes() from
+vmstat_cpu_{dead,online}() whenever a numa node change its N_CPU state.
 
-Hi Geert,
+[1] https://lore.kernel.org/linux-mm/20210721063926.3024591-2-ying.huang@intel.com/
+[2] https://lore.kernel.org/linux-mm/eb438ddd-2919-73d4-bd9f-b7eecdd9577a@linux.vnet.ibm.com/
 
-why would CPU endianess affect the order of bits in a byte?
+Fixes: 884a6e5d1f93b ("mm/migrate: update node demotion order on hotplug events")
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Reported-by: Abhishek Goel <huntbag@linux.vnet.ibm.com>
+Signed-off-by: Oscar Salvador <osalvador@suse.de>
+---
+ v2 -> v3:
+           - Add feedback from Huang Ying
+	   - Add tags
+ v1 -> v2:
+           - Add fedback from Huang Ying
+           - Add feedback from Baolin Wang
+---
+ include/linux/migrate.h |  8 +++++++
+ mm/migrate.c            | 47 +++++++++--------------------------------
+ mm/vmstat.c             | 13 +++++++++++-
+ 3 files changed, 30 insertions(+), 38 deletions(-)
 
-Do you mean that bit 0 one machine is (1 << 0), and on another machine
-bit 0 is (1 << 7)?
+diff --git a/include/linux/migrate.h b/include/linux/migrate.h
+index db96e10eb8da..90e75d5a54d6 100644
+--- a/include/linux/migrate.h
++++ b/include/linux/migrate.h
+@@ -48,7 +48,15 @@ int folio_migrate_mapping(struct address_space *mapping,
+ 		struct folio *newfolio, struct folio *folio, int extra_count);
+ 
+ extern bool numa_demotion_enabled;
++extern void migrate_on_reclaim_init(void);
++#ifdef CONFIG_HOTPLUG_CPU
++extern void set_migration_target_nodes(void);
+ #else
++static inline void set_migration_target_nodes(void) {}
++#endif
++#else
++
++static inline void set_migration_target_nodes(void) {}
+ 
+ static inline void putback_movable_pages(struct list_head *l) {}
+ static inline int migrate_pages(struct list_head *l, new_page_t new,
+diff --git a/mm/migrate.c b/mm/migrate.c
+index e8a6933af68d..2561881f03b2 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -3193,7 +3193,7 @@ static void __set_migration_target_nodes(void)
+ /*
+  * For callers that do not hold get_online_mems() already.
+  */
+-static void set_migration_target_nodes(void)
++void set_migration_target_nodes(void)
+ {
+ 	get_online_mems();
+ 	__set_migration_target_nodes();
+@@ -3257,51 +3257,24 @@ static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
+ 	return notifier_from_errno(0);
+ }
+ 
+-/*
+- * React to hotplug events that might affect the migration targets
+- * like events that online or offline NUMA nodes.
+- *
+- * The ordering is also currently dependent on which nodes have
+- * CPUs.  That means we need CPU on/offline notification too.
+- */
+-static int migration_online_cpu(unsigned int cpu)
+-{
+-	set_migration_target_nodes();
+-	return 0;
+-}
+-
+-static int migration_offline_cpu(unsigned int cpu)
++void __init migrate_on_reclaim_init(void)
+ {
+-	set_migration_target_nodes();
+-	return 0;
+-}
+-
+-static int __init migrate_on_reclaim_init(void)
+-{
+-	int ret;
+-
+ 	node_demotion = kmalloc_array(nr_node_ids,
+ 				      sizeof(struct demotion_nodes),
+ 				      GFP_KERNEL);
+ 	WARN_ON(!node_demotion);
+ 
+-	ret = cpuhp_setup_state_nocalls(CPUHP_MM_DEMOTION_DEAD, "mm/demotion:offline",
+-					NULL, migration_offline_cpu);
++	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
+ 	/*
+-	 * In the unlikely case that this fails, the automatic
+-	 * migration targets may become suboptimal for nodes
+-	 * where N_CPU changes.  With such a small impact in a
+-	 * rare case, do not bother trying to do anything special.
++	 * At this point, all numa nodes with memory/CPus have their state
++	 * properly set, so we can build the demotion order now.
++	 * Let us hold the cpu_hotplug lock just, as we could possibily have
++	 * CPU hotplug events during boot.
+ 	 */
+-	WARN_ON(ret < 0);
+-	ret = cpuhp_setup_state(CPUHP_AP_MM_DEMOTION_ONLINE, "mm/demotion:online",
+-				migration_online_cpu, NULL);
+-	WARN_ON(ret < 0);
+-
+-	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
+-	return 0;
++	cpus_read_lock();
++	set_migration_target_nodes();
++	cpus_read_unlock();
+ }
+-late_initcall(migrate_on_reclaim_init);
+ #endif /* CONFIG_HOTPLUG_CPU */
+ 
+ bool numa_demotion_enabled = false;
+diff --git a/mm/vmstat.c b/mm/vmstat.c
+index 4057372745d0..9e9536df51b5 100644
+--- a/mm/vmstat.c
++++ b/mm/vmstat.c
+@@ -28,6 +28,7 @@
+ #include <linux/mm_inline.h>
+ #include <linux/page_ext.h>
+ #include <linux/page_owner.h>
++#include <linux/migrate.h>
+ 
+ #include "internal.h"
+ 
+@@ -2043,7 +2044,12 @@ static void __init init_cpu_node_state(void)
+ static int vmstat_cpu_online(unsigned int cpu)
+ {
+ 	refresh_zone_stat_thresholds();
+-	node_set_state(cpu_to_node(cpu), N_CPU);
++
++	if (!node_state(cpu_to_node(cpu), N_CPU)) {
++		node_set_state(cpu_to_node(cpu), N_CPU);
++		set_migration_target_nodes();
++	}
++
+ 	return 0;
+ }
+ 
+@@ -2066,6 +2072,8 @@ static int vmstat_cpu_dead(unsigned int cpu)
+ 		return 0;
+ 
+ 	node_clear_state(node, N_CPU);
++	set_migration_target_nodes();
++
+ 	return 0;
+ }
+ 
+@@ -2097,6 +2105,9 @@ void __init init_mm_internals(void)
+ 
+ 	start_shepherd_timer();
+ #endif
++#if defined(CONFIG_MIGRATION) && defined(CONFIG_HOTPLUG_CPU)
++	migrate_on_reclaim_init();
++#endif
+ #ifdef CONFIG_PROC_FS
+ 	proc_create_seq("buddyinfo", 0444, NULL, &fragmentation_op);
+ 	proc_create_seq("pagetypeinfo", 0400, NULL, &pagetypeinfo_op);
+-- 
+2.34.1
 
-In C, we have only one way to address bits of a byte and that is with
-arithmetic. You cannot take the address of a bit any other way, can you?
-
-Can we standardise on "bit n of a byte is addressed as (1 << n)"?
-
-I don't mind in which order the pixels are inside a byte, as long as it
-doesn't change by CPU endianess. If you need both directions, then use
-two different drm_fourcc codes that do not change their meaning by CPU
-endianess. Just like we have XRGB and BGRX formats.
-
-I would not like to see DRM_FORMAT_BIG_ENDIAN used for this, it would
-conflate a whole new concept into the mess that is little- vs.
-big-endian.
-
-
-Thanks,
-pq
-
---Sig_/m.YG_1yyujXTxoe21w.WtAn
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmIvWcMACgkQI1/ltBGq
-qqfXcQ//YRyfURp9d78SsBIIc7E+JMTInSnBi+DsN5ajonw6bUXBpcyhbo8aJG+p
-68tYcUrLaoizXdL318OYH3bVjAfWEhuIjjsGPJ/iUptXmv1D+zEaIRI+h+aYcDcs
-V310ZEYnBkEmG6aKSzwIjCFM8KoB+2oydLhDldQta8oAoIJ4gCED2ARFbpyS8k7H
-kNPY9/lU1uUJdjLDcGChmmwwv1sAL8aXUUmmqYfEg4Dv7XzEi71FRYKJlYq7TuNC
-lGbXZOoyha64DYQbuNiNL/eGSkporUlOdRQrOGMCWIPqNzm8/DrSRtPtNu5h+2Mv
-4LJ/Y/Q57Seur9+Lu3HkXkkq11ET1F64a7FHPplj87XzwM0y3Kn/f+6Y2jJy9DEM
-fcXZdv29ofEeXL1o43Pvka0UziTOALJLxLgNAhS47mNnIklBeihSlbIU3nez15oV
-t3icfb6qdJ5Bkt9sG3vbcjuFf8+dPDMTUqruM7CoF4zrC+e22YVdxX7dXmNlsAzc
-hhlmZAM+dCNN6w2lQoZIgl5rqTBGK8ruCtOl5G/lOjqOXxg/EBfHsSiSGvUsZWAz
-WiO0jLJy/XdijASav+n5dRFQWSgrp8vjwzZbkRcwlb57sxlKd6BGN5/wmAMiCyu1
-5V35MiBAGi45uGU+mVx0Y74j+HIag65ZaWMkN27VtjsCtYMf/xc=
-=cv7k
------END PGP SIGNATURE-----
-
---Sig_/m.YG_1yyujXTxoe21w.WtAn--
