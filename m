@@ -2,57 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F86C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238083AbiCNJan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
+        id S238175AbiCNJaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238034AbiCNJ3r (ORCPT
+        with ESMTP id S238042AbiCNJ3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 05:29:47 -0400
+        Mon, 14 Mar 2022 05:29:48 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9B63527A;
-        Mon, 14 Mar 2022 02:28:30 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 09:28:28 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD536443F9;
+        Mon, 14 Mar 2022 02:28:34 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 09:28:32 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647250109;
+        s=2020; t=1647250113;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UbEI+i1ivALBIfpj7UkIC6yTADjTScQ2xKx34kea2QU=;
-        b=XH9c3/LWFRNwVsj3Oq6r/Gyazx85BgBad4cHLidwQe0g748qK5rD+EXG3VKvD/ZkUZ5wgt
-        pVlk+qKyto4I5yFf4+4N+Xq6kkm5wYjJkF0ApxRFOZiIAie+y3w09+2LGTnCS/sWQo0AXE
-        QUn745e42+NXzladxhOPvoa2vzbtFIGZOFrfdpcBsYcWesNXvU+1wk+MsB0P/8UFVA4qFZ
-        AFYiEAd5hvqYoZ3BbHx9ep00cXIUXS3J8++DLCIETObvPTk2VBbA0rICa/jUHd25Fh8NZR
-        qArNaHxXtlewf36iTXxwqzx7m2Z5ell/BHjyDxU+kZCsuhoJq4Xk+LGOsFlSbg==
+        bh=kL/afjmEA3jEuN1oqWn/f2qR0Dp2m1Y66acTVoUbX8c=;
+        b=3PGRe1cSrXbOudJQTzzt7NDatClXTDHKVEHYOFp+V72IsxoLxnNEPcvARxaZhprfaoYZSk
+        sRveaGxCt1wljNYfS9KXjWmcVpevqNREu97yE2pAVHCw+bRacJaVIAi+nQI11/KXpyPula
+        Ohm67TsRBfKW6KnpMupQoaefcTBscXaZu8/oP1UWO+SvRSMJhsnLMHIvhLkGmBw0jz56wS
+        oFnPj4qoKXdb1goKza5NS0DM2U6y1lM6sggxUScI67zEhFYOydGR7p4H0pDNTeGI0wUuig
+        qxhtsTsjEzeLb8q/aeveMtsHK6qsIQS9Y5+TPjvE6pNrMNuFiMHanz+GUob44w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647250109;
+        s=2020e; t=1647250113;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UbEI+i1ivALBIfpj7UkIC6yTADjTScQ2xKx34kea2QU=;
-        b=aoBzFI64KM8glWfbU+bfPXiRu3V7E0d2iIG7PIAuukYTN7zfSfI/MDAVSTAH7mL8nCra9J
-        ckF5iRdZSbJvttCw==
-From:   "tip-bot2 for Krzysztof Kozlowski" <tip-bot2@linutronix.de>
+        bh=kL/afjmEA3jEuN1oqWn/f2qR0Dp2m1Y66acTVoUbX8c=;
+        b=4x8jhkaec7CEVtccF8FGe7ZMfOvWOkqSiUrKgHs189Bv6a7XoWTArX8vaTGZgWVOPGW4ca
+        9suNL3uNCnOFyvAw==
+From:   "tip-bot2 for Peng Fan" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] clocksource/drivers/exynos_mct: Handle DTS with
- higher number of interrupts
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
+Subject: [tip: timers/core] clocksource/drivers/imx-tpm: Add CLOCK_EVT_FEAT_DYNIRQ
+Cc:     Jacky Bai <ping.bai@nxp.com>, Peng Fan <peng.fan@nxp.com>,
         Daniel Lezcano <daniel.lezcano@linaro.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220220103815.135380-1-krzysztof.kozlowski@canonical.com>
-References: <20220220103815.135380-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20211214120737.1611955-5-peng.fan@oss.nxp.com>
+References: <20211214120737.1611955-5-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Message-ID: <164725010846.16921.7067111417542311406.tip-bot2@tip-bot2>
+Message-ID: <164725011251.16921.9372165520109504949.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,63 +61,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     ab8da93dc06d82f464c47ab30e6c75190702f369
-Gitweb:        https://git.kernel.org/tip/ab8da93dc06d82f464c47ab30e6c75190702f369
-Author:        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-AuthorDate:    Sun, 20 Feb 2022 11:38:15 +01:00
+Commit-ID:     39664b624f6a6518001b2c8f86bac1352c89d0af
+Gitweb:        https://git.kernel.org/tip/39664b624f6a6518001b2c8f86bac1352c89d0af
+Author:        Peng Fan <peng.fan@nxp.com>
+AuthorDate:    Tue, 14 Dec 2021 20:07:36 +08:00
 Committer:     Daniel Lezcano <daniel.lezcano@linaro.org>
-CommitterDate: Mon, 07 Mar 2022 18:27:22 +01:00
+CommitterDate: Wed, 26 Jan 2022 10:01:00 +01:00
 
-clocksource/drivers/exynos_mct: Handle DTS with higher number of interrupts
+clocksource/drivers/imx-tpm: Add CLOCK_EVT_FEAT_DYNIRQ
 
-The driver statically defines maximum number of interrupts it can
-handle, however it does not respect that limit when configuring them.
-When provided with a DTS with more interrupts than assumed, the driver
-will overwrite static array mct_irqs leading to silent memory
-corruption.
+Add CLOCK_EVT_FEAT_DYNIRQ to allow the IRQ could be runtime set affinity
+to the cores that needs wake up, otherwise saying core0 has to send
+IPI to wakeup core1. With CLOCK_EVT_FEAT_DYNIRQ set, when broadcast
+timer could wake up the cores, IPI is not needed.
 
-Validate the interrupts coming from DTS to avoid this.  This does not
-change the fact that such DTS might not boot at all, because it is
-simply incompatible, however at least some warning will be printed.
-
-Fixes: 36ba5d527e95 ("ARM: EXYNOS: add device tree support for MCT controller driver")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
-Link: https://lore.kernel.org/r/20220220103815.135380-1-krzysztof.kozlowski@canonical.com
+Acked-by: Jacky Bai <ping.bai@nxp.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Link: https://lore.kernel.org/r/20211214120737.1611955-5-peng.fan@oss.nxp.com
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/clocksource/exynos_mct.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/clocksource/timer-imx-tpm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-index 6db3d55..03782b3 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -541,6 +541,11 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
- 	 * irqs are specified.
- 	 */
- 	nr_irqs = of_irq_count(np);
-+	if (nr_irqs > ARRAY_SIZE(mct_irqs)) {
-+		pr_err("exynos-mct: too many (%d) interrupts configured in DT\n",
-+			nr_irqs);
-+		nr_irqs = ARRAY_SIZE(mct_irqs);
-+	}
- 	for (i = MCT_L0_IRQ; i < nr_irqs; i++)
- 		mct_irqs[i] = irq_of_parse_and_map(np, i);
- 
-@@ -553,11 +558,14 @@ static int __init exynos4_timer_interrupts(struct device_node *np,
- 		     mct_irqs[MCT_L0_IRQ], err);
- 	} else {
- 		for_each_possible_cpu(cpu) {
--			int mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
-+			int mct_irq;
- 			struct mct_clock_event_device *pcpu_mevt =
- 				per_cpu_ptr(&percpu_mct_tick, cpu);
- 
- 			pcpu_mevt->evt.irq = -1;
-+			if (MCT_L0_IRQ + cpu >= ARRAY_SIZE(mct_irqs))
-+				break;
-+			mct_irq = mct_irqs[MCT_L0_IRQ + cpu];
- 
- 			irq_set_status_flags(mct_irq, IRQ_NOAUTOEN);
- 			if (request_irq(mct_irq,
+diff --git a/drivers/clocksource/timer-imx-tpm.c b/drivers/clocksource/timer-imx-tpm.c
+index 3afd9b0..578fe16 100644
+--- a/drivers/clocksource/timer-imx-tpm.c
++++ b/drivers/clocksource/timer-imx-tpm.c
+@@ -129,7 +129,7 @@ static struct timer_of to_tpm = {
+ 	.clkevt = {
+ 		.name			= "i.MX7ULP TPM Timer",
+ 		.rating			= 200,
+-		.features		= CLOCK_EVT_FEAT_ONESHOT,
++		.features		= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_DYNIRQ,
+ 		.set_state_shutdown	= tpm_set_state_shutdown,
+ 		.set_state_oneshot	= tpm_set_state_oneshot,
+ 		.set_next_event		= tpm_set_next_event,
