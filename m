@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DA2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240118AbiCNMAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37734 "EHLO
+        id S240124AbiCNMAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240016AbiCNL5y (ORCPT
+        with ESMTP id S240060AbiCNL6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:57:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7968CDECF;
-        Mon, 14 Mar 2022 04:56:44 -0700 (PDT)
+        Mon, 14 Mar 2022 07:58:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4484B13CF2;
+        Mon, 14 Mar 2022 04:56:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32327B80DC2;
-        Mon, 14 Mar 2022 11:56:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6571EC340EC;
-        Mon, 14 Mar 2022 11:56:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEAB16112C;
+        Mon, 14 Mar 2022 11:56:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90C07C340E9;
+        Mon, 14 Mar 2022 11:56:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259002;
-        bh=BxB5mmRZXkePyvGp3InA7vMTjJDsDYTbvSyMWQC9K5k=;
+        s=korg; t=1647259012;
+        bh=/Todogodg+mgFMzZnsQMJZeg/SQw6s/iRBcPGIlxRzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dsWUGxBktu+KN1wh1KmitaRZz2XCJo4R4cWFZU1Nz/HZTThk6ZhyXQoySsK0kh8kj
-         iQP8Q9FFIHgrBCNo0knVieGggWmG7H+3C3NbWes3/N9y+Fmpje/4AkbbSJOfUDobyn
-         jrl+Yk2OVmYpQMbokYUI+IRaceezP0VclAs6yUCQ=
+        b=PUO+G1L1I2fwM/9ds5Sf2SuE7mwER+q4WXUYiG4q7Qj3QCDJB7QnaCzRk7R9O7XzX
+         p5e/ctJl4lqcGpwuq3gFlcCKU8BDleurVlLLq3FRkqmH0bvuCCzc/SkvJhkKTBXs6f
+         zrGQLPO/tZPWTQwc6qJDCrO0IxUPnWA4NQZIFzWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
-        Michael Brown <mbrown@fensystems.co.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 24/43] Revert "xen-netback: Check for hotplug-status existence before watching"
-Date:   Mon, 14 Mar 2022 12:53:35 +0100
-Message-Id: <20220314112735.097061304@linuxfoundation.org>
+Subject: [PATCH 5.4 26/43] tracing: Ensure trace buffer is at least 4096 bytes large
+Date:   Mon, 14 Mar 2022 12:53:37 +0100
+Message-Id: <20220314112735.153161387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -52,62 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+From: Sven Schnelle <svens@linux.ibm.com>
 
-[ Upstream commit e8240addd0a3919e0fd7436416afe9aa6429c484 ]
+[ Upstream commit 7acf3a127bb7c65ff39099afd78960e77b2ca5de ]
 
-This reverts commit 2afeec08ab5c86ae21952151f726bfe184f6b23d.
+Booting the kernel with 'trace_buf_size=1' give a warning at
+boot during the ftrace selftests:
 
-The reasoning in the commit was wrong - the code expected to setup the
-watch even if 'hotplug-status' didn't exist. In fact, it relied on the
-watch being fired the first time - to check if maybe 'hotplug-status' is
-already set to 'connected'. Not registering a watch for non-existing
-path (which is the case if hotplug script hasn't been executed yet),
-made the backend not waiting for the hotplug script to execute. This in
-turns, made the netfront think the interface is fully operational, while
-in fact it was not (the vif interface on xen-netback side might not be
-configured yet).
+[    0.892809] Running postponed tracer tests:
+[    0.892893] Testing tracer function:
+[    0.901899] Callback from call_rcu_tasks_trace() invoked.
+[    0.983829] Callback from call_rcu_tasks_rude() invoked.
+[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
+[    1.091944] Callback from call_rcu_tasks() invoked.
+[    1.097695] PASSED
+[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
+[    1.353474] ------------[ cut here ]------------
+[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
 
-This was a workaround for 'hotplug-status' erroneously being removed.
-But since that is reverted now, the workaround is not necessary either.
+Therefore enforce a minimum of 4096 bytes to make the selftest pass.
 
-More discussion at
-https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+Link: https://lkml.kernel.org/r/20220214134456.1751749-1-svens@linux.ibm.com
 
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Reviewed-by: Michael Brown <mbrown@fensystems.co.uk>
-Link: https://lore.kernel.org/r/20220222001817.2264967-2-marmarek@invisiblethingslab.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netback/xenbus.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ kernel/trace/trace.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 0fe0fbd83ce4..44e353dd2ba1 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -980,15 +980,11 @@ static void connect(struct backend_info *be)
- 	xenvif_carrier_on(be->vif);
- 
- 	unregister_hotplug_status_watch(be);
--	if (xenbus_exists(XBT_NIL, dev->nodename, "hotplug-status")) {
--		err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch,
--					   NULL, hotplug_status_changed,
--					   "%s/%s", dev->nodename,
--					   "hotplug-status");
--		if (err)
--			goto err;
-+	err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch, NULL,
-+				   hotplug_status_changed,
-+				   "%s/%s", dev->nodename, "hotplug-status");
-+	if (!err)
- 		be->have_hotplug_status_watch = 1;
--	}
- 
- 	netif_tx_wake_all_queues(be->vif->dev);
- 
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 1a89b2bf626a..56619766e910 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -1305,10 +1305,12 @@ static int __init set_buf_size(char *str)
+ 	if (!str)
+ 		return 0;
+ 	buf_size = memparse(str, &str);
+-	/* nr_entries can not be zero */
+-	if (buf_size == 0)
+-		return 0;
+-	trace_buf_size = buf_size;
++	/*
++	 * nr_entries can not be zero and the startup
++	 * tests require some buffer space. Therefore
++	 * ensure we have at least 4096 bytes of buffer.
++	 */
++	trace_buf_size = max(4096UL, buf_size);
+ 	return 1;
+ }
+ __setup("trace_buf_size=", set_buf_size);
 -- 
 2.34.1
 
