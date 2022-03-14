@@ -2,73 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77836C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 02:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCCFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 02:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235956AbiCNCrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 22:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45080 "EHLO
+        id S235959AbiCNCtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 22:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235875AbiCNCri (ORCPT
+        with ESMTP id S229645AbiCNCtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 22:47:38 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588EE32065;
-        Sun, 13 Mar 2022 19:46:28 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1nTahk-00032e-MQ; Mon, 14 Mar 2022 13:45:05 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Mon, 14 Mar 2022 14:45:05 +1200
-Date:   Mon, 14 Mar 2022 14:45:05 +1200
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Gilad Ben-Yossef <gilad@benyossef.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        "Markku-Juhani O . Saarinen" <mjos@iki.fi>,
-        Jussi Kivilinna <jussi.kivilinna@iki.fi>,
-        X86 ML <x86@kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] crypto: sm4 - create SM4 library based on sm4
- generic code
-Message-ID: <Yi6sMd51viEl3de6@gondor.apana.org.au>
-References: <20210610134459.28541-1-tianjia.zhang@linux.alibaba.com>
- <20210610134459.28541-2-tianjia.zhang@linux.alibaba.com>
- <Yh32tEhUgGeSXf/A@zx2c4.com>
- <Yh65NU6TwcvW/VZV@gondor.apana.org.au>
- <CAHmME9qL4gHwJZcYGRmJ8sxcjkpGFjWDH2gxu15FXzgCUDLifw@mail.gmail.com>
- <Yh/uW6z7aOyG0Jl8@gmail.com>
- <CAHmME9rUUGAM+MP802=dSe0HMLnGAq4Yne-NHfJxyGaKMcdSxg@mail.gmail.com>
- <d8e6305a-b535-5952-aa2a-275ca18c1bd9@linux.alibaba.com>
- <CAHmME9r5CiU9kB=h4QJGeQ5HtkznCaZeTV3e1pBDv1UjrS1AsQ@mail.gmail.com>
+        Sun, 13 Mar 2022 22:49:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7DE2AE34;
+        Sun, 13 Mar 2022 19:48:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04D8560F73;
+        Mon, 14 Mar 2022 02:48:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66DBDC340E8;
+        Mon, 14 Mar 2022 02:48:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647226116;
+        bh=cdxrnVF+mdB7TRc/m1TVEM0ez+IrY1+UczlFrVPBIDI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qO6KL/yWZaUqhz1ePHakl6NGSjBJB1o36h3/ASqNEEgWMl1ppM03Djifu0Ivur3QG
+         te5y/GQooC4bdnGdz8z1t8QwwAC0CYXZ/q9tBbuFzzvcW/cSIcrzaouJdGXJbo5NbB
+         PSEezrFXa2awV3PKy0s7ptIZ51RnDqKt9iJZUhj5NB/X4BSTHiFE/wkTOKv+rrQati
+         wdOeLFthHWLJV7DdaRInORRoEv6hMZKVndUPypm2sUNSWqu+ixdOL37CNOVQwVKJQS
+         GMN7IHWDzI1ynPruoe5yknCGz4DggqJjGYN0NWHve/KisEiyi7iWLOUpD6GOuF7gMg
+         Za/am1gIceI3g==
+Date:   Mon, 14 Mar 2022 04:49:32 +0200
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     Haitao Huang <haitao.huang@linux.intel.com>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        nathaniel@profian.com
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+Message-ID: <Yi6tPLLt9Q+ailQ3@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <YimWaAqEnXHbLdjh@iki.fi>
+ <op.1itu5vkewjvjmi@hhuan26-mobl1.mshome.net>
+ <Yis8LV99mORcLYs6@iki.fi>
+ <Yis9rA8uC/0bmWCF@iki.fi>
+ <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHmME9r5CiU9kB=h4QJGeQ5HtkznCaZeTV3e1pBDv1UjrS1AsQ@mail.gmail.com>
+In-Reply-To: <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 08:40:00PM -0600, Jason A. Donenfeld wrote:
-> Hi Herbert,
-> 
-> Are you willing to consider the views of Eric and me? Or is this a
-> hard nack from you?
+On Fri, Mar 11, 2022 at 09:53:29AM -0800, Reinette Chatre wrote:
 
-Please present your patch to move the code with the reasoning
-for the move and then I can consider it.
+> I saw Haitao's note that EMODPE requires "Read access permitted by enclave".
+> This motivates that EMODPR->PROT_NONE should not be allowed since it would
+> not be possible to relax permissions (run EMODPE) after that. Even so, I
+> also found in the SDM that EACCEPT has the note "Read access permitted
+> by enclave". That seems to indicate that EMODPR->PROT_NONE is not practical
+> from that perspective either since the enclave will not be able to
+> EACCEPT the change. Does that match your understanding?
 
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Yes, PROT_NONE should not be allowed.
+
+This is however the real problem.
+
+The current kernel patch set has inconsistent API and EMODPR ioctl is
+simply unacceptable. It  also requires more concurrency management from
+user space run-time, which would be heck a lot easier to do in the kernel.
+
+If you really want EMODPR as ioctl, then for consistencys sake, then EAUG
+should be too. Like this when things go opposite directions, this patch set
+plain and simply will not work out.
+
+I would pick EAUG's strategy from these two as it requires half the back
+calls to host from an enclave. I.e. please combine mprotect() and EMODPR,
+either in the #PF handler or as part of mprotect(), which ever suits you
+best.
+
+I'll try demonstrate this with two examples.
+
+mmap() could go something like this() (simplified):
+1. Execution #UD's to SYSCALL.
+2. Host calls enclave's mmap() handler with mmap() parameters.
+3. Enclave up-calls host's mmap().
+4. Loops the range with EACCEPTCOPY.
+
+mprotect() has to be done like this:
+1. Execution #UD's to SYSCALL.
+2. Host calls enclave's mprotect() handler.
+3. Enclave up-calls host's mprotect().
+4. Enclave up-calls host's ioctl() to SGX_IOC_ENCLAVE_PERMISSIONS.
+3. Loops the range with EACCEPT.
+
+This is just terrible IMHO. I hope these examples bring some insight.
+
+BR, Jarkko
