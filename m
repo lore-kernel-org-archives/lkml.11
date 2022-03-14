@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA74C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB15BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239893AbiCNL5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36010 "EHLO
+        id S239980AbiCNL5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239918AbiCNL5W (ORCPT
+        with ESMTP id S239886AbiCNL5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:57:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6474BC28;
-        Mon, 14 Mar 2022 04:56:00 -0700 (PDT)
+        Mon, 14 Mar 2022 07:57:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970081274C;
+        Mon, 14 Mar 2022 04:56:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 656BE60F6F;
-        Mon, 14 Mar 2022 11:56:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11BEC340E9;
-        Mon, 14 Mar 2022 11:55:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 804EBB80DE3;
+        Mon, 14 Mar 2022 11:56:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0F28C340E9;
+        Mon, 14 Mar 2022 11:56:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647258959;
-        bh=ckEwlbPoLs/EWoxMcONCSQf2ufdtZ85Xa9YK8WuVaHs=;
+        s=korg; t=1647258966;
+        bh=bMps1IWyihd+IApLTuN7q9Nk61AEbptapgwH3EKoC8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ncwhCcZZKSPWwKQPNXAvPJzpEPJi1rPDaPdaxACYcJBE6YRHXesAzbSqV+/xaTVWo
-         CliDZNjXkRJu7GDuNn+JJQT3xQHMdSgw6zy3I3Y5SrgNHYqJ6dp/s76Y1pudoW+zDX
-         pz5zKxwLWdTlc6E0p2NimmmB7CiNKyZAOItdIrTE=
+        b=st3Mu23vUCRzB1IC9AjXo3yP1bYRXELBQsIYBTbLoFOaKLSsD2GystoJrzKN97eZq
+         0m+GmalYLq5hr37+eZQYtXER+bQCg1KBa9PeyDTsSK76743zvUURNkeqbTCxG3hOp3
+         tG2Thr7dku2Un9yLdacH45NC+trS5Icx2lhvsfdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 17/43] gianfar: ethtool: Fix refcount leak in gfar_get_ts_info
-Date:   Mon, 14 Mar 2022 12:53:28 +0100
-Message-Id: <20220314112734.902950656@linuxfoundation.org>
+Subject: [PATCH 5.4 18/43] net: phy: DP83822: clear MISR2 register to disable interrupts
+Date:   Mon, 14 Mar 2022 12:53:29 +0100
+Message-Id: <20220314112734.930123555@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -51,37 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Clément Léger <clement.leger@bootlin.com>
 
-[ Upstream commit 2ac5b58e645c66932438bb021cb5b52097ce70b0 ]
+[ Upstream commit 37c9d66c95564c85a001d8a035354f0220a1e1c3 ]
 
-The of_find_compatible_node() function returns a node pointer with
-refcount incremented, We should use of_node_put() on it when done
-Add the missing of_node_put() to release the refcount.
+MISR1 was cleared twice but the original author intention was probably
+to clear MISR1 & MISR2 to completely disable interrupts. Fix it to
+clear MISR2.
 
-Fixes: 7349a74ea75c ("net: ethernet: gianfar_ethtool: get phc index through drvdata")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Link: https://lore.kernel.org/r/20220310015313.14938-1-linmq006@gmail.com
+Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220309142228.761153-1-clement.leger@bootlin.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/gianfar_ethtool.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/dp83822.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar_ethtool.c b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-index 3c8e4e2efc07..01a7255e86c9 100644
---- a/drivers/net/ethernet/freescale/gianfar_ethtool.c
-+++ b/drivers/net/ethernet/freescale/gianfar_ethtool.c
-@@ -1489,6 +1489,7 @@ static int gfar_get_ts_info(struct net_device *dev,
- 	ptp_node = of_find_compatible_node(NULL, NULL, "fsl,etsec-ptp");
- 	if (ptp_node) {
- 		ptp_dev = of_find_device_by_node(ptp_node);
-+		of_node_put(ptp_node);
- 		if (ptp_dev)
- 			ptp = platform_get_drvdata(ptp_dev);
- 	}
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index 8a4b1d167ce2..ae17d2f9d534 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -238,7 +238,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
+ 		if (err < 0)
+ 			return err;
+ 
+-		err = phy_write(phydev, MII_DP83822_MISR1, 0);
++		err = phy_write(phydev, MII_DP83822_MISR2, 0);
+ 		if (err < 0)
+ 			return err;
+ 
 -- 
 2.34.1
 
