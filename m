@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C07C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235582AbiCNMQf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
+        id S241227AbiCNMQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241198AbiCNMI0 (ORCPT
+        with ESMTP id S241622AbiCNMI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:26 -0400
+        Mon, 14 Mar 2022 08:08:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B5C4A3FF;
-        Mon, 14 Mar 2022 05:04:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26C04F9DC;
+        Mon, 14 Mar 2022 05:05:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2E0AB80DEC;
-        Mon, 14 Mar 2022 12:04:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1A41C340E9;
-        Mon, 14 Mar 2022 12:04:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53381B80DF0;
+        Mon, 14 Mar 2022 12:05:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C80C340E9;
+        Mon, 14 Mar 2022 12:05:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259479;
-        bh=Xye6heKwh6ZUwm+0VaxNUczYGaicbyE6jQr771iX0G4=;
+        s=korg; t=1647259537;
+        bh=t1emTD1hQqRTM2s+FLqtKL1MLVKlmYxN8zFn0YVOEuQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HR6U1gACVCnJToVRqx2f0hkqS7sDge6v+BNkbZj6PAQ3fLcvkSMx0StyWRTbwQ5my
-         lb43aeaasJMaClRFjc91oMvwbn+rZu2mlDEQ88xBTGbtm9R3vuxEqPIGPiAc0BisJs
-         cuZndSoLLwGN8fnkDNS5AAXhAtP3rYE1kGzoJwVU=
+        b=n63v3IE53q0r5/xA5zPa6ZtjoHA0NSnP7PzzrQjbq6ANM6FXW4IkRrpam0VXauEH7
+         WsawqQ7AK5E/VeegM+iyLoXANqwUG7JSE3woNkiO8xczff3xShax6d4ykH+ObJL64B
+         PXOCaSoGJeCl//yh/MaKUm24W0fv6cppv0UDD1PA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 016/110] virtio-blk: Dont use MAX_DISCARD_SEGMENTS if max_discard_seg is zero
-Date:   Mon, 14 Mar 2022 12:53:18 +0100
-Message-Id: <20220314112743.488986408@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 003/110] HID: elo: Revert USB reference counting
+Date:   Mon, 14 Mar 2022 12:53:05 +0100
+Message-Id: <20220314112743.127452645@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,47 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Jiri Kosina <jkosina@suse.cz>
 
-[ Upstream commit dacc73ed0b88f1a787ec20385f42ca9dd9eddcd0 ]
+[ Upstream commit ac89895213d8950dba6ab342863a0959f73142a7 ]
 
-Currently the value of max_discard_segment will be set to
-MAX_DISCARD_SEGMENTS (256) with no basis in hardware if device
-set 0 to max_discard_seg in configuration space. It's incorrect
-since the device might not be able to handle such large descriptors.
-To fix it, let's follow max_segments restrictions in this case.
+Commit 817b8b9c539 ("HID: elo: fix memory leak in elo_probe") introduced
+memory leak on error path, but more importantly the whole USB reference
+counting is not needed at all in the first place, as the driver itself
+doesn't change the reference counting in any way, and the associated
+usb_device is guaranteed to be kept around by USB core as long as the
+driver binding exists.
 
-Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Link: https://lore.kernel.org/r/20220304100058.116-1-xieyongji@bytedance.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reported-by: Alan Stern <stern@rowland.harvard.edu>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: fbf42729d0e ("HID: elo: update the reference count of the usb device structure")
+Fixes: 817b8b9c539 ("HID: elo: fix memory leak in elo_probe")
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/virtio_blk.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/hid/hid-elo.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 303caf2d17d0..f538bc9dce7d 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -859,9 +859,15 @@ static int virtblk_probe(struct virtio_device *vdev)
+diff --git a/drivers/hid/hid-elo.c b/drivers/hid/hid-elo.c
+index 9b42b0cdeef0..2876cb6a7dca 100644
+--- a/drivers/hid/hid-elo.c
++++ b/drivers/hid/hid-elo.c
+@@ -228,7 +228,6 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ {
+ 	struct elo_priv *priv;
+ 	int ret;
+-	struct usb_device *udev;
  
- 		virtio_cread(vdev, struct virtio_blk_config, max_discard_seg,
- 			     &v);
-+
-+		/*
-+		 * max_discard_seg == 0 is out of spec but we always
-+		 * handled it.
-+		 */
-+		if (!v)
-+			v = sg_elems - 2;
- 		blk_queue_max_discard_segments(q,
--					       min_not_zero(v,
--							    MAX_DISCARD_SEGMENTS));
-+					       min(v, MAX_DISCARD_SEGMENTS));
+ 	if (!hid_is_usb(hdev))
+ 		return -EINVAL;
+@@ -238,8 +237,7 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 		return -ENOMEM;
  
- 		blk_queue_flag_set(QUEUE_FLAG_DISCARD, q);
- 	}
+ 	INIT_DELAYED_WORK(&priv->work, elo_work);
+-	udev = interface_to_usbdev(to_usb_interface(hdev->dev.parent));
+-	priv->usbdev = usb_get_dev(udev);
++	priv->usbdev = interface_to_usbdev(to_usb_interface(hdev->dev.parent));
+ 
+ 	hid_set_drvdata(hdev, priv);
+ 
+@@ -262,7 +260,6 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 
+ 	return 0;
+ err_free:
+-	usb_put_dev(udev);
+ 	kfree(priv);
+ 	return ret;
+ }
+@@ -271,8 +268,6 @@ static void elo_remove(struct hid_device *hdev)
+ {
+ 	struct elo_priv *priv = hid_get_drvdata(hdev);
+ 
+-	usb_put_dev(priv->usbdev);
+-
+ 	hid_hw_stop(hdev);
+ 	cancel_delayed_work_sync(&priv->work);
+ 	kfree(priv);
 -- 
 2.34.1
 
