@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A39DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4134AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240351AbiCNMEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
+        id S240367AbiCNMEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240667AbiCNMDZ (ORCPT
+        with ESMTP id S240724AbiCNMD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:03:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD0A4B42A;
-        Mon, 14 Mar 2022 05:00:41 -0700 (PDT)
+        Mon, 14 Mar 2022 08:03:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A564B43F;
+        Mon, 14 Mar 2022 05:00:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09560612DF;
-        Mon, 14 Mar 2022 12:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3D0BC36AF3;
-        Mon, 14 Mar 2022 12:00:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C27E56112C;
+        Mon, 14 Mar 2022 12:00:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A16DAC340E9;
+        Mon, 14 Mar 2022 12:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259240;
-        bh=YfpmRIDi6jRVe/IYxm/SbOg5cyruW3iEv4Tg+KggpLQ=;
+        s=korg; t=1647259245;
+        bh=PammZmf/887fjlSTjafG/i4SUvHeL/WS/ItbAgnkW5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aCujLUexWtlmH1USnY5ghyM/poXVs6yoS390fZyXwluK7V1n20s5NYAgijr0ZxDjo
-         BmkecdqV9kTSt7OPed0ebyLmcLHH2MKnHRq3JP2ujOxW415YKPp0igMso8uVwBnw4L
-         eyuQXfZjY4xAWaQy57W3IZB47B43kPsGAzVJq17k=
+        b=SG7gS522zobwPncwwcrX6kvhT2540nbDn2eoiaYcACHeeRchnQADjAM+UBJpNSyh7
+         xoqUQUkUHjwTy1Fy6RFjh31viLc4hSTandFFcWBb+JzYnjfVCYmJUGP26nw5GTs3L9
+         HzNTsc3+WBmQpQtg11iQnL4mSJaXssEOjmFCMbf0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Featherston <mark@embeddedTS.com>,
-        Kris Bahnsen <kris@embeddedTS.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 32/71] gpio: ts4900: Do not set DAT and OE together
-Date:   Mon, 14 Mar 2022 12:53:25 +0100
-Message-Id: <20220314112738.832032873@linuxfoundation.org>
+Subject: [PATCH 5.10 33/71] gianfar: ethtool: Fix refcount leak in gfar_get_ts_info
+Date:   Mon, 14 Mar 2022 12:53:26 +0100
+Message-Id: <20220314112738.859903699@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,80 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Featherston <mark@embeddedTS.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 03fe003547975680fdb9ff5ab0e41cb68276c4f2 ]
+[ Upstream commit 2ac5b58e645c66932438bb021cb5b52097ce70b0 ]
 
-This works around an issue with the hardware where both OE and
-DAT are exposed in the same register. If both are updated
-simultaneously, the harware makes no guarantees that OE or DAT
-will actually change in any given order and may result in a
-glitch of a few ns on a GPIO pin when changing direction and value
-in a single write.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, We should use of_node_put() on it when done
+Add the missing of_node_put() to release the refcount.
 
-Setting direction to input now only affects OE bit. Setting
-direction to output updates DAT first, then OE.
-
-Fixes: 9c6686322d74 ("gpio: add Technologic I2C-FPGA gpio support")
-Signed-off-by: Mark Featherston <mark@embeddedTS.com>
-Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Fixes: 7349a74ea75c ("net: ethernet: gianfar_ethtool: get phc index through drvdata")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Link: https://lore.kernel.org/r/20220310015313.14938-1-linmq006@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-ts4900.c | 24 +++++++++++++++++++-----
- 1 file changed, 19 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/freescale/gianfar_ethtool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
-index d885032cf814..d918d2df4de2 100644
---- a/drivers/gpio/gpio-ts4900.c
-+++ b/drivers/gpio/gpio-ts4900.c
-@@ -1,7 +1,7 @@
- /*
-  * Digital I/O driver for Technologic Systems I2C FPGA Core
-  *
-- * Copyright (C) 2015 Technologic Systems
-+ * Copyright (C) 2015, 2018 Technologic Systems
-  * Copyright (C) 2016 Savoir-Faire Linux
-  *
-  * This program is free software; you can redistribute it and/or
-@@ -55,19 +55,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
- {
- 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
- 
--	/*
--	 * This will clear the output enable bit, the other bits are
--	 * dontcare when this is cleared
-+	/* Only clear the OE bit here, requires a RMW. Prevents potential issue
-+	 * with OE and data getting to the physical pin at different times.
- 	 */
--	return regmap_write(priv->regmap, offset, 0);
-+	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
- }
- 
- static int ts4900_gpio_direction_output(struct gpio_chip *chip,
- 					unsigned int offset, int value)
- {
- 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
-+	unsigned int reg;
- 	int ret;
- 
-+	/* If changing from an input to an output, we need to first set the
-+	 * proper data bit to what is requested and then set OE bit. This
-+	 * prevents a glitch that can occur on the IO line
-+	 */
-+	regmap_read(priv->regmap, offset, &reg);
-+	if (!(reg & TS4900_GPIO_OE)) {
-+		if (value)
-+			reg = TS4900_GPIO_OUT;
-+		else
-+			reg &= ~TS4900_GPIO_OUT;
-+
-+		regmap_write(priv->regmap, offset, reg);
-+	}
-+
- 	if (value)
- 		ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
- 							 TS4900_GPIO_OUT);
+diff --git a/drivers/net/ethernet/freescale/gianfar_ethtool.c b/drivers/net/ethernet/freescale/gianfar_ethtool.c
+index cc7d4f93da54..799a1486f586 100644
+--- a/drivers/net/ethernet/freescale/gianfar_ethtool.c
++++ b/drivers/net/ethernet/freescale/gianfar_ethtool.c
+@@ -1456,6 +1456,7 @@ static int gfar_get_ts_info(struct net_device *dev,
+ 	ptp_node = of_find_compatible_node(NULL, NULL, "fsl,etsec-ptp");
+ 	if (ptp_node) {
+ 		ptp_dev = of_find_device_by_node(ptp_node);
++		of_node_put(ptp_node);
+ 		if (ptp_dev)
+ 			ptp = platform_get_drvdata(ptp_dev);
+ 	}
 -- 
 2.34.1
 
