@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B121C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:40:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A1D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239516AbiCNLlv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43060 "EHLO
+        id S239317AbiCNLmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:42:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239486AbiCNLla (ORCPT
+        with ESMTP id S239580AbiCNLlc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:41:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBDB496B9;
-        Mon, 14 Mar 2022 04:39:10 -0700 (PDT)
+        Mon, 14 Mar 2022 07:41:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604CD49922;
+        Mon, 14 Mar 2022 04:39:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC4E4B80DB7;
-        Mon, 14 Mar 2022 11:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 210A4C340E9;
-        Mon, 14 Mar 2022 11:38:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E74E611A4;
+        Mon, 14 Mar 2022 11:39:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BA1CC340E9;
+        Mon, 14 Mar 2022 11:39:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257938;
-        bh=gKeliq3fg57rfc2CraoSKQcTegs0MvIYlV2XGTYuXDQ=;
+        s=korg; t=1647257953;
+        bh=2fKH0gbagV5yGWiK37yDXFSKEx+IL4iEypRmgO9621I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0fciaNtHd+S/ZtFJSJpn+QB+EVwu75Uy3SgkCA0kTrErPvM8nfYMVVaGAYSn9ADVV
-         mQYz5yCnFeQwHhrU0VqoXJe5hOBpd8EJ5mm0Jjv9m71HmHXNgTsWCYUHyQSDkJahCx
-         +KYjIgsImv2J8NO/T48Gcpax70+seDDAaN99Ff6I=
+        b=RkvNX4f40zF6PIj83yeU2Ycr1agEitT1lkbft0r7i4Lkr2OOCet1YlwQN7AWWoHU0
+         3mmLYVRskIZhLKQw2TEbcoa+6oX8TrWATHRtC5gPTTOaJNdycXyE4O7/4BENp7Lwlm
+         igMaVmIGKp/n4U+2y3FegZqzuj82SeuMXhKI5jTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Mohammad Kabat <mohammadkab@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 04/30] net: ethernet: ti: cpts: Handle error for clk_enable
-Date:   Mon, 14 Mar 2022 12:34:22 +0100
-Message-Id: <20220314112731.913713180@linuxfoundation.org>
+Subject: [PATCH 4.19 07/30] net/mlx5: Fix size field in bufferx_reg struct
+Date:   Mon, 14 Mar 2022 12:34:25 +0100
+Message-Id: <20220314112731.996293474@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112731.785042288@linuxfoundation.org>
 References: <20220314112731.785042288@linuxfoundation.org>
@@ -49,37 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Mohammad Kabat <mohammadkab@nvidia.com>
 
-[ Upstream commit 6babfc6e6fab068018c36e8f6605184b8c0b349d ]
+[ Upstream commit ac77998b7ac3044f0509b097da9637184598980d ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+According to HW spec the field "size" should be 16 bits
+in bufferx register.
 
-Fixes: 8a2c9a5ab4b9 ("net: ethernet: ti: cpts: rework initialization/deinitialization")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e281682bf294 ("net/mlx5_core: HW data structs/types definitions cleanup")
+Signed-off-by: Mohammad Kabat <mohammadkab@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpts.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/mlx5/mlx5_ifc.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
-index 10b301e79086..01cc92f6a1f8 100644
---- a/drivers/net/ethernet/ti/cpts.c
-+++ b/drivers/net/ethernet/ti/cpts.c
-@@ -445,7 +445,9 @@ int cpts_register(struct cpts *cpts)
- 	for (i = 0; i < CPTS_MAX_EVENTS; i++)
- 		list_add(&cpts->pool_data[i].list, &cpts->pool);
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 5f711b2983db..af040fcd2c5a 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -8287,8 +8287,8 @@ struct mlx5_ifc_bufferx_reg_bits {
+ 	u8         reserved_at_0[0x6];
+ 	u8         lossy[0x1];
+ 	u8         epsb[0x1];
+-	u8         reserved_at_8[0xc];
+-	u8         size[0xc];
++	u8         reserved_at_8[0x8];
++	u8         size[0x10];
  
--	clk_enable(cpts->refclk);
-+	err = clk_enable(cpts->refclk);
-+	if (err)
-+		return err;
- 
- 	cpts_write32(cpts, CPTS_EN, control);
- 	cpts_write32(cpts, TS_PEND_EN, int_enable);
+ 	u8         xoff_threshold[0x10];
+ 	u8         xon_threshold[0x10];
 -- 
 2.34.1
 
