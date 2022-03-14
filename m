@@ -2,240 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A2BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B5FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:45:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244201AbiCNTqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45926 "EHLO
+        id S244229AbiCNTqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244203AbiCNTqk (ORCPT
+        with ESMTP id S244173AbiCNTqm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:46:40 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496AC3DA78
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:45:29 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id o12so11801879ilg.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:45:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BWFI5h416BXkQSSoLp6it0M+QIIpZiht4kihVcXhZts=;
-        b=VZ2cAUX8Ar0g9XwlSwMUsAJFJ+x9WoBP8ZUB6v4eL265wgG+R7Yg+AHG6eBB9s36q+
-         acas52nuQwIOC2kAnffOOIPVbaZ9CsbEUqvZ9ubN/y27tiGvuGx7f55KXJCuPs5g4L0B
-         Zvb0HwQblFcZjAHSFwulEWa84Nh7s+o1qSje5u9ZWBlI29Mxdd/h0T5AVmH3Ip/J/cEy
-         Xo+rB9DWuAhQkC1vuQA0G75aFWpioKs+9NpJ380LPswDKkyS1ZPp/ovsKyUcA4nK5OHs
-         6A0Q1xlpuoF+4ZuF3LvkEBES9Z4bFPvPSacHgcHRgM4y8kaKq1fjZcfltW/52aCw2zLF
-         tzDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BWFI5h416BXkQSSoLp6it0M+QIIpZiht4kihVcXhZts=;
-        b=EsDRN52DL8ism8wjKDh7JhYi4o2i+MwEG1EVGjIO9G4jFITzkO5+Adk1Et9yQ7+drJ
-         7/6l8pllm4bC6zA+rSSWFQULFb4jgZxygVhIVDCFOTn67bBLKQDaJgwT7h7CZXP1rUqE
-         KNsqoN6klUmus88rH0Eqs/1fFRtKMSJ3M6zZw5PwbwNkaEMxMKVFgbhDktNV2IsnW5Qj
-         HuaspPscy6ZA5IpF+D6UQefogu8IYVvdgskBAvRjFoYoU3zvr8aW3ti25nq0j/8QVBJ/
-         NueNRC2JIyiBxh1CXQU2k7nzEDqkhFIqyAe+gMnjSyrqCu3B65M1qHU9P1kHUtrR/1Lp
-         Hg9Q==
-X-Gm-Message-State: AOAM531sztaM2ZBE3PGUj8qJdgDRBCL8IL2C0IAS3k7z6Gk0GwkJhpm4
-        aznND57/+1yNJJyjyrXpx7Tg9w==
-X-Google-Smtp-Source: ABdhPJwQ3i+7pigTCE79ECMNKcgYpSK4txWbWXeonLwGpNYGsyXDVr849fLZJT/ZuycgWpgB3cB76g==
-X-Received: by 2002:a05:6e02:1a2c:b0:2c7:89cb:6bc8 with SMTP id g12-20020a056e021a2c00b002c789cb6bc8mr11174471ile.236.1647287128338;
-        Mon, 14 Mar 2022 12:45:28 -0700 (PDT)
-Received: from google.com (194.225.68.34.bc.googleusercontent.com. [34.68.225.194])
-        by smtp.gmail.com with ESMTPSA id c6-20020a056e020bc600b002c6731e7cb8sm9091010ilu.31.2022.03.14.12.45.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 12:45:27 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 19:45:24 +0000
-From:   Oliver Upton <oupton@google.com>
-To:     Raghavendra Rao Ananta <rananta@google.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
-        Ricardo Koller <ricarkol@google.com>,
-        Reiji Watanabe <reijiw@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH v4 06/13] KVM: arm64: Add standard hypervisor firmware
- register
-Message-ID: <Yi+bVM742+9W4TYj@google.com>
-References: <20220224172559.4170192-1-rananta@google.com>
- <20220224172559.4170192-7-rananta@google.com>
+        Mon, 14 Mar 2022 15:46:42 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B8113DA67;
+        Mon, 14 Mar 2022 12:45:31 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EHZLl3007314;
+        Mon, 14 Mar 2022 19:45:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=qqsVARwzBqesyBcvt5ohDoAR+P6eIXDxd+fKBlAfoag=;
+ b=h3jpcSW2K6ChSGjycFGfaFprQTl763YJmIKdZpEJ1dpZZ4sGp1mn5/iRuMPdOND5N0AK
+ MUMd4Rus1gr2cmclqqGmSRRs2OKzNlMkh/+rLl0R7a6Z+HUCbT05OgaPoxj6PMvzc3bc
+ A2nSjrvFxXNpJOZNoGV5t0i2YyuUUzd5hgBSHK+eclcb0kqbMxArpBGl/HMcv+zS3E0u
+ kWWQrfX7uv+wpw9vOrXIor+/PNwcV93fK8uFnLW+LWS2cBW20jKMXMYtA/PCP0j/Wfly
+ ocfKYgupLqfpUb5HI0JIo3TpQWEUf1bR8KblFO8HTpWD/7B2YnkwdKpyeh6NMyZ4Sur/ qQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3et6dcrjk4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:45:21 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJN7GH020194;
+        Mon, 14 Mar 2022 19:45:20 GMT
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3et6dcrjju-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:45:20 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJNui4001669;
+        Mon, 14 Mar 2022 19:45:19 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma03dal.us.ibm.com with ESMTP id 3erk594cc5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:45:19 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EJjHNB4850502
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Mar 2022 19:45:18 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E0EE3112064;
+        Mon, 14 Mar 2022 19:45:17 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ECBDC112065;
+        Mon, 14 Mar 2022 19:45:06 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.184])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Mar 2022 19:45:06 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
+        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
+Subject: [PATCH v4 01/32] s390/sclp: detect the zPCI load/store interpretation facility
+Date:   Mon, 14 Mar 2022 15:44:20 -0400
+Message-Id: <20220314194451.58266-2-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224172559.4170192-7-rananta@google.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 2b_-oI8xNQ957O9IbPMfrOju-z-Hyxs2
+X-Proofpoint-ORIG-GUID: 0x0Kcd1IhJE5wF4B58wHQYHS4Z1YmQcQ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=899 impostorscore=0 adultscore=0 clxscore=1015 suspectscore=0
+ mlxscore=0 priorityscore=1501 bulkscore=0 spamscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203140116
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 05:25:52PM +0000, Raghavendra Rao Ananta wrote:
-> Introduce the firmware register to hold the standard hypervisor
-> service calls (owner value 5) as a bitmap. The bitmap represents
-> the features that'll be enabled for the guest, as configured by
-> the user-space. Currently, this includes support only for
-> Paravirtualized time, represented by bit-0.
-> 
-> The register is also added to the kvm_arm_vm_scope_fw_regs[] list
-> as it maintains its state per-VM.
-> 
-> Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
-> ---
->  arch/arm64/include/asm/kvm_host.h |  2 ++
->  arch/arm64/include/uapi/asm/kvm.h |  4 ++++
->  arch/arm64/kvm/guest.c            |  1 +
->  arch/arm64/kvm/hypercalls.c       | 20 +++++++++++++++++++-
->  include/kvm/arm_hypercalls.h      |  3 +++
->  5 files changed, 29 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-> index 1909ced3208f..318148b69279 100644
-> --- a/arch/arm64/include/asm/kvm_host.h
-> +++ b/arch/arm64/include/asm/kvm_host.h
-> @@ -105,9 +105,11 @@ struct kvm_arch_memory_slot {
->   * struct kvm_hvc_desc: KVM ARM64 hypercall descriptor
->   *
->   * @hvc_std_bmap: Bitmap of standard secure service calls
-> + * @hvc_std_hyp_bmap: Bitmap of standard hypervisor service calls
->   */
->  struct kvm_hvc_desc {
->  	u64 hvc_std_bmap;
-> +	u64 hvc_std_hyp_bmap;
->  };
->  
->  struct kvm_arch {
-> diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
-> index 2decc30d6b84..9a2caead7359 100644
-> --- a/arch/arm64/include/uapi/asm/kvm.h
-> +++ b/arch/arm64/include/uapi/asm/kvm.h
-> @@ -295,6 +295,10 @@ struct kvm_arm_copy_mte_tags {
->  #define KVM_REG_ARM_STD_BIT_TRNG_V1_0		BIT(0)
->  #define KVM_REG_ARM_STD_BMAP_BIT_MAX		0       /* Last valid bit */
->  
-> +#define KVM_REG_ARM_STD_HYP_BMAP		KVM_REG_ARM_FW_BMAP_REG(1)
-> +#define KVM_REG_ARM_STD_HYP_BIT_PV_TIME		BIT(0)
-> +#define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX	0       /* Last valid bit */
-> +
->  /* SVE registers */
->  #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
->  
-> diff --git a/arch/arm64/kvm/guest.c b/arch/arm64/kvm/guest.c
-> index d66e6c742bbe..c42426d6137e 100644
-> --- a/arch/arm64/kvm/guest.c
-> +++ b/arch/arm64/kvm/guest.c
-> @@ -66,6 +66,7 @@ static const u64 kvm_arm_vm_scope_fw_regs[] = {
->  	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1,
->  	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
->  	KVM_REG_ARM_STD_BMAP,
-> +	KVM_REG_ARM_STD_HYP_BMAP,
->  };
->  
->  /**
-> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
-> index 48c126c3da72..ebc0cc26cf2e 100644
-> --- a/arch/arm64/kvm/hypercalls.c
-> +++ b/arch/arm64/kvm/hypercalls.c
-> @@ -75,6 +75,10 @@ static bool kvm_hvc_call_supported(struct kvm_vcpu *vcpu, u32 func_id)
->  	case ARM_SMCCC_TRNG_RND64:
->  		return kvm_arm_fw_reg_feat_enabled(hvc_desc->hvc_std_bmap,
->  						KVM_REG_ARM_STD_BIT_TRNG_V1_0);
-> +	case ARM_SMCCC_HV_PV_TIME_FEATURES:
-> +	case ARM_SMCCC_HV_PV_TIME_ST:
-> +		return kvm_arm_fw_reg_feat_enabled(hvc_desc->hvc_std_hyp_bmap,
-> +					KVM_REG_ARM_STD_HYP_BIT_PV_TIME);
->  	default:
->  		/* By default, allow the services that aren't listed here */
->  		return true;
-> @@ -83,6 +87,7 @@ static bool kvm_hvc_call_supported(struct kvm_vcpu *vcpu, u32 func_id)
->  
->  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
->  {
-> +	struct kvm_hvc_desc *hvc_desc = &vcpu->kvm->arch.hvc_desc;
->  	u32 func_id = smccc_get_function(vcpu);
->  	u64 val[4] = {SMCCC_RET_NOT_SUPPORTED};
->  	u32 feature;
-> @@ -134,7 +139,10 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
->  			}
->  			break;
->  		case ARM_SMCCC_HV_PV_TIME_FEATURES:
-> -			val[0] = SMCCC_RET_SUCCESS;
-> +			if (kvm_arm_fw_reg_feat_enabled(
-> +					hvc_desc->hvc_std_hyp_bmap,
+Detect the zPCI Load/Store Interpretation facility.
 
-It is probably OK to keep this parameter on the line above (just stay
-under 100 characters a line).
+Reviewed-by: Eric Farman <farman@linux.ibm.com>
+Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+---
+ arch/s390/include/asm/sclp.h   | 1 +
+ drivers/s390/char/sclp_early.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-> +					KVM_REG_ARM_STD_HYP_BIT_PV_TIME))
-> +				val[0] = SMCCC_RET_SUCCESS;
->  			break;
->  		}
->  		break;
-> @@ -179,6 +187,7 @@ static const u64 kvm_arm_fw_reg_ids[] = {
->  	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1,
->  	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
->  	KVM_REG_ARM_STD_BMAP,
-> +	KVM_REG_ARM_STD_HYP_BMAP,
->  };
->  
->  void kvm_arm_init_hypercalls(struct kvm *kvm)
-> @@ -186,6 +195,7 @@ void kvm_arm_init_hypercalls(struct kvm *kvm)
->  	struct kvm_hvc_desc *hvc_desc = &kvm->arch.hvc_desc;
->  
->  	hvc_desc->hvc_std_bmap = ARM_SMCCC_STD_FEATURES;
-> +	hvc_desc->hvc_std_hyp_bmap = ARM_SMCCC_STD_HYP_FEATURES;
->  }
->  
->  int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
-> @@ -272,6 +282,9 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
->  	case KVM_REG_ARM_STD_BMAP:
->  		val = READ_ONCE(hvc_desc->hvc_std_bmap);
->  		break;
-> +	case KVM_REG_ARM_STD_HYP_BMAP:
-> +		val = READ_ONCE(hvc_desc->hvc_std_hyp_bmap);
-> +		break;
->  	default:
->  		return -ENOENT;
->  	}
-> @@ -294,6 +307,10 @@ static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu, u64 reg_id, u64 val)
->  		fw_reg_bmap = &hvc_desc->hvc_std_bmap;
->  		fw_reg_features = ARM_SMCCC_STD_FEATURES;
->  		break;
-> +	case KVM_REG_ARM_STD_HYP_BMAP:
-> +		fw_reg_bmap = &hvc_desc->hvc_std_hyp_bmap;
-> +		fw_reg_features = ARM_SMCCC_STD_HYP_FEATURES;
-> +		break;
->  	default:
->  		return -ENOENT;
->  	}
-> @@ -398,6 +415,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
->  
->  		return 0;
->  	case KVM_REG_ARM_STD_BMAP:
-> +	case KVM_REG_ARM_STD_HYP_BMAP:
->  		return kvm_arm_set_fw_reg_bmap(vcpu, reg_id, val);
->  	default:
->  		return -ENOENT;
-> diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
-> index 64d30b452809..a1cb6e839c74 100644
-> --- a/include/kvm/arm_hypercalls.h
-> +++ b/include/kvm/arm_hypercalls.h
-> @@ -9,6 +9,9 @@
->  #define ARM_SMCCC_STD_FEATURES \
->  	GENMASK_ULL(KVM_REG_ARM_STD_BMAP_BIT_MAX, 0)
->  
-> +#define ARM_SMCCC_STD_HYP_FEATURES \
-> +	GENMASK_ULL(KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX, 0)
-> +
->  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
->  
->  static inline u32 smccc_get_function(struct kvm_vcpu *vcpu)
-> -- 
-> 2.35.1.473.g83b2b277ed-goog
-> 
+diff --git a/arch/s390/include/asm/sclp.h b/arch/s390/include/asm/sclp.h
+index c68ea35de498..58a4d3d354b7 100644
+--- a/arch/s390/include/asm/sclp.h
++++ b/arch/s390/include/asm/sclp.h
+@@ -88,6 +88,7 @@ struct sclp_info {
+ 	unsigned char has_diag318 : 1;
+ 	unsigned char has_sipl : 1;
+ 	unsigned char has_dirq : 1;
++	unsigned char has_zpci_lsi : 1;
+ 	unsigned int ibc;
+ 	unsigned int mtid;
+ 	unsigned int mtid_cp;
+diff --git a/drivers/s390/char/sclp_early.c b/drivers/s390/char/sclp_early.c
+index e9943a86c361..b88dd0da1231 100644
+--- a/drivers/s390/char/sclp_early.c
++++ b/drivers/s390/char/sclp_early.c
+@@ -45,6 +45,7 @@ static void __init sclp_early_facilities_detect(void)
+ 	sclp.has_gisaf = !!(sccb->fac118 & 0x08);
+ 	sclp.has_hvs = !!(sccb->fac119 & 0x80);
+ 	sclp.has_kss = !!(sccb->fac98 & 0x01);
++	sclp.has_zpci_lsi = !!(sccb->fac118 & 0x01);
+ 	if (sccb->fac85 & 0x02)
+ 		S390_lowcore.machine_flags |= MACHINE_FLAG_ESOP;
+ 	if (sccb->fac91 & 0x40)
+-- 
+2.27.0
+
