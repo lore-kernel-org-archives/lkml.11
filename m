@@ -2,54 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 707EBC35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DE4C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243194AbiCNQjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45302 "EHLO
+        id S243119AbiCNQj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243279AbiCNQgm (ORCPT
+        with ESMTP id S243262AbiCNQgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 12:36:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4821EAEE;
-        Mon, 14 Mar 2022 09:35:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C1C35860;
+        Mon, 14 Mar 2022 09:35:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ACD9614A1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ECF96149A;
         Mon, 14 Mar 2022 16:35:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBBEEC36AFD;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BDB1C36B19;
         Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647275710;
-        bh=HsBIJzgfw2JH4XqStd4gyEpzt2OAZrGh5gmUsjM5drc=;
+        s=k20201202; t=1647275709;
+        bh=yFeoDdAXNpG8eqAcM9UKLZWnOV9MaJroObtIMCoZYG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X3zkF3N4CR4zLLQyKjYV8MrcdfTQnDXUdb+nGdFvUZf2RxfTLtA1V8MOTYXmoy5p+
-         txFszhF8Gm6c3N/mJ8g44qQ3g+GAWJnXnEBMGpMHO1jM2GkTfY3d33KA3/z0hvoEFD
-         7hJnpAgAfeVNutt+0dETMS7gYRHaMlovFYXCKVXGYReKHAAAFaBzZ4lXbURPoSABIG
-         rbt6qvbWFAu+9Huz6RJ9xf2z1iw/zTchitSsGuAYOKLz4pNIXA9UTJpA4M+PTFKM6M
-         F6UhLrDxpqiFaUEsJ+0c2YP4j7WHs7lwCQsZ5bwGuAtwPET5hS+KbhpPcRJE2xDiRw
-         qfC9NcVzTa1mw==
+        b=m/fi0cfYaKtBMr3aeSFDZkhH+NBVO135+RSKG15o9rMzZs0bKEkXniaXsat0KzO4Y
+         k0uYZL16ii2D0EL8XpfdXl/KqMo0RdYq/JLZZiYd+tvRdVLu01no9DIGkJDhuOCxG3
+         K844twOnwMeNUM0ludxLA/dV2p2DFm1zTDVLOGVlv34Nj9n4oJ4Ph++8RE9olngxWJ
+         5/TjnGbeiDyEHAEUO8EP4zUBfdTGeWj71iucpVtqmvBUSNlxXgnPOua393XDPDL028
+         N3A9F0O3mR4D6gkKDsFTjvVyPWvZ5ID5yQL1x890h60lP8z7f0RAop2UIyu8vR5e4r
+         FHaBuHrUSyGhg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nTnf1-001x3K-Jq; Mon, 14 Mar 2022 17:35:07 +0100
+        id 1nTnf1-001x0f-9c; Mon, 14 Mar 2022 17:35:07 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Pratyush Yadav <p.yadav@ti.com>, Benoit Parrot <bparrot@ti.com>,
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Dinghao Liu <dinghao.liu@zju.edu.cn>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
         Eugen Hristev <eugen.hristev@microchip.com>,
+        Evgeny Novikov <novikov@ispras.ru>,
+        Fabien Dessenne <fabien.dessenne@foss.st.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Hugues Fruchet <hugues.fruchet@foss.st.com>,
         Jacopo Mondi <jacopo@jmondi.org>,
+        Jean-Christophe Trotin <jean-christophe.trotin@foss.st.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Sean Young <sean@mess.org>, Xiaofeng Cao <cxfcosmos@gmail.com>,
         Yang Yingliang <yangyingliang@huawei.com>,
-        Zhou Qingyang <zhou1615@umn.edu>, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org
-Subject: [PATCH v2 61/67] media: platform: re-structure TI drivers
-Date:   Mon, 14 Mar 2022 17:34:56 +0100
-Message-Id: <ab9466f3294bdebd9245aed1ab817555b6557e92.1647274407.git.mchehab@kernel.org>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH v2 56/67] media: platform: rename sti/ to stm/sti/
+Date:   Mon, 14 Mar 2022 17:34:51 +0100
+Message-Id: <c4547b2dbe9937523305479f9b3a3aa9c55cc77b.1647274407.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647274406.git.mchehab@kernel.org>
 References: <cover.1647274406.git.mchehab@kernel.org>
@@ -60,191 +82,376 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pratyush Yadav <p.yadav@ti.com>
+As the end goal is to have platform drivers split by vendor,
+rename sti/ to stm/sti/.
 
-The ti-vpe/ sub-directory does not only contain the VPE-specific things.
-It also contains the CAL driver, which is a completely different
-subsystem. This is also not a good place to add new drivers for other TI
-platforms since they will all get mixed up.
-
-Separate the VPE and CAL parts into different sub-directories and rename
-the ti-vpe/ sub-directory to ti/. This is now the place where new TI
-platform drivers can be added.
-
-[mchehab: rebased to apple on the top of media/platform/Kconfig series]
-Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
-Reviewed-by: Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/67] at: https://lore.kernel.org/all/cover.1647274406.git.mchehab@kernel.org/
 
- MAINTAINERS                                              | 3 ++-
- drivers/media/platform/Makefile                          | 6 +-----
- drivers/media/platform/ti/Makefile                       | 3 +++
- drivers/media/platform/ti/cal/Makefile                   | 3 +++
- drivers/media/platform/{ti-vpe => ti/cal}/cal-camerarx.c | 0
- drivers/media/platform/{ti-vpe => ti/cal}/cal-video.c    | 0
- drivers/media/platform/{ti-vpe => ti/cal}/cal.c          | 0
- drivers/media/platform/{ti-vpe => ti/cal}/cal.h          | 0
- drivers/media/platform/{ti-vpe => ti/cal}/cal_regs.h     | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/Makefile       | 4 ----
- drivers/media/platform/{ti-vpe => ti/vpe}/csc.c          | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/csc.h          | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/sc.c           | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/sc.h           | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/sc_coeff.h     | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/vpdma.c        | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/vpdma.h        | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/vpdma_priv.h   | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/vpe.c          | 0
- drivers/media/platform/{ti-vpe => ti/vpe}/vpe_regs.h     | 0
- 20 files changed, 9 insertions(+), 10 deletions(-)
- create mode 100644 drivers/media/platform/ti/Makefile
- create mode 100644 drivers/media/platform/ti/cal/Makefile
- rename drivers/media/platform/{ti-vpe => ti/cal}/cal-camerarx.c (100%)
- rename drivers/media/platform/{ti-vpe => ti/cal}/cal-video.c (100%)
- rename drivers/media/platform/{ti-vpe => ti/cal}/cal.c (100%)
- rename drivers/media/platform/{ti-vpe => ti/cal}/cal.h (100%)
- rename drivers/media/platform/{ti-vpe => ti/cal}/cal_regs.h (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/Makefile (78%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/csc.c (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/csc.h (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/sc.c (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/sc.h (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/sc_coeff.h (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/vpdma.c (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/vpdma.h (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/vpdma_priv.h (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/vpe.c (100%)
- rename drivers/media/platform/{ti-vpe => ti/vpe}/vpe_regs.h (100%)
+ MAINTAINERS                                               | 8 ++++----
+ drivers/media/platform/Kconfig                            | 2 +-
+ drivers/media/platform/Makefile                           | 8 ++++----
+ drivers/media/platform/sti/Kconfig                        | 5 -----
+ drivers/media/platform/stm/sti/Kconfig                    | 5 +++++
+ drivers/media/platform/{ => stm}/sti/bdisp/Kconfig        | 0
+ drivers/media/platform/{ => stm}/sti/bdisp/Makefile       | 0
+ drivers/media/platform/{ => stm}/sti/bdisp/bdisp-debug.c  | 0
+ drivers/media/platform/{ => stm}/sti/bdisp/bdisp-filter.h | 0
+ drivers/media/platform/{ => stm}/sti/bdisp/bdisp-hw.c     | 0
+ drivers/media/platform/{ => stm}/sti/bdisp/bdisp-reg.h    | 0
+ drivers/media/platform/{ => stm}/sti/bdisp/bdisp-v4l2.c   | 0
+ drivers/media/platform/{ => stm}/sti/bdisp/bdisp.h        | 0
+ drivers/media/platform/{ => stm}/sti/c8sectpfe/Kconfig    | 0
+ drivers/media/platform/{ => stm}/sti/c8sectpfe/Makefile   | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-common.c   | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-common.h   | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-core.c     | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-core.h     | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-debugfs.c  | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-debugfs.h  | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-dvb.c      | 0
+ .../platform/{ => stm}/sti/c8sectpfe/c8sectpfe-dvb.h      | 0
+ drivers/media/platform/{ => stm}/sti/delta/Kconfig        | 0
+ drivers/media/platform/{ => stm}/sti/delta/Makefile       | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-cfg.h    | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-debug.c  | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-debug.h  | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-ipc.c    | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-ipc.h    | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-mem.c    | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-mem.h    | 0
+ .../media/platform/{ => stm}/sti/delta/delta-mjpeg-dec.c  | 0
+ .../media/platform/{ => stm}/sti/delta/delta-mjpeg-fw.h   | 0
+ .../media/platform/{ => stm}/sti/delta/delta-mjpeg-hdr.c  | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-mjpeg.h  | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta-v4l2.c   | 0
+ drivers/media/platform/{ => stm}/sti/delta/delta.h        | 0
+ drivers/media/platform/{ => stm}/sti/hva/Kconfig          | 0
+ drivers/media/platform/{ => stm}/sti/hva/Makefile         | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva-debugfs.c    | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva-h264.c       | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva-hw.c         | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva-hw.h         | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva-mem.c        | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva-mem.h        | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva-v4l2.c       | 0
+ drivers/media/platform/{ => stm}/sti/hva/hva.h            | 0
+ 48 files changed, 14 insertions(+), 14 deletions(-)
+ delete mode 100644 drivers/media/platform/sti/Kconfig
+ create mode 100644 drivers/media/platform/stm/sti/Kconfig
+ rename drivers/media/platform/{ => stm}/sti/bdisp/Kconfig (100%)
+ rename drivers/media/platform/{ => stm}/sti/bdisp/Makefile (100%)
+ rename drivers/media/platform/{ => stm}/sti/bdisp/bdisp-debug.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/bdisp/bdisp-filter.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/bdisp/bdisp-hw.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/bdisp/bdisp-reg.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/bdisp/bdisp-v4l2.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/bdisp/bdisp.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/Kconfig (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/Makefile (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-common.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-common.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-core.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-core.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-debugfs.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-debugfs.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-dvb.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/c8sectpfe/c8sectpfe-dvb.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/Kconfig (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/Makefile (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-cfg.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-debug.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-debug.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-ipc.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-ipc.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-mem.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-mem.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-mjpeg-dec.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-mjpeg-fw.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-mjpeg-hdr.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-mjpeg.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta-v4l2.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/delta/delta.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/Kconfig (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/Makefile (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva-debugfs.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva-h264.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva-hw.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva-hw.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva-mem.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva-mem.h (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva-v4l2.c (100%)
+ rename drivers/media/platform/{ => stm}/sti/hva/hva.h (100%)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 6c892fc9595b..81ce7b4e2b2a 100644
+index 4cf03d253bc8..6c1055c27c65 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -19407,7 +19407,8 @@ W:	http://linuxtv.org/
- Q:	http://patchwork.linuxtv.org/project/linux-media/list/
- F:	Documentation/devicetree/bindings/media/ti,cal.yaml
- F:	Documentation/devicetree/bindings/media/ti,vpe.yaml
--F:	drivers/media/platform/ti-vpe/
-+F:	drivers/media/platform/ti/cal/
-+F:	drivers/media/platform/ti/vpe/
+@@ -2710,7 +2710,7 @@ F:	drivers/clocksource/clksrc_st_lpc.c
+ F:	drivers/cpufreq/sti-cpufreq.c
+ F:	drivers/dma/st_fdma*
+ F:	drivers/i2c/busses/i2c-st.c
+-F:	drivers/media/platform/sti/c8sectpfe/
++F:	drivers/media/platform/stm/sti/c8sectpfe/
+ F:	drivers/media/rc/st_rc.c
+ F:	drivers/mmc/host/sdhci-st.c
+ F:	drivers/phy/st/phy-miphy28lp.c
+@@ -3383,7 +3383,7 @@ L:	linux-media@vger.kernel.org
+ S:	Supported
+ W:	https://linuxtv.org
+ T:	git git://linuxtv.org/media_tree.git
+-F:	drivers/media/platform/sti/bdisp
++F:	drivers/media/platform/stm/sti/bdisp
  
- TI WILINK WIRELESS DRIVERS
- L:	linux-wireless@vger.kernel.org
+ BECKHOFF CX5020 ETHERCAT MASTER DRIVER
+ M:	Dariusz Marcinkiewicz <reksio@newterm.pl>
+@@ -5482,7 +5482,7 @@ L:	linux-media@vger.kernel.org
+ S:	Supported
+ W:	https://linuxtv.org
+ T:	git git://linuxtv.org/media_tree.git
+-F:	drivers/media/platform/sti/delta
++F:	drivers/media/platform/stm/sti/delta
+ 
+ DELTA AHE-50DC FAN CONTROL MODULE DRIVER
+ M:	Zev Weiss <zev@bewilderbeest.net>
+@@ -8870,7 +8870,7 @@ L:	linux-media@vger.kernel.org
+ S:	Supported
+ W:	https://linuxtv.org
+ T:	git git://linuxtv.org/media_tree.git
+-F:	drivers/media/platform/sti/hva
++F:	drivers/media/platform/stm/sti/hva
+ 
+ HWPOISON MEMORY FAILURE HANDLING
+ M:	Naoya Horiguchi <naoya.horiguchi@nec.com>
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index c308de1a42a4..2ad5fde02543 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -94,7 +94,7 @@ source "drivers/media/platform/samsung/s3c-camif/Kconfig"
+ source "drivers/media/platform/samsung/s5p-g2d/Kconfig"
+ source "drivers/media/platform/samsung/s5p-jpeg/Kconfig"
+ source "drivers/media/platform/samsung/s5p-mfc/Kconfig"
+-source "drivers/media/platform/sti/Kconfig"
++source "drivers/media/platform/stm/sti/Kconfig"
+ source "drivers/media/platform/stm/stm32/Kconfig"
+ source "drivers/media/platform/ti-vpe/Kconfig"
+ source "drivers/media/platform/via/Kconfig"
 diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
-index 39fa6aaad13b..2c5713ddac09 100644
+index 7f077c9a416d..f20f1287c665 100644
 --- a/drivers/media/platform/Makefile
 +++ b/drivers/media/platform/Makefile
-@@ -37,11 +37,7 @@ obj-y += stm/sti/c8sectpfe/
- obj-y += stm/sti/delta/
- obj-y += stm/sti/hva/
+@@ -36,10 +36,10 @@ obj-y += samsung/s3c-camif/
+ obj-y += samsung/s5p-g2d/
+ obj-y += samsung/s5p-jpeg/
+ obj-y += samsung/s5p-mfc/
+-obj-y += sti/bdisp/
+-obj-y += sti/c8sectpfe/
+-obj-y += sti/delta/
+-obj-y += sti/hva/
++obj-y += stm/sti/bdisp/
++obj-y += stm/sti/c8sectpfe/
++obj-y += stm/sti/delta/
++obj-y += stm/sti/hva/
  obj-y += stm/stm32/
--obj-y += ti-vpe/
--obj-y += ti/am437x/
--obj-y += ti/davinci/
--obj-y += ti/omap/
--obj-y += ti/omap3isp/
-+obj-y += ti/
+ obj-y += ti-vpe/
  obj-y += via/
- obj-y += xilinx/
- 
-diff --git a/drivers/media/platform/ti/Makefile b/drivers/media/platform/ti/Makefile
+diff --git a/drivers/media/platform/sti/Kconfig b/drivers/media/platform/sti/Kconfig
+deleted file mode 100644
+index 9fb5e78a92cf..000000000000
+--- a/drivers/media/platform/sti/Kconfig
++++ /dev/null
+@@ -1,5 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0-only
+-source "drivers/media/platform/sti/bdisp/Kconfig"
+-source "drivers/media/platform/sti/c8sectpfe/Kconfig"
+-source "drivers/media/platform/sti/delta/Kconfig"
+-source "drivers/media/platform/sti/hva/Kconfig"
+diff --git a/drivers/media/platform/stm/sti/Kconfig b/drivers/media/platform/stm/sti/Kconfig
 new file mode 100644
-index 000000000000..bbc737ccbbea
+index 000000000000..311930644281
 --- /dev/null
-+++ b/drivers/media/platform/ti/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0
-+obj-y += cal/
-+obj-y += vpe/
-diff --git a/drivers/media/platform/ti/cal/Makefile b/drivers/media/platform/ti/cal/Makefile
-new file mode 100644
-index 000000000000..45ac35585f0b
---- /dev/null
-+++ b/drivers/media/platform/ti/cal/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0
-+obj-$(CONFIG_VIDEO_TI_CAL) += ti-cal.o
-+ti-cal-y := cal.o cal-camerarx.o cal-video.o
-diff --git a/drivers/media/platform/ti-vpe/cal-camerarx.c b/drivers/media/platform/ti/cal/cal-camerarx.c
++++ b/drivers/media/platform/stm/sti/Kconfig
+@@ -0,0 +1,5 @@
++# SPDX-License-Identifier: GPL-2.0-only
++source "drivers/media/platform/stm/sti/bdisp/Kconfig"
++source "drivers/media/platform/stm/sti/c8sectpfe/Kconfig"
++source "drivers/media/platform/stm/sti/delta/Kconfig"
++source "drivers/media/platform/stm/sti/hva/Kconfig"
+diff --git a/drivers/media/platform/sti/bdisp/Kconfig b/drivers/media/platform/stm/sti/bdisp/Kconfig
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/cal-camerarx.c
-rename to drivers/media/platform/ti/cal/cal-camerarx.c
-diff --git a/drivers/media/platform/ti-vpe/cal-video.c b/drivers/media/platform/ti/cal/cal-video.c
+rename from drivers/media/platform/sti/bdisp/Kconfig
+rename to drivers/media/platform/stm/sti/bdisp/Kconfig
+diff --git a/drivers/media/platform/sti/bdisp/Makefile b/drivers/media/platform/stm/sti/bdisp/Makefile
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/cal-video.c
-rename to drivers/media/platform/ti/cal/cal-video.c
-diff --git a/drivers/media/platform/ti-vpe/cal.c b/drivers/media/platform/ti/cal/cal.c
+rename from drivers/media/platform/sti/bdisp/Makefile
+rename to drivers/media/platform/stm/sti/bdisp/Makefile
+diff --git a/drivers/media/platform/sti/bdisp/bdisp-debug.c b/drivers/media/platform/stm/sti/bdisp/bdisp-debug.c
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/cal.c
-rename to drivers/media/platform/ti/cal/cal.c
-diff --git a/drivers/media/platform/ti-vpe/cal.h b/drivers/media/platform/ti/cal/cal.h
+rename from drivers/media/platform/sti/bdisp/bdisp-debug.c
+rename to drivers/media/platform/stm/sti/bdisp/bdisp-debug.c
+diff --git a/drivers/media/platform/sti/bdisp/bdisp-filter.h b/drivers/media/platform/stm/sti/bdisp/bdisp-filter.h
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/cal.h
-rename to drivers/media/platform/ti/cal/cal.h
-diff --git a/drivers/media/platform/ti-vpe/cal_regs.h b/drivers/media/platform/ti/cal/cal_regs.h
+rename from drivers/media/platform/sti/bdisp/bdisp-filter.h
+rename to drivers/media/platform/stm/sti/bdisp/bdisp-filter.h
+diff --git a/drivers/media/platform/sti/bdisp/bdisp-hw.c b/drivers/media/platform/stm/sti/bdisp/bdisp-hw.c
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/cal_regs.h
-rename to drivers/media/platform/ti/cal/cal_regs.h
-diff --git a/drivers/media/platform/ti-vpe/Makefile b/drivers/media/platform/ti/vpe/Makefile
-similarity index 78%
-rename from drivers/media/platform/ti-vpe/Makefile
-rename to drivers/media/platform/ti/vpe/Makefile
-index ad624056e039..3fadfe084f87 100644
---- a/drivers/media/platform/ti-vpe/Makefile
-+++ b/drivers/media/platform/ti/vpe/Makefile
-@@ -10,7 +10,3 @@ ti-sc-y := sc.o
- ti-csc-y := csc.o
- 
- ccflags-$(CONFIG_VIDEO_TI_VPE_DEBUG) += -DDEBUG
--
--obj-$(CONFIG_VIDEO_TI_CAL) += ti-cal.o
--
--ti-cal-y := cal.o cal-camerarx.o cal-video.o
-diff --git a/drivers/media/platform/ti-vpe/csc.c b/drivers/media/platform/ti/vpe/csc.c
+rename from drivers/media/platform/sti/bdisp/bdisp-hw.c
+rename to drivers/media/platform/stm/sti/bdisp/bdisp-hw.c
+diff --git a/drivers/media/platform/sti/bdisp/bdisp-reg.h b/drivers/media/platform/stm/sti/bdisp/bdisp-reg.h
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/csc.c
-rename to drivers/media/platform/ti/vpe/csc.c
-diff --git a/drivers/media/platform/ti-vpe/csc.h b/drivers/media/platform/ti/vpe/csc.h
+rename from drivers/media/platform/sti/bdisp/bdisp-reg.h
+rename to drivers/media/platform/stm/sti/bdisp/bdisp-reg.h
+diff --git a/drivers/media/platform/sti/bdisp/bdisp-v4l2.c b/drivers/media/platform/stm/sti/bdisp/bdisp-v4l2.c
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/csc.h
-rename to drivers/media/platform/ti/vpe/csc.h
-diff --git a/drivers/media/platform/ti-vpe/sc.c b/drivers/media/platform/ti/vpe/sc.c
+rename from drivers/media/platform/sti/bdisp/bdisp-v4l2.c
+rename to drivers/media/platform/stm/sti/bdisp/bdisp-v4l2.c
+diff --git a/drivers/media/platform/sti/bdisp/bdisp.h b/drivers/media/platform/stm/sti/bdisp/bdisp.h
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/sc.c
-rename to drivers/media/platform/ti/vpe/sc.c
-diff --git a/drivers/media/platform/ti-vpe/sc.h b/drivers/media/platform/ti/vpe/sc.h
+rename from drivers/media/platform/sti/bdisp/bdisp.h
+rename to drivers/media/platform/stm/sti/bdisp/bdisp.h
+diff --git a/drivers/media/platform/sti/c8sectpfe/Kconfig b/drivers/media/platform/stm/sti/c8sectpfe/Kconfig
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/sc.h
-rename to drivers/media/platform/ti/vpe/sc.h
-diff --git a/drivers/media/platform/ti-vpe/sc_coeff.h b/drivers/media/platform/ti/vpe/sc_coeff.h
+rename from drivers/media/platform/sti/c8sectpfe/Kconfig
+rename to drivers/media/platform/stm/sti/c8sectpfe/Kconfig
+diff --git a/drivers/media/platform/sti/c8sectpfe/Makefile b/drivers/media/platform/stm/sti/c8sectpfe/Makefile
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/sc_coeff.h
-rename to drivers/media/platform/ti/vpe/sc_coeff.h
-diff --git a/drivers/media/platform/ti-vpe/vpdma.c b/drivers/media/platform/ti/vpe/vpdma.c
+rename from drivers/media/platform/sti/c8sectpfe/Makefile
+rename to drivers/media/platform/stm/sti/c8sectpfe/Makefile
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-common.c b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-common.c
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/vpdma.c
-rename to drivers/media/platform/ti/vpe/vpdma.c
-diff --git a/drivers/media/platform/ti-vpe/vpdma.h b/drivers/media/platform/ti/vpe/vpdma.h
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-common.c
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-common.c
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-common.h b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-common.h
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/vpdma.h
-rename to drivers/media/platform/ti/vpe/vpdma.h
-diff --git a/drivers/media/platform/ti-vpe/vpdma_priv.h b/drivers/media/platform/ti/vpe/vpdma_priv.h
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-common.h
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-common.h
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-core.c
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/vpdma_priv.h
-rename to drivers/media/platform/ti/vpe/vpdma_priv.h
-diff --git a/drivers/media/platform/ti-vpe/vpe.c b/drivers/media/platform/ti/vpe/vpe.c
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-core.c
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.h b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-core.h
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/vpe.c
-rename to drivers/media/platform/ti/vpe/vpe.c
-diff --git a/drivers/media/platform/ti-vpe/vpe_regs.h b/drivers/media/platform/ti/vpe/vpe_regs.h
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.h
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-core.h
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-debugfs.c b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-debugfs.c
 similarity index 100%
-rename from drivers/media/platform/ti-vpe/vpe_regs.h
-rename to drivers/media/platform/ti/vpe/vpe_regs.h
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-debugfs.c
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-debugfs.c
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-debugfs.h b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-debugfs.h
+similarity index 100%
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-debugfs.h
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-debugfs.h
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-dvb.c b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-dvb.c
+similarity index 100%
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-dvb.c
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-dvb.c
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-dvb.h b/drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-dvb.h
+similarity index 100%
+rename from drivers/media/platform/sti/c8sectpfe/c8sectpfe-dvb.h
+rename to drivers/media/platform/stm/sti/c8sectpfe/c8sectpfe-dvb.h
+diff --git a/drivers/media/platform/sti/delta/Kconfig b/drivers/media/platform/stm/sti/delta/Kconfig
+similarity index 100%
+rename from drivers/media/platform/sti/delta/Kconfig
+rename to drivers/media/platform/stm/sti/delta/Kconfig
+diff --git a/drivers/media/platform/sti/delta/Makefile b/drivers/media/platform/stm/sti/delta/Makefile
+similarity index 100%
+rename from drivers/media/platform/sti/delta/Makefile
+rename to drivers/media/platform/stm/sti/delta/Makefile
+diff --git a/drivers/media/platform/sti/delta/delta-cfg.h b/drivers/media/platform/stm/sti/delta/delta-cfg.h
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-cfg.h
+rename to drivers/media/platform/stm/sti/delta/delta-cfg.h
+diff --git a/drivers/media/platform/sti/delta/delta-debug.c b/drivers/media/platform/stm/sti/delta/delta-debug.c
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-debug.c
+rename to drivers/media/platform/stm/sti/delta/delta-debug.c
+diff --git a/drivers/media/platform/sti/delta/delta-debug.h b/drivers/media/platform/stm/sti/delta/delta-debug.h
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-debug.h
+rename to drivers/media/platform/stm/sti/delta/delta-debug.h
+diff --git a/drivers/media/platform/sti/delta/delta-ipc.c b/drivers/media/platform/stm/sti/delta/delta-ipc.c
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-ipc.c
+rename to drivers/media/platform/stm/sti/delta/delta-ipc.c
+diff --git a/drivers/media/platform/sti/delta/delta-ipc.h b/drivers/media/platform/stm/sti/delta/delta-ipc.h
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-ipc.h
+rename to drivers/media/platform/stm/sti/delta/delta-ipc.h
+diff --git a/drivers/media/platform/sti/delta/delta-mem.c b/drivers/media/platform/stm/sti/delta/delta-mem.c
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-mem.c
+rename to drivers/media/platform/stm/sti/delta/delta-mem.c
+diff --git a/drivers/media/platform/sti/delta/delta-mem.h b/drivers/media/platform/stm/sti/delta/delta-mem.h
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-mem.h
+rename to drivers/media/platform/stm/sti/delta/delta-mem.h
+diff --git a/drivers/media/platform/sti/delta/delta-mjpeg-dec.c b/drivers/media/platform/stm/sti/delta/delta-mjpeg-dec.c
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-mjpeg-dec.c
+rename to drivers/media/platform/stm/sti/delta/delta-mjpeg-dec.c
+diff --git a/drivers/media/platform/sti/delta/delta-mjpeg-fw.h b/drivers/media/platform/stm/sti/delta/delta-mjpeg-fw.h
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-mjpeg-fw.h
+rename to drivers/media/platform/stm/sti/delta/delta-mjpeg-fw.h
+diff --git a/drivers/media/platform/sti/delta/delta-mjpeg-hdr.c b/drivers/media/platform/stm/sti/delta/delta-mjpeg-hdr.c
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-mjpeg-hdr.c
+rename to drivers/media/platform/stm/sti/delta/delta-mjpeg-hdr.c
+diff --git a/drivers/media/platform/sti/delta/delta-mjpeg.h b/drivers/media/platform/stm/sti/delta/delta-mjpeg.h
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-mjpeg.h
+rename to drivers/media/platform/stm/sti/delta/delta-mjpeg.h
+diff --git a/drivers/media/platform/sti/delta/delta-v4l2.c b/drivers/media/platform/stm/sti/delta/delta-v4l2.c
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta-v4l2.c
+rename to drivers/media/platform/stm/sti/delta/delta-v4l2.c
+diff --git a/drivers/media/platform/sti/delta/delta.h b/drivers/media/platform/stm/sti/delta/delta.h
+similarity index 100%
+rename from drivers/media/platform/sti/delta/delta.h
+rename to drivers/media/platform/stm/sti/delta/delta.h
+diff --git a/drivers/media/platform/sti/hva/Kconfig b/drivers/media/platform/stm/sti/hva/Kconfig
+similarity index 100%
+rename from drivers/media/platform/sti/hva/Kconfig
+rename to drivers/media/platform/stm/sti/hva/Kconfig
+diff --git a/drivers/media/platform/sti/hva/Makefile b/drivers/media/platform/stm/sti/hva/Makefile
+similarity index 100%
+rename from drivers/media/platform/sti/hva/Makefile
+rename to drivers/media/platform/stm/sti/hva/Makefile
+diff --git a/drivers/media/platform/sti/hva/hva-debugfs.c b/drivers/media/platform/stm/sti/hva/hva-debugfs.c
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva-debugfs.c
+rename to drivers/media/platform/stm/sti/hva/hva-debugfs.c
+diff --git a/drivers/media/platform/sti/hva/hva-h264.c b/drivers/media/platform/stm/sti/hva/hva-h264.c
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva-h264.c
+rename to drivers/media/platform/stm/sti/hva/hva-h264.c
+diff --git a/drivers/media/platform/sti/hva/hva-hw.c b/drivers/media/platform/stm/sti/hva/hva-hw.c
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva-hw.c
+rename to drivers/media/platform/stm/sti/hva/hva-hw.c
+diff --git a/drivers/media/platform/sti/hva/hva-hw.h b/drivers/media/platform/stm/sti/hva/hva-hw.h
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva-hw.h
+rename to drivers/media/platform/stm/sti/hva/hva-hw.h
+diff --git a/drivers/media/platform/sti/hva/hva-mem.c b/drivers/media/platform/stm/sti/hva/hva-mem.c
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva-mem.c
+rename to drivers/media/platform/stm/sti/hva/hva-mem.c
+diff --git a/drivers/media/platform/sti/hva/hva-mem.h b/drivers/media/platform/stm/sti/hva/hva-mem.h
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva-mem.h
+rename to drivers/media/platform/stm/sti/hva/hva-mem.h
+diff --git a/drivers/media/platform/sti/hva/hva-v4l2.c b/drivers/media/platform/stm/sti/hva/hva-v4l2.c
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva-v4l2.c
+rename to drivers/media/platform/stm/sti/hva/hva-v4l2.c
+diff --git a/drivers/media/platform/sti/hva/hva.h b/drivers/media/platform/stm/sti/hva/hva.h
+similarity index 100%
+rename from drivers/media/platform/sti/hva/hva.h
+rename to drivers/media/platform/stm/sti/hva/hva.h
 -- 
 2.35.1
 
