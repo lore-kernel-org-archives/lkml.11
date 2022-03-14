@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A61C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241130AbiCNMQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54362 "EHLO
+        id S240891AbiCNMQv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242787AbiCNMKv (ORCPT
+        with ESMTP id S242232AbiCNMJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:51 -0400
+        Mon, 14 Mar 2022 08:09:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945222FFD6;
-        Mon, 14 Mar 2022 05:09:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09ECE50B0E;
+        Mon, 14 Mar 2022 05:06:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDB006130F;
-        Mon, 14 Mar 2022 12:09:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6C21C340EC;
-        Mon, 14 Mar 2022 12:09:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB58E61319;
+        Mon, 14 Mar 2022 12:06:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0120AC340E9;
+        Mon, 14 Mar 2022 12:06:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259777;
-        bh=L6ltqiTQjnF+i3WVoYKunDXM06QLZku9iDj1hliVtNA=;
+        s=korg; t=1647259600;
+        bh=YfpmRIDi6jRVe/IYxm/SbOg5cyruW3iEv4Tg+KggpLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S4s3XR8Svso8DC/LmHck5jJdD9rbsXE+Cvz55iR2AhaXbrhmnfUHg+ZACvgT8eIxV
-         DNRKHikwBVOm7poVClx+DCh0ShQlHXGLaEUhChuQuyEAKOeoLSaN4K7rnXIOkRjfIV
-         RhFUYC3ZZ8DOZznXrTX2LX99xSI4BRTAa9hvgeYg=
+        b=10/UpRbBENrQtegLjmJMzXe+vq4yBqTi4VYzrVssHNfEKdJId/ElWShL8DgNnx3+t
+         kZ/ZQvdQMJZeG2XHzthft12TDX7N8rBQ7T/IhQZ373tlRVOM+yY6t9rXB5Mr+KLc/q
+         Yg+NU54Gao8ve6rq7bL1eyu0UfPRPdD6herUJ36c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 087/110] swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
-Date:   Mon, 14 Mar 2022 12:54:29 +0100
-Message-Id: <20220314112745.459779964@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Featherston <mark@embeddedTS.com>,
+        Kris Bahnsen <kris@embeddedTS.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 046/110] gpio: ts4900: Do not set DAT and OE together
+Date:   Mon, 14 Mar 2022 12:53:48 +0100
+Message-Id: <20220314112744.322917468@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,119 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Halil Pasic <pasic@linux.ibm.com>
+From: Mark Featherston <mark@embeddedTS.com>
 
-commit aa6f8dcbab473f3a3c7454b74caa46d36cdc5d13 upstream.
+[ Upstream commit 03fe003547975680fdb9ff5ab0e41cb68276c4f2 ]
 
-Unfortunately, we ended up merging an old version of the patch "fix info
-leak with DMA_FROM_DEVICE" instead of merging the latest one. Christoph
-(the swiotlb maintainer), he asked me to create an incremental fix
-(after I have pointed this out the mix up, and asked him for guidance).
-So here we go.
+This works around an issue with the hardware where both OE and
+DAT are exposed in the same register. If both are updated
+simultaneously, the harware makes no guarantees that OE or DAT
+will actually change in any given order and may result in a
+glitch of a few ns on a GPIO pin when changing direction and value
+in a single write.
 
-The main differences between what we got and what was agreed are:
-* swiotlb_sync_single_for_device is also required to do an extra bounce
-* We decided not to introduce DMA_ATTR_OVERWRITE until we have exploiters
-* The implantation of DMA_ATTR_OVERWRITE is flawed: DMA_ATTR_OVERWRITE
-  must take precedence over DMA_ATTR_SKIP_CPU_SYNC
+Setting direction to input now only affects OE bit. Setting
+direction to output updates DAT first, then OE.
 
-Thus this patch removes DMA_ATTR_OVERWRITE, and makes
-swiotlb_sync_single_for_device() bounce unconditionally (that is, also
-when dir == DMA_TO_DEVICE) in order do avoid synchronising back stale
-data from the swiotlb buffer.
-
-Let me note, that if the size used with dma_sync_* API is less than the
-size used with dma_[un]map_*, under certain circumstances we may still
-end up with swiotlb not being transparent. In that sense, this is no
-perfect fix either.
-
-To get this bullet proof, we would have to bounce the entire
-mapping/bounce buffer. For that we would have to figure out the starting
-address, and the size of the mapping in
-swiotlb_sync_single_for_device(). While this does seem possible, there
-seems to be no firm consensus on how things are supposed to work.
-
-Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-Fixes: ddbd89deb7d3 ("swiotlb: fix info leak with DMA_FROM_DEVICE")
-Cc: stable@vger.kernel.org
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9c6686322d74 ("gpio: add Technologic I2C-FPGA gpio support")
+Signed-off-by: Mark Featherston <mark@embeddedTS.com>
+Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/core-api/dma-attributes.rst |    8 --------
- include/linux/dma-mapping.h               |    8 --------
- kernel/dma/swiotlb.c                      |   23 +++++++++++++++--------
- 3 files changed, 15 insertions(+), 24 deletions(-)
+ drivers/gpio/gpio-ts4900.c | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
 
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,11 +130,3 @@ accesses to DMA buffers in both privileg
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
--
--DMA_ATTR_OVERWRITE
--------------------
--
--This is a hint to the DMA-mapping subsystem that the device is expected to
--overwrite the entire mapped size, thus the caller does not require any of the
--previous buffer contents to be preserved. This allows bounce-buffering
--implementations to optimise DMA_FROM_DEVICE transfers.
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -62,14 +62,6 @@
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
- 
+diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
+index d885032cf814..d918d2df4de2 100644
+--- a/drivers/gpio/gpio-ts4900.c
++++ b/drivers/gpio/gpio-ts4900.c
+@@ -1,7 +1,7 @@
  /*
-- * This is a hint to the DMA-mapping subsystem that the device is expected
-- * to overwrite the entire mapped size, thus the caller does not require any
-- * of the previous buffer contents to be preserved. This allows
-- * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-- */
--#define DMA_ATTR_OVERWRITE		(1UL << 10)
--
--/*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-  * given device and there may be a translation between the CPU physical address
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -578,10 +578,14 @@ phys_addr_t swiotlb_tbl_map_single(struc
- 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
- 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(mem->start, index) + offset;
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
--	    dir == DMA_BIDIRECTIONAL))
--		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
-+	/*
-+	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
-+	 * to the tlb buffer, if we knew for sure the device will
-+	 * overwirte the entire current content. But we don't. Thus
-+	 * unconditional bounce may prevent leaking swiotlb content (i.e.
-+	 * kernel memory) to user-space.
-+	 */
-+	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
- }
- 
-@@ -648,10 +652,13 @@ void swiotlb_tbl_unmap_single(struct dev
- void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
- 		size_t size, enum dma_data_direction dir)
+  * Digital I/O driver for Technologic Systems I2C FPGA Core
+  *
+- * Copyright (C) 2015 Technologic Systems
++ * Copyright (C) 2015, 2018 Technologic Systems
+  * Copyright (C) 2016 Savoir-Faire Linux
+  *
+  * This program is free software; you can redistribute it and/or
+@@ -55,19 +55,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
  {
--	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
--		swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
--	else
--		BUG_ON(dir != DMA_FROM_DEVICE);
-+	/*
-+	 * Unconditional bounce is necessary to avoid corruption on
-+	 * sync_*_for_cpu or dma_ummap_* when the device didn't overwrite
-+	 * the whole lengt of the bounce buffer.
-+	 */
-+	swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
-+	BUG_ON(!valid_dma_direction(dir));
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
+ 
+-	/*
+-	 * This will clear the output enable bit, the other bits are
+-	 * dontcare when this is cleared
++	/* Only clear the OE bit here, requires a RMW. Prevents potential issue
++	 * with OE and data getting to the physical pin at different times.
+ 	 */
+-	return regmap_write(priv->regmap, offset, 0);
++	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
  }
  
- void swiotlb_sync_single_for_cpu(struct device *dev, phys_addr_t tlb_addr,
+ static int ts4900_gpio_direction_output(struct gpio_chip *chip,
+ 					unsigned int offset, int value)
+ {
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
++	unsigned int reg;
+ 	int ret;
+ 
++	/* If changing from an input to an output, we need to first set the
++	 * proper data bit to what is requested and then set OE bit. This
++	 * prevents a glitch that can occur on the IO line
++	 */
++	regmap_read(priv->regmap, offset, &reg);
++	if (!(reg & TS4900_GPIO_OE)) {
++		if (value)
++			reg = TS4900_GPIO_OUT;
++		else
++			reg &= ~TS4900_GPIO_OUT;
++
++		regmap_write(priv->regmap, offset, reg);
++	}
++
+ 	if (value)
+ 		ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
+ 							 TS4900_GPIO_OUT);
+-- 
+2.34.1
+
 
 
