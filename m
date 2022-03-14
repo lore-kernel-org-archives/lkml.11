@@ -2,86 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E12EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73115C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:15:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235108AbiCNPO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 11:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
+        id S242485AbiCNPQn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 11:16:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234533AbiCNPO0 (ORCPT
+        with ESMTP id S234434AbiCNPQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 11:14:26 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440442DEF
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 08:13:12 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 14 Mar 2022 11:16:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2156C633B;
+        Mon, 14 Mar 2022 08:15:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 7033B1F37E;
-        Mon, 14 Mar 2022 15:13:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1647270791; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jBSpS/m09xNMY5vCWklpEoUaUMpCXrL9CuXnHnOJ8FA=;
-        b=cfz95yY+x09OKCe4IzHCi7gQyB+w8K+vx2EHslRxgc85vKOkCNkeazbRpY/t+jqoHL4TWg
-        GAT9Rcy0Hcn1aYKu0mO3dA6V8+K5VlY/il97x+9IVgcelldFpR218ChEM2hYGGSXwNwG7x
-        69zGRlyQ69BebyTmo6USwDvBQneBSKw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1647270791;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=jBSpS/m09xNMY5vCWklpEoUaUMpCXrL9CuXnHnOJ8FA=;
-        b=vAT7nYNXRCBrH+W9wufewXF71/cdEmtswyB6Su3/AlAhm7ydOrwH513tuckuc84OLQcPL3
-        zw5Oj883y9DWzCAA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E228813B35;
-        Mon, 14 Mar 2022 15:13:10 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id x/3gM4ZbL2JyDQAAMHmgww
-        (envelope-from <osalvador@suse.de>); Mon, 14 Mar 2022 15:13:10 +0000
-Date:   Mon, 14 Mar 2022 16:13:09 +0100
-From:   Oscar Salvador <osalvador@suse.de>
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Abhishek Goel <huntbag@linux.vnet.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mm: Only re-generate demotion targets when a numa
- node changes its N_CPU state
-Message-ID: <Yi9bhXSADpNt6WEC@localhost.localdomain>
-References: <20220310120749.23077-1-osalvador@suse.de>
- <87mthxb514.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <YisK2PEkKAqtZPfp@localhost.localdomain>
- <87czip73b4.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A569561243;
+        Mon, 14 Mar 2022 15:15:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09DE4C340EC;
+        Mon, 14 Mar 2022 15:15:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647270929;
+        bh=yH2HvHYugFk66gpwEdhxTtTfC9BU2HzyxT8MBDl663U=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uVU7g7tbD/TCzGnq2oVO2I+7QGPpO2RwLudvj7plBnXI7rtVNbQz2ItMuJBkPSrAv
+         Ved9yYzAhJ3W2KnuLz76UEX1viTbg8yEFUN3mDk3fjwGkC8PkDPkZZyCV2h0KpQY3d
+         SVsbKTmGHncCbpmOORANXABmZHLjuhLlyKj5J2uYwLhLr53p6+7cxuSjF6yRVOMQ63
+         x6Ohn4opQRpqA7XemmKxt+nh5cK/J+MFumIFdygnVtn4IM308vthpJHFuSPsT7DOma
+         O5fmqgUgfc/DEoR/8gMzvJi8SwzGw0G8bucdLPGkwSBfcPvMdWholet0rkjJiKEM40
+         f3zjFinnsmQMw==
+Received: by mail-ed1-f49.google.com with SMTP id y22so20421440eds.2;
+        Mon, 14 Mar 2022 08:15:28 -0700 (PDT)
+X-Gm-Message-State: AOAM532S9CrTqv9vYhZy5E//vrPaw96Qdjul1V1E1kW78lD2Pi0QmJrj
+        uWOxDhRvyxwo91HNJe1XrxXZHEVASvqWaNTS2A==
+X-Google-Smtp-Source: ABdhPJxeHlt9IaR9wy/leAwESkcfkdTm3hjRDGlP+up+OWe5BIoyKWvHvOp4HcW9Fko6USi11kokUxlYoDvdG1vaSHQ=
+X-Received: by 2002:a05:6402:292c:b0:416:8eb:3fc4 with SMTP id
+ ee44-20020a056402292c00b0041608eb3fc4mr20732986edb.2.1647270927197; Mon, 14
+ Mar 2022 08:15:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87czip73b4.fsf@yhuang6-desk2.ccr.corp.intel.com>
+References: <20211214135852.2934670-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20211214135852.2934670-1-vladimir.oltean@nxp.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 14 Mar 2022 09:15:15 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLuD97y=rqRRUw5owvoetLh926ebkmMdGut+gyqTS5hWQ@mail.gmail.com>
+Message-ID: <CAL_JsqLuD97y=rqRRUw5owvoetLh926ebkmMdGut+gyqTS5hWQ@mail.gmail.com>
+Subject: Re: [PATCH v2 devicetree] Revert "arm64: dts: freescale: Fix
+ 'interrupt-map' parent address cells"
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Marc Zyngier <maz@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Li Yang <leoyang.li@nxp.com>, Biwen Li <biwen.li@nxp.com>,
+        Zhiqiang Hou <Zhiqiang.Hou@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 09:03:59AM +0800, Huang, Ying wrote:
-> Oscar Salvador <osalvador@suse.de> writes:
-> On host machine, PMEM is always exposed via memory hotplug.  But later
-> on, we found that for guest system it's possible for PMEM to be exposed
-> as normal memory.
+On Tue, Dec 14, 2021 at 6:59 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+>
+> This reverts commit 869f0ec048dc8fd88c0b2003373bd985795179fb. That
+> updated the expected device tree binding format for the ls-extirq
+> driver, without also updating the parsing code (ls_extirq_parse_map)
+> to the new format.
 
-Could you please elaborate on that? How is it done? I would love to hear the
-details.
+Sorry, I missed this until mentioned on IRC.
 
-Thanks
+>
+> The context is that the ls-extirq driver uses the standard
+> "interrupt-map" OF property in a non-standard way, as suggested by
+> Rob Herring during review:
+> https://lore.kernel.org/lkml/20190927161118.GA19333@bogus/
+>
+> This has turned out to be problematic, as Marc Zyngier discovered
+> through commit 041284181226 ("of/irq: Allow matching of an interrupt-map
+> local to an interrupt controller"), later fixed through commit
+> de4adddcbcc2 ("of/irq: Add a quirk for controllers with their own
+> definition of interrupt-map"). Marc's position, expressed on multiple
+> opportunities, is that:
+>
+> (a) [ making private use of the reserved "interrupt-map" name in a
+>     driver ] "is wrong, by the very letter of what an interrupt-map
+>     means. If the interrupt map points to an interrupt controller,
+>     that's the target for the interrupt."
+> https://lore.kernel.org/lkml/87k0g8jlmg.wl-maz@kernel.org/
+>
+> (b) [ updating the driver's bindings to accept a non-reserved name for
+>     this property, as an alternative, is ] "is totally pointless. These
+>     machines have been in the wild for years, and existing DTs will be
+>     there *forever*."
+> https://lore.kernel.org/lkml/87ilvrk1r0.wl-maz@kernel.org/
+>
+> Considering the above, the Linux kernel has quirks in place to deal with
+> the ls-extirq's non-standard use of the "interrupt-map". These quirks
+> may be needed in other operating systems that consume this device tree,
+> yet this is seen as the only viable solution.
+>
+> Therefore, the premise of the patch being reverted here is invalid.
+> It doesn't matter whether the driver, in its non-standard use of the
+> property, complies to the standard format or not, since this property
+> isn't expected to be used for interrupt translation by the core.
 
+I disagree. The non-standard part is that 'interrupt-map' translation
+is not transparent. 'interrupt-map' that can't be parsed in the
+standard way is just wrong, and I imagine was never the intention
+here. We simply cannot have platforms defining their own format for
+standard properties.
 
--- 
-Oscar Salvador
-SUSE Labs
+Reverting this will cause dtc warnings now (IIRC) and just kicks the
+can down the road. Reverting is fine for now (I gave Arnd the okay on
+IRC), but I think the parsing will need to be updated to honor
+#address-cells and detect an old DT (probably by looking at the total
+size of 'interrupt-map') and mark that change for stable. That would
+only leave a new dt with an old kernel without stable updates broken.
+Seems unlikely a device is getting firmware updates, but not OS
+updates.
+
+Rob
