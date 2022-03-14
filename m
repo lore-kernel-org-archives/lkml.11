@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A16C47085
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 041A1C388F3
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245164AbiCNMcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51434 "EHLO
+        id S245652AbiCNMd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243926AbiCNMVY (ORCPT
+        with ESMTP id S243952AbiCNMVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:24 -0400
+        Mon, 14 Mar 2022 08:21:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B2713CE1;
-        Mon, 14 Mar 2022 05:18:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B12713D41;
+        Mon, 14 Mar 2022 05:19:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AECCB80DF2;
-        Mon, 14 Mar 2022 12:18:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A82EFC340ED;
-        Mon, 14 Mar 2022 12:18:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF9FAB80DF5;
+        Mon, 14 Mar 2022 12:19:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5D24C340EC;
+        Mon, 14 Mar 2022 12:19:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260304;
-        bh=5+Ft8NqKxW8P9GQwxVhJpiNyjBI1KpvTOwGzitr6tus=;
+        s=korg; t=1647260368;
+        bh=biVQO26JNhnpkhW6bbPtwyeL1122P5bPQiLIBuM1CHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q6JZWC94C6eeUGXfk1b/DJBMIN0ksZ8cC9vR09lhXJDtTHEnH0N6x1jLVe1+f4PK7
-         kovJqKA7AZ/ZxTtoi5LoQ1Ze9VRxz1M0lE5K5f+btdYO22Vm6cdA1whVBoVS5DXtzj
-         mp8+vqjyt7PkO1i1rFjS3Htv+Y6fRYL0WlcP37ss=
+        b=lYJg1yQ1+5/QRk73AL70nIGbzbF0ByrdVIFwoHjcxEp4s/KG3wJwbD1JbKaxdHtBI
+         zHnTALWDCCEqeUmEiKEwam6xLEMSAa+ML7XpTeKTJMpOSIWvX8bP6q/aEbK0AiH0VQ
+         U+EbyCAPbvmryB6hp7MuFobPcU9BIUkcCD3DrWZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 070/121] x86/kvm: Dont use pv tlb/ipi/sched_yield if on 1 vCPU
-Date:   Mon, 14 Mar 2022 12:54:13 +0100
-Message-Id: <20220314112746.077423912@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 112/121] watch_queue: Make comment about setting ->defunct more accurate
+Date:   Mon, 14 Mar 2022 12:54:55 +0100
+Message-Id: <20220314112747.234658959@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,54 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit ec756e40e271866f951d77c5e923d8deb6002b15 ]
+commit 4edc0760412b0c4ecefc7e02cb855b310b122825 upstream.
 
-Inspired by commit 3553ae5690a (x86/kvm: Don't use pvqspinlock code if
-only 1 vCPU), on a VM with only 1 vCPU, there is no need to enable
-pv tlb/ipi/sched_yield and we can save the memory for __pv_cpu_mask.
+watch_queue_clear() has a comment stating that setting ->defunct to true
+preventing new additions as well as preventing notifications.  Whilst
+the latter is true, the first bit is superfluous since at the time this
+function is called, the pipe cannot be accessed to add new event
+sources.
 
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1645171838-2855-1-git-send-email-wanpengli@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Remove the "new additions" bit from the comment.
+
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-by: Jann Horn <jannh@google.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/kvm.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ kernel/watch_queue.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 59abbdad7729..ff3db164e52c 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -462,19 +462,22 @@ static bool pv_tlb_flush_supported(void)
- {
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_TLB_FLUSH) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
--		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-+		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+		(num_possible_cpus() != 1));
- }
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -569,7 +569,7 @@ void watch_queue_clear(struct watch_queu
+ 	rcu_read_lock();
+ 	spin_lock_bh(&wqueue->lock);
  
- static bool pv_ipi_supported(void)
- {
--	return kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI);
-+	return (kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI) &&
-+	       (num_possible_cpus() != 1));
- }
+-	/* Prevent new additions and prevent notifications from happening */
++	/* Prevent new notifications from being stored. */
+ 	wqueue->defunct = true;
  
- static bool pv_sched_yield_supported(void)
- {
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_SCHED_YIELD) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
--	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-+	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+	    (num_possible_cpus() != 1));
- }
- 
- #define KVM_IPI_CLUSTER_SIZE	(2 * BITS_PER_LONG)
--- 
-2.34.1
-
+ 	while (!hlist_empty(&wqueue->watches)) {
 
 
