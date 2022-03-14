@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A40BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82362C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239425AbiCNLkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
+        id S237105AbiCNLkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239511AbiCNLiM (ORCPT
+        with ESMTP id S239521AbiCNLjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:38:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3680424BB;
-        Mon, 14 Mar 2022 04:36:59 -0700 (PDT)
+        Mon, 14 Mar 2022 07:39:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6678428E1B;
+        Mon, 14 Mar 2022 04:37:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C6306111A;
-        Mon, 14 Mar 2022 11:36:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D40AC340E9;
-        Mon, 14 Mar 2022 11:36:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ABF3B80DBA;
+        Mon, 14 Mar 2022 11:37:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27759C340E9;
+        Mon, 14 Mar 2022 11:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257818;
-        bh=vQd3/guRz4RM7zmElEFW+9l3YZnMzA4ofl7euSezwPY=;
+        s=korg; t=1647257871;
+        bh=DsABKZppagdsIxtu2uNyGEkaxNybt0ogdt4Q4cKUIe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rG6P/QM9kyVk4Eqr/Nn9Bd4jRGrcY0EyjFr7RoTvOjFYKskcpmbIqC2teYYoq+t5X
-         6haOEEdesm6amN7DTBRhT8Pq3a/rIjWAzRwXCQfD7FMFG+TAXzZ9VDNNy3jX5mebW9
-         PKVBJ9e8OUkRgK1jj6NQeGlt1fZ6UaV/VZbZRnx4=
+        b=xB+pUNgG/LrSWHmud8vjDLu+c8Chv+ztOauC0cWuenQGI1fn5TT47lU+MRyDClNcy
+         n1CD1ntlX/ORM60NiMDqkcCggI3+yrHoA4pIZTYHd8lgrc8MKIpUStIDLKGYnb8Bof
+         4bucA0etfwK8PF4aTsV/L4UwY/xe24jc0mVJ6etI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 04/23] net: ethernet: ti: cpts: Handle error for clk_enable
-Date:   Mon, 14 Mar 2022 12:34:17 +0100
-Message-Id: <20220314112731.182571627@linuxfoundation.org>
+Subject: [PATCH 4.19 01/30] net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
+Date:   Mon, 14 Mar 2022 12:34:19 +0100
+Message-Id: <20220314112731.828619993@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112731.050583127@linuxfoundation.org>
-References: <20220314112731.050583127@linuxfoundation.org>
+In-Reply-To: <20220314112731.785042288@linuxfoundation.org>
+References: <20220314112731.785042288@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,37 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 6babfc6e6fab068018c36e8f6605184b8c0b349d ]
+[ Upstream commit e0058f0fa80f6e09c4d363779c241c45a3c56b94 ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+The function dma_alloc_coherent() in qed_vf_hw_prepare() can fail, so
+its return value should be checked.
 
-Fixes: 8a2c9a5ab4b9 ("net: ethernet: ti: cpts: rework initialization/deinitialization")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Fixes: 1408cc1fa48c ("qed: Introduce VFs")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpts.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_vf.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
-index 9e7e7e8a018d..232662cbc26a 100644
---- a/drivers/net/ethernet/ti/cpts.c
-+++ b/drivers/net/ethernet/ti/cpts.c
-@@ -440,7 +440,9 @@ int cpts_register(struct cpts *cpts)
- 	for (i = 0; i < CPTS_MAX_EVENTS; i++)
- 		list_add(&cpts->pool_data[i].list, &cpts->pool);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.c b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+index 93a0fbf6a132..e12338abaf0a 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_vf.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+@@ -539,6 +539,9 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
+ 						    p_iov->bulletin.size,
+ 						    &p_iov->bulletin.phys,
+ 						    GFP_KERNEL);
++	if (!p_iov->bulletin.p_virt)
++		goto free_pf2vf_reply;
++
+ 	DP_VERBOSE(p_hwfn, QED_MSG_IOV,
+ 		   "VF's bulletin Board [%p virt 0x%llx phys 0x%08x bytes]\n",
+ 		   p_iov->bulletin.p_virt,
+@@ -578,6 +581,10 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
  
--	clk_enable(cpts->refclk);
-+	err = clk_enable(cpts->refclk);
-+	if (err)
-+		return err;
+ 	return rc;
  
- 	cpts_write32(cpts, CPTS_EN, control);
- 	cpts_write32(cpts, TS_PEND_EN, int_enable);
++free_pf2vf_reply:
++	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
++			  sizeof(union pfvf_tlvs),
++			  p_iov->pf2vf_reply, p_iov->pf2vf_reply_phys);
+ free_vf2pf_request:
+ 	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
+ 			  sizeof(union vfpf_tlvs),
 -- 
 2.34.1
 
