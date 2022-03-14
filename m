@@ -2,194 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9979BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D873C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244423AbiCNTs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
+        id S244485AbiCNTtI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:49:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244469AbiCNTsn (ORCPT
+        with ESMTP id S244477AbiCNTtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:48:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD5D73E5E7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647287239;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5mETI+QLK6ZhxRbTKxuVCGJOhAl1j7UwP6UTDjwDl6o=;
-        b=Ou+erTEN1WB+oktNV6WYPYTGQEbZc6eelV1padouHnr/2vF0CSo4URhjByEKumCusrWPId
-        mgOGuZvp7Nkm48v6g1eFU+Hpl4ckiaoDvDayvckjcd0B14t5+feRBewNODJ49PsSrxBCx1
-        TcGhAZ3pfO925rJIZ4N+C35Bg0OTNnI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-449-2pCTlSTPPnmRiIwsCSSdKA-1; Mon, 14 Mar 2022 15:47:09 -0400
-X-MC-Unique: 2pCTlSTPPnmRiIwsCSSdKA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0EC0A1C0514F;
-        Mon, 14 Mar 2022 19:47:09 +0000 (UTC)
-Received: from llong.com (unknown [10.22.16.213])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B0FD40C128B;
-        Mon, 14 Mar 2022 19:47:08 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Feng Tang <feng.tang@intel.com>,
-        Bill Gray <bgray@redhat.com>,
-        Jirka Hladky <jhladky@redhat.com>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH 1/2] x86/tsc: Reduce external interference on max_warp detection
-Date:   Mon, 14 Mar 2022 15:46:29 -0400
-Message-Id: <20220314194630.1726542-2-longman@redhat.com>
-In-Reply-To: <20220314194630.1726542-1-longman@redhat.com>
-References: <20220314194630.1726542-1-longman@redhat.com>
+        Mon, 14 Mar 2022 15:49:02 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E5E3EA9F;
+        Mon, 14 Mar 2022 12:47:42 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlWCU009785;
+        Mon, 14 Mar 2022 19:47:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=I0aFeQ+bOQQ3vSF+hKPDIWFA3lgu6qmCi0ERuCFsuc8=;
+ b=f9wE74Avi6g9YvETJSE77/a3LlAIN/x8O0YZWa6WJgyy1S8G3r46gEoJtlfQWWohTYUg
+ 5qfk3iqR0d1O4KH/MBvnNfsyCZLURgvKpPKOW18+uBDjc3y4FZ3OTr8NvuH94h69W0gN
+ pO1Tg7+KHjGxQ+ZfAJl/KOVfPzZSr6NTi7rL2GHdkMJyCrlk5BPecw+gVhlUFMb6TRPj
+ 7kE39nO0nYFlk64OTrLJt8sspNoCxmFk/7zgvyjtyMGVQAkYzqv+HR8y2wxRCHAbTpo+
+ rp5D0MGKFobdfZdm3elMIr822OQuXxm210kTqpWCbg+Mlof7EW8kheTIq8+3F/bt9H/E Yg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3et6cw8ngg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:47:34 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJlYCl010111;
+        Mon, 14 Mar 2022 19:47:34 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3et6cw8nes-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:47:34 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJO3lB028424;
+        Mon, 14 Mar 2022 19:47:28 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma03wdc.us.ibm.com with ESMTP id 3erk58r8vy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:47:28 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EJlRFD46137750
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Mar 2022 19:47:27 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 81443112061;
+        Mon, 14 Mar 2022 19:47:27 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B0EB4112064;
+        Mon, 14 Mar 2022 19:47:16 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.184])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Mar 2022 19:47:16 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
+        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
+Subject: [PATCH v4 14/32] iommu: introduce iommu_domain_alloc_type and the KVM type
+Date:   Mon, 14 Mar 2022 15:44:33 -0400
+Message-Id: <20220314194451.58266-15-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: FqbgoB_dreqMwLEsGhivRnr6l1Gyrrt2
+X-Proofpoint-GUID: kAKn5innbR7pNSbCzAeZTnM1Zcc8DNGG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ suspectscore=0 mlxscore=0 spamscore=0 phishscore=0 priorityscore=1501
+ adultscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0
+ mlxlogscore=893 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203140116
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TSC max_warp detection code in check_tsc_warp() is very timing
-sensitive. Due to the possibility of false cacheline sharing,
-activities done in other CPUs may have an impact on the max_warp
-detection process. Put the max_wrap
-detection data variables on their own cacheline to reduce that kind
-of external interference.
+s390x will introduce an additional domain type that is used for
+managing IOMMU owned by KVM.  Define the type here and add an
+interface for allocating a specified type vs the default type.
 
-Signed-off-by: Waiman Long <longman@redhat.com>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 ---
- arch/x86/kernel/tsc_sync.c | 57 ++++++++++++++++++++------------------
- 1 file changed, 30 insertions(+), 27 deletions(-)
+ drivers/iommu/iommu.c |  7 +++++++
+ include/linux/iommu.h | 12 ++++++++++++
+ 2 files changed, 19 insertions(+)
 
-diff --git a/arch/x86/kernel/tsc_sync.c b/arch/x86/kernel/tsc_sync.c
-index 9452dc9664b5..70aeb254b62b 100644
---- a/arch/x86/kernel/tsc_sync.c
-+++ b/arch/x86/kernel/tsc_sync.c
-@@ -253,12 +253,15 @@ static atomic_t test_runs;
-  * we want to have the fastest, inlined, non-debug version
-  * of a critical section, to be able to prove TSC time-warps:
-  */
--static arch_spinlock_t sync_lock = __ARCH_SPIN_LOCK_UNLOCKED;
--
--static cycles_t last_tsc;
--static cycles_t max_warp;
--static int nr_warps;
--static int random_warps;
-+static struct {
-+	arch_spinlock_t lock;
-+	int nr_warps;
-+	int random_warps;
-+	cycles_t last_tsc;
-+	cycles_t max_warp;
-+} sync ____cacheline_aligned_in_smp = {
-+	.lock = __ARCH_SPIN_LOCK_UNLOCKED,
-+};
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f2c45b85b9fc..8bb57e0e3945 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1976,6 +1976,13 @@ void iommu_domain_free(struct iommu_domain *domain)
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_free);
+ 
++struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
++					     unsigned int t)
++{
++	return __iommu_domain_alloc(bus, t);
++}
++EXPORT_SYMBOL_GPL(iommu_domain_alloc_type);
++
+ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 9208eca4b0d1..b427bbb9f387 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -63,6 +63,7 @@ struct iommu_domain_geometry {
+ 					      implementation              */
+ #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
+ #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
++#define __IOMMU_DOMAIN_KVM	(1U << 4)  /* Domain is controlled by KVM */
  
  /*
-  * TSC-warp measurement loop running on both CPUs.  This is not called
-@@ -281,11 +284,11 @@ static cycles_t check_tsc_warp(unsigned int timeout)
- 		 * previous TSC that was measured (possibly on
- 		 * another CPU) and update the previous TSC timestamp.
- 		 */
--		arch_spin_lock(&sync_lock);
--		prev = last_tsc;
-+		arch_spin_lock(&sync.lock);
-+		prev = sync.last_tsc;
- 		now = rdtsc_ordered();
--		last_tsc = now;
--		arch_spin_unlock(&sync_lock);
-+		sync.last_tsc = now;
-+		arch_spin_unlock(&sync.lock);
+  * This are the possible domain-types
+@@ -77,6 +78,7 @@ struct iommu_domain_geometry {
+  *				  certain optimizations for these domains
+  *	IOMMU_DOMAIN_DMA_FQ	- As above, but definitely using batched TLB
+  *				  invalidation.
++ *	IOMMU_DOMAIN_KVM	- DMA mappings managed by KVM, used for VMs
+  */
+ #define IOMMU_DOMAIN_BLOCKED	(0U)
+ #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
+@@ -86,6 +88,8 @@ struct iommu_domain_geometry {
+ #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
+ 				 __IOMMU_DOMAIN_DMA_API |	\
+ 				 __IOMMU_DOMAIN_DMA_FQ)
++#define IOMMU_DOMAIN_KVM	(__IOMMU_DOMAIN_PAGING |	\
++				 __IOMMU_DOMAIN_KVM)
  
- 		/*
- 		 * Be nice every now and then (and also check whether
-@@ -304,18 +307,18 @@ static cycles_t check_tsc_warp(unsigned int timeout)
- 		 * we saw a time-warp of the TSC going backwards:
- 		 */
- 		if (unlikely(prev > now)) {
--			arch_spin_lock(&sync_lock);
--			max_warp = max(max_warp, prev - now);
--			cur_max_warp = max_warp;
-+			arch_spin_lock(&sync.lock);
-+			sync.max_warp = max(sync.max_warp, prev - now);
-+			cur_max_warp = sync.max_warp;
- 			/*
- 			 * Check whether this bounces back and forth. Only
- 			 * one CPU should observe time going backwards.
- 			 */
--			if (cur_warps != nr_warps)
--				random_warps++;
--			nr_warps++;
--			cur_warps = nr_warps;
--			arch_spin_unlock(&sync_lock);
-+			if (cur_warps != sync.nr_warps)
-+				sync.random_warps++;
-+			sync.nr_warps++;
-+			cur_warps = sync.nr_warps;
-+			arch_spin_unlock(&sync.lock);
- 		}
- 	}
- 	WARN(!(now-start),
-@@ -394,21 +397,21 @@ void check_tsc_sync_source(int cpu)
- 	 * stop. If not, decrement the number of runs an check if we can
- 	 * retry. In case of random warps no retry is attempted.
- 	 */
--	if (!nr_warps) {
-+	if (!sync.nr_warps) {
- 		atomic_set(&test_runs, 0);
+ struct iommu_domain {
+ 	unsigned type;
+@@ -421,6 +425,8 @@ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+ extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
+ extern struct iommu_group *iommu_group_get_by_id(int id);
+ extern void iommu_domain_free(struct iommu_domain *domain);
++extern struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
++						    unsigned int t);
+ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
+ extern void iommu_detach_device(struct iommu_domain *domain,
+@@ -708,6 +714,12 @@ static inline void iommu_domain_free(struct iommu_domain *domain)
+ {
+ }
  
- 		pr_debug("TSC synchronization [CPU#%d -> CPU#%d]: passed\n",
- 			smp_processor_id(), cpu);
- 
--	} else if (atomic_dec_and_test(&test_runs) || random_warps) {
-+	} else if (atomic_dec_and_test(&test_runs) || sync.random_warps) {
- 		/* Force it to 0 if random warps brought us here */
- 		atomic_set(&test_runs, 0);
- 
- 		pr_warn("TSC synchronization [CPU#%d -> CPU#%d]:\n",
- 			smp_processor_id(), cpu);
- 		pr_warn("Measured %Ld cycles TSC warp between CPUs, "
--			"turning off TSC clock.\n", max_warp);
--		if (random_warps)
-+			"turning off TSC clock.\n", sync.max_warp);
-+		if (sync.random_warps)
- 			pr_warn("TSC warped randomly between CPUs\n");
- 		mark_tsc_unstable("check_tsc_sync_source failed");
- 	}
-@@ -417,10 +420,10 @@ void check_tsc_sync_source(int cpu)
- 	 * Reset it - just in case we boot another CPU later:
- 	 */
- 	atomic_set(&start_count, 0);
--	random_warps = 0;
--	nr_warps = 0;
--	max_warp = 0;
--	last_tsc = 0;
-+	sync.random_warps = 0;
-+	sync.nr_warps = 0;
-+	sync.max_warp = 0;
-+	sync.last_tsc = 0;
- 
- 	/*
- 	 * Let the target continue with the bootup:
-@@ -476,7 +479,7 @@ void check_tsc_sync_target(void)
- 	/*
- 	 * Store the maximum observed warp value for a potential retry:
- 	 */
--	gbl_max_warp = max_warp;
-+	gbl_max_warp = sync.max_warp;
- 
- 	/*
- 	 * Ok, we are done:
++static inline struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
++							   unsigned int t)
++{
++	return NULL;
++}
++
+ static inline int iommu_attach_device(struct iommu_domain *domain,
+ 				      struct device *dev)
+ {
 -- 
 2.27.0
 
