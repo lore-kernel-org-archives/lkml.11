@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD25DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC20C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239697AbiCNLzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57686 "EHLO
+        id S239718AbiCNLzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231281AbiCNLzK (ORCPT
+        with ESMTP id S237669AbiCNLzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:55:10 -0400
+        Mon, 14 Mar 2022 07:55:12 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADB365BB;
-        Mon, 14 Mar 2022 04:54:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA70D65B9;
+        Mon, 14 Mar 2022 04:54:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tUZ4BT09/8qQZ4OVodaS1wcOjxkTbhWVDWuaJwUiKeo=;
-  b=uBd9tS2n8ybReuNK1b/L02Vra/YSvVjl33RTouN182APqXUyGoG9CpLA
-   VeEkoE0EXInVijXpm7YAWbzNPL8shlfZk3Z7SfZ5jmI6YBf7ZX7YVdiN2
-   hYO3XoHTYtmgKbUjQhenHP5IKvOfkma0NEqMIN9ZygYcI71yS2y+igpOJ
-   w=;
+  bh=/563lU4+/eLS72OSYelLl7ODBYeEM+EVJrALZANfmJ8=;
+  b=FcdGT24qN/Iex0moy3IZYkv20Xjtgkgg5GMWY5zi+ZUTjsFvRVr2TNa/
+   FUWhHxI08QFfA8JCJ2XhZ6wDSGW9bItv4jvAUtuGfpTFRAhlL/YGjuOw3
+   3FkjA6MGGsAC2ChMg4FG/q5ETvBqQ+VA6pB0nPyG+talKuoWk10CjO0bO
+   8=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997333"
+   d="scan'208";a="25997334"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:53:59 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Evan Quan <evan.quan@amd.com>
+To:     James Smart <james.smart@broadcom.com>
 Cc:     kernel-janitors@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 01/30] drm/amd/pm: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:25 +0100
-Message-Id: <20220314115354.144023-2-Julia.Lawall@inria.fr>
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 02/30] scsi: lpfc: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:26 +0100
+Message-Id: <20220314115354.144023-3-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -56,20 +54,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/gpu/drm/amd/pm/amdgpu_pm.c |    2 +-
+ drivers/scsi/lpfc/lpfc_mbox.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-index cbbbd4079249..5cd67ddf8495 100644
---- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-+++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-@@ -1870,7 +1870,7 @@ static ssize_t amdgpu_set_smartshift_bias(struct device *dev,
- 	amdgpu_smartshift_bias = bias;
- 	r = count;
+diff --git a/drivers/scsi/lpfc/lpfc_mbox.c b/drivers/scsi/lpfc/lpfc_mbox.c
+index 6c754ee96bee..e1404ab5000d 100644
+--- a/drivers/scsi/lpfc/lpfc_mbox.c
++++ b/drivers/scsi/lpfc/lpfc_mbox.c
+@@ -429,7 +429,7 @@ lpfc_config_msi(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
+ 	memset(pmb, 0, sizeof(LPFC_MBOXQ_t));
  
--	/* TODO: upadte bias level with SMU message */
-+	/* TODO: update bias level with SMU message */
+ 	/*
+-	 * SLI-3, Message Signaled Interrupt Fearure.
++	 * SLI-3, Message Signaled Interrupt Feature.
+ 	 */
  
- out:
- 	pm_runtime_mark_last_busy(ddev->dev);
+ 	/* Multi-message attention configuration */
 
