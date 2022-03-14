@@ -2,95 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E566FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239565AbiCNU1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 16:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56450 "EHLO
+        id S245002AbiCNU12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 16:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232959AbiCNU04 (ORCPT
+        with ESMTP id S240478AbiCNU11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 16:26:56 -0400
-Received: from hosting.gsystem.sk (hosting.gsystem.sk [212.5.213.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1F383917E;
-        Mon, 14 Mar 2022 13:25:45 -0700 (PDT)
-Received: from [192.168.0.2] (chello089173232159.chello.sk [89.173.232.159])
+        Mon, 14 Mar 2022 16:27:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A573917E
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:26:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by hosting.gsystem.sk (Postfix) with ESMTPSA id 88CEF7A00E3;
-        Mon, 14 Mar 2022 21:25:43 +0100 (CET)
-From:   Ondrej Zary <linux@zary.sk>
-To:     Jens Axboe <axboe@kernel.dk>
-Subject: Re: [PATCH] pata_parport: add driver (PARIDE replacement)
-Date:   Mon, 14 Mar 2022 21:25:40 +0100
-User-Agent: KMail/1.9.10
-Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christoph Hellwig <hch@lst.de>, Tim Waugh <tim@cyberelk.net>,
-        linux-block@vger.kernel.org, linux-parport@lists.infradead.org,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220312144415.20010-1-linux@zary.sk> <202203132015.18183.linux@zary.sk> <5161ed17-5f55-e851-c2e2-5340cc62fa3b@kernel.dk>
-In-Reply-To: <5161ed17-5f55-e851-c2e2-5340cc62fa3b@kernel.dk>
-X-KMail-QuotePrefix: > 
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80387B80FE7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 20:26:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14461C340E9;
+        Mon, 14 Mar 2022 20:26:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647289571;
+        bh=9CS29+T32I+TMcpS8styzHO75+JE2E1H4hCtaXxugCo=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=Mn55mgnVDnSmww/J8Y1UBj81s5MHWoXrfl7RpaF1LZjVgNAaWNsomIdpdipfI/xyb
+         /ZUmzyto56XCK21Q/XSP4j+s6qosm5nuH8IssEhYg7TqUqrz59ku2mq7By3oF2vaAm
+         NPZLKlf1Qn4YDyfuz8nC7DCUqo8eTbr6BuWOnZp//C565POnsO/vkn89LSmkm1B3sm
+         RApIfb/H11md0Edk/j5lkHNREhtpauYb6rOoWk1Zlk7fuO5v/omL2bgoYfje/lKHa8
+         z6YzKgGzHy26zI93Fmik4rFYqpjOGoJTxWvTdDkZpYJMnYZxD9NXTgNPTBcym6IsnD
+         nYiN/9Y7KkrVw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id ACA5E5C4162; Mon, 14 Mar 2022 13:26:10 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 13:26:10 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marco Elver <elver@google.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH 0/3] rcu: synchronize_rcu[_expedited]() related fixes
+Message-ID: <20220314202610.GW4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220314133738.269522-1-frederic@kernel.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Message-Id: <202203142125.40532.linux@zary.sk>
+In-Reply-To: <20220314133738.269522-1-frederic@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Monday 14 March 2022 00:19:30 Jens Axboe wrote:
-> On 3/13/22 1:15 PM, Ondrej Zary wrote:
-> > On Saturday 12 March 2022 15:44:15 Ondrej Zary wrote:
-> >> The pata_parport is a libata-based replacement of the old PARIDE
-> >> subsystem - driver for parallel port IDE devices.
-> >> It uses the original paride low-level protocol drivers but does not
-> >> need the high-level drivers (pd, pcd, pf, pt, pg). The IDE devices
-> >> behind parallel port adapters are handled by the ATA layer.
-> >>
-> >> This will allow paride and its high-level drivers to be removed.
-> >>
-> >> paride and pata_parport are mutually exclusive because the compiled
-> >> protocol drivers are incompatible.
-> >>
-> >> Tested with Imation SuperDisk LS-120 and HP C4381A (both use EPAT
-> >> chip).
-> >>
-> >> Note: EPP-32 mode is buggy in EPAT - and also in all other protocol
-> >> drivers - they don't handle non-multiple-of-4 block transfers
-> >> correctly. This causes problems with LS-120 drive.
-> >> There is also another bug in EPAT: EPP modes don't work unless a 4-bit
-> >> or 8-bit mode is used first (probably some initialization missing?).
-> >> Once the device is initialized, EPP works until power cycle.
-> >>
-> >> So after device power on, you have to:
-> >> echo "parport0 epat 0" >/sys/bus/pata_parport/new_device
-> >> echo pata_parport.0 >/sys/bus/pata_parport/delete_device
-> >> echo "parport0 epat 4" >/sys/bus/pata_parport/new_device
-> >> (autoprobe will initialize correctly as it tries the slowest modes
-> >> first but you'll get the broken EPP-32 mode)
-> > 
-> > Found a bug - the same device can be registered multiple times. Fix
-> > will be in v2. But this revealed a bigger problem: pi_connect can
-> > sleep (uses parport_claim_or_block) and libata does not like that. Any
-> > ideas how to fix this?
+On Mon, Mar 14, 2022 at 02:37:35PM +0100, Frederic Weisbecker wrote:
 > 
-> I think you'd need two things here:
+> A few fixes especially for expedited GP polling causing a stall on TREE07,
+> as reported by Paul.
 > 
-> - The blk-mq queue should be registered with BLK_MQ_F_BLOCKING, which
->   will allow blocking off the queue_rq path.
-
-My knowledge about blk-mq is exactly zero. After grepping the code, I guess that BLK_MQ_F_BLOCKING should be used by the block device drivers - sd and sr?
- 
-> - You need to look at making libata safe wrt calling ata_qc_issue()
->   outside the lock. Should probably be fine if you just gate that on
->   whether or not the queue was setup in blocking mode, as that doesn't
->   currently exist in libata.
+> We may still want to optimize start_poll_synchronize_rcu_expedited() on
+> UP-no-preempt but I think Paul may be implying this while doing other
+> fixes.
 > 
+> git://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+> 	rcu/dev
+> 
+> HEAD: 6e5fd7e614fd5c8f0fffeaa140b7ea697bfeb096
+> 
+> Thanks,
+> 	Frederic
 
+I have pulled these in for review and testing, thank you!!!  I have
+started a ~90-minute test and will let you know how that goes.
 
--- 
-Ondrej Zary
+> ---
+> 
+> Frederic Weisbecker (2):
+>       rcu: Fix expedited GP polling against UP/no-preempt environment
+
+I have some concerns with this one due to the fact that it acquires locks
+in cases where the old code would not.  (I did have problems with this
+in both recent SRCU changes and the normal-grace-period counterpart to
+this series.)
+
+But let's see what rcutorture and kbuild test robot think about it.
+
+>       rcu: Fix preemption mode check on synchronize_rcu[_expedited]()
+
+This one looks good.
+
+> Valentin Schneider (1):
+>       preempt/dynamic: Introduce preempt mode accessors
+
+I am guessing that this one is a compact placeholder for my convenience
+(in which case thank you!).  I will be marking it "EXP" on my next rebase.
+
+							Thanx, Paul
+
+>  include/linux/sched.h | 16 +++++++++++++++
+>  kernel/rcu/tree.c     |  2 +-
+>  kernel/rcu/tree_exp.h | 57 +++++++++++++++++++++++++++++++--------------------
+>  kernel/sched/core.c   | 11 ++++++++++
+>  4 files changed, 63 insertions(+), 23 deletions(-)
