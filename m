@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88110C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55694C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239846AbiCNLzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
+        id S239857AbiCNLzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239738AbiCNLzY (ORCPT
+        with ESMTP id S239742AbiCNLzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 07:55:24 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7ED65CF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192E165BD;
         Mon, 14 Mar 2022 04:54:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Z43P+J6/5TKaFsUOdg2hvihfeuRd7BJiaiR6yegy1rQ=;
-  b=mIS74DeiJvgx0sal4xZYqB5/htAhoojW9dD0u2wvcpdCjrRoL5hdjMfY
-   Xk29pwf2x99mOvSRPytiRd7XwJIU2TLO7Qjqre816LalxqStnUZlCNqDh
-   F0qE6E66sjshR6LxQIaMJH08jvuI84gyR/uTdJG6OKLOUDVOd8i5SnSON
-   0=;
+  bh=UTHD6t3CngG06uxaTMECWlsIkBw43Sz+p3dlizGDUyI=;
+  b=TBZeCP4LZz66oYQVczpjdP60ygr5bwb9Ez2/mtvEnHgl7mGPiKL6Dp1n
+   nAb9oBUYNJSaHuh9smaYp1pBq9nMib2XI7DxVZm1QZ6lgCAg5BSSEASfu
+   GGIbCM5ViJuxsMeu/WnkU2JTVJrvG23WnOdV8UOYHzpsaw275LxQgBSoV
+   I=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997344"
+   d="scan'208";a="25997345"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:53:59 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Felipe Balbi <balbi@kernel.org>
-Cc:     kernel-janitors@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 11/30] usb: gadget: udc: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:35 +0100
-Message-Id: <20220314115354.144023-12-Julia.Lawall@inria.fr>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     kernel-janitors@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 12/30] drivers: net: packetengines: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:36 +0100
+Message-Id: <20220314115354.144023-13-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -52,20 +51,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/usb/gadget/udc/snps_udc_core.c |    2 +-
+ drivers/net/ethernet/packetengines/yellowfin.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/udc/snps_udc_core.c b/drivers/usb/gadget/udc/snps_udc_core.c
-index d046c09fa566..52ea4dcf6a92 100644
---- a/drivers/usb/gadget/udc/snps_udc_core.c
-+++ b/drivers/usb/gadget/udc/snps_udc_core.c
-@@ -80,7 +80,7 @@ static int stop_timer;
-  * This cannot be solved by letting the RX DMA disabled until a
-  * request gets queued because there may be other OUT packets
-  * in the FIFO (important for not blocking control traffic).
-- * The value of set_rde controls the correspondig timer.
-+ * The value of set_rde controls the corresponding timer.
-  *
-  * set_rde -1 == not used, means it is alloed to be set to 0 or 1
-  * set_rde  0 == do not touch RDE, do no start the RDE timer
+diff --git a/drivers/net/ethernet/packetengines/yellowfin.c b/drivers/net/ethernet/packetengines/yellowfin.c
+index 12105f62cbdd..03650022d444 100644
+--- a/drivers/net/ethernet/packetengines/yellowfin.c
++++ b/drivers/net/ethernet/packetengines/yellowfin.c
+@@ -191,7 +191,7 @@ IV. Notes
+ 
+ Thanks to Kim Stearns of Packet Engines for providing a pair of G-NIC boards.
+ Thanks to Bruce Faust of Digitalscape for providing both their SYM53C885 board
+-and an AlphaStation to verifty the Alpha port!
++and an AlphaStation to verify the Alpha port!
+ 
+ IVb. References
+ 
 
