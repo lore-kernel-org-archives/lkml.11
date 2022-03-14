@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B154AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 903EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240731AbiCNMH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58934 "EHLO
+        id S240604AbiCNMHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240423AbiCNMHL (ORCPT
+        with ESMTP id S240645AbiCNMHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:07:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E25721E26;
-        Mon, 14 Mar 2022 05:03:22 -0700 (PDT)
+        Mon, 14 Mar 2022 08:07:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208F2237D2;
+        Mon, 14 Mar 2022 05:03:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25335612FD;
-        Mon, 14 Mar 2022 12:03:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18609C340E9;
-        Mon, 14 Mar 2022 12:03:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 70477CE1269;
+        Mon, 14 Mar 2022 12:03:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E56E8C340ED;
+        Mon, 14 Mar 2022 12:03:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259401;
-        bh=cd8UL4Bikyn8oKLwq/6njheNKn8DIRKr7hO3mhtX100=;
+        s=korg; t=1647259405;
+        bh=M8ax33quUGmZY4WEvx5nH5KNIApyPzylG8aYXe9hmrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qGp52ymVelSKAb++fYUIlgtJBEAJCGDw5a0WtdOY+scvRw3JNr1Y1hQIReA209L1h
-         1AdydXNkKq1mkbrq9bFu7IwvuGyF1FPqf+2xGmo8XWuAkEqy3PzF1W+0jmaX5GWPhr
-         1UE24SpEVOMfMjjoQfge45j1gg+88o7j0Ben7rnE=
+        b=2rDjuS9qALkvtndk7dyM85glRuO2/KJOh6XDN7tmbsdl6SR7qTDw20ndbsSDxt6qe
+         9U0XP5wdICQEnlRJrV39C/jo08p42Twqp5MBJ3d/qfWWy2D+Z1HaEMR8qEHZ1OA37+
+         Pc1rGX9LqcGlDGYztAYQytS+y1LkVg9iSvja/2lw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 42/71] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
-Date:   Mon, 14 Mar 2022 12:53:35 +0100
-Message-Id: <20220314112739.109055610@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 69/71] ext4: add check to prevent attempting to resize an fs with sparse_super2
+Date:   Mon, 14 Mar 2022 12:54:02 +0100
+Message-Id: <20220314112739.869914303@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -52,72 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreeya Patel <shreeya.patel@collabora.com>
+From: Josh Triplett <josh@joshtriplett.org>
 
-[ Upstream commit ae42f9288846353982e2eab181fb41e7fd8bf60f ]
+commit b1489186cc8391e0c1e342f9fbc3eedf6b944c61 upstream.
 
-We are racing the registering of .to_irq when probing the
-i2c driver. This results in random failure of touchscreen
-devices.
+The in-kernel ext4 resize code doesn't support filesystem with the
+sparse_super2 feature. It fails with errors like this and doesn't finish
+the resize:
+EXT4-fs (loop0): resizing filesystem from 16640 to 7864320 blocks
+EXT4-fs warning (device loop0): verify_reserved_gdb:760: reserved GDT 2 missing grp 1 (32770)
+EXT4-fs warning (device loop0): ext4_resize_fs:2111: error (-22) occurred during file system resize
+EXT4-fs (loop0): resized filesystem to 2097152
 
-Following explains the race condition better.
+To reproduce:
+mkfs.ext4 -b 4096 -I 256 -J size=32 -E resize=$((256*1024*1024)) -O sparse_super2 ext4.img 65M
+truncate -s 30G ext4.img
+mount ext4.img /mnt
+python3 -c 'import fcntl, os, struct ; fd = os.open("/mnt", os.O_RDONLY | os.O_DIRECTORY) ; fcntl.ioctl(fd, 0x40086610, struct.pack("Q", 30 * 1024 * 1024 * 1024 // 4096), False) ; os.close(fd)'
+dmesg | tail
+e2fsck ext4.img
 
-[gpio driver] gpio driver registers gpio chip
-[gpio consumer] gpio is acquired
-[gpio consumer] gpiod_to_irq() fails with -ENXIO
-[gpio driver] gpio driver registers irqchip
-gpiod_to_irq works at this point, but -ENXIO is fatal
+The userspace resize2fs tool has a check for this case: it checks if the
+filesystem has sparse_super2 set and if the kernel provides
+/sys/fs/ext4/features/sparse_super2. However, the former check requires
+manually reading and parsing the filesystem superblock.
 
-We could see the following errors in dmesg logs when gc->to_irq is NULL
+Detect this case in ext4_resize_begin and error out early with a clear
+error message.
 
-[2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
-[2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
-
-To avoid this situation, defer probing until to_irq is registered.
-Returning -EPROBE_DEFER would be the first step towards avoiding
-the failure of devices due to the race in registration of .to_irq.
-Final solution to this issue would be to avoid using gc irq members
-until they are fully initialized.
-
-This issue has been reported many times in past and people have been
-using workarounds like changing the pinctrl_amd to built-in instead
-of loading it as a module or by adding a softdep for pinctrl_amd into
-the config file.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Josh Triplett <josh@joshtriplett.org>
+Link: https://lore.kernel.org/r/74b8ae78405270211943cd7393e65586c5faeed1.1623093259.git.josh@joshtriplett.org
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpiolib.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/ext4/resize.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index af5bb8fedfea..00526fdd7691 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -3215,6 +3215,16 @@ int gpiod_to_irq(const struct gpio_desc *desc)
- 
- 		return retirq;
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -74,6 +74,11 @@ int ext4_resize_begin(struct super_block
+ 		return -EPERM;
  	}
-+#ifdef CONFIG_GPIOLIB_IRQCHIP
-+	if (gc->irq.chip) {
-+		/*
-+		 * Avoid race condition with other code, which tries to lookup
-+		 * an IRQ before the irqchip has been properly registered,
-+		 * i.e. while gpiochip is still being brought up.
-+		 */
-+		return -EPROBE_DEFER;
+ 
++	if (ext4_has_feature_sparse_super2(sb)) {
++		ext4_msg(sb, KERN_ERR, "Online resizing not supported with sparse_super2");
++		return -EOPNOTSUPP;
 +	}
-+#endif
- 	return -ENXIO;
- }
- EXPORT_SYMBOL_GPL(gpiod_to_irq);
--- 
-2.34.1
-
++
+ 	if (test_and_set_bit_lock(EXT4_FLAGS_RESIZING,
+ 				  &EXT4_SB(sb)->s_ext4_flags))
+ 		ret = -EBUSY;
 
 
