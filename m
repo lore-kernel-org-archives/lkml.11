@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F280C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239744AbiCNM1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:27:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
+        id S241079AbiCNM1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242947AbiCNMT4 (ORCPT
+        with ESMTP id S241496AbiCNMSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:19:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EF4522F5;
-        Mon, 14 Mar 2022 05:15:06 -0700 (PDT)
+        Mon, 14 Mar 2022 08:18:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D2E4B1D0;
+        Mon, 14 Mar 2022 05:12:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6CA2B80DFF;
-        Mon, 14 Mar 2022 12:15:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D3A9C340E9;
-        Mon, 14 Mar 2022 12:15:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B921361382;
+        Mon, 14 Mar 2022 12:12:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3DB8C340E9;
+        Mon, 14 Mar 2022 12:12:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260103;
-        bh=5dn8+/NyVA/eNrucFxQnoSAcjC8HjqGn5cqpg5UYb6Q=;
+        s=korg; t=1647259955;
+        bh=o1eyfosOZlTJ+hUZYylS3B8wCxvivTOqYdjwqWdX3ms=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yk7zxjGitFsSnQrAjIzHR+9dj4nQHKHtk/EVllim5eoHS790yrCYNQxKwSoLyPBWY
-         wDWPhJZxG3amlSnG/R7Ew7nscuhrK2IpISVyRuJcO3OHR2L6iK1N9UKaLf4vt6CH6F
-         /6gWyrkfcuMsicaRKI33iGzIfG2CRadE4xYpTXG0=
+        b=zv0PIvxf7xj8JmJ1DLrI2R5SLxJD6JH/5NZWdxmLwOqfmwriqa9nRiM9NHZn6Cfk0
+         qIEWYs5fJ9N1SaS/tArL/N62BQfOSyRVjb12+XgMnhtUg7lRKGjATm6laUgqcMBvQ1
+         rzpaY8iax7EauPXxoo/FNo7/y3gnFh+itZmbox+g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 057/121] net: arc_emac: Fix use after free in arc_mdio_probe()
-Date:   Mon, 14 Mar 2022 12:54:00 +0100
-Message-Id: <20220314112745.717795416@linuxfoundation.org>
+Subject: [PATCH 5.16 017/121] vhost: fix hung thread due to erroneous iotlb entries
+Date:   Mon, 14 Mar 2022 12:53:20 +0100
+Message-Id: <20220314112744.608703877@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,57 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jianglei Nie <niejianglei2021@163.com>
+From: Anirudh Rayabharam <mail@anirudhrb.com>
 
-[ Upstream commit bc0e610a6eb0d46e4123fafdbe5e6141d9fff3be ]
+[ Upstream commit e2ae38cf3d91837a493cb2093c87700ff3cbe667 ]
 
-If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
-the "bus". But bus->name is still used in the next line, which will lead
-to a use after free.
+In vhost_iotlb_add_range_ctx(), range size can overflow to 0 when
+start is 0 and last is ULONG_MAX. One instance where it can happen
+is when userspace sends an IOTLB message with iova=size=uaddr=0
+(vhost_process_iotlb_msg). So, an entry with size = 0, start = 0,
+last = ULONG_MAX ends up in the iotlb. Next time a packet is sent,
+iotlb_access_ok() loops indefinitely due to that erroneous entry.
 
-We can fix it by putting the name in a local variable and make the
-bus->name point to the rodata section "name",then use the name in the
-error message without referring to bus to avoid the uaf.
+	Call Trace:
+	 <TASK>
+	 iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
+	 vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
+	 vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
+	 vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+	 kthread+0x2e9/0x3a0 kernel/kthread.c:377
+	 ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+	 </TASK>
 
-Fixes: 95b5fc03c189 ("net: arc_emac: Make use of the helper function dev_err_probe()")
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-Link: https://lore.kernel.org/r/20220309121824.36529-1-niejianglei2021@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported by syzbot at:
+	https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+
+To fix this, do two things:
+
+1. Return -EINVAL in vhost_chr_write_iter() when userspace asks to map
+   a range with size 0.
+2. Fix vhost_iotlb_add_range_ctx() to handle the range [0, ULONG_MAX]
+   by splitting it into two entries.
+
+Fixes: 0bbe30668d89e ("vhost: factor out IOTLB")
+Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+Link: https://lore.kernel.org/r/20220305095525.5145-1-mail@anirudhrb.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/vhost/iotlb.c | 11 +++++++++++
+ drivers/vhost/vhost.c |  5 +++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
-index 9acf589b1178..87f40c2ba904 100644
---- a/drivers/net/ethernet/arc/emac_mdio.c
-+++ b/drivers/net/ethernet/arc/emac_mdio.c
-@@ -132,6 +132,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
- {
- 	struct arc_emac_mdio_bus_data *data = &priv->bus_data;
- 	struct device_node *np = priv->dev->of_node;
-+	const char *name = "Synopsys MII Bus";
- 	struct mii_bus *bus;
- 	int error;
+diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+index 670d56c879e5..40b098320b2a 100644
+--- a/drivers/vhost/iotlb.c
++++ b/drivers/vhost/iotlb.c
+@@ -57,6 +57,17 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+ 	if (last < start)
+ 		return -EFAULT;
  
-@@ -142,7 +143,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
- 	priv->bus = bus;
- 	bus->priv = priv;
- 	bus->parent = priv->dev;
--	bus->name = "Synopsys MII Bus";
-+	bus->name = name;
- 	bus->read = &arc_mdio_read;
- 	bus->write = &arc_mdio_write;
- 	bus->reset = &arc_mdio_reset;
-@@ -167,7 +168,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
- 	if (error) {
- 		mdiobus_free(bus);
- 		return dev_err_probe(priv->dev, error,
--				     "cannot register MDIO bus %s\n", bus->name);
-+				     "cannot register MDIO bus %s\n", name);
++	/* If the range being mapped is [0, ULONG_MAX], split it into two entries
++	 * otherwise its size would overflow u64.
++	 */
++	if (start == 0 && last == ULONG_MAX) {
++		u64 mid = last / 2;
++
++		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
++		addr += mid + 1;
++		start = mid + 1;
++	}
++
+ 	if (iotlb->limit &&
+ 	    iotlb->nmaps == iotlb->limit &&
+ 	    iotlb->flags & VHOST_IOTLB_FLAG_RETIRE) {
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 59edb5a1ffe2..55475fd59fb7 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -1170,6 +1170,11 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
+ 		goto done;
  	}
  
- 	return 0;
++	if (msg.size == 0) {
++		ret = -EINVAL;
++		goto done;
++	}
++
+ 	if (dev->msg_handler)
+ 		ret = dev->msg_handler(dev, &msg);
+ 	else
 -- 
 2.34.1
 
