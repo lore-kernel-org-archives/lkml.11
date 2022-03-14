@@ -2,134 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C16C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245638AbiCNWcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 18:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        id S240755AbiCNWgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 18:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238535AbiCNWb6 (ORCPT
+        with ESMTP id S237216AbiCNWgS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 18:31:58 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07BE03E5D3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:30:48 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-2e57826a10bso23705947b3.7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:30:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=h5JL0iMAknmQ5zErn6+wiD/umMBaFUOjyvtYnP2xprY=;
-        b=jQ/m0lOugL+8gJgFqx0d3h9CrFThHj9SSAeaK26F10uhuhpm/IaylQbEWCgs9aEwMg
-         xHtSL+1zpiDRTCvz7Cn5aRvjgCITWk3mUrrQ84T450bxekrPtSojJ9NqGFIOniFofeCW
-         oigDE3fy/qz233g6GgO9rDuDR/i0uAMFfOZrQ5R1xDxmeTdrthehy3vy8Rniy1PJX66s
-         sbvlACcvZ5v4uSyG9yTP4oI5H64SWKa3tAumzPpzAiHIMcKhCCd6Tu/h57yjjsGaes+5
-         GEUvw4LRuQrph0IrOwbuL+O9N2aaye8CspgHa/kLVu8XIDkpK3dDCJdTBkEgTUNO5MyA
-         5pUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=h5JL0iMAknmQ5zErn6+wiD/umMBaFUOjyvtYnP2xprY=;
-        b=6SL8OlunltdZiJN/J8zYoOssNNM7jnhMN8E5SCk5udt5cK0MY0ZLLwOnHq+9kMjcCL
-         j5G9NoTuM0TixOFuuv6luMShD/8/4daqwVMz/xTqebM0ix4rXsyMpl/TJdCdIkvnrrlr
-         uCLERiLQKxZl0b0Klj4suTCAwXgFwnqAizhO/a/llRmr3aVaZFGbH/jAyc0K2927M+mP
-         CxjMI4S5zK8buiYxzg2rxwprJFf5Wjc/vcHcm5cS1K9Xtqj+PezCHO1hThumVSYNZ9uQ
-         UdwJjMcwQEMNoXrC+R99I5cppvZGeLJ+wu4FG2KBOLmWV8iG7d3iVbohPSTQbUlpA3Co
-         zKTA==
-X-Gm-Message-State: AOAM530pJsCIph1aJgRCetnsNV6PoWHLB+e2iqnyQDpLA/NUKfSmpn1c
-        2g9DpUJQ6v0+lnzsJvFFk/PDUQr6IX3cg5ym5XR4Aw==
-X-Google-Smtp-Source: ABdhPJwzLCJfSZjx5/TBItvwJKrtoDNANlPaUefy9IZu2+RM17VvYmhwaNKSXJWDCzbo9iV3+Var2lcUHXH4XaXX0Pc=
-X-Received: by 2002:a81:b49:0:b0:2db:f472:dfca with SMTP id
- 70-20020a810b49000000b002dbf472dfcamr20504701ywl.455.1647297046635; Mon, 14
- Mar 2022 15:30:46 -0700 (PDT)
+        Mon, 14 Mar 2022 18:36:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46ACF30F73
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:35:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D8C6140C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:35:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5BC4C340E9;
+        Mon, 14 Mar 2022 22:35:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647297304;
+        bh=hbsjHiLQ5g+4nDSjuI4RnOLjrnPpRYYdrxZhXbxfh3o=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=fAGJa7jO/QZRtaMpck6eVyC47pTxDnID33LYKFxdVZ70KBD8v42ysyfKAw0nX32fo
+         O+JabTjjeQqKroVmhfICVTyzVTEd4n4dKAKN+BJfFw++ebJqrbA1Rx6A7W7MMpQY5i
+         FrduoPAwWMvd0L0r2Hj7QCSs5TqKge4vloxnBlG39VKiygIdcQq27qABr4m39yDbvS
+         U8GdSQichZyU82J5M9UdiN6upesZ8vi+357wvaSHWbMjAJplu5UTlHwLOkRE9DiBRO
+         nZl+RngXipWUOkxWEwKgcfgMCtPmQKDy2mvVE2rK0P+evgNOnwgegqI585BOopjYhp
+         OwhY/CHu2sp5w==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 507E85C023F; Mon, 14 Mar 2022 15:35:04 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 15:35:04 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marco Elver <elver@google.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH 0/3] rcu: synchronize_rcu[_expedited]() related fixes
+Message-ID: <20220314223504.GA1150279@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220314133738.269522-1-frederic@kernel.org>
+ <20220314202610.GW4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-References: <20220314221703.30910-1-dmueller@suse.de>
-In-Reply-To: <20220314221703.30910-1-dmueller@suse.de>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Mon, 14 Mar 2022 15:30:10 -0700
-Message-ID: <CAGETcx_6BGXFfF1ZHH_=Gq1vp8quFzyLNSCjtfTakJfQE-7Nyw@mail.gmail.com>
-Subject: Re: [PATCH] scripts/dev-needs: depend on bash in shebang
-To:     =?UTF-8?B?RGlyayBNw7xsbGVy?= <dmueller@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220314202610.GW4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding LKML
+On Mon, Mar 14, 2022 at 01:26:10PM -0700, Paul E. McKenney wrote:
+> On Mon, Mar 14, 2022 at 02:37:35PM +0100, Frederic Weisbecker wrote:
+> > 
+> > A few fixes especially for expedited GP polling causing a stall on TREE07,
+> > as reported by Paul.
+> > 
+> > We may still want to optimize start_poll_synchronize_rcu_expedited() on
+> > UP-no-preempt but I think Paul may be implying this while doing other
+> > fixes.
+> > 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+> > 	rcu/dev
+> > 
+> > HEAD: 6e5fd7e614fd5c8f0fffeaa140b7ea697bfeb096
+> > 
+> > Thanks,
+> > 	Frederic
+> 
+> I have pulled these in for review and testing, thank you!!!  I have
+> started a ~90-minute test and will let you know how that goes.
 
-On Mon, Mar 14, 2022 at 3:17 PM Dirk M=C3=BCller <dmueller@suse.de> wrote:
->
-> This script uses bash specific syntax. make it more specific by
-> declaring it to be used via bash rather than /bin/sh which could
-> be non-bash.
->
-> Signed-off-by: Dirk M=C3=BCller <dmueller@suse.de>
+And TREE05 doesn't like this much.  I get too-short grace periods.
+TREE05 is unusual in being the one with the kernel build with
+CONFIG_PREEMPT_NONE=y but also with CONFIG_PREEMPT_DYNAMIC=n.
 
-Technically this is targeted towards toybox because that's what I deal
-with everyday while I work on Android devices. But toybox seems to
-follow bash conventions. Would this shebang be considered valid in
-that instance?
+Running tests of the commits individually.
 
-Btw, I've been meaning to add (for more than year) the following to
-the top of the script:
-shopt -s expand_aliases
+							Thanx, Paul
 
-Geert pointed out that the script doesn't work with some setups
-because this flag isn't default enabled. I also remember this being a
-deprecated option, but until someone wants to rewrite this script in a
-way that it'll work on toybox (this is what Android uses) with zero
-setup and also not depend on the aliases, we might as well set the
-flag to match with reality.
-
-Wanna pull that shopt into your patch?
-
--Saravana
-
-> ---
->  scripts/dev-needs.sh | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/dev-needs.sh b/scripts/dev-needs.sh
-> index 454cc304fb44..c324f0737f6b 100755
-> --- a/scripts/dev-needs.sh
-> +++ b/scripts/dev-needs.sh
-> @@ -1,4 +1,4 @@
-> -#! /bin/sh
-> +#!/bin/bash
->  # SPDX-License-Identifier: GPL-2.0
->  # Copyright (c) 2020, Google LLC. All rights reserved.
->  # Author: Saravana Kannan <saravanak@google.com>
-> --
-> 2.35.1
->
-
-On Mon, Mar 14, 2022 at 3:17 PM Dirk M=C3=BCller <dmueller@suse.de> wrote:
->
-> This script uses bash specific syntax. make it more specific by
-> declaring it to be used via bash rather than /bin/sh which could
-> be non-bash.
->
-> Signed-off-by: Dirk M=C3=BCller <dmueller@suse.de>
-> ---
->  scripts/dev-needs.sh | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/dev-needs.sh b/scripts/dev-needs.sh
-> index 454cc304fb44..c324f0737f6b 100755
-> --- a/scripts/dev-needs.sh
-> +++ b/scripts/dev-needs.sh
-> @@ -1,4 +1,4 @@
-> -#! /bin/sh
-> +#!/bin/bash
->  # SPDX-License-Identifier: GPL-2.0
->  # Copyright (c) 2020, Google LLC. All rights reserved.
->  # Author: Saravana Kannan <saravanak@google.com>
-> --
-> 2.35.1
->
+> > ---
+> > 
+> > Frederic Weisbecker (2):
+> >       rcu: Fix expedited GP polling against UP/no-preempt environment
+> 
+> I have some concerns with this one due to the fact that it acquires locks
+> in cases where the old code would not.  (I did have problems with this
+> in both recent SRCU changes and the normal-grace-period counterpart to
+> this series.)
+> 
+> But let's see what rcutorture and kbuild test robot think about it.
+> 
+> >       rcu: Fix preemption mode check on synchronize_rcu[_expedited]()
+> 
+> This one looks good.
+> 
+> > Valentin Schneider (1):
+> >       preempt/dynamic: Introduce preempt mode accessors
+> 
+> I am guessing that this one is a compact placeholder for my convenience
+> (in which case thank you!).  I will be marking it "EXP" on my next rebase.
+> 
+> 							Thanx, Paul
+> 
+> >  include/linux/sched.h | 16 +++++++++++++++
+> >  kernel/rcu/tree.c     |  2 +-
+> >  kernel/rcu/tree_exp.h | 57 +++++++++++++++++++++++++++++++--------------------
+> >  kernel/sched/core.c   | 11 ++++++++++
+> >  4 files changed, 63 insertions(+), 23 deletions(-)
