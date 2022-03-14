@@ -2,137 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28011C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C9F3C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238640AbiCNKmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
+        id S238652AbiCNKmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234173AbiCNKm1 (ORCPT
+        with ESMTP id S238637AbiCNKmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:42:27 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2C13EA92;
-        Mon, 14 Mar 2022 03:41:17 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22E8a3U8011989;
-        Mon, 14 Mar 2022 10:41:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=CWAf8f5TJCbQpdwIz0ofQ9Dva67XSRgREsrrNLuwR9c=;
- b=klV9G+whGYzATWcvlvJ+tJNC2VIlxd+vsF5+qJdKS96KQrLV+jZTFRX1KRRmLLC3jS0R
- +36EX2xsnn7jfK64QiwvpAHQeQ/rxfPp4UFw3XfeHppYsSHD6W750YZI2y2rSDN13KPG
- +NFaToHJSA5EoiT53C+FVZ/0rOQYbC1jYjwIqMUzQJI53xD+Mtp9wBGQ+Iqmah4EyubH
- rQtRIjGnpqldEMzATxOW5Ic/StmAzn1vbE5+dUUy8Z1f7uAPUDr4V7ad73RT4behrR0y
- k9y0/Jz89jDUfkTbuTPmMI3iiWdrpgdWE78n3S5Jz5MxixN6aa68RkrTVEqNcwkao1U+ bg== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3es5kmqf47-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 10:41:17 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EAbQ2Q027535;
-        Mon, 14 Mar 2022 10:41:14 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 3erk58kc7h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 10:41:14 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EAfBI743844076
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Mar 2022 10:41:12 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4B4C311C6E8;
-        Mon, 14 Mar 2022 10:32:12 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D897311C6C7;
-        Mon, 14 Mar 2022 10:32:10 +0000 (GMT)
-Received: from li-bb2b2a4c-3307-11b2-a85c-8fa5c3a69313.ibm.com (unknown [9.43.29.85])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Mar 2022 10:32:10 +0000 (GMT)
-From:   Ojaswin Mujoo <ojaswin@linux.ibm.com>
-To:     fstests@vger.kernel.org
-Cc:     riteshh@linux.ibm.com, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ext4/053: Add support for testing mb_optimize_scan
-Date:   Mon, 14 Mar 2022 16:02:07 +0530
-Message-Id: <5b0d252484cbe973c2df0c677cb47b30012b0db1.1647253313.git.ojaswin@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
+        Mon, 14 Mar 2022 06:42:40 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538E343AF4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 03:41:31 -0700 (PDT)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D89433FDC7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:41:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647254489;
+        bh=cR8L9DGP3yJSDi44x8gY1TGjdeDaEHMP44/lzSW8rUQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=uZ1YNzHChHmCeH+THODOAPEsCaIwQg65eSDPPYJu4McYWuq9pumNDgtR2wYIVQVuv
+         DPDYLKURuGTvJTBPwPrbBQaoNKxezHUDyHTqrQaTItMXmgYe2surs3nryfu7KO8xx2
+         7I8aYTM52kGQOjrDfYswCL8R8oVQcsC1KqlJwJ2uVSURDAItNG0VU/L+Ox78/5kHXX
+         Dv7VVWdLh4GXZntNWj9L9SuNn89F+nHaWwkskyS8sNivhioMmQtFKTFvCL4jpAvkzV
+         uBi92J7/cpR/mvKx6L1DDTTBTbQ5IffRfysUHPrP7BGKuFVfiE0SuCGTqt2OXHO8aF
+         MwCqZfGfJcYkw==
+Received: by mail-ed1-f72.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so8469784edb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 03:41:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cR8L9DGP3yJSDi44x8gY1TGjdeDaEHMP44/lzSW8rUQ=;
+        b=Z6rmS/3k+NWUKWB/1uXsox0oQLVofxTJbIu7Izsrv84YE9icqrMRy8NAR6z24KpIaR
+         WQpy6zQcv9aSA2Tt/cYcrpDPM5Cp9RZ2KhuZdMYs1ASo40IqrRjvBHC4Pza+IUlfHu3D
+         aDGoaamasYBVN5z0BYz3vMJFJ0ELTqXLqtlRVoKwY0b4NAyGzFioi6V9n3+DHTRlH5Vp
+         CF8LgfPAfCN4GAvt9ZC+Y7m26uPFnqBHYJ8dpwlgb7J1ydC03Ig7kmhULg60NB9rrtsp
+         1JUAtVzqbpqcR4DV3T7R8z6pJD0CvjgaLxSdaAhHF3UBjmpavTF81APoEDQMjTQ5VMfr
+         Go0w==
+X-Gm-Message-State: AOAM530cLS59+6/rDF3QfYxFdo/ADde+yyYF/+7KUQPY3v2Cy6xMWZVO
+        q0LB30RTACIzknqxUDKRgRXbPC364TIjQBKXBmJckDN+L2QjKCJAHIDjibvkZFTbFiK8Pvb3mlf
+        vuxdkHZcuN7TpBmf2zxGb9DsHYVJb4u6ckoJ1tyH8VQ==
+X-Received: by 2002:a17:906:c116:b0:6d6:f8b3:cd47 with SMTP id do22-20020a170906c11600b006d6f8b3cd47mr18639533ejc.501.1647254489238;
+        Mon, 14 Mar 2022 03:41:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxSOTbmSAF6uG3GM22YAt0E/KC7wWNF2wsOIEvYm9csbBjNR+5AfgsSfbdmR5FElce7jWg1qA==
+X-Received: by 2002:a17:906:c116:b0:6d6:f8b3:cd47 with SMTP id do22-20020a170906c11600b006d6f8b3cd47mr18639508ejc.501.1647254489015;
+        Mon, 14 Mar 2022 03:41:29 -0700 (PDT)
+Received: from [192.168.0.152] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.googlemail.com with ESMTPSA id er12-20020a056402448c00b00413d03ac4a2sm7380218edb.69.2022.03.14.03.41.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 03:41:28 -0700 (PDT)
+Message-ID: <fadbc93f-8741-58c6-d0e5-dc740e0f0724@canonical.com>
+Date:   Mon, 14 Mar 2022 11:41:27 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: Jofw897RvP4hcS-2YBWXAd3cvoNMdPUR
-X-Proofpoint-GUID: Jofw897RvP4hcS-2YBWXAd3cvoNMdPUR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_04,2022-03-14_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 adultscore=0 spamscore=0 phishscore=0 lowpriorityscore=0
- mlxscore=0 bulkscore=0 malwarescore=0 mlxlogscore=921 impostorscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203140065
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy
+ override params bindings
+Content-Language: en-US
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
+Cc:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wesley Cheng <wcheng@codeaurora.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-usb@vger.kernel.org, quic_ppratap@quicinc.com,
+        quic_kriskura@quicinc.com
+References: <1646288011-32242-1-git-send-email-quic_c_sanm@quicinc.com>
+ <1646288011-32242-2-git-send-email-quic_c_sanm@quicinc.com>
+ <b793195b-1d3d-63b2-19d2-72ae2aec8c0f@canonical.com>
+ <20220314032952.GA27561@hu-pkondeti-hyd.qualcomm.com>
+ <f1621a67-a0ff-f111-c4da-9401924e7f4a@canonical.com>
+ <20220314081613.GA28402@hu-pkondeti-hyd.qualcomm.com>
+ <c88396f4-4cfe-d375-1dcd-b34a6496cb06@canonical.com>
+ <20220314094054.GB28402@hu-pkondeti-hyd.qualcomm.com>
+ <b45b3b7e-e1c0-79b6-81c0-53c70427dd10@canonical.com>
+ <20220314103045.GA31533@hu-pkondeti-hyd.qualcomm.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220314103045.GA31533@hu-pkondeti-hyd.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support to test the mb_optimize_scan mount option.
-Since its value is not reflected in the "options" file in proc,
-use "mb_structs_summary" to verify its value.
+On 14/03/2022 11:30, Pavan Kondeti wrote:
+> Hi Krzysztof,
+> 
+>>
+>> Ah, I did not get it. That's not the solution for this case. defines in
+>> dt-bindings are for constants which already can be in DT, e.g. IDs. Your
+>> register values should not be stored in DT.
+>>
+> These are again not register definitions. These are encodings that dT and
+> driver can use. These would be constants only, no?
 
-Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
----
- tests/ext4/053 | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+What do you mean it is not a register value? I don't have access to
+datasheet/manual but I can clearly see code:
 
-diff --git a/tests/ext4/053 b/tests/ext4/053
-index e1e79592..bd92002f 100755
---- a/tests/ext4/053
-+++ b/tests/ext4/053
-@@ -100,6 +100,7 @@ test_mnt() {
- 	(
- 	ret=0
- 	IFS=','
-+	proc_path="/proc/fs/ext4/$(_short_dev $SCRATCH_DEV)"
- 	for option in $OPTS; do
- 		if echo $IGNORED | grep -w $option; then
- 			continue
-@@ -114,11 +115,16 @@ test_mnt() {
- 		fi
- 		option=${option#^}
- 
--		if echo $CHECK_MINFO | grep -w $option; then
-+		if [[ $option =~ ^mb_optimize_scan=.*$ ]]; then
-+			# mb_optimize_scan needs special handling
-+			expected=${option#*=}
-+			ret=$(cat $proc_path/mb_structs_summary | grep "optimize_scan" \
-+				| awk '{ print $2 }')
-+		elif echo $CHECK_MINFO | grep -w $option; then
- 			findmnt -n -o OPTIONS $SCRATCH_DEV | grep $option
- 			ret=$?
- 		else
--			grep $option /proc/fs/ext4/$(_short_dev $SCRATCH_DEV)/options
-+			grep $option $proc_path/options
- 			ret=$?
- 		fi
- 
-@@ -526,13 +532,10 @@ for fstype in ext2 ext3 ext4; do
- 
- 	mnt prefetch_block_bitmaps removed
- 	mnt no_prefetch_block_bitmaps
--	# We don't currently have a way to know that the option has been
--	# applied, so comment it out for now. This should be fixed in the
--	# future.
--	#mnt mb_optimize_scan=0
--	#mnt mb_optimize_scan=1
--	#not_mnt mb_optimize_scan=9
--	#not_mnt mb_optimize_scan=
-+	mnt mb_optimize_scan=0
-+	mnt mb_optimize_scan=1
-+	not_mnt mb_optimize_scan=9
-+	not_mnt mb_optimize_scan=
- 	mnt nombcache
- 	mnt no_mbcache nombcache
- 	mnt check=none removed
--- 
-2.27.0
++	if (or->hs_disconnect.override)
++		qcom_snps_hsphy_write_mask(hsphy->base,
++			USB2_PHY_USB_PHY_HS_PHY_OVERRIDE_X0,
++			HS_DISCONNECT_MASK,
++			or->hs_disconnect.value << HS_DISCONNECT_SHIFT);
 
+You read the value from DT (e.g. "3" which means 6.3% for hs-disconnect)
+and you write it to a register. Directly. 3 is a value for the hardware,
+meaningless outside of it. It has meaning only in this one hardware
+programming model. For humans it means nothing. For humans 6.3% means
+something.
+
+>>>
+>>>>
+>>>> What could be the meaningful value? Percentage could work. You have
+>>>> there a negative value, so I wonder what type of percentage is it? What
+>>>> is the formula?
+>>>
+>>> I just multiplied by 100 since device tree has no support for floating (as per
+>>> my knowledge). The negative value represents it lowers the disconnect
+>>> threshold by 2.72% of the default value. if it makes sense, we could also
+>>> start from 0 like below.
+>>
+>> ok
+>>
+>>>
+>>> #define QCOM_SNPS_FEMTO_HS_DISCONNECT_NEG_2P72_PCT 0
+>>> #define QCOM_SNPS_FEMTO_HS_DISCONNECT_DEFAULT	1
+>>> #define QCOM_SNPS_FEMTO_HS_DISCONNECT_3P17_PCT	2
+>>> #define QCOM_SNPS_FEMTO_HS_DISCONNECT_6P3_PCT	3
+>>>
+>>> The driver can have a table to map these bindings. This looks much better
+>>> than those x100 formula values.
+>>
+>> Again mention driver how he can map it. I mostly don't care about the
+>> driver. :)
+>>
+>> I think we are getting around the problem, so to emphasize again: do not
+>> store register values in the bindings/DT but its meaning, so in your
+>> case most likely percentages (or permille or ratio or some other value).
+>>
+> 
+> I am really confused on what is that you mean by not storing the registers
+> here. We are only giving enum values for specific percentages supported by
+> the PHY. 
+
+The enum consists of values used in hardware registers. Values having
+meaning only to this one particular hardware. Any other hardware will
+not understand them.
+
+IOW, you embed the hardware programming model in the DT. No.
+
+> if you see -2.72 corresponds to 0 value on 0:2 bits of a register.
+> I did not mention that in the device tree. we are giving constant values
+> (enums) for all the possible percentage values. The user can see the
+> dt-bindings file and pass the approriate value based on the compliance
+> results. What is the objection?
+
+You use some unrelated arguments. How does it matter what user can see
+or cannot see?
+
+> 
+> can you please give an example if you have something in mind? 
+
+I gave you an example - use percentages. Another example how it was done
+wrong is here:
+https://lore.kernel.org/linux-devicetree/c6607953-927e-4d85-21cb-72e01a121453@kernel.org/
+
+
+Best regards,
+Krzysztof
