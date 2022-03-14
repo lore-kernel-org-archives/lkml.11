@@ -2,103 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 03:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50163C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 03:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236140AbiCND4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 23:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
+        id S236147AbiCND51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 23:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234742AbiCND4m (ORCPT
+        with ESMTP id S232277AbiCND50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 23:56:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A4D2DD4E;
-        Sun, 13 Mar 2022 20:55:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8C81B80D06;
-        Mon, 14 Mar 2022 03:55:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D1CC340EE;
-        Mon, 14 Mar 2022 03:55:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647230128;
-        bh=ystJ2dFsrKoVvhUyZVXVmuFA5GbJI9nSD70EYmIfp3g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZtVDwDyBVhtK2d/JR44H+cRv2iEbIufCbkTkvjW+2XwsFotSxigOa+69Dk38ArAlV
-         muXwtFmM0sKt83vPmZjbHTfYTHhDY76d4O9XS4EOAnwOxA+DZxbYNrC0SX8/9h/kx2
-         6HjGlpywObERaCjm+Sfw6bsavrCGxAeSKd02Vz0Sa0vZT72813W+BkRVCnjNhNGnku
-         ysfFRV1/0v84xoGcsd0Oz+zHz+Yv6VROq7iaawS2I+4P7HQywFje/2Oy7ire7iAsBc
-         7/7qnkkVLV7JQb+IQVhB9dDNwDk8QcQUCCkDLNQgsBoPjZXlC9RidFcNN1/LoLuMrE
-         MTErrw9FnR4PA==
-Date:   Mon, 14 Mar 2022 05:54:42 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     Haitao Huang <haitao.huang@linux.intel.com>,
-        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
+        Sun, 13 Mar 2022 23:57:26 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A31731DD5;
+        Sun, 13 Mar 2022 20:56:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647230177; x=1678766177;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6bkM5qkPnQ8XQAJyJzGj5m4VADZeV4mTAnh7ytVk5t8=;
+  b=nJjDVNXIJzKHe7lucGwQ3LnMoki4zcUbV1Qk8aFoUN/vei5TYAfC1rn2
+   OZ5WEJzlQMWyBanpMy4A9BJj1ZUUeaJowqbBELhPjiGBpaguKw98vrX8g
+   CMKMY6k5a3WbgbRwnkYjbU4uxeRVA87gwZAtDVqStXfZ5eGD5fFewPej6
+   Z1HH7SnCGDEfqYvM1CAvzxgfh8BHsbWm+U56b232Mh70+Xe5KZF0b9yWG
+   u1t1V805q7CyiUoPWVmWB8aZIjvA+QIrdhoWcvsV3jw0pKfOiimhx+DlE
+   SDLOLwiAXzclhtDrJOkLzWB2HhtLfODJhjXmLQQhcA+LabmWX82sVj9BZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="236532311"
+X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
+   d="scan'208";a="236532311"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 20:56:17 -0700
+X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
+   d="scan'208";a="713561551"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 20:56:11 -0700
+Date:   Mon, 14 Mar 2022 12:09:42 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Zeng Guang <guang.zeng@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
         "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-Message-ID: <Yi68ghXucqTSe72S@iki.fi>
-References: <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
- <YimWaAqEnXHbLdjh@iki.fi>
- <op.1itu5vkewjvjmi@hhuan26-mobl1.mshome.net>
- <Yis8LV99mORcLYs6@iki.fi>
- <Yis9rA8uC/0bmWCF@iki.fi>
- <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com>
- <YiuQx+X9UQ2l22un@iki.fi>
- <e1c04077-0165-c5ec-53be-7fd732965e80@intel.com>
- <Yi65sM+yCvZU0/am@iki.fi>
- <Yi66abN6kg/8DGzi@iki.fi>
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>
+Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
+ unconditionally
+Message-ID: <20220314040941.GA18296@gao-cwp>
+References: <Yifg4bea6zYEz1BK@google.com>
+ <20220309052013.GA2915@gao-cwp>
+ <YihCtvDps/qJ2TOW@google.com>
+ <6dc7cff15812864ed14b5c014769488d80ce7f49.camel@redhat.com>
+ <YirPkr5efyylrD0x@google.com>
+ <29c76393-4884-94a8-f224-08d313b73f71@intel.com>
+ <01586c518de0c72ff3997d32654b8fa6e7df257d.camel@redhat.com>
+ <2900660d947a878e583ebedf60e7332e74a1af5f.camel@redhat.com>
+ <20220313135335.GA18405@gao-cwp>
+ <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yi66abN6kg/8DGzi@iki.fi>
+In-Reply-To: <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 05:45:48AM +0200, Jarkko Sakkinen wrote:
-> On Mon, Mar 14, 2022 at 05:42:43AM +0200, Jarkko Sakkinen wrote:
-> > On Fri, Mar 11, 2022 at 11:28:27AM -0800, Reinette Chatre wrote:
-> > > Supporting permission restriction in an ioctl() enables the runtime to manage
-> > > the enclave memory without needing to map it.
-> > 
-> > Which is opposite what you do in EAUG. You can also augment pages without
-> > needing the map them. Sure you get that capability, but it is quite useless
-> > in practice.
-> 
-> Essentially you are tuning for a niche artifical use case over the common
-> case that most people end up doing. It makes no sense.
+>> > > This won't work with nested AVIC - we can't just inhibit a nested guest using its own AVIC,
+>> > > because migration happens.
+>> > 
+>> > I mean because host decided to change its apic id, which it can in theory do any time,
+>> > even after the nested guest has started. Seriously, the only reason guest has to change apic id,
+>> > is to try to exploit some security hole.
+>> 
+>> Hi
+>> 
+>> Thanks for the information.  
+>> 
+>> IIUC, you mean KVM applies APICv inhibition only to L1 VM, leaving APICv
+>> enabled for L2 VM. Shouldn't KVM disable APICv for L2 VM in this case?
+>> It looks like a generic issue in dynamically toggling APICv scheme,
+>> e.g., qemu can set KVM_GUESTDBG_BLOCKIRQ after nested guest has started.
+>> 
+>
+>That is the problem - you can't disable it for L2, unless you are willing to emulate it in software.
+>Or in other words, when nested guest uses a hardware feature, you can't at some point say to it:
+>sorry buddy - hardware feature disappeared.
 
-Also it is important to remember why EMODPR is there: it is not to bring
-useful control mechanism or interesting applications for SGX. It's there
-because of hardware constraints. Therefore it should be used accordingly
-and certainly not to fully expose its interface to the user space.
+Agreed. I missed this.
 
-Without hardware constraints, we would have only in-enclave EMODP.
+>
+>It is *currently* not a problem for APICv because it doesn't do IPI virtualization,
+>and even with these patches, it doesn't do this for nesting.
+>It does become when you allow nested guest to use this which I did in the nested AVIC code.
+>
+>
+>and writable apic ids do pose a large problem, since nested AVIC, will target L1's apic ids,
+>and when they can change under you without any notice, and even worse be duplicate,
+>it is just nightmare.
 
-It is essentially a reset mechanism for EPCM, not more or less. Therefore,
-it should be used as such and pick a *fixed* value to reset the EPCM from
-the mapped range. I think PROT_READ is the sanest choice of the available
-options. Then, EMODPE can be used for the most part just like "EMODP".
+OK. So the problem of disabling APICv is if we choose to disable APICv instead
+of making APIC ID read-only, although it can work perfectly for VMX IPIv, it
+effectively makes future cleanup to AVIC difficult/impossible because nested
+AVIC is practically to implement without assuming APIC IDs of L1 is immutable.
 
-Please do not fully expose EMODPR to the user space. It's a pandora box
-of misbehaviour and shooting yourself into foot.
+Sean & Maxim
 
-BR, Jarkko
+How about go back to use a module parameter to opt in to read-only APIC ID.
+Although migration in some cases may fail but it shouldn't be a big issue as
+migration VMs from a KVM with nested=on to a KVM with nested=off may also fail.
