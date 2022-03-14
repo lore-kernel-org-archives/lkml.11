@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBEFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B9CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237981AbiCNMDj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:03:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
+        id S240152AbiCNMDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240223AbiCNMCc (ORCPT
+        with ESMTP id S240420AbiCNMCw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:02:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFA949FBC;
-        Mon, 14 Mar 2022 04:59:55 -0700 (PDT)
+        Mon, 14 Mar 2022 08:02:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF984AE1A;
+        Mon, 14 Mar 2022 05:00:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8530661297;
-        Mon, 14 Mar 2022 11:59:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41636C340EC;
-        Mon, 14 Mar 2022 11:59:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA068B80DED;
+        Mon, 14 Mar 2022 12:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30581C340E9;
+        Mon, 14 Mar 2022 12:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259163;
-        bh=uH+9wUozafbkU8hZyLgzaileE4CqzDonFw9tNkZ91r4=;
+        s=korg; t=1647259211;
+        bh=bdFL2p6Uh3FS0ZBBSN7cWAcwiXonpScEdh2pPj85trA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=opNnZS84ZEMUgcS+JWJvoF34k6TNx7XVbT6n06FLoA6jUuRKLvFkFo2gvOulHnyH/
-         73rIBdnA3J9u2ufa0qTHs73nZ6E+Wx1peivePeaf7vIiJIx011vaQCxqMKHkFDpBG+
-         1nMqETTwAQ4qULsE12xqBngL1IEUCRy6CSeRXYIs=
+        b=cbgSVw7V3B8PpHIPOjjeA4RZUoi/B/3rwiNF8dkZ5C+TR6zml+RMUbyrL2CV5bD4J
+         TKhmXY5kXfKrNT+oouzmL2xjBIRl0KCKHmZVyHrEr4YBmUUKuqZuAgXdwNV52nh2q7
+         J49cjDF6Pa76SWZOpCTdw2QQiRs3fmnaW6BEuTew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Mohammad Kabat <mohammadkab@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 17/71] ice: stop disabling VFs due to PF error responses
-Date:   Mon, 14 Mar 2022 12:53:10 +0100
-Message-Id: <20220314112738.415508406@linuxfoundation.org>
+Subject: [PATCH 5.10 27/71] net/mlx5: Fix size field in bufferx_reg struct
+Date:   Mon, 14 Mar 2022 12:53:20 +0100
+Message-Id: <20220314112738.692696662@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,106 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Mohammad Kabat <mohammadkab@nvidia.com>
 
-[ Upstream commit 79498d5af8e458102242d1667cf44df1f1564e63 ]
+[ Upstream commit ac77998b7ac3044f0509b097da9637184598980d ]
 
-The ice_vc_send_msg_to_vf function has logic to detect "failure"
-responses being sent to a VF. If a VF is sent more than
-ICE_DFLT_NUM_INVAL_MSGS_ALLOWED then the VF is marked as disabled.
-Almost identical logic also existed in the i40e driver.
+According to HW spec the field "size" should be 16 bits
+in bufferx register.
 
-This logic was added to the ice driver in commit 1071a8358a28 ("ice:
-Implement virtchnl commands for AVF support") which itself copied from
-the i40e implementation in commit 5c3c48ac6bf5 ("i40e: implement virtual
-device interface").
-
-Neither commit provides a proper explanation or justification of the
-check. In fact, later commits to i40e changed the logic to allow
-bypassing the check in some specific instances.
-
-The "logic" for this seems to be that error responses somehow indicate a
-malicious VF. This is not really true. The PF might be sending an error
-for any number of reasons such as lack of resources, etc.
-
-Additionally, this causes the PF to log an info message for every failed
-VF response which may confuse users, and can spam the kernel log.
-
-This behavior is not documented as part of any requirement for our
-products and other operating system drivers such as the FreeBSD
-implementation of our drivers do not include this type of check.
-
-In fact, the change from dev_err to dev_info in i40e commit 18b7af57d9c1
-("i40e: Lower some message levels") explains that these messages
-typically don't actually indicate a real issue. It is quite likely that
-a user who hits this in practice will be very confused as the VF will be
-disabled without an obvious way to recover.
-
-We already have robust malicious driver detection logic using actual
-hardware detection mechanisms that detect and prevent invalid device
-usage. Remove the logic since its not a documented requirement and the
-behavior is not intuitive.
-
-Fixes: 1071a8358a28 ("ice: Implement virtchnl commands for AVF support")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: e281682bf294 ("net/mlx5_core: HW data structs/types definitions cleanup")
+Signed-off-by: Mohammad Kabat <mohammadkab@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c   | 18 ------------------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h   |  3 ---
- 2 files changed, 21 deletions(-)
+ include/linux/mlx5/mlx5_ifc.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 48511ad0e0c8..5134342ff70f 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1849,24 +1849,6 @@ ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index f5e829e12a76..eba1f1cbc9fb 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -9307,8 +9307,8 @@ struct mlx5_ifc_bufferx_reg_bits {
+ 	u8         reserved_at_0[0x6];
+ 	u8         lossy[0x1];
+ 	u8         epsb[0x1];
+-	u8         reserved_at_8[0xc];
+-	u8         size[0xc];
++	u8         reserved_at_8[0x8];
++	u8         size[0x10];
  
- 	dev = ice_pf_to_dev(pf);
- 
--	/* single place to detect unsuccessful return values */
--	if (v_retval) {
--		vf->num_inval_msgs++;
--		dev_info(dev, "VF %d failed opcode %d, retval: %d\n", vf->vf_id,
--			 v_opcode, v_retval);
--		if (vf->num_inval_msgs > ICE_DFLT_NUM_INVAL_MSGS_ALLOWED) {
--			dev_err(dev, "Number of invalid messages exceeded for VF %d\n",
--				vf->vf_id);
--			dev_err(dev, "Use PF Control I/F to enable the VF\n");
--			set_bit(ICE_VF_STATE_DIS, vf->vf_states);
--			return -EIO;
--		}
--	} else {
--		vf->num_valid_msgs++;
--		/* reset the invalid counter, if a valid message is received. */
--		vf->num_inval_msgs = 0;
--	}
--
- 	aq_ret = ice_aq_send_msg_to_vf(&pf->hw, vf->vf_id, v_opcode, v_retval,
- 				       msg, msglen, NULL);
- 	if (aq_ret && pf->hw.mailboxq.sq_last_status != ICE_AQ_RC_ENOSYS) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 59e5b4f16e96..d2e935c678a1 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -13,7 +13,6 @@
- #define ICE_MAX_MACADDR_PER_VF		18
- 
- /* Malicious Driver Detection */
--#define ICE_DFLT_NUM_INVAL_MSGS_ALLOWED		10
- #define ICE_MDD_EVENTS_THRESHOLD		30
- 
- /* Static VF transaction/status register def */
-@@ -97,8 +96,6 @@ struct ice_vf {
- 	unsigned int tx_rate;		/* Tx bandwidth limit in Mbps */
- 	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
- 
--	u64 num_inval_msgs;		/* number of continuous invalid msgs */
--	u64 num_valid_msgs;		/* number of valid msgs detected */
- 	unsigned long vf_caps;		/* VF's adv. capabilities */
- 	u8 num_req_qs;			/* num of queue pairs requested by VF */
- 	u16 num_mac;
+ 	u8         xoff_threshold[0x10];
+ 	u8         xon_threshold[0x10];
 -- 
 2.34.1
 
