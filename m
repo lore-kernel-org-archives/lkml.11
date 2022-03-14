@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 818C1C38161
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF57C47088
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245487AbiCNMdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51492 "EHLO
+        id S245585AbiCNMdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:33:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243889AbiCNMVV (ORCPT
+        with ESMTP id S243945AbiCNMVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:21 -0400
+        Mon, 14 Mar 2022 08:21:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781A53882;
-        Mon, 14 Mar 2022 05:17:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6C613D33;
+        Mon, 14 Mar 2022 05:19:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A17160919;
-        Mon, 14 Mar 2022 12:17:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D4ABC340E9;
-        Mon, 14 Mar 2022 12:17:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 06DD360C70;
+        Mon, 14 Mar 2022 12:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF056C340E9;
+        Mon, 14 Mar 2022 12:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260257;
-        bh=7xLY8E0iecjq7U2PTSjAQrPQepZTvnSyMfmnWw0JgT8=;
+        s=korg; t=1647260355;
+        bh=/ysTpHMR/qo7lmvua99zXU/quYDGz2gZ/U7+mWVtzZo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PIrb2/9XgEO8UsOgvYhkch1MfIeBzNFu5yRNEqgEbe5COR0vdQ6inmrcH6KO3bgnk
-         STRrgJ5m69Y+IuPdzVhWFOlEbKUNHkETFjFXx4PP9hNatI1eqwmfNnbI0gmjVuuSdU
-         Kwg5kidnUGaAgimGEfc+ln9mJ9QRvAz1PDs176GU=
+        b=CS3V/gc+DzlmRi4TpMUzUTPlEEi67rhn3pOYUahvXe1WOQZb4UhxYm5BhzE42bfCS
+         SA1E0kXq2ygQ2ybCDimovDFjNXvD79/2PVN/7jWwhlnU5Pl9uyCq7n2fVXxpNepE8G
+         8AWSUNVYPGMVtKbktAx1Vj0K4oXVDviQ6FU6+n6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: [PATCH 5.16 098/121] arm64: Ensure execute-only permissions are not allowed without EPAN
-Date:   Mon, 14 Mar 2022 12:54:41 +0100
-Message-Id: <20220314112746.848735404@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 109/121] watch_queue: Fix the alloc bitmap size to reflect notes allocated
+Date:   Mon, 14 Mar 2022 12:54:52 +0100
+Message-Id: <20220314112747.152601399@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,119 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Catalin Marinas <catalin.marinas@arm.com>
+From: David Howells <dhowells@redhat.com>
 
-commit 6e2edd6371a497a6350bb735534c9bda2a31f43d upstream.
+commit 3b4c0371928c17af03e8397ac842346624017ce6 upstream.
 
-Commit 18107f8a2df6 ("arm64: Support execute-only permissions with
-Enhanced PAN") re-introduced execute-only permissions when EPAN is
-available. When EPAN is not available, arch_filter_pgprot() is supposed
-to change a PAGE_EXECONLY permission into PAGE_READONLY_EXEC. However,
-if BTI or MTE are present, such check does not detect the execute-only
-pgprot in the presence of PTE_GP (BTI) or MT_NORMAL_TAGGED (MTE),
-allowing the user to request PROT_EXEC with PROT_BTI or PROT_MTE.
+Currently, watch_queue_set_size() sets the number of notes available in
+wqueue->nr_notes according to the number of notes allocated, but sets
+the size of the bitmap to the unrounded number of notes originally asked
+for.
 
-Remove the arch_filter_pgprot() function, change the default VM_EXEC
-permissions to PAGE_READONLY_EXEC and update the protection_map[] array
-at core_initcall() if EPAN is detected.
+Fix this by setting the bitmap size to the number of notes we're
+actually going to make available (ie. the number allocated).
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Fixes: 18107f8a2df6 ("arm64: Support execute-only permissions with Enhanced PAN")
-Cc: <stable@vger.kernel.org> # 5.13.x
-Acked-by: Will Deacon <will@kernel.org>
-Reviewed-by: Vladimir Murzin <vladimir.murzin@arm.com>
-Tested-by: Vladimir Murzin <vladimir.murzin@arm.com>
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-by: Jann Horn <jannh@google.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/Kconfig                    |    3 ---
- arch/arm64/include/asm/pgtable-prot.h |    4 ++--
- arch/arm64/include/asm/pgtable.h      |   11 -----------
- arch/arm64/mm/mmap.c                  |   17 +++++++++++++++++
- 4 files changed, 19 insertions(+), 16 deletions(-)
+ kernel/watch_queue.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -1264,9 +1264,6 @@ config HW_PERF_EVENTS
- 	def_bool y
- 	depends on ARM_PMU
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -244,6 +244,7 @@ long watch_queue_set_size(struct pipe_in
+ 		goto error;
+ 	}
  
--config ARCH_HAS_FILTER_PGPROT
--	def_bool y
--
- # Supported by clang >= 7.0
- config CC_HAVE_SHADOW_CALL_STACK
- 	def_bool $(cc-option, -fsanitize=shadow-call-stack -ffixed-x18)
---- a/arch/arm64/include/asm/pgtable-prot.h
-+++ b/arch/arm64/include/asm/pgtable-prot.h
-@@ -92,7 +92,7 @@ extern bool arm64_use_ng_mappings;
- #define __P001  PAGE_READONLY
- #define __P010  PAGE_READONLY
- #define __P011  PAGE_READONLY
--#define __P100  PAGE_EXECONLY
-+#define __P100  PAGE_READONLY_EXEC	/* PAGE_EXECONLY if Enhanced PAN */
- #define __P101  PAGE_READONLY_EXEC
- #define __P110  PAGE_READONLY_EXEC
- #define __P111  PAGE_READONLY_EXEC
-@@ -101,7 +101,7 @@ extern bool arm64_use_ng_mappings;
- #define __S001  PAGE_READONLY
- #define __S010  PAGE_SHARED
- #define __S011  PAGE_SHARED
--#define __S100  PAGE_EXECONLY
-+#define __S100  PAGE_READONLY_EXEC	/* PAGE_EXECONLY if Enhanced PAN */
- #define __S101  PAGE_READONLY_EXEC
- #define __S110  PAGE_SHARED_EXEC
- #define __S111  PAGE_SHARED_EXEC
---- a/arch/arm64/include/asm/pgtable.h
-+++ b/arch/arm64/include/asm/pgtable.h
-@@ -1017,17 +1017,6 @@ static inline bool arch_wants_old_prefau
- }
- #define arch_wants_old_prefaulted_pte	arch_wants_old_prefaulted_pte
++	nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
+ 	ret = pipe_resize_ring(pipe, roundup_pow_of_two(nr_notes));
+ 	if (ret < 0)
+ 		goto error;
+@@ -269,7 +270,7 @@ long watch_queue_set_size(struct pipe_in
+ 	wqueue->notes = pages;
+ 	wqueue->notes_bitmap = bitmap;
+ 	wqueue->nr_pages = nr_pages;
+-	wqueue->nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
++	wqueue->nr_notes = nr_notes;
+ 	return 0;
  
--static inline pgprot_t arch_filter_pgprot(pgprot_t prot)
--{
--	if (cpus_have_const_cap(ARM64_HAS_EPAN))
--		return prot;
--
--	if (pgprot_val(prot) != pgprot_val(PAGE_EXECONLY))
--		return prot;
--
--	return PAGE_READONLY_EXEC;
--}
--
- static inline bool pud_sect_supported(void)
- {
- 	return PAGE_SIZE == SZ_4K;
---- a/arch/arm64/mm/mmap.c
-+++ b/arch/arm64/mm/mmap.c
-@@ -7,8 +7,10 @@
- 
- #include <linux/io.h>
- #include <linux/memblock.h>
-+#include <linux/mm.h>
- #include <linux/types.h>
- 
-+#include <asm/cpufeature.h>
- #include <asm/page.h>
- 
- /*
-@@ -38,3 +40,18 @@ int valid_mmap_phys_addr_range(unsigned
- {
- 	return !(((pfn << PAGE_SHIFT) + size) & ~PHYS_MASK);
- }
-+
-+static int __init adjust_protection_map(void)
-+{
-+	/*
-+	 * With Enhanced PAN we can honour the execute-only permissions as
-+	 * there is no PAN override with such mappings.
-+	 */
-+	if (cpus_have_const_cap(ARM64_HAS_EPAN)) {
-+		protection_map[VM_EXEC] = PAGE_EXECONLY;
-+		protection_map[VM_EXEC | VM_SHARED] = PAGE_EXECONLY;
-+	}
-+
-+	return 0;
-+}
-+arch_initcall(adjust_protection_map);
+ error_p:
 
 
