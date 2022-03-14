@@ -2,132 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1436AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18450C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238573AbiCNKdS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40090 "EHLO
+        id S238578AbiCNKeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231730AbiCNKdO (ORCPT
+        with ESMTP id S236630AbiCNKeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:33:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDA843ACE;
-        Mon, 14 Mar 2022 03:32:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50E6660FCD;
-        Mon, 14 Mar 2022 10:32:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14508C340E9;
-        Mon, 14 Mar 2022 10:31:59 +0000 (UTC)
-Message-ID: <1682f555-f7b8-8830-26ff-8d0c9007d323@xs4all.nl>
-Date:   Mon, 14 Mar 2022 11:31:58 +0100
+        Mon, 14 Mar 2022 06:34:00 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6751230F;
+        Mon, 14 Mar 2022 03:32:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647253970; x=1678789970;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tcH7GGg15JCUBMXBBEr4A+gzUlR4DzpJ44QMDaHKhXo=;
+  b=A9UqD0DW9K+S/CvEXXSZVh2smEJ6SObgjqDf2xwJiJ156wqXF6kdH8Dd
+   IsnXq0g+GAKC5bvUEuEHgnIaEHsHhnc4odPUXkIygMc7+h6oFuC3/MqaH
+   dwGpMF7LIVpWhn53OdS48+pVJK+2h1rTFaCQYyxz7mUM8sitteejWSZhK
+   /gXs8bf5MGq0evoU1A6+lEn25rPbXzsfgWOKTliNK5qwEnrWIHRr62vUB
+   OFHQJ7LViTcDJFwfS5c0RMNoQHEaiFg2xV+x+/msJ4W2N7RYwLeF23Zy3
+   +sfDKq6Cd+j0Y6swoOvrsCnWhcyWdfTLbF9BNQWrve+mOMV8M+G4Dle8d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="255941815"
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="255941815"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 03:32:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="580067063"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.92]) ([10.237.72.92])
+  by orsmga001.jf.intel.com with ESMTP; 14 Mar 2022 03:32:45 -0700
+Message-ID: <4436fbb9-32fa-82f0-bf99-344b9bfddf78@intel.com>
+Date:   Mon, 14 Mar 2022 12:32:45 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v4 2/2] venus: venc: Add support for intra-refresh mode
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH] mmc: block: enable cache-flushing when mmc cache is on
 Content-Language: en-US
-To:     quic_dikshita@quicinc.com, linux-media@vger.kernel.org,
+To:     Avri Altman <Avri.Altman@wdc.com>,
+        Michael Wu <michael@allwinnertech.com>, ulf.hansson@linaro.org,
+        beanhuo@micron.com, porzio@gmail.com
+Cc:     lixiang <lixiang@allwinnertech.com>, linux-mmc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, ezequiel@collabora.com,
-        stanimir.varbanov@linaro.org, quic_vgarodia@quicinc.com,
-        quic_majja@quicinc.com, quic_jdas@quicinc.com
-References: <1647252574-30451-1-git-send-email-quic_dikshita@quicinc.com>
- <1647252574-30451-3-git-send-email-quic_dikshita@quicinc.com>
-From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
-In-Reply-To: <1647252574-30451-3-git-send-email-quic_dikshita@quicinc.com>
+References: <20220312044315.7994-1-michael@allwinnertech.com>
+ <DM6PR04MB6575D203B92955D9A913576CFC0F9@DM6PR04MB6575.namprd04.prod.outlook.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <DM6PR04MB6575D203B92955D9A913576CFC0F9@DM6PR04MB6575.namprd04.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 14/03/2022 09:26, Avri Altman wrote:
+> Hi,
+>> The mmc core enable cache on default. But it only enables cache-flushing
+>> when host supports cmd23 and eMMC supports reliable write.
+>> For hosts which do not support cmd23 or eMMCs which do not support
+>> reliable write, the cache can not be flushed by `sync` command.
+>> This may leads to cache data lost.
+>> This patch enables cache-flushing as long as cache is enabled, no matter host
+>> supports cmd23 and/or eMMC supports reliable write or not.
+> I looked in the spec and indeed couldn't find why enabling cache is dependent of cmd23/reliable write.
+> Nor I was able to find the original commit log.
+
+Reliable write was added first, so it might have been an oversight:
+
+commit 881d1c25f765938a95def5afe39486ce39f9fc96
+Author: Seungwon Jeon <tgih.jun@samsung.com>
+Date:   Fri Oct 14 14:03:21 2011 +0900
+
+    mmc: core: Add cache control for eMMC4.5 device
+    
+    This patch adds cache feature of eMMC4.5 Spec.
+    If device supports cache capability, host can utilize some specific
+    operations.
+    
+    Signed-off-by: Seungwon Jeon <tgih.jun@samsung.com>
+    Signed-off-by: Jaehoon Chung <jh80.chung@samsung.com>
+    Signed-off-by: Chris Ball <cjb@laptop.org>
 
 
-On 3/14/22 11:09, quic_dikshita@quicinc.com wrote:
-> From: Dikshita Agarwal <quic_dikshita@quicinc.com>
+
 > 
-> Add support for intra-refresh type v4l2 control.
+> Please allow few days to ask internally.
 > 
-> Signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
-> ---
->  drivers/media/platform/qcom/venus/core.h       |  1 +
->  drivers/media/platform/qcom/venus/venc.c       |  6 +++++-
->  drivers/media/platform/qcom/venus/venc_ctrls.c | 10 ++++++++++
->  3 files changed, 16 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/media/platform/qcom/venus/core.h b/drivers/media/platform/qcom/venus/core.h
-> index 7c3bac0..65c0f01 100644
-> --- a/drivers/media/platform/qcom/venus/core.h
-> +++ b/drivers/media/platform/qcom/venus/core.h
-> @@ -260,6 +260,7 @@ struct venc_controls {
->  
->  	u32 header_mode;
->  	bool aud_enable;
-> +	u32 intra_refresh_type;
->  	u32 intra_refresh_period;
->  
->  	struct {
-> diff --git a/drivers/media/platform/qcom/venus/venc.c b/drivers/media/platform/qcom/venus/venc.c
-> index 84bafc3..bff8caf 100644
-> --- a/drivers/media/platform/qcom/venus/venc.c
-> +++ b/drivers/media/platform/qcom/venus/venc.c
-> @@ -893,8 +893,12 @@ static int venc_set_properties(struct venus_inst *inst)
->  				mbs++;
->  			mbs /= ctr->intra_refresh_period;
->  
-> -			intra_refresh.mode = HFI_INTRA_REFRESH_RANDOM;
->  			intra_refresh.cir_mbs = mbs;
-> +			if (ctr->intra_refresh_type ==
-> +			    V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC)
-> +				intra_refresh.mode = HFI_INTRA_REFRESH_CYCLIC;
-> +			else
-> +				intra_refresh.mode = HFI_INTRA_REFRESH_RANDOM;
->  		}
->  
->  		ptype = HFI_PROPERTY_PARAM_VENC_INTRA_REFRESH;
-> diff --git a/drivers/media/platform/qcom/venus/venc_ctrls.c b/drivers/media/platform/qcom/venus/venc_ctrls.c
-> index 1ada42d..51f5a572 100644
-> --- a/drivers/media/platform/qcom/venus/venc_ctrls.c
-> +++ b/drivers/media/platform/qcom/venus/venc_ctrls.c
-> @@ -316,6 +316,9 @@ static int venc_op_s_ctrl(struct v4l2_ctrl *ctrl)
->  	case V4L2_CID_COLORIMETRY_HDR10_MASTERING_DISPLAY:
->  		ctr->mastering = *ctrl->p_new.p_hdr10_mastering;
->  		break;
-> +	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:
-> +		ctr->intra_refresh_type = ctrl->val;
-> +		break;
->  	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD:
->  		ctr->intra_refresh_period = ctrl->val;
->  		break;
-> @@ -582,6 +585,13 @@ int venc_ctrl_init(struct venus_inst *inst)
->  				   V4L2_CID_COLORIMETRY_HDR10_MASTERING_DISPLAY,
->  				   v4l2_ctrl_ptr_create(NULL));
->  
-> +	v4l2_ctrl_new_std_menu(&inst->ctrl_handler, &venc_ctrl_ops,
-> +			       V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE,
-> +			       V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC,
-> +			       ~((1 << V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM) |
-> +			       (1 << V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC)),
+> Thanks,
+> Avri
 
-Just set this to 0. All menu items in the range 0..max are used, so nothing
-needs to be skipped.
-
-This argument should only be set to a non-0 value if one or more items in
-the range 0..max are to be skipped.
-
-After that change you can add my:
-
-Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-
-Regards,
-
-	Hans
-
-> +			       V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM);
-> +
->  	v4l2_ctrl_new_std(&inst->ctrl_handler, &venc_ctrl_ops,
->  			  V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD, 0,
->  			  ((4096 * 2304) >> 8), 1, 0);
