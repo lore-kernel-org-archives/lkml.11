@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D7CC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 818C1C38161
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245049AbiCNMcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48864 "EHLO
+        id S245487AbiCNMdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243928AbiCNMVY (ORCPT
+        with ESMTP id S243889AbiCNMVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7CD13CE4;
-        Mon, 14 Mar 2022 05:18:37 -0700 (PDT)
+        Mon, 14 Mar 2022 08:21:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781A53882;
+        Mon, 14 Mar 2022 05:17:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E024FB80DF4;
-        Mon, 14 Mar 2022 12:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4518FC340E9;
-        Mon, 14 Mar 2022 12:18:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A17160919;
+        Mon, 14 Mar 2022 12:17:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D4ABC340E9;
+        Mon, 14 Mar 2022 12:17:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260314;
-        bh=Mqf59jWgVyICVi1MOdIXW8LT3afhn1KB7de9lEOHhq4=;
+        s=korg; t=1647260257;
+        bh=7xLY8E0iecjq7U2PTSjAQrPQepZTvnSyMfmnWw0JgT8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DPPgU9HgfYMsQQo8goeLKvlkmNzwKe5AJtrkMXsbxfh5FROg0IeXtWtrjxNCtXVGd
-         qvAT7QVv6uPhMSBroR731fguPPRn3OIypWmwH5HW5+6Xp2ymbZEH5sVrP0Jv8Thx/X
-         VpSUrc5zFlSOjUFkfOCLd68/jqzNaZpsdGWQZTBQ=
+        b=PIrb2/9XgEO8UsOgvYhkch1MfIeBzNFu5yRNEqgEbe5COR0vdQ6inmrcH6KO3bgnk
+         STRrgJ5m69Y+IuPdzVhWFOlEbKUNHkETFjFXx4PP9hNatI1eqwmfNnbI0gmjVuuSdU
+         Kwg5kidnUGaAgimGEfc+ln9mJ9QRvAz1PDs176GU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, suresh kumar <suresh2514@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 072/121] net-sysfs: add check for netdevice being present to speed_show
-Date:   Mon, 14 Mar 2022 12:54:15 +0100
-Message-Id: <20220314112746.132053856@linuxfoundation.org>
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Vladimir Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH 5.16 098/121] arm64: Ensure execute-only permissions are not allowed without EPAN
+Date:   Mon, 14 Mar 2022 12:54:41 +0100
+Message-Id: <20220314112746.848735404@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,78 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+From: Catalin Marinas <catalin.marinas@arm.com>
 
-[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
+commit 6e2edd6371a497a6350bb735534c9bda2a31f43d upstream.
 
-When bringing down the netdevice or system shutdown, a panic can be
-triggered while accessing the sysfs path because the device is already
-removed.
+Commit 18107f8a2df6 ("arm64: Support execute-only permissions with
+Enhanced PAN") re-introduced execute-only permissions when EPAN is
+available. When EPAN is not available, arch_filter_pgprot() is supposed
+to change a PAGE_EXECONLY permission into PAGE_READONLY_EXEC. However,
+if BTI or MTE are present, such check does not detect the execute-only
+pgprot in the presence of PTE_GP (BTI) or MT_NORMAL_TAGGED (MTE),
+allowing the user to request PROT_EXEC with PROT_BTI or PROT_MTE.
 
-    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
-    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
-    ...
-    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
-    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
+Remove the arch_filter_pgprot() function, change the default VM_EXEC
+permissions to PAGE_READONLY_EXEC and update the protection_map[] array
+at core_initcall() if EPAN is detected.
 
-    crash> bt
-    ...
-    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
-    ...
-     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
-        [exception RIP: dma_pool_alloc+0x1ab]
-        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
-        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
-        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
-        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
-        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
-        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
-        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
-    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
-    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
-    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
-    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
-    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
-    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
-    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
-    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
-    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
-    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
-    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
-    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
-    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
-    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
-    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
-    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
-    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
-
-    crash> net_device.state ffff89443b0c0000
-      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
-
-To prevent this scenario, we also make sure that the netdevice is present.
-
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Fixes: 18107f8a2df6 ("arm64: Support execute-only permissions with Enhanced PAN")
+Cc: <stable@vger.kernel.org> # 5.13.x
+Acked-by: Will Deacon <will@kernel.org>
+Reviewed-by: Vladimir Murzin <vladimir.murzin@arm.com>
+Tested-by: Vladimir Murzin <vladimir.murzin@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/net-sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/Kconfig                    |    3 ---
+ arch/arm64/include/asm/pgtable-prot.h |    4 ++--
+ arch/arm64/include/asm/pgtable.h      |   11 -----------
+ arch/arm64/mm/mmap.c                  |   17 +++++++++++++++++
+ 4 files changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index d7f9ee830d34..9e5657f63245 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -213,7 +213,7 @@ static ssize_t speed_show(struct device *dev,
- 	if (!rtnl_trylock())
- 		return restart_syscall();
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -1264,9 +1264,6 @@ config HW_PERF_EVENTS
+ 	def_bool y
+ 	depends on ARM_PMU
  
--	if (netif_running(netdev)) {
-+	if (netif_running(netdev) && netif_device_present(netdev)) {
- 		struct ethtool_link_ksettings cmd;
+-config ARCH_HAS_FILTER_PGPROT
+-	def_bool y
+-
+ # Supported by clang >= 7.0
+ config CC_HAVE_SHADOW_CALL_STACK
+ 	def_bool $(cc-option, -fsanitize=shadow-call-stack -ffixed-x18)
+--- a/arch/arm64/include/asm/pgtable-prot.h
++++ b/arch/arm64/include/asm/pgtable-prot.h
+@@ -92,7 +92,7 @@ extern bool arm64_use_ng_mappings;
+ #define __P001  PAGE_READONLY
+ #define __P010  PAGE_READONLY
+ #define __P011  PAGE_READONLY
+-#define __P100  PAGE_EXECONLY
++#define __P100  PAGE_READONLY_EXEC	/* PAGE_EXECONLY if Enhanced PAN */
+ #define __P101  PAGE_READONLY_EXEC
+ #define __P110  PAGE_READONLY_EXEC
+ #define __P111  PAGE_READONLY_EXEC
+@@ -101,7 +101,7 @@ extern bool arm64_use_ng_mappings;
+ #define __S001  PAGE_READONLY
+ #define __S010  PAGE_SHARED
+ #define __S011  PAGE_SHARED
+-#define __S100  PAGE_EXECONLY
++#define __S100  PAGE_READONLY_EXEC	/* PAGE_EXECONLY if Enhanced PAN */
+ #define __S101  PAGE_READONLY_EXEC
+ #define __S110  PAGE_SHARED_EXEC
+ #define __S111  PAGE_SHARED_EXEC
+--- a/arch/arm64/include/asm/pgtable.h
++++ b/arch/arm64/include/asm/pgtable.h
+@@ -1017,17 +1017,6 @@ static inline bool arch_wants_old_prefau
+ }
+ #define arch_wants_old_prefaulted_pte	arch_wants_old_prefaulted_pte
  
- 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
--- 
-2.34.1
-
+-static inline pgprot_t arch_filter_pgprot(pgprot_t prot)
+-{
+-	if (cpus_have_const_cap(ARM64_HAS_EPAN))
+-		return prot;
+-
+-	if (pgprot_val(prot) != pgprot_val(PAGE_EXECONLY))
+-		return prot;
+-
+-	return PAGE_READONLY_EXEC;
+-}
+-
+ static inline bool pud_sect_supported(void)
+ {
+ 	return PAGE_SIZE == SZ_4K;
+--- a/arch/arm64/mm/mmap.c
++++ b/arch/arm64/mm/mmap.c
+@@ -7,8 +7,10 @@
+ 
+ #include <linux/io.h>
+ #include <linux/memblock.h>
++#include <linux/mm.h>
+ #include <linux/types.h>
+ 
++#include <asm/cpufeature.h>
+ #include <asm/page.h>
+ 
+ /*
+@@ -38,3 +40,18 @@ int valid_mmap_phys_addr_range(unsigned
+ {
+ 	return !(((pfn << PAGE_SHIFT) + size) & ~PHYS_MASK);
+ }
++
++static int __init adjust_protection_map(void)
++{
++	/*
++	 * With Enhanced PAN we can honour the execute-only permissions as
++	 * there is no PAN override with such mappings.
++	 */
++	if (cpus_have_const_cap(ARM64_HAS_EPAN)) {
++		protection_map[VM_EXEC] = PAGE_EXECONLY;
++		protection_map[VM_EXEC | VM_SHARED] = PAGE_EXECONLY;
++	}
++
++	return 0;
++}
++arch_initcall(adjust_protection_map);
 
 
