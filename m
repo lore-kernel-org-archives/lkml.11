@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18187C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75FB4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239140AbiCNLgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34608 "EHLO
+        id S239155AbiCNLgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:36:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239123AbiCNLg0 (ORCPT
+        with ESMTP id S239113AbiCNLgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:36:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E51427FD;
-        Mon, 14 Mar 2022 04:35:15 -0700 (PDT)
+        Mon, 14 Mar 2022 07:36:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE74642A26;
+        Mon, 14 Mar 2022 04:35:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74A1B61142;
-        Mon, 14 Mar 2022 11:35:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64E77C340F9;
-        Mon, 14 Mar 2022 11:35:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F7E7B80DBE;
+        Mon, 14 Mar 2022 11:35:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D204C340E9;
+        Mon, 14 Mar 2022 11:35:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257714;
-        bh=7/3gVYu8SRpTnyppvzM+I2mjyROx9eSEuZlbhyzkf90=;
+        s=korg; t=1647257719;
+        bh=A2wtG3v5j0hpvU8hINsG8yBGCqv10mRtKPYDt5BXuoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1z+w5o8Sw5Z5mPyxZMu/8uhgZv9tVD7H/T6NRVqEXxdzjdKZphASrO2mG0qcu09qh
-         3aIpuue/G81F8iB3MQF246kwy+49PyrR45OPyjoK6UZOVlx5lzoRSnL+0+sjk3D9UR
-         YRjZRCM6b5KxMrBtK0IG8HFAyXRT+9MJrenNTw5U=
+        b=RBvANUOt/0gzEKCuhCjt+C6Iovo47QG5+OAdf1UO1IKNTaBL3fHCCQWFVN/g0MbDx
+         7W8ygx9/WsDVFoqTbHHVdrBQ/BvnU75Nhc5skPqkii895sAtW2DzkAqGxDOTEm/mgG
+         stDHrt5sUzPDbrw77IU5qxI+mrP5qmPFqZ+BgFjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 4.9 18/20] batman-adv: Dont expect inter-netns unique iflink indices
-Date:   Mon, 14 Mar 2022 12:34:19 +0100
-Message-Id: <20220314112731.033894102@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.9 19/20] ARM: fix Thumb2 regression with Spectre BHB
+Date:   Mon, 14 Mar 2022 12:34:20 +0100
+Message-Id: <20220314112731.062892656@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112730.388955049@linuxfoundation.org>
 References: <20220314112730.388955049@linuxfoundation.org>
@@ -49,72 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit 6c1f41afc1dbe59d9d3c8bb0d80b749c119aa334 upstream.
+commit 6c7cb60bff7aec24b834343ff433125f469886a3 upstream.
 
-The ifindex doesn't have to be unique for multiple network namespaces on
-the same machine.
+When building for Thumb2, the vectors make use of a local label. Sadly,
+the Spectre BHB code also uses a local label with the same number which
+results in the Thumb2 reference pointing at the wrong place. Fix this
+by changing the number used for the Spectre BHB local label.
 
-  $ ip netns add test1
-  $ ip -net test1 link add dummy1 type dummy
-  $ ip netns add test2
-  $ ip -net test2 link add dummy2 type dummy
-
-  $ ip -net test1 link show dev dummy1
-  6: dummy1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-      link/ether 96:81:55:1e:dd:85 brd ff:ff:ff:ff:ff:ff
-  $ ip -net test2 link show dev dummy2
-  6: dummy2: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-      link/ether 5a:3c:af:35:07:c3 brd ff:ff:ff:ff:ff:ff
-
-But the batman-adv code to walk through the various layers of virtual
-interfaces uses this assumption because dev_get_iflink handles it
-internally and doesn't return the actual netns of the iflink. And
-dev_get_iflink only documents the situation where ifindex == iflink for
-physical devices.
-
-But only checking for dev->netdev_ops->ndo_get_iflink is also not an option
-because ipoib_get_iflink implements it even when it sometimes returns an
-iflink != ifindex and sometimes iflink == ifindex. The caller must
-therefore make sure itself to check both netns and iflink + ifindex for
-equality. Only when they are equal, a "physical" interface was detected
-which should stop the traversal. On the other hand, vxcan_get_iflink can
-also return 0 in case there was currently no valid peer. In this case, it
-is still necessary to stop.
-
-Fixes: b7eddd0b3950 ("batman-adv: prevent using any virtual device created on batman-adv as hard-interface")
-Fixes: 5ed4a460a1d3 ("batman-adv: additional checks for virtual interfaces on top of WiFi")
-Reported-by: Sabrina Dubroca <sd@queasysnail.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
-[ bp: 4.9 backported: drop modification of non-existing batadv_get_real_netdevice. ]
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/batman-adv/hard-interface.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/arm/kernel/entry-armv.S |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -163,13 +163,15 @@ static bool batadv_is_on_batman_iface(co
- 		return true;
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1074,9 +1074,9 @@ vector_bhb_loop8_\name:
  
- 	iflink = dev_get_iflink(net_dev);
--
--	/* no more parents..stop recursion */
--	if (iflink == 0 || iflink == net_dev->ifindex)
-+	if (iflink == 0)
- 		return false;
- 
- 	parent_net = batadv_getlink_net(net_dev, net);
- 
-+	/* iflink to itself, most likely physical device */
-+	if (net == parent_net && iflink == net_dev->ifindex)
-+		return false;
-+
- 	/* recurse over the parent device */
- 	parent_dev = __dev_get_by_index((struct net *)parent_net, iflink);
- 	/* if we got a NULL parent_dev there is something broken.. */
+ 	@ bhb workaround
+ 	mov	r0, #8
+-1:	b	. + 4
++3:	b	. + 4
+ 	subs	r0, r0, #1
+-	bne	1b
++	bne	3b
+ 	dsb
+ 	isb
+ 	b	2b
 
 
