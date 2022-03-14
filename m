@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A23C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D28D4C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241314AbiCNMW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        id S241366AbiCNMWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:22:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241164AbiCNMM7 (ORCPT
+        with ESMTP id S240973AbiCNMMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:12:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3B436174;
-        Mon, 14 Mar 2022 05:11:01 -0700 (PDT)
+        Mon, 14 Mar 2022 08:12:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A81344FD;
+        Mon, 14 Mar 2022 05:10:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B252B80DF7;
-        Mon, 14 Mar 2022 12:11:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F517C340E9;
-        Mon, 14 Mar 2022 12:10:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 021476130F;
+        Mon, 14 Mar 2022 12:10:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF2EFC340E9;
+        Mon, 14 Mar 2022 12:10:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259858;
-        bh=MCanwxxSbotRv9mh+b1RN09ulz21n+ZgM4BgmlgR4HE=;
+        s=korg; t=1647259847;
+        bh=NqA27l9xeTHC7nsQWTG2iQ8eiJfiJlCHGnqdQcCijeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cxhDsPeZZkcdCZ8E6AJSn/XhIXuaB0HAWhEWDgutGUY6JZTWaf5wJXUpYnPobhHy6
-         XuvqJlyiKIX88d+vuIva9r1YUoGs2VXpGjH8dMUxxik9njabeYy2+Ira5BbY0w0BSs
-         0uLKQ5+ivfuEQcUld0fl6rF8e3W+QUZIQUXRZxak=
+        b=MM3idWel+Kr66bBqi93bSYIL1TxDpVZTal0oT8piXmp1LMsy6e5TrIVavDDUIGYL7
+         n9HcWhExXQi8odPhcd33XfWk/AOCtqqttw+LUjNFMly0evuavb6J8EKUMUqhfGEm5S
+         LhGmzr2P2ck90lVFziknRKIGfgkeXPcAJUQz2lqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Lyude Paul <lyude@redhat.com>, Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        dri-devel@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>
-Subject: [PATCH 5.15 105/110] drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
-Date:   Mon, 14 Mar 2022 12:54:47 +0100
-Message-Id: <20220314112745.956467304@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.15 103/110] x86/sgx: Free backing memory after faulting the enclave page
+Date:   Mon, 14 Mar 2022 12:54:45 +0100
+Message-Id: <20220314112745.901639690@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -54,55 +48,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Jarkko Sakkinen <jarkko@kernel.org>
 
-commit 3755d35ee1d2454b20b8a1e20d790e56201678a4 upstream.
+commit 08999b2489b4c9b939d7483dbd03702ee4576d96 upstream.
 
-As reported in [1], DRM_PANEL_EDP depends on DRM_DP_HELPER. Select
-the option to fix the build failure. The error message is shown
-below.
+There is a limited amount of SGX memory (EPC) on each system.  When that
+memory is used up, SGX has its own swapping mechanism which is similar
+in concept but totally separate from the core mm/* code.  Instead of
+swapping to disk, SGX swaps from EPC to normal RAM.  That normal RAM
+comes from a shared memory pseudo-file and can itself be swapped by the
+core mm code.  There is a hierarchy like this:
 
-  arm-linux-gnueabihf-ld: drivers/gpu/drm/panel/panel-edp.o: in function
-    `panel_edp_probe': panel-edp.c:(.text+0xb74): undefined reference to
-    `drm_panel_dp_aux_backlight'
-  make[1]: *** [/builds/linux/Makefile:1222: vmlinux] Error 1
+	EPC <-> shmem <-> disk
 
-The issue has been reported before, when DisplayPort helpers were
-hidden behind the option CONFIG_DRM_KMS_HELPER. [2]
+After data is swapped back in from shmem to EPC, the shmem backing
+storage needs to be freed.  Currently, the backing shmem is not freed.
+This effectively wastes the shmem while the enclave is running.  The
+memory is recovered when the enclave is destroyed and the backing
+storage freed.
 
-v2:
-	* fix and expand commit description (Arnd)
+Sort this out by freeing memory with shmem_truncate_range(), as soon as
+a page is faulted back to the EPC.  In addition, free the memory for
+PCMD pages as soon as all PCMD's in a page have been marked as unused
+by zeroing its contents.
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Fixes: 9d6366e743f3 ("drm: fb_helper: improve CONFIG_FB dependency")
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://lore.kernel.org/dri-devel/CA+G9fYvN0NyaVkRQmA1O6rX7H8PPaZrUAD7=RDy33QY9rUU-9g@mail.gmail.com/ # [1]
-Link: https://lore.kernel.org/all/20211117062704.14671-1-rdunlap@infradead.org/ # [2]
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Lyude Paul <lyude@redhat.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: dri-devel@lists.freedesktop.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220203093922.20754-1-tzimmermann@suse.de
-Signed-off-by: Dave Airlie <airlied@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Reported-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220303223859.273187-1-jarkko@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/panel/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kernel/cpu/sgx/encl.c |   57 ++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 48 insertions(+), 9 deletions(-)
 
---- a/drivers/gpu/drm/panel/Kconfig
-+++ b/drivers/gpu/drm/panel/Kconfig
-@@ -83,6 +83,7 @@ config DRM_PANEL_SIMPLE
- 	depends on PM
- 	select VIDEOMODE_HELPERS
- 	select DRM_DP_AUX_BUS
-+	select DRM_DP_HELPER
- 	help
- 	  DRM panel driver for dumb panels that need at most a regulator and
- 	  a GPIO to be powered up. Optionally a backlight can be attached so
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -13,6 +13,30 @@
+ #include "sgx.h"
+ 
+ /*
++ * Calculate byte offset of a PCMD struct associated with an enclave page. PCMD's
++ * follow right after the EPC data in the backing storage. In addition to the
++ * visible enclave pages, there's one extra page slot for SECS, before PCMD
++ * structs.
++ */
++static inline pgoff_t sgx_encl_get_backing_page_pcmd_offset(struct sgx_encl *encl,
++							    unsigned long page_index)
++{
++	pgoff_t epc_end_off = encl->size + sizeof(struct sgx_secs);
++
++	return epc_end_off + page_index * sizeof(struct sgx_pcmd);
++}
++
++/*
++ * Free a page from the backing storage in the given page index.
++ */
++static inline void sgx_encl_truncate_backing_page(struct sgx_encl *encl, unsigned long page_index)
++{
++	struct inode *inode = file_inode(encl->backing);
++
++	shmem_truncate_range(inode, PFN_PHYS(page_index), PFN_PHYS(page_index) + PAGE_SIZE - 1);
++}
++
++/*
+  * ELDU: Load an EPC page as unblocked. For more info, see "OS Management of EPC
+  * Pages" in the SDM.
+  */
+@@ -22,9 +46,11 @@ static int __sgx_encl_eldu(struct sgx_en
+ {
+ 	unsigned long va_offset = encl_page->desc & SGX_ENCL_PAGE_VA_OFFSET_MASK;
+ 	struct sgx_encl *encl = encl_page->encl;
++	pgoff_t page_index, page_pcmd_off;
+ 	struct sgx_pageinfo pginfo;
+ 	struct sgx_backing b;
+-	pgoff_t page_index;
++	bool pcmd_page_empty;
++	u8 *pcmd_page;
+ 	int ret;
+ 
+ 	if (secs_page)
+@@ -32,14 +58,16 @@ static int __sgx_encl_eldu(struct sgx_en
+ 	else
+ 		page_index = PFN_DOWN(encl->size);
+ 
++	page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
++
+ 	ret = sgx_encl_get_backing(encl, page_index, &b);
+ 	if (ret)
+ 		return ret;
+ 
+ 	pginfo.addr = encl_page->desc & PAGE_MASK;
+ 	pginfo.contents = (unsigned long)kmap_atomic(b.contents);
+-	pginfo.metadata = (unsigned long)kmap_atomic(b.pcmd) +
+-			  b.pcmd_offset;
++	pcmd_page = kmap_atomic(b.pcmd);
++	pginfo.metadata = (unsigned long)pcmd_page + b.pcmd_offset;
+ 
+ 	if (secs_page)
+ 		pginfo.secs = (u64)sgx_get_epc_virt_addr(secs_page);
+@@ -55,11 +83,24 @@ static int __sgx_encl_eldu(struct sgx_en
+ 		ret = -EFAULT;
+ 	}
+ 
+-	kunmap_atomic((void *)(unsigned long)(pginfo.metadata - b.pcmd_offset));
++	memset(pcmd_page + b.pcmd_offset, 0, sizeof(struct sgx_pcmd));
++
++	/*
++	 * The area for the PCMD in the page was zeroed above.  Check if the
++	 * whole page is now empty meaning that all PCMD's have been zeroed:
++	 */
++	pcmd_page_empty = !memchr_inv(pcmd_page, 0, PAGE_SIZE);
++
++	kunmap_atomic(pcmd_page);
+ 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
+ 
+ 	sgx_encl_put_backing(&b, false);
+ 
++	sgx_encl_truncate_backing_page(encl, page_index);
++
++	if (pcmd_page_empty)
++		sgx_encl_truncate_backing_page(encl, PFN_DOWN(page_pcmd_off));
++
+ 	return ret;
+ }
+ 
+@@ -579,7 +620,7 @@ static struct page *sgx_encl_get_backing
+ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 			 struct sgx_backing *backing)
+ {
+-	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
++	pgoff_t page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
+ 	struct page *contents;
+ 	struct page *pcmd;
+ 
+@@ -587,7 +628,7 @@ int sgx_encl_get_backing(struct sgx_encl
+ 	if (IS_ERR(contents))
+ 		return PTR_ERR(contents);
+ 
+-	pcmd = sgx_encl_get_backing_page(encl, pcmd_index);
++	pcmd = sgx_encl_get_backing_page(encl, PFN_DOWN(page_pcmd_off));
+ 	if (IS_ERR(pcmd)) {
+ 		put_page(contents);
+ 		return PTR_ERR(pcmd);
+@@ -596,9 +637,7 @@ int sgx_encl_get_backing(struct sgx_encl
+ 	backing->page_index = page_index;
+ 	backing->contents = contents;
+ 	backing->pcmd = pcmd;
+-	backing->pcmd_offset =
+-		(page_index & (PAGE_SIZE / sizeof(struct sgx_pcmd) - 1)) *
+-		sizeof(struct sgx_pcmd);
++	backing->pcmd_offset = page_pcmd_off & (PAGE_SIZE - 1);
+ 
+ 	return 0;
+ }
 
 
