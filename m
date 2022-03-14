@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240057AbiCNL7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
+        id S236659AbiCNL7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240184AbiCNL6W (ORCPT
+        with ESMTP id S240195AbiCNL6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:58:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33AC9FCB;
-        Mon, 14 Mar 2022 04:57:12 -0700 (PDT)
+        Mon, 14 Mar 2022 07:58:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84269A191;
+        Mon, 14 Mar 2022 04:57:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A147EB80DE2;
-        Mon, 14 Mar 2022 11:57:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CCF7C340E9;
-        Mon, 14 Mar 2022 11:57:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DBBD6112C;
+        Mon, 14 Mar 2022 11:57:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD142C340E9;
+        Mon, 14 Mar 2022 11:57:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259030;
-        bh=53SuvHqLsdQdV5lGsvyqBuQ/n38DdwjVCycIDj9374k=;
+        s=korg; t=1647259034;
+        bh=2z3sHLbs3i+JwZqjq1YXDQcvL9PzzebynVKwSZ/U2TA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z4E0A99EwixVGe7p+WkN6t7Oti65q3BtCT0KTFUi9whMW5gMRgZQe2THs6N/f5lvW
-         yAeUA9RwrzOi/50BiWc+BfVD9tjA9W8TpOMp3Fvg0GLPd6rSpRT8O4LKr9bZE+SZ3J
-         b6sDS8s9g1f3YEBzD6HmO4RpZXTIANhvUNX60Bns=
+        b=JudAFNps27v3E9SW9XAOE2xpW1rUqNMB0zuXfXI2uMOyF20DG/z5+JEieRoH/LgF9
+         qnl3dzEIXr6txn/Zl7gFwveL8+tLNtpFACNKK8esQKaiiY3zlU8B+BbaGJMbRA+bgD
+         /oCt9ab7ir/NxPS+2lZL0MP+DgMTOIezBNGThAoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.4 30/43] fuse: fix pipe buffer lifetime for direct_io
-Date:   Mon, 14 Mar 2022 12:53:41 +0100
-Message-Id: <20220314112735.266119159@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 5.4 31/43] staging: gdm724x: fix use after free in gdm_lte_rx()
+Date:   Mon, 14 Mar 2022 12:53:42 +0100
+Message-Id: <20220314112735.294023935@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -48,79 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 0c4bcfdecb1ac0967619ee7ff44871d93c08c909 upstream.
+commit fc7f750dc9d102c1ed7bbe4591f991e770c99033 upstream.
 
-In FOPEN_DIRECT_IO mode, fuse_file_write_iter() calls
-fuse_direct_write_iter(), which normally calls fuse_direct_io(), which then
-imports the write buffer with fuse_get_user_pages(), which uses
-iov_iter_get_pages() to grab references to userspace pages instead of
-actually copying memory.
+The netif_rx_ni() function frees the skb so we can't dereference it to
+save the skb->len.
 
-On the filesystem device side, these pages can then either be read to
-userspace (via fuse_dev_read()), or splice()d over into a pipe using
-fuse_dev_splice_read() as pipe buffers with &nosteal_pipe_buf_ops.
-
-This is wrong because after fuse_dev_do_read() unlocks the FUSE request,
-the userspace filesystem can mark the request as completed, causing write()
-to return. At that point, the userspace filesystem should no longer have
-access to the pipe buffer.
-
-Fix by copying pages coming from the user address space to new pipe
-buffers.
-
-Reported-by: Jann Horn <jannh@google.com>
-Fixes: c3021629a0d8 ("fuse: support splice() reading from fuse device")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Fixes: 61e121047645 ("staging: gdm7240: adding LTE USB driver")
+Cc: stable <stable@vger.kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220228074331.GA13685@kili
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fuse/dev.c    |   12 +++++++++++-
- fs/fuse/file.c   |    1 +
- fs/fuse/fuse_i.h |    1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/staging/gdm724x/gdm_lte.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/fs/fuse/dev.c
-+++ b/fs/fuse/dev.c
-@@ -933,7 +933,17 @@ static int fuse_copy_page(struct fuse_co
+--- a/drivers/staging/gdm724x/gdm_lte.c
++++ b/drivers/staging/gdm724x/gdm_lte.c
+@@ -76,14 +76,15 @@ static void tx_complete(void *arg)
  
- 	while (count) {
- 		if (cs->write && cs->pipebufs && page) {
--			return fuse_ref_page(cs, page, offset, count);
-+			/*
-+			 * Can't control lifetime of pipe buffers, so always
-+			 * copy user pages.
-+			 */
-+			if (cs->req->args->user_pages) {
-+				err = fuse_copy_fill(cs);
-+				if (err)
-+					return err;
-+			} else {
-+				return fuse_ref_page(cs, page, offset, count);
-+			}
- 		} else if (!cs->len) {
- 			if (cs->move_pages && page &&
- 			    offset == 0 && count == PAGE_SIZE) {
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -1433,6 +1433,7 @@ static int fuse_get_user_pages(struct fu
- 			(PAGE_SIZE - ret) & (PAGE_SIZE - 1);
+ static int gdm_lte_rx(struct sk_buff *skb, struct nic *nic, int nic_type)
+ {
+-	int ret;
++	int ret, len;
+ 
++	len = skb->len + ETH_HLEN;
+ 	ret = netif_rx_ni(skb);
+ 	if (ret == NET_RX_DROP) {
+ 		nic->stats.rx_dropped++;
+ 	} else {
+ 		nic->stats.rx_packets++;
+-		nic->stats.rx_bytes += skb->len + ETH_HLEN;
++		nic->stats.rx_bytes += len;
  	}
  
-+	ap->args.user_pages = true;
- 	if (write)
- 		ap->args.in_pages = 1;
- 	else
---- a/fs/fuse/fuse_i.h
-+++ b/fs/fuse/fuse_i.h
-@@ -248,6 +248,7 @@ struct fuse_args {
- 	bool nocreds:1;
- 	bool in_pages:1;
- 	bool out_pages:1;
-+	bool user_pages:1;
- 	bool out_argvar:1;
- 	bool page_zeroing:1;
- 	bool page_replace:1;
+ 	return 0;
 
 
