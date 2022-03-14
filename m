@@ -2,139 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E07B5C47080
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 557DCC35296
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242529AbiCNMaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        id S242571AbiCNMaG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:30:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243877AbiCNMVV (ORCPT
+        with ESMTP id S243879AbiCNMVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:21:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3256121AC;
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321F81140;
         Mon, 14 Mar 2022 05:17:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88983B80DF9;
-        Mon, 14 Mar 2022 12:17:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB44EC340E9;
-        Mon, 14 Mar 2022 12:17:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260250;
-        bh=1YcsxDwy55FRMcevWNunqDFXcYipB2vLzDPAXkg5MwY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TI4AYlTs9i72kTJX56OkWzuCM/eCvrozif1mkhjBQ9SG8H4hq0ysNnG0XFVQ2890D
-         an+5h5X/1yfGsjw9pdEKsDhQ4LbvrAq3SMKI7TBDYrS3mHsIb6XIGxw026r5Z0AT4j
-         Ee0UDl6y4qk7XzyqC1NTiJ6FWgPZP9WjKfsdZtc0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marcelo Tosatti <mtosatti@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.16 096/121] tracing/osnoise: Do not unregister events twice
-Date:   Mon, 14 Mar 2022 12:54:39 +0100
-Message-Id: <20220314112746.792467396@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
-References: <20220314112744.120491875@linuxfoundation.org>
-User-Agent: quilt/0.66
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FWNbZTFAMBhTgS2R1HpJWQ7vZbciDztq6nj7YGJohCE=;
+  b=HQtBKMWZuEVOREaqlRVE/01NtC4d9mTQstV2bcHaHlXi2M27x094itGk
+   yuLGQkwQVo5Kd+5w4hU+jps2xadytqyLLJD/jb2fGybRoVlo75MrqeOgt
+   CniSZtbcfdKiirA6FrQ75csVKfWVUiiTbUXYzQvGVOJZ2yELq0Y+wq8mE
+   U=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
+   d="scan'208";a="25997337"
+Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:53:59 +0100
+From:   Julia Lawall <Julia.Lawall@inria.fr>
+To:     Justin Ernst <justin.ernst@hpe.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 05/30] x86/platform/uv: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:29 +0100
+Message-Id: <20220314115354.144023-6-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+Various spelling mistakes in comments.
+Detected with the help of Coccinelle.
 
-commit f0cfe17bcc1dd2f0872966b554a148e888833ee9 upstream.
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-Nicolas reported that using:
-
- # trace-cmd record -e all -M 10 -p osnoise --poll
-
-Resulted in the following kernel warning:
-
- ------------[ cut here ]------------
- WARNING: CPU: 0 PID: 1217 at kernel/tracepoint.c:404 tracepoint_probe_unregister+0x280/0x370
- [...]
- CPU: 0 PID: 1217 Comm: trace-cmd Not tainted 5.17.0-rc6-next-20220307-nico+ #19
- RIP: 0010:tracepoint_probe_unregister+0x280/0x370
- [...]
- CR2: 00007ff919b29497 CR3: 0000000109da4005 CR4: 0000000000170ef0
- Call Trace:
-  <TASK>
-  osnoise_workload_stop+0x36/0x90
-  tracing_set_tracer+0x108/0x260
-  tracing_set_trace_write+0x94/0xd0
-  ? __check_object_size.part.0+0x10a/0x150
-  ? selinux_file_permission+0x104/0x150
-  vfs_write+0xb5/0x290
-  ksys_write+0x5f/0xe0
-  do_syscall_64+0x3b/0x90
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
- RIP: 0033:0x7ff919a18127
- [...]
- ---[ end trace 0000000000000000 ]---
-
-The warning complains about an attempt to unregister an
-unregistered tracepoint.
-
-This happens on trace-cmd because it first stops tracing, and
-then switches the tracer to nop. Which is equivalent to:
-
-  # cd /sys/kernel/tracing/
-  # echo osnoise > current_tracer
-  # echo 0 > tracing_on
-  # echo nop > current_tracer
-
-The osnoise tracer stops the workload when no trace instance
-is actually collecting data. This can be caused both by
-disabling tracing or disabling the tracer itself.
-
-To avoid unregistering events twice, use the existing
-trace_osnoise_callback_enabled variable to check if the events
-(and the workload) are actually active before trying to
-deactivate them.
-
-Link: https://lore.kernel.org/all/c898d1911f7f9303b7e14726e7cc9678fbfb4a0e.camel@redhat.com/
-Link: https://lkml.kernel.org/r/938765e17d5a781c2df429a98f0b2e7cc317b022.1646823913.git.bristot@kernel.org
-
-Cc: stable@vger.kernel.org
-Cc: Marcelo Tosatti <mtosatti@redhat.com>
-Fixes: 2fac8d6486d5 ("tracing/osnoise: Allow multiple instances of the same tracer")
-Reported-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_osnoise.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/platform/x86/uv_sysfs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -2222,6 +2222,17 @@ static void osnoise_workload_stop(void)
- 	if (osnoise_has_registered_instances())
- 		return;
+diff --git a/drivers/platform/x86/uv_sysfs.c b/drivers/platform/x86/uv_sysfs.c
+index 625b0b79d185..7c7c95c59908 100644
+--- a/drivers/platform/x86/uv_sysfs.c
++++ b/drivers/platform/x86/uv_sysfs.c
+@@ -555,7 +555,7 @@ static int init_pci_top_obj(struct uv_pci_top_obj *top_obj, char *line)
+ 	 */
+ 	line[6] = '_';
  
-+	/*
-+	 * If callbacks were already disabled in a previous stop
-+	 * call, there is no need to disable then again.
-+	 *
-+	 * For instance, this happens when tracing is stopped via:
-+	 * echo 0 > tracing_on
-+	 * echo nop > current_tracer.
-+	 */
-+	if (!trace_osnoise_callback_enabled)
-+		return;
-+
- 	trace_osnoise_callback_enabled = false;
- 	/*
- 	 * Make sure that ftrace_nmi_enter/exit() see
-
+-	/* Null terminate after the concatencated name tokens
++	/* Null terminate after the concatenated name tokens
+ 	 * to produce kobj name string.
+ 	 */
+ 	line[14] = '\0';
 
