@@ -2,131 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4006DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38FD5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244828AbiCNUCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 16:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60400 "EHLO
+        id S244843AbiCNUDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 16:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244768AbiCNUCa (ORCPT
+        with ESMTP id S244814AbiCNUDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 16:02:30 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E30710FC5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:01:18 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id n19so29155712lfh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:01:17 -0700 (PDT)
+        Mon, 14 Mar 2022 16:03:13 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2773EA8B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:02:02 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dc1ce31261so140806677b3.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:02:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=F5mU9o7savlVkOpAVXAc7vZgunxy8jXIc2Wup8XxmsY=;
-        b=U9r3p6udDqYlZ1aopd62hIGt17gWQvQg7QbrFEqTQOh59FTbqt6d+jnOaxtuOemxUx
-         fc8Cm//gfPrMpb46jCfiDzcT2SRuCSHU4LZvHM+j4uGUzaPmhhsaFt3Mra/xnGnwt3z1
-         NvVVn/WRXQJVn3RMkkWAQxgRotPoF/Cf/qFIxY5bKHkOBrBM7//tpkLQf7zt1KFfgzD+
-         YNEi7mazSo0xLGI7QHGT/qPi++c6x9OOylHKgsHWcp8raYtetaDbdH/UxwcuqaGuJmzX
-         pX4Nj7n69fCKkgPH++8LHtka06ngmG4Ta9Hdb2RTKiknFDUEjkh7aClHpBD7jW+pFoBk
-         zMpw==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:cc;
+        bh=xEuR5NAbPKTc90nTUG2UpVDsPT4/g7gJ4EIuKy2M61Y=;
+        b=ry7DrS+DzmCoBuS+N3t8KJPneqxZpyjWKhm0hi4UrJVtWocUiLGratH7dA7vGH64X7
+         Qg/sE6ZP+ZQuX6cKWQqNcZW6E9FfL8kpyZVAoWnG+B5DO6fQiwivmN8fNnXVY0N6Ixvf
+         bMOIdm00KmvyWI9+z3twtaJ6QG9adpXzf7D7r2LWmUXxnDLf73lL12Lok43SuXanyQop
+         KBwSkd7sD4mFizm5xQ53F43xhYn9dXjcZk0+drkMZbmDDYN3Y4hmCBytmO7wv8ywRXdB
+         b8p8OtiKMvR67lAOiIZx034Nf/fJoa1ZehmUA2wp5KusaqdbU77O+LKpVeykEIpNS6GY
+         fuZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=F5mU9o7savlVkOpAVXAc7vZgunxy8jXIc2Wup8XxmsY=;
-        b=DPaUHg/XdQbYlAvgjlCthnc+pGJMtLISgUw0h0fB+u9gOzHLJZjV0ikgnVLmLtW+8K
-         A7Ssh248UyZ0/n90NX2X6iGIA6ySiLl8vdIqSKQfXZk69krfsXp7pf6HeXi57GjlYIM3
-         T3afmBtnyjGQ7YKYeZ24pZ199RuIKdsqWdRE23EiFdiA9inv5Y+6QkvIzu565SAdxAYh
-         u8LNKEkWw8IiLTnA+Bt8w2t+vwFjtQnK+AS1YSGv8AZKTiXp1dsJorBqkqoEmmQOlic8
-         5RhcmB3423hDuhMSQc4HZnu8XERFR4Oo4nmzxxX8IRt2dDJGb//7sPOXwmRf50CPFM+0
-         4xZQ==
-X-Gm-Message-State: AOAM531wx9KbCc+cWfdCvgI/PsXMTzvTMoo4eU4AWJb6Cb2GE/rI+I1e
-        ftZiEk0fZUdgP2cU+GTCwzaFVknH+z4lhpjr/6o=
-X-Google-Smtp-Source: ABdhPJyHDyPenGqPAi41TYDlo5mD300lE2AJ2gyHhdiUNZlkYSUqN58v0syL+saGgM1BBbx8/gwZZA==
-X-Received: by 2002:ac2:4ac2:0:b0:448:373b:dca5 with SMTP id m2-20020ac24ac2000000b00448373bdca5mr14094527lfp.568.1647288075110;
-        Mon, 14 Mar 2022 13:01:15 -0700 (PDT)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id t10-20020ac24c0a000000b004482e94a3b5sm3431991lfq.16.2022.03.14.13.01.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 13:01:14 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
- for MST
-In-Reply-To: <20220314175556.7mjr4tui4vb4i5qn@skbuf>
-References: <20220314095231.3486931-1-tobias@waldekranz.com>
- <20220314095231.3486931-10-tobias@waldekranz.com>
- <20220314165649.vtsd3xqv7htut55d@skbuf>
- <20220314175556.7mjr4tui4vb4i5qn@skbuf>
-Date:   Mon, 14 Mar 2022 21:01:12 +0100
-Message-ID: <87mthsl2wn.fsf@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:cc;
+        bh=xEuR5NAbPKTc90nTUG2UpVDsPT4/g7gJ4EIuKy2M61Y=;
+        b=MQ40vQq4dAjabs25QcUVjaBpMwEGpvrBG6u39qZz0aI3EwUEmgh91IWLQZtbcwjw8F
+         lvf9Grj4gsnUyo7dwfTK2+g1YPXStY523V/zEWa+RLfyqROxFjuuIzDBBLBgPrYXqxgY
+         SXeS5uDwdRem+sCgurXxC/8S7ZBm7dF2arsU5fNuPLxlYu3VlWfRN1h1sXBVzA/lYLas
+         qHBgicwzOcnzqWyOxRZaBRWH4N7ycQ8J72YOpYXApjo7cn3d2f+8c+Exfzei9cJOkiFZ
+         3dKSckmVWj6qewCXjZ+sFv56jtz6Yl2jlojbotu9mqwS/rgnqLp+v00jEwLzz9eF8KH4
+         mVMw==
+X-Gm-Message-State: AOAM532Bz2CCZhYNxADhVtpfPJ+EHYhT5fDn5JQtdp3hNl9WQZVpEEkf
+        N2PfgDr5L5lNgJFccWA3ygskVxpywyOLFXBuDw==
+X-Google-Smtp-Source: ABdhPJxifXiV2IwBShgAldnOtAN44f4qB6zmnPyH/IJw/7BkXZPOJKxYCtAxbJk4yN0V7cgS+dlxUhTFe/JmaJ6gOg==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:500a:9ac2:e73e:69e3])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:7b85:0:b0:628:beb3:d877 with SMTP
+ id w127-20020a257b85000000b00628beb3d877mr19510073ybc.8.1647288122059; Mon,
+ 14 Mar 2022 13:02:02 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 13:01:09 -0700
+Message-Id: <20220314200148.2695206-1-kaleshsingh@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH v6 0/8] KVM: arm64: Hypervisor stack enhancements
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Scull <ascull@google.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 19:55, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Mon, Mar 14, 2022 at 06:56:49PM +0200, Vladimir Oltean wrote:
->> > diff --git a/net/dsa/port.c b/net/dsa/port.c
->> > index 58291df14cdb..1a17a0efa2fa 100644
->> > --- a/net/dsa/port.c
->> > +++ b/net/dsa/port.c
->> > @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
->> >  	if (err && err != -EOPNOTSUPP)
->> >  		return err;
->> >  
->> > +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
->> > +	if (err && err != -EOPNOTSUPP)
->> > +		return err;
->> 
->> Sadly this will break down because we don't have unwinding on error in
->> place (sorry). We'd end up with an unoffloaded bridge port with
->> partially synced bridge port attributes. Could you please add a patch
->> previous to this one that handles this, and unoffloads those on error?
->
-> Actually I would rather rename the entire dsa_port_mst_enable() function
-> to dsa_port_mst_validate() and move it to the beginning of dsa_port_bridge_join().
-> This simplifies the unwinding that needs to take place quite a bit.
+Hi all,
 
-Well you still need to unwind vlan filtering if setting the ageing time
-fails, which is the most complicated one, right? Still, I agree that
-_validate is a better name, and then _bridge_join seems like a more
-reasonable placement. Should the unwinding patch still be part of this
-series then?
+This is v6 of the nVHE hypervisor stack enhancements. Addresses some
+refactoring/cleanup and documentation improvments from Stephen,
+and rebased on 5.17-rc8.
 
-While we're here, I actually made this a hard error in both scenarios
-(but forgot to update the log - will do that in v4, depending on what we
-decide here). There's a dilemma:
+Previous versions can be found at:
+v5: https://lore.kernel.org/r/20220307184935.1704614-1-kaleshsingh@google.com/
+v4: https://lore.kernel.org/r/20220225033548.1912117-1-kaleshsingh@google.com/
+v3: https://lore.kernel.org/r/20220224051439.640768-1-kaleshsingh@google.com/
+v2: https://lore.kernel.org/r/20220222165212.2005066-1-kaleshsingh@google.com/
+v1: https://lore.kernel.org/r/20220210224220.4076151-1-kaleshsingh@google.com/
 
-- When reacting to the attribute event, i.e. changing the mode on a
-  member we're apart of, we _can't_ return -EOPNOTSUPP as it will be
-  ignored, which is why dsa_port_mst_validate (nee _enable) returns
-  -EINVAL.
+The previous cover letter has been copied below for convenience.
 
-- When joining a bridge, we _must_ return -EOPNOTSUPP to trigger the
-  software fallback.
+Thanks,
+Kalesh
 
-Having something like this in dsa_port_bridge_join...
+-----
 
-err = dsa_port_mst_validate(dp);
-if (err == -EINVAL)
-	return -EOPNOTSUPP;
-else if (err)
-	return err;
+This series is based on 5.17-rc8 and adds the following stack features to
+the KVM nVHE hypervisor:
 
-...works I suppose, but feels somewhat awkwark. Any better ideas?
+== Hyp Stack Guard Pages ==
+
+Based on the technique used by arm64 VMAP_STACK to detect overflow.
+i.e. the stack is aligned such that the 'stack shift' bit of any valid
+SP is 1. The 'stack shift' bit can be tested in the exception entry to
+detect overflow without corrupting GPRs.
+
+== Hyp Stack Unwinder ==
+
+The unwinding and dumping of the hyp stack is not enabled by default and
+depends on CONFIG_NVHE_EL2_DEBUG to avoid potential information leaks.
+
+When CONFIG_NVHE_EL2_DEBUG is enabled the host stage 2 protection is
+disabled, allowing the host to read the hypervisor stack pages and unwind
+the stack from EL1. This allows us to print the hypervisor stacktrace
+before panicking the host; as shown below.
+
+Example call trace:
+
+[   98.916444][  T426] kvm [426]: nVHE hyp panic at: [<ffffffc0096156fc>] __kvm_nvhe_overflow_stack+0x8/0x34!
+[   98.918360][  T426] nVHE HYP call trace:
+[   98.918692][  T426] kvm [426]: [<ffffffc009615aac>] __kvm_nvhe_cpu_prepare_nvhe_panic_info+0x4c/0x68
+[   98.919545][  T426] kvm [426]: [<ffffffc0096159a4>] __kvm_nvhe_hyp_panic+0x2c/0xe8
+[   98.920107][  T426] kvm [426]: [<ffffffc009615ad8>] __kvm_nvhe_hyp_panic_bad_stack+0x10/0x10
+[   98.920665][  T426] kvm [426]: [<ffffffc009610a4c>] __kvm_nvhe___kvm_hyp_host_vector+0x24c/0x794
+[   98.921292][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
+. . .
+
+[   98.973382][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
+[   98.973816][  T426] kvm [426]: [<ffffffc0096152f4>] __kvm_nvhe___kvm_vcpu_run+0x38/0x438
+[   98.974255][  T426] kvm [426]: [<ffffffc009616f80>] __kvm_nvhe_handle___kvm_vcpu_run+0x1c4/0x364
+[   98.974719][  T426] kvm [426]: [<ffffffc009616928>] __kvm_nvhe_handle_trap+0xa8/0x130
+[   98.975152][  T426] kvm [426]: [<ffffffc009610064>] __kvm_nvhe___host_exit+0x64/0x64
+[   98.975588][  T426] ---- end of nVHE HYP call trace ----
+
+
+
+
+Kalesh Singh (8):
+  KVM: arm64: Introduce hyp_alloc_private_va_range()
+  KVM: arm64: Introduce pkvm_alloc_private_va_range()
+  KVM: arm64: Add guard pages for KVM nVHE hypervisor stack
+  KVM: arm64: Add guard pages for pKVM (protected nVHE) hypervisor stack
+  KVM: arm64: Detect and handle hypervisor stack overflows
+  KVM: arm64: Add hypervisor overflow stack
+  KVM: arm64: Unwind and dump nVHE HYP stacktrace
+  KVM: arm64: Symbolize the nVHE HYP backtrace
+
+ arch/arm64/include/asm/kvm_asm.h     |  21 +++
+ arch/arm64/include/asm/kvm_mmu.h     |   4 +
+ arch/arm64/include/asm/stacktrace.h  |  12 ++
+ arch/arm64/kernel/stacktrace.c       | 210 ++++++++++++++++++++++++---
+ arch/arm64/kvm/Kconfig               |   5 +-
+ arch/arm64/kvm/arm.c                 |  41 +++++-
+ arch/arm64/kvm/handle_exit.c         |  16 +-
+ arch/arm64/kvm/hyp/include/nvhe/mm.h |   6 +-
+ arch/arm64/kvm/hyp/nvhe/host.S       |  29 ++++
+ arch/arm64/kvm/hyp/nvhe/hyp-main.c   |  18 ++-
+ arch/arm64/kvm/hyp/nvhe/mm.c         |  78 ++++++----
+ arch/arm64/kvm/hyp/nvhe/setup.c      |  31 +++-
+ arch/arm64/kvm/hyp/nvhe/switch.c     |  30 +++-
+ arch/arm64/kvm/mmu.c                 |  70 ++++++---
+ scripts/kallsyms.c                   |   2 +-
+ 15 files changed, 477 insertions(+), 96 deletions(-)
+
+
+base-commit: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+-- 
+2.35.1.723.g4982287a31-goog
 
