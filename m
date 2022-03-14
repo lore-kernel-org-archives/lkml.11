@@ -2,144 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96659C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 02:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 377DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 02:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235830AbiCNCIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 22:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
+        id S235822AbiCNCMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 22:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233806AbiCNCIF (ORCPT
+        with ESMTP id S231283AbiCNCMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 22:08:05 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2042.outbound.protection.outlook.com [40.107.102.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FE53A18D
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 19:06:55 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mBYdhUjNiEad0w3JzlwDiFDS6YN4YezJg0yrkxCIefeFduCvRq/5qAJl5NPvonPMbByxhI4FWd+i3SV9PDpmTiUvoyU+R6THLgDY3Mz7bheqNQkGzY+BpLvNWSIcTpYfx4dwbWeBlNNtRX44Y5BQ0bQ7mjhWTHfL0MNjkOhY2fMeS56T3RzV8NBA1txxbWHQpFiNyBq8z1Ec1UMePM+Jek1VMMJOLDh4al4C0tGNINMesoPIRg2DRhYmY/us/GqZM7pFA/E0QDBNjOJ0uosx2dReqbSp7CCs2owYOAmk5Sh5XFi6jdeihOECmOi4vxrQJHcETfURCAFa2FxG+KkjZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xBwukwF7/Z8AC4bweTLT+Cd2Q2ei4XZHgRVmMCH17h8=;
- b=V0kv8+wBgfPvR3G6W5Xx+gjozXJKTPIrza1qCrWrsWAysUVvPIIoxwWymaCcNa71NqY+tLHKwrsdrNeLcZR4GlpkmRvCOVUkmD2ghIVa+9ZAD7ceR0Nd/8Kiisqr3pF4FrSi+ITX8Yvq/0wwrnB6n/LoIpRN57HYA6XcMHDb10oelJVwjMjUbv73T1TyX7WWsIlr6ipUwzTPIx6F3Hzk2lsGgxlmxY8GYp/cRju8ReAk/FijNr8zKIKWd2G+tpGWPcjJcSnDzJMgcxNO6fkQb4fvaJDC8i1W9FZ49qPHY2VaFpsPFEXFXd84n0794x3zDmcWF/YIDsUJksquxgLZGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xBwukwF7/Z8AC4bweTLT+Cd2Q2ei4XZHgRVmMCH17h8=;
- b=463YHb3qvNb4SDAkuDpeGhj6pouGY6ZS4PgqkSTqXcDjUWfJ1Ko0ZGMuV+X0Vt02Pe5ANCrc2RXdqoDwspWus04UqgYo3OD0I6XcPpm5ra/RuXJhWuL2PvVW4UIDfZi8dGIkuTBymg5LplZaRg59R3/g80z+3MV4lpf5hbgExYg=
-Received: from BN6PR16CA0003.namprd16.prod.outlook.com (2603:10b6:404:f5::13)
- by DM5PR12MB1947.namprd12.prod.outlook.com (2603:10b6:3:111::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25; Mon, 14 Mar
- 2022 02:06:53 +0000
-Received: from BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:f5:cafe::6b) by BN6PR16CA0003.outlook.office365.com
- (2603:10b6:404:f5::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.28 via Frontend
- Transport; Mon, 14 Mar 2022 02:06:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT034.mail.protection.outlook.com (10.13.176.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5061.22 via Frontend Transport; Mon, 14 Mar 2022 02:06:52 +0000
-Received: from ethanolx5673host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 13 Mar
- 2022 21:06:51 -0500
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>
-CC:     <joro@8bytes.org>, <jon.grimm@amd.com>, <wei.huang2@amd.com>,
-        <terry.bowman@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH] iommu/amd: Do not call sleep while holding spinlock
-Date:   Sun, 13 Mar 2022 21:43:21 -0500
-Message-ID: <20220314024321.37411-1-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.17.1
+        Sun, 13 Mar 2022 22:12:19 -0400
+Received: from out29-220.mail.aliyun.com (out29-220.mail.aliyun.com [115.124.29.220])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0072A240;
+        Sun, 13 Mar 2022 19:11:09 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07748652|-1;BR=01201311R121S39rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.00552317-0.00660772-0.987869;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047204;MF=kant@allwinnertech.com;NM=1;PH=DS;RN=6;RT=6;SR=0;TI=SMTPD_---.N3nAf7U_1647223866;
+Received: from sunxibot.allwinnertech.com(mailfrom:kant@allwinnertech.com fp:SMTPD_---.N3nAf7U_1647223866)
+          by smtp.aliyun-inc.com(10.147.40.233);
+          Mon, 14 Mar 2022 10:11:07 +0800
+From:   Kant Fan <kant@allwinnertech.com>
+To:     myungjoo.ham@samsung.com (maintainer:DEVICE FREQUENCY (DEVFREQ)),
+        kyungmin.park@samsung.com (maintainer:DEVICE FREQUENCY (DEVFREQ)),
+        cw00.choi@samsung.com (maintainer:DEVICE FREQUENCY (DEVFREQ))
+Cc:     Kant Fan <kant@allwinnertech.com>,
+        linux-pm@vger.kernel.org (open list:DEVICE FREQUENCY (DEVFREQ)),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] devfreq:governor:Save void *data in the governor userspace
+Date:   Mon, 14 Mar 2022 10:11:17 +0800
+Message-Id: <20220314021118.59375-1-kant@allwinnertech.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f1d76887-0aed-4501-43f5-08da055f4e95
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1947:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1947C339A86348DE1DF24434F30F9@DM5PR12MB1947.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DMK0wGLwOeHGJslPw3gVF/VubYqYzp9MQpfAZBFyeeBT1WYQiT+4wwtEMN+tNeqZzmztnrhG1q7weByY+1R526LrZ9EVjpk3fXgmZbNvGcyl7nTnJaJLW6gnPmB69Ilk0Ei9IxatrIgEuEY35H5cuHtInf7/TQmknqsuRPJ26vnMVCddKSmsaeB4I89VCSctJ/1lVo5l2bvdj3Og+TiNt1Ue0FMJcFdHvYo+By28ygkScTH4m6iWMAgJO+9eSjhKrCpRZfHy3KNHVpH9aLZrEWICSV/BbPMQq/cHgcPEyymal43JQvKD0mTVjwxkh/1DEnc4gWRUuOIxQw0d+MMZaEsmqn9+/ACBCSMZ1nwfdTEHJr1z1NuD7R0dBvWn6eyf8I7b++9zAx5woB7LuDtLcH7Bhmn+UjJdLvZefdxmBM20PphrVqvqOPj2YbfJgY10ffl95umLzfBgT19ug1eww9b0bY1l5wtsXXn9C4ANAYsRgEmWSDbxhZQq2mE3ySKeIx82VBADVpZYyLnqHTafCMe9Ex6rTrlll1R9BF/s/9QLulrGvreNvj9Q37fID6XNrEvaAUC441tL62j2JNxezmO1zE84UbMrVyxX1MmAN7yaQI1nT8oiFcyeddm5jFTjCxKENYuqujPcyGwpPAYQT6aCNwfWIYADzOFXDKNfjN4k2GNUOqCqaNcvyvfxtIBLdqBrMMha122hjURnzgUzOQ==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(7696005)(36756003)(83380400001)(44832011)(16526019)(26005)(186003)(54906003)(47076005)(5660300002)(110136005)(6666004)(86362001)(40460700003)(8936002)(2906002)(81166007)(2616005)(316002)(426003)(82310400004)(356005)(36860700001)(336012)(1076003)(508600001)(70586007)(8676002)(4326008)(70206006)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2022 02:06:52.4158
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1d76887-0aed-4501-43f5-08da055f4e95
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT034.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1947
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Smatch static checker warns:
-	drivers/iommu/amd/iommu_v2.c:133 free_device_state()
-	warn: sleeping in atomic context
+The member void *data in the structure devfreq can be overwrite
+by governor_userspace. For example:
+1. The device driver assigned the devfreq governor to simple_ondemand
+by the function devfreq_add_device() and init the devfreq member
+void *data to a pointer of a static structure devfreq_simple_ondemand_data
+by the function devfreq_add_device().
+2. The user changed the devfreq governor to userspace by the command
+"echo userspace > /sys/class/devfreq/.../governor".
+3. The governor userspace alloced a dynamic memory for the struct
+userspace_data and assigend the member void *data of devfreq to
+this memory by the function userspace_init().
+4. The user changed the devfreq governor back to simple_ondemand
+by the command "echo simple_ondemand > /sys/class/devfreq/.../governor".
+5. The governor userspace exited and assigned the member void *data
+in the structure devfreq to NULL by the function userspace_exit().
+6. The governor simple_ondemand fetched the static information of
+devfreq_simple_ondemand_data in the function
+devfreq_simple_ondemand_func() but the member void *data of devfreq was
+assigned to NULL by the function userspace_exit().
+7. The information of upthreshold and downdifferential is lost
+and the governor simple_ondemand can't work correctly.
 
-Fixes by storing the list of struct device_state in a temporary
-list, and then free the memory after releasing the spinlock.
+The member void *data in the structure devfreq is designed for
+a static pointer used in a governor and inited by the function
+devfreq_add_device(). So if a governor want to use void *data
+to do some other things, it must save void *data in the init()
+function and restore void *data in the exit() function.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: dc6a709e5123 ("iommu/amd: Improve amd_iommu_v2_exit()")
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Kant Fan <kant@allwinnertech.com>
 ---
- drivers/iommu/amd/iommu_v2.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/devfreq/governor_userspace.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
-index 490da41c3c71..5a6e4f87d875 100644
---- a/drivers/iommu/amd/iommu_v2.c
-+++ b/drivers/iommu/amd/iommu_v2.c
-@@ -947,6 +947,7 @@ static void __exit amd_iommu_v2_exit(void)
- {
- 	struct device_state *dev_state, *next;
- 	unsigned long flags;
-+	LIST_HEAD(freelist);
+diff --git a/drivers/devfreq/governor_userspace.c b/drivers/devfreq/governor_userspace.c
+index ab9db7adb3ad..dbbb448dcbcf 100644
+--- a/drivers/devfreq/governor_userspace.c
++++ b/drivers/devfreq/governor_userspace.c
+@@ -17,6 +17,7 @@
+ struct userspace_data {
+ 	unsigned long user_frequency;
+ 	bool valid;
++	void *saved_data;
+ };
  
- 	if (!amd_iommu_v2_supported())
- 		return;
-@@ -966,11 +967,20 @@ static void __exit amd_iommu_v2_exit(void)
- 
- 		put_device_state(dev_state);
- 		list_del(&dev_state->list);
--		free_device_state(dev_state);
-+		list_add_tail(&dev_state->list, &freelist);
+ static int devfreq_userspace_func(struct devfreq *df, unsigned long *freq)
+@@ -91,6 +92,7 @@ static int userspace_init(struct devfreq *devfreq)
+ 		goto out;
  	}
+ 	data->valid = false;
++	data->saved_data = devfreq->data;
+ 	devfreq->data = data;
  
- 	spin_unlock_irqrestore(&state_lock, flags);
+ 	err = sysfs_create_group(&devfreq->dev.kobj, &dev_attr_group);
+@@ -100,6 +102,8 @@ static int userspace_init(struct devfreq *devfreq)
  
-+	/*
-+	 * Since free_device_state waits on the count to be zero,
-+	 * we need to free dev_state outside the spinlock.
-+	 */
-+	list_for_each_entry_safe(dev_state, next, &freelist, list) {
-+		list_del(&dev_state->list);
-+		free_device_state(dev_state);
-+	}
-+
- 	destroy_workqueue(iommu_wq);
+ static void userspace_exit(struct devfreq *devfreq)
+ {
++	struct userspace_data *data = devfreq->data;
++	void *saved_data = data->saved_data;
+ 	/*
+ 	 * Remove the sysfs entry, unless this is being called after
+ 	 * device_del(), which should have done this already via kobject_del().
+@@ -108,7 +112,7 @@ static void userspace_exit(struct devfreq *devfreq)
+ 		sysfs_remove_group(&devfreq->dev.kobj, &dev_attr_group);
+ 
+ 	kfree(devfreq->data);
+-	devfreq->data = NULL;
++	devfreq->data = saved_data;
  }
  
+ static int devfreq_userspace_handler(struct devfreq *devfreq,
 -- 
-2.17.1
+2.29.0
 
