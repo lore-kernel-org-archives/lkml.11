@@ -2,79 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D586CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E78DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237905AbiCNJKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33998 "EHLO
+        id S237904AbiCNJKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237857AbiCNJKZ (ORCPT
+        with ESMTP id S237847AbiCNJKY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 05:10:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF21F42A3D;
-        Mon, 14 Mar 2022 02:09:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 14 Mar 2022 05:10:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AB74163E
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 02:09:12 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FF9BB80D5A;
-        Mon, 14 Mar 2022 09:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA817C340F5;
+        by smtp-out2.suse.de (Postfix) with ESMTPS id B58D81F37E;
         Mon, 14 Mar 2022 09:09:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647248952;
-        bh=spwdTO7RC4wZ9ulgHe1HjaFtsCLNUN5rQMMjLkFKp3U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tPvi7DK05b65cUjbw8qAi8O3SOrVVMsisuxwx07XEi4VcYvj87u7k2wg7j6R8RGus
-         k3IMvEpLFNGXOGjTV3sf4Ewpzq0JS+0dl43sev9nS6wkgAz3CN+mlCz5xGFTUtEujJ
-         BATndB1xs+JoM0y/+ReH6q3DUygsG2Qz3KXjsQjcmBzOilfc6eiQp/Lowxcy97iMr5
-         YRu5qXljtiEPxlDf3WjDXEh67drpmboys0vNQ6J2KJwxwt7zPk2pfREpV3LAvjGumm
-         jw8nfwsLQc++0p+ke6eX9BSia5Tv6sGVRyNfBobtwHzMVsW3Uz6/lv0M9nFzUhSn6Y
-         qcrf47ttBjCDA==
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, tzungbi@kernel.org,
-        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/5] platform/chrome: cros_kbd_led_backlight: sort headers alphabetically
-Date:   Mon, 14 Mar 2022 17:08:31 +0800
-Message-Id: <20220314090835.3822093-2-tzungbi@kernel.org>
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-In-Reply-To: <20220314090835.3822093-1-tzungbi@kernel.org>
-References: <20220314090835.3822093-1-tzungbi@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647248950; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oZDKu+JBJDRVsjqZYqekmRzMv+/i6U7EN7Ysg+sQ8Do=;
+        b=uCIdH4BgAQYuFlIehJjxgpckcXdbzP9TWuNWzBGP+N/RRevDvG/kHMeXZOeaCOqWUMPBlM
+        wOXxv+fnpkWi6wmnjC5RxJ9+YiuGCKZ7XHwwtmsHVsLwXJ92sV+nAd5JMxbWrJ4Y0E8jLH
+        z+M5f0awEFv/yEnFwo0N+oZeo+VrQWA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647248950;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oZDKu+JBJDRVsjqZYqekmRzMv+/i6U7EN7Ysg+sQ8Do=;
+        b=ikGXtBGXunHXXi0s0Q+HKW7DKieChDD1m6bmplssi6BL3UTDT5malijRsZ2nkNS2XR/t/1
+        wpN+37ragpwEMZCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5F77C13ADA;
+        Mon, 14 Mar 2022 09:09:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 8XeQFjYGL2K5YgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 14 Mar 2022 09:09:10 +0000
+Message-ID: <b3575a73-384c-e0da-1db9-bad2aec053c4@suse.cz>
+Date:   Mon, 14 Mar 2022 10:09:10 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [mm/page_alloc] 8212a964ee: vm-scalability.throughput 30.5%
+ improvement
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        0day robot <lkp@intel.com>, Michal Hocko <mhocko@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        "Huang, Ying" <ying.huang@intel.com>,
+        "Tang, Feng" <feng.tang@intel.com>, zhengjun.xing@linux.intel.com,
+        fengwei.yin@intel.com, Eric Dumazet <eric.dumazet@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>
+References: <20220312154321.GC1189@xsang-OptiPlex-9020>
+ <15307f8a-c202-75d8-1361-dae0146df734@suse.cz>
+ <CANn89i+fM0k+=Qw0M0fso1f-Ya8--5+==gtcWqCpo=Gu-ca1Ow@mail.gmail.com>
+ <8f499c76-68cb-a2c3-01fd-c8759e2fd317@suse.cz>
+ <CANn89iJwBe4+C8KP--c_9O6QE_Tou+1Z0+ugtuniG-06nzxPmg@mail.gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <CANn89iJwBe4+C8KP--c_9O6QE_Tou+1Z0+ugtuniG-06nzxPmg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
----
-Changes from v1:
-- Update email address accordingly.
+On 3/13/22 22:10, Eric Dumazet wrote:
+> On Sun, Mar 13, 2022 at 1:29 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+>>
+>> On 3/13/22 00:26, Eric Dumazet wrote:
+>> > On Sat, Mar 12, 2022 at 10:59 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+>> >>
+>> >> On 3/12/22 16:43, kernel test robot wrote:
+>> >>>
+>> >>>
+>> >>> Greeting,
+>> >>>
+>> >>> FYI, we noticed a 30.5% improvement of vm-scalability.throughput due to commit:
+>> >>>
+>> >>>
+>> >>> commit: 8212a964ee020471104e34dce7029dec33c218a9 ("Re: [PATCH v2] mm/page_alloc: call check_new_pages() while zone spinlock is not held")
+>> >>> url: https://github.com/0day-ci/linux/commits/Mel-Gorman/Re-PATCH-v2-mm-page_alloc-call-check_new_pages-while-zone-spinlock-is-not-held/20220309-203504
+>> >>> patch link: https://lore.kernel.org/lkml/20220309123245.GI15701@techsingularity.net
+>> >>
+>> >> Heh, that's weird. I would expect some improvement from Eric's patch,
+>> >> but this seems to be actually about Mel's "mm/page_alloc: check
+>> >> high-order pages for corruption during PCP operations" applied directly
+>> >> on 5.17-rc7 per the github url above. This was rather expected to make
+>> >> performance worse if anything, so maybe the improvement is due to some
+>> >> unexpected side-effect of different inlining decisions or cache alignment...
+>> >>
+>> >
+>> > I doubt this has anything to do with inlining or cache alignment.
+>> >
+>> > I am not familiar with the benchmark, but its name
+>> > (anon-w-rand-hugetlb) hints at hugetlb ?
+>> >
+>> > After Mel fix, we go over 512 'struct page' to perform sanity checks,
+>> > thus loading into cpu caches the 512 cache lines.
+>>
+>> Ah, that's true.
+>>
+>> > This caching is done while no lock is held.
+>>
+>> But I don't think this is. The test was AFAICS done without your patch,
+>> so the lock is still held in rmqueue(). And it's also held in
+>> rmqueue_bulk() -> check_pcp_refill().
+> 
+> Note that Mel patch  touches both check_pcp_refill() and check_new_pcp()
+> 
+> __rmqueue_pcplist() definitely calls check_new_pcp() while the zone
+> spinlock is _not_ held.
 
- drivers/platform/chrome/cros_kbd_led_backlight.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Yes, but the checking from check_new_pcp() is active only with
+CONFIG_DEBUG_VM or enabled debug_pagealloc, which were both disabled in the
+robot's report.
 
-diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
-index aa409f0201fb..f9587a562bb7 100644
---- a/drivers/platform/chrome/cros_kbd_led_backlight.c
-+++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
-@@ -4,12 +4,12 @@
- // Copyright (C) 2012 Google, Inc.
- 
- #include <linux/acpi.h>
--#include <linux/leds.h>
- #include <linux/delay.h>
- #include <linux/err.h>
--#include <linux/module.h>
- #include <linux/init.h>
- #include <linux/kernel.h>
-+#include <linux/leds.h>
-+#include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- 
--- 
-2.35.1.723.g4982287a31-goog
+> Note that it is possible to defer calls to check_pcp_refill after the
+> spinlock is released.
+> 
+> Untested patch:
 
+I'll check the latest posting.
