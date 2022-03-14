@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74517C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240854AbiCNMNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56192 "EHLO
+        id S240861AbiCNMNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242917AbiCNMLS (ORCPT
+        with ESMTP id S241402AbiCNMIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:11:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A73233A28;
-        Mon, 14 Mar 2022 05:10:08 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5B14D617;
+        Mon, 14 Mar 2022 05:05:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCBF7B80DF7;
-        Mon, 14 Mar 2022 12:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B9AEC340EC;
-        Mon, 14 Mar 2022 12:10:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3450C61333;
+        Mon, 14 Mar 2022 12:05:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EE97C340E9;
+        Mon, 14 Mar 2022 12:05:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259805;
-        bh=jSQBdgjmG/0puOUtBTQLeaUF/iDNY/kxEsrAKEP7R2Y=;
+        s=korg; t=1647259507;
+        bh=phEX2o4kGjcEwrUXdZwA2/tdOklVcHKaImRgkEMmqPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k06gW234fdo8rx7UK6d3USApiKWYvHZ7mBVizPwWbbKaJYhwj+Fw18EECOwogUsqh
-         0YRjguvWTQB/QpCOlpD8oORnhtK3/8V+mBhjyKVr7kQbgMKqFsOUf/Y/24VFyP+6Ua
-         NM+AXEHz1IK6iVEUbgIS71qotfvbdXPRWIG1P9QQ=
+        b=yOXEb62JPovkAmxlDkwDGmzOKuplRHDVH8qHVdx5sv63imAqnT0q7U/S+aJft+tiR
+         34DuZ3m0ft8CzWzrBjtdY5gVwBEhTQy+y07PC8zN8UiQ5e0FgYKoWNpHSVr6me1CIz
+         av66Jj4DjR4ahI4xqcadOKDcnFpWjQuAPNEO3SFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 094/110] watch_queue, pipe: Free watchqueue state after clearing pipe ring
-Date:   Mon, 14 Mar 2022 12:54:36 +0100
-Message-Id: <20220314112745.651950510@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 022/110] qed: return status of qed_iov_get_link
+Date:   Mon, 14 Mar 2022 12:53:24 +0100
+Message-Id: <20220314112743.655806943@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,53 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Tom Rix <trix@redhat.com>
 
-commit db8facfc9fafacefe8a835416a6b77c838088f8b upstream.
+[ Upstream commit d9dc0c84ad2d4cc911ba252c973d1bf18d5eb9cf ]
 
-In free_pipe_info(), free the watchqueue state after clearing the pipe
-ring as each pipe ring descriptor has a release function, and in the
-case of a notification message, this is watch_queue_pipe_buf_release()
-which tries to mark the allocation bitmap that was previously released.
+Clang static analysis reports this issue
+qed_sriov.c:4727:19: warning: Assigned value is
+  garbage or undefined
+  ivi->max_tx_rate = tx_rate ? tx_rate : link.speed;
+                   ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fix this by moving the put of the pipe's ref on the watch queue to after
-the ring has been cleared.  We still need to call watch_queue_clear()
-before doing that to make sure that the pipe is disconnected from any
-notification sources first.
+link is only sometimes set by the call to qed_iov_get_link()
+qed_iov_get_link fails without setting link or returning
+status.  So change the decl to return status.
 
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 73390ac9d82b ("qed*: support ndo_get_vf_config")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/pipe.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
---- a/fs/pipe.c
-+++ b/fs/pipe.c
-@@ -830,10 +830,8 @@ void free_pipe_info(struct pipe_inode_in
- 	int i;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+index ed2b6fe5a78d..998378ce9983 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+@@ -3778,11 +3778,11 @@ bool qed_iov_mark_vf_flr(struct qed_hwfn *p_hwfn, u32 *p_disabled_vfs)
+ 	return found;
+ }
  
- #ifdef CONFIG_WATCH_QUEUE
--	if (pipe->watch_queue) {
-+	if (pipe->watch_queue)
- 		watch_queue_clear(pipe->watch_queue);
--		put_watch_queue(pipe->watch_queue);
--	}
- #endif
+-static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
+-			     u16 vfid,
+-			     struct qed_mcp_link_params *p_params,
+-			     struct qed_mcp_link_state *p_link,
+-			     struct qed_mcp_link_capabilities *p_caps)
++static int qed_iov_get_link(struct qed_hwfn *p_hwfn,
++			    u16 vfid,
++			    struct qed_mcp_link_params *p_params,
++			    struct qed_mcp_link_state *p_link,
++			    struct qed_mcp_link_capabilities *p_caps)
+ {
+ 	struct qed_vf_info *p_vf = qed_iov_get_vf_info(p_hwfn,
+ 						       vfid,
+@@ -3790,7 +3790,7 @@ static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
+ 	struct qed_bulletin_content *p_bulletin;
  
- 	(void) account_pipe_buffers(pipe->user, pipe->nr_accounted, 0);
-@@ -843,6 +841,10 @@ void free_pipe_info(struct pipe_inode_in
- 		if (buf->ops)
- 			pipe_buf_release(pipe, buf);
- 	}
-+#ifdef CONFIG_WATCH_QUEUE
-+	if (pipe->watch_queue)
-+		put_watch_queue(pipe->watch_queue);
-+#endif
- 	if (pipe->tmp_page)
- 		__free_page(pipe->tmp_page);
- 	kfree(pipe->bufs);
+ 	if (!p_vf)
+-		return;
++		return -EINVAL;
+ 
+ 	p_bulletin = p_vf->bulletin.p_virt;
+ 
+@@ -3800,6 +3800,7 @@ static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
+ 		__qed_vf_get_link_state(p_hwfn, p_link, p_bulletin);
+ 	if (p_caps)
+ 		__qed_vf_get_link_caps(p_hwfn, p_caps, p_bulletin);
++	return 0;
+ }
+ 
+ static int
+@@ -4658,6 +4659,7 @@ static int qed_get_vf_config(struct qed_dev *cdev,
+ 	struct qed_public_vf_info *vf_info;
+ 	struct qed_mcp_link_state link;
+ 	u32 tx_rate;
++	int ret;
+ 
+ 	/* Sanitize request */
+ 	if (IS_VF(cdev))
+@@ -4671,7 +4673,9 @@ static int qed_get_vf_config(struct qed_dev *cdev,
+ 
+ 	vf_info = qed_iov_get_public_vf_info(hwfn, vf_id, true);
+ 
+-	qed_iov_get_link(hwfn, vf_id, NULL, &link, NULL);
++	ret = qed_iov_get_link(hwfn, vf_id, NULL, &link, NULL);
++	if (ret)
++		return ret;
+ 
+ 	/* Fill information about VF */
+ 	ivi->vf = vf_id;
+-- 
+2.34.1
+
 
 
