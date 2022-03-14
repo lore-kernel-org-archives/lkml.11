@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3A3C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18318C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240440AbiCNMLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S236096AbiCNMLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240968AbiCNMIK (ORCPT
+        with ESMTP id S242831AbiCNMLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013652AE02;
-        Mon, 14 Mar 2022 05:04:12 -0700 (PDT)
+        Mon, 14 Mar 2022 08:11:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5385B2FFD6;
+        Mon, 14 Mar 2022 05:09:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45D1D6130D;
-        Mon, 14 Mar 2022 12:04:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DD0C340E9;
-        Mon, 14 Mar 2022 12:04:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1386EB80DF6;
+        Mon, 14 Mar 2022 12:09:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4446C340EC;
+        Mon, 14 Mar 2022 12:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259451;
-        bh=bqsgv4wYRlRAXFN2jwy/To0VbWXSYoahODxLG/Pqnl0=;
+        s=korg; t=1647259788;
+        bh=zddcMlYUQ+kwwOjXI5gXvba06n+8T3/uULg83W55lio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p3SH04pEZK0e+deVykMjji5sJ7xu/ZK+fgy//QqpUgt+kqOVUgtveDv6sFjYPLYra
-         ss+hUYAhFxbFaNxYoJvi2sPKWAgkkDGjUz8Ly30MqUqr2inwaPaZR+jjm/EstijnFY
-         oHc0/4XuJvu97STG/Rk839hy0arp0sIT7GEQcj0k=
+        b=oVKpxGo+a2Q/2O0+zR7r9D86aq837jTdWeqb8FJD8W+a6upZNDWsX5+jqW9ZBl2wo
+         JCAaWBLTMwPJgsVIdn12H6ldCXE875BrZLHAM7ATk3KuQ1VFOc4pJchPMtc5Pari0n
+         aZbyenHcMXRjJ1H2axgZjuznEdwDJMmbGVnPJIzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuang Li <shuali@redhat.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 010/110] tipc: fix kernel panic when enabling bearer
-Date:   Mon, 14 Mar 2022 12:53:12 +0100
-Message-Id: <20220314112743.320738039@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Halil Pasic" <pasic@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.15 090/110] virtio: acknowledge all features before access
+Date:   Mon, 14 Mar 2022 12:54:32 +0100
+Message-Id: <20220314112745.542566592@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -51,106 +49,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-[ Upstream commit be4977b847f5d5cedb64d50eaaf2218c3a55a3a3 ]
+commit 4fa59ede95195f267101a1b8916992cf3f245cdb upstream.
 
-When enabling a bearer on a node, a kernel panic is observed:
+The feature negotiation was designed in a way that
+makes it possible for devices to know which config
+fields will be accessed by drivers.
 
-[    4.498085] RIP: 0010:tipc_mon_prep+0x4e/0x130 [tipc]
-...
-[    4.520030] Call Trace:
-[    4.520689]  <IRQ>
-[    4.521236]  tipc_link_build_proto_msg+0x375/0x750 [tipc]
-[    4.522654]  tipc_link_build_state_msg+0x48/0xc0 [tipc]
-[    4.524034]  __tipc_node_link_up+0xd7/0x290 [tipc]
-[    4.525292]  tipc_rcv+0x5da/0x730 [tipc]
-[    4.526346]  ? __netif_receive_skb_core+0xb7/0xfc0
-[    4.527601]  tipc_l2_rcv_msg+0x5e/0x90 [tipc]
-[    4.528737]  __netif_receive_skb_list_core+0x20b/0x260
-[    4.530068]  netif_receive_skb_list_internal+0x1bf/0x2e0
-[    4.531450]  ? dev_gro_receive+0x4c2/0x680
-[    4.532512]  napi_complete_done+0x6f/0x180
-[    4.533570]  virtnet_poll+0x29c/0x42e [virtio_net]
-...
+This is broken since commit 404123c2db79 ("virtio: allow drivers to
+validate features") with fallout in at least block and net.  We have a
+partial work-around in commit 2f9a174f918e ("virtio: write back
+F_VERSION_1 before validate") which at least lets devices find out which
+format should config space have, but this is a partial fix: guests
+should not access config space without acknowledging features since
+otherwise we'll never be able to change the config space format.
 
-The node in question is receiving activate messages in another
-thread after changing bearer status to allow message sending/
-receiving in current thread:
+To fix, split finalize_features from virtio_finalize_features and
+call finalize_features with all feature bits before validation,
+and then - if validation changed any bits - once again after.
 
-         thread 1           |              thread 2
-         --------           |              --------
-                            |
-tipc_enable_bearer()        |
-  test_and_set_bit_lock()   |
-    tipc_bearer_xmit_skb()  |
-                            | tipc_l2_rcv_msg()
-                            |   tipc_rcv()
-                            |     __tipc_node_link_up()
-                            |       tipc_link_build_state_msg()
-                            |         tipc_link_build_proto_msg()
-                            |           tipc_mon_prep()
-                            |           {
-                            |             ...
-                            |             // null-pointer dereference
-                            |             u16 gen = mon->dom_gen;
-                            |             ...
-                            |           }
-  // Not being executed yet |
-  tipc_mon_create()         |
-  {                         |
-    ...                     |
-    // allocate             |
-    mon = kzalloc();        |
-    ...                     |
-  }                         |
+Since virtio_finalize_features no longer writes out features
+rename it to virtio_features_ok - since that is what it does:
+checks that features are ok with the device.
 
-Monitoring pointer in thread 2 is dereferenced before monitoring data
-is allocated in thread 1. This causes kernel panic.
+As a side effect, this also reduces the amount of hypervisor accesses -
+we now only acknowledge features once unless we are clearing any
+features when validating (which is uncommon).
 
-This commit fixes it by allocating the monitoring data before enabling
-the bearer to receive messages.
+IRC I think that this was more or less always the intent in the spec but
+unfortunately the way the spec is worded does not say this explicitly, I
+plan to address this at the spec level, too.
 
-Fixes: 35c55c9877f8 ("tipc: add neighbor monitoring framework")
-Reported-by: Shuang Li <shuali@redhat.com>
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
+Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
+Cc: "Halil Pasic" <pasic@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tipc/bearer.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/virtio/virtio.c       |   39 ++++++++++++++++++++++-----------------
+ include/linux/virtio_config.h |    3 ++-
+ 2 files changed, 24 insertions(+), 18 deletions(-)
 
-diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
-index 443f8e5b9477..36b466cfd9e1 100644
---- a/net/tipc/bearer.c
-+++ b/net/tipc/bearer.c
-@@ -352,16 +352,18 @@ static int tipc_enable_bearer(struct net *net, const char *name,
- 		goto rejected;
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -166,14 +166,13 @@ void virtio_add_status(struct virtio_dev
+ }
+ EXPORT_SYMBOL_GPL(virtio_add_status);
+ 
+-static int virtio_finalize_features(struct virtio_device *dev)
++/* Do some validation, then set FEATURES_OK */
++static int virtio_features_ok(struct virtio_device *dev)
+ {
+-	int ret = dev->config->finalize_features(dev);
+ 	unsigned status;
++	int ret;
+ 
+ 	might_sleep();
+-	if (ret)
+-		return ret;
+ 
+ 	ret = arch_has_restricted_virtio_memory_access();
+ 	if (ret) {
+@@ -238,17 +237,6 @@ static int virtio_dev_probe(struct devic
+ 		driver_features_legacy = driver_features;
  	}
  
--	test_and_set_bit_lock(0, &b->up);
--	rcu_assign_pointer(tn->bearer_list[bearer_id], b);
--	if (skb)
--		tipc_bearer_xmit_skb(net, bearer_id, skb, &b->bcast_addr);
+-	/*
+-	 * Some devices detect legacy solely via F_VERSION_1. Write
+-	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
+-	 * these when needed.
+-	 */
+-	if (drv->validate && !virtio_legacy_is_little_endian()
+-			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
+-		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
+-		dev->config->finalize_features(dev);
+-	}
 -
-+	/* Create monitoring data before accepting activate messages */
- 	if (tipc_mon_create(net, bearer_id)) {
- 		bearer_disable(net, b);
-+		kfree_skb(skb);
- 		return -ENOMEM;
+ 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
+ 		dev->features = driver_features & device_features;
+ 	else
+@@ -259,13 +247,26 @@ static int virtio_dev_probe(struct devic
+ 		if (device_features & (1ULL << i))
+ 			__virtio_set_bit(dev, i);
+ 
++	err = dev->config->finalize_features(dev);
++	if (err)
++		goto err;
++
+ 	if (drv->validate) {
++		u64 features = dev->features;
++
+ 		err = drv->validate(dev);
+ 		if (err)
+ 			goto err;
++
++		/* Did validation change any features? Then write them again. */
++		if (features != dev->features) {
++			err = dev->config->finalize_features(dev);
++			if (err)
++				goto err;
++		}
  	}
  
-+	test_and_set_bit_lock(0, &b->up);
-+	rcu_assign_pointer(tn->bearer_list[bearer_id], b);
-+	if (skb)
-+		tipc_bearer_xmit_skb(net, bearer_id, skb, &b->bcast_addr);
-+
- 	pr_info("Enabled bearer <%s>, priority %u\n", name, prio);
+-	err = virtio_finalize_features(dev);
++	err = virtio_features_ok(dev);
+ 	if (err)
+ 		goto err;
  
- 	return res;
--- 
-2.34.1
-
+@@ -489,7 +490,11 @@ int virtio_device_restore(struct virtio_
+ 	/* We have a driver! */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
+ 
+-	ret = virtio_finalize_features(dev);
++	ret = dev->config->finalize_features(dev);
++	if (ret)
++		goto err;
++
++	ret = virtio_features_ok(dev);
+ 	if (ret)
+ 		goto err;
+ 
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -62,8 +62,9 @@ struct virtio_shm_region {
+  *	Returns the first 64 feature bits (all we currently need).
+  * @finalize_features: confirm what device features we'll be using.
+  *	vdev: the virtio_device
+- *	This gives the final feature bits for the device: it can change
++ *	This sends the driver feature bits to the device: it can change
+  *	the dev->feature bits if it wants.
++ * Note: despite the name this can be called any number of times.
+  *	Returns 0 on success or error status
+  * @bus_name: return the bus name associated with the device (optional)
+  *	vdev: the virtio_device
 
 
