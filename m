@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F41AC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F1C8C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242546AbiCNMTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:19:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        id S242374AbiCNMS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242494AbiCNMKE (ORCPT
+        with ESMTP id S242473AbiCNMKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:04 -0400
+        Mon, 14 Mar 2022 08:10:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13A622BCA;
-        Mon, 14 Mar 2022 05:08:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7708F193F3;
+        Mon, 14 Mar 2022 05:08:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80CB561314;
-        Mon, 14 Mar 2022 12:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D2E2C340E9;
-        Mon, 14 Mar 2022 12:08:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D27896130F;
+        Mon, 14 Mar 2022 12:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C38A7C340E9;
+        Mon, 14 Mar 2022 12:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259717;
-        bh=JNgz7aOmQOURe9AXh8w879yMAAPClIIjiSnyCIm1RY0=;
+        s=korg; t=1647259708;
+        bh=/gwCmlsi5Q06s9CqoiM/ulAmAa9EkDtF9xcqhREj8NM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QANKskSrQqm9vVqO2l2VoOOycUcMCqXDfr2010HTyEMhGQRwqBNLQ41+sR9hbaApX
-         92guk6HQt0wgIHt7rM00+jTeXd7Xe/VBO7NXQ5ZRwvFoBScvxCv1Th2FIfJz4u8q1q
-         TxB5PrMfZfw9weTagscnmz2Xx3FIiYZQCzGZMkKA=
+        b=EZ2kAYsZWn5pGBpEMTOGlyOGug1JtEFIp1uW7+pqTdKtyHXafWNyZGzTY/34kQlZj
+         6WwLccZ+5+JHLgo2SLT7gQxITSzk021s6Prgs3SMrzFid3GWp/KtBSZMFOfIsy+4/r
+         husk1lPFUwdw4+oooPQ5x/wjqqTmQQ1qk/MV/E6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 036/110] net: ethernet: ti: cpts: Handle error for clk_enable
-Date:   Mon, 14 Mar 2022 12:53:38 +0100
-Message-Id: <20220314112744.045684399@linuxfoundation.org>
+Subject: [PATCH 5.15 070/110] tracing: Ensure trace buffer is at least 4096 bytes large
+Date:   Mon, 14 Mar 2022 12:54:12 +0100
+Message-Id: <20220314112744.989605523@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,37 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Sven Schnelle <svens@linux.ibm.com>
 
-[ Upstream commit 6babfc6e6fab068018c36e8f6605184b8c0b349d ]
+[ Upstream commit 7acf3a127bb7c65ff39099afd78960e77b2ca5de ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+Booting the kernel with 'trace_buf_size=1' give a warning at
+boot during the ftrace selftests:
 
-Fixes: 8a2c9a5ab4b9 ("net: ethernet: ti: cpts: rework initialization/deinitialization")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[    0.892809] Running postponed tracer tests:
+[    0.892893] Testing tracer function:
+[    0.901899] Callback from call_rcu_tasks_trace() invoked.
+[    0.983829] Callback from call_rcu_tasks_rude() invoked.
+[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
+[    1.091944] Callback from call_rcu_tasks() invoked.
+[    1.097695] PASSED
+[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
+[    1.353474] ------------[ cut here ]------------
+[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
+
+Therefore enforce a minimum of 4096 bytes to make the selftest pass.
+
+Link: https://lkml.kernel.org/r/20220214134456.1751749-1-svens@linux.ibm.com
+
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpts.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/trace/trace.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
-index 43222a34cba0..f9514518700e 100644
---- a/drivers/net/ethernet/ti/cpts.c
-+++ b/drivers/net/ethernet/ti/cpts.c
-@@ -568,7 +568,9 @@ int cpts_register(struct cpts *cpts)
- 	for (i = 0; i < CPTS_MAX_EVENTS; i++)
- 		list_add(&cpts->pool_data[i].list, &cpts->pool);
- 
--	clk_enable(cpts->refclk);
-+	err = clk_enable(cpts->refclk);
-+	if (err)
-+		return err;
- 
- 	cpts_write32(cpts, CPTS_EN, control);
- 	cpts_write32(cpts, TS_PEND_EN, int_enable);
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 86fb77c2ace5..01002656f1ae 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -1496,10 +1496,12 @@ static int __init set_buf_size(char *str)
+ 	if (!str)
+ 		return 0;
+ 	buf_size = memparse(str, &str);
+-	/* nr_entries can not be zero */
+-	if (buf_size == 0)
+-		return 0;
+-	trace_buf_size = buf_size;
++	/*
++	 * nr_entries can not be zero and the startup
++	 * tests require some buffer space. Therefore
++	 * ensure we have at least 4096 bytes of buffer.
++	 */
++	trace_buf_size = max(4096UL, buf_size);
+ 	return 1;
+ }
+ __setup("trace_buf_size=", set_buf_size);
 -- 
 2.34.1
 
