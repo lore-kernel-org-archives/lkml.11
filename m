@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDE6C35280
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F0FC3527B
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242357AbiCNM3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
+        id S242295AbiCNM33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243872AbiCNMVV (ORCPT
+        with ESMTP id S243861AbiCNMVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:21 -0400
+        Mon, 14 Mar 2022 08:21:20 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B451096;
-        Mon, 14 Mar 2022 05:17:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847E2BE5;
+        Mon, 14 Mar 2022 05:17:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=W/+ETx5b3xS1Tdv9RdFRhbPpWKbPzvFWXK5rp+AtZnI=;
-  b=syBj3rUl3ursH0T++MuaesnsdMP2hosY4QJOBLPo46+CkhrwQsA7Mi8s
-   zbicBYa2rxPCOsEpDZ0NuY7meHnhcIvDxphOVVXXybCjQwkR3ToUKADVV
-   SC767kaFu8jfBW0jAhVy5zkX9xjfbEuM5i1C1uxUesnxLD8KzP+u1kMJp
-   s=;
+  bh=yAh5dhSWoezDHAmIMKrnf1fmCmAoJ/u8UhSQGN/+5rg=;
+  b=AOnEnK5rwCG4310Vpj8R+iKPhl+ZQD+1cDacCSAMGCta6CgsSn9yBslL
+   Y1TrJpCX8hv7jCgskW7U1RQ8F6ZnlT4GCA0nKToZhZGvR2wQ42o/C7TAp
+   6Uwkpl70GJ0CwzNzwB5HL+SwW86rfOZM88KpUW0hoMBFN0ZoFvJLVt9bZ
+   Y=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997362"
+   d="scan'208";a="25997353"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc:     kernel-janitors@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        linux-power@fi.rohmeurope.com, linux-kernel@vger.kernel.org
-Subject: [PATCH 28/30] mfd: bd9576: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:52 +0100
-Message-Id: <20220314115354.144023-29-Julia.Lawall@inria.fr>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 20/30] airo: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:44 +0100
+Message-Id: <20220314115354.144023-21-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -51,20 +54,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/mfd/rohm-bd9576.c |    2 +-
+ drivers/net/wireless/cisco/airo.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/rohm-bd9576.c b/drivers/mfd/rohm-bd9576.c
-index 6661a27d69a8..f37cd4f27aeb 100644
---- a/drivers/mfd/rohm-bd9576.c
-+++ b/drivers/mfd/rohm-bd9576.c
-@@ -23,7 +23,7 @@ enum {
- };
- 
- /*
-- * Due to the BD9576MUF nasty IRQ behaiour we don't always populate IRQs.
-+ * Due to the BD9576MUF nasty IRQ behaviour we don't always populate IRQs.
-  * These will be added to regulator resources only if IRQ information for the
-  * PMIC is populated in device-tree.
-  */
+diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
+index 452d08545d31..10daef81c355 100644
+--- a/drivers/net/wireless/cisco/airo.c
++++ b/drivers/net/wireless/cisco/airo.c
+@@ -545,7 +545,7 @@ struct ConfigRid {
+ #define MODE_CFG_MASK cpu_to_le16(0xff)
+ #define MODE_ETHERNET_HOST cpu_to_le16(0<<8) /* rx payloads converted */
+ #define MODE_LLC_HOST cpu_to_le16(1<<8) /* rx payloads left as is */
+-#define MODE_AIRONET_EXTEND cpu_to_le16(1<<9) /* enable Aironet extenstions */
++#define MODE_AIRONET_EXTEND cpu_to_le16(1<<9) /* enable Aironet extensions */
+ #define MODE_AP_INTERFACE cpu_to_le16(1<<10) /* enable ap interface extensions */
+ #define MODE_ANTENNA_ALIGN cpu_to_le16(1<<11) /* enable antenna alignment */
+ #define MODE_ETHER_LLC cpu_to_le16(1<<12) /* enable ethernet LLC */
 
