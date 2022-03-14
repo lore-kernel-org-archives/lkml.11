@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E42C3C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1207C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241881AbiCNMSd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
+        id S241653AbiCNMSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242314AbiCNMJv (ORCPT
+        with ESMTP id S242101AbiCNMJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:51 -0400
+        Mon, 14 Mar 2022 08:09:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5F013EA6;
-        Mon, 14 Mar 2022 05:07:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF04024BF8;
+        Mon, 14 Mar 2022 05:06:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C2F6130D;
-        Mon, 14 Mar 2022 12:07:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CC65C340E9;
-        Mon, 14 Mar 2022 12:07:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E759612FD;
+        Mon, 14 Mar 2022 12:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED76EC340ED;
+        Mon, 14 Mar 2022 12:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259622;
-        bh=K0Zfy3TQifKqnpEDApkGb4MJ3KxVp4amKIB/i6G30+A=;
+        s=korg; t=1647259583;
+        bh=ch4D18rnxIrYNmJUCXmQxy+VD/VhstF+pdh7cobO6P8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CVRcyxIEqyhwXZ9D/vGnZJ9fTsvxRk8vqVK/0dL9Bocs4AJVqaDWIaa5KKNJfFrvu
-         MVUDJRJi5d4h4wrykOpLxGZkriry4DIRnJHHMkHma/0IxjTU1zCiv/6VwdIrRyBWPb
-         B0NgmzKPT6Jdf1KKz8ScqH8p8/znNosq4+U9Id/U=
+        b=epFosccXFbjUY0y8+EjU1m0y/HDx+sjTkKtio5MqJ0DJ8YyxniuIvS903cUNm8nL6
+         97fJo0xV/WBA4hUCrFaR+Z+HBUhWolNWI5Kj6TY5qC7kktqP9R1F0uSMqaz0WCctBD
+         FnlKvpLmdEZ8JHgZWFwGKRWNWC7orko47L2p3rsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 034/110] ethernet: Fix error handling in xemaclite_of_probe
-Date:   Mon, 14 Mar 2022 12:53:36 +0100
-Message-Id: <20220314112743.990351778@linuxfoundation.org>
+        stable@vger.kernel.org, Grzegorz Siwik <grzegorz.siwik@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 033/110] ice: Fix curr_link_speed advertised speed
+Date:   Mon, 14 Mar 2022 12:53:35 +0100
+Message-Id: <20220314112743.961788194@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,46 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-[ Upstream commit b19ab4b38b06aae12442b2de95ccf58b5dc53584 ]
+[ Upstream commit ad35ffa252af67d4cc7c744b9377a2b577748e3f ]
 
-This node pointer is returned by of_parse_phandle() with refcount
-incremented in this function. Calling of_node_put() to avoid the
-refcount leak. As the remove function do.
+Change curr_link_speed advertised speed, due to
+link_info.link_speed is not equal phy.curr_user_speed_req.
+Without this patch it is impossible to set advertised
+speed to same as link_speed.
 
-Fixes: 5cdaaa12866e ("net: emaclite: adding MDIO and phy lib support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220308024751.2320-1-linmq006@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Testing Hints: Try to set advertised speed
+to 25G only with 25G default link (use ethtool -s 0x80000000)
+
+Fixes: 48cb27f2fd18 ("ice: Implement handlers for ethtool PHY/link operations")
+Signed-off-by: Grzegorz Siwik <grzegorz.siwik@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index b780aad3550a..5524ac4fae80 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -1185,7 +1185,7 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
- 	if (rc) {
- 		dev_err(dev,
- 			"Cannot register network device, aborting\n");
--		goto error;
-+		goto put_node;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index c451cf401e63..38c2d9a5574a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -2275,7 +2275,7 @@ ice_set_link_ksettings(struct net_device *netdev,
+ 		goto done;
  	}
  
- 	dev_info(dev,
-@@ -1193,6 +1193,8 @@ static int xemaclite_of_probe(struct platform_device *ofdev)
- 		 (unsigned long __force)ndev->mem_start, lp->base_addr, ndev->irq);
- 	return 0;
+-	curr_link_speed = pi->phy.link_info.link_speed;
++	curr_link_speed = pi->phy.curr_user_speed_req;
+ 	adv_link_speed = ice_ksettings_find_adv_link_speed(ks);
  
-+put_node:
-+	of_node_put(lp->phy_node);
- error:
- 	free_netdev(ndev);
- 	return rc;
+ 	/* If speed didn't get set, set it to what it currently is.
 -- 
 2.34.1
 
