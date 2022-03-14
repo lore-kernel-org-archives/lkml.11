@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C06C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1643FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbiCNMY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        id S241336AbiCNMZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241795AbiCNMSY (ORCPT
+        with ESMTP id S241813AbiCNMSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:18:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63753140F9;
-        Mon, 14 Mar 2022 05:13:04 -0700 (PDT)
+        Mon, 14 Mar 2022 08:18:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CFF264D;
+        Mon, 14 Mar 2022 05:13:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2BA1B80D24;
-        Mon, 14 Mar 2022 12:13:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6D77C340E9;
-        Mon, 14 Mar 2022 12:13:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3256F6139D;
+        Mon, 14 Mar 2022 12:13:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41515C340ED;
+        Mon, 14 Mar 2022 12:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259981;
-        bh=sIs2vLv0LU4RwOYr14ccSSzcXKm3+p+9K3S56bkx5WQ=;
+        s=korg; t=1647259984;
+        bh=x8ZDC68Cp5usz1aT+VE2TNb5XMwJpsLwMUxX0tjgTFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dnc4R9ghb1rCTrSHaM/b9eSi+MCK1wrLPCdFiwwYrKxh1cix0zKJ82fxN0OexUe5s
-         V+sHGWfvecwEyiuEMZgJaSS4dQIcBtFo0zOuif1C2s9k9GF/Skr6+yxmbM46qZpPeM
-         eZjgEJYOFRJPrzbJu9VB461JB8Ptlm8elqEsEi5Y=
+        b=tjrT8N7SqCWf/cFCIQzloXGbB4Sely2ZWWF2fuxsLe3XvALJtx+OQ+vuL629SH71H
+         nwx5jqti+curogXwprtzgCWhINC59m0mtuXncPRQyUKx8tYbGpuWODnDyrRyhKMXAp
+         oMwzXuez8hbthfssfx1GMuap4JObzWGgjZtQ/VSo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 006/121] clk: qcom: gdsc: Add support to update GDSC transition delay
-Date:   Mon, 14 Mar 2022 12:53:09 +0100
-Message-Id: <20220314112744.302790306@linuxfoundation.org>
+Subject: [PATCH 5.16 007/121] clk: qcom: dispcc: Update the transition delay for MDSS GDSC
+Date:   Mon, 14 Mar 2022 12:53:10 +0100
+Message-Id: <20220314112744.330030133@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -52,115 +52,97 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Taniya Das <tdas@codeaurora.org>
 
-[ Upstream commit 4e7c4d3652f96f41179aab3ff53025c7a550d689 ]
-
-GDSCs have multiple transition delays which are used for the GDSC FSM
-states. Older targets/designs required these values to be updated from
-gdsc code to certain default values for the FSM state to work as
-expected. But on the newer targets/designs the values updated from the
-GDSC driver can hamper the FSM state to not work as expected.
+[ Upstream commit 6e6fec3f961c00ca34ffb4bf2ad9febb4b499f8d ]
 
 On SC7180 we observe black screens because the gdsc is being
 enabled/disabled very rapidly and the GDSC FSM state does not work as
 expected. This is due to the fact that the GDSC reset value is being
 updated from SW.
 
-Thus add support to update the transition delay from the clock
-controller gdscs as required.
+The recommended transition delay for mdss core gdsc updated for
+SC7180/SC7280/SM8250.
 
-Fixes: 45dd0e55317cc ("clk: qcom: Add support for GDSCs)
+Fixes: dd3d06622138 ("clk: qcom: Add display clock controller driver for SC7180")
+Fixes: 1a00c962f9cd ("clk: qcom: Add display clock controller driver for SC7280")
+Fixes: 80a18f4a8567 ("clk: qcom: Add display clock controller driver for SM8150 and SM8250")
 Signed-off-by: Taniya Das <tdas@codeaurora.org>
-Link: https://lore.kernel.org/r/20220223185606.3941-1-tdas@codeaurora.org
+Link: https://lore.kernel.org/r/20220223185606.3941-2-tdas@codeaurora.org
 Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+[sboyd@kernel.org: lowercase hex]
 Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/qcom/gdsc.c | 26 +++++++++++++++++++++-----
- drivers/clk/qcom/gdsc.h |  8 +++++++-
- 2 files changed, 28 insertions(+), 6 deletions(-)
+ drivers/clk/qcom/dispcc-sc7180.c | 5 ++++-
+ drivers/clk/qcom/dispcc-sc7280.c | 5 ++++-
+ drivers/clk/qcom/dispcc-sm8250.c | 5 ++++-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clk/qcom/gdsc.c b/drivers/clk/qcom/gdsc.c
-index 7e1dd8ccfa38..44520efc6c72 100644
---- a/drivers/clk/qcom/gdsc.c
-+++ b/drivers/clk/qcom/gdsc.c
+diff --git a/drivers/clk/qcom/dispcc-sc7180.c b/drivers/clk/qcom/dispcc-sc7180.c
+index 538e4963c915..5d2ae297e741 100644
+--- a/drivers/clk/qcom/dispcc-sc7180.c
++++ b/drivers/clk/qcom/dispcc-sc7180.c
 @@ -1,6 +1,6 @@
  // SPDX-License-Identifier: GPL-2.0-only
  /*
-- * Copyright (c) 2015, 2017-2018, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2015, 2017-2018, 2022, The Linux Foundation. All rights reserved.
+- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2019, 2022, The Linux Foundation. All rights reserved.
   */
  
- #include <linux/bitops.h>
-@@ -35,9 +35,14 @@
- #define CFG_GDSCR_OFFSET		0x4
+ #include <linux/clk-provider.h>
+@@ -625,6 +625,9 @@ static struct clk_branch disp_cc_mdss_vsync_clk = {
  
- /* Wait 2^n CXO cycles between all states. Here, n=2 (4 cycles). */
--#define EN_REST_WAIT_VAL	(0x2 << 20)
--#define EN_FEW_WAIT_VAL		(0x8 << 16)
--#define CLK_DIS_WAIT_VAL	(0x2 << 12)
-+#define EN_REST_WAIT_VAL	0x2
-+#define EN_FEW_WAIT_VAL		0x8
-+#define CLK_DIS_WAIT_VAL	0x2
-+
-+/* Transition delay shifts */
-+#define EN_REST_WAIT_SHIFT	20
-+#define EN_FEW_WAIT_SHIFT	16
-+#define CLK_DIS_WAIT_SHIFT	12
- 
- #define RETAIN_MEM		BIT(14)
- #define RETAIN_PERIPH		BIT(13)
-@@ -380,7 +385,18 @@ static int gdsc_init(struct gdsc *sc)
- 	 */
- 	mask = HW_CONTROL_MASK | SW_OVERRIDE_MASK |
- 	       EN_REST_WAIT_MASK | EN_FEW_WAIT_MASK | CLK_DIS_WAIT_MASK;
--	val = EN_REST_WAIT_VAL | EN_FEW_WAIT_VAL | CLK_DIS_WAIT_VAL;
-+
-+	if (!sc->en_rest_wait_val)
-+		sc->en_rest_wait_val = EN_REST_WAIT_VAL;
-+	if (!sc->en_few_wait_val)
-+		sc->en_few_wait_val = EN_FEW_WAIT_VAL;
-+	if (!sc->clk_dis_wait_val)
-+		sc->clk_dis_wait_val = CLK_DIS_WAIT_VAL;
-+
-+	val = sc->en_rest_wait_val << EN_REST_WAIT_SHIFT |
-+		sc->en_few_wait_val << EN_FEW_WAIT_SHIFT |
-+		sc->clk_dis_wait_val << CLK_DIS_WAIT_SHIFT;
-+
- 	ret = regmap_update_bits(sc->regmap, sc->gdscr, mask, val);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/clk/qcom/gdsc.h b/drivers/clk/qcom/gdsc.h
-index d7cc4c21a9d4..ad313d7210bd 100644
---- a/drivers/clk/qcom/gdsc.h
-+++ b/drivers/clk/qcom/gdsc.h
+ static struct gdsc mdss_gdsc = {
+ 	.gdscr = 0x3000,
++	.en_rest_wait_val = 0x2,
++	.en_few_wait_val = 0x2,
++	.clk_dis_wait_val = 0xf,
+ 	.pd = {
+ 		.name = "mdss_gdsc",
+ 	},
+diff --git a/drivers/clk/qcom/dispcc-sc7280.c b/drivers/clk/qcom/dispcc-sc7280.c
+index 4ef4ae231794..ad596d567f6a 100644
+--- a/drivers/clk/qcom/dispcc-sc7280.c
++++ b/drivers/clk/qcom/dispcc-sc7280.c
 @@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
+ // SPDX-License-Identifier: GPL-2.0-only
  /*
-- * Copyright (c) 2015, 2017-2018, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2015, 2017-2018, 2022, The Linux Foundation. All rights reserved.
+- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2021-2022, The Linux Foundation. All rights reserved.
   */
  
- #ifndef __QCOM_GDSC_H__
-@@ -22,6 +22,9 @@ struct reset_controller_dev;
-  * @cxcs: offsets of branch registers to toggle mem/periph bits in
-  * @cxc_count: number of @cxcs
-  * @pwrsts: Possible powerdomain power states
-+ * @en_rest_wait_val: transition delay value for receiving enr ack signal
-+ * @en_few_wait_val: transition delay value for receiving enf ack signal
-+ * @clk_dis_wait_val: transition delay value for halting clock
-  * @resets: ids of resets associated with this gdsc
-  * @reset_count: number of @resets
-  * @rcdev: reset controller
-@@ -36,6 +39,9 @@ struct gdsc {
- 	unsigned int			clamp_io_ctrl;
- 	unsigned int			*cxcs;
- 	unsigned int			cxc_count;
-+	unsigned int			en_rest_wait_val;
-+	unsigned int			en_few_wait_val;
-+	unsigned int			clk_dis_wait_val;
- 	const u8			pwrsts;
- /* Powerdomain allowable state bitfields */
- #define PWRSTS_OFF		BIT(0)
+ #include <linux/clk-provider.h>
+@@ -787,6 +787,9 @@ static struct clk_branch disp_cc_sleep_clk = {
+ 
+ static struct gdsc disp_cc_mdss_core_gdsc = {
+ 	.gdscr = 0x1004,
++	.en_rest_wait_val = 0x2,
++	.en_few_wait_val = 0x2,
++	.clk_dis_wait_val = 0xf,
+ 	.pd = {
+ 		.name = "disp_cc_mdss_core_gdsc",
+ 	},
+diff --git a/drivers/clk/qcom/dispcc-sm8250.c b/drivers/clk/qcom/dispcc-sm8250.c
+index 566fdfa0a15b..db9379634fb2 100644
+--- a/drivers/clk/qcom/dispcc-sm8250.c
++++ b/drivers/clk/qcom/dispcc-sm8250.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /*
+- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2018-2020, 2022, The Linux Foundation. All rights reserved.
+  */
+ 
+ #include <linux/clk-provider.h>
+@@ -1126,6 +1126,9 @@ static struct clk_branch disp_cc_mdss_vsync_clk = {
+ 
+ static struct gdsc mdss_gdsc = {
+ 	.gdscr = 0x3000,
++	.en_rest_wait_val = 0x2,
++	.en_few_wait_val = 0x2,
++	.clk_dis_wait_val = 0xf,
+ 	.pd = {
+ 		.name = "mdss_gdsc",
+ 	},
 -- 
 2.34.1
 
