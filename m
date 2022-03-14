@@ -2,118 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A08C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64135C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244791AbiCNT7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        id S244798AbiCNT7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244837AbiCNT6G (ORCPT
+        with ESMTP id S244585AbiCNT7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:58:06 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 947B71128;
-        Mon, 14 Mar 2022 12:56:55 -0700 (PDT)
-Received: from apollo.. (unknown [IPv6:2a02:810b:4340:43bf:4685:ff:fe12:5967])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2CA7622175;
-        Mon, 14 Mar 2022 20:51:48 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647287510;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FsPSXYNf65u9lGXlMuwSK06aDtqt8nh3mUbWWnhzEfU=;
-        b=Vn/QbwOwzy6e02taXzUWU1C0W6Pxpd5fmMSm9y7vOmRThcH6VGbwWjsDjImTzcvLJpuYfr
-        RqUW6GJG/9lQhhYXKSQoqFnQ4n4gTVxm/t4K7gFh6Zpdumk0DjXpSW7DKTQ6rIQ/SM2Ydq
-        iPX4EGdS0zuMnaZ/4BQE9/igYxusDGo=
-From:   Michael Walle <michael@walle.cc>
-To:     andriy.shevchenko@linux.intel.com
-Cc:     djrscally@gmail.com, gregkh@linuxfoundation.org,
-        heikki.krogerus@linux.intel.com, lenb@kernel.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        nuno.sa@analog.com, rafael@kernel.org,
-        sakari.ailus@linux.intel.com, Russell King <linux@armlinux.org.uk>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v4 1/1] device property: Allow error pointer to be passed to fwnode APIs
-Date:   Mon, 14 Mar 2022 20:51:37 +0100
-Message-Id: <20220314195138.20036-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220308123712.18613-1-andriy.shevchenko@linux.intel.com>
-References: <20220308123712.18613-1-andriy.shevchenko@linux.intel.com>
+        Mon, 14 Mar 2022 15:59:40 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF8FFD31
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:58:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647287909; x=1678823909;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=I5hLqAPtwDrTpIjnWP/nITosRUyTCLL8YBk1Kaj6UBw=;
+  b=korZH+K1ysuCF4Q5N0r0c9ogSdqtFHdSa0bs8Dn0cyS+rWL9WXNGF/vN
+   +ymYdHBtY8gCu1oZtEE3i7nzchCOU1ZI8TC5NDJ1Zn5J3HsL43nYzXLIy
+   PF8XugjlnqbB5J89YsT2GzS3T8Nu4xhOEAlpSKjARKPRfExekftkUkToL
+   VOYwdpwtZTLeJ2Y4yrjQJExWeTL3K+IvRLi/jtdza/Wj8YHNH1vjsVVDM
+   KmFxA4jTNKAW+hSiZSR120QdUkO5NLlCo2gAkPBxpWtoeyIz+AfTCvP4N
+   GvrMWOf2oot103ooOsIzKvUmbojqtgvrX2bnlZQkLZnKP/+kFJ0yRnVzO
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256323450"
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="256323450"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:58:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="512348515"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 14 Mar 2022 12:58:27 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nTqpm-000ABg-G0; Mon, 14 Mar 2022 19:58:26 +0000
+Date:   Tue, 15 Mar 2022 03:57:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jorge Lopez <jorge.lopez2@hp.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: [pdx86-platform-drivers-x86:review-hans 67/67]
+ drivers/platform/x86/hp-wmi.c:86: warning: wrong kernel-doc identifier on
+ line:
+Message-ID: <202203150330.81L3pgxq-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git review-hans
+head:   9f7e383ebdee6712bee02e3a6c2027cf287950fc
+commit: 9f7e383ebdee6712bee02e3a6c2027cf287950fc [67/67] Changing bios_args.data to be dynamically allocated
+config: i386-randconfig-a016-20220314 (https://download.01.org/0day-ci/archive/20220315/202203150330.81L3pgxq-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 3e4950d7fa78ac83f33bbf1658e2f49a73719236)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/commit/?id=9f7e383ebdee6712bee02e3a6c2027cf287950fc
+        git remote add pdx86-platform-drivers-x86 https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git
+        git fetch --no-tags pdx86-platform-drivers-x86 review-hans
+        git checkout 9f7e383ebdee6712bee02e3a6c2027cf287950fc
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/platform/x86/
 
-> Some of the fwnode APIs might return an error pointer instead of NULL
-> or valid fwnode handle. The result of such API call may be considered
-> optional and hence the test for it is usually done in a form of
-> 
-> 	fwnode = fwnode_find_reference(...);
-> 	if (IS_ERR(fwnode))
-> 		...error handling...
-> 
-> Nevertheless the resulting fwnode may have bumped the reference count
-> and hence caller of the above API is obliged to call fwnode_handle_put().
-> Since fwnode may be not valid either as NULL or error pointer the check
-> has to be performed there. This approach uglifies the code and adds
-> a point of making a mistake, i.e. forgetting about error point case.
-> 
-> To prevent this, allow an error pointer to be passed to the fwnode APIs.
-> 
-> Fixes: 83b34afb6b79 ("device property: Introduce fwnode_find_reference()")
-> Reported-by: Nuno Sá <nuno.sa@analog.com>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Tested-by: Nuno Sá <nuno.sa@analog.com>
-> Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-> Acked-by: Nuno Sá <nuno.sa@analog.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This breaks SFP/phylink (using the lan966x switch) on my board. See below
-for more details.
+All warnings (new ones prefixed by >>):
 
-[..]
+>> drivers/platform/x86/hp-wmi.c:86: warning: wrong kernel-doc identifier on line:
+    * struct bios_args buffer is dynamically allocated.  New WMI command types
 
-> @@ -480,15 +485,16 @@ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
->  {
->  	int ret;
->  
-> +	if (IS_ERR_OR_NULL(fwnode))
-> +		return -ENOENT;
-> +
->  	ret = fwnode_call_int_op(fwnode, get_reference_args, prop, nargs_prop,
->  				 nargs, index, args);
-> +	if (ret == 0)
 
-Should this be "if (ret == 0 || IS_ERR_OR_NULL(fwnode->secondary))" ?
+vim +86 drivers/platform/x86/hp-wmi.c
 
-> +		return ret;
->  
-> -	if (ret < 0 && !IS_ERR_OR_NULL(fwnode) &&
-> -	    !IS_ERR_OR_NULL(fwnode->secondary))
-> -		ret = fwnode_call_int_op(fwnode->secondary, get_reference_args,
-> -					 prop, nargs_prop, nargs, index, args);
-> -
-> -	return ret;
-> +	return fwnode_call_int_op(fwnode->secondary, get_reference_args, prop, nargs_prop,
-> +				  nargs, index, args);
->  }
->  EXPORT_SYMBOL_GPL(fwnode_property_get_reference_args);
+    84	
+    85	/**
+  > 86	 * struct bios_args buffer is dynamically allocated.  New WMI command types
+    87	 * were introduced that exceeds 128-byte data size.  Changes to handle
+    88	 * the data size allocation scheme were kept in hp_wmi_perform_qurey function.
+    89	 */
+    90	struct bios_args {
+    91		u32 signature;
+    92		u32 command;
+    93		u32 commandtype;
+    94		u32 datasize;
+    95		u8 data[];
+    96	};
+    97	
 
-What happens before this patch is that sfp_bus_find_fwnode() will call
-fwnode_property_get_reference_args() and the first calls return -ENOENT
-which sfp_bus_find_fwnode() will handle in a special way. After your
-patch, -EINVAL is returned, because fwnode_call_int_op() on
-fwnode->secondary is always called regardless of the return value of
-the original fwnode.
-
--michael
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
