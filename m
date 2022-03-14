@@ -2,92 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63260C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09200C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241769AbiCNRey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 13:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36280 "EHLO
+        id S243203AbiCNRfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239124AbiCNRew (ORCPT
+        with ESMTP id S239124AbiCNRfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 13:34:52 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3389D5F76;
-        Mon, 14 Mar 2022 10:33:41 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id w7so19166649ioj.5;
-        Mon, 14 Mar 2022 10:33:41 -0700 (PDT)
+        Mon, 14 Mar 2022 13:35:39 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6BA6353;
+        Mon, 14 Mar 2022 10:34:29 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id e3so15256979pjm.5;
+        Mon, 14 Mar 2022 10:34:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=eBGr3EYVnokIXBZ1ivLXLwjkCHVmPG/SGV375op3izg=;
-        b=Yri5H9BjpRLyG5xBvAORHMLFFU574INQGOGlqdxvi99/lfQh0kbGKh6c483jVQk7z/
-         d12PXnebuWxr4eDHRmOdGxhZCwRfy6NOlvCYTW0X0vv/Gf+wDxwQ2KduMYt/hFQESjc0
-         7W8MdC6HVt1lHPg4gg8VNQg8H7a/MPuoaNcmJpLuY3SNLTG8AcBCX7wxofQp9q9NaS3/
-         uLew7UvreOLBxFKS6N5bXKw2fsyDRRzccYHAqLR4U4qLtDRNwwLsY+ciDq7ICBww06AP
-         8K5NxRYahZunnQ8H+s9RUMUJwJw3waLnF5mspnwE9/So8j7SfE6a5ixpqo1dH5dsk+D8
-         lphA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CcHP8n4xtuNuolJ/LTK32L7lLsQLGVbj8PkneJtl+jA=;
+        b=I02igLL//BGsHnk7q1Iu0tjDOAKFUc7OCqxNL7bkuq06fsHUQHIaSR1pzgk7SqFgAq
+         Y4Hi1Xb5y6QuW6c1pu+nI109X+0KBIhFJMLsZEZfXZksr5YAAlSLVzzuKKrno1Mk4ikh
+         g3piJjUiAasrUkQGFJ1zZ8YNm+QId+ZssW5GomynQ9PGNQzy21JXYegtH85bTREuhL7I
+         /HAfztEvBTEqyedbbnxobKByArDB82xJuH9wmJA0d/PQ0UPJKbzB4p7mBwuCoX1+7U8F
+         9BK3O/bf/R0CiO9ayj65XaUrxvtp0nC3yVWAVUzDkTA/fkah6qV5xm49zTEy1HyUqa3k
+         V0QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=eBGr3EYVnokIXBZ1ivLXLwjkCHVmPG/SGV375op3izg=;
-        b=RfZOOcmO7X32vMq18vHSOVgyUWSAKUfz8xy1h3Lg++gpXASLNaiS8WtKkUv/6L27gz
-         jJcMsk6vfwbZpNEraY708QJlyi6Vt6COZMpTpcRXh6AJUgNsSmMngnnWrZ4u/Qq3b+Np
-         77S9T9pGk6Y3EWEGoI0JEhBxFOR/NiWPDeCid3nNO9YphsuoVVxiXgS1bsHKlm5fkkNi
-         SQGDZqhDK9euxhK+X6pxH13pkD9++9lJ+QXE4rqyjy/gaeB4cJYrvp0HgPhNwO2sIvz6
-         vPZsdUKuRYGgAUso9HLzdRKAFT4WPAZp4iUHCGiQcOiSGH6gEq1ZJYWBocCD/2liQpVW
-         oXrw==
-X-Gm-Message-State: AOAM531vnn2PqgfWjspKtAPiYgu61fLuyW2xyMpj8iQC7ZQzHNuAHVSK
-        kVfk7sVxCr5x/Bx5BkjCAebdIfXofye2IETrX2CBqA==
-X-Google-Smtp-Source: ABdhPJx8ZD8JSMbw5k93UnuCz6taMEHoNc2IrTv4tTz58ahIcruugzpDBjCFKLYmtUEFPxNT8nUy+w==
-X-Received: by 2002:a05:6638:3051:b0:317:8a78:7be5 with SMTP id u17-20020a056638305100b003178a787be5mr21532199jak.142.1647279219972;
-        Mon, 14 Mar 2022 10:33:39 -0700 (PDT)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id f4-20020a92b504000000b002c21ef70a81sm9470504ile.7.2022.03.14.10.33.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 10:33:39 -0700 (PDT)
-Message-ID: <622f7c73.1c69fb81.aef87.8a56@mx.google.com>
-Date:   Mon, 14 Mar 2022 10:33:39 -0700 (PDT)
-X-Google-Original-Date: Mon, 14 Mar 2022 17:33:37 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
-Subject: RE: [PATCH 5.10 00/71] 5.10.106-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CcHP8n4xtuNuolJ/LTK32L7lLsQLGVbj8PkneJtl+jA=;
+        b=KuV+6xwVTxHbdslt3RK2cLlor1wbRGeD1gc4caB1jxj1nx0wFzMTrHhgGk6eYS944M
+         n5YT5WGR/DDDpQ8zjqrF0reZX+VIG/VBRaP1evI8V9sJv04qGYUZwvNSDE3fY9xenqTt
+         ZOYGhhJWIi6ny5JQMiT/r3x5F+KKM6M/YHz2MvUJswT5sD2JyxWqsF2vK6rg3b34k+ZK
+         US6bzS9rNBLS1F5GBEuw0kBYCVW7IXm6tgoy6vUh020/mr7lZ0tN5yVfo/3OCeqnu0KB
+         qoks2dl3yPXH3CeWwrfa2rL+PEH5OSaxgqnVf6WcfaXBFnV2iH1jN/6QW1dcNycfaVyE
+         rjHg==
+X-Gm-Message-State: AOAM532bwSOGfJmYD8PfMa3qPN2SZaFnidw/4xWRSPBFTIhyJdHiE47n
+        wNI70V9O89ujR6H8Se9Q08ZpumxbPXIpwLrh6uGZ0SyX
+X-Google-Smtp-Source: ABdhPJyXmcMDtH2qOdtDOufWlVuBQ+aJdiEMM8xw+FZt5o4ecpnj24p8rZJYBpCOqw5nFxE1WR//PxQ8S2E0ELNFEXY=
+X-Received: by 2002:a17:903:124a:b0:151:99fe:1a10 with SMTP id
+ u10-20020a170903124a00b0015199fe1a10mr24476612plh.87.1647279268835; Mon, 14
+ Mar 2022 10:34:28 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220312074613.4798-1-linmiaohe@huawei.com> <20220312074613.4798-4-linmiaohe@huawei.com>
+In-Reply-To: <20220312074613.4798-4-linmiaohe@huawei.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Mon, 14 Mar 2022 10:34:17 -0700
+Message-ID: <CAHbLzkp_7iJts8NfCFQdEQuvh-o7YFpU3Axc+6ZCx1ZcJB7z1g@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] mm/memory-failure.c: make non-LRU movable pages unhandlable
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, tony.luck@intel.com, bp@alien8.de,
+        naoya.horiguchi@nec.com, mike.kravetz@oracle.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linux-edac@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 12:52:53 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.10.106 release.
-> There are 71 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.106-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+On Fri, Mar 11, 2022 at 11:47 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>
+> We can not really handle non-LRU movable pages in memory failure. Typically
+> they are balloon, zsmalloc, etc. Assuming we run into a base (4K) non-LRU
+> movable page, we could reach as far as identify_page_state(), it should not
+> fall into any category except me_unknown. For the non-LRU compound movable
+> pages, they could be taken for transhuge pages but it's unexpected to split
+> non-LRU  movable pages using split_huge_page_to_list in memory_failure. So
+> we could just simply make non-LRU  movable pages unhandlable to avoid these
+> possible nasty cases.
+>
+> Suggested-by: Yang Shi <shy828301@gmail.com>
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-5.10.106-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+Reviewed-by: Yang Shi <shy828301@gmail.com>
 
+> ---
+>  mm/memory-failure.c | 20 +++++++++++++-------
+>  1 file changed, 13 insertions(+), 7 deletions(-)
+>
+> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+> index 2ff7dd2078c4..ba621c6823ed 100644
+> --- a/mm/memory-failure.c
+> +++ b/mm/memory-failure.c
+> @@ -1177,12 +1177,18 @@ void ClearPageHWPoisonTakenOff(struct page *page)
+>   * does not return true for hugetlb or device memory pages, so it's assumed
+>   * to be called only in the context where we never have such pages.
+>   */
+> -static inline bool HWPoisonHandlable(struct page *page)
+> +static inline bool HWPoisonHandlable(struct page *page, unsigned long flags)
+>  {
+> -       return PageLRU(page) || __PageMovable(page) || is_free_buddy_page(page);
+> +       bool movable = false;
+> +
+> +       /* Soft offline could mirgate non-LRU movable pages */
+> +       if ((flags & MF_SOFT_OFFLINE) && __PageMovable(page))
+> +               movable = true;
+> +
+> +       return movable || PageLRU(page) || is_free_buddy_page(page);
+>  }
+>
+> -static int __get_hwpoison_page(struct page *page)
+> +static int __get_hwpoison_page(struct page *page, unsigned long flags)
+>  {
+>         struct page *head = compound_head(page);
+>         int ret = 0;
+> @@ -1197,7 +1203,7 @@ static int __get_hwpoison_page(struct page *page)
+>          * for any unsupported type of page in order to reduce the risk of
+>          * unexpected races caused by taking a page refcount.
+>          */
+> -       if (!HWPoisonHandlable(head))
+> +       if (!HWPoisonHandlable(head, flags))
+>                 return -EBUSY;
+>
+>         if (get_page_unless_zero(head)) {
+> @@ -1222,7 +1228,7 @@ static int get_any_page(struct page *p, unsigned long flags)
+>
+>  try_again:
+>         if (!count_increased) {
+> -               ret = __get_hwpoison_page(p);
+> +               ret = __get_hwpoison_page(p, flags);
+>                 if (!ret) {
+>                         if (page_count(p)) {
+>                                 /* We raced with an allocation, retry. */
+> @@ -1250,7 +1256,7 @@ static int get_any_page(struct page *p, unsigned long flags)
+>                 }
+>         }
+>
+> -       if (PageHuge(p) || HWPoisonHandlable(p)) {
+> +       if (PageHuge(p) || HWPoisonHandlable(p, flags)) {
+>                 ret = 1;
+>         } else {
+>                 /*
+> @@ -2308,7 +2314,7 @@ int soft_offline_page(unsigned long pfn, int flags)
+>
+>  retry:
+>         get_online_mems();
+> -       ret = get_hwpoison_page(page, flags);
+> +       ret = get_hwpoison_page(page, flags | MF_SOFT_OFFLINE);
+>         put_online_mems();
+>
+>         if (ret > 0) {
+> --
+> 2.23.0
+>
