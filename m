@@ -2,130 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 03:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A61DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 03:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236079AbiCNDdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 23:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        id S236080AbiCNDem (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 23:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231607AbiCNDdO (ORCPT
+        with ESMTP id S231858AbiCNDei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 23:33:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A10E245BE
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 20:32:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647228725; x=1678764725;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=snO8rGUb9URFdKwIcqtzNi/dK7l9SG1uDEz05qyUwFE=;
-  b=OCHn4mi4wBsCT/RzZHcafN71GkeXw0hJtOzMYSIdv8pJu6heJKoBYds2
-   kPNmYnS/j8Kdt/mgChVD5hndeBX2IeX4sjuYkmZIpyaUT5SUWdKJocwin
-   dWkYzL/zUekGGJoiQExY1v6fycrAr54HFO+kj2IuNyeWXahooJPCRk1Ds
-   /7TFLPbK+7VtMVvYcBWVBHB0g141wP+5E115/Bg2jhtyvEjWobf0gtzPB
-   Q10uzVdcHNvclOOw1OxKEz30qGXAjl6Pbx34b2H1i+FpKuAANoZxkkrKR
-   qUHWA9igrLsC91xP/8F+Vuo+ELdi0cEdv5tHoZX80jGNEAW3e5FUNEsa1
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="280683489"
-X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
-   d="scan'208";a="280683489"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 20:32:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
-   d="scan'208";a="612744344"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Mar 2022 20:31:56 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nTbR4-0009Y8-HB; Mon, 14 Mar 2022 03:31:54 +0000
-Date:   Mon, 14 Mar 2022 11:31:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: drivers/net/wireless/intel/iwlwifi/mei/net.c:400: undefined
- reference to `ieee80211_hdrlen'
-Message-ID: <202203141142.6EHviCS0-lkp@intel.com>
+        Sun, 13 Mar 2022 23:34:38 -0400
+Received: from meesny.iki.fi (meesny.iki.fi [195.140.195.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAF86144;
+        Sun, 13 Mar 2022 20:33:25 -0700 (PDT)
+Received: from localhost (91-154-92-187.elisa-laajakaista.fi [91.154.92.187])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sakkinen)
+        by meesny.iki.fi (Postfix) with ESMTPSA id 9CDFE200B9;
+        Mon, 14 Mar 2022 05:33:23 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1647228803;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=uQhyjB8j73qzl+ChbP8kn0vO6yWGcJ/9Sw43XmwkW0w=;
+        b=qtgMfRcX/anqtLCrek/LRwovjkV4rOYVySov8PlNI3nvO0kkuvNbvQb6lb+g3Yb2nlwZbu
+        3fsuK7vwA1IIptx4tGLclTjNt0rXnXLk/snLB4hEcEzENnMvdTT86hkH9XiU/uvv4O823Z
+        yf4zB5xs3eY7o6/sCtZ13w1xb/4tM4g=
+Date:   Mon, 14 Mar 2022 05:32:39 +0200
+From:   Jarkko Sakkinen <jarkko.sakkinen@iki.fi>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        keyrings@vger.kernel.org, James Morris <jmorris@namei.org>,
+        David Howells <dhowells@redhat.com>,
+        Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: [GIT PULL] TPM DEVICE DRIVER updates for v5.18
+Message-ID: <Yi63V9wVfSJ3ioSm@iki.fi>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=sakkinen smtp.mailfrom=jarkko.sakkinen@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1647228803; a=rsa-sha256; cv=none;
+        b=VkNC55aZDMNRTZe+joMuK+lUobPyayMtVcgd8DvapbiJacXtQCdhCQULukkb4i1wt5u4XT
+        3K13qkpzNve6+K8FkgUP1XHqTch9oEsXZLiPhuHG6ErVrqKGxoX04tKMGZu5tN0kBr75nJ
+        b7JUUA8GNK3PIW0LqOMKQPws4jqbGhM=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1647228803;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=uQhyjB8j73qzl+ChbP8kn0vO6yWGcJ/9Sw43XmwkW0w=;
+        b=s0jz8gNi6Ri+XWWPt/Y18RxoBAOBZiKT6ExSRpRIHDhbUbfAdxDp0RfowlVOyj77wGmuGc
+        WuyB3y3KbO1jv7Ycd+duiT1WK909IzoXSnCYkf1u1tEwgsD76O1TG9zCEMAfdUkQsOnB/F
+        46PHXqTd1QYur8A9b89aozdtzYJac+Y=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   09688c0166e76ce2fb85e86b9d99be8b0084cdf9
-commit: 875ad06015329314c594d3302ac2bbea37774543 iwlwifi: fix build error for IWLMEI
-date:   11 days ago
-config: i386-randconfig-a001-20220314 (https://download.01.org/0day-ci/archive/20220314/202203141142.6EHviCS0-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=875ad06015329314c594d3302ac2bbea37774543
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 875ad06015329314c594d3302ac2bbea37774543
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+The following changes since commit ea4424be16887a37735d6550cfd0611528dbe5d9:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+  Merge tag 'mtd/fixes-for-5.17-rc8' of git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux (2022-03-07 11:43:22 -0800)
 
-All errors (new ones prefixed by >>):
+are available in the Git repository at:
 
-   ld: drivers/net/wireless/intel/iwlwifi/mei/net.o: in function `iwl_mei_tx_copy_to_csme':
->> drivers/net/wireless/intel/iwlwifi/mei/net.c:400: undefined reference to `ieee80211_hdrlen'
+  git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.18-v2
 
+for you to fetch changes up to fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9:
 
-vim +400 drivers/net/wireless/intel/iwlwifi/mei/net.c
+  tpm: use try_get_ops() in tpm-space.c (2022-03-10 01:47:25 +0200)
 
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  364  
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  365  #define DHCP_SERVER_PORT 67
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  366  #define DHCP_CLIENT_PORT 68
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  367  void iwl_mei_tx_copy_to_csme(struct sk_buff *origskb, unsigned int ivlen)
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  368  {
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  369  	struct ieee80211_hdr *hdr;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  370  	struct sk_buff *skb;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  371  	struct ethhdr ethhdr;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  372  	struct ethhdr *eth;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  373  
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  374  	/* Catch DHCP packets */
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  375  	if (origskb->protocol != htons(ETH_P_IP) ||
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  376  	    ip_hdr(origskb)->protocol != IPPROTO_UDP ||
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  377  	    udp_hdr(origskb)->source != htons(DHCP_CLIENT_PORT) ||
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  378  	    udp_hdr(origskb)->dest != htons(DHCP_SERVER_PORT))
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  379  		return;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  380  
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  381  	/*
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  382  	 * We could be a bit less aggressive here and not copy everything, but
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  383  	 * this is very rare anyway, do don't bother much.
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  384  	 */
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  385  	skb = skb_copy(origskb, GFP_ATOMIC);
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  386  	if (!skb)
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  387  		return;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  388  
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  389  	skb->protocol = origskb->protocol;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  390  
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  391  	hdr = (void *)skb->data;
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  392  
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  393  	memcpy(ethhdr.h_dest, ieee80211_get_DA(hdr), ETH_ALEN);
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  394  	memcpy(ethhdr.h_source, ieee80211_get_SA(hdr), ETH_ALEN);
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  395  
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  396  	/*
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  397  	 * Remove the ieee80211 header + IV + SNAP but leave the ethertype
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  398  	 * We still have enough headroom for the sap header.
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12  399  	 */
-2da4366f9e2c44 Emmanuel Grumbach 2021-11-12 @400  	pskb_pull(skb, ieee80211_hdrlen(hdr->frame_control) + ivlen + 6);
+----------------------------------------------------------------
+tpmdd updates for Linux v5.18
 
-:::::: The code at line 400 was first introduced by commit
-:::::: 2da4366f9e2c44afedec4acad65a99a3c7da1a35 iwlwifi: mei: add the driver to allow cooperation with CSME
+----------------------------------------------------------------
+Andreas Rammhold (1):
+      KEYS: trusted: Fix trusted key backends when building as module
 
-:::::: TO: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-:::::: CC: Kalle Valo <kvalo@codeaurora.org>
+Dave Kleikamp (1):
+      KEYS: trusted: Avoid calling null function trusted_key_exit
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Eric Biggers (8):
+      KEYS: fix length validation in keyctl_pkey_params_get_2()
+      KEYS: x509: clearly distinguish between key and signature algorithms
+      KEYS: x509: remove unused fields
+      KEYS: x509: remove never-set ->unsupported_key flag
+      KEYS: x509: remove dead code that set ->unsupported_sig
+      KEYS: remove support for asym_tpm keys
+      KEYS: asymmetric: enforce that sig algo matches key algo
+      KEYS: asymmetric: properly validate hash_algo and encoding
+
+Eric Snowberg (8):
+      integrity: Fix warning about missing prototypes
+      integrity: Introduce a Linux keyring called machine
+      integrity: add new keyring handler for mok keys
+      KEYS: store reference to machine keyring
+      KEYS: Introduce link restriction for machine keys
+      efi/mokvar: move up init order
+      integrity: Trust MOK keys if MokListTrustedRT found
+      integrity: Only use machine keyring when uefi_check_trust_mok_keys is true
+
+Gustavo A. R. Silva (1):
+      tpm: xen-tpmfront: Use struct_size() helper
+
+James Bottomley (1):
+      tpm: use try_get_ops() in tpm-space.c
+
+Lino Sanfilippo (1):
+      tpm: fix reference counting for struct tpm_chip
+
+Stefan Berger (1):
+      selftests: tpm2: Determine available PCR bank
+
+Tadeusz Struk (2):
+      tpm: Fix error handling in async work
+      selftests: tpm: add async space test with noneexisting handle
+
+ certs/system_keyring.c                             |  44 +-
+ crypto/asymmetric_keys/Kconfig                     |  21 -
+ crypto/asymmetric_keys/Makefile                    |  12 -
+ crypto/asymmetric_keys/asym_tpm.c                  | 957 ---------------------
+ crypto/asymmetric_keys/pkcs7_verify.c              |  13 +-
+ crypto/asymmetric_keys/public_key.c                | 126 ++-
+ crypto/asymmetric_keys/tpm.asn1                    |   5 -
+ crypto/asymmetric_keys/tpm_parser.c                | 102 ---
+ crypto/asymmetric_keys/x509.asn1                   |   2 +-
+ crypto/asymmetric_keys/x509_cert_parser.c          |  34 +-
+ crypto/asymmetric_keys/x509_parser.h               |   1 -
+ crypto/asymmetric_keys/x509_public_key.c           |  24 -
+ drivers/char/tpm/tpm-chip.c                        |  46 +-
+ drivers/char/tpm/tpm-dev-common.c                  |   8 +-
+ drivers/char/tpm/tpm.h                             |   2 +
+ drivers/char/tpm/tpm2-space.c                      |  73 +-
+ drivers/char/tpm/xen-tpmfront.c                    |   8 +-
+ drivers/firmware/efi/mokvar-table.c                |   2 +-
+ include/crypto/asym_tpm_subtype.h                  |  19 -
+ include/keys/system_keyring.h                      |  14 +
+ security/integrity/Kconfig                         |  13 +
+ security/integrity/Makefile                        |   1 +
+ security/integrity/digsig.c                        |  15 +-
+ security/integrity/integrity.h                     |  17 +-
+ .../integrity/platform_certs/keyring_handler.c     |  18 +-
+ .../integrity/platform_certs/keyring_handler.h     |   5 +
+ security/integrity/platform_certs/load_uefi.c      |   4 +-
+ .../integrity/platform_certs/machine_keyring.c     |  77 ++
+ security/keys/keyctl_pkey.c                        |  14 +-
+ security/keys/trusted-keys/trusted_core.c          |   6 +-
+ tools/testing/selftests/tpm2/tpm2.py               |  31 +
+ tools/testing/selftests/tpm2/tpm2_tests.py         |  45 +-
+ 32 files changed, 486 insertions(+), 1273 deletions(-)
+ delete mode 100644 crypto/asymmetric_keys/asym_tpm.c
+ delete mode 100644 crypto/asymmetric_keys/tpm.asn1
+ delete mode 100644 crypto/asymmetric_keys/tpm_parser.c
+ delete mode 100644 include/crypto/asym_tpm_subtype.h
+ create mode 100644 security/integrity/platform_certs/machine_keyring.c
