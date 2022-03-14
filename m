@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F949C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242934AbiCNQS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58148 "EHLO
+        id S242938AbiCNQTG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:19:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234282AbiCNQSW (ORCPT
+        with ESMTP id S242932AbiCNQTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:18:22 -0400
+        Mon, 14 Mar 2022 12:19:03 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D16A4161E
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:17:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20635F75
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5XpAIw2yg1CSg6scwFjP4xm5do4IfouW2lVMpcbtSFY=; b=FzvGRTu7naBCARpYFA2lLhYLPY
-        Yrh39A07HVuxla3xbUbmIMG4jywP+TSIQHm1a2CdyLrK300BB9nHBIkyrgHCXZyHesPpkuahWCrqZ
-        daQDDsI71ELlN1dl2Ys7uqxdrH/D/2NQLrduSYIN728FvJcGuUw/yxjqtBlFKes2OADNzd1/HZNAe
-        31xPLxs57l781DGfFg/yWG2Tc9aARYqSBhW8i1B73uOd5pvsKUnCYPPT8kPIAgY06PwKJXp5SG3Ya
-        yZR9wxc9PA6w4b7z2gtcttfeSJmgyAcnPJ68QOgkJCiF4zwv9w8qCd+jBf7AodyXhWay9Qv1HKOSz
-        4gk+6zNQ==;
+        bh=dwLf6RzOeFuliLX0ooOtLy5ua6UBRGxTFPEUWQAzNJQ=; b=Pr7f3PvG+NbM0IYBxGkd1YzIir
+        jdNMYdBSaaM0cbshTydJt2sFfwwx+ieJB3mXnoqvDQX+4zE35YjCF4l9qKUyBFyO7OVsRceSUIaBc
+        x33Uhn4HzmuZ6LUdngR6jn1/s0hnAoHp9n8brEc80WGbNPVP5VhZwjWtgGOz0f0VyYyE4pndFFJiw
+        0po3+c4818Zqf3nNx96XSUL5GWX1NlO0DEQrjLm2jKVC3jb2tKgjQzB3Qlyx/BMCNqRw1EfE3oUwA
+        zchMrCY7GErAryhJ3RWjZ/gTGJpP1XH8T6gVpcL5RLZHatS5EaHC5J0NRhh6Z6U+wZFiKSnQc4//Z
+        NGnlmKtQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nTnNO-004CYa-I6; Mon, 14 Mar 2022 16:16:54 +0000
-Date:   Mon, 14 Mar 2022 16:16:54 +0000
+        id 1nTnOF-004CZY-WC; Mon, 14 Mar 2022 16:17:48 +0000
+Date:   Mon, 14 Mar 2022 16:17:47 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     Miaohe Lin <linmiaohe@huawei.com>
 Cc:     akpm@linux-foundation.org, hughd@google.com, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/mlock: Use vma_lookup() instead of find_vma()
-Message-ID: <Yi9qdrJ9AXOJszmu@casper.infradead.org>
-References: <20220314151728.20800-1-linmiaohe@huawei.com>
+Subject: Re: [PATCH] mm/mlock: remove unneeded start >= vma->vm_end check
+Message-ID: <Yi9qq9hVloDXcW4b@casper.infradead.org>
+References: <20220314153223.53753-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220314151728.20800-1-linmiaohe@huawei.com>
+In-Reply-To: <20220314153223.53753-1-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 11:17:28PM +0800, Miaohe Lin wrote:
-> Using vma_lookup() verifies the start is contained in the found vma. This
-> results in easier to read the code.
+On Mon, Mar 14, 2022 at 11:32:23PM +0800, Miaohe Lin wrote:
+> If find_vma returns a vma, it must satisfies that start < vma->vm_end.
+> Since vma list is sorted in the ascending order, so we will never see
+> start >= vma->vm_end here. Remove this unneeded check.
 
-This conflicts with the maple tree.
+faulty logic; vm_start + len might wrap.
