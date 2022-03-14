@@ -2,94 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9EB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E687DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241519AbiCNMuC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
+        id S238832AbiCNMuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237740AbiCNMtG (ORCPT
+        with ESMTP id S236869AbiCNMry (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:49:06 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5346A64FF
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:47:54 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id x15so23702838wru.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:47:54 -0700 (PDT)
+        Mon, 14 Mar 2022 08:47:54 -0400
+Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BBB377F1;
+        Mon, 14 Mar 2022 05:41:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=UcZz3PXNAXNeLX36v/bP5PcZAjppkzTqtYj3JQZLCdA=;
-        b=ig3ZPDbuCYDJsY/LgK1lpVFFGCBJvNLc/orKd5+QKvhAz74QdogXuc35H6CwRfnHa+
-         hT4a6QXAcVyg2Z83vj3WOEp6qcGbrEEGflCZ39lr6oczDy0B3LoakQsSKEWHEhF25TGl
-         8hqA7CALrwlBQeqlQOh45Re1Edl+ybv98yo2khw1rSBH1+PRnC5+dhq1eAaKBczXqlJZ
-         ul6xk3BFYCjhk7mvf7OU/zEMtmx7O3AMM19LQu/zS7QSrk84f2LvxIg8IXuLjexhJDQk
-         I8Cyu7Kd22U9CgsLcEo1AWInzQOZJKa0GgYkv0oshHsaKztu5Zrw0S35lj3UhbLW2UTT
-         zQNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=UcZz3PXNAXNeLX36v/bP5PcZAjppkzTqtYj3JQZLCdA=;
-        b=MBB2kA+TU3udfd9hxkbfBaAyQVZnE4dcMvrjo803NVGKMn3QYAiyowrrGaVFk/Nz0l
-         SOWASPXQ4F6OAi0WV8YHj6vu+2y9ImVreDNY4iI+3begGIFaSNyp7eh/4dqvDi1kQLoh
-         mptXSz2hNOPShrgrPCqnZ7U51+5phtKHqLrJZ4k+PsaO3fmYGrX1zt3s4Fr7xW8tYcqT
-         XRYoGjnKf7rXY86CUBZFQ1GzOc7QxtZEOqBgXgVrYgwIzsyXtUhOC4undmCur1B5HpuR
-         QGRPUPK9j1yCryLc/ld17Wgvxxn4jQUoiAyvWampOl5vrgrXNtq/Z1N9USmSu2bTOYkg
-         MiWg==
-X-Gm-Message-State: AOAM5304HM5IEGUzMsnseHCQJYnpB9/pwNTKCRS10wVv9oAONoHYl0SR
-        Dr2yK4l31zkpErsc7qmc4HX/FQ==
-X-Google-Smtp-Source: ABdhPJxbbfF5IE+ED+j6Qzjup3ymxmcmA/LwEtp0YD0fuDRr/NLeeKHy41JvH6RnmaYRzkrpBmXj8g==
-X-Received: by 2002:a5d:6d83:0:b0:203:6a0e:8854 with SMTP id l3-20020a5d6d83000000b002036a0e8854mr16161016wrs.259.1647262072830;
-        Mon, 14 Mar 2022 05:47:52 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id f8-20020adfb608000000b0020229d72a4esm12782580wre.38.2022.03.14.05.47.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 05:47:52 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 12:47:50 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] vhost: Protect the virtqueue from being cleared
- whilst still in use
-Message-ID: <Yi85dls3CCc2i1iK@google.com>
-References: <20220314084302.2933167-1-lee.jones@linaro.org>
- <20220314072137-mutt-send-email-mst@kernel.org>
+  d=inria.fr; s=dc;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=M9spczh/Q2CKy8sMPxzQoXDaExSwQXf/vtHnX1TW0y0=;
+  b=JWnavQwdiW+E6NAcxa3wyUKgIVR+UCaJGE5YAkPfKZtGey9O/SI36evj
+   d+SVjeyrAeMgnizhu4vffjSJlsafhVrIqYgsE/RuHNYaSxDD05aGLpJO8
+   r1q6tOpvTLJABZtZ/UcZ3ItWN2ER1A7GJ1vVFzo81Db16EirVNqPVeMRT
+   U=;
+Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
+   d="scan'208";a="25997360"
+Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
+From:   Julia Lawall <Julia.Lawall@inria.fr>
+To:     Harald Freudenberger <freude@linux.ibm.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 26/30] s390/pkey: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:50 +0100
+Message-Id: <20220314115354.144023-27-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220314072137-mutt-send-email-mst@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022, Michael S. Tsirkin wrote:
+Various spelling mistakes in comments.
+Detected with the help of Coccinelle.
 
-> On Mon, Mar 14, 2022 at 08:43:02AM +0000, Lee Jones wrote:
-> > vhost_vsock_handle_tx_kick() already holds the mutex during its call
-> > to vhost_get_vq_desc().  All we have to do here is take the same lock
-> > during virtqueue clean-up and we mitigate the reported issues.
-> > 
-> > Also WARN() as a precautionary measure.  The purpose of this is to
-> > capture possible future race conditions which may pop up over time.
-> > 
-> > Cc: <stable@vger.kernel.org>
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> 
-> Pls refer to my previous responses to this patch.  I'd like to see an
-> argument for why this will make future bugs less and not more likely.
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-If you think the previous 'check owner' patch fixes all of the
-concurrency issues, then this patch can be dropped.
+---
+ drivers/s390/crypto/pkey_api.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+diff --git a/drivers/s390/crypto/pkey_api.c b/drivers/s390/crypto/pkey_api.c
+index cf23ce1b1146..7f69ca695fc2 100644
+--- a/drivers/s390/crypto/pkey_api.c
++++ b/drivers/s390/crypto/pkey_api.c
+@@ -155,7 +155,7 @@ static int pkey_skey2pkey(const u8 *key, struct pkey_protkey *pkey)
+ 	/*
+ 	 * The cca_xxx2protkey call may fail when a card has been
+ 	 * addressed where the master key was changed after last fetch
+-	 * of the mkvp into the cache. Try 3 times: First witout verify
++	 * of the mkvp into the cache. Try 3 times: First without verify
+ 	 * then with verify and last round with verify and old master
+ 	 * key verification pattern match not ignored.
+ 	 */
+
