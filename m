@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E90CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84176C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240677AbiCNMGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
+        id S240685AbiCNMG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240596AbiCNMF5 (ORCPT
+        with ESMTP id S240612AbiCNMGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:05:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A903960C5;
-        Mon, 14 Mar 2022 05:02:46 -0700 (PDT)
+        Mon, 14 Mar 2022 08:06:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA0165F0;
+        Mon, 14 Mar 2022 05:02:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41EA4612DD;
-        Mon, 14 Mar 2022 12:02:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9DF5C340E9;
-        Mon, 14 Mar 2022 12:02:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABE6FB80CDE;
+        Mon, 14 Mar 2022 12:02:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E169C340E9;
+        Mon, 14 Mar 2022 12:02:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259365;
-        bh=/ysTpHMR/qo7lmvua99zXU/quYDGz2gZ/U7+mWVtzZo=;
+        s=korg; t=1647259370;
+        bh=hY2UIJK5Bcp2co/zW3Bbj4YExAPuG2DsjYW6j9zjOz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A1TbWC5MqJcVNhqcLflTkzzXdhVE8DofZnVU75smSlnqZRtav138/oRPo9IrAdil+
-         m5q/lSghRIyumYZS8F3MCNsbRvGZazMJVO1qpcRuIfuvDaHyiIb7/ClWjnrky12+62
-         fyKWkeNn/I7m5x5AoNI7W7hLK1kKD90S+Hx3T1TY=
+        b=M/Q+ZFra7B1AgTSf1NynT/zMaYCYyQpMwXhVD5nXf7eyikcASRXpE/m11jaJqhILw
+         icfHAbzh489c3tnEZoIBOLjT3glKcbD9xKJpADvBN9e3VvYwXX0bwpJlnWNELVT5eB
+         /EI0kvBUAZaMzEsji2LHGZrsFaAXUEv16NV13NhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 62/71] watch_queue: Fix the alloc bitmap size to reflect notes allocated
-Date:   Mon, 14 Mar 2022 12:53:55 +0100
-Message-Id: <20220314112739.666040961@linuxfoundation.org>
+Subject: [PATCH 5.10 63/71] watch_queue: Free the alloc bitmap when the watch_queue is torn down
+Date:   Mon, 14 Mar 2022 12:53:56 +0100
+Message-Id: <20220314112739.693287130@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -51,15 +51,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Howells <dhowells@redhat.com>
 
-commit 3b4c0371928c17af03e8397ac842346624017ce6 upstream.
+commit 7ea1a0124b6da246b5bc8c66cddaafd36acf3ecb upstream.
 
-Currently, watch_queue_set_size() sets the number of notes available in
-wqueue->nr_notes according to the number of notes allocated, but sets
-the size of the bitmap to the unrounded number of notes originally asked
-for.
-
-Fix this by setting the bitmap size to the number of notes we're
-actually going to make available (ie. the number allocated).
+Free the watch_queue note allocation bitmap when the watch_queue is
+destroyed.
 
 Fixes: c73be61cede5 ("pipe: Add general notification queue support")
 Reported-by: Jann Horn <jannh@google.com>
@@ -67,27 +62,18 @@ Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/watch_queue.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/watch_queue.c |    1 +
+ 1 file changed, 1 insertion(+)
 
 --- a/kernel/watch_queue.c
 +++ b/kernel/watch_queue.c
-@@ -244,6 +244,7 @@ long watch_queue_set_size(struct pipe_in
- 		goto error;
- 	}
+@@ -373,6 +373,7 @@ static void __put_watch_queue(struct kre
  
-+	nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
- 	ret = pipe_resize_ring(pipe, roundup_pow_of_two(nr_notes));
- 	if (ret < 0)
- 		goto error;
-@@ -269,7 +270,7 @@ long watch_queue_set_size(struct pipe_in
- 	wqueue->notes = pages;
- 	wqueue->notes_bitmap = bitmap;
- 	wqueue->nr_pages = nr_pages;
--	wqueue->nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
-+	wqueue->nr_notes = nr_notes;
- 	return 0;
+ 	for (i = 0; i < wqueue->nr_pages; i++)
+ 		__free_page(wqueue->notes[i]);
++	bitmap_free(wqueue->notes_bitmap);
  
- error_p:
+ 	wfilter = rcu_access_pointer(wqueue->filter);
+ 	if (wfilter)
 
 
