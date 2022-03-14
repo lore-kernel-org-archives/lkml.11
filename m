@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54CB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC0D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237474AbiCNIJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:09:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
+        id S237540AbiCNIJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237616AbiCNIJe (ORCPT
+        with ESMTP id S237747AbiCNIHy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:09:34 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9A943388;
-        Mon, 14 Mar 2022 01:08:17 -0700 (PDT)
-X-UUID: 7f5c77c72f5049c9846b53e5a005e2ea-20220314
-X-UUID: 7f5c77c72f5049c9846b53e5a005e2ea-20220314
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <yongqiang.niu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1021397348; Mon, 14 Mar 2022 16:08:13 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 14 Mar 2022 16:08:11 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Mar 2022 16:08:10 +0800
-From:   Yongqiang Niu <yongqiang.niu@mediatek.com>
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Dennis YC Hsieh <dennis-yc.hsieh@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-Subject: [PATCH v1, 1/1] drm/mediatek: fixup ovl vblank callback data null pointer issue
-Date:   Mon, 14 Mar 2022 16:08:08 +0800
-Message-ID: <20220314080808.29370-2-yongqiang.niu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220314080808.29370-1-yongqiang.niu@mediatek.com>
-References: <20220314080808.29370-1-yongqiang.niu@mediatek.com>
+        Mon, 14 Mar 2022 04:07:54 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E88741F99;
+        Mon, 14 Mar 2022 01:05:53 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 87454218FE;
+        Mon, 14 Mar 2022 08:05:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647245140; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OzrrCIOc03LWU33BuZwOlRtUjqpB/1gQj5SnYfBFyBI=;
+        b=vz8xCLs3GA+SbXd8C5WMv2WikqAOLN10T7cX48Z3b/L/Zmbsmrc5NIq9a7rgnMBforI+W4
+        qT5LpKbZfVyQ/aXghPuCj8PyytIuL2CnEz5PQP0fddec0o3BpIEDr+JZPxFcCDfZZQT67d
+        XcdIAEuo2D8xyI7PScdhVaLP1wR+bx0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647245140;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OzrrCIOc03LWU33BuZwOlRtUjqpB/1gQj5SnYfBFyBI=;
+        b=4gl7/H4/gzhDT42W7eUjbVQYhf+uegiC4EgmKzLlmxGmJUMyCZHdCJhpOky+doOhti0L6P
+        gOx8yDmtRl/nl1Bw==
+Received: from quack3.suse.cz (unknown [10.100.200.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 7760DA3B9A;
+        Mon, 14 Mar 2022 08:05:40 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 2C635A0615; Mon, 14 Mar 2022 09:05:40 +0100 (CET)
+Date:   Mon, 14 Mar 2022 09:05:40 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Bang Li <libang.linuxer@gmail.com>
+Cc:     jack@suse.cz, amir73il@gmail.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fsnotify: remove redundant parameter judgment
+Message-ID: <20220314080540.ovk66yvuyzfbi4zt@quack3.lan>
+References: <20220311151240.62045-1-libang.linuxer@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311151240.62045-1-libang.linuxer@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ovl vblank_cb_data will be null pointer when disable ovl
-vblank
+On Fri 11-03-22 23:12:40, Bang Li wrote:
+> iput() has already judged the incoming parameter, so there is no need to
+> repeat the judgment here.
+> 
+> Signed-off-by: Bang Li <libang.linuxer@gmail.com>
 
-Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_disp_ovl.c | 1 -
- 1 file changed, 1 deletion(-)
+Thanks. I've applied the patch to my tree.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-index 2146299e5f52..f3a450c0ef2d 100644
---- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-+++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-@@ -113,7 +113,6 @@ void mtk_ovl_disable_vblank(struct device *dev)
- 	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
- 
- 	ovl->vblank_cb = NULL;
--	ovl->vblank_cb_data = NULL;
- 	writel_relaxed(0x0, ovl->regs + DISP_REG_OVL_INTEN);
- }
- 
+								Honza
+
+> ---
+>  fs/notify/fsnotify.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/fs/notify/fsnotify.c b/fs/notify/fsnotify.c
+> index 494f653efbc6..70a8516b78bc 100644
+> --- a/fs/notify/fsnotify.c
+> +++ b/fs/notify/fsnotify.c
+> @@ -70,8 +70,7 @@ static void fsnotify_unmount_inodes(struct super_block *sb)
+>  		spin_unlock(&inode->i_lock);
+>  		spin_unlock(&sb->s_inode_list_lock);
+>  
+> -		if (iput_inode)
+> -			iput(iput_inode);
+> +		iput(iput_inode);
+>  
+>  		/* for each watch, send FS_UNMOUNT and then remove it */
+>  		fsnotify_inode(inode, FS_UNMOUNT);
+> @@ -85,8 +84,7 @@ static void fsnotify_unmount_inodes(struct super_block *sb)
+>  	}
+>  	spin_unlock(&sb->s_inode_list_lock);
+>  
+> -	if (iput_inode)
+> -		iput(iput_inode);
+> +	iput(iput_inode);
+>  }
+>  
+>  void fsnotify_sb_delete(struct super_block *sb)
+> -- 
+> 2.25.1
+> 
 -- 
-2.25.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
