@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE12C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239736AbiCNLze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
+        id S239837AbiCNLzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239713AbiCNLzQ (ORCPT
+        with ESMTP id S239730AbiCNLzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:55:16 -0400
+        Mon, 14 Mar 2022 07:55:24 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3207365BB;
-        Mon, 14 Mar 2022 04:54:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC0065D5;
+        Mon, 14 Mar 2022 04:54:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2bPo/ehC6PvjvjHbIR6MD5i0BWWQ35nkkz07QKW4GuI=;
-  b=ZgoJ9URYLWs39A25c89pC542rz7dKzDlLsyDrSbpIvlorWVFiRRx1OSL
-   Fs/xWAZCor1/YPzDgIfbcR7Zz5Q3pk+uzxOOCZ1kw+wZN6xvyOkVMKYwP
-   JosB127WUZlHPXUXn0FJiWi2847qJ6DN+AO3eJaBzEjVm00mDrPeDdeq2
+  bh=PTwOcgm2slbmg9VL7iVtoVa9+P+qCUypTT7BxbCACEc=;
+  b=MBne6/9eSWzHJJv1CzvQEflUBhYI5DdP9CaBpGjCMvDcLoHbnQ4MEshV
+   VUpNuvPV1eKLCIDT1VulXc8zYkVXuWspnvNwcqhpiqHwfXZxJzmdx42FJ
+   70uWnBON0BfBSw0iGr7irSvTDsi1H8f2ledzsBuaM+fuIVqaF4TAJ1CsP
    Q=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997342"
+   d="scan'208";a="25997346"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:53:59 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Shunqian Zheng <zhengsq@rock-chips.com>
+To:     Richard Weinberger <richard@nod.at>
 Cc:     kernel-janitors@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 09/30] media: i2c: ov5695: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:33 +0100
-Message-Id: <20220314115354.144023-10-Julia.Lawall@inria.fr>
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 13/30] UBI: block: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:37 +0100
+Message-Id: <20220314115354.144023-14-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -52,20 +53,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/media/i2c/ov5695.c |    2 +-
+ drivers/mtd/ubi/block.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/i2c/ov5695.c b/drivers/media/i2c/ov5695.c
-index 439385938a51..910309783885 100644
---- a/drivers/media/i2c/ov5695.c
-+++ b/drivers/media/i2c/ov5695.c
-@@ -1122,7 +1122,7 @@ static int ov5695_set_ctrl(struct v4l2_ctrl *ctrl)
+diff --git a/drivers/mtd/ubi/block.c b/drivers/mtd/ubi/block.c
+index a78fdf3b30f7..d32768f7fe5c 100644
+--- a/drivers/mtd/ubi/block.c
++++ b/drivers/mtd/ubi/block.c
+@@ -441,7 +441,7 @@ int ubiblock_create(struct ubi_volume_info *vi)
  
- 	switch (ctrl->id) {
- 	case V4L2_CID_EXPOSURE:
--		/* 4 least significant bits of expsoure are fractional part */
-+		/* 4 least significant bits of exposure are fractional part */
- 		ret = ov5695_write_reg(ov5695->client, OV5695_REG_EXPOSURE,
- 				       OV5695_REG_VALUE_24BIT, ctrl->val << 4);
- 		break;
+ 	/*
+ 	 * Create one workqueue per volume (per registered block device).
+-	 * Rembember workqueues are cheap, they're not threads.
++	 * Remember workqueues are cheap, they're not threads.
+ 	 */
+ 	dev->wq = alloc_workqueue("%s", 0, 0, gd->disk_name);
+ 	if (!dev->wq) {
 
