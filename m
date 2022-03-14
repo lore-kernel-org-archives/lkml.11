@@ -2,54 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB031C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Mar 2022 23:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 932F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 00:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235701AbiCMXuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 19:50:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
+        id S235732AbiCNASD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 20:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235718AbiCMXrz (ORCPT
+        with ESMTP id S235711AbiCNAR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 19:47:55 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232D564C7
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 16:46:45 -0700 (PDT)
+        Sun, 13 Mar 2022 20:17:57 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F06432B
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 17:16:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647215205; x=1678751205;
+  t=1647217008; x=1678753008;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=wMf00R80cVF9qHEEHx61TQwqkfmpJ3tk31BJz9qEcok=;
-  b=a6vzues0T1oEWS6nQDX+qrbdGvgfE0ESPGK4xIzSX+/acngcNslSijSV
-   polp7waZxiaexoO4b4tNK0KYmYqMZEDhCvfIEpl26CgzY464ZpvbY31Ea
-   VqTKRW7gVrLlqURVpvRU/sNfjHfLO2SYnp+UwODDzb/yy0EWlzrmpAsIX
-   v1BS+uTrvk+UtWMMsXJJHFkmWRAn6x3eiHcA4ANOuZ7i+tRn8tFIKzVNK
-   wBfGmHBWOB0MDP7/VqKL60BF70S5935BIChTyf4Huo2HLnCPFBuLtjr9Y
-   sHTIYbtpC2HjO47y+DYHSObO83mHOYxASyo6cM+yCuuVe5bPf7zOuGX4W
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="255637274"
+  bh=FzP7/R1vz6/0gooNdhTFj/f/GipTNRZSpNhdFVE26Rk=;
+  b=WRBlry8ygMbU3/AERnYIHmx16pVkG0/iyC0/wDhKlSuBuyO2gHFpsF/5
+   myy5QKAPKLzxNHVjA1EaHW8HxfCHFsVMRdrsvMBNJDs7iRCAL6mzaJ2It
+   /9RNHojHWBpDmOYH5RS2SdVtlcz7eD7VepYQHJ5kbfwh8/4Iktqbx5jHi
+   JEeMhbVBzOCrBkHPwGTZCJsYf1daM603j9xlwCz43GJLAbbuuca8+hM/A
+   MifCKNwMvtr6g2VEL/PfFZbo/iezLhKHWE1RKOQCRUyku61zpD4RFeyQr
+   g3+djf+rBY9MHoi+LDp/QIf9SJJvzfsgqde5hmME7lz2zVw/+4bf/dNWT
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="238079874"
 X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
-   d="scan'208";a="255637274"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 16:46:44 -0700
+   d="scan'208";a="238079874"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 17:16:47 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
-   d="scan'208";a="515207768"
+   d="scan'208";a="497413071"
 Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 13 Mar 2022 16:46:43 -0700
+  by orsmga003.jf.intel.com with ESMTP; 13 Mar 2022 17:16:45 -0700
 Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nTXv8-0009OV-ES; Sun, 13 Mar 2022 23:46:42 +0000
-Date:   Mon, 14 Mar 2022 07:45:42 +0800
+        id 1nTYOC-0009Pi-Qf; Mon, 14 Mar 2022 00:16:44 +0000
+Date:   Mon, 14 Mar 2022 08:16:16 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
         Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: [toke:xdp-queueing-03 7/9] include/linux/bpf.h:2064:9: warning:
- incompatible pointer to integer conversion returning 'void *' from a
- function with result type 'int'
-Message-ID: <202203140739.otiRAMwr-lkp@intel.com>
+Subject: [toke:xdp-queueing-03 7/9] kernel/bpf/verifier.c:1580:39: sparse:
+ sparse: mixing different enum types:
+Message-ID: <202203140808.WyoqkliI-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -61,82 +59,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 tree:   https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git xdp-queueing-03
 head:   3e7f25d58b1bfd5ad623678bf9e11f27c98a8094
 commit: 28d9ca982b9ae96bcad2bee81647ba18ae049a69 [7/9] bpf: Enable direct packet access for dequeue packets
-config: hexagon-randconfig-r045-20220313 (https://download.01.org/0day-ci/archive/20220314/202203140739.otiRAMwr-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0467eb2cb7654c15ae366967ef35093c5724c416)
-reproduce (this is a W=1 build):
+config: s390-randconfig-s031-20220313 (https://download.01.org/0day-ci/archive/20220314/202203140808.WyoqkliI-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce:
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
         # https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/commit/?id=28d9ca982b9ae96bcad2bee81647ba18ae049a69
         git remote add toke https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git
         git fetch --no-tags toke xdp-queueing-03
         git checkout 28d9ca982b9ae96bcad2bee81647ba18ae049a69
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/core/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
 
-   In file included from net/core/sock.c:133:
-   In file included from include/linux/filter.h:9:
->> include/linux/bpf.h:2064:9: warning: incompatible pointer to integer conversion returning 'void *' from a function with result type 'int' [-Wint-conversion]
-           return ERR_PTR(-EINVAL);
-                  ^~~~~~~~~~~~~~~~
-   1 warning generated.
---
-   In file included from net/core/dev.c:95:
->> include/linux/bpf.h:2064:9: warning: incompatible pointer to integer conversion returning 'void *' from a function with result type 'int' [-Wint-conversion]
-           return ERR_PTR(-EINVAL);
-                  ^~~~~~~~~~~~~~~~
-   net/core/dev.c:5011:1: warning: unused function 'sch_handle_ingress' [-Wunused-function]
-   sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
-   ^
-   net/core/dev.c:5160:19: warning: unused function 'nf_ingress' [-Wunused-function]
-   static inline int nf_ingress(struct sk_buff *skb, struct packet_type **pt_prev,
-                     ^
-   3 warnings generated.
---
-   In file included from net/core/filter.c:38:
-   In file included from include/linux/skmsg.h:7:
->> include/linux/bpf.h:2064:9: warning: incompatible pointer to integer conversion returning 'void *' from a function with result type 'int' [-Wint-conversion]
-           return ERR_PTR(-EINVAL);
-                  ^~~~~~~~~~~~~~~~
->> net/core/filter.c:9720:14: warning: incompatible integer to pointer conversion assigning to 'struct btf *' from 'int' [-Wint-conversion]
-           btf_vmlinux = bpf_get_btf_vmlinux();
-                       ^ ~~~~~~~~~~~~~~~~~~~~~
-   net/core/filter.c:9848:14: warning: incompatible integer to pointer conversion assigning to 'struct btf *' from 'int' [-Wint-conversion]
-           btf_vmlinux = bpf_get_btf_vmlinux();
-                       ^ ~~~~~~~~~~~~~~~~~~~~~
-   3 warnings generated.
---
-   In file included from net/core/net-traces.c:35:
-   In file included from include/trace/events/tcp.h:12:
-   In file included from include/net/tcp.h:35:
-   In file included from include/net/sock_reuseport.h:5:
-   In file included from include/linux/filter.h:9:
->> include/linux/bpf.h:2064:9: warning: incompatible pointer to integer conversion returning 'void *' from a function with result type 'int' [-Wint-conversion]
-           return ERR_PTR(-EINVAL);
-                  ^~~~~~~~~~~~~~~~
-   In file included from net/core/net-traces.c:50:
-   In file included from include/trace/events/neigh.h:255:
-   In file included from include/trace/define_trace.h:102:
-   In file included from include/trace/trace_events.h:873:
-   include/trace/events/neigh.h:42:20: warning: variable 'pin6' set but not used [-Wunused-but-set-variable]
-                   struct in6_addr *pin6;
-                                    ^
-   2 warnings generated.
+sparse warnings: (new ones prefixed by >>)
+>> kernel/bpf/verifier.c:1580:39: sparse: sparse: mixing different enum types:
+>> kernel/bpf/verifier.c:1580:39: sparse:    unsigned int enum bpf_reg_type
+>> kernel/bpf/verifier.c:1580:39: sparse:    unsigned int enum bpf_type_flag
+   kernel/bpf/verifier.c:13799:38: sparse: sparse: subtraction of functions? Share your drugs
+   kernel/bpf/verifier.c: note: in included file (through include/linux/bpf.h, include/linux/bpf-cgroup.h):
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast from non-scalar
+   include/linux/bpfptr.h:63:40: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:63:40: sparse: sparse: cast from non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast from non-scalar
+   include/linux/bpfptr.h:63:40: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:63:40: sparse: sparse: cast from non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast from non-scalar
+   include/linux/bpfptr.h:63:40: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:63:40: sparse: sparse: cast from non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast from non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast to non-scalar
+   include/linux/bpfptr.h:52:47: sparse: sparse: cast from non-scalar
 
+vim +1580 kernel/bpf/verifier.c
 
-vim +2064 include/linux/bpf.h
-
-  2061	
-  2062	static inline bpf_get_btf_vmlinux(void)
-  2063	{
-> 2064		return ERR_PTR(-EINVAL);
-  2065	}
-  2066	
+  1568	
+  1569	static void mark_btf_ld_reg(struct bpf_verifier_env *env,
+  1570				    struct bpf_reg_state *regs, u32 regno,
+  1571				    enum bpf_reg_type reg_type,
+  1572				    struct btf *btf, u32 reg_id,
+  1573				    enum bpf_type_flag flag)
+  1574	{
+  1575		if (reg_type == SCALAR_VALUE) {
+  1576			mark_reg_unknown(env, regs, regno);
+  1577			return;
+  1578		}
+  1579		mark_reg_known_zero(env, regs, regno);
+> 1580		regs[regno].type = reg_type | flag;
+  1581		/* If not PTR_TO_BTF_ID, it is a pkt pointer */
+  1582		if (reg_type != PTR_TO_BTF_ID) {
+  1583			regs[regno].pkt_uid = reg_id;
+  1584			return;
+  1585		}
+  1586		regs[regno].btf = btf;
+  1587		regs[regno].btf_id = reg_id;
+  1588	}
+  1589	
 
 ---
 0-DAY CI Kernel Test Service
