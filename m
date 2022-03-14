@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 420AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B8B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240886AbiCNMPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
+        id S240937AbiCNMQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:16:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241935AbiCNMJ0 (ORCPT
+        with ESMTP id S241744AbiCNMJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:26 -0400
+        Mon, 14 Mar 2022 08:09:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB40F21E28;
-        Mon, 14 Mar 2022 05:06:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26BFD5005D;
+        Mon, 14 Mar 2022 05:05:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 050C8B80DF2;
-        Mon, 14 Mar 2022 12:06:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18651C340EC;
-        Mon, 14 Mar 2022 12:06:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A720DB80DFB;
+        Mon, 14 Mar 2022 12:05:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30AEDC340E9;
+        Mon, 14 Mar 2022 12:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259575;
-        bh=gGTai23t9U7lsssfYkhc6pfjBUzlubnpioPn2KQ35D4=;
+        s=korg; t=1647259552;
+        bh=V+853khC3T+yyyE4lTN1M3wsATdBDpk20pz8p+avMNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NmstQpoM8U7iEskX+Ss7umRqVo8GR7Vl6UoLPG+F30ILd9nTdO8PrXD/8uGaFF7Sj
-         qZCrT3P1hH+GpvWjq1we0KcM4SNcw5bXHaUBlMKfRa2zHVC1Pikd0OAZXB6sk4710D
-         tv0P6nX1jXLsN59czrLAz3Ej562pq5nYohVE6MlU=
+        b=cqx2+/ZyfmnreOmnBwXvd1u7hBUi63mPdOY+Mb9PRVac8ptO9wyrL2H77dxCdMSkK
+         0/XWcLHQpKuCfcP6ysaVTRReU78cGFgV5eUwp6gLHFol+9nBTzdRuHoWqqus6+MtVJ
+         vskfIRY2wrKlWb4uZh4yGnoy/X8FUG7Pz4PrfNP8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 009/110] arm64: dts: armada-3720-turris-mox: Add missing ethernet0 alias
-Date:   Mon, 14 Mar 2022 12:53:11 +0100
-Message-Id: <20220314112743.293082993@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 004/110] HID: hid-thrustmaster: fix OOB read in thrustmaster_interrupts
+Date:   Mon, 14 Mar 2022 12:53:06 +0100
+Message-Id: <20220314112743.154783242@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -50,34 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit a0e897d1b36793fe0ab899f2fe93dff25c82f418 ]
+[ Upstream commit fc3ef2e3297b3c0e2006b5d7b3d66965e3392036 ]
 
-U-Boot uses ethernet* aliases for setting MAC addresses. Therefore define
-also alias for ethernet0.
+Syzbot reported an slab-out-of-bounds Read in thrustmaster_probe() bug.
+The root case is in missing validation check of actual number of endpoints.
 
-Fixes: 7109d817db2e ("arm64: dts: marvell: add DTS for Turris Mox")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Code should not blindly access usb_host_interface::endpoint array, since
+it may contain less endpoints than code expects.
+
+Fix it by adding missing validaion check and print an error if
+number of endpoints do not match expected number
+
+Fixes: c49c33637802 ("HID: support for initialization of some Thrustmaster wheels")
+Reported-and-tested-by: syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/hid/hid-thrustmaster.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-index 04da07ae4420..1eddf31d8bd8 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-@@ -18,6 +18,7 @@ / {
+diff --git a/drivers/hid/hid-thrustmaster.c b/drivers/hid/hid-thrustmaster.c
+index 0c92b7f9b8b8..afdd778a10f0 100644
+--- a/drivers/hid/hid-thrustmaster.c
++++ b/drivers/hid/hid-thrustmaster.c
+@@ -158,6 +158,12 @@ static void thrustmaster_interrupts(struct hid_device *hdev)
+ 		return;
+ 	}
  
- 	aliases {
- 		spi0 = &spi0;
-+		ethernet0 = &eth0;
- 		ethernet1 = &eth1;
- 		mmc0 = &sdhci0;
- 		mmc1 = &sdhci1;
++	if (usbif->cur_altsetting->desc.bNumEndpoints < 2) {
++		kfree(send_buf);
++		hid_err(hdev, "Wrong number of endpoints?\n");
++		return;
++	}
++
+ 	ep = &usbif->cur_altsetting->endpoint[1];
+ 	b_ep = ep->desc.bEndpointAddress;
+ 
 -- 
 2.34.1
 
