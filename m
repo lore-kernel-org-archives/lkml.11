@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D7AC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BA7C47080
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243759AbiCNMbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
+        id S243932AbiCNMbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242995AbiCNMT7 (ORCPT
+        with ESMTP id S243004AbiCNMUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:19:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBC852B28;
-        Mon, 14 Mar 2022 05:15:10 -0700 (PDT)
+        Mon, 14 Mar 2022 08:20:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382F652E18;
+        Mon, 14 Mar 2022 05:15:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F129B80DE1;
-        Mon, 14 Mar 2022 12:15:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DF7EC340E9;
-        Mon, 14 Mar 2022 12:15:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C67D1B80D24;
+        Mon, 14 Mar 2022 12:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D6AC340E9;
+        Mon, 14 Mar 2022 12:15:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260107;
-        bh=i7xv0jglIHn4FUUINh7I6a5MJYZqrXrWYxEtF5hnFLA=;
+        s=korg; t=1647260110;
+        bh=RsFZTWnfjmpT6i3ems5I0UMcIWdeQ2t770YuUzve0og=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UKHfBtLIEXa4yeAnW0LCaEH8y2Gx3j5p++PAWy7/QaM8b6X5UJkecKVVcYFBjnQOd
-         NUyN1Bkc/564IQBeyAmCvkXOnHZK6hUWtvELouJM4gU8f6l54y0ne/Vw0eSUvYTNpV
-         36dXZiiuLyPLso8By/1Ql3f6bVnLT0AHQsfcaDKo=
+        b=kjcEMa4z9bSWgpdmAiAKGRHch06w4mVvg7VvQIK8inRiDanMUSZr77v/BMeF1DtaR
+         2x7u2JPDRNsxlFrT2t96moIUMCQ33C1bm6BMMXi822ybdavaE/JeduVFVUskN1LGF6
+         MQikQBBDERkw5A4+3gDfgUmVsIZmSa9VbFxuBr+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>,
-        Peter Robinson <pbrobinson@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, valis <sec@valis.email>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 058/121] net: bcmgenet: Dont claim WOL when its not available
-Date:   Mon, 14 Mar 2022 12:54:01 +0100
-Message-Id: <20220314112745.745078143@linuxfoundation.org>
+Subject: [PATCH 5.16 023/121] esp: Fix possible buffer overflow in ESP transformation
+Date:   Mon, 14 Mar 2022 12:53:26 +0100
+Message-Id: <20220314112744.776782376@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -51,56 +49,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Linton <jeremy.linton@arm.com>
+From: Steffen Klassert <steffen.klassert@secunet.com>
 
-[ Upstream commit 00b022f8f876a3a036b0df7f971001bef6398605 ]
+[ Upstream commit ebe48d368e97d007bfeb76fcb065d6cfc4c96645 ]
 
-Some of the bcmgenet platforms don't correctly support WOL, yet
-ethtool returns:
+The maximum message size that can be send is bigger than
+the  maximum site that skb_page_frag_refill can allocate.
+So it is possible to write beyond the allocated buffer.
 
-"Supports Wake-on: gsf"
+Fix this by doing a fallback to COW in that case.
 
-which is false.
+v2:
 
-Ideally if there isn't a wol_irq, or there is something else that
-keeps the device from being able to wakeup it should display:
+Avoid get get_order() costs as suggested by Linus Torvalds.
 
-"Supports Wake-on: d"
-
-This patch checks whether the device can wakup, before using the
-hard-coded supported flags. This corrects the ethtool reporting, as
-well as the WOL configuration because ethtool verifies that the mode
-is supported before attempting it.
-
-Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-Tested-by: Peter Robinson <pbrobinson@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220310045535.224450-1-jeremy.linton@arm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
+Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
+Reported-by: valis <sec@valis.email>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/net/esp.h | 2 ++
+ net/ipv4/esp4.c   | 5 +++++
+ net/ipv6/esp6.c   | 5 +++++
+ 3 files changed, 12 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-index e31a5a397f11..f55d9d9c01a8 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-@@ -40,6 +40,13 @@
- void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
-+	struct device *kdev = &priv->pdev->dev;
-+
-+	if (!device_can_wakeup(kdev)) {
-+		wol->supported = 0;
-+		wol->wolopts = 0;
-+		return;
-+	}
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 9c5637d41d95..90cd02ff77ef 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -4,6 +4,8 @@
  
- 	wol->supported = WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_FILTER;
- 	wol->wolopts = priv->wolopts;
+ #include <linux/skbuff.h>
+ 
++#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
++
+ struct ip_esp_hdr;
+ 
+ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index e1b1d080e908..70e6c87fbe3d 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -446,6 +446,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
++	unsigned int allocsz;
+ 
+ 	/* this is non-NULL only with TCP/UDP Encapsulation */
+ 	if (x->encap) {
+@@ -455,6 +456,10 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 			return err;
+ 	}
+ 
++	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
++	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++		goto cow;
++
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
+ 			nfrags = 1;
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 883b53fd7846..b7b573085bd5 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -483,6 +483,7 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
++	unsigned int allocsz;
+ 
+ 	if (x->encap) {
+ 		int err = esp6_output_encap(x, skb, esp);
+@@ -491,6 +492,10 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 			return err;
+ 	}
+ 
++	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
++	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++		goto cow;
++
+ 	if (!skb_cloned(skb)) {
+ 		if (tailen <= skb_tailroom(skb)) {
+ 			nfrags = 1;
 -- 
 2.34.1
 
