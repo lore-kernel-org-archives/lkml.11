@@ -2,142 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06352C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5166DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235375AbiCNJcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        id S234173AbiCNJfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238233AbiCNJcY (ORCPT
+        with ESMTP id S229821AbiCNJfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 05:32:24 -0400
-Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A335945AE5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 02:30:44 -0700 (PDT)
-Received: by mail-vs1-xe2a.google.com with SMTP id j128so16322164vsc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 02:30:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KeEKIGDs9aXtMIhttJqsnMc0I5powM9Tr74wlg/y0N4=;
-        b=lJ3K5cO3Dq2yUA9tXv+g2KWoRQVbUQykq7rgnVsvdNTinvfq2zVR/yeWcYQ91TJnvm
-         tgEhlsMQRIGR3LbKXt1i7eQBVLAIwooq1wvCKm2WmQ2slDHMaRu8xBxhaCBW482uRynU
-         tE+hG69ChaKdnzLD1jMRGbnyP3MSuZlba7K1c7cBgQ5reXpaOdLgSh1wX9mVgBnrxEjI
-         ymH2dl4bqWPZnYxoIjbGUbAD/bhuCjtJw7SN/Ra74Q7+T2YdUCqmV+O+K8TDvAh4HQ19
-         0V+5K6ZMorsvLVs706dbT3zQzir4kkgQWkOXYGnJYffXDPM5a/UOKqy/Mr+hk6gKXtbQ
-         /h0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KeEKIGDs9aXtMIhttJqsnMc0I5powM9Tr74wlg/y0N4=;
-        b=VjZ/KpLiFiXQKau+Q1c6u3cirhpU9D3+EyE6n3ml1luthajzy70lH5mptISUj+uJp1
-         4qsuyJjb/L3b1p3YVR4FYxBt4qwPbTtAEpN6lVLpM5rEG5qQ+dXFPWC4pAUeuXJe25OC
-         2GWO1BVHhdy3rBgAAp4vl4F8s6dHBC6kbp3pthwOU7PIt1Pd7zvbG5N74kzPING8x+e3
-         sg3tXzBML+a6lcQW+RCzhbInEkfQAlEy0OGPH/5RiupuK/KsjJz9xvQqKVlAhjQtIzUI
-         GoUpPwvTVbv5bTL0Mp85MAwTAXmUkHOdT6dbTzvpkxoy6OQxF2rw29IR2h7sIDZX8XZq
-         BndA==
-X-Gm-Message-State: AOAM532U5lxOCgp4YaBfUi2BbfQ64IiK6ms128bdEGJS5pd2c9hEx8V5
-        W/lHy27J1HKOoofrT9T8Y9Pw+3PrkgCva5OMoQn7oQ==
-X-Google-Smtp-Source: ABdhPJysb3Sw3/ukECu2h8EIWocceI4MckxeGuz3tnGwSYqea1336M0S1Iw+cCwN7NQ7GEwY+pua/xA+S5ZNz8vIosY=
-X-Received: by 2002:a05:6102:290c:b0:322:b864:22f5 with SMTP id
- cz12-20020a056102290c00b00322b86422f5mr6266141vsb.41.1647250243519; Mon, 14
- Mar 2022 02:30:43 -0700 (PDT)
+        Mon, 14 Mar 2022 05:35:13 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4B87649
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 02:34:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 6FADC210FE;
+        Mon, 14 Mar 2022 09:34:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647250442; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hrhvns3eJJSZbbPJB+GUKs5Vp1t21GpqMnW5wv4sJQ8=;
+        b=Y25w2WPOH3cK6txjIYtc49Po4O1/afIyXuOozDA34MwximIDz+N2cmbar4kSB5EYpzkrJk
+        bODVrAA9bozP9LHMeq2RXmoYbfT1j/H3TtejnVbud0rlZXzzTW/1nNQK3sJ7mhyKva6UPi
+        cOepCvvAzYumSLU8QtlsWV6+PopStGs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647250442;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hrhvns3eJJSZbbPJB+GUKs5Vp1t21GpqMnW5wv4sJQ8=;
+        b=/wIFhhkF1b+HQseLdC724tUXvjOGsEMoH8Bz86vUlo0aZ2HZ6VT6gu1JBvHEQjQlq+mCL0
+        nm6kqi1rM3wr+eCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3F3ED13B2B;
+        Mon, 14 Mar 2022 09:34:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id iqa5DgoML2KUbQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 14 Mar 2022 09:34:02 +0000
+Message-ID: <a77849a7-987d-ecf8-42c1-fc611cd71e15@suse.cz>
+Date:   Mon, 14 Mar 2022 10:34:01 +0100
 MIME-Version: 1.0
-References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-6-yuzhao@google.com>
- <875yoh552i.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <875yoh552i.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Mon, 14 Mar 2022 03:30:31 -0600
-Message-ID: <CAOUHufYPSesiePfxaV=y9Vne5cb+Y_vQtJyQ1NiO1CFus=8WOA@mail.gmail.com>
-Subject: Re: [PATCH v9 05/14] mm: multi-gen LRU: groundwork
-To:     "Huang, Ying" <ying.huang@intel.com>,
-        kernel@lists.fedoraproject.org, kernel-team@lists.ubuntu.com
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Content-Language: en-US
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
         Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+        Shakeel Butt <shakeelb@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Michal Hocko <mhocko@kernel.org>, Wei Xu <weixugc@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Hugh Dickins <hughd@google.com>
+References: <20220313232547.3843690-1-eric.dumazet@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH] mm/page_alloc: call check_pcp_refill() while zone
+ spinlock is not held
+In-Reply-To: <20220313232547.3843690-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 2:09 AM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Hi, Yu,
->
-> Yu Zhao <yuzhao@google.com> writes:
-> > diff --git a/mm/Kconfig b/mm/Kconfig
-> > index 3326ee3903f3..747ab1690bcf 100644
-> > --- a/mm/Kconfig
-> > +++ b/mm/Kconfig
-> > @@ -892,6 +892,16 @@ config ANON_VMA_NAME
-> >         area from being merged with adjacent virtual memory areas due to the
-> >         difference in their name.
-> >
-> > +# the multi-gen LRU {
-> > +config LRU_GEN
-> > +     bool "Multi-Gen LRU"
-> > +     depends on MMU
-> > +     # the following options can use up the spare bits in page flags
-> > +     depends on !MAXSMP && (64BIT || !SPARSEMEM || SPARSEMEM_VMEMMAP)
->
-> LRU_GEN depends on !MAXSMP.  So, What is the maximum NR_CPUS supported
-> by LRU_GEN?
+On 3/14/22 00:25, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> check_pcp_refill() is used from rmqueue_bulk() while zone spinlock
+> is held.
+> 
+> This used to be fine because check_pcp_refill() was testing only the
+> head page, while its 'struct page' was very hot in the cpu caches.
+> 
+> With ("mm/page_alloc: check high-order pages for corruption during PCP
+> operations") check_pcp_refill() will add latencies for high order pages.
+> 
+> We can defer the calls to check_pcp_refill() after the zone
+> spinlock has been released.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Mel Gorman <mgorman@techsingularity.net>
+> Cc: Matthew Wilcox <willy@infradead.org>
+> Cc: Shakeel Butt <shakeelb@google.com>
+> Cc: David Rientjes <rientjes@google.com>
+> Cc: Vlastimil Babka <vbabka@suse.cz>
+> Cc: Michal Hocko <mhocko@kernel.org>
+> Cc: Wei Xu <weixugc@google.com>
+> Cc: Greg Thelen <gthelen@google.com>
+> Cc: Hugh Dickins <hughd@google.com>
+> ---
+>  mm/page_alloc.c | 21 +++++++++++++--------
+>  1 file changed, 13 insertions(+), 8 deletions(-)
+> 
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index c9ebf0635d592c6f58df9793ce9fa213371a9a7f..5f0531c11ad668b1c4426ebddc17821aca824783 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -3024,7 +3024,9 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
+>  			unsigned long count, struct list_head *list,
+>  			int migratetype, unsigned int alloc_flags)
+>  {
+> +	struct page *page, *tmp;
+>  	int i, allocated = 0;
+> +	int free_cma_pages = 0;
+>  
+>  	/*
+>  	 * local_lock_irq held so equivalent to spin_lock_irqsave for
 
-LRU_GEN doesn't really care about NR_CPUS. IOW, it doesn't impose a
-max number. The dependency is with NODES_SHIFT selected by MAXSMP:
-    default "10" if MAXSMP
-This combined with LAST_CPUPID_SHIFT can exhaust the spare bits in page flags.
+Right so this should be AFAIU enough for
+__mod_zone_page_state(NR_FREE_CMA_PAGES) at the end to be OK outside of
+zone->lock.
 
-MAXSMP is meant for kernel developers to test their code, and it
-should not be used in production [1]. But some distros unfortunately
-ship kernels built with this option, e.g., Fedora and Ubuntu. And
-their users reported build errors to me after they applied MGLRU on
-those kernels ("Not enough bits in page flags"). Let me add Fedora and
-Ubuntu to this thread.
+> @@ -3032,14 +3034,10 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
+>  	 */
+>  	spin_lock(&zone->lock);
+>  	for (i = 0; i < count; ++i) {
+> -		struct page *page = __rmqueue(zone, order, migratetype,
+> -								alloc_flags);
+> +		page = __rmqueue(zone, order, migratetype, alloc_flags);
+>  		if (unlikely(page == NULL))
+>  			break;
+>  
+> -		if (unlikely(check_pcp_refill(page)))
+> -			continue;
+> -
+>  		/*
+>  		 * Split buddy pages returned by expand() are received here in
+>  		 * physical page order. The page is added to the tail of
+> @@ -3052,9 +3050,6 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
+>  		 */
+>  		list_add_tail(&page->lru, list);
+>  		allocated++;
+> -		if (is_migrate_cma(get_pcppage_migratetype(page)))
+> -			__mod_zone_page_state(zone, NR_FREE_CMA_PAGES,
+> -					      -(1 << order));
+>  	}
+>  
+>  	/*
+> @@ -3065,6 +3060,16 @@ static int rmqueue_bulk(struct zone *zone, unsigned int order,
+>  	 */
+>  	__mod_zone_page_state(zone, NR_FREE_PAGES, -(i << order));
+>  	spin_unlock(&zone->lock);
 
-Fedora and Ubuntu,
+You could maybe even exchange those two lines as well?
 
-Could you please clarify if there is a reason to ship kernels built
-with MAXSMP? Otherwise, please consider disabling this option. Thanks.
+> +	list_for_each_entry_safe(page, tmp, list, lru) {
+> +		if (unlikely(check_pcp_refill(page))) {
+> +			list_del(&page->lru);
+> +			allocated--;
+> +		} else if (is_migrate_cma(get_pcppage_migratetype(page))) {
+> +			free_cma_pages++;
 
-As per above, MAXSMP enables ridiculously large numbers of CPUs and
-NUMA nodes for testing purposes. It is detrimental to performance,
-e.g., CPUMASK_OFFSTACK.
+I think in line with the (IMHO correct) decreasing NR_FREE_CMA_PAGES
+regardless of the check result, we should also count free_cma_pages here
+unconditionally before doing check_pcp_refill().
 
-[1] https://lore.kernel.org/lkml/20131106055634.GA24044@gmail.com/
+> +		}
+> +	}
+> +	if (free_cma_pages)
+> +		__mod_zone_page_state(zone, NR_FREE_CMA_PAGES, -(free_cma_pages << order));
+>  	return allocated;
+>  }
+>  
+
