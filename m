@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B946C47082
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41861C47086
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244712AbiCNMcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
+        id S245281AbiCNMcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243858AbiCNMVT (ORCPT
+        with ESMTP id S243920AbiCNMVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:19 -0400
+        Mon, 14 Mar 2022 08:21:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A3BC40;
-        Mon, 14 Mar 2022 05:17:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E57213CD3;
+        Mon, 14 Mar 2022 05:18:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A720E60C6D;
-        Mon, 14 Mar 2022 12:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6742FC340E9;
-        Mon, 14 Mar 2022 12:17:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA14E60919;
+        Mon, 14 Mar 2022 12:18:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDD15C340E9;
+        Mon, 14 Mar 2022 12:18:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260242;
-        bh=+iu3YEJGg0Ei9nx0UmPyifith2WwxThQTTrvu8AqV/c=;
+        s=korg; t=1647260296;
+        bh=LmRga0VTamUUd5o95CfD1gCQkfP8wH4YTTwDMJR8llk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RV/UBRURIGdYT8M59jX5ubMp7c7UpDrBcqozXZKnpuCyZtxLBNd8FlzKrUDyiizH8
-         gKlSiUd0rV0ozSu0xT7NQigR7QHgqb5RM4McTvx4oJjHangpRnYSLiFuHPfI1luKB9
-         lzUwh8dl4FJJYcXy30r4aHsUfRa/fIc0ENGGGSCE=
+        b=FiGGh8G79/CToXPqdVJDig+HLzfxfGxQyqvV//WKVkAxANYEXcqN0rA25tU1ernhG
+         fmoIsLMPlbOmfeum5fbHOx5rBdVofVhWy1pfQD+4xB18PfmpotsBFaNe4CWLu9RGXL
+         uGOUnnJJ36PwtIgM86p0tHDfYvK4pjrfQNdtdTFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Emil Renner Berthing <kernel@esmil.dk>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 094/121] riscv: Fix auipc+jalr relocation range checks
-Date:   Mon, 14 Mar 2022 12:54:37 +0100
-Message-Id: <20220314112746.738899759@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 068/121] drm/vc4: hdmi: Unregister codec device on unbind
+Date:   Mon, 14 Mar 2022 12:54:11 +0100
+Message-Id: <20220314112746.022924338@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -48,100 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emil Renner Berthing <kernel@esmil.dk>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit 0966d385830de3470b7131db8e86c0c5bc9c52dc upstream.
+[ Upstream commit e40945ab7c7f966d0c37b7bd7b0596497dfe228d ]
 
-RISC-V can do PC-relative jumps with a 32bit range using the following
-two instructions:
+On bind we will register the HDMI codec device but we don't unregister
+it on unbind, leading to a device leakage. Unregister our device at
+unbind.
 
-	auipc	t0, imm20	; t0 = PC + imm20 * 2^12
-	jalr	ra, t0, imm12	; ra = PC + 4, PC = t0 + imm12
-
-Crucially both the 20bit immediate imm20 and the 12bit immediate imm12
-are treated as two's-complement signed values. For this reason the
-immediates are usually calculated like this:
-
-	imm20 = (offset + 0x800) >> 12
-	imm12 = offset & 0xfff
-
-..where offset is the signed offset from the auipc instruction. When
-the 11th bit of offset is 0 the addition of 0x800 doesn't change the top
-20 bits and imm12 considered positive. When the 11th bit is 1 the carry
-of the addition by 0x800 means imm20 is one higher, but since imm12 is
-then considered negative the two's complement representation means it
-all cancels out nicely.
-
-However, this addition by 0x800 (2^11) means an offset greater than or
-equal to 2^31 - 2^11 would overflow so imm20 is considered negative and
-result in a backwards jump. Similarly the lower range of offset is also
-moved down by 2^11 and hence the true 32bit range is
-
-	[-2^31 - 2^11, 2^31 - 2^11)
-
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220127111452.222002-1-maxime@cerno.tech
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/module.c |   21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++++++
+ drivers/gpu/drm/vc4/vc4_hdmi.h | 1 +
+ 2 files changed, 9 insertions(+)
 
---- a/arch/riscv/kernel/module.c
-+++ b/arch/riscv/kernel/module.c
-@@ -13,6 +13,19 @@
- #include <linux/pgtable.h>
- #include <asm/sections.h>
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 24f11c07bc3c..2f53ba54b81a 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1522,6 +1522,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 		dev_err(dev, "Couldn't register the HDMI codec: %ld\n", PTR_ERR(codec_pdev));
+ 		return PTR_ERR(codec_pdev);
+ 	}
++	vc4_hdmi->audio.codec_pdev = codec_pdev;
  
-+/*
-+ * The auipc+jalr instruction pair can reach any PC-relative offset
-+ * in the range [-2^31 - 2^11, 2^31 - 2^11)
-+ */
-+static bool riscv_insn_valid_32bit_offset(ptrdiff_t val)
+ 	dai_link->cpus		= &vc4_hdmi->audio.cpu;
+ 	dai_link->codecs	= &vc4_hdmi->audio.codec;
+@@ -1561,6 +1562,12 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 
+ }
+ 
++static void vc4_hdmi_audio_exit(struct vc4_hdmi *vc4_hdmi)
 +{
-+#ifdef CONFIG_32BIT
-+	return true;
-+#else
-+	return (-(1L << 31) - (1L << 11)) <= val && val < ((1L << 31) - (1L << 11));
-+#endif
++	platform_device_unregister(vc4_hdmi->audio.codec_pdev);
++	vc4_hdmi->audio.codec_pdev = NULL;
 +}
 +
- static int apply_r_riscv_32_rela(struct module *me, u32 *location, Elf_Addr v)
+ static irqreturn_t vc4_hdmi_hpd_irq_thread(int irq, void *priv)
  {
- 	if (v != (u32)v) {
-@@ -95,7 +108,7 @@ static int apply_r_riscv_pcrel_hi20_rela
- 	ptrdiff_t offset = (void *)v - (void *)location;
- 	s32 hi20;
+ 	struct vc4_hdmi *vc4_hdmi = priv;
+@@ -2299,6 +2306,7 @@ static void vc4_hdmi_unbind(struct device *dev, struct device *master,
+ 	kfree(vc4_hdmi->hdmi_regset.regs);
+ 	kfree(vc4_hdmi->hd_regset.regs);
  
--	if (offset != (s32)offset) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		pr_err(
- 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
- 		  me->name, (long long)v, location);
-@@ -197,10 +210,9 @@ static int apply_r_riscv_call_plt_rela(s
- 				       Elf_Addr v)
- {
- 	ptrdiff_t offset = (void *)v - (void *)location;
--	s32 fill_v = offset;
- 	u32 hi20, lo12;
++	vc4_hdmi_audio_exit(vc4_hdmi);
+ 	vc4_hdmi_cec_exit(vc4_hdmi);
+ 	vc4_hdmi_hotplug_exit(vc4_hdmi);
+ 	vc4_hdmi_connector_destroy(&vc4_hdmi->connector);
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdmi.h
+index 33e9f665ab8e..c0492da73683 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.h
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
+@@ -113,6 +113,7 @@ struct vc4_hdmi_audio {
+ 	struct snd_soc_dai_link_component platform;
+ 	struct snd_dmaengine_dai_dma_data dma_data;
+ 	struct hdmi_audio_infoframe infoframe;
++	struct platform_device *codec_pdev;
+ 	bool streaming;
+ };
  
--	if (offset != fill_v) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		/* Only emit the plt entry if offset over 32-bit range */
- 		if (IS_ENABLED(CONFIG_MODULE_SECTIONS)) {
- 			offset = module_emit_plt_entry(me, v);
-@@ -224,10 +236,9 @@ static int apply_r_riscv_call_rela(struc
- 				   Elf_Addr v)
- {
- 	ptrdiff_t offset = (void *)v - (void *)location;
--	s32 fill_v = offset;
- 	u32 hi20, lo12;
- 
--	if (offset != fill_v) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		pr_err(
- 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
- 		  me->name, (long long)v, location);
+-- 
+2.34.1
+
 
 
