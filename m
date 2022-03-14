@@ -2,88 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7009C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236060AbiCNJEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
+        id S237764AbiCNJEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231559AbiCNJET (ORCPT
+        with ESMTP id S235593AbiCNJEu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 05:04:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C19528E17;
-        Mon, 14 Mar 2022 02:03:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B15B7612B9;
-        Mon, 14 Mar 2022 09:03:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF57C340F5;
-        Mon, 14 Mar 2022 09:03:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647248588;
-        bh=BCdwikr2vz55Gg6PuMXgetSu2UWOs0MXUsCZC+OCyyE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=QahnG01e6jZc0dRks4DF6nDuGYJlCo/qGqpZq0DWYgiIZ0O8MFVA5Vgvgsw15t0qs
-         +sJ0J79nzL05Ucf+ZHyJRFRafef1ntTgOFhWjbgPocBgiEcaQnOoq8iWbgesmqr1Bf
-         qT2gzJx+BWAzjsGdWwqjnbu3tEA5GcJNa2JwjFLNk6f6Q+8eHjPuKKV9h8nJFMOlB2
-         KEOtb7jgBM+sckCHFbFWYUeMyzvzMt0RFO9Pq+jaMcD14udVF1WAK93VegVe9r5/SI
-         uFxblV0J6J6LKB6mJZMCf3fgv6PAKKnQKkrvcY5V40tCJv+sDyAfMv6H6WTzfVJNja
-         sdQQZSs7hGXzQ==
-Received: by mail-yb1-f173.google.com with SMTP id g26so29302888ybj.10;
-        Mon, 14 Mar 2022 02:03:08 -0700 (PDT)
-X-Gm-Message-State: AOAM532ED3LcxoHqq0BB0oZ8F3gaihBsD20SDOah0jSLiT7+k47OxnJi
-        DWQOoTA6bRhEm03eKRH47+nnXoIMLnx/cc3pLsE=
-X-Google-Smtp-Source: ABdhPJy8huQQmqnCSx9yI8of1v/BIBOYIbynMrebeBFvdYFpIPCFwVwclYk4awxHfJIfG6+KCP5D5ynA1anQobSsPqQ=
-X-Received: by 2002:a25:af8e:0:b0:622:c778:c0a2 with SMTP id
- g14-20020a25af8e000000b00622c778c0a2mr17505799ybh.50.1647248587150; Mon, 14
- Mar 2022 02:03:07 -0700 (PDT)
+        Mon, 14 Mar 2022 05:04:50 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14E531DED
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 02:03:37 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id s11so13697948pfu.13
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 02:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FGhuM+Ul8ivfECgpMOf+uI9At4u/thxxxtZts2/cwIo=;
+        b=jtuwA3otb+JEQeCtC5sFp76yUkFebNN67sz4Sd7Rz63tG5UuGaEOgjnNzrMGibzxgH
+         B7jkx2iMfTNCvYp/0laSPFWrAXnu+7LGe7JoBDXpIYuUfSkDJAKC+snFugRnBMJozOMR
+         EQgyaY2h9FX1R8v61Xc6Jerr2aqR0LkPusphMhUQecCREi0g41YKRvJqTq+ZpSan9KMm
+         OSF+l64S6MYJxIPJtmxsoA8Nu5RydZkgPrkVB+7lvXtiPyfVnmEd57WsHjLcfALSqZCk
+         ZxACblfSesJaiiPrgtr4njAkxFfj4RRD+oFRbQVgqoxHXRkbI9Zm8GyGUrAYoMCJuzIT
+         1MdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FGhuM+Ul8ivfECgpMOf+uI9At4u/thxxxtZts2/cwIo=;
+        b=lziHe7pGqP/n19UbHgEomC1n0nC1R3VMWZ9P8YRNHFF7feVnYTgn38kkHtXTQpwpJW
+         BjaqW8OEzOXrevdVAHdyO/lZKS9ja7lRKppiCUKUAlltUZr0CThuidpS+moQoGHvU1s7
+         tUmFWNQFEIinJzxvLa9fv0ULmEb8dGoLRI7I+Ns5W8I8nUtIoZdS0aRgKGx0WIpt1NEb
+         VtTgjRvXRoxwSOKqItDTe3ZFoIY+7mG1oToy82dd0NohQkrgakP/twaiybXmz6uXCojj
+         PgJjoW6eatpt0Kc09AYBEwlE5hQzFp3gJ88LFa+EvMrUWJOwhDZElyJZO/GZudzrQnrW
+         iKmw==
+X-Gm-Message-State: AOAM530k5/2OXshbBE91WOoE1T1wfsSyQAxh5CkFkf2l6zl/DtD68dnj
+        Zc1bHK5NsDvJfNm8s8anflyoECJbt6raKLrahViisx44/79haA==
+X-Google-Smtp-Source: ABdhPJxGuJ+973f0F6J0wdUQG+sd71F7QlJJrClPl/UMGq8eoJPqhJOYvQrNx0WvcwhkIp9nytb8KwDRO+YQMsJRwes=
+X-Received: by 2002:a63:174f:0:b0:381:2bb3:2661 with SMTP id
+ 15-20020a63174f000000b003812bb32661mr6760596pgx.197.1647248617345; Mon, 14
+ Mar 2022 02:03:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAMj1kXE02HH7vRUjF3iKAL+1idKTy-oOYyGnBd3g90m6eObBxg@mail.gmail.com>
- <YikByJteDEtKi4Xv@shell.armlinux.org.uk> <CAMj1kXGnwbe=YYWaRxaXioEfTJOdXg9JYcNddO8iifpWLRZCWg@mail.gmail.com>
- <Yinwq3Z9l0selLLS@shell.armlinux.org.uk> <Yin2jQqW+pUWJZ7E@shell.armlinux.org.uk>
- <CAMj1kXGkUJ=-4oA4GvBZNK94A1MrZ7UwKDN_tJRgwq8KF06VmA@mail.gmail.com>
- <CA+G9fYvEANOMekjvtu7agdVYQ_b8OMtxQdyAV2JT_vMdBU3VRA@mail.gmail.com>
- <CAMj1kXEVVZTKX_86bbTfLpFuDriV0-uwCMgSKDP+dzcD1L4XCw@mail.gmail.com>
- <CA+G9fYuO-sy+sZnhSz=A7Xm0LdSp2AT+7jCKLB33tZzK4izj3g@mail.gmail.com>
- <CAMj1kXGb_0FNU7capJEDWTZF2OegmZyBphhH8GuNqL7+YYLjZQ@mail.gmail.com>
- <Yip3GJDbJIYNeg44@shell.armlinux.org.uk> <CA+G9fYsjK7z3VUgaOcs+cCCQWNsXW58pbDqruev6ANLdcswF1g@mail.gmail.com>
-In-Reply-To: <CA+G9fYsjK7z3VUgaOcs+cCCQWNsXW58pbDqruev6ANLdcswF1g@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 14 Mar 2022 10:02:55 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXEA8TmK_pqDxrEg5==OPfWp8LWEBE=iFhJ8-5cm_DOgyA@mail.gmail.com>
-Message-ID: <CAMj1kXEA8TmK_pqDxrEg5==OPfWp8LWEBE=iFhJ8-5cm_DOgyA@mail.gmail.com>
-Subject: Re: [next] arm: Internal error: Oops: 5 PC is at __read_once_word_nocheck
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>,
-        lkft-triage@lists.linaro.org
+References: <20220301194830.3557578-1-jens.wiklander@linaro.org> <20220301194830.3557578-3-jens.wiklander@linaro.org>
+In-Reply-To: <20220301194830.3557578-3-jens.wiklander@linaro.org>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Mon, 14 Mar 2022 14:33:26 +0530
+Message-ID: <CAFA6WYNj_onTOtETKTLTGG6=GYHMDvty90KftLkfEz_v7nZx9w@mail.gmail.com>
+Subject: Re: [PATCH 2/3] optee: add FF-A capability OPTEE_FFA_SEC_CAP_ARG_OFFSET
+To:     Jens Wiklander <jens.wiklander@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 at 10:02, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+On Wed, 2 Mar 2022 at 01:18, Jens Wiklander <jens.wiklander@linaro.org> wrote:
 >
-> Hi  Ard and Russell,
->
-> Your three patches applied and tested on x15 tested by Daniel and reported
-> kernel crash did not find it after multiple iterations.
->
-> ARM: unwind: set frame.pc correctly for current-thread unwinding
-> ARM: entry: fix unwinder problems caused by IRQ stacks
-> ARM: Revert "unwind: dump exception stack from calling frame"
->
-> Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> Adds the secure capability OPTEE_FFA_SEC_CAP_ARG_OFFSET to indicate that
+> OP-TEE with FF-A can support an argument struct at a non-zero offset into
+> a passed shared memory object.
 >
 
-Thank you Naresh.
+It isn't clear to me why FF-A ABI requires this capability.
+shm->offset should be honoured by default, if it isn't then it's a
+bug. AFAIK, FF-A is currently still in its early stages so it
+shouldn't be that hard to fix bugs in the ABI.
+
+-Sumit
+
+> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+> ---
+>  drivers/tee/optee/ffa_abi.c   | 17 +++++++++++++++--
+>  drivers/tee/optee/optee_ffa.h | 12 +++++++++++-
+>  2 files changed, 26 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
+> index 7686f7020616..cc863aaefcd9 100644
+> --- a/drivers/tee/optee/ffa_abi.c
+> +++ b/drivers/tee/optee/ffa_abi.c
+> @@ -615,12 +615,21 @@ static int optee_ffa_do_call_with_arg(struct tee_context *ctx,
+>                 .data0 = OPTEE_FFA_YIELDING_CALL_WITH_ARG,
+>                 .data1 = (u32)shm->sec_world_id,
+>                 .data2 = (u32)(shm->sec_world_id >> 32),
+> -               .data3 = shm->offset,
+> +               .data3 = 0,
+>         };
+>         struct optee_msg_arg *arg;
+>         unsigned int rpc_arg_offs;
+>         struct optee_msg_arg *rpc_arg;
+>
+> +       /*
+> +        * The shared memory object has to start on a page when passed as
+> +        * an argument struct. This is also what the shm pool allocator
+> +        * returns, but check this before calling secure world to catch
+> +        * eventual errors early in case something changes.
+> +        */
+> +       if (shm->offset)
+> +               return -EINVAL;
+> +
+>         arg = tee_shm_get_va(shm, 0);
+>         if (IS_ERR(arg))
+>                 return PTR_ERR(arg);
+> @@ -678,6 +687,7 @@ static bool optee_ffa_api_is_compatbile(struct ffa_device *ffa_dev,
+>
+>  static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
+>                                     const struct ffa_dev_ops *ops,
+> +                                   u32 *sec_caps,
+>                                     unsigned int *rpc_param_count)
+>  {
+>         struct ffa_send_direct_data data = { OPTEE_FFA_EXCHANGE_CAPABILITIES };
+> @@ -694,6 +704,7 @@ static bool optee_ffa_exchange_caps(struct ffa_device *ffa_dev,
+>         }
+>
+>         *rpc_param_count = (u8)data.data1;
+> +       *sec_caps = data.data2;
+>
+>         return true;
+>  }
+> @@ -777,6 +788,7 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+>         struct tee_device *teedev;
+>         struct tee_context *ctx;
+>         struct optee *optee;
+> +       u32 sec_caps;
+>         int rc;
+>
+>         ffa_ops = ffa_dev_ops_get(ffa_dev);
+> @@ -788,7 +800,8 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
+>         if (!optee_ffa_api_is_compatbile(ffa_dev, ffa_ops))
+>                 return -EINVAL;
+>
+> -       if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &rpc_param_count))
+> +       if (!optee_ffa_exchange_caps(ffa_dev, ffa_ops, &sec_caps,
+> +                                    &rpc_param_count))
+>                 return -EINVAL;
+>
+>         optee = kzalloc(sizeof(*optee), GFP_KERNEL);
+> diff --git a/drivers/tee/optee/optee_ffa.h b/drivers/tee/optee/optee_ffa.h
+> index ee3a03fc392c..97266243deaa 100644
+> --- a/drivers/tee/optee/optee_ffa.h
+> +++ b/drivers/tee/optee/optee_ffa.h
+> @@ -81,8 +81,16 @@
+>   *                   as the second MSG arg struct for
+>   *                   OPTEE_FFA_YIELDING_CALL_WITH_ARG.
+>   *        Bit[31:8]: Reserved (MBZ)
+> - * w5-w7: Note used (MBZ)
+> + * w5:   Bitfield of secure world capabilities OPTEE_FFA_SEC_CAP_* below,
+> + *       unused bits MBZ.
+> + * w6-w7: Not used (MBZ)
+> + */
+> +/*
+> + * Secure world supports giving an offset into the argument shared memory
+> + * object, see also OPTEE_FFA_YIELDING_CALL_WITH_ARG
+>   */
+> +#define OPTEE_FFA_SEC_CAP_ARG_OFFSET   BIT(0)
+> +
+>  #define OPTEE_FFA_EXCHANGE_CAPABILITIES OPTEE_FFA_BLOCKING_CALL(2)
+>
+>  /*
+> @@ -112,6 +120,8 @@
+>   *       OPTEE_MSG_GET_ARG_SIZE(num_params) follows a struct optee_msg_arg
+>   *       for RPC, this struct has reserved space for the number of RPC
+>   *       parameters as returned by OPTEE_FFA_EXCHANGE_CAPABILITIES.
+> + *       MBZ unless the bit OPTEE_FFA_SEC_CAP_ARG_OFFSET is received with
+> + *       OPTEE_FFA_EXCHANGE_CAPABILITIES.
+>   * w7:    Not used (MBZ)
+>   * Resume from RPC. Register usage:
+>   * w3:    Service ID, OPTEE_FFA_YIELDING_CALL_RESUME
+> --
+> 2.31.1
+>
