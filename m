@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 670DCC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFFDC3527E
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242336AbiCNM3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:29:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        id S242314AbiCNM3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243864AbiCNMVU (ORCPT
+        with ESMTP id S243862AbiCNMVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:21:20 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A369CEF;
-        Mon, 14 Mar 2022 05:17:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9936C62;
+        Mon, 14 Mar 2022 05:17:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=FJ5wXrhL/9ylQnMvdM2Q4vFxfquXxlOyQHpUBbVVNgI=;
-  b=a3jhw+wo/Cs8m0TeWfe+JUWEyIsLOIAuZ+eUSQ/fY1nkQeScgGRbVVDX
-   Y/WQfE3t4AAGmGm7CwfaPzKr4JZeP1e/7BOTm4hxIDSf9lP03Pj6cEyhv
-   7gd50CPjNwFMpGcf26wvWl/Xn8HrwUP+ftNfv8ZuM9a2EnFliHV4CSk4t
-   w=;
+  bh=+QWaBDYxADvSsUY8qg5wOXMDHzBy5XuwKndW6k+z53c=;
+  b=iDNSBE41Nm8OgSBkPg8VbFTfqyui2cAsU7o3PiVl53qcCApFjm+i7YSj
+   upsrgeoeFoBN1ZYs54zq0bBgKLl6U2FOfYXTJkFFxMXfEI0xd1OD8f5QN
+   UsLDj5JRueFP/s6Wq0yCUcYpitC754Kyju23WQGbo2lgD/DiJmcrqq/wI
+   M=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997357"
+   d="scan'208";a="25997355"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Harry Wentland <harry.wentland@amd.com>
-Cc:     kernel-janitors@vger.kernel.org, Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 23/30] drm/amdgpu/dc: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:47 +0100
-Message-Id: <20220314115354.144023-24-Julia.Lawall@inria.fr>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH 21/30] spi: sun4i: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:45 +0100
+Message-Id: <20220314115354.144023-22-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -57,38 +54,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/gpu/drm/amd/display/dc/bios/command_table.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/spi/spi-sun4i.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/bios/command_table.c b/drivers/gpu/drm/amd/display/dc/bios/command_table.c
-index ad13e4e36d77..0e36cd800fc9 100644
---- a/drivers/gpu/drm/amd/display/dc/bios/command_table.c
-+++ b/drivers/gpu/drm/amd/display/dc/bios/command_table.c
-@@ -456,7 +456,7 @@ static enum bp_result transmitter_control_v2(
- 		if ((CONNECTOR_ID_DUAL_LINK_DVII == connector_id) ||
- 				(CONNECTOR_ID_DUAL_LINK_DVID == connector_id))
- 			/* on INIT this bit should be set according to the
--			 * phisycal connector
-+			 * physical connector
- 			 * Bit0: dual link connector flag
- 			 * =0 connector is single link connector
- 			 * =1 connector is dual link connector
-@@ -468,7 +468,7 @@ static enum bp_result transmitter_control_v2(
- 				cpu_to_le16((uint8_t)cntl->connector_obj_id.id);
- 		break;
- 	case TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS:
--		/* votage swing and pre-emphsis */
-+		/* voltage swing and pre-emphsis */
- 		params.asMode.ucLaneSel = (uint8_t)cntl->lane_select;
- 		params.asMode.ucLaneSet = (uint8_t)cntl->lane_settings;
- 		break;
-@@ -2120,7 +2120,7 @@ static enum bp_result program_clock_v5(
- 	memset(&params, 0, sizeof(params));
- 	if (!bp->cmd_helper->clock_source_id_to_atom(
- 			bp_params->pll_id, &atom_pll_id)) {
--		BREAK_TO_DEBUGGER(); /* Invalid Inpute!! */
-+		BREAK_TO_DEBUGGER(); /* Invalid Input!! */
- 		return BP_RESULT_BADINPUT;
- 	}
- 
+diff --git a/drivers/spi/spi-sun4i.c b/drivers/spi/spi-sun4i.c
+index 1fdfc6e6691d..6000d0761206 100644
+--- a/drivers/spi/spi-sun4i.c
++++ b/drivers/spi/spi-sun4i.c
+@@ -280,7 +280,7 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
+ 	 * SPI_CLK = MOD_CLK / (2 ^ (cdr + 1))
+ 	 * Or we can use CDR2, which is calculated with the formula:
+ 	 * SPI_CLK = MOD_CLK / (2 * (cdr + 1))
+-	 * Wether we use the former or the latter is set through the
++	 * Whether we use the former or the latter is set through the
+ 	 * DRS bit.
+ 	 *
+ 	 * First try CDR2, and if we can't reach the expected
 
