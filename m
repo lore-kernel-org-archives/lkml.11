@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF06BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6764C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240847AbiCNMOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S240809AbiCNMOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242689AbiCNMKj (ORCPT
+        with ESMTP id S240879AbiCNMIF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:39 -0400
+        Mon, 14 Mar 2022 08:08:05 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6EE31531;
-        Mon, 14 Mar 2022 05:09:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D525F286F4;
+        Mon, 14 Mar 2022 05:04:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FE416130D;
-        Mon, 14 Mar 2022 12:09:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76DDFC340E9;
-        Mon, 14 Mar 2022 12:09:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46ECF612FD;
+        Mon, 14 Mar 2022 12:04:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E744C340E9;
+        Mon, 14 Mar 2022 12:04:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259761;
-        bh=U5Rul2AMCPlEOya2A6Nt5TwYosi8R9/tJibX+jcrzzg=;
+        s=korg; t=1647259443;
+        bh=z8YnW1vmitftbSedT8yaHgGh8V55K/2sVTZDJ71Kz4s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DL0kF02EGZndGKMDMeHrdTLOXjI+zq0p+gXXJZOUZ00lgC1tfrd9cK3E+ZvQ5CeSz
-         Z3x6ym6rWurZfSELJ4Qq1NDyY7sVRNY3kgKFxcD/0Re7csoHOC1PVzgZxEAwZEwefN
-         3JOOuCltbUDfC+jG0DN9kCO0s2jPSoDQGsXIgr/A=
+        b=kz+v9dGcirX0YudDESFOc2L8N58rOrDWugE6TTOnNF4iIovn2lY44rAX+TyDUN04K
+         egskUxvChyE/yA2nd7S27jYaotx9tMqERAu/D0u8ttu/wb9vyCFOI6SAcTJ4S3JvUA
+         j7Zfi4IXbsX5908iWL+EzQSY+TtWOViV9jlITVtI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Jon Lin <jon.lin@rock-chips.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 032/110] ice: Dont use GFP_KERNEL in atomic context
-Date:   Mon, 14 Mar 2022 12:53:34 +0100
-Message-Id: <20220314112743.934364058@linuxfoundation.org>
+Subject: [PATCH 5.10 39/71] spi: rockchip: terminate dma transmission when slave abort
+Date:   Mon, 14 Mar 2022 12:53:32 +0100
+Message-Id: <20220314112739.026210569@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
-References: <20220314112743.029192918@linuxfoundation.org>
+In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
+References: <20220314112737.929694832@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Jon Lin <jon.lin@rock-chips.com>
 
-[ Upstream commit 3d97f1afd8d831e0c0dc1157418f94b8faa97b54 ]
+[ Upstream commit 80808768e41324d2e23de89972b5406c1020e6e4 ]
 
-ice_misc_intr() is an irq handler. It should not sleep.
+After slave abort, all DMA should be stopped, or it will affect the
+next transmission and maybe abort again.
 
-Use GFP_ATOMIC instead of GFP_KERNEL when allocating some memory.
-
-Fixes: 348048e724a0 ("ice: Implement iidc operations")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Tested-by: Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+Link: https://lore.kernel.org/r/20220216014028.8123-3-jon.lin@rock-chips.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-rockchip.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index d6ee62ae4480..137a054dd1e3 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2874,7 +2874,7 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
- 		struct iidc_event *event;
+diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
+index a59431075411..a9f97023d5a0 100644
+--- a/drivers/spi/spi-rockchip.c
++++ b/drivers/spi/spi-rockchip.c
+@@ -567,6 +567,12 @@ static int rockchip_spi_slave_abort(struct spi_controller *ctlr)
+ {
+ 	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
  
- 		ena_mask &= ~ICE_AUX_CRIT_ERR;
--		event = kzalloc(sizeof(*event), GFP_KERNEL);
-+		event = kzalloc(sizeof(*event), GFP_ATOMIC);
- 		if (event) {
- 			set_bit(IIDC_EVENT_CRIT_ERR, event->type);
- 			/* report the entire OICR value to AUX driver */
++	if (atomic_read(&rs->state) & RXDMA)
++		dmaengine_terminate_sync(ctlr->dma_rx);
++	if (atomic_read(&rs->state) & TXDMA)
++		dmaengine_terminate_sync(ctlr->dma_tx);
++	atomic_set(&rs->state, 0);
++	spi_enable_chip(rs, false);
+ 	rs->slave_abort = true;
+ 	complete(&ctlr->xfer_completion);
+ 
 -- 
 2.34.1
 
