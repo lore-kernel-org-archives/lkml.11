@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84176C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240685AbiCNMG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
+        id S240631AbiCNMG7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240612AbiCNMGF (ORCPT
+        with ESMTP id S240621AbiCNMGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:06:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA0165F0;
-        Mon, 14 Mar 2022 05:02:53 -0700 (PDT)
+        Mon, 14 Mar 2022 08:06:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB88EBC2F;
+        Mon, 14 Mar 2022 05:02:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ABE6FB80CDE;
-        Mon, 14 Mar 2022 12:02:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E169C340E9;
-        Mon, 14 Mar 2022 12:02:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3074961251;
+        Mon, 14 Mar 2022 12:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23622C340E9;
+        Mon, 14 Mar 2022 12:02:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259370;
-        bh=hY2UIJK5Bcp2co/zW3Bbj4YExAPuG2DsjYW6j9zjOz8=;
+        s=korg; t=1647259374;
+        bh=qrjcQzJJwJt0h45ZjSQPyEjka1WJolCH3qzCphW+dps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M/Q+ZFra7B1AgTSf1NynT/zMaYCYyQpMwXhVD5nXf7eyikcASRXpE/m11jaJqhILw
-         icfHAbzh489c3tnEZoIBOLjT3glKcbD9xKJpADvBN9e3VvYwXX0bwpJlnWNELVT5eB
-         /EI0kvBUAZaMzEsji2LHGZrsFaAXUEv16NV13NhI=
+        b=MYfGh1aNkj1abHawqXcsfab6tFGrniPBAXgCHRp7UjxbcSymYRp5PiteLgFE2V1mw
+         36IhSJYFAAXpdK27n+hq4ZzeY6Bdxl9iMgsSCPFNBECaWHl13rR8aOrBANW87IN8cN
+         mVV1Zq7ZAsV0NWV8ZiT/c6fyj9T/yOCVkogpxqCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 63/71] watch_queue: Free the alloc bitmap when the watch_queue is torn down
-Date:   Mon, 14 Mar 2022 12:53:56 +0100
-Message-Id: <20220314112739.693287130@linuxfoundation.org>
+Subject: [PATCH 5.10 64/71] watch_queue: Fix lack of barrier/sync/lock between post and read
+Date:   Mon, 14 Mar 2022 12:53:57 +0100
+Message-Id: <20220314112739.730907012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -51,10 +51,20 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Howells <dhowells@redhat.com>
 
-commit 7ea1a0124b6da246b5bc8c66cddaafd36acf3ecb upstream.
+commit 2ed147f015af2b48f41c6f0b6746aa9ea85c19f3 upstream.
 
-Free the watch_queue note allocation bitmap when the watch_queue is
-destroyed.
+There's nothing to synchronise post_one_notification() versus
+pipe_read().  Whilst posting is done under pipe->rd_wait.lock, the
+reader only takes pipe->mutex which cannot bar notification posting as
+that may need to be made from contexts that cannot sleep.
+
+Fix this by setting pipe->head with a barrier in post_one_notification()
+and reading pipe->head with a barrier in pipe_read().
+
+If that's not sufficient, the rd_wait.lock will need to be taken,
+possibly in a ->confirm() op so that it only applies to notifications.
+The lock would, however, have to be dropped before copy_page_to_iter()
+is invoked.
 
 Fixes: c73be61cede5 ("pipe: Add general notification queue support")
 Reported-by: Jann Horn <jannh@google.com>
@@ -62,18 +72,32 @@ Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/watch_queue.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/pipe.c            |    3 ++-
+ kernel/watch_queue.c |    2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -252,7 +252,8 @@ pipe_read(struct kiocb *iocb, struct iov
+ 	 */
+ 	was_full = pipe_full(pipe->head, pipe->tail, pipe->max_usage);
+ 	for (;;) {
+-		unsigned int head = pipe->head;
++		/* Read ->head with a barrier vs post_one_notification() */
++		unsigned int head = smp_load_acquire(&pipe->head);
+ 		unsigned int tail = pipe->tail;
+ 		unsigned int mask = pipe->ring_size - 1;
+ 
 --- a/kernel/watch_queue.c
 +++ b/kernel/watch_queue.c
-@@ -373,6 +373,7 @@ static void __put_watch_queue(struct kre
+@@ -113,7 +113,7 @@ static bool post_one_notification(struct
+ 	buf->offset = offset;
+ 	buf->len = len;
+ 	buf->flags = PIPE_BUF_FLAG_WHOLE;
+-	pipe->head = head + 1;
++	smp_store_release(&pipe->head, head + 1); /* vs pipe_read() */
  
- 	for (i = 0; i < wqueue->nr_pages; i++)
- 		__free_page(wqueue->notes[i]);
-+	bitmap_free(wqueue->notes_bitmap);
- 
- 	wfilter = rcu_access_pointer(wqueue->filter);
- 	if (wfilter)
+ 	if (!test_and_clear_bit(note, wqueue->notes_bitmap)) {
+ 		spin_unlock_irq(&pipe->rd_wait.lock);
 
 
