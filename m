@@ -2,256 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D15DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238841AbiCNLtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44050 "EHLO
+        id S239543AbiCNLtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238089AbiCNLtJ (ORCPT
+        with ESMTP id S238089AbiCNLtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:49:09 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013481FCF3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:47:55 -0700 (PDT)
-X-UUID: 7f733952714449e69ee43b4c202ec5ba-20220314
-X-UUID: 7f733952714449e69ee43b4c202ec5ba-20220314
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <mark-pk.tsai@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 982047766; Mon, 14 Mar 2022 19:47:50 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 14 Mar 2022 19:47:49 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Mar 2022 19:47:49 +0800
-From:   Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-To:     <rostedt@goodmis.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <mark-pk.tsai@mediatek.com>,
-        <matthias.bgg@gmail.com>, <mingo@redhat.com>,
-        <yj.chiang@mediatek.com>
-Subject: Re: [PATCH] tracing: make tracer_init_tracefs initcall asynchronous
-Date:   Mon, 14 Mar 2022 19:47:49 +0800
-Message-ID: <20220314114749.28646-1-mark-pk.tsai@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220311113153.2d627800@gandalf.local.home>
-References: <20220311113153.2d627800@gandalf.local.home>
+        Mon, 14 Mar 2022 07:49:41 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631523ED2B;
+        Mon, 14 Mar 2022 04:48:31 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22EBlGTZ124224;
+        Mon, 14 Mar 2022 06:47:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647258436;
+        bh=A+p09ykpYT6VHc3fsURK5eWzEGL+2zDBzN5kHFSBz8c=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=E1jemJllSfQqx5Izpc3mGcNV1DwGMELTSSOwpBuYCP43xPhZii6hINMNW1Hj81dOO
+         rmJylF2qoYC4E2OkfUcK/wRQJReI4n4IyL8ReF+qVz+I0/0JGaOuFj/TkrC8x1dgCf
+         ZB5zSHcvK4jMP0XJpmz/LBSoJYPpnByi1Yjz+3ks=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22EBlGeJ040925
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 14 Mar 2022 06:47:16 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 14
+ Mar 2022 06:47:16 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 14 Mar 2022 06:47:16 -0500
+Received: from [10.250.235.173] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22EBlBgu022886;
+        Mon, 14 Mar 2022 06:47:12 -0500
+Message-ID: <1dfd6a3d-452a-1e71-ca26-1fffe6db1636@ti.com>
+Date:   Mon, 14 Mar 2022 17:17:10 +0530
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 05/17] mtd: spinand: Define ctrl_ops for non-page
+ read/write op templates
+Content-Language: en-US
+To:     Boris Brezillon <boris.brezillon@collabora.com>
+CC:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Mark Brown <broonie@kernel.org>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Daniel Palmer <daniel@0x0f.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <p.yadav@ti.com>
+References: <20220101074250.14443-1-a-nandan@ti.com>
+ <20220101074250.14443-6-a-nandan@ti.com>
+ <20220103110107.45594e78@collabora.com>
+ <bf3ea909-e0a5-eeac-12e9-c8a809685f48@ti.com>
+ <20220215183705.574df0c1@collabora.com>
+ <12c7a6a6-8b49-1c3e-087f-79c77388b091@ti.com>
+ <20220310094053.1d86d13a@collabora.com>
+From:   Apurva Nandan <a-nandan@ti.com>
+In-Reply-To: <20220310094053.1d86d13a@collabora.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Fri, 11 Mar 2022 19:26:56 +0800
-> Mark-PK Tsai <mark-pk.tsai@mediatek.com> wrote:
-> 
-> > tracer_init_tracefs() is slow especially when there are
-> > lots of trace events.
-> > Create a kthread to do tracer_init_tracefs() asynchronously
-> 
-> When making comments like this, please provide the benchmarks you used,
-> with the numbers before and after.
 
-I've retest it with kernel 5.17-rc7 on my arm64 board, and I found that
-the critical path is trace_eval_sync which spend about 430 ms.
-It's almost half of the time the do_initcalls spends.
-Below is the test result.
-
-			before		after
-tracer_init_tracefs	29872 us	66 us
-trace_eval_sync		429695 us	459370 us
-do_initcalls		797818 us	799890 us
-
-I locally skip trace_eval_sync and got below result.
-
-			before		after		diff
-do_initcalls		359252 us	341725 us	-17527 us
-
-So beside this patch, could we add a kernel parameter or a
-option to skip it when it doesn't used right after kernel boot?
-
-> 
-> > to speed up the initialization of kernel and move the
-> > related functions and variables out of init section.
-> 
-> Thus we sacrifice memory for boot time. I'd like to also see how much
-> memory is freed from init before and after this patch.
-> 
-
-Below is the INIT_TEXT and INIT_DATA diff:
-
-		before	after	diff
-INIT_TEXT	7F290	7EDAC	-0x4e4	bytes
-INIT_DATA	116FE8	116FE8	0	bytes
-
-And the init section is 64K aligned on arm64 so that when I test
-on my platform, the actual memory freed by initmem_free() have no
-diffrence after apply this patch.
-
-#define SEGMENT_ALIGN SZ_64K
-
-> > 
-> > Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-> > ---
-> >  fs/tracefs/inode.c          |  8 ++++----
-> >  kernel/trace/ftrace.c       | 12 ++++++------
-> >  kernel/trace/trace.c        | 21 ++++++++++++++++-----
-> >  kernel/trace/trace_events.c |  2 +-
-> >  4 files changed, 27 insertions(+), 16 deletions(-)
-> > 
-> > diff --git a/fs/tracefs/inode.c b/fs/tracefs/inode.c
-> > index de7252715b12..9a713d6bcb7e 100644
-> > --- a/fs/tracefs/inode.c
-> > +++ b/fs/tracefs/inode.c
-> > @@ -561,10 +561,10 @@ struct dentry *tracefs_create_dir(const char *name, struct dentry *parent)
-> >   *
-> >   * Returns the dentry of the instances directory.
-> >   */
-> > -__init struct dentry *tracefs_create_instance_dir(const char *name,
-> > -					  struct dentry *parent,
-> > -					  int (*mkdir)(const char *name),
-> > -					  int (*rmdir)(const char *name))
-> > +struct dentry *tracefs_create_instance_dir(const char *name,
-> > +					   struct dentry *parent,
-> > +					   int (*mkdir)(const char *name),
-> > +					   int (*rmdir)(const char *name))
-> >  {
-> >  	struct dentry *dentry;
-> >  
-> > diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> > index a4b462b6f944..197630cbd5dd 100644
-> > --- a/kernel/trace/ftrace.c
-> > +++ b/kernel/trace/ftrace.c
-> > @@ -940,7 +940,7 @@ static const struct file_operations ftrace_profile_fops = {
-> >  };
-> >  
-> >  /* used to initialize the real stat files */
-> > -static struct tracer_stat function_stats __initdata = {
-> > +static struct tracer_stat function_stats = {
-> >  	.name		= "functions",
-> >  	.stat_start	= function_stat_start,
-> >  	.stat_next	= function_stat_next,
-> > @@ -949,7 +949,7 @@ static struct tracer_stat function_stats __initdata = {
-> >  	.stat_show	= function_stat_show
-> >  };
-> >  
-> > -static __init void ftrace_profile_tracefs(struct dentry *d_tracer)
-> > +static void ftrace_profile_tracefs(struct dentry *d_tracer)
-> >  {
-> >  	struct ftrace_profile_stat *stat;
-> >  	struct dentry *entry;
-> > @@ -991,7 +991,7 @@ static __init void ftrace_profile_tracefs(struct dentry *d_tracer)
-> >  }
-> >  
-> >  #else /* CONFIG_FUNCTION_PROFILER */
-> > -static __init void ftrace_profile_tracefs(struct dentry *d_tracer)
-> > +static void ftrace_profile_tracefs(struct dentry *d_tracer)
-> >  {
-> >  }
-> >  #endif /* CONFIG_FUNCTION_PROFILER */
-> > @@ -6359,7 +6359,7 @@ void ftrace_destroy_filter_files(struct ftrace_ops *ops)
-> >  	mutex_unlock(&ftrace_lock);
-> >  }
-> >  
-> > -static __init int ftrace_init_dyn_tracefs(struct dentry *d_tracer)
-> > +static int ftrace_init_dyn_tracefs(struct dentry *d_tracer)
-> >  {
-> >  
-> >  	trace_create_file("available_filter_functions", TRACE_MODE_READ,
-> > @@ -7754,8 +7754,8 @@ void ftrace_init_tracefs(struct trace_array *tr, struct dentry *d_tracer)
-> >  			  d_tracer, tr, &ftrace_no_pid_fops);
-> >  }
-> >  
-> > -void __init ftrace_init_tracefs_toplevel(struct trace_array *tr,
-> > -					 struct dentry *d_tracer)
-> > +void ftrace_init_tracefs_toplevel(struct trace_array *tr,
-> > +				  struct dentry *d_tracer)
-> >  {
-> >  	/* Only the top level directory has the dyn_tracefs and profile */
-> >  	WARN_ON(!(tr->flags & TRACE_ARRAY_FL_GLOBAL));
-> > diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-> > index eb44418574f9..f55da82060e2 100644
-> > --- a/kernel/trace/trace.c
-> > +++ b/kernel/trace/trace.c
-> > @@ -9562,10 +9562,10 @@ int tracing_init_dentry(void)
-> >  extern struct trace_eval_map *__start_ftrace_eval_maps[];
-> >  extern struct trace_eval_map *__stop_ftrace_eval_maps[];
-> >  
-> > -static struct workqueue_struct *eval_map_wq __initdata;
-> > -static struct work_struct eval_map_work __initdata;
-> > +static struct workqueue_struct *eval_map_wq;
-> > +static struct work_struct eval_map_work;
-> >  
-> > -static void __init eval_map_work_func(struct work_struct *work)
-> > +static void eval_map_work_func(struct work_struct *work)
-> >  {
-> >  	int len;
-> >  
-> > @@ -9573,7 +9573,7 @@ static void __init eval_map_work_func(struct work_struct *work)
-> >  	trace_insert_eval_map(NULL, __start_ftrace_eval_maps, len);
-> >  }
-> >  
-> > -static int __init trace_eval_init(void)
-> > +static int trace_eval_init(void)
-> >  {
-> >  	INIT_WORK(&eval_map_work, eval_map_work_func);
-> >  
-> > @@ -9671,7 +9671,7 @@ static struct notifier_block trace_module_nb = {
-> >  };
-> >  #endif /* CONFIG_MODULES */
-> >  
-> > -static __init int tracer_init_tracefs(void)
-> > +static int tracefs_init(void *data)
-> >  {
-> >  	int ret;
-> >  
-> > @@ -9721,6 +9721,17 @@ static __init int tracer_init_tracefs(void)
-> >  	return 0;
-> >  }
-> >  
-> > +static __init int tracer_init_tracefs(void)
-> > +{
-> > +	struct task_struct *thread;
-> > +
-> > +	thread = kthread_run(tracefs_init, NULL, "tracefs_init");
-> > +	if (IS_ERR(thread))
-> > +		return PTR_ERR(thread);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  fs_initcall(tracer_init_tracefs);
-> >  
-> >  static int trace_panic_handler(struct notifier_block *this,
-> > diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-> > index 3147614c1812..fe055bef1e8f 100644
-> > --- a/kernel/trace/trace_events.c
-> > +++ b/kernel/trace/trace_events.c
-> > @@ -3687,7 +3687,7 @@ static __init int event_trace_init_fields(void)
-> >  	return 0;
-> >  }
-> >  
-> > -__init int event_trace_init(void)
-> > +int event_trace_init(void)
-> >  {
-> >  	struct trace_array *tr;
-> >  	struct dentry *entry;
-> 
-> Hmm, this calls early_event_tracer() which is also in __init. Looks like
-> there's going to be a ripple effect due to this change.
-> 
-> If we want to go this route, then first a change must be made to remove the
-> needed functions from init, and then see if we can consolidate it. As there
-> are some init functions that are duplicated for init purposes.
-
-Got it!
-
-> 
-> -- Steve
-
+On 10/03/22 14:10, Boris Brezillon wrote:
+> On Thu, 10 Mar 2022 13:27:06 +0530
+> Apurva Nandan <a-nandan@ti.com> wrote:
+>
+>>>>> This way, you can easily pick the right set of operations based
+>>>>> on the protocol/mode you're in:
+>>>>>
+>>>>> #define spinand_get_op_template(spinand, opname) \
+>>>>> 	((spinand)->op_templates[(spinand)->protocol]->opname)
+>>>>>
+>>>>> static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
+>>>>> {
+>>>>> 	struct spi_mem_op op = *spinand_get_op_template(spinand, get_feature);
+>>>>> 	int ret;
+>>>>>
+>>>>> 	...
+>>>>> }
+>>>> I find a couple of issues with this  method,
+>>>>
+>>>> 1. read_cache, write_cache, update_cache op templates don't fit well
+>>>> with the other non-data ops, as
+>>>> these data ops are used to create a dirmap, and that can be done only
+>>>> once at probe time. Hence, there
+>>>> is a different mechanism of selecting of data ops and non-data ops.
+>>> Not sure I see why this is a problem. You can populate data-ops for all
+>>> modes, and pick the one that provides the best perfs when you create
+>>> the dirmap (which should really be at the end of the probe, if it's not
+>>> already).
+>>>   
+>>>> Hence, this division in the op templates
+>>>> struct as data_ops and ctrl_ops is required. Currently, the core only
+>>>> supports using a single protocol for
+>>>> data ops, chosen at the time of probing.
+>>> Again, I don't see why you need to differentiate the control and data
+>>> ops when populating this table. Those are just operations the NAND
+>>> supports, and the data operations is just a subset.
+>>>   
+>>>> 2. If we use this single op_templates struct, I can't think of any good
+>>>> way to initialize these in the
+>>>> manufacturers driver (winbond.c), refer to 17th patch in this series.
+>>>> Could you please suggest a macro
+>>>> implementation also for winbond.c with the suggested op_templates struct.
+>>> First replace the op_variants field by something more generic:
+>>>
+>>> struct spinand_info {
+>>> ...
+>>> 	const struct spinand_op_variants **ops_variants;
+>>> ...
+>>> };
+>>>
+>>> #define SPINAND_OP_VARIANTS(_id, ...) \
+>>> 	[SPI_NAND_OP_ ## _id] = { __VA_ARGS__ }
+>>>
+>>> #define SPINAND_OPS_VARIANTS(name, ...)
+>>> 	const struct spinand_op_variants name[]{
+>>> 		__VA_ARGS__,
+>>> 	};
+>>>
+>>> #define SPINAND_INFO_OPS_VARIANTS(defs)
+>>> 	.ops_variants = defs
+>> If we modify these macros, it would require other spinand vendor drivers
+>> to change (toshiba, micron, etc).
+>> The older macros suit them well, should we go about changing them to
+>> this new macro (will require re-testing all of them),
+>> or can we keep them unchanged and have new set of macros with different
+>> name (please give suggestion for it) for op variants.
+> I'd rather have everything converted to the new approach (we don't want
+> 2 ways of describing the same thing), and I'm not sure you can make the
+> old macros map to the new solution, so I fear you'll have to patch all
+> vendors. This being said, I'm fine providing simple wrappers if that
+> helps, but I don't see how they'd make the description simpler/more
+> compact to be honest.
+Okay, I will convert all of the vendor drivers, but please note I don't 
+have any way to test the changes on all the flashes.
