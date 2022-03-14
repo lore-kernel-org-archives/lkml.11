@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3492AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234538AbiCNMMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
+        id S240813AbiCNMMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241490AbiCNMIq (ORCPT
+        with ESMTP id S241321AbiCNMIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DB54EA02;
-        Mon, 14 Mar 2022 05:05:23 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A35C4504B;
+        Mon, 14 Mar 2022 05:04:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D9D161348;
-        Mon, 14 Mar 2022 12:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67602C340EC;
-        Mon, 14 Mar 2022 12:05:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21FFBB80DED;
+        Mon, 14 Mar 2022 12:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C10C340E9;
+        Mon, 14 Mar 2022 12:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259517;
-        bh=iFsjWznm3SrnPCRqCcEAQ2tUS6+ySlC58zxri+CXmAQ=;
+        s=korg; t=1647259494;
+        bh=oVlhXAJLdhxfU/4NKvyFlxWx+GgAVon1B+jYTpfRdyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PgHO61u4UsbPwqYkJGYqWIAFy7nTaRG1AB2CRR4Y7hJ1dx/nNsW5XqQ8HmQW0jg2G
-         SZ7gzzX9fKZh2RHxydhfTlD/CWlGVVXO/PxgeqndYhRlC5si3PB6DYq98xmfD2QU9B
-         VrDsWGChX5zL6/szZKSxklzhuS/BF4jPljUGyJ6A=
+        b=rYU26h+bzC8VcX4sXpCM8sBQgHVUz2g3Svpg06vihTP0lnZH2YIXa414Ety1yva4Z
+         PHqztFsftDpwn6s0A8sRmzlsrC3ir3XxCtfFjqZikanv6l8osopiz8xs5irD1EdxWg
+         H0MyjptPwwsLadE5NDLhKa7ZwKl4EG2AODgvnXdQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 025/110] drm/sun4i: mixer: Fix P010 and P210 format numbers
-Date:   Mon, 14 Mar 2022 12:53:27 +0100
-Message-Id: <20220314112743.738669211@linuxfoundation.org>
+Subject: [PATCH 5.15 002/110] arm64: dts: qcom: sm8350: Correct UFS symbol clocks
+Date:   Mon, 14 Mar 2022 12:53:04 +0100
+Message-Id: <20220314112743.099608119@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,43 +51,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-[ Upstream commit 9470c29faa91c804aa04de4c10634bf02462bfa5 ]
+[ Upstream commit 0fd4dcb607ce29110d6c0b481a98c4ff3d300551 ]
 
-It turns out that DE3 manual has inverted YUV and YVU format numbers for
-P010 and P210. Invert them.
+The introduction of '9a61f813fcc8 ("clk: qcom: regmap-mux: fix parent
+clock lookup")' broke UFS support on SM8350.
 
-This was tested by playing video decoded to P010 and additionally
-confirmed by looking at BSP driver source.
+The cause for this is that the symbol clocks have a specified rate in
+the "freq-table-hz" table in the UFS node, which causes the UFS code to
+request a rate change, for which the "bi_tcxo" happens to provide the
+closest rate.  Prior to the change in regmap-mux it was determined
+(incorrectly) that no change was needed and everything worked.
 
-Fixes: 169ca4b38932 ("drm/sun4i: Add separate DE3 VI layer formats")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220228181436.1424550-1-jernej.skrabec@gmail.com
+The rates of 75 and 300MHz matches the documentation for the symbol
+clocks, but we don't represent the parent clocks today. So let's mimic
+the configuration found in other platforms, by omitting the rate for the
+symbol clocks as well to avoid the rate change.
+
+While at it also fill in the dummy symbol clocks that was dropped from
+the GCC driver as it was upstreamed.
+
+Fixes: 59c7cf814783 ("arm64: dts: qcom: sm8350: Add UFS nodes")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Reviewed-by: Vinod Koul <vkoul@kernel.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Link: https://lore.kernel.org/r/20211222162058.3418902-1-bjorn.andersson@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun8i_mixer.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-index 145833a9d82d..5b3fbee18671 100644
---- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
-+++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
-@@ -111,10 +111,10 @@
- /* format 13 is semi-planar YUV411 VUVU */
- #define SUN8I_MIXER_FBFMT_YUV411	14
- /* format 15 doesn't exist */
--/* format 16 is P010 YVU */
--#define SUN8I_MIXER_FBFMT_P010_YUV	17
--/* format 18 is P210 YVU */
--#define SUN8I_MIXER_FBFMT_P210_YUV	19
-+#define SUN8I_MIXER_FBFMT_P010_YUV	16
-+/* format 17 is P010 YVU */
-+#define SUN8I_MIXER_FBFMT_P210_YUV	18
-+/* format 19 is P210 YVU */
- /* format 20 is packed YVU444 10-bit */
- /* format 21 is packed YUV444 10-bit */
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index 09d919793758..a8886adaaf37 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -35,6 +35,24 @@ sleep_clk: sleep-clk {
+ 			clock-frequency = <32000>;
+ 			#clock-cells = <0>;
+ 		};
++
++		ufs_phy_rx_symbol_0_clk: ufs-phy-rx-symbol-0 {
++			compatible = "fixed-clock";
++			clock-frequency = <1000>;
++			#clock-cells = <0>;
++		};
++
++		ufs_phy_rx_symbol_1_clk: ufs-phy-rx-symbol-1 {
++			compatible = "fixed-clock";
++			clock-frequency = <1000>;
++			#clock-cells = <0>;
++		};
++
++		ufs_phy_tx_symbol_0_clk: ufs-phy-tx-symbol-0 {
++			compatible = "fixed-clock";
++			clock-frequency = <1000>;
++			#clock-cells = <0>;
++		};
+ 	};
+ 
+ 	cpus {
+@@ -462,9 +480,9 @@ gcc: clock-controller@100000 {
+ 				 <0>,
+ 				 <0>,
+ 				 <0>,
+-				 <0>,
+-				 <0>,
+-				 <0>,
++				 <&ufs_phy_rx_symbol_0_clk>,
++				 <&ufs_phy_rx_symbol_1_clk>,
++				 <&ufs_phy_tx_symbol_0_clk>,
+ 				 <0>,
+ 				 <0>;
+ 		};
+@@ -1082,8 +1100,8 @@ ufs_mem_hc: ufshc@1d84000 {
+ 				<75000000 300000000>,
+ 				<0 0>,
+ 				<0 0>,
+-				<75000000 300000000>,
+-				<75000000 300000000>;
++				<0 0>,
++				<0 0>;
+ 			status = "disabled";
+ 		};
  
 -- 
 2.34.1
