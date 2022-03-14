@@ -2,127 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50163C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 03:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A26BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 04:05:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbiCND51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 23:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
+        id S231691AbiCNEG7 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 00:06:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232277AbiCND50 (ORCPT
+        with ESMTP id S229653AbiCNEGz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 23:57:26 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A31731DD5;
-        Sun, 13 Mar 2022 20:56:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647230177; x=1678766177;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6bkM5qkPnQ8XQAJyJzGj5m4VADZeV4mTAnh7ytVk5t8=;
-  b=nJjDVNXIJzKHe7lucGwQ3LnMoki4zcUbV1Qk8aFoUN/vei5TYAfC1rn2
-   OZ5WEJzlQMWyBanpMy4A9BJj1ZUUeaJowqbBELhPjiGBpaguKw98vrX8g
-   CMKMY6k5a3WbgbRwnkYjbU4uxeRVA87gwZAtDVqStXfZ5eGD5fFewPej6
-   Z1HH7SnCGDEfqYvM1CAvzxgfh8BHsbWm+U56b232Mh70+Xe5KZF0b9yWG
-   u1t1V805q7CyiUoPWVmWB8aZIjvA+QIrdhoWcvsV3jw0pKfOiimhx+DlE
-   SDLOLwiAXzclhtDrJOkLzWB2HhtLfODJhjXmLQQhcA+LabmWX82sVj9BZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="236532311"
-X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
-   d="scan'208";a="236532311"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 20:56:17 -0700
-X-IronPort-AV: E=Sophos;i="5.90,179,1643702400"; 
-   d="scan'208";a="713561551"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2022 20:56:11 -0700
-Date:   Mon, 14 Mar 2022 12:09:42 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Zeng Guang <guang.zeng@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>
-Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
- unconditionally
-Message-ID: <20220314040941.GA18296@gao-cwp>
-References: <Yifg4bea6zYEz1BK@google.com>
- <20220309052013.GA2915@gao-cwp>
- <YihCtvDps/qJ2TOW@google.com>
- <6dc7cff15812864ed14b5c014769488d80ce7f49.camel@redhat.com>
- <YirPkr5efyylrD0x@google.com>
- <29c76393-4884-94a8-f224-08d313b73f71@intel.com>
- <01586c518de0c72ff3997d32654b8fa6e7df257d.camel@redhat.com>
- <2900660d947a878e583ebedf60e7332e74a1af5f.camel@redhat.com>
- <20220313135335.GA18405@gao-cwp>
- <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        Mon, 14 Mar 2022 00:06:55 -0400
+X-Greylist: delayed 402 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Mar 2022 21:05:46 PDT
+Received: from mail.wilcox-tech.com (mail.wilcox-tech.com [45.32.83.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3DA3D4AD
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 21:05:46 -0700 (PDT)
+Received: (qmail 1571 invoked from network); 14 Mar 2022 03:59:02 -0000
+Received: from localhost (HELO smtpclient.apple) (AWilcox@Wilcox-Tech.com@127.0.0.1)
+  by localhost with ESMTPA; 14 Mar 2022 03:59:02 -0000
+From:   "A. Wilcox" <awilfox@adelielinux.org>
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: [BUG] arm64/m1: Accessing SYS_ID_AA64ISAR2_EL1 causes early boot
+ failure on 5.15.28, 5.16.14, 5.17
+Message-Id: <32EA0FE1-5254-4A41-B684-AA2DEC021110@adelielinux.org>
+Date:   Sun, 13 Mar 2022 22:59:01 -0500
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> > > This won't work with nested AVIC - we can't just inhibit a nested guest using its own AVIC,
->> > > because migration happens.
->> > 
->> > I mean because host decided to change its apic id, which it can in theory do any time,
->> > even after the nested guest has started. Seriously, the only reason guest has to change apic id,
->> > is to try to exploit some security hole.
->> 
->> Hi
->> 
->> Thanks for the information.  
->> 
->> IIUC, you mean KVM applies APICv inhibition only to L1 VM, leaving APICv
->> enabled for L2 VM. Shouldn't KVM disable APICv for L2 VM in this case?
->> It looks like a generic issue in dynamically toggling APICv scheme,
->> e.g., qemu can set KVM_GUESTDBG_BLOCKIRQ after nested guest has started.
->> 
->
->That is the problem - you can't disable it for L2, unless you are willing to emulate it in software.
->Or in other words, when nested guest uses a hardware feature, you can't at some point say to it:
->sorry buddy - hardware feature disappeared.
+Hello,
 
-Agreed. I missed this.
+I’ve been testing kernel updates for the Adélie Linux distribution’s ARM64 port using a Parallels VM on a MacBook Pro (13-inch, M1, 2020).  When the kernel attempts to access SYS_ID_AA64ISAR2_EL1, it causes a fault as seen here booting 5.17.0-rc8:
 
->
->It is *currently* not a problem for APICv because it doesn't do IPI virtualization,
->and even with these patches, it doesn't do this for nesting.
->It does become when you allow nested guest to use this which I did in the nested AVIC code.
->
->
->and writable apic ids do pose a large problem, since nested AVIC, will target L1's apic ids,
->and when they can change under you without any notice, and even worse be duplicate,
->it is just nightmare.
 
-OK. So the problem of disabling APICv is if we choose to disable APICv instead
-of making APIC ID read-only, although it can work perfectly for VMX IPIv, it
-effectively makes future cleanup to AVIC difficult/impossible because nested
-AVIC is practically to implement without assuming APIC IDs of L1 is immutable.
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410f0000]
+[    0.000000] Linux version 5.17.0-rc8-easy (awilcox@adelie-m1) (gcc (Adelie 8.3.0) 8.3.0, GNU ld (GNU Binutils) 2.32) #1 SMP Sun Mar 13 22:19:54 CDT 2022
+[    0.000000] Machine model: Parallels ARM Virtual Machine
+[    0.000000] earlycon: pl11 at MMIO 0x0000000002110000 (options '')
+[    0.000000] printk: bootconsole [pl11] enabled
+[    0.000000] efi: EFI v2.70 by EDK II
+[    0.000000] ------------[ cut here ]------------
+[    0.000000] kernel BUG at arch/arm64/kernel/traps.c:498!
+[    0.000000] Internal error: Oops - BUG: 0 [#1] SMP
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.17.0-rc8-easy #1
+[    0.000000] Hardware name: Parallels ARM Virtual Machine (DT)
+[    0.000000] pstate: 004000c5 (nzcv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    0.000000] pc : do_undefinstr+0x4d0/0x5b0
+[    0.000000] lr : do_undefinstr+0x21c/0x5b0
+[    0.000000] sp : ffff800009763c00
+[    0.000000] x29: ffff800009763c00 x28: ffff800009773680 x27: ffff8000093d0108
+[    0.000000] x26: 0000000000000000 x25: ffff8000093d0108 x24: ffff8000091e5098
+[    0.000000] x23: 00000000404000c5 x22: ffff8000080805e8 x21: 0000000138cfd000
+[    0.000000] x20: ffff800009763c90 x19: ffff8000091e5098 x18: 0000000000000010
+[    0.000000] x17: 000000000000036f x16: 0000000000014000 x15: 0000000400000000
+[    0.000000] x14: 000000000000036f x13: 0000000400000000 x12: 000000000000036f
+[    0.000000] x11: 0000000400000000 x10: 00000000005b0000 x9 : 000000013fa50000
+[    0.000000] x8 : 0000000400000000 x7 : 0000000000000003 x6 : 0000000000000000
+[    0.000000] x5 : 0000000000000000 x4 : ffff800009911108 x3 : 0000000000000000
+[    0.000000] x2 : ffff800009775ac0 x1 : ffff800009911108 x0 : 00000000404000c5
+[    0.000000] Call trace:
+[    0.000000]  do_undefinstr+0x4d0/0x5b0
+[    0.000000]  el1_undef+0x2c/0x48
+[    0.000000]  el1h_64_sync_handler+0x8c/0xd0
+[    0.000000]  el1h_64_sync+0x78/0x7c
+[    0.000000]  __cpuinfo_store_cpu+0x70/0x230
+[    0.000000]  cpuinfo_store_boot_cpu+0x28/0x54
+[    0.000000]  smp_prepare_boot_cpu+0x2c/0x38
+[    0.000000]  start_kernel+0x490/0x918
+[    0.000000]  __primary_switched+0xc0/0xc8
+[    0.000000] Code: 54fff641 17ffffa6 a9025bf5 f9001bf7 (d4210000) 
+[    0.000000] ---[ end trace 0000000000000000 ]---
 
-Sean & Maxim
 
-How about go back to use a module parameter to opt in to read-only APIC ID.
-Although migration in some cases may fail but it shouldn't be a big issue as
-migration VMs from a KVM with nested=on to a KVM with nested=off may also fail.
+Disabling the access of SYS_ID_AA64ISAR2_EL1 in __cpuinfo_store_cpu causes failure a bit later on; this trace is taken from a 5.15.28 tree:
+
+
+[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410f0000]
+[    0.000000] Linux version 5.15.28-mc1-easy (awilcox@adelie-m1) (gcc (Adelie 8.3.0) 8.3.0, GNU ld (GNU Binutils) 2.32) #1 SMP Sun Mar 13 21:17:53 CDT 2022
+[    0.000000] Machine model: Parallels ARM Virtual Machine
+[    0.000000] earlycon: pl11 at MMIO 0x0000000002110000 (options '')
+[    0.000000] printk: bootconsole [pl11] enabled
+[    0.000000] efi: EFI v2.70 by EDK II
+[    0.000000] ------------[ cut here ]------------
+[    0.000000] kernel BUG at arch/arm64/kernel/traps.c:498!
+[    0.000000] Internal error: Oops - BUG: 0 [#1] SMP
+[    0.000000] Modules linked in:
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.28-mc1-easy #1
+[    0.000000] Hardware name: Parallels ARM Virtual Machine (DT)
+[    0.000000] pstate: 004000c5 (nzcv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    0.000000] pc : do_undefinstr+0x4d0/0x5b0
+[    0.000000] lr : do_undefinstr+0x21c/0x5b0
+[    0.000000] sp : ffff8000097b3b30
+[    0.000000] x29: ffff8000097b3b30 x28: ffff8000097c3740 x27: 0000000000000020
+[    0.000000] x26: ffff800008e737b8 x25: ffff80000995f540 x24: ffff8000092595d8
+[    0.000000] x23: 00000000804000c5 x22: ffff800008126340 x21: 0000000138d6b000
+[    0.000000] x20: ffff8000097b3bc0 x19: ffff800009258b58 x18: 0000000000000010
+[    0.000000] x17: 000000000000036f x16: 0000000000014000 x15: 0000000000000025
+[    0.000000] x14: ffff8000097b3a40 x13: 00000000ffffffea x12: ffff800009808ea8
+[    0.000000] x11: 0000000000000003 x10: ffff8000097fce68 x9 : ffff8000097fcec0
+[    0.000000] x8 : 000000000000bfe8 x7 : c0000000fffff7ff x6 : 0000000000000001
+[    0.000000] x5 : 0000000000000000 x4 : ffff80000995f108 x3 : 0000000000000000
+[    0.000000] x2 : ffff8000097c5b38 x1 : ffff80000995f108 x0 : 00000000804000c5
+[    0.000000] Call trace:
+[    0.000000]  do_undefinstr+0x4d0/0x5b0
+[    0.000000]  el1_undef+0x2c/0x48
+[    0.000000]  el1h_64_sync_handler+0x8c/0xd0
+[    0.000000]  el1h_64_sync+0x78/0x7c
+[    0.000000]  is_spectre_bhb_affected+0x38/0xb8
+[    0.000000]  update_cpu_capabilities+0x74/0x128
+[    0.000000]  init_cpu_features+0x250/0x274
+[    0.000000]  cpuinfo_store_boot_cpu+0x48/0x54
+[    0.000000]  smp_prepare_boot_cpu+0x2c/0x38
+[    0.000000]  start_kernel+0x4c0/0x948
+[    0.000000]  __primary_switched+0xbc/0xc4
+[    0.000000] Code: 54fff641 17ffffa6 a9025bf5 f9001bf7 (d4210000) 
+[    0.000000] lrng_drng: ChaCha20 core initialized with first seeding
+[    0.000000] ---[ end trace 921bf73327f0869a ]—
+
+
+This is because detection of the clearbhb instruction support requires accessing SYS_ID_AA64ISAR2_EL1.  Commenting out the two uses of supports_clearbhb in the kernel now yields a successful boot.
+
+Qemu developers seem to have found this issue as well[1] when trying to boot 5.17 using HVF, the Apple Hypervisor Framework.  This seems to be some sort of platform quirk on M1, or at least in HVF on M1.  I’m not sure what the best workaround would be for this.  SYS_ID_AA64ISAR2_EL1 seems to be something added in ARMv8.7, so perhaps access to it could be gated on that.  
+
+Unfortunately, this code was just added to 5.15.28 and 5.16.14, so stable no longer boots on Parallels VM on M1.  I am unsure if this affects physical boot on Apple M1 or not.
+
+I am willing to test any patches or workarounds.  Please CC me on replies as I am not subscribed to the list(s).
+
+Best,
+-A.
+
+[1]: https://lists.nongnu.org/archive/html/qemu-devel/2022-02/msg01973.html
+
+--
+A. Wilcox (awilfox)      - Unix since '97, Linux since '01
+Mac, iOS, Linux software engineer
+Bio: https://catfox.life - Distro: https://www.adelielinux.org
