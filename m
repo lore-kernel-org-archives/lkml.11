@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB838C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF06BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241010AbiCNMOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48702 "EHLO
+        id S240847AbiCNMOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242462AbiCNMKC (ORCPT
+        with ESMTP id S242689AbiCNMKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07FD140A7;
-        Mon, 14 Mar 2022 05:08:22 -0700 (PDT)
+        Mon, 14 Mar 2022 08:10:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6EE31531;
+        Mon, 14 Mar 2022 05:09:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8BFAB80DF0;
-        Mon, 14 Mar 2022 12:08:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F157DC340E9;
-        Mon, 14 Mar 2022 12:08:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FE416130D;
+        Mon, 14 Mar 2022 12:09:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76DDFC340E9;
+        Mon, 14 Mar 2022 12:09:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259700;
-        bh=ggBfsXFAbHLCW/U0wi05vrwQYAKaP3g9I/kK8Sip/XU=;
+        s=korg; t=1647259761;
+        bh=U5Rul2AMCPlEOya2A6Nt5TwYosi8R9/tJibX+jcrzzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xPKE+r6JKoiejyCfmftOWSZViyA8PphMSlZvVKr6QHTK1gsnRKmMWZMdM3DGK/pGi
-         ScmIOYGtO/vOqXJsd5+Ln4H7DbktB9WogA2Qx9GW+tyQu3L2W9XOfw07kE21dgi42A
-         K9gf1yiZAl/LNbgRjQ9ovcELhloOb2pxLhvd9gYs=
+        b=DL0kF02EGZndGKMDMeHrdTLOXjI+zq0p+gXXJZOUZ00lgC1tfrd9cK3E+ZvQ5CeSz
+         Z3x6ym6rWurZfSELJ4Qq1NDyY7sVRNY3kgKFxcD/0Re7csoHOC1PVzgZxEAwZEwefN
+         3JOOuCltbUDfC+jG0DN9kCO0s2jPSoDQGsXIgr/A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
-        Michael Brown <mbrown@fensystems.co.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 068/110] Revert "xen-netback: Check for hotplug-status existence before watching"
-Date:   Mon, 14 Mar 2022 12:54:10 +0100
-Message-Id: <20220314112744.933992422@linuxfoundation.org>
+Subject: [PATCH 5.15 032/110] ice: Dont use GFP_KERNEL in atomic context
+Date:   Mon, 14 Mar 2022 12:53:34 +0100
+Message-Id: <20220314112743.934364058@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -52,62 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit e8240addd0a3919e0fd7436416afe9aa6429c484 ]
+[ Upstream commit 3d97f1afd8d831e0c0dc1157418f94b8faa97b54 ]
 
-This reverts commit 2afeec08ab5c86ae21952151f726bfe184f6b23d.
+ice_misc_intr() is an irq handler. It should not sleep.
 
-The reasoning in the commit was wrong - the code expected to setup the
-watch even if 'hotplug-status' didn't exist. In fact, it relied on the
-watch being fired the first time - to check if maybe 'hotplug-status' is
-already set to 'connected'. Not registering a watch for non-existing
-path (which is the case if hotplug script hasn't been executed yet),
-made the backend not waiting for the hotplug script to execute. This in
-turns, made the netfront think the interface is fully operational, while
-in fact it was not (the vif interface on xen-netback side might not be
-configured yet).
+Use GFP_ATOMIC instead of GFP_KERNEL when allocating some memory.
 
-This was a workaround for 'hotplug-status' erroneously being removed.
-But since that is reverted now, the workaround is not necessary either.
-
-More discussion at
-https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
-
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Reviewed-by: Michael Brown <mbrown@fensystems.co.uk>
-Link: https://lore.kernel.org/r/20220222001817.2264967-2-marmarek@invisiblethingslab.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 348048e724a0 ("ice: Implement iidc operations")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Tested-by: Leszek Kaliszczuk <leszek.kaliszczuk@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netback/xenbus.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index 3fad58d22155..990360d75cb6 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -824,15 +824,11 @@ static void connect(struct backend_info *be)
- 	xenvif_carrier_on(be->vif);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index d6ee62ae4480..137a054dd1e3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2874,7 +2874,7 @@ static irqreturn_t ice_misc_intr(int __always_unused irq, void *data)
+ 		struct iidc_event *event;
  
- 	unregister_hotplug_status_watch(be);
--	if (xenbus_exists(XBT_NIL, dev->nodename, "hotplug-status")) {
--		err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch,
--					   NULL, hotplug_status_changed,
--					   "%s/%s", dev->nodename,
--					   "hotplug-status");
--		if (err)
--			goto err;
-+	err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch, NULL,
-+				   hotplug_status_changed,
-+				   "%s/%s", dev->nodename, "hotplug-status");
-+	if (!err)
- 		be->have_hotplug_status_watch = 1;
--	}
- 
- 	netif_tx_wake_all_queues(be->vif->dev);
- 
+ 		ena_mask &= ~ICE_AUX_CRIT_ERR;
+-		event = kzalloc(sizeof(*event), GFP_KERNEL);
++		event = kzalloc(sizeof(*event), GFP_ATOMIC);
+ 		if (event) {
+ 			set_bit(IIDC_EVENT_CRIT_ERR, event->type);
+ 			/* report the entire OICR value to AUX driver */
 -- 
 2.34.1
 
