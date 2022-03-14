@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6E8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D87EBC3527A
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241736AbiCNMSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
+        id S241939AbiCNMSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242221AbiCNMJo (ORCPT
+        with ESMTP id S242333AbiCNMJw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:44 -0400
+        Mon, 14 Mar 2022 08:09:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2318C50B04;
-        Mon, 14 Mar 2022 05:06:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FAE1274E;
+        Mon, 14 Mar 2022 05:07:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABEB76130C;
-        Mon, 14 Mar 2022 12:06:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2EAC340EC;
-        Mon, 14 Mar 2022 12:06:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 459AA6135D;
+        Mon, 14 Mar 2022 12:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 013EDC340E9;
+        Mon, 14 Mar 2022 12:07:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259597;
-        bh=YeTe//0SAgavio9Xw86XZZ+I6TczDnfWm8tRimdCf7o=;
+        s=korg; t=1647259630;
+        bh=jZR3+ETO07l5be9Zbr0+cUekGSmFVSB6LkzIJFFjvZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yRkdJVa1Qv/ZNWSZsiTwP1k38v/cmLT+TNXrMJpGsgp6S1jkpTDFxbpLwquk+l1MV
-         5Iom95mdcBrl5jrGgB9z8GEHZfvz+qrZ6luwAGvVjnjbssgFYVO3qraX8yWn/wGT9r
-         vFU5QqWe73JSaeNk2nunLCvDYpcmOrWmj7AvpicM=
+        b=wlaIejI2lk3YZW2AupXI8phYrr6W1KSSey3mff35pT2inNRUliR2ePVCduETOGlEo
+         jiD7Kp596EIVmOZ2QN6sachepqLTa8HDrQXZTU1eK1X9ciUBiXL3zLpAkUWu9+5ssl
+         uRTTMkxsLzdaKiJv25UtHAaTqbdA19DthibXGUac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 045/110] selftests: pmtu.sh: Kill nettest processes launched in subshell.
-Date:   Mon, 14 Mar 2022 12:53:47 +0100
-Message-Id: <20220314112744.295152342@linuxfoundation.org>
+        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 053/110] swiotlb: fix info leak with DMA_FROM_DEVICE
+Date:   Mon, 14 Mar 2022 12:53:55 +0100
+Message-Id: <20220314112744.516988198@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -50,65 +48,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Halil Pasic <pasic@linux.ibm.com>
 
-[ Upstream commit 94a4a4fe4c696413932eed8bdec46574de9576b8 ]
+[ Upstream commit ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e ]
 
-When using "run_cmd <command> &", then "$!" refers to the PID of the
-subshell used to run <command>, not the command itself. Therefore
-nettest_pids actually doesn't contain the list of the nettest commands
-running in the background. So cleanup() can't kill them and the nettest
-processes run until completion (fortunately they have a 5s timeout).
+The problem I'm addressing was discovered by the LTP test covering
+cve-2018-1000204.
 
-Fix this by defining a new command for running processes in the
-background, for which "$!" really refers to the PID of the command run.
+A short description of what happens follows:
+1) The test case issues a command code 00 (TEST UNIT READY) via the SG_IO
+   interface with: dxfer_len == 524288, dxdfer_dir == SG_DXFER_FROM_DEV
+   and a corresponding dxferp. The peculiar thing about this is that TUR
+   is not reading from the device.
+2) In sg_start_req() the invocation of blk_rq_map_user() effectively
+   bounces the user-space buffer. As if the device was to transfer into
+   it. Since commit a45b599ad808 ("scsi: sg: allocate with __GFP_ZERO in
+   sg_build_indirect()") we make sure this first bounce buffer is
+   allocated with GFP_ZERO.
+3) For the rest of the story we keep ignoring that we have a TUR, so the
+   device won't touch the buffer we prepare as if the we had a
+   DMA_FROM_DEVICE type of situation. My setup uses a virtio-scsi device
+   and the  buffer allocated by SG is mapped by the function
+   virtqueue_add_split() which uses DMA_FROM_DEVICE for the "in" sgs (here
+   scatter-gather and not scsi generics). This mapping involves bouncing
+   via the swiotlb (we need swiotlb to do virtio in protected guest like
+   s390 Secure Execution, or AMD SEV).
+4) When the SCSI TUR is done, we first copy back the content of the second
+   (that is swiotlb) bounce buffer (which most likely contains some
+   previous IO data), to the first bounce buffer, which contains all
+   zeros.  Then we copy back the content of the first bounce buffer to
+   the user-space buffer.
+5) The test case detects that the buffer, which it zero-initialized,
+  ain't all zeros and fails.
 
-Also, double quote variables on the modified lines, to avoid shellcheck
-warnings.
+One can argue that this is an swiotlb problem, because without swiotlb
+we leak all zeros, and the swiotlb should be transparent in a sense that
+it does not affect the outcome (if all other participants are well
+behaved).
 
-Fixes: ece1278a9b81 ("selftests: net: add ESP-in-UDP PMTU test")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Copying the content of the original buffer into the swiotlb buffer is
+the only way I can think of to make swiotlb transparent in such
+scenarios. So let's do just that if in doubt, but allow the driver
+to tell us that the whole mapped buffer is going to be overwritten,
+in which case we can preserve the old behavior and avoid the performance
+impact of the extra bounce.
+
+Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/pmtu.sh | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ Documentation/core-api/dma-attributes.rst | 8 ++++++++
+ include/linux/dma-mapping.h               | 8 ++++++++
+ kernel/dma/swiotlb.c                      | 3 ++-
+ 3 files changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 2e8972573d91..694732e4b344 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -374,6 +374,16 @@ run_cmd() {
- 	return $rc
+diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+index 1887d92e8e92..17706dc91ec9 100644
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
++
++DMA_ATTR_OVERWRITE
++------------------
++
++This is a hint to the DMA-mapping subsystem that the device is expected to
++overwrite the entire mapped size, thus the caller does not require any of the
++previous buffer contents to be preserved. This allows bounce-buffering
++implementations to optimise DMA_FROM_DEVICE transfers.
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index dca2b1355bb1..6150d11a607e 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -61,6 +61,14 @@
+  */
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+ 
++/*
++ * This is a hint to the DMA-mapping subsystem that the device is expected
++ * to overwrite the entire mapped size, thus the caller does not require any
++ * of the previous buffer contents to be preserved. This allows
++ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
++ */
++#define DMA_ATTR_OVERWRITE		(1UL << 10)
++
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 87c40517e822..aca0690550e2 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -579,7 +579,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+ 	tlb_addr = slot_addr(mem->start, index) + offset;
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+-	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
++	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
++	    dir == DMA_BIDIRECTIONAL))
+ 		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
+ 	return tlb_addr;
  }
- 
-+run_cmd_bg() {
-+	cmd="$*"
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "    COMMAND: %s &\n" "${cmd}"
-+	fi
-+
-+	$cmd 2>&1 &
-+}
-+
- # Find the auto-generated name for this namespace
- nsname() {
- 	eval echo \$NS_$1
-@@ -670,10 +680,10 @@ setup_nettest_xfrm() {
- 	[ ${1} -eq 6 ] && proto="-6" || proto=""
- 	port=${2}
- 
--	run_cmd ${ns_a} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
-+	run_cmd_bg "${ns_a}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
- 	nettest_pids="${nettest_pids} $!"
- 
--	run_cmd ${ns_b} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
-+	run_cmd_bg "${ns_b}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
- 	nettest_pids="${nettest_pids} $!"
- }
- 
 -- 
 2.34.1
 
