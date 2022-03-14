@@ -2,60 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 243D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:53:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD33C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237053AbiCNOy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 10:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45900 "EHLO
+        id S240445AbiCNOyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 10:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233580AbiCNOyZ (ORCPT
+        with ESMTP id S233567AbiCNOyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 10:54:25 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9840825C5C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 981FA255B3;
         Mon, 14 Mar 2022 07:53:14 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nTm4N-0006nG-00; Mon, 14 Mar 2022 15:53:11 +0100
+        id 1nTm4O-0006nG-02; Mon, 14 Mar 2022 15:53:12 +0100
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 7F643C2E2F; Mon, 14 Mar 2022 15:50:49 +0100 (CET)
-Date:   Mon, 14 Mar 2022 15:50:49 +0100
+        id 6D6BDC2E31; Mon, 14 Mar 2022 15:52:34 +0100 (CET)
+Date:   Mon, 14 Mar 2022 15:52:34 +0100
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] MIPS: Clean up device_tree_init()
-Message-ID: <20220314145049.GA13438@alpha.franken.de>
-References: <1646895012-3143-1-git-send-email-yangtiezhu@loongson.cn>
+Subject: Re: [PATCH] mips: cdmm: Fix refcount leak in mips_cdmm_phys_base
+Message-ID: <20220314145234.GE13438@alpha.franken.de>
+References: <20220309091711.3850-1-linmq006@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1646895012-3143-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <20220309091711.3850-1-linmq006@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 02:50:09PM +0800, Tiezhu Yang wrote:
-> Tiezhu Yang (3):
->   MIPS: Remove redundant check in device_tree_init()
->   MIPS: Remove redundant definitions of device_tree_init()
->   MIPS: Fix wrong comments in asm/prom.h
+On Wed, Mar 09, 2022 at 09:17:10AM +0000, Miaoqian Lin wrote:
+> The of_find_compatible_node() function returns a node pointer with
+> refcount incremented, We should use of_node_put() on it when done
+> Add the missing of_node_put() to release the refcount.
 > 
->  arch/mips/ath79/setup.c          |  5 -----
->  arch/mips/include/asm/prom.h     |  4 ++--
->  arch/mips/kernel/prom.c          |  5 +++++
->  arch/mips/lantiq/prom.c          |  5 -----
->  arch/mips/loongson64/setup.c     |  8 --------
->  arch/mips/mti-malta/Makefile     |  1 -
->  arch/mips/mti-malta/malta-dt.c   | 15 ---------------
->  arch/mips/pic32/pic32mzda/init.c |  8 --------
->  arch/mips/ralink/of.c            |  5 -----
->  9 files changed, 7 insertions(+), 49 deletions(-)
->  delete mode 100644 arch/mips/mti-malta/malta-dt.c
+> Fixes: 2121aa3e2312 ("mips: cdmm: Add mti,mips-cdmm dtb node support")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/bus/mips_cdmm.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-series applied to mips-next.
+applied to mips-next.
 
 Thomas.
 
