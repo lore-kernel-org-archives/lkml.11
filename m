@@ -2,113 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F505C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240266AbiCNMEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
+        id S240329AbiCNMEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240571AbiCNMDS (ORCPT
+        with ESMTP id S240638AbiCNMDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:03:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5944B1CC;
-        Mon, 14 Mar 2022 05:00:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6B6061297;
-        Mon, 14 Mar 2022 12:00:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45DEBC36AE2;
-        Mon, 14 Mar 2022 12:00:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259208;
-        bh=MHA8YOPQlBUsZgSMVgP9mywMOxsMIm/wsGfEcOTyA18=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r4hZpa4/CCDvlzRpkPZWdwg05TgLdyInf8jOjZngO/L5fhon7P0E0RL85AMRve90s
-         2Mfo5wBUL+d6I66qjFbkNYQJJPYqaQeYpIBlkP0yceY6hYhsH0fpUI2Co8W1FlyTsl
-         MUsDKxlgoks2kx6073eM37p1vW2ki3L0//AyKcfw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Osterried <thomas@osterried.de>,
-        Duoming Zhou <duoming@zju.edu.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 26/71] ax25: Fix NULL pointer dereference in ax25_kill_by_device
-Date:   Mon, 14 Mar 2022 12:53:19 +0100
-Message-Id: <20220314112738.665790643@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
-References: <20220314112737.929694832@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Mar 2022 08:03:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1DF14B407
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:00:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647259197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=DTumIzkUVMCDvmMhaJUDyMiG+aNJUlziXvFqILOQYsI=;
+        b=Fx8sD/JbdyLzP94A+V1xfdOotmYcIHm5ISvnQ1T6ndEogXzV7TyfCtDPGRf0p6VsegfNy3
+        bsIYugzTUMz0IuHNj+aJqTOdh7hc3YIRq0GfcMbMz2X9Lov5XQZX8WQYcB7+3myGY8KD6t
+        oMsYqiKDn0QvQOa0h6KBhlk3n/P0HXs=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-93-Y-JefBWWPk6yX7A-kJ9QrQ-1; Mon, 14 Mar 2022 07:59:56 -0400
+X-MC-Unique: Y-JefBWWPk6yX7A-kJ9QrQ-1
+Received: by mail-wr1-f70.google.com with SMTP id h11-20020a5d430b000000b001f01a35a86fso4268343wrq.4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:59:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=DTumIzkUVMCDvmMhaJUDyMiG+aNJUlziXvFqILOQYsI=;
+        b=ZuzIMK4S4jQhVwN/J9SqY90hKt3y5tuYd0Le1uhWwYXFxrqBwl/jQoVXdqpMkptwFS
+         6Oj+X3HSMgbrbgf7B8jPw90usbnC2GqNKWT0c6rN4NoM/3NGRcQaboIbOQCaAbed3rI/
+         jtOOiDAD3LXjsuVCIuS8uXQnrbn6wcIYjCfiCJjD5Z8i+TG357CMOnwZgDdQ+2CBRryL
+         52Cn69QN/ytePuL6nlP2FJMWU1vdgXi4X3VW/inJfef5a84roThCsXZddMEewoSn+zFP
+         p+RlZybliiRWlLdXZNfkE2yBhqefOqnXPs5cH1synY9r8UD6QxbCW9ig3zdSZWHFkLSl
+         LLgA==
+X-Gm-Message-State: AOAM530SbCxrnhCknzC4Clg6wjmk8OeoQa4IVIVZfWNCdqyb5BnFLupD
+        rNMiLrqz/LaPrT7L4jmDVizqMJcWhplq7s31OQRqcDUP5GNuozguYohCaPJV1hRAfgDxJJQ40iq
+        XLh57b3v/y9QYsS/m0WpiTeIN
+X-Received: by 2002:a05:600c:4f09:b0:389:cf43:eaf8 with SMTP id l9-20020a05600c4f0900b00389cf43eaf8mr17160220wmq.201.1647259194497;
+        Mon, 14 Mar 2022 04:59:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzp7ZJAVv6i97GoEYXJTrh4j1WEgqWNchpszO38kLqkQtDsjqJCu3h0XIEDXpnWhcBdQ3hpYw==
+X-Received: by 2002:a05:600c:4f09:b0:389:cf43:eaf8 with SMTP id l9-20020a05600c4f0900b00389cf43eaf8mr17160208wmq.201.1647259194258;
+        Mon, 14 Mar 2022 04:59:54 -0700 (PDT)
+Received: from redhat.com ([2.55.183.53])
+        by smtp.gmail.com with ESMTPSA id w6-20020a5d6806000000b002036515dda7sm13416882wru.33.2022.03.14.04.59.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 04:59:53 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 07:59:51 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        elic@nvidia.com, jasowang@redhat.com, mail@anirudhrb.com,
+        mst@redhat.com
+Subject: [GIT PULL] virtio: a last minute regression fix
+Message-ID: <20220314075951-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+The following changes since commit 3dd7d135e75cb37c8501ba02977332a2a487dd39:
 
-[ Upstream commit 71171ac8eb34ce7fe6b3267dce27c313ab3cb3ac ]
+  tools/virtio: handle fallout from folio work (2022-03-06 06:06:50 -0500)
 
-When two ax25 devices attempted to establish connection, the requester use ax25_create(),
-ax25_bind() and ax25_connect() to initiate connection. The receiver use ax25_rcv() to
-accept connection and use ax25_create_cb() in ax25_rcv() to create ax25_cb, but the
-ax25_cb->sk is NULL. When the receiver is detaching, a NULL pointer dereference bug
-caused by sock_hold(sk) in ax25_kill_by_device() will happen. The corresponding
-fail log is shown below:
+are available in the Git repository at:
 
-===============================================================
-BUG: KASAN: null-ptr-deref in ax25_device_event+0xfd/0x290
-Call Trace:
-...
-ax25_device_event+0xfd/0x290
-raw_notifier_call_chain+0x5e/0x70
-dev_close_many+0x174/0x220
-unregister_netdevice_many+0x1f7/0xa60
-unregister_netdevice_queue+0x12f/0x170
-unregister_netdev+0x13/0x20
-mkiss_close+0xcd/0x140
-tty_ldisc_release+0xc0/0x220
-tty_release_struct+0x17/0xa0
-tty_release+0x62d/0x670
-...
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-This patch add condition check in ax25_kill_by_device(). If s->sk is
-NULL, it will goto if branch to kill device.
+for you to fetch changes up to 95932ab2ea07b79cdb33121e2f40ccda9e6a73b5:
 
-Fixes: 4e0f718daf97 ("ax25: improve the incomplete fix to avoid UAF and NPD bugs")
-Reported-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ax25/af_ax25.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+  vhost: allow batching hint without size (2022-03-10 08:12:04 -0500)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 23bd26057a82..9e0eef7fe9ad 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -87,6 +87,13 @@ static void ax25_kill_by_device(struct net_device *dev)
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
- 			sk = s->sk;
-+			if (!sk) {
-+				spin_unlock_bh(&ax25_list_lock);
-+				s->ax25_dev = NULL;
-+				ax25_disconnect(s, ENETUNREACH);
-+				spin_lock_bh(&ax25_list_lock);
-+				goto again;
-+			}
- 			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
--- 
-2.34.1
+----------------------------------------------------------------
+virtio: a last minute regression fix
 
+I thought we did a lot of testing, but a regression still
+managed to sneak in. The fix seems trivial.
 
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Jason Wang (1):
+      vhost: allow batching hint without size
+
+ drivers/vhost/vhost.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
