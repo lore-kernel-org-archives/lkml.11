@@ -2,102 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC0D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D10C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:09:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237540AbiCNIJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        id S237606AbiCNIKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237747AbiCNIHy (ORCPT
+        with ESMTP id S237614AbiCNIKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:07:54 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E88741F99;
-        Mon, 14 Mar 2022 01:05:53 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 87454218FE;
-        Mon, 14 Mar 2022 08:05:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647245140; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OzrrCIOc03LWU33BuZwOlRtUjqpB/1gQj5SnYfBFyBI=;
-        b=vz8xCLs3GA+SbXd8C5WMv2WikqAOLN10T7cX48Z3b/L/Zmbsmrc5NIq9a7rgnMBforI+W4
-        qT5LpKbZfVyQ/aXghPuCj8PyytIuL2CnEz5PQP0fddec0o3BpIEDr+JZPxFcCDfZZQT67d
-        XcdIAEuo2D8xyI7PScdhVaLP1wR+bx0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647245140;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OzrrCIOc03LWU33BuZwOlRtUjqpB/1gQj5SnYfBFyBI=;
-        b=4gl7/H4/gzhDT42W7eUjbVQYhf+uegiC4EgmKzLlmxGmJUMyCZHdCJhpOky+doOhti0L6P
-        gOx8yDmtRl/nl1Bw==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
+        Mon, 14 Mar 2022 04:10:07 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DA8E094;
+        Mon, 14 Mar 2022 01:08:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 7760DA3B9A;
-        Mon, 14 Mar 2022 08:05:40 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 2C635A0615; Mon, 14 Mar 2022 09:05:40 +0100 (CET)
-Date:   Mon, 14 Mar 2022 09:05:40 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Bang Li <libang.linuxer@gmail.com>
-Cc:     jack@suse.cz, amir73il@gmail.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fsnotify: remove redundant parameter judgment
-Message-ID: <20220314080540.ovk66yvuyzfbi4zt@quack3.lan>
-References: <20220311151240.62045-1-libang.linuxer@gmail.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5224DCE10A8;
+        Mon, 14 Mar 2022 08:08:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27B61C340E9;
+        Mon, 14 Mar 2022 08:08:48 +0000 (UTC)
+Message-ID: <430ded35-898e-47dd-c287-f3979a04af48@xs4all.nl>
+Date:   Mon, 14 Mar 2022 09:08:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220311151240.62045-1-libang.linuxer@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 1/2] media: v4l2-ctrls: Add intra-refresh type control
+Content-Language: en-US
+To:     quic_dikshita@quicinc.com, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, ezequiel@collabora.com,
+        stanimir.varbanov@linaro.org, quic_vgarodia@quicinc.com,
+        quic_majja@quicinc.com, quic_jdas@quicinc.com
+References: <1647244809-25340-1-git-send-email-quic_dikshita@quicinc.com>
+ <1647244809-25340-2-git-send-email-quic_dikshita@quicinc.com>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <1647244809-25340-2-git-send-email-quic_dikshita@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 11-03-22 23:12:40, Bang Li wrote:
-> iput() has already judged the incoming parameter, so there is no need to
-> repeat the judgment here.
+Hi Dikshita,
+
+Some small comments below:
+
+On 3/14/22 09:00, quic_dikshita@quicinc.com wrote:
+> From: Dikshita Agarwal <quic_dikshita@quicinc.com>
 > 
-> Signed-off-by: Bang Li <libang.linuxer@gmail.com>
-
-Thanks. I've applied the patch to my tree.
-
-								Honza
-
+> Add a control to set intra-refresh type.
+> 
+> Signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
+> Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 > ---
->  fs/notify/fsnotify.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+>  .../userspace-api/media/v4l/ext-ctrls-codec.rst    | 27 ++++++++++++++++++++++
+>  drivers/media/v4l2-core/v4l2-ctrls-defs.c          |  9 ++++++++
+>  include/uapi/linux/v4l2-controls.h                 |  5 ++++
+>  3 files changed, 41 insertions(+)
 > 
-> diff --git a/fs/notify/fsnotify.c b/fs/notify/fsnotify.c
-> index 494f653efbc6..70a8516b78bc 100644
-> --- a/fs/notify/fsnotify.c
-> +++ b/fs/notify/fsnotify.c
-> @@ -70,8 +70,7 @@ static void fsnotify_unmount_inodes(struct super_block *sb)
->  		spin_unlock(&inode->i_lock);
->  		spin_unlock(&sb->s_inode_list_lock);
+> diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> index 4cd7c54..2406272 100644
+> --- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> +++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+> @@ -1180,6 +1180,33 @@ enum v4l2_mpeg_video_h264_entropy_mode -
+>      is set to non zero value.
+>      Applicable to H264, H263 and MPEG4 encoder.
 >  
-> -		if (iput_inode)
-> -			iput(iput_inode);
-> +		iput(iput_inode);
+> +``V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE (enum)``
+> +
+> +enum v4l2_mpeg_video_intra_refresh_period_type -
+> +    Sets the type of intra refresh. The period to refresh
+> +    the whole frame is specified by V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD.
+> +    Note if the client sets this control to either
+> +    ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM``or
+> +    ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC``
+> +    the ``V4L2_CID_MPEG_VIDEO_CYCLIC_INTRA_REFRESH_MB`` control
+> +    shall be ignored.
+
+No, that's not right. Just drop this sentence. This control just sets
+the type, and whether CYCLIC_INTRA_REFRESH_MB is used or not depends
+on INTRA_REFRESH_PERIOD, but that has nothing to do with this control.
+
+> +    And if this control is not present that it is undefined what
+> +    refresh type is used and it is upto the drive to decide.
+
+upto -> up to
+
+> +    Applicable to H264 and HEVC encoders. Possible values are:
+> +
+> +.. tabularcolumns:: |p{9.6cm}|p{7.9cm}|
+> +
+> +.. flat-table::
+> +    :header-rows:  0
+> +    :stub-columns: 0
+> +
+> +    * - ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM``
+> +      - The whole frame is completely refreshed randomly
+> +      after the specified period.
+> +    * - ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC``
+> +      - The whole frame MBs are completely refreshed in cyclic order
+> +      after the specified period.
+> +
+>  ``V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD (integer)``
+>      Intra macroblock refresh period. This sets the period to refresh
+>      the whole frame. In other words, this defines the number of frames
+> diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> index 54ca4e6..451c8b0 100644
+> --- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> +++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+> @@ -572,6 +572,11 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
+>  		"VBV/CPB Limit",
+>  		NULL,
+>  	};
+> +	static const char * const intra_refresh_period_type[] = {
+> +		"Random",
+> +		"Cyclic",
+> +		NULL,
+> +	};
 >  
->  		/* for each watch, send FS_UNMOUNT and then remove it */
->  		fsnotify_inode(inode, FS_UNMOUNT);
-> @@ -85,8 +84,7 @@ static void fsnotify_unmount_inodes(struct super_block *sb)
+>  	switch (id) {
+>  	case V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ:
+> @@ -705,6 +710,8 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
+>  		return hevc_start_code;
+>  	case V4L2_CID_CAMERA_ORIENTATION:
+>  		return camera_orientation;
+> +	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:
+> +		return intra_refresh_period_type;
+>  	default:
+>  		return NULL;
 >  	}
->  	spin_unlock(&sb->s_inode_list_lock);
+> @@ -834,6 +841,7 @@ const char *v4l2_ctrl_get_name(u32 id)
+>  	case V4L2_CID_MPEG_VIDEO_DECODER_SLICE_INTERFACE:	return "Decoder Slice Interface";
+>  	case V4L2_CID_MPEG_VIDEO_DECODER_MPEG4_DEBLOCK_FILTER:	return "MPEG4 Loop Filter Enable";
+>  	case V4L2_CID_MPEG_VIDEO_CYCLIC_INTRA_REFRESH_MB:	return "Number of Intra Refresh MBs";
+> +	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:	return "Intra Refresh Type";
+
+"Intra Refresh Period Type"
+
+>  	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD:		return "Intra Refresh Period";
+>  	case V4L2_CID_MPEG_VIDEO_FRAME_RC_ENABLE:		return "Frame Level Rate Control Enable";
+>  	case V4L2_CID_MPEG_VIDEO_MB_RC_ENABLE:			return "H264 MB Level Rate Control";
+> @@ -1360,6 +1368,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
+>  	case V4L2_CID_STATELESS_H264_DECODE_MODE:
+>  	case V4L2_CID_STATELESS_H264_START_CODE:
+>  	case V4L2_CID_CAMERA_ORIENTATION:
+> +	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:
+>  		*type = V4L2_CTRL_TYPE_MENU;
+>  		break;
+>  	case V4L2_CID_LINK_FREQ:
+> diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+> index c8e0f84..e7df4c5 100644
+> --- a/include/uapi/linux/v4l2-controls.h
+> +++ b/include/uapi/linux/v4l2-controls.h
+> @@ -443,6 +443,11 @@ enum v4l2_mpeg_video_multi_slice_mode {
+>  #define V4L2_CID_MPEG_VIDEO_USE_LTR_FRAMES		(V4L2_CID_CODEC_BASE+234)
+>  #define V4L2_CID_MPEG_VIDEO_DEC_CONCEAL_COLOR		(V4L2_CID_CODEC_BASE+235)
+>  #define V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD	(V4L2_CID_CODEC_BASE+236)
+> +#define V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE	(V4L2_CID_CODEC_BASE+237)
+> +enum v4l2_mpeg_video_intra_refresh_period_type {
+> +	V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM	= 0,
+> +	V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC	= 1,
+> +};
 >  
-> -	if (iput_inode)
-> -		iput(iput_inode);
-> +	iput(iput_inode);
->  }
->  
->  void fsnotify_sb_delete(struct super_block *sb)
-> -- 
-> 2.25.1
-> 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+>  /* CIDs for the MPEG-2 Part 2 (H.262) codec */
+>  #define V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL			(V4L2_CID_CODEC_BASE+270)
+
+Regards,
+
+	Hans
