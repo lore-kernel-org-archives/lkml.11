@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53ABBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:48:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73338C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:48:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236394AbiCNMtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
+        id S239717AbiCNMte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238740AbiCNMr5 (ORCPT
+        with ESMTP id S239275AbiCNMr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:47:57 -0400
+        Mon, 14 Mar 2022 08:47:58 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4383D39819;
-        Mon, 14 Mar 2022 05:41:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955BD3A1A2;
+        Mon, 14 Mar 2022 05:41:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=8mOJDVdwdSGZCFGEhAfw8ieBt5NQ/WrYJfTx+uv/2Yo=;
-  b=P6zDPohhNOgVWb8eK2c2vfZqOV46Gdj57qZ32dK8svwy7rCQuAKbeq9K
-   5irf5y2N6r8sOHuCtkFtuL72NsRXbedp5oYp7bahkVYTd4P+RhJ++uVDh
-   5/hiTTacqPYq2jxs/sEv9Vq08CsY9UeEM3zN3jpeWt/QbbbtDehRf7dg6
-   M=;
+  bh=+hYUu2G/bq68s9f2SGkYZi4xlcaxcWwYD94UHu9GgRY=;
+  b=p9GC6OpXJFvaT9UgALjpX+KCc0W9t9BgRzlCd4QoDwR4er5TD0eMzJXf
+   DzriE/66opaOKETRTPjE9OG0m7KC1tMUXl7LiKztQkRo8CQrgGKYtj8jC
+   QkOqFsWa0Hcrkc3qfiXAVUjObxEM1YZHFPRQ9Qi9fLqe470ItuvysdJfW
+   k=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997350"
+   d="scan'208";a="25997352"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     James Smart <james.smart@broadcom.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Ram Vegesna <ram.vegesna@broadcom.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     kernel-janitors@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 17/30] scsi: elx: libefc_sli: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:41 +0100
-Message-Id: <20220314115354.144023-18-Julia.Lawall@inria.fr>
+Subject: [PATCH 19/30] rtlwifi: rtl8821ae: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:43 +0100
+Message-Id: <20220314115354.144023-20-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -55,20 +54,38 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/scsi/elx/libefc_sli/sli4.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/elx/libefc_sli/sli4.c b/drivers/scsi/elx/libefc_sli/sli4.c
-index 3ea57bd6fb0a..b8c048cdb17f 100644
---- a/drivers/scsi/elx/libefc_sli/sli4.c
-+++ b/drivers/scsi/elx/libefc_sli/sli4.c
-@@ -4127,7 +4127,7 @@ sli_calc_max_qentries(struct sli4 *sli4)
- 						  sli4->qinfo.count_mask[q]);
- 	}
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
+index f6bff0ebd6b0..f3fe16798c59 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
+@@ -872,7 +872,7 @@ static void rtl8821ae_dm_false_alarm_counter_statistics(struct ieee80211_hw *hw)
+ 	else
+ 		falsealm_cnt->cnt_all = falsealm_cnt->cnt_ofdm_fail;
  
--	/* single, continguous DMA allocations will be called for each queue
-+	/* single, contiguous DMA allocations will be called for each queue
- 	 * of size (max_qentries * queue entry size); since these can be large,
- 	 * check against the OS max DMA allocation size
+-	/*reset OFDM FA coutner*/
++	/*reset OFDM FA counter*/
+ 	rtl_set_bbreg(hw, ODM_REG_OFDM_FA_RST_11AC, BIT(17), 1);
+ 	rtl_set_bbreg(hw, ODM_REG_OFDM_FA_RST_11AC, BIT(17), 0);
+ 	/* reset CCK FA counter*/
+@@ -1464,7 +1464,7 @@ void rtl8812ae_dm_txpower_tracking_callback_thermalmeter(
+ 	const u8 *delta_swing_table_idx_tup_b;
+ 	const u8 *delta_swing_table_idx_tdown_b;
+ 
+-	/*2. Initilization ( 7 steps in total )*/
++	/*2. Initialization ( 7 steps in total )*/
+ 	rtl8812ae_get_delta_swing_table(hw,
+ 		&delta_swing_table_idx_tup_a,
+ 		&delta_swing_table_idx_tdown_a,
+@@ -2502,7 +2502,7 @@ static void rtl8821ae_dm_check_edca_turbo(struct ieee80211_hw *hw)
+ 	rtlpriv->dm.dbginfo.num_non_be_pkt = 0;
+ 
+ 	/*===============================
+-	 * list paramter for different platform
++	 * list parameter for different platform
+ 	 *===============================
  	 */
+ 	pb_is_cur_rdl_state = &rtlpriv->dm.is_cur_rdlstate;
 
