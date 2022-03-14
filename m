@@ -2,171 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02090C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243484AbiCNQl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:41:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
+        id S243279AbiCNQkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243880AbiCNQi0 (ORCPT
+        with ESMTP id S243260AbiCNQgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:38:26 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D3F31EEFE;
-        Mon, 14 Mar 2022 09:37:00 -0700 (PDT)
-Received: from jpiotrowski-Surface-Book-3 (ip-037-201-215-233.um10.pools.vodafone-ip.de [37.201.215.233])
-        by linux.microsoft.com (Postfix) with ESMTPSA id E9FF5205836A;
-        Mon, 14 Mar 2022 09:36:57 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E9FF5205836A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1647275819;
-        bh=TANwhXsmvSoowjz9fhb6c0Fd/b7jlbQ0LayQhJAe704=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sevBVUwN9Njy9W0lVbgHuO2iFIH/DCQJx1beCuQ7p+2YNcsvNvvz46MV/SD+9K7pn
-         Z9Ri9xz0mGzKuEhEq6Ckh1+omZu0Xfe8RyB6C2LP3PC5S4UUksvWV9rruh2E6+R1ai
-         I3A+Nq17RUIJ/6JsU/zMDjZyGn4bssEvg0s1egxE=
-Date:   Mon, 14 Mar 2022 17:36:47 +0100
-From:   Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Stefan Roese <sr@denx.de>, Thomas Gleixner <tglx@linutronix.de>,
-        linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Marek Vasut <marex@denx.de>, stable@vger.kernel.org,
-        x86@kernel.org, maz@kernel.org
-Subject: Re: [tip: irq/urgent] PCI/MSI: Mask MSI-X vectors only on success
-Message-ID: <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
-References: <20211210161025.3287927-1-sr@denx.de>
- <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
+        Mon, 14 Mar 2022 12:36:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E1831DFD;
+        Mon, 14 Mar 2022 09:35:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDA5161492;
+        Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0ACBC36AFA;
+        Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647275709;
+        bh=S1QzD54NI2VOy0jZem526Pj8WyLSwsLwdUgiDAJ4r6c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZjHLfMu8fjOdFswY/IjTSH1Xxr9tTiIabVRfDHSWoSLAzvwgZcZXmq3N5q/ZMZYQj
+         G2WwXkBwD3ls73cgfrEBjDa0fByjZEZ4fxK16ZqY48N64rSgW1gQZ3iQUV/VCUgx6u
+         SJWsqL7KjuUtRJxf0Kj5tELStzZDA0I3x03sxJr9GDeFv0RDJrvVgNfj1FC+OTtCQd
+         lHSjoj/R8hFbuHZgAAcegGt8U8xWZyFWJugwZ7EaREYsTq1/ztmCOhnMV3MO4k4LQG
+         ca3NA1jo6s4/dy3RdfzIz1Pq/EBOuhLvf3SbUX8LH/5IlvFJ4ZcFTuPKDOAC0KgV5J
+         L1uHgMEvlR5xg==
+Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
+        (envelope-from <mchehab@kernel.org>)
+        id 1nTnf1-001x36-Hl; Mon, 14 Mar 2022 17:35:07 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH v2 60/67] media: platform: rename omap/ to ti/omap/
+Date:   Mon, 14 Mar 2022 17:34:55 +0100
+Message-Id: <b01e1edbcf0589d1f3150340db6c2e81d034975a.1647274407.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1647274406.git.mchehab@kernel.org>
+References: <cover.1647274406.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas, Hi Stefan,
+As the end goal is to have platform drivers split by vendor,
+rename omap/ to ti/omap/.
 
-On Tue, Dec 14, 2021 at 12:28:06PM -0000, tip-bot2 for Stefan Roese wrote:
-> The following commit has been merged into the irq/urgent branch of tip:
-> 
-> Commit-ID:     83dbf898a2d45289be875deb580e93050ba67529
-> Gitweb:        https://git.kernel.org/tip/83dbf898a2d45289be875deb580e93050ba67529
-> Author:        Stefan Roese <sr@denx.de>
-> AuthorDate:    Tue, 14 Dec 2021 12:49:32 +01:00
-> Committer:     Thomas Gleixner <tglx@linutronix.de>
-> CommitterDate: Tue, 14 Dec 2021 13:23:32 +01:00
-> 
-> PCI/MSI: Mask MSI-X vectors only on success
-> 
-> Masking all unused MSI-X entries is done to ensure that a crash kernel
-> starts from a clean slate, which correponds to the reset state of the
-> device as defined in the PCI-E specificion 3.0 and later:
-> 
->  Vector Control for MSI-X Table Entries
->  --------------------------------------
-> 
->  "00: Mask bit:  When this bit is set, the function is prohibited from
->                  sending a message using this MSI-X Table entry.
->                  ...
->                  This bit’s state after reset is 1 (entry is masked)."
-> 
-> A Marvell NVME device fails to deliver MSI interrupts after trying to
-> enable MSI-X interrupts due to that masking. It seems to take the MSI-X
-> mask bits into account even when MSI-X is disabled.
-> 
-> While not specification compliant, this can be cured by moving the masking
-> into the success path, so that the MSI-X table entries stay in device reset
-> state when the MSI-X setup fails.
-> 
-> [ tglx: Move it into the success path, add comment and amend changelog ]
-> 
-> Fixes: aa8092c1d1f1 ("PCI/MSI: Mask all unused MSI-X entries")                                                                                                                                                                                                                 
-> Signed-off-by: Stefan Roese <sr@denx.de>
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: linux-pci@vger.kernel.org
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Michal Simek <michal.simek@xilinx.com>
-> Cc: Marek Vasut <marex@denx.de>
-> Cc: stable@vger.kernel.org
-> Link: https://lore.kernel.org/r/20211210161025.3287927-1-sr@denx.de
-> ---
->  drivers/pci/msi.c | 13 ++++++++++---
->  1 file changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> index 48e3f4e..6748cf9 100644
-> --- a/drivers/pci/msi.c
-> +++ b/drivers/pci/msi.c
-> @@ -722,9 +722,6 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
->  		goto out_disable;
->  	}
->  
-> -	/* Ensure that all table entries are masked. */
-> -	msix_mask_all(base, tsize);
-> -
->  	ret = msix_setup_entries(dev, base, entries, nvec, affd);
->  	if (ret)
->  		goto out_disable;
-> @@ -751,6 +748,16 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
->  	/* Set MSI-X enabled bits and unmask the function */
->  	pci_intx_for_msi(dev, 0);
->  	dev->msix_enabled = 1;
-> +
-> +	/*
-> +	 * Ensure that all table entries are masked to prevent
-> +	 * stale entries from firing in a crash kernel.
-> +	 *
-> +	 * Done late to deal with a broken Marvell NVME device
-> +	 * which takes the MSI-X mask bits into account even
-> +	 * when MSI-X is disabled, which prevents MSI delivery.
-> +	 */
-> +	msix_mask_all(base, tsize);
->  	pci_msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_MASKALL, 0);
->  
->  	pcibios_free_irq(dev);
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-We've had reports of issues with AWS m4 instances, which use Intel 82559 VFs
-for networking (ixgbevf) with MSI-X interrupts, which I've bisected down to
-this commit. Since this commit these VMs no longer have any network connectivity
-and so fail to boot. This occurs with both 5.15 and 5.10 kernels, reverting the
-backport of this commit restores networking.
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH v2 00/67] at: https://lore.kernel.org/all/cover.1647274406.git.mchehab@kernel.org/
 
-Do you have any suggestions of how this can be resolved other than a revert?
+ drivers/media/platform/Kconfig                        | 2 +-
+ drivers/media/platform/Makefile                       | 2 +-
+ drivers/media/platform/{ => ti}/omap/Kconfig          | 0
+ drivers/media/platform/{ => ti}/omap/Makefile         | 0
+ drivers/media/platform/{ => ti}/omap/omap_vout.c      | 0
+ drivers/media/platform/{ => ti}/omap/omap_vout_vrfb.c | 0
+ drivers/media/platform/{ => ti}/omap/omap_vout_vrfb.h | 0
+ drivers/media/platform/{ => ti}/omap/omap_voutdef.h   | 0
+ drivers/media/platform/{ => ti}/omap/omap_voutlib.c   | 0
+ drivers/media/platform/{ => ti}/omap/omap_voutlib.h   | 0
+ 10 files changed, 2 insertions(+), 2 deletions(-)
+ rename drivers/media/platform/{ => ti}/omap/Kconfig (100%)
+ rename drivers/media/platform/{ => ti}/omap/Makefile (100%)
+ rename drivers/media/platform/{ => ti}/omap/omap_vout.c (100%)
+ rename drivers/media/platform/{ => ti}/omap/omap_vout_vrfb.c (100%)
+ rename drivers/media/platform/{ => ti}/omap/omap_vout_vrfb.h (100%)
+ rename drivers/media/platform/{ => ti}/omap/omap_voutdef.h (100%)
+ rename drivers/media/platform/{ => ti}/omap/omap_voutlib.c (100%)
+ rename drivers/media/platform/{ => ti}/omap/omap_voutlib.h (100%)
 
-Here's the full bisect log:
+diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
+index 4f95ea9b1221..43a654e87613 100644
+--- a/drivers/media/platform/Kconfig
++++ b/drivers/media/platform/Kconfig
+@@ -81,7 +81,6 @@ source "drivers/media/platform/mediatek/mtk-vcodec/Kconfig"
+ source "drivers/media/platform/mediatek/mtk-vpu/Kconfig"
+ source "drivers/media/platform/nvidia/tegra-vde/Kconfig"
+ source "drivers/media/platform/nxp/Kconfig"
+-source "drivers/media/platform/omap/Kconfig"
+ source "drivers/media/platform/qcom/Kconfig"
+ source "drivers/media/platform/renesas/Kconfig"
+ source "drivers/media/platform/rockchip/Kconfig"
+@@ -96,6 +95,7 @@ source "drivers/media/platform/stm/stm32/Kconfig"
+ source "drivers/media/platform/ti-vpe/Kconfig"
+ source "drivers/media/platform/ti/am437x/Kconfig"
+ source "drivers/media/platform/ti/davinci/Kconfig"
++source "drivers/media/platform/ti/omap/Kconfig"
+ source "drivers/media/platform/ti/omap3isp/Kconfig"
+ source "drivers/media/platform/via/Kconfig"
+ source "drivers/media/platform/xilinx/Kconfig"
+diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
+index c2bab3ba9ef6..39fa6aaad13b 100644
+--- a/drivers/media/platform/Makefile
++++ b/drivers/media/platform/Makefile
+@@ -21,7 +21,6 @@ obj-y += mediatek/mtk-vcodec/
+ obj-y += mediatek/mtk-vpu/
+ obj-y += nvidia/tegra-vde/
+ obj-y += nxp/
+-obj-y += omap/
+ obj-y += qcom/camss/
+ obj-y += qcom/venus/
+ obj-y += renesas/
+@@ -41,6 +40,7 @@ obj-y += stm/stm32/
+ obj-y += ti-vpe/
+ obj-y += ti/am437x/
+ obj-y += ti/davinci/
++obj-y += ti/omap/
+ obj-y += ti/omap3isp/
+ obj-y += via/
+ obj-y += xilinx/
+diff --git a/drivers/media/platform/omap/Kconfig b/drivers/media/platform/ti/omap/Kconfig
+similarity index 100%
+rename from drivers/media/platform/omap/Kconfig
+rename to drivers/media/platform/ti/omap/Kconfig
+diff --git a/drivers/media/platform/omap/Makefile b/drivers/media/platform/ti/omap/Makefile
+similarity index 100%
+rename from drivers/media/platform/omap/Makefile
+rename to drivers/media/platform/ti/omap/Makefile
+diff --git a/drivers/media/platform/omap/omap_vout.c b/drivers/media/platform/ti/omap/omap_vout.c
+similarity index 100%
+rename from drivers/media/platform/omap/omap_vout.c
+rename to drivers/media/platform/ti/omap/omap_vout.c
+diff --git a/drivers/media/platform/omap/omap_vout_vrfb.c b/drivers/media/platform/ti/omap/omap_vout_vrfb.c
+similarity index 100%
+rename from drivers/media/platform/omap/omap_vout_vrfb.c
+rename to drivers/media/platform/ti/omap/omap_vout_vrfb.c
+diff --git a/drivers/media/platform/omap/omap_vout_vrfb.h b/drivers/media/platform/ti/omap/omap_vout_vrfb.h
+similarity index 100%
+rename from drivers/media/platform/omap/omap_vout_vrfb.h
+rename to drivers/media/platform/ti/omap/omap_vout_vrfb.h
+diff --git a/drivers/media/platform/omap/omap_voutdef.h b/drivers/media/platform/ti/omap/omap_voutdef.h
+similarity index 100%
+rename from drivers/media/platform/omap/omap_voutdef.h
+rename to drivers/media/platform/ti/omap/omap_voutdef.h
+diff --git a/drivers/media/platform/omap/omap_voutlib.c b/drivers/media/platform/ti/omap/omap_voutlib.c
+similarity index 100%
+rename from drivers/media/platform/omap/omap_voutlib.c
+rename to drivers/media/platform/ti/omap/omap_voutlib.c
+diff --git a/drivers/media/platform/omap/omap_voutlib.h b/drivers/media/platform/ti/omap/omap_voutlib.h
+similarity index 100%
+rename from drivers/media/platform/omap/omap_voutlib.h
+rename to drivers/media/platform/ti/omap/omap_voutlib.h
+-- 
+2.35.1
 
-$ git bisect log
-git bisect start
-# good: [4e8c680af6d51ba9315e31bd4f7599e080561a2d] Linux 5.15.7
-git bisect good 4e8c680af6d51ba9315e31bd4f7599e080561a2d
-# bad: [efe3167e52a5833ec20ee6214be9b99b378564a8] Linux 5.15.27
-git bisect bad efe3167e52a5833ec20ee6214be9b99b378564a8
-# bad: [63dcc388662c3562de94d69bfa771ae4cd29b79f] Linux 5.15.16
-git bisect bad 63dcc388662c3562de94d69bfa771ae4cd29b79f
-# good: [57dcae4a8b93271c4e370920ea0dbb94a0215d30] Linux 5.15.10
-git bisect good 57dcae4a8b93271c4e370920ea0dbb94a0215d30
-# bad: [25960cafa06e6fcd830e6c792e6a7de68c1e25ed] Linux 5.15.12
-git bisect bad 25960cafa06e6fcd830e6c792e6a7de68c1e25ed
-# bad: [fb6ad5cb3b6745e7bffc5fe19b130f3594375634] Linux 5.15.11
-git bisect bad fb6ad5cb3b6745e7bffc5fe19b130f3594375634
-# good: [257b3bb16634fd936129fe2f57a91594a75b8751] drm/amd/pm: fix a potential gpu_metrics_table memory leak
-git bisect good 257b3bb16634fd936129fe2f57a91594a75b8751
-# bad: [bbdaa7a48f465a2ee76d65839caeda08af1ef3b2] btrfs: fix double free of anon_dev after failure to create subvolume
-git bisect bad bbdaa7a48f465a2ee76d65839caeda08af1ef3b2
-# good: [c8e8e6f4108e4c133b09f31f6cc7557ee6df3bb6] bpf, selftests: Fix racing issue in btf_skc_cls_ingress test
-git bisect good c8e8e6f4108e4c133b09f31f6cc7557ee6df3bb6
-# bad: [5cb5c3e1b184da9f49e46119a0e506519fc58185] usb: xhci: Extend support for runtime power management for AMD's Yellow carp.
-git bisect bad 5cb5c3e1b184da9f49e46119a0e506519fc58185
-# good: [e7a8a261bab07ec1ed5f5bb990aacc4de9c08eb4] tty: n_hdlc: make n_hdlc_tty_wakeup() asynchronous
-git bisect good e7a8a261bab07ec1ed5f5bb990aacc4de9c08eb4
-# good: [4df1af29930b03d61fb774bfaa5100dbdb964628] PCI/MSI: Clear PCI_MSIX_FLAGS_MASKALL on error
-git bisect good 4df1af29930b03d61fb774bfaa5100dbdb964628
-# bad: [d8888cdabedf353ab9b5a6af75f70bf341a3e7df] PCI/MSI: Mask MSI-X vectors only on success
-git bisect bad d8888cdabedf353ab9b5a6af75f70bf341a3e7df
-# first bad commit: [d8888cdabedf353ab9b5a6af75f70bf341a3e7df] PCI/MSI: Mask MSI-X vectors only on success
-
-Bests,
-Jeremi
