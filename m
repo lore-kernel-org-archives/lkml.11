@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A55BC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B841C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240260AbiCNMDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S240313AbiCNMD7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240441AbiCNMCx (ORCPT
+        with ESMTP id S240455AbiCNMCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:02:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82211EC55;
-        Mon, 14 Mar 2022 05:00:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FBD48E7A;
+        Mon, 14 Mar 2022 05:00:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDC56B80DF3;
-        Mon, 14 Mar 2022 11:59:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C6AC340E9;
-        Mon, 14 Mar 2022 11:59:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFFA3B80DF5;
+        Mon, 14 Mar 2022 11:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01D41C340E9;
+        Mon, 14 Mar 2022 11:59:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259192;
-        bh=TqKFtjgXN3ErMrPJUo3AQq/1Nc3i24dF1IcWtRKWD2U=;
+        s=korg; t=1647259196;
+        bh=JNgz7aOmQOURe9AXh8w879yMAAPClIIjiSnyCIm1RY0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jk9J4yh+LhdJXvu4+3z9+rSJJKE1ttwkvUGYd0ACm9F66VsFLrxI7gvhJ8yt+qSgJ
-         dN7ZcqbxwhumGJA9aDsWAD4RgKFoNIleP6Tl2i21QG/CI0kkDc0vjZTF6y4YwV5IMf
-         75/6aQBiJCMnnUEWqjennNqHmyoY3X/lI8Bisp+0=
+        b=EBuIOa26GEvgm/DWEtxha6Gdz2j8WhYr5lvBKfVOYDiZ0AbxoqcGG+bzI45D+m6lB
+         h3Ptkd6tvAogDhJNBNuoS3ctgAvMEuVKjjIhWhXXkHSZ58adR0paAD100g+jmpDou9
+         6HsZU6GCXkfw1OQIKvBVjc/KuD5T3gH/xT/nXTTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 23/71] tipc: fix incorrect order of state message data sanity check
-Date:   Mon, 14 Mar 2022 12:53:16 +0100
-Message-Id: <20220314112738.582757933@linuxfoundation.org>
+Subject: [PATCH 5.10 24/71] net: ethernet: ti: cpts: Handle error for clk_enable
+Date:   Mon, 14 Mar 2022 12:53:17 +0100
+Message-Id: <20220314112738.610318939@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,57 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit c79fcc27be90b308b3fa90811aefafdd4078668c ]
+[ Upstream commit 6babfc6e6fab068018c36e8f6605184b8c0b349d ]
 
-When receiving a state message, function tipc_link_validate_msg()
-is called to validate its header portion. Then, its data portion
-is validated before it can be accessed correctly. However, current
-data sanity  check is done after the message header is accessed to
-update some link variables.
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-This commit fixes this issue by moving the data sanity check to
-the beginning of state message handling and right after the header
-sanity check.
-
-Fixes: 9aa422ad3266 ("tipc: improve size validations for received domain records")
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Link: https://lore.kernel.org/r/20220308021200.9245-1-tung.q.nguyen@dektech.com.au
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8a2c9a5ab4b9 ("net: ethernet: ti: cpts: rework initialization/deinitialization")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/link.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/ti/cpts.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index fb835a3822f4..7a353ff62844 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -2245,6 +2245,11 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
- 		break;
+diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
+index 43222a34cba0..f9514518700e 100644
+--- a/drivers/net/ethernet/ti/cpts.c
++++ b/drivers/net/ethernet/ti/cpts.c
+@@ -568,7 +568,9 @@ int cpts_register(struct cpts *cpts)
+ 	for (i = 0; i < CPTS_MAX_EVENTS; i++)
+ 		list_add(&cpts->pool_data[i].list, &cpts->pool);
  
- 	case STATE_MSG:
-+		/* Validate Gap ACK blocks, drop if invalid */
-+		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
-+		if (glen > dlen)
-+			break;
-+
- 		l->rcv_nxt_state = msg_seqno(hdr) + 1;
+-	clk_enable(cpts->refclk);
++	err = clk_enable(cpts->refclk);
++	if (err)
++		return err;
  
- 		/* Update own tolerance if peer indicates a non-zero value */
-@@ -2270,10 +2275,6 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
- 			break;
- 		}
- 
--		/* Receive Gap ACK blocks from peer if any */
--		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
--		if(glen > dlen)
--			break;
- 		tipc_mon_rcv(l->net, data + glen, dlen - glen, l->addr,
- 			     &l->mon_state, l->bearer_id);
- 
+ 	cpts_write32(cpts, CPTS_EN, control);
+ 	cpts_write32(cpts, TS_PEND_EN, int_enable);
 -- 
 2.34.1
 
