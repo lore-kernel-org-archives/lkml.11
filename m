@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240713AbiCNMMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35328 "EHLO
+        id S240724AbiCNMMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242214AbiCNMJo (ORCPT
+        with ESMTP id S242400AbiCNMJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC6C50B01;
-        Mon, 14 Mar 2022 05:06:53 -0700 (PDT)
+        Mon, 14 Mar 2022 08:09:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA31658A;
+        Mon, 14 Mar 2022 05:07:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DB12B80CDE;
-        Mon, 14 Mar 2022 12:06:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6AF0C340E9;
-        Mon, 14 Mar 2022 12:06:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9686B6130D;
+        Mon, 14 Mar 2022 12:07:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E2BC340E9;
+        Mon, 14 Mar 2022 12:07:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259610;
-        bh=GZLKigzq4Gitbm9huNUFHN9WWFAWoxqfadSve0/aCJM=;
+        s=korg; t=1647259659;
+        bh=Isd6eX3MZTVfTJRJPDZlkUXt7TUV9IkLi7PqQSY8XRk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xpggnBQdaBem9LTX0D7iJGBe63TIOyp8egk48sYebSvKkjfIql5Ya53Wqbabl8cep
-         Z+bK2SCjCIlUEWlklFsa9HizG2xo9qfd2gTo0T337uu4pXLaU1/5BfypDyOgrfiymp
-         /dlMdtYeg0xT3O+Y88kZR3gvH/9EckzKvGcR0OGQ=
+        b=o9Yjj8J72EMEa1XNwLFT4FosxhOjP9qYvO/4HR6sreqaocmEutjt+oNGsw9mmduvF
+         GbQdfGjOE4h+OPF73OYTAOvwt/blJTe/lAUMqJnOQ2wVwK91Tx7SPDwveX6IRbFcA2
+         U5fTO0afbdUbH8h4AQfjMtubdRCGYOtMZO7q+7bo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Javier Martinez Canillas <javierm@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 048/110] net: phy: DP83822: clear MISR2 register to disable interrupts
-Date:   Mon, 14 Mar 2022 12:53:50 +0100
-Message-Id: <20220314112744.377863951@linuxfoundation.org>
+Subject: [PATCH 5.15 060/110] drm/vc4: hdmi: Unregister codec device on unbind
+Date:   Mon, 14 Mar 2022 12:54:02 +0100
+Message-Id: <20220314112744.709890013@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -52,37 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Clément Léger <clement.leger@bootlin.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 37c9d66c95564c85a001d8a035354f0220a1e1c3 ]
+[ Upstream commit e40945ab7c7f966d0c37b7bd7b0596497dfe228d ]
 
-MISR1 was cleared twice but the original author intention was probably
-to clear MISR1 & MISR2 to completely disable interrupts. Fix it to
-clear MISR2.
+On bind we will register the HDMI codec device but we don't unregister
+it on unbind, leading to a device leakage. Unregister our device at
+unbind.
 
-Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220309142228.761153-1-clement.leger@bootlin.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220127111452.222002-1-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/dp83822.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++++++
+ drivers/gpu/drm/vc4/vc4_hdmi.h | 1 +
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 211b5476a6f5..ce17b2af3218 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -274,7 +274,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
- 		if (err < 0)
- 			return err;
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 9170d948b448..07887cbfd9cb 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1522,6 +1522,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 		dev_err(dev, "Couldn't register the HDMI codec: %ld\n", PTR_ERR(codec_pdev));
+ 		return PTR_ERR(codec_pdev);
+ 	}
++	vc4_hdmi->audio.codec_pdev = codec_pdev;
  
--		err = phy_write(phydev, MII_DP83822_MISR1, 0);
-+		err = phy_write(phydev, MII_DP83822_MISR2, 0);
- 		if (err < 0)
- 			return err;
+ 	dai_link->cpus		= &vc4_hdmi->audio.cpu;
+ 	dai_link->codecs	= &vc4_hdmi->audio.codec;
+@@ -1561,6 +1562,12 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 
+ }
+ 
++static void vc4_hdmi_audio_exit(struct vc4_hdmi *vc4_hdmi)
++{
++	platform_device_unregister(vc4_hdmi->audio.codec_pdev);
++	vc4_hdmi->audio.codec_pdev = NULL;
++}
++
+ static irqreturn_t vc4_hdmi_hpd_irq_thread(int irq, void *priv)
+ {
+ 	struct vc4_hdmi *vc4_hdmi = priv;
+@@ -2298,6 +2305,7 @@ static void vc4_hdmi_unbind(struct device *dev, struct device *master,
+ 	kfree(vc4_hdmi->hdmi_regset.regs);
+ 	kfree(vc4_hdmi->hd_regset.regs);
+ 
++	vc4_hdmi_audio_exit(vc4_hdmi);
+ 	vc4_hdmi_cec_exit(vc4_hdmi);
+ 	vc4_hdmi_hotplug_exit(vc4_hdmi);
+ 	vc4_hdmi_connector_destroy(&vc4_hdmi->connector);
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdmi.h
+index 33e9f665ab8e..c0492da73683 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.h
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
+@@ -113,6 +113,7 @@ struct vc4_hdmi_audio {
+ 	struct snd_soc_dai_link_component platform;
+ 	struct snd_dmaengine_dai_dma_data dma_data;
+ 	struct hdmi_audio_infoframe infoframe;
++	struct platform_device *codec_pdev;
+ 	bool streaming;
+ };
  
 -- 
 2.34.1
