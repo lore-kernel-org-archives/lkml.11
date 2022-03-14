@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E326C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E13C8C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242892AbiCNMaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        id S242842AbiCNMaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243908AbiCNMVX (ORCPT
+        with ESMTP id S243918AbiCNMVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:21:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640CBDFC7;
-        Mon, 14 Mar 2022 05:17:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B27E11A23;
+        Mon, 14 Mar 2022 05:18:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F231860C6D;
-        Mon, 14 Mar 2022 12:17:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB273C340EC;
-        Mon, 14 Mar 2022 12:17:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E73F960B04;
+        Mon, 14 Mar 2022 12:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6030C340E9;
+        Mon, 14 Mar 2022 12:18:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260277;
-        bh=4Fma61kxyBtoEpmgucDXrTf9L5hhilvU5ts6daQFQuc=;
+        s=korg; t=1647260286;
+        bh=DLjvPiW/foqqGXUYRry8oY7tm2GUXhAvY4eAkNeAkV8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tr6w9XO1oy3OJ1lq0R83gU4YZVuRmQ0iStTZNh3OcppNRl/6duuVT3MO4jmgFpwH7
-         DwNkyVPYJsZUJz7AMadUBa9NbW8f8/HePsxq2+nIzkgHKl3Z2ZdqHbpv1jazEEClSb
-         xH6BLIGXrWBmHzQzQBhFTSAoLU940TZJ7m/CTOh8=
+        b=b1j9yFI6cU+voZf5gsdF4lHqXNtsbtDid9pXi0aOYJA8QnLZGpRBcaliBFmehN4PA
+         hr9bDO+Sl4Xpkw9VLRjy+DRdJRqyELCSCpSJ9DwopdUSIUVKn9iDp2c9cW8gi8ajUm
+         SzQ1tx64O8cA0YlOUNnyW1rgNrjrbxE1fRch7FVY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Lin <jon.lin@rock-chips.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 067/121] spi: rockchip: terminate dma transmission when slave abort
-Date:   Mon, 14 Mar 2022 12:54:10 +0100
-Message-Id: <20220314112745.994984753@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 104/121] ARM: fix Thumb2 regression with Spectre BHB
+Date:   Mon, 14 Mar 2022 12:54:47 +0100
+Message-Id: <20220314112747.015756286@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,40 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Lin <jon.lin@rock-chips.com>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 80808768e41324d2e23de89972b5406c1020e6e4 ]
+commit 6c7cb60bff7aec24b834343ff433125f469886a3 upstream.
 
-After slave abort, all DMA should be stopped, or it will affect the
-next transmission and maybe abort again.
+When building for Thumb2, the vectors make use of a local label. Sadly,
+the Spectre BHB code also uses a local label with the same number which
+results in the Thumb2 reference pointing at the wrong place. Fix this
+by changing the number used for the Spectre BHB local label.
 
-Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
-Link: https://lore.kernel.org/r/20220216014028.8123-3-jon.lin@rock-chips.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-rockchip.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/kernel/entry-armv.S |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-index 4f65ba3dd19c..c6a1bb09be05 100644
---- a/drivers/spi/spi-rockchip.c
-+++ b/drivers/spi/spi-rockchip.c
-@@ -585,6 +585,12 @@ static int rockchip_spi_slave_abort(struct spi_controller *ctlr)
- {
- 	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
+--- a/arch/arm/kernel/entry-armv.S
++++ b/arch/arm/kernel/entry-armv.S
+@@ -1040,9 +1040,9 @@ vector_bhb_loop8_\name:
  
-+	if (atomic_read(&rs->state) & RXDMA)
-+		dmaengine_terminate_sync(ctlr->dma_rx);
-+	if (atomic_read(&rs->state) & TXDMA)
-+		dmaengine_terminate_sync(ctlr->dma_tx);
-+	atomic_set(&rs->state, 0);
-+	spi_enable_chip(rs, false);
- 	rs->slave_abort = true;
- 	spi_finalize_current_transfer(ctlr);
- 
--- 
-2.34.1
-
+ 	@ bhb workaround
+ 	mov	r0, #8
+-1:	b	. + 4
++3:	b	. + 4
+ 	subs	r0, r0, #1
+-	bne	1b
++	bne	3b
+ 	dsb
+ 	isb
+ 	b	2b
 
 
