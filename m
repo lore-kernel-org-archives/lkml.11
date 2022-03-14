@@ -2,119 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4290DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244740AbiCNTy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
+        id S244163AbiCNT4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240990AbiCNTyp (ORCPT
+        with ESMTP id S234588AbiCNT4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:54:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2002525E3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647287540;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GBOGyth8SUjOhbMl4iXnJi0rODftuyM/OOyrFjsN+/8=;
-        b=YDi9++S7ansLS1XXVkMeV3KK2bR5HXzt7v4NlkzidBfh5qkYT7yNOaKwgT+F1X30DLZb3U
-        O3r6RETn5h00jQuW6C5xEGFiFjmoEdp8RHItFrP0XziNiJUJ4ooZ5X69mUBl1nz9CbHKKz
-        8EICQpdQetMLvUVV3QQdEY8gskt6qQE=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-pIEsjpPwPZmCLYawG71J8g-1; Mon, 14 Mar 2022 15:52:18 -0400
-X-MC-Unique: pIEsjpPwPZmCLYawG71J8g-1
-Received: by mail-il1-f199.google.com with SMTP id f18-20020a926a12000000b002be48b02bc6so9894469ilc.17
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:52:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GBOGyth8SUjOhbMl4iXnJi0rODftuyM/OOyrFjsN+/8=;
-        b=PxCIVqlVtfGi8qeu+lI+2MdYQ2VTNDDQogghPGeI8jBj0LcWGJBd2yfUTpkltZ/maq
-         CjVjWrsnod8h5Tk1ozDzwBwX9YlYtep2bk7F2IOpV0do1nJbNQdTazHZRB3oR3sCo8qU
-         POt2UbkdLOPwkVo90e0zD7WjISBd+Ve/u9v1CAu9hvZ2JiMxSkgTvH7VzBY01wcrDJYU
-         yLjG/JYrdw3rMfeKdbdwXk6afe7UBQ+Ut5emelwEAUod3ELgvYzHSoq0mBbUO4b9sKqk
-         HCS5DJwAEFIBmN0pwtSlftXddKZ5KnnAyZW5S2INjMmFQeSkrzA7nVHyq8tu8zVI/3G+
-         T1yQ==
-X-Gm-Message-State: AOAM5322ceY5W9/Ot+hR8+TB0GxvlIaHsI30XS19hX3hhu7VitDAuHHP
-        vLNnPfU4gCBOtW+J8emSDLslJ7CuNw4aZgNvhpMmKoOIK5+c8aWfwPK0hL5KtQpaLsKjD8IJKRx
-        oZ0p+7GU6BKQF6ksoZCxb7X4C
-X-Received: by 2002:a02:1d45:0:b0:317:c1ed:882f with SMTP id 66-20020a021d45000000b00317c1ed882fmr22366748jaj.33.1647287538238;
-        Mon, 14 Mar 2022 12:52:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzL70MDAi9m5dOEzNFXAK2hOJ4q3gZT3CFGBlHf6tZ4stiRQUgD9xY/OIi31lTSnRRajnBrsQ==
-X-Received: by 2002:a02:1d45:0:b0:317:c1ed:882f with SMTP id 66-20020a021d45000000b00317c1ed882fmr22366737jaj.33.1647287538003;
-        Mon, 14 Mar 2022 12:52:18 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id w6-20020a056e021c8600b002c602537ab9sm9693969ill.54.2022.03.14.12.52.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 12:52:17 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 13:52:16 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org, jgg@nvidia.com,
-        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
-        yishaih@nvidia.com, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2] vfio-pci: Provide reviewers and acceptance criteria
- for vendor drivers
-Message-ID: <20220314135216.0cd5e16a.alex.williamson@redhat.com>
-In-Reply-To: <87pmmoxqv8.fsf@meer.lwn.net>
-References: <164728518026.40450.7442813673746870904.stgit@omen>
-        <87pmmoxqv8.fsf@meer.lwn.net>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Mon, 14 Mar 2022 15:56:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B26D8D;
+        Mon, 14 Mar 2022 12:54:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5940611EF;
+        Mon, 14 Mar 2022 19:54:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7EFAC340E9;
+        Mon, 14 Mar 2022 19:54:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647287695;
+        bh=xo/dl+rzWKB5iDv2IhjiepvkwP0BaMZrXwe5xnF7NXg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=UVIatPS6JWsrLdLjjAEpcPpHfprS0uVnOmSk7x0Rf8VbJTUD+ZFOLgv8SadcJRZEU
+         QnXg1joEPcgUGew28Ra3jl4LpQlaA46s8ukaOxyy2z8rtAc0xxD9seET4QUPq3wOYG
+         z2zCwSQtxJarxZ3Dz2E7yFbelYZWQoBJtAw1lOX00JkkEfkXPhbYGZubVzUSugfUKH
+         7fbwlTeg4owhYddluYTKmxRXE3gNmN7F3MZcJ1djCdf3WfQvp/4PAc7zC6M0Xwj94M
+         9rvTmBS/E07GxGq3cnOonszTErgW+CsVn+gnBWkM3DHcT4mHsgSNcy0IWUmSkHttQR
+         O/RiTq/D0PESQ==
+Date:   Mon, 14 Mar 2022 14:54:53 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH -next?] x86: PCI: asm/pci_x86.h needs more #includes
+Message-ID: <20220314195453.GA527280@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220226213703.24041-1-rdunlap@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jon,
-
-On Mon, 14 Mar 2022 13:42:51 -0600
-Jonathan Corbet <corbet@lwn.net> wrote:
-
-> Alex Williamson <alex.williamson@redhat.com> writes:
+On Sat, Feb 26, 2022 at 01:37:03PM -0800, Randy Dunlap wrote:
+> <asm/pci_x86.h> uses EINVAL, __init, and raw_spinlock_t, so it
+> should #include the appropriate files to prevent build errors.
 > 
-> > Vendor or device specific extensions for devices exposed to userspace
-> > through the vfio-pci-core library open both new functionality and new
-> > risks.  Here we attempt to provided formalized requirements and
-> > expectations to ensure that future drivers both collaborate in their
-> > interaction with existing host drivers, as well as receive additional
-> > reviews from community members with experience in this area.
-> >
-> > Cc: Jason Gunthorpe <jgg@nvidia.com>
-> > Cc: Yishai Hadas <yishaih@nvidia.com>
-> > Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> > ---  
+> ../arch/x86/include/asm/pci_x86.h:150:10: error: ‘EINVAL’ undeclared (first use in this function)
+>   return -EINVAL;
 > 
-> One thing...
+> ../arch/x86/include/asm/pci_x86.h:105:8: error: unknown type name ‘raw_spinlock_t’
+>  extern raw_spinlock_t pci_config_lock;
 > 
-> >  .../vfio/vfio-pci-vendor-driver-acceptance.rst     |   35 ++++++++++++++++++++
-> >  MAINTAINERS                                        |   10 ++++++
-> >  2 files changed, 45 insertions(+)  
+> ../arch/x86/include/asm/pci_x86.h:141:20: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘dmi_check_pciprobe’
+>  extern void __init dmi_check_pciprobe(void);
 > 
-> If you add a new RST file, you need to add it to an index.rst somewhere
-> so that it becomes part of the kernel docs build.
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 
-Whoops
+Thanks, applied to pci/misc for v5.18.
 
-> Also, though: can we avoid creating a new top-level documentation
-> directory for just this file?  It seems like it would logically be a
-> part of the maintainers guide (Documentation/maintainer) ... ?
-
-I'm not sure it's appropriate for Documentation/maintainer/ but it
-would make sense to link it from maintainer-entry-profile.rst there.
-What if I move it to Documentation/driver-api where there are a couple
-other vfio docs?  Thanks,
-
-Alex
-
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: x86@kernel.org
+> Cc: linux-pci@vger.kernel.org
+> ---
+> Without this patch, I am seeing *many* build errors in
+> linux-next-20220225.
+> 
+> I don't know why this showed up in linux-next-20220225 all of a
+> sudden.
+> 
+>  arch/x86/include/asm/pci_x86.h |    3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> --- linux-next-20220225.orig/arch/x86/include/asm/pci_x86.h
+> +++ linux-next-20220225/arch/x86/include/asm/pci_x86.h
+> @@ -5,7 +5,10 @@
+>   *	(c) 1999 Martin Mares <mj@ucw.cz>
+>   */
+>  
+> +#include <linux/errno.h>
+> +#include <linux/init.h>
+>  #include <linux/ioport.h>
+> +#include <linux/spinlock.h>
+>  
+>  #undef DEBUG
+>  
