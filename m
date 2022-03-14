@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC34C35294
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B946C47082
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244446AbiCNMcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51444 "EHLO
+        id S244712AbiCNMcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243799AbiCNMVQ (ORCPT
+        with ESMTP id S243858AbiCNMVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B7049F83;
-        Mon, 14 Mar 2022 05:17:03 -0700 (PDT)
+        Mon, 14 Mar 2022 08:21:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A3BC40;
+        Mon, 14 Mar 2022 05:17:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9949BB80DC0;
-        Mon, 14 Mar 2022 12:17:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB94EC340E9;
-        Mon, 14 Mar 2022 12:17:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A720E60C6D;
+        Mon, 14 Mar 2022 12:17:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6742FC340E9;
+        Mon, 14 Mar 2022 12:17:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260221;
-        bh=iPLPLA7IMxm/yNnObmx+1b1e4pzUaWU5IeYMucuip24=;
+        s=korg; t=1647260242;
+        bh=+iu3YEJGg0Ei9nx0UmPyifith2WwxThQTTrvu8AqV/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JuRALm8qa02uSeevSnA1S/bx+wUYcpjnlVyx8zZzHW2s7S+v4f/22b9oU4fMAaAb/
-         uEqKljCrTA+AAiCmRrQ07UjUPt7aUNLU0IKJXVWRgMLqaPwWR/tr5T4PJjvA/uNfqy
-         pLuSRKnw0PGuznGYMplz3fKQGR0FDth0azbxelww=
+        b=RV/UBRURIGdYT8M59jX5ubMp7c7UpDrBcqozXZKnpuCyZtxLBNd8FlzKrUDyiizH8
+         gKlSiUd0rV0ozSu0xT7NQigR7QHgqb5RM4McTvx4oJjHangpRnYSLiFuHPfI1luKB9
+         lzUwh8dl4FJJYcXy30r4aHsUfRa/fIc0ENGGGSCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH 5.16 090/121] staging: gdm724x: fix use after free in gdm_lte_rx()
-Date:   Mon, 14 Mar 2022 12:54:33 +0100
-Message-Id: <20220314112746.629986870@linuxfoundation.org>
+        stable@vger.kernel.org, Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 094/121] riscv: Fix auipc+jalr relocation range checks
+Date:   Mon, 14 Mar 2022 12:54:37 +0100
+Message-Id: <20220314112746.738899759@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -48,47 +48,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Emil Renner Berthing <kernel@esmil.dk>
 
-commit fc7f750dc9d102c1ed7bbe4591f991e770c99033 upstream.
+commit 0966d385830de3470b7131db8e86c0c5bc9c52dc upstream.
 
-The netif_rx_ni() function frees the skb so we can't dereference it to
-save the skb->len.
+RISC-V can do PC-relative jumps with a 32bit range using the following
+two instructions:
 
-Fixes: 61e121047645 ("staging: gdm7240: adding LTE USB driver")
-Cc: stable <stable@vger.kernel.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220228074331.GA13685@kili
+	auipc	t0, imm20	; t0 = PC + imm20 * 2^12
+	jalr	ra, t0, imm12	; ra = PC + 4, PC = t0 + imm12
+
+Crucially both the 20bit immediate imm20 and the 12bit immediate imm12
+are treated as two's-complement signed values. For this reason the
+immediates are usually calculated like this:
+
+	imm20 = (offset + 0x800) >> 12
+	imm12 = offset & 0xfff
+
+..where offset is the signed offset from the auipc instruction. When
+the 11th bit of offset is 0 the addition of 0x800 doesn't change the top
+20 bits and imm12 considered positive. When the 11th bit is 1 the carry
+of the addition by 0x800 means imm20 is one higher, but since imm12 is
+then considered negative the two's complement representation means it
+all cancels out nicely.
+
+However, this addition by 0x800 (2^11) means an offset greater than or
+equal to 2^31 - 2^11 would overflow so imm20 is considered negative and
+result in a backwards jump. Similarly the lower range of offset is also
+moved down by 2^11 and hence the true 32bit range is
+
+	[-2^31 - 2^11, 2^31 - 2^11)
+
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/gdm724x/gdm_lte.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/riscv/kernel/module.c |   21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/gdm724x/gdm_lte.c b/drivers/staging/gdm724x/gdm_lte.c
-index 493ed4821515..0d8d8fed283d 100644
---- a/drivers/staging/gdm724x/gdm_lte.c
-+++ b/drivers/staging/gdm724x/gdm_lte.c
-@@ -76,14 +76,15 @@ static void tx_complete(void *arg)
+--- a/arch/riscv/kernel/module.c
++++ b/arch/riscv/kernel/module.c
+@@ -13,6 +13,19 @@
+ #include <linux/pgtable.h>
+ #include <asm/sections.h>
  
- static int gdm_lte_rx(struct sk_buff *skb, struct nic *nic, int nic_type)
++/*
++ * The auipc+jalr instruction pair can reach any PC-relative offset
++ * in the range [-2^31 - 2^11, 2^31 - 2^11)
++ */
++static bool riscv_insn_valid_32bit_offset(ptrdiff_t val)
++{
++#ifdef CONFIG_32BIT
++	return true;
++#else
++	return (-(1L << 31) - (1L << 11)) <= val && val < ((1L << 31) - (1L << 11));
++#endif
++}
++
+ static int apply_r_riscv_32_rela(struct module *me, u32 *location, Elf_Addr v)
  {
--	int ret;
-+	int ret, len;
+ 	if (v != (u32)v) {
+@@ -95,7 +108,7 @@ static int apply_r_riscv_pcrel_hi20_rela
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+ 	s32 hi20;
  
-+	len = skb->len + ETH_HLEN;
- 	ret = netif_rx_ni(skb);
- 	if (ret == NET_RX_DROP) {
- 		nic->stats.rx_dropped++;
- 	} else {
- 		nic->stats.rx_packets++;
--		nic->stats.rx_bytes += skb->len + ETH_HLEN;
-+		nic->stats.rx_bytes += len;
- 	}
+-	if (offset != (s32)offset) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		pr_err(
+ 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
+ 		  me->name, (long long)v, location);
+@@ -197,10 +210,9 @@ static int apply_r_riscv_call_plt_rela(s
+ 				       Elf_Addr v)
+ {
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+-	s32 fill_v = offset;
+ 	u32 hi20, lo12;
  
- 	return 0;
--- 
-2.35.1
-
+-	if (offset != fill_v) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		/* Only emit the plt entry if offset over 32-bit range */
+ 		if (IS_ENABLED(CONFIG_MODULE_SECTIONS)) {
+ 			offset = module_emit_plt_entry(me, v);
+@@ -224,10 +236,9 @@ static int apply_r_riscv_call_rela(struc
+ 				   Elf_Addr v)
+ {
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+-	s32 fill_v = offset;
+ 	u32 hi20, lo12;
+ 
+-	if (offset != fill_v) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		pr_err(
+ 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
+ 		  me->name, (long long)v, location);
 
 
