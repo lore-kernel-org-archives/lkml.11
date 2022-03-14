@@ -2,66 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 23:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 23:53:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343771AbiCNXxP (ORCPT
+        id S1343779AbiCNXyr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 19:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
+        Mon, 14 Mar 2022 19:54:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234318AbiCNXxN (ORCPT
+        with ESMTP id S234318AbiCNXyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 19:53:13 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B70541D321;
-        Mon, 14 Mar 2022 16:52:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=AH8lET2Tj2kAiiPi9GqUtRtt3g/1zLmNS2wbBb+Uh6s=; b=xfMsWH0w8N/xe1EDTszWU0/5Co
-        0LxLRQZSXrGT1+fO0l4b8AQ1dL70L+KOnxPm5oNeQoknqorSIN1UtaTq/7rlxk8z9d+yBjAjP72GP
-        GZP5MzI3zbWxUCeSvZD1kYKzGTcEMVX5239FJYHvS7nIuvIFj2W+ZSltr8uHG1qzt6yE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nTuTh-00Apla-BE; Tue, 15 Mar 2022 00:51:53 +0100
-Date:   Tue, 15 Mar 2022 00:51:53 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Anders Roxell <anders.roxell@linaro.org>
-Cc:     hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCHv2] net: phy: Kconfig: micrel_phy: fix dependency issue
-Message-ID: <Yi/VGY+PoiPnBQpJ@lunn.ch>
-References: <20220314110254.12498-1-anders.roxell@linaro.org>
+        Mon, 14 Mar 2022 19:54:44 -0400
+X-Greylist: delayed 2568 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 16:53:33 PDT
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9371D33E07
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 16:53:33 -0700 (PDT)
+Received: from [IPV6:2601:646:8600:40c0:7285:c2ff:fefb:fd4] ([IPv6:2601:646:8600:40c0:7285:c2ff:fefb:fd4])
+        (authenticated bits=0)
+        by mail.zytor.com (8.17.1/8.15.2) with ESMTPSA id 22EN9n2q891914
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Mon, 14 Mar 2022 16:09:50 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 22EN9n2q891914
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+        s=2022030301; t=1647299390;
+        bh=yXYBP3SJCOpI0B/SJTjM6RkYHfQUJdmFKPcrRE0IY/o=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=DrHy7s86fzmIPg8XhYfzqeCwYBzJQPmhjNe4B1TnB9/QTlhoULdBdpRlLcwkRUujg
+         X0/ai06rOXA4XVjjnDroL6+5/zNWZDf+fvxZ7ND4fG6WjkyX8SnZcZF82oQZRFN3x3
+         wL5VTvOlHixhK0mpSjtwNjhPo1Sxonx20h83cATTSj8h9LorPzkjRQy5PmpkG2mkNP
+         6oUpdnQli1XNDELG0HdFeU0w9Rikpmrkq1it+Xg5/xcV0+HKPPMLpAMns9CXofETR5
+         NiSvVoGxRiYKUPq/Sk2PEL5UctDZIHY/cIt9ochYfo/BZ51GaI39jlL3wxIrRFt/fK
+         oN79FSUicshKg==
+Message-ID: <dccb0cf2-edc1-fb98-d4ca-4f76687b7e6c@zytor.com>
+Date:   Mon, 14 Mar 2022 16:09:44 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314110254.12498-1-anders.roxell@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] x86: use builtins to read eflags
+Content-Language: en-US
+To:     Bill Wendling <morbo@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Juergen Gross <jgross@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20211215211847.206208-1-morbo@google.com> <87mtl1l63m.ffs@tglx>
+ <CAGG=3QV2sw1w+j2NDqPVAbobGj04QXfOF0VcSCebRbs6y-L5WA@mail.gmail.com>
+From:   "H. Peter Anvin" <hpa@zytor.com>
+In-Reply-To: <CAGG=3QV2sw1w+j2NDqPVAbobGj04QXfOF0VcSCebRbs6y-L5WA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 12:02:54PM +0100, Anders Roxell wrote:
-> When building driver CONFIG_MICREL_PHY the follow error shows up:
+On 12/16/21 11:55, Bill Wendling wrote:
+> On Wed, Dec 15, 2021 at 4:57 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>>
+>> Bill,
+>>
+>> On Wed, Dec 15 2021 at 13:18, Bill Wendling wrote:
+>>
+>> please always CC the relevant mailing lists, i.e. this lacks a cc:
+>> linux-kernel@vger.kernel.org
+>>
+> I thought that was automatically added. But as Peter pointed out in
+> another email thread, no one has time to read the LKML, so it seems a
+> bit pointless? Nonetheless it's added now.
 > 
-> aarch64-linux-gnu-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
-> micrel.c:(.text+0x1764): undefined reference to `ptp_clock_index'
-> micrel.c:(.text+0x1764): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ptp_clock_index'
-> aarch64-linux-gnu-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
-> micrel.c:(.text+0x4720): undefined reference to `ptp_clock_register'
-> micrel.c:(.text+0x4720): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ptp_clock_register'
-> 
-> Rework Kconfig for MICREL_PHY to depend on 'PTP_1588_CLOCK_OPTIONAL'.
-> Arnd describes in a good way why its needed to add this depends in patch
-> e5f31552674e ("ethernet: fix PTP_1588_CLOCK dependencies").
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Consider linux-kernel a distributed archive. Noone reads it in real 
+time, but it is really great to be able to search for someone specific 
+in one place.
 
-    Andrew
+	-hpa
+
