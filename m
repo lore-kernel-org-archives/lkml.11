@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EED69C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240625AbiCNMGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59436 "EHLO
+        id S240672AbiCNMGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240572AbiCNMFv (ORCPT
+        with ESMTP id S240585AbiCNMFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:05:51 -0400
+        Mon, 14 Mar 2022 08:05:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7405A49254;
-        Mon, 14 Mar 2022 05:02:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDF3496A1;
+        Mon, 14 Mar 2022 05:02:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 242F9B80CDE;
-        Mon, 14 Mar 2022 12:02:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B7E1C340E9;
-        Mon, 14 Mar 2022 12:02:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42032B80D24;
+        Mon, 14 Mar 2022 12:02:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E8BC340E9;
+        Mon, 14 Mar 2022 12:02:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259355;
-        bh=AUqtvabMwOT8H1tChuw/4DbeorIaoD6A+b5KC2+sjwI=;
+        s=korg; t=1647259360;
+        bh=EpphPjkJYLQvxtjYHWazgFohtokZXh676sRXQzOPIuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKL/TphBMrgtrdbfZaBHDED+NO+RiPW9Lsunxis4MtBi3UowW0UodK+HdPP6MWmtn
-         hQjfPJKC0xCUHG9hkqpzNjZ7XlKZRelh0AF+mRenchyKqHWaGlgs1ls0i72Vel5SQ8
-         C+sgF1OcOvpvgSWECXNUyW2wHeDdo47I/HsmMFiQ=
+        b=ZBBkKVAx3az7UwYqkrxN6kpEuZQp70+4r3torI8HhvBrjFUB39Fr2XOpC/oi1hoLI
+         Nt/9teBv5kBrfnmq6es5PakB+3pgDncAB9ytWaGp++5FAC8GPmluBaqqF6FI0cPtVM
+         2R4UkdwZowcngs2UdaQkCdEDIIRPsQQDaj4OEgPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         David Howells <dhowells@redhat.com>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 60/71] watch_queue: Fix to release page in ->release()
-Date:   Mon, 14 Mar 2022 12:53:53 +0100
-Message-Id: <20220314112739.610601388@linuxfoundation.org>
+Subject: [PATCH 5.10 61/71] watch_queue: Fix to always request a pow-of-2 pipe ring size
+Date:   Mon, 14 Mar 2022 12:53:54 +0100
+Message-Id: <20220314112739.638370324@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -51,15 +51,19 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Howells <dhowells@redhat.com>
 
-commit c1853fbadcba1497f4907971e7107888e0714c81 upstream.
+commit 96a4d8912b28451cd62825fd7caa0e66e091d938 upstream.
 
-When a pipe ring descriptor points to a notification message, the
-refcount on the backing page is incremented by the generic get function,
-but the release function, which marks the bitmap, doesn't drop the page
-ref.
+The pipe ring size must always be a power of 2 as the head and tail
+pointers are masked off by AND'ing with the size of the ring - 1.
+watch_queue_set_size(), however, lets you specify any number of notes
+between 1 and 511.  This number is passed through to pipe_resize_ring()
+without checking/forcing its alignment.
 
-Fix this by calling generic_pipe_buf_release() at the end of
-watch_queue_pipe_buf_release().
+Fix this by rounding the number of slots required up to the nearest
+power of two.  The request is meant to guarantee that at least that many
+notifications can be generated before the queue is full, so rounding
+down isn't an option, but, alternatively, it may be better to give an
+error if we aren't allowed to allocate that much ring space.
 
 Fixes: c73be61cede5 ("pipe: Add general notification queue support")
 Reported-by: Jann Horn <jannh@google.com>
@@ -67,18 +71,19 @@ Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/watch_queue.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/watch_queue.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/kernel/watch_queue.c
 +++ b/kernel/watch_queue.c
-@@ -54,6 +54,7 @@ static void watch_queue_pipe_buf_release
- 	bit += page->index;
+@@ -244,7 +244,7 @@ long watch_queue_set_size(struct pipe_in
+ 		goto error;
+ 	}
  
- 	set_bit(bit, wqueue->notes_bitmap);
-+	generic_pipe_buf_release(pipe, buf);
- }
+-	ret = pipe_resize_ring(pipe, nr_notes);
++	ret = pipe_resize_ring(pipe, roundup_pow_of_two(nr_notes));
+ 	if (ret < 0)
+ 		goto error;
  
- // No try_steal function => no stealing
 
 
