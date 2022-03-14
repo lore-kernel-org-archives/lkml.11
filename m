@@ -2,167 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7ABC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CC6C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235737AbiCNQlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
+        id S243895AbiCNQld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243212AbiCNQgc (ORCPT
+        with ESMTP id S243923AbiCNQia (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:36:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D3925C6F;
-        Mon, 14 Mar 2022 09:35:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A030B6147F;
-        Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FC29C36AE7;
-        Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647275709;
-        bh=VRQda2tMB4KIfpCexAx6sritTOy8Q9GvC+ZZgReP5hM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TxvC0ru7bp6etupfdOniNCCDKIpc3bpM5VcKUcpRQi/5CQp/hExvGdP9EhwQN7lnQ
-         Smx6r2mQnkoyyFDEVGNLhQOJfYooX4g+V0PzX1AM+KiOVKPqHP3a8XAC1wIAyeGjzN
-         HNUhWf8POZkpUpRwwegwV2bAq357J4GnVmMXr9gXzanu5HbUN1weMcP8bkPAbqML2c
-         +RTI9LDIbinfAvbYxpe9JAxFn6rOjuAiblpZuj/NLHHx8s4ydg0BP+6UV37AoHNMLX
-         mW4iEFNYKEyfzxYRoahHXYv1dCFgw4wnoyFTIJqaWtIX+7/xQ4NSK5j3qf2lyt/Nvb
-         687Q9toIxCNRQ==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nTnf1-001x1R-BP; Mon, 14 Mar 2022 17:35:07 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH v2 57/67] media: platform: rename am437x/ to ti/am437x/
-Date:   Mon, 14 Mar 2022 17:34:52 +0100
-Message-Id: <1ebc47e42c2692fe09947d517a5e9a3b12fc58a3.1647274407.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1647274406.git.mchehab@kernel.org>
-References: <cover.1647274406.git.mchehab@kernel.org>
+        Mon, 14 Mar 2022 12:38:30 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479D337AA9
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:37:08 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id g8so9686538qke.2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:37:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dpBAoVsBs5pmN0ITaSoUHzzdcUkZXl3b73bSC3GUG9U=;
+        b=TA0eK4AXTtiOBAwdWRCR6Nv6wWYLsoxxDFGDGXc4JJ1XMmlDmv2YlrJy0HmkG68Ejn
+         I5HoTb/W9Rv6icvi3mH10PiPHPBH7zOUVRP89Z3L3vVSc4BJt822XLFyediPKA/7LCQW
+         C8kE6glKqF1Y4yMxRHzXgsA+v+FKf13UQfGkgGCNFfIA8JiYswThwEjqOJ+F0tdl4WZg
+         SM8u8kxhbBFI+PHfuoHPA8CwyySHEGMM//DvgaD38+DVdE5ocmXYDMzMnq4uSGFcj1OM
+         y5eEXj6z35wZL2YL0fI4oUdSQyX6bfDc2TtSxjpdnaialOlsdhCUnhaawp9nVZ5oKTBc
+         KxKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dpBAoVsBs5pmN0ITaSoUHzzdcUkZXl3b73bSC3GUG9U=;
+        b=FRIWgVsuITUB2j1i597UKV/EYfvDGnPx4e2y45cuu7tMa6YKT8bGZP5BzBc8OhFyw6
+         Exn0JL+uZpyslti1M27XGVJtkk+ycWV4jS8qVcKvNXFQeQ1LSHfP2J/4w1MhXrDWENhZ
+         lR33a2O81rmbITn73GrhDfG6Q8h18xqBDN1aNJE8d4t+vykraeKlzVRqipaivKBGXgCl
+         ykzxp2Z0sfyqeXJ9X9ERliJUBliY5iKMVn3Gcvqa0thBiW74Ha76yye8N+EvaWo8Edxw
+         X8uQkk8PxOBf5/9pVslN82tzHSPrGWDrnIq7nj9zJYbYQkazqxAG4z28EtkdvZ/lcrq8
+         xW7A==
+X-Gm-Message-State: AOAM533kVUNdIYD46gJSVbM3MH2QBi/Vc9GG0np1UnZQuRszGnGg3JcZ
+        iBN1UocvudB07XrjK+VKQ0uvbA==
+X-Google-Smtp-Source: ABdhPJxMjebTF+bOmlEycAd5SxCn5ZJwAsh0pbHUVpZ5dmiWF4Lhr8C02y08OzygCSHYBFNzIpctfA==
+X-Received: by 2002:a37:9a13:0:b0:67b:11f3:231f with SMTP id c19-20020a379a13000000b0067b11f3231fmr14854160qke.641.1647275827168;
+        Mon, 14 Mar 2022 09:37:07 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id g21-20020ac85815000000b002e06e2623a7sm11410178qtg.0.2022.03.14.09.37.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 09:37:06 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nTngv-000Q4z-HM; Mon, 14 Mar 2022 13:37:05 -0300
+Date:   Mon, 14 Mar 2022 13:37:05 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     GUO Zihua <guozihua@huawei.com>
+Cc:     linux-integrity@vger.kernel.org, wangweiyang2@huawei.com,
+        xiujianfeng@huawei.com, weiyongjun1@huawei.com, peterhuewe@gmx.de,
+        jarkko@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tpm: Fix memory leak in tpmm_chip_alloc
+Message-ID: <20220314163705.GA64706@ziepe.ca>
+References: <20220307104827.40843-1-guozihua@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220307104827.40843-1-guozihua@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the end goal is to have platform drivers split by vendor,
-rename am437x/ to ti/am437x/.
+On Mon, Mar 07, 2022 at 06:48:27PM +0800, GUO Zihua wrote:
+> Fix a memory leak in tpmm_chip_alloc. devm_add_action_or_reset would
+> call put_device on error, while tpm->devs is left untouched. Call
+> put_device on tpm->devs as well if devm_add_action_or_reset returns an
+> error.
+> 
+> Fixes: fdc915f7f719 ("tpm: expose spaces via a device link /dev/tpmrm")
+> Signed-off-by: GUO Zihua <guozihua@huawei.com>
+>  drivers/char/tpm/tpm-chip.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
+> index b009e7479b70..0a92334e8c40 100644
+> +++ b/drivers/char/tpm/tpm-chip.c
+> @@ -308,6 +308,12 @@ static int tpm_class_shutdown(struct device *dev)
+>  	return 0;
+>  }
+>  
+> +static void tpm_chip_free(struct tpm_chip *chip)
+> +{
+> +	put_device(&chip->devs);
+> +	put_device(&chip->dev);
+> +}
+> +
+>  /**
+>   * tpm_chip_alloc() - allocate a new struct tpm_chip instance
+>   * @pdev: device to which the chip is associated
+> @@ -396,8 +402,7 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
+>  	return chip;
+>  
+>  out:
+> -	put_device(&chip->devs);
+> -	put_device(&chip->dev);
+> +	tpm_chip_free(chip);
+>  	return ERR_PTR(rc);
+>  }
+>  EXPORT_SYMBOL_GPL(tpm_chip_alloc);
+> @@ -420,8 +425,8 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
+>  		return chip;
+>  
+>  	rc = devm_add_action_or_reset(pdev,
+> -				      (void (*)(void *)) put_device,
+> -				      &chip->dev);
+> +				      (void (*)(void *)) tpm_chip_free,
+> +				      chip);
+>  	if (rc)
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
+This looks like the same issue as was adressed by the recent discussion..
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH v2 00/67] at: https://lore.kernel.org/all/cover.1647274406.git.mchehab@kernel.org/
-
- MAINTAINERS                                               | 2 +-
- drivers/media/platform/Kconfig                            | 2 +-
- drivers/media/platform/Makefile                           | 2 +-
- drivers/media/platform/{ => ti}/am437x/Kconfig            | 0
- drivers/media/platform/{ => ti}/am437x/Makefile           | 0
- drivers/media/platform/{ => ti}/am437x/am437x-vpfe.c      | 0
- drivers/media/platform/{ => ti}/am437x/am437x-vpfe.h      | 0
- drivers/media/platform/{ => ti}/am437x/am437x-vpfe_regs.h | 0
- 8 files changed, 3 insertions(+), 3 deletions(-)
- rename drivers/media/platform/{ => ti}/am437x/Kconfig (100%)
- rename drivers/media/platform/{ => ti}/am437x/Makefile (100%)
- rename drivers/media/platform/{ => ti}/am437x/am437x-vpfe.c (100%)
- rename drivers/media/platform/{ => ti}/am437x/am437x-vpfe.h (100%)
- rename drivers/media/platform/{ => ti}/am437x/am437x-vpfe_regs.h (100%)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6c1055c27c65..f0b262176a70 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19262,7 +19262,7 @@ S:	Maintained
- W:	https://linuxtv.org
- Q:	http://patchwork.linuxtv.org/project/linux-media/list/
- T:	git git://linuxtv.org/mhadli/v4l-dvb-davinci_devices.git
--F:	drivers/media/platform/am437x/
-+F:	drivers/media/platform/ti/am437x/
- 
- TI BANDGAP AND THERMAL DRIVER
- M:	Eduardo Valentin <edubezval@gmail.com>
-diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index 2ad5fde02543..5d56058fa397 100644
---- a/drivers/media/platform/Kconfig
-+++ b/drivers/media/platform/Kconfig
-@@ -67,7 +67,6 @@ config VIDEO_MUX
- 
- source "drivers/media/platform/allegro-dvt/Kconfig"
- source "drivers/media/platform/allwinner/Kconfig"
--source "drivers/media/platform/am437x/Kconfig"
- source "drivers/media/platform/amlogic/meson-ge2d/Kconfig"
- source "drivers/media/platform/amphion/Kconfig"
- source "drivers/media/platform/aspeed/Kconfig"
-@@ -97,6 +96,7 @@ source "drivers/media/platform/samsung/s5p-mfc/Kconfig"
- source "drivers/media/platform/stm/sti/Kconfig"
- source "drivers/media/platform/stm/stm32/Kconfig"
- source "drivers/media/platform/ti-vpe/Kconfig"
-+source "drivers/media/platform/ti/am437x/Kconfig"
- source "drivers/media/platform/via/Kconfig"
- source "drivers/media/platform/xilinx/Kconfig"
- 
-diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
-index f20f1287c665..f8c4617da0ae 100644
---- a/drivers/media/platform/Makefile
-+++ b/drivers/media/platform/Makefile
-@@ -7,7 +7,6 @@
- # (e. g. LC_ALL=C sort Makefile)
- obj-y += allegro-dvt/
- obj-y += allwinner/
--obj-y += am437x/
- obj-y += amlogic/meson-ge2d/
- obj-y += amphion/
- obj-y += aspeed/
-@@ -42,6 +41,7 @@ obj-y += stm/sti/delta/
- obj-y += stm/sti/hva/
- obj-y += stm/stm32/
- obj-y += ti-vpe/
-+obj-y += ti/am437x/
- obj-y += via/
- obj-y += xilinx/
- 
-diff --git a/drivers/media/platform/am437x/Kconfig b/drivers/media/platform/ti/am437x/Kconfig
-similarity index 100%
-rename from drivers/media/platform/am437x/Kconfig
-rename to drivers/media/platform/ti/am437x/Kconfig
-diff --git a/drivers/media/platform/am437x/Makefile b/drivers/media/platform/ti/am437x/Makefile
-similarity index 100%
-rename from drivers/media/platform/am437x/Makefile
-rename to drivers/media/platform/ti/am437x/Makefile
-diff --git a/drivers/media/platform/am437x/am437x-vpfe.c b/drivers/media/platform/ti/am437x/am437x-vpfe.c
-similarity index 100%
-rename from drivers/media/platform/am437x/am437x-vpfe.c
-rename to drivers/media/platform/ti/am437x/am437x-vpfe.c
-diff --git a/drivers/media/platform/am437x/am437x-vpfe.h b/drivers/media/platform/ti/am437x/am437x-vpfe.h
-similarity index 100%
-rename from drivers/media/platform/am437x/am437x-vpfe.h
-rename to drivers/media/platform/ti/am437x/am437x-vpfe.h
-diff --git a/drivers/media/platform/am437x/am437x-vpfe_regs.h b/drivers/media/platform/ti/am437x/am437x-vpfe_regs.h
-similarity index 100%
-rename from drivers/media/platform/am437x/am437x-vpfe_regs.h
-rename to drivers/media/platform/ti/am437x/am437x-vpfe_regs.h
--- 
-2.35.1
-
+Jason
