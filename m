@@ -2,337 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827CAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:50:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB08C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240762AbiCNOv5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 10:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
+        id S239889AbiCNOwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 10:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234483AbiCNOvz (ORCPT
+        with ESMTP id S231299AbiCNOwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 10:51:55 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70AD83A5D4;
-        Mon, 14 Mar 2022 07:50:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647269445; x=1678805445;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=N+G6beZi59FUQo88au8V4FELbIxpTKtqSnWPAPTyaIM=;
-  b=n19Rs+vZFf2As8hlTueSqnNnI+ksR4HC7DGK+/672kC+VHMrb0SWhVPk
-   pYO0AzwDqnBxct6IP+SmkU2RtAF2GvkEWCxhl0Q05/l+dra0PvbB3m40V
-   Oj0IOu/XXVqlSizH3WITygHnswuVWk3WKMTU8d5+uQnCz8EYooUk+HPKa
-   8qc15F6FjxVwNZXbvAwBDE0vl9OSDmqb2WszQyhePCs6TWcLsQANz99Ib
-   DjrXGIN99C/8GmYoSq0QgslekUBTugSxGfhJnHl4GLNI6JTiG94jYqAd/
-   rpfKLtu7iueGLkwUINBC9xE4jaAxtmTu3lfY9XA4V2SS7XFq7ZZZGtibw
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="280807337"
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="280807337"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 07:50:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="818998801"
-Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
-  by fmsmga005.fm.intel.com with ESMTP; 14 Mar 2022 07:50:44 -0700
-From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     rafael@kernel.org, daniel.lezcano@linaro.org, amitk@kernel.org,
-        rui.zhang@intel.com
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        matthewgarrett@google.com,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] thermal: int340x: Update OS policy capability
-Date:   Mon, 14 Mar 2022 07:50:43 -0700
-Message-Id: <20220314145043.928617-1-srinivas.pandruvada@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 14 Mar 2022 10:52:33 -0400
+Received: from esa.hc3962-90.iphmx.com (esa.hc3962-90.iphmx.com [216.71.140.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51A240A0C;
+        Mon, 14 Mar 2022 07:51:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=qti.qualcomm.com; i=@qti.qualcomm.com; q=dns/txt;
+  s=qccesdkim1; t=1647269483; x=1647874283;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=c3aUFcp72/NYZ6c2fphWfjAz6wlQBfRdlWr/+v6wUco=;
+  b=i/CGGTQzeVpR6ENXABPUNMyHpQqnuxHviA29VB00UqtnJAbBxw/HuStV
+   s2PSb+QCjJWq6WDu4fztyHwqFz2V9n7SGWm66OWZARkzpQmJ6AmfVLzAL
+   9SgK02ZhAIu++rOvkhew/FsGCaVuJ3hW2YFpJyehXLT+imVedibAo6+he
+   I=;
+Received: from mail-sn1anam02lp2048.outbound.protection.outlook.com (HELO NAM02-SN1-obe.outbound.protection.outlook.com) ([104.47.57.48])
+  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 14:51:22 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=W22Fp487wZc7Xl+TmdIxy2wxdl3uCKp0zThJs83eqHS5uHcn3ZSvefLu7RRjaOp5iKlsVkg1IcbCQQyRydSctXNFiy0ynwllsIeu2wko9ME/CFfezZeYuGg9n4tQ5ZsWtKjTutpp1gGqy9d/KMQtdQmSbhXfLtz8ZbpDZAfTEjB5pWPedQd8YonDus0KO+lz7WX6tDY8Tw8zTG7zyeHpH7MFX9MazzkWT/TDf9zKZMADjQ7NEiYVZKXtQK6r6tbdpJD4otthsJfDQkB8Wd5B+2AjKFPvD2eREZXWFPhAz+eS5Ki+TiqK0Xvon97UJ2W5eOMnpIiBDV6cKlGKzYKoBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c3aUFcp72/NYZ6c2fphWfjAz6wlQBfRdlWr/+v6wUco=;
+ b=OFOXmOAsDpRov72lFzLZUOwvLHcHXyVQOVhx2EKgWf5gcKLADkJUZEi1XOh+OEOmWKxT/POrqd+l83mK0NNFacsqCQRYx+R8yH4wZf+LpKgGMDlQjoIttyVv7UYmzIJjsxsDZlAQKIXUXYtGe8XAAa39FvBnc1UVbwKWoio+ffyymm4D1S/OO7q0N0jdwv9r4eiKO6xo6KdP0JD/7TcVePDdeqoNqrn5O4h1x2e0JgviILlLX5BfBhxAJl71PTGTu9n3fXISQdgKa5MJqWTs28c0H9p99cufHbaNvYkl6XE10dk1UdD/hzSBTqZbz1ASigeL9UlMYCjWdQMr3fKkww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=qti.qualcomm.com; dmarc=pass action=none
+ header.from=qti.qualcomm.com; dkim=pass header.d=qti.qualcomm.com; arc=none
+Received: from BN0PR02MB8173.namprd02.prod.outlook.com (2603:10b6:408:163::15)
+ by BN7PR02MB3953.namprd02.prod.outlook.com (2603:10b6:406:ff::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.28; Mon, 14 Mar
+ 2022 14:51:20 +0000
+Received: from BN0PR02MB8173.namprd02.prod.outlook.com
+ ([fe80::198b:e44b:f8af:4635]) by BN0PR02MB8173.namprd02.prod.outlook.com
+ ([fe80::198b:e44b:f8af:4635%8]) with mapi id 15.20.5061.028; Mon, 14 Mar 2022
+ 14:51:20 +0000
+From:   Vinod Polimera <vpolimer@qti.qualcomm.com>
+To:     Doug Anderson <dianders@chromium.org>,
+        quic_vpolimer <quic_vpolimer@quicinc.com>
+CC:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>
+Subject: RE: [PATCH v5 5/5] drm/msm/disp/dpu1: set mdp clk to the maximum
+ frequency in opp table during probe
+Thread-Topic: [PATCH v5 5/5] drm/msm/disp/dpu1: set mdp clk to the maximum
+ frequency in opp table during probe
+Thread-Index: AQHYMw1OBhsy/Tz+FESywpD+hB9Cmay3cL4AgAeOtJA=
+Date:   Mon, 14 Mar 2022 14:51:20 +0000
+Message-ID: <BN0PR02MB817391C539C90651850391F6E40F9@BN0PR02MB8173.namprd02.prod.outlook.com>
+References: <1646758500-3776-1-git-send-email-quic_vpolimer@quicinc.com>
+ <1646758500-3776-6-git-send-email-quic_vpolimer@quicinc.com>
+ <CAD=FV=WFairiQF2zWc637Z+H61rX4Ar-E9ufG1fMctEk9E_xTg@mail.gmail.com>
+In-Reply-To: <CAD=FV=WFairiQF2zWc637Z+H61rX4Ar-E9ufG1fMctEk9E_xTg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=qti.qualcomm.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 08c9ce77-c977-4295-f4c2-08da05ca19d2
+x-ms-traffictypediagnostic: BN7PR02MB3953:EE_
+x-microsoft-antispam-prvs: <BN7PR02MB3953913C536BEE00093AE726E40F9@BN7PR02MB3953.namprd02.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mu50VM9a3yQ5x3qLALOzY9rzcBP4zb1tfaitQKo4X62JIoWAzSLYNX6GgjazMQKh2cakjC89Io/ovVSOmhmKkOJYcAW0A1ZFShS7H5nWwzEy3VEoTuSg/GT/lYrYvOQ7LL+YA8BumRG6DpTsQWOfb3ickL4cJYACL4w3jkZryNi0HpVONSjH0RSctSSwgBVMLlywOcweV3yROs743vvS1XiccDReQC/2KBJNzzpy7Pxx4lrNIHp0snjtjt/KQwRB2wrUnG3gbvl7F6Oe7LAJQr/dj1J5ublxzS38ytg/8TWyeaSdN6EMR8Iv6qBOjHh0NKyInflSCgzGdte6WXsyEP8ZgN0W2yddMTvpT9H8rAvRIK3ijHgR1MX5SrSnG3tL2fkfLS6GA4/+kdPiTNvgHxtMa/DVvKoGVuZW72fosyjQnaHyx3ssM5wn9Y9J567l1tHmPk9+7Y5qBHaSz21bzFiR1quB3jh0ohP7dvnTDG0VyrbXqNHtPNf1FwJfr7vSNVCfQsEdbulZ7et7CrsR7n/02kPR+OG+Wo8OUxb559/vqv/qYLElzUpm5bhhQQ+fM/BMeMhwPQ03a/p+sImFSwwpdzYJaGmpPqhOjgN2WfY7j81zd/9N7xPaekXA3drN88LeJ/KbTfaxedVG+ALxlWE71AeiwPUOdL8fkwGTchGi87TprBFF1BmpLZrFM/EWpS3qFBpE8RJJYtr76PZRgA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR02MB8173.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(122000001)(2906002)(71200400001)(38100700002)(52536014)(55016003)(38070700005)(316002)(5660300002)(6506007)(7696005)(8676002)(8936002)(53546011)(86362001)(107886003)(83380400001)(4326008)(26005)(33656002)(9686003)(76116006)(508600001)(110136005)(54906003)(66946007)(186003)(64756008)(66476007)(66446008)(66556008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WmhQSkNkQUQ2eTZ2dWlkL0d2K2JUMlZDR21LVE5Qa3N5emF6cnFiZlZ0dkVX?=
+ =?utf-8?B?dW9XL1lmTTNXOEhWTXV0M3RmTXNzMjdtZHVDMGdZMXNCQ3ZNVmVaSHkrTzl1?=
+ =?utf-8?B?SFFZKytYd3V0NHJSdXdqY1N1WjU1QnZucHRlOHJSaEliSzZodjhJMXplbm1V?=
+ =?utf-8?B?RmtPL2k1bXpHQmNjVEtDNXZCM2s3M2FoKzB1TU5ZajNjaXdiNnlKYU9nRE9D?=
+ =?utf-8?B?b2hGWmlId3RmYlhGbUJuaWYvQUVFRmJOQnFQd0RhQSs4b1c0OVhzYVhKVDNw?=
+ =?utf-8?B?ZnlYdzZzc0xhTEVrZlMrekZxWUNwbmJxNXhoLzBTNmhaQTdTSEhrMklqeE56?=
+ =?utf-8?B?YzhuTzNtbXJTUzBVbHJpZ2lKSWVwYUFEcDZ2ZXZXb0N0TUVObDJHL2R1aDZ3?=
+ =?utf-8?B?d2xNSWhzMkFsZEgyN2ZKZmFvVDJsVkhnWFB5MFhjeHNDZnlqNzFoRGNuNnh0?=
+ =?utf-8?B?RDluMHJSYTFUWTNnQlpUbExYMXFWMU5RQlE0QVdzemZ3RDQ5ZmUzbUZ0dmls?=
+ =?utf-8?B?UnJKOExmMWNldTJaTEwxZDVaK05xNTQ3N3hkZVAwZllTL0gyMDZQR0FZTVNH?=
+ =?utf-8?B?NGx1N3Y3VWc0ZFprWmNkQ3NiN1pFdGJJRngwWU5GQUE5WVFlZW1YOTNrQ1c4?=
+ =?utf-8?B?Umh5WmF1eU40eXJrN1hteHVGVUllSmdkTmo1NksreXFLZGJRVmdkbDk2RHBC?=
+ =?utf-8?B?VVZrZDJkMUlNd3ROdDMrMnFNM2lUTDNqa25tWll3V3oxWDR3T0c1LzRLOGNF?=
+ =?utf-8?B?QlRXaE5yRVQ5VmJoc05Lbm8vdHRsNGMzQVFjN09jbzI2Wi8rSVRYd1BucmN0?=
+ =?utf-8?B?MGJOVDkvUjZVeC9TWEgvNDBXUzE0dmU5cGpCMjFBeHBzS09DZnhndC9NWXEw?=
+ =?utf-8?B?UzU1Q0tJdVRMaExmVDNFOXhITGtBWjZrYmR4SUJBZ0UrV3Jhb3dHMFNzNWMy?=
+ =?utf-8?B?R0thNktING1xNzkrNXV5OGdlL2pMdW1qNGRSUWJlMGh5bE5CaXErU2IwSnRq?=
+ =?utf-8?B?WkJpTHFXb29EWjVUNkVqSGxvbTVNMStxRWxxd2diWk1SMTBiK2N6MXR3WldF?=
+ =?utf-8?B?M3J3UWEvUVF0enBadC9EWjJZTkNjUWtxWm41RzY5T2pidDFoYTkxOG0vRnFT?=
+ =?utf-8?B?WmQvUHlmT3cyVTJuT2Q4aEJqQmk2YlRiNFFrR1kzTTdWd1JKTU11Ly9lb0RT?=
+ =?utf-8?B?UVJIY3AyRHVBaDFPKzFvSmpJckZCSmtvVnYweUIxdzZNNGJJdDduRTdJR3pY?=
+ =?utf-8?B?WDRZT1cwamNZUWhpS0c2amJtMWVQd0lMTDJuSjQ2ZERVdmQ1Sld5bENHUzlu?=
+ =?utf-8?B?cmgyZTdtOTNXZmFSZlBPK0phTWZwd1ZWTDY4NCszY2tZV001Uzl2WlRmaCtZ?=
+ =?utf-8?B?S2Y1NWNIRDRyOGFYdmx5cGhBN2N4Vk5iSjNhZTVTTUhKQUNENWVTaXdGRmRu?=
+ =?utf-8?B?QU9UbFErZ2tMd0c1dFg3dHVJamNsV1lTM2ZlekE2dEhMMm5BQlh6Q3hYNnAr?=
+ =?utf-8?B?dmhEL2g4dUI1aVk1VXZqblphM1lpT2d4ZVJMcmxtYlpWamtJSDB5NlM1Q3Ni?=
+ =?utf-8?B?eDRZZ3JGeWM3aWZNTHBLbHV6Q1BXc0d5bzRzVHBaU1NEQXVEaXFZbHBiaDdS?=
+ =?utf-8?B?L0RQQ0ZIeUJaOE9vbWg0eW1aODZCN0xOVjBCdU5JRlBVNGNQeEJsT2pOMVVX?=
+ =?utf-8?B?SzdKWSsvamlFcm96eldTMU5RSzNZV2dNUUtvN2hla1RzaGxCRUNDUFRmeWpp?=
+ =?utf-8?B?b01ZdUFKTnZrOXhHTlk2cWJ4MGVmWDJBeldyK2o2alVYZ3BKRnEyZEtucEth?=
+ =?utf-8?B?ZWRnY1FtdDYrbTNUY05wU1dRbGZGZTJlTGRkUzRIV1M4NWlPRStJYWg0T2My?=
+ =?utf-8?B?QTdRREJPTGlnN1JOekI5RG1zK2ZsRFJiTXpMd0J3SUxTeEpqeEpJOGE0WEpH?=
+ =?utf-8?B?Y2UvNWxMQ2ZvaXdSdW1GWHVvc1dZRys4aGRXTUg5MzhtYU0wbExKWHl1ZEdG?=
+ =?utf-8?B?RVJCenpMSzB3PT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: qti.qualcomm.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR02MB8173.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08c9ce77-c977-4295-f4c2-08da05ca19d2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2022 14:51:20.0353
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GJLO4HzDgiTRED+aZRCjPcx5bN4wMdEluVi/SwcPcGDCAGnZyDENy2OiKy1mpyEUNn81DLKzA2sicrE3SvtCO7tvkyYVliVeJMbVK5oHY7c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR02MB3953
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the firmware with OS supported policies mask, so	that firmware can
-relinquish its internal controls. Without this update several Tiger Lake
-laptops gets performance limited with in few seconds of executing in
-turbo region.
-
-The existing way of enumerating firmware policies via IDSP method and
-selecting policy by directly writing those policy UUIDS via _OSC method
-is not supported in newer generation of hardware.
-
-There is a new UUID "B23BA85D-C8B7-3542-88DE-8DE2FFCFD698" is defined for
-updating policy capabilities. As part of ACPI _OSC method:
-
-Arg0 - UUID: B23BA85D-C8B7-3542-88DE-8DE2FFCFD698
-Arg1 - Rev ID: 1
-Arg2 - Count: 2
-Arg3 - Capability buffers: Array of Arg2 DWORDS
-
-DWORD1: As defined in the ACPI 5.0 Specification
-- Bit 0: Query Flag
-- Bits 1-3: Always 0
-- Bits 4-31: Reserved
-
-DWORD2 and beyond:
-- Bit0: set to 1 to indicate Intel(R) Dynamic Tuning is active, 0 to
-indicate it is disabled and legacy thermal mechanism should
-be enabled.
-- Bit1: set to 1 to indicate Intel(R) Dynamic Tuning is controlling
-active cooling, 0 to indicate bios shall enable legacy thermal
-zone with active trip point.
-- Bit2: set to 1 to indicate Intel(R) Dynamic Tuning is controlling
-passive cooling, 0 to indicate bios shall enable legacy thermal
-zone with passive trip point.
-- Bit3: set to 1 to indicate Intel(R) Dynamic Tuning is handling
-critical trip point, 0 to indicate bios shall enable legacy
-thermal zone with critical trip point.
-- Bits 4:31: Reserved
-
-From sysfs interface, there is an existing interface to update policy
-UUID using attribute "current_uuid". User space can write the same UUID
-for ACTIVE, PASSIVE and CRITICAL policy. Driver converts these UUIDs to
-DWORD2 Bit 1 to Bit 3. When any of the policy is activated by user
-space it is assumed that dynamic tuning is active.
-
-For example
-$cd /sys/bus/platform/devices/INTC1040:00/uuids
-To support active policy
-$echo "3A95C389-E4B8-4629-A526-C52C88626BAE" > current_uuid
-To support passive policy
-$echo "42A441D6-AE6A-462b-A84B-4A8CE79027D3" > current_uuid
-To support critical policy
-$echo "97C68AE7-15FA-499c-B8C9-5DA81D606E0A" > current_uuid
-
-To check all the supported policies
-$cat current_uuid
-3A95C389-E4B8-4629-A526-C52C88626BAE
-42A441D6-AE6A-462b-A84B-4A8CE79027D3
-97C68AE7-15FA-499c-B8C9-5DA81D606E0A
-
-To match the bit format for DWORD2, rearranged enum int3400_thermal_uuid
-and int3400_thermal_uuids[] by swapping current INT3400_THERMAL_ACTIVE
-and INT3400_THERMAL_PASSIVE_1.
-
-If the policies are enumerated via IDSP method then legacy method is
-used, if not the new method is used to update policy support.
-
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- .../intel/int340x_thermal/int3400_thermal.c   | 146 ++++++++++++------
- 1 file changed, 97 insertions(+), 49 deletions(-)
-
-diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-index c2d3df302214..d5f065c4d209 100644
---- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-+++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-@@ -17,8 +17,8 @@
- #define INT3400_KEEP_ALIVE 0xA0
- 
- enum int3400_thermal_uuid {
-+	INT3400_THERMAL_ACTIVE = 0,
- 	INT3400_THERMAL_PASSIVE_1,
--	INT3400_THERMAL_ACTIVE,
- 	INT3400_THERMAL_CRITICAL,
- 	INT3400_THERMAL_ADAPTIVE_PERFORMANCE,
- 	INT3400_THERMAL_EMERGENCY_CALL_MODE,
-@@ -31,8 +31,8 @@ enum int3400_thermal_uuid {
- };
- 
- static char *int3400_thermal_uuids[INT3400_THERMAL_MAXIMUM_UUID] = {
--	"42A441D6-AE6A-462b-A84B-4A8CE79027D3",
- 	"3A95C389-E4B8-4629-A526-C52C88626BAE",
-+	"42A441D6-AE6A-462b-A84B-4A8CE79027D3",
- 	"97C68AE7-15FA-499c-B8C9-5DA81D606E0A",
- 	"63BE270F-1C11-48FD-A6F7-3AF253FF3E2D",
- 	"5349962F-71E6-431D-9AE8-0A635B710AEE",
-@@ -59,6 +59,7 @@ struct int3400_thermal_priv {
- 	char *data_vault;
- 	int odvp_count;
- 	int *odvp;
-+	u16 os_uuid_mask;
- 	struct odvp_attr *odvp_attrs;
- };
- 
-@@ -142,12 +143,55 @@ static ssize_t current_uuid_show(struct device *dev,
- 				 struct device_attribute *devattr, char *buf)
- {
- 	struct int3400_thermal_priv *priv = dev_get_drvdata(dev);
-+	int i, length = 0;
-+
-+	if (priv->current_uuid_index > 0)
-+		return sprintf(buf, "%s\n",
-+			       int3400_thermal_uuids[priv->current_uuid_index]);
-+
-+	for (i = 0; i <= INT3400_THERMAL_CRITICAL; i++) {
-+		if (priv->os_uuid_mask & BIT(i))
-+			length += scnprintf(&buf[length],
-+					    PAGE_SIZE - length,
-+					    "%s\n",
-+					    int3400_thermal_uuids[i]);
-+	}
- 
--	if (priv->current_uuid_index == -1)
--		return sprintf(buf, "INVALID\n");
-+	if (length)
-+		return length;
- 
--	return sprintf(buf, "%s\n",
--		       int3400_thermal_uuids[priv->current_uuid_index]);
-+	return sprintf(buf, "INVALID\n");
-+}
-+
-+static int int3400_thermal_run_osc(acpi_handle handle, char *uuid_str, int *enable)
-+{
-+	u32 ret, buf[2];
-+	acpi_status status;
-+	int result = 0;
-+	struct acpi_osc_context context = {
-+		.uuid_str = NULL,
-+		.rev = 1,
-+		.cap.length = 8,
-+	};
-+
-+	context.uuid_str = uuid_str;
-+
-+	buf[OSC_QUERY_DWORD] = 0;
-+	buf[OSC_SUPPORT_DWORD] = *enable;
-+
-+	context.cap.pointer = buf;
-+
-+	status = acpi_run_osc(handle, &context);
-+	if (ACPI_SUCCESS(status)) {
-+		ret = *((u32 *)(context.ret.pointer + 4));
-+		if (ret != *enable)
-+			result = -EPERM;
-+	} else
-+		result = -EPERM;
-+
-+	kfree(context.ret.pointer);
-+
-+	return result;
- }
- 
- static ssize_t current_uuid_store(struct device *dev,
-@@ -164,16 +208,47 @@ static ssize_t current_uuid_store(struct device *dev,
- 			 * If we have a list of supported UUIDs, make sure
- 			 * this one is supported.
- 			 */
--			if (priv->uuid_bitmap &&
--			    !(priv->uuid_bitmap & (1 << i)))
-+			if (priv->uuid_bitmap & BIT(i)) {
-+				priv->current_uuid_index = i;
-+				return count;
-+			}
-+
-+			/*
-+			 * There is support of only 3 policies via the new
-+			 * _OSC to inform OS capability:
-+			 * INT3400_THERMAL_ACTIVE
-+			 * INT3400_THERMAL_PASSIVE_1
-+			 * INT3400_THERMAL_CRITICAL
-+			 */
-+
-+			if (i > INT3400_THERMAL_CRITICAL)
- 				return -EINVAL;
- 
--			priv->current_uuid_index = i;
--			return count;
-+			priv->os_uuid_mask |= BIT(i);
-+
-+			break;
- 		}
- 	}
- 
--	return -EINVAL;
-+	if (priv->os_uuid_mask) {
-+		int cap, ret;
-+
-+		/*
-+		 * Capability bits:
-+		 * Bit 0: set to 1 to indicate DPTF is active
-+		 * Bi1 1: set to 1 to active cooling is supported by user space daemon
-+		 * Bit 2: set to 1 to passive cooling is supported by user space daemon
-+		 * Bit 3: set to 1 to critical trip is handled by user space daemon
-+		 */
-+		cap = ((priv->os_uuid_mask << 1) | 0x01);
-+		ret = int3400_thermal_run_osc(priv->adev->handle,
-+					      "b23ba85d-c8b7-3542-88de-8de2ffcfd698",
-+					      &cap);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return count;
- }
- 
- static DEVICE_ATTR_RW(current_uuid);
-@@ -236,41 +311,6 @@ static int int3400_thermal_get_uuids(struct int3400_thermal_priv *priv)
- 	return result;
- }
- 
--static int int3400_thermal_run_osc(acpi_handle handle,
--				enum int3400_thermal_uuid uuid, bool enable)
--{
--	u32 ret, buf[2];
--	acpi_status status;
--	int result = 0;
--	struct acpi_osc_context context = {
--		.uuid_str = NULL,
--		.rev = 1,
--		.cap.length = 8,
--	};
--
--	if (uuid < 0 || uuid >= INT3400_THERMAL_MAXIMUM_UUID)
--		return -EINVAL;
--
--	context.uuid_str = int3400_thermal_uuids[uuid];
--
--	buf[OSC_QUERY_DWORD] = 0;
--	buf[OSC_SUPPORT_DWORD] = enable;
--
--	context.cap.pointer = buf;
--
--	status = acpi_run_osc(handle, &context);
--	if (ACPI_SUCCESS(status)) {
--		ret = *((u32 *)(context.ret.pointer + 4));
--		if (ret != enable)
--			result = -EPERM;
--	} else
--		result = -EPERM;
--
--	kfree(context.ret.pointer);
--
--	return result;
--}
--
- static ssize_t odvp_show(struct kobject *kobj, struct kobj_attribute *attr,
- 			 char *buf)
- {
-@@ -422,10 +462,18 @@ static int int3400_thermal_change_mode(struct thermal_zone_device *thermal,
- 	if (!priv)
- 		return -EINVAL;
- 
--	if (mode != thermal->mode)
-+	if (mode != thermal->mode) {
-+		int enabled;
-+
-+		if (priv->current_uuid_index < 0 ||
-+		    priv->current_uuid_index >= INT3400_THERMAL_MAXIMUM_UUID)
-+			return -EINVAL;
-+
-+		enabled = (mode == THERMAL_DEVICE_ENABLED);
- 		result = int3400_thermal_run_osc(priv->adev->handle,
--						priv->current_uuid_index,
--						mode == THERMAL_DEVICE_ENABLED);
-+						 int3400_thermal_uuids[priv->current_uuid_index],
-+						 &enabled);
-+	}
- 
- 
- 	evaluate_odvp(priv);
--- 
-2.31.1
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRG91ZyBBbmRlcnNvbiA8
+ZGlhbmRlcnNAY2hyb21pdW0ub3JnPg0KPiBTZW50OiBUaHVyc2RheSwgTWFyY2ggMTAsIDIwMjIg
+MTI6NTUgQU0NCj4gVG86IHF1aWNfdnBvbGltZXIgPHF1aWNfdnBvbGltZXJAcXVpY2luYy5jb20+
+DQo+IENjOiBkcmktZGV2ZWwgPGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmc+OyBsaW51
+eC1hcm0tbXNtIDxsaW51eC1hcm0tDQo+IG1zbUB2Z2VyLmtlcm5lbC5vcmc+OyBmcmVlZHJlbm8g
+PGZyZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmc+Ow0KPiBvcGVuIGxpc3Q6T1BFTiBGSVJN
+V0FSRSBBTkQgRkxBVFRFTkVEIERFVklDRSBUUkVFIEJJTkRJTkdTDQo+IDxkZXZpY2V0cmVlQHZn
+ZXIua2VybmVsLm9yZz47IExLTUwgPGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+OyBSb2IN
+Cj4gQ2xhcmsgPHJvYmRjbGFya0BnbWFpbC5jb20+OyBTdGVwaGVuIEJveWQgPHN3Ym95ZEBjaHJv
+bWl1bS5vcmc+Ow0KPiBxdWljX2thbHlhbnQgPHF1aWNfa2FseWFudEBxdWljaW5jLmNvbT4NCj4g
+U3ViamVjdDogUmU6IFtQQVRDSCB2NSA1LzVdIGRybS9tc20vZGlzcC9kcHUxOiBzZXQgbWRwIGNs
+ayB0byB0aGUNCj4gbWF4aW11bSBmcmVxdWVuY3kgaW4gb3BwIHRhYmxlIGR1cmluZyBwcm9iZQ0K
+PiANCj4gV0FSTklORzogVGhpcyBlbWFpbCBvcmlnaW5hdGVkIGZyb20gb3V0c2lkZSBvZiBRdWFs
+Y29tbS4gUGxlYXNlIGJlIHdhcnkNCj4gb2YgYW55IGxpbmtzIG9yIGF0dGFjaG1lbnRzLCBhbmQg
+ZG8gbm90IGVuYWJsZSBtYWNyb3MuDQo+IA0KPiBIaSwNCj4gDQo+IE9uIFR1ZSwgTWFyIDgsIDIw
+MjIgYXQgODo1NSBBTSBWaW5vZCBQb2xpbWVyYQ0KPiA8cXVpY192cG9saW1lckBxdWljaW5jLmNv
+bT4gd3JvdGU6DQo+ID4NCj4gPiB1c2UgbWF4IGNsb2NrIGR1cmluZyBwcm9iZS9iaW5kIHNlcXVl
+bmNlIGZyb20gdGhlIG9wcCB0YWJsZS4NCj4gPiBUaGUgY2xvY2sgd2lsbCBiZSBzY2FsZWQgZG93
+biB3aGVuIGZyYW1ld29yayBzZW5kcyBhbiB1cGRhdGUuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5
+OiBWaW5vZCBQb2xpbWVyYSA8cXVpY192cG9saW1lckBxdWljaW5jLmNvbT4NCj4gPiAtLS0NCj4g
+PiAgZHJpdmVycy9ncHUvZHJtL21zbS9kaXNwL2RwdTEvZHB1X2ttcy5jIHwgMyArKysNCj4gPiAg
+MSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQ0KPiANCj4gSW4gYWRkaXRpb24gdG8gRG1p
+dHJ5J3MgcmVxdWVzdHMsIGNhbiB5b3UgYWxzbyBtYWtlIHRoaXMgcGF0Y2ggIzEgaW4NCj4gdGhl
+IHNlcmllcyBzaW5jZSB0aGUgRFRTIHN0dWZmIHJlYWxseSBvdWdodCB0byBjb21lIF9hZnRlcl8g
+dGhpcyBvbmUuDQo+IA0KPiAuLi5hbmQgYWN0dWFsbHksIHRoaW5raW5nIGFib3V0IGl0IGZ1cnRo
+ZXI6DQo+IA0KPiAxLiBJZiB3ZSBsYW5kIHRoaXMgZml4LCB3ZSBhY3R1YWxseSBkb24ndCBfbmVl
+ZF8gdGhlIGR0cyBwYXRjaGVzLA0KPiByaWdodD8gU3VyZSwgdGhlIGNsb2NrIHJhdGUgd2lsbCBn
+ZXQgYXNzaWduZWQgYmVmb3JlIHByb2JlIGJ1dCB0aGVuDQo+IHdlJ2xsIGNoYW5nZSBpdCByaWdo
+dCBhd2F5IGluIHByb2JlLCByaWdodD8NCj4gDQo+IDIuIElmIHdlIGxhbmQgdGhlIGR0cyBwYXRj
+aGVzIF9iZWZvcmVfIHRoZSBkcml2ZXIgcGF0Y2ggdGhlbiBpdCB3aWxsDQo+IGJlIGEgcmVncmVz
+c2lvbiwgcmlnaHQ/DQo+IA0KPiAzLiBUaGUgZHRzIHBhdGNoZXMgYW5kIGRyaXZlciBwYXRjaCB3
+aWxsIHByb2JhYmx5IGxhbmQgdGhyb3VnaA0KPiBzZXBhcmF0ZSB0cmVlcy4gVGhlIGRyaXZlciBw
+YXRjaCB3aWxsIGdvIHRocm91Z2ggdGhlIE1TTSBEUk0gdHJlZSBhbmQNCj4gdGhlIGRldmljZSB0
+cmVlIHBhdGNoZXMgdGhyb3VnaCB0aGUgUXVhbGNvbW0gYXJtc29jIHRyZWUsIHJpZ2h0Pw0KPiAN
+Cj4gDQo+IEFzc3VtaW5nIHRoYXQgdGhlIGFib3ZlIGlzIHJpZ2h0LCB3ZSBzaG91bGQ6DQo+IA0K
+PiAxLiBQdXQgdGhlIGRyaXZlciBwYXRjaCBmaXJzdC4NCj4gDQpNb3ZlZCBkcml2ZXIgcGF0Y2gg
+Zmlyc3QuDQoNCj4gMi4gUmVtb3ZlIHRoZSAiRml4ZXMiIHRhZyBvbiB0aGUgZHRzIHBhdGNoZXMu
+IEkgZ3Vlc3MgaW4gdGhlb3J5IHdlDQo+IGNvdWxkIGhhdmUgYSBGSXhlcyB0YWcgb24gdGhpcyBw
+YXRjaD8NCj4gDQotIFJlbW92ZWQgZml4ZWQgdGFnIG9uIGR0IHBhdGNoZXMgYW5kIGFkZGVkIG9u
+IGRyaXZlciBwYXRjaC4NCg0KPiAzLiBOb3RlIGluIHRoZSBkdHMgcGF0Y2hlcyBjb21taXQgbWVz
+c2FnZXMgdGhhdCB0aGV5IGRlcGVuZCBvbiB0aGUgZHJpdmVyDQo+IHBhdGNoLg0KPiANCi0gQWRk
+ZWQgZGVwZW5kZW5jeSBwYXRjaCBvbiBkcml2ZXIgcGF0Y2ggZm9yIGR0IHBhdGNoLg0KDQo+IDQu
+IERlbGF5IHRoZSBkdHMgcGF0Y2hlcyB1bnRpbCB0aGUgZHJpdmVyIGNoYW5nZSBoYXMgbWFkZSBp
+dCB0byBtYWlubGluZS4NCj4gDQo+IERvZXMgdGhhdCBzb3VuZCByZWFzb25hYmxlPw0K
