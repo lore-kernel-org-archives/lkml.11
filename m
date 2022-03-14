@@ -2,140 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F97C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74ED8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243214AbiCNRQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 13:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
+        id S242128AbiCNRTU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiCNRQq (ORCPT
+        with ESMTP id S229968AbiCNRTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 13:16:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE5B39694;
-        Mon, 14 Mar 2022 10:15:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 14 Mar 2022 13:19:18 -0400
+X-Greylist: delayed 415 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 10:18:07 PDT
+Received: from hl1100.dinaserver.com (hl1100.dinaserver.com [82.98.168.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B57F1B79E
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:18:06 -0700 (PDT)
+X-DinaScanner-From: info@foescoa.es
+X-DinaScanner-SpamScore:  2.99
+X-DinaScanner-SpamCheck: no es spam, SpamAssassin (almacenado, puntaje=2.992,
+        requerido 6, autolearn=disabled, ALL_TRUSTED -1.00, BAYES_60 2.20,
+        DKIMWL_BLOCKED 0.00, DKIM_SIGNED 0.10, DKIM_VALID -0.10,
+        DKIM_VALID_AU -0.10, DKIM_VALID_EF -0.10, FROM_FMBLA_NDBLOCKED 0.00,
+        FROM_IS_REPLY_TO -0.50, T_SCC_BODY_TEXT_LINE -0.01,
+        URIBL_DBL_SPAM 2.50)
+X-DinaScanner: Libre de Virus
+X-DinaScanner-ID: B347A46C515B.A1AF9
+X-DinaScanner-Information: DinaScanner. Filtro anti-Spam y anti-Virus
+Received: from DESKTOP4PGD8QHHome (unknown [91.116.0.144])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2CCB60F4B;
-        Mon, 14 Mar 2022 17:15:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 150B1C340E9;
-        Mon, 14 Mar 2022 17:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647278135;
-        bh=EQd6QSNnIgzu3N+XI4qSRIf3ZpnZgC2hfNyP7yHWeBE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Y6CAX+qOJXC95w4Way/8WtBS1h2fPcGylcautxIBOI+BwC9RVxzqTY8X8lhA8uMLy
-         L1AMLZqASaO1VE/YPMgC4SCZM4P4ZFkVoJKnBFm5sIrO+7WpODruCkO27obRRajcPj
-         +aN6AB+KKiM7HnHe9lzn0Cx79eMZPhgTFLDVJnwtkQGVYpBALFM9YNIYedpSqqOyWM
-         m6z46nqw/ga5QmvGFIM+bvvP7dfd7aFLJnMQzX/voQeFDidnejFZSUqB41sLKsyyOt
-         YoSlvtI23iEkzOwbMMB1HqmD1MsTYosJ2D+5czzgRBXTLeoJUFGAm2yxKXjEznECX7
-         +M2IFMZGeb/DQ==
-Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
-        (envelope-from <mchehab@kernel.org>)
-        id 1nToI8-001zIU-Fa; Mon, 14 Mar 2022 18:15:32 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Aline Santana Cordeiro <alinesantanacordeiro@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev, Hans Verkuil <hverkuil@xs4all.nl>
-Subject: [PATCH] media: atomisp: fix bad usage at error handling logic
-Date:   Mon, 14 Mar 2022 18:15:31 +0100
-Message-Id: <7c6071ba016b58206fc1f731f02c67ea0ae3c758.1647278119.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        (Authenticated sender: info@foescoa.es)
+        by hl1100.dinaserver.com (Postfix) with ESMTPSA id B347A46C515B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:11:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=foescoa.es; s=default;
+        t=1647277869; bh=osP0bnjNiRoJrOBrEdr9YZ5k1NUaAIb3chPo87sUgB8=;
+        h=From:Reply-To:To:Subject:Date;
+        b=ov8GcWdzjtpLqIkTXoM83YaYx/c+RijnhZfVkAfNVcsm6e3WphKmQntBATw7gdxxo
+         Jm+yDg7MOryp8jTzdF1muoH1cyQehSFpDanTv10yf2hBjVJJM/nSjrM5/CWMxXzczt
+         iTfYDYebNBOYRrlmayUf9KMgX2auOeOsbVJLiw6Y=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+From:   info@foescoa.es
+Reply-To: info@foescoa.es
+To:     linux-kernel@vger.kernel.org
+Subject: Marzo
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 14 Mar 2022 18:11:10 +0100
+Message-ID: <7888478468920244928350@DESKTOP-4PGD8QH>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As warned by sparse:
-	atomisp: drivers/staging/media/atomisp/pci/atomisp_acc.c:508 atomisp_acc_load_extensions() warn: iterator used outside loop: 'acc_fw'
+Buenos d=EDas
 
-The acc_fw interactor is used outside the loop, at the error handling
-logic. On most cases, this is actually safe there, but, if
-atomisp_css_set_acc_parameters() has an error, an attempt to use it
-will pick an invalid value for acc_fw.
 
-Reported-by: Hans Verkuil <hverkuil@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
- .../staging/media/atomisp/pci/atomisp_acc.c   | 28 +++++++++++++------
- 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_acc.c b/drivers/staging/media/atomisp/pci/atomisp_acc.c
-index 9a1751895ab0..28cb271663c4 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_acc.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_acc.c
-@@ -439,6 +439,18 @@ int atomisp_acc_s_mapped_arg(struct atomisp_sub_device *asd,
- 	return 0;
- }
- 
-+static void atomisp_acc_unload_some_extensions(struct atomisp_sub_device *asd,
-+					      int i,
-+					      struct atomisp_acc_fw *acc_fw)
-+{
-+	while (--i >= 0) {
-+		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
-+			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
-+							 acc_flag_to_pipe[i].pipe_id);
-+		}
-+	}
-+}
-+
- /*
-  * Appends the loaded acceleration binary extensions to the
-  * current ISP mode. Must be called just before sh_css_start().
-@@ -479,16 +491,20 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
- 								     acc_fw->fw,
- 								     acc_flag_to_pipe[i].pipe_id,
- 								     acc_fw->type);
--				if (ret)
-+				if (ret) {
-+					atomisp_acc_unload_some_extensions(asd, i, acc_fw);
- 					goto error;
-+				}
- 
- 				ext_loaded = true;
- 			}
- 		}
- 
- 		ret = atomisp_css_set_acc_parameters(acc_fw);
--		if (ret < 0)
-+		if (ret < 0) {
-+			atomisp_acc_unload_some_extensions(asd, i, acc_fw);
- 			goto error;
-+		}
- 	}
- 
- 	if (!ext_loaded)
-@@ -497,6 +513,7 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
- 	ret = atomisp_css_update_stream(asd);
- 	if (ret) {
- 		dev_err(isp->dev, "%s: update stream failed.\n", __func__);
-+		atomisp_acc_unload_extensions(asd);
- 		goto error;
- 	}
- 
-@@ -504,13 +521,6 @@ int atomisp_acc_load_extensions(struct atomisp_sub_device *asd)
- 	return 0;
- 
- error:
--	while (--i >= 0) {
--		if (acc_fw->flags & acc_flag_to_pipe[i].flag) {
--			atomisp_css_unload_acc_extension(asd, acc_fw->fw,
--							 acc_flag_to_pipe[i].pipe_id);
--		}
--	}
--
- 	list_for_each_entry_continue_reverse(acc_fw, &asd->acc.fw, list) {
- 		if (acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_OUTPUT &&
- 		    acc_fw->type != ATOMISP_ACC_FW_LOAD_TYPE_VIEWFINDER)
--- 
-2.35.1
+Soy Alex Pons, director de FOESCO.
 
+
+Os adjuntamos el listado de CURSOS BONIFICABLES para empleados en activo o =
+ERTE disponibles para la presente convocatoria y la FICHA DE INSCRIPCI=D3N =
+para solicitarlos.
+
+=BFPod=E9is por favor confirmarnos que os han llegado correctamente los PDF=
+ adjuntos=3F
+
+
+Recordamos que todos los cursos impartidos son 100% Bonificables (Coste 0) =
+con cargo al Cr=E9dito de Formaci=F3n 2022 disponible de cada empresa.
+
+Si desconoc=E9is este dato nos lo pod=E9is consultar.
+
+
+
+INSTRUCCIONES PARA SOLICITAR LOS CURSOS BONIFICABLES:
+
+Se han de cumplimentar =FAnicamente los siguientes datos de la FICHA DE INS=
+CRIPCI=D3N adjunta (1 impreso por curso) y se ha de mandar escaneado o en f=
+otograf=EDa a esta misma direcci=F3n de correo electr=F3nico.
+
+-  Curso a realizar
+-  Nombre completo y DNI del alumno
+-  N=FAmero de afiliaci=F3n a la Seguridad Social del alumno (Dato indicado=
+ en las n=F3minas)
+-  Tel=E9fono y e-mail del alumno
+-  Nombre y CIF de la empresa
+-  Direcci=F3n de la empresa
+-  Tel=E9fono y e-mail de la empresa
+-  Tel=E9fono y e-mail del gestor de la empresa
+-  Cta. Cotizaci=F3n a la seguridad social de la empresa (Dato indicado en =
+las n=F3minas)
+-  A=F1o de creaci=F3n de la empresa
+-  Nombre completo y DNI de un representante legal de la empresa
+-  Firma del representante legal de la empresa.
+-  Sello de la empresa.
+-  Firma del alumno.
+
+
+
+Quedamos a vuestra disposici=F3n.
+
+
+Un cordial saludo.
+
+
+Alex Pons
+Director FOESCO
+
+
+FOESCO Formaci=F3n Estatal Continua.
+Empresa inscrita en el Registro de empresas de Formaci=F3n.
+
+www.foesco.com
+Tel:          910 323 794
+(Horario de 9h a 15h y de 17h a 20h de lunes a Viernes)
+
+FOESCO ofrece formaci=F3n a empresas y trabajadores en activo a trav=E9s de=
+ cursos bonificados por la Fundaci=F3n Estatal para la Formaci=F3n en el Em=
+pleo (antiguo FORCEM) que gestiona las acciones formativas de FORMACI=D3N C=
+ONTINUA para trabajadores y se rige por la ley 30/2015 de 9 de septiembre.
+
+Antes de imprimir este e-mail piense bien si es necesario hacerlo. La infor=
+maci=F3n transmitida en este mensaje est=E1 dirigida solamente a las person=
+as o entidades que figuran en el encabezamiento y contiene informaci=F3n co=
+nfidencial, por lo que, si usted lo recibiera por error, por favor destr=FA=
+yalo sin copiarlo, usarlo ni distribuirlo, comunic=E1ndolo inmediatamente a=
+l emisor del mensaje. De conformidad con lo dispuesto en el Reglamento Euro=
+peo del 2016/679, del 27 de abril de 2016, FOESCO le informa que los datos =
+por usted suministrados ser=E1n tratados con las medidas de seguridad confo=
+rmes a la normativa vigente que se requiere. Dichos datos ser=E1n empleados=
+ con fines de gesti=F3n. Para el ejercicio de sus derechos de transparencia=
+, informaci=F3n, acceso, rectificaci=F3n, supresi=F3n o derecho al olvido, =
+limitaci=F3n del tratamiento, portabilidad de datos y oposici=F3n de sus da=
+tos de car=E1cter personal deber=E1 dirigirse a la direcci=F3n del responsa=
+ble del tratamiento a C/ LAGUNA DEL MARQUESADO N=BA10, 28021, MADRID, "PULS=
+ANDO AQUI" <mailto:bajas@foesco.com=3FSubject=3DBAJA%20CORREOS> y "ENVIAR".
