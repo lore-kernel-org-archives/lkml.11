@@ -2,151 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01EEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:47:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244432AbiCNTs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S244436AbiCNTsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244359AbiCNTsQ (ORCPT
+        with ESMTP id S244403AbiCNTsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:48:16 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDC83DDF8;
-        Mon, 14 Mar 2022 12:47:06 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EHfxqa000786;
-        Mon, 14 Mar 2022 19:47:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=XmqMk+lEABYpM+9BV3uK0X5g2LK2Ku400QAKT44/diQ=;
- b=d15+uqmasu+2i7MEBXNmnuBLG7haM6SfdJ51yODU+s+aRR6s+0NtELMR50Ryn4DRdeau
- npi7qQrrXSYg4ghWEGj4zKERU0L5xkSjPezStjQBk/chJRQPqnPK3HjDxT1Y61vJp86z
- hLz9bKBDuLXybxZchgQF6hgQ9/glZqUcVyLzKpW8CtdBpjiSAyXJIVUHTDdt/l6PnqtU
- PlWwKdVRyt0PnU2t7fkxfgPJUdJpmY6aOxsCOawZRXJl+R8gG2+lO/4K/W8HmQvl3V+X
- rowK4+AhbQ80vbFcMp04fywYOuKE+DYNkIvwj0TPuxA5plJO9ocENdoO4BwHpEcC+99r fA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6aj0txk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:46:59 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJeoks029436;
-        Mon, 14 Mar 2022 19:46:59 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6aj0tx9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:46:59 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJNB2m001535;
-        Mon, 14 Mar 2022 19:46:58 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma01dal.us.ibm.com with ESMTP id 3erk59cbth-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:46:58 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EJkujc20840858
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Mar 2022 19:46:56 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3C39311206B;
-        Mon, 14 Mar 2022 19:46:56 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D2E2B112061;
-        Mon, 14 Mar 2022 19:46:45 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.184])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Mar 2022 19:46:45 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
-Subject: [PATCH v4 11/32] s390/pci: add helper function to find device by handle
-Date:   Mon, 14 Mar 2022 15:44:30 -0400
-Message-Id: <20220314194451.58266-12-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
-References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+        Mon, 14 Mar 2022 15:48:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CE2F3DA79
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 12:47:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647287232;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=74lQ53agjdb+drBg2ZrVPEZ4Mhaf7waMbyBjjplBVKg=;
+        b=bWHqTz5KLatfxVfAphRtdymnvyGQq6NR4a1m2O8QNuoN+jhDpvpkFSpvmsdw1/KBOhb73q
+        1lQwTpQ92Q2Xbvk/MgOTHaMGcQMWmmTWKIeiG7Ripfcvx84CJYbIVYXNzcJ4cANk93uwfY
+        UwNeNtNSfD4sLyDPrNPc31dQp1kswHw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-421-pGt2JrTsNNmuGNLVzlgqPQ-1; Mon, 14 Mar 2022 15:47:11 -0400
+X-MC-Unique: pGt2JrTsNNmuGNLVzlgqPQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 80EA52999B35;
+        Mon, 14 Mar 2022 19:47:10 +0000 (UTC)
+Received: from llong.com (unknown [10.22.16.213])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1BD9C400F3EF;
+        Mon, 14 Mar 2022 19:47:09 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, Feng Tang <feng.tang@intel.com>,
+        Bill Gray <bgray@redhat.com>,
+        Jirka Hladky <jhladky@redhat.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH 2/2] x86/tsc_sync: Add synchronization overhead to tsc adjustment
+Date:   Mon, 14 Mar 2022 15:46:30 -0400
+Message-Id: <20220314194630.1726542-3-longman@redhat.com>
+In-Reply-To: <20220314194630.1726542-1-longman@redhat.com>
+References: <20220314194630.1726542-1-longman@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: iSgqA6D3SAjVZXhxav5rqIX4iYDDxHsN
-X-Proofpoint-ORIG-GUID: n2GLZzJDoa_sV7_98Ow15-2pW-clMNFj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 impostorscore=0 suspectscore=0 priorityscore=1501
- clxscore=1015 mlxlogscore=680 spamscore=0 adultscore=0 bulkscore=0
- phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203140116
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Intercepted zPCI instructions will specify the desired function via a
-function handle.  Add a routine to find the device with the specified
-handle.
+As stated in the comment of check_tsc_sync_target():
 
-Acked-by: Niklas Schnelle <schnelle@linux.ibm.com>
-Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+  The adjustment value is slightly off by the overhead of the
+  sync mechanism (observed values are ~200 TSC cycles), but this
+  really depends on CPU, node distance and frequency. So
+  compensating for this is hard to get right.
+
+That overhead, however, can cause the tsc adjustment to fail after 3
+test runs as can be seen when booting up a hot 4-socket Intel CooperLake
+system:
+
+[    0.034090] TSC deadline timer available
+[    0.008807] TSC ADJUST compensate: CPU36 observed 95626 warp. Adjust: 95626
+[    0.008807] TSC ADJUST compensate: CPU36 observed 74 warp. Adjust: 95700
+[    0.974281] TSC synchronization [CPU#0 -> CPU#36]:
+[    0.974281] Measured 4 cycles TSC warp between CPUs, turning off TSC clock.
+[    0.974281] tsc: Marking TSC unstable due to check_tsc_sync_source failed
+
+To prevent this tsc adjustment failure, we need to estimate the sync
+overhead which will be at least an unlock operation in one cpu followed
+by a lock operation in another cpu.
+
+The measurement is done in check_tsc_sync_target() after stop_count
+reached 2 which is set by the source cpu after it re-initializes the sync
+variables causing the lock cacheline to be remote from the target cpu.
+The subsequent time measurement will then be similar to latency between
+successive 2-cpu sync loop in check_tsc_warp().
+
+Interrupt should not yet been enabled when check_tsc_sync_target() is
+called. However some interference may have caused the overhead estimation
+to vary a bit.  With this patch applied, the measured overhead on the
+same CooperLake system on different reboot runs varies from 104 to 326.
+
+Signed-off-by: Waiman Long <longman@redhat.com>
 ---
- arch/s390/include/asm/pci.h |  1 +
- arch/s390/pci/pci.c         | 16 ++++++++++++++++
- 2 files changed, 17 insertions(+)
+ arch/x86/kernel/tsc_sync.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
 
-diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 7ee52a70a96f..3c0b9986dcdc 100644
---- a/arch/s390/include/asm/pci.h
-+++ b/arch/s390/include/asm/pci.h
-@@ -275,6 +275,7 @@ static inline struct zpci_dev *to_zpci_dev(struct device *dev)
- }
+diff --git a/arch/x86/kernel/tsc_sync.c b/arch/x86/kernel/tsc_sync.c
+index 70aeb254b62b..e2c43ba4e7b8 100644
+--- a/arch/x86/kernel/tsc_sync.c
++++ b/arch/x86/kernel/tsc_sync.c
+@@ -445,6 +445,7 @@ void check_tsc_sync_target(void)
+ 	struct tsc_adjust *cur = this_cpu_ptr(&tsc_adjust);
+ 	unsigned int cpu = smp_processor_id();
+ 	cycles_t cur_max_warp, gbl_max_warp;
++	cycles_t start, sync_overhead;
+ 	int cpus = 2;
  
- struct zpci_dev *get_zdev_by_fid(u32);
-+struct zpci_dev *get_zdev_by_fh(u32 fh);
+ 	/* Also aborts if there is no TSC. */
+@@ -505,29 +506,37 @@ void check_tsc_sync_target(void)
+ 	if (!atomic_read(&test_runs))
+ 		return;
  
- /* DMA */
- int zpci_dma_init(void);
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index ca9c29386de6..04c16312ad54 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -76,6 +76,22 @@ struct zpci_dev *get_zdev_by_fid(u32 fid)
- 	return zdev;
- }
- 
-+struct zpci_dev *get_zdev_by_fh(u32 fh)
-+{
-+	struct zpci_dev *tmp, *zdev = NULL;
++	/*
++	 * Estimate the synchronization overhead by measuring the time for
++	 * a lock/unlock operation.
++	 */
++	start = rdtsc_ordered();
++	arch_spin_lock(&sync.lock);
++	arch_spin_unlock(&sync.lock);
++	sync_overhead = rdtsc_ordered() - start;
 +
-+	spin_lock(&zpci_list_lock);
-+	list_for_each_entry(tmp, &zpci_list, entry) {
-+		if (tmp->fh == fh) {
-+			zdev = tmp;
-+			break;
-+		}
+ 	/*
+ 	 * If the warp value of this CPU is 0, then the other CPU
+ 	 * observed time going backwards so this TSC was ahead and
+ 	 * needs to move backwards.
+ 	 */
+-	if (!cur_max_warp)
++	if (!cur_max_warp) {
+ 		cur_max_warp = -gbl_max_warp;
++		sync_overhead = -sync_overhead;
 +	}
-+	spin_unlock(&zpci_list_lock);
-+	return zdev;
-+}
-+EXPORT_SYMBOL_GPL(get_zdev_by_fh);
-+
- void zpci_remove_reserved_devices(void)
- {
- 	struct zpci_dev *tmp, *zdev;
+ 
+ 	/*
+ 	 * Add the result to the previous adjustment value.
+ 	 *
+ 	 * The adjustment value is slightly off by the overhead of the
+ 	 * sync mechanism (observed values are ~200 TSC cycles), but this
+-	 * really depends on CPU, node distance and frequency. So
+-	 * compensating for this is hard to get right. Experiments show
+-	 * that the warp is not longer detectable when the observed warp
+-	 * value is used. In the worst case the adjustment needs to go
+-	 * through a 3rd run for fine tuning.
++	 * really depends on CPU, node distance and frequency. Add the
++	 * estimated sync overhead to the adjustment value.
+ 	 */
+-	cur->adjusted += cur_max_warp;
++	cur->adjusted += cur_max_warp + sync_overhead;
+ 
+-	pr_warn("TSC ADJUST compensate: CPU%u observed %lld warp. Adjust: %lld\n",
+-		cpu, cur_max_warp, cur->adjusted);
++	pr_warn("TSC ADJUST compensate: CPU%u observed %lld warp (overhead %lld). Adjust: %lld\n",
++		cpu, cur_max_warp, sync_overhead, cur->adjusted);
+ 
+ 	wrmsrl(MSR_IA32_TSC_ADJUST, cur->adjusted);
+ 	goto retry;
 -- 
 2.27.0
 
