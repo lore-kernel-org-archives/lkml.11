@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9127CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F017BC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241843AbiCNM2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
+        id S241948AbiCNM2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243351AbiCNMUe (ORCPT
+        with ESMTP id S243459AbiCNMUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:20:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D25344F2;
-        Mon, 14 Mar 2022 05:15:48 -0700 (PDT)
+        Mon, 14 Mar 2022 08:20:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B305468B;
+        Mon, 14 Mar 2022 05:16:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 780E4608C4;
-        Mon, 14 Mar 2022 12:15:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 111E3C340E9;
-        Mon, 14 Mar 2022 12:15:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 10565CE1232;
+        Mon, 14 Mar 2022 12:16:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BDC0C36AE3;
+        Mon, 14 Mar 2022 12:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260147;
-        bh=vIM6AUwnOl+uW/m2jIG6QnLVc2yWJTjJ5mdHCQ0xwYc=;
+        s=korg; t=1647260162;
+        bh=jakVvKjtUdQUJVcNt9eTW1GmyK7Gj6ycAC5BLjlTLr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d4Ytoh73pVsG11ScPCMHKzTZCPqlYbMXFXloecOCbwoAAc/5wsXZ1fqxP9TKElugh
-         H5QYcVWKZwNep5vp3dhZ/JSf97CHz2I/RPAnLnwQYCmbBh/cFqehmMdnJtFpC/m0sF
-         SUx87KxB+4G+seCglZ0dT7Ru84tpyvQtpNKwiS9g=
+        b=hJSvxLervxN3a8tczXM/qCVd2m5RMiKjjCY+rJZxzNPXzCI0Yo20vGu6XK4h3j+gF
+         KWO2jWp7osLH10khNJSGMcLhzVlgqFIo78EfvMyclusPhdlDs4j5Cq7wtrzELrWxSZ
+         UyufoeI/5dBhBvlVvi6ed60Apn62Iv6yW1REiLF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 019/121] virtio-blk: Remove BUG_ON() in virtio_queue_rq()
-Date:   Mon, 14 Mar 2022 12:53:22 +0100
-Message-Id: <20220314112744.664541917@linuxfoundation.org>
+Subject: [PATCH 5.16 075/121] PCI: Mark all AMD Navi10 and Navi14 GPU ATS as broken
+Date:   Mon, 14 Mar 2022 12:54:18 +0100
+Message-Id: <20220314112746.214869174@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -51,90 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit e030759a1ddcbf61d42b6e996bfeb675e0032d8b ]
+[ Upstream commit 3f1271b54edcc692da5a3663f2aa2a64781f9bc3 ]
 
-Currently we have a BUG_ON() to make sure the number of sg
-list does not exceed queue_max_segments() in virtio_queue_rq().
-However, the block layer uses queue_max_discard_segments()
-instead of queue_max_segments() to limit the sg list for
-discard requests. So the BUG_ON() might be triggered if
-virtio-blk device reports a larger value for max discard
-segment than queue_max_segments(). To fix it, let's simply
-remove the BUG_ON() which has become unnecessary after commit
-02746e26c39e("virtio-blk: avoid preallocating big SGL for data").
-And the unused vblk->sg_elems can also be removed together.
+There are enough VBIOS escapes without the proper workaround that some
+users still hit this.  Microsoft never productized ATS on Windows so OEM
+platforms that were Windows-only didn't always validate ATS.
 
-Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
-Suggested-by: Christoph Hellwig <hch@infradead.org>
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
-Link: https://lore.kernel.org/r/20220304100058.116-2-xieyongji@bytedance.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+The advantages of ATS are not worth it compared to the potential
+instabilities on harvested boards.  Disable ATS on all Navi10 and Navi14
+boards.
+
+Symptoms include:
+
+  amdgpu 0000:07:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0007 address=0xffffc02000 flags=0x0000]
+  AMD-Vi: Event logged [IO_PAGE_FAULT device=07:00.0 domain=0x0007 address=0xffffc02000 flags=0x0000]
+  [drm:amdgpu_job_timedout [amdgpu]] *ERROR* ring sdma0 timeout, signaled seq=6047, emitted seq=6049
+  amdgpu 0000:07:00.0: amdgpu: GPU reset begin!
+  amdgpu 0000:07:00.0: amdgpu: GPU reset succeeded, trying to resume
+  amdgpu 0000:07:00.0: [drm:amdgpu_ring_test_helper [amdgpu]] *ERROR* ring sdma0 test failed (-110)
+  [drm:amdgpu_device_ip_resume_phase2 [amdgpu]] *ERROR* resume of IP block <sdma_v4_0> failed -110
+  amdgpu 0000:07:00.0: amdgpu: GPU reset(1) failed
+
+Related commits:
+
+  e8946a53e2a6 ("PCI: Mark AMD Navi14 GPU ATS as broken")
+  a2da5d8cc0b0 ("PCI: Mark AMD Raven iGPU ATS as broken in some platforms")
+  45beb31d3afb ("PCI: Mark AMD Navi10 GPU rev 0x00 ATS as broken")
+  5e89cd303e3a ("PCI: Mark AMD Navi14 GPU rev 0xc5 ATS as broken")
+  d28ca864c493 ("PCI: Mark AMD Stoney Radeon R7 GPU ATS as broken")
+  9b44b0b09dec ("PCI: Mark AMD Stoney GPU ATS as broken")
+
+[bhelgaas: add symptoms and related commits]
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1760
+Link: https://lore.kernel.org/r/20220222160801.841643-1-alexander.deucher@amd.com
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Christian König <christian.koenig@amd.com>
+Acked-by: Guchun Chen <guchun.chen@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/virtio_blk.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+ drivers/pci/quirks.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 87f239eb0a99..b3df5e5452a7 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -76,9 +76,6 @@ struct virtio_blk {
- 	 */
- 	refcount_t refs;
- 
--	/* What host tells us, plus 2 for header & tailer. */
--	unsigned int sg_elems;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 20a932690738..db864bf634a3 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -5344,11 +5344,6 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SERVERWORKS, 0x0422, quirk_no_ext_tags);
+  */
+ static void quirk_amd_harvest_no_ats(struct pci_dev *pdev)
+ {
+-	if ((pdev->device == 0x7312 && pdev->revision != 0x00) ||
+-	    (pdev->device == 0x7340 && pdev->revision != 0xc5) ||
+-	    (pdev->device == 0x7341 && pdev->revision != 0x00))
+-		return;
 -
- 	/* Ida index - used to track minor number allocations. */
- 	int index;
- 
-@@ -322,8 +319,6 @@ static blk_status_t virtio_queue_rq(struct blk_mq_hw_ctx *hctx,
- 	blk_status_t status;
- 	int err;
- 
--	BUG_ON(req->nr_phys_segments + 2 > vblk->sg_elems);
--
- 	status = virtblk_setup_cmd(vblk->vdev, req, vbr);
- 	if (unlikely(status))
- 		return status;
-@@ -783,8 +778,6 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	/* Prevent integer overflows and honor max vq size */
- 	sg_elems = min_t(u32, sg_elems, VIRTIO_BLK_MAX_SG_ELEMS - 2);
- 
--	/* We need extra sg elements at head and tail. */
--	sg_elems += 2;
- 	vdev->priv = vblk = kmalloc(sizeof(*vblk), GFP_KERNEL);
- 	if (!vblk) {
- 		err = -ENOMEM;
-@@ -796,7 +789,6 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	mutex_init(&vblk->vdev_mutex);
- 
- 	vblk->vdev = vdev;
--	vblk->sg_elems = sg_elems;
- 
- 	INIT_WORK(&vblk->config_work, virtblk_config_changed_work);
- 
-@@ -854,7 +846,7 @@ static int virtblk_probe(struct virtio_device *vdev)
- 		set_disk_ro(vblk->disk, 1);
- 
- 	/* We can handle whatever the host told us to handle. */
--	blk_queue_max_segments(q, vblk->sg_elems-2);
-+	blk_queue_max_segments(q, sg_elems);
- 
- 	/* No real sector limit. */
- 	blk_queue_max_hw_sectors(q, -1U);
-@@ -932,7 +924,7 @@ static int virtblk_probe(struct virtio_device *vdev)
- 		 * handled it.
- 		 */
- 		if (!v)
--			v = sg_elems - 2;
-+			v = sg_elems;
- 		blk_queue_max_discard_segments(q,
- 					       min(v, MAX_DISCARD_SEGMENTS));
- 
+ 	if (pdev->device == 0x15d8) {
+ 		if (pdev->revision == 0xcf &&
+ 		    pdev->subsystem_vendor == 0xea50 &&
+@@ -5370,10 +5365,19 @@ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x98e4, quirk_amd_harvest_no_ats);
+ /* AMD Iceland dGPU */
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x6900, quirk_amd_harvest_no_ats);
+ /* AMD Navi10 dGPU */
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7310, quirk_amd_harvest_no_ats);
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7312, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7318, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7319, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x731a, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x731b, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x731e, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x731f, quirk_amd_harvest_no_ats);
+ /* AMD Navi14 dGPU */
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7340, quirk_amd_harvest_no_ats);
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7341, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x7347, quirk_amd_harvest_no_ats);
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x734f, quirk_amd_harvest_no_ats);
+ /* AMD Raven platform iGPU */
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_ATI, 0x15d8, quirk_amd_harvest_no_ats);
+ #endif /* CONFIG_PCI_ATS */
 -- 
 2.34.1
 
