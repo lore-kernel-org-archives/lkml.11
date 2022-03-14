@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F04C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343534AbiCNWpu (ORCPT
+        id S1343545AbiCNWp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 18:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
+        Mon, 14 Mar 2022 18:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245751AbiCNWpa (ORCPT
+        with ESMTP id S1343490AbiCNWpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 18:45:30 -0400
+        Mon, 14 Mar 2022 18:45:36 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF0A33E89
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:44:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158C133EA3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:44:22 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id A87E11F42F1F
+        with ESMTPSA id A7D591F42F20
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647297858;
-        bh=lqIPNgHcK+R8RUthJvDL/DlyQjBceMvg3jqjByDDlWI=;
+        s=mail; t=1647297861;
+        bh=MFtjO6AUonTNiFBNDnhq26+Ub8SJFpaMmi/rx2a3dGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P5spa+LjZqn9fP03vZ5eSHU2Uovd6b5RaczYBbB9jNsqXbfD1idsVRL0ztXzeohKR
-         dMFlE59CSdzrWvD1nGboZMBFrF/+l6gxjELczROOMciJLE16rYKLrgK2Vj9blHBZ7O
-         h8SHNQQDVOmTBx1RXqO/ldKy4TffeSkqsqUoNrbUx2r0GxsLU+6oaJU1AYsrBiuGLz
-         7XBLXVZDkyuZub8oMLHVXCbAaCube74CyCFHSxaNfjOt8gqtjM2Ryt7yzAJ21Gt/y3
-         CUBFPi2G+hQ/h1ypJAqhpsRFPbqsRVf63/sdk66iDgBHREkQAHUgskxpaaeW6adWD4
-         TA7nz39Pck+4w==
+        b=aDV905hnraMF4Zx25JS6Pamx+NV+O69OXmspYdHIsaJ9PH9YIkQ2AXgs5ZDt31w2s
+         868R0FPfSR7LkR9P5ypigl/oWUXaG+ewX+IwsjDlz5yZ8E58AmhmbEn6TKTwliSh05
+         596hKbRJb7Edf4eGjOT49kx4tzQP7DOnnHKyVKXEsPB6g1Rz55BmtqEoURYrto8lRn
+         reO6ESuZXv06qmygYZe/75SjfwWZSsCZXb7kIeyY6hXcPXKKnFyTI4OvXm7367qWDP
+         g9Ul1OKw9iwvpXHf+FGtVENQ0JboO3nP2yytjW3EXzu5jl1MgRgGQRwYVQrZ2jg5ll
+         1WWBl3Poqu66A==
 From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
 To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
         Gurchetan Singh <gurchetansingh@chromium.org>,
@@ -48,9 +48,9 @@ Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org,
         Dmitry Osipenko <digetx@gmail.com>,
         Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH v2 6/8] drm/shmem-helper: Add generic memory shrinker
-Date:   Tue, 15 Mar 2022 01:42:51 +0300
-Message-Id: <20220314224253.236359-7-dmitry.osipenko@collabora.com>
+Subject: [PATCH v2 8/8] drm/panfrost: Switch to generic memory shrinker
+Date:   Tue, 15 Mar 2022 01:42:53 +0300
+Message-Id: <20220314224253.236359-9-dmitry.osipenko@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
 References: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
@@ -60,360 +60,244 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a common DRM SHMEM shrinker. It allows to reduce code
-duplication among DRM drivers, it also handles complicated lockings
-for the drivers. This is initial version of the shrinker that covers
-basic needs of GPU drivers.
+Replace Panfrost's memory shrinker with a generic DRM memory shrinker.
 
-This patch is based on a couple ideas borrowed from Rob's Clark MSM
-shrinker and Thomas' Zimmermann variant of SHMEM shrinker.
-
-GPU drivers that want to use generic DRM memory shrinker must support
-generic GEM reservations.
-
-Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
 Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
 ---
- drivers/gpu/drm/drm_gem_shmem_helper.c | 194 +++++++++++++++++++++++++
- include/drm/drm_device.h               |   4 +
- include/drm/drm_gem.h                  |  11 ++
- include/drm/drm_gem_shmem_helper.h     |  25 ++++
- 4 files changed, 234 insertions(+)
+ drivers/gpu/drm/panfrost/Makefile          |  1 -
+ drivers/gpu/drm/panfrost/panfrost_device.h |  4 ----
+ drivers/gpu/drm/panfrost/panfrost_drv.c    | 19 ++-------------
+ drivers/gpu/drm/panfrost/panfrost_gem.c    | 27 ++++++++++++++--------
+ drivers/gpu/drm/panfrost/panfrost_gem.h    |  9 --------
+ drivers/gpu/drm/panfrost/panfrost_job.c    | 22 +++++++++++++++++-
+ 6 files changed, 40 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-index 37009418cd28..35be2ee98f11 100644
---- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-+++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -139,6 +139,9 @@ void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
+diff --git a/drivers/gpu/drm/panfrost/Makefile b/drivers/gpu/drm/panfrost/Makefile
+index b71935862417..ecf0864cb515 100644
+--- a/drivers/gpu/drm/panfrost/Makefile
++++ b/drivers/gpu/drm/panfrost/Makefile
+@@ -5,7 +5,6 @@ panfrost-y := \
+ 	panfrost_device.o \
+ 	panfrost_devfreq.o \
+ 	panfrost_gem.o \
+-	panfrost_gem_shrinker.o \
+ 	panfrost_gpu.o \
+ 	panfrost_job.o \
+ 	panfrost_mmu.o \
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.h b/drivers/gpu/drm/panfrost/panfrost_device.h
+index 8b25278f34c8..fe04b21fc044 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.h
++++ b/drivers/gpu/drm/panfrost/panfrost_device.h
+@@ -115,10 +115,6 @@ struct panfrost_device {
+ 		atomic_t pending;
+ 	} reset;
+ 
+-	struct mutex shrinker_lock;
+-	struct list_head shrinker_list;
+-	struct shrinker shrinker;
+-
+ 	struct panfrost_devfreq pfdevfreq;
+ };
+ 
+diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+index 94b6f0a19c83..b014dadcf51f 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -160,7 +160,6 @@ panfrost_lookup_bos(struct drm_device *dev,
+ 			break;
+ 		}
+ 
+-		atomic_inc(&bo->gpu_usecount);
+ 		job->mappings[i] = mapping;
+ 	}
+ 
+@@ -390,7 +389,6 @@ static int panfrost_ioctl_madvise(struct drm_device *dev, void *data,
  {
- 	struct drm_gem_object *obj = &shmem->base;
+ 	struct panfrost_file_priv *priv = file_priv->driver_priv;
+ 	struct drm_panfrost_madvise *args = data;
+-	struct panfrost_device *pfdev = dev->dev_private;
+ 	struct drm_gem_object *gem_obj;
+ 	struct panfrost_gem_object *bo;
+ 	int ret = 0;
+@@ -403,7 +401,6 @@ static int panfrost_ioctl_madvise(struct drm_device *dev, void *data,
  
-+	/* take out shmem GEM object from the memory shrinker */
-+	drm_gem_shmem_madvise(shmem, 0);
-+
- 	WARN_ON(shmem->vmap_use_count);
+ 	bo = to_panfrost_bo(gem_obj);
  
- 	if (obj->import_attach) {
-@@ -163,6 +166,42 @@ void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
- }
- EXPORT_SYMBOL_GPL(drm_gem_shmem_free);
+-	mutex_lock(&pfdev->shrinker_lock);
+ 	mutex_lock(&bo->mappings.lock);
+ 	if (args->madv == PANFROST_MADV_DONTNEED) {
+ 		struct panfrost_gem_mapping *first;
+@@ -429,17 +426,8 @@ static int panfrost_ioctl_madvise(struct drm_device *dev, void *data,
  
-+static void drm_gem_shmem_update_purgeable_status(struct drm_gem_shmem_object *shmem)
-+{
-+	struct drm_gem_object *obj = &shmem->base;
-+	struct drm_gem_shmem_shrinker *gem_shrinker = obj->dev->shmem_shrinker;
-+	size_t page_count = obj->size >> PAGE_SHIFT;
-+
-+	if (!gem_shrinker || obj->import_attach || !obj->funcs->purge)
-+		return;
-+
-+	mutex_lock(&shmem->vmap_lock);
-+	mutex_lock(&shmem->pages_lock);
-+	mutex_lock(&gem_shrinker->lock);
-+
-+	if (shmem->madv < 0) {
-+		list_del_init(&shmem->madv_list);
-+		goto unlock;
-+	} else if (shmem->madv > 0) {
-+		if (!list_empty(&shmem->madv_list))
-+			goto unlock;
-+
-+		WARN_ON(gem_shrinker->shrinkable_count + page_count < page_count);
-+		gem_shrinker->shrinkable_count += page_count;
-+
-+		list_add_tail(&shmem->madv_list, &gem_shrinker->lru);
-+	} else if (!list_empty(&shmem->madv_list)) {
-+		list_del_init(&shmem->madv_list);
-+
-+		WARN_ON(gem_shrinker->shrinkable_count < page_count);
-+		gem_shrinker->shrinkable_count -= page_count;
-+	}
-+unlock:
-+	mutex_unlock(&gem_shrinker->lock);
-+	mutex_unlock(&shmem->pages_lock);
-+	mutex_unlock(&shmem->vmap_lock);
-+}
-+
- static int drm_gem_shmem_get_pages_locked(struct drm_gem_shmem_object *shmem)
- {
- 	struct drm_gem_object *obj = &shmem->base;
-@@ -366,6 +405,8 @@ int drm_gem_shmem_vmap(struct drm_gem_shmem_object *shmem,
- 	ret = drm_gem_shmem_vmap_locked(shmem, map);
- 	mutex_unlock(&shmem->vmap_lock);
+ 	args->retained = drm_gem_shmem_madvise(&bo->base, args->madv);
  
-+	drm_gem_shmem_update_purgeable_status(shmem);
-+
+-	if (args->retained) {
+-		if (args->madv == PANFROST_MADV_DONTNEED)
+-			list_add_tail(&bo->base.madv_list,
+-				      &pfdev->shrinker_list);
+-		else if (args->madv == PANFROST_MADV_WILLNEED)
+-			list_del_init(&bo->base.madv_list);
+-	}
+-
+ out_unlock_mappings:
+ 	mutex_unlock(&bo->mappings.lock);
+-	mutex_unlock(&pfdev->shrinker_lock);
+ 
+ 	drm_gem_object_put(gem_obj);
  	return ret;
+@@ -570,9 +558,6 @@ static int panfrost_probe(struct platform_device *pdev)
+ 	ddev->dev_private = pfdev;
+ 	pfdev->ddev = ddev;
+ 
+-	mutex_init(&pfdev->shrinker_lock);
+-	INIT_LIST_HEAD(&pfdev->shrinker_list);
+-
+ 	err = panfrost_device_init(pfdev);
+ 	if (err) {
+ 		if (err != -EPROBE_DEFER)
+@@ -594,7 +579,7 @@ static int panfrost_probe(struct platform_device *pdev)
+ 	if (err < 0)
+ 		goto err_out1;
+ 
+-	panfrost_gem_shrinker_init(ddev);
++	drm_gem_shmem_shrinker_register(ddev);
+ 
+ 	return 0;
+ 
+@@ -612,8 +597,8 @@ static int panfrost_remove(struct platform_device *pdev)
+ 	struct panfrost_device *pfdev = platform_get_drvdata(pdev);
+ 	struct drm_device *ddev = pfdev->ddev;
+ 
++	drm_gem_shmem_shrinker_unregister(ddev);
+ 	drm_dev_unregister(ddev);
+-	panfrost_gem_shrinker_cleanup(ddev);
+ 
+ 	pm_runtime_get_sync(pfdev->dev);
+ 	pm_runtime_disable(pfdev->dev);
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
+index 293e799e2fe8..d164d05ed84e 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gem.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
+@@ -19,16 +19,6 @@ static void panfrost_gem_free_object(struct drm_gem_object *obj)
+ 	struct panfrost_gem_object *bo = to_panfrost_bo(obj);
+ 	struct panfrost_device *pfdev = obj->dev->dev_private;
+ 
+-	/*
+-	 * Make sure the BO is no longer inserted in the shrinker list before
+-	 * taking care of the destruction itself. If we don't do that we have a
+-	 * race condition between this function and what's done in
+-	 * panfrost_gem_shrinker_scan().
+-	 */
+-	mutex_lock(&pfdev->shrinker_lock);
+-	list_del_init(&bo->base.madv_list);
+-	mutex_unlock(&pfdev->shrinker_lock);
+-
+ 	/*
+ 	 * If we still have mappings attached to the BO, there's a problem in
+ 	 * our refcounting.
+@@ -195,6 +185,22 @@ static int panfrost_gem_pin(struct drm_gem_object *obj)
+ 	return drm_gem_shmem_pin(&bo->base);
  }
- EXPORT_SYMBOL(drm_gem_shmem_vmap);
-@@ -409,6 +450,8 @@ void drm_gem_shmem_vunmap(struct drm_gem_shmem_object *shmem,
- 	mutex_lock(&shmem->vmap_lock);
- 	drm_gem_shmem_vunmap_locked(shmem, map);
- 	mutex_unlock(&shmem->vmap_lock);
-+
-+	drm_gem_shmem_update_purgeable_status(shmem);
- }
- EXPORT_SYMBOL(drm_gem_shmem_vunmap);
  
-@@ -451,6 +494,8 @@ int drm_gem_shmem_madvise(struct drm_gem_shmem_object *shmem, int madv)
- 
- 	mutex_unlock(&shmem->pages_lock);
- 
-+	drm_gem_shmem_update_purgeable_status(shmem);
-+
- 	return (madv >= 0);
- }
- EXPORT_SYMBOL(drm_gem_shmem_madvise);
-@@ -763,6 +808,155 @@ drm_gem_shmem_prime_import_sg_table(struct drm_device *dev,
- }
- EXPORT_SYMBOL_GPL(drm_gem_shmem_prime_import_sg_table);
- 
-+static struct drm_gem_shmem_shrinker *
-+to_drm_shrinker(struct shrinker *shrinker)
++static unsigned long panfrost_gem_purge(struct drm_gem_object *obj)
 +{
-+	return container_of(shrinker, struct drm_gem_shmem_shrinker, base);
++	struct drm_gem_shmem_object *shmem = to_drm_gem_shmem_obj(obj);
++	struct panfrost_gem_object *bo = to_panfrost_bo(obj);
++
++	if (!mutex_trylock(&bo->mappings.lock))
++		return 0;
++
++	panfrost_gem_teardown_mappings_locked(bo);
++	drm_gem_shmem_purge_locked(&bo->base);
++
++	mutex_unlock(&bo->mappings.lock);
++
++	return shmem->base.size >> PAGE_SHIFT;
 +}
 +
-+static unsigned long
-+drm_gem_shmem_shrinker_count_objects(struct shrinker *shrinker,
-+				     struct shrink_control *sc)
-+{
-+	struct drm_gem_shmem_shrinker *gem_shrinker = to_drm_shrinker(shrinker);
-+	u64 count = gem_shrinker->shrinkable_count;
-+
-+	if (count >= SHRINK_EMPTY)
-+		return SHRINK_EMPTY - 1;
-+
-+	return count ?: SHRINK_EMPTY;
-+}
-+
-+static unsigned long
-+drm_gem_shmem_shrinker_scan_objects(struct shrinker *shrinker,
-+				    struct shrink_control *sc)
-+{
-+	struct drm_gem_shmem_shrinker *gem_shrinker = to_drm_shrinker(shrinker);
-+	struct drm_gem_shmem_object *shmem;
-+	struct list_head still_in_list;
-+	bool lock_contention = true;
-+	struct drm_gem_object *obj;
-+	unsigned long freed = 0;
-+
-+	INIT_LIST_HEAD(&still_in_list);
-+
-+	mutex_lock(&gem_shrinker->lock);
-+
-+	while (freed < sc->nr_to_scan) {
-+		shmem = list_first_entry_or_null(&gem_shrinker->lru,
-+						 typeof(*shmem), madv_list);
-+		if (!shmem)
-+			break;
-+
-+		obj = &shmem->base;
-+		list_move_tail(&shmem->madv_list, &still_in_list);
-+
-+		/*
-+		 * If it's in the process of being freed, gem_object->free()
-+		 * may be blocked on lock waiting to remove it.  So just
-+		 * skip it.
-+		 */
-+		if (!kref_get_unless_zero(&obj->refcount))
-+			continue;
-+
-+		mutex_unlock(&gem_shrinker->lock);
-+
-+		/* prevent racing with job submission code paths */
-+		if (!dma_resv_trylock(obj->resv))
-+			goto shrinker_lock;
-+
-+		/* prevent racing with the dma-buf exporting */
-+		if (!mutex_trylock(&gem_shrinker->dev->object_name_lock))
-+			goto resv_unlock;
-+
-+		if (!mutex_trylock(&shmem->vmap_lock))
-+			goto object_name_unlock;
-+
-+		if (!mutex_trylock(&shmem->pages_lock))
-+			goto vmap_unlock;
-+
-+		lock_contention = false;
-+
-+		/* check whether h/w uses this object */
-+		if (!dma_resv_test_signaled(obj->resv, true))
-+			goto pages_unlock;
-+
-+		/* GEM may've become unpurgeable while shrinker was unlocked */
-+		if (!drm_gem_shmem_is_purgeable(shmem))
-+			goto pages_unlock;
-+
-+		freed += obj->funcs->purge(obj);
-+pages_unlock:
-+		mutex_unlock(&shmem->pages_lock);
-+vmap_unlock:
-+		mutex_unlock(&shmem->vmap_lock);
-+object_name_unlock:
-+		mutex_unlock(&gem_shrinker->dev->object_name_lock);
-+resv_unlock:
-+		dma_resv_unlock(obj->resv);
-+shrinker_lock:
-+		drm_gem_object_put(&shmem->base);
-+		mutex_lock(&gem_shrinker->lock);
-+	}
-+
-+	list_splice_tail(&still_in_list, &gem_shrinker->lru);
-+	WARN_ON(gem_shrinker->shrinkable_count < freed);
-+	gem_shrinker->shrinkable_count -= freed;
-+
-+	mutex_unlock(&gem_shrinker->lock);
-+
-+	if (!freed && !lock_contention)
-+		return SHRINK_STOP;
-+
-+	return freed;
-+}
-+
-+int drm_gem_shmem_shrinker_register(struct drm_device *dev)
-+{
-+	struct drm_gem_shmem_shrinker *gem_shrinker;
-+	int err;
-+
-+	if (WARN_ON(dev->shmem_shrinker))
-+		return -EBUSY;
-+
-+	gem_shrinker = kzalloc(sizeof(*gem_shrinker), GFP_KERNEL);
-+	if (!gem_shrinker)
-+		return -ENOMEM;
-+
-+	gem_shrinker->base.count_objects = drm_gem_shmem_shrinker_count_objects;
-+	gem_shrinker->base.scan_objects = drm_gem_shmem_shrinker_scan_objects;
-+	gem_shrinker->base.seeks = DEFAULT_SEEKS;
-+	gem_shrinker->dev = dev;
-+
-+	INIT_LIST_HEAD(&gem_shrinker->lru);
-+	mutex_init(&gem_shrinker->lock);
-+
-+	dev->shmem_shrinker = gem_shrinker;
-+
-+	err = register_shrinker(&gem_shrinker->base);
-+	if (err) {
-+		dev->shmem_shrinker = NULL;
-+		kfree(gem_shrinker);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(drm_gem_shmem_shrinker_register);
-+
-+void drm_gem_shmem_shrinker_unregister(struct drm_device *dev)
-+{
-+	struct drm_gem_shmem_shrinker *gem_shrinker = dev->shmem_shrinker;
-+
-+	if (gem_shrinker) {
-+		unregister_shrinker(&gem_shrinker->base);
-+		mutex_destroy(&gem_shrinker->lock);
-+		dev->shmem_shrinker = NULL;
-+		kfree(gem_shrinker);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(drm_gem_shmem_shrinker_unregister);
-+
- MODULE_DESCRIPTION("DRM SHMEM memory-management helpers");
- MODULE_IMPORT_NS(DMA_BUF);
- MODULE_LICENSE("GPL v2");
-diff --git a/include/drm/drm_device.h b/include/drm/drm_device.h
-index 9923c7a6885e..929546cad894 100644
---- a/include/drm/drm_device.h
-+++ b/include/drm/drm_device.h
-@@ -16,6 +16,7 @@ struct drm_vblank_crtc;
- struct drm_vma_offset_manager;
- struct drm_vram_mm;
- struct drm_fb_helper;
-+struct drm_gem_shmem_shrinker;
- 
- struct inode;
- 
-@@ -277,6 +278,9 @@ struct drm_device {
- 	/** @vram_mm: VRAM MM memory manager */
- 	struct drm_vram_mm *vram_mm;
- 
-+	/** @shmem_shrinker: SHMEM GEM memory shrinker */
-+	struct drm_gem_shmem_shrinker *shmem_shrinker;
-+
- 	/**
- 	 * @switch_power_state:
- 	 *
-diff --git a/include/drm/drm_gem.h b/include/drm/drm_gem.h
-index e2941cee14b6..cdb99cfbf0bc 100644
---- a/include/drm/drm_gem.h
-+++ b/include/drm/drm_gem.h
-@@ -172,6 +172,17 @@ struct drm_gem_object_funcs {
- 	 * This is optional but necessary for mmap support.
- 	 */
- 	const struct vm_operations_struct *vm_ops;
-+
-+	/**
-+	 * @purge:
-+	 *
-+	 * Releases the GEM object's allocated backing storage to the system.
-+	 *
-+	 * Returns the number of pages that have been freed by purging the GEM object.
-+	 *
-+	 * This callback is used by the GEM shrinker.
-+	 */
-+	unsigned long (*purge)(struct drm_gem_object *obj);
+ static const struct drm_gem_object_funcs panfrost_gem_funcs = {
+ 	.free = panfrost_gem_free_object,
+ 	.open = panfrost_gem_open,
+@@ -207,6 +213,7 @@ static const struct drm_gem_object_funcs panfrost_gem_funcs = {
+ 	.vunmap = drm_gem_shmem_object_vunmap,
+ 	.mmap = drm_gem_shmem_object_mmap,
+ 	.vm_ops = &drm_gem_shmem_vm_ops,
++	.purge = panfrost_gem_purge,
  };
  
  /**
-diff --git a/include/drm/drm_gem_shmem_helper.h b/include/drm/drm_gem_shmem_helper.h
-index d0a57853c188..455254f131f6 100644
---- a/include/drm/drm_gem_shmem_helper.h
-+++ b/include/drm/drm_gem_shmem_helper.h
-@@ -6,6 +6,7 @@
- #include <linux/fs.h>
- #include <linux/mm.h>
- #include <linux/mutex.h>
-+#include <linux/shrinker.h>
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.h b/drivers/gpu/drm/panfrost/panfrost_gem.h
+index 8088d5fd8480..09da064f1c07 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gem.h
++++ b/drivers/gpu/drm/panfrost/panfrost_gem.h
+@@ -30,12 +30,6 @@ struct panfrost_gem_object {
+ 		struct mutex lock;
+ 	} mappings;
  
- #include <drm/drm_file.h>
- #include <drm/drm_gem.h>
-@@ -15,6 +16,7 @@
- struct dma_buf_attachment;
- struct drm_mode_create_dumb;
- struct drm_printer;
-+struct drm_device;
- struct sg_table;
+-	/*
+-	 * Count the number of jobs referencing this BO so we don't let the
+-	 * shrinker reclaim this object prematurely.
+-	 */
+-	atomic_t gpu_usecount;
+-
+ 	bool noexec		:1;
+ 	bool is_heap		:1;
+ };
+@@ -84,7 +78,4 @@ panfrost_gem_mapping_get(struct panfrost_gem_object *bo,
+ void panfrost_gem_mapping_put(struct panfrost_gem_mapping *mapping);
+ void panfrost_gem_teardown_mappings_locked(struct panfrost_gem_object *bo);
  
- /**
-@@ -272,6 +274,29 @@ static inline int drm_gem_shmem_object_mmap(struct drm_gem_object *obj, struct v
- 	return drm_gem_shmem_mmap(shmem, vma);
+-void panfrost_gem_shrinker_init(struct drm_device *dev);
+-void panfrost_gem_shrinker_cleanup(struct drm_device *dev);
+-
+ #endif /* __PANFROST_GEM_H__ */
+diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
+index a6925dbb6224..e767e526e897 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_job.c
++++ b/drivers/gpu/drm/panfrost/panfrost_job.c
+@@ -267,6 +267,22 @@ static void panfrost_attach_object_fences(struct drm_gem_object **bos,
+ 		dma_resv_add_excl_fence(bos[i]->resv, fence);
  }
  
-+/**
-+ * struct drm_gem_shmem_shrinker - Generic memory shrinker for shmem GEMs
-+ */
-+struct drm_gem_shmem_shrinker {
-+	/** @base: Shrinker for purging shmem GEM objects */
-+	struct shrinker base;
++static bool panfrost_objects_alive(struct drm_gem_object **bos, int bo_count)
++{
++	struct panfrost_gem_object *bo;
++	bool alive = true;
 +
-+	/** @lock: Protects @lru */
-+	struct mutex lock;
++	while (alive && bo_count--) {
++		bo = to_panfrost_bo(bos[bo_count]);
 +
-+	/** @lru: List of shmem GEM objects available for purging */
-+	struct list_head lru;
++		mutex_lock(&bo->mappings.lock);
++		alive = !bo->base.madv;
++		mutex_unlock(&bo->mappings.lock);
++	}
 +
-+	/** @dev: DRM device that uses this shrinker */
-+	struct drm_device *dev;
++	return alive;
++}
 +
-+	/** @shrinkable_count: Count of shmem GEM pages to be purged */
-+	u64 shrinkable_count;
-+};
+ int panfrost_job_push(struct panfrost_job *job)
+ {
+ 	struct panfrost_device *pfdev = job->pfdev;
+@@ -278,6 +294,11 @@ int panfrost_job_push(struct panfrost_job *job)
+ 	if (ret)
+ 		return ret;
+ 
++	if (!panfrost_objects_alive(job->bos, job->bo_count)) {
++		ret = -ENOMEM;
++		goto unlock;
++	}
 +
-+int drm_gem_shmem_shrinker_register(struct drm_device *dev);
-+void drm_gem_shmem_shrinker_unregister(struct drm_device *dev);
-+
- /*
-  * Driver ops
-  */
+ 	mutex_lock(&pfdev->sched_lock);
+ 	drm_sched_job_arm(&job->base);
+ 
+@@ -319,7 +340,6 @@ static void panfrost_job_cleanup(struct kref *ref)
+ 			if (!job->mappings[i])
+ 				break;
+ 
+-			atomic_dec(&job->mappings[i]->obj->gpu_usecount);
+ 			panfrost_gem_mapping_put(job->mappings[i]);
+ 		}
+ 		kvfree(job->mappings);
 -- 
 2.35.1
 
