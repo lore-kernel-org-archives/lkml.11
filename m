@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E09C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236575AbiCNM1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        id S231571AbiCNM1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241773AbiCNMSX (ORCPT
+        with ESMTP id S242892AbiCNMTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:18:23 -0400
+        Mon, 14 Mar 2022 08:19:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6A26427;
-        Mon, 14 Mar 2022 05:12:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5480650E3D;
+        Mon, 14 Mar 2022 05:14:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96702B80DE1;
-        Mon, 14 Mar 2022 12:12:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 003EFC340E9;
-        Mon, 14 Mar 2022 12:12:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43F4AB80DF4;
+        Mon, 14 Mar 2022 12:14:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C9EC340E9;
+        Mon, 14 Mar 2022 12:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259969;
-        bh=t1emTD1hQqRTM2s+FLqtKL1MLVKlmYxN8zFn0YVOEuQ=;
+        s=korg; t=1647260088;
+        bh=YfpmRIDi6jRVe/IYxm/SbOg5cyruW3iEv4Tg+KggpLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X+dLvZH5nPZd+jiOF9pbSBabUkIPO0+ne5yuxkqz0pZhYQ2EEbNjQssu1Q2OVn/v3
-         x5thiqYLHJNLtm6dHiUf+Ji228KE9G/DhZ5W3iMwlWrPYqogJXk3gpAtnlLQP5zcHt
-         /KyzqjqjlFQCQHEd7CBxRScBsgFoqZtHuxeIIYds=
+        b=OFaqFpgmxR5LuLZN23sp23QD0BDQATthzeWoHo90VqksMxL41ncptDhN+6j1cFwze
+         t5Bz9ysET6wyP++H0/Q9w5iWf+lKK0yQWxcD4jIX9YJvHekdM9bGlr9Hk3AiAYjG4B
+         Cj2uUlTS9OmMPCgqFyXzQLhXkMtbKQ770PM4bKBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 003/121] HID: elo: Revert USB reference counting
-Date:   Mon, 14 Mar 2022 12:53:06 +0100
-Message-Id: <20220314112744.219863098@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Featherston <mark@embeddedTS.com>,
+        Kris Bahnsen <kris@embeddedTS.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 052/121] gpio: ts4900: Do not set DAT and OE together
+Date:   Mon, 14 Mar 2022 12:53:55 +0100
+Message-Id: <20220314112745.579079298@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,66 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Kosina <jkosina@suse.cz>
+From: Mark Featherston <mark@embeddedTS.com>
 
-[ Upstream commit ac89895213d8950dba6ab342863a0959f73142a7 ]
+[ Upstream commit 03fe003547975680fdb9ff5ab0e41cb68276c4f2 ]
 
-Commit 817b8b9c539 ("HID: elo: fix memory leak in elo_probe") introduced
-memory leak on error path, but more importantly the whole USB reference
-counting is not needed at all in the first place, as the driver itself
-doesn't change the reference counting in any way, and the associated
-usb_device is guaranteed to be kept around by USB core as long as the
-driver binding exists.
+This works around an issue with the hardware where both OE and
+DAT are exposed in the same register. If both are updated
+simultaneously, the harware makes no guarantees that OE or DAT
+will actually change in any given order and may result in a
+glitch of a few ns on a GPIO pin when changing direction and value
+in a single write.
 
-Reported-by: Alan Stern <stern@rowland.harvard.edu>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: fbf42729d0e ("HID: elo: update the reference count of the usb device structure")
-Fixes: 817b8b9c539 ("HID: elo: fix memory leak in elo_probe")
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Setting direction to input now only affects OE bit. Setting
+direction to output updates DAT first, then OE.
+
+Fixes: 9c6686322d74 ("gpio: add Technologic I2C-FPGA gpio support")
+Signed-off-by: Mark Featherston <mark@embeddedTS.com>
+Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-elo.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/gpio/gpio-ts4900.c | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/hid/hid-elo.c b/drivers/hid/hid-elo.c
-index 9b42b0cdeef0..2876cb6a7dca 100644
---- a/drivers/hid/hid-elo.c
-+++ b/drivers/hid/hid-elo.c
-@@ -228,7 +228,6 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
+diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
+index d885032cf814..d918d2df4de2 100644
+--- a/drivers/gpio/gpio-ts4900.c
++++ b/drivers/gpio/gpio-ts4900.c
+@@ -1,7 +1,7 @@
+ /*
+  * Digital I/O driver for Technologic Systems I2C FPGA Core
+  *
+- * Copyright (C) 2015 Technologic Systems
++ * Copyright (C) 2015, 2018 Technologic Systems
+  * Copyright (C) 2016 Savoir-Faire Linux
+  *
+  * This program is free software; you can redistribute it and/or
+@@ -55,19 +55,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
  {
- 	struct elo_priv *priv;
- 	int ret;
--	struct usb_device *udev;
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
  
- 	if (!hid_is_usb(hdev))
- 		return -EINVAL;
-@@ -238,8 +237,7 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
- 		return -ENOMEM;
- 
- 	INIT_DELAYED_WORK(&priv->work, elo_work);
--	udev = interface_to_usbdev(to_usb_interface(hdev->dev.parent));
--	priv->usbdev = usb_get_dev(udev);
-+	priv->usbdev = interface_to_usbdev(to_usb_interface(hdev->dev.parent));
- 
- 	hid_set_drvdata(hdev, priv);
- 
-@@ -262,7 +260,6 @@ static int elo_probe(struct hid_device *hdev, const struct hid_device_id *id)
- 
- 	return 0;
- err_free:
--	usb_put_dev(udev);
- 	kfree(priv);
- 	return ret;
+-	/*
+-	 * This will clear the output enable bit, the other bits are
+-	 * dontcare when this is cleared
++	/* Only clear the OE bit here, requires a RMW. Prevents potential issue
++	 * with OE and data getting to the physical pin at different times.
+ 	 */
+-	return regmap_write(priv->regmap, offset, 0);
++	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
  }
-@@ -271,8 +268,6 @@ static void elo_remove(struct hid_device *hdev)
- {
- 	struct elo_priv *priv = hid_get_drvdata(hdev);
  
--	usb_put_dev(priv->usbdev);
--
- 	hid_hw_stop(hdev);
- 	cancel_delayed_work_sync(&priv->work);
- 	kfree(priv);
+ static int ts4900_gpio_direction_output(struct gpio_chip *chip,
+ 					unsigned int offset, int value)
+ {
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
++	unsigned int reg;
+ 	int ret;
+ 
++	/* If changing from an input to an output, we need to first set the
++	 * proper data bit to what is requested and then set OE bit. This
++	 * prevents a glitch that can occur on the IO line
++	 */
++	regmap_read(priv->regmap, offset, &reg);
++	if (!(reg & TS4900_GPIO_OE)) {
++		if (value)
++			reg = TS4900_GPIO_OUT;
++		else
++			reg &= ~TS4900_GPIO_OUT;
++
++		regmap_write(priv->regmap, offset, reg);
++	}
++
+ 	if (value)
+ 		ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
+ 							 TS4900_GPIO_OUT);
 -- 
 2.34.1
 
