@@ -2,257 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E691EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 06:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F61C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236506AbiCNHA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 03:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
+        id S236508AbiCNHCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 03:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236493AbiCNHAx (ORCPT
+        with ESMTP id S231877AbiCNHCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 03:00:53 -0400
-Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C9A44090E
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 23:59:42 -0700 (PDT)
-Received: from unknown (HELO lgeamrelo02.lge.com) (156.147.1.126)
-        by 156.147.23.53 with ESMTP; 14 Mar 2022 15:59:40 +0900
-X-Original-SENDERIP: 156.147.1.126
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO X58A-UD3R) (10.177.244.38)
-        by 156.147.1.126 with ESMTP; 14 Mar 2022 15:59:40 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-Date:   Mon, 14 Mar 2022 15:59:06 +0900
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     torvalds@linux-foundation.org, damien.lemoal@opensource.wdc.com,
-        linux-ide@vger.kernel.org, adilger.kernel@dilger.ca,
-        linux-ext4@vger.kernel.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, peterz@infradead.org,
-        will@kernel.org, tglx@linutronix.de, rostedt@goodmis.org,
-        joel@joelfernandes.org, sashal@kernel.org, daniel.vetter@ffwll.ch,
-        chris@chris-wilson.co.uk, duyuyang@gmail.com,
-        johannes.berg@intel.com, tj@kernel.org, tytso@mit.edu,
-        willy@infradead.org, david@fromorbit.com, amir73il@gmail.com,
-        bfields@fieldses.org, gregkh@linuxfoundation.org,
-        kernel-team@lge.com, linux-mm@kvack.org, akpm@linux-foundation.org,
-        mhocko@kernel.org, minchan@kernel.org, hannes@cmpxchg.org,
-        vdavydov.dev@gmail.com, sj@kernel.org, jglisse@redhat.com,
-        dennis@kernel.org, cl@linux.com, penberg@kernel.org,
-        rientjes@google.com, vbabka@suse.cz, ngupta@vflare.org,
-        linux-block@vger.kernel.org, paolo.valente@linaro.org,
-        josef@toxicpanda.com, linux-fsdevel@vger.kernel.org,
-        viro@zeniv.linux.org.uk, jack@suse.cz, jack@suse.com,
-        jlayton@kernel.org, dan.j.williams@intel.com, hch@infradead.org,
-        djwong@kernel.org, dri-devel@lists.freedesktop.org,
-        airlied@linux.ie, rodrigosiqueiramelo@gmail.com,
-        melissa.srw@gmail.com, hamohammed.sa@gmail.com
-Subject: Re: [PATCH v4 00/24] DEPT(Dependency Tracker)
-Message-ID: <20220314065906.GA6255@X58A-UD3R>
-References: <1646377603-19730-1-git-send-email-byungchul.park@lge.com>
- <Yiv9Fn4kcRbXJLmu@ip-172-31-19-208.ap-northeast-1.compute.internal>
+        Mon, 14 Mar 2022 03:02:44 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C487F40900;
+        Mon, 14 Mar 2022 00:01:34 -0700 (PDT)
+X-UUID: 4decd2aa2f854a098042a04bf0a4a7e3-20220314
+X-UUID: 4decd2aa2f854a098042a04bf0a4a7e3-20220314
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 669941624; Mon, 14 Mar 2022 15:01:27 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 14 Mar 2022 15:01:26 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 14 Mar 2022 15:01:23 +0800
+Message-ID: <2d0ab5290e63069f310987a4423ef2a46f02f1b3.camel@mediatek.com>
+Subject: Re: [PATCH net-next v2 9/9] net: ethernet: mtk-star-emac: separate
+ tx/rx handling with two NAPIs
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Fabien Parent <fparent@baylibre.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
+        <srv_heupstream@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>
+Date:   Mon, 14 Mar 2022 15:01:23 +0800
+In-Reply-To: <20220128074454.46d0ca29@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220127015857.9868-1-biao.huang@mediatek.com>
+         <20220127015857.9868-10-biao.huang@mediatek.com>
+         <20220127194338.01722b3c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <2bdb6c9b5ec90b6c606b7db8c13f8acb34910b36.camel@mediatek.com>
+         <20220128074454.46d0ca29@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yiv9Fn4kcRbXJLmu@ip-172-31-19-208.ap-northeast-1.compute.internal>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 01:53:26AM +0000, Hyeonggon Yoo wrote:
-> On Fri, Mar 04, 2022 at 04:06:19PM +0900, Byungchul Park wrote:
-> > Hi Linus and folks,
+Dear Jakub,
+	Thanks for your comments~
+
+On Fri, 2022-01-28 at 07:44 -0800, Jakub Kicinski wrote:
+> On Fri, 28 Jan 2022 15:05:27 +0800 Biao Huang wrote:
+> > > > + * Description : this is the driver interrupt service routine.
+> > > > + * it mainly handles:
+> > > > + *  1. tx complete interrupt for frame transmission.
+> > > > + *  2. rx complete interrupt for frame reception.
+> > > > + *  3. MAC Management Counter interrupt to avoid counter
+> > > > overflow.
+> > > >   */
+> > > >  static irqreturn_t mtk_star_handle_irq(int irq, void *data)
+> > > >  {
+> > > > -	struct mtk_star_priv *priv;
+> > > > -	struct net_device *ndev;
+> > > > +	struct net_device *ndev = data;
+> > > > +	struct mtk_star_priv *priv = netdev_priv(ndev);
+> > > > +	unsigned int intr_status = mtk_star_intr_ack_all(priv);
+> > > > +	unsigned long flags = 0;
+> > > > +
+> > > > +	if (intr_status & MTK_STAR_BIT_INT_STS_FNRC) {
+> > > > +		if (napi_schedule_prep(&priv->rx_napi)) {
+> > > > +			spin_lock_irqsave(&priv->lock, flags);
+> > > > +			/* mask Rx Complete interrupt */
+> > > > +			mtk_star_disable_dma_irq(priv, true,
+> > > > false);
+> > > > +			spin_unlock_irqrestore(&priv->lock,
+> > > > flags);
+> > > > +			__napi_schedule_irqoff(&priv->rx_napi);
+> > > > +		}
+> > > > +	}
+> > > >  
+> > > > -	ndev = data;
+> > > > -	priv = netdev_priv(ndev);
+> > > > +	if (intr_status & MTK_STAR_BIT_INT_STS_TNTC) {
+> > > > +		if (napi_schedule_prep(&priv->tx_napi)) {
+> > > > +			spin_lock_irqsave(&priv->lock, flags);
+> > > > +			/* mask Tx Complete interrupt */
+> > > > +			mtk_star_disable_dma_irq(priv, false,
+> > > > true);
+> > > > +			spin_unlock_irqrestore(&priv->lock,
+> > > > flags);
+> > > > +			__napi_schedule_irqoff(&priv->tx_napi);
+> > > > +		}
+> > > > +	}  
+> > > 
+> > > Seems a little wasteful to retake the same lock twice if two IRQ
+> > > sources fire at the same time.  
 > > 
-> > I've been developing a tool for detecting deadlock possibilities by
-> > tracking wait/event rather than lock(?) acquisition order to try to
-> > cover all synchonization machanisms. It's done on v5.17-rc1 tag.
+> > The TX/RX irq control bits are in the same register,
+> > but they are triggered independently.
+> > So it seems necessary to protect the register
+> > access with a spin lock.
+> 
+> This is what I meant:
+> 
+> rx = (status & RX) && napi_schedule_prep(rx_napi);
+> tx = (status & TX) && napi_schedule_prep(tx_napi);
+> 
+> if (rx || tx) {
+> 	spin_lock()
+> 	disable_irq(priv, rx, tx);	
+> 	spin_unlock();
+> 	if (rx)
+> 		__napi_schedule_irqoff(rx_napi)
+> 	if (tx)
+> 		__napi_schedule_irqoff(tx_napi)
+> }
+> 
+OK, We'll adopt your suggestion, and corresponding modification will be
+added in next send.
+> > > >  	desc_data.dma_addr = mtk_star_dma_map_tx(priv, skb);
+> > > >  	if (dma_mapping_error(dev, desc_data.dma_addr))
+> > > > @@ -1050,18 +1103,10 @@ static int
+> > > > mtk_star_netdev_start_xmit(struct sk_buff *skb,
+> > > >  
+> > > >  	desc_data.skb = skb;
+> > > >  	desc_data.len = skb->len;
+> > > > -
+> > > > -	spin_lock_bh(&priv->lock);
+> > > > 
+> > > >  	mtk_star_ring_push_head_tx(ring, &desc_data);
+> > > >  
+> > > >  	netdev_sent_queue(ndev, skb->len);
+> > > >  
+> > > > -	if (mtk_star_ring_full(ring))
+> > > > -		netif_stop_queue(ndev);  
+> > > 
+> > > Are you stopping the queue in advance somewhere else now? Did you
+> > > only
+> > > test this with BQL enabled? Only place that stops the ring also
+> > > prints
+> > > a loud warning now AFAICS..  
 > > 
-> > https://github.com/lgebyungchulpark/linux-dept/commits/dept1.14_on_v5.17-rc1
-> >
+> > No.
+> > 
+> > We modify the ring full condition, and will not invoke
+> > netif_stop_queue
+> > if queue is already stopped.
 > 
-> Small feedback unrelated to thread:
-> I'm not sure "Need to expand the ring buffer" is something to call
-> WARN(). Is this stack trace useful for something?
+> I don't understand what you're saying.
+> 
+> > Test pass no matter whether BQL is enabled or disabled.
+> > 
+> > It's much safer to judge queue is full or not at the beginning of
+> > start_xmit() to avoid invalid setting.
+> 
+> Drivers are expected to stop their queues at the end of xmit routine
+> if
+> the ring can't accommodate another frame. It's more efficient to stop
+> the queues early than have to put skbs already dequeued from the
+> qdisc
+> layer back into the qdiscs.
+Yes, if descriptors ring is full, it's meaningful to stop the queue 
+at the end of xmit; 
+But driver seems hard to know how many descriptors the next skb will
+request, e.g. 3 descriptors are available for next round send, but the
+next skb may need 4 descriptors, in this case, we still need judge
+whether descriptors are enough for skb transmission, then decide stop
+the queue or not, at the beginning of xmit routine.
 
-Yeah. It seems to happen too often. I won't warn it. Thanks.
+Maybe we should judge ring is full or not at the beginning and the end
+of xmit routine(seems a little redundancy).
 
-> ========
-> 
-> Hello Byungchul. These are two warnings of DEPT on system.
-> Both cases look similar.
-> 
-> In what case DEPT says (unknown)?
-> I'm not sure we can properly debug this.
-> 
-> ===================================================
-> DEPT: Circular dependency has been detected.
-> 5.17.0-rc1+ #3 Tainted: G        W        
-> ---------------------------------------------------
-> summary
-> ---------------------------------------------------
-> *** AA DEADLOCK ***
-> 
-> context A
->     [S] (unknown)(&vfork:0)
->     [W] wait_for_completion_killable(&vfork:0)
->     [E] complete(&vfork:0)
+Regards~
 
-All the reports look like having to do with kernel_clone(). I need to
-check it more. Thank you very much.
-
-You are awesome, Hyeonggon.
-
-Thank you,
-Byungchul
-
-> [S]: start of the event context
-> [W]: the wait blocked
-> [E]: the event not reachable
-> ---------------------------------------------------
-> context A's detail
-> ---------------------------------------------------
-> context A
->     [S] (unknown)(&vfork:0)
->     [W] wait_for_completion_killable(&vfork:0)
->     [E] complete(&vfork:0)
-> 
-> [S] (unknown)(&vfork:0):
-> (N/A)
-> 
-> [W] wait_for_completion_killable(&vfork:0):
-> [<ffffffc00802204c>] kernel_clone+0x25c/0x2b8
-> stacktrace:
->       dept_wait+0x74/0x88
->       wait_for_completion_killable+0x60/0xa0
->       kernel_clone+0x25c/0x2b8
->       __do_sys_clone+0x5c/0x74
->       __arm64_sys_clone+0x18/0x20
->       invoke_syscall.constprop.0+0x78/0xc4
->       do_el0_svc+0x98/0xd0
->       el0_svc+0x44/0xe4
->       el0t_64_sync_handler+0xb0/0x12c
->       el0t_64_sync+0x158/0x15c
-> 
-> [E] complete(&vfork:0):
-> [<ffffffc00801f49c>] mm_release+0x7c/0x90
-> stacktrace:
->       dept_event+0xe0/0x100
->       complete+0x48/0x98
->       mm_release+0x7c/0x90
->       exit_mm_release+0xc/0x14
->       do_exit+0x1b4/0x81c
->       do_group_exit+0x30/0x9c
->       __wake_up_parent+0x0/0x24
->       invoke_syscall.constprop.0+0x78/0xc4
->       do_el0_svc+0x98/0xd0
->       el0_svc+0x44/0xe4
->       el0t_64_sync_handler+0xb0/0x12c
->       el0t_64_sync+0x158/0x15c
-> ---------------------------------------------------
-> information that might be helpful
-> ---------------------------------------------------
-> CPU: 6 PID: 229 Comm: start-stop-daem Tainted: G        W         5.17.0-rc1+ #3
-> Hardware name: linux,dummy-virt (DT)
-> Call trace:
->  dump_backtrace.part.0+0x9c/0xc4
->  show_stack+0x14/0x28
->  dump_stack_lvl+0x9c/0xcc
->  dump_stack+0x14/0x2c
->  print_circle+0x2d4/0x438
->  cb_check_dl+0x44/0x70
->  bfs+0x60/0x168
->  add_dep+0x88/0x11c
->  do_event.constprop.0+0x19c/0x2c0
->  dept_event+0xe0/0x100
->  complete+0x48/0x98
->  mm_release+0x7c/0x90
->  exit_mm_release+0xc/0x14
->  do_exit+0x1b4/0x81c
->  do_group_exit+0x30/0x9c
->  __wake_up_parent+0x0/0x24
->  invoke_syscall.constprop.0+0x78/0xc4
->  do_el0_svc+0x98/0xd0
->  el0_svc+0x44/0xe4
->  el0t_64_sync_handler+0xb0/0x12c
->  el0t_64_sync+0x158/0x15c
-> 
-> 
-> 
-> 
-> ===================================================
-> DEPT: Circular dependency has been detected.
-> 5.17.0-rc1+ #3 Tainted: G        W        
-> ---------------------------------------------------
-> summary
-> ---------------------------------------------------
-> *** AA DEADLOCK ***
-> 
-> context A
->     [S] (unknown)(&try_completion:0)
->     [W] wait_for_completion_timeout(&try_completion:0)
->     [E] complete(&try_completion:0)
-> 
-> [S]: start of the event context
-> [W]: the wait blocked
-> [E]: the event not reachable
-> ---------------------------------------------------
-> context A's detail
-> ---------------------------------------------------
-> context A
->     [S] (unknown)(&try_completion:0)
->     [W] wait_for_completion_timeout(&try_completion:0)
->     [E] complete(&try_completion:0)
-> 
-> [S] (unknown)(&try_completion:0):
-> (N/A)
-> 
-> [W] wait_for_completion_timeout(&try_completion:0):
-> [<ffffffc008166bf4>] kunit_try_catch_run+0xb4/0x160
-> stacktrace:
->       dept_wait+0x74/0x88
->       wait_for_completion_timeout+0x64/0xa0
->       kunit_try_catch_run+0xb4/0x160
->       kunit_test_try_catch_successful_try_no_catch+0x3c/0x98
->       kunit_try_run_case+0x9c/0xa0
->       kunit_generic_run_threadfn_adapter+0x1c/0x28
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
-> 
-> [E] complete(&try_completion:0):
-> [<ffffffc00803dce4>] kthread_complete_and_exit+0x18/0x20
-> stacktrace:
->       dept_event+0xe0/0x100
->       complete+0x48/0x98
->       kthread_complete_and_exit+0x18/0x20
->       kunit_try_catch_throw+0x0/0x1c
->       kthread+0xd4/0xe4
->       ret_from_fork+0x10/0x20
-> 
-> ---------------------------------------------------
-> information that might be helpful
-> ---------------------------------------------------
-> CPU: 15 PID: 132 Comm: kunit_try_catch Tainted: G        W         5.17.0-rc1+ #3
-> Hardware name: linux,dummy-virt (DT)
-> Call trace:
->  dump_backtrace.part.0+0x9c/0xc4
->  show_stack+0x14/0x28
->  dump_stack_lvl+0x9c/0xcc
->  dump_stack+0x14/0x2c
->  print_circle+0x2d4/0x438
->  cb_check_dl+0x44/0x70
->  bfs+0x60/0x168
->  add_dep+0x88/0x11c
->  do_event.constprop.0+0x19c/0x2c0
->  dept_event+0xe0/0x100
->  complete+0x48/0x98
->  kthread_complete_and_exit+0x18/0x20
->  kunit_try_catch_throw+0x0/0x1c
->  kthread+0xd4/0xe4
->  ret_from_fork+0x10/0x20
-
-
-> -- 
-> Thank you, You are awesome!
-> Hyeonggon :-)
