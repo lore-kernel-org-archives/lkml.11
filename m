@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F132FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239975AbiCNL66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:58:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
+        id S240049AbiCNL7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240137AbiCNL6O (ORCPT
+        with ESMTP id S240162AbiCNL6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:58:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2FB65DA;
-        Mon, 14 Mar 2022 04:57:04 -0700 (PDT)
+        Mon, 14 Mar 2022 07:58:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5E465D7;
+        Mon, 14 Mar 2022 04:57:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C72260FF3;
-        Mon, 14 Mar 2022 11:57:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69988C340EC;
-        Mon, 14 Mar 2022 11:57:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA01161251;
+        Mon, 14 Mar 2022 11:57:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48DDC340E9;
+        Mon, 14 Mar 2022 11:57:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259023;
-        bh=boM+X7Jtz7xEMxABclzXsyS0I01CPMFAo2H06POull4=;
+        s=korg; t=1647259027;
+        bh=IU/bSd/Up1lGH3O2Qg9A2SkcKJiyLwSWHeG6qKlMYTs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xziltt+wAcGFP9SuI8BN6fBf6kWHxitrlACPlZJ4rsrRoyTrTt0O3nCe87SIfFO5i
-         u+BfgitpxZ10kyd0IYhyGp8RwL/59MzKZFrtW+p91plE9m953CE7pHsLOEv47Uxzj+
-         QyHywmqwruCp80ed94T3x6GcbgkD20cRFtT7bvL0=
+        b=rxWGQz7L1JLFWj+HNXDkDtlGwa7pfbVj5+RD8fEodESw94vnRdpf7G1It2k3xsCTw
+         ZuyLOrKEoWnooFDj0ckD+ZgxuhXuRFOSdivC3S1qGwpolKVCU1qIgA261TJFEssXzp
+         cddWNvrh9KWga/wt+MmEuo391M/t+jIwyrIAWn8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        linux-arm-kernel@lists.infradead.org, patches@armlinux.org.uk,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 29/43] ARM: Spectre-BHB: provide empty stub for non-config
-Date:   Mon, 14 Mar 2022 12:53:40 +0100
-Message-Id: <20220314112735.237801373@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 03/43] virtio-blk: Dont use MAX_DISCARD_SEGMENTS if max_discard_seg is zero
+Date:   Mon, 14 Mar 2022 12:53:14 +0100
+Message-Id: <20220314112734.514655046@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -52,49 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-commit 68453767131a5deec1e8f9ac92a9042f929e585d upstream.
+[ Upstream commit dacc73ed0b88f1a787ec20385f42ca9dd9eddcd0 ]
 
-When CONFIG_GENERIC_CPU_VULNERABILITIES is not set, references
-to spectre_v2_update_state() cause a build error, so provide an
-empty stub for that function when the Kconfig option is not set.
+Currently the value of max_discard_segment will be set to
+MAX_DISCARD_SEGMENTS (256) with no basis in hardware if device
+set 0 to max_discard_seg in configuration space. It's incorrect
+since the device might not be able to handle such large descriptors.
+To fix it, let's follow max_segments restrictions in this case.
 
-Fixes this build error:
-
-  arm-linux-gnueabi-ld: arch/arm/mm/proc-v7-bugs.o: in function `cpu_v7_bugs_init':
-  proc-v7-bugs.c:(.text+0x52): undefined reference to `spectre_v2_update_state'
-  arm-linux-gnueabi-ld: proc-v7-bugs.c:(.text+0x82): undefined reference to `spectre_v2_update_state'
-
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: patches@armlinux.org.uk
-Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Link: https://lore.kernel.org/r/20220304100058.116-1-xieyongji@bytedance.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/include/asm/spectre.h |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/block/virtio_blk.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/arch/arm/include/asm/spectre.h
-+++ b/arch/arm/include/asm/spectre.h
-@@ -25,7 +25,13 @@ enum {
- 	SPECTRE_V2_METHOD_LOOP8 = BIT(__SPECTRE_V2_METHOD_LOOP8),
- };
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index 816eb2db7308..4b3645e648ee 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -980,9 +980,15 @@ static int virtblk_probe(struct virtio_device *vdev)
  
-+#ifdef CONFIG_GENERIC_CPU_VULNERABILITIES
- void spectre_v2_update_state(unsigned int state, unsigned int methods);
-+#else
-+static inline void spectre_v2_update_state(unsigned int state,
-+					   unsigned int methods)
-+{}
-+#endif
+ 		virtio_cread(vdev, struct virtio_blk_config, max_discard_seg,
+ 			     &v);
++
++		/*
++		 * max_discard_seg == 0 is out of spec but we always
++		 * handled it.
++		 */
++		if (!v)
++			v = sg_elems - 2;
+ 		blk_queue_max_discard_segments(q,
+-					       min_not_zero(v,
+-							    MAX_DISCARD_SEGMENTS));
++					       min(v, MAX_DISCARD_SEGMENTS));
  
- int spectre_bhb_update_vectors(unsigned int method);
- 
+ 		blk_queue_flag_set(QUEUE_FLAG_DISCARD, q);
+ 	}
+-- 
+2.34.1
+
 
 
