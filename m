@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C41C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239896AbiCNL5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        id S239875AbiCNL5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239835AbiCNL45 (ORCPT
+        with ESMTP id S239802AbiCNL47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:56:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CACEDF8F;
-        Mon, 14 Mar 2022 04:55:46 -0700 (PDT)
+        Mon, 14 Mar 2022 07:56:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC696A191;
+        Mon, 14 Mar 2022 04:55:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C426EB80DE3;
-        Mon, 14 Mar 2022 11:55:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98DE1C340ED;
-        Mon, 14 Mar 2022 11:55:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6231060FF3;
+        Mon, 14 Mar 2022 11:55:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C56C340E9;
+        Mon, 14 Mar 2022 11:55:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647258943;
-        bh=YMYnOjNNfhNjUlC61X8qNNM2OgJ0OqDWeEDZ4qw2yJc=;
+        s=korg; t=1647258948;
+        bh=rmqWh++bmnolqTwUgqq50Pxu7vO0BZugPXX67ZgUons=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qjicIDP2evSBAD7a9eOVzznArgu3Mfq40MSfG0spC/ZfdFPxRjRKZvLetehzW6JTS
-         hiLWY2jOiPBrumUME0wkTUgXcuo+mKoGhn7WyR1XGbO61/tNfnoXDNIoXsDuFFMh9e
-         Wu5qkKbn92s6WbIeSei24iM8RRIinGtf3aZiJyLY=
+        b=rlHsdb2I51rKadhUYfwgfKalYpE0XR/p96k0DGOYFinsBFMURHWmGcHPALSXnE1DD
+         2ZYLtvaANfXjy5KhUpZwJ6YVuGeHyNThV9E8jcCbck+vATte2WdID1sqdVmI4xGVp3
+         +I2NrG/tYT7mSAYSshyNHJ/TLXM0ePyeqZTWH+zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
-Subject: [PATCH 5.4 14/43] NFC: port100: fix use-after-free in port100_send_complete
-Date:   Mon, 14 Mar 2022 12:53:25 +0100
-Message-Id: <20220314112734.818860137@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 15/43] selftests: pmtu.sh: Kill tcpdump processes launched by subshell.
+Date:   Mon, 14 Mar 2022 12:53:26 +0100
+Message-Id: <20220314112734.846774844@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -51,84 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Guillaume Nault <gnault@redhat.com>
 
-[ Upstream commit f80cfe2f26581f188429c12bd937eb905ad3ac7b ]
+[ Upstream commit 18dfc667550fe9c032a6dcc3402b50e691e18029 ]
 
-Syzbot reported UAF in port100_send_complete(). The root case is in
-missing usb_kill_urb() calls on error handling path of ->probe function.
+The cleanup() function takes care of killing processes launched by the
+test functions. It relies on variables like ${tcpdump_pids} to get the
+relevant PIDs. But tests are run in their own subshell, so updated
+*_pids values are invisible to other shells. Therefore cleanup() never
+sees any process to kill:
 
-port100_send_complete() accesses devm allocated memory which will be
-freed on probe failure. We should kill this urbs before returning an
-error from probe function to prevent reported use-after-free
+$ ./tools/testing/selftests/net/pmtu.sh -t pmtu_ipv4_exception
+TEST: ipv4: PMTU exceptions                                         [ OK ]
+TEST: ipv4: PMTU exceptions - nexthop objects                       [ OK ]
 
-Fail log:
+$ pgrep -af tcpdump
+6084 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
+6085 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
+6086 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
+6087 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
+6088 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
+6089 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
+6090 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
+6091 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
+6228 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
+6229 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
+6230 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
+6231 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
+6232 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
+6233 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
+6234 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
+6235 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
 
-BUG: KASAN: use-after-free in port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
-Read of size 1 at addr ffff88801bb59540 by task ksoftirqd/2/26
-...
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
- __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1670
+Fix this by running cleanup() in the context of the test subshell.
+Now that each test cleans the environment after completion, there's no
+need for calling cleanup() again when the next test starts. So let's
+drop it from the setup() function. This is okay because cleanup() is
+also called when pmtu.sh starts, so even the first test starts in a
+clean environment.
 
-...
+Also, use tcpdump's immediate mode. Otherwise it might not have time to
+process buffered packets, resulting in missing packets or even empty
+pcap files for short tests.
 
-Allocated by task 1255:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- ____kasan_kmalloc mm/kasan/common.c:515 [inline]
- ____kasan_kmalloc mm/kasan/common.c:474 [inline]
- __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
- alloc_dr drivers/base/devres.c:116 [inline]
- devm_kmalloc+0x96/0x1d0 drivers/base/devres.c:823
- devm_kzalloc include/linux/device.h:209 [inline]
- port100_probe+0x8a/0x1320 drivers/nfc/port100.c:1502
+Note: PAUSE_ON_FAIL is still evaluated before cleanup(), so one can
+still inspect the test environment upon failure when using -p.
 
-Freed by task 1255:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free+0xff/0x140 mm/kasan/common.c:328
- kasan_slab_free include/linux/kasan.h:236 [inline]
- __cache_free mm/slab.c:3437 [inline]
- kfree+0xf8/0x2b0 mm/slab.c:3794
- release_nodes+0x112/0x1a0 drivers/base/devres.c:501
- devres_release_all+0x114/0x190 drivers/base/devres.c:530
- really_probe+0x626/0xcc0 drivers/base/dd.c:670
-
-Reported-and-tested-by: syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
-Fixes: 0347a6ab300a ("NFC: port100: Commands mechanism implementation")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20220308185007.6987-1-paskripkin@gmail.com
+Fixes: a92a0a7b8e7c ("selftests: pmtu: Simplify cleanup and namespace names")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/port100.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/net/pmtu.sh | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
-index 1caebefb25ff..2ae1474faede 100644
---- a/drivers/nfc/port100.c
-+++ b/drivers/nfc/port100.c
-@@ -1609,7 +1609,9 @@ static int port100_probe(struct usb_interface *interface,
- 	nfc_digital_free_device(dev->nfc_digital_dev);
+diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
+index 3429767cadcd..88be9083b923 100755
+--- a/tools/testing/selftests/net/pmtu.sh
++++ b/tools/testing/selftests/net/pmtu.sh
+@@ -579,7 +579,6 @@ setup_routing() {
+ setup() {
+ 	[ "$(id -u)" -ne 0 ] && echo "  need to run as root" && return $ksft_skip
  
- error:
-+	usb_kill_urb(dev->in_urb);
- 	usb_free_urb(dev->in_urb);
-+	usb_kill_urb(dev->out_urb);
- 	usb_free_urb(dev->out_urb);
- 	usb_put_dev(dev->udev);
+-	cleanup
+ 	for arg do
+ 		eval setup_${arg} || { echo "  ${arg} not supported"; return 1; }
+ 	done
+@@ -590,7 +589,7 @@ trace() {
  
+ 	for arg do
+ 		[ "${ns_cmd}" = "" ] && ns_cmd="${arg}" && continue
+-		${ns_cmd} tcpdump -s 0 -i "${arg}" -w "${name}_${arg}.pcap" 2> /dev/null &
++		${ns_cmd} tcpdump --immediate-mode -s 0 -i "${arg}" -w "${name}_${arg}.pcap" 2> /dev/null &
+ 		tcpdump_pids="${tcpdump_pids} $!"
+ 		ns_cmd=
+ 	done
+@@ -1182,6 +1181,10 @@ run_test() {
+ 
+ 	unset IFS
+ 
++	# Since cleanup() relies on variables modified by this subshell, it
++	# has to run in this context.
++	trap cleanup EXIT
++
+ 	if [ "$VERBOSE" = "1" ]; then
+ 		printf "\n##########################################################################\n\n"
+ 	fi
 -- 
 2.34.1
 
