@@ -2,97 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28077C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:59:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238137AbiCNKAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        id S238280AbiCNKAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236723AbiCNKAd (ORCPT
+        with ESMTP id S238166AbiCNKAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:00:33 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018B413FA7;
-        Mon, 14 Mar 2022 02:59:24 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id yy13so32634922ejb.2;
-        Mon, 14 Mar 2022 02:59:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PsQNFBWA1EYlWL3JRbf/rtOCOkamxrVDSuDVIjgIR4o=;
-        b=Odt8+9N/t1UJqOHii0oFmoTGa0XVGEaSk0m+Opd7PNjwmGiA19Z3+Z0YGXQAhHm6Io
-         9qJBRjGF9EW/BnKor8o6eob+8rCP5x6u9/lmIyJZiUPx/U9Hvs6/T/OzsMWy/gwM4aZy
-         lY/IadiLCsMmVCyEzhI6q6utFcl/f8X3tWz+cwrRyJ6Dlb4+08dS4ITreAlbPVfRKWxV
-         KDvk+QZB27zthh5VrdbjK30KUSYA6sYWJIzCmZ7UVc51+SzRjhTdh8RnUTU+WiH36JMq
-         YNVuyQj4NLs2/lzzq+I+U7CAh27sAf0W5EU/2bMHbSLSOnbVoE9frKv593Oci6iE9fuh
-         0b9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PsQNFBWA1EYlWL3JRbf/rtOCOkamxrVDSuDVIjgIR4o=;
-        b=mIc51MuHaFDs0D1ls5P1qxH3YRQ0D1cB6AuO1copwsuoXk7D4BIXsD7s2g8e7dl6oT
-         Up3mN98BXqpO06zt1s27xx6V8x8btcQN6btQlt6gkiOZsml0aVstOfxw2CLEdO8+bC+b
-         5oo3zsNl6+TBjGj1KzNWBzYd96a4//HPGrSmQKz4CKOYdcYkknKheYLvztLawfkNEr/5
-         9p8n5RnoBQhJjZKqlXNIcsyjIlwIFnqjOA9HDyiYlOZbuZpfrsXSMg+qmtDwwFJvPttw
-         fuA/yFLfBSRUVFJI6JBfd/nr52AZBzzsWzbgvJHDz/ObIvsCOYP3CDXKS58ZQj5LpGPN
-         HAxg==
-X-Gm-Message-State: AOAM531Ld7wx9dYpks8JA9JSsvOQLuwoPQ7yHd7UK+P6uktfhi2vgSbG
-        +vCsGlxX99+jmk3t4BM6i6w=
-X-Google-Smtp-Source: ABdhPJzXCHhNgZJb8D0D1qr9Mm4UXShFVL/kE231KCbkM3J6kKbxUDbSJgKYRl7pYdyLICPzW3Bsmw==
-X-Received: by 2002:a17:906:9704:b0:6da:aa98:d459 with SMTP id k4-20020a170906970400b006daaa98d459mr18549838ejx.294.1647251962463;
-        Mon, 14 Mar 2022 02:59:22 -0700 (PDT)
-Received: from NB2240.irisgmbh.local (p200300c3af44a500646b36c3c097229d.dip0.t-ipconnect.de. [2003:c3:af44:a500:646b:36c3:c097:229d])
-        by smtp.gmail.com with ESMTPSA id gv9-20020a170906f10900b006d7128b2e6fsm6598648ejb.162.2022.03.14.02.59.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 02:59:21 -0700 (PDT)
-From:   Ian Dannapel <iansdannapel@gmail.com>
-To:     linux@rempel-privat.de
-Cc:     kernel@pengutronix.de, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Michael.Glembotzki@iris-sensing.com,
-        Erik.Schumacher@iris-sensing.com,
-        Ian Dannapel <iansdannapel@gmail.com>
-Subject: [PATCH] i2c: imx: remove unnecessary delay at startup
-Date:   Mon, 14 Mar 2022 10:59:18 +0100
-Message-Id: <20220314095918.50014-1-iansdannapel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 14 Mar 2022 06:00:46 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5691013FA9;
+        Mon, 14 Mar 2022 02:59:35 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22E9rqMQ108791;
+        Mon, 14 Mar 2022 04:53:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647251632;
+        bh=sXDP6FRE9AaNqzed1m1RfsUHilWi4nFVgOEPlOZhFcM=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=p2YmpfJixwk6rzSKyMZ4uABJJHWukEKF7M5iRHHyWqZUBHKDsueKxief1uzzPTFXy
+         lKoRq2MGJsDECgBzvNq2JxICfK+aXBP95nCOHBh7wYgRIfRpJw8iKPtm9wdIozfhru
+         4EgnIcu1MCmR/mM5CupYjrBLf9bjksc/ISOUfyjc=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22E9rqGZ052177
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 14 Mar 2022 04:53:52 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 14
+ Mar 2022 04:53:52 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 14 Mar 2022 04:53:52 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22E9rp8V090706;
+        Mon, 14 Mar 2022 04:53:51 -0500
+Date:   Mon, 14 Mar 2022 15:23:50 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+CC:     Niklas =?utf-8?Q?S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Benoit Parrot <bparrot@ti.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Zhou Qingyang <zhou1615@umn.edu>,
+        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+Subject: Re: [PATCH 61/64] media: platform: rename ti-vpe/ to ti/vpe/
+Message-ID: <20220314095350.mbvjs7alqoz4vvml@ti.com>
+References: <cover.1647242578.git.mchehab@kernel.org>
+ <fecdb3d1e4fffbb5c3e0003a7d403ef9669ca026.1647242579.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <fecdb3d1e4fffbb5c3e0003a7d403ef9669ca026.1647242579.git.mchehab@kernel.org>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-a delay on the startup of the i2c imx controller is not required or defined in the specs.
-By removing it, the user can see a latency decrease from up to 150μs in communication.
-Additional info: https://lore.kernel.org/all/20220304132037.GA15901@pengutronix.de/
+Hi Mauro,
 
-Signed-off-by: Ian S. Dannapel <iansdannapel@gmail.com>
----
- drivers/i2c/busses/i2c-imx.c | 6 ------
- 1 file changed, 6 deletions(-)
+On 14/03/22 08:55AM, Mauro Carvalho Chehab wrote:
+> As the end goal is to have platform drivers split by vendor,
+> rename ti-vpe/ to ti/vpe/.
 
-diff --git a/drivers/i2c/busses/i2c-imx.c b/drivers/i2c/busses/i2c-imx.c
-index 3576b63a6c03..019dda5301df 100644
---- a/drivers/i2c/busses/i2c-imx.c
-+++ b/drivers/i2c/busses/i2c-imx.c
-@@ -602,12 +602,6 @@ static int i2c_imx_start(struct imx_i2c_struct *i2c_imx, bool atomic)
- 	imx_i2c_write_reg(i2c_imx->hwdata->i2sr_clr_opcode, i2c_imx, IMX_I2C_I2SR);
- 	imx_i2c_write_reg(i2c_imx->hwdata->i2cr_ien_opcode, i2c_imx, IMX_I2C_I2CR);
- 
--	/* Wait controller to be stable */
--	if (atomic)
--		udelay(50);
--	else
--		usleep_range(50, 150);
--
- 	/* Start I2C transaction */
- 	temp = imx_i2c_read_reg(i2c_imx, IMX_I2C_I2CR);
- 	temp |= I2CR_MSTA;
+I submitted a patch to do something similar [0]. I think it is a better 
+one because there are actually 2 separate IP drivers here: CAL and VPE. 
+My patch puts them both in their own directories, and a later patch 
+introduces a 3rd driver, j721e-csi2rx.
+
+So I would like to see my patch's directory structure being used.
+
+Nacked-by: Pratyush Yadav <p.yadav@ti.com>
+
+[0] https://patchwork.linuxtv.org/project/linux-media/patch/20220121142904.4091481-11-p.yadav@ti.com/
+
+> 
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> ---
+> 
+> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> See [PATCH 00/64] at: https://lore.kernel.org/all/cover.1647242578.git.mchehab@kernel.org/
+> 
+
 -- 
-2.25.1
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
