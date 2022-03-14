@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239504AbiCNLmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        id S239668AbiCNLmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239637AbiCNLmS (ORCPT
+        with ESMTP id S239568AbiCNLme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:42:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915A763AC;
-        Mon, 14 Mar 2022 04:39:49 -0700 (PDT)
+        Mon, 14 Mar 2022 07:42:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FF649F1A;
+        Mon, 14 Mar 2022 04:39:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A063E61188;
-        Mon, 14 Mar 2022 11:39:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20B0C340EC;
-        Mon, 14 Mar 2022 11:39:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FA906111A;
+        Mon, 14 Mar 2022 11:39:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316E7C340E9;
+        Mon, 14 Mar 2022 11:39:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257976;
-        bh=U5DHcUcxX8FAjNZdWFN5814xFjfJkZy9jDYKBuhOVQs=;
+        s=korg; t=1647257995;
+        bh=gw27gFzAhBnBV+UypLRu5IfxJHjufI1qJ25YslvMYZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ShRDmxa+MuctUM9Eqlafl8Hf1Pu7pajZNLnD0pxerQrCtPPbOv5wTGCYu+NdZoOs6
-         09+p2zk7JcDIjgERH1Z80oI1t0ND9P1YuCH9uiMCryQUe52Battpyli6Jlpvr0BM0R
-         1a66xoT8PsSn8Q11UH19B+Nd5I/uoFdBUsoJx4p4=
+        b=BqQyGPwg/PMm1TPDKlxrNIZlcMY5GzwgPPUVqWY/DZohacJSYiwORUGGkY7UIKWJr
+         7/Q0S9qwVaaLc8DvUHgnop2+FpYtXqx8JlRt60cUC6Sl7dxhdLl6vRHBDYT/7ZWDD+
+         HO07/uaRlrAkz6P3ehLDervOvzmslIoi3dwbXNaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Halil Pasic" <pasic@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 4.19 24/30] virtio: acknowledge all features before access
-Date:   Mon, 14 Mar 2022 12:34:42 +0100
-Message-Id: <20220314112732.477285418@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 4.19 28/30] sched/topology: Make sched_init_numa() use a set for the deduplicating sort
+Date:   Mon, 14 Mar 2022 12:34:46 +0100
+Message-Id: <20220314112732.587290871@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112731.785042288@linuxfoundation.org>
 References: <20220314112731.785042288@linuxfoundation.org>
@@ -49,140 +50,258 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-commit 4fa59ede95195f267101a1b8916992cf3f245cdb upstream.
+commit 620a6dc40754dc218f5b6389b5d335e9a107fd29 upstream.
 
-The feature negotiation was designed in a way that
-makes it possible for devices to know which config
-fields will be accessed by drivers.
+The deduplicating sort in sched_init_numa() assumes that the first line in
+the distance table contains all unique values in the entire table. I've
+been trying to pen what this exactly means for the topology, but it's not
+straightforward. For instance, topology.c uses this example:
 
-This is broken since commit 404123c2db79 ("virtio: allow drivers to
-validate features") with fallout in at least block and net.  We have a
-partial work-around in commit 2f9a174f918e ("virtio: write back
-F_VERSION_1 before validate") which at least lets devices find out which
-format should config space have, but this is a partial fix: guests
-should not access config space without acknowledging features since
-otherwise we'll never be able to change the config space format.
+  node   0   1   2   3
+    0:  10  20  20  30
+    1:  20  10  20  20
+    2:  20  20  10  20
+    3:  30  20  20  10
 
-To fix, split finalize_features from virtio_finalize_features and
-call finalize_features with all feature bits before validation,
-and then - if validation changed any bits - once again after.
+  0 ----- 1
+  |     / |
+  |   /   |
+  | /     |
+  2 ----- 3
 
-Since virtio_finalize_features no longer writes out features
-rename it to virtio_features_ok - since that is what it does:
-checks that features are ok with the device.
+Which works out just fine. However, if we swap nodes 0 and 1:
 
-As a side effect, this also reduces the amount of hypervisor accesses -
-we now only acknowledge features once unless we are clearing any
-features when validating (which is uncommon).
+  1 ----- 0
+  |     / |
+  |   /   |
+  | /     |
+  2 ----- 3
 
-IRC I think that this was more or less always the intent in the spec but
-unfortunately the way the spec is worded does not say this explicitly, I
-plan to address this at the spec level, too.
+we get this distance table:
 
-Acked-by: Jason Wang <jasowang@redhat.com>
-Cc: stable@vger.kernel.org
-Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
-Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
-Cc: "Halil Pasic" <pasic@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+  node   0  1  2  3
+    0:  10 20 20 20
+    1:  20 10 20 30
+    2:  20 20 10 20
+    3:  20 30 20 10
+
+Which breaks the deduplicating sort (non-representative first line). In
+this case this would just be a renumbering exercise, but it so happens that
+we can have a deduplicating sort that goes through the whole table in O(n²)
+at the extra cost of a temporary memory allocation (i.e. any form of set).
+
+The ACPI spec (SLIT) mentions distances are encoded on 8 bits. Following
+this, implement the set as a 256-bits bitmap. Should this not be
+satisfactory (i.e. we want to support 32-bit values), then we'll have to go
+for some other sparse set implementation.
+
+This has the added benefit of letting us allocate just the right amount of
+memory for sched_domains_numa_distance[], rather than an arbitrary
+(nr_node_ids + 1).
+
+Note: DT binding equivalent (distance-map) decodes distances as 32-bit
+values.
+
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20210122123943.1217-2-valentin.schneider@arm.com
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio.c       |   39 +++++++++++++++++++++------------------
- include/linux/virtio_config.h |    3 ++-
- 2 files changed, 23 insertions(+), 19 deletions(-)
+ include/linux/topology.h |    1 
+ kernel/sched/topology.c  |   99 ++++++++++++++++++++++-------------------------
+ 2 files changed, 49 insertions(+), 51 deletions(-)
 
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -165,14 +165,11 @@ void virtio_add_status(struct virtio_dev
+--- a/include/linux/topology.h
++++ b/include/linux/topology.h
+@@ -47,6 +47,7 @@ int arch_update_cpu_topology(void);
+ /* Conform to ACPI 2.0 SLIT distance definitions */
+ #define LOCAL_DISTANCE		10
+ #define REMOTE_DISTANCE		20
++#define DISTANCE_BITS           8
+ #ifndef node_distance
+ #define node_distance(from,to)	((from) == (to) ? LOCAL_DISTANCE : REMOTE_DISTANCE)
+ #endif
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1322,66 +1322,58 @@ static void init_numa_topology_type(void
+ 	}
  }
- EXPORT_SYMBOL_GPL(virtio_add_status);
  
--static int virtio_finalize_features(struct virtio_device *dev)
-+/* Do some validation, then set FEATURES_OK */
-+static int virtio_features_ok(struct virtio_device *dev)
++
++#define NR_DISTANCE_VALUES (1 << DISTANCE_BITS)
++
+ void sched_init_numa(void)
  {
--	int ret = dev->config->finalize_features(dev);
- 	unsigned status;
- 
--	if (ret)
--		return ret;
+-	int next_distance, curr_distance = node_distance(0, 0);
+ 	struct sched_domain_topology_level *tl;
+-	int level = 0;
+-	int i, j, k;
 -
- 	if (!virtio_has_feature(dev, VIRTIO_F_VERSION_1))
- 		return 0;
+-	sched_domains_numa_distance = kzalloc(sizeof(int) * (nr_node_ids + 1), GFP_KERNEL);
+-	if (!sched_domains_numa_distance)
+-		return;
+-
+-	/* Includes NUMA identity node at level 0. */
+-	sched_domains_numa_distance[level++] = curr_distance;
+-	sched_domains_numa_levels = level;
++	unsigned long *distance_map;
++	int nr_levels = 0;
++	int i, j;
  
-@@ -221,17 +218,6 @@ static int virtio_dev_probe(struct devic
- 		driver_features_legacy = driver_features;
+ 	/*
+ 	 * O(nr_nodes^2) deduplicating selection sort -- in order to find the
+ 	 * unique distances in the node_distance() table.
+-	 *
+-	 * Assumes node_distance(0,j) includes all distances in
+-	 * node_distance(i,j) in order to avoid cubic time.
+ 	 */
+-	next_distance = curr_distance;
++	distance_map = bitmap_alloc(NR_DISTANCE_VALUES, GFP_KERNEL);
++	if (!distance_map)
++		return;
++
++	bitmap_zero(distance_map, NR_DISTANCE_VALUES);
+ 	for (i = 0; i < nr_node_ids; i++) {
+ 		for (j = 0; j < nr_node_ids; j++) {
+-			for (k = 0; k < nr_node_ids; k++) {
+-				int distance = node_distance(i, k);
++			int distance = node_distance(i, j);
+ 
+-				if (distance > curr_distance &&
+-				    (distance < next_distance ||
+-				     next_distance == curr_distance))
+-					next_distance = distance;
+-
+-				/*
+-				 * While not a strong assumption it would be nice to know
+-				 * about cases where if node A is connected to B, B is not
+-				 * equally connected to A.
+-				 */
+-				if (sched_debug() && node_distance(k, i) != distance)
+-					sched_numa_warn("Node-distance not symmetric");
+-
+-				if (sched_debug() && i && !find_numa_distance(distance))
+-					sched_numa_warn("Node-0 not representative");
++			if (distance < LOCAL_DISTANCE || distance >= NR_DISTANCE_VALUES) {
++				sched_numa_warn("Invalid distance value range");
++				return;
+ 			}
+-			if (next_distance != curr_distance) {
+-				sched_domains_numa_distance[level++] = next_distance;
+-				sched_domains_numa_levels = level;
+-				curr_distance = next_distance;
+-			} else break;
++
++			bitmap_set(distance_map, distance, 1);
+ 		}
++	}
++	/*
++	 * We can now figure out how many unique distance values there are and
++	 * allocate memory accordingly.
++	 */
++	nr_levels = bitmap_weight(distance_map, NR_DISTANCE_VALUES);
+ 
+-		/*
+-		 * In case of sched_debug() we verify the above assumption.
+-		 */
+-		if (!sched_debug())
+-			break;
++	sched_domains_numa_distance = kcalloc(nr_levels, sizeof(int), GFP_KERNEL);
++	if (!sched_domains_numa_distance) {
++		bitmap_free(distance_map);
++		return;
  	}
  
--	/*
--	 * Some devices detect legacy solely via F_VERSION_1. Write
--	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
--	 * these when needed.
--	 */
--	if (drv->validate && !virtio_legacy_is_little_endian()
--			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
--		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
--		dev->config->finalize_features(dev);
--	}
--
- 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
- 		dev->features = driver_features & device_features;
- 	else
-@@ -242,13 +228,26 @@ static int virtio_dev_probe(struct devic
- 		if (device_features & (1ULL << i))
- 			__virtio_set_bit(dev, i);
- 
-+	err = dev->config->finalize_features(dev);
-+	if (err)
-+		goto err;
++	for (i = 0, j = 0; i < nr_levels; i++, j++) {
++		j = find_next_bit(distance_map, NR_DISTANCE_VALUES, j);
++		sched_domains_numa_distance[i] = j;
++	}
 +
- 	if (drv->validate) {
-+		u64 features = dev->features;
++	bitmap_free(distance_map);
 +
- 		err = drv->validate(dev);
- 		if (err)
- 			goto err;
+ 	/*
+-	 * 'level' contains the number of unique distances
++	 * 'nr_levels' contains the number of unique distances
+ 	 *
+ 	 * The sched_domains_numa_distance[] array includes the actual distance
+ 	 * numbers.
+@@ -1390,15 +1382,15 @@ void sched_init_numa(void)
+ 	/*
+ 	 * Here, we should temporarily reset sched_domains_numa_levels to 0.
+ 	 * If it fails to allocate memory for array sched_domains_numa_masks[][],
+-	 * the array will contain less then 'level' members. This could be
++	 * the array will contain less then 'nr_levels' members. This could be
+ 	 * dangerous when we use it to iterate array sched_domains_numa_masks[][]
+ 	 * in other functions.
+ 	 *
+-	 * We reset it to 'level' at the end of this function.
++	 * We reset it to 'nr_levels' at the end of this function.
+ 	 */
+ 	sched_domains_numa_levels = 0;
+ 
+-	sched_domains_numa_masks = kzalloc(sizeof(void *) * level, GFP_KERNEL);
++	sched_domains_numa_masks = kzalloc(sizeof(void *) * nr_levels, GFP_KERNEL);
+ 	if (!sched_domains_numa_masks)
+ 		return;
+ 
+@@ -1406,7 +1398,7 @@ void sched_init_numa(void)
+ 	 * Now for each level, construct a mask per node which contains all
+ 	 * CPUs of nodes that are that many hops away from us.
+ 	 */
+-	for (i = 0; i < level; i++) {
++	for (i = 0; i < nr_levels; i++) {
+ 		sched_domains_numa_masks[i] =
+ 			kzalloc(nr_node_ids * sizeof(void *), GFP_KERNEL);
+ 		if (!sched_domains_numa_masks[i])
+@@ -1414,12 +1406,17 @@ void sched_init_numa(void)
+ 
+ 		for (j = 0; j < nr_node_ids; j++) {
+ 			struct cpumask *mask = kzalloc(cpumask_size(), GFP_KERNEL);
++			int k;
 +
-+		/* Did validation change any features? Then write them again. */
-+		if (features != dev->features) {
-+			err = dev->config->finalize_features(dev);
-+			if (err)
-+				goto err;
-+		}
- 	}
+ 			if (!mask)
+ 				return;
  
--	err = virtio_finalize_features(dev);
-+	err = virtio_features_ok(dev);
- 	if (err)
- 		goto err;
+ 			sched_domains_numa_masks[i][j] = mask;
  
-@@ -412,7 +411,11 @@ int virtio_device_restore(struct virtio_
- 	/* We have a driver! */
- 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
- 
--	ret = virtio_finalize_features(dev);
-+	ret = dev->config->finalize_features(dev);
-+	if (ret)
-+		goto err;
+ 			for_each_node(k) {
++				if (sched_debug() && (node_distance(j, k) != node_distance(k, j)))
++					sched_numa_warn("Node-distance not symmetric");
 +
-+	ret = virtio_features_ok(dev);
- 	if (ret)
- 		goto err;
+ 				if (node_distance(j, k) > sched_domains_numa_distance[i])
+ 					continue;
  
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -51,8 +51,9 @@ struct irq_affinity;
-  *	Returns the first 32 feature bits (all we currently need).
-  * @finalize_features: confirm what device features we'll be using.
-  *	vdev: the virtio_device
-- *	This gives the final feature bits for the device: it can change
-+ *	This sends the driver feature bits to the device: it can change
-  *	the dev->feature bits if it wants.
-+ * Note: despite the name this can be called any number of times.
-  *	Returns 0 on success or error status
-  * @bus_name: return the bus name associated with the device
-  *	vdev: the virtio_device
+@@ -1431,7 +1428,7 @@ void sched_init_numa(void)
+ 	/* Compute default topology size */
+ 	for (i = 0; sched_domain_topology[i].mask; i++);
+ 
+-	tl = kzalloc((i + level + 1) *
++	tl = kzalloc((i + nr_levels) *
+ 			sizeof(struct sched_domain_topology_level), GFP_KERNEL);
+ 	if (!tl)
+ 		return;
+@@ -1454,7 +1451,7 @@ void sched_init_numa(void)
+ 	/*
+ 	 * .. and append 'j' levels of NUMA goodness.
+ 	 */
+-	for (j = 1; j < level; i++, j++) {
++	for (j = 1; j < nr_levels; i++, j++) {
+ 		tl[i] = (struct sched_domain_topology_level){
+ 			.mask = sd_numa_mask,
+ 			.sd_flags = cpu_numa_flags,
+@@ -1466,8 +1463,8 @@ void sched_init_numa(void)
+ 
+ 	sched_domain_topology = tl;
+ 
+-	sched_domains_numa_levels = level;
+-	sched_max_numa_distance = sched_domains_numa_distance[level - 1];
++	sched_domains_numa_levels = nr_levels;
++	sched_max_numa_distance = sched_domains_numa_distance[nr_levels - 1];
+ 
+ 	init_numa_topology_type();
+ }
 
 
