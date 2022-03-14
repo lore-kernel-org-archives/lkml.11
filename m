@@ -2,93 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D54C35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B230C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241422AbiCNMNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33616 "EHLO
+        id S241122AbiCNMNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241745AbiCNMJG (ORCPT
+        with ESMTP id S242888AbiCNMLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:06 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C298D50068
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:05:56 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nTjSG-0006MY-0k; Mon, 14 Mar 2022 13:05:40 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-cd06-1d72-9fa6-b58a.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:cd06:1d72:9fa6:b58a])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AA0FD4AE7C;
-        Mon, 14 Mar 2022 12:05:02 +0000 (UTC)
-Date:   Mon, 14 Mar 2022 13:05:02 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 27/30] can: ucan: fix typos in comments
-Message-ID: <20220314120502.kpc27kzk2dnou2td@pengutronix.de>
-References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
- <20220314115354.144023-28-Julia.Lawall@inria.fr>
+        Mon, 14 Mar 2022 08:11:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0863033A1D;
+        Mon, 14 Mar 2022 05:10:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC885B80DF6;
+        Mon, 14 Mar 2022 12:10:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA970C340EC;
+        Mon, 14 Mar 2022 12:10:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647259801;
+        bh=blSzkE0diLpAz0nAF+i5aaDVUw3yAONYwdMGUTE07xI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FoxgLUajrnwCjuXTqRkn1JOj1FmJfU7Q2+0Cw+SafznZvagWFbBaH9lqRQR/zpqE6
+         zUbLmD2zWRY7wEY/LHidLqRuRmVRxPnZrHrsVVyuGDHCh9H1rM3zFOMGeLtmBeHIxP
+         Iw94Y3LHI5sfgD7MQQoXEd7afmeLT2W+SYn9q0Us=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 093/110] watch_queue: Fix filter limit check
+Date:   Mon, 14 Mar 2022 12:54:35 +0100
+Message-Id: <20220314112745.624808982@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
+References: <20220314112743.029192918@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="utbqex7kud7q6aoc"
-Content-Disposition: inline
-In-Reply-To: <20220314115354.144023-28-Julia.Lawall@inria.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: David Howells <dhowells@redhat.com>
 
---utbqex7kud7q6aoc
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit c993ee0f9f81caf5767a50d1faeba39a0dc82af2 upstream.
 
-On 14.03.2022 12:53:51, Julia Lawall wrote:
-> Various spelling mistakes in comments.
-> Detected with the help of Coccinelle.
->=20
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+In watch_queue_set_filter(), there are a couple of places where we check
+that the filter type value does not exceed what the type_filter bitmap
+can hold.  One place calculates the number of bits by:
 
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+   if (tf[i].type >= sizeof(wfilter->type_filter) * 8)
 
-Should I take this, or are you going to upstream this?
+which is fine, but the second does:
 
-Marc
+   if (tf[i].type >= sizeof(wfilter->type_filter) * BITS_PER_LONG)
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+which is not.  This can lead to a couple of out-of-bounds writes due to
+a too-large type:
 
---utbqex7kud7q6aoc
-Content-Type: application/pgp-signature; name="signature.asc"
+ (1) __set_bit() on wfilter->type_filter
+ (2) Writing more elements in wfilter->filters[] than we allocated.
 
------BEGIN PGP SIGNATURE-----
+Fix this by just using the proper WATCH_TYPE__NR instead, which is the
+number of types we actually know about.
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIvL2sACgkQrX5LkNig
-013ghgf+OFs60+q+Dd4p/sUmD7ZvtB2QitZ69mbLVzun53kAWpiwm8dMpruvkzVv
-3fJoo1LQf3RatjI3X1VdBhhPiXydxXqsPyPKM+wqGIFx4eBvUVVX2tqkJWa8fCiT
-thYXj2u52KL/ewRCqY2n2P/SV9TZkBh1XCi0VfNJXctig/trq6EI8ggC5WDHPyqS
-F+RLj00w4KXI1qm0cB81jzv9UV0I2yBhkdPhXcNZB6Wc7vgEeTufJwMwyPScrEVB
-NopO4WdprdujxEEXl01ajOknMu6cuI2XCyVLWljYENYCbCfQ1AV19uYrYbTazGP/
-iyaki+mj1/3mHLwV1NfiqnMPC0u8ug==
-=Z0sl
------END PGP SIGNATURE-----
+The bug may cause an oops looking something like:
 
---utbqex7kud7q6aoc--
+  BUG: KASAN: slab-out-of-bounds in watch_queue_set_filter+0x659/0x740
+  Write of size 4 at addr ffff88800d2c66bc by task watch_queue_oob/611
+  ...
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x45/0x59
+   print_address_description.constprop.0+0x1f/0x150
+   ...
+   kasan_report.cold+0x7f/0x11b
+   ...
+   watch_queue_set_filter+0x659/0x740
+   ...
+   __x64_sys_ioctl+0x127/0x190
+   do_syscall_64+0x43/0x90
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+  Allocated by task 611:
+   kasan_save_stack+0x1e/0x40
+   __kasan_kmalloc+0x81/0xa0
+   watch_queue_set_filter+0x23a/0x740
+   __x64_sys_ioctl+0x127/0x190
+   do_syscall_64+0x43/0x90
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+  The buggy address belongs to the object at ffff88800d2c66a0
+   which belongs to the cache kmalloc-32 of size 32
+  The buggy address is located 28 bytes inside of
+   32-byte region [ffff88800d2c66a0, ffff88800d2c66c0)
+
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-by: Jann Horn <jannh@google.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/watch_queue.h |    3 ++-
+ kernel/watch_queue.c        |    4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+--- a/include/linux/watch_queue.h
++++ b/include/linux/watch_queue.h
+@@ -28,7 +28,8 @@ struct watch_type_filter {
+ struct watch_filter {
+ 	union {
+ 		struct rcu_head	rcu;
+-		unsigned long	type_filter[2];	/* Bitmask of accepted types */
++		/* Bitmask of accepted types */
++		DECLARE_BITMAP(type_filter, WATCH_TYPE__NR);
+ 	};
+ 	u32			nr_filters;	/* Number of filters */
+ 	struct watch_type_filter filters[];
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -320,7 +320,7 @@ long watch_queue_set_filter(struct pipe_
+ 		    tf[i].info_mask & WATCH_INFO_LENGTH)
+ 			goto err_filter;
+ 		/* Ignore any unknown types */
+-		if (tf[i].type >= sizeof(wfilter->type_filter) * 8)
++		if (tf[i].type >= WATCH_TYPE__NR)
+ 			continue;
+ 		nr_filter++;
+ 	}
+@@ -336,7 +336,7 @@ long watch_queue_set_filter(struct pipe_
+ 
+ 	q = wfilter->filters;
+ 	for (i = 0; i < filter.nr_filters; i++) {
+-		if (tf[i].type >= sizeof(wfilter->type_filter) * BITS_PER_LONG)
++		if (tf[i].type >= WATCH_TYPE__NR)
+ 			continue;
+ 
+ 		q->type			= tf[i].type;
+
+
