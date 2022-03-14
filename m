@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFFDC3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6713C4707F
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242314AbiCNM3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        id S242406AbiCNM3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243862AbiCNMVU (ORCPT
+        with ESMTP id S243874AbiCNMVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:20 -0400
+        Mon, 14 Mar 2022 08:21:21 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9936C62;
-        Mon, 14 Mar 2022 05:17:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7143810BC;
+        Mon, 14 Mar 2022 05:17:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+QWaBDYxADvSsUY8qg5wOXMDHzBy5XuwKndW6k+z53c=;
-  b=iDNSBE41Nm8OgSBkPg8VbFTfqyui2cAsU7o3PiVl53qcCApFjm+i7YSj
-   upsrgeoeFoBN1ZYs54zq0bBgKLl6U2FOfYXTJkFFxMXfEI0xd1OD8f5QN
-   UsLDj5JRueFP/s6Wq0yCUcYpitC754Kyju23WQGbo2lgD/DiJmcrqq/wI
-   M=;
+  bh=VH4JLLVTmsGjZM12TeV9tkCYfL9x4NOujHU4Jgu+w1I=;
+  b=L3CXpax2DaNttb9lDffzBgJzlv8QFSW1v5rEwdDwwuvtUyy7/mpbG6iX
+   /WY7B1Pp7OxOx5CSLVvbFeFgK55HhM32oZ7Ebx7cCX8bp6RpBRp2UwMBv
+   d3MNv+Ns7ff4VorRWJmuPPyY04juf4MHXdfBhjYHAjJIqzZlrjlX1moTG
+   U=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997355"
+   d="scan'208";a="25997363"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     kernel-janitors@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH 21/30] spi: sun4i: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:45 +0100
-Message-Id: <20220314115354.144023-22-Julia.Lawall@inria.fr>
+To:     Alex Deucher <alexander.deucher@amd.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 29/30] drm/amdgpu: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:53 +0100
+Message-Id: <20220314115354.144023-30-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -54,20 +55,29 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/spi/spi-sun4i.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi-sun4i.c b/drivers/spi/spi-sun4i.c
-index 1fdfc6e6691d..6000d0761206 100644
---- a/drivers/spi/spi-sun4i.c
-+++ b/drivers/spi/spi-sun4i.c
-@@ -280,7 +280,7 @@ static int sun4i_spi_transfer_one(struct spi_master *master,
- 	 * SPI_CLK = MOD_CLK / (2 ^ (cdr + 1))
- 	 * Or we can use CDR2, which is calculated with the formula:
- 	 * SPI_CLK = MOD_CLK / (2 * (cdr + 1))
--	 * Wether we use the former or the latter is set through the
-+	 * Whether we use the former or the latter is set through the
- 	 * DRS bit.
- 	 *
- 	 * First try CDR2, and if we can't reach the expected
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+index fe660a8e150f..970b065e9a6b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -340,7 +340,7 @@ static void amdgpu_cs_get_threshold_for_moves(struct amdgpu_device *adev,
+ 	if (free_vram >= 128 * 1024 * 1024 || free_vram >= total_vram / 8) {
+ 		s64 min_us;
+ 
+-		/* Be more aggresive on dGPUs. Try to fill a portion of free
++		/* Be more aggressive on dGPUs. Try to fill a portion of free
+ 		 * VRAM now.
+ 		 */
+ 		if (!(adev->flags & AMD_IS_APU))
+@@ -1280,7 +1280,7 @@ static int amdgpu_cs_submit(struct amdgpu_cs_parser *p,
+ 			continue;
+ 
+ 		/*
+-		 * Work around dma_resv shortcommings by wrapping up the
++		 * Work around dma_resv shortcomings by wrapping up the
+ 		 * submission in a dma_fence_chain and add it as exclusive
+ 		 * fence.
+ 		 */
 
