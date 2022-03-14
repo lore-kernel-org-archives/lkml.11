@@ -2,116 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE90C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4A7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237859AbiCNJKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32884 "EHLO
+        id S237870AbiCNJKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237855AbiCNJKI (ORCPT
+        with ESMTP id S237888AbiCNJKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 05:10:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B833D4AA;
-        Mon, 14 Mar 2022 02:08:55 -0700 (PDT)
+        Mon, 14 Mar 2022 05:10:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497F242A24;
+        Mon, 14 Mar 2022 02:09:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97FF9612BB;
-        Mon, 14 Mar 2022 09:08:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B682DC340E9;
-        Mon, 14 Mar 2022 09:08:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADDC7B80D36;
+        Mon, 14 Mar 2022 09:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08154C340E9;
+        Mon, 14 Mar 2022 09:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647248934;
-        bh=FwRy95YaoTK2BNBsAgnwyFkUwJ1K6hC1h5SRyvWqEcc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eFv4qW0zk+Q4ROflZLHSfSc7/GdW/JJTymTEGHG4ab37a+OEHGBLg6hucLF/BEMOc
-         4u0LS/E0OoHkXaX+D8c7tDe1zzKlffiRv5Dt9Z8tOjDYB4GXpNCucxNpR3ZiUSVj7t
-         VJ1qVYGrCNXO/jBw/wTqbRch/pPViqesEmFf81yRHcwS59I0WDiJ1+3STDgXa5wRhM
-         eRul9IN2FQz/yHS5TWfuMBIJHSZM+9ncVf/aenPo8/ir4/UOr4lHiF+83iehh07SRa
-         +YDGzpYqSRJm1+RFwCkK3CRM4rONeSjSoQP55KOSznp0HYSZithsyrc8ZVoDTHptPd
-         8x/5rlYGRYYlg==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH v2 3/3] docs: bootconfig: Add how to embed the bootconfig into kernel
-Date:   Mon, 14 Mar 2022 18:08:50 +0900
-Message-Id: <164724893057.731226.7051999254450413648.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164724890153.731226.1478494969800777757.stgit@devnote2>
-References: <164724890153.731226.1478494969800777757.stgit@devnote2>
-User-Agent: StGit/0.19
+        s=k20201202; t=1647248950;
+        bh=zx8O5o71LdC5cifVKMEOM1uIXEeT19K3/ICvdk/HAIw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TX9eRS8Mdkd+cJ+GIf4dLzQQnALgyUyMfwu/0ccCpOxX/8Rn8FxmPysX5Y6GUazS/
+         KzOuqlrZ+aHQYYBaFG7UBrY8ysB2EDPmzXQw2W4Z52oRvPpn5pefCTSbHmzbVpoAJn
+         wqnVVEx2xuVL0ZrEAzhg6EBZzFR2XPHKgOkXy2Y+0iqcLPwH0XXHeiFiGhZJuVc9/A
+         hUeugpR+rrpQTHg7Fk/7SWlQJMsjvVOxpclb/+Com7QKangHmjP5zBGS8Kj0r1UdnG
+         tZYymkUhZ2oQdVhc/unPT20ufJ91/qtfPUIu/DDrI0BokexOO++CVCbpTQX7shRoZM
+         Qlo/aPWYr9oJg==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, tzungbi@kernel.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/5] platform/chrome: cros_kbd_led_backlight: add EC PWM backend
+Date:   Mon, 14 Mar 2022 17:08:30 +0800
+Message-Id: <20220314090835.3822093-1-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a description how to embed the bootconfig file into kernel.
+The series adds EC PWM as an backend option for ChromeOS keyboard LED
+backlight.
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v3:
-  - Fix typos.
- Changes in v2:
-  - Corrected the text accoding to Randy's suggestion.
-  - Do not reccomend to use relative path for CONFIG_EMBED_BOOT_CONFIG_FILE.
----
- Documentation/admin-guide/bootconfig.rst |   30 +++++++++++++++++++++++++++---
- 1 file changed, 27 insertions(+), 3 deletions(-)
+The 1st patch reorder the headers alphabetically.
 
-diff --git a/Documentation/admin-guide/bootconfig.rst b/Documentation/admin-guide/bootconfig.rst
-index a1860fc0ca88..9028e0f1307b 100644
---- a/Documentation/admin-guide/bootconfig.rst
-+++ b/Documentation/admin-guide/bootconfig.rst
-@@ -158,9 +158,15 @@ Each key-value pair is shown in each line with following style::
- Boot Kernel With a Boot Config
- ==============================
- 
--Since the boot configuration file is loaded with initrd, it will be added
--to the end of the initrd (initramfs) image file with padding, size,
--checksum and 12-byte magic word as below.
-+There are two options to boot the kernel with bootconfig: attaching the
-+bootconfig to the initrd image or embedding it in the kernel itself.
-+
-+Attaching a Boot Config to Initrd
-+---------------------------------
-+
-+Since the boot configuration file is loaded with initrd by default,
-+it will be added to the end of the initrd (initramfs) image file with
-+padding, size, checksum and 12-byte magic word as below.
- 
- [initrd][bootconfig][padding][size(le32)][checksum(le32)][#BOOTCONFIG\n]
- 
-@@ -196,6 +202,24 @@ To remove the config from the image, you can use -d option as below::
- Then add "bootconfig" on the normal kernel command line to tell the
- kernel to look for the bootconfig at the end of the initrd file.
- 
-+Embedding a Boot Config into Kernel
-+-----------------------------------
-+
-+If you can not use initrd, you can also embed the bootconfig file in the
-+kernel by Kconfig options. In this case, you need to recompile the kernel
-+with the following configs::
-+
-+ CONFIG_EMBED_BOOT_CONFIG=y
-+ CONFIG_EMBED_BOOT_CONFIG_FILE="/PATH/TO/BOOTCONFIG/FILE"
-+
-+``CONFIG_EMBED_BOOT_CONFIG_FILE`` requires a correct absolute path to
-+the bootconfig file. The kernel will embed it as the default bootconfig.
-+
-+Just as when attaching the bootconfig to the initrd, you need ``bootconfig``
-+option on the kernel command line to enable the embedded bootconfig.
-+
-+Note that even if you set this option, you can override the embedded
-+bootconfig by another bootconfig which attached to the initrd.
- 
- Kernel parameters via Boot Config
- =================================
+The 2nd patch separates the ACPI backend as an independent option.
+
+The 3rd patch is the DT binding document for the proposed compatible string.
+
+The 4th patch supports OF match.
+
+The 5th patch adds EC PWM as another backend option.
+
+Changes from v1:
+(https://patchwork.kernel.org/project/chrome-platform/cover/20220214053646.3088298-1-tzungbi@google.com/)
+- Update email address accordingly.
+
+Tzung-Bi Shih (5):
+  platform/chrome: cros_kbd_led_backlight: sort headers alphabetically
+  platform/chrome: cros_kbd_led_backlight: separate ACPI backend
+  dt-bindings: add google,cros-kbd-led-backlight
+  platform/chrome: cros_kbd_led_backlight: support OF match
+  platform/chrome: cros_kbd_led_backlight: support EC PWM backend
+
+ .../chrome/google,cros-kbd-led-backlight.yaml |  35 +++
+ .../bindings/mfd/google,cros-ec.yaml          |   3 +
+ drivers/platform/chrome/Kconfig               |  14 +-
+ .../platform/chrome/cros_kbd_led_backlight.c  | 220 ++++++++++++++++--
+ 4 files changed, 249 insertions(+), 23 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/chrome/google,cros-kbd-led-backlight.yaml
+
+-- 
+2.35.1.723.g4982287a31-goog
 
