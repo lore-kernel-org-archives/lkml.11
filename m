@@ -2,509 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE793C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28011C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235435AbiCNKk3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56330 "EHLO
+        id S238640AbiCNKmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234281AbiCNKkZ (ORCPT
+        with ESMTP id S234173AbiCNKm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:40:25 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7131815A0B;
-        Mon, 14 Mar 2022 03:39:15 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 6EA791F43C62
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647254354;
-        bh=EUbmJON90sDQrR2mXhuO1QBu4eKg32Jxdq/pCeygcfc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Rsg8jgWiDFfVzbxCVIhHFNK0MisMROZJS9K0NONEg/QBiaHGVEsNk2oj4vbCSPnBg
-         vuKcrTBbMBOVd8iz6QGTGuma4rtXAiKIWvmzwf3y6F5pXnWQNa97m/k3FDtR+wVxq6
-         tEzZahIEmlmSf7MSA+t3CZqmVOOyM9fvAArbvfTzBc/jnLtVjZE7LDtsBW7EK6X09c
-         82zSjWS/1RWIVVwvgxQNlRyc4ndrkKmge3tPxkFUaN26EPeUsJEE3P8vdo0xcK4yGX
-         thPs8E341juDwEiK/GKcDsxsz74tlxUGLqJFQi4cbk5K0QaUSE+7AOkJhmqrNxkAWT
-         SjA051EyfLMCA==
-Message-ID: <3c7c6e67-072c-6377-05bd-1b5baa579666@collabora.com>
-Date:   Mon, 14 Mar 2022 11:39:11 +0100
+        Mon, 14 Mar 2022 06:42:27 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2C13EA92;
+        Mon, 14 Mar 2022 03:41:17 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22E8a3U8011989;
+        Mon, 14 Mar 2022 10:41:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=CWAf8f5TJCbQpdwIz0ofQ9Dva67XSRgREsrrNLuwR9c=;
+ b=klV9G+whGYzATWcvlvJ+tJNC2VIlxd+vsF5+qJdKS96KQrLV+jZTFRX1KRRmLLC3jS0R
+ +36EX2xsnn7jfK64QiwvpAHQeQ/rxfPp4UFw3XfeHppYsSHD6W750YZI2y2rSDN13KPG
+ +NFaToHJSA5EoiT53C+FVZ/0rOQYbC1jYjwIqMUzQJI53xD+Mtp9wBGQ+Iqmah4EyubH
+ rQtRIjGnpqldEMzATxOW5Ic/StmAzn1vbE5+dUUy8Z1f7uAPUDr4V7ad73RT4behrR0y
+ k9y0/Jz89jDUfkTbuTPmMI3iiWdrpgdWE78n3S5Jz5MxixN6aa68RkrTVEqNcwkao1U+ bg== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3es5kmqf47-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 10:41:17 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EAbQ2Q027535;
+        Mon, 14 Mar 2022 10:41:14 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 3erk58kc7h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 10:41:14 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EAfBI743844076
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Mar 2022 10:41:12 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4B4C311C6E8;
+        Mon, 14 Mar 2022 10:32:12 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D897311C6C7;
+        Mon, 14 Mar 2022 10:32:10 +0000 (GMT)
+Received: from li-bb2b2a4c-3307-11b2-a85c-8fa5c3a69313.ibm.com (unknown [9.43.29.85])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Mar 2022 10:32:10 +0000 (GMT)
+From:   Ojaswin Mujoo <ojaswin@linux.ibm.com>
+To:     fstests@vger.kernel.org
+Cc:     riteshh@linux.ibm.com, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ext4/053: Add support for testing mb_optimize_scan
+Date:   Mon, 14 Mar 2022 16:02:07 +0530
+Message-Id: <5b0d252484cbe973c2df0c677cb47b30012b0db1.1647253313.git.ojaswin@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [v3 10/19] ASoC: mediatek: mt8186: support tdm in platform driver
-Content-Language: en-US
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org,
-        robh+dt@kernel.org
-Cc:     aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
-        tzungbi@google.com, julianbraha@gmail.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220313151023.21229-1-jiaxin.yu@mediatek.com>
- <20220313151023.21229-11-jiaxin.yu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220313151023.21229-11-jiaxin.yu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Jofw897RvP4hcS-2YBWXAd3cvoNMdPUR
+X-Proofpoint-GUID: Jofw897RvP4hcS-2YBWXAd3cvoNMdPUR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-14_04,2022-03-14_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 adultscore=0 spamscore=0 phishscore=0 lowpriorityscore=0
+ mlxscore=0 bulkscore=0 malwarescore=0 mlxlogscore=921 impostorscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203140065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 13/03/22 16:10, Jiaxin Yu ha scritto:
-> Add mt8186 tdm dai driver.
-> 
-> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> ---
->   sound/soc/mediatek/mt8186/mt8186-dai-tdm.c | 695 +++++++++++++++++++++
->   1 file changed, 695 insertions(+)
->   create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-tdm.c
-> 
-> diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-tdm.c b/sound/soc/mediatek/mt8186/mt8186-dai-tdm.c
-> new file mode 100644
-> index 000000000000..52acc5f6e147
-> --- /dev/null
-> +++ b/sound/soc/mediatek/mt8186/mt8186-dai-tdm.c
-> @@ -0,0 +1,695 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +//
-> +// MediaTek ALSA SoC Audio DAI TDM Control
-> +//
-> +// Copyright (c) 2022 MediaTek Inc.
-> +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> +
-> +#include <linux/regmap.h>
-> +#include <sound/pcm_params.h>
-> +
-> +#include "mt8186-afe-clk.h"
-> +#include "mt8186-afe-common.h"
-> +#include "mt8186-afe-gpio.h"
-> +#include "mt8186-interconnection.h"
-> +
-> +#define TDM_HD_EN_W_NAME "TDM_HD_EN"
-> +#define TDM_MCLK_EN_W_NAME "TDM_MCLK_EN"
-> +#define MTK_AFE_TDM_KCONTROL_NAME "TDM_HD_Mux"
-> +
-> +struct mtk_afe_tdm_priv {
-> +	unsigned int id;
-> +	unsigned int rate; /* for determine which apll to use */
-> +	unsigned int bck_invert;
-> +	unsigned int lck_invert;
-> +	unsigned int lrck_width;
-> +	unsigned int mclk_id;
-> +	unsigned int mclk_multiple; /* according to sample rate */
-> +	unsigned int mclk_rate;
-> +	unsigned int mclk_apll;
-> +	unsigned int tdm_mode;
-> +	unsigned int data_mode;
-> +	unsigned int slave_mode;
-> +	unsigned int low_jitter_en;
-> +};
-> +
-> +enum {
-> +	TDM_IN_I2S = 0,
-> +	TDM_IN_LJ = 1,
-> +	TDM_IN_RJ = 2,
-> +	TDM_IN_DSP_A = 4,
-> +	TDM_IN_DSP_B = 5,
-> +};
-> +
-> +enum {
-> +	TDM_DATA_ONE_PIN = 0,
-> +	TDM_DATA_MULTI_PIN,
-> +};
-> +
-> +enum {
-> +	TDM_BCK_NON_INV = 0,
-> +	TDM_BCK_INV = 1,
-> +};
-> +
-> +enum {
-> +	TDM_LCK_NON_INV = 0,
-> +	TDM_LCK_INV = 1,
-> +};
-> +
-> +static unsigned int get_tdm_lrck_width(snd_pcm_format_t format,
-> +				       unsigned int mode)
-> +{
-> +	if (mode == TDM_IN_DSP_A || mode == TDM_IN_DSP_B)
-> +		return 0;
-> +
-> +	return snd_pcm_format_physical_width(format) - 1;
-> +}
-> +
-> +static unsigned int get_tdm_ch_fixup(unsigned int channels)
-> +{
-> +	if (channels > 4)
-> +		return 8;
-> +	else if (channels > 2)
-> +		return 4;
-> +
-> +	return 2;
-> +}
-> +
-> +static unsigned int get_tdm_ch_per_sdata(unsigned int mode,
-> +					 unsigned int channels)
-> +{
-> +	if (mode == TDM_IN_DSP_A || mode == TDM_IN_DSP_B)
-> +		return get_tdm_ch_fixup(channels);
-> +
-> +	return 2;
-> +}
-> +
-> +enum {
-> +	SUPPLY_SEQ_APLL,
-> +	SUPPLY_SEQ_TDM_MCK_EN,
-> +	SUPPLY_SEQ_TDM_HD_EN,
-> +	SUPPLY_SEQ_TDM_EN,
-> +};
-> +
-> +static int get_tdm_id_by_name(const char *name)
-> +{
-> +	return MT8186_DAI_TDM_IN;
-> +}
-> +
-> +static int mtk_tdm_en_event(struct snd_soc_dapm_widget *w,
-> +			    struct snd_kcontrol *kcontrol,
-> +			    int event)
-> +{
-> +	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(w->name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +
-> +	if (!tdm_priv) {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return -EINVAL;
-> +	}
-> +
-> +	dev_dbg(cmpnt->dev, "%s(), name %s, event 0x%x\n",
-> +		__func__, w->name, event);
-> +
-> +	switch (event) {
-> +	case SND_SOC_DAPM_PRE_PMU:
-> +		mt8186_afe_gpio_request(afe->dev, true, tdm_priv->id, 0);
-> +		break;
-> +	case SND_SOC_DAPM_POST_PMD:
-> +		mt8186_afe_gpio_request(afe->dev, false, tdm_priv->id, 0);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int mtk_tdm_mck_en_event(struct snd_soc_dapm_widget *w,
-> +				struct snd_kcontrol *kcontrol,
-> +				int event)
-> +{
-> +	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(w->name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +
-> +	if (!tdm_priv) {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return -EINVAL;
-> +	}
-> +
-> +	dev_dbg(cmpnt->dev, "%s(), name %s, event 0x%x, dai_id %d\n",
-> +		__func__, w->name, event, dai_id);
-> +
-> +	switch (event) {
-> +	case SND_SOC_DAPM_PRE_PMU:
-> +		mt8186_mck_enable(afe, tdm_priv->mclk_id, tdm_priv->mclk_rate);
-> +		break;
-> +	case SND_SOC_DAPM_POST_PMD:
-> +		tdm_priv->mclk_rate = 0;
-> +		mt8186_mck_disable(afe, tdm_priv->mclk_id);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +/* dai component */
-> +/* tdm virtual mux to output widget */
-> +static const char * const tdm_mux_map[] = {
-> +	"Normal", "Dummy_Widget",
-> +};
-> +
-> +static int tdm_mux_map_value[] = {
-> +	0, 1,
-> +};
-> +
-> +static SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL(tdm_mux_map_enum,
-> +					      SND_SOC_NOPM,
-> +					      0,
-> +					      1,
-> +					      tdm_mux_map,
-> +					      tdm_mux_map_value);
-> +
-> +static const struct snd_kcontrol_new tdm_in_mux_control =
-> +	SOC_DAPM_ENUM("TDM In Select", tdm_mux_map_enum);
-> +
-> +static const struct snd_soc_dapm_widget mtk_dai_tdm_widgets[] = {
-> +	SND_SOC_DAPM_CLOCK_SUPPLY("aud_tdm_clk"),
-> +
-> +	SND_SOC_DAPM_SUPPLY_S("TDM_EN", SUPPLY_SEQ_TDM_EN,
-> +			      ETDM_IN1_CON0, ETDM_IN1_CON0_REG_ETDM_IN_EN_SFT,
-> +			      0, mtk_tdm_en_event,
-> +			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-> +	/* tdm hd en */
-> +	SND_SOC_DAPM_SUPPLY_S(TDM_HD_EN_W_NAME, SUPPLY_SEQ_TDM_HD_EN,
-> +			      ETDM_IN1_CON2, ETDM_IN1_CON2_REG_CLOCK_SOURCE_SEL_SFT,
-> +			      0, NULL,
-> +			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-> +
-> +	SND_SOC_DAPM_SUPPLY_S(TDM_MCLK_EN_W_NAME, SUPPLY_SEQ_TDM_MCK_EN,
-> +			      SND_SOC_NOPM, 0, 0,
-> +			      mtk_tdm_mck_en_event,
-> +			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
-> +
-> +	SND_SOC_DAPM_INPUT("TDM_DUMMY_IN"),
-> +
-> +	SND_SOC_DAPM_MUX("TDM_In_Mux",
-> +			 SND_SOC_NOPM, 0, 0, &tdm_in_mux_control),
-> +};
-> +
-> +static int mtk_afe_tdm_mclk_connect(struct snd_soc_dapm_widget *source,
-> +				    struct snd_soc_dapm_widget *sink)
-> +{
-> +	struct snd_soc_dapm_widget *w = sink;
-> +	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(w->name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +
-> +	if (!tdm_priv) {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return 0;
-> +	}
-> +
-> +	return (tdm_priv->mclk_rate > 0) ? 1 : 0;
-> +}
-> +
-> +static int mtk_afe_tdm_mclk_apll_connect(struct snd_soc_dapm_widget *source,
-> +					 struct snd_soc_dapm_widget *sink)
-> +{
-> +	struct snd_soc_dapm_widget *w = sink;
-> +	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(w->name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +	int cur_apll;
-> +
-> +	/* which apll */
-> +	cur_apll = mt8186_get_apll_by_name(afe, source->name);
-> +
-> +	return (tdm_priv->mclk_apll == cur_apll) ? 1 : 0;
-> +}
-> +
-> +static int mtk_afe_tdm_hd_connect(struct snd_soc_dapm_widget *source,
-> +				  struct snd_soc_dapm_widget *sink)
-> +{
-> +	struct snd_soc_dapm_widget *w = sink;
-> +	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(w->name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +
-> +	if (!tdm_priv) {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return 0;
-> +	}
-> +
-> +	return tdm_priv->low_jitter_en;
-> +}
-> +
-> +static int mtk_afe_tdm_apll_connect(struct snd_soc_dapm_widget *source,
-> +				    struct snd_soc_dapm_widget *sink)
-> +{
-> +	struct snd_soc_dapm_widget *w = sink;
-> +	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(w->name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +	int cur_apll;
-> +	int tdm_need_apll;
-> +
-> +	if (!tdm_priv) {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return 0;
-> +	}
-> +
-> +	/* which apll */
-> +	cur_apll = mt8186_get_apll_by_name(afe, source->name);
-> +
-> +	/* choose APLL from tdm rate */
-> +	tdm_need_apll = mt8186_get_apll_by_rate(afe, tdm_priv->rate);
-> +
-> +	return (tdm_need_apll == cur_apll) ? 1 : 0;
-> +}
-> +
-> +/* low jitter control */
-> +static const char * const mt8186_tdm_hd_str[] = {
-> +	"Normal", "Low_Jitter"
-> +};
-> +
-> +static const struct soc_enum mt8186_tdm_enum[] = {
-> +	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(mt8186_tdm_hd_str),
-> +			    mt8186_tdm_hd_str),
-> +};
-> +
-> +static int mt8186_tdm_hd_get(struct snd_kcontrol *kcontrol,
-> +			     struct snd_ctl_elem_value *ucontrol)
-> +{
-> +	struct snd_soc_component *cmpnt = snd_soc_kcontrol_component(kcontrol);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(kcontrol->id.name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +
-> +	if (!tdm_priv) {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return -EINVAL;
-> +	}
-> +
-> +	ucontrol->value.integer.value[0] = tdm_priv->low_jitter_en;
-> +
-> +	return 0;
-> +}
-> +
-> +static int mt8186_tdm_hd_set(struct snd_kcontrol *kcontrol,
-> +			     struct snd_ctl_elem_value *ucontrol)
-> +{
-> +	struct snd_soc_component *cmpnt = snd_soc_kcontrol_component(kcontrol);
-> +	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int dai_id = get_tdm_id_by_name(kcontrol->id.name);
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[dai_id];
-> +	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
-> +	int hd_en;
-> +
-> +	if (ucontrol->value.enumerated.item[0] >= e->items)
-> +		return -EINVAL;
-> +
-> +	hd_en = ucontrol->value.integer.value[0];
-> +
-> +	dev_dbg(afe->dev, "%s(), kcontrol name %s, hd_en %d\n",
-> +		__func__, kcontrol->id.name, hd_en);
-> +
-> +	if (!tdm_priv) {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return -EINVAL;
-> +	}
-> +
-> +	tdm_priv->low_jitter_en = hd_en;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct snd_kcontrol_new mtk_dai_tdm_controls[] = {
-> +	SOC_ENUM_EXT(MTK_AFE_TDM_KCONTROL_NAME, mt8186_tdm_enum[0],
-> +		     mt8186_tdm_hd_get, mt8186_tdm_hd_set),
-> +};
-> +
-> +static const struct snd_soc_dapm_route mtk_dai_tdm_routes[] = {
-> +	{"TDM IN", NULL, "aud_tdm_clk"},
-> +	{"TDM IN", NULL, "TDM_EN"},
-> +	{"TDM IN", NULL, TDM_HD_EN_W_NAME, mtk_afe_tdm_hd_connect},
-> +	{TDM_HD_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_tdm_apll_connect},
-> +	{TDM_HD_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_tdm_apll_connect},
-> +
-> +	{"TDM IN", NULL, TDM_MCLK_EN_W_NAME, mtk_afe_tdm_mclk_connect},
-> +	{TDM_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_tdm_mclk_apll_connect},
-> +	{TDM_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_tdm_mclk_apll_connect},
-> +
-> +	/* allow tdm on without codec on */
-> +	{"TDM IN", NULL, "TDM_In_Mux"},
-> +	{"TDM_In_Mux", "Dummy_Widget", "TDM_DUMMY_IN"},
-> +};
-> +
-> +/* dai ops */
-> +static int mtk_dai_tdm_cal_mclk(struct mtk_base_afe *afe,
-> +				struct mtk_afe_tdm_priv *tdm_priv,
-> +				int freq)
-> +{
-> +	int apll;
-> +	int apll_rate;
-> +
-> +	apll = mt8186_get_apll_by_rate(afe, freq);
-> +	apll_rate = mt8186_get_apll_rate(afe, apll);
-> +
-> +	if (!freq || freq > apll_rate) {
-> +		dev_err(afe->dev,
-> +			"%s(), freq(%d Hz) invalid\n", __func__, freq);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (apll_rate % freq != 0) {
-> +		dev_err(afe->dev,
-> +			"%s(), APLL cannot generate %d Hz", __func__, freq);
-> +		return -EINVAL;
-> +	}
-> +
-> +	tdm_priv->mclk_rate = freq;
-> +	tdm_priv->mclk_apll = apll;
-> +
-> +	return 0;
-> +}
-> +
-> +static int mtk_dai_tdm_hw_params(struct snd_pcm_substream *substream,
-> +				 struct snd_pcm_hw_params *params,
-> +				 struct snd_soc_dai *dai)
-> +{
-> +	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
-> +	struct mt8186_afe_private *afe_priv = afe->platform_priv;
-> +	int tdm_id = dai->id;
-> +	struct mtk_afe_tdm_priv *tdm_priv = afe_priv->dai_priv[tdm_id];
-> +	unsigned int tdm_mode = tdm_priv->tdm_mode;
-> +	unsigned int data_mode = tdm_priv->data_mode;
-> +	unsigned int rate = params_rate(params);
-> +	unsigned int channels = params_channels(params);
-> +	snd_pcm_format_t format = params_format(params);
-> +	unsigned int bit_width =
-> +		snd_pcm_format_physical_width(format);
-> +	unsigned int tdm_channels = (data_mode == TDM_DATA_ONE_PIN) ?
-> +		get_tdm_ch_per_sdata(tdm_mode, channels) : 2;
-> +	unsigned int lrck_width =
-> +		get_tdm_lrck_width(format, tdm_mode);
-> +	unsigned int tdm_con = 0;
-> +	bool slave_mode = tdm_priv->slave_mode;
-> +	bool lrck_inv = tdm_priv->lck_invert;
-> +	bool bck_inv = tdm_priv->bck_invert;
-> +	unsigned int tran_rate;
-> +	unsigned int tran_relatch_rate;
-> +
-> +	if (tdm_priv)
-> +		tdm_priv->rate = rate;
-> +	else {
-> +		dev_err(afe->dev, "%s(), tdm_priv == NULL", __func__);
-> +		return -EINVAL;
-> +	}
+Add support to test the mb_optimize_scan mount option.
+Since its value is not reflected in the "options" file in proc,
+use "mb_structs_summary" to verify its value.
 
-This can be simpler:
+Signed-off-by: Ojaswin Mujoo <ojaswin@linux.ibm.com>
+---
+ tests/ext4/053 | 21 ++++++++++++---------
+ 1 file changed, 12 insertions(+), 9 deletions(-)
 
-	if (!tdm_priv) {
-		dev_err ....
-		return -EINVAL;
-	}
+diff --git a/tests/ext4/053 b/tests/ext4/053
+index e1e79592..bd92002f 100755
+--- a/tests/ext4/053
++++ b/tests/ext4/053
+@@ -100,6 +100,7 @@ test_mnt() {
+ 	(
+ 	ret=0
+ 	IFS=','
++	proc_path="/proc/fs/ext4/$(_short_dev $SCRATCH_DEV)"
+ 	for option in $OPTS; do
+ 		if echo $IGNORED | grep -w $option; then
+ 			continue
+@@ -114,11 +115,16 @@ test_mnt() {
+ 		fi
+ 		option=${option#^}
+ 
+-		if echo $CHECK_MINFO | grep -w $option; then
++		if [[ $option =~ ^mb_optimize_scan=.*$ ]]; then
++			# mb_optimize_scan needs special handling
++			expected=${option#*=}
++			ret=$(cat $proc_path/mb_structs_summary | grep "optimize_scan" \
++				| awk '{ print $2 }')
++		elif echo $CHECK_MINFO | grep -w $option; then
+ 			findmnt -n -o OPTIONS $SCRATCH_DEV | grep $option
+ 			ret=$?
+ 		else
+-			grep $option /proc/fs/ext4/$(_short_dev $SCRATCH_DEV)/options
++			grep $option $proc_path/options
+ 			ret=$?
+ 		fi
+ 
+@@ -526,13 +532,10 @@ for fstype in ext2 ext3 ext4; do
+ 
+ 	mnt prefetch_block_bitmaps removed
+ 	mnt no_prefetch_block_bitmaps
+-	# We don't currently have a way to know that the option has been
+-	# applied, so comment it out for now. This should be fixed in the
+-	# future.
+-	#mnt mb_optimize_scan=0
+-	#mnt mb_optimize_scan=1
+-	#not_mnt mb_optimize_scan=9
+-	#not_mnt mb_optimize_scan=
++	mnt mb_optimize_scan=0
++	mnt mb_optimize_scan=1
++	not_mnt mb_optimize_scan=9
++	not_mnt mb_optimize_scan=
+ 	mnt nombcache
+ 	mnt no_mbcache nombcache
+ 	mnt check=none removed
+-- 
+2.27.0
 
-	tdm_priv->rate = rate;
-
-...with that fixed:
-
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
