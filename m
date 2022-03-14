@@ -2,164 +2,314 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC1DBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AED8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245515AbiCNWPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 18:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
+        id S244673AbiCNWUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 18:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237433AbiCNWPC (ORCPT
+        with ESMTP id S234328AbiCNWUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 18:15:02 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492573D496
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:13:51 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id s29so8362146lfb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:13:51 -0700 (PDT)
+        Mon, 14 Mar 2022 18:20:36 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47BD112ABB
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:19:22 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id j5-20020a056902020500b00628ab64be30so14989680ybs.16
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:19:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=P+sSZ/MIHLkLQskC5zq8hmVD4ykc2QmIuRZHeedkEaI=;
-        b=ojFUY1Ydha4EjvryEkE3HsxyjtloLRMCc5AmrdkMj8nj0s1r31KnEkySamhyOGNtxJ
-         cJ4/+NGmk3It+nqJTCZRnc56LmxUKMBDiqc3uQZpAlGXydEiMUR7jJtwdNTo7+XXMIYH
-         QNHQHUqVtdiJqKTkpy7d2LLoYXI9o363C5m5z3JucWS9HzlQMtFiJJdXcQRg0G9WxnEY
-         wXE0rtDHshiBb39cqzlGsSxdkfRzf40J9yLOAikMOoZyBKTD8TtWjpUwsEgllQmeljW2
-         +DMEUU9d2SVX02w7yjNbVPm+mexqvGQEPcMME9EN0yRU2V4CNpsYEcIrO7KV7jTYwpEG
-         yk0w==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=PUbw9oR4TOWQqbTABcpCBiJL0Yev5THBA5pdKZN8yvA=;
+        b=J1hE3hHr1zsdx2TTT9uQ8g+cnB6YxCSxV/wyXzB5ur+pe3dFPt3rEDefpO4XE55lsi
+         8gZiynrR3zS+GagnwyB0TvwYdmUul0KHqjqaIgpD5T46pJmV0OASYur87Q7bFLZiNDL9
+         2ZmcmF7zGimVqA9byNlp52uJl4VPvf93OGjKWOHQ1dlyii6F67dB9vyYXwt4snrOVhRO
+         aRC6Uir5qzkUNS4BGa4DvdECbKXrWaq5ZffLZWKmDXltB+6n9bktUoRYgRJbAnF4rZSO
+         coryXU4576gWvx5IoZQz+Vdu7MFNiBcenKyUl7qG3OLRplbEr8GhlIVXm2xJelcBJNVD
+         sMPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=P+sSZ/MIHLkLQskC5zq8hmVD4ykc2QmIuRZHeedkEaI=;
-        b=nMsQxgT0OLQHnXuiCNAr3sGQNmcRCSvO0o5PAaMllgS9kRGZWRnOT4EQ+SyD1XiN8r
-         8VAoVuX5URdPGHseQJw6r8bAmW3WzZln9P+y20aGMdzM45+DiWWG7YKiyHFqdDKO5slf
-         FUaGw69EXRGmQQCjSR6kirzuTwI49zUh6UVB4SK3z6miDL4k5ZctC46qqhmdceaYI8cI
-         TbN5l73FuRx6WqtB7Q3wjL1D/Jlm35BwftdvZhKVrnc3O1NZPg/38uku1jUVCOBPwX3x
-         OaXNGM3WSnOrksbIcQjz1F9IJ/Kh5Xytp31vcHrRQf4aG8vD9Qs9Dam2tUupxv49cKxV
-         K8sQ==
-X-Gm-Message-State: AOAM532Xfd595IOSpDIZBCIP0n0Vo9YsGCrD9nrJ0ZOPnOdu/33cpw2e
-        HBieeE/uVExLvGg9bV48I41syw==
-X-Google-Smtp-Source: ABdhPJzBOCPzfCoOjZRJEfzWh6SxoSpbyeNrkPdkrWcpL7NEjcByTPWlBt/VH7PbCKEeRFDPXcGgnQ==
-X-Received: by 2002:ac2:5441:0:b0:448:5b32:c493 with SMTP id d1-20020ac25441000000b004485b32c493mr14552456lfn.438.1647296029382;
-        Mon, 14 Mar 2022 15:13:49 -0700 (PDT)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id h1-20020a056512054100b0044847b32426sm3481059lfl.156.2022.03.14.15.13.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 15:13:48 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
- for MST
-In-Reply-To: <20220314202040.f2r4pidcy6ws34qv@skbuf>
-References: <20220314095231.3486931-1-tobias@waldekranz.com>
- <20220314095231.3486931-10-tobias@waldekranz.com>
- <20220314165649.vtsd3xqv7htut55d@skbuf>
- <20220314175556.7mjr4tui4vb4i5qn@skbuf> <87mthsl2wn.fsf@waldekranz.com>
- <20220314202040.f2r4pidcy6ws34qv@skbuf>
-Date:   Mon, 14 Mar 2022 23:13:47 +0100
-Message-ID: <87h780kwro.fsf@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=PUbw9oR4TOWQqbTABcpCBiJL0Yev5THBA5pdKZN8yvA=;
+        b=2SLeQvvSiCDbxHM+nM2V6vx8Ercrqv9MTYR0AmnZDJAUv8aPz5S0zuEr6e6DIt6oaH
+         yycB4fCR7VsKAiY7R6YtYFR73kQngmujgFrH/5ajFOXP+lRLxC4gTOGgSTjdHMJKnyX0
+         6nV0Y6GYpLxqldeBXsnFYQIeyLY7DB2VVx88PuMNQmlEfflOz1+L921SXfeV86akV1kz
+         R+Fn4DFEQ2h0Zryfp3nMzZM0nX4OPWa+8RYwcn+gZiD3ObcHFhoMp3copKfWdXMM959w
+         LDeCRNRHhgEfndiGnSTzsGjT7ta6rcCVTy1K0i7KIxUHIxCa2db6vrZCdFH3CY/SWZNJ
+         5DOw==
+X-Gm-Message-State: AOAM5315kJz3lyg5JRPK626Ji55pXPBiLtyzF8ivI7CRk/pq5eZWn6eV
+        H2BFr6TTP3gvKWBiA5ASEJMofN8tjA4i77Ldgdg=
+X-Google-Smtp-Source: ABdhPJyVdzLvoXd1ovJfPXOpK4i088ln7nkAB8by2vP1a15Mrq9AQrg9C6VUjpBiPOWFoO0KptOWMVCryVCPZwLSxY0=
+X-Received: from ndesaulniers1.mtv.corp.google.com ([2620:15c:211:202:eff1:725e:2848:530f])
+ (user=ndesaulniers job=sendgmr) by 2002:a5b:7cf:0:b0:623:df1c:b83d with SMTP
+ id t15-20020a5b07cf000000b00623df1cb83dmr20604797ybq.75.1647296361448; Mon,
+ 14 Mar 2022 15:19:21 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 15:19:03 -0700
+Message-Id: <20220314221909.2027027-1-ndesaulniers@google.com>
+Mime-Version: 1.0
+X-Developer-Key: i=ndesaulniers@google.com; a=ed25519; pk=lvO/pmg+aaCb6dPhyGC1GyOCvPueDrrc8Zeso5CaGKE=
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1647296343; l=8543;
+ s=20211004; h=from:subject; bh=/onzoCSytyNT3SABwW/OByMJJIxIi8oEiyApyZBwU0U=;
+ b=E+R0wTk1bVgZLouAH40yCEBUVKAcS1zwU8U71ZI/iiVQFeBG4+m1x/2/gvtH8niazhrp3Bn/yx2d
+ /snHQfSVAOa+pZQIMJOV1CmVLD3K6sFRL3Xkykt9GB5kiposo2GQ
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH] lockdep: fix -Wunused-parameter for _THIS_IP_
+From:   Nick Desaulniers <ndesaulniers@google.com>
+To:     Ingo Molnar <mingo@redhat.com>, Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Joey Gouly <joey.gouly@arm.com>, Marc Zyngier <maz@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 22:20, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Mon, Mar 14, 2022 at 09:01:12PM +0100, Tobias Waldekranz wrote:
->> On Mon, Mar 14, 2022 at 19:55, Vladimir Oltean <olteanv@gmail.com> wrote:
->> > On Mon, Mar 14, 2022 at 06:56:49PM +0200, Vladimir Oltean wrote:
->> >> > diff --git a/net/dsa/port.c b/net/dsa/port.c
->> >> > index 58291df14cdb..1a17a0efa2fa 100644
->> >> > --- a/net/dsa/port.c
->> >> > +++ b/net/dsa/port.c
->> >> > @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
->> >> >  	if (err && err != -EOPNOTSUPP)
->> >> >  		return err;
->> >> >  
->> >> > +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
->> >> > +	if (err && err != -EOPNOTSUPP)
->> >> > +		return err;
->> >> 
->> >> Sadly this will break down because we don't have unwinding on error in
->> >> place (sorry). We'd end up with an unoffloaded bridge port with
->> >> partially synced bridge port attributes. Could you please add a patch
->> >> previous to this one that handles this, and unoffloads those on error?
->> >
->> > Actually I would rather rename the entire dsa_port_mst_enable() function
->> > to dsa_port_mst_validate() and move it to the beginning of dsa_port_bridge_join().
->> > This simplifies the unwinding that needs to take place quite a bit.
->> 
->> Well you still need to unwind vlan filtering if setting the ageing time
->> fails, which is the most complicated one, right?
->
-> Yes, but we can leave that for another day :)
->
-> ...ergo
->
->> Should the unwinding patch still be part of this series then?
->
-> no.
+While looking into a bug related to the compiler's handling of addresses
+of labels, I noticed some uses of _THIS_IP_ seemed unused in lockdep.
+Drive by cleanup.
 
-Agreed
+-Wunused-parameter:
+kernel/locking/lockdep.c:1383:22: warning: unused parameter 'ip'
+kernel/locking/lockdep.c:4246:48: warning: unused parameter 'ip'
+kernel/locking/lockdep.c:4844:19: warning: unused parameter 'ip'
 
->> Still, I agree that _validate is a better name, and then _bridge_join
->> seems like a more reasonable placement.
->> 
->> While we're here, I actually made this a hard error in both scenarios
->> (but forgot to update the log - will do that in v4, depending on what we
->> decide here). There's a dilemma:
->> 
->> - When reacting to the attribute event, i.e. changing the mode on a
->>   member we're apart of, we _can't_ return -EOPNOTSUPP as it will be
->>   ignored, which is why dsa_port_mst_validate (nee _enable) returns
->>   -EINVAL.
->> 
->> - When joining a bridge, we _must_ return -EOPNOTSUPP to trigger the
->>   software fallback.
->> 
->> Having something like this in dsa_port_bridge_join...
->> 
->> err = dsa_port_mst_validate(dp);
->> if (err == -EINVAL)
->> 	return -EOPNOTSUPP;
->> else if (err)
->> 	return err;
->> 
->> ...works I suppose, but feels somewhat awkwark. Any better ideas?
->
-> What you can do is follow the model of dsa_switch_supports_uc_filtering(),
-> and create a dsa_switch_supports_mst() which is called inside an
-> "if br_mst_enabled(br)" check, and returns bool. When false, you could
-> return -EINVAL or -EOPNOTSUPP, as appropriate.
->
-> This is mostly fine, except for the pesky dsa_port_can_configure_learning(dp)
-> check :) So while you could name it dsa_port_supports_mst() and pass it
-> a dsa_port, the problem is that you can't put the implementation of this
-> new dsa_port_supports_mst() next to dsa_switch_supports_uc_filtering()
-> where it would be nice to sit for symmetry, because the latter is static
-> inline and we're missing the definition of dsa_port_can_configure_learning().
-> So.. the second best thing is to keep dsa_port_supports_mst() in the
-> same place where dsa_port_mst_enable() currently is.
->
-> What do you think?
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+---
+ arch/arm64/kernel/entry-common.c |  8 ++++----
+ include/linux/irqflags.h         |  4 ++--
+ include/linux/kvm_host.h         |  2 +-
+ kernel/entry/common.c            |  6 +++---
+ kernel/locking/lockdep.c         | 22 ++++++++--------------
+ kernel/sched/idle.c              |  2 +-
+ kernel/trace/trace_preemptirq.c  |  4 ++--
+ 7 files changed, 21 insertions(+), 27 deletions(-)
 
-I think that would mostly work. It would have to be positioned higher up
-in the file though, so that it can be called from _bridge_join. Unless
-we add a forward for it of course, but that seems to break with existing
-conventions.
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index ef7fcefb96bd..8a4244316e25 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -73,7 +73,7 @@ static __always_inline void __exit_to_kernel_mode(struct pt_regs *regs)
+ 	if (interrupts_enabled(regs)) {
+ 		if (regs->exit_rcu) {
+ 			trace_hardirqs_on_prepare();
+-			lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++			lockdep_hardirqs_on_prepare();
+ 			rcu_irq_exit();
+ 			lockdep_hardirqs_on(CALLER_ADDR0);
+ 			return;
+@@ -118,7 +118,7 @@ static __always_inline void enter_from_user_mode(struct pt_regs *regs)
+ static __always_inline void __exit_to_user_mode(void)
+ {
+ 	trace_hardirqs_on_prepare();
+-	lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++	lockdep_hardirqs_on_prepare();
+ 	user_enter_irqoff();
+ 	lockdep_hardirqs_on(CALLER_ADDR0);
+ }
+@@ -176,7 +176,7 @@ static void noinstr arm64_exit_nmi(struct pt_regs *regs)
+ 	ftrace_nmi_exit();
+ 	if (restore) {
+ 		trace_hardirqs_on_prepare();
+-		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++		lockdep_hardirqs_on_prepare();
+ 	}
+ 
+ 	rcu_nmi_exit();
+@@ -212,7 +212,7 @@ static void noinstr arm64_exit_el1_dbg(struct pt_regs *regs)
+ 
+ 	if (restore) {
+ 		trace_hardirqs_on_prepare();
+-		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++		lockdep_hardirqs_on_prepare();
+ 	}
+ 
+ 	rcu_nmi_exit();
+diff --git a/include/linux/irqflags.h b/include/linux/irqflags.h
+index 4b140938b03e..5ec0fa71399e 100644
+--- a/include/linux/irqflags.h
++++ b/include/linux/irqflags.h
+@@ -20,13 +20,13 @@
+ #ifdef CONFIG_PROVE_LOCKING
+   extern void lockdep_softirqs_on(unsigned long ip);
+   extern void lockdep_softirqs_off(unsigned long ip);
+-  extern void lockdep_hardirqs_on_prepare(unsigned long ip);
++  extern void lockdep_hardirqs_on_prepare(void);
+   extern void lockdep_hardirqs_on(unsigned long ip);
+   extern void lockdep_hardirqs_off(unsigned long ip);
+ #else
+   static inline void lockdep_softirqs_on(unsigned long ip) { }
+   static inline void lockdep_softirqs_off(unsigned long ip) { }
+-  static inline void lockdep_hardirqs_on_prepare(unsigned long ip) { }
++  static inline void lockdep_hardirqs_on_prepare(void) { }
+   static inline void lockdep_hardirqs_on(unsigned long ip) { }
+   static inline void lockdep_hardirqs_off(unsigned long ip) { }
+ #endif
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index f11039944c08..f32bed70a5c5 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -441,7 +441,7 @@ static __always_inline void guest_state_enter_irqoff(void)
+ {
+ 	instrumentation_begin();
+ 	trace_hardirqs_on_prepare();
+-	lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++	lockdep_hardirqs_on_prepare();
+ 	instrumentation_end();
+ 
+ 	guest_context_enter_irqoff();
+diff --git a/kernel/entry/common.c b/kernel/entry/common.c
+index bad713684c2e..3ce3a0a6c762 100644
+--- a/kernel/entry/common.c
++++ b/kernel/entry/common.c
+@@ -124,7 +124,7 @@ static __always_inline void __exit_to_user_mode(void)
+ {
+ 	instrumentation_begin();
+ 	trace_hardirqs_on_prepare();
+-	lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++	lockdep_hardirqs_on_prepare();
+ 	instrumentation_end();
+ 
+ 	user_enter_irqoff();
+@@ -412,7 +412,7 @@ noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
+ 			instrumentation_begin();
+ 			/* Tell the tracer that IRET will enable interrupts */
+ 			trace_hardirqs_on_prepare();
+-			lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++			lockdep_hardirqs_on_prepare();
+ 			instrumentation_end();
+ 			rcu_irq_exit();
+ 			lockdep_hardirqs_on(CALLER_ADDR0);
+@@ -465,7 +465,7 @@ void noinstr irqentry_nmi_exit(struct pt_regs *regs, irqentry_state_t irq_state)
+ 	ftrace_nmi_exit();
+ 	if (irq_state.lockdep) {
+ 		trace_hardirqs_on_prepare();
+-		lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++		lockdep_hardirqs_on_prepare();
+ 	}
+ 	instrumentation_end();
+ 
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index f8a0212189ca..05604795b39c 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -1378,7 +1378,7 @@ static struct lock_list *alloc_list_entry(void)
+  */
+ static int add_lock_to_list(struct lock_class *this,
+ 			    struct lock_class *links_to, struct list_head *head,
+-			    unsigned long ip, u16 distance, u8 dep,
++			    u16 distance, u8 dep,
+ 			    const struct lock_trace *trace)
+ {
+ 	struct lock_list *entry;
+@@ -3131,19 +3131,15 @@ check_prev_add(struct task_struct *curr, struct held_lock *prev,
+ 	 * to the previous lock's dependency list:
+ 	 */
+ 	ret = add_lock_to_list(hlock_class(next), hlock_class(prev),
+-			       &hlock_class(prev)->locks_after,
+-			       next->acquire_ip, distance,
+-			       calc_dep(prev, next),
+-			       *trace);
++			       &hlock_class(prev)->locks_after, distance,
++			       calc_dep(prev, next), *trace);
+ 
+ 	if (!ret)
+ 		return 0;
+ 
+ 	ret = add_lock_to_list(hlock_class(prev), hlock_class(next),
+-			       &hlock_class(next)->locks_before,
+-			       next->acquire_ip, distance,
+-			       calc_depb(prev, next),
+-			       *trace);
++			       &hlock_class(next)->locks_before, distance,
++			       calc_depb(prev, next), *trace);
+ 	if (!ret)
+ 		return 0;
+ 
+@@ -4234,14 +4230,13 @@ static void __trace_hardirqs_on_caller(void)
+ 
+ /**
+  * lockdep_hardirqs_on_prepare - Prepare for enabling interrupts
+- * @ip:		Caller address
+  *
+  * Invoked before a possible transition to RCU idle from exit to user or
+  * guest mode. This ensures that all RCU operations are done before RCU
+  * stops watching. After the RCU transition lockdep_hardirqs_on() has to be
+  * invoked to set the final state.
+  */
+-void lockdep_hardirqs_on_prepare(unsigned long ip)
++void lockdep_hardirqs_on_prepare(void)
+ {
+ 	if (unlikely(!debug_locks))
+ 		return;
+@@ -4838,8 +4833,7 @@ EXPORT_SYMBOL_GPL(__lockdep_no_validate__);
+ 
+ static void
+ print_lock_nested_lock_not_held(struct task_struct *curr,
+-				struct held_lock *hlock,
+-				unsigned long ip)
++				struct held_lock *hlock)
+ {
+ 	if (!debug_locks_off())
+ 		return;
+@@ -5015,7 +5009,7 @@ static int __lock_acquire(struct lockdep_map *lock, unsigned int subclass,
+ 	chain_key = iterate_chain_key(chain_key, hlock_id(hlock));
+ 
+ 	if (nest_lock && !__lock_is_held(nest_lock, -1)) {
+-		print_lock_nested_lock_not_held(curr, hlock, ip);
++		print_lock_nested_lock_not_held(curr, hlock);
+ 		return 0;
+ 	}
+ 
+diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
+index d17b0a5ce6ac..499a3e286cd0 100644
+--- a/kernel/sched/idle.c
++++ b/kernel/sched/idle.c
+@@ -105,7 +105,7 @@ void __cpuidle default_idle_call(void)
+ 		 * last -- this is very similar to the entry code.
+ 		 */
+ 		trace_hardirqs_on_prepare();
+-		lockdep_hardirqs_on_prepare(_THIS_IP_);
++		lockdep_hardirqs_on_prepare();
+ 		rcu_idle_enter();
+ 		lockdep_hardirqs_on(_THIS_IP_);
+ 
+diff --git a/kernel/trace/trace_preemptirq.c b/kernel/trace/trace_preemptirq.c
+index f4938040c228..95b58bd757ce 100644
+--- a/kernel/trace/trace_preemptirq.c
++++ b/kernel/trace/trace_preemptirq.c
+@@ -46,7 +46,7 @@ void trace_hardirqs_on(void)
+ 		this_cpu_write(tracing_irq_cpu, 0);
+ 	}
+ 
+-	lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++	lockdep_hardirqs_on_prepare();
+ 	lockdep_hardirqs_on(CALLER_ADDR0);
+ }
+ EXPORT_SYMBOL(trace_hardirqs_on);
+@@ -94,7 +94,7 @@ __visible void trace_hardirqs_on_caller(unsigned long caller_addr)
+ 		this_cpu_write(tracing_irq_cpu, 0);
+ 	}
+ 
+-	lockdep_hardirqs_on_prepare(CALLER_ADDR0);
++	lockdep_hardirqs_on_prepare();
+ 	lockdep_hardirqs_on(CALLER_ADDR0);
+ }
+ EXPORT_SYMBOL(trace_hardirqs_on_caller);
+-- 
+2.35.1.723.g4982287a31-goog
+
