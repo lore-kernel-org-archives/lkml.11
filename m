@@ -2,512 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D0CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238915AbiCNPEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 11:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37134 "EHLO
+        id S241652AbiCNPE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 11:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235953AbiCNPEE (ORCPT
+        with ESMTP id S235147AbiCNPEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 11:04:04 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8AA2BC7;
-        Mon, 14 Mar 2022 08:02:49 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id BABC31F43FFC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647270168;
-        bh=cNefFXJG8zF9SfjjfxxvctpAt6F07yCtQ9ifyj4jjTI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=hDGJk/MjjqWovgMKoctxzwfdKZCBNKvYtawnAp2jEbnYO7UG4ZQga0MP7LneGh+xm
-         iEoYUfrfg1LqpUmX/6udZ5UFNJ1RRnwYLcLfZHxunWhkwHy2viGQXv0AtOweQTY2yX
-         MB5F4+H+fSTb9LMTAahAtT1MmJyKbYQSzXrEXN0gMkIO4P/HpkkZ27AsN+mpXRRwfC
-         uYbnT3owgl/94YIK1g1tEOqj25fThBPUPEujeJ2btWrJssWms/dU1eE1Fds8E6Kf55
-         2Uih4SL3DQi8whX+z0fMJSyW87XHlY74U9ZMXRCszfcY++f9SmMYE13H3BlB34KPlZ
-         HniC4ZzHP0k1g==
-Message-ID: <30eae66e-5dd2-9868-dd2a-aab377ffd821@collabora.com>
-Date:   Mon, 14 Mar 2022 16:02:43 +0100
+        Mon, 14 Mar 2022 11:04:54 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2054.outbound.protection.outlook.com [40.107.94.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1CD3D1CB;
+        Mon, 14 Mar 2022 08:03:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WMNqcHprSPjfvFpdKQzgsA3weSJglo/FphreohFVg/1g+lQN3tuLlXaW4STobJcHPo090ZFb7kjVGlLgUhyMrqVnhRDCDHaREhBO9vjP7qsHySIzZWTFKbnk7JXCgxT7GiiFQ9zai/YH6KS7WkOB6J7Cfm9lOURFQaxTXt7r2vpMTojCZY8Ah9b6srKQdbz5Q86Q5qGzDlXaP/yqVnq4YHrmZIL88a2VhIcKew2aK9nQ+WJPPNq4oKEfHFkxgP1dfUH6cKCHpbrf0Tvizdv5mokvghU9NQEM09bmUmjQ+K5ZX6CKXo+ErJQG9XbWA2mGYHWWtt65vGRtk7ZM3lf+TQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kJ8aWSlHPgQDMyq4D3N2pdzjFkaCvtNK7VLsYMrmbIk=;
+ b=C+/qXgoYgupQYEo94gO2UjDn9BFCcjElHp91GyLNtSRkyvV9Xm8HXqTYQU8kE9vXK1B08SEJZjn1AV/skX7Zmybytzs6maczk0KoAOF7a6xyxwMMZUZSAM+lCFiLzTZfU6YHMlHSl6MsDOdwB12BU+8OSfUDxbPpIV2FH3xW2xrabGXwJymS1zV2PQ3RZTNzvYQ5r717sscr3qoAJ0cebEHJ7SpS3PzvWm7Jc4oTL7BhIVa+LK/VJdD4TwotsTdz2NYiWmKaanrQS09I5O4bDIYPXQTkhoM2Lubx0DmkLdBFU2HP7noxLroXnmISgXJKhFhEuijDrLBFL14rheo68w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kJ8aWSlHPgQDMyq4D3N2pdzjFkaCvtNK7VLsYMrmbIk=;
+ b=idJBTWRZpjs7feB5K1uBQFzoQ93m6T47pWQ0rubRv52K9rZ6eBfMjtGTcU5nX3/X1aYZU33TuDmZzF1dKYwgQ5HRTpGKCZOCb2tvNhCPmgK1DuIoaMcOckJsrsTc080ZA9KsJwxk3D8q3k7VFChYiW4w7K4ekdHz8dQ4qqtw3BctzCxikKMBDnUkOnGXE2iQqxWjHxpAqMJujzKX1b+2U7cpl2DEwhXMpsXuo3S9yPdnsYB4t9BHzo7owJT+T2FVqclaTLrlSkNfmwfzhGptqFoxI92dNhzq1AWNzBi/qTl/4MyW3DdhW84SiVqq9S2q93+r0wsdcC6eZxxh13H7Gg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BL1PR12MB5112.namprd12.prod.outlook.com (2603:10b6:208:316::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.21; Mon, 14 Mar
+ 2022 15:03:42 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28%4]) with mapi id 15.20.5061.028; Mon, 14 Mar 2022
+ 15:03:42 +0000
+Date:   Mon, 14 Mar 2022 12:03:41 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Shameerali Kolothum Thodi 
+        <shameerali.kolothum.thodi@huawei.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
+        "yishaih@nvidia.com" <yishaih@nvidia.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        liulongfang <liulongfang@huawei.com>,
+        "Zengtao (B)" <prime.zeng@hisilicon.com>,
+        Jonathan Cameron <jonathan.cameron@huawei.com>,
+        "Wangzhou (B)" <wangzhou1@hisilicon.com>,
+        Xu Zaibo <xuzaibo@huawei.com>
+Subject: Re: [PATCH v8 8/9] hisi_acc_vfio_pci: Add support for VFIO live
+ migration
+Message-ID: <20220314150341.GD11336@nvidia.com>
+References: <20220303230131.2103-1-shameerali.kolothum.thodi@huawei.com>
+ <20220303230131.2103-9-shameerali.kolothum.thodi@huawei.com>
+ <20220304205720.GE219866@nvidia.com>
+ <20220307120513.74743f17.alex.williamson@redhat.com>
+ <aac9a26dc27140d9a1ce56ebdec393a6@huawei.com>
+ <20220307125239.7261c97d.alex.williamson@redhat.com>
+ <BN9PR11MB5276EBE887402EBE22630BAB8C099@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220308123312.1f4ba768.alex.williamson@redhat.com>
+ <BN9PR11MB527634CCF86829E0680E5E678C0A9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220310134954.0df4bb12.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220310134954.0df4bb12.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL0PR03CA0035.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::48) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH 06/24] media: platform: rename mtk-vcodec/ to
- mediatek/mtk-vcodec/
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc:     =?UTF-8?Q?Niklas_S=c3=b6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Hirokazu Honda <hiroh@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Steve Cho <stevecho@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Tzung-Bi Shih <tzungbi@google.com>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mediatek@lists.infradead.org
-References: <cover.1647167750.git.mchehab@kernel.org>
- <53a632ce79c9d02673d7540e18d681f123afb801.1647167750.git.mchehab@kernel.org>
- <17120e5dcc7b7fdac207a41d764a13db7b270380.camel@collabora.com>
- <20220314153733.63d1451f@coco.lan>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220314153733.63d1451f@coco.lan>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8303c6ed-abc9-4f2d-18a8-08da05cbd422
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5112:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB51128CED82C1AE5CF27E6243C20F9@BL1PR12MB5112.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UuRaeAkOFl+GnWckgNXRc77J2WofDTefZhZQZIIqlC0Ah3ECNqaaCyMbk4V+0pbXqRlC3eWmDBt9DDP0RO+B2ATXLLg8f7fvhlzr6N7Tj9fgMku9ZrUvVRI7iR9LOzVcSK4a7ixTeGDlG34AdRFjRN19Wwhiid3uqQGTLofiOjsZqEYP6uCkxBPZhAjxVFYtlMvbJSAjM0lOE1S/m4ZTzxg4mM2myvCi8gqSY++D7myjCiRGnRRNArqwlSuuBHtib3O45eoVIHDbIURB0XywvIpGQx2p4vZmmxSFtmed/tgkUEQwqneh2aJJFT0LQABJk7KjLlqQTlLMSsAV1L0ylfgUaebnZxv5dmHlrhRLaNHK1wbYsGPwzl6e8UADkVIoQrfutLGwbyACl5jMcLbFPkxY39ywiGKAaBDfVdU0QLjO3exbV+6bYyWv2XKxyh5N2CEdrbNdcTft1fNZyP2icxmTejOl5g8m/pjDYMUJm61Jwm+DJ4b130HS5xaaHzDKOG0BZ4dccc0jW92dp2zXhnDmvZfi8bcK7mOvJD9nn5Z1GBXDAvf8LB8ytxiTNgj6VxYW2D52+HDw7ZE2B0sdTA+E0F1aeY3O9ytSVboCHVhhMaA2nCdKLRil1CIJyA+JaoTzwUrZ1yVwHcY2Tw3yoA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(6512007)(4326008)(38100700002)(8676002)(66476007)(6506007)(1076003)(2616005)(66556008)(186003)(2906002)(26005)(83380400001)(508600001)(316002)(6916009)(6486002)(54906003)(33656002)(86362001)(8936002)(36756003)(7416002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HmLY0k539fDXQnpq5mULd6zlayrOFsA9GD7+74Q+A9AJwnpDWyordNMvdvyE?=
+ =?us-ascii?Q?TBup0G7XAN5uJLZWaNw0k8rGCT5Hm3EJdT/cfoxKkAYrgUhjMwEBzdQEWfxg?=
+ =?us-ascii?Q?RAoO9ylqNVUk7aDB46ldSGdP1RA7JyNd73T6tzDLhWr4JISMEYK3PG+ophT7?=
+ =?us-ascii?Q?h4Nmpv3xabHGjBd7mrbDu5RR4todAs1YNUo41fUikPTDFUtjwuU8gtBN50T/?=
+ =?us-ascii?Q?wDnrG+h2kjZZCSqlKgeGDUG/VspE2lTw99lv9sPWNZvtDLBM8MnHk/8IPVWM?=
+ =?us-ascii?Q?2e6KP0CaVevMfEhCwY1s8/Pb+4qIeuPiYJ0TIHkxvWUczmsU2iaK91u16leX?=
+ =?us-ascii?Q?CbAnGDm3fSROl0V8t/v1YWcNi2/Wa3JQI7ywlw6AuG+Aqvt8qfptQfZMr2kn?=
+ =?us-ascii?Q?Wa5vNJGG216Qm+m4fURQjPqLi758QrCdH89jPKs+OOXjEPJacXmoPJ+q8VvH?=
+ =?us-ascii?Q?PlglsOQPQhMxfWvT/ufr9hp63gBRDXFEDMzWAUm3yqAZI+0HF7iBcoGJ/ILe?=
+ =?us-ascii?Q?NKenoL1wLvY9FmgOAJeoG+TzXqoX/nWz26NmldUPjr741iXqH1G1nca4QCk8?=
+ =?us-ascii?Q?ghqDwzBm4YVbAM0TujvK1KhEkEnT0SHIemM92m/PuPSvJPmsqZ2bIg69VCKT?=
+ =?us-ascii?Q?cup3cI+PdLJIixme3YWyP4777P+o103+wfpMJtEkqhfquLLDi19l0L5UikoT?=
+ =?us-ascii?Q?TuXONBXsMA1+G3SOb3bDVjaNNZIKBDXSNXfMHYzTNGbvNmFf7hcHULo0pxbm?=
+ =?us-ascii?Q?wOyeGMh8YVsYVEIp69MqGzM3rzcjQ1or/Gn+6tUqD1acw/EsyrgAIb4rulp5?=
+ =?us-ascii?Q?RTixU+4rjwGBIOY/JAuPnW+ofuEnJTm8f98v9ltu6IjRHTMmR31UswzOlnF+?=
+ =?us-ascii?Q?YjJTK2UclCnOrbolywtbxIU7sRyWFZs1RQyGFBpocQO3yJKsH4o77kwQmlLn?=
+ =?us-ascii?Q?r1s9aDz4nWWOP+0ARC2hd802vEsbkMQqqmyv7ajdKLjU6Nr65AT4cXL/2M78?=
+ =?us-ascii?Q?w5CO4Hrdp0Ixx0pLJKd34J4m+1UjPUl2z01gNZD+NnHZNemnd1RIxraNoB+/?=
+ =?us-ascii?Q?aVUl5h9sNEL/Ti8oNGX9UuE6r0t4VIyNw5fBqiPl8EyGFbmza7YQsB8TAp5j?=
+ =?us-ascii?Q?XH5/CG/zSOor6/c/luLwXajA9cgNSkzbqjIGk9PDACT+v9GGRnK1SzLTpGMG?=
+ =?us-ascii?Q?GD57kzSrZTosrak9EkmFgAk8BC7km/CCR8bvKpYEzXVH0TCJw2h1RSeslIlr?=
+ =?us-ascii?Q?hhVmNC/H9KG9QT4ttW5HegARESabpyPAG+xdnpm21mU1TMEkUqC2MSnEGGNn?=
+ =?us-ascii?Q?+eo2TdvZQyswP7vfNl5MdY5vTstkU1wTQS9PKTf4C69WTmfotSbMu0s65QNo?=
+ =?us-ascii?Q?i/oU9S0XnGB0500sMAZlEmRDfMjwELPxcENLTUnJrOyUhddAYAECgJ11qyyP?=
+ =?us-ascii?Q?Xc8DHFs8kLxIfmnfVOfFCG2lO7j3vths?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8303c6ed-abc9-4f2d-18a8-08da05cbd422
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2022 15:03:42.5456
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Y1Xav2xsjZCZ6oVjEb/mDKV7Hi9gIXHXQi98r3bqvLWMNjGgAkLVyEdML9DrHnw1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5112
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/03/22 15:37, Mauro Carvalho Chehab ha scritto:
-> Em Mon, 14 Mar 2022 09:09:45 -0400
-> Nicolas Dufresne <nicolas.dufresne@collabora.com> escreveu:
+On Thu, Mar 10, 2022 at 01:49:54PM -0700, Alex Williamson wrote:
+
+> +New driver submissions are therefore requested to have approval via
+> +Sign-off for any interactions with parent drivers.  Additionally,
+
+Acked-by/etc.
+
+> +drivers should make an attempt to provide sufficient documentation
+> +for reviewers to understand the device specific extensions, for
+> +example in the case of migration data, how is the device state
+> +composed and consumed, which portions are not otherwise available to
+> +the user via vfio-pci, what safeguards exist to validate the data,
+> +etc.  To that extent, authors should additionally expect to require
+> +reviews from at least one of the listed reviewers, in addition to the
+> +overall vfio maintainer.
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 4322b5321891..4f7d26f9aac6 100644
+> +++ b/MAINTAINERS
+> @@ -20314,6 +20314,13 @@ F:	drivers/vfio/mdev/
+>  F:	include/linux/mdev.h
+>  F:	samples/vfio-mdev/
+>  
+> +VFIO PCI VENDOR DRIVERS
+> +R:	Your Name <your.name@here.com>
+> +L:	kvm@vger.kernel.org
+> +S:	Maintained
+> +P:	Documentation/vfio/vfio-pci-vendor-driver-acceptance.rst
+> +F:	drivers/vfio/pci/*/
+> +
+>  VFIO PLATFORM DRIVER
+>  M:	Eric Auger <eric.auger@redhat.com>
+>  L:	kvm@vger.kernel.org
 > 
->> Le dimanche 13 mars 2022 à 11:51 +0100, Mauro Carvalho Chehab a écrit :
->>> As the end goal is to have platform drivers split by vendor,
->>> rename mtk-vcodec/ to mediatek/mtk-vcodec/.
->>
->> Was thinking all these mtk-* directory didn't fit with the platform/ semantic. I
->> totally support this change. I suppose jpeg/mdp/vpu also needs to be moved. And
->> mdp3 and various vcodec patches will need a new submission.
-> 
-> They were all moved too, each one on a separate patch in this series:
-> 
+> Ideally we'd have at least Yishai, Shameer, Jason, and yourself listed
+> as reviewers (Connie and I are included via the higher level entry).
+> Thoughts from anyone?  Volunteers for reviewers if we want to press
+> forward with this as formal acceptance criteria?  Thanks,
 
-Hello Mauro, Nicolas
+I've not seen such formalism before in the kernel, but seems like it
+might be an interesting experiment. You can add my name
 
-I was wondering if we could also drop the 'mtk-' prefix from the folder names,
-as 'mtk' effectively stands for 'mediatek'... so we would have them as:
-
-mediatek/jpeg
-mediatek/mdp
-mediatek/mdp3
-mediatek/vcodec
-mediatek/vpu
-
-mediatek/mtk-... looks a bit repetitive :)
-
-Cheers,
-Angelo
-
->      $ LANG=C tree -d drivers/media/platform/
->      drivers/media/platform/
->      |-- allegro-dvt
->      |-- allwinner
->      |   |-- sun4i-csi
->      |   |-- sun6i-csi
->      |   |-- sun8i-di
->      |   `-- sun8i-rotate
->      |-- amlogic
->      |   `-- meson-ge2d
->      |-- amphion
->      |-- aspeed
->      |-- atmel
->      |-- cadence
->      |-- chips-media
->      |-- intel
->      |-- marvell
->      |-- mediatek
->      |   |-- mtk-jpeg
->      |   |-- mtk-mdp
->      |   |-- mtk-vcodec
->      |   |   |-- vdec
->      |   |   `-- venc
->      |   `-- mtk-vpu
->      |-- nvidia
->      |   `-- tegra-vde
->      |-- nxp
->      |   `-- imx-jpeg
->      |-- qcom
->      |   |-- camss
->      |   `-- venus
->      |-- renesas
->      |   |-- rcar-vin
->      |   `-- vsp1
->      |-- rockchip
->      |   |-- rga
->      |   `-- rkisp1
->      |-- samsung
->      |   |-- exynos-gsc
->      |   |-- exynos4-is
->      |   |-- s3c-camif
->      |   |-- s5p-g2d
->      |   |-- s5p-jpeg
->      |   `-- s5p-mfc
->      |-- stm
->      |   |-- sti
->      |   |   |-- bdisp
->      |   |   |-- c8sectpfe
->      |   |   |-- delta
->      |   |   `-- hva
->      |   `-- stm32
->      |       `-- dma2d
->      |-- ti
->      |   |-- am437x
->      |   |-- cal
->      |   |-- davinci
->      |   |-- omap
->      |   |-- omap3isp
->      |   `-- vpe
->      |-- ti-vpe
->      |-- via
->      `-- xilinx
-> 
->>
->>>
->>> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
->>
->> Acked-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
->>
->>> ---
->>>
->>> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
->>> See [PATCH 00/24] at: https://lore.kernel.org/all/cover.1647167750.git.mchehab@kernel.org/
->>>
->>>   MAINTAINERS                                                     | 2 +-
->>>   drivers/media/platform/Kconfig                                  | 2 +-
->>>   drivers/media/platform/Makefile                                 | 2 +-
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/Kconfig        | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/Makefile       | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec.c   | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec.h   | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_drv.c     | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_hw.c      | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_hw.h      | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_pm.c      | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_pm.h      | 0
->>>   .../{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_stateful.c         | 0
->>>   .../{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_stateless.c        | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_drv.h   | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc.c   | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc.h   | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc_drv.c     | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc_pm.c      | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc_pm.h      | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw.c    | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw.h    | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw_priv.h     | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw_scp.c      | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw_vpu.c      | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_intr.c  | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_intr.h  | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_util.c  | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_util.h  | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/vdec/vdec_h264_if.c      | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/vdec/vdec_h264_req_if.c  | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/vdec/vdec_vp8_if.c | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/vdec/vdec_vp9_if.c | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/vdec_drv_base.h    | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_drv_if.c  | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_drv_if.h  | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_ipi_msg.h | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/vdec_msg_queue.c   | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/vdec_msg_queue.h   | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_vpu_if.c  | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_vpu_if.h  | 0
->>>   .../platform/{ => mediatek}/mtk-vcodec/venc/venc_h264_if.c      | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/venc/venc_vp8_if.c | 0
->>>   .../media/platform/{ => mediatek}/mtk-vcodec/venc_drv_base.h    | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_drv_if.c  | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_drv_if.h  | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_ipi_msg.h | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_vpu_if.c  | 0
->>>   drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_vpu_if.h  | 0
->>>   49 files changed, 3 insertions(+), 3 deletions(-)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/Kconfig (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/Makefile (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_drv.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_hw.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_hw.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_pm.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_pm.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_stateful.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_dec_stateless.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_drv.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc_drv.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc_pm.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_enc_pm.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw_priv.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw_scp.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_fw_vpu.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_intr.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_intr.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_util.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/mtk_vcodec_util.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec/vdec_h264_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec/vdec_h264_req_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec/vdec_vp8_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec/vdec_vp9_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_drv_base.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_drv_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_drv_if.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_ipi_msg.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_msg_queue.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_msg_queue.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_vpu_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/vdec_vpu_if.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc/venc_h264_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc/venc_vp8_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_drv_base.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_drv_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_drv_if.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_ipi_msg.h (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_vpu_if.c (100%)
->>>   rename drivers/media/platform/{ => mediatek}/mtk-vcodec/venc_vpu_if.h (100%)
->>>
->>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> index 2203d98bbcf1..bfe014870a77 100644
->>> --- a/MAINTAINERS
->>> +++ b/MAINTAINERS
->>> @@ -12147,7 +12147,7 @@ M:	Andrew-CT Chen <andrew-ct.chen@mediatek.com>
->>>   S:	Supported
->>>   F:	Documentation/devicetree/bindings/media/mediatek-vcodec.txt
->>>   F:	Documentation/devicetree/bindings/media/mediatek-vpu.txt
->>> -F:	drivers/media/platform/mtk-vcodec/
->>> +F:	drivers/media/platform/mediatek/mtk-vcodec/
->>>   F:	drivers/media/platform/mtk-vpu/
->>>   
->>>   MEDIATEK MMC/SD/SDIO DRIVER
->>> diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
->>> index a45fd3fe103e..8ba10b657164 100644
->>> --- a/drivers/media/platform/Kconfig
->>> +++ b/drivers/media/platform/Kconfig
->>> @@ -80,7 +80,7 @@ source "drivers/media/platform/intel/Kconfig"
->>>   source "drivers/media/platform/marvell/Kconfig"
->>>   source "drivers/media/platform/mediatek/mtk-jpeg/Kconfig"
->>>   source "drivers/media/platform/mediatek/mtk-mdp/Kconfig"
->>> -source "drivers/media/platform/mtk-vcodec/Kconfig"
->>> +source "drivers/media/platform/mediatek/mtk-vcodec/Kconfig"
->>>   source "drivers/media/platform/mtk-vpu/Kconfig"
->>>   source "drivers/media/platform/nxp/Kconfig"
->>>   source "drivers/media/platform/omap/Kconfig"
->>> diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
->>> index 6f5d09cd8f9b..637a3a7ac036 100644
->>> --- a/drivers/media/platform/Makefile
->>> +++ b/drivers/media/platform/Makefile
->>> @@ -20,7 +20,7 @@ obj-y += intel/
->>>   obj-y += marvell/
->>>   obj-y += mediatek/mtk-jpeg/
->>>   obj-y += mediatek/mtk-mdp/
->>> -obj-y += mtk-vcodec/
->>> +obj-y += mediatek/mtk-vcodec/
->>>   obj-y += mtk-vpu/
->>>   obj-y += nxp/
->>>   obj-y += omap/
->>> diff --git a/drivers/media/platform/mtk-vcodec/Kconfig b/drivers/media/platform/mediatek/mtk-vcodec/Kconfig
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/Kconfig
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/Kconfig
->>> diff --git a/drivers/media/platform/mtk-vcodec/Makefile b/drivers/media/platform/mediatek/mtk-vcodec/Makefile
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/Makefile
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/Makefile
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_drv.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_drv.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_hw.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_hw.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_hw.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_hw.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_pm.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_pm.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_pm.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_pm.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateful.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_stateful.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateful.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_stateful.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_stateless.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_dec_stateless.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_drv.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_drv.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc_drv.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc_drv.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc_pm.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc_pm.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc_pm.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_enc_pm.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_fw.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_fw.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_priv.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw_priv.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_priv.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw_priv.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_scp.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw_scp.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_scp.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw_scp.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw_vpu.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_fw_vpu.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_fw_vpu.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_intr.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_intr.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_intr.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_intr.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_intr.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_intr.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_intr.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_intr.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_util.c b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_util.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_util.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_util.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_util.h b/drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_util.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/mtk_vcodec_util.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/mtk_vcodec_util.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec/vdec_h264_if.c b/drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_h264_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec/vdec_h264_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_h264_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec/vdec_h264_req_if.c b/drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_h264_req_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec/vdec_h264_req_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_h264_req_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec/vdec_vp8_if.c b/drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_vp8_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec/vdec_vp8_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_vp8_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec/vdec_vp9_if.c b/drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_vp9_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec/vdec_vp9_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec/vdec_vp9_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_drv_base.h b/drivers/media/platform/mediatek/mtk-vcodec/vdec_drv_base.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_drv_base.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_drv_base.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_drv_if.c b/drivers/media/platform/mediatek/mtk-vcodec/vdec_drv_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_drv_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_drv_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_drv_if.h b/drivers/media/platform/mediatek/mtk-vcodec/vdec_drv_if.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_drv_if.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_drv_if.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_ipi_msg.h b/drivers/media/platform/mediatek/mtk-vcodec/vdec_ipi_msg.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_ipi_msg.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_ipi_msg.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_msg_queue.c b/drivers/media/platform/mediatek/mtk-vcodec/vdec_msg_queue.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_msg_queue.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_msg_queue.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_msg_queue.h b/drivers/media/platform/mediatek/mtk-vcodec/vdec_msg_queue.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_msg_queue.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_msg_queue.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_vpu_if.c b/drivers/media/platform/mediatek/mtk-vcodec/vdec_vpu_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_vpu_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_vpu_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/vdec_vpu_if.h b/drivers/media/platform/mediatek/mtk-vcodec/vdec_vpu_if.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/vdec_vpu_if.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/vdec_vpu_if.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc/venc_h264_if.c b/drivers/media/platform/mediatek/mtk-vcodec/venc/venc_h264_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc/venc_h264_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc/venc_h264_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc/venc_vp8_if.c b/drivers/media/platform/mediatek/mtk-vcodec/venc/venc_vp8_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc/venc_vp8_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc/venc_vp8_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc_drv_base.h b/drivers/media/platform/mediatek/mtk-vcodec/venc_drv_base.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc_drv_base.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc_drv_base.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc_drv_if.c b/drivers/media/platform/mediatek/mtk-vcodec/venc_drv_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc_drv_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc_drv_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc_drv_if.h b/drivers/media/platform/mediatek/mtk-vcodec/venc_drv_if.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc_drv_if.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc_drv_if.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc_ipi_msg.h b/drivers/media/platform/mediatek/mtk-vcodec/venc_ipi_msg.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc_ipi_msg.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc_ipi_msg.h
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc_vpu_if.c b/drivers/media/platform/mediatek/mtk-vcodec/venc_vpu_if.c
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc_vpu_if.c
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc_vpu_if.c
->>> diff --git a/drivers/media/platform/mtk-vcodec/venc_vpu_if.h b/drivers/media/platform/mediatek/mtk-vcodec/venc_vpu_if.h
->>> similarity index 100%
->>> rename from drivers/media/platform/mtk-vcodec/venc_vpu_if.h
->>> rename to drivers/media/platform/mediatek/mtk-vcodec/venc_vpu_if.h
->>
-> 
-> 
-> 
-> Thanks,
-> Mauro
-
-
+Jason
