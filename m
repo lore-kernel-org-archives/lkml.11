@@ -2,98 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F505C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC15C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240329AbiCNMEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        id S240343AbiCNMEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240638AbiCNMDX (ORCPT
+        with ESMTP id S240621AbiCNMDW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:03:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1DF14B407
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:00:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647259197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=DTumIzkUVMCDvmMhaJUDyMiG+aNJUlziXvFqILOQYsI=;
-        b=Fx8sD/JbdyLzP94A+V1xfdOotmYcIHm5ISvnQ1T6ndEogXzV7TyfCtDPGRf0p6VsegfNy3
-        bsIYugzTUMz0IuHNj+aJqTOdh7hc3YIRq0GfcMbMz2X9Lov5XQZX8WQYcB7+3myGY8KD6t
-        oMsYqiKDn0QvQOa0h6KBhlk3n/P0HXs=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-93-Y-JefBWWPk6yX7A-kJ9QrQ-1; Mon, 14 Mar 2022 07:59:56 -0400
-X-MC-Unique: Y-JefBWWPk6yX7A-kJ9QrQ-1
-Received: by mail-wr1-f70.google.com with SMTP id h11-20020a5d430b000000b001f01a35a86fso4268343wrq.4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:59:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=DTumIzkUVMCDvmMhaJUDyMiG+aNJUlziXvFqILOQYsI=;
-        b=ZuzIMK4S4jQhVwN/J9SqY90hKt3y5tuYd0Le1uhWwYXFxrqBwl/jQoVXdqpMkptwFS
-         6Oj+X3HSMgbrbgf7B8jPw90usbnC2GqNKWT0c6rN4NoM/3NGRcQaboIbOQCaAbed3rI/
-         jtOOiDAD3LXjsuVCIuS8uXQnrbn6wcIYjCfiCJjD5Z8i+TG357CMOnwZgDdQ+2CBRryL
-         52Cn69QN/ytePuL6nlP2FJMWU1vdgXi4X3VW/inJfef5a84roThCsXZddMEewoSn+zFP
-         p+RlZybliiRWlLdXZNfkE2yBhqefOqnXPs5cH1synY9r8UD6QxbCW9ig3zdSZWHFkLSl
-         LLgA==
-X-Gm-Message-State: AOAM530SbCxrnhCknzC4Clg6wjmk8OeoQa4IVIVZfWNCdqyb5BnFLupD
-        rNMiLrqz/LaPrT7L4jmDVizqMJcWhplq7s31OQRqcDUP5GNuozguYohCaPJV1hRAfgDxJJQ40iq
-        XLh57b3v/y9QYsS/m0WpiTeIN
-X-Received: by 2002:a05:600c:4f09:b0:389:cf43:eaf8 with SMTP id l9-20020a05600c4f0900b00389cf43eaf8mr17160220wmq.201.1647259194497;
-        Mon, 14 Mar 2022 04:59:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzp7ZJAVv6i97GoEYXJTrh4j1WEgqWNchpszO38kLqkQtDsjqJCu3h0XIEDXpnWhcBdQ3hpYw==
-X-Received: by 2002:a05:600c:4f09:b0:389:cf43:eaf8 with SMTP id l9-20020a05600c4f0900b00389cf43eaf8mr17160208wmq.201.1647259194258;
-        Mon, 14 Mar 2022 04:59:54 -0700 (PDT)
-Received: from redhat.com ([2.55.183.53])
-        by smtp.gmail.com with ESMTPSA id w6-20020a5d6806000000b002036515dda7sm13416882wru.33.2022.03.14.04.59.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 04:59:53 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 07:59:51 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elic@nvidia.com, jasowang@redhat.com, mail@anirudhrb.com,
-        mst@redhat.com
-Subject: [GIT PULL] virtio: a last minute regression fix
-Message-ID: <20220314075951-mutt-send-email-mst@kernel.org>
+        Mon, 14 Mar 2022 08:03:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA9D2B182;
+        Mon, 14 Mar 2022 05:00:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6632E61260;
+        Mon, 14 Mar 2022 12:00:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 306C6C340E9;
+        Mon, 14 Mar 2022 12:00:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647259231;
+        bh=YMYnOjNNfhNjUlC61X8qNNM2OgJ0OqDWeEDZ4qw2yJc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lmYF62sHUcY4Z6fHoMBDtErtk2BbgnwRbmEiLC6njs1AOjTks2EbQs/HMCEGBwcKK
+         SYl7LLrFWT4PXx3S1ELOoXLiThVWY8B4UCz57M13kuT8QdUUqVDxTvXDHCxxXc8HDk
+         KXsqvG7mJgIMoPHM6fRUrthO2AF9WNOyekfGmZS4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 30/71] NFC: port100: fix use-after-free in port100_send_complete
+Date:   Mon, 14 Mar 2022 12:53:23 +0100
+Message-Id: <20220314112738.775459963@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
+References: <20220314112737.929694832@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 3dd7d135e75cb37c8501ba02977332a2a487dd39:
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-  tools/virtio: handle fallout from folio work (2022-03-06 06:06:50 -0500)
+[ Upstream commit f80cfe2f26581f188429c12bd937eb905ad3ac7b ]
 
-are available in the Git repository at:
+Syzbot reported UAF in port100_send_complete(). The root case is in
+missing usb_kill_urb() calls on error handling path of ->probe function.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+port100_send_complete() accesses devm allocated memory which will be
+freed on probe failure. We should kill this urbs before returning an
+error from probe function to prevent reported use-after-free
 
-for you to fetch changes up to 95932ab2ea07b79cdb33121e2f40ccda9e6a73b5:
+Fail log:
 
-  vhost: allow batching hint without size (2022-03-10 08:12:04 -0500)
+BUG: KASAN: use-after-free in port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
+Read of size 1 at addr ffff88801bb59540 by task ksoftirqd/2/26
+...
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0x8d/0x303 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ port100_send_complete+0x16e/0x1a0 drivers/nfc/port100.c:935
+ __usb_hcd_giveback_urb+0x2b0/0x5c0 drivers/usb/core/hcd.c:1670
 
-----------------------------------------------------------------
-virtio: a last minute regression fix
+...
 
-I thought we did a lot of testing, but a regression still
-managed to sneak in. The fix seems trivial.
+Allocated by task 1255:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa6/0xd0 mm/kasan/common.c:524
+ alloc_dr drivers/base/devres.c:116 [inline]
+ devm_kmalloc+0x96/0x1d0 drivers/base/devres.c:823
+ devm_kzalloc include/linux/device.h:209 [inline]
+ port100_probe+0x8a/0x1320 drivers/nfc/port100.c:1502
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Freed by task 1255:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0xff/0x140 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:236 [inline]
+ __cache_free mm/slab.c:3437 [inline]
+ kfree+0xf8/0x2b0 mm/slab.c:3794
+ release_nodes+0x112/0x1a0 drivers/base/devres.c:501
+ devres_release_all+0x114/0x190 drivers/base/devres.c:530
+ really_probe+0x626/0xcc0 drivers/base/dd.c:670
 
-----------------------------------------------------------------
-Jason Wang (1):
-      vhost: allow batching hint without size
+Reported-and-tested-by: syzbot+16bcb127fb73baeecb14@syzkaller.appspotmail.com
+Fixes: 0347a6ab300a ("NFC: port100: Commands mechanism implementation")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20220308185007.6987-1-paskripkin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nfc/port100.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- drivers/vhost/vhost.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+diff --git a/drivers/nfc/port100.c b/drivers/nfc/port100.c
+index 1caebefb25ff..2ae1474faede 100644
+--- a/drivers/nfc/port100.c
++++ b/drivers/nfc/port100.c
+@@ -1609,7 +1609,9 @@ static int port100_probe(struct usb_interface *interface,
+ 	nfc_digital_free_device(dev->nfc_digital_dev);
+ 
+ error:
++	usb_kill_urb(dev->in_urb);
+ 	usb_free_urb(dev->in_urb);
++	usb_kill_urb(dev->out_urb);
+ 	usb_free_urb(dev->out_urb);
+ 	usb_put_dev(dev->udev);
+ 
+-- 
+2.34.1
+
+
 
