@@ -2,104 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D85B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6154CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242544AbiCNPfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 11:35:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47920 "EHLO
+        id S242573AbiCNPfo convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 11:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240734AbiCNPfZ (ORCPT
+        with ESMTP id S242549AbiCNPfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 11:35:25 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2911EC5C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 08:34:14 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nTmhd-0006ou-Cw; Mon, 14 Mar 2022 16:33:45 +0100
-Message-ID: <7f1e4cbd-2d02-2345-493b-68ded3357f26@pengutronix.de>
-Date:   Mon, 14 Mar 2022 16:33:39 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [EXT] Re: [PATCH v5 4/5] crypto: caam - add in-kernel interface
- for blob generator
-Content-Language: en-US
-To:     Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     David Gstir <david@sigma-star.at>,
-        Aymen Sghaier <aymen.sghaier@nxp.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Horia Geanta <horia.geanta@nxp.com>,
-        Richard Weinberger <richard@nod.at>,
-        James Morris <jmorris@namei.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        James Bottomley <jejb@linux.ibm.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        "tharvey@gateworks.com" <tharvey@gateworks.com>,
-        Franck Lenormand <franck.lenormand@nxp.com>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220222195819.2313913-1-a.fatoum@pengutronix.de>
- <20220222195819.2313913-5-a.fatoum@pengutronix.de> <YhZVmBy3/nWbqf+/@iki.fi>
- <a8cb99e0-fe01-2234-9839-fea28ca09f6d@pengutronix.de>
- <DU2PR04MB863084B70239A69E4DE9D65B953E9@DU2PR04MB8630.eurprd04.prod.outlook.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <DU2PR04MB863084B70239A69E4DE9D65B953E9@DU2PR04MB8630.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Mon, 14 Mar 2022 11:35:33 -0400
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B605C2182D;
+        Mon, 14 Mar 2022 08:34:23 -0700 (PDT)
+Received: from smtpclient.apple (p5b3d2183.dip0.t-ipconnect.de [91.61.33.131])
+        by mail.holtmann.org (Postfix) with ESMTPSA id ACCA2CECC5;
+        Mon, 14 Mar 2022 16:34:22 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH] Bluetooth: hci_uart: add missing NULL check in h5_enqueue
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220313174936.1299-1-paskripkin@gmail.com>
+Date:   Mon, 14 Mar 2022 16:34:22 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Hilda Wu <hildawu@realtek.com>,
+        Archie Pusaka <apusaka@chromium.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com
+Content-Transfer-Encoding: 8BIT
+Message-Id: <E53EB6BA-06CE-48B4-96A5-745D0F2D3646@holtmann.org>
+References: <20220313174936.1299-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Pankaj,
+Hi Pavel,
 
-On 25.02.22 13:20, Pankaj Gupta wrote:
->>>> +static u32 *caam_blob_alloc_desc(size_t keymod_len) {
->>>> +    size_t len;
->>>> +
->>>> +    /* header + (key mod immediate) + 2x pointers + op */
->>>> +    len = 4 + (4 + ALIGN(keymod_len, 4)) + 2*(4 + 4 +
->>>> + CAAM_PTR_SZ_MAX) + 4;
->>>
->>> Nit: the amount of magic numbers is overwhelming here. I neither
->>> understand the statement nor how that comment should help me to
->> understand it.
->>
->> header              =  4
->> (key mod immediate) = (4 + ALIGN(keymod_len, 4))
->> 2x pointer          =  2 * (4 + 4 + CAAM_PTR_SZ_MAX)
->> op                  =  4
+> Syzbot hit general protection fault in __pm_runtime_resume(). The problem
+> was in missing NULL check.
 > 
-> Instead of the function caam_blob_alloc_desc(), it will be great if the caller functions caam_encap_blob()/caam_encap_blob (), could add local array:
-> uint32_t desc[CAAM_DESC_BYTES_MAX];
+> hu->serdev can be NULL and we should not blindly pass &serdev->dev
+> somewhere, since it will cause GPF.
+> 
+> Reported-by: syzbot+b9bd12fbed3485a3e51f@syzkaller.appspotmail.com
+> Fixes: d9dd833cf6d2 ("Bluetooth: hci_h5: Add runtime suspend")
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> ---
+> drivers/bluetooth/hci_h5.c | 8 +++++---
+> 1 file changed, 5 insertions(+), 3 deletions(-)
 
-I just looked into this and placing desc on stack is not possible
-as it is used for DMA inside caam_jr_enqueue().
+patch has been applied to bluetooth-next tree.
 
-Cheers,
-Ahmad
+However if someone would finally step up and write a standalone serdev only driver for 3-Wire UART support, this would not be a problem in the first place. We are just applying on bandaid after another.
 
+Regards
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Marcel
+
