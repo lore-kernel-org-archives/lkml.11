@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 304F2C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06397C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241098AbiCNMWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S241485AbiCNMWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241323AbiCNMNM (ORCPT
+        with ESMTP id S241216AbiCNMNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:13:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FA136E33;
-        Mon, 14 Mar 2022 05:11:12 -0700 (PDT)
+        Mon, 14 Mar 2022 08:13:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE28B366A2;
+        Mon, 14 Mar 2022 05:11:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40D366137C;
-        Mon, 14 Mar 2022 12:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31891C340EC;
-        Mon, 14 Mar 2022 12:11:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67B8BB80DFB;
+        Mon, 14 Mar 2022 12:11:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B10DBC340E9;
+        Mon, 14 Mar 2022 12:11:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259870;
-        bh=ZQzY0kOoJ4xEPBHHmkNThIkdhKvGqVT89bJ2GEzGjk0=;
+        s=korg; t=1647259862;
+        bh=AOk/3A1maZIhYaKanLu/kz4jEySsk00+Ym/Ql8tG+qc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qlSdpFiwhqJzaNUL71pcijXVq2MKMjz0AQmvw51bPKSd/7Rrh29CefN5b4MKz0sGQ
-         r4PKn/FocEb4b4O5QU3e+g1dc9FZIeJ6cHx3kMaBfu+K4pA0us1Xaq35GbqQIAeoD+
-         j3BdqKVL+CJOovIJlC09EwtqT3/w5opBPosU/9as=
+        b=P22duVXNuiildbGMMwt9vqBStlt49nFa3KVxJdyu2ZcQLLAm7JhCfUPZxIgnAiC2Z
+         X3x9IJ5UP5kbEURH0EcRQeTEhaAB6PpkGhUf/AEVwX2YTg8HrhgVrtka7wont0Ehch
+         VGojMM0s97QLQ2FPaqAvvoLcCpK9brKQlxjZmekk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.15 107/110] drm/i915: Workaround broken BIOS DBUF configuration on TGL/RKL
-Date:   Mon, 14 Mar 2022 12:54:49 +0100
-Message-Id: <20220314112746.013068312@linuxfoundation.org>
+        stable@vger.kernel.org, Scott McNutt <scott.mcnutt@siriusxm.com>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 079/110] net: macb: Fix lost RX packet wakeup race in NAPI receive
+Date:   Mon, 14 Mar 2022 12:54:21 +0100
+Message-Id: <20220314112745.237130901@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -51,162 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit 4e6f55120c7eccf6f9323bb681632e23cbcb3f3c upstream.
+commit 0bf476fc3624e3a72af4ba7340d430a91c18cd67 upstream.
 
-On TGL/RKL the BIOS likes to use some kind of bogus DBUF layout
-that doesn't match what the spec recommends. With a single active
-pipe that is not going to be a problem, but with multiple pipes
-active skl_commit_modeset_enables() goes into an infinite loop
-since it can't figure out any order in which it can commit the
-pipes without causing DBUF overlaps between the planes.
+There is an oddity in the way the RSR register flags propagate to the
+ISR register (and the actual interrupt output) on this hardware: it
+appears that RSR register bits only result in ISR being asserted if the
+interrupt was actually enabled at the time, so enabling interrupts with
+RSR bits already set doesn't trigger an interrupt to be raised. There
+was already a partial fix for this race in the macb_poll function where
+it checked for RSR bits being set and re-triggered NAPI receive.
+However, there was a still a race window between checking RSR and
+actually enabling interrupts, where a lost wakeup could happen. It's
+necessary to check again after enabling interrupts to see if RSR was set
+just prior to the interrupt being enabled, and re-trigger receive in that
+case.
 
-We'd need some kind of extra DBUF defrag stage in between to
-make the transition possible. But that is clearly way too complex
-a solution, so in the name of simplicity let's just sanitize the
-DBUF state by simply turning off all planes when we detect a
-pipe encroaching on its neighbours' DBUF slices. We only have
-to disable the primary planes as all other planes should have
-already been disabled (if they somehow were enabled) by
-earlier sanitization steps.
+This issue was noticed in a point-to-point UDP request-response protocol
+which periodically saw timeouts or abnormally high response times due to
+received packets not being processed in a timely fashion. In many
+applications, more packets arriving, including TCP retransmissions, would
+cause the original packet to be processed, thus masking the issue.
 
-And for good measure let's also sanitize in case the DBUF
-allocations of the pipes already seem to overlap each other.
-
-Cc: <stable@vger.kernel.org> # v5.14+
-Closes: https://gitlab.freedesktop.org/drm/intel/-/issues/4762
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220204141818.1900-3-ville.syrjala@linux.intel.com
-Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
-(cherry picked from commit 15512021eb3975a8c2366e3883337e252bb0eee5)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Fixes: 02f7a34f34e3 ("net: macb: Re-enable RX interrupt only when RX is done")
+Cc: stable@vger.kernel.org
+Co-developed-by: Scott McNutt <scott.mcnutt@siriusxm.com>
+Signed-off-by: Scott McNutt <scott.mcnutt@siriusxm.com>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_display.c |    5 +
- drivers/gpu/drm/i915/display/intel_display.h |    2 
- drivers/gpu/drm/i915/intel_pm.c              |   68 +++++++++++++++++++++++++++
- drivers/gpu/drm/i915/intel_pm.h              |    1 
- 4 files changed, 74 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c |   25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/i915/display/intel_display.c
-+++ b/drivers/gpu/drm/i915/display/intel_display.c
-@@ -1658,8 +1658,8 @@ static void fixup_plane_bitmasks(struct
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1606,7 +1606,14 @@ static int macb_poll(struct napi_struct
+ 	if (work_done < budget) {
+ 		napi_complete_done(napi, work_done);
+ 
+-		/* Packets received while interrupts were disabled */
++		/* RSR bits only seem to propagate to raise interrupts when
++		 * interrupts are enabled at the time, so if bits are already
++		 * set due to packets received while interrupts were disabled,
++		 * they will not cause another interrupt to be generated when
++		 * interrupts are re-enabled.
++		 * Check for this case here. This has been seen to happen
++		 * around 30% of the time under heavy network load.
++		 */
+ 		status = macb_readl(bp, RSR);
+ 		if (status) {
+ 			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+@@ -1614,6 +1621,22 @@ static int macb_poll(struct napi_struct
+ 			napi_reschedule(napi);
+ 		} else {
+ 			queue_writel(queue, IER, bp->rx_intr_mask);
++
++			/* In rare cases, packets could have been received in
++			 * the window between the check above and re-enabling
++			 * interrupts. Therefore, a double-check is required
++			 * to avoid losing a wakeup. This can potentially race
++			 * with the interrupt handler doing the same actions
++			 * if an interrupt is raised just after enabling them,
++			 * but this should be harmless.
++			 */
++			status = macb_readl(bp, RSR);
++			if (unlikely(status)) {
++				queue_writel(queue, IDR, bp->rx_intr_mask);
++				if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
++					queue_writel(queue, ISR, MACB_BIT(RCOMP));
++				napi_schedule(napi);
++			}
+ 		}
  	}
- }
  
--static void intel_plane_disable_noatomic(struct intel_crtc *crtc,
--					 struct intel_plane *plane)
-+void intel_plane_disable_noatomic(struct intel_crtc *crtc,
-+				  struct intel_plane *plane)
- {
- 	struct drm_i915_private *dev_priv = to_i915(crtc->base.dev);
- 	struct intel_crtc_state *crtc_state =
-@@ -13217,6 +13217,7 @@ intel_modeset_setup_hw_state(struct drm_
- 		vlv_wm_sanitize(dev_priv);
- 	} else if (DISPLAY_VER(dev_priv) >= 9) {
- 		skl_wm_get_hw_state(dev_priv);
-+		skl_wm_sanitize(dev_priv);
- 	} else if (HAS_PCH_SPLIT(dev_priv)) {
- 		ilk_wm_get_hw_state(dev_priv);
- 	}
---- a/drivers/gpu/drm/i915/display/intel_display.h
-+++ b/drivers/gpu/drm/i915/display/intel_display.h
-@@ -629,6 +629,8 @@ void intel_plane_unpin_fb(struct intel_p
- struct intel_encoder *
- intel_get_crtc_new_encoder(const struct intel_atomic_state *state,
- 			   const struct intel_crtc_state *crtc_state);
-+void intel_plane_disable_noatomic(struct intel_crtc *crtc,
-+				  struct intel_plane *plane);
- 
- unsigned int intel_surf_alignment(const struct drm_framebuffer *fb,
- 				  int color_plane);
---- a/drivers/gpu/drm/i915/intel_pm.c
-+++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -6681,6 +6681,74 @@ void skl_wm_get_hw_state(struct drm_i915
- 	dbuf_state->enabled_slices = dev_priv->dbuf.enabled_slices;
- }
- 
-+static bool skl_dbuf_is_misconfigured(struct drm_i915_private *i915)
-+{
-+	const struct intel_dbuf_state *dbuf_state =
-+		to_intel_dbuf_state(i915->dbuf.obj.state);
-+	struct skl_ddb_entry entries[I915_MAX_PIPES] = {};
-+	struct intel_crtc *crtc;
-+
-+	for_each_intel_crtc(&i915->drm, crtc) {
-+		const struct intel_crtc_state *crtc_state =
-+			to_intel_crtc_state(crtc->base.state);
-+
-+		entries[crtc->pipe] = crtc_state->wm.skl.ddb;
-+	}
-+
-+	for_each_intel_crtc(&i915->drm, crtc) {
-+		const struct intel_crtc_state *crtc_state =
-+			to_intel_crtc_state(crtc->base.state);
-+		u8 slices;
-+
-+		slices = skl_compute_dbuf_slices(crtc, dbuf_state->active_pipes,
-+						 dbuf_state->joined_mbus);
-+		if (dbuf_state->slices[crtc->pipe] & ~slices)
-+			return true;
-+
-+		if (skl_ddb_allocation_overlaps(&crtc_state->wm.skl.ddb, entries,
-+						I915_MAX_PIPES, crtc->pipe))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+void skl_wm_sanitize(struct drm_i915_private *i915)
-+{
-+	struct intel_crtc *crtc;
-+
-+	/*
-+	 * On TGL/RKL (at least) the BIOS likes to assign the planes
-+	 * to the wrong DBUF slices. This will cause an infinite loop
-+	 * in skl_commit_modeset_enables() as it can't find a way to
-+	 * transition between the old bogus DBUF layout to the new
-+	 * proper DBUF layout without DBUF allocation overlaps between
-+	 * the planes (which cannot be allowed or else the hardware
-+	 * may hang). If we detect a bogus DBUF layout just turn off
-+	 * all the planes so that skl_commit_modeset_enables() can
-+	 * simply ignore them.
-+	 */
-+	if (!skl_dbuf_is_misconfigured(i915))
-+		return;
-+
-+	drm_dbg_kms(&i915->drm, "BIOS has misprogrammed the DBUF, disabling all planes\n");
-+
-+	for_each_intel_crtc(&i915->drm, crtc) {
-+		struct intel_plane *plane = to_intel_plane(crtc->base.primary);
-+		const struct intel_plane_state *plane_state =
-+			to_intel_plane_state(plane->base.state);
-+		struct intel_crtc_state *crtc_state =
-+			to_intel_crtc_state(crtc->base.state);
-+
-+		if (plane_state->uapi.visible)
-+			intel_plane_disable_noatomic(crtc, plane);
-+
-+		drm_WARN_ON(&i915->drm, crtc_state->active_planes != 0);
-+
-+		memset(&crtc_state->wm.skl.ddb, 0, sizeof(crtc_state->wm.skl.ddb));
-+	}
-+}
-+
- static void ilk_pipe_wm_get_hw_state(struct intel_crtc *crtc)
- {
- 	struct drm_device *dev = crtc->base.dev;
---- a/drivers/gpu/drm/i915/intel_pm.h
-+++ b/drivers/gpu/drm/i915/intel_pm.h
-@@ -48,6 +48,7 @@ void skl_pipe_wm_get_hw_state(struct int
- 			      struct skl_pipe_wm *out);
- void g4x_wm_sanitize(struct drm_i915_private *dev_priv);
- void vlv_wm_sanitize(struct drm_i915_private *dev_priv);
-+void skl_wm_sanitize(struct drm_i915_private *dev_priv);
- bool intel_can_enable_sagv(struct drm_i915_private *dev_priv,
- 			   const struct intel_bw_state *bw_state);
- void intel_sagv_pre_plane_update(struct intel_atomic_state *state);
 
 
