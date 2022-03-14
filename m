@@ -2,70 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56727C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 23:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50845C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 23:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343715AbiCNXhM (ORCPT
+        id S1343719AbiCNXjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 19:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
+        Mon, 14 Mar 2022 19:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343707AbiCNXhK (ORCPT
+        with ESMTP id S234879AbiCNXjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 19:37:10 -0400
-X-Greylist: delayed 1253 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 16:35:59 PDT
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [142.44.231.140])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919C813F63;
-        Mon, 14 Mar 2022 16:35:59 -0700 (PDT)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nTtph-00BJxN-UC; Mon, 14 Mar 2022 23:10:34 +0000
-Date:   Mon, 14 Mar 2022 23:10:33 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Hao Luo <haoluo@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Tejun Heo <tj@kernel.org>, joshdon@google.com, sdf@google.com,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v1 1/9] bpf: Add mkdir, rmdir, unlink syscalls
- for prog_bpf_syscall
-Message-ID: <Yi/LaZ5id4ZjqFmL@zeniv-ca.linux.org.uk>
-References: <20220225234339.2386398-1-haoluo@google.com>
- <20220225234339.2386398-2-haoluo@google.com>
- <YiwXnSGf9Nb79wnm@zeniv-ca.linux.org.uk>
- <CA+khW7g+T2sAkP1aycmts_82JKWgYk5Y0ZJp+EvjFUyNY8W_5w@mail.gmail.com>
+        Mon, 14 Mar 2022 19:39:46 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4771260A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 16:38:34 -0700 (PDT)
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+        by gnuweeb.org (Postfix) with ESMTPSA id 4B3347E30E
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 23:38:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1647301113;
+        bh=wIqQvh6SBH7/sGVClwpwSqfcrSrcjWMeXd2Jqdos78Q=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=SF94SUvS8LJUWE9hy25eQlftDp0lAuo2+vUJFf3uWZwImg4PZ56TeTK8Whi3Zsgpq
+         LTa5pm9Nvr3y3G2Jrm+dX1eECGorxNWssXdOHFOz24MntWpiStPDUsAM2jcgAdTYOr
+         cXHw1zbaSVRzplfbBeEAexhMHYWkZh/UZ72NTFUZoZEXg0ltyb69VcMEHbhqLdWGrA
+         CnSAFUkjCjnCGjuMKDSGj28/Mx8c7vH6DqSw8NMuygo68kDCEd5WhJK+CB+YHrfeLA
+         DXosJw4uhLGQLrlg4AbIaVREjYJf5GUhkCTQtW32bHTRdLd3DKJl/cFh2RJ3AqE376
+         A2OdCZWmaUo4g==
+Received: by mail-lf1-f43.google.com with SMTP id n19so29986316lfh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 16:38:33 -0700 (PDT)
+X-Gm-Message-State: AOAM533dYoqHQAiBoBDytXE02yHCrA++AUN80Wn51U+ocxTtiYd+FglA
+        KqzQVo1v9SA7E/pcvhwX93agk6s167N6RozNZfQ=
+X-Google-Smtp-Source: ABdhPJzjbTe0C+EB0JCEH8nKklBaChHKoWAjB6pm0Yx3tVZK6ZlpNE/YAxy/WZLl0PWZHm/FmYeIcj6s+9bIXMcWQJw=
+X-Received: by 2002:a05:6512:3f90:b0:446:6b95:24aa with SMTP id
+ x16-20020a0565123f9000b004466b9524aamr15278707lfa.610.1647301111209; Mon, 14
+ Mar 2022 16:38:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+khW7g+T2sAkP1aycmts_82JKWgYk5Y0ZJp+EvjFUyNY8W_5w@mail.gmail.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+References: <202203091430.MLY27Bif-lkp@intel.com> <20220309065849.96165-1-alviro.iskandar@gnuweeb.org>
+ <Yi+8ft7yXrNN4+Yx@dev-arch.thelio-3990X>
+In-Reply-To: <Yi+8ft7yXrNN4+Yx@dev-arch.thelio-3990X>
+From:   Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Date:   Tue, 15 Mar 2022 06:38:19 +0700
+X-Gmail-Original-Message-ID: <CAOG64qNUd12UaSNYax5tnZh5uOnqjmiiSc9HxTfTEU4w5HPvXA@mail.gmail.com>
+Message-ID: <CAOG64qNUd12UaSNYax5tnZh5uOnqjmiiSc9HxTfTEU4w5HPvXA@mail.gmail.com>
+Subject: Re: [PATCH] ASoC: atmel: mchp-pdmc: Fix `-Wpointer-bool-conversion` warning
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Nugraha <richiisei@gmail.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 10:07:31AM -0700, Hao Luo wrote:
-> Hello Al,
+On Tue, Mar 15, 2022 at 5:07 AM Nathan Chancellor wrote:
+> Hi Alviro,
+[...]
+>
+> I would recommend removing these and just setting those values via git
+> send-email flags. In other words:
+>
+> git send-email --to "..." --cc "..." --cc "..." <path to .patch>
+>
+> and so on. It can cause a lot of spam if this patch is ever backported
+> or needed in other trees.
 
-> > In which contexts can those be called?
-> >
-> 
-> In a sleepable context. The plan is to introduce a certain tracepoints
-> as sleepable, a program that attaches to sleepable tracepoints is
-> allowed to call these functions. In particular, the first sleepable
-> tracepoint introduced in this patchset is one at the end of
-> cgroup_mkdir(). Do you have any advices?
+Fixed.
 
-Yes - don't do it, unless you really want a lot of user-triggerable
-deadlocks.
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Link: https://lore.kernel.org/lkml/202203091430.MLY27Bif-lkp@intel.com
+> > Fixes: 50291652af5269813baa6024eb0e81b5f0bbb451 ("ASoC: atmel: mchp-pdmc: add PDMC driver")
+>
+> This should be simplified to:
+>
+> Fixes: 50291652af52 ("ASoC: atmel: mchp-pdmc: add PDMC driver")
+>
+> I don't think the automated checkers will complain about that but the
+> short form is preferred.
 
-Pathname resolution is not locking-agnostic.  In particular, you can't
-do it if you are under any ->i_rwsem, whether it's shared or exclusive.
-That includes cgroup_mkdir() callchains.  And if the pathname passed
-to these functions will have you walk through the parent directory,
-you would get screwed (e.g. if the next component happens to be
-inexistent, triggering a lookup, which takes ->i_rwsem shared).
+Fixed.
+
+> > Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+>
+> Thanks a lot for the patch!
+>
+> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+>
+> I don't know if those nits are worth resending but I do not see this
+> applied to Mark's tree yet. It might have gotten lost because this was
+> sent as a reply to the build report, rather than its own thread, which
+> has caused issues for me in the past:
+>
+> https://lore.kernel.org/r/20210903162639.GM4932@sirena.org.uk/
+>
+> If there is no action on this patch in the next couple of days, please
+> consider resending with the above nits addressed with Codrin's tag and
+> my tag.
+
+Will address those. Thanks for the review.
+
+-- Viro
