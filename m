@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC36C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C31C35273
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242086AbiCNM2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        id S242118AbiCNM27 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243644AbiCNMVG (ORCPT
+        with ESMTP id S243615AbiCNMVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:06 -0400
+        Mon, 14 Mar 2022 08:21:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13E354FB5;
-        Mon, 14 Mar 2022 05:16:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A4C35245;
+        Mon, 14 Mar 2022 05:16:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6766B60C77;
-        Mon, 14 Mar 2022 12:16:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE79C340E9;
-        Mon, 14 Mar 2022 12:16:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFF1A60C72;
+        Mon, 14 Mar 2022 12:16:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8FB1C340E9;
+        Mon, 14 Mar 2022 12:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260192;
-        bh=q6225OgmNK7kllOTZPGgFL9ixZv/nU3ERVzIB1tEN58=;
+        s=korg; t=1647260187;
+        bh=eGzBZgdQcdiSVjCSR4mr2bCxnxn8WjIU+tGN2s5k9VE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TIQPeqLDBZqh1IKZAK9dFGSyYgbxaIvTCIr/GITR48vixGd61wNdBi2eiRtR35xfZ
-         +IpJFL/WsDJ0xfZjYum7j+3/EjNX1upD3g65xthIm9lc0S2mhnOGa3x6f4xSjFp+9Z
-         UHCotToxd1MhHzftvnw6gjR3kocB6xsGOLXVRjzU=
+        b=f09BhJCcXZ9KMjsvHGI3XJ2usBKb485inFmZ63aHb9jecpFudQ1QErNlHeAQvWT9d
+         wLI6Fsj4LZk5V2FB9lIPfMV5qHu5GGrOm3us0goL1lkWK+8toLOvKhhC0Chh9J8foX
+         T3yWctBmOPJrakHLkf0t0sPFCEXT2g3fSdBPbPfw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anton Romanov <romanton@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 065/121] kvm: x86: Disable KVM_HC_CLOCK_PAIRING if tsc is in always catchup mode
-Date:   Mon, 14 Mar 2022 12:54:08 +0100
-Message-Id: <20220314112745.939591232@linuxfoundation.org>
+Subject: [PATCH 5.16 081/121] tracing: Ensure trace buffer is at least 4096 bytes large
+Date:   Mon, 14 Mar 2022 12:54:24 +0100
+Message-Id: <20220314112746.382534123@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,47 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Romanov <romanton@google.com>
+From: Sven Schnelle <svens@linux.ibm.com>
 
-[ Upstream commit 3a55f729240a686aa8af00af436306c0cd532522 ]
+[ Upstream commit 7acf3a127bb7c65ff39099afd78960e77b2ca5de ]
 
-If vcpu has tsc_always_catchup set each request updates pvclock data.
-KVM_HC_CLOCK_PAIRING consumers such as ptp_kvm_x86 rely on tsc read on
-host's side and do hypercall inside pvclock_read_retry loop leading to
-infinite loop in such situation.
+Booting the kernel with 'trace_buf_size=1' give a warning at
+boot during the ftrace selftests:
 
-v3:
-    Removed warn
-    Changed return code to KVM_EFAULT
-v2:
-    Added warn
+[    0.892809] Running postponed tracer tests:
+[    0.892893] Testing tracer function:
+[    0.901899] Callback from call_rcu_tasks_trace() invoked.
+[    0.983829] Callback from call_rcu_tasks_rude() invoked.
+[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
+[    1.091944] Callback from call_rcu_tasks() invoked.
+[    1.097695] PASSED
+[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
+[    1.353474] ------------[ cut here ]------------
+[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
 
-Signed-off-by: Anton Romanov <romanton@google.com>
-Message-Id: <20220216182653.506850-1-romanton@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Therefore enforce a minimum of 4096 bytes to make the selftest pass.
+
+Link: https://lkml.kernel.org/r/20220214134456.1751749-1-svens@linux.ibm.com
+
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ kernel/trace/trace.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index c6eb3e45e3d8..e8f495b9ae10 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8770,6 +8770,13 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
- 	if (clock_type != KVM_CLOCK_PAIRING_WALLCLOCK)
- 		return -KVM_EOPNOTSUPP;
- 
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 24683115eade..5816ad79cce8 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -1472,10 +1472,12 @@ static int __init set_buf_size(char *str)
+ 	if (!str)
+ 		return 0;
+ 	buf_size = memparse(str, &str);
+-	/* nr_entries can not be zero */
+-	if (buf_size == 0)
+-		return 0;
+-	trace_buf_size = buf_size;
 +	/*
-+	 * When tsc is in permanent catchup mode guests won't be able to use
-+	 * pvclock_read_retry loop to get consistent view of pvclock
++	 * nr_entries can not be zero and the startup
++	 * tests require some buffer space. Therefore
++	 * ensure we have at least 4096 bytes of buffer.
 +	 */
-+	if (vcpu->arch.tsc_always_catchup)
-+		return -KVM_EOPNOTSUPP;
-+
- 	if (!kvm_get_walltime_and_clockread(&ts, &cycle))
- 		return -KVM_EOPNOTSUPP;
- 
++	trace_buf_size = max(4096UL, buf_size);
+ 	return 1;
+ }
+ __setup("trace_buf_size=", set_buf_size);
 -- 
 2.34.1
 
