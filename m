@@ -2,109 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46ECDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:35:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F1CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243464AbiCNRgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 13:36:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        id S243475AbiCNRhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243460AbiCNRgm (ORCPT
+        with ESMTP id S243330AbiCNRhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 13:36:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718A99FC7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:35:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647279332; x=1678815332;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0V5PxXs4rysOGClpalbI+15QZlt52WVH1UhdqXGq8Rs=;
-  b=T26a45+LqR6cxCo2J59SGDKljEAu5oYprnmvUFXDTpDHDemrXbs/Hv8p
-   vM3JD9IqsZ42jRow0cJOMLArwUCitlebxO2podK7V0hDXQwDp1bdQajEi
-   G0V1tAAw3hwAK7u8GIFKIYRQZmg2EdnNiN96lFW/6zFoIgUe6IKx5pkQI
-   EoUTJwCicebgY3HsG4HZX/LHXypjVMG3ON7ZmjdrPvEk6gZiP1un+9Dzc
-   7svn33jrs49gFf8v82rJjEt7m3EsFGwfVLr1WWTmKWXjopQTRBzXLfzB+
-   GNyirNvWoPoOP5SzS5KMa4kOoiPrjJUYxzuuRRoG274pVNkD/AqTpkjqB
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="253654307"
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="253654307"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 10:35:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="713805287"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 14 Mar 2022 10:35:20 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nTob8-000A4j-1l; Mon, 14 Mar 2022 17:35:10 +0000
-Date:   Tue, 15 Mar 2022 01:34:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     zhengding chen <chenzhengding@oppo.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.10
- 2348/9999] drivers/android/binder.c:1373:70: sparse: sparse: Using plain
- integer as NULL pointer
-Message-ID: <202203150146.7GOxXHYj-lkp@intel.com>
+        Mon, 14 Mar 2022 13:37:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B2C9FC1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:35:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2500BB80EA8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:35:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E3E3C340E9;
+        Mon, 14 Mar 2022 17:35:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647279351;
+        bh=23aGtBZ+roTpnSTpxgU+DVYehJCSbai+m5P8j3ght4o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aS96RNBHOWtZ2Oa9UTMul1NAoszWh1lDejKFfG3GocyL5aZTUWWXW3pyaKmjckJY/
+         Nf2GH2QdHuP5ms3Ad4coPZ2kz05CVoVxdfsKhYkBp7IT7pTY9juZZlbtJl/51nDBHx
+         wIj3Uuy2qQfXCLJCO07Aq/FhqA806LDolCnAIkAc=
+Date:   Mon, 14 Mar 2022 18:35:39 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
+Cc:     Forest Bond <forest@alittletooquiet.net>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] staging: vt6656: Remove unused 5GHz support
+Message-ID: <Yi9868MQr4CQLgIV@kroah.com>
+References: <cover.1646935331.git.philipp.g.hortmann@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <cover.1646935331.git.philipp.g.hortmann@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10
-head:   f3ca80cced4e447653b51be876c026c337d84702
-commit: 35014985c266face161f6d107f8d8338e02a0b2d [2348/9999] ANDROID: vendor_hooks: Add hooks for binder proc transaction
-config: x86_64-randconfig-s021 (https://download.01.org/0day-ci/archive/20220315/202203150146.7GOxXHYj-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/35014985c266face161f6d107f8d8338e02a0b2d
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10
-        git checkout 35014985c266face161f6d107f8d8338e02a0b2d
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/android/
+On Thu, Mar 10, 2022 at 07:54:02PM +0100, Philipp Hortmann wrote:
+> vt6655 (PCI) and vt6656 (USB) do only support 2.4GHz band and not 5GHz band.
+> Both drivers do allow only one vendor id and device id.
+> So no other devices are covered by those drivers.
+> Because of this the following priv->rf_type cannot occure:
+> RF_AIROHA7230
+> RF_VT3342A0
+> 
+> ---
+> Tested with vt6656 on mini PCIe card (connected over USB)
+> which is using rf_type: RF_VT3226D0 (2.4GHz only)
+> Tested with vt6656 as USB Plugin Module
+> which is using rf_type: RF_AL2230S (2.4GHz only)
+> In order to combine vt665x infrastructure it is important
+> that vt6655 is also not using this code. (Patch already provided)
+> vt6655 on mini PCI Module is using
+> rf_type: RF_AIROHA (2.4GHz only)
+> 
+> Philipp Hortmann (5):
+>   staging: vt6656: Remove unused rf_type in channel.c
+>   staging: vt6656: Remove unused rf_type in baseband.c
+>   staging: vt6656: Remove unused rf_type in rf.c; top level
+>   staging: vt6656: Remove unused rf_type in rf.c; unused variables
+>   staging: vt6656: Remove unused rf_type in card.c
+> 
+>  drivers/staging/vt6656/baseband.c |  16 +-
+>  drivers/staging/vt6656/card.c     |  16 --
+>  drivers/staging/vt6656/channel.c  |  96 +------
+>  drivers/staging/vt6656/rf.c       | 413 +-----------------------------
+>  4 files changed, 10 insertions(+), 531 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+If you could send follow-on patchs for the kernel test bot warnings,
+that would be great.
 
+thanks,
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/android/binder.c:1373:70: sparse: sparse: Using plain integer as NULL pointer
-   drivers/android/binder.c:2508:41: sparse: sparse: Using plain integer as NULL pointer
-   drivers/android/binder.c:4580:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted __poll_t @@     got int @@
-   drivers/android/binder.c:4580:24: sparse:     expected restricted __poll_t
-   drivers/android/binder.c:4580:24: sparse:     got int
-
-vim +1373 drivers/android/binder.c
-
-  1363	
-  1364	/**
-  1365	 * binder_free_ref() - free the binder_ref
-  1366	 * @ref:	ref to free
-  1367	 *
-  1368	 * Free the binder_ref. Free the binder_node indicated by ref->node
-  1369	 * (if non-NULL) and the binder_ref_death indicated by ref->death.
-  1370	 */
-  1371	static void binder_free_ref(struct binder_ref *ref)
-  1372	{
-> 1373		trace_android_vh_binder_del_ref(ref->proc ? ref->proc->tsk : 0, ref->data.desc);
-  1374		if (ref->node)
-  1375			binder_free_node(ref->node);
-  1376		kfree(ref->death);
-  1377		kfree(ref);
-  1378	}
-  1379	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+greg k-h
