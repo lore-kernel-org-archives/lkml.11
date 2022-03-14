@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E308FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E678C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241371AbiCNMZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
+        id S241444AbiCNMZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241879AbiCNMSc (ORCPT
+        with ESMTP id S241968AbiCNMSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:18:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 786D41FCC1;
-        Mon, 14 Mar 2022 05:13:11 -0700 (PDT)
+        Mon, 14 Mar 2022 08:18:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F1641FAC;
+        Mon, 14 Mar 2022 05:13:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9FDB8CE1268;
-        Mon, 14 Mar 2022 12:13:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D2CC340EC;
-        Mon, 14 Mar 2022 12:13:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A49336097A;
+        Mon, 14 Mar 2022 12:13:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B276C340E9;
+        Mon, 14 Mar 2022 12:13:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259987;
-        bh=O0ug6X5FmoZy+XnlL4UfoS/smZJsR4Ea5iDiujXvNvg=;
+        s=korg; t=1647260004;
+        bh=iFsjWznm3SrnPCRqCcEAQ2tUS6+ySlC58zxri+CXmAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CNNFhF5NgmPTuYq2DXNRQNpDuHvhcceYdfHgY/okm59uqTLtHVrGlEynVfnLAyTOW
-         IJHIUv9SX8gNmhRVAxHxTfXW0Nm6t/7rZCeXtxxt3uGyPfZ0k5gy4/4wHJ98GEntO0
-         Lym7ywuHrJpDPtBSzAOfCIZ4wrcRywh4QYEd7uEY=
+        b=eNQLQu85Spn8kqRiIR9ebr6CzWR4Eaa8IxqXYNzMS/GORwmcYPMyVzbTUbnCBpTwa
+         37ev6uNhXkPJ5F6h+HlkmlF02Mwqu8aPK/uJo/IP7K8ZTZNKANNP0x5a8X/7c/USVs
+         +ExDthwkI3m+Qjx8QogGY/USDPsffog4ykZcqcew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 008/121] soc: mediatek: mt8192-mmsys: Fix dither to dsi0 paths input sel
-Date:   Mon, 14 Mar 2022 12:53:11 +0100
-Message-Id: <20220314112744.357937888@linuxfoundation.org>
+Subject: [PATCH 5.16 030/121] drm/sun4i: mixer: Fix P010 and P210 format numbers
+Date:   Mon, 14 Mar 2022 12:53:33 +0100
+Message-Id: <20220314112744.971337865@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -54,50 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit c432cd598a185afefba1ac3b0ee226f222f71341 ]
+[ Upstream commit 9470c29faa91c804aa04de4c10634bf02462bfa5 ]
 
-In commit d687e056a18f ("soc: mediatek: mmsys: Add mt8192 mmsys routing table"),
-the mmsys routing table for mt8192 was introduced but the input selector
-for DITHER->DSI0 has no value assigned to it.
+It turns out that DE3 manual has inverted YUV and YVU format numbers for
+P010 and P210. Invert them.
 
-This means that we are clearing bit 0 instead of setting it, blocking
-communication between these two blocks; due to that, any display that
-is connected to DSI0 will not work, as no data will go through.
-The effect of that issue is that, during bootup, the DRM will block for
-some time, while atomically waiting for a vblank that never happens;
-later, the situation doesn't get better, leaving the display in a
-non-functional state.
+This was tested by playing video decoded to P010 and additionally
+confirmed by looking at BSP driver source.
 
-To fix this issue, fix the route entry in the table by assigning the
-dither input selector to MT8192_DISP_DSI0_SEL_IN.
-
-Fixes: d687e056a18f ("soc: mediatek: mmsys: Add mt8192 mmsys routing table")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Tested-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Link: https://lore.kernel.org/r/20220128142056.359900-1-angelogioacchino.delregno@collabora.com
-Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
+Fixes: 169ca4b38932 ("drm/sun4i: Add separate DE3 VI layer formats")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220228181436.1424550-1-jernej.skrabec@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/mediatek/mt8192-mmsys.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/sun4i/sun8i_mixer.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/mediatek/mt8192-mmsys.h b/drivers/soc/mediatek/mt8192-mmsys.h
-index 6f0a57044a7b..6aae0b12b6ff 100644
---- a/drivers/soc/mediatek/mt8192-mmsys.h
-+++ b/drivers/soc/mediatek/mt8192-mmsys.h
-@@ -53,7 +53,8 @@ static const struct mtk_mmsys_routes mmsys_mt8192_routing_table[] = {
- 		MT8192_AAL0_SEL_IN_CCORR0
- 	}, {
- 		DDP_COMPONENT_DITHER, DDP_COMPONENT_DSI0,
--		MT8192_DISP_DSI0_SEL_IN, MT8192_DSI0_SEL_IN_DITHER0
-+		MT8192_DISP_DSI0_SEL_IN, MT8192_DSI0_SEL_IN_DITHER0,
-+		MT8192_DSI0_SEL_IN_DITHER0
- 	}, {
- 		DDP_COMPONENT_RDMA0, DDP_COMPONENT_COLOR0,
- 		MT8192_DISP_RDMA0_SOUT_SEL, MT8192_RDMA0_SOUT_COLOR0,
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 145833a9d82d..5b3fbee18671 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -111,10 +111,10 @@
+ /* format 13 is semi-planar YUV411 VUVU */
+ #define SUN8I_MIXER_FBFMT_YUV411	14
+ /* format 15 doesn't exist */
+-/* format 16 is P010 YVU */
+-#define SUN8I_MIXER_FBFMT_P010_YUV	17
+-/* format 18 is P210 YVU */
+-#define SUN8I_MIXER_FBFMT_P210_YUV	19
++#define SUN8I_MIXER_FBFMT_P010_YUV	16
++/* format 17 is P010 YVU */
++#define SUN8I_MIXER_FBFMT_P210_YUV	18
++/* format 19 is P210 YVU */
+ /* format 20 is packed YVU444 10-bit */
+ /* format 21 is packed YUV444 10-bit */
+ 
 -- 
 2.34.1
 
