@@ -2,531 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343552AbiCNWp7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 18:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43872 "EHLO
+        id S240218AbiCNWtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 18:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245756AbiCNWpc (ORCPT
+        with ESMTP id S229751AbiCNWtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 18:45:32 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F6E33EA0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:44:20 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: dmitry.osipenko)
-        with ESMTPSA id 2A6E51F42F1D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647297859;
-        bh=X2CbEKyvbT/dkl1bAr69mkzlqvlSL4rVXzcbvs5f6es=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RHO5OaemcraKv0losbbfZ+2vEZZCG0uacPmbR6sK7pdaPfsXsv0Pw/hNXpqatB7ES
-         r3p13owNyRlT6cTzxLU8f2BIb15iEy8F1eZYpxWi9x0zmvyqEh9Nfd1+VGx28Kx8eq
-         DTf9GAkHS0wel6B9c8eDzvYwPwVjrXDcAcgCvf4V/rjQbPlFfSghbyJY9mVg096c4u
-         Nf+5WCqmrKCsK5cJeFMgawgQrnQAW/QWqnOkpyX6DlDOy/fq5iPexDnxA75Gq7NZ5J
-         9iqNWiUqvzNeiSbXbSWvOc0CicAXkuso2U20RSkTGyAMKJPmiAMyY9n88DmtHt795e
-         wXFRwH003WYeA==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        virtualization@lists.linux-foundation.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Subject: [PATCH v2 7/8] drm/virtio: Support memory shrinking
-Date:   Tue, 15 Mar 2022 01:42:52 +0300
-Message-Id: <20220314224253.236359-8-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
-References: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
+        Mon, 14 Mar 2022 18:49:31 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B30DF87
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:48:20 -0700 (PDT)
+Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22EL4nBq031093;
+        Mon, 14 Mar 2022 22:48:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=pps0720;
+ bh=SShXG4SVKjCGHUhJmzQhkK4Hbzhr8vmDL7gV0ix8YBc=;
+ b=Udh+RQ8KNHZE0/2AO9WGz1aRSZK3jV2NHb9qeDeFDfB/e2BlUnJrsxQY0UARpoPw5p3D
+ cfuL4gAqYMqq4xX02jZkYq/o2zmo9Wi1VkWgWEUDex/T9PMdDniIV8UFbrvfOx2xLjo0
+ fgB7g/2RSzkM/b24e6abPNTJc7Zkl+y2miSAVA/FT5gkXCRaCl/0+KTKUO2VWAldsFaG
+ HwQ2fXH+6ZLSFrQT9B1b+fEI+iXfnz0/UtsuDCpVnaJ2Hkvpn4Q20gbo1jG3VeGVU18J
+ 0o8KL1KmVnKFAotxosNOq2Ru4Mgv3x9Y8f3BvszvfGGrJ7vRMqlAytY0z2uGQ3IGQdIG ww== 
+Received: from g2t2352.austin.hpe.com (g2t2352.austin.hpe.com [15.233.44.25])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3et922aqcn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 22:48:01 +0000
+Received: from G2W6310.americas.hpqcorp.net (g2w6310.austin.hp.com [16.197.64.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by g2t2352.austin.hpe.com (Postfix) with ESMTPS id 97D4962;
+        Mon, 14 Mar 2022 22:47:59 +0000 (UTC)
+Received: from G1W8108.americas.hpqcorp.net (2002:10c1:483c::10c1:483c) by
+ G2W6310.americas.hpqcorp.net (2002:10c5:4034::10c5:4034) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.23; Mon, 14 Mar 2022 22:47:59 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (15.241.52.12) by
+ G1W8108.americas.hpqcorp.net (16.193.72.60) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.23 via Frontend Transport; Mon, 14 Mar 2022 22:47:59 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lcnADffy5PzEJGiVvajBe4+8N38/y0AbPHJ7TyvcyJVt96+yoWiYcyN3AGyxHJpGvkvVK2eIeLxJ8KRTJxYoC7f71W0/h+ut/EF5x4zUrm8tTq2q3MH4k+tJW5vp1k8Yum/JHEnQ5OR8iyAOZwTbpqLPrluV1sy1C3EstOws9n4OuZSZdTZ0xGnToETLy+Rt16pOTANSrp8ox4+9OahvbmdO0uauU01x8uPl0Iwtw3hbnLdj3bX32wYslPWuFUmYBLl6ziq5OHm40CJT7WI1amoB58erjEFRVfqastwD7fBOdTHEi7bqjqHq65KjO4WGyJXtn01BB8UCc7RRttAiuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SShXG4SVKjCGHUhJmzQhkK4Hbzhr8vmDL7gV0ix8YBc=;
+ b=Z39KMMVlpM8SWvK/BdMvuRJRwjpTtGWmxnPrtds/gKJ/MpVtN75h3E0Vdv/ewYn1BFGS0mytBUZKSzUFVJ6rJ7hadcAjykPnFhD2ifz0QEGmDw6uRrcE6/NQa1HQQwa+11Q2HHnbpmbOb8d23Ayeb710wQ50kN4R6mvS9zHQO/D92c/b0cEc8yY42nGjn3ANIlt24aGE/fKLgEelvJwUEyflkcK9JoeDGgutTm1KiiQBWY6eKSwHkDUGtDSkz03DDy919ju0waFAm4VUnLZ9HqKupedJEq0ti/zWRCI8j2mfdAYfbXdePkrKX0XQeurieZWuYPkZAVvGjhVi71e+yw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
+ header.d=hpe.com; arc=none
+Received: from DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:8:4f::17) by
+ SJ0PR84MB1484.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:a03:432::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.28; Mon, 14 Mar
+ 2022 22:47:57 +0000
+Received: from DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::f9a2:fe09:a133:e21e]) by DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::f9a2:fe09:a133:e21e%7]) with mapi id 15.20.5061.028; Mon, 14 Mar 2022
+ 22:47:57 +0000
+From:   "Verdun, Jean-Marie" <verdun@hpe.com>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        "Hawkins, Nick" <nick.hawkins@hpe.com>
+CC:     Russell King <linux@armlinux.org.uk>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Olof Johansson <olof@lixom.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] [v1] arch: arm: configs: gxp_defconfig
+Thread-Topic: [PATCH] [v1] arch: arm: configs: gxp_defconfig
+Thread-Index: AQHYI2Pt+fLVSCbpEEG4Jh+m/2IR7ayWuYMAgCh1fQA=
+Date:   Mon, 14 Mar 2022 22:47:57 +0000
+Message-ID: <9FE3F625-39FC-4ED7-A2CC-567EF0181886@hpe.com>
+References: <nick.hawkins@hpe.com>
+ <20220216183704.42084-1-nick.hawkins@hpe.com>
+ <CAK8P3a2Ryjr738XgLsGQngvc7j=Kk620LMjWpu-_HiwdK_fX4Q@mail.gmail.com>
+In-Reply-To: <CAK8P3a2Ryjr738XgLsGQngvc7j=Kk620LMjWpu-_HiwdK_fX4Q@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7de6534e-03bd-49fd-c475-08da060caf51
+x-ms-traffictypediagnostic: SJ0PR84MB1484:EE_
+x-microsoft-antispam-prvs: <SJ0PR84MB14846B8530787D90E56442DFD60F9@SJ0PR84MB1484.NAMPRD84.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YGX5zPAekaTHovhLjcbkf7uNAi1jD9NgqhU2fS6WEWFjvib0QcwAvKf9UdvLUfp21KZ722AyB1I5Q2ngiu+9mV65EM+ANffjGgtBsP7GeLR3B6Hh951cxJbUIU9k1PKBKKQ6TqQSEk58xjW/cipEt6tydsitA3cud5QPe/UYcGtKKyrBOe/nkdvhrVr9IJkg6Mst33kaFguCxv1lB+fAuv3Po2TLI1wSkL6smipoljhcuEguMP6mvuTNwywi9SCobZlJx6xZ59Z04Ysq1x7MQWJ64gU0fqXve72wck6RrKyCHPuKmJhHhsaSdOnvrnfdF/g6PmVdHX2/5Gfm/mdT4IuNxAipM+fc04UZ24ZGEV+tm/xe8+SsbzJI22VfSp4ZCTwKGh51GTEKoiJ3Z6hVyOTvztyXPFiDEdB93S1rWrpOgDi9sKWnsxlwtUXHYsqF8OAeOuSRi9juvq4/7wN/gTYrIby/Hy+XklxtjhayZiF+7h7/TBhAAAZZqfJpQi4PnwTSTL0aHD/yve4ghJW/iKxr/Ag2j3srvj5BYL7IGLYEtJEBIvOg0rmlY2YE3ZjRijyXl2bcNeEejDg9ah6QILZX6+J3JJqx5XsbyhYstL4m3wFGkmlX4O9F9RD54BEJU5Xv79OZX7wuuK2jOOziANik3ETw/2yjxIgcr9Xx/VbFvFBIaoB1vd8+tZXzgOM1LKfEMyjZMAsni4AtRrqppOBcAf6ECl8WtpP3xUblW1hxqJHk4tkeL32K8os7m4Rc
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(366004)(110136005)(54906003)(316002)(4326008)(6512007)(122000001)(6636002)(33656002)(6506007)(38100700002)(76116006)(64756008)(8676002)(6486002)(66946007)(66556008)(66476007)(91956017)(86362001)(71200400001)(508600001)(66446008)(5660300002)(36756003)(8936002)(2906002)(82960400001)(83380400001)(186003)(2616005)(38070700005)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cDdXd09FR1p6NEVRQ3diVXNOWittdUNwR0ZSWm9pNHJWYnRWYUIwZ04rOFB0?=
+ =?utf-8?B?R3FTSVlJc283UVdSbk9WSzNBOHVMT0I3aXZZZGlxWGVzWFNpa0taVFFSaUoz?=
+ =?utf-8?B?a1M3dXJCWVA2N0ZTRzA4TG5WZHh2MGhHR09lTWozM2FTZ2RtWnpDQmZ1anhp?=
+ =?utf-8?B?dUdQckhWNFJPV3pJc2NsaThTbUVURXpPakZXcCtMaTBaeGNwN29nWWczKzlP?=
+ =?utf-8?B?S29uTkNXMkZpdDV3aEtNbXpjTE9adThIRTFqekpmUkVnSjRybHpiWUtva2Jh?=
+ =?utf-8?B?YmtjT2hJSVoxSUQ0YXFYWnJ5ek8yV0RySWNPTWlRU0U5SjRkTklDcFlmMWJz?=
+ =?utf-8?B?eVU4TjJobXdzSFNMamhvVTVoT3VBcFhod1h1V2RTQUdwNGM5QTlKeTh5Ymsx?=
+ =?utf-8?B?OWcyQ29Oc1FPRUI1cy9nZFpza1k0eTMrcEc4dytpYkQvTU5GWEhoVUNIYnkr?=
+ =?utf-8?B?WGtpelhJbVc5ODVwODUxUHMzVktNYXd4WXF2RStvbFFoMmVZS3ljQjR1VG5D?=
+ =?utf-8?B?YzkvL3oxQXhodVFlN2NtNEp5OVFyS2VkbitxR0hERHZaQTU3QUZFTGlJdWdj?=
+ =?utf-8?B?TCtWSW1iVFZUWU1vY0hOUFJhTE16c3NQRXA1SHFFMkg5djArSkk3VC9OOVd6?=
+ =?utf-8?B?bzlTWnBKbXdwTnAzRlp4ak1iZlNzakdOcUU4eEp3eHRnenZvWUlpT01GUndD?=
+ =?utf-8?B?RSt1SW8yeU54d0MrTGpnaUNlTVkwQmsweURPUHRxRG1ldlY5Q0FkNnhpWGlr?=
+ =?utf-8?B?dEtramo4Y1BwN2VuWkZoRzNGbnFQeW9iYXZaWlhibUc5T05tMFlsWlZ5WCtn?=
+ =?utf-8?B?bVBDVkFkNEEvdWgrejMwL0srYTJMNjVpOVVFcklFMjR2TXVBSm9RWU5nV3NR?=
+ =?utf-8?B?a1E3SjY3dUo3MkhIbEZoYkdjT01RcVp1bXdBYkcwMGNrS0tzTVBIOWM1OURw?=
+ =?utf-8?B?aXYzMHhqa2dyYko1TFk3WU1BbkNObWUrM1lOKzZ0S25adFlHNHQxRUQrd1JY?=
+ =?utf-8?B?TE5xbnJGS1l6ckhEY3pZYlAwQzZHRnplV0w0UUt6Y1pnMHVyY0JaUkYvL2NS?=
+ =?utf-8?B?NEM2VndTY3AxZWFET29oYmlxTWdBQWhSL3BoMXErdThxa3VFUVJKV29uNytq?=
+ =?utf-8?B?UTl0Zk5ObmxYSFlTek1yV3Bxd0NJWGFvWjdNYkt0ai9Bd25CVUFpRHRFQm9C?=
+ =?utf-8?B?NVZMVVJtR0pKSFhtYnQ0RWlYTlE0Z3NMeXl6ZndlWTV2WUdXcEgydmc1TGlm?=
+ =?utf-8?B?MzVBVzdyRlN3VXN6UGlpUWYzT1RyQ3FHYUlsa29GSUJOZ0R5RlZScmhTazVs?=
+ =?utf-8?B?b1R2UHJrbGNJY1llcEZxRHEwS1d5MXFkRjIrbnpsdytQNnZYeStRZnYyeEVo?=
+ =?utf-8?B?NUNBc3VNUmxCdGZBRTNiN0hITTY4YzFnMzJJalVsVjdPRm1YaWZiOExYYXB2?=
+ =?utf-8?B?Tk5CSGgwOWVVT3B0Mno0eGI5eVc5VDdoMjVkRXBiVk9jRWEvbTFGN2JJZWto?=
+ =?utf-8?B?bkhCMDlXRlJwbUZ0VXdCamhWekt4S0JSdmtKMzRrdlN3VkdVbm82UEhrSzdt?=
+ =?utf-8?B?SXV4YjdaQzg1NlM2d1RwN3c3ZjQ1aXJBK2tWbEE3Tk05eUxWMVRjaTI2M1p0?=
+ =?utf-8?B?ZnhUM3VkNlFJZGlMUlVkbHByZlZsejlIWFp2YUk5ellIRkhlNlN1R3BuWEdx?=
+ =?utf-8?B?c2dISlFyNVhDdGZPVHdhbHErYzZqREk4bXhLYWY0Y2xHT1NUeGFWUWVjS2ly?=
+ =?utf-8?B?Q2JudW55dFBxcXpTdTRzeFV1b3ZjbjJranZpQ0luMWpsYzhFN0dwOGl5QXNr?=
+ =?utf-8?B?N0RWdlc4V21JMVhJdU56bTlFWC96NVB4Qlc3SVBTRi9MMStLOEIxMEFhb25Y?=
+ =?utf-8?B?L1hpK21kazkvalplTWxEK2VGQ3pnK0xHZVJIZHoydk9sRmlJdXBFK1hNUEtD?=
+ =?utf-8?B?S3FzWHd0T0srS1FIUFljZ3U1WldIczU2N092Z2wzQitXdUdISTlpYTljVnli?=
+ =?utf-8?B?NkRiR1RJemhqbTFHRWxNYWdVTjB2Q0ZhUU13Qk1iaUpSK2VsWFZqWTEya0p4?=
+ =?utf-8?Q?DIGk6M?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <01C5019FE384414F9CCCE3D6235E5A4F@NAMPRD84.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR84MB1976.NAMPRD84.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7de6534e-03bd-49fd-c475-08da060caf51
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2022 22:47:57.5998
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Hc04Ga+rw9wdbl6lvFwudV6Us7PVG7+XQU/7hNh/bWVkjC85kU6/8OdglygZfQA9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR84MB1484
+X-OriginatorOrg: hpe.com
+X-Proofpoint-GUID: MpqfiZuSNBIj6lGiMaHWF8Ns6brx7qBL
+X-Proofpoint-ORIG-GUID: MpqfiZuSNBIj6lGiMaHWF8Ns6brx7qBL
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-14_14,2022-03-14_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 spamscore=0
+ lowpriorityscore=0 bulkscore=0 phishscore=0 priorityscore=1501
+ suspectscore=0 adultscore=0 malwarescore=0 impostorscore=0 mlxscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203140130
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add memory shrinker support and new madvise IOCTL to the VirtIO-GPU
-driver. Userspace (BO cache manager of Mesa driver) will mark BOs as
-"don't need" using the new IOCTL to let shrinker purge the marked BOs
-on OOM, thus shrinker will lower memory pressure and prevent OOM kills.
-
-For the starter only support of handling guest-side memory pressure is
-implemented.
-
-Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
- drivers/gpu/drm/virtio/virtgpu_drv.h    | 21 +++++-
- drivers/gpu/drm/virtio/virtgpu_gem.c    | 96 +++++++++++++++++++++++++
- drivers/gpu/drm/virtio/virtgpu_ioctl.c  | 37 ++++++++++
- drivers/gpu/drm/virtio/virtgpu_kms.c    | 10 +++
- drivers/gpu/drm/virtio/virtgpu_object.c | 22 ++++++
- drivers/gpu/drm/virtio/virtgpu_plane.c  | 17 ++++-
- drivers/gpu/drm/virtio/virtgpu_vq.c     | 15 ++++
- include/uapi/drm/virtgpu_drm.h          | 14 ++++
- 8 files changed, 229 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.h b/drivers/gpu/drm/virtio/virtgpu_drv.h
-index b2d93cb12ebf..86e5c7b83ec5 100644
---- a/drivers/gpu/drm/virtio/virtgpu_drv.h
-+++ b/drivers/gpu/drm/virtio/virtgpu_drv.h
-@@ -94,6 +94,9 @@ struct virtio_gpu_object {
- 
- 	int uuid_state;
- 	uuid_t uuid;
-+
-+	/* object's backing memory will stay pinned while count > 0 */
-+	unsigned int mem_pin_count;
- };
- #define gem_to_virtio_gpu_obj(gobj) \
- 	container_of((gobj), struct virtio_gpu_object, base.base)
-@@ -261,6 +264,9 @@ struct virtio_gpu_device {
- 	spinlock_t resource_export_lock;
- 	/* protects map state and host_visible_mm */
- 	spinlock_t host_visible_lock;
-+
-+	/* protects all memory management operations */
-+	struct mutex mm_lock;
- };
- 
- struct virtio_gpu_fpriv {
-@@ -274,7 +280,7 @@ struct virtio_gpu_fpriv {
- };
- 
- /* virtgpu_ioctl.c */
--#define DRM_VIRTIO_NUM_IOCTLS 12
-+#define DRM_VIRTIO_NUM_IOCTLS 13
- extern struct drm_ioctl_desc virtio_gpu_ioctls[DRM_VIRTIO_NUM_IOCTLS];
- void virtio_gpu_create_context(struct drm_device *dev, struct drm_file *file);
- 
-@@ -310,6 +316,13 @@ void virtio_gpu_array_put_free(struct virtio_gpu_object_array *objs);
- void virtio_gpu_array_put_free_delayed(struct virtio_gpu_device *vgdev,
- 				       struct virtio_gpu_object_array *objs);
- void virtio_gpu_array_put_free_work(struct work_struct *work);
-+int virtio_gpu_array_validate(struct virtio_gpu_device *vgdev,
-+			      struct virtio_gpu_object_array *objs);
-+int virtio_gpu_gem_host_mem_release(struct virtio_gpu_object *bo);
-+bool virtio_gpu_gem_madvise(struct virtio_gpu_object *obj, int madv);
-+int virtio_gpu_gem_pin(struct virtio_gpu_object *bo);
-+void virtio_gpu_gem_unpin(struct virtio_gpu_object *bo);
-+bool virtio_gpu_gem_is_pinned(struct virtio_gpu_object *bo);
- 
- /* virtgpu_vq.c */
- int virtio_gpu_alloc_vbufs(struct virtio_gpu_device *vgdev);
-@@ -321,6 +334,8 @@ void virtio_gpu_cmd_create_resource(struct virtio_gpu_device *vgdev,
- 				    struct virtio_gpu_fence *fence);
- void virtio_gpu_cmd_unref_resource(struct virtio_gpu_device *vgdev,
- 				   struct virtio_gpu_object *bo);
-+int virtio_gpu_cmd_release_resource(struct virtio_gpu_device *vgdev,
-+				    struct virtio_gpu_object *bo);
- void virtio_gpu_cmd_transfer_to_host_2d(struct virtio_gpu_device *vgdev,
- 					uint64_t offset,
- 					uint32_t width, uint32_t height,
-@@ -483,4 +498,8 @@ void virtio_gpu_vram_unmap_dma_buf(struct device *dev,
- 				   struct sg_table *sgt,
- 				   enum dma_data_direction dir);
- 
-+/* virtgpu_gem_shrinker.c */
-+int virtio_gpu_gem_shrinker_init(struct virtio_gpu_device *vgdev);
-+void virtio_gpu_gem_shrinker_fini(struct virtio_gpu_device *vgdev);
-+
- #endif
-diff --git a/drivers/gpu/drm/virtio/virtgpu_gem.c b/drivers/gpu/drm/virtio/virtgpu_gem.c
-index 48d3c9955f0d..62cdc00f3009 100644
---- a/drivers/gpu/drm/virtio/virtgpu_gem.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_gem.c
-@@ -282,3 +282,99 @@ void virtio_gpu_array_put_free_work(struct work_struct *work)
- 	}
- 	spin_unlock(&vgdev->obj_free_lock);
- }
-+
-+int virtio_gpu_array_validate(struct virtio_gpu_device *vgdev,
-+			      struct virtio_gpu_object_array *objs)
-+{
-+	struct drm_gem_shmem_object *shmem;
-+	int ret = 0;
-+	u32 i;
-+
-+	mutex_lock(&vgdev->mm_lock);
-+
-+	for (i = 0; i < objs->nents; i++) {
-+		shmem = to_drm_gem_shmem_obj(objs->objs[i]);
-+		if (shmem->madv) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&vgdev->mm_lock);
-+
-+	return ret;
-+}
-+
-+bool virtio_gpu_gem_madvise(struct virtio_gpu_object *bo, int madv)
-+{
-+	struct virtio_gpu_device *vgdev = bo->base.base.dev->dev_private;
-+	bool retained;
-+
-+	/*
-+	 * For now we support only purging BOs that are backed by guest's
-+	 * memory.
-+	 */
-+	if (!virtio_gpu_is_shmem(bo))
-+		return true;
-+
-+	mutex_lock(&vgdev->mm_lock);
-+	retained = drm_gem_shmem_madvise(&bo->base, madv);
-+	mutex_unlock(&vgdev->mm_lock);
-+
-+	return retained;
-+}
-+
-+int virtio_gpu_gem_host_mem_release(struct virtio_gpu_object *bo)
-+{
-+	struct virtio_gpu_device *vgdev = bo->base.base.dev->dev_private;
-+	int err;
-+
-+	if (bo->created) {
-+		err = virtio_gpu_cmd_release_resource(vgdev, bo);
-+		if (err)
-+			return err;
-+
-+		virtio_gpu_notify(vgdev);
-+		bo->created = false;
-+	}
-+
-+	return 0;
-+}
-+
-+int virtio_gpu_gem_pin(struct virtio_gpu_object *bo)
-+{
-+	struct virtio_gpu_device *vgdev = bo->base.base.dev->dev_private;
-+	int ret = 0;
-+
-+	mutex_lock(&vgdev->mm_lock);
-+
-+	if (bo->base.madv == VIRTGPU_MADV_WILLNEED)
-+		bo->mem_pin_count++;
-+	else
-+		ret = -ENOMEM;
-+
-+	mutex_unlock(&vgdev->mm_lock);
-+
-+	return ret;
-+}
-+
-+void virtio_gpu_gem_unpin(struct virtio_gpu_object *bo)
-+{
-+	struct virtio_gpu_device *vgdev = bo->base.base.dev->dev_private;
-+
-+	mutex_lock(&vgdev->mm_lock);
-+	WARN_ON(!bo->mem_pin_count--);
-+	mutex_unlock(&vgdev->mm_lock);
-+}
-+
-+bool virtio_gpu_gem_is_pinned(struct virtio_gpu_object *bo)
-+{
-+	struct virtio_gpu_device *vgdev = bo->base.base.dev->dev_private;
-+	bool ret;
-+
-+	mutex_lock(&vgdev->mm_lock);
-+	ret = bo->mem_pin_count > 0;
-+	mutex_unlock(&vgdev->mm_lock);
-+
-+	return ret;
-+}
-diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-index c708bab555c6..bb5369eee425 100644
---- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-@@ -217,6 +217,10 @@ static int virtio_gpu_execbuffer_ioctl(struct drm_device *dev, void *data,
- 		ret = virtio_gpu_array_lock_resv(buflist);
- 		if (ret)
- 			goto out_memdup;
-+
-+		ret = virtio_gpu_array_validate(vgdev, buflist);
-+		if (ret)
-+			goto out_unresv;
- 	}
- 
- 	out_fence = virtio_gpu_fence_alloc(vgdev, fence_ctx, ring_idx);
-@@ -423,6 +427,10 @@ static int virtio_gpu_transfer_from_host_ioctl(struct drm_device *dev,
- 	if (ret != 0)
- 		goto err_put_free;
- 
-+	ret = virtio_gpu_array_validate(vgdev, objs);
-+	if (ret)
-+		goto err_unlock;
-+
- 	fence = virtio_gpu_fence_alloc(vgdev, vgdev->fence_drv.context, 0);
- 	if (!fence) {
- 		ret = -ENOMEM;
-@@ -482,6 +490,10 @@ static int virtio_gpu_transfer_to_host_ioctl(struct drm_device *dev, void *data,
- 		if (ret != 0)
- 			goto err_put_free;
- 
-+		ret = virtio_gpu_array_validate(vgdev, objs);
-+		if (ret)
-+			goto err_unlock;
-+
- 		ret = -ENOMEM;
- 		fence = virtio_gpu_fence_alloc(vgdev, vgdev->fence_drv.context,
- 					       0);
-@@ -836,6 +848,28 @@ static int virtio_gpu_context_init_ioctl(struct drm_device *dev,
- 	return ret;
- }
- 
-+static int virtio_gpu_madvise_ioctl(struct drm_device *dev,
-+				    void *data,
-+				    struct drm_file *file)
-+{
-+	struct drm_virtgpu_madvise *args = data;
-+	struct virtio_gpu_object *bo;
-+	struct drm_gem_object *obj;
-+
-+	if (args->madv > VIRTGPU_MADV_DONTNEED)
-+		return -EOPNOTSUPP;
-+
-+	obj = drm_gem_object_lookup(file, args->bo_handle);
-+	if (!obj)
-+		return -ENOENT;
-+
-+	bo = gem_to_virtio_gpu_obj(obj);
-+	args->retained = virtio_gpu_gem_madvise(bo, args->madv);
-+	drm_gem_object_put(obj);
-+
-+	return 0;
-+}
-+
- struct drm_ioctl_desc virtio_gpu_ioctls[DRM_VIRTIO_NUM_IOCTLS] = {
- 	DRM_IOCTL_DEF_DRV(VIRTGPU_MAP, virtio_gpu_map_ioctl,
- 			  DRM_RENDER_ALLOW),
-@@ -875,4 +909,7 @@ struct drm_ioctl_desc virtio_gpu_ioctls[DRM_VIRTIO_NUM_IOCTLS] = {
- 
- 	DRM_IOCTL_DEF_DRV(VIRTGPU_CONTEXT_INIT, virtio_gpu_context_init_ioctl,
- 			  DRM_RENDER_ALLOW),
-+
-+	DRM_IOCTL_DEF_DRV(VIRTGPU_MADVISE, virtio_gpu_madvise_ioctl,
-+			  DRM_RENDER_ALLOW),
- };
-diff --git a/drivers/gpu/drm/virtio/virtgpu_kms.c b/drivers/gpu/drm/virtio/virtgpu_kms.c
-index 0d1e3eb61bee..3a94d5d5fbed 100644
---- a/drivers/gpu/drm/virtio/virtgpu_kms.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_kms.c
-@@ -134,6 +134,7 @@ int virtio_gpu_init(struct virtio_device *vdev, struct drm_device *dev)
- 	dev->dev_private = vgdev;
- 	vgdev->vdev = vdev;
- 
-+	mutex_init(&vgdev->mm_lock);
- 	spin_lock_init(&vgdev->display_info_lock);
- 	spin_lock_init(&vgdev->resource_export_lock);
- 	spin_lock_init(&vgdev->host_visible_lock);
-@@ -238,6 +239,12 @@ int virtio_gpu_init(struct virtio_device *vdev, struct drm_device *dev)
- 		goto err_scanouts;
- 	}
- 
-+	ret = drm_gem_shmem_shrinker_register(dev);
-+	if (ret) {
-+		DRM_ERROR("shrinker init failed\n");
-+		goto err_modeset;
-+	}
-+
- 	virtio_device_ready(vgdev->vdev);
- 
- 	if (num_capsets)
-@@ -250,6 +257,8 @@ int virtio_gpu_init(struct virtio_device *vdev, struct drm_device *dev)
- 			   5 * HZ);
- 	return 0;
- 
-+err_modeset:
-+	virtio_gpu_modeset_fini(vgdev);
- err_scanouts:
- 	virtio_gpu_free_vbufs(vgdev);
- err_vbufs:
-@@ -289,6 +298,7 @@ void virtio_gpu_release(struct drm_device *dev)
- 	if (!vgdev)
- 		return;
- 
-+	drm_gem_shmem_shrinker_unregister(dev);
- 	virtio_gpu_modeset_fini(vgdev);
- 	virtio_gpu_free_vbufs(vgdev);
- 	virtio_gpu_cleanup_cap_cache(vgdev);
-diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virtio/virtgpu_object.c
-index 1964c0d8b51f..4133c8a71bd6 100644
---- a/drivers/gpu/drm/virtio/virtgpu_object.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_object.c
-@@ -97,6 +97,27 @@ static void virtio_gpu_free_object(struct drm_gem_object *obj)
- 	virtio_gpu_cleanup_object(bo);
- }
- 
-+static unsigned long virtio_gpu_purge_object(struct drm_gem_object *obj)
-+{
-+	struct virtio_gpu_object *bo = gem_to_virtio_gpu_obj(obj);
-+	int err;
-+
-+	if (virtio_gpu_gem_is_pinned(bo))
-+		return 0;
-+
-+	/*
-+	 * Release host's memory before guest's memory is gone to ensure that
-+	 * host won't touch released memory of the guest.
-+	 */
-+	err = virtio_gpu_gem_host_mem_release(bo);
-+	if (err)
-+		return 0;
-+
-+	drm_gem_shmem_purge_locked(&bo->base);
-+
-+	return obj->size >> PAGE_SHIFT;
-+}
-+
- static const struct drm_gem_object_funcs virtio_gpu_shmem_funcs = {
- 	.free = virtio_gpu_free_object,
- 	.open = virtio_gpu_gem_object_open,
-@@ -110,6 +131,7 @@ static const struct drm_gem_object_funcs virtio_gpu_shmem_funcs = {
- 	.vunmap = drm_gem_shmem_object_vunmap,
- 	.mmap = drm_gem_shmem_object_mmap,
- 	.vm_ops = &drm_gem_shmem_vm_ops,
-+	.purge = &virtio_gpu_purge_object,
- };
- 
- bool virtio_gpu_is_shmem(struct virtio_gpu_object *bo)
-diff --git a/drivers/gpu/drm/virtio/virtgpu_plane.c b/drivers/gpu/drm/virtio/virtgpu_plane.c
-index 6d3cc9e238a4..597ef1645bf2 100644
---- a/drivers/gpu/drm/virtio/virtgpu_plane.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_plane.c
-@@ -246,20 +246,28 @@ static int virtio_gpu_plane_prepare_fb(struct drm_plane *plane,
- 	struct virtio_gpu_device *vgdev = dev->dev_private;
- 	struct virtio_gpu_framebuffer *vgfb;
- 	struct virtio_gpu_object *bo;
-+	int err;
- 
- 	if (!new_state->fb)
- 		return 0;
- 
- 	vgfb = to_virtio_gpu_framebuffer(new_state->fb);
- 	bo = gem_to_virtio_gpu_obj(vgfb->base.obj[0]);
--	if (!bo || (plane->type == DRM_PLANE_TYPE_PRIMARY && !bo->guest_blob))
-+
-+	err = virtio_gpu_gem_pin(bo);
-+	if (err)
-+		return err;
-+
-+	if (plane->type == DRM_PLANE_TYPE_PRIMARY && !bo->guest_blob)
- 		return 0;
- 
- 	if (bo->dumb && (plane->state->fb != new_state->fb)) {
- 		vgfb->fence = virtio_gpu_fence_alloc(vgdev, vgdev->fence_drv.context,
- 						     0);
--		if (!vgfb->fence)
-+		if (!vgfb->fence) {
-+			virtio_gpu_gem_unpin(bo);
- 			return -ENOMEM;
-+		}
- 	}
- 
- 	return 0;
-@@ -269,15 +277,20 @@ static void virtio_gpu_plane_cleanup_fb(struct drm_plane *plane,
- 					struct drm_plane_state *old_state)
- {
- 	struct virtio_gpu_framebuffer *vgfb;
-+	struct virtio_gpu_object *bo;
- 
- 	if (!plane->state->fb)
- 		return;
- 
- 	vgfb = to_virtio_gpu_framebuffer(plane->state->fb);
-+	bo = gem_to_virtio_gpu_obj(vgfb->base.obj[0]);
-+
- 	if (vgfb->fence) {
- 		dma_fence_put(&vgfb->fence->f);
- 		vgfb->fence = NULL;
- 	}
-+
-+	virtio_gpu_gem_unpin(bo);
- }
- 
- static void virtio_gpu_cursor_plane_update(struct drm_plane *plane,
-diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c b/drivers/gpu/drm/virtio/virtgpu_vq.c
-index 06566e44307d..c55c2fc8ecc0 100644
---- a/drivers/gpu/drm/virtio/virtgpu_vq.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
-@@ -536,6 +536,21 @@ void virtio_gpu_cmd_unref_resource(struct virtio_gpu_device *vgdev,
- 		virtio_gpu_cleanup_object(bo);
- }
- 
-+int virtio_gpu_cmd_release_resource(struct virtio_gpu_device *vgdev,
-+				    struct virtio_gpu_object *bo)
-+{
-+	struct virtio_gpu_resource_unref *cmd_p;
-+	struct virtio_gpu_vbuffer *vbuf;
-+
-+	cmd_p = virtio_gpu_alloc_cmd(vgdev, &vbuf, sizeof(*cmd_p));
-+	memset(cmd_p, 0, sizeof(*cmd_p));
-+
-+	cmd_p->hdr.type = cpu_to_le32(VIRTIO_GPU_CMD_RESOURCE_UNREF);
-+	cmd_p->resource_id = cpu_to_le32(bo->hw_res_handle);
-+
-+	return virtio_gpu_queue_ctrl_buffer(vgdev, vbuf);
-+}
-+
- void virtio_gpu_cmd_set_scanout(struct virtio_gpu_device *vgdev,
- 				uint32_t scanout_id, uint32_t resource_id,
- 				uint32_t width, uint32_t height,
-diff --git a/include/uapi/drm/virtgpu_drm.h b/include/uapi/drm/virtgpu_drm.h
-index 0512fde5e697..12197d8e9759 100644
---- a/include/uapi/drm/virtgpu_drm.h
-+++ b/include/uapi/drm/virtgpu_drm.h
-@@ -48,6 +48,7 @@ extern "C" {
- #define DRM_VIRTGPU_GET_CAPS  0x09
- #define DRM_VIRTGPU_RESOURCE_CREATE_BLOB 0x0a
- #define DRM_VIRTGPU_CONTEXT_INIT 0x0b
-+#define DRM_VIRTGPU_MADVISE 0x0c
- 
- #define VIRTGPU_EXECBUF_FENCE_FD_IN	0x01
- #define VIRTGPU_EXECBUF_FENCE_FD_OUT	0x02
-@@ -196,6 +197,15 @@ struct drm_virtgpu_context_init {
- 	__u64 ctx_set_params;
- };
- 
-+#define VIRTGPU_MADV_WILLNEED 0
-+#define VIRTGPU_MADV_DONTNEED 1
-+struct drm_virtgpu_madvise {
-+	__u32 bo_handle;
-+	__u32 retained; /* out, non-zero if BO can be used */
-+	__u32 madv;
-+	__u32 pad;
-+};
-+
- /*
-  * Event code that's given when VIRTGPU_CONTEXT_PARAM_POLL_RINGS_MASK is in
-  * effect.  The event size is sizeof(drm_event), since there is no additional
-@@ -246,6 +256,10 @@ struct drm_virtgpu_context_init {
- 	DRM_IOWR(DRM_COMMAND_BASE + DRM_VIRTGPU_CONTEXT_INIT,		\
- 		struct drm_virtgpu_context_init)
- 
-+#define DRM_IOCTL_VIRTGPU_MADVISE \
-+	DRM_IOWR(DRM_COMMAND_BASE + DRM_VIRTGPU_MADVISE, \
-+		 struct drm_virtgpu_madvise)
-+
- #if defined(__cplusplus)
- }
- #endif
--- 
-2.35.1
-
+SGkgQXJuZCwNCg0K77u/T24gMi8xNi8yMiwgMTo1OCBQTSwgIkFybmQgQmVyZ21hbm4iIDxhcm5k
+QGFybmRiLmRlPiB3cm90ZToNCg0KDQo+ICAgIE9uZSBiaXQgb2YgaW5mb3JtYXRpb24gdGhhdCBJ
+IHdvdWxkIGxpa2UgdG8gc2VlIGluIHRoZSBkZWZjb25maWcgcGF0Y2gNCj4gICAgaXMgYW4gZXhw
+bGFuYXRpb24gYWJvdXQgd2h5IHlvdSBuZWVkIGEgY3VzdG9tIGRlZmNvbmZpZyBpbiB0aGUNCj4g
+ICAgZmlyc3QgcGxhY2UsIHJhdGhlciB0aGFuIHVzaW5nIG11bHRpX3Y3X2RlZmNvbmZpZy4gUGxl
+YXNlIGFsc28gYWRkDQo+ICAgIGEgcGF0Y2ggdG8gZW5hYmxlIHlvdXIgcGxhdGZvcm0gaW4gdGhl
+IG11bHRpX3Y3X2RlZmNvbmZpZywgYWxvbmcgd2l0aA0KPiAgICB0aGUgZHJpdmVycyB5b3UgbmVl
+ZCAoYXMgbG9hZGFibGUgbW9kdWxlcykuDQoNCkkgdG9vayBzb21lIHRpbWUgdG8gbG9vayBhdCB0
+aGUgZGVmY29uZmlnICJjaGFsbGVuZ2UiLiBOaWNrIGhhcyB1cGRhdGVkIHRoZSBtdWx0aV92N19k
+ZWZjb25maWcgd2l0aCBvdXIgR1hQIGluIGEgbmV3IHNlcmllcyBvZiBwYXRjaGVzLCBidXQgdGhp
+cyB3b24ndCBleGVjdXRlIG9uIG91ciBBU0lDIChjb21waWxhdGlvbiBpcyBvaykuIFRoZSBjaGFs
+bGVuZ2UgaXMgdGhhdCB3ZSBhcmUgbWlzc2luZyBhIGZldyBmZWF0dXJlcyB3aGljaCBhcmUgZW5h
+YmxlZCBieSBkZWZhdWx0LCBhbmQgSSB3YXMgd29uZGVyaW5nIGlmIHRoZSBjb21tdW5pdHkgd291
+bGQgYWNjZXB0IHRvIGRpc2FibGUgdGhlbSBieSBkZWZhdWx0Lg0KDQpUaGlzIGlzIHRoaXMNCg0K
+Q09ORklHX1BFUkZfRVZFTlRTPXkNCkNPTkZJR19BUkNIX1ZJUlQ9eQ0KDQpCb3RoIG9mIHRoZW0g
+Z2VuZXJhdGUgdW5rbm93biBpbnN0cnVjdGlvbiBvbiBvdXIgcGxhdGZvcm0gd2hpY2ggbGVhZCB0
+byBrZXJuZWwgY3Jhc2guIA0KDQpXaXRoIHRoZXNlIG9wdGlvbnMgZGlzYWJsZWQsIHdlIGNhbiB1
+c2UgdGhlIGRlZmNvbmZpZyBhbmQgYWRkIG9ubHkNCg0KQ09ORklHX0FSQ0hfSFBFPXkNCkNPTkZJ
+R19BUkNIX0hQRV9HWFA9eQ0KQ09ORklHX0dYUF9XQVRDSERPRz15DQpDT05GSUdfQVRBR1M9eQ0K
+DQpUbyBpdCwgYXMgdG8gZ2V0IGV2ZXJ5dGhpbmcgc2V0dXAgYW5kIGdldCBvdXIgbmV3IHBsYXRm
+b3JtIGJvb3Rpbmcgd2l0aG91dCBhbnkgaXNzdWVzLCBhc3N1bWluZyB0aGUgYXNzb2NpYXRlZCBj
+b2RlIGlzIHByZXNlbnQuIFRoZSBBVEFHUyBpcyBub3QgbWFuZGF0b3J5IGl0IHJlbW92ZWQgc29t
+ZSB3YXJuaW5nIG1lc3NhZ2VzIGR1cmluZyBrZXJuZWwgYm9vdC4NCg0KSSBrbm93IHRoaXMgaXMg
+cmVtb3Zpbmcgc29tZSBzdGFuZGFyZCBmZWF0dXJlLCBidXQsIEkgcHJvYmFibHkgY2FuJ3QgZWFz
+aWx5IGZpeCB0aGUgbWlzc2luZyBpbnN0cnVjdGlvbnMuIEkgY2FuIGRpZyBhIGxpdHRsZSBiaXQg
+aWYgbmVlZGVkIHdpdGhvdXQgYW55IGlzc3VlLiBJZiB3ZSB3YW50IHRvIGhhdmUgYSB3b3JraW5n
+IGRlZmNvbmZpZyBvbiBIUEUgR1hQIHBsYXRmb3JtLCB0aGVuIHdlIG5lZWQgdG8gZWl0aGVyIHRh
+a2UgdGhpcyBtb2RpZmljYXRpb24sIG9yIGNoYW5nZSB0aGUgY29kZSBmcm9tIHBlcmZfZXZlbnRz
+IGFuZCBhcmNoX3ZpcnQgdG8gcHJvcGVybHkgd29yayBpZiB0aGUgcmVxdWlyZWQgdW5kZXJseWlu
+ZyBoYXJkd2FyZSBpcyB1bmFibGUgdG8gc3VwcG9ydCB0aGVzZSBmZWF0dXJlcyAoY291bGQgYmUg
+cHJvYmFibHkgYSBkdW1teSB0ZXN0IHRvIGlkZW50aWZ5IHRoZSBhc2ljIGF0IGNvbXBpbGF0aW9u
+IHRpbWUpLCBvciBjcmVhdGUgYSBzcGVjaWZpYyBkZWZjb25maWcuIA0KDQpJIGFtIGZ1bGx5IG9w
+ZW4gdG8gYWxsIG9wdGlvbnMsIGp1c3QgbGV0IG1lIGtub3cgdGhlIHByZWZlcnJlZCBvbmUuDQoN
+CnZlam1hcmllDQoNCg0K
