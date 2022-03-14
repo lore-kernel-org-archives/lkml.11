@@ -2,147 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B52C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B35C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:28:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238550AbiCNK3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
+        id S238559AbiCNKaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238542AbiCNK3O (ORCPT
+        with ESMTP id S235862AbiCNKaA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:29:14 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2934C3CA46
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 03:28:05 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KHCRK61gZz9sRn;
-        Mon, 14 Mar 2022 11:27:57 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id NoXnbGICbYvd; Mon, 14 Mar 2022 11:27:57 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KHCRJ4w30z9sRv;
-        Mon, 14 Mar 2022 11:27:56 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 92E918B76E;
-        Mon, 14 Mar 2022 11:27:56 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id 08cDasFjybrG; Mon, 14 Mar 2022 11:27:56 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5F17C8B76C;
-        Mon, 14 Mar 2022 11:27:56 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22EARlau4139729
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 11:27:47 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22EARkGF4139723;
-        Mon, 14 Mar 2022 11:27:46 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        x86@kernel.org
-Subject: [PATCH v1 2/2] static_call: Remove __DEFINE_STATIC_CALL macro
-Date:   Mon, 14 Mar 2022 11:27:36 +0100
-Message-Id: <329074f92d96e3220ebe15da7bbe2779beee31eb.1647253456.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <1e0a61a88f52a460f62a58ffc2a5f847d1f7d9d8.1647253456.git.christophe.leroy@csgroup.eu>
-References: <1e0a61a88f52a460f62a58ffc2a5f847d1f7d9d8.1647253456.git.christophe.leroy@csgroup.eu>
+        Mon, 14 Mar 2022 06:30:00 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56CE3F306;
+        Mon, 14 Mar 2022 03:28:50 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id C73B91F4354F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647253729;
+        bh=bwHJoPxyu/AsruLxj2fvTwgEqOZ11tvgaKSJ2SduNvU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=C7Pxy4F/H7J0euO4lGClMCo9eeB6EsBAqQe2Cwxtqs/Rj+fZfImezffwz8imhnSUS
+         PXw0pBauG13We073OAWMG8HwjQIqgNSMWPxi44sV8xQDZBtIxNjvmSR4RvoVuCApCG
+         j4aO7+o67W8/NbD9orC2PYd1bXVjE3R28VC9Vvb5OlCg1lHufKIa6XygCH8F+RLJac
+         BbnJa/Cb5mbFm4g0JObcD20Zw2QxqHkV3Mp4yL1UQUAOqsZiP+QMLEqF+C/7sVdXee
+         gLfi5vzapDWRvbLc+r/I7kOtDmjp5G/sp4vKMilLGvN9Bu7ZjALK9AMNaA28x+MZ9Q
+         tjvCVw2taCy3A==
+Message-ID: <2cdd1e7b-d1e0-7cfd-ff24-18320dbe2a51@collabora.com>
+Date:   Mon, 14 Mar 2022 11:28:46 +0100
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1647253655; l=2642; s=20211009; h=from:subject:message-id; bh=54TTsQ4t1JOmGYJlgGxKSjtdyf3fR5FYcb6fhFV8Vwk=; b=b3TZEaNwVxdPSvoAngCH+wbAAfSlwKl0Fu4CX9Mq5jNSznvYeHtWb3Kq9TL7K87DOkk/v55AQoYc lDZuL07CCmYBdMpTjJrxO5IoCFlZYUKFeOVT8Ale/l5ZrNnZTFrI
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [v3 07/19] ASoC: mediatek: mt8186: support i2s in platform driver
+Content-Language: en-US
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org,
+        robh+dt@kernel.org
+Cc:     aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
+        tzungbi@google.com, julianbraha@gmail.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220313151023.21229-1-jiaxin.yu@mediatek.com>
+ <20220313151023.21229-8-jiaxin.yu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220313151023.21229-8-jiaxin.yu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Only DEFINE_STATIC_CALL use __DEFINE_STATIC_CALL macro now when
-CONFIG_HAVE_STATIC_CALL is selected.
+Il 13/03/22 16:10, Jiaxin Yu ha scritto:
+> Add mt8186 i2s dai driver.
+> 
+> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 
-Only keep __DEFINE_STATIC_CALL() for the generic fallback, and
-also use it to implement DEFINE_STATIC_CALL_NULL() in that case.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- include/linux/static_call.h | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
-
-diff --git a/include/linux/static_call.h b/include/linux/static_call.h
-index 3c50b0fdda16..df53bed9d71f 100644
---- a/include/linux/static_call.h
-+++ b/include/linux/static_call.h
-@@ -180,13 +180,13 @@ extern int static_call_text_reserved(void *start, void *end);
- 
- extern long __static_call_return0(void);
- 
--#define __DEFINE_STATIC_CALL(name, _func, _func_init)			\
-+#define DEFINE_STATIC_CALL(name, _func)					\
- 	DECLARE_STATIC_CALL(name, _func);				\
- 	struct static_call_key STATIC_CALL_KEY(name) = {		\
--		.func = _func_init,					\
-+		.func = _func,						\
- 		.type = 1,						\
- 	};								\
--	ARCH_DEFINE_STATIC_CALL_TRAMP(name, _func_init)
-+	ARCH_DEFINE_STATIC_CALL_TRAMP(name, _func)
- 
- #define DEFINE_STATIC_CALL_NULL(name, _func)				\
- 	DECLARE_STATIC_CALL(name, _func);				\
-@@ -225,12 +225,12 @@ extern long __static_call_return0(void);
- 
- static inline int static_call_init(void) { return 0; }
- 
--#define __DEFINE_STATIC_CALL(name, _func, _func_init)			\
-+#define DEFINE_STATIC_CALL(name, _func)					\
- 	DECLARE_STATIC_CALL(name, _func);				\
- 	struct static_call_key STATIC_CALL_KEY(name) = {		\
--		.func = _func_init,					\
-+		.func = _func,						\
- 	};								\
--	ARCH_DEFINE_STATIC_CALL_TRAMP(name, _func_init)
-+	ARCH_DEFINE_STATIC_CALL_TRAMP(name, _func)
- 
- #define DEFINE_STATIC_CALL_NULL(name, _func)				\
- 	DECLARE_STATIC_CALL(name, _func);				\
-@@ -292,11 +292,11 @@ static inline long __static_call_return0(void)
- 		.func = _func_init,					\
- 	}
- 
-+#define DEFINE_STATIC_CALL(name, _func)					\
-+	__DEFINE_STATIC_CALL(name, _func, _func)
-+
- #define DEFINE_STATIC_CALL_NULL(name, _func)				\
--	DECLARE_STATIC_CALL(name, _func);				\
--	struct static_call_key STATIC_CALL_KEY(name) = {		\
--		.func = NULL,						\
--	}
-+	__DEFINE_STATIC_CALL(name, _func, NULL)
- 
- #define DEFINE_STATIC_CALL_RET0(name, _func)				\
- 	__DEFINE_STATIC_CALL(name, _func, __static_call_return0)
-@@ -341,7 +341,4 @@ static inline int static_call_text_reserved(void *start, void *end)
- 
- #endif /* CONFIG_HAVE_STATIC_CALL */
- 
--#define DEFINE_STATIC_CALL(name, _func)					\
--	__DEFINE_STATIC_CALL(name, _func, _func)
--
- #endif /* _LINUX_STATIC_CALL_H */
--- 
-2.35.1
+> ---
+>   sound/soc/mediatek/mt8186/mt8186-dai-i2s.c | 1355 ++++++++++++++++++++
+>   1 file changed, 1355 insertions(+)
+>   create mode 100644 sound/soc/mediatek/mt8186/mt8186-dai-i2s.c
+> 
 
