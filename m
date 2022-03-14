@@ -2,74 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E687DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A920C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238832AbiCNMuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55936 "EHLO
+        id S241248AbiCNMuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236869AbiCNMry (ORCPT
+        with ESMTP id S242177AbiCNMsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:47:54 -0400
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BBB377F1;
-        Mon, 14 Mar 2022 05:41:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=M9spczh/Q2CKy8sMPxzQoXDaExSwQXf/vtHnX1TW0y0=;
-  b=JWnavQwdiW+E6NAcxa3wyUKgIVR+UCaJGE5YAkPfKZtGey9O/SI36evj
-   d+SVjeyrAeMgnizhu4vffjSJlsafhVrIqYgsE/RuHNYaSxDD05aGLpJO8
-   r1q6tOpvTLJABZtZ/UcZ3ItWN2ER1A7GJ1vVFzo81Db16EirVNqPVeMRT
-   U=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997360"
-Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Harald Freudenberger <freude@linux.ibm.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 26/30] s390/pkey: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:50 +0100
-Message-Id: <20220314115354.144023-27-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+        Mon, 14 Mar 2022 08:48:25 -0400
+Received: from mail.mleia.com (mleia.com [178.79.152.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6FCC38D95;
+        Mon, 14 Mar 2022 05:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+        t=1647261287; bh=E5qK/LokoWbwQ3NAAGJqmIaSC9RmuNtETGn508KBwxs=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=sVEB/6/ZcCmLhloWfxjr+OKp77Z0EA4Kn00f5Rq+oukexmooJNc5KgHe9b1Dzq7ce
+         mI/PKm73rC2sIXp0F5PMRoigg20jJ6xpoqIGjRVoF71jOB8qFGCyqt5IUzOGNoEzln
+         opJ7Zp0WTg5x3Ltcz6cc7m7Y/V2HRuH/XeFLT0PBz1nUqU55y8ene/DCGxPvzLHdWF
+         /ZrD2li+IUmc2S3tov20ssdd2n0/hE7GaoIC2zd5UnuywAL4t3TCXwKdLtL0PaDY3N
+         3EQJXLAwQ6KNnwClYo6bOPWOMoGTtPx44FaXJOqg3s/Y6ZZ4lb+kASOVjGtC8x/z0z
+         s+n4b3HaVHjWg==
+Received: from mail.mleia.com (localhost [127.0.0.1])
+        by mail.mleia.com (Postfix) with ESMTP id 9203D39F2D5;
+        Mon, 14 Mar 2022 12:34:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
+        t=1647261287; bh=E5qK/LokoWbwQ3NAAGJqmIaSC9RmuNtETGn508KBwxs=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=sVEB/6/ZcCmLhloWfxjr+OKp77Z0EA4Kn00f5Rq+oukexmooJNc5KgHe9b1Dzq7ce
+         mI/PKm73rC2sIXp0F5PMRoigg20jJ6xpoqIGjRVoF71jOB8qFGCyqt5IUzOGNoEzln
+         opJ7Zp0WTg5x3Ltcz6cc7m7Y/V2HRuH/XeFLT0PBz1nUqU55y8ene/DCGxPvzLHdWF
+         /ZrD2li+IUmc2S3tov20ssdd2n0/hE7GaoIC2zd5UnuywAL4t3TCXwKdLtL0PaDY3N
+         3EQJXLAwQ6KNnwClYo6bOPWOMoGTtPx44FaXJOqg3s/Y6ZZ4lb+kASOVjGtC8x/z0z
+         s+n4b3HaVHjWg==
+Received: from [192.168.1.102] (88-113-46-102.elisa-laajakaista.fi [88.113.46.102])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by mail.mleia.com (Postfix) with ESMTPSA id 2C53739F095;
+        Mon, 14 Mar 2022 12:34:47 +0000 (UTC)
+Subject: Re: [PATCH v2 3/3] ARM: dts: lpc32xx: Update spi clock properties
+To:     Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Kuldeep Singh <singh.kuldeep87k@gmail.com>,
+        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220311093800.18778-1-singh.kuldeep87k@gmail.com>
+ <20220311093800.18778-4-singh.kuldeep87k@gmail.com>
+ <4aae560d-d266-d0d0-136f-32891b15bc01@mleia.com>
+ <CAK8P3a3a_WXbDKN-jJUt_Wuvop0rfaUs4ytwyhogOxdtJAPx0w@mail.gmail.com>
+ <4f39f086-1932-1729-8761-d5c533356812@mleia.com>
+ <dc599cae-7245-73dc-8050-14ec6c1336b8@arm.com>
+ <f497fb65-3568-cda2-f086-2275b50daf4b@mleia.com>
+ <faea4c0c-e20b-c043-6f74-95af8177e8bd@arm.com>
+From:   Vladimir Zapolskiy <vz@mleia.com>
+Message-ID: <4a7e3d0e-f804-74a5-ef5b-206404eb9b61@mleia.com>
+Date:   Mon, 14 Mar 2022 14:34:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
+In-Reply-To: <faea4c0c-e20b-c043-6f74-95af8177e8bd@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
+X-CRM114-CacheID: sfid-20220314_123447_626055_29EE4042 
+X-CRM114-Status: GOOD (  34.52  )
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various spelling mistakes in comments.
-Detected with the help of Coccinelle.
+On 3/14/22 2:20 PM, Robin Murphy wrote:
+> On 2022-03-14 11:50, Vladimir Zapolskiy wrote:
+>> On 3/14/22 1:43 PM, Robin Murphy wrote:
+>>> On 2022-03-11 14:07, Vladimir Zapolskiy wrote:
+>>>> On 3/11/22 3:38 PM, Arnd Bergmann wrote:
+>>>>> On Fri, Mar 11, 2022 at 2:20 PM Vladimir Zapolskiy <vz@mleia.com>
+>>>>> wrote:
+>>>>>>
+>>>>>> On 3/11/22 11:38 AM, Kuldeep Singh wrote:
+>>>>>>> PL022 binding require two clocks to be defined but lpc platform
+>>>>>>> doesn't
+>>>>>>> comply with bindings and define only one clock i.e apb_pclk.
+>>>>>>>
+>>>>>>> Update spi clocks and clocks-names property by adding appropriate
+>>>>>>> clock
+>>>>>>> reference to make it compliant with bindings.
+>>>>>>>
+>>>>>>> CC: Vladimir Zapolskiy <vz@mleia.com>
+>>>>>>> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+>>>>>>> ---
+>>>>>>> v2:
+>>>>>>> - New patch with similar changeset
+>>>>>>> - Send to soc ML
+>>>>>>>
+>>>>>>>      arch/arm/boot/dts/lpc32xx.dtsi | 8 ++++----
+>>>>>>>      1 file changed, 4 insertions(+), 4 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/arch/arm/boot/dts/lpc32xx.dtsi
+>>>>>>> b/arch/arm/boot/dts/lpc32xx.dtsi
+>>>>>>> index c87066d6c995..30958e02d5e2 100644
+>>>>>>> --- a/arch/arm/boot/dts/lpc32xx.dtsi
+>>>>>>> +++ b/arch/arm/boot/dts/lpc32xx.dtsi
+>>>>>>> @@ -178,8 +178,8 @@ ssp0: spi@20084000 {
+>>>>>>>                                  compatible = "arm,pl022",
+>>>>>>> "arm,primecell";
+>>>>>>>                                  reg = <0x20084000 0x1000>;
+>>>>>>>                                  interrupts = <20
+>>>>>>> IRQ_TYPE_LEVEL_HIGH>;
+>>>>>>> -                             clocks = <&clk LPC32XX_CLK_SSP0>;
+>>>>>>> -                             clock-names = "apb_pclk";
+>>>>>>> +                             clocks = <&clk LPC32XX_CLK_SSP0>,
+>>>>>>> <&clk LPC32XX_CLK_SSP0>;
+>>>>>>> +                             clock-names = "sspclk", "apb_pclk";
+>>>>>>
+>>>>>> In fact I'm uncertain if it is the right change, could it happen that
+>>>>>> the commit
+>>>>>> cc0f6e96c4fd ("spi: dt-bindings: Convert Arm pl022 to json-schema")
+>>>>>> sets a wrong
+>>>>>> schema pattern?
+>>>>>
+>>>>> Good pointm this doesn't quite seem right: it is unlikely that the
+>>>>> same clock
+>>>>> is used for both the SPI bus and the APB bus.
+>>>>>
+>>>>>> Apparently just one clock is wanted on all observed platforms and
+>>>>>> cases, this
+>>>>>> is implicitly confirmed by clock handling in the
+>>>>>> drivers/spi/spi-pl022.c :
+>>>>>>
+>>>>>>            pl022->clk = devm_clk_get(&adev->dev, NULL);
+>>>>>>
+>>>>>> So, I would vote to fix the device tree bindings schema.
+>>>>>
+>>>>> Isn't this just using the wrong name? The name of the macro
+>>>>> LPC32XX_CLK_SSP0 might indicate that this is indeed the SPI clock
+>>>>> rather than the APB clock, so we only need to change clock-names
+>>>>> property here and leave it unchanged otherwise.
+>>>>
+>>>> Yes, the name is wrong, here I'm ready to take the blame:
+>>>>
+>>>> Fixes: 93898eb775e5 ("arm: dts: lpc32xx: add clock properties to device
+>>>> nodes")
+>>>>
+>>>> Noteworthy the commit above presets the same clock name to other
+>>>> PrimeCell
+>>>> controllers, namely pl110 (LCD), pl080 (DMA), pl175 (EMC) and pl18x
+>>>> (SD),
+>>>> plus this one pl022 (SSP), and all but SSP and SD are AHB slaves in
+>>>> fact.
+>>>>
+>>>> On LPC32xx the bus clock source and function clock source for SSP is
+>>>> HCLK.
+>>>>
+>>>> My guess is that the misnamed "apb_pclk" migrated into the schema from
+>>>> the lpc32xx.dtsi, so I'd suggest, unless some platform really needs it,
+>>>> firstly fix the schema by removing "apb_pclk" clock. It will leave
+>>>> just one
+>>>> clock, so "clock-names" property can be set as optional, and the drop
+>>>> the property from the lpc32xx.dtsi.
+>>>
+>>> No, "apb_pclk" is part of the common AMBA binding, and is required by
+>>> the "arm,primecell" compatible. You won't (usually) find it referenced
+>>> in drivers because it's dealt with by amba_get_enable_pclk() via
+>>> amba_probe().
+>>>
+>>
+>> Thank you, it explains, why "apb_pclk" is required for all PrimeCell
+>> controllers on the SoC. Nevertheless, in commit 93898eb775e5 it was
+>> misidentified with the sspclk clock, the latter one is the only clock
+>> explicitly utilized by the driver in 2015 and till today. Fixes in dts
+>> files should be preceded by a fix in the driver.
+> 
+> There's nothing to fix in the driver, though. In fact it can only be
+> working today because the Linux driver isn't very strict and simply
+> assumes that the first clock entry is SSPCLK *without* considering its
+> name (other consumers of the binding might be stricter; I don't know),
 
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+Here I'm a bit ignorant, would it be totally reliable to assume that
+clk_get(dev, NULL) gets the first clock from the list, and will it never
+happen that one day it takes e.g. the last entry?
 
----
- drivers/s390/crypto/pkey_api.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm kind of surprised that the asked fix in the driver meets such a
+resistance.
 
-diff --git a/drivers/s390/crypto/pkey_api.c b/drivers/s390/crypto/pkey_api.c
-index cf23ce1b1146..7f69ca695fc2 100644
---- a/drivers/s390/crypto/pkey_api.c
-+++ b/drivers/s390/crypto/pkey_api.c
-@@ -155,7 +155,7 @@ static int pkey_skey2pkey(const u8 *key, struct pkey_protkey *pkey)
- 	/*
- 	 * The cca_xxx2protkey call may fail when a card has been
- 	 * addressed where the master key was changed after last fetch
--	 * of the mkvp into the cache. Try 3 times: First witout verify
-+	 * of the mkvp into the cache. Try 3 times: First without verify
- 	 * then with verify and last round with verify and old master
- 	 * key verification pattern match not ignored.
- 	 */
+> and because presumably the HCLK happens to be enabled already anyway.
 
+Yes, that's the case here.
+
+> Changing the driver behaviour would only stand to cause functional
+> regressions.
+> 
+> There are effectively two bugs in the DTS here, firstly that it only has
+> one clock entry when it should have two, and secondly that the clock
+> entry which *is* present has the wrong name (or the wrong clock
+> specifier, depending on how you look at it). Kuldeep's patch merely
+> fixes the first one by fully describing the way it's currently working
+> in practice, so it's really just a choice of whether to treat "respect
+> the binding" and "describe the hardware correctly" as separate issues
+> and have a follow-up patch to correctly reference HCLK as the second
+> clock, or whether they're trivial enough to squash together.
+> 
+
+The two problems in the DTS are not argued, the chosen way to correct them
+is questionable though. Well, I won't object to see it split into two
+changes, but please send them at least in one series then, so that it
+won't be left forgotten.
+
+--
+Best wishes,
+Vladimir
