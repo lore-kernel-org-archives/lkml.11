@@ -2,96 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E32C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236064AbiCNQ6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:58:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
+        id S236412AbiCNRBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:01:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234996AbiCNQ6n (ORCPT
+        with ESMTP id S233840AbiCNRBt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:58:43 -0400
+        Mon, 14 Mar 2022 13:01:49 -0400
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137223A73B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:57:34 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B45C41F380;
-        Mon, 14 Mar 2022 16:57:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647277052; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=EjQj53Mw0YNh700fK1Icsq6ho1Eko/PdYkCQNR6mqrE=;
-        b=gugqY4B+djL/nhmH2nhDAdJV9P41rQYJ2g8SWA9aCiKiiKSdP2+uGZsC4sPdnLQ8fOgSCH
-        qSm6oJPE6pYN89aep1Xr1FKgtz60j1MreAp0B6P5lM0t/5RqEp9n8OdcaLZGDVga6OGmeo
-        UaWZx+zlPEUkeANI0uWQ9uIAZDXJ17E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647277052;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F31112A8E
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:00:40 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id BC1351F37E;
+        Mon, 14 Mar 2022 17:00:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647277238; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=udtMCKBAV+CTtEiGQ3rsvTyzveA3xXUN1Z13knpbinA=;
+        b=CyJxWVR2hLvizoQqfXm3T3++omYoIYGgJ+0KqqZsp4jjcQCvpOLRZ6NZGhilzc1YTyNoWU
+        AG4ReQtQZZuhs+9vexmyRVKTajAxk/SOlMo9tZ53LYvYlpWF1t+O3lqamvBdedWMhvcmdj
+        3NeHEQZ/zoqn5+6XqlwnNkdfvuQifB8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647277238;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=EjQj53Mw0YNh700fK1Icsq6ho1Eko/PdYkCQNR6mqrE=;
-        b=fnCZrvmEeOA7aH1I0CkzTH1mPfrTtZJOzoyH8BmBVce8WgahkZwgQgUp/95n0M8XfYcZLU
-        0/4ZOUhnIT9ymwAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8994213B39;
-        Mon, 14 Mar 2022 16:57:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id RbYpIPxzL2I+PAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 14 Mar 2022 16:57:32 +0000
-From:   Vlastimil Babka <vbabka@suse.cz>
-To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH 1/2] mm, fault-injection: declare should_fail_alloc_page()
-Date:   Mon, 14 Mar 2022 17:57:23 +0100
-Message-Id: <20220314165724.16071-1-vbabka@suse.cz>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1119; h=from:subject; bh=QGoL6qUI09dpG/35dBQDgHemHz/FCAGmqGRnNq+rios=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiL3Pyn7opOzfCBHWa660u1sfUHhTXqveiKMNIEZ6Q pT5b1QiJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYi9z8gAKCRDgIcpz8YmpEMjmCA C9dqVWnbqOG9kRwx4yBIUGJqbzVqSalN5zHjMGiyDG9PUa8Mnsw9v6WJnWG1gaXlTYM2UMkddxUri0 kEpkTc6qNrYCiVzwkr8MVCFU9JEDYmIkPz/EBljtAn0cjEZnHhcM5BVQeJ5J48dZzz25H4PgSc1bW5 FKbXmRop8pWwllwouudA5m0JJrLP+IeNyEC/GPxsTJGWqpiCFEmBpdJSJWDxoCf5jEax4yqzbwKUnj jAcBl7tnK4lVHEyhafgDiTGXts1HxQWuXkWqLza096bE/p3c0aJKNWEU43yOANIOKTZN/vJ9X4Kycb ZThdDMOsM+5NMxrU4PpYv+0bfjRDxj
-X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
-Content-Transfer-Encoding: 8bit
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=udtMCKBAV+CTtEiGQ3rsvTyzveA3xXUN1Z13knpbinA=;
+        b=z4bhkXhsQZrsyNJDMTsBPzx+0YguC94IrefwYSQrbFekPTbMJCzqZ5VkcVvTPPprcdrKk9
+        PzOSsCpQltcDtABg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 41E22A3B81;
+        Mon, 14 Mar 2022 17:00:38 +0000 (UTC)
+Date:   Mon, 14 Mar 2022 18:00:38 +0100
+Message-ID: <s5hpmmoa2q1.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Andy Chi <andy.chi@canonical.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Jeremy Szu <jeremy.szu@canonical.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Werner Sembach <wse@tuxedocomputers.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: hda/realtek: fix right sounds and mute/micmute LEDs for HP machines
+In-Reply-To: <20220314142122.71602-1-andy.chi@canonical.com>
+References: <20220314142122.71602-1-andy.chi@canonical.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mm/ directory can almost fully be built with W=1, which would help
-in local development. One remaining issue is missing prototype for
-should_fail_alloc_page(). Thus add it next to the should_failslab()
-prototype.
+On Mon, 14 Mar 2022 15:21:19 +0100,
+Andy Chi wrote:
+> 
+> * The HP ProBook 440/450 and EliteBook 640/650 are
+>   using ALC236 codec which used 0x02 to control mute LED
+>   and 0x01 to control micmute LED. Therefore, add a quirk to make it works.
+> 
+> Signed-off-by: Andy Chi <andy.chi@canonical.com>
 
-Note the previous attempt by commit f7173090033c ("mm/page_alloc: make
-should_fail_alloc_page() static") had to be reverted by commit
-54aa386661fe as it caused an unresolved symbol error with
-CONFIG_DEBUG_INFO_BTF=y
+Thanks, applied now.
 
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
----
- include/linux/fault-inject.h | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/fault-inject.h b/include/linux/fault-inject.h
-index e525f6957c49..2d04f6448cde 100644
---- a/include/linux/fault-inject.h
-+++ b/include/linux/fault-inject.h
-@@ -64,6 +64,8 @@ static inline struct dentry *fault_create_debugfs_attr(const char *name,
- 
- struct kmem_cache;
- 
-+bool should_fail_alloc_page(gfp_t gfp_mask, unsigned int order);
-+
- int should_failslab(struct kmem_cache *s, gfp_t gfpflags);
- #ifdef CONFIG_FAILSLAB
- extern bool __should_failslab(struct kmem_cache *s, gfp_t gfpflags);
--- 
-2.35.1
-
+Takashi
