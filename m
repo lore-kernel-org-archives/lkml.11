@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56874C352B6
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5862C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245418AbiCNMc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
+        id S245104AbiCNMcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243895AbiCNMVW (ORCPT
+        with ESMTP id S243927AbiCNMVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:22 -0400
+        Mon, 14 Mar 2022 08:21:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EED6255;
-        Mon, 14 Mar 2022 05:17:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885F013CE3;
+        Mon, 14 Mar 2022 05:18:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF51860B04;
-        Mon, 14 Mar 2022 12:17:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8644C340E9;
-        Mon, 14 Mar 2022 12:17:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D20460DBB;
+        Mon, 14 Mar 2022 12:18:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E5E9C340E9;
+        Mon, 14 Mar 2022 12:18:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260273;
-        bh=hsnUw+fKKfcVjGV4i+TG2vlfsOgpRhvYjcS+730bdBQ=;
+        s=korg; t=1647260309;
+        bh=q+lhG1LbNNKewQbXq+2r/4a0Q5Up4I/iuuciJ9Y6sGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xA9otbu2sqfP+HVUCh6OEszy/JbPuOd7gLb3DwSpvBMH+7ki3cKHqOdBTgoMqKFgQ
-         vCCUFXLcWMik4Wm/TH2uhQLpnZjUAdaAmHDKhdnDtZ0o6meu6O7BE1uQnGKw0GUk8O
-         YNY249Sux/XmTxEUo+9mZboeqN2Id7qagEKyFRWk=
+        b=fkvkhLruCmAGlcmSZHYckWMyCt8KkM1oCvo46Fos0ltRUSDJ7WnNq33jFgMJG3yDO
+         Xr8KHp5ay/nZmr4mZ2OcxFm5z72QbBPiiZdLl+XWxDizGUzGDSZ3Xi/+hM61ZcvNyH
+         JXzGX5sKzjEoqPUaCu+CTEgcLxad9HcaUzwdzmHY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Halil Pasic" <pasic@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.16 102/121] virtio: acknowledge all features before access
-Date:   Mon, 14 Mar 2022 12:54:45 +0100
-Message-Id: <20220314112746.961371411@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Lin Ma <linma@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 071/121] drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
+Date:   Mon, 14 Mar 2022 12:54:14 +0100
+Message-Id: <20220314112746.104980888@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,141 +50,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 4fa59ede95195f267101a1b8916992cf3f245cdb upstream.
+[ Upstream commit efe4186e6a1b54bf38b9e05450d43b0da1fd7739 ]
 
-The feature negotiation was designed in a way that
-makes it possible for devices to know which config
-fields will be accessed by drivers.
+When a 6pack device is detaching, the sixpack_close() will act to cleanup
+necessary resources. Although del_timer_sync() in sixpack_close()
+won't return if there is an active timer, one could use mod_timer() in
+sp_xmit_on_air() to wake up timer again by calling userspace syscall such
+as ax25_sendmsg(), ax25_connect() and ax25_ioctl().
 
-This is broken since commit 404123c2db79 ("virtio: allow drivers to
-validate features") with fallout in at least block and net.  We have a
-partial work-around in commit 2f9a174f918e ("virtio: write back
-F_VERSION_1 before validate") which at least lets devices find out which
-format should config space have, but this is a partial fix: guests
-should not access config space without acknowledging features since
-otherwise we'll never be able to change the config space format.
+This unexpected waked handler, sp_xmit_on_air(), realizes nothing about
+the undergoing cleanup and may still call pty_write() to use driver layer
+resources that have already been released.
 
-To fix, split finalize_features from virtio_finalize_features and
-call finalize_features with all feature bits before validation,
-and then - if validation changed any bits - once again after.
+One of the possible race conditions is shown below:
 
-Since virtio_finalize_features no longer writes out features
-rename it to virtio_features_ok - since that is what it does:
-checks that features are ok with the device.
+      (USE)                      |      (FREE)
+ax25_sendmsg()                   |
+ ax25_queue_xmit()               |
+  ...                            |
+  sp_xmit()                      |
+   sp_encaps()                   | sixpack_close()
+    sp_xmit_on_air()             |  del_timer_sync(&sp->tx_t)
+     mod_timer(&sp->tx_t,...)    |  ...
+                                 |  unregister_netdev()
+                                 |  ...
+     (wait a while)              | tty_release()
+                                 |  tty_release_struct()
+                                 |   release_tty()
+    sp_xmit_on_air()             |    tty_kref_put(tty_struct) //FREE
+     pty_write(tty_struct) //USE |    ...
 
-As a side effect, this also reduces the amount of hypervisor accesses -
-we now only acknowledge features once unless we are clearing any
-features when validating (which is uncommon).
+The corresponding fail log is shown below:
+===============================================================
+BUG: KASAN: use-after-free in __run_timers.part.0+0x170/0x470
+Write of size 8 at addr ffff88800a652ab8 by task swapper/2/0
+...
+Call Trace:
+  ...
+  queue_work_on+0x3f/0x50
+  pty_write+0xcd/0xe0pty_write+0xcd/0xe0
+  sp_xmit_on_air+0xb2/0x1f0
+  call_timer_fn+0x28/0x150
+  __run_timers.part.0+0x3c2/0x470
+  run_timer_softirq+0x3b/0x80
+  __do_softirq+0xf1/0x380
+  ...
 
-IRC I think that this was more or less always the intent in the spec but
-unfortunately the way the spec is worded does not say this explicitly, I
-plan to address this at the spec level, too.
+This patch reorders the del_timer_sync() after the unregister_netdev()
+to avoid UAF bugs. Because the unregister_netdev() is well synchronized,
+it flushs out any pending queues, waits the refcount of net_device
+decreases to zero and removes net_device from kernel. There is not any
+running routines after executing unregister_netdev(). Therefore, we could
+not arouse timer from userspace again.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
-Cc: stable@vger.kernel.org
-Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
-Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
-Cc: "Halil Pasic" <pasic@linux.ibm.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio.c       |   39 ++++++++++++++++++++++-----------------
- include/linux/virtio_config.h |    3 ++-
- 2 files changed, 24 insertions(+), 18 deletions(-)
+ drivers/net/hamradio/6pack.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -166,14 +166,13 @@ void virtio_add_status(struct virtio_dev
- }
- EXPORT_SYMBOL_GPL(virtio_add_status);
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 8a19a06b505d..ff2bb3d80fac 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -668,11 +668,11 @@ static void sixpack_close(struct tty_struct *tty)
+ 	 */
+ 	netif_stop_queue(sp->dev);
  
--static int virtio_finalize_features(struct virtio_device *dev)
-+/* Do some validation, then set FEATURES_OK */
-+static int virtio_features_ok(struct virtio_device *dev)
- {
--	int ret = dev->config->finalize_features(dev);
- 	unsigned status;
-+	int ret;
++	unregister_netdev(sp->dev);
++
+ 	del_timer_sync(&sp->tx_t);
+ 	del_timer_sync(&sp->resync_t);
  
- 	might_sleep();
--	if (ret)
--		return ret;
- 
- 	ret = arch_has_restricted_virtio_memory_access();
- 	if (ret) {
-@@ -238,17 +237,6 @@ static int virtio_dev_probe(struct devic
- 		driver_features_legacy = driver_features;
- 	}
- 
--	/*
--	 * Some devices detect legacy solely via F_VERSION_1. Write
--	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
--	 * these when needed.
--	 */
--	if (drv->validate && !virtio_legacy_is_little_endian()
--			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
--		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
--		dev->config->finalize_features(dev);
--	}
+-	unregister_netdev(sp->dev);
 -
- 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
- 		dev->features = driver_features & device_features;
- 	else
-@@ -259,13 +247,26 @@ static int virtio_dev_probe(struct devic
- 		if (device_features & (1ULL << i))
- 			__virtio_set_bit(dev, i);
- 
-+	err = dev->config->finalize_features(dev);
-+	if (err)
-+		goto err;
-+
- 	if (drv->validate) {
-+		u64 features = dev->features;
-+
- 		err = drv->validate(dev);
- 		if (err)
- 			goto err;
-+
-+		/* Did validation change any features? Then write them again. */
-+		if (features != dev->features) {
-+			err = dev->config->finalize_features(dev);
-+			if (err)
-+				goto err;
-+		}
- 	}
- 
--	err = virtio_finalize_features(dev);
-+	err = virtio_features_ok(dev);
- 	if (err)
- 		goto err;
- 
-@@ -489,7 +490,11 @@ int virtio_device_restore(struct virtio_
- 	/* We have a driver! */
- 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
- 
--	ret = virtio_finalize_features(dev);
-+	ret = dev->config->finalize_features(dev);
-+	if (ret)
-+		goto err;
-+
-+	ret = virtio_features_ok(dev);
- 	if (ret)
- 		goto err;
- 
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -64,8 +64,9 @@ struct virtio_shm_region {
-  *	Returns the first 64 feature bits (all we currently need).
-  * @finalize_features: confirm what device features we'll be using.
-  *	vdev: the virtio_device
-- *	This gives the final feature bits for the device: it can change
-+ *	This sends the driver feature bits to the device: it can change
-  *	the dev->feature bits if it wants.
-+ * Note: despite the name this can be called any number of times.
-  *	Returns 0 on success or error status
-  * @bus_name: return the bus name associated with the device (optional)
-  *	vdev: the virtio_device
+ 	/* Free all 6pack frame buffers after unreg. */
+ 	kfree(sp->rbuff);
+ 	kfree(sp->xbuff);
+-- 
+2.34.1
+
 
 
