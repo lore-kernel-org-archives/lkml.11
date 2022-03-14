@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E703C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242434AbiCNMTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
+        id S241736AbiCNMSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242458AbiCNMKC (ORCPT
+        with ESMTP id S242221AbiCNMJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294181402D;
-        Mon, 14 Mar 2022 05:08:19 -0700 (PDT)
+        Mon, 14 Mar 2022 08:09:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2318C50B04;
+        Mon, 14 Mar 2022 05:06:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C90DEB80DED;
-        Mon, 14 Mar 2022 12:08:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6497C340E9;
-        Mon, 14 Mar 2022 12:08:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABEB76130C;
+        Mon, 14 Mar 2022 12:06:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E2EAC340EC;
+        Mon, 14 Mar 2022 12:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259696;
-        bh=y9LNOtA0ZosUeRoySr2nYOAjfjc02VpHHJ/PyJlwL00=;
+        s=korg; t=1647259597;
+        bh=YeTe//0SAgavio9Xw86XZZ+I6TczDnfWm8tRimdCf7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=isaP8uNy4h0RudfYdYMuaPIhR2XmtKScmiaCrJkuvg4It3ZDJlOCwMFr/7b/l7kc1
-         Es+geJwa/2b/ikvk2gQHf+hSPimNGg88Yi14Bz5GfNGmuGWNZnBlEyXcjnUbWdqkEj
-         mXeSKxw2zZRoc8qzQ4JMedcLOuzvRFPAzfD9aXJE=
+        b=yRkdJVa1Qv/ZNWSZsiTwP1k38v/cmLT+TNXrMJpGsgp6S1jkpTDFxbpLwquk+l1MV
+         5Iom95mdcBrl5jrGgB9z8GEHZfvz+qrZ6luwAGvVjnjbssgFYVO3qraX8yWn/wGT9r
+         vFU5QqWe73JSaeNk2nunLCvDYpcmOrWmj7AvpicM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
-        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/110] Revert "xen-netback: remove hotplug-status once it has served its purpose"
-Date:   Mon, 14 Mar 2022 12:54:09 +0100
-Message-Id: <20220314112744.906242916@linuxfoundation.org>
+Subject: [PATCH 5.15 045/110] selftests: pmtu.sh: Kill nettest processes launched in subshell.
+Date:   Mon, 14 Mar 2022 12:53:47 +0100
+Message-Id: <20220314112744.295152342@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -51,60 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+From: Guillaume Nault <gnault@redhat.com>
 
-[ Upstream commit 0f4558ae91870692ce7f509c31c9d6ee721d8cdc ]
+[ Upstream commit 94a4a4fe4c696413932eed8bdec46574de9576b8 ]
 
-This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
+When using "run_cmd <command> &", then "$!" refers to the PID of the
+subshell used to run <command>, not the command itself. Therefore
+nettest_pids actually doesn't contain the list of the nettest commands
+running in the background. So cleanup() can't kill them and the nettest
+processes run until completion (fortunately they have a 5s timeout).
 
-The 'hotplug-status' node should not be removed as long as the vif
-device remains configured. Otherwise the xen-netback would wait for
-re-running the network script even if it was already called (in case of
-the frontent re-connecting). But also, it _should_ be removed when the
-vif device is destroyed (for example when unbinding the driver) -
-otherwise hotplug script would not configure the device whenever it
-re-appear.
+Fix this by defining a new command for running processes in the
+background, for which "$!" really refers to the PID of the command run.
 
-Moving removal of the 'hotplug-status' node was a workaround for nothing
-calling network script after xen-netback module is reloaded. But when
-vif interface is re-created (on xen-netback unbind/bind for example),
-the script should be called, regardless of who does that - currently
-this case is not handled by the toolstack, and requires manual
-script call. Keeping hotplug-status=connected to skip the call is wrong
-and leads to not configured interface.
+Also, double quote variables on the modified lines, to avoid shellcheck
+warnings.
 
-More discussion at
-https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
-
-Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Link: https://lore.kernel.org/r/20220222001817.2264967-1-marmarek@invisiblethingslab.com
+Fixes: ece1278a9b81 ("selftests: net: add ESP-in-UDP PMTU test")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/xen-netback/xenbus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/pmtu.sh | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
-index d24b7a7993aa..3fad58d22155 100644
---- a/drivers/net/xen-netback/xenbus.c
-+++ b/drivers/net/xen-netback/xenbus.c
-@@ -256,6 +256,7 @@ static void backend_disconnect(struct backend_info *be)
- 		unsigned int queue_index;
- 
- 		xen_unregister_watchers(vif);
-+		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
- #ifdef CONFIG_DEBUG_FS
- 		xenvif_debugfs_delif(vif);
- #endif /* CONFIG_DEBUG_FS */
-@@ -675,7 +676,6 @@ static void hotplug_status_changed(struct xenbus_watch *watch,
- 
- 		/* Not interested in this watch anymore. */
- 		unregister_hotplug_status_watch(be);
--		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
- 	}
- 	kfree(str);
+diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
+index 2e8972573d91..694732e4b344 100755
+--- a/tools/testing/selftests/net/pmtu.sh
++++ b/tools/testing/selftests/net/pmtu.sh
+@@ -374,6 +374,16 @@ run_cmd() {
+ 	return $rc
  }
+ 
++run_cmd_bg() {
++	cmd="$*"
++
++	if [ "$VERBOSE" = "1" ]; then
++		printf "    COMMAND: %s &\n" "${cmd}"
++	fi
++
++	$cmd 2>&1 &
++}
++
+ # Find the auto-generated name for this namespace
+ nsname() {
+ 	eval echo \$NS_$1
+@@ -670,10 +680,10 @@ setup_nettest_xfrm() {
+ 	[ ${1} -eq 6 ] && proto="-6" || proto=""
+ 	port=${2}
+ 
+-	run_cmd ${ns_a} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
++	run_cmd_bg "${ns_a}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
+ 	nettest_pids="${nettest_pids} $!"
+ 
+-	run_cmd ${ns_b} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
++	run_cmd_bg "${ns_b}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
+ 	nettest_pids="${nettest_pids} $!"
+ }
+ 
 -- 
 2.34.1
 
