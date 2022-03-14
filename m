@@ -2,133 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF267C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 13:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 13:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239294AbiCNNbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 09:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46110 "EHLO
+        id S241717AbiCNNc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 09:32:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233166AbiCNNbn (ORCPT
+        with ESMTP id S233166AbiCNNc0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 09:31:43 -0400
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B7A13D73;
-        Mon, 14 Mar 2022 06:30:32 -0700 (PDT)
-Received: by mail-qk1-f176.google.com with SMTP id q4so12660482qki.11;
-        Mon, 14 Mar 2022 06:30:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7ESmoGYKvForOfgnFNNl3bul8J0TvzMfyrdSY3ncE6E=;
-        b=uO+Um3ZMkaOLd27w4397t+Fkci9z8p3BGpG5jW0zNEyNevdQQ3tfMYRQx9pNG+RhSO
-         QAsxZlkwXCeoTcUeUAe1swxy98G/HDfoZh//jGFz/JX6ZKfggiHzqsgI+1hKpkYMkCLA
-         Xq1e6uM7YUAZmXhnNKlGjDNL+YA4lkbjb05Rb4WQ+9jzlcWCsd7NdS5v+Yovyyq+B6Xt
-         HauZd5YXzbkC71oZgaILvTVBcKFwPBMBzjYNbXUuvK4uP/8H+VVg4nMW9Y/R9aeqq3o0
-         wjayk+HwknTMqAXIUBrL3IFro1AQ69neLCqIjCTYulhrVSLFgMyMk2CNKgUWwxUTlhEO
-         vUpw==
-X-Gm-Message-State: AOAM530oWWKWLE09SRWpWTbka181do3MQbbMp7Uj40CiL+jDxlcKW9b/
-        XefFAtyX4Fne666Zy+onTgYoCxKduszn7w==
-X-Google-Smtp-Source: ABdhPJzO94wE27iqfcTwnmSWUlJLQydrjBgOPb1Wr0PywBgDqz56YNMacz/XufAKVIYWUsYJQWs5Aw==
-X-Received: by 2002:a05:620a:4085:b0:67b:315b:a09f with SMTP id f5-20020a05620a408500b0067b315ba09fmr14881685qko.334.1647264631247;
-        Mon, 14 Mar 2022 06:30:31 -0700 (PDT)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id h8-20020ac87d48000000b002e1c6faae9csm5564977qtb.28.2022.03.14.06.30.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 06:30:30 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2db2add4516so163661667b3.1;
-        Mon, 14 Mar 2022 06:30:30 -0700 (PDT)
-X-Received: by 2002:a0d:f1c7:0:b0:2db:d2bc:be11 with SMTP id
- a190-20020a0df1c7000000b002dbd2bcbe11mr18928111ywf.62.1647264630398; Mon, 14
- Mar 2022 06:30:30 -0700 (PDT)
+        Mon, 14 Mar 2022 09:32:26 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAE913D73
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 06:31:16 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EDDHa5016652;
+        Mon, 14 Mar 2022 13:30:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : reply-to : references : mime-version : content-type
+ : in-reply-to; s=pp1; bh=NgDfcMbBGd3DW5fIpR/Qs+Z/HcDTzQJQcY7VH4+xRlQ=;
+ b=l7u+H6NDYrHrNDmmNzJ4WbiSV1eb92bPL7qD1dxIebKEG8qaHzkhxM6FnKR7UrxQPgWI
+ NMnV5L07zF9JuaA9WT1/3P41XAhSu3MBfFrwPPiqphUfcYiifgx8psDe5RwBbYx3isuP
+ EprYLgAhChrKr3xcx8j4syqs0i1J3ZiY1ZIT+Sc29DjAa+712E3ImXUi47gobsyc5aJg
+ 7pcnol+JDRdCf3XGgu2W9IkG87SA78gfm+sdf7+ScPhcLm5q32p5+pG91UaJwZpkdDYM
+ mIq4MvuBfUb2ALYFtWIn+5Wvn68/4BADN3S4hhTpFTcPBaYKGt7H0IbHLodprhqi1UlA aw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6d98rvj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 13:30:54 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EDDV8l018765;
+        Mon, 14 Mar 2022 13:30:54 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6d98ndc-106
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 13:30:54 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EAxHSn010595;
+        Mon, 14 Mar 2022 11:09:04 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06ams.nl.ibm.com with ESMTP id 3erjshkysy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 11:09:04 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EB91Tv28967192
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Mar 2022 11:09:02 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A0D64A42D9;
+        Mon, 14 Mar 2022 11:07:03 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5E269A422D;
+        Mon, 14 Mar 2022 11:06:54 +0000 (GMT)
+Received: from linux.vnet.ibm.com (unknown [9.126.150.29])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Mon, 14 Mar 2022 11:06:54 +0000 (GMT)
+Date:   Mon, 14 Mar 2022 16:36:53 +0530
+From:   Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+To:     K Prateek Nayak <kprateek.nayak@amd.com>
+Cc:     peterz@infradead.org, aubrey.li@linux.intel.com, efault@gmx.de,
+        gautham.shenoy@amd.com, linux-kernel@vger.kernel.org,
+        mgorman@techsingularity.net, mingo@kernel.org,
+        song.bao.hua@hisilicon.com, valentin.schneider@arm.com,
+        vincent.guittot@linaro.org
+Subject: Re: [PATCH v6] sched/fair: Consider cpu affinity when allowing NUMA
+ imbalance in find_idlest_group
+Message-ID: <20220314110653.GM618915@linux.vnet.ibm.com>
+Reply-To: Srikar Dronamraju <srikar@linux.vnet.ibm.com>
+References: <20220308063749.6929-1-kprateek.nayak@amd.com>
+ <20220308092944.GJ618915@linux.vnet.ibm.com>
+ <7e5bdc95-a30a-58bc-fc67-98b03fe1fa22@amd.com>
+ <20220309052554.GK618915@linux.vnet.ibm.com>
+ <bb443650-868a-49b7-e41e-c2a788781df5@amd.com>
+ <20220309094320.GL618915@linux.vnet.ibm.com>
+ <9effd823-5375-fce0-cb92-6630e82d8b04@amd.com>
 MIME-Version: 1.0
-References: <cover.1646683502.git.geert@linux-m68k.org> <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
-In-Reply-To: <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Mar 2022 14:30:18 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
-Message-ID: <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
-Subject: Re: [PATCH v2 05/10] drm/fourcc: Add DRM_FORMAT_C[124]
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>
-Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <9effd823-5375-fce0-cb92-6630e82d8b04@amd.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 1TuZbGqvSJ_qoQVJnbLUZPvGHZME_YkZ
+X-Proofpoint-ORIG-GUID: Zmvb6ER6ezzHHQOszOXQqS7iTY-epXpB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-14_08,2022-03-14_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
+ phishscore=0 impostorscore=0 bulkscore=0 spamscore=0 priorityscore=1501
+ mlxscore=0 clxscore=1015 mlxlogscore=999 adultscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203140083
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 9:53 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> Introduce fourcc codes for color-indexed frame buffer formats with two,
-> four, and sixteen colors, and provide a mapping from bit per pixel and
-> depth to fourcc codes.
->
-> As the number of bits per pixel is less than eight, these rely on proper
-> block handling for the calculation of bits per pixel and pitch.
->
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+* K Prateek Nayak <kprateek.nayak@amd.com> [2022-03-09 17:00:33]:
 
-> --- a/include/uapi/drm/drm_fourcc.h
-> +++ b/include/uapi/drm/drm_fourcc.h
-> @@ -99,7 +99,10 @@ extern "C" {
->  #define DRM_FORMAT_INVALID     0
->
->  /* color index */
-> -#define DRM_FORMAT_C8          fourcc_code('C', '8', ' ', ' ') /* [7:0] C */
-> +#define DRM_FORMAT_C1          fourcc_code('C', '1', ' ', ' ') /* [7:0] C0:C1:C2:C3:C4:C5:C6:C7 1:1:1:1:1:1:1:1 eight pixels/byte */
-> +#define DRM_FORMAT_C2          fourcc_code('C', '2', ' ', ' ') /* [7:0] C0:C1:C2:C3 2:2:2:2 four pixels/byte */
-> +#define DRM_FORMAT_C4          fourcc_code('C', '4', ' ', ' ') /* [7:0] C0:C1 4:4 two pixels/byte */
-> +#define DRM_FORMAT_C8          fourcc_code('C', '8', ' ', ' ') /* [7:0] C 8 one pixel/byte */
->
->  /* 8 bpp Red */
->  #define DRM_FORMAT_R8          fourcc_code('R', '8', ' ', ' ') /* [7:0] R */
+> Hello Srikar,
+> 
+> On 3/9/2022 3:13 PM, Srikar Dronamraju wrote:
+> > [..snip..]
+> > I completely understand your problem. The only missing piece is why is this
+> > initial placement *not a problem for the unpinned case*. If we are able to
+> > articulate how the current code works well for the unpinned case, I would
+> > be fine.
+> From what I understand, the initial task placement happens as follows:
+> 
+> When a new task is created via fork or exec, for the initial wakeup
+> it takes the slow path in select_task_rq_fair() and goes to
+> find_idlest_cpu(). find_idlest_cpu() will explore the sched domain
+> hierarchy in a top-down fashion to find the idlest cpu for task to
+> run on.
+> 
+> During this, it'll call find_idlest_group() to get the idlest group
+> within a particular domain to search for the target cpu. In our case,
+> the local group will have spare capacity to accommodate tasks.
+> We only do a cpumask_test_cpu(this_cpu, sched_group_span(group))
+> to check is the task can run on a particular group.
+> 
 
-After replying to Ilia's comment[1], I realized the CFB drawing
-operations use native byte and bit ordering, unless
-FBINFO_FOREIGN_ENDIAN is set.
-While Amiga, Atari, and Sun-3 use big-endian bit ordering,
-e.g. Acorn VIDC[2] uses little endian, and SH7760[3] is configurable
-(sh7760fb configures ordering to match host order).
-BTW, ssd130{7fb,x}_update_rect() both assume little-endian, so I
-guess they are broken on big-endian.
-Fbtest uses big-endian bit ordering, so < 8 bpp is probably broken
-on little-endian.
+[snip]
 
-Hence the above should become:
+Ok, Prateek, I do understand the intent here.
+Thanks for spending the time to explain the same.
 
-    #define DRM_FORMAT_C1          fourcc_code('C', '1', ' ', ' ') /*
-[7:0] C7:C6:C5:C4:C3:C2:C1:C0 1:1:1:1:1:1:1:1 eight pixels/byte */
-    #define DRM_FORMAT_C2          fourcc_code('C', '2', ' ', ' ') /*
-[7:0] C3:C2:C1:C0 2:2:2:2 four pixels/byte */
-    #define DRM_FORMAT_C4          fourcc_code('C', '4', ' ', ' ') /*
-[7:0] C1:C0 4:4 two pixels/byte */
+> Ah! I see. But I do believe this problem of initial
+> placement lies along the wakeup path.
+> --
+> Thanks and Regards,
+> Prateek
 
-The same changes should be made for DRM_FORMAT_[RD][124].
-
-The fbdev emulation code should gain support for these with and without
-DRM_FORMAT_BIG_ENDIAN, the latter perhaps only on big-endian platforms?
-
-[1] https://lore.kernel.org/r/CAKb7UvgEdm9U=+RyRwL0TGRfA_Qc7NbhCWoZOft2DKdXggtKYw@mail.gmail.com/
-[2] See p.30 of the VIDC datasheet
-    http://chrisacorns.computinghistory.org.uk/docs/Acorn/Misc/Acorn_VIDC_Datasheet.pdf
-[3] See p.1178 of the SH7660 datasheet
-    https://datasheet.octopart.com/HD6417760BL200AV-Renesas-datasheet-14105759.pdf
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Thanks and Regards
+Srikar Dronamraju
