@@ -2,140 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11919C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70639C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 20:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244904AbiCNUHE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 16:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43634 "EHLO
+        id S244916AbiCNUHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 16:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234180AbiCNUHC (ORCPT
+        with ESMTP id S234180AbiCNUHE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 16:07:02 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D490A403CE
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:05:51 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id j5-20020a056902020500b00628ab64be30so14696352ybs.16
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:05:51 -0700 (PDT)
+        Mon, 14 Mar 2022 16:07:04 -0400
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC17403ED
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:05:54 -0700 (PDT)
+Received: by mail-oo1-xc2f.google.com with SMTP id n5-20020a4a9545000000b0031d45a442feso21804659ooi.3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 13:05:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=8f0s79ka6K+xZLjhEa6v9OQwM+zc/G84NFUgH0amXtY=;
-        b=oWMxFcmEuQa7Oz8Msf5z2d2F/+cxSvJeY2AkshA00cCwmDongR92lT++R6u+2wswp/
-         KeHuRfDuIINh7QuVpmgim0OtP9TVidSBRd8VA4FhF9ErV1otSCPmz+AkktixGdSZwzT8
-         LCfWw99uiLBPTLjaM7e2GesV6Vr95aJhEjo56x1iSRDgcy1Pi4qC604b7DxcZjF0+c7w
-         /2K0o8E7BBCgilr6vRGvf156M3tc+fnB8epOT0a5sLqt3zWx7hzNiJnGvxaWsM5waXja
-         J6OMDvqIkNbTk3t3YyDVaC5Q3RlFOFXcGH/fE9ejjisH84XYUlCL+8IflYOkwpId7Erp
-         aQEQ==
+        d=linuxtx.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iL+bTF+IsJj2jfqqbh63XbPYr229OTSdVOr9HvKPCW0=;
+        b=TvMuOAeIRfWytcYVW6/pg0KYzYrx9Tkxdo4o5kJKp1AwbBur9neOONvgjXK7aCQowK
+         qvKd4xqhAUQZfT9YjahbL9ca2ZzjkajQUPO/zkPl36ooh449iOMz0Rrpk7DUj0zH1PqI
+         VmTjLtNHvo36r8ScufR7fwNxUecCfr+qp7+yg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=8f0s79ka6K+xZLjhEa6v9OQwM+zc/G84NFUgH0amXtY=;
-        b=v824qqGiz8hub6LukDtpjGbn/W4h8tL/oLpwbeBQn1V9g582bRsDasHwGJo8SBBrj9
-         Nh6Ri34F0ksqag0tP2zGCl/CkM+kLFnVSAr+XkvDZbU54KW5tEKjWwwW7N0YpwJTqbX2
-         VypCdCndQpqztUfnRQvzphe024AxuNJHpdGBudZfZIm3//3leKJ+xobcUNBMA2XNpthT
-         3lGKO+0kXo8VLL60C3HQ8bZGdGxtnX2qtWfHS0eJ31re/Bz0x2j6inYnDstESr3+DVmS
-         FQ+wg8RDZHIx9HY7vpzBjQ4DdQ2soAoqU0Qi64qdNFj8reL4hSvCHsezM6OtiOxqXGe2
-         Ym7w==
-X-Gm-Message-State: AOAM530PN4gBGuctm5XB9205ZMwO4el6FODnnOev/KtZT/L/Bl7F9Zxt
-        EMHrlr1z/1Lx38x4WlezZRiqN2feaZi9pZ1Axg==
-X-Google-Smtp-Source: ABdhPJxeJ4ERpyXJrRQxcj/bYJNsQODEu20+d8yn9qPL1N8ZlV6KyQDHbDeVHPvOyZo+/DauOEQQySrLcRIvNw+kpA==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:500a:9ac2:e73e:69e3])
- (user=kaleshsingh job=sendgmr) by 2002:a5b:712:0:b0:629:5d03:4b1b with SMTP
- id g18-20020a5b0712000000b006295d034b1bmr19139174ybq.380.1647288351094; Mon,
- 14 Mar 2022 13:05:51 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 13:01:15 -0700
-In-Reply-To: <20220314200148.2695206-1-kaleshsingh@google.com>
-Message-Id: <20220314200148.2695206-7-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220314200148.2695206-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH v6 6/8] KVM: arm64: Add hypervisor overflow stack
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        Andrew Jones <drjones@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iL+bTF+IsJj2jfqqbh63XbPYr229OTSdVOr9HvKPCW0=;
+        b=Xd66CkajuuAMgAPDaVFrl0/2n0NV65doa/FMAg6wBr5JEOzFmxv6LT5LWFu/kvWHcS
+         f4PqBPeD9UDfoFPMsBCMWf8TNu/ZymWxlCNkfSH68kHbIXuka3xwriEmX4atKxLOSQS5
+         px+035RJstOqd/zCLPlnUdLx76R1kHKHG9Ngx7W5fRBp0B8PhOQPKJYW9k3P0OMdwgvS
+         ER3w9K6SWxrRZeTEjPFCizoevb1sJSNRy3sJkV2lL3kmT8ldianuKJaPJuksvdQI/NYC
+         YSucX9HYboceZgaUddb0DAth1z2H/kVMyuFlHbSigrxPmrxRQmcKbFFXNQYNQ7j8qv6u
+         pnCA==
+X-Gm-Message-State: AOAM532RHTpTDQ/73Kf2Q4R8QFNoJyEvsIC1LOpbB8IN11cSuMVDreI9
+        IfMUYT3Jinit3EQlQ6fptZwmKA==
+X-Google-Smtp-Source: ABdhPJy0s8+oSNomesaZ0ulF3NtaDRMWwTOCjPz1yaBWqLDcyEb0YpB2dblrbvA9Ii/MbMTDfH0M2Q==
+X-Received: by 2002:a05:6870:e74b:b0:db:2768:f169 with SMTP id t11-20020a056870e74b00b000db2768f169mr375879oak.120.1647288353793;
+        Mon, 14 Mar 2022 13:05:53 -0700 (PDT)
+Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
+        by smtp.gmail.com with ESMTPSA id n11-20020a9d710b000000b005af4ceeaac1sm8074726otj.37.2022.03.14.13.05.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 13:05:52 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 15:05:51 -0500
+From:   Justin Forbes <jmforbes@linuxtx.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.16 000/121] 5.16.15-rc1 review
+Message-ID: <Yi+gH+yWc5td2rR8@fedora64.linuxtx.org>
+References: <20220314112744.120491875@linuxfoundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allocate and switch to 16-byte aligned secondary stack on overflow. This
-provides us stack space to better handle overflows; and is used in
-a subsequent patch to dump the hypervisor stacktrace. The overflow stack
-is only allocated if CONFIG_NVHE_EL2_DEBUG is enabled, as hypervisor
-stacktraces is a debug feature dependent on CONFIG_NVHE_EL2_DEBUG.
+On Mon, Mar 14, 2022 at 12:53:03PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.15 release.
+> There are 121 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.15-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
+Tested rc1 against the Fedora build system (aarch64, armv7, ppc64le,
+s390x, x86_64), and boot tested x86_64. No regressions noted.
 
-Changes in v4:
-  - Update comment to clarify resetting the SP to the top of the stack
-    only happens if CONFIG_NVHE_EL2_DEBUG is disabled, per Fuad
-
-
- arch/arm64/kvm/hyp/nvhe/host.S   | 11 ++++++++---
- arch/arm64/kvm/hyp/nvhe/switch.c |  5 +++++
- 2 files changed, 13 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
-index be6d844279b1..a0c4b4f1549f 100644
---- a/arch/arm64/kvm/hyp/nvhe/host.S
-+++ b/arch/arm64/kvm/hyp/nvhe/host.S
-@@ -179,13 +179,18 @@ SYM_FUNC_END(__host_hvc)
- 	b	hyp_panic
- 
- .L__hyp_sp_overflow\@:
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+	/* Switch to the overflow stack */
-+	adr_this_cpu sp, hyp_overflow_stack + PAGE_SIZE, x0
-+#else
- 	/*
--	 * Reset SP to the top of the stack, to allow handling the hyp_panic.
--	 * This corrupts the stack but is ok, since we won't be attempting
--	 * any unwinding here.
-+	 * If !CONFIG_NVHE_EL2_DEBUG, reset SP to the top of the stack, to
-+	 * allow handling the hyp_panic. This corrupts the stack but is ok,
-+	 * since we won't be attempting any unwinding here.
- 	 */
- 	ldr_this_cpu	x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
- 	mov	sp, x0
-+#endif
- 
- 	bl	hyp_panic_bad_stack
- 	ASM_BUG()
-diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-index 703a5d3f611b..efc20273a352 100644
---- a/arch/arm64/kvm/hyp/nvhe/switch.c
-+++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-@@ -34,6 +34,11 @@ DEFINE_PER_CPU(struct kvm_host_data, kvm_host_data);
- DEFINE_PER_CPU(struct kvm_cpu_context, kvm_hyp_ctxt);
- DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
- 
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
-+	__aligned(16);
-+#endif
-+
- static void __activate_traps(struct kvm_vcpu *vcpu)
- {
- 	u64 val;
--- 
-2.35.1.723.g4982287a31-goog
-
+Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
