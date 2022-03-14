@@ -2,98 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E27C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D173C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239059AbiCNLfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
+        id S239023AbiCNLfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239035AbiCNLfI (ORCPT
+        with ESMTP id S236577AbiCNLfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:35:08 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F05342486;
-        Mon, 14 Mar 2022 04:33:52 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id q13so13237064plk.12;
-        Mon, 14 Mar 2022 04:33:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xJJVf4XEMS36RF5BbkvFmc1p0vno0lmSqAoaojk+slA=;
-        b=PHPEp2SKy9JooD3Aftbg0qeiKDQRQUX/ARYN1xjsX0tgRSiBwubEkLn3uB4OT5ahh9
-         cGf+l5rHd7iSPGDzTuK3Bm7z3cmy2mWruG3B+a3K8BucByQbZSH/7wJyt8nZ5tNVgxLo
-         6TS5xdTpb9nx2JaL0gbb0/ikCmgNNQnBFpeLAy1Dp6XPgkTWkQnvR1jh4cLl4mYUFpga
-         VHCBh3idXBfkvmEVA17siKwqAZPY1Ga0GdZJSp1Q4FoWadHV9hDkjh8n5an+AlqdeOqn
-         X6h8bnwWz6TLNdsPw7NcX4hr13TOhxx5F953CufuBCAzz+LSXLutS9AMxcnt3T9KpKpK
-         woSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xJJVf4XEMS36RF5BbkvFmc1p0vno0lmSqAoaojk+slA=;
-        b=0TktoOJNyeGQMNQSu0zeIPkxHrYjwzqwivR0lVvTUlPYEqkC28oRMviy3yo1h7YXFS
-         aXyjQAqwN/j2v1lMoW2h8gi3fm9T3hFGydonabkgfsKrMgcDjOuwSUIdVE9fxIYSwNq6
-         +ZbRiTYo/RBppGGGWcxjSvaQmNny4bvZIZaSpee1et9iVYy39Gc4wbW4n3yzyIdETJcC
-         H025IB62avjF9xOec4qtX+/Ui75y7BTpCTRGvN8E2LDRX6xNEr83/3EvV6f581SPHEHa
-         5wNtPNnApxnHaP7r6aDasY0gjhmkWlJXzKNOLr5ltRxZqC6ybyhYgrE8qo2BNjIlkU5p
-         NuoQ==
-X-Gm-Message-State: AOAM533wEpNhBDuQrZYYaPF4/zIcWbZ9bX23v/2zcnftcK6hkKjvKtTU
-        saFVN1Zy7eLVOs2UQnR+ACgl23VCraQ63A==
-X-Google-Smtp-Source: ABdhPJzJP9uVr7dX011F6jFGipnvelTk+3P07bcB2Cn2YFKJ4ur9c+h3c15aMRP1gV9Kn0yvEESgWA==
-X-Received: by 2002:a17:902:7805:b0:151:b8ec:202b with SMTP id p5-20020a170902780500b00151b8ec202bmr23074862pll.111.1647257631606;
-        Mon, 14 Mar 2022 04:33:51 -0700 (PDT)
-Received: from ubuntu.mate (subs02-180-214-232-74.three.co.id. [180.214.232.74])
-        by smtp.gmail.com with ESMTPSA id 3-20020a17090a030300b001c17851b6a1sm13608117pje.28.2022.03.14.04.33.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 04:33:51 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 5/5] Documentation: update stable tree link
-Date:   Mon, 14 Mar 2022 18:33:29 +0700
-Message-Id: <20220314113329.485372-6-bagasdotme@gmail.com>
+        Mon, 14 Mar 2022 07:35:39 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0EA3ED1D;
+        Mon, 14 Mar 2022 04:34:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BEA62CE1176;
+        Mon, 14 Mar 2022 11:34:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60BC7C340E9;
+        Mon, 14 Mar 2022 11:34:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647257666;
+        bh=723RJKFmjtUkAGQyqZ+6vtkIxRTQNc85URH8O5GguD4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=S17a/Y5dHOitAFatb3kMuQn5DnvJdGfuafHMlRDkYnKVEdLOY0jcFlm6oi04xvcFK
+         gtYppLOrSVySzmNNYB9UQWF4iZTHzMlP40E3EfglpQc7e0KkI2YAi+BM6TXz1vnA8q
+         hLlfdMLEl8GlHHwWClyVJba8Sm88OLbnfqxS4+uM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 01/20] net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
+Date:   Mon, 14 Mar 2022 12:34:02 +0100
+Message-Id: <20220314112730.435791883@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314113329.485372-1-bagasdotme@gmail.com>
-References: <20220314113329.485372-1-bagasdotme@gmail.com>
+In-Reply-To: <20220314112730.388955049@linuxfoundation.org>
+References: <20220314112730.388955049@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The link to stable tree is redirected to
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git. Update
-accordingly.
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: stable@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+[ Upstream commit e0058f0fa80f6e09c4d363779c241c45a3c56b94 ]
+
+The function dma_alloc_coherent() in qed_vf_hw_prepare() can fail, so
+its return value should be checked.
+
+Fixes: 1408cc1fa48c ("qed: Introduce VFs")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/process/stable-kernel-rules.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_vf.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/process/stable-kernel-rules.rst b/Documentation/process/stable-kernel-rules.rst
-index c494914622e..a9a479fba90 100644
---- a/Documentation/process/stable-kernel-rules.rst
-+++ b/Documentation/process/stable-kernel-rules.rst
-@@ -178,7 +178,7 @@ Trees
-  - The finalized and tagged releases of all stable kernels can be found
-    in separate branches per version at:
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_vf.c b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+index 170243d3276b..d0449d5418f7 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_vf.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_vf.c
+@@ -384,6 +384,9 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
+ 						    p_iov->bulletin.size,
+ 						    &p_iov->bulletin.phys,
+ 						    GFP_KERNEL);
++	if (!p_iov->bulletin.p_virt)
++		goto free_pf2vf_reply;
++
+ 	DP_VERBOSE(p_hwfn, QED_MSG_IOV,
+ 		   "VF's bulletin Board [%p virt 0x%llx phys 0x%08x bytes]\n",
+ 		   p_iov->bulletin.p_virt,
+@@ -397,6 +400,10 @@ int qed_vf_hw_prepare(struct qed_hwfn *p_hwfn)
  
--	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-+	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+ 	return qed_vf_pf_acquire(p_hwfn);
  
-  - The release candidate of all stable kernel versions can be found at:
- 
++free_pf2vf_reply:
++	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
++			  sizeof(union pfvf_tlvs),
++			  p_iov->pf2vf_reply, p_iov->pf2vf_reply_phys);
+ free_vf2pf_request:
+ 	dma_free_coherent(&p_hwfn->cdev->pdev->dev,
+ 			  sizeof(union vfpf_tlvs),
 -- 
-An old man doll... just what I always wanted! - Clara
+2.34.1
+
+
 
