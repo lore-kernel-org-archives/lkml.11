@@ -2,67 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC22C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10424C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243044AbiCNQbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
+        id S243050AbiCNQbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243025AbiCNQb3 (ORCPT
+        with ESMTP id S243048AbiCNQbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:31:29 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7207B13D22;
-        Mon, 14 Mar 2022 09:30:19 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id k24so24891752wrd.7;
-        Mon, 14 Mar 2022 09:30:19 -0700 (PDT)
+        Mon, 14 Mar 2022 12:31:40 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BA313E3E;
+        Mon, 14 Mar 2022 09:30:21 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id i8so24903513wrr.8;
+        Mon, 14 Mar 2022 09:30:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5IWZB7lm0OS7hiJCt1Fk8L1gWisKBN/knOKbVeilPF4=;
-        b=qtRhVzP1IotAGcXO6C1pZ75A5P6fJYQT2aa4yaBaaO8cSA0oFTOOXGiv6aygKri+Gu
-         AsVWM1naLcA7ZxVTBMsZOLRzj4PWFStGxyigAA78jh+aoomI0Gfbgh2YrZM2e8JaM9nP
-         tBc68SqXLeMIZFurb3umP394DC2Y1tyLwF4MeQH8KszoEt1LG5XxdoOdTlc40ByS7MbS
-         vmqVU4rku9gtSRWFSOvxR1DJ/re/xuuA8XjnLooWpjmW7z17RVdosqwbD17WzSvC3Par
-         rYAo3nT/d7mbJNevolJNW+UnwznP87XmB7uaLtzvdcg/X7kOJCxn2qLd5giIbEB7K8DH
-         RnLA==
+        bh=AzsIbe/VyQDZhQv3en/oGFWMkVwLL9AvbOE+B5m6rmM=;
+        b=oluAmZ1AbProoVNTpi90HZvl0fwZzZZa4vLOh9Kw7RedFNCTQ+C2fpFTKnXJ1mDjmZ
+         duGVfXlvqLBAzdKe9hKrZKq72KmCLmS28/3Tm/T8V7jgRsSIs7OzVwv65iWIHtL9+xib
+         mNqhEvzO3LDIioC55gLFc8WxjlBOE60HswL6BxEksEBB7fuHtfcTOn1dyiG7YpTMjXV4
+         qX8bSeZagaIiUBD+UQOxe0FCoXDvi+HkX4YHJvLcEUA2h6S/S9tTE++UQ12D85vDwdsL
+         PB4mpdyn5bDrzzXUi3MM9WJEgEI2gO2/7pPkUnJrcpRhoP4Zc+A7w7eHYfarrUmHB4Ky
+         2e+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5IWZB7lm0OS7hiJCt1Fk8L1gWisKBN/knOKbVeilPF4=;
-        b=KgqdyWH7E94DBS9VvqE9Pc1tCxGRLoMsphJOQoLqcHzYlK1Tjjr0pHIJNpHLWNS3Kr
-         Mp0/oUdwLj+39geZky/5uQ3PmX6sjTRSnabkBX8mAJm8M8nExlGwKdcGdjGmiSnfos58
-         hDLGN7SFpiPLqxfGK7WoqRGUOQic0a4z/HBZ6JTLieL2MXE7cooA0bIsdl+j/vM6acoD
-         t6ZJPWEqh+6/XoDK8S+BNn80Cme7VdhWq9RPUJn6qAPWMA4tfPwkpl9G+agPkxDZ1fuE
-         rlwYGmwI3BzB9uOwZLJzOEbFyC8NbsPNn1JIhIlJlOq/Z33f7GHEEP4yhUekimE7WKsp
-         QTVw==
-X-Gm-Message-State: AOAM5323vTyAvEdiGUI1VrKveMyMWqouPr6FF30ebrJ/eIDSG4Rf67hG
-        gWZbegTkG3DFUf9EFcwNEaU=
-X-Google-Smtp-Source: ABdhPJziNtwZGkbnwKeDXdTEo5ctpjTFFpNoIz9NasiUJKQ7pee9Wro4ag+vWU1HLo1Kje0ACVTm4g==
-X-Received: by 2002:a5d:5888:0:b0:203:6974:968a with SMTP id n8-20020a5d5888000000b002036974968amr17829324wrf.339.1647275418067;
-        Mon, 14 Mar 2022 09:30:18 -0700 (PDT)
+        bh=AzsIbe/VyQDZhQv3en/oGFWMkVwLL9AvbOE+B5m6rmM=;
+        b=DfHGdoRQbnkbqewtyp5t5Spi7mgSZm1b5SbSVYMqt2jZF3mGGUVXNdHrzumuBO1zXd
+         pAk1QhXLqByqG62vxr+R9HzMVyoYJ6zHAs/OSMjQEujgGPZ4yf9IE7zoLiBI6/xVCrnC
+         yAzt1p5vOK5sFxSrA9IX3h5mZ4t1UNNyNyqusSSWnuCnJHdLJlUV1QBLFQEcyX5olqDv
+         ZJSb7xMKe1clSO79atrXp1Uealx895QpmcLboFqtdQ4I7vqd8ZvqVmq8QhOHtFDDG7jc
+         DextNZV+wZ72N+2D4NZmzncYM8Krg4SN+qyJPZ/K+Xnd5DI3ONrk8Y9wF9Av0UIPxGyA
+         wdbg==
+X-Gm-Message-State: AOAM533zsEvz7zS+zceKFpW8PFwYKHv3ABzx5NmfDRN4gxnUZKFAL55I
+        kW1QVVaD0hl+WPhW1YFTTdo=
+X-Google-Smtp-Source: ABdhPJy5zV2RXw6618ozXkF+A8aLhNgnnHiahwhVyrGmH9IHJNHt1h6EQhbUi1N+zsOVFCxtMP8lsA==
+X-Received: by 2002:a05:6000:1548:b0:203:7a50:315d with SMTP id 8-20020a056000154800b002037a50315dmr17318360wry.41.1647275419825;
+        Mon, 14 Mar 2022 09:30:19 -0700 (PDT)
 Received: from linuxdev2.toradex.int (31-10-206-124.static.upc.ch. [31.10.206.124])
-        by smtp.gmail.com with ESMTPSA id w10-20020a5d680a000000b001f1dabec837sm13476817wru.113.2022.03.14.09.30.17
+        by smtp.gmail.com with ESMTPSA id w10-20020a5d680a000000b001f1dabec837sm13476817wru.113.2022.03.14.09.30.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 09:30:17 -0700 (PDT)
+        Mon, 14 Mar 2022 09:30:19 -0700 (PDT)
 From:   Max Krummenacher <max.oss.09@gmail.com>
 X-Google-Original-From: Max Krummenacher <max.krummenacher@toradex.com>
 To:     max.krummenacher@toradex.com
-Cc:     Arnd Bergmann <arnd@arndb.de>, Fabio Estevam <festevam@gmail.com>,
+Cc:     Oleksandr Suvorov <oleksandr.suvorov@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Olof Johansson <olof@lixom.net>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        soc@kernel.org
-Subject: [PATCH v1 03/14] ARM: dts: imx6dl-colibri: Drop dedicated v1.1 device tree
-Date:   Mon, 14 Mar 2022 17:29:47 +0100
-Message-Id: <20220314162958.40361-4-max.krummenacher@toradex.com>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 05/14] ARM: dts: imx6dl-colibri: Add gpio-line-names
+Date:   Mon, 14 Mar 2022 17:29:49 +0100
+Message-Id: <20220314162958.40361-6-max.krummenacher@toradex.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314162958.40361-1-max.krummenacher@toradex.com>
 References: <20220314162958.40361-1-max.krummenacher@toradex.com>
@@ -72,178 +71,249 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop Colibri V1.1 device tree, this is just a duplicate of Colibri V1.0
-with the possibility to use SD cards in UHS mode if the carrier board
-does not have 3.3V pull up resistor.
+From: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 
-The dedicated device tree kept the feature switched of by setting
-the no-1-8-v property and thus does not offer anything different
-than what the regular device tree does.
+Add GPIO line names on module level. Those are all GPIOs which a user
+might use on his custom carrier board. If more meaningful names are
+available on the carrier board, the user can overwrite the line names
+in the carrier board level device tree.
 
-Thus drop the dedicated device tree and merge the preparation to
-allow enabling the feature should a carrier without pull ups
-be used into the regular device tree.
-
+Signed-off-by: Oleksandr Suvorov <oleksandr.suvorov@toradex.com>
 Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
 ---
 
- arch/arm/boot/dts/Makefile                    |  1 -
- .../boot/dts/imx6dl-colibri-v1_1-eval-v3.dts  | 31 -------------
- .../boot/dts/imx6qdl-colibri-v1_1-uhs.dtsi    | 44 -------------------
- arch/arm/boot/dts/imx6qdl-colibri.dtsi        | 29 +++++++++++-
- 4 files changed, 27 insertions(+), 78 deletions(-)
- delete mode 100644 arch/arm/boot/dts/imx6dl-colibri-v1_1-eval-v3.dts
- delete mode 100644 arch/arm/boot/dts/imx6qdl-colibri-v1_1-uhs.dtsi
+ arch/arm/boot/dts/imx6qdl-colibri.dtsi | 218 +++++++++++++++++++++++++
+ 1 file changed, 218 insertions(+)
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 235ad559acb2..ee27bafa69be 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -453,7 +453,6 @@ dtb-$(CONFIG_SOC_IMX6Q) += \
- 	imx6dl-aristainetos2_4.dtb \
- 	imx6dl-aristainetos2_7.dtb \
- 	imx6dl-colibri-eval-v3.dtb \
--	imx6dl-colibri-v1_1-eval-v3.dtb \
- 	imx6dl-cubox-i.dtb \
- 	imx6dl-cubox-i-emmc-som-v15.dtb \
- 	imx6dl-cubox-i-som-v15.dtb \
-diff --git a/arch/arm/boot/dts/imx6dl-colibri-v1_1-eval-v3.dts b/arch/arm/boot/dts/imx6dl-colibri-v1_1-eval-v3.dts
-deleted file mode 100644
-index 223275f028f1..000000000000
---- a/arch/arm/boot/dts/imx6dl-colibri-v1_1-eval-v3.dts
-+++ /dev/null
-@@ -1,31 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0+ OR MIT
--/*
-- * Copyright 2020 Toradex
-- */
--
--/dts-v1/;
--
--#include "imx6dl-colibri-eval-v3.dts"
--#include "imx6qdl-colibri-v1_1-uhs.dtsi"
--
--/ {
--	model = "Toradex Colibri iMX6DL/S V1.1 on Colibri Evaluation Board V3";
--	compatible = "toradex,colibri_imx6dl-v1_1-eval-v3",
--		     "toradex,colibri_imx6dl-v1_1",
--		     "toradex,colibri_imx6dl-eval-v3",
--		     "toradex,colibri_imx6dl",
--		     "fsl,imx6dl";
--};
--
--/* Colibri MMC */
--&usdhc1 {
--	status = "okay";
--	/*
--	 * Please make sure your carrier board does not pull-up any of
--	 * the MMC/SD signals to 3.3 volt before attempting to activate
--	 * UHS-I support.
--	 * To let signaling voltage be changed to 1.8V, please
--	 * delete no-1-8-v property (example below):
--	 * /delete-property/no-1-8-v;
--	 */
--};
-diff --git a/arch/arm/boot/dts/imx6qdl-colibri-v1_1-uhs.dtsi b/arch/arm/boot/dts/imx6qdl-colibri-v1_1-uhs.dtsi
-deleted file mode 100644
-index 7672fbfc29be..000000000000
---- a/arch/arm/boot/dts/imx6qdl-colibri-v1_1-uhs.dtsi
-+++ /dev/null
-@@ -1,44 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0+ OR MIT
--/*
-- * Copyright 2020 Toradex
-- */
--
--&iomuxc {
--	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
--		fsl,pins = <
--			MX6QDL_PAD_SD1_CMD__SD1_CMD    0x170b1
--			MX6QDL_PAD_SD1_CLK__SD1_CLK    0x100b1
--			MX6QDL_PAD_SD1_DAT0__SD1_DATA0 0x170b1
--			MX6QDL_PAD_SD1_DAT1__SD1_DATA1 0x170b1
--			MX6QDL_PAD_SD1_DAT2__SD1_DATA2 0x170b1
--			MX6QDL_PAD_SD1_DAT3__SD1_DATA3 0x170b1
--		>;
--	};
--
--	pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
--		fsl,pins = <
--			MX6QDL_PAD_SD1_CMD__SD1_CMD    0x170f1
--			MX6QDL_PAD_SD1_CLK__SD1_CLK    0x100f1
--			MX6QDL_PAD_SD1_DAT0__SD1_DATA0 0x170f1
--			MX6QDL_PAD_SD1_DAT1__SD1_DATA1 0x170f1
--			MX6QDL_PAD_SD1_DAT2__SD1_DATA2 0x170f1
--			MX6QDL_PAD_SD1_DAT3__SD1_DATA3 0x170f1
--		>;
--	};
--};
--
--/* Colibri MMC */
--&usdhc1 {
--	pinctrl-names = "default", "state_100mhz", "state_200mhz";
--	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_mmc_cd>;
--	pinctrl-1 = <&pinctrl_usdhc1_100mhz &pinctrl_mmc_cd>;
--	pinctrl-2 = <&pinctrl_usdhc1_200mhz &pinctrl_mmc_cd>;
--	vmmc-supply = <&reg_module_3v3>;
--	vqmmc-supply = <&vgen3_reg>;
--	wakeup-source;
--	keep-power-in-suspend;
--	sd-uhs-sdr12;
--	sd-uhs-sdr25;
--	sd-uhs-sdr50;
--	sd-uhs-sdr104;
--};
 diff --git a/arch/arm/boot/dts/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-index 4e2a309c93fa..16d38bc78b2a 100644
+index c6112b1bffd4..c92887f6af61 100644
 --- a/arch/arm/boot/dts/imx6qdl-colibri.dtsi
 +++ b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-@@ -370,11 +370,14 @@
- 
- /* Colibri MMC */
- &usdhc1 {
--	pinctrl-names = "default";
-+	pinctrl-names = "default", "state_100mhz", "state_200mhz";
- 	pinctrl-0 = <&pinctrl_usdhc1 &pinctrl_mmc_cd>;
-+	pinctrl-1 = <&pinctrl_usdhc1_100mhz &pinctrl_mmc_cd>;
-+	pinctrl-2 = <&pinctrl_usdhc1_200mhz &pinctrl_mmc_cd>;
- 	cd-gpios = <&gpio2 5 GPIO_ACTIVE_LOW>; /* MMCD */
- 	disable-wp;
--	vqmmc-supply = <&reg_module_3v3>;
-+	vmmc-supply = <&reg_module_3v3>;
-+	vqmmc-supply = <&vgen3_reg>;
- 	bus-width = <4>;
- 	no-1-8-v;
- 	status = "disabled";
-@@ -692,6 +695,28 @@
- 		>;
+@@ -118,6 +118,224 @@
  	};
+ };
  
-+	pinctrl_usdhc1_100mhz: usdhc1grp100mhz {
-+		fsl,pins = <
-+			MX6QDL_PAD_SD1_CMD__SD1_CMD    0x170b1
-+			MX6QDL_PAD_SD1_CLK__SD1_CLK    0x100b1
-+			MX6QDL_PAD_SD1_DAT0__SD1_DATA0 0x170b1
-+			MX6QDL_PAD_SD1_DAT1__SD1_DATA1 0x170b1
-+			MX6QDL_PAD_SD1_DAT2__SD1_DATA2 0x170b1
-+			MX6QDL_PAD_SD1_DAT3__SD1_DATA3 0x170b1
-+		>;
-+	};
++&gpio1 {
++	gpio-line-names = "",
++			  "SODIMM_67",
++			  "SODIMM_180",
++			  "SODIMM_196",
++			  "SODIMM_174",
++			  "SODIMM_176",
++			  "SODIMM_194",
++			  "SODIMM_55",
++			  "SODIMM_63",
++			  "SODIMM_28",
++			  "SODIMM_93",
++			  "SODIMM_69",
++			  "SODIMM_99",
++			  "SODIMM_130",
++			  "SODIMM_106",
++			  "SODIMM_98",
++			  "SODIMM_192",
++			  "SODIMM_49",
++			  "SODIMM_190",
++			  "SODIMM_51",
++			  "SODIMM_47",
++			  "SODIMM_53",
++			  "",
++			  "SODIMM_22";
++};
 +
-+	pinctrl_usdhc1_200mhz: usdhc1grp200mhz {
-+		fsl,pins = <
-+			MX6QDL_PAD_SD1_CMD__SD1_CMD    0x170f1
-+			MX6QDL_PAD_SD1_CLK__SD1_CLK    0x100f1
-+			MX6QDL_PAD_SD1_DAT0__SD1_DATA0 0x170f1
-+			MX6QDL_PAD_SD1_DAT1__SD1_DATA1 0x170f1
-+			MX6QDL_PAD_SD1_DAT2__SD1_DATA2 0x170f1
-+			MX6QDL_PAD_SD1_DAT3__SD1_DATA3 0x170f1
-+		>;
-+	};
++&gpio2 {
++	gpio-line-names = "SODIMM_132",
++			  "SODIMM_134",
++			  "SODIMM_135",
++			  "SODIMM_133",
++			  "SODIMM_102",
++			  "SODIMM_43",
++			  "SODIMM_127",
++			  "SODIMM_37",
++			  "SODIMM_104",
++			  "SODIMM_59",
++			  "SODIMM_30",
++			  "SODIMM_100",
++			  "SODIMM_38",
++			  "SODIMM_34",
++			  "SODIMM_32",
++			  "SODIMM_36",
++			  "SODIMM_59",
++			  "SODIMM_67",
++			  "SODIMM_97",
++			  "SODIMM_79",
++			  "SODIMM_103",
++			  "SODIMM_101",
++			  "SODIMM_45",
++			  "SODIMM_105",
++			  "SODIMM_107",
++			  "SODIMM_91",
++			  "SODIMM_89",
++			  "SODIMM_150",
++			  "SODIMM_126",
++			  "SODIMM_128",
++			  "",
++			  "SODIMM_94";
++};
 +
- 	pinctrl_usdhc3: usdhc3grp {
- 		fsl,pins = <
- 			MX6QDL_PAD_SD3_CMD__SD3_CMD	0x17059
++&gpio3 {
++	gpio-line-names = "SODIMM_111",
++			  "SODIMM_113",
++			  "SODIMM_115",
++			  "SODIMM_117",
++			  "SODIMM_119",
++			  "SODIMM_121",
++			  "SODIMM_123",
++			  "SODIMM_125",
++			  "SODIMM_110",
++			  "SODIMM_112",
++			  "SODIMM_114",
++			  "SODIMM_116",
++			  "SODIMM_118",
++			  "SODIMM_120",
++			  "SODIMM_122",
++			  "SODIMM_124",
++			  "",
++			  "SODIMM_96",
++			  "SODIMM_77",
++			  "SODIMM_25",
++			  "SODIMM_27",
++			  "SODIMM_88",
++			  "SODIMM_90",
++			  "SODIMM_31",
++			  "SODIMM_23",
++			  "SODIMM_29",
++			  "SODIMM_71",
++			  "SODIMM_73",
++			  "SODIMM_92",
++			  "SODIMM_81",
++			  "SODIMM_131",
++			  "SODIMM_129";
++};
++
++&gpio4 {
++	gpio-line-names = "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_168",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_184",
++			  "SODIMM_186",
++			  "HDMI_15",
++			  "HDMI_16",
++			  "SODIMM_178",
++			  "SODIMM_188",
++			  "SODIMM_56",
++			  "SODIMM_44",
++			  "SODIMM_68",
++			  "SODIMM_82",
++			  "SODIMM_24",
++			  "SODIMM_76",
++			  "SODIMM_70",
++			  "SODIMM_60",
++			  "SODIMM_58",
++			  "SODIMM_78",
++			  "SODIMM_72",
++			  "SODIMM_80",
++			  "SODIMM_46",
++			  "SODIMM_62",
++			  "SODIMM_48",
++			  "SODIMM_74";
++};
++
++&gpio5 {
++	gpio-line-names = "SODIMM_95",
++			  "",
++			  "SODIMM_86",
++			  "",
++			  "SODIMM_65",
++			  "SODIMM_50",
++			  "SODIMM_52",
++			  "SODIMM_54",
++			  "SODIMM_66",
++			  "SODIMM_64",
++			  "SODIMM_57",
++			  "SODIMM_61",
++			  "SODIMM_136",
++			  "SODIMM_138",
++			  "SODIMM_140",
++			  "SODIMM_142",
++			  "SODIMM_144",
++			  "SODIMM_146",
++			  "SODIMM_172",
++			  "SODIMM_170",
++			  "SODIMM_149",
++			  "SODIMM_151",
++			  "SODIMM_153",
++			  "SODIMM_155",
++			  "SODIMM_157",
++			  "SODIMM_159",
++			  "SODIMM_161",
++			  "SODIMM_163",
++			  "SODIMM_33",
++			  "SODIMM_35",
++			  "SODIMM_165",
++			  "SODIMM_167";
++};
++
++&gpio6 {
++	gpio-line-names = "SODIMM_169",
++			  "SODIMM_171",
++			  "SODIMM_173",
++			  "SODIMM_175",
++			  "SODIMM_177",
++			  "SODIMM_179",
++			  "SODIMM_85",
++			  "SODIMM_166",
++			  "SODIMM_160",
++			  "SODIMM_162",
++			  "SODIMM_158",
++			  "SODIMM_164",
++			  "",
++			  "",
++			  "SODIMM_156",
++			  "SODIMM_75",
++			  "SODIMM_154",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_152";
++};
++
++&gpio7 {
++	gpio-line-names = "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "",
++			  "SODIMM_19",
++			  "SODIMM_21",
++			  "",
++			  "SODIMM_137";
++};
++
+ &hdmi {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_hdmi_ddc>;
 -- 
 2.20.1
 
