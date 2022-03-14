@@ -2,81 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87477C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB90C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245622AbiCNW3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 18:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38862 "EHLO
+        id S245630AbiCNWbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 18:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245612AbiCNW3r (ORCPT
+        with ESMTP id S238535AbiCNWbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 18:29:47 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA19D12635
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:28:35 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id l2so33713508ybe.8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:28:35 -0700 (PDT)
+        Mon, 14 Mar 2022 18:31:44 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C9B23E5CB
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:30:34 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id u61so33703391ybi.11
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:30:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qWHNUqN4RPuJ+7vYjuCC+61GwajgQBbNJQM7LJ6cllQ=;
-        b=mfx54VUND+tksYeR/vbtsuf8Rqw0eLgWGmJdnX62ExXLEOu9eKylDVL20CFBMls5nT
-         1N7agP7N/TTm0WB5LYMTdDTccZVlrguzVQT1u5Q5OqAa/nxQfZFT1WPSX6VacnvvYc/B
-         NLMnqVmITanUnR3Z2O2fhLb2ZrgeWrXBGE+guyqvKdaqmrQPWMStdEzwXkv5u1Rf5aXJ
-         bdbxr7/wnGLNEXaM4llvK5Xzr9nGt4iQqYBEduQytHE3D3nDsgewItxoJvm6mwPOChRX
-         BOGysxDi60RjHw5e3Bf5SbifZo0p+iW+AXk2ANZeRo6wr9V8URDVRgEVlBoxoWPSdlVN
-         txCw==
+        bh=NlBHR6usH1gSHtmofP4iSUiv99gPnLLBTvpyEYcoxh4=;
+        b=MvZ5uReWaLRuWb0aH67AkF8JXHm7LrqmDeZ87wUAEhFFqRt4AtOVbqoF7LXc4pck9C
+         x/XcAXC6IUmfpQ3WpMrQjy48OPWQq0hR71Eydu9NZL/t8rCnaW2QkAZ5ObBUae/kJkpZ
+         GTz4pUarx7Es/H9FYJWZoMiHHoIitGnXQ7fMyRhvBXYGQYub7QfSA12MGB5TT7qKDkV2
+         /esAqJbA+TTWuD08RAVUg94hta61Z06RKT0HyVR3RzaCAHk7ppzA2+cFoIQnTotmqNXI
+         rpE7L17xwj9XtaKWdiYtiZaqy3hNvQZvIQr/S1aIBX+yQGjbLvVww1yZ39Xqihkj0HPs
+         kqxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qWHNUqN4RPuJ+7vYjuCC+61GwajgQBbNJQM7LJ6cllQ=;
-        b=Og/0JSRJXVTz6kZ57JJ899EJAuXVt+MDH8MSb4jj5WbDkg45Gbd3IL/BZbFe0+cfBJ
-         1DhA+YC3U+ssiiNdKgLIamYfKLfnVUMJAQuuxMmM1T4ClzCracHVTyrFpIWk6K2DCX3Q
-         eET/3jZnkf+SWtE1U8t1aSNkfmYaL/NP+9CSVcrnP1k2N5nWefnMw1Thlf9GJAc6RpT+
-         fRTFJGCjVFzKtR48fcQxcYTzPH7VGzm03WmkiQjyGZJ23SU66OMrqeWynlnoOA8acRmh
-         NCOKuKBs8swY0ZEOu02faVKMx7P9EdldEkZJnuHZnE7phUYLUAzd4O/aYQ0EHz5D4aDK
-         fy4w==
-X-Gm-Message-State: AOAM532c6CWH8FVimKgldwumsjUEix7VISV3yaPyyxW/VeEBj0mmiUGf
-        Ju/5LfgtYTYvZAP0H+fBvgbRybuO7xdXd4DE03qn5g==
-X-Google-Smtp-Source: ABdhPJxY3aPz3pg9iWcQ54O5HlHHzIhd94s/LV7H9QfgeLcD4LnfyG8oIiLntLd4kof5PBDBI0d0DPOnHZ+ud4Eb2No=
-X-Received: by 2002:a25:f406:0:b0:628:c29b:5c39 with SMTP id
- q6-20020a25f406000000b00628c29b5c39mr20736120ybd.369.1647296914823; Mon, 14
- Mar 2022 15:28:34 -0700 (PDT)
+        bh=NlBHR6usH1gSHtmofP4iSUiv99gPnLLBTvpyEYcoxh4=;
+        b=M9XdlpDJL6gWgvGW46WnHo6LtuYCqRLppS4XC6OBiFcXqQ6ANMpXOd6tFFZwMsUa8p
+         kO/1Tbz4Ml30QvAv0YNAgHuiqvmoW4pLJ8wZx9PJRGb2gCadAuJMVftg0OigdNa6vlea
+         bgBgBimzBymLOjrRvBTE/uYcyBmxBRlwmNV/qimpAEokAXNom71auOYHSWwq4xGwr1nr
+         epa2AMuoxAT9jD6H4xyJGg/nYDvAy76B/rmkhKwCHh/piCT+kIc6t8C2t78IvtgXe0Gp
+         UVw9yUALMcq2CxBKtiEtZwxBbn6KH02ciMoJSK/41TcmAfdMRQdu3ydrCVHWjtT2GVeI
+         sZfQ==
+X-Gm-Message-State: AOAM532EA1Y3j6+PsowqbzD+k3P5o0lj1DYbN5caNvZnxoURSKCzeBgt
+        FQbtneR8hX8PdAQUvgy5q9aLMKkZdwipVkVF1kVOBg==
+X-Google-Smtp-Source: ABdhPJw4ajnPMAp2l22VE4wgnTHI7XHy1g/O2oEHoRMaFMihH5016jGC2cLdkd8irDT+QCje4jTuRpl7cLtaWwFyAtQ=
+X-Received: by 2002:a05:6902:203:b0:628:7b6f:2845 with SMTP id
+ j3-20020a056902020300b006287b6f2845mr20723906ybs.533.1647297033601; Mon, 14
+ Mar 2022 15:30:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220312113853.63446-1-singh.kuldeep87k@gmail.com> <20220312113853.63446-5-singh.kuldeep87k@gmail.com>
-In-Reply-To: <20220312113853.63446-5-singh.kuldeep87k@gmail.com>
+References: <20220311145209.17346-1-lukas.bulwahn@gmail.com>
+In-Reply-To: <20220311145209.17346-1-lukas.bulwahn@gmail.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 14 Mar 2022 23:28:23 +0100
-Message-ID: <CACRpkdaVXMBu9DYca3NF_injHUZ3YWpdqVMNd_6toG-=ZkCkOw@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] ARM: dts: ste-dbx: Update spi clock-names property
-To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Date:   Mon, 14 Mar 2022 23:30:22 +0100
+Message-ID: <CACRpkdbjy2Cpzs7j6=iWw+wnJxBHkaxgcO2SOx6DeTLeF4ogPw@mail.gmail.com>
+Subject: Re: [PATCH] mfd: ab8500: clean up definitions in header after debugfs removal
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 12:39 PM Kuldeep Singh
-<singh.kuldeep87k@gmail.com> wrote:
+On Fri, Mar 11, 2022 at 3:52 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
 
-> Now that spi pl022 binding only accept "sspclk" as clock name, ST
-> ericsson platform with "SSPCLK" clock name start raising dtbs_check
-> warnings. Make necessary changes to update this property in order to
-> make it compliant with binding.
+> Commit 3d4d1266597c ("mfd: ab8500: Drop debugfs module") removes the config
+> AB8500_DEBUG in drivers/mfd/Kconfig, but missed a reference to this config
+> in include/linux/mfd/abx500/ab8500.h.
 >
-> clock-names:0: 'sspclk' was expected
+> The functions ab8500_dump_all_banks() and ab8500_debug_register_interrupt()
+> in the ab8500 header, previously with definitions conditioned on
+> AB8500_DEBUG, are now completely needless to define and handle at all.
 >
-> Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+> The function ab8500_debug_register_interrupt() is not used at all and can
+> just be removed.
+>
+> The function ab8500_dump_all_banks() is just registered in the abx500_ops
+> struct in the dump_all_banks field, but this is then not further referenced
+> anywhere else at all. So, safely drop the dump_all_banks field from
+> abx500_ops and delete the ab8500_dump_all_banks() definition.
+>
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 > ---
-> v3:
-> - Reword commit message
+> Linus, Lee, please pick this clean-up on top of the commit above.
 
-Patch applied to the ux500 tree!
+With Lee's requested one-character fix:
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
 Yours,
 Linus Walleij
