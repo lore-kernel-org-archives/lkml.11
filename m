@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75FB4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:35:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC881C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239155AbiCNLgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
+        id S239096AbiCNLgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239113AbiCNLgc (ORCPT
+        with ESMTP id S239135AbiCNLgg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:36:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE74642A26;
-        Mon, 14 Mar 2022 04:35:21 -0700 (PDT)
+        Mon, 14 Mar 2022 07:36:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF4442A14;
+        Mon, 14 Mar 2022 04:35:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F7E7B80DBE;
-        Mon, 14 Mar 2022 11:35:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D204C340E9;
-        Mon, 14 Mar 2022 11:35:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04BCE61129;
+        Mon, 14 Mar 2022 11:35:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0226C340ED;
+        Mon, 14 Mar 2022 11:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257719;
-        bh=A2wtG3v5j0hpvU8hINsG8yBGCqv10mRtKPYDt5BXuoM=;
+        s=korg; t=1647257723;
+        bh=vuzDvDp7IBqg0LSGTRql+DakrwNuBWYGjouDTDgZZig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RBvANUOt/0gzEKCuhCjt+C6Iovo47QG5+OAdf1UO1IKNTaBL3fHCCQWFVN/g0MbDx
-         7W8ygx9/WsDVFoqTbHHVdrBQ/BvnU75Nhc5skPqkii895sAtW2DzkAqGxDOTEm/mgG
-         stDHrt5sUzPDbrw77IU5qxI+mrP5qmPFqZ+BgFjg=
+        b=cX6jiK6MSiUs5tGU3qKcq0G6jOhz7RYcoc7j8ZrNJa/70vJxGo5t4S+NPjPf6tfrR
+         04+zzDGGPWmQPRE1LCfRkujD67mU/NeVNFG1hB/iRcCeOEbDRT5utTkMz5R4mk8s7H
+         9uGqd4UcXJ3k8+sCPPDrKNZY86eAQwqBWmsbZ3+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 19/20] ARM: fix Thumb2 regression with Spectre BHB
-Date:   Mon, 14 Mar 2022 12:34:20 +0100
-Message-Id: <20220314112731.062892656@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 02/20] qed: return status of qed_iov_get_link
+Date:   Mon, 14 Mar 2022 12:34:03 +0100
+Message-Id: <20220314112730.463694901@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112730.388955049@linuxfoundation.org>
 References: <20220314112730.388955049@linuxfoundation.org>
@@ -49,37 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Tom Rix <trix@redhat.com>
 
-commit 6c7cb60bff7aec24b834343ff433125f469886a3 upstream.
+[ Upstream commit d9dc0c84ad2d4cc911ba252c973d1bf18d5eb9cf ]
 
-When building for Thumb2, the vectors make use of a local label. Sadly,
-the Spectre BHB code also uses a local label with the same number which
-results in the Thumb2 reference pointing at the wrong place. Fix this
-by changing the number used for the Spectre BHB local label.
+Clang static analysis reports this issue
+qed_sriov.c:4727:19: warning: Assigned value is
+  garbage or undefined
+  ivi->max_tx_rate = tx_rate ? tx_rate : link.speed;
+                   ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fixes: b9baf5c8c5c3 ("ARM: Spectre-BHB workaround")
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+link is only sometimes set by the call to qed_iov_get_link()
+qed_iov_get_link fails without setting link or returning
+status.  So change the decl to return status.
+
+Fixes: 73390ac9d82b ("qed*: support ndo_get_vf_config")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/kernel/entry-armv.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
---- a/arch/arm/kernel/entry-armv.S
-+++ b/arch/arm/kernel/entry-armv.S
-@@ -1074,9 +1074,9 @@ vector_bhb_loop8_\name:
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+index 6379bfedc9f0..9a7ba55b4693 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+@@ -2899,11 +2899,11 @@ int qed_iov_mark_vf_flr(struct qed_hwfn *p_hwfn, u32 *p_disabled_vfs)
+ 	return found;
+ }
  
- 	@ bhb workaround
- 	mov	r0, #8
--1:	b	. + 4
-+3:	b	. + 4
- 	subs	r0, r0, #1
--	bne	1b
-+	bne	3b
- 	dsb
- 	isb
- 	b	2b
+-static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
+-			     u16 vfid,
+-			     struct qed_mcp_link_params *p_params,
+-			     struct qed_mcp_link_state *p_link,
+-			     struct qed_mcp_link_capabilities *p_caps)
++static int qed_iov_get_link(struct qed_hwfn *p_hwfn,
++			    u16 vfid,
++			    struct qed_mcp_link_params *p_params,
++			    struct qed_mcp_link_state *p_link,
++			    struct qed_mcp_link_capabilities *p_caps)
+ {
+ 	struct qed_vf_info *p_vf = qed_iov_get_vf_info(p_hwfn,
+ 						       vfid,
+@@ -2911,7 +2911,7 @@ static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
+ 	struct qed_bulletin_content *p_bulletin;
+ 
+ 	if (!p_vf)
+-		return;
++		return -EINVAL;
+ 
+ 	p_bulletin = p_vf->bulletin.p_virt;
+ 
+@@ -2921,6 +2921,7 @@ static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
+ 		__qed_vf_get_link_state(p_hwfn, p_link, p_bulletin);
+ 	if (p_caps)
+ 		__qed_vf_get_link_caps(p_hwfn, p_caps, p_bulletin);
++	return 0;
+ }
+ 
+ static void qed_iov_process_mbx_req(struct qed_hwfn *p_hwfn,
+@@ -3538,6 +3539,7 @@ static int qed_get_vf_config(struct qed_dev *cdev,
+ 	struct qed_public_vf_info *vf_info;
+ 	struct qed_mcp_link_state link;
+ 	u32 tx_rate;
++	int ret;
+ 
+ 	/* Sanitize request */
+ 	if (IS_VF(cdev))
+@@ -3551,7 +3553,9 @@ static int qed_get_vf_config(struct qed_dev *cdev,
+ 
+ 	vf_info = qed_iov_get_public_vf_info(hwfn, vf_id, true);
+ 
+-	qed_iov_get_link(hwfn, vf_id, NULL, &link, NULL);
++	ret = qed_iov_get_link(hwfn, vf_id, NULL, &link, NULL);
++	if (ret)
++		return ret;
+ 
+ 	/* Fill information about VF */
+ 	ivi->vf = vf_id;
+-- 
+2.34.1
+
 
 
