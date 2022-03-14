@@ -2,151 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 767B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C39B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242771AbiCNPwv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 11:52:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59248 "EHLO
+        id S242782AbiCNPyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 11:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237643AbiCNPws (ORCPT
+        with ESMTP id S233051AbiCNPyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 11:52:48 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1732192BB
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 08:51:37 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id n19so27914830lfh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 08:51:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GO6DO22NyOz74pRKEaDBeavTF5IzNMteCDkoxNllIjs=;
-        b=C+MtGX9CMvggkG1qaBzQ7cD7DzChnpKOxlIfkKuGP5QvXmw69IBulUXax1WvA1adD3
-         ddIMSnABoXDU2in9nYP4VXGeuIrxOGyP6u6nm81HlypZko7oyfWnQWOi4xdB4H3fDGO3
-         Au802GbTgksVMv+cI84WSDkhpI8RES1YS8dJ8KGY3NLhIZnrsA1z+nPcJLmWiScSPsOQ
-         3xbzgxQM9hrQSglBU6iUTGp07lNUv+EQWD0ji/zAJAA1vFeNcWq8GVWFu+Fz4KubEVoh
-         Dd7tMx7xJDYZu5277JvRIlAepC2jprlPO74GXQEACdusmjs0E41lmYPnq5mrtWNg7giG
-         NlTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GO6DO22NyOz74pRKEaDBeavTF5IzNMteCDkoxNllIjs=;
-        b=ShddOidZJ6g5PaAhWNNPzHXQOp/J5sW9UQ9Kb8zyfpiB8+jBtAuT140zwelHUaFoT8
-         6VxtPZ4UmuNe1zI2BE4+FhyEoU5jjxZWCunxeW9u1cwbSo094e9qL4ZpHwFDiEen3xDz
-         8JtlaNGKB8PGJ4UcmCzWvQh3gfxrpplfqwu2KBBdTDymvsSl1NXQLipPhVGgEBlIMqt0
-         Y2I5vUV1Qba4j4oBGqFaBK5LilTrrrSk1c9t1SPUp4jz/gTjWuQbeNfAYjuT0fO+M6Kp
-         YvQj22T0qHHwVE+dNzkvK1wddjxPn7rPolarCnby1XEOVcgP3KwnvNCDeS0WxpqFA5WR
-         w9eg==
-X-Gm-Message-State: AOAM5300JpZ34nCQoaKZAh0Sbh10q7agqG4qYGcXqNOe5hgM3NfVo+en
-        7/x2DOmLKz13rdSZ6v+sa59BjKkvc3PfoSijdx70VQ==
-X-Google-Smtp-Source: ABdhPJx1ExVE9qufvJAbY8tN7OfqPeyUdY8cYDJaBjP79yF9JHq/eJYG89IfJxx7LaUUQS2SzHYyxnTDJwTT8d7GQQ4=
-X-Received: by 2002:a05:6512:e98:b0:448:8053:d34a with SMTP id
- bi24-20020a0565120e9800b004488053d34amr7045193lfb.680.1647273095785; Mon, 14
- Mar 2022 08:51:35 -0700 (PDT)
+        Mon, 14 Mar 2022 11:54:03 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1224313D57;
+        Mon, 14 Mar 2022 08:52:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647273171; x=1678809171;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3yJxxA91uWOhzYlVJp4lXDa6RpvyMWHjr+Q1DevJB14=;
+  b=YhA2cr2fuhLmFzn55e/fQYghb8jMgYZ+T2BtZzZNAfFIneSWGh7KpjuM
+   f7tWgi7NmXXN8CnCHQzCFtr/lfEnbiZpKGZWuzzJTEOnGBoNjurRw3N2A
+   CiPjjQhhxqOnY/AQbivCYxQ5pBeU7v6DOx8zhntIwTkIwWnf5RC0M0l4Y
+   84okfsfNflazpyI44lDWF2enQhIg65NRLMHGyiPmr0CL6Em3upFenYN3M
+   FYnm8AaKiWrikjmgJ8KOmTJyJxnvYYm6AKfSKy18m2LlTso05aHEEM568
+   N8y3jHS/U5X2m5jCWJ68g0M6hv0I/DaBVRVTBSiQuNr+fordPtfceJ+7O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="319289816"
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="319289816"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 08:52:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="612936984"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 14 Mar 2022 08:52:47 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nTn02-0009zN-IK; Mon, 14 Mar 2022 15:52:46 +0000
+Date:   Mon, 14 Mar 2022 23:52:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     frank zago <frank@zago.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Jan-Niklas Burfeind <kernel@aiyionpri.me>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa-dev@sang-engineering.com>,
+        Johan Hovold <johan@kernel.org>, linux-usb@vger.kernel.org,
+        gunar@schorcht.net, Lee Jones <lee.jones@linaro.org>
+Cc:     kbuild-all@lists.01.org, frank zago <frank@zago.net>
+Subject: Re: [PATCH v3] mfd: ch341: add driver for the WCH CH341 in I2C/GPIO
+ mode
+Message-ID: <202203142302.5s8nv83m-lkp@intel.com>
+References: <20220314030937.22762-1-frank@zago.net>
 MIME-Version: 1.0
-References: <20201211141656.24915-1-mw@semihalf.com> <CAPDyKFqsSO+f9iG8vccwXZXDDNHgLEg7bfUe-KfHn2C-ZnOU4A@mail.gmail.com>
- <20220314154033.4x74zscayee32rrj@pali>
-In-Reply-To: <20220314154033.4x74zscayee32rrj@pali>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Mon, 14 Mar 2022 16:51:25 +0100
-Message-ID: <CAPv3WKc4MFeLgnJMWx=YNT5Ta5yi6fVhb4f-Rf211FTEmkvyog@mail.gmail.com>
-Subject: Re: [PATCH] mmc: sdhci-xenon: fix 1.8v regulator stabilization
-To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        Ziji Hu <huziji@marvell.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Kostya Porotchkin <kostap@marvell.com>,
-        Alex Leibovich <alexl@marvell.com>,
-        "# 4.0+" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314030937.22762-1-frank@zago.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pali,
+Hi frank,
 
+Thank you for the patch! Yet something to improve:
 
-pon., 14 mar 2022 o 16:40 Pali Roh=C3=A1r <pali@kernel.org> napisa=C5=82(a)=
-:
->
-> On Monday 11 January 2021 19:06:24 Ulf Hansson wrote:
-> > On Fri, 11 Dec 2020 at 15:17, Marcin Wojtas <mw@semihalf.com> wrote:
-> > >
-> > > From: Alex Leibovich <alexl@marvell.com>
-> > >
-> > > Automatic Clock Gating is a feature used for the power
-> > > consumption optimisation. It turned out that
-> > > during early init phase it may prevent the stable voltage
-> > > switch to 1.8V - due to that on some platfroms an endless
-> > > printout in dmesg can be observed:
-> > > "mmc1: 1.8V regulator output did not became stable"
-> > > Fix the problem by disabling the ACG at very beginning
-> > > of the sdhci_init and let that be enabled later.
-> > >
-> > > Fixes: 3a3748dba881 ("mmc: sdhci-xenon: Add Marvell Xenon SDHC core f=
-unctionality")
-> > > Signed-off-by: Alex Leibovich <alexl@marvell.com>
-> > > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
-> > > Cc: stable@vger.kernel.org
-> >
-> > Applied for fixes (by fixing the typos), thanks!
->
-> Hello!
->
-> Is not this patch address same issue which was fixed by patch which was
-> merged earlier?
->
-> bb32e1987bc5 ("mmc: sdhci-xenon: fix annoying 1.8V regulator warning")
-> https://lore.kernel.org/linux-mmc/CAPDyKFqAsvgAjfL-c9ukFNWeGJmufQosR2Eg9S=
-KjXMVpNitdkA@mail.gmail.com/
->
+[auto build test ERROR on lee-mfd/for-mfd-next]
+[also build test ERROR on linux/master linus/master v5.17-rc8 next-20220310]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-This indeed look similar. This fix was originally developed for CN913x
-platform without the mentioned patch (I'm wondering if it would also
-suffice to fix A3k board's problem). Anyway, I don't think we have an
-issue here, as everything seems to work fine on top of mainline Linux
-with both changes.
+url:    https://github.com/0day-ci/linux/commits/frank-zago/mfd-ch341-add-driver-for-the-WCH-CH341-in-I2C-GPIO-mode/20220314-111158
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git for-mfd-next
+config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20220314/202203142302.5s8nv83m-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/bba0dbb56cafdad51de5ccb8ab6714d5b14d0782
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review frank-zago/mfd-ch341-add-driver-for-the-WCH-CH341-in-I2C-GPIO-mode/20220314-111158
+        git checkout bba0dbb56cafdad51de5ccb8ab6714d5b14d0782
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
 
-Best regards,
-Marcin
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> > Kind regards
-> > Uffe
-> >
-> >
-> > > ---
-> > >  drivers/mmc/host/sdhci-xenon.c | 7 ++++++-
-> > >  1 file changed, 6 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/mmc/host/sdhci-xenon.c b/drivers/mmc/host/sdhci-=
-xenon.c
-> > > index c67611fdaa8a..4b05f6fdefb4 100644
-> > > --- a/drivers/mmc/host/sdhci-xenon.c
-> > > +++ b/drivers/mmc/host/sdhci-xenon.c
-> > > @@ -168,7 +168,12 @@ static void xenon_reset_exit(struct sdhci_host *=
-host,
-> > >         /* Disable tuning request and auto-retuning again */
-> > >         xenon_retune_setup(host);
-> > >
-> > > -       xenon_set_acg(host, true);
-> > > +       /*
-> > > +        * The ACG should be turned off at the early init time, in or=
-der
-> > > +        * to solve a possile issues with the 1.8V regulator stabiliz=
-ation.
-> > > +        * The feature is enabled in later stage.
-> > > +        */
-> > > +       xenon_set_acg(host, false);
-> > >
-> > >         xenon_set_sdclk_off_idle(host, sdhc_id, false);
-> > >
-> > > --
-> > > 2.29.0
-> > >
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "arizona_request_irq" [sound/soc/codecs/snd-soc-wm5110.ko] undefined!
+>> ERROR: modpost: "arizona_free_irq" [sound/soc/codecs/snd-soc-wm5110.ko] undefined!
+>> ERROR: modpost: "arizona_set_irq_wake" [sound/soc/codecs/snd-soc-wm5110.ko] undefined!
+>> ERROR: modpost: "arizona_request_irq" [sound/soc/codecs/snd-soc-wm5102.ko] undefined!
+>> ERROR: modpost: "arizona_free_irq" [sound/soc/codecs/snd-soc-wm5102.ko] undefined!
+>> ERROR: modpost: "arizona_set_irq_wake" [sound/soc/codecs/snd-soc-wm5102.ko] undefined!
+>> ERROR: modpost: "arizona_request_irq" [sound/soc/codecs/snd-soc-cs47l24.ko] undefined!
+>> ERROR: modpost: "arizona_free_irq" [sound/soc/codecs/snd-soc-cs47l24.ko] undefined!
+>> ERROR: modpost: "arizona_set_irq_wake" [sound/soc/codecs/snd-soc-cs47l24.ko] undefined!
+>> ERROR: modpost: "arizona_request_irq" [sound/soc/codecs/snd-soc-arizona.ko] undefined!
+WARNING: modpost: suppressed 16 unresolved symbol warnings because there were too many)
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
