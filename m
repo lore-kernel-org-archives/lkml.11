@@ -2,162 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 380F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E162AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:40:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236763AbiCNHlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 03:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
+        id S236769AbiCNHlq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 03:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236747AbiCNHlL (ORCPT
+        with ESMTP id S232409AbiCNHlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 03:41:11 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A84240A33
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 00:40:01 -0700 (PDT)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 0C45E3F7E7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 07:40:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647243600;
-        bh=vL1DMH5mB/xA+saWf/LfgxjeoWUu89778nGRlXG7H8w=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=YIJOJ1/QBAdfhgwPo2N+gX/+jY+/CoQVH8bplFWmkCwGN+F3KHV7oreEDLHq0vDCe
-         m9d+QXY92JhsTw7DhJmUng8d2z+TPKvAGFq25k5KsRhXwX03MoLqBvorVjkvC6fpLs
-         VrR28qO4d5z2TC7Mj4bdQqKyFOqaXJM0mnirepoI41oZfwInSAnoEvbRZNBDVi35+M
-         SwegAfQavC0bd1AQtbY6L1K9QM8oecg9DpsOL3IAO9eIdlpB4juaID7cvWqSRRVeVi
-         RiDMugMGYNq/fmuxglPejm2QD6dM3yHK8npwQscYeeThEr2d6eiGvQiuxyWPkasMnN
-         qEhSZ/O6jApdw==
-Received: by mail-ej1-f72.google.com with SMTP id x2-20020a1709065ac200b006d9b316257fso7541657ejs.12
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 00:40:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vL1DMH5mB/xA+saWf/LfgxjeoWUu89778nGRlXG7H8w=;
-        b=Dp5GZTxzCCdnGgkpKcrGfL+pd32bGWZRlrk3IMTR1QY9uvQ2VFFVg0o7tljqrcY4lC
-         pzKbZ0tYIVlCunh+yF1ipShPlt31IxkGlWTBZS0mAnkEcAxh+ZEO+B0Bn8y7Z99YWpJI
-         85Ub16PNBLuSCZKGX9jxb1YArvJKF2lMP30Wux6CHxmpTLrKl38cxOfwOJuSDI62DYla
-         4maMcluo9ZgPZyLTKiAYpb9ybroaSuVeOrIIi0gFFRqysYvH7s+VLRqaTqyNI+ZnFKH9
-         fN+Xv59/hzel4GC88ZeIsCc50JjqJ5Ia0qMHKqyODWV2EI6/sR/FFxyGaVTYfF0tfUHi
-         9HSw==
-X-Gm-Message-State: AOAM533/95MmfF9fociGB2VWA8KiePWYtBOHTbwaF20DGwwa8eMR/25X
-        9vqdzL/qpofppbseiBJUVJ05hh5iiAhfGCd51IbxueX4X0SMFdvjqAogkgGuxLwYF5Uv+oyFtA4
-        UIimXltBjPPSVI4+oe0gq5zNK3S0c9dO7/Q5vitlKEQ==
-X-Received: by 2002:a17:907:96a0:b0:6db:a7d5:166a with SMTP id hd32-20020a17090796a000b006dba7d5166amr11292877ejc.725.1647243599449;
-        Mon, 14 Mar 2022 00:39:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyPxGLGvg6NYB7X0d8qa+t78Eu3+toeF4mQVyTiq0YuLnZWWKsaPeVCabDXp2g1VLgogEky+A==
-X-Received: by 2002:a17:907:96a0:b0:6db:a7d5:166a with SMTP id hd32-20020a17090796a000b006dba7d5166amr11292864ejc.725.1647243599250;
-        Mon, 14 Mar 2022 00:39:59 -0700 (PDT)
-Received: from [192.168.0.152] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.googlemail.com with ESMTPSA id a102-20020a509eef000000b0041614c8f79asm7552126edf.88.2022.03.14.00.39.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 00:39:58 -0700 (PDT)
-Message-ID: <f1621a67-a0ff-f111-c4da-9401924e7f4a@canonical.com>
-Date:   Mon, 14 Mar 2022 08:39:57 +0100
+        Mon, 14 Mar 2022 03:41:45 -0400
+Received: from ZXSHCAS1.zhaoxin.com (ZXSHCAS1.zhaoxin.com [203.148.12.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF1E40E65;
+        Mon, 14 Mar 2022 00:40:35 -0700 (PDT)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS1.zhaoxin.com
+ (10.28.252.161) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Mon, 14 Mar
+ 2022 15:25:27 +0800
+Received: from [192.168.43.174] (124.64.16.6) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Mon, 14 Mar
+ 2022 15:25:24 +0800
+To:     <mathias.nyman@intel.com>, <gregkh@linuxfoundation.org>,
+        <stern@rowland.harvard.edu>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <CobeChen@zhaoxin.com>, <TimGuo@zhaoxin.com>,
+        <tonywwang@zhaoxin.com>, <weitaowang@zhaoxin.com>
+From:   "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
+Subject: [PATCH] USB: Fix xhci ERDP update issue
+Message-ID: <3c576edf-89c3-ccf3-a43f-4ce2c1ced18d@zhaoxin.com>
+Date:   Mon, 14 Mar 2022 15:25:23 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/3] dt-bindings: phy: qcom,usb-snps-femto-v2: Add phy
- override params bindings
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
-To:     Pavan Kondeti <quic_pkondeti@quicinc.com>
-Cc:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wesley Cheng <wcheng@codeaurora.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-usb@vger.kernel.org, quic_ppratap@quicinc.com,
-        quic_kriskura@quicinc.com
-References: <1646288011-32242-1-git-send-email-quic_c_sanm@quicinc.com>
- <1646288011-32242-2-git-send-email-quic_c_sanm@quicinc.com>
- <b793195b-1d3d-63b2-19d2-72ae2aec8c0f@canonical.com>
- <20220314032952.GA27561@hu-pkondeti-hyd.qualcomm.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220314032952.GA27561@hu-pkondeti-hyd.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [124.64.16.6]
+X-ClientProxiedBy: ZXSHCAS1.zhaoxin.com (10.28.252.161) To
+ zxbjmbx1.zhaoxin.com (10.29.252.163)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/03/2022 04:29, Pavan Kondeti wrote:
-> Hi Krzysztof,
-> 
-> On Thu, Mar 03, 2022 at 04:59:22PM +0100, Krzysztof Kozlowski wrote:
->> On 03/03/2022 07:13, Sandeep Maheswaram wrote:
->>> Add device tree bindings for SNPS phy tuning parameters.
->>>
->>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
->>> ---
->>>  .../bindings/phy/qcom,usb-snps-femto-v2.yaml       | 125 +++++++++++++++++++++
->>>  1 file changed, 125 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
->>> index 0dfe691..227c097 100644
->>> --- a/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
->>> +++ b/Documentation/devicetree/bindings/phy/qcom,usb-snps-femto-v2.yaml
->>> @@ -50,6 +50,131 @@ properties:
->>>    vdda33-supply:
->>>      description: phandle to the regulator 3.3V supply node.
->>>  
->>> +  qcom,hs-disconnect:
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    description:
->>> +      This adjusts the voltage level for the threshold used to
->>> +      detect a disconnect event at the host. Possible values are.
->>
->> ':', instead of full stop.
->>
->>> +      7 -> +21.56%
->>> +      6 -> +17.43%
->>> +      5 -> +13.32%
->>> +      4 -> +9.73%
->>> +      3 -> +6.3
->>> +      2 -> +3.17%
->>> +      1 -> 0, Design default%
->>
->> Use "default:" instead. Here and in other places.
->>
->>> +      0 -> -2.72%
->>
->> In current form this should be an enum... but actually current form is
->> wrong. You should not store register values in DT. What if next version
->> of hardware has a different meaning of these values?
->>
->> Instead, you should store here meaningful values, not register values.
->>
-> 
-> Thanks for the feedback.
-> 
-> The values in % really makes the tuning easy. People look at the eye diagram
-> and decided whether to increase/decrease the margin. The absolute values
-> may not be that useful. All we need is an "adjustment" here. The databook
-> it self does not give any absolute values.
-> 
-> I agree to the "enum" suggestion which we have been following for the
-> qusb2 driver already. 
-> 
-> The values have not changed in the last 5 years for this hardware block, so
-> defining enums for the % values would be really helpful. 
+On some situations, software handles TRB events slower than adding TRBs,
+xhci_irq will not exit until all events are handled. If xhci_irq just
+handles 256 TRBs and exit, the temp variable(event_ring_deq) driver 
+records in xhci irq is equal to driver current dequeue pointer. It will 
+cause driver not update ERDP and software dequeue pointer lost sync with 
+ERDP. On the next xhci_irq, the event ring is full but driver will not 
+update ERDP as software dequeue pointer is equal to ERDP.
 
-I did not say you cannot store here percentages. Quite opposite - store
-here the percentages. Just do not store register value. No. Please read
-my comment again - meaningful values are needed.
+[  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
+[  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7 
+inflight: CMD OUT
+[  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 
+00 00 08 00
+[  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host 
+not responding to stop endpoint command.
+[  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
+[  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not 
+responding, assume dead
+[  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6 
+inflight: CMD
+[  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 
+00 00 08 00
+[  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5 
+inflight: CMD
 
+Fixed this issue by update software record temp variable when handles 
+128 TRB events.
 
-Best regards,
-Krzysztof
+Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+---
+  drivers/usb/host/xhci-ring.c | 1 +
+  1 file changed, 1 insertion(+)
+
+diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+index d0b6806..f970799 100644
+--- a/drivers/usb/host/xhci-ring.c
++++ b/drivers/usb/host/xhci-ring.c
+@@ -3141,6 +3141,7 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
+                 if (event_loop++ < TRBS_PER_SEGMENT / 2)
+                         continue;
+                 xhci_update_erst_dequeue(xhci, event_ring_deq);
++               event_ring_deq = xhci->event_ring->dequeue;
+
+                 /* ring is half-full, force isoc trbs to interrupt more 
+often */
+                 if (xhci->isoc_bei_interval > AVOID_BEI_INTERVAL_MIN)
+-- 
+2.7.4
