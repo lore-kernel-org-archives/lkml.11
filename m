@@ -2,267 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44EF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239530AbiCNLpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
+        id S238090AbiCNLs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240413AbiCNLny (ORCPT
+        with ESMTP id S234260AbiCNLs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:43:54 -0400
+        Mon, 14 Mar 2022 07:48:57 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF2694889B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:41:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C7B510FFB
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:47:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647258111;
+        s=mimecast20190719; t=1647258465;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cW4jyY0ggHWKM//52H4ZSp+MxpMFUr2GDlzHOKOA7Nc=;
-        b=DQ9oUauDc0lbGZ3KlOfXED5WHb12cOvAocW3icq95uRWbB9nkuBE2CgqxwkBhdWaNUh1Cv
-        XCYquxOtFcvt92LXjgVw7t4geMKXnaXZgLjn1qK2BHBDhRtY9MZ5Jq21HAkH6PpYFqtAHS
-        FPWVtzcnHYnuylNJGSXD1VFiJ8NgwfI=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bcpZVS9jvdmkopqFrbtM3sjMZDj+ts0ptUqEv+TD0sY=;
+        b=d79WQB1Evn8/Teji+NbFGplBliDKzF8lqtUUyqtPidTAOaQaM9ChdPeeSXKSnDYY6tUojr
+        kkFs7aNyCD+rWp+ou9zX1ZbR9lk2+5KjLOs/Eg4mo0qy8ryZTVk/kcnyogcmt0x1/qPBpx
+        1C8QwCJVV+Tz3GxU9iQSdEmNhwGcpaE=
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
+ [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-52-EhVpStTWOjyimOKEEl0qCA-1; Mon, 14 Mar 2022 07:41:50 -0400
-X-MC-Unique: EhVpStTWOjyimOKEEl0qCA-1
-Received: by mail-ed1-f69.google.com with SMTP id r8-20020aa7d588000000b00416438ed9a2so8549905edq.11
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:41:50 -0700 (PDT)
+ us-mta-498-udhyp90XOIia_Ep0zka_xw-1; Mon, 14 Mar 2022 07:47:44 -0400
+X-MC-Unique: udhyp90XOIia_Ep0zka_xw-1
+Received: by mail-oi1-f197.google.com with SMTP id o124-20020aca5a82000000b002d7585f6de6so11512657oib.3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:47:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cW4jyY0ggHWKM//52H4ZSp+MxpMFUr2GDlzHOKOA7Nc=;
-        b=TFF8WsnAtXuVOra9SuyD68mkke5FJuXIhcu2hRe0gZCRDm7FZWewxkOx5DaJ1FGI5w
-         Xu1fRIi/M5+TPj9u1BFOUGXbaPgnhJhXi0wTVvOC9ugZAlbFWgKV8Roc/ypqpLWZl2M8
-         XiHrnekC/0ymo2V/7P0UjZv3IlIBjzo7Ns4UHp9E+eYBsH/jdHwFAzBP20LHTZM2aBQu
-         1Btj/vv7CSjFAWz2K6aQ8n0gljHsG3i03LMrrxm+rV47glDMxaCj0x9581rSdqi3KcfJ
-         tmIupTcYPlvaCzsY2qOlgOqslsc1Scbdmw/+MfX0ZujOzg3ETsZd7rlxWb+iKw4Cx9Jc
-         AVAA==
-X-Gm-Message-State: AOAM531p81g0dR1f8Y65Il3ibZN2GoMHK80PWxLZ9FwPjI6pUZcQE0DZ
-        Sybip0xz+MDXHL7+UW5RHr8QQqHto3VQzuZxWnZCg27ojy4L89vL7Y2o/YWCKhlloq1ifyWHHpz
-        470MpxRL9RdjzJAuoOXAbC/3o
-X-Received: by 2002:a17:906:c04d:b0:6b9:252:c51c with SMTP id bm13-20020a170906c04d00b006b90252c51cmr18463874ejb.470.1647258109164;
-        Mon, 14 Mar 2022 04:41:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw1/PLmBFreOKVpLqYJHlqGRf+raWVhG5509XKiTAb59JuFpATNwStJnj9bzZcI97sPIdSztQ==
-X-Received: by 2002:a17:906:c04d:b0:6b9:252:c51c with SMTP id bm13-20020a170906c04d00b006b90252c51cmr18463866ejb.470.1647258108946;
-        Mon, 14 Mar 2022 04:41:48 -0700 (PDT)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id u10-20020a50d94a000000b004131aa2525esm7988373edj.49.2022.03.14.04.41.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 04:41:48 -0700 (PDT)
-Message-ID: <1cd105fe-3c63-49f7-cf1c-b86322ff2d37@redhat.com>
-Date:   Mon, 14 Mar 2022 12:41:48 +0100
+        bh=bcpZVS9jvdmkopqFrbtM3sjMZDj+ts0ptUqEv+TD0sY=;
+        b=kCNZZ5NGiWQK485VDe/PyssEDpdgNa/AMG+fskBPDRiJjPwKW6oGZ4UAf2hJ6Im8sS
+         zSUv1Vsdr1np0VHVJAnz6k2JyHxTcn9DmAqJt/n2O52Oy4hIFTPD3DOsT+FM4RlcgEGH
+         wePYgqAz25FoGrW23J6Z9ey6/ezexE8QKn0AX9+oXC/aoqC2B+eKh6tJ0SuYYWIxE0XV
+         pPZMU7Obw3Tbc+LRad40AHsNod9p3nyLbO44rMX02n0zJCl2lHE1l5a81eJkmiQKodoV
+         qe4Ie2y07uPSgCSvrEvGJ5i9UMyOrXfrmGXViSZo6chH3Ik8mDsdDHH3t4XueSgblQiR
+         bFgQ==
+X-Gm-Message-State: AOAM532LUyBwlKUK6esZ/Xg26aQktZyBVrXzij0wYVKpnRnBAwRnZgAE
+        OHi+7G5HM6gsX+ybrQVPPhxIN1iOpFxIz0N0T4k+Rtdy4NhWRJwAFj0pvekdYEDfIiwt505Fuzp
+        zukwF5maLZ+EdWLPiZ36tkZhH
+X-Received: by 2002:a9d:a26:0:b0:5b2:62f9:8951 with SMTP id 35-20020a9d0a26000000b005b262f98951mr10746042otg.90.1647258463130;
+        Mon, 14 Mar 2022 04:47:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxwAqYk4P1BWHg3E8uMP/QwyEazpxiKmi1fZygLGLiMJjqBhE26gasRX3j+K/Rj2zdZtSk8vg==
+X-Received: by 2002:a9d:a26:0:b0:5b2:62f9:8951 with SMTP id 35-20020a9d0a26000000b005b262f98951mr10746026otg.90.1647258462846;
+        Mon, 14 Mar 2022 04:47:42 -0700 (PDT)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id 125-20020a4a1483000000b003175bffb677sm7367924ood.2.2022.03.14.04.47.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 04:47:42 -0700 (PDT)
+From:   trix@redhat.com
+To:     nehal-bakulchandra.shah@amd.com, basavaraj.natikar@amd.com,
+        jikos@kernel.org, benjamin.tissoires@redhat.com, lains@riseup.net,
+        djogorchock@gmail.com, erazor_de@users.sourceforge.net,
+        srinivas.pandruvada@linux.intel.com, Shyam-sundar.S-k@amd.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] HID: cleanup comments
+Date:   Mon, 14 Mar 2022 04:47:34 -0700
+Message-Id: <20220314114734.1606537-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] platform/x86: hp-wmi: support omen thermal profile policy
- v1
-Content-Language: en-US
-To:     Enver Balalic <balalic.enver@gmail.com>, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        pobrn@protonmail.com
-References: <20220313190532.vpeuytz2ergnfsyt@omen>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220313190532.vpeuytz2ergnfsyt@omen>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Tom Rix <trix@redhat.com>
 
-Thank you for your patch. Some other changes have just landed to
-the hp-wmi driver, so for the next version please base your patch
-on my review-hans branch:
+For spdx, move to first line, use // style comment
 
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+Double words removed
+not, the, in
 
-On 3/13/22 20:05, Enver Balalic wrote:
-> As it turns out, these laptops have 2 thermal profile versions.
-> A previous patch added support for v0, this patch adds support
-> for v1 thermal policies that are in use on some devices.
-> We obtain the thermal policy version by querying the get system
-> design data WMI call and looking at the fourth byte it returns,
-> except if the system board DMI Board ID is in a specific array
-> that the windows command center app overrides to thermal policy
-> v0 for some reason.
-> 
-> Signed-off-by: Enver Balalic <balalic.enver@gmail.com>
-> ---
->  drivers/platform/x86/hp-wmi.c | 69 +++++++++++++++++++++++++++++++----
->  1 file changed, 62 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-> index 48a46466f086..ed5c729f8da1 100644
-> --- a/drivers/platform/x86/hp-wmi.c
-> +++ b/drivers/platform/x86/hp-wmi.c
-> @@ -61,6 +61,14 @@ static const char * const omen_thermal_profile_boards[] = {
->  	"8917", "8918", "8949", "894A", "89EB"
->  };
->  
-> +/* DMI Board names of Omen laptops that are specifically set to be thermal
-> + * profile version 0 by the Omen Command Center app, regardless of what
-> + * the get system design information WMI call returns
-> + */
-> +static const char *const omen_thermal_profile_force_v0_boards[] = {
-> +	"8607", "8746", "8747", "8749", "874A", "8748"
-> +};
-> +
->  enum hp_wmi_radio {
->  	HPWMI_WIFI	= 0x0,
->  	HPWMI_BLUETOOTH	= 0x1,
-> @@ -115,6 +123,7 @@ enum hp_wmi_gm_commandtype {
->  	HPWMI_SET_PERFORMANCE_MODE = 0x1A,
->  	HPWMI_FAN_SPEED_MAX_GET_QUERY = 0x26,
->  	HPWMI_FAN_SPEED_MAX_SET_QUERY = 0x27,
-> +	HPWMI_GET_SYSTEM_DESIGN_DATA = 0x28,
->  };
->  
->  enum hp_wmi_command {
-> @@ -149,6 +158,12 @@ enum hp_wireless2_bits {
->  	HPWMI_POWER_FW_OR_HW	= HPWMI_POWER_BIOS | HPWMI_POWER_HARD,
->  };
->  
-> +enum hp_thermal_profile_omen_v1 {
-> +	HP_OMEN_V1_THERMAL_PROFILE_DEFAULT	= 0x30,
-> +	HP_OMEN_V1_THERMAL_PROFILE_PERFORMANCE	= 0x31,
-> +	HP_OMEN_V1_THERMAL_PROFILE_COOL		= 0x50,
-> +};
-> +
+Replacements
+stuructures to structures
+Maganetic to Magnetic
+repond to respond
+behvaior to behavior
+Secial to Special
+informations to information
 
-Maybe also rename the V0 values to HP_OMEN_V0_THERMAL_PROFILE_?
-for consistency ?
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ .../amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h  | 8 ++++----
+ drivers/hid/hid-logitech-hidpp.c                          | 2 +-
+ drivers/hid/hid-magicmouse.c                              | 2 +-
+ drivers/hid/hid-nintendo.c                                | 2 +-
+ drivers/hid/hid-redragon.c                                | 2 +-
+ drivers/hid/hid-roccat-kone.c                             | 4 ++--
+ drivers/hid/hid-sony.c                                    | 2 +-
+ drivers/hid/intel-ish-hid/ishtp-hid-client.c              | 2 +-
+ 8 files changed, 12 insertions(+), 12 deletions(-)
 
->  enum hp_thermal_profile_omen {
->  	HP_OMEN_THERMAL_PROFILE_DEFAULT     = 0x00,
->  	HP_OMEN_THERMAL_PROFILE_PERFORMANCE = 0x01,
-> @@ -360,9 +375,6 @@ static int omen_thermal_profile_set(int mode)
->  	char buffer[2] = {0, mode};
->  	int ret;
->  
-> -	if (mode < 0 || mode > 2)
-> -		return -EINVAL;
-> -
->  	ret = hp_wmi_perform_query(HPWMI_SET_PERFORMANCE_MODE, HPWMI_GM,
->  				   &buffer, sizeof(buffer), sizeof(buffer));
->  
-> @@ -384,6 +396,30 @@ static bool is_omen_thermal_profile(void)
->  			    board_name) >= 0;
->  }
->  
-> +static int omen_get_thermal_policy_version(void)
-> +{
-> +	unsigned char buffer[8] = { 0 };
-> +	int ret;
-> +
-> +	const char *board_name = dmi_get_system_info(DMI_BOARD_NAME);
-> +
-> +	if (board_name) {
-> +		int matches = match_string(omen_thermal_profile_force_v0_boards,
-> +			ARRAY_SIZE(omen_thermal_profile_force_v0_boards),
-> +			board_name);
-> +		if (matches >= 0)
-> +			return 1;
-
-This seems wrong, shouldn't this be "return 0" so that the v0 interface
-actually gets used, rather then the v1 interface?
-
-> +	}
-> +
-> +	ret = hp_wmi_perform_query(HPWMI_GET_SYSTEM_DESIGN_DATA, HPWMI_GM,
-> +				   &buffer, sizeof(buffer), sizeof(buffer));
-> +
-> +	if (ret)
-> +		return ret < 0 ? ret : -EINVAL;
-> +
-> +	return buffer[3];
-> +}
-> +
->  static int omen_thermal_profile_get(void)
->  {
->  	u8 data;
-> @@ -1009,12 +1045,15 @@ static int platform_profile_omen_get(struct platform_profile_handler *pprof,
->  
->  	switch (tp) {
->  	case HP_OMEN_THERMAL_PROFILE_PERFORMANCE:
-> +	case HP_OMEN_V1_THERMAL_PROFILE_PERFORMANCE:
->  		*profile = PLATFORM_PROFILE_PERFORMANCE;
->  		break;
->  	case HP_OMEN_THERMAL_PROFILE_DEFAULT:
-> +	case HP_OMEN_V1_THERMAL_PROFILE_DEFAULT:
->  		*profile = PLATFORM_PROFILE_BALANCED;
->  		break;
->  	case HP_OMEN_THERMAL_PROFILE_COOL:
-> +	case HP_OMEN_V1_THERMAL_PROFILE_COOL:
->  		*profile = PLATFORM_PROFILE_COOL;
->  		break;
->  	default:
-> @@ -1027,23 +1066,38 @@ static int platform_profile_omen_get(struct platform_profile_handler *pprof,
->  static int platform_profile_omen_set(struct platform_profile_handler *pprof,
->  				     enum platform_profile_option profile)
->  {
-> -	int err, tp;
-> +	int err, tp, tp_version;
-> +
-> +	tp_version = omen_get_thermal_policy_version();
-> +
-> +	if (tp_version < 0 || tp_version > 1)
-> +		return -EOPNOTSUPP;
->  
->  	switch (profile) {
->  	case PLATFORM_PROFILE_PERFORMANCE:
-> -		tp = HP_OMEN_THERMAL_PROFILE_PERFORMANCE;
-> +		if (tp_version == 0)
-> +			tp = HP_OMEN_THERMAL_PROFILE_PERFORMANCE;
-> +		else
-> +			tp = HP_OMEN_V1_THERMAL_PROFILE_PERFORMANCE;
->  		break;
->  	case PLATFORM_PROFILE_BALANCED:
-> -		tp = HP_OMEN_THERMAL_PROFILE_DEFAULT;
-> +		if (tp_version == 0)
-> +			tp = HP_OMEN_THERMAL_PROFILE_DEFAULT;
-> +		else
-> +			tp = HP_OMEN_V1_THERMAL_PROFILE_DEFAULT;
->  		break;
->  	case PLATFORM_PROFILE_COOL:
-> -		tp = HP_OMEN_THERMAL_PROFILE_COOL;
-> +		if (tp_version == 0)
-> +			tp = HP_OMEN_THERMAL_PROFILE_COOL;
-> +		else
-> +			tp = HP_OMEN_V1_THERMAL_PROFILE_COOL;
->  		break;
->  	default:
->  		return -EOPNOTSUPP;
->  	}
->  
->  	err = omen_thermal_profile_set(tp);
-> +
-
-Please drop this unnecessary blank-line addition.
-
->	if (err < 0)
->  		return err;
->  
-> @@ -1128,6 +1182,7 @@ static int thermal_profile_setup(void)
->  		 */
->  
->  		err = omen_thermal_profile_set(tp);
-> +
-
-Please drop this unnecessary blank-line addition.
-
->  		if (err < 0)
->  			return err;
->  
-
-Regards,
-
-Hans
+diff --git a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h
+index 8d97ca0f9b526..b07dc4bbb858a 100644
+--- a/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h
++++ b/drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid_report_desc.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-or-later */
+ /*
+- * HID  descriptor stuructures
++ * HID  descriptor structures
+  * Copyright 2020-2021 Advanced Micro Devices, Inc.
+  * Authors: Nehal Bakulchandra Shah <Nehal-bakulchandra.shah@amd.com>
+  *	    Sandeep Singh <Sandeep.singh@amd.com>
+@@ -429,21 +429,21 @@ const u8 comp3_report_descriptor[] = {
+ 0x95, 1,		/* HID report count(1) */
+ 0x55, 0x0F,		/* HID unit exponent(0x0F) */
+ 0xB1, 0x02,		/* HID feature (Data_Arr_Abs) */
+-0x0A, 0x84, 0x14,	/* Maganetic flux and change sensitivity ABS) */
++0x0A, 0x84, 0x14,	/* Magnetic flux and change sensitivity ABS) */
+ 0x15, 0,		/* HID logical Min_8(0) */
+ 0x26, 0xFF, 0xFF,	/* HID logical Max_16(0xFF,0xFF) */
+ 0x75, 16,		/* HID report size(16) */
+ 0x95, 1,		/* HID report count(1) */
+ 0x55, 0x0E,		/* HID unit exponent(0x0E) */
+ 0xB1, 0x02,		/* HID feature (Data_Arr_Abs) */
+-0x0A, 0x84, 0x24,	/* Maganetic flux and mod change sensitivity Max) */
++0x0A, 0x84, 0x24,	/* Magnetic flux and mod change sensitivity Max) */
+ 0x16, 0x01, 0x80,	/* HID logical Min_16(0x01,0x80) */
+ 0x26, 0xFF, 0x7F,	/* HID logical Max_16(0xFF,0x7F) */
+ 0x75, 16,		/* HID report size(16) */
+ 0x95, 1,		/* HID report count(1) */
+ 0x55, 0x0F,		/* HID unit exponent(0x0F) */
+ 0xB1, 0x02,		/* HID feature (Data_Arr_Abs) */
+-0x0A, 0x84, 0x34,	/* Maganetic flux and mod change sensitivity Min */
++0x0A, 0x84, 0x34,	/* Magnetic flux and mod change sensitivity Min */
+ 0x16, 0x01, 0x80,	/* HID logical Min_16(0x01,0x80) */
+ 0x26, 0xFF, 0x7F,	/* HID logical Max_16(0xFF,0x7F) */
+ 0x75, 16,		/* HID report size(16) */
+diff --git a/drivers/hid/hid-logitech-hidpp.c b/drivers/hid/hid-logitech-hidpp.c
+index 81de88ab2ecc7..68f9e9d207f42 100644
+--- a/drivers/hid/hid-logitech-hidpp.c
++++ b/drivers/hid/hid-logitech-hidpp.c
+@@ -1694,7 +1694,7 @@ static int hidpp_battery_get_property(struct power_supply *psy,
+ 			val->strval = hidpp->hid_dev->uniq;
+ 			break;
+ 		case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+-			/* hardware reports voltage in in mV. sysfs expects uV */
++			/* hardware reports voltage in mV. sysfs expects uV */
+ 			val->intval = hidpp->battery.voltage * 1000;
+ 			break;
+ 		case POWER_SUPPLY_PROP_CHARGE_TYPE:
+diff --git a/drivers/hid/hid-magicmouse.c b/drivers/hid/hid-magicmouse.c
+index 664a624a363d0..f6790dc6fd026 100644
+--- a/drivers/hid/hid-magicmouse.c
++++ b/drivers/hid/hid-magicmouse.c
+@@ -869,7 +869,7 @@ static int magicmouse_probe(struct hid_device *hdev,
+ 	report->size = 6;
+ 
+ 	/*
+-	 * Some devices repond with 'invalid report id' when feature
++	 * Some devices respond with 'invalid report id' when feature
+ 	 * report switching it into multitouch mode is sent to it.
+ 	 *
+ 	 * This results in -EIO from the _raw low-level transport callback,
+diff --git a/drivers/hid/hid-nintendo.c b/drivers/hid/hid-nintendo.c
+index 2204de889739f..0eb017333bca6 100644
+--- a/drivers/hid/hid-nintendo.c
++++ b/drivers/hid/hid-nintendo.c
+@@ -1071,7 +1071,7 @@ static void joycon_parse_imu_report(struct joycon_ctlr *ctlr,
+ 	 * samples, so the IMU sampling rate should be avg_time_delta/3. We can
+ 	 * also use this average to detect events where we have dropped a
+ 	 * packet. The userspace timestamp for the samples will be adjusted
+-	 * accordingly to prevent unwanted behvaior.
++	 * accordingly to prevent unwanted behavior.
+ 	 */
+ 	if (!ctlr->imu_first_packet_received) {
+ 		ctlr->imu_timestamp_us = 0;
+diff --git a/drivers/hid/hid-redragon.c b/drivers/hid/hid-redragon.c
+index 73c9d4c4fa34d..b32ac27940b29 100644
+--- a/drivers/hid/hid-redragon.c
++++ b/drivers/hid/hid-redragon.c
+@@ -1,8 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0+
+ /*
+  *  HID driver for Redragon keyboards
+  *
+  *  Copyright (c) 2017 Robert Munteanu
+- *  SPDX-License-Identifier: GPL-2.0+
+  */
+ 
+ /*
+diff --git a/drivers/hid/hid-roccat-kone.c b/drivers/hid/hid-roccat-kone.c
+index 76da04801ca9b..2ba5cc5a1ab6a 100644
+--- a/drivers/hid/hid-roccat-kone.c
++++ b/drivers/hid/hid-roccat-kone.c
+@@ -688,7 +688,7 @@ static int kone_init_kone_device_struct(struct usb_device *usb_dev,
+  * Since IGNORE_MOUSE quirk moved to hid-apple, there is no way to bind only to
+  * mousepart if usb_hid is compiled into the kernel and kone is compiled as
+  * module.
+- * Secial behaviour is bound only to mousepart since only mouseevents contain
++ * Special behaviour is bound only to mousepart since only mouseevents contain
+  * additional notifications.
+  */
+ static int kone_init_specials(struct hid_device *hdev)
+@@ -835,7 +835,7 @@ static void kone_report_to_chrdev(struct kone_device const *kone,
+ 
+ /*
+  * Is called for keyboard- and mousepart.
+- * Only mousepart gets informations about special events in its extended event
++ * Only mousepart gets information about special events in its extended event
+  * structure.
+  */
+ static int kone_raw_event(struct hid_device *hdev, struct hid_report *report,
+diff --git a/drivers/hid/hid-sony.c b/drivers/hid/hid-sony.c
+index 60ec2b29d54de..03691cdcfb8e1 100644
+--- a/drivers/hid/hid-sony.c
++++ b/drivers/hid/hid-sony.c
+@@ -368,7 +368,7 @@ static const unsigned int buzz_keymap[] = {
+ };
+ 
+ /* The Navigation controller is a partial DS3 and uses the same HID report
+- * and hence the same keymap indices, however not not all axes/buttons
++ * and hence the same keymap indices, however not all axes/buttons
+  * are physically present. We use the same axis and button mapping as
+  * the DS3, which uses the Linux gamepad spec.
+  */
+diff --git a/drivers/hid/intel-ish-hid/ishtp-hid-client.c b/drivers/hid/intel-ish-hid/ishtp-hid-client.c
+index 4338c9b68a43d..e3d70c5460e96 100644
+--- a/drivers/hid/intel-ish-hid/ishtp-hid-client.c
++++ b/drivers/hid/intel-ish-hid/ishtp-hid-client.c
+@@ -328,7 +328,7 @@ static void process_recv(struct ishtp_cl *hid_ishtp_cl, void *recv_buf,
+ 
+ /**
+  * ish_cl_event_cb() - bus driver callback for incoming message/packet
+- * @device:	Pointer to the the ishtp client device for which this message
++ * @device:	Pointer to the ishtp client device for which this message
+  *		is targeted
+  *
+  * Remove the packet from the list and process the message by calling
+-- 
+2.26.3
 
