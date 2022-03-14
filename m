@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E1BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C06C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240637AbiCNMGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60188 "EHLO
+        id S231482AbiCNMGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240456AbiCNMFS (ORCPT
+        with ESMTP id S240524AbiCNMFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:05:18 -0400
+        Mon, 14 Mar 2022 08:05:17 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540F129C9D;
-        Mon, 14 Mar 2022 05:02:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C522A1EC66;
+        Mon, 14 Mar 2022 05:02:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D245661251;
-        Mon, 14 Mar 2022 12:02:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95170C340E9;
-        Mon, 14 Mar 2022 12:02:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EA3461298;
+        Mon, 14 Mar 2022 12:02:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 249ADC340E9;
+        Mon, 14 Mar 2022 12:02:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259340;
-        bh=rA8MUk+qgPUNyTczyuKioG02Uku9lVWVFXwdv1WelmY=;
+        s=korg; t=1647259331;
+        bh=+iu3YEJGg0Ei9nx0UmPyifith2WwxThQTTrvu8AqV/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yd05pkl9fy5jhgdBb2wtZRFxa6NuK0bPODPnuA923C/UVHGZiGoLBw/amwPMlGDg/
-         fw5XEzLHmDuh32v4HZ+D51ln0bq5x1GniqI1x6w031WJcAt6/N8G4gHfVLYUjDUEyr
-         b2EW/2z7ooSOFWEYyzEQuBu1yor/yBrFTQ09ORN8=
+        b=DncF7kFRPATQL5t0Lar+shFKYXbi09qxH8+2KJt3BLUI4DQXsGcxNhdQyjx+gORkh
+         /kJLc9omm1mxT0oONxxg1PPEPUskt1pMzJS5WOXpgDMznOv1kOnjbqCex8NS5oVtoi
+         ksBvkAp3VPXgEUH4kTjH/fqe9hWi3a52/SiRvldM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Subject: [PATCH 5.10 57/71] virtio: unexport virtio_finalize_features
-Date:   Mon, 14 Mar 2022 12:53:50 +0100
-Message-Id: <20220314112739.527237169@linuxfoundation.org>
+        stable@vger.kernel.org, Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.10 55/71] riscv: Fix auipc+jalr relocation range checks
+Date:   Mon, 14 Mar 2022 12:53:48 +0100
+Message-Id: <20220314112739.471380327@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -49,50 +48,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Emil Renner Berthing <kernel@esmil.dk>
 
-commit 838d6d3461db0fdbf33fc5f8a69c27b50b4a46da upstream.
+commit 0966d385830de3470b7131db8e86c0c5bc9c52dc upstream.
 
-virtio_finalize_features is only used internally within virtio.
-No reason to export it.
+RISC-V can do PC-relative jumps with a 32bit range using the following
+two instructions:
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+	auipc	t0, imm20	; t0 = PC + imm20 * 2^12
+	jalr	ra, t0, imm12	; ra = PC + 4, PC = t0 + imm12
+
+Crucially both the 20bit immediate imm20 and the 12bit immediate imm12
+are treated as two's-complement signed values. For this reason the
+immediates are usually calculated like this:
+
+	imm20 = (offset + 0x800) >> 12
+	imm12 = offset & 0xfff
+
+..where offset is the signed offset from the auipc instruction. When
+the 11th bit of offset is 0 the addition of 0x800 doesn't change the top
+20 bits and imm12 considered positive. When the 11th bit is 1 the carry
+of the addition by 0x800 means imm20 is one higher, but since imm12 is
+then considered negative the two's complement representation means it
+all cancels out nicely.
+
+However, this addition by 0x800 (2^11) means an offset greater than or
+equal to 2^31 - 2^11 would overflow so imm20 is considered negative and
+result in a backwards jump. Similarly the lower range of offset is also
+moved down by 2^11 and hence the true 32bit range is
+
+	[-2^31 - 2^11, 2^31 - 2^11)
+
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio.c |    3 +--
- include/linux/virtio.h  |    1 -
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ arch/riscv/kernel/module.c |   21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
---- a/drivers/virtio/virtio.c
-+++ b/drivers/virtio/virtio.c
-@@ -167,7 +167,7 @@ void virtio_add_status(struct virtio_dev
- }
- EXPORT_SYMBOL_GPL(virtio_add_status);
+--- a/arch/riscv/kernel/module.c
++++ b/arch/riscv/kernel/module.c
+@@ -13,6 +13,19 @@
+ #include <linux/pgtable.h>
+ #include <asm/sections.h>
  
--int virtio_finalize_features(struct virtio_device *dev)
-+static int virtio_finalize_features(struct virtio_device *dev)
++/*
++ * The auipc+jalr instruction pair can reach any PC-relative offset
++ * in the range [-2^31 - 2^11, 2^31 - 2^11)
++ */
++static bool riscv_insn_valid_32bit_offset(ptrdiff_t val)
++{
++#ifdef CONFIG_32BIT
++	return true;
++#else
++	return (-(1L << 31) - (1L << 11)) <= val && val < ((1L << 31) - (1L << 11));
++#endif
++}
++
+ static int apply_r_riscv_32_rela(struct module *me, u32 *location, Elf_Addr v)
  {
- 	int ret = dev->config->finalize_features(dev);
- 	unsigned status;
-@@ -203,7 +203,6 @@ int virtio_finalize_features(struct virt
- 	}
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(virtio_finalize_features);
+ 	if (v != (u32)v) {
+@@ -95,7 +108,7 @@ static int apply_r_riscv_pcrel_hi20_rela
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+ 	s32 hi20;
  
- static int virtio_dev_probe(struct device *_d)
+-	if (offset != (s32)offset) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		pr_err(
+ 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
+ 		  me->name, (long long)v, location);
+@@ -197,10 +210,9 @@ static int apply_r_riscv_call_plt_rela(s
+ 				       Elf_Addr v)
  {
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -135,7 +135,6 @@ void virtio_break_device(struct virtio_d
- void virtio_config_changed(struct virtio_device *dev);
- void virtio_config_disable(struct virtio_device *dev);
- void virtio_config_enable(struct virtio_device *dev);
--int virtio_finalize_features(struct virtio_device *dev);
- #ifdef CONFIG_PM_SLEEP
- int virtio_device_freeze(struct virtio_device *dev);
- int virtio_device_restore(struct virtio_device *dev);
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+-	s32 fill_v = offset;
+ 	u32 hi20, lo12;
+ 
+-	if (offset != fill_v) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		/* Only emit the plt entry if offset over 32-bit range */
+ 		if (IS_ENABLED(CONFIG_MODULE_SECTIONS)) {
+ 			offset = module_emit_plt_entry(me, v);
+@@ -224,10 +236,9 @@ static int apply_r_riscv_call_rela(struc
+ 				   Elf_Addr v)
+ {
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+-	s32 fill_v = offset;
+ 	u32 hi20, lo12;
+ 
+-	if (offset != fill_v) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		pr_err(
+ 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
+ 		  me->name, (long long)v, location);
 
 
