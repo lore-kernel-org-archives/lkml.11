@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0972EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A867C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240767AbiCNMMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33650 "EHLO
+        id S240787AbiCNMMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241652AbiCNMI7 (ORCPT
+        with ESMTP id S240996AbiCNMIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43804FC40;
-        Mon, 14 Mar 2022 05:05:44 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895A02C11B;
+        Mon, 14 Mar 2022 05:04:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56BC2B80DF4;
-        Mon, 14 Mar 2022 12:05:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED36EC340ED;
-        Mon, 14 Mar 2022 12:05:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B34612FF;
+        Mon, 14 Mar 2022 12:04:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE96C340E9;
+        Mon, 14 Mar 2022 12:04:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259541;
-        bh=0GaHM71WTvRwvmUjyN6LM1irv0B9SFZIfrhRf36MkOY=;
+        s=korg; t=1647259456;
+        bh=At0yOp44yBOPqKzhP7VM/vYRI679WH5Wi1WwGfgayn8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UW9XvAmgvmtJgbcsjrQdab6YaXkzPg7SYjm5EZ/+jHnVWhj+EbBlJP/1Y09HcgZkU
-         t9ahWP5R+dbn4wLl2MhTFU8XcLtme3oMuTk5r3/GSS94XERNN0rHn1xhb0bmfdGPPp
-         qKX4z/soSXY1sWKZhoMLG2Iiz/WyfDS45bRR/G98=
+        b=fzwU7DOIXWVroSNysUGLBueJSZE3QA6SQHX0vCRoObGYyopPvJ2EGnLeBExA4gFek
+         XyLxv1MCVTRj313RmtC5NIN6tKlWZDJk+WqMUDrg6XWpz/GQjkkMqvnChPu1zd6WI2
+         mUdxYDGo4qhNsmKWxj12mNkX8/OO3LSVHHOuf2B4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        Jason Wang <jasowang@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 030/110] ice: stop disabling VFs due to PF error responses
-Date:   Mon, 14 Mar 2022 12:53:32 +0100
-Message-Id: <20220314112743.877476780@linuxfoundation.org>
+Subject: [PATCH 5.15 011/110] vdpa/mlx5: add validation for VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command
+Date:   Mon, 14 Mar 2022 12:53:13 +0100
+Message-Id: <20220314112743.348334045@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -50,106 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Si-Wei Liu <si-wei.liu@oracle.com>
 
-[ Upstream commit 79498d5af8e458102242d1667cf44df1f1564e63 ]
+[ Upstream commit ed0f849fc3a63ed2ddf5e72cdb1de3bdbbb0f8eb ]
 
-The ice_vc_send_msg_to_vf function has logic to detect "failure"
-responses being sent to a VF. If a VF is sent more than
-ICE_DFLT_NUM_INVAL_MSGS_ALLOWED then the VF is marked as disabled.
-Almost identical logic also existed in the i40e driver.
+When control vq receives a VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command
+request from the driver, presently there is no validation against the
+number of queue pairs to configure, or even if multiqueue had been
+negotiated or not is unverified. This may lead to kernel panic due to
+uninitialized resource for the queues were there any bogus request
+sent down by untrusted driver. Tie up the loose ends there.
 
-This logic was added to the ice driver in commit 1071a8358a28 ("ice:
-Implement virtchnl commands for AVF support") which itself copied from
-the i40e implementation in commit 5c3c48ac6bf5 ("i40e: implement virtual
-device interface").
-
-Neither commit provides a proper explanation or justification of the
-check. In fact, later commits to i40e changed the logic to allow
-bypassing the check in some specific instances.
-
-The "logic" for this seems to be that error responses somehow indicate a
-malicious VF. This is not really true. The PF might be sending an error
-for any number of reasons such as lack of resources, etc.
-
-Additionally, this causes the PF to log an info message for every failed
-VF response which may confuse users, and can spam the kernel log.
-
-This behavior is not documented as part of any requirement for our
-products and other operating system drivers such as the FreeBSD
-implementation of our drivers do not include this type of check.
-
-In fact, the change from dev_err to dev_info in i40e commit 18b7af57d9c1
-("i40e: Lower some message levels") explains that these messages
-typically don't actually indicate a real issue. It is quite likely that
-a user who hits this in practice will be very confused as the VF will be
-disabled without an obvious way to recover.
-
-We already have robust malicious driver detection logic using actual
-hardware detection mechanisms that detect and prevent invalid device
-usage. Remove the logic since its not a documented requirement and the
-behavior is not intuitive.
-
-Fixes: 1071a8358a28 ("ice: Implement virtchnl commands for AVF support")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 52893733f2c5 ("vdpa/mlx5: Add multiqueue support")
+Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Link: https://lore.kernel.org/r/1642206481-30721-4-git-send-email-si-wei.liu@oracle.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Eli Cohen <elic@nvidia.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c   | 18 ------------------
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h   |  3 ---
- 2 files changed, 21 deletions(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 4054adb5279c..4338e4ff7e85 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -2234,24 +2234,6 @@ ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 1afbda216df5..902aad29456f 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1529,11 +1529,27 @@ static virtio_net_ctrl_ack handle_ctrl_mq(struct mlx5_vdpa_dev *mvdev, u8 cmd)
  
- 	dev = ice_pf_to_dev(pf);
+ 	switch (cmd) {
+ 	case VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET:
++		/* This mq feature check aligns with pre-existing userspace
++		 * implementation.
++		 *
++		 * Without it, an untrusted driver could fake a multiqueue config
++		 * request down to a non-mq device that may cause kernel to
++		 * panic due to uninitialized resources for extra vqs. Even with
++		 * a well behaving guest driver, it is not expected to allow
++		 * changing the number of vqs on a non-mq device.
++		 */
++		if (!MLX5_FEATURE(mvdev, VIRTIO_NET_F_MQ))
++			break;
++
+ 		read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->riov, (void *)&mq, sizeof(mq));
+ 		if (read != sizeof(mq))
+ 			break;
  
--	/* single place to detect unsuccessful return values */
--	if (v_retval) {
--		vf->num_inval_msgs++;
--		dev_info(dev, "VF %d failed opcode %d, retval: %d\n", vf->vf_id,
--			 v_opcode, v_retval);
--		if (vf->num_inval_msgs > ICE_DFLT_NUM_INVAL_MSGS_ALLOWED) {
--			dev_err(dev, "Number of invalid messages exceeded for VF %d\n",
--				vf->vf_id);
--			dev_err(dev, "Use PF Control I/F to enable the VF\n");
--			set_bit(ICE_VF_STATE_DIS, vf->vf_states);
--			return -EIO;
--		}
--	} else {
--		vf->num_valid_msgs++;
--		/* reset the invalid counter, if a valid message is received. */
--		vf->num_inval_msgs = 0;
--	}
--
- 	aq_ret = ice_aq_send_msg_to_vf(&pf->hw, vf->vf_id, v_opcode, v_retval,
- 				       msg, msglen, NULL);
- 	if (aq_ret && pf->hw.mailboxq.sq_last_status != ICE_AQ_RC_ENOSYS) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index a750e9a9d712..532f57f01467 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -14,7 +14,6 @@
- #define ICE_MAX_MACADDR_PER_VF		18
- 
- /* Malicious Driver Detection */
--#define ICE_DFLT_NUM_INVAL_MSGS_ALLOWED		10
- #define ICE_MDD_EVENTS_THRESHOLD		30
- 
- /* Static VF transaction/status register def */
-@@ -107,8 +106,6 @@ struct ice_vf {
- 	unsigned int tx_rate;		/* Tx bandwidth limit in Mbps */
- 	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
- 
--	u64 num_inval_msgs;		/* number of continuous invalid msgs */
--	u64 num_valid_msgs;		/* number of valid msgs detected */
- 	unsigned long vf_caps;		/* VF's adv. capabilities */
- 	u8 num_req_qs;			/* num of queue pairs requested by VF */
- 	u16 num_mac;
+ 		newqps = mlx5vdpa16_to_cpu(mvdev, mq.virtqueue_pairs);
++		if (newqps < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
++		    newqps > mlx5_vdpa_max_qps(mvdev->max_vqs))
++			break;
++
+ 		if (ndev->cur_num_vqs == 2 * newqps) {
+ 			status = VIRTIO_NET_OK;
+ 			break;
 -- 
 2.34.1
 
