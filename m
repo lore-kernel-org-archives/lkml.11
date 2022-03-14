@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 691DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0972EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240733AbiCNMMD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
+        id S240767AbiCNMMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241244AbiCNMI3 (ORCPT
+        with ESMTP id S241652AbiCNMI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6064B1CE;
-        Mon, 14 Mar 2022 05:04:48 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43804FC40;
+        Mon, 14 Mar 2022 05:05:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A20616130A;
-        Mon, 14 Mar 2022 12:04:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85CEDC340ED;
-        Mon, 14 Mar 2022 12:04:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56BC2B80DF4;
+        Mon, 14 Mar 2022 12:05:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED36EC340ED;
+        Mon, 14 Mar 2022 12:05:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259487;
-        bh=+E5woosn/ZbFLikndWdbKLVKptItEm0e3E0i3Z+4g/Y=;
+        s=korg; t=1647259541;
+        bh=0GaHM71WTvRwvmUjyN6LM1irv0B9SFZIfrhRf36MkOY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1TGXYLMoh1xof65JjsJUlB7X6jv9HHeb8c6W/dy1tkvb3SaKlygATE1BCl3TFxzto
-         LeYjp9JZpod350LNnvkSq9szofVZODvn6ChnFJqTVO8/48Z3rWpVdudMYsnKQegqjx
-         n5/fFlsUXqCZhBKTaJZ63Nd4DidLUde5XOAuDaE8=
+        b=UW9XvAmgvmtJgbcsjrQdab6YaXkzPg7SYjm5EZ/+jHnVWhj+EbBlJP/1Y09HcgZkU
+         t9ahWP5R+dbn4wLl2MhTFU8XcLtme3oMuTk5r3/GSS94XERNN0rHn1xhb0bmfdGPPp
+         qKX4z/soSXY1sWKZhoMLG2Iiz/WyfDS45bRR/G98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jacob Keller <jacob.e.keller@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 018/110] isdn: hfcpci: check the return value of dma_set_mask() in setup_hw()
-Date:   Mon, 14 Mar 2022 12:53:20 +0100
-Message-Id: <20220314112743.544081971@linuxfoundation.org>
+Subject: [PATCH 5.15 030/110] ice: stop disabling VFs due to PF error responses
+Date:   Mon, 14 Mar 2022 12:53:32 +0100
+Message-Id: <20220314112743.877476780@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -50,39 +50,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-[ Upstream commit d0aeb0d4a3f7d2a0df7e9545892bbeede8f2ac7e ]
+[ Upstream commit 79498d5af8e458102242d1667cf44df1f1564e63 ]
 
-The function dma_set_mask() in setup_hw() can fail, so its return value
-should be checked.
+The ice_vc_send_msg_to_vf function has logic to detect "failure"
+responses being sent to a VF. If a VF is sent more than
+ICE_DFLT_NUM_INVAL_MSGS_ALLOWED then the VF is marked as disabled.
+Almost identical logic also existed in the i40e driver.
 
-Fixes: 1700fe1a10dc ("Add mISDN HFC PCI driver")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This logic was added to the ice driver in commit 1071a8358a28 ("ice:
+Implement virtchnl commands for AVF support") which itself copied from
+the i40e implementation in commit 5c3c48ac6bf5 ("i40e: implement virtual
+device interface").
+
+Neither commit provides a proper explanation or justification of the
+check. In fact, later commits to i40e changed the logic to allow
+bypassing the check in some specific instances.
+
+The "logic" for this seems to be that error responses somehow indicate a
+malicious VF. This is not really true. The PF might be sending an error
+for any number of reasons such as lack of resources, etc.
+
+Additionally, this causes the PF to log an info message for every failed
+VF response which may confuse users, and can spam the kernel log.
+
+This behavior is not documented as part of any requirement for our
+products and other operating system drivers such as the FreeBSD
+implementation of our drivers do not include this type of check.
+
+In fact, the change from dev_err to dev_info in i40e commit 18b7af57d9c1
+("i40e: Lower some message levels") explains that these messages
+typically don't actually indicate a real issue. It is quite likely that
+a user who hits this in practice will be very confused as the VF will be
+disabled without an obvious way to recover.
+
+We already have robust malicious driver detection logic using actual
+hardware detection mechanisms that detect and prevent invalid device
+usage. Remove the logic since its not a documented requirement and the
+behavior is not intuitive.
+
+Fixes: 1071a8358a28 ("ice: Implement virtchnl commands for AVF support")
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/hfcpci.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c   | 18 ------------------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h   |  3 ---
+ 2 files changed, 21 deletions(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
-index bd087cca1c1d..af17459c1a5c 100644
---- a/drivers/isdn/hardware/mISDN/hfcpci.c
-+++ b/drivers/isdn/hardware/mISDN/hfcpci.c
-@@ -2005,7 +2005,11 @@ setup_hw(struct hfc_pci *hc)
- 	}
- 	/* Allocate memory for FIFOS */
- 	/* the memory needs to be on a 32k boundary within the first 4G */
--	dma_set_mask(&hc->pdev->dev, 0xFFFF8000);
-+	if (dma_set_mask(&hc->pdev->dev, 0xFFFF8000)) {
-+		printk(KERN_WARNING
-+		       "HFC-PCI: No usable DMA configuration!\n");
-+		return -EIO;
-+	}
- 	buffer = dma_alloc_coherent(&hc->pdev->dev, 0x8000, &hc->hw.dmahandle,
- 				    GFP_KERNEL);
- 	/* We silently assume the address is okay if nonzero */
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 4054adb5279c..4338e4ff7e85 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -2234,24 +2234,6 @@ ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
+ 
+ 	dev = ice_pf_to_dev(pf);
+ 
+-	/* single place to detect unsuccessful return values */
+-	if (v_retval) {
+-		vf->num_inval_msgs++;
+-		dev_info(dev, "VF %d failed opcode %d, retval: %d\n", vf->vf_id,
+-			 v_opcode, v_retval);
+-		if (vf->num_inval_msgs > ICE_DFLT_NUM_INVAL_MSGS_ALLOWED) {
+-			dev_err(dev, "Number of invalid messages exceeded for VF %d\n",
+-				vf->vf_id);
+-			dev_err(dev, "Use PF Control I/F to enable the VF\n");
+-			set_bit(ICE_VF_STATE_DIS, vf->vf_states);
+-			return -EIO;
+-		}
+-	} else {
+-		vf->num_valid_msgs++;
+-		/* reset the invalid counter, if a valid message is received. */
+-		vf->num_inval_msgs = 0;
+-	}
+-
+ 	aq_ret = ice_aq_send_msg_to_vf(&pf->hw, vf->vf_id, v_opcode, v_retval,
+ 				       msg, msglen, NULL);
+ 	if (aq_ret && pf->hw.mailboxq.sq_last_status != ICE_AQ_RC_ENOSYS) {
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
+index a750e9a9d712..532f57f01467 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
+@@ -14,7 +14,6 @@
+ #define ICE_MAX_MACADDR_PER_VF		18
+ 
+ /* Malicious Driver Detection */
+-#define ICE_DFLT_NUM_INVAL_MSGS_ALLOWED		10
+ #define ICE_MDD_EVENTS_THRESHOLD		30
+ 
+ /* Static VF transaction/status register def */
+@@ -107,8 +106,6 @@ struct ice_vf {
+ 	unsigned int tx_rate;		/* Tx bandwidth limit in Mbps */
+ 	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
+ 
+-	u64 num_inval_msgs;		/* number of continuous invalid msgs */
+-	u64 num_valid_msgs;		/* number of valid msgs detected */
+ 	unsigned long vf_caps;		/* VF's adv. capabilities */
+ 	u8 num_req_qs;			/* num of queue pairs requested by VF */
+ 	u16 num_mac;
 -- 
 2.34.1
 
