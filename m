@@ -2,80 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D87C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:14:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82DC1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:16:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbiCNIPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S237637AbiCNIRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiCNIPN (ORCPT
+        with ESMTP id S229696AbiCNIRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:15:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E927210FC5;
-        Mon, 14 Mar 2022 01:14:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82B1961242;
-        Mon, 14 Mar 2022 08:14:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE4FC340E9;
-        Mon, 14 Mar 2022 08:14:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647245642;
-        bh=Uvv06HiF9fvm1TbN8I3GVYyUnjN1QZ0WDKTX+78ozas=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LyYRZofebb1+kpbeDD+Az+KCus+iFdqVP2mxR1SFrCtCxI89QanlnUfnmQYEDTE/N
-         woV+Jnhee7pYbB3x9I3VXHkYvJWeYsG2LfUmPklqj5MCB1O/8MO2ltYWiOHxwbRPSd
-         v09+uf02tkaMsKL56QI6wXDyisFQacVK+wbAbcOs=
-Date:   Mon, 14 Mar 2022 09:13:59 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     stephen@networkplumber.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] hv_netvsc: Add check for kvmalloc_array
-Message-ID: <Yi75RwIY330W5Fhb@kroah.com>
-References: <20220314080514.2501092-1-jiasheng@iscas.ac.cn>
+        Mon, 14 Mar 2022 04:17:38 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142742B25C;
+        Mon, 14 Mar 2022 01:16:28 -0700 (PDT)
+X-UUID: 6a5bb6c471d04ddf9b8f9838f4c1c4fc-20220314
+X-UUID: 6a5bb6c471d04ddf9b8f9838f4c1c4fc-20220314
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 995635809; Mon, 14 Mar 2022 16:16:24 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 14 Mar 2022 16:16:23 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 14 Mar
+ 2022 16:16:23 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 14 Mar 2022 16:16:22 +0800
+Message-ID: <9671f38a0e22d70fba77d1e35520c2a16c93d119.camel@mediatek.com>
+Subject: Re: [RESEND V6 0/5] add display support for MediaTek SoC MT8186
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>, <airlied@linux.ie>,
+        <jassisinghbrar@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <yongqiang.niu@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <fparent@baylibre.com>, <linux-mediatek@lists.infradead.org>,
+        <hsinyi@chromium.org>, <linux-arm-kernel@lists.infradead.org>
+Date:   Mon, 14 Mar 2022 16:16:17 +0800
+In-Reply-To: <bf6c9d9270f54fe7baff62998498c1a75a69f723.camel@mediatek.com>
+References: <20220303065725.23384-1-rex-bc.chen@mediatek.com>
+         <bf6c9d9270f54fe7baff62998498c1a75a69f723.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314080514.2501092-1-jiasheng@iscas.ac.cn>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 04:05:14PM +0800, Jiasheng Jiang wrote:
-> On Mon, Mar 14, 2022 at 03:33:49PM +0800, Greg KH wrote:
-> >> Thanks, I have tested the patch by kernel_patch_verify,
+Hi, Rex:
+
+On Mon, 2022-03-14 at 14:30 +0800, Rex-BC Chen wrote:
+> Hello Chun-Kuang,
+> 
+> Do I need to rebase this series to your branch mediatek-drm-fixes and
+> send next version?
+
+That's good.
+
+Regards,
+CK
+
+> 
+> BRs,
+> Rex
+> 
+> On Thu, 2022-03-03 at 14:57 +0800, Rex-BC Chen wrote:
+> > v6:
+> > 1. Remove mmsys patches which are accepted.
+> > 2. Fix error of dt-binding.
 > > 
-> > What is that?
-> 
-> It a Linux kernel patch static verification helper tool.
-> Link: https://github.com/nmenon/kernel_patch_verify
-> 
-> >> and all the tests are passed.
+> > v5:
+> > 1. Add binding patch of aal for MT8183.
+> > 2. Revise enum to const.
+> > 3. Change to use enum for mutex.
+> > 4. Remove patches which are accepted by maintainers. (mmsys and
+> > mutex)
 > > 
-> > What tests exactly?  How did you fail this allocation?
+> > v4:
+> > 1. Remove binding of dsi and dpi.
+> > 2. Revise aal binding.
+> > 3. Fix indention in [4/5].
+> > 
+> > v3:
+> > 1. Modify display binding based on mtk display binding patch. ([1])
+> > 2. Remove patch: drm/mediatek: separate postmask component from
+> > mtk_disp_drv.c
+> > 3. Remove compatible of 8186 ovl because we can re-use compatible
+> > of
+> > 8192 for 8186.
+> > 4. Fix issue of space before tab on mutex patch.
+> > 
+> > [1]: 
+> > 
+https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/commit/?h=mediatek-drm-next&id=4ed545e7d10049b5492afc184e61a67e478a2cfd__;!!CTRNKA9wMg0ARbw!wkqxkeKHyS9CpOeGc9hmbilFWKk7g6fyeckortZrr_qhtb7VTP8zMYcuaYjw_w$
+> >  
+> > 
+> > v2:
+> > 1. Add binding documentation for mmsys, mutex and mtk_display.
+> > 2. Remove duplicated definition of postmask registers on
+> > mtk_drm_drv.
+> > 3. Add disp_ovl support for MT8186.
+> > 4. Add detailed commit messages.
+> > 
+> > Rex-BC Chen (4):
+> >   dt-bindings: display: mediatek: add aal binding for MT8183
+> >   dt-bindings: display: mediatek: revise enum to const
+> >   dt-bindings: display: mediatek: change to use enum for mutex
+> >   dt-bindings: display: mediatek: add MT8186 SoC binding
+> > 
+> > Yongqiang Niu (1):
+> >   drm/mediatek: add display support for MT8186
+> > 
+> >  .../display/mediatek/mediatek,aal.yaml        |  7 +++-
+> >  .../display/mediatek/mediatek,ccorr.yaml      |  5 ++-
+> >  .../display/mediatek/mediatek,color.yaml      |  7 ++--
+> >  .../display/mediatek/mediatek,dither.yaml     |  4 +--
+> >  .../display/mediatek/mediatek,gamma.yaml      |  4 +--
+> >  .../display/mediatek/mediatek,mutex.yaml      | 25 ++++++--------
+> >  .../display/mediatek/mediatek,ovl-2l.yaml     |  4 +++
+> >  .../display/mediatek/mediatek,ovl.yaml        |  8 +++--
+> >  .../display/mediatek/mediatek,postmask.yaml   |  4 +++
+> >  .../display/mediatek/mediatek,rdma.yaml       |  7 ++--
+> >  drivers/gpu/drm/mediatek/mtk_drm_drv.c        | 33
+> > +++++++++++++++++++
+> >  11 files changed, 76 insertions(+), 32 deletions(-)
+> > 
 > 
-> The failure of allocation is not included in the tests.
-> And as far as I know, there is not any tool that has the
-> ability to fail the allocation.
+> 
 
-There are tools that do this.
-
-> But I think that for safety, the cost of redundant and harmless
-> check is acceptable.
-> Also, checking after allocation is a good program pattern.
-
-That's fine, it's how you clean up that is the problem that not everyone
-gets correct, which is why it is good to verify that you do not
-introduce problems.
-
-greg k-h
