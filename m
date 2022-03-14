@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B230C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F92C352A1
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241122AbiCNMNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55924 "EHLO
+        id S241455AbiCNMN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242888AbiCNMLN (ORCPT
+        with ESMTP id S241434AbiCNMIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:11:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0863033A1D;
-        Mon, 14 Mar 2022 05:10:04 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B17F34D9F6;
+        Mon, 14 Mar 2022 05:05:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC885B80DF6;
-        Mon, 14 Mar 2022 12:10:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA970C340EC;
-        Mon, 14 Mar 2022 12:10:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42D87B80DF2;
+        Mon, 14 Mar 2022 12:05:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33CFAC340ED;
+        Mon, 14 Mar 2022 12:05:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259801;
-        bh=blSzkE0diLpAz0nAF+i5aaDVUw3yAONYwdMGUTE07xI=;
+        s=korg; t=1647259510;
+        bh=PLkxFWAuJPB2flzQRtes2vC27qTt7IiTYtVEtYcftUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FoxgLUajrnwCjuXTqRkn1JOj1FmJfU7Q2+0Cw+SafznZvagWFbBaH9lqRQR/zpqE6
-         zUbLmD2zWRY7wEY/LHidLqRuRmVRxPnZrHrsVVyuGDHCh9H1rM3zFOMGeLtmBeHIxP
-         Iw94Y3LHI5sfgD7MQQoXEd7afmeLT2W+SYn9q0Us=
+        b=f2ozqY7Z9DSR+4rNhcRKBPuyvLp+aHcTkv3KULo9sTQQpcyYYjAyY1Iebvbpum0+r
+         Azs6MWciFtVKnq6Lyyd61BXQz3lpq25vdry/q+fhY/edUKMrosS2FukJTqiia7KLJZ
+         YX3GEx7CTKENT9xoT4162ddgZY8ugFBzDYIaiB/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 093/110] watch_queue: Fix filter limit check
-Date:   Mon, 14 Mar 2022 12:54:35 +0100
-Message-Id: <20220314112745.624808982@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 023/110] smsc95xx: Ignore -ENODEV errors when device is unplugged
+Date:   Mon, 14 Mar 2022 12:53:25 +0100
+Message-Id: <20220314112743.683391099@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,101 +49,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Fabio Estevam <festevam@denx.de>
 
-commit c993ee0f9f81caf5767a50d1faeba39a0dc82af2 upstream.
+[ Upstream commit c70c453abcbf3ecbaadd4c3236a5119b8da365cf ]
 
-In watch_queue_set_filter(), there are a couple of places where we check
-that the filter type value does not exceed what the type_filter bitmap
-can hold.  One place calculates the number of bits by:
+According to Documentation/driver-api/usb/URB.rst when a device
+is unplugged usb_submit_urb() returns -ENODEV.
 
-   if (tf[i].type >= sizeof(wfilter->type_filter) * 8)
+This error code propagates all the way up to usbnet_read_cmd() and
+usbnet_write_cmd() calls inside the smsc95xx.c driver during
+Ethernet cable unplug, unbind or reboot.
 
-which is fine, but the second does:
+This causes the following errors to be shown on reboot, for example:
 
-   if (tf[i].type >= sizeof(wfilter->type_filter) * BITS_PER_LONG)
+ci_hdrc ci_hdrc.1: remove, state 1
+usb usb2: USB disconnect, device number 1
+usb 2-1: USB disconnect, device number 2
+usb 2-1.1: USB disconnect, device number 3
+smsc95xx 2-1.1:1.0 eth1: unregister 'smsc95xx' usb-ci_hdrc.1-1.1, smsc95xx USB 2.0 Ethernet
+smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
+smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
+smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
+smsc95xx 2-1.1:1.0 eth1: Failed to read reg index 0x00000114: -19
+smsc95xx 2-1.1:1.0 eth1: Error reading MII_ACCESS
+smsc95xx 2-1.1:1.0 eth1: __smsc95xx_mdio_read: MII is busy
+smsc95xx 2-1.1:1.0 eth1: hardware isn't capable of remote wakeup
+usb 2-1.4: USB disconnect, device number 4
+ci_hdrc ci_hdrc.1: USB bus 2 deregistered
+ci_hdrc ci_hdrc.0: remove, state 4
+usb usb1: USB disconnect, device number 1
+ci_hdrc ci_hdrc.0: USB bus 1 deregistered
+imx2-wdt 30280000.watchdog: Device shutdown: Expect reboot!
+reboot: Restarting system
 
-which is not.  This can lead to a couple of out-of-bounds writes due to
-a too-large type:
+Ignore the -ENODEV errors inside __smsc95xx_mdio_read() and
+__smsc95xx_phy_wait_not_busy() and do not print error messages
+when -ENODEV is returned.
 
- (1) __set_bit() on wfilter->type_filter
- (2) Writing more elements in wfilter->filters[] than we allocated.
-
-Fix this by just using the proper WATCH_TYPE__NR instead, which is the
-number of types we actually know about.
-
-The bug may cause an oops looking something like:
-
-  BUG: KASAN: slab-out-of-bounds in watch_queue_set_filter+0x659/0x740
-  Write of size 4 at addr ffff88800d2c66bc by task watch_queue_oob/611
-  ...
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x45/0x59
-   print_address_description.constprop.0+0x1f/0x150
-   ...
-   kasan_report.cold+0x7f/0x11b
-   ...
-   watch_queue_set_filter+0x659/0x740
-   ...
-   __x64_sys_ioctl+0x127/0x190
-   do_syscall_64+0x43/0x90
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-  Allocated by task 611:
-   kasan_save_stack+0x1e/0x40
-   __kasan_kmalloc+0x81/0xa0
-   watch_queue_set_filter+0x23a/0x740
-   __x64_sys_ioctl+0x127/0x190
-   do_syscall_64+0x43/0x90
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-  The buggy address belongs to the object at ffff88800d2c66a0
-   which belongs to the cache kmalloc-32 of size 32
-  The buggy address is located 28 bytes inside of
-   32-byte region [ffff88800d2c66a0, ffff88800d2c66c0)
-
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/watch_queue.h |    3 ++-
- kernel/watch_queue.c        |    4 ++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/usb/smsc95xx.c | 28 ++++++++++++++++++++--------
+ 1 file changed, 20 insertions(+), 8 deletions(-)
 
---- a/include/linux/watch_queue.h
-+++ b/include/linux/watch_queue.h
-@@ -28,7 +28,8 @@ struct watch_type_filter {
- struct watch_filter {
- 	union {
- 		struct rcu_head	rcu;
--		unsigned long	type_filter[2];	/* Bitmask of accepted types */
-+		/* Bitmask of accepted types */
-+		DECLARE_BITMAP(type_filter, WATCH_TYPE__NR);
- 	};
- 	u32			nr_filters;	/* Number of filters */
- 	struct watch_type_filter filters[];
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -320,7 +320,7 @@ long watch_queue_set_filter(struct pipe_
- 		    tf[i].info_mask & WATCH_INFO_LENGTH)
- 			goto err_filter;
- 		/* Ignore any unknown types */
--		if (tf[i].type >= sizeof(wfilter->type_filter) * 8)
-+		if (tf[i].type >= WATCH_TYPE__NR)
- 			continue;
- 		nr_filter++;
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 026e7487c45b..eb0d325e92b7 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -84,9 +84,10 @@ static int __must_check __smsc95xx_read_reg(struct usbnet *dev, u32 index,
+ 	ret = fn(dev, USB_VENDOR_REQUEST_READ_REGISTER, USB_DIR_IN
+ 		 | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+ 		 0, index, &buf, 4);
+-	if (unlikely(ret < 0)) {
+-		netdev_warn(dev->net, "Failed to read reg index 0x%08x: %d\n",
+-			    index, ret);
++	if (ret < 0) {
++		if (ret != -ENODEV)
++			netdev_warn(dev->net, "Failed to read reg index 0x%08x: %d\n",
++				    index, ret);
+ 		return ret;
  	}
-@@ -336,7 +336,7 @@ long watch_queue_set_filter(struct pipe_
  
- 	q = wfilter->filters;
- 	for (i = 0; i < filter.nr_filters; i++) {
--		if (tf[i].type >= sizeof(wfilter->type_filter) * BITS_PER_LONG)
-+		if (tf[i].type >= WATCH_TYPE__NR)
- 			continue;
+@@ -116,7 +117,7 @@ static int __must_check __smsc95xx_write_reg(struct usbnet *dev, u32 index,
+ 	ret = fn(dev, USB_VENDOR_REQUEST_WRITE_REGISTER, USB_DIR_OUT
+ 		 | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+ 		 0, index, &buf, 4);
+-	if (unlikely(ret < 0))
++	if (ret < 0 && ret != -ENODEV)
+ 		netdev_warn(dev->net, "Failed to write reg index 0x%08x: %d\n",
+ 			    index, ret);
  
- 		q->type			= tf[i].type;
+@@ -159,6 +160,9 @@ static int __must_check __smsc95xx_phy_wait_not_busy(struct usbnet *dev,
+ 	do {
+ 		ret = __smsc95xx_read_reg(dev, MII_ADDR, &val, in_pm);
+ 		if (ret < 0) {
++			/* Ignore -ENODEV error during disconnect() */
++			if (ret == -ENODEV)
++				return 0;
+ 			netdev_warn(dev->net, "Error reading MII_ACCESS\n");
+ 			return ret;
+ 		}
+@@ -194,7 +198,8 @@ static int __smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx,
+ 	addr = mii_address_cmd(phy_id, idx, MII_READ_ | MII_BUSY_);
+ 	ret = __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+ 	if (ret < 0) {
+-		netdev_warn(dev->net, "Error writing MII_ADDR\n");
++		if (ret != -ENODEV)
++			netdev_warn(dev->net, "Error writing MII_ADDR\n");
+ 		goto done;
+ 	}
+ 
+@@ -206,7 +211,8 @@ static int __smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx,
+ 
+ 	ret = __smsc95xx_read_reg(dev, MII_DATA, &val, in_pm);
+ 	if (ret < 0) {
+-		netdev_warn(dev->net, "Error reading MII_DATA\n");
++		if (ret != -ENODEV)
++			netdev_warn(dev->net, "Error reading MII_DATA\n");
+ 		goto done;
+ 	}
+ 
+@@ -214,6 +220,10 @@ static int __smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx,
+ 
+ done:
+ 	mutex_unlock(&dev->phy_mutex);
++
++	/* Ignore -ENODEV error during disconnect() */
++	if (ret == -ENODEV)
++		return 0;
+ 	return ret;
+ }
+ 
+@@ -235,7 +245,8 @@ static void __smsc95xx_mdio_write(struct usbnet *dev, int phy_id,
+ 	val = regval;
+ 	ret = __smsc95xx_write_reg(dev, MII_DATA, val, in_pm);
+ 	if (ret < 0) {
+-		netdev_warn(dev->net, "Error writing MII_DATA\n");
++		if (ret != -ENODEV)
++			netdev_warn(dev->net, "Error writing MII_DATA\n");
+ 		goto done;
+ 	}
+ 
+@@ -243,7 +254,8 @@ static void __smsc95xx_mdio_write(struct usbnet *dev, int phy_id,
+ 	addr = mii_address_cmd(phy_id, idx, MII_WRITE_ | MII_BUSY_);
+ 	ret = __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+ 	if (ret < 0) {
+-		netdev_warn(dev->net, "Error writing MII_ADDR\n");
++		if (ret != -ENODEV)
++			netdev_warn(dev->net, "Error writing MII_ADDR\n");
+ 		goto done;
+ 	}
+ 
+-- 
+2.34.1
+
 
 
