@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240547AbiCNMGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58630 "EHLO
+        id S240488AbiCNMGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240555AbiCNMFU (ORCPT
+        with ESMTP id S240556AbiCNMFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:05:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF73846173;
-        Mon, 14 Mar 2022 05:02:30 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C8BB47AF3;
+        Mon, 14 Mar 2022 05:02:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15FDCB80D24;
-        Mon, 14 Mar 2022 12:02:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5446AC340ED;
-        Mon, 14 Mar 2022 12:02:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 836A2612FB;
+        Mon, 14 Mar 2022 12:02:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 851D1C340E9;
+        Mon, 14 Mar 2022 12:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259347;
-        bh=qlgUNIR5LdJ8E/CVar6iRKrlBhipwT0fC3JfdrsqBjQ=;
+        s=korg; t=1647259351;
+        bh=jSQBdgjmG/0puOUtBTQLeaUF/iDNY/kxEsrAKEP7R2Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c4t0/nGf0awnKW5A8PWRTwNZput64heNzgMNzFXuXX6eCrDhBuwJZcWzcwsUTz998
-         lqwyNwjhWivKZvqF9HP5NiZZnuKrJDBq6xsw/tG0R65E+3tkcIODQOmAQpou8k5Hfs
-         ZvANbyWmoKtPG7f3Uo6gDahe5fkONEZ1s3WnVRyI=
+        b=s1SbI+Wj+UyFgzxrwXqoo0z8wsXP5WF1oR2w9l/dWrj7tS77yz4hlKr469KGzwFNV
+         ZgDV1lpQ7tmVKzPcyXVtZiEH8Y+wDemrOCOQ3fypKgVZl8SP3ToRavyJOlxrCXwARZ
+         YuODNLWJqqV5dSNTeL2VtsMnUqFHxhZqgOLKK//s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vikash Chandola <vikash.chandola@linux.intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 41/71] hwmon: (pmbus) Clear pmbus fault/warning bits after read
-Date:   Mon, 14 Mar 2022 12:53:34 +0100
-Message-Id: <20220314112739.082070941@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 59/71] watch_queue, pipe: Free watchqueue state after clearing pipe ring
+Date:   Mon, 14 Mar 2022 12:53:52 +0100
+Message-Id: <20220314112739.582363593@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,42 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vikash Chandola <vikash.chandola@linux.intel.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 35f165f08950a876f1b95a61d79c93678fba2fd6 ]
+commit db8facfc9fafacefe8a835416a6b77c838088f8b upstream.
 
-Almost all fault/warning bits in pmbus status registers remain set even
-after fault/warning condition are removed. As per pmbus specification
-these faults must be cleared by user.
-Modify hwmon behavior to clear fault/warning bit after fetching data if
-fault/warning bit was set. This allows to get fresh data in next read.
+In free_pipe_info(), free the watchqueue state after clearing the pipe
+ring as each pipe ring descriptor has a release function, and in the
+case of a notification message, this is watch_queue_pipe_buf_release()
+which tries to mark the allocation bitmap that was previously released.
 
-Signed-off-by: Vikash Chandola <vikash.chandola@linux.intel.com>
-Link: https://lore.kernel.org/r/20220222131253.2426834-1-vikash.chandola@linux.intel.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by moving the put of the pipe's ref on the watch queue to after
+the ring has been cleared.  We still need to call watch_queue_clear()
+before doing that to make sure that the pipe is disconnected from any
+notification sources first.
+
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-by: Jann Horn <jannh@google.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/pmbus/pmbus_core.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ fs/pipe.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index b0e2820a2d57..71798fde2ef0 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -898,6 +898,11 @@ static int pmbus_get_boolean(struct i2c_client *client, struct pmbus_boolean *b,
- 		pmbus_update_sensor_data(client, s2);
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -830,10 +830,8 @@ void free_pipe_info(struct pipe_inode_in
+ 	int i;
  
- 	regval = status & mask;
-+	if (regval) {
-+		ret = pmbus_write_byte_data(client, page, reg, regval);
-+		if (ret)
-+			goto unlock;
-+	}
- 	if (s1 && s2) {
- 		s64 v1, v2;
+ #ifdef CONFIG_WATCH_QUEUE
+-	if (pipe->watch_queue) {
++	if (pipe->watch_queue)
+ 		watch_queue_clear(pipe->watch_queue);
+-		put_watch_queue(pipe->watch_queue);
+-	}
+ #endif
  
--- 
-2.34.1
-
+ 	(void) account_pipe_buffers(pipe->user, pipe->nr_accounted, 0);
+@@ -843,6 +841,10 @@ void free_pipe_info(struct pipe_inode_in
+ 		if (buf->ops)
+ 			pipe_buf_release(pipe, buf);
+ 	}
++#ifdef CONFIG_WATCH_QUEUE
++	if (pipe->watch_queue)
++		put_watch_queue(pipe->watch_queue);
++#endif
+ 	if (pipe->tmp_page)
+ 		__free_page(pipe->tmp_page);
+ 	kfree(pipe->bufs);
 
 
