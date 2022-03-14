@@ -2,119 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B772C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47620C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244708AbiCNTw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36176 "EHLO
+        id S244513AbiCNTwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244693AbiCNTwT (ORCPT
+        with ESMTP id S244683AbiCNTwT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 15:52:19 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761EA3EF29;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B391D3F301;
         Mon, 14 Mar 2022 12:50:50 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlVOw002680;
-        Mon, 14 Mar 2022 19:50:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=67AWJ2p19Rw/MnXoxakt2Evr7rWlJmgaPwFcSm2xlKo=;
- b=Y9hHR9FMyogek0UYzheYdwYlsBmW2qNOq/WgF4kj25zS3Nui6nsLPtbvDglE14LJcysp
- 4myWKY/e695NBg9as6AqDfSJlUbz6Str96/TrHFnwC0IQ4DE9XBOyPrADcEVP1RmR/U/
- l2yCzhHviBhxmHxIjZYSYDFIlDGSuvm7U6nXoe6m/gVDsU4yUWj5Y8hmUPFAkO5LYTfU
- /iGq5HszsyU+3AnkJ1ggyzQvnYzkyXeC3oH8Cb+SXTefFz0XpAS4CWnMjU0WmpC+Et4a
- ToNS5ACCBY9XSN8frFSoD5YabP1vsxkKEjd2MbWGSePvasQzmHXsGC8aAxCjaQQQOftQ Pg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92mr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:50:13 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJnLSN007716;
-        Mon, 14 Mar 2022 19:50:13 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92mf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:50:13 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJl8ai028267;
-        Mon, 14 Mar 2022 19:50:12 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma04dal.us.ibm.com with ESMTP id 3erk59cce9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 19:50:12 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EJoAQG33358158
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Mar 2022 19:50:10 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 47A49112062;
-        Mon, 14 Mar 2022 19:50:10 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BA36C11206F;
-        Mon, 14 Mar 2022 19:50:00 +0000 (GMT)
-Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.184])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Mar 2022 19:50:00 +0000 (GMT)
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-To:     linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
-Subject: [PATCH v4 31/32] MAINTAINERS: additional files related kvm s390 pci passthrough
-Date:   Mon, 14 Mar 2022 15:44:50 -0400
-Message-Id: <20220314194451.58266-32-mjrosato@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
-References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8C92B80F79;
+        Mon, 14 Mar 2022 19:50:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0768CC340E9;
+        Mon, 14 Mar 2022 19:50:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647287417;
+        bh=kMPXQdSDTqPZw7TxTqFO8+ozgcvhKk61vNuNGq6NqZ4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aBYW5qr3K6D3J3laM6P3okKIixNitcz6eBEnEBls1QbCSU3MFvseZZdwZWbWqzmPZ
+         T1xfXLDSYrcnDo3BO1UPC9Apfgj6XXgSHSdI+/fEImHikC2tXcSd6mK2gPVFvHZjSE
+         ejnPBgt4ksCpDHJuo2kfZTRRuUltdiLxmObD5soPqUtzC5wglgwm9SqpwzlwWtB80K
+         UKokgPWfw8A0jf/rK0SQMW9LTSQ7Qr34QOqFuPbN4MFfRAcMAARgCgSUuctH384LSm
+         z/FTZFxvo1dXxy9MW9Q+Kn1E/rBwfk9A5DQ8XDyPQVJJyyAa6voZsrCOY4AIxI7eE4
+         p/ZVemtnuIHvg==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 0/2] x86: Avoid CONFIG_X86_X32_ABI=y with llvm-objcopy
+Date:   Mon, 14 Mar 2022 12:48:40 -0700
+Message-Id: <20220314194842.3452-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 4yMtETw5zpch6ZLIPviSr9iKm8zFLR7_
-X-Proofpoint-ORIG-GUID: 5HVlPH_7SIExJBJWcOSyU7jHEQVOGOSd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- suspectscore=0 bulkscore=0 mlxlogscore=840 phishscore=0 spamscore=0
- malwarescore=0 impostorscore=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203140116
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add entries from the s390 kvm subdirectory related to pci passthrough.
+This series disables CONFIG_X86_X32_ABI=y with llvm-objcopy, which has
+had two outstanding issues, which are further outlined in the second
+patch:
 
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
----
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+https://github.com/ClangBuiltLinux/linux/issues/514
+https://github.com/ClangBuiltLinux/linux/issues/1141
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e127c2fb08a7..6c76eb66b10a 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16928,6 +16928,8 @@ M:	Eric Farman <farman@linux.ibm.com>
- L:	linux-s390@vger.kernel.org
- L:	kvm@vger.kernel.org
- S:	Supported
-+F:	arch/s390/include/asm/kvm_pci.h
-+F:	arch/s390/kvm/pci*
- F:	drivers/vfio/pci/vfio_pci_zdev.c
- F:	include/uapi/linux/vfio_zdev.h
- 
+The first patch is from Masahiro, which moves the CONFIG_X86_X32_ABI
+back into Kconfig proper. It was initially pushed as an RFC:
+
+https://lore.kernel.org/r/20210227183910.221873-1-masahiroy@kernel.org/
+
+The conclusion of that thread was that the check was still needed
+because of the two issues above. However, with the introduction of
+IBT, specifically commit 41c5ef31ad71 ("x86/ibt: Base IBT bits"), the
+second issue linked above becomes visible with allmodconfig, which
+heavily impacts automated testing.
+
+The second patch builds on the first by just universally disabling
+CONFIG_X86_X32_ABI when using llvm-objcopy at configuration time so that
+neither issue is visible.
+
+While it is unlikely that these issues will be fixed in LLVM, this could
+eventually become a version check.
+
+This is based on -tip x86/core and I would like for both patches to go
+with the IBT changes so that there is no build breakage.
+
+Masahiro Yamada (1):
+  x86: Remove toolchain check for X32 ABI capability
+
+Nathan Chancellor (1):
+  x86/Kconfig: Do not allow CONFIG_X86_X32_ABI=y with llvm-objcopy
+
+ arch/x86/Kconfig                       | 13 +++++++------
+ arch/x86/Makefile                      | 16 ----------------
+ arch/x86/entry/syscalls/Makefile       |  2 +-
+ arch/x86/include/asm/syscall_wrapper.h |  6 +++---
+ arch/x86/include/asm/vdso.h            |  2 +-
+ arch/x86/kernel/process_64.c           |  2 +-
+ fs/fuse/ioctl.c                        |  2 +-
+ fs/xfs/xfs_ioctl32.c                   |  2 +-
+ sound/core/control_compat.c            | 16 ++++++++--------
+ sound/core/pcm_compat.c                | 20 ++++++++++----------
+ 10 files changed, 33 insertions(+), 48 deletions(-)
+
+
+base-commit: f8afc9d88e65d189653f363eacc1f3131216ef7c
 -- 
-2.27.0
+2.35.1
 
