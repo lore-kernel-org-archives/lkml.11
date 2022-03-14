@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF57C47088
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39499C3527B
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245585AbiCNMdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
+        id S245535AbiCNMdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243945AbiCNMVZ (ORCPT
+        with ESMTP id S243943AbiCNMVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:21:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6C613D33;
-        Mon, 14 Mar 2022 05:19:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89AEE13D04;
+        Mon, 14 Mar 2022 05:18:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06DD360C70;
-        Mon, 14 Mar 2022 12:19:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF056C340E9;
-        Mon, 14 Mar 2022 12:19:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2285660C70;
+        Mon, 14 Mar 2022 12:18:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 704ADC340E9;
+        Mon, 14 Mar 2022 12:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260355;
-        bh=/ysTpHMR/qo7lmvua99zXU/quYDGz2gZ/U7+mWVtzZo=;
+        s=korg; t=1647260333;
+        bh=GHcjVNVFmexWPprva3YoZ+5Onj0yOw5uwvJRTbQR+mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CS3V/gc+DzlmRi4TpMUzUTPlEEi67rhn3pOYUahvXe1WOQZb4UhxYm5BhzE42bfCS
-         SA1E0kXq2ygQ2ybCDimovDFjNXvD79/2PVN/7jWwhlnU5Pl9uyCq7n2fVXxpNepE8G
-         8AWSUNVYPGMVtKbktAx1Vj0K4oXVDviQ6FU6+n6w=
+        b=OXKRYkl5ejURaVosBp08IKiEnQ7NcsOrUcSpivWicz7eRPkap7ZHKOruOYBer6BsB
+         v+T7jfHrlJn3/e/ZkdPVCy74s9nzQvtNE5uJVc4qPYcFUwceEB47VNgn2f2o4qXdv7
+         7aKYUMCbh9D6SJqenfWUKR04aaR/wbou5O4zSSD8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 109/121] watch_queue: Fix the alloc bitmap size to reflect notes allocated
-Date:   Mon, 14 Mar 2022 12:54:52 +0100
-Message-Id: <20220314112747.152601399@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        Lyude Paul <lyude@redhat.com>, Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        dri-devel@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>
+Subject: [PATCH 5.16 118/121] drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
+Date:   Mon, 14 Mar 2022 12:55:01 +0100
+Message-Id: <20220314112747.405722135@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,45 +54,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
 
-commit 3b4c0371928c17af03e8397ac842346624017ce6 upstream.
+commit 3755d35ee1d2454b20b8a1e20d790e56201678a4 upstream.
 
-Currently, watch_queue_set_size() sets the number of notes available in
-wqueue->nr_notes according to the number of notes allocated, but sets
-the size of the bitmap to the unrounded number of notes originally asked
-for.
+As reported in [1], DRM_PANEL_EDP depends on DRM_DP_HELPER. Select
+the option to fix the build failure. The error message is shown
+below.
 
-Fix this by setting the bitmap size to the number of notes we're
-actually going to make available (ie. the number allocated).
+  arm-linux-gnueabihf-ld: drivers/gpu/drm/panel/panel-edp.o: in function
+    `panel_edp_probe': panel-edp.c:(.text+0xb74): undefined reference to
+    `drm_panel_dp_aux_backlight'
+  make[1]: *** [/builds/linux/Makefile:1222: vmlinux] Error 1
 
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+The issue has been reported before, when DisplayPort helpers were
+hidden behind the option CONFIG_DRM_KMS_HELPER. [2]
+
+v2:
+	* fix and expand commit description (Arnd)
+
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+Fixes: 9d6366e743f3 ("drm: fb_helper: improve CONFIG_FB dependency")
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://lore.kernel.org/dri-devel/CA+G9fYvN0NyaVkRQmA1O6rX7H8PPaZrUAD7=RDy33QY9rUU-9g@mail.gmail.com/ # [1]
+Link: https://lore.kernel.org/all/20211117062704.14671-1-rdunlap@infradead.org/ # [2]
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Lyude Paul <lyude@redhat.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: dri-devel@lists.freedesktop.org
+Link: https://patchwork.freedesktop.org/patch/msgid/20220203093922.20754-1-tzimmermann@suse.de
+Signed-off-by: Dave Airlie <airlied@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/watch_queue.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/panel/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -244,6 +244,7 @@ long watch_queue_set_size(struct pipe_in
- 		goto error;
- 	}
- 
-+	nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
- 	ret = pipe_resize_ring(pipe, roundup_pow_of_two(nr_notes));
- 	if (ret < 0)
- 		goto error;
-@@ -269,7 +270,7 @@ long watch_queue_set_size(struct pipe_in
- 	wqueue->notes = pages;
- 	wqueue->notes_bitmap = bitmap;
- 	wqueue->nr_pages = nr_pages;
--	wqueue->nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
-+	wqueue->nr_notes = nr_notes;
- 	return 0;
- 
- error_p:
+--- a/drivers/gpu/drm/panel/Kconfig
++++ b/drivers/gpu/drm/panel/Kconfig
+@@ -95,6 +95,7 @@ config DRM_PANEL_EDP
+ 	depends on PM
+ 	select VIDEOMODE_HELPERS
+ 	select DRM_DP_AUX_BUS
++	select DRM_DP_HELPER
+ 	help
+ 	  DRM panel driver for dumb eDP panels that need at most a regulator and
+ 	  a GPIO to be powered up. Optionally a backlight can be attached so
 
 
