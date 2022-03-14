@@ -2,85 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4F2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F03EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237410AbiCNIIg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:08:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        id S237533AbiCNIIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238251AbiCNII1 (ORCPT
+        with ESMTP id S237585AbiCNIHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:08:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FCF22FFE3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 01:07:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B4A0611B8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 08:07:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C053EC340E9;
-        Mon, 14 Mar 2022 08:07:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647245237;
-        bh=Qhr3AT/HysLtUJqE2yY8Zz0XqrJA9evnIrPJ4H08OB4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QA6vMD2HgDtCWP6cOe5kDFODkFdUwvX2BIlB+BbM/zCPBk52Xwbh2MDNmWxs5/KDA
-         lMW+1nIOqp2QHDpQX8ZV3RX3t4wlwD4fq75UTTY8IJyWFQzEYnGIR0qfGapeqtEW8e
-         aW22hLLyOsfwNVykqyzt7O/VHLD0D9A/oPb6K4gQ=
-Date:   Mon, 14 Mar 2022 09:07:13 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     chenguanyou <chenguanyou9338@gmail.com>
-Cc:     longman@redhat.com, dave@stgolabs.net, hdanton@sina.com,
-        jaegeuk@google.com, linux-kernel@vger.kernel.org,
-        mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
-        quic_aiquny@quicinc.com, will@kernel.org
-Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more
- consistent
-Message-ID: <Yi73sVutB2w3zxbT@kroah.com>
-References: <cb03cbe5-0357-144d-0660-3ebc50c0245a@redhat.com>
- <20220217154154.6030-1-chenguanyou@xiaomi.com>
+        Mon, 14 Mar 2022 04:07:52 -0400
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D2FC41326;
+        Mon, 14 Mar 2022 01:05:43 -0700 (PDT)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowACHj_s89y5iZXdxAw--.12198S2;
+        Mon, 14 Mar 2022 16:05:18 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     gregkh@linuxfoundation.org
+Cc:     stephen@networkplumber.org, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: Re: [PATCH] hv_netvsc: Add check for kvmalloc_array
+Date:   Mon, 14 Mar 2022 16:05:14 +0800
+Message-Id: <20220314080514.2501092-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217154154.6030-1-chenguanyou@xiaomi.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowACHj_s89y5iZXdxAw--.12198S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrCFW8XF1fJw15Zw4xXF1fWFg_yoWxXwbEgw
+        4UArWYka4kt3W0yF15KFn5Wrsakw47WF1Yqrs8J39IyasxuF4kKFyDCr43Jwnxu3yrAFnI
+        9r12kF45try29jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbI8FF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
+        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_Wryl
+        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
+        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v2
+        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvj
+        fUOmhFUUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 17, 2022 at 11:41:54PM +0800, chenguanyou wrote:
-> >>>>> Hi Waiman, Greg,
-> >>>>> This patch has been merged in branch linux-5.16.y.
-> >>>>> Can we take it to the linux-5.10.y LTS version?
-> >>>> What is "this patch"?
-> >>> commit d257cc8cb8d5355ffc43a96bab94db7b5a324803 ("locking/rwsem: Make handoff bit handling more consistent")
-> >> Have you tested it on the 5.10.y branch to verify it actually works
-> >> properly for you?
-> >>
-> >> If so, please provide a working backport to the stable list, as it does
-> >> not apply cleanly as-is.
-> >>
-> >> thanks,
-> >>
-> >> greg k-h
-> >>
-> > I have attached the 5.10.y backport of commit 
-> > d257cc8cb8d5355ffc43a96bab94db7b5a324803 ("locking/rwsem: Make handoff 
-> > bit handling more consistent"). I also include a backport of commit 
-> > 2f06f702925b512a95b95dca3855549c047eef58 ("locking/rwsem: Prevent 
-> > potential lock starvation") which I think may help Jaegeuk. I had run 
-> > some sanity tests and the backported patches work fine. However, I don't 
-> > have access to their testing environments to verify if they can fix the 
-> > problems seem by Chen or Jaegeuk. So please test these patches to see if 
-> > they can address your problems.
+On Mon, Mar 14, 2022 at 03:33:49PM +0800, Greg KH wrote:
+>> Thanks, I have tested the patch by kernel_patch_verify,
 > 
-> Hi Longman,
+> What is that?
+
+It a Linux kernel patch static verification helper tool.
+Link: https://github.com/nmenon/kernel_patch_verify
+
+>> and all the tests are passed.
 > 
-> I'll do some stability testing on our 5.10 phone.
+> What tests exactly?  How did you fail this allocation?
 
-What ever happened with this testing?
+The failure of allocation is not included in the tests.
+And as far as I know, there is not any tool that has the
+ability to fail the allocation.
+But I think that for safety, the cost of redundant and harmless
+check is acceptable.
+Also, checking after allocation is a good program pattern.
 
-thanks,
+Thanks,
+Jiang
 
-greg k-h
