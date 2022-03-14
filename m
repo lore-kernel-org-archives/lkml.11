@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A795C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF34EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235455AbiCNMRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55568 "EHLO
+        id S241047AbiCNMRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242861AbiCNMLI (ORCPT
+        with ESMTP id S240793AbiCNMHy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:11:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40ECA32EFC;
-        Mon, 14 Mar 2022 05:09:59 -0700 (PDT)
+        Mon, 14 Mar 2022 08:07:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D47B26136;
+        Mon, 14 Mar 2022 05:03:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7FF561314;
-        Mon, 14 Mar 2022 12:09:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABCAFC340F4;
-        Mon, 14 Mar 2022 12:09:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3E8EB80DF4;
+        Mon, 14 Mar 2022 12:03:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED1C6C340EC;
+        Mon, 14 Mar 2022 12:03:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259792;
-        bh=H5PrVNJ9RgkeRrsR7UrsrQ5G4Bj6FAhEeIAnrs3d6CU=;
+        s=korg; t=1647259432;
+        bh=jq/4X7WKx712Z4Nd1+z1ahSG13+/Eajwrc24FqKSEoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rPxJIz31RV0Vvw/84Pv5UrrwQV1Iu93datJx1KgEBMc2wgi80Fw8gSO/NWBFiSG6v
-         sGSRW3UpkKcvSMGy3M5Qlvb0N2kYerZvLOtyXPzQAkn/ezOAkAqw0ewvTmihxu6/eO
-         NSdN4JITYAYIdYpMoL6tIJM4OS2egpcWgbZS8d7k=
+        b=kFtfXU8LOAGNzoUfoPT3aUMyGfEcFUlRP5TBtDFB4NRq5/PrZZIZzi0tBcAxdWeXd
+         OPziOI8MXaQ652QTudKdpXsUcYfSAormMdBqn3frXUt6N2YeU5u7dgJrxqvLaYoOuk
+         HavQNQ0kzHy0zW1gqW3BpsIVCBbA2dO3t0nhqrSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Chumak <dchumak@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 091/110] net/mlx5: Fix offloading with ESWITCH_IPV4_TTL_MODIFY_ENABLE
-Date:   Mon, 14 Mar 2022 12:54:33 +0100
-Message-Id: <20220314112745.570049869@linuxfoundation.org>
+        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 46/71] tracing: Ensure trace buffer is at least 4096 bytes large
+Date:   Mon, 14 Mar 2022 12:53:39 +0100
+Message-Id: <20220314112739.219829427@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
-References: <20220314112743.029192918@linuxfoundation.org>
+In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
+References: <20220314112737.929694832@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,35 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dima Chumak <dchumak@nvidia.com>
+From: Sven Schnelle <svens@linux.ibm.com>
 
-commit 39bab83b119faac4bf7f07173a42ed35be95147e upstream.
+[ Upstream commit 7acf3a127bb7c65ff39099afd78960e77b2ca5de ]
 
-Only prio 1 is supported for nic mode when there is no ignore flow level
-support in firmware. But for switchdev mode, which supports fixed number
-of statically pre-allocated prios, this restriction is not relevant so
-it can be relaxed.
+Booting the kernel with 'trace_buf_size=1' give a warning at
+boot during the ftrace selftests:
 
-Fixes: d671e109bd85 ("net/mlx5: Fix tc max supported prio for nic mode")
-Signed-off-by: Dima Chumak <dchumak@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[    0.892809] Running postponed tracer tests:
+[    0.892893] Testing tracer function:
+[    0.901899] Callback from call_rcu_tasks_trace() invoked.
+[    0.983829] Callback from call_rcu_tasks_rude() invoked.
+[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
+[    1.091944] Callback from call_rcu_tasks() invoked.
+[    1.097695] PASSED
+[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
+[    1.353474] ------------[ cut here ]------------
+[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
+
+Therefore enforce a minimum of 4096 bytes to make the selftest pass.
+
+Link: https://lkml.kernel.org/r/20220214134456.1751749-1-svens@linux.ibm.com
+
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c |    3 ---
- 1 file changed, 3 deletions(-)
+ kernel/trace/trace.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-@@ -121,9 +121,6 @@ u32 mlx5_chains_get_nf_ft_chain(struct m
- 
- u32 mlx5_chains_get_prio_range(struct mlx5_fs_chains *chains)
- {
--	if (!mlx5_chains_prios_supported(chains))
--		return 1;
--
- 	if (mlx5_chains_ignore_flow_level_supported(chains))
- 		return UINT_MAX;
- 
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 71ed0616d83b..953dd9568dd7 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -1490,10 +1490,12 @@ static int __init set_buf_size(char *str)
+ 	if (!str)
+ 		return 0;
+ 	buf_size = memparse(str, &str);
+-	/* nr_entries can not be zero */
+-	if (buf_size == 0)
+-		return 0;
+-	trace_buf_size = buf_size;
++	/*
++	 * nr_entries can not be zero and the startup
++	 * tests require some buffer space. Therefore
++	 * ensure we have at least 4096 bytes of buffer.
++	 */
++	trace_buf_size = max(4096UL, buf_size);
+ 	return 1;
+ }
+ __setup("trace_buf_size=", set_buf_size);
+-- 
+2.34.1
+
 
 
