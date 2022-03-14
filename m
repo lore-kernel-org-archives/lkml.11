@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240700AbiCNMHV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35316 "EHLO
+        id S240548AbiCNMHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240708AbiCNMG7 (ORCPT
+        with ESMTP id S240654AbiCNMHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:06:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD332018A;
-        Mon, 14 Mar 2022 05:03:15 -0700 (PDT)
+        Mon, 14 Mar 2022 08:07:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1565A21273;
+        Mon, 14 Mar 2022 05:03:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 27E7FCE1265;
-        Mon, 14 Mar 2022 12:03:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC4DC340E9;
-        Mon, 14 Mar 2022 12:03:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF914B80DEC;
+        Mon, 14 Mar 2022 12:03:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA14C340EC;
+        Mon, 14 Mar 2022 12:03:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259392;
-        bh=KJ76qdj+9s1wslnc9jYS35+T7a9INtf5aJ7Icsm/uo4=;
+        s=korg; t=1647259397;
+        bh=hA2jntMUiHHrRBMInAefEI/HQkp7b7Hah6h12nd58Nc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IBDTF68M3p1xT5Lv7GdCbJlI45c4W5qAurJnDRvWKdQSrROJYO+0qHTYVPgGfwUgr
-         lL3eYpgMZ98JiWuU4e9XSQocCyBnHl94jvQgc9QuHlmyrLgXYKbTqZ5AJAcyOlFQ4r
-         /PAJD2yXPlsTFLwSh1O3TO9jV2BZoYuo8YqsYs2c=
+        b=h0VyDgonE43aLw5IYotoWftRwLQ66F5wLF9UbwSlW2PaKoP0OMFsWsPbdJ1xzlb1a
+         tZZ1hkfP6S9thwk+SkJjyAdvqN9m+c3+6ATP72qkwQDiRZupubsB2P/nwOM/wCbSiL
+         uUzYwmy5pmz3rl2J0CbvffawVHnVK6YpATwD/Jvk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ross Philipson <ross.philipson@oracle.com>,
+        stable@vger.kernel.org, Li Huafei <lihuafei1@huawei.com>,
         Borislav Petkov <bp@suse.de>,
-        Daniel Kiper <daniel.kiper@oracle.com>
-Subject: [PATCH 5.10 67/71] x86/boot: Add setup_indirect support in early_memremap_is_setup_data()
-Date:   Mon, 14 Mar 2022 12:54:00 +0100
-Message-Id: <20220314112739.814638150@linuxfoundation.org>
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: [PATCH 5.10 68/71] x86/traps: Mark do_int3() NOKPROBE_SYMBOL
+Date:   Mon, 14 Mar 2022 12:54:01 +0100
+Message-Id: <20220314112739.842180777@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -49,82 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ross Philipson <ross.philipson@oracle.com>
+From: Li Huafei <lihuafei1@huawei.com>
 
-commit 445c1470b6ef96440e7cfc42dfc160f5004fd149 upstream.
+commit a365a65f9ca1ceb9cf1ac29db4a4f51df7c507ad upstream.
 
-The x86 boot documentation describes the setup_indirect structures and
-how they are used. Only one of the two functions in ioremap.c that needed
-to be modified to be aware of the introduction of setup_indirect
-functionality was updated. Adds comparable support to the other function
-where it was missing.
+Since kprobe_int3_handler() is called in do_int3(), probing do_int3()
+can cause a breakpoint recursion and crash the kernel. Therefore,
+do_int3() should be marked as NOKPROBE_SYMBOL.
 
-Fixes: b3c72fc9a78e ("x86/boot: Introduce setup_indirect")
-Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+Fixes: 21e28290b317 ("x86/traps: Split int3 handler up")
+Signed-off-by: Li Huafei <lihuafei1@huawei.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/1645668456-22036-3-git-send-email-ross.philipson@oracle.com
+Link: https://lore.kernel.org/r/20220310120915.63349-1-lihuafei1@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/mm/ioremap.c |   33 +++++++++++++++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+ arch/x86/kernel/traps.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/x86/mm/ioremap.c
-+++ b/arch/x86/mm/ioremap.c
-@@ -694,22 +694,51 @@ static bool memremap_is_setup_data(resou
- static bool __init early_memremap_is_setup_data(resource_size_t phys_addr,
- 						unsigned long size)
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -651,6 +651,7 @@ static bool do_int3(struct pt_regs *regs
+ 
+ 	return res == NOTIFY_STOP;
+ }
++NOKPROBE_SYMBOL(do_int3);
+ 
+ static void do_int3_user(struct pt_regs *regs)
  {
-+	struct setup_indirect *indirect;
- 	struct setup_data *data;
- 	u64 paddr, paddr_next;
- 
- 	paddr = boot_params.hdr.setup_data;
- 	while (paddr) {
--		unsigned int len;
-+		unsigned int len, size;
- 
- 		if (phys_addr == paddr)
- 			return true;
- 
- 		data = early_memremap_decrypted(paddr, sizeof(*data));
-+		if (!data) {
-+			pr_warn("failed to early memremap setup_data entry\n");
-+			return false;
-+		}
-+
-+		size = sizeof(*data);
- 
- 		paddr_next = data->next;
- 		len = data->len;
- 
--		early_memunmap(data, sizeof(*data));
-+		if ((phys_addr > paddr) && (phys_addr < (paddr + len))) {
-+			early_memunmap(data, sizeof(*data));
-+			return true;
-+		}
-+
-+		if (data->type == SETUP_INDIRECT) {
-+			size += len;
-+			early_memunmap(data, sizeof(*data));
-+			data = early_memremap_decrypted(paddr, size);
-+			if (!data) {
-+				pr_warn("failed to early memremap indirect setup_data\n");
-+				return false;
-+			}
-+
-+			indirect = (struct setup_indirect *)data->data;
-+
-+			if (indirect->type != SETUP_INDIRECT) {
-+				paddr = indirect->addr;
-+				len = indirect->len;
-+			}
-+		}
-+
-+		early_memunmap(data, size);
- 
- 		if ((phys_addr > paddr) && (phys_addr < (paddr + len)))
- 			return true;
 
 
