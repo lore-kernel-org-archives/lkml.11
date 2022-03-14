@@ -2,169 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 366B6C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0698BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237653AbiCNIVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
+        id S237369AbiCNIXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237369AbiCNIVk (ORCPT
+        with ESMTP id S231159AbiCNIXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:21:40 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097FE3EF23
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 01:20:30 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id h11so20679771ljb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 01:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=0jsGDZGuE1wFeDgrRVvKz3gMkQvG2OtkGgkBW7bJIIY=;
-        b=SzgtULj3Rl6JojXcMunC64uc+o+TjwdnMSkBlloSVDnK5jPfszaNn21wkMHEK/ITNa
-         yiZY0GzFsJZtjWswmSdhnjRams5TUswISNTAwjR2cUpwGpnJwkHfTH/JXY9U9HLdYmjp
-         QMqTNlhF5/LGN9hfHybecV8wonADSuwQ0smkLc/4EFHBZVFCwNUDkvZ2VXlB6rhMocoK
-         VNpqDUOWAotRn/RnW8sXBrEfkv1TER0RrYutQ0FkZ82KSw6QFPwU2sVgk7CIOTLlr39H
-         2LQ/c25FuJzeRB85Jp0UJDl7epcDBXFGEwiBPqNgGawRFG88sUdJ4mhZOWx9mT2V/g9s
-         heDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0jsGDZGuE1wFeDgrRVvKz3gMkQvG2OtkGgkBW7bJIIY=;
-        b=6/dt/5BaS82hcg+RsfEEEKh6aZVSTtkx/Tqkhb98odzQHcmNsQ84VKTbLub3F6yiME
-         4tglSY+NiaiV1cHHlI3s96XiZI0kiBaXQP/HM6T/+R/wcb0PbaqPEzfk385aiabjoB+K
-         RyHy+0Q8ATJi44BRFdQHWrJtxOfwvoxko7kExU6McWyv38tcx04DepevAJCEueOO5kp8
-         zOvG+8m6naFpD6msDTJvggCJKii23yGj1SffTrBkl/yabxeBg4flFeZNsNA1odFxGDtp
-         jxhr+Ji87iKyfcMrNPhykrsVj1l+Zht9pJaEdS7qUvs+3vspurL4mf//fTC/k6/f72BT
-         L7aQ==
-X-Gm-Message-State: AOAM532TzU2gCl2epgWDVBzeNNN+4fueK9LLkZCVo2FcmIz/UIcUc+3d
-        kI3U/bxrj3XUzZPVTRSArlDh9x/xgMaHPA==
-X-Google-Smtp-Source: ABdhPJzS/POZUDP6+CYrgOXdz6HjJeNcuxARNO8TOkiRP249gvnf2SkXE8Ah7YjoekbbvAGqtJdJgw==
-X-Received: by 2002:a05:651c:243:b0:247:eb1b:939d with SMTP id x3-20020a05651c024300b00247eb1b939dmr13654168ljn.250.1647246028276;
-        Mon, 14 Mar 2022 01:20:28 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id u13-20020a056512094d00b0043e6c108925sm3140943lft.136.2022.03.14.01.20.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 01:20:27 -0700 (PDT)
-Message-ID: <169795c1-607e-ee60-7ac7-538ed888bedf@linaro.org>
-Date:   Mon, 14 Mar 2022 11:20:21 +0300
+        Mon, 14 Mar 2022 04:23:22 -0400
+Received: from smtp-190e.mail.infomaniak.ch (smtp-190e.mail.infomaniak.ch [IPv6:2001:1600:4:17::190e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1943F324
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 01:22:12 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KH8f81BzkzMprsH;
+        Mon, 14 Mar 2022 09:22:08 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KH8f4419JzlhSML;
+        Mon, 14 Mar 2022 09:22:04 +0100 (CET)
+Message-ID: <bdc3f565-9deb-504e-a904-639b9b2c7517@digikod.net>
+Date:   Mon, 14 Mar 2022 09:22:33 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 12/16] clk: qcom: clk-krait: add 8064 errata workaround
-Content-Language: en-GB
-To:     Ansuel Smith <ansuelsmth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Peter De Schrijver <pdeschrijver@nvidia.com>,
-        Prashant Gaikwad <pgaikwad@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <20220313190419.2207-1-ansuelsmth@gmail.com>
- <20220313190419.2207-13-ansuelsmth@gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <20220313190419.2207-13-ansuelsmth@gmail.com>
+User-Agent: 
+Content-Language: en-US
+To:     Paul Moore <paul@paul-moore.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     John Johansen <john.johansen@canonical.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <brauner@kernel.org>,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        Eric Paris <eparis@parisplace.org>,
+        James Morris <jmorris@namei.org>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Steve French <sfrench@samba.org>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>,
+        selinux@vger.kernel.org, Casey Schaufler <casey@schaufler-ca.com>
+References: <20220228215935.748017-1-mic@digikod.net>
+ <20220301092232.wh7m3fxbe7hyxmcu@wittgenstein>
+ <f6b63133-d555-a77c-0847-de15a9302283@digikod.net>
+ <CAHC9VhQd3rL-13k0u39Krkdjp2_dtPfgEPxr=kawWUM9FjjOsw@mail.gmail.com>
+ <8d520529-4d3e-4874-f359-0ead9207cead@canonical.com>
+ <CAHC9VhRrjqe1AdZYtjpzLJyBF6FTeQ4EcEwsOd2YMimA5_tzEA@mail.gmail.com>
+ <b848fe63-e86d-af38-5198-5519cb3c02ef@I-love.SAKURA.ne.jp>
+ <CAHC9VhQqx7B+6Ji_92eMZ1o9O_yaDQQoPVw92Av0Zznv7i8F8w@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v1] fs: Fix inconsistent f_mode
+In-Reply-To: <CAHC9VhQqx7B+6Ji_92eMZ1o9O_yaDQQoPVw92Av0Zznv7i8F8w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/03/2022 22:04, Ansuel Smith wrote:
-> Add 8064 errata workaround where the sec_src clock gating needs to be
 
-Could you please be more specific whether the errata applies only to the 
-ipq8064 or to the apq8064 too? 8064 is not specific enough.
-
-> disabled during switching. To enable this set disable_sec_src_gating in
-> the mux struct.
+On 12/03/2022 16:17, Paul Moore wrote:
+> On Fri, Mar 11, 2022 at 8:35 PM Tetsuo Handa
+> <penguin-kernel@i-love.sakura.ne.jp> wrote:
+>> On 2022/03/12 7:15, Paul Moore wrote:
+>>> The silence on this has been deafening :/  No thoughts on fixing, or
+>>> not fixing OPEN_FMODE(), Al?
+>>
+>> On 2022/03/01 19:15, Mickaël Salaün wrote:
+>>>
+>>> On 01/03/2022 10:22, Christian Brauner wrote:
+>>>> That specific part seems a bit risky at first glance. Given that the
+>>>> patch referenced is from 2009 this means we've been allowing O_WRONLY |
+>>>> O_RDWR to succeed for almost 13 years now.
+>>>
+>>> Yeah, it's an old bug, but we should keep in mind that a file descriptor
+>>> created with such flags cannot be used to read nor write. However,
+>>> unfortunately, it can be used for things like ioctl, fstat, chdir… I
+>>> don't know if there is any user of this trick.
+>>
+>> I got a reply from Al at https://lkml.kernel.org/r/20090212032821.GD28946@ZenIV.linux.org.uk
+>> that sys_open(path, 3) is for ioctls only. And I'm using this trick when opening something
+>> for ioctls only.
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->   drivers/clk/qcom/clk-krait.c | 16 ++++++++++++++++
->   drivers/clk/qcom/clk-krait.h |  1 +
->   drivers/clk/qcom/krait-cc.c  |  1 +
->   3 files changed, 18 insertions(+)
+> Thanks Tetsuo, that's helpful.  After reading your email I went
+> digging around to see if this was documented anywhere, and buried in
+> the open(2) manpage, towards the bottom under the "File access mode"
+> header, is this paragraph:
 > 
-> diff --git a/drivers/clk/qcom/clk-krait.c b/drivers/clk/qcom/clk-krait.c
-> index d8af281eba0e..82fe7031e1f4 100644
-> --- a/drivers/clk/qcom/clk-krait.c
-> +++ b/drivers/clk/qcom/clk-krait.c
-> @@ -18,13 +18,23 @@
->   static DEFINE_SPINLOCK(krait_clock_reg_lock);
->   
->   #define LPL_SHIFT	8
-> +#define SECCLKAGD	BIT(4)
-> +
->   static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
->   {
->   	unsigned long flags;
->   	u32 regval;
->   
->   	spin_lock_irqsave(&krait_clock_reg_lock, flags);
-> +
->   	regval = krait_get_l2_indirect_reg(mux->offset);
-> +
-> +	/* 8064 Errata: disable sec_src clock gating during switch. */
-> +	if (mux->disable_sec_src_gating) {
-> +		regval |= SECCLKAGD;
-> +		krait_set_l2_indirect_reg(mux->offset, regval);
-> +	}
-> +
->   	regval &= ~(mux->mask << mux->shift);
->   	regval |= (sel & mux->mask) << mux->shift;
->   	if (mux->lpl) {
-> @@ -33,6 +43,12 @@ static void __krait_mux_set_sel(struct krait_mux_clk *mux, int sel)
->   	}
->   	krait_set_l2_indirect_reg(mux->offset, regval);
->   
-> +	/* 8064 Errata: re-enabled sec_src clock gating. */
+>   "Linux reserves the special, nonstandard access mode 3 (binary 11)
+>    in flags to mean: check for read and write permission on the file
+>    and return a file descriptor that can't be used for reading or
+>    writing.  This nonstandard access mode is used by some Linux
+>    drivers to return a file descriptor that is to be used only for
+>    device-specific ioctl(2) operations."
 
-And here too
+Interesting, I missed the reference to this special value in the man page.
 
-> +	if (mux->disable_sec_src_gating) {
-> +		regval &= ~SECCLKAGD;
-> +		krait_set_l2_indirect_reg(mux->offset, regval);
-> +	}
-> +
->   	/* Wait for switch to complete. */
->   	mb();
->   	udelay(1);
-> diff --git a/drivers/clk/qcom/clk-krait.h b/drivers/clk/qcom/clk-krait.h
-> index 9120bd2f5297..f930538c539e 100644
-> --- a/drivers/clk/qcom/clk-krait.h
-> +++ b/drivers/clk/qcom/clk-krait.h
-> @@ -15,6 +15,7 @@ struct krait_mux_clk {
->   	u8		safe_sel;
->   	u8		old_index;
->   	bool		reparent;
-> +	bool		disable_sec_src_gating;
->   
->   	struct clk_hw	hw;
->   	struct notifier_block   clk_nb;
-> diff --git a/drivers/clk/qcom/krait-cc.c b/drivers/clk/qcom/krait-cc.c
-> index 1bdc89c097e6..533a770332be 100644
-> --- a/drivers/clk/qcom/krait-cc.c
-> +++ b/drivers/clk/qcom/krait-cc.c
-> @@ -154,6 +154,7 @@ krait_add_sec_mux(struct device *dev, struct clk *qsb, int id,
->   	mux->shift = 2;
->   	mux->parent_map = sec_mux_map;
->   	mux->hw.init = &init;
-> +	mux->disable_sec_src_gating = true;
->   
->   	init.name = kasprintf(GFP_KERNEL, "krait%s_sec_mux", s);
->   	if (!init.name)
+> 
+> I learned something new today :)  With this in mind it looks like
+> doing a SELinux file:ioctl check is the correct thing to do.
 
+Indeed, SELinux uses it in an early ioctl check, but it still seems 
+inconsistent (without being a bug) with the handling of the other value 
+of this flag. This FD can also be used for chdir or other inode-related 
+actions, which may not involve ioctl.
 
--- 
-With best wishes
-Dmitry
+However, it seems there is a more visible inconsistency with the way 
+Tomoyo checks for read, write (because of the ACC_MODE use) *and* ioctl 
+rights for an ioctl action. At least, the semantic is not the same and 
+is not reflected in the documentation.
+
+Because AppArmor and Landlock don't support ioctl, this looks fine for them.
