@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08978C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9862C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:38:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239266AbiCNLjz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
+        id S239272AbiCNLj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239351AbiCNLiu (ORCPT
+        with ESMTP id S239444AbiCNLjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:38:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF6B4338A;
-        Mon, 14 Mar 2022 04:37:39 -0700 (PDT)
+        Mon, 14 Mar 2022 07:39:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E11DB1;
+        Mon, 14 Mar 2022 04:37:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 326C9B80DBA;
-        Mon, 14 Mar 2022 11:37:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 914C5C36AE5;
-        Mon, 14 Mar 2022 11:37:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C4D161181;
+        Mon, 14 Mar 2022 11:37:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5EAC340EC;
+        Mon, 14 Mar 2022 11:37:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257857;
-        bh=M8ax33quUGmZY4WEvx5nH5KNIApyPzylG8aYXe9hmrg=;
+        s=korg; t=1647257866;
+        bh=HQDzt7DRnstbuSIZ9hqLQDqQhgyT8/fAxqbSn2TWsus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y998LP5GI/lo79FmHKOfP+Bg+E5aoEzgIE883yxdh3V7q6D2PcHEBaltPCe1Jao7X
-         +KKMNLc7tRNIZLdFHk1gCNFqstdvWgSZDlPCPKr6NCZGINqkZc5//Nvo4f4j3Gs+K/
-         H6VsfaT0PUTjGjhMEPZt3fL46hFnKMbN2Fw+uleA=
+        b=EoMFBEbzOrWBrzmdJb8eC6d9HqzZo8meKE7zvHtejlEgcf7h+y90vtLDQEHOnhDcL
+         mqv+MyNQoEy6a8FeRV0vbVMjQzZcjYrc5yBvAUcAWX9e14ecHTodWz3NREIIzhDxIg
+         R4cyhzLk9hFymnlR4N4aPx5USsxlMDVUOp9SnxvA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Triplett <josh@joshtriplett.org>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 22/23] ext4: add check to prevent attempting to resize an fs with sparse_super2
-Date:   Mon, 14 Mar 2022 12:34:35 +0100
-Message-Id: <20220314112731.699764053@linuxfoundation.org>
+        stable@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH 4.14 19/23] virtio: unexport virtio_finalize_features
+Date:   Mon, 14 Mar 2022 12:34:32 +0100
+Message-Id: <20220314112731.614231378@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112731.050583127@linuxfoundation.org>
 References: <20220314112731.050583127@linuxfoundation.org>
@@ -48,55 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Triplett <josh@joshtriplett.org>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit b1489186cc8391e0c1e342f9fbc3eedf6b944c61 upstream.
+commit 838d6d3461db0fdbf33fc5f8a69c27b50b4a46da upstream.
 
-The in-kernel ext4 resize code doesn't support filesystem with the
-sparse_super2 feature. It fails with errors like this and doesn't finish
-the resize:
-EXT4-fs (loop0): resizing filesystem from 16640 to 7864320 blocks
-EXT4-fs warning (device loop0): verify_reserved_gdb:760: reserved GDT 2 missing grp 1 (32770)
-EXT4-fs warning (device loop0): ext4_resize_fs:2111: error (-22) occurred during file system resize
-EXT4-fs (loop0): resized filesystem to 2097152
+virtio_finalize_features is only used internally within virtio.
+No reason to export it.
 
-To reproduce:
-mkfs.ext4 -b 4096 -I 256 -J size=32 -E resize=$((256*1024*1024)) -O sparse_super2 ext4.img 65M
-truncate -s 30G ext4.img
-mount ext4.img /mnt
-python3 -c 'import fcntl, os, struct ; fd = os.open("/mnt", os.O_RDONLY | os.O_DIRECTORY) ; fcntl.ioctl(fd, 0x40086610, struct.pack("Q", 30 * 1024 * 1024 * 1024 // 4096), False) ; os.close(fd)'
-dmesg | tail
-e2fsck ext4.img
-
-The userspace resize2fs tool has a check for this case: it checks if the
-filesystem has sparse_super2 set and if the kernel provides
-/sys/fs/ext4/features/sparse_super2. However, the former check requires
-manually reading and parsing the filesystem superblock.
-
-Detect this case in ext4_resize_begin and error out early with a clear
-error message.
-
-Signed-off-by: Josh Triplett <josh@joshtriplett.org>
-Link: https://lore.kernel.org/r/74b8ae78405270211943cd7393e65586c5faeed1.1623093259.git.josh@joshtriplett.org
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/resize.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/virtio/virtio.c |    3 +--
+ include/linux/virtio.h  |    1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
---- a/fs/ext4/resize.c
-+++ b/fs/ext4/resize.c
-@@ -74,6 +74,11 @@ int ext4_resize_begin(struct super_block
- 		return -EPERM;
- 	}
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -165,7 +165,7 @@ void virtio_add_status(struct virtio_dev
+ }
+ EXPORT_SYMBOL_GPL(virtio_add_status);
  
-+	if (ext4_has_feature_sparse_super2(sb)) {
-+		ext4_msg(sb, KERN_ERR, "Online resizing not supported with sparse_super2");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	if (test_and_set_bit_lock(EXT4_FLAGS_RESIZING,
- 				  &EXT4_SB(sb)->s_ext4_flags))
- 		ret = -EBUSY;
+-int virtio_finalize_features(struct virtio_device *dev)
++static int virtio_finalize_features(struct virtio_device *dev)
+ {
+ 	int ret = dev->config->finalize_features(dev);
+ 	unsigned status;
+@@ -185,7 +185,6 @@ int virtio_finalize_features(struct virt
+ 	}
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(virtio_finalize_features);
+ 
+ static int virtio_dev_probe(struct device *_d)
+ {
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -151,7 +151,6 @@ void virtio_break_device(struct virtio_d
+ void virtio_config_changed(struct virtio_device *dev);
+ void virtio_config_disable(struct virtio_device *dev);
+ void virtio_config_enable(struct virtio_device *dev);
+-int virtio_finalize_features(struct virtio_device *dev);
+ #ifdef CONFIG_PM_SLEEP
+ int virtio_device_freeze(struct virtio_device *dev);
+ int virtio_device_restore(struct virtio_device *dev);
 
 
