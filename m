@@ -2,384 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD762C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 19:51:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244678AbiCNTwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 15:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S244761AbiCNTwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 15:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244707AbiCNTwU (ORCPT
+        with ESMTP id S244688AbiCNTwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 15:52:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1E23F30A;
-        Mon, 14 Mar 2022 12:50:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8CEA611A6;
-        Mon, 14 Mar 2022 19:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D32EC340E9;
-        Mon, 14 Mar 2022 19:50:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647287420;
-        bh=Dro4LZI2ieLx7MeHOzF/p3bWs/a6rgtiTs1GrLOSZ7o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FWRPnEw8M5XArLed9BsUXmtAwsnFEbxJGpaEV1blCB7CSCzNf9cfzJq6E8qCEiDwS
-         mGn48rkhoppdRnh7heBi+oTkIu60H0aTVY6cPkZQPAKp1bYGHpzuoD1kN0xJs9lJw5
-         E0F8FZY4VgAqnUqJnKQ1Kr0qtqek3/uqDBVj/ko9JY7kQayP1yaNHn+i/+gAEod2Kh
-         k4piJWOo4t/DUoXQ9YdffIxJ5V5ojGfrnHkVO5GezwgN11p4/XLFhTy9qzGpuQuwsH
-         gUkH5XP4sk3BBswDO1zyeDF6/7LXVJTkKD+xSm06gVyGWIvpoTrHSeuObo4tXY/hal
-         AuIUcfRHwkMyg==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
-        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 1/2] x86: Remove toolchain check for X32 ABI capability
-Date:   Mon, 14 Mar 2022 12:48:41 -0700
-Message-Id: <20220314194842.3452-2-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314194842.3452-1-nathan@kernel.org>
-References: <20220314194842.3452-1-nathan@kernel.org>
+        Mon, 14 Mar 2022 15:52:17 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A283EBBA;
+        Mon, 14 Mar 2022 12:50:45 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlWhx002808;
+        Mon, 14 Mar 2022 19:50:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=NtvaafqQawGeW536gL8Hl+D6uOSeQNQSIU3t8O8kAGo=;
+ b=U+Q8AXbREqKtoBSy1OfYbPcKMqlf/LZ5J8MN4imLZOcjfcZpfO2i6d803VjHFvAW1OQ6
+ IZoRL/DBhS+yQYPffMj0jGXkqzGYKKTj3MJyK7WgVdmo9lsoJPKr9TtFI9cnnCAeoHiE
+ TzLaPd9m8x6lYhXhA3HdmxRO2TmW9j4+zPHdQCZckN8LeuRAlWCHokD1oXGqGX8qQSuV
+ VyVqIXwvJIwwHWEP2zHo35hyPi0zNZ/ZYLiJUNMsnyTTW0wSeYafLB6qhjQ7eByMyX/1
+ FyT1EvRdDjdj3VJqaX1dJg/HtUm/pwlS2kIpxFuNOCdPZOotj/XIKRWYTjiRz+CFl56Y Ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92hd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:50:03 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJlXF3002902;
+        Mon, 14 Mar 2022 19:50:03 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92gr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:50:02 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJm5XG002536;
+        Mon, 14 Mar 2022 19:50:01 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma03wdc.us.ibm.com with ESMTP id 3erk58r9an-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 19:50:01 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22EJo0lT52232548
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Mar 2022 19:50:00 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 25108112062;
+        Mon, 14 Mar 2022 19:50:00 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3195D11206D;
+        Mon, 14 Mar 2022 19:49:51 +0000 (GMT)
+Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown [9.211.32.184])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Mar 2022 19:49:50 +0000 (GMT)
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+To:     linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
+        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
+        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
+        pbonzini@redhat.com, corbet@lwn.net, jgg@nvidia.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
+Subject: [PATCH v4 30/32] KVM: s390: introduce CPU feature for zPCI Interpretation
+Date:   Mon, 14 Mar 2022 15:44:49 -0400
+Message-Id: <20220314194451.58266-31-mjrosato@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Qe627T8D3VOl9Qp75zzIwElIOid11C8C
+X-Proofpoint-ORIG-GUID: irMXp6E0xak-vS7Ir70D8fq3nQLZJrBd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ suspectscore=0 bulkscore=0 mlxlogscore=972 phishscore=0 spamscore=0
+ malwarescore=0 impostorscore=0 adultscore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203140116
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+KVM_S390_VM_CPU_FEAT_ZPCI_INTERP relays whether zPCI interpretive
+execution is possible based on the available hardware facilities.
 
-Commit 0bf6276392e9 ("x32: Warn and disable rather than error if
-binutils too old") added a small test in arch/x86/Makefile because
-binutils 2.22 or newer is needed to properly support elf32-x86-64. This
-check is no longer necessary, as the minimum supported version of
-binutils is 2.23, which is enforced at configuration time with
-scripts/min-tool-version.sh.
-
-Remove this check and replace all uses of CONFIG_X86_X32 with
-CONFIG_X86_X32_ABI, as two symbols are no longer necessary.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-[nathan: Rebase, fix up a few places where CONFIG_X86_X32 was still
-         used, and simplify commit message to satisfy -tip requirements]
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 ---
- arch/x86/Kconfig                       |  8 ++------
- arch/x86/Makefile                      | 16 ----------------
- arch/x86/entry/syscalls/Makefile       |  2 +-
- arch/x86/include/asm/syscall_wrapper.h |  6 +++---
- arch/x86/include/asm/vdso.h            |  2 +-
- arch/x86/kernel/process_64.c           |  2 +-
- fs/fuse/ioctl.c                        |  2 +-
- fs/xfs/xfs_ioctl32.c                   |  2 +-
- sound/core/control_compat.c            | 16 ++++++++--------
- sound/core/pcm_compat.c                | 20 ++++++++++----------
- 10 files changed, 28 insertions(+), 48 deletions(-)
+ arch/s390/include/uapi/asm/kvm.h | 1 +
+ arch/s390/kvm/kvm-s390.c         | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 870e0d10452d..b903bfcd713c 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2861,7 +2861,7 @@ config IA32_AOUT
- 	help
- 	  Support old a.out binaries in the 32bit emulation.
- 
--config X86_X32
-+config X86_X32_ABI
- 	bool "x32 ABI for 64-bit mode"
- 	depends on X86_64
- 	help
-@@ -2870,10 +2870,6 @@ config X86_X32
- 	  full 64-bit register file and wide data path while leaving
- 	  pointers at 32 bits for smaller memory footprint.
- 
--	  You will need a recent binutils (2.22 or later) with
--	  elf32_x86_64 support enabled to compile a kernel with this
--	  option set.
--
- config COMPAT_32
- 	def_bool y
- 	depends on IA32_EMULATION || X86_32
-@@ -2882,7 +2878,7 @@ config COMPAT_32
- 
- config COMPAT
- 	def_bool y
--	depends on IA32_EMULATION || X86_X32
-+	depends on IA32_EMULATION || X86_X32_ABI
- 
- if COMPAT
- config COMPAT_FOR_U64_ALIGNMENT
-diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index f29c2c9c3216..63d50f65b828 100644
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -152,22 +152,6 @@ else
-         KBUILD_CFLAGS += -mcmodel=kernel
- endif
- 
--ifdef CONFIG_X86_X32
--	x32_ld_ok := $(call try-run,\
--			/bin/echo -e '1: .quad 1b' | \
--			$(CC) $(KBUILD_AFLAGS) -c -x assembler -o "$$TMP" - && \
--			$(OBJCOPY) -O elf32-x86-64 "$$TMP" "$$TMP.o" && \
--			$(LD) -m elf32_x86_64 "$$TMP.o" -o "$$TMP",y,n)
--        ifeq ($(x32_ld_ok),y)
--                CONFIG_X86_X32_ABI := y
--                KBUILD_AFLAGS += -DCONFIG_X86_X32_ABI
--                KBUILD_CFLAGS += -DCONFIG_X86_X32_ABI
--        else
--                $(warning CONFIG_X86_X32 enabled but no binutils support)
--        endif
--endif
--export CONFIG_X86_X32_ABI
--
- #
- # If the function graph tracer is used with mcount instead of fentry,
- # '-maccumulate-outgoing-args' is needed to prevent a GCC bug
-diff --git a/arch/x86/entry/syscalls/Makefile b/arch/x86/entry/syscalls/Makefile
-index 5b3efed0e4e8..7f3886eeb2ff 100644
---- a/arch/x86/entry/syscalls/Makefile
-+++ b/arch/x86/entry/syscalls/Makefile
-@@ -67,7 +67,7 @@ uapisyshdr-y			+= unistd_32.h unistd_64.h unistd_x32.h
- syshdr-y			+= syscalls_32.h
- syshdr-$(CONFIG_X86_64)		+= unistd_32_ia32.h unistd_64_x32.h
- syshdr-$(CONFIG_X86_64)		+= syscalls_64.h
--syshdr-$(CONFIG_X86_X32)	+= syscalls_x32.h
-+syshdr-$(CONFIG_X86_X32_ABI)	+= syscalls_x32.h
- syshdr-$(CONFIG_XEN)		+= xen-hypercalls.h
- 
- uapisyshdr-y	:= $(addprefix $(uapi)/, $(uapisyshdr-y))
-diff --git a/arch/x86/include/asm/syscall_wrapper.h b/arch/x86/include/asm/syscall_wrapper.h
-index 6a2827d0681f..59358d1bf880 100644
---- a/arch/x86/include/asm/syscall_wrapper.h
-+++ b/arch/x86/include/asm/syscall_wrapper.h
-@@ -159,7 +159,7 @@ extern long __ia32_sys_ni_syscall(const struct pt_regs *regs);
- #endif /* CONFIG_IA32_EMULATION */
- 
- 
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- /*
-  * For the x32 ABI, we need to create a stub for compat_sys_*() which is aware
-  * of the x86-64-style parameter ordering of x32 syscalls. The syscalls common
-@@ -177,12 +177,12 @@ extern long __ia32_sys_ni_syscall(const struct pt_regs *regs);
- 
- #define __X32_COMPAT_SYS_NI(name)					\
- 	__SYS_NI(x64, compat_sys_##name)
--#else /* CONFIG_X86_X32 */
-+#else /* CONFIG_X86_X32_ABI */
- #define __X32_COMPAT_SYS_STUB0(name)
- #define __X32_COMPAT_SYS_STUBx(x, name, ...)
- #define __X32_COMPAT_COND_SYSCALL(name)
- #define __X32_COMPAT_SYS_NI(name)
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 
- 
- #ifdef CONFIG_COMPAT
-diff --git a/arch/x86/include/asm/vdso.h b/arch/x86/include/asm/vdso.h
-index 98aa103eb4ab..2963a2f5dbc4 100644
---- a/arch/x86/include/asm/vdso.h
-+++ b/arch/x86/include/asm/vdso.h
-@@ -37,7 +37,7 @@ struct vdso_image {
- extern const struct vdso_image vdso_image_64;
- #endif
- 
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- extern const struct vdso_image vdso_image_x32;
- #endif
- 
-diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 3402edec236c..e459253649be 100644
---- a/arch/x86/kernel/process_64.c
-+++ b/arch/x86/kernel/process_64.c
-@@ -681,7 +681,7 @@ void set_personality_64bit(void)
- 
- static void __set_personality_x32(void)
- {
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 	if (current->mm)
- 		current->mm->context.flags = 0;
- 
-diff --git a/fs/fuse/ioctl.c b/fs/fuse/ioctl.c
-index fbc09dab1f85..7143c85cc4aa 100644
---- a/fs/fuse/ioctl.c
-+++ b/fs/fuse/ioctl.c
-@@ -170,7 +170,7 @@ long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
- #else
- 	if (flags & FUSE_IOCTL_COMPAT) {
- 		inarg.flags |= FUSE_IOCTL_32BIT;
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 		if (in_x32_syscall())
- 			inarg.flags |= FUSE_IOCTL_COMPAT_X32;
- #endif
-diff --git a/fs/xfs/xfs_ioctl32.c b/fs/xfs/xfs_ioctl32.c
-index 004ed2a251e8..ca25ed89b706 100644
---- a/fs/xfs/xfs_ioctl32.c
-+++ b/fs/xfs/xfs_ioctl32.c
-@@ -217,7 +217,7 @@ xfs_compat_ioc_fsbulkstat(
- 	inumbers_fmt_pf		inumbers_func = xfs_fsinumbers_fmt_compat;
- 	bulkstat_one_fmt_pf	bs_one_func = xfs_fsbulkstat_one_fmt_compat;
- 
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 	if (in_x32_syscall()) {
- 		/*
- 		 * ... but on x32 the input xfs_fsop_bulkreq has pointers
-diff --git a/sound/core/control_compat.c b/sound/core/control_compat.c
-index edff063e088d..d8a86d1a99d6 100644
---- a/sound/core/control_compat.c
-+++ b/sound/core/control_compat.c
-@@ -150,7 +150,7 @@ struct snd_ctl_elem_value32 {
-         unsigned char reserved[128];
+diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
+index 7a6b14874d65..ed06458a871f 100644
+--- a/arch/s390/include/uapi/asm/kvm.h
++++ b/arch/s390/include/uapi/asm/kvm.h
+@@ -130,6 +130,7 @@ struct kvm_s390_vm_cpu_machine {
+ #define KVM_S390_VM_CPU_FEAT_PFMFI	11
+ #define KVM_S390_VM_CPU_FEAT_SIGPIF	12
+ #define KVM_S390_VM_CPU_FEAT_KSS	13
++#define KVM_S390_VM_CPU_FEAT_ZPCI_INTERP 14
+ struct kvm_s390_vm_cpu_feat {
+ 	__u64 feat[16];
  };
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 613101ba29be..137ab8c09b82 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -434,6 +434,12 @@ static void kvm_s390_cpu_feat_init(void)
+ 	if (test_facility(151)) /* DFLTCC */
+ 		__insn32_query(INSN_DFLTCC, kvm_s390_available_subfunc.dfltcc);
  
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- /* x32 has a different alignment for 64bit values from ia32 */
- struct snd_ctl_elem_value_x32 {
- 	struct snd_ctl_elem_id id;
-@@ -162,7 +162,7 @@ struct snd_ctl_elem_value_x32 {
- 	} value;
- 	unsigned char reserved[128];
- };
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 
- /* get the value type and count of the control */
- static int get_ctl_type(struct snd_card *card, struct snd_ctl_elem_id *id,
-@@ -347,7 +347,7 @@ static int snd_ctl_elem_write_user_compat(struct snd_ctl_file *file,
- 	return ctl_elem_write_user(file, data32, &data32->value);
- }
- 
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- static int snd_ctl_elem_read_user_x32(struct snd_card *card,
- 				      struct snd_ctl_elem_value_x32 __user *data32)
- {
-@@ -359,7 +359,7 @@ static int snd_ctl_elem_write_user_x32(struct snd_ctl_file *file,
- {
- 	return ctl_elem_write_user(file, data32, &data32->value);
- }
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 
- /* add or replace a user control */
- static int snd_ctl_elem_add_compat(struct snd_ctl_file *file,
-@@ -418,10 +418,10 @@ enum {
- 	SNDRV_CTL_IOCTL_ELEM_WRITE32 = _IOWR('U', 0x13, struct snd_ctl_elem_value32),
- 	SNDRV_CTL_IOCTL_ELEM_ADD32 = _IOWR('U', 0x17, struct snd_ctl_elem_info32),
- 	SNDRV_CTL_IOCTL_ELEM_REPLACE32 = _IOWR('U', 0x18, struct snd_ctl_elem_info32),
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 	SNDRV_CTL_IOCTL_ELEM_READ_X32 = _IOWR('U', 0x12, struct snd_ctl_elem_value_x32),
- 	SNDRV_CTL_IOCTL_ELEM_WRITE_X32 = _IOWR('U', 0x13, struct snd_ctl_elem_value_x32),
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- };
- 
- static inline long snd_ctl_ioctl_compat(struct file *file, unsigned int cmd, unsigned long arg)
-@@ -460,12 +460,12 @@ static inline long snd_ctl_ioctl_compat(struct file *file, unsigned int cmd, uns
- 		return snd_ctl_elem_add_compat(ctl, argp, 0);
- 	case SNDRV_CTL_IOCTL_ELEM_REPLACE32:
- 		return snd_ctl_elem_add_compat(ctl, argp, 1);
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 	case SNDRV_CTL_IOCTL_ELEM_READ_X32:
- 		return snd_ctl_elem_read_user_x32(ctl->card, argp);
- 	case SNDRV_CTL_IOCTL_ELEM_WRITE_X32:
- 		return snd_ctl_elem_write_user_x32(ctl, argp);
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 	}
- 
- 	down_read(&snd_ioctl_rwsem);
-diff --git a/sound/core/pcm_compat.c b/sound/core/pcm_compat.c
-index e4e176854ce7..917c5b4f19d7 100644
---- a/sound/core/pcm_compat.c
-+++ b/sound/core/pcm_compat.c
-@@ -147,13 +147,13 @@ static int snd_pcm_ioctl_channel_info_compat(struct snd_pcm_substream *substream
- 	return err;
- }
- 
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- /* X32 ABI has the same struct as x86-64 for snd_pcm_channel_info */
- static int snd_pcm_channel_info_user(struct snd_pcm_substream *substream,
- 				     struct snd_pcm_channel_info __user *src);
- #define snd_pcm_ioctl_channel_info_x32(s, p)	\
- 	snd_pcm_channel_info_user(s, p)
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 
- struct compat_snd_pcm_status64 {
- 	snd_pcm_state_t state;
-@@ -375,7 +375,7 @@ static int snd_pcm_ioctl_xfern_compat(struct snd_pcm_substream *substream,
- 	return err;
- }
- 
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- /* X32 ABI has 64bit timespec and 64bit alignment */
- struct snd_pcm_mmap_status_x32 {
- 	snd_pcm_state_t state;
-@@ -468,7 +468,7 @@ static int snd_pcm_ioctl_sync_ptr_x32(struct snd_pcm_substream *substream,
- 
- 	return 0;
- }
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 
- #ifdef __BIG_ENDIAN
- typedef char __pad_before_u32[4];
-@@ -560,10 +560,10 @@ enum {
- 	SNDRV_PCM_IOCTL_READN_FRAMES32 = _IOR('A', 0x53, struct snd_xfern32),
- 	SNDRV_PCM_IOCTL_STATUS_COMPAT64 = _IOR('A', 0x20, struct compat_snd_pcm_status64),
- 	SNDRV_PCM_IOCTL_STATUS_EXT_COMPAT64 = _IOWR('A', 0x24, struct compat_snd_pcm_status64),
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 	SNDRV_PCM_IOCTL_CHANNEL_INFO_X32 = _IOR('A', 0x32, struct snd_pcm_channel_info),
- 	SNDRV_PCM_IOCTL_SYNC_PTR_X32 = _IOWR('A', 0x23, struct snd_pcm_sync_ptr_x32),
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- };
- 
- static long snd_pcm_ioctl_compat(struct file *file, unsigned int cmd, unsigned long arg)
-@@ -607,10 +607,10 @@ static long snd_pcm_ioctl_compat(struct file *file, unsigned int cmd, unsigned l
- 	case __SNDRV_PCM_IOCTL_SYNC_PTR32:
- 		return snd_pcm_common_ioctl(file, substream, cmd, argp);
- 	case __SNDRV_PCM_IOCTL_SYNC_PTR64:
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 		if (in_x32_syscall())
- 			return snd_pcm_ioctl_sync_ptr_x32(substream, argp);
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 		return snd_pcm_ioctl_sync_ptr_buggy(substream, argp);
- 	case SNDRV_PCM_IOCTL_HW_REFINE32:
- 		return snd_pcm_ioctl_hw_params_compat(substream, 1, argp);
-@@ -642,10 +642,10 @@ static long snd_pcm_ioctl_compat(struct file *file, unsigned int cmd, unsigned l
- 		return snd_pcm_status_user_compat64(substream, argp, false);
- 	case SNDRV_PCM_IOCTL_STATUS_EXT_COMPAT64:
- 		return snd_pcm_status_user_compat64(substream, argp, true);
--#ifdef CONFIG_X86_X32
-+#ifdef CONFIG_X86_X32_ABI
- 	case SNDRV_PCM_IOCTL_CHANNEL_INFO_X32:
- 		return snd_pcm_ioctl_channel_info_x32(substream, argp);
--#endif /* CONFIG_X86_X32 */
-+#endif /* CONFIG_X86_X32_ABI */
- 	}
- 
- 	return -ENOIOCTLCMD;
++	/* zPCI Interpretation */
++	if (IS_ENABLED(CONFIG_VFIO_PCI) && IS_ENABLED(CONFIG_S390_KVM_IOMMU) &&
++	    test_facility(69) && test_facility(70) && test_facility(71) &&
++	    test_facility(72))
++		allow_cpu_feat(KVM_S390_VM_CPU_FEAT_ZPCI_INTERP);
++
+ 	if (MACHINE_HAS_ESOP)
+ 		allow_cpu_feat(KVM_S390_VM_CPU_FEAT_ESOP);
+ 	/*
 -- 
-2.35.1
+2.27.0
 
