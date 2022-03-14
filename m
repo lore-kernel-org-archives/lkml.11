@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF546C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 062AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240919AbiCNMMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33616 "EHLO
+        id S240932AbiCNMMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241351AbiCNMIi (ORCPT
+        with ESMTP id S241371AbiCNMIj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:38 -0400
+        Mon, 14 Mar 2022 08:08:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BCC4C439;
-        Mon, 14 Mar 2022 05:05:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CFC4CD7D;
+        Mon, 14 Mar 2022 05:05:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04E8B612FF;
-        Mon, 14 Mar 2022 12:05:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36201C36AE2;
-        Mon, 14 Mar 2022 12:04:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 777BE61251;
+        Mon, 14 Mar 2022 12:05:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFA2C36AFA;
+        Mon, 14 Mar 2022 12:05:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259500;
-        bh=RsFZTWnfjmpT6i3ems5I0UMcIWdeQ2t770YuUzve0og=;
+        s=korg; t=1647259503;
+        bh=r4aKVxRcS5UDMIkz1JVImxpE6sxrwYcacVNnbS5lCcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AI2ClrVzUm7PoJ+nbbAVOgtfO77fOOnlikKtpcLhjfe9IVnFppojHJ6t2BDWZvZlw
-         f1gWAjI0mWudXl3p17SVPW+CWi93xcuikiXsm9iXI1cODZIhbTb0f9YDI6sLVosxm8
-         9yNEfNX82P0w0vV7WS2Jbqa8Vu79/f9BLN43UmKo=
+        b=Fh2V0KS+SxfZmX6Z2q6uvRc1QokdeVTZ6aAOHLq3VoHgUiE3eQyz0xHrzOXOSPLgJ
+         1Gey2/4d8zG619NI4JlND3uhrDWR0SC1juZbc7m24BE16pNi2VdVTAc8f+flxyYFqe
+         Q/BAUD/jrpOWy4YxyBgIGR7i6NxyajYsl5JS52Y4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, valis <sec@valis.email>,
+        stable@vger.kernel.org,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 020/110] esp: Fix possible buffer overflow in ESP transformation
-Date:   Mon, 14 Mar 2022 12:53:22 +0100
-Message-Id: <20220314112743.599549873@linuxfoundation.org>
+Subject: [PATCH 5.15 021/110] esp: Fix BEET mode inter address family tunneling on GSO
+Date:   Mon, 14 Mar 2022 12:53:23 +0100
+Message-Id: <20220314112743.627393509@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -51,88 +51,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Steffen Klassert <steffen.klassert@secunet.com>
 
-[ Upstream commit ebe48d368e97d007bfeb76fcb065d6cfc4c96645 ]
+[ Upstream commit 053c8fdf2c930efdff5496960842bbb5c34ad43a ]
 
-The maximum message size that can be send is bigger than
-the  maximum site that skb_page_frag_refill can allocate.
-So it is possible to write beyond the allocated buffer.
+The xfrm{4,6}_beet_gso_segment() functions did not correctly set the
+SKB_GSO_IPXIP4 and SKB_GSO_IPXIP6 gso types for the address family
+tunneling case. Fix this by setting these gso types.
 
-Fix this by doing a fallback to COW in that case.
-
-v2:
-
-Avoid get get_order() costs as suggested by Linus Torvalds.
-
-Fixes: cac2661c53f3 ("esp4: Avoid skb_cow_data whenever possible")
-Fixes: 03e2a30f6a27 ("esp6: Avoid skb_cow_data whenever possible")
-Reported-by: valis <sec@valis.email>
+Fixes: 384a46ea7bdc7 ("esp4: add gso_segment for esp4 beet mode")
+Fixes: 7f9e40eb18a99 ("esp6: add gso_segment for esp6 beet mode")
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/esp.h | 2 ++
- net/ipv4/esp4.c   | 5 +++++
- net/ipv6/esp6.c   | 5 +++++
- 3 files changed, 12 insertions(+)
+ net/ipv4/esp4_offload.c | 3 +++
+ net/ipv6/esp6_offload.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/include/net/esp.h b/include/net/esp.h
-index 9c5637d41d95..90cd02ff77ef 100644
---- a/include/net/esp.h
-+++ b/include/net/esp.h
-@@ -4,6 +4,8 @@
- 
- #include <linux/skbuff.h>
- 
-+#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
-+
- struct ip_esp_hdr;
- 
- static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index e1b1d080e908..70e6c87fbe3d 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -446,6 +446,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 	struct page *page;
- 	struct sk_buff *trailer;
- 	int tailen = esp->tailen;
-+	unsigned int allocsz;
- 
- 	/* this is non-NULL only with TCP/UDP Encapsulation */
- 	if (x->encap) {
-@@ -455,6 +456,10 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 			return err;
+diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
+index 8e4e9aa12130..dad5d29a6a8d 100644
+--- a/net/ipv4/esp4_offload.c
++++ b/net/ipv4/esp4_offload.c
+@@ -159,6 +159,9 @@ static struct sk_buff *xfrm4_beet_gso_segment(struct xfrm_state *x,
+ 			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV4;
  	}
  
-+	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
-+	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
-+		goto cow;
++	if (proto == IPPROTO_IPV6)
++		skb_shinfo(skb)->gso_type |= SKB_GSO_IPXIP4;
 +
- 	if (!skb_cloned(skb)) {
- 		if (tailen <= skb_tailroom(skb)) {
- 			nfrags = 1;
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 883b53fd7846..b7b573085bd5 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -483,6 +483,7 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 	struct page *page;
- 	struct sk_buff *trailer;
- 	int tailen = esp->tailen;
-+	unsigned int allocsz;
- 
- 	if (x->encap) {
- 		int err = esp6_output_encap(x, skb, esp);
-@@ -491,6 +492,10 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 			return err;
+ 	__skb_pull(skb, skb_transport_offset(skb));
+ 	ops = rcu_dereference(inet_offloads[proto]);
+ 	if (likely(ops && ops->callbacks.gso_segment))
+diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
+index a349d4798077..302170882382 100644
+--- a/net/ipv6/esp6_offload.c
++++ b/net/ipv6/esp6_offload.c
+@@ -198,6 +198,9 @@ static struct sk_buff *xfrm6_beet_gso_segment(struct xfrm_state *x,
+ 			ipv6_skip_exthdr(skb, 0, &proto, &frag);
  	}
  
-+	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
-+	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
-+		goto cow;
++	if (proto == IPPROTO_IPIP)
++		skb_shinfo(skb)->gso_type |= SKB_GSO_IPXIP6;
 +
- 	if (!skb_cloned(skb)) {
- 		if (tailen <= skb_tailroom(skb)) {
- 			nfrags = 1;
+ 	__skb_pull(skb, skb_transport_offset(skb));
+ 	ops = rcu_dereference(inet6_offloads[proto]);
+ 	if (likely(ops && ops->callbacks.gso_segment))
 -- 
 2.34.1
 
