@@ -2,180 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 763E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A666C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239220AbiCNLhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S238958AbiCNLik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239202AbiCNLhU (ORCPT
+        with ESMTP id S235080AbiCNLhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:37:20 -0400
+        Mon, 14 Mar 2022 07:37:33 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49768433AB;
-        Mon, 14 Mar 2022 04:36:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A42BB424A0;
+        Mon, 14 Mar 2022 04:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2FD161130;
-        Mon, 14 Mar 2022 11:36:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EC80C340E9;
-        Mon, 14 Mar 2022 11:35:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D127461172;
+        Mon, 14 Mar 2022 11:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65270C340E9;
+        Mon, 14 Mar 2022 11:36:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257760;
-        bh=4XBQmzxSlgqVq4uzJLDJWX8OONLIQaibjMk869vL9As=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WpNuHz6wmCXj1PTN+L/Pw0AuVPUmJT8wAiSOFS6HYkGfqMZJDJxvVMQA5a1mjv6XU
-         uT2CHIJ2vUiI9VVkddNBMXjBrN5FsAP+Ma+KdiUf+9LXjGgnHBHUKmlgcvPlS7Kdfv
-         WTEcv6+lIfRYTPyNoduq2P1EqeFaezBx4a2zdTWc=
+        s=korg; t=1647257770;
+        bh=ZYB/bkridebpmK6z9O2fU4zZFulBHJqPbq0vDm66a1A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VJgCG27LD9zyF9hIPZHzCOycOeu346cNPNGJR6bn/N62LM6IZHazU92EJ1aKVDh0/
+         T3Y8S1qLvSBRFy1Q8LiAXLbDAUxBaXoXmn3AeY32WYUksW22548UNmmGXI8Z9HK/tp
+         Pstn+IfhOGD0VWDxP1kVZ1A7W//R6gwh4tMkitBM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 09/20] sctp: fix kernel-infoleak for SCTP sockets
-Date:   Mon, 14 Mar 2022 12:34:10 +0100
-Message-Id: <20220314112730.777399486@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.14 00/23] 4.14.272-rc1 review
+Date:   Mon, 14 Mar 2022 12:34:13 +0100
+Message-Id: <20220314112731.050583127@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112730.388955049@linuxfoundation.org>
-References: <20220314112730.388955049@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.272-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.14.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.14.272-rc1
+X-KernelTest-Deadline: 2022-03-16T11:27+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+This is the start of the stable review cycle for the 4.14.272 release.
+There are 23 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit 633593a808980f82d251d0ca89730d8bb8b0220c ]
+Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
+Anything received after that time might be too late.
 
-syzbot reported a kernel infoleak [1] of 4 bytes.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.272-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
+and the diffstat can be found below.
 
-After analysis, it turned out r->idiag_expires is not initialized
-if inet_sctp_diag_fill() calls inet_diag_msg_common_fill()
+thanks,
 
-Make sure to clear idiag_timer/idiag_retrans/idiag_expires
-and let inet_diag_msg_sctpasoc_fill() fill them again if needed.
+greg k-h
 
-[1]
+-------------
+Pseudo-Shortlog of commits:
 
-BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
-BUG: KMSAN: kernel-infoleak in copyout lib/iov_iter.c:154 [inline]
-BUG: KMSAN: kernel-infoleak in _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
- instrument_copy_to_user include/linux/instrumented.h:121 [inline]
- copyout lib/iov_iter.c:154 [inline]
- _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
- copy_to_iter include/linux/uio.h:162 [inline]
- simple_copy_to_iter+0xf3/0x140 net/core/datagram.c:519
- __skb_datagram_iter+0x2d5/0x11b0 net/core/datagram.c:425
- skb_copy_datagram_iter+0xdc/0x270 net/core/datagram.c:533
- skb_copy_datagram_msg include/linux/skbuff.h:3696 [inline]
- netlink_recvmsg+0x669/0x1c80 net/netlink/af_netlink.c:1977
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- __sys_recvfrom+0x795/0xa10 net/socket.c:2097
- __do_sys_recvfrom net/socket.c:2115 [inline]
- __se_sys_recvfrom net/socket.c:2111 [inline]
- __x64_sys_recvfrom+0x19d/0x210 net/socket.c:2111
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.14.272-rc1
 
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:737 [inline]
- slab_alloc_node mm/slub.c:3247 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4975
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1158 [inline]
- netlink_dump+0x3e5/0x16c0 net/netlink/af_netlink.c:2248
- __netlink_dump_start+0xcf8/0xe90 net/netlink/af_netlink.c:2373
- netlink_dump_start include/linux/netlink.h:254 [inline]
- inet_diag_handler_cmd+0x2e7/0x400 net/ipv4/inet_diag.c:1341
- sock_diag_rcv_msg+0x24a/0x620
- netlink_rcv_skb+0x40c/0x7e0 net/netlink/af_netlink.c:2494
- sock_diag_rcv+0x63/0x80 net/core/sock_diag.c:277
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x1093/0x1360 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x14d9/0x1720 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- sock_write_iter+0x594/0x690 net/socket.c:1061
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_write+0x52c/0x1500 fs/read_write.c:851
- vfs_writev fs/read_write.c:924 [inline]
- do_writev+0x645/0xe00 fs/read_write.c:967
- __do_sys_writev fs/read_write.c:1040 [inline]
- __se_sys_writev fs/read_write.c:1037 [inline]
- __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Qu Wenruo <wqu@suse.com>
+    btrfs: unlock newly allocated extent buffer after error
 
-Bytes 68-71 of 2508 are uninitialized
-Memory access of size 2508 starts at ffff888114f9b000
-Data copied to user address 00007f7fe09ff2e0
+Josh Triplett <josh@joshtriplett.org>
+    ext4: add check to prevent attempting to resize an fs with sparse_super2
 
-CPU: 1 PID: 3478 Comm: syz-executor306 Not tainted 5.17.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+    ARM: fix Thumb2 regression with Spectre BHB
 
-Fixes: 8f840e47f190 ("sctp: add the sctp_diag.c file")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
-Link: https://lore.kernel.org/r/20220310001145.297371-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/sctp/sctp_diag.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+Michael S. Tsirkin <mst@redhat.com>
+    virtio: acknowledge all features before access
 
-diff --git a/net/sctp/sctp_diag.c b/net/sctp/sctp_diag.c
-index e8f56b7c5afb..a044964fa802 100644
---- a/net/sctp/sctp_diag.c
-+++ b/net/sctp/sctp_diag.c
-@@ -45,10 +45,6 @@ static void inet_diag_msg_sctpasoc_fill(struct inet_diag_msg *r,
- 		r->idiag_timer = SCTP_EVENT_TIMEOUT_T3_RTX;
- 		r->idiag_retrans = asoc->rtx_data_chunks;
- 		r->idiag_expires = jiffies_to_msecs(t3_rtx->expires - jiffies);
--	} else {
--		r->idiag_timer = 0;
--		r->idiag_retrans = 0;
--		r->idiag_expires = 0;
- 	}
- }
- 
-@@ -128,13 +124,14 @@ static int inet_sctp_diag_fill(struct sock *sk, struct sctp_association *asoc,
- 	r = nlmsg_data(nlh);
- 	BUG_ON(!sk_fullsock(sk));
- 
-+	r->idiag_timer = 0;
-+	r->idiag_retrans = 0;
-+	r->idiag_expires = 0;
- 	if (asoc) {
- 		inet_diag_msg_sctpasoc_fill(r, sk, asoc);
- 	} else {
- 		inet_diag_msg_common_fill(r, sk);
- 		r->idiag_state = sk->sk_state;
--		r->idiag_timer = 0;
--		r->idiag_retrans = 0;
- 	}
- 
- 	if (inet_diag_msg_attrs_fill(sk, skb, r, ext, user_ns, net_admin))
--- 
-2.34.1
+Michael S. Tsirkin <mst@redhat.com>
+    virtio: unexport virtio_finalize_features
 
+James Morse <james.morse@arm.com>
+    KVM: arm64: Reset PMC_EL0 to avoid a panic() on systems with no PMU
+
+Dan Carpenter <dan.carpenter@oracle.com>
+    staging: gdm724x: fix use after free in gdm_lte_rx()
+
+Randy Dunlap <rdunlap@infradead.org>
+    ARM: Spectre-BHB: provide empty stub for non-config
+
+Mike Kravetz <mike.kravetz@oracle.com>
+    selftests/memfd: clean up mapping in mfd_fail_write
+
+Sven Schnelle <svens@linux.ibm.com>
+    tracing: Ensure trace buffer is at least 4096 bytes large
+
+Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+    Revert "xen-netback: Check for hotplug-status existence before watching"
+
+Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+    Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
+
+suresh kumar <suresh2514@gmail.com>
+    net-sysfs: add check for netdevice being present to speed_show
+
+Eric Dumazet <edumazet@google.com>
+    sctp: fix kernel-infoleak for SCTP sockets
+
+Mark Featherston <mark@embeddedTS.com>
+    gpio: ts4900: Do not set DAT and OE together
+
+Pavel Skripkin <paskripkin@gmail.com>
+    NFC: port100: fix use-after-free in port100_send_complete
+
+Mohammad Kabat <mohammadkab@nvidia.com>
+    net/mlx5: Fix size field in bufferx_reg struct
+
+Duoming Zhou <duoming@zju.edu.cn>
+    ax25: Fix NULL pointer dereference in ax25_kill_by_device
+
+Jiasheng Jiang <jiasheng@iscas.ac.cn>
+    net: ethernet: lpc_eth: Handle error for clk_enable
+
+Jiasheng Jiang <jiasheng@iscas.ac.cn>
+    net: ethernet: ti: cpts: Handle error for clk_enable
+
+Miaoqian Lin <linmq006@gmail.com>
+    ethernet: Fix error handling in xemaclite_of_probe
+
+Tom Rix <trix@redhat.com>
+    qed: return status of qed_iov_get_link
+
+Jia-Ju Bai <baijiaju1990@gmail.com>
+    net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                      |  4 +--
+ arch/arm/include/asm/spectre.h                |  6 ++++
+ arch/arm/kernel/entry-armv.S                  |  4 +--
+ arch/arm64/kvm/sys_regs.c                     |  4 ++-
+ drivers/gpio/gpio-ts4900.c                    | 24 ++++++++++++----
+ drivers/net/ethernet/nxp/lpc_eth.c            |  5 +++-
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c   | 18 +++++++-----
+ drivers/net/ethernet/qlogic/qed/qed_vf.c      |  7 +++++
+ drivers/net/ethernet/ti/cpts.c                |  4 ++-
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c |  4 ++-
+ drivers/net/xen-netback/xenbus.c              | 13 ++++-----
+ drivers/nfc/port100.c                         |  2 ++
+ drivers/staging/gdm724x/gdm_lte.c             |  5 ++--
+ drivers/virtio/virtio.c                       | 40 ++++++++++++++-------------
+ fs/btrfs/extent-tree.c                        |  1 +
+ fs/ext4/resize.c                              |  5 ++++
+ include/linux/mlx5/mlx5_ifc.h                 |  4 +--
+ include/linux/virtio.h                        |  1 -
+ include/linux/virtio_config.h                 |  3 +-
+ kernel/trace/trace.c                          | 10 ++++---
+ net/ax25/af_ax25.c                            |  7 +++++
+ net/core/net-sysfs.c                          |  2 +-
+ net/sctp/sctp_diag.c                          |  9 ++----
+ tools/testing/selftests/memfd/memfd_test.c    |  1 +
+ 24 files changed, 119 insertions(+), 64 deletions(-)
 
 
