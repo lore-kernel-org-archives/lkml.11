@@ -2,202 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A372EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE32C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236610AbiCNHZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 03:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        id S236598AbiCNH11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 03:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230267AbiCNHZY (ORCPT
+        with ESMTP id S230226AbiCNH1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 03:25:24 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CE421808;
-        Mon, 14 Mar 2022 00:24:14 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id x200so28920727ybe.6;
-        Mon, 14 Mar 2022 00:24:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SVU4yjyHFIsoLQqX99m6dks/I1YjxJeajGkAN3rfbC0=;
-        b=G7X+fjufED/sHmNcgMywOMc4IAYvMqqGH4lSwzN4jqB1Vgn21IkY2u2ppFy7bArRJP
-         Zk4ae9Q6TrFZuWjWSji1KKY0xABtG42/RytMR4hPEssOxBhLeRs3NztzaNZ3J8Nw9ZW4
-         qxkRAYpyZS0B0vD3ccBu50HQH0CWHjY0Nttme2ENzPSrySKOxHA8GDMxTqpi5rU26/8w
-         DMNcNItPgKkxTEEmII8I8qbpbsfhDPJWnTOFatAP8mEdzPreia73T9mprCc2pxpYSw5R
-         BXxJe+3N8o+qy+YdQowpS2v70DM8/V56FUQjxCoMgRnWcX7unF0Y+LoYCmB8sNTvYOEj
-         XnZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SVU4yjyHFIsoLQqX99m6dks/I1YjxJeajGkAN3rfbC0=;
-        b=WlKOCZrCFcVmShhUzJdn0Ec5QqXENwXu4CI0xqXfuMHJfaNKWhSxDqRI8t0JH8MxX2
-         wznM+S9MyxQBmkCYxfge4YnenzcYx4dvdY6H0ulE7JWiPsXSa4Jd2rW65fsY09sPGKUE
-         p7XURvbtuqoIiY72jy7UNVnPQcAt7KURRYC2/ZuboLhWu+vQ3scyfdy83DccZ/mQxk2X
-         WqMlvvSRFaezBKLmOkbLMutVUPygSo6GfKCfYJH/BGBxWnj6FzAkWABA7zOWkzso+1ee
-         1jIH8ECfIsnUhAWyB47EEfbQqg7ZiPkqAYiy6v9IwalEbwXkosz1SgAr+hZtIrso23kN
-         8ERQ==
-X-Gm-Message-State: AOAM53033YHI+AnKQqKtc2csrm352NRKOyoUz3jyYXcgapkTO+2zYNv7
-        tQYww79CsUkOQM0mPI+wIFYA0BAf3UfTlNZr/1k=
-X-Google-Smtp-Source: ABdhPJx5cqUJCvREwt97BrqISyK/AjrwYw4pDWHwDZg8KqLHD2V51R/QHv4BqcUPJN6h4hx8T9xEPJ3Tvv9t+pCuvSs=
-X-Received: by 2002:a5b:986:0:b0:628:7e0a:c14c with SMTP id
- c6-20020a5b0986000000b006287e0ac14cmr16397164ybq.240.1647242653731; Mon, 14
- Mar 2022 00:24:13 -0700 (PDT)
+        Mon, 14 Mar 2022 03:27:25 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1577A40A1C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 00:26:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647242776; x=1678778776;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bfWcMYWS2zvebQ7CpaRsDpVSYIbxbj/UAZ95la2dDTE=;
+  b=geH2euoUBhvg4LRESCBT3QVwXlEsLQJoaJRgByNSd87yHIhEB11JwPyk
+   B51arw1i+XbZW4SlXtl0hLG0xxF0HwI5aYu2li7DZ4k4R11R+vXavoksx
+   L6Ocv8SDgpmG8JWHVs/NsFG3obiRcMsD1hd/IwZ0jUe7TmqWhPCaLg5B9
+   TamLHKxEod9ccAkeRM62p7Hsun3XyRn5Bs2JiEA3AryMTnPaUSBhoSDw3
+   AXDg8pGRAojRtXgfoOpAqkJjPjybAbD+YF5alL+ovdVR96OvTWOX0tw7e
+   qMP3AgjFbzfBfl0dcsM6Ok/NYeVfDgidbTMc+GeXtvwatVJjyVLJ8aLht
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="255907169"
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="255907169"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 00:26:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="515310957"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 14 Mar 2022 00:26:14 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nTf5p-0009gq-Ct; Mon, 14 Mar 2022 07:26:13 +0000
+Date:   Mon, 14 Mar 2022 15:25:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:herbert/cryptodev-2.6/master 137/137]
+ include/linux/cacheflush.h:12:46: warning: 'struct folio' declared inside
+ parameter list will not be visible outside of this definition or declaration
+Message-ID: <202203141545.snRTl9jH-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220314060304.95400-1-juitse.huang@gmail.com>
-In-Reply-To: <20220314060304.95400-1-juitse.huang@gmail.com>
-From:   Henry Tseng <henrybear327@gmail.com>
-Date:   Mon, 14 Mar 2022 08:24:02 +0100
-Message-ID: <CAA5xa-kH0eyP16DocXyy2=VdVQCBa6d+PRJbcHANHdpk3QnFJg@mail.gmail.com>
-Subject: Re: [PATCH] docs/scheduler: Introduce the doc of load average
-To:     Jui-Tse Huang <juitse.huang@gmail.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Huaixin Chang <changhuaixin@linux.alibaba.com>,
-        Beata Michalska <beata.michalska@arm.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>,
-        Yiwei Lin <s921975628@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I believe there is a typo in the document, as mentioned inline down below.
+tree:   https://github.com/ammarfaizi2/linux-block herbert/cryptodev-2.6/master
+head:   0e03b8fd29363f2df44e2a7a176d486de550757a
+commit: 0e03b8fd29363f2df44e2a7a176d486de550757a [137/137] crypto: xilinx - Turn SHA into a tristate and allow COMPILE_TEST
+config: h8300-allmodconfig (https://download.01.org/0day-ci/archive/20220314/202203141545.snRTl9jH-lkp@intel.com/config)
+compiler: h8300-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/0e03b8fd29363f2df44e2a7a176d486de550757a
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block herbert/cryptodev-2.6/master
+        git checkout 0e03b8fd29363f2df44e2a7a176d486de550757a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/crypto/xilinx/
 
-On Mon, Mar 14, 2022 at 7:03 AM Jui-Tse Huang <juitse.huang@gmail.com> wrote:
->
-> Load average is one of the common as well as easily observed statistics provided
-> by Linux, but still not well documented, which makes the numbers that users
-> observe from the output of top, htop or other system monitoring applications are
-> only numbers. This patch discusses how Linux calculates the load average as well
-> as what is concerned while calculating the load average.
->
-> The discussion flow is divided into several parts:
-> 1. The expression used to get the load average.
-> 2. Why does Linux choose such an average method from the other.
-> 2. The meaning of each term in the expression.
-> 3. The type of tasks that will be covered in the calculation.
-> 4. A brief explanation of the fixed-point number since the weights defined in
->    the Linux kernel are based on it.
->
-> Signed-off-by: Jui-Tse Huang <juitse.huang@gmail.com>
-> Signed-off-by: Yiwei Lin <s921975628@gmail.com>
-> Co-Developed-by: Yiwei Lin <s921975628@gmail.com>
->
-> ---
->  Documentation/scheduler/index.rst        |  1 +
->  Documentation/scheduler/load-average.rst | 77 ++++++++++++++++++++++++
->  2 files changed, 78 insertions(+)
->  create mode 100644 Documentation/scheduler/load-average.rst
->
-> diff --git a/Documentation/scheduler/index.rst b/Documentation/scheduler/index.rst
-> index 88900aabdbf7..bdc779b4190f 100644
-> --- a/Documentation/scheduler/index.rst
-> +++ b/Documentation/scheduler/index.rst
-> @@ -17,6 +17,7 @@ Linux Scheduler
->      sched-nice-design
->      sched-rt-group
->      sched-stats
-> +    load-average
->
->      text_files
->
-> diff --git a/Documentation/scheduler/load-average.rst b/Documentation/scheduler/load-average.rst
-> new file mode 100644
-> index 000000000000..1b55f8da4e16
-> --- /dev/null
-> +++ b/Documentation/scheduler/load-average.rst
-> @@ -0,0 +1,77 @@
-> +============
-> +Load Average
-> +============
-> +
-> +Load average is a basic statistic provided by almost all operating systems that
-> +aims to report the usage of system hardware resources. In Linux kernel, the
-> +load average is calculated via the following expression::
-> +
-> +                / 0                                      , if t = 0
-> +    load_{t} = |
-> +                \ laod_{t - 1} * exp + active * (1 - exp), otherwise
-> +
-> +The expression represents the exponential moving average of the historical
-> +loading of the system. There are several reasons that Linux kernel chooses
-> +exponential moving average from other similar average equations such as simple
-> +moving average or cumulative moving average:
-> +
-> +#. The exponential moving average consumes fixed memory space, while the simple
-> +   moving average has O(n) space complexity where n is the number of timeslice
-> +   within a given interval.
-> +#. The exponential moving average not only applies a higher weight to the most
-> +   recent record but also declines the weight exponentially, which makes the
-> +   resulting load average reflect the situation of the current system. Neither
-> +   the simple moving average nor cumulative moving average has this feature.
-> +
-> +In the expression, the load_{t} in the expression indicates the calculated load
-> +average at the given time t.
-> +The active is the most recent recorded system load. In Linux, the system load
-> +means the number of tasks in the state of TASK_RUNNING or TASK_UNINTERRUPTIBLE
-> +of the entire system. Tasks with TASK_UNINTERRUPTIBLE state are usually waiting
-> +for disk I/O or holding an uninterruptible lock, which is considered as a part
-> +of system resource, thus, Linux kernel covers them while calculating the load
-> +average.
-> +The exp means the weight applied to the previous report of load average, while
-> +(1 - exp) is the weight applied to the most recently recorded system load.
-> +There are three different weights defined in the Linux kernel, in
-> +include/linux/sched/loadavg.h, to perform statistics in various timescales::
-> +
-> +    // include/linux/sched/loadavg.h
-> +    ...
-> +    #define EXP_1    1884    /* 1/exp(5sec/1min) as fixed-point */
-> +    #define EXP_5    2014    /* 1/exp(5sec/5min) */
-> +    #define EXP_15   2037    /* 1/exp(5sec/15min) */
-> +    ...
-> +
-> +According to the expression shown on the top of this page, the weight (exp)
-> +controls how much of the last load load_{t - 1} will take place in the
-> +calculation of current load, while (1 - exp) is the weight applied to the most
-> +recent record of system load active.
-> +
-> +Due to the security issue, the weights are defined as fixed-point numbers based
-> +on the unsigned integer rather than floating-pointing numbers. The introduction
-> +of the fixed-point number keeps the FPU away from the calculation process. Since
-> +the precession of the fixed-point used in the Linux kernel is 11 bits, a
-> +fixed-point can be converted to a floating-point by dividing it by 2048, as the
-> +expression shown below::
-> +
-> +    EXP_1  = 1884 / 2048 = 0.919922
-> +    EXP_5  = 2014 / 2048 = 0.983398
-> +    EXP_15 = 2037 / 2048 = 0.994629
-> +
-> +Which indicates the weights applied to active are::
-> +
-> +    (1 - EXP_1)  = (1 - 0.919922) = 0.080078
-> +    (1 - EXP_5)  = (1 - 0.983398) = 0.016602
-> +    (1 - EXP_15) = (1 - 0.994629) = 0.005371
-> +
-> +The load average will be updated every 5 seconds. Each time the scheduler_tick()
-> +be called, the function calc_global_load_tick() will also be invoked, which
-> +makes the active of each CPU core be calculated and be merged globally, finally,
-> +the load average will be updated with that global active.
-> +
-> +As a user, the load average can be observed via top, htop, or other system
-> +monitor application, or more directly, by the following command::
-> +
-> +    $ cat /proc/laodavg
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Should be $ cat /proc/loadavg
+All warnings (new ones prefixed by >>):
 
-> +
-> --
-> 2.25.1
->
+   In file included from drivers/crypto/xilinx/zynqmp-sha.c:6:
+>> include/linux/cacheflush.h:12:46: warning: 'struct folio' declared inside parameter list will not be visible outside of this definition or declaration
+      12 | static inline void flush_dcache_folio(struct folio *folio)
+         |                                              ^~~~~
+   In file included from include/asm-generic/percpu.h:5,
+                    from ./arch/h8300/include/generated/asm/percpu.h:1,
+                    from include/linux/irqflags.h:17,
+                    from include/asm-generic/cmpxchg.h:15,
+                    from ./arch/h8300/include/generated/asm/cmpxchg.h:1,
+                    from include/asm-generic/atomic.h:12,
+                    from ./arch/h8300/include/generated/asm/atomic.h:1,
+                    from include/linux/atomic.h:7,
+                    from include/linux/crypto.h:15,
+                    from include/crypto/hash.h:11,
+                    from drivers/crypto/xilinx/zynqmp-sha.c:7:
+   include/linux/scatterlist.h: In function 'sg_set_buf':
+   include/asm-generic/page.h:89:51: warning: ordered comparison of pointer with null pointer [-Wextra]
+      89 | #define virt_addr_valid(kaddr)  (((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
+         |                                                   ^~
+   include/linux/compiler.h:78:45: note: in definition of macro 'unlikely'
+      78 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+         |                                             ^
+   include/linux/scatterlist.h:160:9: note: in expansion of macro 'BUG_ON'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |         ^~~~~~
+   include/linux/scatterlist.h:160:17: note: in expansion of macro 'virt_addr_valid'
+     160 |         BUG_ON(!virt_addr_valid(buf));
+         |                 ^~~~~~~~~~~~~~~
 
 
--- 
-Best wishes,
-Henry
+vim +12 include/linux/cacheflush.h
+
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06   6) 
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06   7) #if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06   8) #ifndef ARCH_IMPLEMENTS_FLUSH_DCACHE_FOLIO
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06   9) void flush_dcache_folio(struct folio *folio);
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06  10) #endif
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06  11) #else
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06 @12) static inline void flush_dcache_folio(struct folio *folio)
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06  13) {
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06  14) }
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06  15) #define ARCH_IMPLEMENTS_FLUSH_DCACHE_FOLIO 0
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06  16) #endif /* ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE */
+522a0032af0055 Matthew Wilcox (Oracle  2021-11-06  17) 
+
+:::::: The code at line 12 was first introduced by commit
+:::::: 522a0032af005502507f5f81ae64fdcc82b5d068 Add linux/cacheflush.h
+
+:::::: TO: Matthew Wilcox (Oracle) <willy@infradead.org>
+:::::: CC: Matthew Wilcox (Oracle) <willy@infradead.org>
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
