@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 291FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C19E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241064AbiCNMR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:17:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
+        id S240988AbiCNMRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241045AbiCNMIR (ORCPT
+        with ESMTP id S242292AbiCNMJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:08:17 -0400
+        Mon, 14 Mar 2022 08:09:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CB32DABF;
-        Mon, 14 Mar 2022 05:04:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A111D26558;
+        Mon, 14 Mar 2022 05:07:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42C62B80DF0;
-        Mon, 14 Mar 2022 12:04:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47CDFC340E9;
-        Mon, 14 Mar 2022 12:04:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2E92B80DED;
+        Mon, 14 Mar 2022 12:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48CF0C340E9;
+        Mon, 14 Mar 2022 12:06:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259459;
-        bh=VOh4WZWDHbvl0DVM0VCouT/2UyXl+kHCC7NlZIFYlBw=;
+        s=korg; t=1647259616;
+        bh=i7xv0jglIHn4FUUINh7I6a5MJYZqrXrWYxEtF5hnFLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k651MXGQdYCuKkJSGXEuk9sd6m6DWiHUMxErZ8+TzJ8oTYNieRgtt8fy3W6GF4I1E
-         hT8YjMvqnhePlznDwy3+1/O7rR6LonHupD1ITQy7HTreQJzTYacCJwRE5O8GgbeZ9K
-         /5NHUmKAERQSSyuHPnnEoHuM8+MCZhNcGMEJ6gLk=
+        b=gsP2ODDZfTww0d0Op/XUZl0cVg45FWqxFjfxbNuXZuFsE02yAvmqBPoaOyqanExn1
+         pWAvY/DRJNldsSqENMGWBs230Ni3+CAVL1b9syghAqSrYKD9O++SPOCkBKoE+UMDEU
+         SCB4VHnJZOPpO1yHG6Mb4Zu2GdvQXK21pypj5L5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        stable@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>,
+        Peter Robinson <pbrobinson@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 012/110] vduse: Fix returning wrong type in vduse_domain_alloc_iova()
-Date:   Mon, 14 Mar 2022 12:53:14 +0100
-Message-Id: <20220314112743.375956292@linuxfoundation.org>
+Subject: [PATCH 5.15 050/110] net: bcmgenet: Dont claim WOL when its not available
+Date:   Mon, 14 Mar 2022 12:53:52 +0100
+Message-Id: <20220314112744.433400772@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -52,39 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Jeremy Linton <jeremy.linton@arm.com>
 
-[ Upstream commit b9d102dafec6af1c07b610faf0a6d4e8aee14ae0 ]
+[ Upstream commit 00b022f8f876a3a036b0df7f971001bef6398605 ]
 
-This fixes the following smatch warnings:
+Some of the bcmgenet platforms don't correctly support WOL, yet
+ethtool returns:
 
-drivers/vdpa/vdpa_user/iova_domain.c:305 vduse_domain_alloc_iova() warn: should 'iova_pfn << shift' be a 64 bit type?
+"Supports Wake-on: gsf"
 
-Fixes: 8c773d53fb7b ("vduse: Implement an MMU-based software IOTLB")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Link: https://lore.kernel.org/r/20220121083940.102-1-xieyongji@bytedance.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+which is false.
+
+Ideally if there isn't a wol_irq, or there is something else that
+keeps the device from being able to wakeup it should display:
+
+"Supports Wake-on: d"
+
+This patch checks whether the device can wakup, before using the
+hard-coded supported flags. This corrects the ethtool reporting, as
+well as the WOL configuration because ethtool verifies that the mode
+is supported before attempting it.
+
+Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Tested-by: Peter Robinson <pbrobinson@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220310045535.224450-1-jeremy.linton@arm.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/vdpa_user/iova_domain.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
-index 1daae2608860..0678c2514197 100644
---- a/drivers/vdpa/vdpa_user/iova_domain.c
-+++ b/drivers/vdpa/vdpa_user/iova_domain.c
-@@ -302,7 +302,7 @@ vduse_domain_alloc_iova(struct iova_domain *iovad,
- 		iova_len = roundup_pow_of_two(iova_len);
- 	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+index e31a5a397f11..f55d9d9c01a8 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+@@ -40,6 +40,13 @@
+ void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+ {
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
++	struct device *kdev = &priv->pdev->dev;
++
++	if (!device_can_wakeup(kdev)) {
++		wol->supported = 0;
++		wol->wolopts = 0;
++		return;
++	}
  
--	return iova_pfn << shift;
-+	return (dma_addr_t)iova_pfn << shift;
- }
- 
- static void vduse_domain_free_iova(struct iova_domain *iovad,
+ 	wol->supported = WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_FILTER;
+ 	wol->wolopts = priv->wolopts;
 -- 
 2.34.1
 
