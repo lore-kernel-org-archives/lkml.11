@@ -2,165 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0131C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243441AbiCNRgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 13:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
+        id S243447AbiCNRg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234321AbiCNRgL (ORCPT
+        with ESMTP id S243464AbiCNRgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 13:36:11 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9C2659B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:35:00 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id s25so28474466lfs.10
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:35:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8A3cxPbkf5/imDcGfqUsgEkAZ/Yq4pAldU3s8K2mQzc=;
-        b=tfX+LbUtQWULAhzeWtmsYWPMAURZzqdsjSM/aDGl+qglrfZ5bNzfGleMtHFaTt3jZv
-         3UyQ5yndXqQ8IyXR6tjdhKwpYv9aaculLUgdA6PMil4v28IhdiEX2uhZI0KYNH460tQ6
-         GKcfKXGVcGVxcLcjPvKm3Y+xr7jKp0lTmNP15knWHThq1yVvN8ocGYyB/el//U+71WsO
-         9kxkVPpZ6bjpiPklFVZMRSxBgbjd89SZz6rNYPQo0Uto/u5sjUUJwJwIeOikglGO6VNE
-         lvYLAnfBrGRNUOM81j19C9LApg+tiwD55XcFvJbf4tDEynsa5BMJpjgefQARvNRiNVXn
-         Zf9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=8A3cxPbkf5/imDcGfqUsgEkAZ/Yq4pAldU3s8K2mQzc=;
-        b=SssiOr4v1twNh3mvOQHBQP8fIfXQk6gXjEEjQQO/FZb1HAGqCrcKPxb/RlIF9TW9D6
-         ZeCvRHN8Nci96aN8hS/fDtQuo4S4Mb0vWk+Xq3Z844CUCnKj7fdte2BkJ0qSqXsZjLN2
-         Gh6AnaAPxjCcZrntYga9fpo/YN2vmwUcY8sO//O/xSXGwrnhO0722axy5h7j11IDd/XS
-         i1zJApLyb4s4wgeTq7WY2eV8L1W+hWNs9tdEJ72aV15Xut49r666rnoKU86Lv5/CXVsG
-         p1v+nXf7dGr6mO0yITQqeRedkWLuhIzHP+x9EMIWb6pNLEZlnkzas9qQ1uyIUElPbwLa
-         G+zQ==
-X-Gm-Message-State: AOAM530RXbVNdvS5iIKJzuTJ1THwsTa3a2lxNi127lfgKoDYOabCHWiE
-        Qc3MKkRshfydpGU+RymPGJpnL2jImOfkRGKLyE1cow==
-X-Google-Smtp-Source: ABdhPJwyJUQnuBymc31Rm47cQ/NdVZrkI9p8VQjPdQxJrZbxv7kE4yinBibZy7OcE53BDtGYf0q134NUBFysmwbOxgc=
-X-Received: by 2002:a19:ca07:0:b0:448:7eab:f1a with SMTP id
- a7-20020a19ca07000000b004487eab0f1amr7790394lfg.456.1647279294144; Mon, 14
- Mar 2022 10:34:54 -0700 (PDT)
+        Mon, 14 Mar 2022 13:36:24 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1257CA1A6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647279314; x=1678815314;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=jPaWQzoMtyMcrbezoCVNRD7YiuzxuZs8L8nT/etgwJc=;
+  b=d/9ZIEXlc25IiaigSyK3RZcTJrgM/1/jE+Na7IKMj8mKUZOqEfHQAj17
+   SMXbzk6v/pWpRSNIPZPBKjBbHxR1rnqmP0NxL5NK40KbVh+OHBSwyr9Gr
+   lfnmlEN0mkXLNpibWGTzQ5zt5KOKQ7Ac7C/TNaaVYD3IAHzl7Zddh6rcT
+   WEgm/iA9+grNK7ydElugL0AB+dPhmCfbT6pT5/zu9Fhnpgd+UP6eC0Sjh
+   Wv4VCfKA4iNzBai9wQuGBska6t48JujOu34x+KiQviiD5J5TQem0udrAx
+   NQKKV8/+pD29ecQk9wybHSDdJLnGS/fewwsQKnO4vI8QTi8fJo+aWQSx1
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="256046719"
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="256046719"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 10:35:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="689900708"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 14 Mar 2022 10:35:10 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nTob8-000A4o-40; Mon, 14 Mar 2022 17:35:10 +0000
+Date:   Tue, 15 Mar 2022 01:34:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     cgel.zte@gmail.com, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com
+Cc:     kbuild-all@lists.01.org, akpm@linux-foundation.org,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, xu xin <xu.xin16@zte.com.cn>
+Subject: Re: [PATCH linux-next] ksm: Count ksm-merging pages for each process
+Message-ID: <202203150131.oDjproo7-lkp@intel.com>
+References: <20220314015355.2111696-1-xu.xin16@zte.com.cn>
 MIME-Version: 1.0
-References: <20220307213356.2797205-1-brijesh.singh@amd.com>
- <20220307213356.2797205-33-brijesh.singh@amd.com> <CAMkAt6pO0xZb2pye-VEKdFQ_dYFgLA21fkYmnYPTWo8mzPrKDQ@mail.gmail.com>
- <20220310212504.2kt6sidexljh2s6p@amd.com> <YiuBqZnjEUyMfBMu@suse.de>
-In-Reply-To: <YiuBqZnjEUyMfBMu@suse.de>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Mon, 14 Mar 2022 11:34:42 -0600
-Message-ID: <CAMkAt6r==_=U4Ha6ZTmii-JL3htJ3-dD4tc+QBqN7dVt711N2A@mail.gmail.com>
-Subject: Re: [PATCH v12 32/46] x86/compressed/64: Add support for SEV-SNP
- CPUID table in #VC handlers
-To:     Joerg Roedel <jroedel@suse.de>
-Cc:     Michael Roth <michael.roth@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-coco@lists.linux.dev,
-        linux-mm@kvack.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, Tony Luck <tony.luck@intel.com>,
-        Marc Orr <marcorr@google.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314015355.2111696-1-xu.xin16@zte.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 10:06 AM Joerg Roedel <jroedel@suse.de> wrote:
->
-> On Thu, Mar 10, 2022 at 03:25:04PM -0600, Michael Roth wrote:
-> > Joerg, do you have more background on that? Would it make sense, outsid=
-e
-> > of this series, to change it to a terminate? Maybe with a specific set
-> > of error codes for ES_{OK,UNSUPPORTED,VMM_ERROR,DECODE_FAILED}?
->
-> This seems to be a left over from development of the SEV-ES guest
-> patch-set. I wanted to see whether the VM crashed due to a triple fault
-> or an error in the #VC handler. The halt loop can be replaced by
-> termination request now.
->
-> > > I am still working on why the early_printk()s in that function are no=
-t
-> > > working, it seems that they lead to a different halt.
-> >
-> > I don't see a different halt. They just don't seem to print anything.
-> > (keep in mind you still need to advance the IP or else the guest is
-> > still gonna end up spinning here, even if you're removing the halt loop
-> > for testing purposes)
->
-> The early_printks() also cause #VC exceptions, and if that handling is
-> broken for some reason nothing will be printed.
->
-> >
-> > > working, it seems that they lead to a different halt. Have you tested
-> > > any of those error paths manually? For example if you set your CPUID
-> > > bits to explicitly fail here do you see the expected printks?
-> >
-> > I think at that point in the code, when the XSAVE stuff is setup, the
-> > console hasn't been enabled yet, so messages would get buffered until t=
-hey
-> > get flushed later (which won't happen since there's halt loop after). I
-> > know in some cases devs will dump the log buffer from memory instead to=
- get
-> > at the error messages for early failures. (Maybe that's also why Joerg
-> > decided to use a halt loop there instead of terminating?)
->
-> It is hard to dump the log-buffer from encrypted memory :) But I
-> remember having seen messages from these early_printks under SEV-ES for
-> different bugs. Not sure why they don't appear in this situation.
->
-> > So maybe reworking the error handling in handle_vc_boot_ghcb() to use
-> > sev_es_terminate() might be warranted, but probably worth checking with
-> > Joerg first, and should be done as a separate series since it is not
-> > SNP-related.
->
-> I am fine with this change.
+Hi,
 
-I'll send a patch out for that.
+Thank you for the patch! Perhaps something to improve:
 
-I was also thinking about adding a vcpu run exit reason for
-termination. It would be nice to get a more informative exit reason
-than -EINVAL in userspace. Thoughts?
+[auto build test WARNING on next-20220310]
 
->
-> Regards,
->
-> --
-> J=C3=B6rg R=C3=B6del
-> jroedel@suse.de
->
-> SUSE Software Solutions Germany GmbH
-> Maxfeldstr. 5
-> 90409 N=C3=BCrnberg
-> Germany
->
-> (HRB 36809, AG N=C3=BCrnberg)
-> Gesch=C3=A4ftsf=C3=BChrer: Ivo Totev
->
+url:    https://github.com/0day-ci/linux/commits/cgel-zte-gmail-com/ksm-Count-ksm-merging-pages-for-each-process/20220314-095633
+base:    71941773e143369a73c9c4a3b62fbb60736a1182
+config: s390-randconfig-s031-20220313 (https://download.01.org/0day-ci/archive/20220315/202203150131.oDjproo7-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/64577121c010929e9f2604053f4b96402d3089a8
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review cgel-zte-gmail-com/ksm-Count-ksm-merging-pages-for-each-process/20220314-095633
+        git checkout 64577121c010929e9f2604053f4b96402d3089a8
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> mm/ksm.c:647:23: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct task_struct *owner @@     got struct task_struct [noderef] __rcu *owner @@
+   mm/ksm.c:647:23: sparse:     expected struct task_struct *owner
+   mm/ksm.c:647:23: sparse:     got struct task_struct [noderef] __rcu *owner
+   mm/ksm.c:805:23: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct task_struct *owner @@     got struct task_struct [noderef] __rcu *owner @@
+   mm/ksm.c:805:23: sparse:     expected struct task_struct *owner
+   mm/ksm.c:805:23: sparse:     got struct task_struct [noderef] __rcu *owner
+   mm/ksm.c:2038:15: sparse: sparse: incorrect type in assignment (different address spaces) @@     expected struct task_struct *owner @@     got struct task_struct [noderef] __rcu *owner @@
+   mm/ksm.c:2038:15: sparse:     expected struct task_struct *owner
+   mm/ksm.c:2038:15: sparse:     got struct task_struct [noderef] __rcu *owner
+   mm/ksm.c: note: in included file:
+   include/linux/rmap.h:248:28: sparse: sparse: context imbalance in 'write_protect_page' - unexpected unlock
+
+vim +647 mm/ksm.c
+
+   635	
+   636		/* check it's not STABLE_NODE_CHAIN or negative */
+   637		BUG_ON(stable_node->rmap_hlist_len < 0);
+   638	
+   639		hlist_for_each_entry(rmap_item, &stable_node->hlist, hlist) {
+   640			if (rmap_item->hlist.next)
+   641				ksm_pages_sharing--;
+   642			else
+   643				ksm_pages_shared--;
+   644	
+   645	#ifdef CONFIG_MEMCG /*Condition of mm_struct with owner*/
+   646			BUG_ON(rmap_item->mm == NULL);
+ > 647			owner = rmap_item->mm->owner;
+   648			/* In case that the process of mm may be killed or exit */
+   649			if (owner)
+   650				owner->ksm_merging_pages--;
+   651	#endif
+   652			VM_BUG_ON(stable_node->rmap_hlist_len <= 0);
+   653			stable_node->rmap_hlist_len--;
+   654			put_anon_vma(rmap_item->anon_vma);
+   655			rmap_item->address &= PAGE_MASK;
+   656			cond_resched();
+   657		}
+   658	
+   659		/*
+   660		 * We need the second aligned pointer of the migrate_nodes
+   661		 * list_head to stay clear from the rb_parent_color union
+   662		 * (aligned and different than any node) and also different
+   663		 * from &migrate_nodes. This will verify that future list.h changes
+   664		 * don't break STABLE_NODE_DUP_HEAD. Only recent gcc can handle it.
+   665		 */
+   666		BUILD_BUG_ON(STABLE_NODE_DUP_HEAD <= &migrate_nodes);
+   667		BUILD_BUG_ON(STABLE_NODE_DUP_HEAD >= &migrate_nodes + 1);
+   668	
+   669		if (stable_node->head == &migrate_nodes)
+   670			list_del(&stable_node->list);
+   671		else
+   672			stable_node_dup_del(stable_node);
+   673		free_stable_node(stable_node);
+   674	}
+   675	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
