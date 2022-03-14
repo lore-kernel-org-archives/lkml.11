@@ -2,151 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6582AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238867AbiCNLTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
+        id S238872AbiCNLUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238007AbiCNLTh (ORCPT
+        with ESMTP id S237211AbiCNLUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:19:37 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8B81BE8C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:18:27 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id w27so26482567lfa.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:18:27 -0700 (PDT)
+        Mon, 14 Mar 2022 07:20:05 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C6638BC3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:18:54 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id rm8-20020a17090b3ec800b001c55791fdb1so6361126pjb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 04:18:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XskhS1+ZejRwgAiU2pw1deIKGswy4V+5KYO2DeR1N9Y=;
-        b=Uhu1Lwv+8VuFE5mRfF/1b2fiAHqmvUsgUhO0pXi5pyY4urvEINV6Z/m05yaTGcL5ZE
-         +vLW4CEz2XJmayqkOZwg68/tGpAtHuZmQ18hMhr8SHNkm4H/Er1sDkW3fhVzF4bJp4VD
-         t4GUQ30wmnGKjmoD9e7ylxfIYy7S+dnRcLwN2BAWwedlCqT01lOSr8m7LV8LVcNaIUjh
-         OD7b6zeb/aNU4N99T50I0q8ffqS5qtDBfH0RYR6JetL+NbVtq48E/GQXd4m+a92tmr4b
-         vqUI0gEaE7QWLqqos5eiSeey6RnrWI2pLhk0pXSQibJpGpu/eUTQPYb+Wx4tSOgjTFsn
-         vASQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=dpq2jd5nmzdPBxLx2tXJQXsCy3Tj/t5W3K7mDTr0mRA=;
+        b=jh/Cnw1mFIfgU+lkoZrJoF0z6Z6W9mFhDXhB5+RnCHYuKE5YhSDNj9/g7UVKLRN/3y
+         ngf5XPbBFRBYJxq9ucd7l+r91HkUvWYN4cffHl68Z07pcKMUiJWixniIYPdiQ6hpT/0t
+         Sk91booBlv/neFQH87+V1m+zaEqXSoKwW0A+/lUVKmEo5F4Q690hCPa1tBS3sjW4e6os
+         YBGI+5KSwBwLdwjdOT4iCLqCd9Bd+nxcf1ba3jN4nh+e6Gdl4ZzrOE6RsKyU8OtWULP4
+         rbMjgyE8AL/rPY7Sxe5PlylhulojeITZgBlCAUN1fD9AYPShvUTV3vpgpIdUNzxrZDuz
+         UWTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XskhS1+ZejRwgAiU2pw1deIKGswy4V+5KYO2DeR1N9Y=;
-        b=pTuPM4MmVuEUeMaiF67nQizyfBC33KY+X8zXH0MAUKrSnG0MU4d8kSSs7ccDSfmDg7
-         qZQ/nG+F/OJMS61tr2d29LKW/2pU60ECgcLnDbVAU17QW5FX8Gjd96DqmMCKQNDsDuEw
-         UQRzdVte+jtpzUXynZbKV1jGgMbBWSZ2xbq/ds0v/fXS4SbJBLYF/v4tCtiS1IS6yc6U
-         i+RGwns/csAW18j1Tnlh/cus8z4tsG4oSCgl6dm+E3kKlxCKUqDjGP8FXwA3oIbSEk91
-         rxfdEWCz3YHU9DOMU8TZpKHfRvriRTAkeNo1jnSxuLuWHSzAbxDddgU9cZUxwBtqknqz
-         AP2A==
-X-Gm-Message-State: AOAM531+VXV4Cas0sqvkSzIgaaGfmrUVzX2CPR90zJ3gDSz7eZgsWNFC
-        T3eUBpRSrEqVy/TbqiiRcKohgzsX1YZyLC+qXmiNkw==
-X-Google-Smtp-Source: ABdhPJzg/q9jjOR2SPQ2R16ySqzVp24+QtiJiQEJR73cAEQSY86tTlqPmMueae2ZtUIMfhCRek0+f4lyt/Me1eJarYw=
-X-Received: by 2002:a05:6512:12c4:b0:448:6d12:4434 with SMTP id
- p4-20020a05651212c400b004486d124434mr9339397lfg.71.1647256705361; Mon, 14 Mar
- 2022 04:18:25 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dpq2jd5nmzdPBxLx2tXJQXsCy3Tj/t5W3K7mDTr0mRA=;
+        b=0f9vvzbfFyqM0L98DRAa1m/9dfjCsRZQMDGk2UBlLWrESCrGciTlMN7A/yQ8WRA7UK
+         O0gb2cWgwf+TDdpUpPpfw3yadSnLgS/J7LRMl3esRpE2a0fxdTm+Dv676QQDLgbEGL0J
+         Cq2ep96AaEnFhZVVD0NBuBLbuU6ZY7/4AvkJqhPDu7o5X4sfCwl72P/HVJLFwmVSciSO
+         /h1PH08ulrDz6GKD6pidJNXFOHiGvrM1DRPv6qshCMzhvA0tZs81L9UT+S7dH44rQmjD
+         tQhNqXAmVzUc4s4rAtMkh/TbqdtZ0VNV+DTO5sY1kTabKkV/evazpglBhltpj1Y9xFOt
+         dwwg==
+X-Gm-Message-State: AOAM530VTKI55/omeyApPXdk0c7azXd0X1+pTcQDhprWDf3x6Ol8TI5v
+        cBUqB6/j9t8xvtZk6+UA5oU=
+X-Google-Smtp-Source: ABdhPJw7TrZDmVqj0LeEGjx3ITiP3HqPpbBotW11n2lnXv64Cc62Cb792fcZnNvgCutVVrheuog0iw==
+X-Received: by 2002:a17:90b:1e47:b0:1bf:6d79:b1fd with SMTP id pi7-20020a17090b1e4700b001bf6d79b1fdmr35927360pjb.49.1647256734337;
+        Mon, 14 Mar 2022 04:18:54 -0700 (PDT)
+Received: from [192.168.1.102] ([45.250.64.116])
+        by smtp.gmail.com with ESMTPSA id e4-20020a17090ab38400b001bf9519fe8bsm20757369pjr.38.2022.03.14.04.18.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 04:18:53 -0700 (PDT)
+Message-ID: <85279e7c-bc63-5ee0-0a4b-443b4b1a87c9@gmail.com>
+Date:   Mon, 14 Mar 2022 16:48:47 +0530
 MIME-Version: 1.0
-References: <20220314095225.53563-1-yann.gautier@foss.st.com>
-In-Reply-To: <20220314095225.53563-1-yann.gautier@foss.st.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 14 Mar 2022 12:17:49 +0100
-Message-ID: <CAPDyKFqObiC2fwZJ_0JArbVhnFZHV6bA0XJg0diwPgmRx1Bntg@mail.gmail.com>
-Subject: Re: [PATCH RESEND] mmc: mmci: manage MMC_PM_KEEP_POWER per variant config
-To:     Yann Gautier <yann.gautier@foss.st.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>, kernel@dh-electronics.com,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Grzegorz Szymaszek <gszymaszek@short.pl>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] staging: android: ashmem: Declared file operation with
+ const keyword Warning found by checkpatch.pl script.
+Content-Language: en-US
+To:     Joe Perches <joe@perches.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Arve_Hj=c3=b8nnev=c3=a5g?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+References: <20220312204128.3942-1-shaikhkamal2012@gmail.com>
+ <19a139d0dde6fadfce79c10d40c9810b50702fb1.camel@perches.com>
+From:   shaikh kamaluddin <shaikhkamal2012@gmail.com>
+In-Reply-To: <19a139d0dde6fadfce79c10d40c9810b50702fb1.camel@perches.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 at 10:53, Yann Gautier <yann.gautier@foss.st.com> wrote:
->
-> Add a disable_keep_power field in variant_data struct. The
-> MMC_PM_KEEP_POWER flag will be enabled if disable_keep_power is not set.
-> It is only set to true for stm32_sdmmc variants.
->
-> The issue was seen on STM32MP157C-DK2 board, which embeds a wifi chip.
-> It doesn't correctly support low power, and we need to unbind the wifi
-> driver before a suspend sequence. But the wifi chip firmware is then
-> lost, and the communication with SDIO fails if MMC_PM_KEEP_POWER is
-> enabled.
+On 3/13/2022 2:57 AM, Joe Perches wrote:
+> On Sun, 2022-03-13 at 03:11 +0530, shaikh kamal wrote:
+> []
+>> diff --git a/drivers/staging/android/ashmem.c b/drivers/staging/android/ashmem.c
+> []
+>> @@ -377,7 +377,7 @@ ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
+>>   
+>>   static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+>>   {
+>> -	static struct file_operations vmfile_fops;
+>> +	static const struct file_operations vmfile_fops;
+> 
+> Make sure to compile any files modified by your suggested patches
+> _before_ sending the patches.
+> 
+> 
 
-So the platform supports to maintain the power for the embedded wifi
-chip during system suspend, but the SDIO func driver (for the WiFi
-chip) doesn't implement its part correctly. Did I get that right?
-
-In that case, it sounds to me like we should try to fix the support
-for power management in the SDIO func driver instead, no?
-I am happy to help with guidance/review if that is needed. What SDIO
-func driver is this about?
-
-Kind regards
-Uffe
-
-> The flag can still be enabled through DT property: keep-power-in-suspend.
->
-> Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
-> ---
-> Resend the patch alone. It was previoulsy in a series [1] for which the
-> other patches will be reworked.
->
-> [1] https://lore.kernel.org/lkml/20220304135134.47827-1-yann.gautier@foss.st.com/
->
->  drivers/mmc/host/mmci.c | 5 ++++-
->  drivers/mmc/host/mmci.h | 1 +
->  2 files changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
-> index 45b8608c935c..0e2f2f5d6a52 100644
-> --- a/drivers/mmc/host/mmci.c
-> +++ b/drivers/mmc/host/mmci.c
-> @@ -274,6 +274,7 @@ static struct variant_data variant_stm32_sdmmc = {
->         .busy_detect            = true,
->         .busy_detect_flag       = MCI_STM32_BUSYD0,
->         .busy_detect_mask       = MCI_STM32_BUSYD0ENDMASK,
-> +       .disable_keep_power     = true,
->         .init                   = sdmmc_variant_init,
->  };
->
-> @@ -301,6 +302,7 @@ static struct variant_data variant_stm32_sdmmcv2 = {
->         .busy_detect            = true,
->         .busy_detect_flag       = MCI_STM32_BUSYD0,
->         .busy_detect_mask       = MCI_STM32_BUSYD0ENDMASK,
-> +       .disable_keep_power     = true,
->         .init                   = sdmmc_variant_init,
->  };
->
-> @@ -2172,7 +2174,8 @@ static int mmci_probe(struct amba_device *dev,
->         host->stop_abort.flags = MMC_RSP_R1B | MMC_CMD_AC;
->
->         /* We support these PM capabilities. */
-> -       mmc->pm_caps |= MMC_PM_KEEP_POWER;
-> +       if (!variant->disable_keep_power)
-> +               mmc->pm_caps |= MMC_PM_KEEP_POWER;
->
->         /*
->          * We can do SGIO
-> diff --git a/drivers/mmc/host/mmci.h b/drivers/mmc/host/mmci.h
-> index e1a9b96a3396..2cad1ef9766a 100644
-> --- a/drivers/mmc/host/mmci.h
-> +++ b/drivers/mmc/host/mmci.h
-> @@ -361,6 +361,7 @@ struct variant_data {
->         u32                     opendrain;
->         u8                      dma_lli:1;
->         u32                     stm32_idmabsize_mask;
-> +       u8                      disable_keep_power:1;
->         void (*init)(struct mmci_host *host);
->  };
->
-> --
-> 2.25.1
->
+Thanks for your suggestion, Kernel build is failing.
