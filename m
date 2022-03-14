@@ -2,93 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EC9C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235346AbiCNMf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
+        id S233127AbiCNMrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:47:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241031AbiCNMef (ORCPT
+        with ESMTP id S234672AbiCNMq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:34:35 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077691D0C0;
-        Mon, 14 Mar 2022 05:32:42 -0700 (PDT)
-Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MsZBb-1oHj3y0IhP-00txXw; Mon, 14 Mar 2022 13:32:41 +0100
-Received: by mail-wr1-f47.google.com with SMTP id r10so23716488wrp.3;
-        Mon, 14 Mar 2022 05:32:41 -0700 (PDT)
-X-Gm-Message-State: AOAM532iDPmTogaBAEXkFjYhD7HLQRjB7xg4y6unFo/KQgLZAx/yC4yI
-        njwgWDcCQ92vKa3kFg2CMG+ypjwooRjFFPhLL8U=
-X-Google-Smtp-Source: ABdhPJxkFLmHM1om+Pm/EdZjlu/oHNDpfpDjWiz13UF+c79mJMkNbH3uFQXob/61v67y1ilq+j5Sa2dGjBYC2XD0inI=
-X-Received: by 2002:adf:d081:0:b0:1ef:9378:b7cc with SMTP id
- y1-20020adfd081000000b001ef9378b7ccmr17319150wrh.407.1647261160730; Mon, 14
- Mar 2022 05:32:40 -0700 (PDT)
+        Mon, 14 Mar 2022 08:46:27 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C18D1F636;
+        Mon, 14 Mar 2022 05:38:03 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id qt6so33533710ejb.11;
+        Mon, 14 Mar 2022 05:38:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DHDXfguQf/+0V20Zk/mruH8iTYp9EnY9SZujr9Uh8qY=;
+        b=TKtBFa9ixDzFuEWiW6FvgilF1e6EJ1hdGIdyPqxyN9AbC1VUQ7PQFZmTXSJ063AbOe
+         Dkk9eSZAeu27C2tw3g164G7EfPumW080ea1Ly0r5Ew6T96agB942zrX5oJ1T57zTvV4O
+         fxnkhkzo6Pe3kPzU5Ak2Xuupjvv0ddjwLmJbA6BDLGtEj2XSQG97d26kQ/NcLoCnzcfH
+         xAuTFqS7RbJHAqtqErj7Wrxm+t+ba6E8vhko0zL6fILBsjULIg2tM6A/7JD75cwhWb0A
+         j5+8XEIRebN08xSz5toCWQhpK9Gra8IsDrVV4CoLTM1ls8O6LJiiLFf6nMsRhcgMb5MX
+         Fphg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DHDXfguQf/+0V20Zk/mruH8iTYp9EnY9SZujr9Uh8qY=;
+        b=nlR/4zlyjIwGJcIRBdluUGmpbFSXURDyBhlI9GFHZsXCL3LLSLt/ywhGA61SzWf0Q3
+         UPbhejpdTUIUT6iBSl7SI0nJv4kN/li8F8sveBLNvDFGSmwA7ihxJaUJeHwxlBzitQ0m
+         7kRP8cm2sY8UK/KdCWkG0LAldSb/eKVa12YAAli66VfUZ6Wm/nYeTis5GH4ptenXP8oF
+         i8PP7/Ioc5ouXv4mvI2YLWXjmnZDQN4hnyAHJmr1frsomzKm3BcZOwGRpI/Gx0P+15NU
+         m50c7ObbKa2B/hhisdf7FLM2FT+Go2QRTgJVkFleuiwepY4wqC6cxdKTo8q4e4VsFa8X
+         9S4g==
+X-Gm-Message-State: AOAM533hMyu3vF1GZ65Oc8irZFPuNOG76/FYJxmDopYYJT4XKGMmr5GC
+        1K9nGEi9T9GnO5Py1/umAVg=
+X-Google-Smtp-Source: ABdhPJxwELyfsQSJTNq8Sa1l7yiWAs9D0dHvQGP4T1HLkCTbCN50lBERRClcm7Ub9FPMyHuRg9NoSw==
+X-Received: by 2002:a17:907:6d82:b0:6d6:da31:e542 with SMTP id sb2-20020a1709076d8200b006d6da31e542mr18590966ejc.135.1647261452616;
+        Mon, 14 Mar 2022 05:37:32 -0700 (PDT)
+Received: from [192.168.1.116] ([77.124.29.183])
+        by smtp.gmail.com with ESMTPSA id k7-20020aa7c047000000b004132d3b60aasm7821888edo.78.2022.03.14.05.37.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 05:37:32 -0700 (PDT)
+Message-ID: <66fa1399-cc4b-8bdc-d4bc-ed9befe1803e@gmail.com>
+Date:   Mon, 14 Mar 2022 14:37:29 +0200
 MIME-Version: 1.0
-References: <20220311093800.18778-1-singh.kuldeep87k@gmail.com>
- <20220311093800.18778-4-singh.kuldeep87k@gmail.com> <4aae560d-d266-d0d0-136f-32891b15bc01@mleia.com>
- <CAK8P3a3a_WXbDKN-jJUt_Wuvop0rfaUs4ytwyhogOxdtJAPx0w@mail.gmail.com>
- <4f39f086-1932-1729-8761-d5c533356812@mleia.com> <dc599cae-7245-73dc-8050-14ec6c1336b8@arm.com>
- <f497fb65-3568-cda2-f086-2275b50daf4b@mleia.com> <faea4c0c-e20b-c043-6f74-95af8177e8bd@arm.com>
-In-Reply-To: <faea4c0c-e20b-c043-6f74-95af8177e8bd@arm.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 14 Mar 2022 13:32:24 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1KLHwABtXwu-8Kg-GyKbETz1uRhdCz5edELOGG7JdaMg@mail.gmail.com>
-Message-ID: <CAK8P3a1KLHwABtXwu-8Kg-GyKbETz1uRhdCz5edELOGG7JdaMg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] ARM: dts: lpc32xx: Update spi clock properties
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Vladimir Zapolskiy <vz@mleia.com>, Arnd Bergmann <arnd@arndb.de>,
-        Kuldeep Singh <singh.kuldeep87k@gmail.com>,
-        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:BRidD3s+k4ddX6FhmA6r0KsG1DRPklEV0cUP5rL1bxizBW85MUG
- hAQEoY+ttglGkEf02F/7+FPXVxsS87loPbm3FiMgFVnrEgYLBn2gvMYg+HNuVL+ln6KZgyq
- P4bsBDfdfuun6O9a8qtG8+BESlBwJwD9sCsEshjjLWISbzswFed5NLB63lZy6iftvuQ6709
- XUp8VTe4L9n59J7gaaFtw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0WlnscOXg3k=:4A1f8uYndxT0vn2XHeEaBa
- 9M4qC1XjUpWZbu6aNwzKSWSKeGVGHwwGPR2E06lNNMmb7FdxgC2opO+LsARCmR/u1uDuHXToP
- IeM3yImU2CPisHkk+X2ie+GxuH/hyo+uXZrPVf0p+tI3g/GLsZP9NlMMB6S1i4O3hQqqUNxVi
- e3D7O6sWwvuK/iwvjWlZCWas0y2Zd++oEY7SKwf/9NtmFeuup+XtW/0JYIaubNRTr1X6vRG7B
- D5m7NK8BPB3LLSzYHsDCLyXQh8AP9DBGY7vXgoNOTi3knaRCZVQVJbsb4u4vu4nBdP0gEJJ+W
- ZwVFhygNRY3cXKiub2FPRdLoIS7Ba9Ljg64O6xj+oTU1ElKzHkYXybRfZo4pIHVbpI7aWfDOd
- xwAZbndtOl5IVnDaAGpFYESn1JYU8Jfomw1iVCTSKcez57SOY0SgG1qtZX2RptVxYbSZiEc+o
- O+Pi6o6NKTLr66NDIGSrrCd9GMG05rP/B+Hp3DKJ8RzzzVVRSl/b3LRz+QBUinhAMZJEK/Soy
- pIueCUi0GzY0D9OKn8OxQncoyA5v4+ECf9ZcnejZCvQeUvH6SrkspLwd8UdrmvYpgp6ArQ8SY
- 2kgiYIhLIAjDfPje3gO1nipB7QKLvb3Qbey/z+4hfNLztm1h9J7Qv1222P5GlPZvkuKDvypm7
- 0ywFODZLlsNvuqmPZQ04wqIcITtITCY/JJEp5CYEuAceCmorP48/e4Q8L+usHGoZVXv8=
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH 2/6] net/mlx4_en: use kzalloc
+Content-Language: en-US
+To:     Julia Lawall <Julia.Lawall@inria.fr>,
+        Tariq Toukan <tariqt@nvidia.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220312102705.71413-1-Julia.Lawall@inria.fr>
+ <20220312102705.71413-3-Julia.Lawall@inria.fr>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <20220312102705.71413-3-Julia.Lawall@inria.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 1:20 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2022-03-14 11:50, Vladimir Zapolskiy wrote:
-> > On 3/14/22 1:43 PM, Robin Murphy wrote:
 
-> >
-> > Thank you, it explains, why "apb_pclk" is required for all PrimeCell
-> > controllers on the SoC. Nevertheless, in commit 93898eb775e5 it was
-> > misidentified with the sspclk clock, the latter one is the only clock
-> > explicitly utilized by the driver in 2015 and till today. Fixes in dts
-> > files should be preceded by a fix in the driver.
->
-> There's nothing to fix in the driver, though. In fact it can only be
-> working today because the Linux driver isn't very strict and simply
-> assumes that the first clock entry is SSPCLK *without* considering its
-> name (other consumers of the binding might be stricter; I don't know),
-> and because presumably the HCLK happens to be enabled already anyway.
-> Changing the driver behaviour would only stand to cause functional
-> regressions.
 
-We can change the driver to look for an sspclk by name first, and
-then fall back to the first clk if none is found. This would be backwards
-compatible and allow new dts files to have an arbitrary order, though
-we still need to be careful about changing the existing dts files after
-that, to avoid breaking older kernels.
+On 3/12/2022 12:27 PM, Julia Lawall wrote:
+> Use kzalloc instead of kmalloc + memset.
+> 
+> The semantic patch that makes this change is:
+> (https://coccinelle.gitlabpages.inria.fr/website/)
+> 
+> //<smpl>
+> @@
+> expression res, size, flag;
+> @@
+> - res = kmalloc(size, flag);
+> + res = kzalloc(size, flag);
+>    ...
+> - memset(res, 0, size);
+> //</smpl>
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+> 
+> ---
+>   drivers/net/ethernet/mellanox/mlx4/en_rx.c |    3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> index 8cfc649f226b..8f762fc170b3 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> @@ -1067,7 +1067,7 @@ static int mlx4_en_config_rss_qp(struct mlx4_en_priv *priv, int qpn,
+>   	struct mlx4_qp_context *context;
+>   	int err = 0;
+>   
+> -	context = kmalloc(sizeof(*context), GFP_KERNEL);
+> +	context = kzalloc(sizeof(*context), GFP_KERNEL);
+>   	if (!context)
+>   		return -ENOMEM;
+>   
+> @@ -1078,7 +1078,6 @@ static int mlx4_en_config_rss_qp(struct mlx4_en_priv *priv, int qpn,
+>   	}
+>   	qp->event = mlx4_en_sqp_event;
+>   
+> -	memset(context, 0, sizeof(*context));
+>   	mlx4_en_fill_qp_context(priv, ring->actual_size, ring->stride, 0, 0,
+>   				qpn, ring->cqn, -1, context);
+>   	context->db_rec_addr = cpu_to_be64(ring->wqres.db.dma);
+> 
 
-       Arnd
+Thanks for your patch.
+
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+
