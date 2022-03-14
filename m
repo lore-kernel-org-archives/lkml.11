@@ -2,126 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA28C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29641C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237910AbiCNJLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
+        id S234388AbiCNJLH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237900AbiCNJKf (ORCPT
+        with ESMTP id S237891AbiCNJKf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 05:10:35 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05758433BB
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 02:09:24 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22E8CiGe016403;
-        Mon, 14 Mar 2022 09:09:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=H/Mn6HRsNMhv+bwCByeF0mc91VKpGPpT7Vj7Y41dm4s=;
- b=Jqtg2OJKTCOFoIj5pAa472dsohGGqKuMdU+J8nWOCjRGbw2SIXjiFtL+vVQvelGzxaHG
- sbvRdojUtJQHGReXSy7cutbiNss15BSydRLQ2JrZ4bIsqIK3ElzwcRJktyKO1o4neDFq
- /Vpa4agSDU4MWKBuHf99DUkWJ6S8qXnNCQqhq2hT6rDpNOZ8nxeiVV3srWCMqX/1Vo8S
- 3vqmkikdRyh7ypiEno9uWxQOM09R+8Qnrv5gzStOlNHnpSun1balpFwDjY67n+lLZk+E
- E0E/2JdE1yxvtSx/sZNVqontccmRZ9xYR/XHtPBoplIO8+9lQV0xRNPW0YbUlnfB/3Pb hQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3es56gx0rj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 09:09:17 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22E8ik7m026680;
-        Mon, 14 Mar 2022 09:09:16 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3es56gx0r1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 09:09:16 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22E97MC0010143;
-        Mon, 14 Mar 2022 09:09:15 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma05fra.de.ibm.com with ESMTP id 3erk58k6vg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 09:09:14 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22E99EJR36438466
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Mar 2022 09:09:14 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1EDEEA5A6B;
-        Mon, 14 Mar 2022 09:09:11 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 79FF4A5B26;
-        Mon, 14 Mar 2022 09:09:08 +0000 (GMT)
-Received: from [9.43.4.195] (unknown [9.43.4.195])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Mar 2022 09:09:08 +0000 (GMT)
-Message-ID: <222c1c94-bc9a-a253-f408-937d02512151@linux.vnet.ibm.com>
-Date:   Mon, 14 Mar 2022 14:39:07 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] mm: Only re-generate demotion targets when a numa node
- changes its N_CPU state
-Content-Language: en-US
-To:     Dave Hansen <dave.hansen@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Oscar Salvador <osalvador@suse.de>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "Huang, Ying" <ying.huang@intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220310120749.23077-1-osalvador@suse.de>
- <20220310183951.cb713c6ae926ea6ea8489a71@linux-foundation.org>
- <c3b12235-b0ee-c5c5-b876-e96519786503@intel.com>
-From:   Abhishek Goel <huntbag@linux.vnet.ibm.com>
-In-Reply-To: <c3b12235-b0ee-c5c5-b876-e96519786503@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: J4Xk-0LqknNImNWTwo8-VSyS0boIhyBQ
-X-Proofpoint-GUID: E0o5cit5g5tOz2AZZP5nCnAz9zyJR39e
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5583843399;
+        Mon, 14 Mar 2022 02:09:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45063B80D5B;
+        Mon, 14 Mar 2022 09:09:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B761BC340F5;
+        Mon, 14 Mar 2022 09:09:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647248959;
+        bh=5TX/dk0N+tSkMnJvZ8bJ8SCwTJbmkPqtIew+ntbu8GI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GfcAspsTgkbGYyQus8OX4ALk/+tYj8DfcENH4fmC30zJdrLWjC8qH94mTObdFRXOv
+         A+RxJVat+KhHea/fcAOvno3gwx9qEidUZoHf/amyxhAhqgp/hRukAEblNqvNuLEClk
+         7WULxQYOYD7gdHHbUJ0c3Ruce4DETZySuv0A3ASnMk3v11Jv6S9kI/acAty0uOiPJo
+         2/cBMoczxpceCXIb8N88nzqqEXN+RbZYwyMUpUbB4qiwd9FUTKu3UzGPUul34j1CPS
+         2QyrJtS0VhFU5Wlos+PsjMdcwYo+v1rRnhA2bfPmiRY1s13WD1Az1vMTRUxZUmuMLd
+         VL/jRisiFec9w==
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, tzungbi@kernel.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 5/5] platform/chrome: cros_kbd_led_backlight: support EC PWM backend
+Date:   Mon, 14 Mar 2022 17:08:35 +0800
+Message-Id: <20220314090835.3822093-6-tzungbi@kernel.org>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+In-Reply-To: <20220314090835.3822093-1-tzungbi@kernel.org>
+References: <20220314090835.3822093-1-tzungbi@kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_02,2022-03-11_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- priorityscore=1501 bulkscore=0 adultscore=0 lowpriorityscore=0
- phishscore=0 malwarescore=0 impostorscore=0 clxscore=1011 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203140059
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+EC PWM backend uses EC_CMD_PWM_SET_KEYBOARD_BACKLIGHT and
+EC_CMD_PWM_GET_KEYBOARD_BACKLIGHT for setting and getting the brightness
+respectively.
 
-On 11/03/22 22:40, Dave Hansen wrote:
-> On 3/10/22 18:39, Andrew Morton wrote:
->> On Thu, 10 Mar 2022 13:07:49 +0100 Oscar Salvador <osalvador@suse.de> wrote:
->>> We do already have two CPU callbacks (vmstat_cpu_online() and vmstat_cpu_dead())
->>> that check exactly that, so get rid of the CPU callbacks in
->>> migrate_on_reclaim_init() and only call set_migration_target_nodes() from
->>> vmstat_cpu_{dead,online}() whenever a numa node change its N_CPU state.
->> What I'm not getting here (as so often happens) is a sense of how badly
->> this affects our users.  Does anyone actually hotplug frequently enough
->> to care?
-> I asked Abhishek about this a bit here:
->
->> https://lore.kernel.org/all/4e8067e1-0574-c9d2-9d6c-d676d32071bd@linux.vnet.ibm.com/
-> It sounded to me like there are ppc users who convert their systems from
-> SMT=1 to SMT=8.  I'd guess that they want to do this as a side-channel
-> mitigation because ppc has been dealing with the same basic issues as
-> those of us over in x86 land.  The increase in time (20s->36s) would be
-> noticeable and probably slightly annoying to a human waiting on it.
->
-> I'd love to hear more details on this from Abhishek, like whether end
-> users do this as opposed to IBM's kernel developers.  But, it does sound
-> deserving of a stable@ tag to me.
-Yes, end users also use this, especially on large systems, might want
-to switch between SMT=1, SMT=4 and SMT=8.
-And this is also usable for dynamic LPAR operations.
-As Dave pointed out, this increase in time while manageable and just
-noticeable on smaller systems, can be very clearly observed as the
-systems become larger.
+Signed-off-by: Tzung-Bi Shih <tzungbi@kernel.org>
+---
+Changes from v1:
+- Update email address accordingly.
+
+ drivers/platform/chrome/Kconfig               |   6 +
+ .../platform/chrome/cros_kbd_led_backlight.c  | 126 +++++++++++++++---
+ 2 files changed, 117 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
+index 3f74679a556c..298a49550857 100644
+--- a/drivers/platform/chrome/Kconfig
++++ b/drivers/platform/chrome/Kconfig
+@@ -142,6 +142,12 @@ config CROS_KBD_LED_BACKLIGHT_ACPI
+ 	help
+ 	  ChromeOS keyboard backlight ACPI backend.
+ 
++config CROS_KBD_LED_BACKLIGHT_EC_PWM
++	tristate "ChromeOS keyboard backlight EC PWM backend"
++	depends on CROS_EC && CROS_KBD_LED_BACKLIGHT
++	help
++	  ChromeOS keyboard backlight EC PWM backend.
++
+ config CROS_EC_CHARDEV
+ 	tristate "ChromeOS EC miscdevice"
+ 	depends on MFD_CROS_EC_DEV
+diff --git a/drivers/platform/chrome/cros_kbd_led_backlight.c b/drivers/platform/chrome/cros_kbd_led_backlight.c
+index 1f2750c830d4..05a93b71d222 100644
+--- a/drivers/platform/chrome/cros_kbd_led_backlight.c
++++ b/drivers/platform/chrome/cros_kbd_led_backlight.c
+@@ -11,10 +11,17 @@
+ #include <linux/leds.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/platform_data/cros_ec_commands.h>
++#include <linux/platform_data/cros_ec_proto.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+ #include <linux/slab.h>
+ 
++struct keyboard_led_private {
++	struct led_classdev cdev;
++	struct cros_ec_device *ec;
++};
++
+ /**
+  * struct keyboard_led_drvdata - keyboard LED driver data.
+  * @init:			Init function.
+@@ -40,6 +47,8 @@ struct keyboard_led_drvdata {
+ 	enum led_brightness max_brightness;
+ };
+ 
++#define KEYBOARD_BACKLIGHT_MAX 100
++
+ #if IS_ENABLED(CONFIG_CROS_KBD_LED_BACKLIGHT_ACPI)
+ 
+ /* Keyboard LED ACPI Device must be defined in firmware */
+@@ -47,8 +56,6 @@ struct keyboard_led_drvdata {
+ #define ACPI_KEYBOARD_BACKLIGHT_READ	ACPI_KEYBOARD_BACKLIGHT_DEVICE ".KBQC"
+ #define ACPI_KEYBOARD_BACKLIGHT_WRITE	ACPI_KEYBOARD_BACKLIGHT_DEVICE ".KBCM"
+ 
+-#define ACPI_KEYBOARD_BACKLIGHT_MAX		100
+-
+ static void keyboard_led_set_brightness_acpi(struct led_classdev *cdev,
+ 					     enum led_brightness brightness)
+ {
+@@ -107,7 +114,7 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
+ 	.init = keyboard_led_init_acpi,
+ 	.brightness_set = keyboard_led_set_brightness_acpi,
+ 	.brightness_get = keyboard_led_get_brightness_acpi,
+-	.max_brightness = ACPI_KEYBOARD_BACKLIGHT_MAX,
++	.max_brightness = KEYBOARD_BACKLIGHT_MAX,
+ };
+ 
+ #else /* IS_ENABLED(CONFIG_CROS_KBD_LED_BACKLIGHT_ACPI) */
+@@ -123,34 +130,122 @@ static const struct keyboard_led_drvdata keyboard_led_drvdata_acpi = {
+ 
+ #endif /* IS_ENABLED(CONFIG_CROS_KBD_LED_BACKLIGHT_ACPI) */
+ 
++#if IS_ENABLED(CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM)
++
++static int
++keyboard_led_set_brightness_blocking_ec_pwm(struct led_classdev *cdev,
++					    enum led_brightness brightness)
++{
++	struct {
++		struct cros_ec_command msg;
++		struct ec_params_pwm_set_keyboard_backlight params;
++	} __packed buf;
++	struct ec_params_pwm_set_keyboard_backlight *params = &buf.params;
++	struct cros_ec_command *msg = &buf.msg;
++	struct keyboard_led_private *private =
++		container_of(cdev, struct keyboard_led_private, cdev);
++
++	memset(&buf, 0, sizeof(buf));
++
++	msg->version = 0;
++	msg->command = EC_CMD_PWM_SET_KEYBOARD_BACKLIGHT;
++	msg->insize = 0;
++	msg->outsize = sizeof(*params);
++
++	params->percent = brightness;
++
++	return cros_ec_cmd_xfer_status(private->ec, msg);
++}
++
++static enum led_brightness
++keyboard_led_get_brightness_ec_pwm(struct led_classdev *cdev)
++{
++	struct {
++		struct cros_ec_command msg;
++		struct ec_response_pwm_get_keyboard_backlight resp;
++	} __packed buf;
++	struct ec_response_pwm_get_keyboard_backlight *resp = &buf.resp;
++	struct cros_ec_command *msg = &buf.msg;
++	struct keyboard_led_private *private =
++		container_of(cdev, struct keyboard_led_private, cdev);
++	int ret;
++
++	memset(&buf, 0, sizeof(buf));
++
++	msg->version = 0;
++	msg->command = EC_CMD_PWM_GET_KEYBOARD_BACKLIGHT;
++	msg->insize = sizeof(*resp);
++	msg->outsize = 0;
++
++	ret = cros_ec_cmd_xfer_status(private->ec, msg);
++	if (ret < 0)
++		return ret;
++
++	return resp->percent;
++}
++
++static int keyboard_led_init_ec_pwm(struct platform_device *pdev)
++{
++	struct keyboard_led_private *private = platform_get_drvdata(pdev);
++
++	private->ec = dev_get_drvdata(pdev->dev.parent);
++	if (!private->ec) {
++		dev_err(&pdev->dev, "no parent EC device\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
++	.init = keyboard_led_init_ec_pwm,
++	.brightness_set_blocking = keyboard_led_set_brightness_blocking_ec_pwm,
++	.brightness_get = keyboard_led_get_brightness_ec_pwm,
++	.max_brightness = KEYBOARD_BACKLIGHT_MAX,
++};
++
++#else /* IS_ENABLED(CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM) */
++
++static int keyboard_led_init_ec_pwm_null(struct platform_device *pdev)
++{
++	return -EOPNOTSUPP;
++}
++
++static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {
++	.init = keyboard_led_init_ec_pwm_null,
++};
++
++#endif /* IS_ENABLED(CONFIG_CROS_KBD_LED_BACKLIGHT_EC_PWM) */
++
+ static int keyboard_led_probe(struct platform_device *pdev)
+ {
+-	struct led_classdev *cdev;
+ 	const struct keyboard_led_drvdata *drvdata;
++	struct keyboard_led_private *private;
+ 	int error;
+ 
+ 	drvdata = device_get_match_data(&pdev->dev);
+ 	if (!drvdata)
+ 		return -EINVAL;
+ 
++	private = devm_kzalloc(&pdev->dev, sizeof(*private), GFP_KERNEL);
++	if (!private)
++		return -ENOMEM;
++	platform_set_drvdata(pdev, private);
++
+ 	if (drvdata->init) {
+ 		error = drvdata->init(pdev);
+ 		if (error)
+ 			return error;
+ 	}
+ 
+-	cdev = devm_kzalloc(&pdev->dev, sizeof(*cdev), GFP_KERNEL);
+-	if (!cdev)
+-		return -ENOMEM;
+-
+-	cdev->name = "chromeos::kbd_backlight";
+-	cdev->flags |= LED_CORE_SUSPENDRESUME;
+-	cdev->max_brightness = drvdata->max_brightness;
+-	cdev->brightness_set = drvdata->brightness_set;
+-	cdev->brightness_set_blocking = drvdata->brightness_set_blocking;
+-	cdev->brightness_get = drvdata->brightness_get;
++	private->cdev.name = "chromeos::kbd_backlight";
++	private->cdev.flags |= LED_CORE_SUSPENDRESUME;
++	private->cdev.max_brightness = drvdata->max_brightness;
++	private->cdev.brightness_set = drvdata->brightness_set;
++	private->cdev.brightness_set_blocking = drvdata->brightness_set_blocking;
++	private->cdev.brightness_get = drvdata->brightness_get;
+ 
+-	error = devm_led_classdev_register(&pdev->dev, cdev);
++	error = devm_led_classdev_register(&pdev->dev, &private->cdev);
+ 	if (error)
+ 		return error;
+ 
+@@ -169,6 +264,7 @@ MODULE_DEVICE_TABLE(acpi, keyboard_led_acpi_match);
+ static const struct of_device_id keyboard_led_of_match[] = {
+ 	{
+ 		.compatible = "google,cros-kbd-led-backlight",
++		.data = &keyboard_led_drvdata_ec_pwm,
+ 	},
+ 	{}
+ };
+-- 
+2.35.1.723.g4982287a31-goog
+
