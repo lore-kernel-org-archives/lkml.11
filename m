@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86094C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:14:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3123C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:14:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240836AbiCNMPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S235150AbiCNMPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242472AbiCNMKI (ORCPT
+        with ESMTP id S241138AbiCNMIV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C035140A5;
-        Mon, 14 Mar 2022 05:08:59 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D6E496B9;
+        Mon, 14 Mar 2022 05:04:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6C9F6130F;
-        Mon, 14 Mar 2022 12:08:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E322C340E9;
-        Mon, 14 Mar 2022 12:08:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ADA761251;
+        Mon, 14 Mar 2022 12:04:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31AEFC340EC;
+        Mon, 14 Mar 2022 12:04:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259733;
-        bh=46/45yPv03Vd7wdgIs0qyefA6DBhuuWV8uHgW4390cI=;
+        s=korg; t=1647259475;
+        bh=o1eyfosOZlTJ+hUZYylS3B8wCxvivTOqYdjwqWdX3ms=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GMDPsXJCdhKa2czS/zJiwPnZ4wLW58wFx9jC2ljG9SG4PUZuh1vJ0g0R0Ln4RTN5n
-         y+G+8q9MejrlQyJSoJJ2Fks0ZoSRt8TtUqD/3fJ8IFBlQZs7DZeKym8bUvbUzDPzi7
-         mY0GpIVKhRvrf8/s1XW8rJPD4heamES/OMsJoRpc=
+        b=Bmk2QGRyQQwROGvk/dwR/uBMV/+Rxavne0u9MM5MNB9JrRrl/1ZBH++vKUMrhICoO
+         CbESbLvUHkUqOIVojZZuE/Fmcx1F9Xz2SX/kFeLjVNX4vKf5ESowHBVfE5IG2BDms/
+         gj4xakaa/m+MWH0tg6xIS31ZNSZh4DzKZQN7flp4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Jean-Pierre=20Andr=C3=A9?= <jean-pierre.andre@wanadoo.fr>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.15 075/110] fuse: fix fileattr op failure
-Date:   Mon, 14 Mar 2022 12:54:17 +0100
-Message-Id: <20220314112745.127129705@linuxfoundation.org>
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        Anirudh Rayabharam <mail@anirudhrb.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 015/110] vhost: fix hung thread due to erroneous iotlb entries
+Date:   Mon, 14 Mar 2022 12:53:17 +0100
+Message-Id: <20220314112743.460512435@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,46 +51,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Anirudh Rayabharam <mail@anirudhrb.com>
 
-commit a679a61520d8a7b0211a1da990404daf5cc80b72 upstream.
+[ Upstream commit e2ae38cf3d91837a493cb2093c87700ff3cbe667 ]
 
-The fileattr API conversion broke lsattr on ntfs3g.
+In vhost_iotlb_add_range_ctx(), range size can overflow to 0 when
+start is 0 and last is ULONG_MAX. One instance where it can happen
+is when userspace sends an IOTLB message with iova=size=uaddr=0
+(vhost_process_iotlb_msg). So, an entry with size = 0, start = 0,
+last = ULONG_MAX ends up in the iotlb. Next time a packet is sent,
+iotlb_access_ok() loops indefinitely due to that erroneous entry.
 
-Previously the ioctl(... FS_IOC_GETFLAGS) returned an EINVAL error, but
-after the conversion the error returned by the fuse filesystem was not
-propagated back to the ioctl() system call, resulting in success being
-returned with bogus values.
+	Call Trace:
+	 <TASK>
+	 iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
+	 vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
+	 vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
+	 vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
+	 kthread+0x2e9/0x3a0 kernel/kthread.c:377
+	 ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+	 </TASK>
 
-Fix by checking for outarg.result in fuse_priv_ioctl(), just as generic
-ioctl code does.
+Reported by syzbot at:
+	https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
 
-Reported-by: Jean-Pierre André <jean-pierre.andre@wanadoo.fr>
-Fixes: 72227eac177d ("fuse: convert to fileattr")
-Cc: <stable@vger.kernel.org> # v5.13
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To fix this, do two things:
+
+1. Return -EINVAL in vhost_chr_write_iter() when userspace asks to map
+   a range with size 0.
+2. Fix vhost_iotlb_add_range_ctx() to handle the range [0, ULONG_MAX]
+   by splitting it into two entries.
+
+Fixes: 0bbe30668d89e ("vhost: factor out IOTLB")
+Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
+Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
+Link: https://lore.kernel.org/r/20220305095525.5145-1-mail@anirudhrb.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/ioctl.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/vhost/iotlb.c | 11 +++++++++++
+ drivers/vhost/vhost.c |  5 +++++
+ 2 files changed, 16 insertions(+)
 
---- a/fs/fuse/ioctl.c
-+++ b/fs/fuse/ioctl.c
-@@ -394,9 +394,12 @@ static int fuse_priv_ioctl(struct inode
- 	args.out_args[1].value = ptr;
+diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+index 670d56c879e5..40b098320b2a 100644
+--- a/drivers/vhost/iotlb.c
++++ b/drivers/vhost/iotlb.c
+@@ -57,6 +57,17 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
+ 	if (last < start)
+ 		return -EFAULT;
  
- 	err = fuse_simple_request(fm, &args);
--	if (!err && outarg.flags & FUSE_IOCTL_RETRY)
--		err = -EIO;
--
-+	if (!err) {
-+		if (outarg.result < 0)
-+			err = outarg.result;
-+		else if (outarg.flags & FUSE_IOCTL_RETRY)
-+			err = -EIO;
++	/* If the range being mapped is [0, ULONG_MAX], split it into two entries
++	 * otherwise its size would overflow u64.
++	 */
++	if (start == 0 && last == ULONG_MAX) {
++		u64 mid = last / 2;
++
++		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
++		addr += mid + 1;
++		start = mid + 1;
 +	}
- 	return err;
- }
++
+ 	if (iotlb->limit &&
+ 	    iotlb->nmaps == iotlb->limit &&
+ 	    iotlb->flags & VHOST_IOTLB_FLAG_RETIRE) {
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 59edb5a1ffe2..55475fd59fb7 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -1170,6 +1170,11 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
+ 		goto done;
+ 	}
  
++	if (msg.size == 0) {
++		ret = -EINVAL;
++		goto done;
++	}
++
+ 	if (dev->msg_handler)
+ 		ret = dev->msg_handler(dev, &msg);
+ 	else
+-- 
+2.34.1
+
 
 
