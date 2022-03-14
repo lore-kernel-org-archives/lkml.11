@@ -2,46 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA62C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB00C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239609AbiCNLpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42672 "EHLO
+        id S239593AbiCNLpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239593AbiCNLmu (ORCPT
+        with ESMTP id S239527AbiCNLmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:42:50 -0400
+        Mon, 14 Mar 2022 07:42:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689C648E55;
-        Mon, 14 Mar 2022 04:40:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624E23BA4E;
+        Mon, 14 Mar 2022 04:40:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 268C4B80DBF;
-        Mon, 14 Mar 2022 11:40:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A266C340E9;
-        Mon, 14 Mar 2022 11:39:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0942CB80DC4;
+        Mon, 14 Mar 2022 11:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 667D9C340EC;
+        Mon, 14 Mar 2022 11:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647258000;
-        bh=4Hl79FCH9ex4jb0RPlHaXMWBQreyKU+jduSJMcs8qDE=;
+        s=korg; t=1647258009;
+        bh=cLHQDXAZOpyLaLgN179kv4tfiwa3d6XUTCrpezCTBoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HMDHgnp5sDGVvbhzOmAf+EOhn/BDyj9FJetQasOvocl1ZXnvk+24Esr31a4xEkXKz
-         6gSNY6rvUMKf0N1OlVc0B7bEPa1Yfg22W31uiYuWih4K88QaOxlEZkG8uXjZs4UZUj
-         evZ7+51Y+HYTZ/qrE97hOHYe+/K53PqTW3tbsE5s=
+        b=U1fHlND19THm0CdVVZsYheUk+NgsQYyDqmqj57KEVtPkOiHw6XjSMyGVc0RpdSdCy
+         FfU+EPgBTHqdtnJCZUb6lirnvfQQRG00WOKQDzvzBf2JTXn0pbuMNg4nUc6n8F5ABb
+         7C3HHVnBlK4hTds/oGlnGgOkL7FHCcnkdNMNkjS8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        dann frazier <dann.frazier@canonical.com>
-Subject: [PATCH 4.19 29/30] sched/topology: Fix sched_domain_topology_level alloc in sched_init_numa()
-Date:   Mon, 14 Mar 2022 12:34:47 +0100
-Message-Id: <20220314112732.614114671@linuxfoundation.org>
+        stable@vger.kernel.org, James Morse <james.morse@arm.com>
+Subject: [PATCH 4.19 22/30] KVM: arm64: Reset PMC_EL0 to avoid a panic() on systems with no PMU
+Date:   Mon, 14 Mar 2022 12:34:40 +0100
+Message-Id: <20220314112732.412975093@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112731.785042288@linuxfoundation.org>
 References: <20220314112731.785042288@linuxfoundation.org>
@@ -53,49 +47,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dietmar Eggemann <dietmar.eggemann@arm.com>
+From: James Morse <james.morse@arm.com>
 
-commit 71e5f6644fb2f3304fcb310145ded234a37e7cc1 upstream.
+The logic in commit 2a5f1b67ec57 "KVM: arm64: Don't access PMCR_EL0 when no
+PMU is available" relies on an empty reset handler being benign.  This was
+not the case in earlier kernel versions, so the stable backport of this
+patch is causing problems.
 
-Commit "sched/topology: Make sched_init_numa() use a set for the
-deduplicating sort" allocates 'i + nr_levels (level)' instead of
-'i + nr_levels + 1' sched_domain_topology_level.
+KVMs behaviour in this area changed over time. In particular, prior to commit
+03fdfb269009 ("KVM: arm64: Don't write junk to sysregs on reset"), an empty
+reset handler will trigger a warning, as the guest registers have been
+poisoned.
+Prior to commit 20589c8cc47d ("arm/arm64: KVM: Don't panic on failure to
+properly reset system registers"), this warning was a panic().
 
-This led to an Oops (on Arm64 juno with CONFIG_SCHED_DEBUG):
+Instead of reverting the backport, make it write 0 to the sys_reg[] array.
+This keeps the reset logic happy, and the dodgy value can't be seen by
+the guest as it can't request the emulation.
 
-sched_init_domains
-  build_sched_domains()
-    __free_domain_allocs()
-      __sdt_free() {
-	...
-        for_each_sd_topology(tl)
-	  ...
-          sd = *per_cpu_ptr(sdd->sd, j); <--
-	  ...
-      }
+The original bug was accessing the PMCR_EL0 register on CPUs that don't
+implement that feature. There is no known silicon that does this, but
+v4.9's ACPI support is unable to find the PMU, so triggers this code:
 
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Tested-by: Vincent Guittot <vincent.guittot@linaro.org>
-Tested-by: Barry Song <song.bao.hua@hisilicon.com>
-Link: https://lkml.kernel.org/r/6000e39e-7d28-c360-9cd6-8798fd22a9bf@arm.com
-Signed-off-by: dann frazier <dann.frazier@canonical.com>
+| Kernel panic - not syncing: Didn't reset vcpu_sys_reg(24)
+| CPU: 1 PID: 3055 Comm: lkvm Not tainted 4.9.302-00032-g64e078a56789 #13476
+| Hardware name: ARM LTD ARM Juno Development Platform/ARM Juno Development Platform, BIOS EDK II Jul 30 2018
+| Call trace:
+| [<ffff00000808b4b0>] dump_backtrace+0x0/0x1a0
+| [<ffff00000808b664>] show_stack+0x14/0x20
+| [<ffff0000088f0e18>] dump_stack+0x98/0xb8
+| [<ffff0000088eef08>] panic+0x118/0x274
+| [<ffff0000080b50e0>] access_actlr+0x0/0x20
+| [<ffff0000080b2620>] kvm_reset_vcpu+0x5c/0xac
+| [<ffff0000080ac688>] kvm_arch_vcpu_ioctl+0x3e4/0x490
+| [<ffff0000080a382c>] kvm_vcpu_ioctl+0x5b8/0x720
+| [<ffff000008201e44>] do_vfs_ioctl+0x2f4/0x884
+| [<ffff00000820244c>] SyS_ioctl+0x78/0x9c
+| [<ffff000008083a9c>] __sys_trace_return+0x0/0x4
+
+Cc: <stable@vger.kernel.org> # < v5.3 with 2a5f1b67ec57 backported
+Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/topology.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kvm/sys_regs.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1428,7 +1428,7 @@ void sched_init_numa(void)
- 	/* Compute default topology size */
- 	for (i = 0; sched_domain_topology[i].mask; i++);
+--- a/arch/arm64/kvm/sys_regs.c
++++ b/arch/arm64/kvm/sys_regs.c
+@@ -620,8 +620,10 @@ static void reset_pmcr(struct kvm_vcpu *
+ 	u64 pmcr, val;
  
--	tl = kzalloc((i + nr_levels) *
-+	tl = kzalloc((i + nr_levels + 1) *
- 			sizeof(struct sched_domain_topology_level), GFP_KERNEL);
- 	if (!tl)
+ 	/* No PMU available, PMCR_EL0 may UNDEF... */
+-	if (!kvm_arm_support_pmu_v3())
++	if (!kvm_arm_support_pmu_v3()) {
++		vcpu_sys_reg(vcpu, PMCR_EL0) = 0;
  		return;
++	}
+ 
+ 	pmcr = read_sysreg(pmcr_el0);
+ 	/*
 
 
