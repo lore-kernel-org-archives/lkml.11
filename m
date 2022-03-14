@@ -2,116 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E10C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B84C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234064AbiCNQca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
+        id S235554AbiCNQfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:35:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238700AbiCNQbd (ORCPT
+        with ESMTP id S232757AbiCNQfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:31:33 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646C213D4E;
-        Mon, 14 Mar 2022 09:30:20 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id h15so24869487wrc.6;
-        Mon, 14 Mar 2022 09:30:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zQsn3GuuUz52TzNLVtFaCymDKnKHO9CKxYjpT5cZM18=;
-        b=N/CX6VgJ2HwWQioK9B5WhaJia8qiaRoPQkbSGcSs97Stb72sXGqgqXWzlbeujR7YCr
-         M8TFjun2Uv+GchUnFI2Lx9cU+XSDJaFBOB1JAbEVmuvlYjXlzENhguRx5apw9MqJJaaJ
-         u6JNGSyey6aQRc5ekPPzrHw4+m4qyyR29SMkITwoevKKeK3MMbdl/yeA7RZHdpfnM+ER
-         jaCM1TuMWJ5XZkSrOAkt1pzUu0yomkfI2/hk49URyOD9XoAzf/dq1JapKSxaGlto+6YN
-         CoqcCY0SQFxIj8N0gtRxpp+VDLlqiquep9Fwj/ynD+zlGemx9XA4D/1pzWJ7Cfkh6QIV
-         0cig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zQsn3GuuUz52TzNLVtFaCymDKnKHO9CKxYjpT5cZM18=;
-        b=1E6ZdRx1SnphFUl1MFQIboIsUCHuT132P2yX0QxcbbD22TgM1GSZ4/W72y5sdw/XxR
-         B5a91PcYGcE0Kvz4gTrJOmIF6I7GXxyBuzH5LkFhtBxI+dHskL6VnuHk7yyDNBewr7FK
-         5iY+Cx0wNfVhLPp8ToXRZ176osT0bHX71SlwjDaPMMKpSJoWbrWjjsjZcgoPV8muRyiJ
-         PnfndSG7h2BceQ8SjdMJe49NvjY8cEsWoQ1sHEhq4nw4vJzfUQaS1IE75ZMyUOyMSsIe
-         RX53y4Hhmd8yVkLe+yikoQ+M8TD9CQja1wUwcgMZIK0imm35FidfbIAnTYScdA+rpZs+
-         6fNg==
-X-Gm-Message-State: AOAM531Uc49p7WjdD9La4QsqQCvAlYIhfRgQu1T99G0oIpqmqrTcFIqL
-        +NQQePh4PG5Hag7v5bFdzj8=
-X-Google-Smtp-Source: ABdhPJwgH+RhoacMKh0ghMZUqXgSpKkD5p0fFqkycVHdOHpMAJt3Rxx5StpEigohrSKRfWse23gf2A==
-X-Received: by 2002:a05:6000:1868:b0:203:732e:6a96 with SMTP id d8-20020a056000186800b00203732e6a96mr17442456wri.39.1647275418972;
-        Mon, 14 Mar 2022 09:30:18 -0700 (PDT)
-Received: from linuxdev2.toradex.int (31-10-206-124.static.upc.ch. [31.10.206.124])
-        by smtp.gmail.com with ESMTPSA id w10-20020a5d680a000000b001f1dabec837sm13476817wru.113.2022.03.14.09.30.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 09:30:18 -0700 (PDT)
-From:   Max Krummenacher <max.oss.09@gmail.com>
-X-Google-Original-From: Max Krummenacher <max.krummenacher@toradex.com>
-To:     max.krummenacher@toradex.com
-Cc:     Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 04/14] ARM: dts: imx6dl-colibri: Fix I2C pinmuxing
-Date:   Mon, 14 Mar 2022 17:29:48 +0100
-Message-Id: <20220314162958.40361-5-max.krummenacher@toradex.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220314162958.40361-1-max.krummenacher@toradex.com>
-References: <20220314162958.40361-1-max.krummenacher@toradex.com>
+        Mon, 14 Mar 2022 12:35:41 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25EF8627D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:34:31 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6E5ED6E;
+        Mon, 14 Mar 2022 09:34:30 -0700 (PDT)
+Received: from [10.57.42.204] (unknown [10.57.42.204])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3C0F63F766;
+        Mon, 14 Mar 2022 09:34:28 -0700 (PDT)
+Message-ID: <74afb713-0413-bd49-c3f1-f6a094df2e17@arm.com>
+Date:   Mon, 14 Mar 2022 16:34:23 +0000
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] drm/bridge: synopsys/dw-hdmi: set cec clock rate
+Content-Language: en-GB
+From:   Robin Murphy <robin.murphy@arm.com>
+To:     Peter Geis <pgwipeout@gmail.com>,
+        Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Pierre-Hugues Husson <phh@phh.me>,
+        Archit Taneja <architt@codeaurora.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
+        dri-devel@lists.freedesktop.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220126202427.3047814-1-pgwipeout@gmail.com>
+ <3AFD1DD4-AF0A-4ECC-B4F5-E6BD6B9F1BB7@gmail.com>
+ <CAMdYzYq06QSmFAwCuTmBYy4LfQAQDxzx2PGc8HOB1iEjxXHGyg@mail.gmail.com>
+ <c6766e6e-3c90-f0e6-86b3-4afdf41fbbb1@arm.com>
+In-Reply-To: <c6766e6e-3c90-f0e6-86b3-4afdf41fbbb1@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix names of extra pingroup node and property for gpio bus recovery.
-Without the change i2c2 is not functional.
-Fixes: 56f0df6b6b58 ("ARM: dts: imx*(colibri|apalis): add missing
-recovery modes to i2c")
+On 2022-03-14 11:31, Robin Murphy wrote:
+> On 2022-03-13 12:56, Peter Geis wrote:
+>> On Sun, Mar 13, 2022 at 6:13 AM Piotr Oniszczuk
+>> <piotr.oniszczuk@gmail.com> wrote:
+>>>
+>>>
+>>>
+>>>> Wiadomość napisana przez Peter Geis <pgwipeout@gmail.com> w dniu 
+>>>> 26.01.2022, o godz. 21:24:
+>>>>
+>>>> The hdmi-cec clock must be 32khz in order for cec to work correctly.
+>>>> Ensure after enabling the clock we set it in order for the hardware to
+>>>> work as expected.
+>>>> Warn on failure, in case this is a static clock that is slighty off.
+>>>> Fixes hdmi-cec support on Rockchip devices.
+>>>>
+>>>> Fixes: ebe32c3e282a ("drm/bridge: synopsys/dw-hdmi: Enable cec clock")
+>>>>
+>>>> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+>>>> ---
+>>>> drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 7 +++++++
+>>>> 1 file changed, 7 insertions(+)
+>>>>
+>>>> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c 
+>>>> b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>>>> index 54d8fdad395f..1a96da60e357 100644
+>>>> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>>>> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>>>> @@ -48,6 +48,9 @@
+>>>>
+>>>> #define HDMI14_MAX_TMDSCLK    340000000
+>>>>
+>>>> +/* HDMI CEC needs a clock rate of 32khz */
+>>>> +#define HDMI_CEC_CLK_RATE    32768
+>>>> +
+>>>> enum hdmi_datamap {
+>>>>        RGB444_8B = 0x01,
+>>>>        RGB444_10B = 0x03,
+>>>> @@ -3347,6 +3350,10 @@ struct dw_hdmi *dw_hdmi_probe(struct 
+>>>> platform_device *pdev,
+>>>>                                ret);
+>>>>                        goto err_iahb;
+>>>>                }
+>>>> +
+>>>> +             ret = clk_set_rate(hdmi->cec_clk, HDMI_CEC_CLK_RATE);
+>>>> +             if (ret)
+>>>> +                     dev_warn(hdmi->dev, "Cannot set HDMI cec clock 
+>>>> rate: %d\n", ret);
+>>>>        }
+>>>>
+>>>>        /* Product and revision IDs */
+>>>> -- 
+>>>> 2.25.1
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Linux-rockchip mailing list
+>>>> Linux-rockchip@lists.infradead.org
+>>>> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+>>>
+>>> Peter,
+>>>
+>>> On my 5.17-rc7 with applied rk356x VOP2 v8 series - this patch makes 
+>>> CEC working on rk3566.
+>>> Unfortunately it breaks working ok CEC on rk3399 rockpi-4b.
+>>>
+>>> Reverting this patch brings back CEC on rk3399 - but rk3366 becomes 
+>>> with non working CEC
+>>>
+>>> I'm not sure how to move forward with this....
+>>
+>> I was worried about that, thanks for testing it.
+>> Can you send me the cec_clk rate before and after this patch?
+> 
+> Hmm, looks like there might be a bug in the RK3399 clock driver - 
+> although it's treated as having mux_pll_p as parents, according to the 
+> public TRM the CEC clock appears unique in being backwards compared to 
+> every other mux of those two inputs. I'm now tempted to test this on my 
+> board tonight and see if I can see 24MHz on the CEC pin... :)
 
-Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
----
+Nope, turns out that's an error in the TRM and the mux is fine. The bug 
+is between the clock driver blindly assuming xin32k is usable, and 
+nearly all RK3399 boards forgetting to claim the pinctrl to actually 
+enable the input :/
 
- arch/arm/boot/dts/imx6qdl-colibri.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm/boot/dts/imx6qdl-colibri.dtsi b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-index 16d38bc78b2a..c6112b1bffd4 100644
---- a/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-colibri.dtsi
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+ OR MIT
- /*
-- * Copyright 2014-2020 Toradex
-+ * Copyright 2014-2022 Toradex
-  * Copyright 2012 Freescale Semiconductor, Inc.
-  * Copyright 2011 Linaro Ltd.
-  */
-@@ -132,7 +132,7 @@
- 	clock-frequency = <100000>;
- 	pinctrl-names = "default", "gpio";
- 	pinctrl-0 = <&pinctrl_i2c2>;
--	pinctrl-0 = <&pinctrl_i2c2_gpio>;
-+	pinctrl-1 = <&pinctrl_i2c2_gpio>;
- 	scl-gpios = <&gpio2 30 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	sda-gpios = <&gpio3 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
- 	status = "okay";
-@@ -491,7 +491,7 @@
- 		>;
- 	};
- 
--	pinctrl_i2c2_gpio: i2c2grp {
-+	pinctrl_i2c2_gpio: i2c2gpiogrp {
- 		fsl,pins = <
- 			MX6QDL_PAD_EIM_EB2__GPIO2_IO30 0x4001b8b1
- 			MX6QDL_PAD_EIM_D16__GPIO3_IO16 0x4001b8b1
--- 
-2.20.1
-
+Robin.
