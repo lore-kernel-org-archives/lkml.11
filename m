@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE687C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240749AbiCNMLf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        id S240865AbiCNMLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242788AbiCNMKv (ORCPT
+        with ESMTP id S242355AbiCNMJx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:51 -0400
+        Mon, 14 Mar 2022 08:09:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C752FFD8;
-        Mon, 14 Mar 2022 05:09:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9262715E;
+        Mon, 14 Mar 2022 05:07:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E0326130D;
-        Mon, 14 Mar 2022 12:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB79C340EC;
-        Mon, 14 Mar 2022 12:09:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED626130D;
+        Mon, 14 Mar 2022 12:07:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D89FC340E9;
+        Mon, 14 Mar 2022 12:07:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259780;
-        bh=nK0fHhUPWtbyhA90lBEgj/JeM/L8D0Uaf85ZTdj+OQ8=;
+        s=korg; t=1647259638;
+        bh=2o1LoqJAtWoL5H0rIhGX0s5a1sOKR+z79T2uz71pT8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IrAyqss/n6dCN9gcOqXtEHoEKdqADVti7fLkVwq53URpBLE4Y51Qszy/0FkugprHc
-         NehWa5i2IBHc0Crobw4cwpP3mbsQGetz6QJMfV4y8W8L6sK21xGDbc7k5TiKYpf1lr
-         VgMscDKj6CahxDgJZtIn37KwSLBnGOs9nz0U0zmo=
+        b=Hf96/YFAnrlnO0EHA8dRH8J/gT5bO21Uw/slO7FHhjcTPa9XbakqM7DG8mJzyfUZf
+         1P3Pb4YGCR75twjE8OzNs44dO7Qaju2iODgO0q1mCXYcRhB6BN3BdjwlmmJ7aJWZ/H
+         1u3AJ5BGKC36CfK2h5SwPWHKpaitpM9Zu/HmPR9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrei Vagin <avagin@gmail.com>
-Subject: [PATCH 5.15 088/110] KVM: x86/mmu: kvm_faultin_pfn has to return false if pfh is returned
-Date:   Mon, 14 Mar 2022 12:54:30 +0100
-Message-Id: <20220314112745.487207310@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 055/110] pinctrl: tigerlake: Revert "Add Alder Lake-M ACPI ID"
+Date:   Mon, 14 Mar 2022 12:53:57 +0100
+Message-Id: <20220314112744.571590223@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,35 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrei Vagin <avagin@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit a7cc099f2ec3117678adeb69749bef7e9dde3148 upstream.
+[ Upstream commit 6f66db29e2415cbe8759c48584f9cae19b3c2651 ]
 
-This looks like a typo in 8f32d5e563cb. This change didn't intend to do
-any functional changes.
+It appears that last minute change moved ACPI ID of Alder Lake-M
+to the INTC1055, which is already in the driver.
 
-The problem was caught by gVisor tests.
+This ID on the other hand will be used elsewhere.
 
-Fixes: 8f32d5e563cb ("KVM: x86/mmu: allow kvm_faultin_pfn to return page fault handling code")
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Andrei Vagin <avagin@gmail.com>
-Message-Id: <20211015163221.472508-1-avagin@gmail.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This reverts commit 258435a1c8187f559549e515d2f77fa0b57bcd27.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu/mmu.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/pinctrl/intel/pinctrl-tigerlake.c | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3967,6 +3967,7 @@ static bool kvm_faultin_pfn(struct kvm_v
- 
- 	*pfn = __gfn_to_pfn_memslot(slot, gfn, false, NULL,
- 				    write, writable, hva);
-+	return false;
- 
- out_retry:
- 	*r = RET_PF_RETRY;
+diff --git a/drivers/pinctrl/intel/pinctrl-tigerlake.c b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+index 0bcd19597e4a..3ddaeffc0415 100644
+--- a/drivers/pinctrl/intel/pinctrl-tigerlake.c
++++ b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+@@ -749,7 +749,6 @@ static const struct acpi_device_id tgl_pinctrl_acpi_match[] = {
+ 	{ "INT34C5", (kernel_ulong_t)&tgllp_soc_data },
+ 	{ "INT34C6", (kernel_ulong_t)&tglh_soc_data },
+ 	{ "INTC1055", (kernel_ulong_t)&tgllp_soc_data },
+-	{ "INTC1057", (kernel_ulong_t)&tgllp_soc_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, tgl_pinctrl_acpi_match);
+-- 
+2.34.1
+
 
 
