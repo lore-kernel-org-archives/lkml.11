@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D2FC38A05
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27041C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243545AbiCNMbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49758 "EHLO
+        id S244179AbiCNMbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242866AbiCNMTt (ORCPT
+        with ESMTP id S243300AbiCNMUc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:19:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEAA50B37;
-        Mon, 14 Mar 2022 05:14:50 -0700 (PDT)
+        Mon, 14 Mar 2022 08:20:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC735373F;
+        Mon, 14 Mar 2022 05:15:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A42608C4;
-        Mon, 14 Mar 2022 12:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A01E7C340EC;
-        Mon, 14 Mar 2022 12:14:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08D746097A;
+        Mon, 14 Mar 2022 12:15:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1220AC340E9;
+        Mon, 14 Mar 2022 12:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260085;
-        bh=YeTe//0SAgavio9Xw86XZZ+I6TczDnfWm8tRimdCf7o=;
+        s=korg; t=1647260142;
+        bh=7UNbjXRtIQ7vrNXQ+5T/QDvBPzYf9h6QXyj/8SiyFBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j9aoYKLPn2xkkXddZ3CmF1F2TQEj+xao1TZrJEwJ69UWh9tIpH1K+MqYRjjEzffiO
-         69+RlnODEaL1IZ7Piq2fyFp+3M/F2KTsUQO5tOmZOktQB05mG/Ln8CO7YSSvabMAF0
-         8znOhQKsKTtDkKV5hi89grMkCePjl4Stxo17qDxw=
+        b=NSFEnsHTnvqrD+fG8Zho/LaGRH4/Sow0N+ANOWb33B8/Zn/+x43OJt8G1K//cfGse
+         vLRmc+Rd1Ld1pm7ImXcbLDUzTf9Bj23ohoWXu1iJgrrUuyGv/yYdXvt+/IP9oS9nK6
+         7PD3xH2rRn2OvCZT0LnlWlmmDSwejtWFWDCgdYsQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 051/121] selftests: pmtu.sh: Kill nettest processes launched in subshell.
-Date:   Mon, 14 Mar 2022 12:53:54 +0100
-Message-Id: <20220314112745.550881854@linuxfoundation.org>
+Subject: [PATCH 5.16 028/121] gpiolib: acpi: Convert ACPI value of debounce to microseconds
+Date:   Mon, 14 Mar 2022 12:53:31 +0100
+Message-Id: <20220314112744.915431485@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -50,65 +52,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 94a4a4fe4c696413932eed8bdec46574de9576b8 ]
+[ Upstream commit 660c619b9d7ccd28648ee3766cdbe94ec7b27402 ]
 
-When using "run_cmd <command> &", then "$!" refers to the PID of the
-subshell used to run <command>, not the command itself. Therefore
-nettest_pids actually doesn't contain the list of the nettest commands
-running in the background. So cleanup() can't kill them and the nettest
-processes run until completion (fortunately they have a 5s timeout).
+It appears that GPIO ACPI library uses ACPI debounce values directly.
+However, the GPIO library APIs expect the debounce timeout to be in
+microseconds.
 
-Fix this by defining a new command for running processes in the
-background, for which "$!" really refers to the PID of the command run.
+Convert ACPI value of debounce to microseconds.
 
-Also, double quote variables on the modified lines, to avoid shellcheck
-warnings.
+While at it, document this detail where it is appropriate.
 
-Fixes: ece1278a9b81 ("selftests: net: add ESP-in-UDP PMTU test")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215664
+Reported-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Fixes: 8dcb7a15a585 ("gpiolib: acpi: Take into account debounce settings")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/pmtu.sh | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/gpio/gpiolib-acpi.c |  6 ++++--
+ drivers/gpio/gpiolib.c      | 10 ++++++++++
+ 2 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 2e8972573d91..694732e4b344 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -374,6 +374,16 @@ run_cmd() {
- 	return $rc
+diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
+index feb8157d2d67..c49b3b5334cd 100644
+--- a/drivers/gpio/gpiolib-acpi.c
++++ b/drivers/gpio/gpiolib-acpi.c
+@@ -308,7 +308,8 @@ static struct gpio_desc *acpi_request_own_gpiod(struct gpio_chip *chip,
+ 	if (IS_ERR(desc))
+ 		return desc;
+ 
+-	ret = gpio_set_debounce_timeout(desc, agpio->debounce_timeout);
++	/* ACPI uses hundredths of milliseconds units */
++	ret = gpio_set_debounce_timeout(desc, agpio->debounce_timeout * 10);
+ 	if (ret)
+ 		dev_warn(chip->parent,
+ 			 "Failed to set debounce-timeout for pin 0x%04X, err %d\n",
+@@ -1049,7 +1050,8 @@ int acpi_dev_gpio_irq_get_by(struct acpi_device *adev, const char *name, int ind
+ 			if (ret < 0)
+ 				return ret;
+ 
+-			ret = gpio_set_debounce_timeout(desc, info.debounce);
++			/* ACPI uses hundredths of milliseconds units */
++			ret = gpio_set_debounce_timeout(desc, info.debounce * 10);
+ 			if (ret)
+ 				return ret;
+ 
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index abfbf546d159..a1dca6dc03b4 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -2191,6 +2191,16 @@ static int gpio_set_bias(struct gpio_desc *desc)
+ 	return gpio_set_config_with_argument_optional(desc, bias, arg);
  }
  
-+run_cmd_bg() {
-+	cmd="$*"
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "    COMMAND: %s &\n" "${cmd}"
-+	fi
-+
-+	$cmd 2>&1 &
-+}
-+
- # Find the auto-generated name for this namespace
- nsname() {
- 	eval echo \$NS_$1
-@@ -670,10 +680,10 @@ setup_nettest_xfrm() {
- 	[ ${1} -eq 6 ] && proto="-6" || proto=""
- 	port=${2}
- 
--	run_cmd ${ns_a} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
-+	run_cmd_bg "${ns_a}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
- 	nettest_pids="${nettest_pids} $!"
- 
--	run_cmd ${ns_b} nettest ${proto} -q -D -s -x -p ${port} -t 5 &
-+	run_cmd_bg "${ns_b}" nettest "${proto}" -q -D -s -x -p "${port}" -t 5
- 	nettest_pids="${nettest_pids} $!"
- }
- 
++/**
++ * gpio_set_debounce_timeout() - Set debounce timeout
++ * @desc:	GPIO descriptor to set the debounce timeout
++ * @debounce:	Debounce timeout in microseconds
++ *
++ * The function calls the certain GPIO driver to set debounce timeout
++ * in the hardware.
++ *
++ * Returns 0 on success, or negative error code otherwise.
++ */
+ int gpio_set_debounce_timeout(struct gpio_desc *desc, unsigned int debounce)
+ {
+ 	return gpio_set_config_with_argument_optional(desc,
 -- 
 2.34.1
 
