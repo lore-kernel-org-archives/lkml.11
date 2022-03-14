@@ -2,167 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A3FC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1951AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242835AbiCNRI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 13:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
+        id S238800AbiCNRJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234467AbiCNRIz (ORCPT
+        with ESMTP id S242841AbiCNRI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 13:08:55 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5788C3DA58
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:07:44 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id e24so25026970wrc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:07:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I9gjU0x/PgdM8bvtL6SwyLtmlqm3fb9Iulm2fPDe870=;
-        b=TDH+vn8MRDd0TIB/7sTaTIjyrSXs8HnE41Pah2MUMlSNzgrfQ07BlDrRt6vnV9JeF/
-         RAWJ1UkMrKFqkzQiiuZsik44O39eSmBjZ/Z0Nxr6go34gwnOlZ7Ocq/eSGzObW4s6hAk
-         pgR/q2kn736c/MTokUaliD8FOZ8zTosL3VNsOoT1c/fv+Y/lg4bXIp8Zcku0zjJlrY64
-         OWXit4bmUsIXP1MjuvvbYNu5lMsMWpfkEt7UlsGPcmiLIfqn/Xh65eL6h9/L9yURmFxi
-         2KUh12l/KKOJ7r0Jvvaq7WFBa4alT8MiNUNfvkD5HmQbLUmb+GtN1TCdrrQXLhaUEzq7
-         NSqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I9gjU0x/PgdM8bvtL6SwyLtmlqm3fb9Iulm2fPDe870=;
-        b=u/jmOdzSXwPFEBHujcARI3gw1VecbtOKCjKIrh2Xpke55rlROLQ6eZZCIxsRmc2BFV
-         Qd+PmAkv7ATT1sp4BNfTRR0RAN+KdRM7gKe2G+u+/56gsrDuDr1pzfbScpAydU+ryG5w
-         vxsH5l6UjQQl5X26vuQc8p6MKzI+pItcs/N35SFrWD9PZ2ScCbhGS4sliOnNIAVvK22b
-         6liQVYT0eEWOE7/J5sE8tn5bgSEwREOY1YBnoz6HeLdWEFmQu81uc9l5Oc8mowyklQuE
-         07pq7Md5SWqVDMY3lSZmqiLISzV0j+Gm+tE2HOcuVXgon297/rybrpuLjARWeRLjs1TV
-         KBPA==
-X-Gm-Message-State: AOAM532L4IeuQYgwuFU4aG/hNA1ULf2rBKUffbaK54HCPOG5XVlqrZsE
-        OSx7tYh9NbBRnXVbF5zrNSe+3Jl65UAsnLNW8vPViQ==
-X-Google-Smtp-Source: ABdhPJx1lcNmqCv85hlXRj7qoj+pc07cQQmq4rWlMg08lDktFz47BLCOP1mr2/KTpAMc+M3aq8bmx8xnegsS0Y2U0DU=
-X-Received: by 2002:adf:e6c7:0:b0:1ed:9f7c:c99e with SMTP id
- y7-20020adfe6c7000000b001ed9f7cc99emr16863843wrm.0.1647277662677; Mon, 14 Mar
- 2022 10:07:42 -0700 (PDT)
+        Mon, 14 Mar 2022 13:08:56 -0400
+X-Greylist: delayed 603 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 10:07:45 PDT
+Received: from mout-u-204.mailbox.org (mout-u-204.mailbox.org [91.198.250.253])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C69B4F;
+        Mon, 14 Mar 2022 10:07:45 -0700 (PDT)
+Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:105:465:1:4:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-u-204.mailbox.org (Postfix) with ESMTPS id 4KHMvH5fyLz9sW2;
+        Mon, 14 Mar 2022 17:49:15 +0100 (CET)
+Message-ID: <43418c23-5efd-4d14-706f-f536c504b75a@denx.de>
+Date:   Mon, 14 Mar 2022 17:49:09 +0100
 MIME-Version: 1.0
-References: <20220225234339.2386398-1-haoluo@google.com> <20220225234339.2386398-2-haoluo@google.com>
- <YiwXnSGf9Nb79wnm@zeniv-ca.linux.org.uk>
-In-Reply-To: <YiwXnSGf9Nb79wnm@zeniv-ca.linux.org.uk>
-From:   Hao Luo <haoluo@google.com>
-Date:   Mon, 14 Mar 2022 10:07:31 -0700
-Message-ID: <CA+khW7g+T2sAkP1aycmts_82JKWgYk5Y0ZJp+EvjFUyNY8W_5w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 1/9] bpf: Add mkdir, rmdir, unlink syscalls
- for prog_bpf_syscall
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Tejun Heo <tj@kernel.org>, joshdon@google.com, sdf@google.com,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [tip: irq/urgent] PCI/MSI: Mask MSI-X vectors only on success
+Content-Language: en-US
+To:     Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-pci@vger.kernel.org,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Marek Vasut <marex@denx.de>, stable@vger.kernel.org,
+        x86@kernel.org, maz@kernel.org, Dusty Mabe <dustymabe@redhat.com>
+References: <20211210161025.3287927-1-sr@denx.de>
+ <163948488617.23020.3934435568065766936.tip-bot2@tip-bot2>
+ <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
+From:   Stefan Roese <sr@denx.de>
+In-Reply-To: <Yi9vH2F2OBDprwd8@jpiotrowski-Surface-Book-3>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Al,
+Hi Jeremi,
 
-On Fri, Mar 11, 2022 at 7:46 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> On Fri, Feb 25, 2022 at 03:43:31PM -0800, Hao Luo wrote:
-> > This patch allows bpf_syscall prog to perform some basic filesystem
-> > operations: create, remove directories and unlink files. Three bpf
-> > helpers are added for this purpose. When combined with the following
-> > patches that allow pinning and getting bpf objects from bpf prog,
-> > this feature can be used to create directory hierarchy in bpffs that
-> > help manage bpf objects purely using bpf progs.
-> >
-> > The added helpers subject to the same permission checks as their syscall
-> > version. For example, one can not write to a read-only file system;
-> > The identity of the current process is checked to see whether it has
-> > sufficient permission to perform the operations.
-> >
-> > Only directories and files in bpffs can be created or removed by these
-> > helpers. But it won't be too hard to allow these helpers to operate
-> > on files in other filesystems, if we want.
->
-> In which contexts can those be called?
->
+(added Dusty to Cc)
 
-In a sleepable context. The plan is to introduce a certain tracepoints
-as sleepable, a program that attaches to sleepable tracepoints is
-allowed to call these functions. In particular, the first sleepable
-tracepoint introduced in this patchset is one at the end of
-cgroup_mkdir(). Do you have any advices?
+On 3/14/22 17:36, Jeremi Piotrowski wrote:
+> Hi Thomas, Hi Stefan,
+> 
+> On Tue, Dec 14, 2021 at 12:28:06PM -0000, tip-bot2 for Stefan Roese wrote:
+>> The following commit has been merged into the irq/urgent branch of tip:
+>>
+>> Commit-ID:     83dbf898a2d45289be875deb580e93050ba67529
+>> Gitweb:        https://git.kernel.org/tip/83dbf898a2d45289be875deb580e93050ba67529
+>> Author:        Stefan Roese <sr@denx.de>
+>> AuthorDate:    Tue, 14 Dec 2021 12:49:32 +01:00
+>> Committer:     Thomas Gleixner <tglx@linutronix.de>
+>> CommitterDate: Tue, 14 Dec 2021 13:23:32 +01:00
+>>
+>> PCI/MSI: Mask MSI-X vectors only on success
+>>
+>> Masking all unused MSI-X entries is done to ensure that a crash kernel
+>> starts from a clean slate, which correponds to the reset state of the
+>> device as defined in the PCI-E specificion 3.0 and later:
+>>
+>>   Vector Control for MSI-X Table Entries
+>>   --------------------------------------
+>>
+>>   "00: Mask bit:  When this bit is set, the function is prohibited from
+>>                   sending a message using this MSI-X Table entry.
+>>                   ...
+>>                   This bit’s state after reset is 1 (entry is masked)."
+>>
+>> A Marvell NVME device fails to deliver MSI interrupts after trying to
+>> enable MSI-X interrupts due to that masking. It seems to take the MSI-X
+>> mask bits into account even when MSI-X is disabled.
+>>
+>> While not specification compliant, this can be cured by moving the masking
+>> into the success path, so that the MSI-X table entries stay in device reset
+>> state when the MSI-X setup fails.
+>>
+>> [ tglx: Move it into the success path, add comment and amend changelog ]
+>>
+>> Fixes: aa8092c1d1f1 ("PCI/MSI: Mask all unused MSI-X entries")
+>> Signed-off-by: Stefan Roese <sr@denx.de>
+>> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+>> Cc: linux-pci@vger.kernel.org
+>> Cc: Bjorn Helgaas <bhelgaas@google.com>
+>> Cc: Michal Simek <michal.simek@xilinx.com>
+>> Cc: Marek Vasut <marex@denx.de>
+>> Cc: stable@vger.kernel.org
+>> Link: https://lore.kernel.org/r/20211210161025.3287927-1-sr@denx.de
+>> ---
+>>   drivers/pci/msi.c | 13 ++++++++++---
+>>   1 file changed, 10 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+>> index 48e3f4e..6748cf9 100644
+>> --- a/drivers/pci/msi.c
+>> +++ b/drivers/pci/msi.c
+>> @@ -722,9 +722,6 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
+>>   		goto out_disable;
+>>   	}
+>>   
+>> -	/* Ensure that all table entries are masked. */
+>> -	msix_mask_all(base, tsize);
+>> -
+>>   	ret = msix_setup_entries(dev, base, entries, nvec, affd);
+>>   	if (ret)
+>>   		goto out_disable;
+>> @@ -751,6 +748,16 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
+>>   	/* Set MSI-X enabled bits and unmask the function */
+>>   	pci_intx_for_msi(dev, 0);
+>>   	dev->msix_enabled = 1;
+>> +
+>> +	/*
+>> +	 * Ensure that all table entries are masked to prevent
+>> +	 * stale entries from firing in a crash kernel.
+>> +	 *
+>> +	 * Done late to deal with a broken Marvell NVME device
+>> +	 * which takes the MSI-X mask bits into account even
+>> +	 * when MSI-X is disabled, which prevents MSI delivery.
+>> +	 */
+>> +	msix_mask_all(base, tsize);
+>>   	pci_msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_MASKALL, 0);
+>>   
+>>   	pcibios_free_irq(dev);
+> 
+> We've had reports of issues with AWS m4 instances, which use Intel 82559 VFs
+> for networking (ixgbevf) with MSI-X interrupts, which I've bisected down to
+> this commit. Since this commit these VMs no longer have any network connectivity
+> and so fail to boot. This occurs with both 5.15 and 5.10 kernels, reverting the
+> backport of this commit restores networking.
+> 
+> Do you have any suggestions of how this can be resolved other than a revert?
+> 
+> Here's the full bisect log:
+> 
+> $ git bisect log
+> git bisect start
+> # good: [4e8c680af6d51ba9315e31bd4f7599e080561a2d] Linux 5.15.7
+> git bisect good 4e8c680af6d51ba9315e31bd4f7599e080561a2d
+> # bad: [efe3167e52a5833ec20ee6214be9b99b378564a8] Linux 5.15.27
+> git bisect bad efe3167e52a5833ec20ee6214be9b99b378564a8
+> # bad: [63dcc388662c3562de94d69bfa771ae4cd29b79f] Linux 5.15.16
+> git bisect bad 63dcc388662c3562de94d69bfa771ae4cd29b79f
+> # good: [57dcae4a8b93271c4e370920ea0dbb94a0215d30] Linux 5.15.10
+> git bisect good 57dcae4a8b93271c4e370920ea0dbb94a0215d30
+> # bad: [25960cafa06e6fcd830e6c792e6a7de68c1e25ed] Linux 5.15.12
+> git bisect bad 25960cafa06e6fcd830e6c792e6a7de68c1e25ed
+> # bad: [fb6ad5cb3b6745e7bffc5fe19b130f3594375634] Linux 5.15.11
+> git bisect bad fb6ad5cb3b6745e7bffc5fe19b130f3594375634
+> # good: [257b3bb16634fd936129fe2f57a91594a75b8751] drm/amd/pm: fix a potential gpu_metrics_table memory leak
+> git bisect good 257b3bb16634fd936129fe2f57a91594a75b8751
+> # bad: [bbdaa7a48f465a2ee76d65839caeda08af1ef3b2] btrfs: fix double free of anon_dev after failure to create subvolume
+> git bisect bad bbdaa7a48f465a2ee76d65839caeda08af1ef3b2
+> # good: [c8e8e6f4108e4c133b09f31f6cc7557ee6df3bb6] bpf, selftests: Fix racing issue in btf_skc_cls_ingress test
+> git bisect good c8e8e6f4108e4c133b09f31f6cc7557ee6df3bb6
+> # bad: [5cb5c3e1b184da9f49e46119a0e506519fc58185] usb: xhci: Extend support for runtime power management for AMD's Yellow carp.
+> git bisect bad 5cb5c3e1b184da9f49e46119a0e506519fc58185
+> # good: [e7a8a261bab07ec1ed5f5bb990aacc4de9c08eb4] tty: n_hdlc: make n_hdlc_tty_wakeup() asynchronous
+> git bisect good e7a8a261bab07ec1ed5f5bb990aacc4de9c08eb4
+> # good: [4df1af29930b03d61fb774bfaa5100dbdb964628] PCI/MSI: Clear PCI_MSIX_FLAGS_MASKALL on error
+> git bisect good 4df1af29930b03d61fb774bfaa5100dbdb964628
+> # bad: [d8888cdabedf353ab9b5a6af75f70bf341a3e7df] PCI/MSI: Mask MSI-X vectors only on success
+> git bisect bad d8888cdabedf353ab9b5a6af75f70bf341a3e7df
+> # first bad commit: [d8888cdabedf353ab9b5a6af75f70bf341a3e7df] PCI/MSI: Mask MSI-X vectors only on success
 
-> > +BPF_CALL_2(bpf_rmdir, const char *, pathname, int, pathname_sz)
-> > +{
-> > +     struct user_namespace *mnt_userns;
-> > +     struct path parent;
-> > +     struct dentry *dentry;
-> > +     int err;
-> > +
-> > +     if (pathname_sz <= 1 || pathname[pathname_sz - 1])
-> > +             return -EINVAL;
-> > +
-> > +     err = kern_path(pathname, 0, &parent);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     if (!bpf_path_is_bpf_dir(&parent)) {
-> > +             err = -EPERM;
-> > +             goto exit1;
-> > +     }
-> > +
-> > +     err = mnt_want_write(parent.mnt);
-> > +     if (err)
-> > +             goto exit1;
-> > +
-> > +     dentry = kern_path_locked(pathname, &parent);
->
-> This can't be right.  Ever.  There is no promise whatsoever
-> that these two lookups will resolve to the same place.
->
-> > +BPF_CALL_2(bpf_unlink, const char *, pathname, int, pathname_sz)
-> > +{
-> > +     struct user_namespace *mnt_userns;
-> > +     struct path parent;
-> > +     struct dentry *dentry;
-> > +     struct inode *inode = NULL;
-> > +     int err;
-> > +
-> > +     if (pathname_sz <= 1 || pathname[pathname_sz - 1])
-> > +             return -EINVAL;
-> > +
-> > +     err = kern_path(pathname, 0, &parent);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     err = mnt_want_write(parent.mnt);
-> > +     if (err)
-> > +             goto exit1;
-> > +
-> > +     dentry = kern_path_locked(pathname, &parent);
-> > +     if (IS_ERR(dentry)) {
-> > +             err = PTR_ERR(dentry);
-> > +             goto exit2;
-> > +     }
->
-> Ditto.  NAK; if you want to poke into fs/namei.c guts, do it right.
-> Or at least discuss that on fsdevel.  As it is, it's completely broken.
-> It's racy *and* it blatantly leaks both vfsmount and dentry references.
->
-> NAKed-by: Al Viro <viro@zeniv.linux.org.uk>
+I've added Dusty to Cc, as he (and others) already have been dealing
+with this issue AFAICT.
 
-Thanks Al for taking a look. Actually, there is a simpler approach:
-can we export two functions in namei.c that wrap call to do_mkdirat
-and do_unlinkat, but take a kernel string as pathname? Then these two
-bpf helpers can use them, don't have to be this complicated. Does this
-sound good to you?
+Dusty, could you perhaps chime in with the latest status? AFAIU, it's
+related to potential issues with the Xen version used on these systems?
 
-Thanks!
+Thanks,
+Stefan
