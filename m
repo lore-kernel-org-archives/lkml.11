@@ -2,115 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EA5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 15:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239378AbiCNPXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 11:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        id S240984AbiCNPXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 11:23:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242114AbiCNPWv (ORCPT
+        with ESMTP id S231531AbiCNPXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 11:22:51 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428783D482
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 08:21:38 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:46148)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nTmVs-001pwi-O2; Mon, 14 Mar 2022 09:21:36 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37680 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nTmVr-003ci5-Gz; Mon, 14 Mar 2022 09:21:36 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     <akpm@linux-foundation.org>, <hughd@google.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Alexey Gladkov <legion@kernel.org>
-References: <20220314064039.62972-1-linmiaohe@huawei.com>
-Date:   Mon, 14 Mar 2022 10:21:10 -0500
-In-Reply-To: <20220314064039.62972-1-linmiaohe@huawei.com> (Miaohe Lin's
-        message of "Mon, 14 Mar 2022 14:40:39 +0800")
-Message-ID: <87h78036hl.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 14 Mar 2022 11:23:45 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B736D140D7;
+        Mon, 14 Mar 2022 08:22:34 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nTmWm-0006nk-I1; Mon, 14 Mar 2022 16:22:32 +0100
+Message-ID: <a8a62dd3-fe45-9745-f332-9815ecef52f7@leemhuis.info>
+Date:   Mon, 14 Mar 2022 16:22:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nTmVr-003ci5-Gz;;;mid=<87h78036hl.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+M0LAEcOvb6LWyXxgtrZneXmnp61b93Kw=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v2] mm/mlock: fix potential imbalanced rlimit ucounts
- adjustment
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] PCI: xgene: Revert "PCI: xgene: Use inbound resources for
+ setup"
+Content-Language: en-US
+To:     Marc Zyngier <maz@kernel.org>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel-team@android.com, Rob Herring <robh@kernel.org>,
+        Toan Le <toan@os.amperecomputing.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?Q?St=c3=a9phane_Graber?= <stgraber@ubuntu.com>,
+        dann frazier <dann.frazier@canonical.com>,
+        stable@vger.kernel.org
+References: <20220314144429.1947610-1-maz@kernel.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <20220314144429.1947610-1-maz@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1647271354;1d5d7c18;
+X-HE-SMSGID: 1nTmWm-0006nk-I1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Miaohe Lin <linmiaohe@huawei.com> writes:
+On 14.03.22 15:44, Marc Zyngier wrote:
+> Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+> killed PCIe on my XGene-1 box (a Mustang board). The machine itself
+> is still alive, but half of its storage (over NVMe) is gone, and the
+> NVMe driver just times out.
+> 
+> Note that this machine boots with a device tree provided by the
+> UEFI firmware (2016 vintage), which could well be non conformant
+> with the spec, hence the breakage.
+> 
+> With the patch reverted, the box boots 5.17-rc8 with flying colors.
+> 
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Toan Le <toan@os.amperecomputing.com>
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Cc: Krzysztof Wilczyński <kw@linux.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Stéphane Graber <stgraber@ubuntu.com>
+> Cc: dann frazier <dann.frazier@canonical.com>
+> Cc: Thorsten Leemhuis <regressions@leemhuis.info>
 
-> user_shm_lock forgets to set allowed to 0 when get_ucounts fails. So
-> the later user_shm_unlock might do the extra dec_rlimit_ucounts. Fix
-> this by resetting allowed to 0.
+Feel free to drop me there. But could you please instead add a 'Link:'
+tag pointing to the report for anyone wanting to look into the backstory
+in the future, as explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'? E.g. like this:
 
-This fix looks correct.  But the ability for people to follow and read
-the code seems questionable.  I saw in v1 of this patch Hugh originally
-misread the logic.
+"Link: https://lore.kernel.org/r/Yf2wTLjmcRj%2BAbDv@xps13.dannf/"
 
-Could we instead change the code to leave lock_limit at ULONG_MAX aka
-RLIM_INFINITY, leave initialized to 0, and not even need a special case
-of RLIM_INFINITY as nothing can be greater that ULONG_MAX?
+FWIW, I care for another reason: I'm tracking this regression with
+regzbot, my regression tracking bot. Proper "Link:" tags allow the bot
+to connect regression reports with fixes being posted or applied to
+resolve the regression -- which makes regression tracking a whole lot
+easier.
 
-Something like this?
+While at it, let me tell regzbot about this thread:
+#regzbot ^backmonitor:
+https://lore.kernel.org/r/Yf2wTLjmcRj%2BAbDv@xps13.dannf/
 
-diff --git a/mm/mlock.c b/mm/mlock.c
-index 8f584eddd305..e7eabf5193ab 100644
---- a/mm/mlock.c
-+++ b/mm/mlock.c
-@@ -827,13 +827,12 @@ int user_shm_lock(size_t size, struct ucounts *ucounts)
- 
- 	locked = (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
- 	lock_limit = rlimit(RLIMIT_MEMLOCK);
--	if (lock_limit == RLIM_INFINITY)
--		allowed = 1;
--	lock_limit >>= PAGE_SHIFT;
-+	if (lock_limit != RLIM_INFINITY)
-+		lock_limit >>= PAGE_SHIFT;
- 	spin_lock(&shmlock_user_lock);
- 	memlock = inc_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
- 
--	if (!allowed && (memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
-+	if ((memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
- 		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
- 		goto out;
- 	}
+> Cc: stable@vger.kernel.org>
 
->
-> Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> Acked-by: Hugh Dickins <hughd@google.com>
-> ---
-> v1->v2:
->   correct Fixes tag and collect Acked-by tag
->   Thanks Hugh for review!
-> ---
->  mm/mlock.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/mm/mlock.c b/mm/mlock.c
-> index 29372c0eebe5..efd2dd2943de 100644
-> --- a/mm/mlock.c
-> +++ b/mm/mlock.c
-> @@ -733,6 +733,7 @@ int user_shm_lock(size_t size, struct ucounts *ucounts)
->  	}
->  	if (!get_ucounts(ucounts)) {
->  		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
-> +		allowed = 0;
->  		goto out;
->  	}
->  	allowed = 1;
+Typo, missing a "<"
 
-Eric
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+reports on my table. I can only look briefly into most of them and lack
+knowledge about most of the areas they concern. I thus unfortunately
+will sometimes get things wrong or miss something important. I hope
+that's not the case here; if you think it is, don't hesitate to tell me
+in a public reply, it's in everyone's interest to set the public record
+straight.
+
+-- 
+Additional information about regzbot:
+
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
+
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
