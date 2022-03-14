@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 612A5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F75C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241304AbiCNMYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        id S241311AbiCNMYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241303AbiCNMRL (ORCPT
+        with ESMTP id S241729AbiCNMSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:17:11 -0400
+        Mon, 14 Mar 2022 08:18:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0194B369E0;
-        Mon, 14 Mar 2022 05:12:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1CFABC0A;
+        Mon, 14 Mar 2022 05:12:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70F7261315;
-        Mon, 14 Mar 2022 12:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3190EC340E9;
-        Mon, 14 Mar 2022 12:12:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 11B8061382;
+        Mon, 14 Mar 2022 12:12:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D03C0C340E9;
+        Mon, 14 Mar 2022 12:12:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259936;
-        bh=YGDCMuwrUahh+Ocfj5rpl5YvgAJSu76Qii8l0ri9tGM=;
+        s=korg; t=1647259973;
+        bh=jt+cYboBf6a9eltsE2cy5RocCv4dZOC0FFIQxWaw7dY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d//OdAmPBZxCsmJU3n5/oZBVmHI+r39mlt3qpnxFi2kDFETQpGJgO2Qmaq+up7I1N
-         TkjW+zqkqM9FWWF8uV7X5AUcBY9GYwBO/7Cs/dpMHVHTl8V2YrQZNhIJXBMEZvm8gP
-         pIgLy3wxxaHpT7IbC5ZIq8Ewwv7fI6aP03s4J5vE=
+        b=qvUTwMRbkcq0fd2ZUNslUtrZEXKMw96l9txMNh4WPKddUbg5al+QMvXcbOAZgb51H
+         BYktA9jfwO6lo9167JmRHuve0WRDYKKpC28ajXS3BGhlwUwwqlYuFKcWLhlgTeiwRA
+         A5pi2zKM+bv3EH9AYpj08T4+76XpTMe1s8jHH7/M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 013/121] vdpa/mlx5: add validation for VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command
-Date:   Mon, 14 Mar 2022 12:53:16 +0100
-Message-Id: <20220314112744.496974287@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com
+Subject: [PATCH 5.16 004/121] HID: hid-thrustmaster: fix OOB read in thrustmaster_interrupts
+Date:   Mon, 14 Mar 2022 12:53:07 +0100
+Message-Id: <20220314112744.246863886@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -50,60 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Si-Wei Liu <si-wei.liu@oracle.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit ed0f849fc3a63ed2ddf5e72cdb1de3bdbbb0f8eb ]
+[ Upstream commit fc3ef2e3297b3c0e2006b5d7b3d66965e3392036 ]
 
-When control vq receives a VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET command
-request from the driver, presently there is no validation against the
-number of queue pairs to configure, or even if multiqueue had been
-negotiated or not is unverified. This may lead to kernel panic due to
-uninitialized resource for the queues were there any bogus request
-sent down by untrusted driver. Tie up the loose ends there.
+Syzbot reported an slab-out-of-bounds Read in thrustmaster_probe() bug.
+The root case is in missing validation check of actual number of endpoints.
 
-Fixes: 52893733f2c5 ("vdpa/mlx5: Add multiqueue support")
-Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Link: https://lore.kernel.org/r/1642206481-30721-4-git-send-email-si-wei.liu@oracle.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Eli Cohen <elic@nvidia.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Code should not blindly access usb_host_interface::endpoint array, since
+it may contain less endpoints than code expects.
+
+Fix it by adding missing validaion check and print an error if
+number of endpoints do not match expected number
+
+Fixes: c49c33637802 ("HID: support for initialization of some Thrustmaster wheels")
+Reported-and-tested-by: syzbot+35eebd505e97d315d01c@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/hid/hid-thrustmaster.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index ef6da39ccb3f..7b4ab7cfc359 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1571,11 +1571,27 @@ static virtio_net_ctrl_ack handle_ctrl_mq(struct mlx5_vdpa_dev *mvdev, u8 cmd)
+diff --git a/drivers/hid/hid-thrustmaster.c b/drivers/hid/hid-thrustmaster.c
+index 03b935ff02d5..9da4240530dd 100644
+--- a/drivers/hid/hid-thrustmaster.c
++++ b/drivers/hid/hid-thrustmaster.c
+@@ -158,6 +158,12 @@ static void thrustmaster_interrupts(struct hid_device *hdev)
+ 		return;
+ 	}
  
- 	switch (cmd) {
- 	case VIRTIO_NET_CTRL_MQ_VQ_PAIRS_SET:
-+		/* This mq feature check aligns with pre-existing userspace
-+		 * implementation.
-+		 *
-+		 * Without it, an untrusted driver could fake a multiqueue config
-+		 * request down to a non-mq device that may cause kernel to
-+		 * panic due to uninitialized resources for extra vqs. Even with
-+		 * a well behaving guest driver, it is not expected to allow
-+		 * changing the number of vqs on a non-mq device.
-+		 */
-+		if (!MLX5_FEATURE(mvdev, VIRTIO_NET_F_MQ))
-+			break;
++	if (usbif->cur_altsetting->desc.bNumEndpoints < 2) {
++		kfree(send_buf);
++		hid_err(hdev, "Wrong number of endpoints?\n");
++		return;
++	}
 +
- 		read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->riov, (void *)&mq, sizeof(mq));
- 		if (read != sizeof(mq))
- 			break;
+ 	ep = &usbif->cur_altsetting->endpoint[1];
+ 	b_ep = ep->desc.bEndpointAddress;
  
- 		newqps = mlx5vdpa16_to_cpu(mvdev, mq.virtqueue_pairs);
-+		if (newqps < VIRTIO_NET_CTRL_MQ_VQ_PAIRS_MIN ||
-+		    newqps > mlx5_vdpa_max_qps(mvdev->max_vqs))
-+			break;
-+
- 		if (ndev->cur_num_vqs == 2 * newqps) {
- 			status = VIRTIO_NET_OK;
- 			break;
 -- 
 2.34.1
 
