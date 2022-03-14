@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A2ACC3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC36C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242042AbiCNM2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50618 "EHLO
+        id S242086AbiCNM2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243626AbiCNMVF (ORCPT
+        with ESMTP id S243644AbiCNMVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:05 -0400
+        Mon, 14 Mar 2022 08:21:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B5F54FA5;
-        Mon, 14 Mar 2022 05:16:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13E354FB5;
+        Mon, 14 Mar 2022 05:16:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86EF7608C4;
-        Mon, 14 Mar 2022 12:16:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90AF8C340E9;
-        Mon, 14 Mar 2022 12:16:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6766B60C77;
+        Mon, 14 Mar 2022 12:16:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE79C340E9;
+        Mon, 14 Mar 2022 12:16:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260190;
-        bh=dVGoPrrWRTVHA4L6rhMCbLqZZdospTvDe05WnMPVvFI=;
+        s=korg; t=1647260192;
+        bh=q6225OgmNK7kllOTZPGgFL9ixZv/nU3ERVzIB1tEN58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NtiqJ63sYxe1yOsuMCUs1nSeZ8aGGyhCuZn+BK99bTn6IxYJ8Yo9q2PZo8sd5xTNG
-         9o82BkcBav8kZ9REmriEmfrXwP6m+KZXkV1mPu3kdel+OFBBgyiNOaihbUDFaPAVYi
-         XPRNYFs/gwxnL+V4295A0KMozaXsS/nPdrUQr4uE=
+        b=TIQPeqLDBZqh1IKZAK9dFGSyYgbxaIvTCIr/GITR48vixGd61wNdBi2eiRtR35xfZ
+         +IpJFL/WsDJ0xfZjYum7j+3/EjNX1upD3g65xthIm9lc0S2mhnOGa3x6f4xSjFp+9Z
+         UHCotToxd1MhHzftvnw6gjR3kocB6xsGOLXVRjzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Anton Romanov <romanton@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 082/121] tracing/osnoise: Make osnoise_main to sleep for microseconds
-Date:   Mon, 14 Mar 2022 12:54:25 +0100
-Message-Id: <20220314112746.409684021@linuxfoundation.org>
+Subject: [PATCH 5.16 065/121] kvm: x86: Disable KVM_HC_CLOCK_PAIRING if tsc is in always catchup mode
+Date:   Mon, 14 Mar 2022 12:54:08 +0100
+Message-Id: <20220314112745.939591232@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -50,101 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Anton Romanov <romanton@google.com>
 
-[ Upstream commit dd990352f01ee9a6c6eee152e5d11c021caccfe4 ]
+[ Upstream commit 3a55f729240a686aa8af00af436306c0cd532522 ]
 
-osnoise's runtime and period are in the microseconds scale, but it is
-currently sleeping in the millisecond's scale. This behavior roots in the
-usage of hwlat as the skeleton for osnoise.
+If vcpu has tsc_always_catchup set each request updates pvclock data.
+KVM_HC_CLOCK_PAIRING consumers such as ptp_kvm_x86 rely on tsc read on
+host's side and do hypercall inside pvclock_read_retry loop leading to
+infinite loop in such situation.
 
-Make osnoise to sleep in the microseconds scale. Also, move the sleep to
-a specialized function.
+v3:
+    Removed warn
+    Changed return code to KVM_EFAULT
+v2:
+    Added warn
 
-Link: https://lkml.kernel.org/r/302aa6c7bdf2d131719b22901905e9da122a11b2.1645197336.git.bristot@kernel.org
-
-Cc: Ingo Molnar <mingo@redhat.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Anton Romanov <romanton@google.com>
+Message-Id: <20220216182653.506850-1-romanton@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_osnoise.c | 53 ++++++++++++++++++++++--------------
- 1 file changed, 32 insertions(+), 21 deletions(-)
+ arch/x86/kvm/x86.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index b58674e8644a..58c788b0ca27 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -1437,6 +1437,37 @@ static int run_osnoise(void)
- static struct cpumask osnoise_cpumask;
- static struct cpumask save_cpumask;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index c6eb3e45e3d8..e8f495b9ae10 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8770,6 +8770,13 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
+ 	if (clock_type != KVM_CLOCK_PAIRING_WALLCLOCK)
+ 		return -KVM_EOPNOTSUPP;
  
-+/*
-+ * osnoise_sleep - sleep until the next period
-+ */
-+static void osnoise_sleep(void)
-+{
-+	u64 interval;
-+	ktime_t wake_time;
-+
-+	mutex_lock(&interface_lock);
-+	interval = osnoise_data.sample_period - osnoise_data.sample_runtime;
-+	mutex_unlock(&interface_lock);
-+
 +	/*
-+	 * differently from hwlat_detector, the osnoise tracer can run
-+	 * without a pause because preemption is on.
++	 * When tsc is in permanent catchup mode guests won't be able to use
++	 * pvclock_read_retry loop to get consistent view of pvclock
 +	 */
-+	if (!interval) {
-+		/* Let synchronize_rcu_tasks() make progress */
-+		cond_resched_tasks_rcu_qs();
-+		return;
-+	}
++	if (vcpu->arch.tsc_always_catchup)
++		return -KVM_EOPNOTSUPP;
 +
-+	wake_time = ktime_add_us(ktime_get(), interval);
-+	__set_current_state(TASK_INTERRUPTIBLE);
-+
-+	while (schedule_hrtimeout_range(&wake_time, 0, HRTIMER_MODE_ABS)) {
-+		if (kthread_should_stop())
-+			break;
-+	}
-+}
-+
- /*
-  * osnoise_main - The osnoise detection kernel thread
-  *
-@@ -1445,30 +1476,10 @@ static struct cpumask save_cpumask;
-  */
- static int osnoise_main(void *data)
- {
--	u64 interval;
+ 	if (!kvm_get_walltime_and_clockread(&ts, &cycle))
+ 		return -KVM_EOPNOTSUPP;
  
- 	while (!kthread_should_stop()) {
--
- 		run_osnoise();
--
--		mutex_lock(&interface_lock);
--		interval = osnoise_data.sample_period - osnoise_data.sample_runtime;
--		mutex_unlock(&interface_lock);
--
--		do_div(interval, USEC_PER_MSEC);
--
--		/*
--		 * differently from hwlat_detector, the osnoise tracer can run
--		 * without a pause because preemption is on.
--		 */
--		if (interval < 1) {
--			/* Let synchronize_rcu_tasks() make progress */
--			cond_resched_tasks_rcu_qs();
--			continue;
--		}
--
--		if (msleep_interruptible(interval))
--			break;
-+		osnoise_sleep();
- 	}
- 
- 	return 0;
 -- 
 2.34.1
 
