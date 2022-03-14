@@ -2,81 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F03EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237533AbiCNIIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
+        id S236754AbiCNIIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237585AbiCNIHw (ORCPT
+        with ESMTP id S237657AbiCNIHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:07:52 -0400
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D2FC41326;
-        Mon, 14 Mar 2022 01:05:43 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowACHj_s89y5iZXdxAw--.12198S2;
-        Mon, 14 Mar 2022 16:05:18 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org
-Cc:     stephen@networkplumber.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: [PATCH] hv_netvsc: Add check for kvmalloc_array
-Date:   Mon, 14 Mar 2022 16:05:14 +0800
-Message-Id: <20220314080514.2501092-1-jiasheng@iscas.ac.cn>
+        Mon, 14 Mar 2022 04:07:49 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685B73F8B9;
+        Mon, 14 Mar 2022 01:05:34 -0700 (PDT)
+X-UUID: 056b96e514c940ab8c284bf0a31f8b3b-20220314
+X-UUID: 056b96e514c940ab8c284bf0a31f8b3b-20220314
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 978099276; Mon, 14 Mar 2022 15:57:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 14 Mar 2022 15:57:20 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 14 Mar 2022 15:57:19 +0800
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        <angelogioacchino.delregno@collabora.com>
+CC:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
+        <dkirjanov@suse.de>
+Subject: [PATCH net-next v13 3/7] stmmac: dwmac-mediatek: re-arrange clock setting
+Date:   Mon, 14 Mar 2022 15:57:09 +0800
+Message-ID: <20220314075713.29140-4-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220314075713.29140-1-biao.huang@mediatek.com>
+References: <20220314075713.29140-1-biao.huang@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowACHj_s89y5iZXdxAw--.12198S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrCFW8XF1fJw15Zw4xXF1fWFg_yoWxXwbEgw
-        4UArWYka4kt3W0yF15KFn5Wrsakw47WF1Yqrs8J39IyasxuF4kKFyDCr43Jwnxu3yrAFnI
-        9r12kF45try29jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbI8FF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
-        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_Wryl
-        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
-        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v2
-        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvj
-        fUOmhFUUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 03:33:49PM +0800, Greg KH wrote:
->> Thanks, I have tested the patch by kernel_patch_verify,
-> 
-> What is that?
+The rmii_internal clock is needed only when PHY
+interface is RMII, and reference clock is from MAC.
 
-It a Linux kernel patch static verification helper tool.
-Link: https://github.com/nmenon/kernel_patch_verify
+Re-arrange the clock setting as following:
+1. the optional "rmii_internal" is controlled by devm_clk_get(),
+2. other clocks still be configured by devm_clk_bulk_get().
 
->> and all the tests are passed.
-> 
-> What tests exactly?  How did you fail this allocation?
+Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+---
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 71 +++++++++++++------
+ 1 file changed, 48 insertions(+), 23 deletions(-)
 
-The failure of allocation is not included in the tests.
-And as far as I know, there is not any tool that has the
-ability to fail the allocation.
-But I think that for safety, the cost of redundant and harmless
-check is acceptable.
-Also, checking after allocation is a good program pattern.
-
-Thanks,
-Jiang
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+index 8747aa4403e8..b2507a2ba326 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+@@ -49,12 +49,12 @@ struct mac_delay_struct {
+ struct mediatek_dwmac_plat_data {
+ 	const struct mediatek_dwmac_variant *variant;
+ 	struct mac_delay_struct mac_delay;
++	struct clk *rmii_internal_clk;
+ 	struct clk_bulk_data *clks;
+-	struct device_node *np;
+ 	struct regmap *peri_regmap;
++	struct device_node *np;
+ 	struct device *dev;
+ 	phy_interface_t phy_mode;
+-	int num_clks_to_config;
+ 	bool rmii_clk_from_mac;
+ 	bool rmii_rxc;
+ };
+@@ -74,7 +74,7 @@ struct mediatek_dwmac_variant {
+ 
+ /* list of clocks required for mac */
+ static const char * const mt2712_dwmac_clk_l[] = {
+-	"axi", "apb", "mac_main", "ptp_ref", "rmii_internal"
++	"axi", "apb", "mac_main", "ptp_ref"
+ };
+ 
+ static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
+@@ -83,23 +83,12 @@ static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
+ 	int rmii_rxc = plat->rmii_rxc ? RMII_CLK_SRC_RXC : 0;
+ 	u32 intf_val = 0;
+ 
+-	/* The clock labeled as "rmii_internal" in mt2712_dwmac_clk_l is needed
+-	 * only in RMII(when MAC provides the reference clock), and useless for
+-	 * RGMII/MII/RMII(when PHY provides the reference clock).
+-	 * num_clks_to_config indicates the real number of clocks should be
+-	 * configured, equals to (plat->variant->num_clks - 1) in default for all the case,
+-	 * then +1 for rmii_clk_from_mac case.
+-	 */
+-	plat->num_clks_to_config = plat->variant->num_clks - 1;
+-
+ 	/* select phy interface in top control domain */
+ 	switch (plat->phy_mode) {
+ 	case PHY_INTERFACE_MODE_MII:
+ 		intf_val |= PHY_INTF_MII;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RMII:
+-		if (plat->rmii_clk_from_mac)
+-			plat->num_clks_to_config++;
+ 		intf_val |= (PHY_INTF_RMII | rmii_rxc | rmii_clk_from_mac);
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
+@@ -314,18 +303,34 @@ static int mediatek_dwmac_config_dt(struct mediatek_dwmac_plat_data *plat)
+ static int mediatek_dwmac_clk_init(struct mediatek_dwmac_plat_data *plat)
+ {
+ 	const struct mediatek_dwmac_variant *variant = plat->variant;
+-	int i, num = variant->num_clks;
++	int i, ret;
+ 
+-	plat->clks = devm_kcalloc(plat->dev, num, sizeof(*plat->clks), GFP_KERNEL);
++	plat->clks = devm_kcalloc(plat->dev, variant->num_clks, sizeof(*plat->clks), GFP_KERNEL);
+ 	if (!plat->clks)
+ 		return -ENOMEM;
+ 
+-	for (i = 0; i < num; i++)
++	for (i = 0; i < variant->num_clks; i++)
+ 		plat->clks[i].id = variant->clk_list[i];
+ 
+-	plat->num_clks_to_config = variant->num_clks;
++	ret = devm_clk_bulk_get(plat->dev, variant->num_clks, plat->clks);
++	if (ret)
++		return ret;
+ 
+-	return devm_clk_bulk_get(plat->dev, num, plat->clks);
++	/* The clock labeled as "rmii_internal" is needed only in RMII(when
++	 * MAC provides the reference clock), and useless for RGMII/MII or
++	 * RMII(when PHY provides the reference clock).
++	 * So, "rmii_internal" clock is got and configured only when
++	 * reference clock of RMII is from MAC.
++	 */
++	if (plat->rmii_clk_from_mac) {
++		plat->rmii_internal_clk = devm_clk_get(plat->dev, "rmii_internal");
++		if (IS_ERR(plat->rmii_internal_clk))
++			ret = PTR_ERR(plat->rmii_internal_clk);
++	} else {
++		plat->rmii_internal_clk = NULL;
++	}
++
++	return ret;
+ }
+ 
+ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+@@ -350,35 +355,55 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+ 		}
+ 	}
+ 
+-	ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
++	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+ 	if (ret) {
+ 		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+ 		return ret;
+ 	}
+ 
++	ret = clk_prepare_enable(plat->rmii_internal_clk);
++	if (ret) {
++		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
++		goto err_clk;
++	}
++
+ 	return 0;
++
++err_clk:
++	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
++	return ret;
+ }
+ 
+ static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
+ {
+ 	struct mediatek_dwmac_plat_data *plat = priv;
++	const struct mediatek_dwmac_variant *variant = plat->variant;
+ 
+-	clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
++	clk_disable_unprepare(plat->rmii_internal_clk);
++	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+ }
+ 
+ static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+ {
+ 	struct mediatek_dwmac_plat_data *plat = priv;
++	const struct mediatek_dwmac_variant *variant = plat->variant;
+ 	int ret = 0;
+ 
+ 	if (enabled) {
+-		ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
++		ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+ 		if (ret) {
+ 			dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+ 			return ret;
+ 		}
++
++		ret = clk_prepare_enable(plat->rmii_internal_clk);
++		if (ret) {
++			dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
++			return ret;
++		}
+ 	} else {
+-		clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
++		clk_disable_unprepare(plat->rmii_internal_clk);
++		clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+ 	}
+ 
+ 	return ret;
+-- 
+2.25.1
 
