@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238090AbiCNJ37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 05:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
+        id S238099AbiCNJaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 05:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237979AbiCNJ3b (ORCPT
+        with ESMTP id S238011AbiCNJ3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 05:29:31 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08B13527A;
-        Mon, 14 Mar 2022 02:28:22 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 09:28:20 -0000
+        Mon, 14 Mar 2022 05:29:35 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E343527A;
+        Mon, 14 Mar 2022 02:28:26 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 09:28:23 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647250101;
+        s=2020; t=1647250104;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xsZXj1i0gVfeGzHaAYAGqiS4zC0iqUJz74PBWog4ReA=;
-        b=K2oGzTp109rycMpdzih1LlJs9tgIkJIE4D92HZopMRPZAM24kf7ZbuPsiPTtTQpb+81qJ0
-        6XZGWwnOxjwO3ieWQJXjN4mfmGsD6HjxsQasC5I02u+W1wC0OKCrfWs/R1DhWbqw5cMuLt
-        EedwLpByozENtQnyfhvA7/smVdIj6UaqqxFpy9Ft8EwidkahlqNkJLCdqcvZE2C1aVBnv3
-        gUHMvc4nYTEus6Ooet3aB//LZQogI3I6wWbF4RBk8UD2Nb9y5YEUl4p1gDpey7qhXsfpKE
-        chnq7By22BgHd7Kr6AdtnMEpA4WLXs/QtlkwWlTX7FnzCvr0PmUGAEJqK8lHkg==
+        bh=lbX4guq10C4WbgjPFGR3cSWHkRW9v5h6QvXycrYx3bs=;
+        b=W6SejkfzyqzbYt4BGVcAuC0bxVydl1mxspI84A48zhyJ/WOiCQqDEXTovJJd4qnG9iLYtt
+        c9w9O6N3MplRfOwOkIk8/mYgZ/z2NNL3auRFMkeeOnjkcK57Qy1/rz9RtLNo82K3fWEnys
+        75IIdEeTyGLeMTPJlfJ3ftah9R0mQhPS7p5+B6l7nKs/aPps0XiZ520ghC+Za5lvzu1jCn
+        zc3vraDt1qpAjeRFdFSR0b5g18ugw1quptDPrtx5pMdzYrYNQ/C7BdkN8DIem3+3ZrMx5G
+        0Vd8WFqhav333fx3qISF0utc4vrzPNzp1oA9dTDyMRR8LbvactM7+ckTu+B5yA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647250101;
+        s=2020e; t=1647250104;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=xsZXj1i0gVfeGzHaAYAGqiS4zC0iqUJz74PBWog4ReA=;
-        b=JZpdZVUsSb79xU7zxMhnK58/Pjc+f+Hbrb99ObyuTiNZGe5q1NAnx7wBm5GnhZdyX9yxKj
-        t1aF+9kcGCczZ0Bw==
-From:   "tip-bot2 for Claudiu Beznea" <tip-bot2@linutronix.de>
+        bh=lbX4guq10C4WbgjPFGR3cSWHkRW9v5h6QvXycrYx3bs=;
+        b=uM1DMt1UNn6wElWYAix9Ejr5BY/sH5sV95dYVFB3V9DDtvw5YbNX0VB5gQ5uhC2FGnKgRg
+        0p+lJ2h5L7p17xCw==
+From:   "tip-bot2 for Nathan Chancellor" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] clocksource/drivers/timer-microchip-pit64b: Use notrace
-Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+Subject: [tip: timers/core] clocksource/drivers/imx-tpm: Move
+ tpm_read_sched_clock() under CONFIG_ARM
+Cc:     Nathan Chancellor <nathan@kernel.org>, Peng Fan <peng.fan@nxp.com>,
         Daniel Lezcano <daniel.lezcano@linaro.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220304133601.2404086-3-claudiu.beznea@microchip.com>
-References: <20220304133601.2404086-3-claudiu.beznea@microchip.com>
+In-Reply-To: <20220303184212.2356245-1-nathan@kernel.org>
+References: <20220303184212.2356245-1-nathan@kernel.org>
 MIME-Version: 1.0
-Message-ID: <164725010037.16921.9970306478525402477.tip-bot2@tip-bot2>
+Message-ID: <164725010341.16921.1444597331705749005.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,37 +62,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     ff10ee97cb203262e88d9c8bc87369cbd4004a0c
-Gitweb:        https://git.kernel.org/tip/ff10ee97cb203262e88d9c8bc87369cbd4004a0c
-Author:        Claudiu Beznea <claudiu.beznea@microchip.com>
-AuthorDate:    Fri, 04 Mar 2022 15:35:57 +02:00
+Commit-ID:     bf127df3cceada8693888fc86a3121c38ef25701
+Gitweb:        https://git.kernel.org/tip/bf127df3cceada8693888fc86a3121c38ef25701
+Author:        Nathan Chancellor <nathan@kernel.org>
+AuthorDate:    Thu, 03 Mar 2022 11:42:12 -07:00
 Committer:     Daniel Lezcano <daniel.lezcano@linaro.org>
-CommitterDate: Mon, 07 Mar 2022 18:27:28 +01:00
+CommitterDate: Mon, 07 Mar 2022 18:27:22 +01:00
 
-clocksource/drivers/timer-microchip-pit64b: Use notrace
+clocksource/drivers/imx-tpm: Move tpm_read_sched_clock() under CONFIG_ARM
 
-Use notrace for mchp_pit64b_sched_read_clk() to avoid recursive call of
-prepare_ftrace_return() when issuing:
-echo function_graph > /sys/kernel/debug/tracing/current_tracer
+When building this driver for an architecture other than ARCH=arm:
 
-Fixes: 625022a5f160 ("clocksource/drivers/timer-microchip-pit64b: Add Microchip PIT64B support")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220304133601.2404086-3-claudiu.beznea@microchip.com
+  drivers/clocksource/timer-imx-tpm.c:78:20: error: unused function 'tpm_read_sched_clock' [-Werror,-Wunused-function]
+  static u64 notrace tpm_read_sched_clock(void)
+                     ^
+  1 error generated.
+
+Move the function definition under the existing CONFIG_ARM section so
+there is no more warning.
+
+Fixes: 10720e120e2b ("clocksource/drivers/imx-tpm: Exclude sched clock for ARM64")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Link: https://lore.kernel.org/r/20220303184212.2356245-1-nathan@kernel.org
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/clocksource/timer-microchip-pit64b.c | 2 +-
+ drivers/clocksource/timer-imx-tpm.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
-index cfa4ec7..790d2c9 100644
---- a/drivers/clocksource/timer-microchip-pit64b.c
-+++ b/drivers/clocksource/timer-microchip-pit64b.c
-@@ -165,7 +165,7 @@ static u64 mchp_pit64b_clksrc_read(struct clocksource *cs)
- 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
- }
- 
--static u64 mchp_pit64b_sched_read_clk(void)
-+static u64 notrace mchp_pit64b_sched_read_clk(void)
+diff --git a/drivers/clocksource/timer-imx-tpm.c b/drivers/clocksource/timer-imx-tpm.c
+index 60cefc2..bd64a8a 100644
+--- a/drivers/clocksource/timer-imx-tpm.c
++++ b/drivers/clocksource/timer-imx-tpm.c
+@@ -73,12 +73,12 @@ static unsigned long tpm_read_current_timer(void)
  {
- 	return mchp_pit64b_cnt_read(mchp_pit64b_cs_base);
+ 	return tpm_read_counter();
  }
+-#endif
+ 
+ static u64 notrace tpm_read_sched_clock(void)
+ {
+ 	return tpm_read_counter();
+ }
++#endif
+ 
+ static int tpm_set_next_event(unsigned long delta,
+ 				struct clock_event_device *evt)
