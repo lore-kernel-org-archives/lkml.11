@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4938AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240574AbiCNMGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
+        id S240629AbiCNMGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiCNMFQ (ORCPT
+        with ESMTP id S240537AbiCNMFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:05:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A1114004;
-        Mon, 14 Mar 2022 05:02:09 -0700 (PDT)
+        Mon, 14 Mar 2022 08:05:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1D51E3DD;
+        Mon, 14 Mar 2022 05:02:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD8EF61298;
-        Mon, 14 Mar 2022 12:02:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6649C340EC;
-        Mon, 14 Mar 2022 12:02:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D326EB80DEC;
+        Mon, 14 Mar 2022 12:02:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA42C340E9;
+        Mon, 14 Mar 2022 12:02:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259328;
-        bh=mdDHg2z5cqERmmM8M2jduxHMSN8p3o1lU+HcDbiVjn4=;
+        s=korg; t=1647259335;
+        bh=71dKtFl+444RABSal+6w1Genfqm5WPhpmd70CYkEtkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rp2Y/eAmleORap4t3gCGAWPMonkpa1OHH+/A/Sx713PRdHl8GtpZyXwncGV9uUVpD
-         AGjhudf3sdDWz4BOSwz9/s+VGw5fKnizxCTRIsNiiLy428NxGUWwocp2V5cXG2BEOd
-         F/HtyQLjDMqtofo/xYYaeC1R+yqAsBDLZiZj/I6w=
+        b=xCIo8yKXMFj7LRN1L7C4o7r2wEd5OuGA3ByaiZolnVbILP+o1DNyc10wAza6u44ej
+         X/Kp3llGKxq2TrHTAY8oc7OZwFuLUmwnmg1UIi9ZNopgdK8WICW/Zj8l+ok5C/XfFp
+         USVkb5eVnPJcG03TmBjVw0JdAuAFb3QBvd4jVje8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rong Chen <rong.chen@amlogic.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.10 54/71] mmc: meson: Fix usage of meson_mmc_post_req()
-Date:   Mon, 14 Mar 2022 12:53:47 +0100
-Message-Id: <20220314112739.442781304@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>
+Subject: [PATCH 5.10 56/71] arm64: dts: marvell: armada-37xx: Remap IO space to bus address 0x0
+Date:   Mon, 14 Mar 2022 12:53:49 +0100
+Message-Id: <20220314112739.498431196@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -49,81 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rong Chen <rong.chen@amlogic.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit f0d2f15362f02444c5d7ffd5a5eb03e4aa54b685 upstream.
+commit a1cc1697bb56cdf880ad4d17b79a39ef2c294bc9 upstream.
 
-Currently meson_mmc_post_req() is called in meson_mmc_request() right
-after meson_mmc_start_cmd(). This could lead to DMA unmapping before the request
-is actually finished.
+Legacy and old PCI I/O based cards do not support 32-bit I/O addressing.
 
-To fix, don't call meson_mmc_post_req() until meson_mmc_request_done().
+Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from
+'ranges' DT property") kernel can set different PCIe address on CPU and
+different on the bus for the one A37xx address mapping without any firmware
+support in case the bus address does not conflict with other A37xx mapping.
 
-Signed-off-by: Rong Chen <rong.chen@amlogic.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Fixes: 79ed05e329c3 ("mmc: meson-gx: add support for descriptor chain mode")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220216124239.4007667-1-rong.chen@amlogic.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+So remap I/O space to the bus address 0x0 to enable support for old legacy
+I/O port based cards which have hardcoded I/O ports in low address space.
+
+Note that DDR on A37xx is mapped to bus address 0x0. And mapping of I/O
+space can be set to address 0x0 too because MEM space and I/O space are
+separate and so do not conflict.
+
+Remapping IO space on Turris Mox to different address is not possible to
+due bootloader bug.
+
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 76f6386b25cc ("arm64: dts: marvell: Add Aardvark PCIe support for Armada 3700")
+Cc: stable@vger.kernel.org # 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from 'ranges' DT property")
+Cc: stable@vger.kernel.org # 514ef1e62d65 ("arm64: dts: marvell: armada-37xx: Extend PCIe MEM space")
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/meson-gx-mmc.c |   15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts |    7 ++++++-
+ arch/arm64/boot/dts/marvell/armada-37xx.dtsi           |    2 +-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
---- a/drivers/mmc/host/meson-gx-mmc.c
-+++ b/drivers/mmc/host/meson-gx-mmc.c
-@@ -173,6 +173,8 @@ struct meson_host {
- 	int irq;
- 
- 	bool vqmmc_enabled;
-+	bool needs_pre_post_req;
-+
- };
- 
- #define CMD_CFG_LENGTH_MASK GENMASK(8, 0)
-@@ -652,6 +654,8 @@ static void meson_mmc_request_done(struc
- 	struct meson_host *host = mmc_priv(mmc);
- 
- 	host->cmd = NULL;
-+	if (host->needs_pre_post_req)
-+		meson_mmc_post_req(mmc, mrq, 0);
- 	mmc_request_done(host->mmc, mrq);
- }
- 
-@@ -869,7 +873,7 @@ static int meson_mmc_validate_dram_acces
- static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
- {
- 	struct meson_host *host = mmc_priv(mmc);
--	bool needs_pre_post_req = mrq->data &&
-+	host->needs_pre_post_req = mrq->data &&
- 			!(mrq->data->host_cookie & SD_EMMC_PRE_REQ_DONE);
- 
+--- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
++++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+@@ -138,7 +138,9 @@
  	/*
-@@ -885,22 +889,19 @@ static void meson_mmc_request(struct mmc
- 		}
- 	}
- 
--	if (needs_pre_post_req) {
-+	if (host->needs_pre_post_req) {
- 		meson_mmc_get_transfer_mode(mmc, mrq);
- 		if (!meson_mmc_desc_chain_mode(mrq->data))
--			needs_pre_post_req = false;
-+			host->needs_pre_post_req = false;
- 	}
- 
--	if (needs_pre_post_req)
-+	if (host->needs_pre_post_req)
- 		meson_mmc_pre_req(mmc, mrq);
- 
- 	/* Stop execution */
- 	writel(0, host->regs + SD_EMMC_START);
- 
- 	meson_mmc_start_cmd(mmc, mrq->sbc ?: mrq->cmd);
--
--	if (needs_pre_post_req)
--		meson_mmc_post_req(mmc, mrq, 0);
- }
- 
- static void meson_mmc_read_resp(struct mmc_host *mmc, struct mmc_command *cmd)
+ 	 * U-Boot port for Turris Mox has a bug which always expects that "ranges" DT property
+ 	 * contains exactly 2 ranges with 3 (child) address cells, 2 (parent) address cells and
+-	 * 2 size cells and also expects that the second range starts at 16 MB offset. If these
++	 * 2 size cells and also expects that the second range starts at 16 MB offset. Also it
++	 * expects that first range uses same address for PCI (child) and CPU (parent) cells (so
++	 * no remapping) and that this address is the lowest from all specified ranges. If these
+ 	 * conditions are not met then U-Boot crashes during loading kernel DTB file. PCIe address
+ 	 * space is 128 MB long, so the best split between MEM and IO is to use fixed 16 MB window
+ 	 * for IO and the rest 112 MB (64+32+16) for MEM, despite that maximal IO size is just 64 kB.
+@@ -147,6 +149,9 @@
+ 	 * https://source.denx.de/u-boot/u-boot/-/commit/cb2ddb291ee6fcbddd6d8f4ff49089dfe580f5d7
+ 	 * https://source.denx.de/u-boot/u-boot/-/commit/c64ac3b3185aeb3846297ad7391fc6df8ecd73bf
+ 	 * https://source.denx.de/u-boot/u-boot/-/commit/4a82fca8e330157081fc132a591ebd99ba02ee33
++	 * Bug related to requirement of same child and parent addresses for first range is fixed
++	 * in U-Boot version 2022.04 by following commit:
++	 * https://source.denx.de/u-boot/u-boot/-/commit/1fd54253bca7d43d046bba4853fe5fafd034bc17
+ 	 */
+ 	#address-cells = <3>;
+ 	#size-cells = <2>;
+--- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
+@@ -495,7 +495,7 @@
+ 			 * (totaling 127 MiB) for MEM.
+ 			 */
+ 			ranges = <0x82000000 0 0xe8000000   0 0xe8000000   0 0x07f00000   /* Port 0 MEM */
+-				  0x81000000 0 0xefff0000   0 0xefff0000   0 0x00010000>; /* Port 0 IO */
++				  0x81000000 0 0x00000000   0 0xefff0000   0 0x00010000>; /* Port 0 IO */
+ 			interrupt-map-mask = <0 0 0 7>;
+ 			interrupt-map = <0 0 0 1 &pcie_intc 0>,
+ 					<0 0 0 2 &pcie_intc 1>,
 
 
