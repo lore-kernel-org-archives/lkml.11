@@ -2,226 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 08:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236754AbiCNIIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 04:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
+        id S237491AbiCNII4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 04:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237657AbiCNIHt (ORCPT
+        with ESMTP id S237899AbiCNIIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 04:07:49 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685B73F8B9;
-        Mon, 14 Mar 2022 01:05:34 -0700 (PDT)
-X-UUID: 056b96e514c940ab8c284bf0a31f8b3b-20220314
-X-UUID: 056b96e514c940ab8c284bf0a31f8b3b-20220314
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 978099276; Mon, 14 Mar 2022 15:57:21 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 14 Mar 2022 15:57:20 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Mar 2022 15:57:19 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <angelogioacchino.delregno@collabora.com>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <dkirjanov@suse.de>
-Subject: [PATCH net-next v13 3/7] stmmac: dwmac-mediatek: re-arrange clock setting
-Date:   Mon, 14 Mar 2022 15:57:09 +0800
-Message-ID: <20220314075713.29140-4-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220314075713.29140-1-biao.huang@mediatek.com>
-References: <20220314075713.29140-1-biao.huang@mediatek.com>
+        Mon, 14 Mar 2022 04:08:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304C3443F7;
+        Mon, 14 Mar 2022 01:06:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FE9EB80BE7;
+        Mon, 14 Mar 2022 08:06:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 145AAC340E9;
+        Mon, 14 Mar 2022 08:06:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647245175;
+        bh=gb7LFv9e2vRdyKjuKd26Rvil+QCxagd9WC/7n/TYZAg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yq6711oJFJjBjOj6CYAbE53+aSvGy45cd1euulJAqKCaiH91Z4uVgmB5rdVe48/eD
+         KTNSS2vKZvW1FcRhcN5QeniQvGD+1YET0IeT8XST9R4m+K+1F63pF5yucx6QhY3Kvs
+         qNrlqbj8H6Fz3EvPM5j4WxKb5XPOCsJwwatmMV3k=
+Date:   Mon, 14 Mar 2022 09:06:12 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Zhao Gongyi <zhaogongyi@huawei.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Waiman Long <longman@redhat.com>, Tejun Heo <tj@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>
+Subject: Re: [PATCH 4.19 01/34] cgroup/cpuset: Fix a race between
+ cpuset_attach() and cpu hotplug
+Message-ID: <Yi73dKB10LBTGb+S@kroah.com>
+References: <20220228172207.090703467@linuxfoundation.org>
+ <20220228172208.566431934@linuxfoundation.org>
+ <20220308151232.GA21752@blackbody.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220308151232.GA21752@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The rmii_internal clock is needed only when PHY
-interface is RMII, and reference clock is from MAC.
+On Tue, Mar 08, 2022 at 04:12:32PM +0100, Michal Koutný wrote:
+> Hello.
+> 
+> On Mon, Feb 28, 2022 at 06:24:07PM +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> > [...]
+> >      cpuset_attach()				cpu hotplug
+> >     ---------------------------            ----------------------
+> >     down_write(cpuset_rwsem)
+> >     guarantee_online_cpus() // (load cpus_attach)
+> > 					sched_cpu_deactivate
+> > 					  set_cpu_active()
+> > 					  // will change cpu_active_mask
+> >     set_cpus_allowed_ptr(cpus_attach)
+> >       __set_cpus_allowed_ptr_locked()
+> >        // (if the intersection of cpus_attach and
+> >          cpu_active_mask is empty, will return -EINVAL)
+> >     up_write(cpuset_rwsem)
+> > [...]
+> > --- a/kernel/cgroup/cpuset.c
+> > +++ b/kernel/cgroup/cpuset.c
+> > @@ -1528,6 +1528,7 @@ static void cpuset_attach(struct cgroup_
+> >  	cgroup_taskset_first(tset, &css);
+> >  	cs = css_cs(css);
+> >  
+> > +	cpus_read_lock();
+> >  	mutex_lock(&cpuset_mutex);
+> 
+> This backport (and possible older kernels) looks suspicious since it comes
+> before commit d74b27d63a8b ("cgroup/cpuset: Change cpuset_rwsem and
+> hotplug lock order") v5.4-rc1~176^2~30 when the locking order was:
+> cpuset lock, cpus lock.
+> 
+> At the same time it also comes before commit 710da3c8ea7d ("sched/core:
+> Prevent race condition between cpuset and __sched_setscheduler()")
+> v5.4-rc1~176^2~27 when neither __sched_setscheduler() cared and this
+> race is similar. (The swapped locking may still conflict with
+> rebuild_sched_domains() before d74b27d63a8b.)
 
-Re-arrange the clock setting as following:
-1. the optional "rmii_internal" is controlled by devm_clk_get(),
-2. other clocks still be configured by devm_clk_bulk_get().
+Thanks for noticing this.  What do you recommend to do to resolve this?
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
----
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 71 +++++++++++++------
- 1 file changed, 48 insertions(+), 23 deletions(-)
+thanks,
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 8747aa4403e8..b2507a2ba326 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -49,12 +49,12 @@ struct mac_delay_struct {
- struct mediatek_dwmac_plat_data {
- 	const struct mediatek_dwmac_variant *variant;
- 	struct mac_delay_struct mac_delay;
-+	struct clk *rmii_internal_clk;
- 	struct clk_bulk_data *clks;
--	struct device_node *np;
- 	struct regmap *peri_regmap;
-+	struct device_node *np;
- 	struct device *dev;
- 	phy_interface_t phy_mode;
--	int num_clks_to_config;
- 	bool rmii_clk_from_mac;
- 	bool rmii_rxc;
- };
-@@ -74,7 +74,7 @@ struct mediatek_dwmac_variant {
- 
- /* list of clocks required for mac */
- static const char * const mt2712_dwmac_clk_l[] = {
--	"axi", "apb", "mac_main", "ptp_ref", "rmii_internal"
-+	"axi", "apb", "mac_main", "ptp_ref"
- };
- 
- static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
-@@ -83,23 +83,12 @@ static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
- 	int rmii_rxc = plat->rmii_rxc ? RMII_CLK_SRC_RXC : 0;
- 	u32 intf_val = 0;
- 
--	/* The clock labeled as "rmii_internal" in mt2712_dwmac_clk_l is needed
--	 * only in RMII(when MAC provides the reference clock), and useless for
--	 * RGMII/MII/RMII(when PHY provides the reference clock).
--	 * num_clks_to_config indicates the real number of clocks should be
--	 * configured, equals to (plat->variant->num_clks - 1) in default for all the case,
--	 * then +1 for rmii_clk_from_mac case.
--	 */
--	plat->num_clks_to_config = plat->variant->num_clks - 1;
--
- 	/* select phy interface in top control domain */
- 	switch (plat->phy_mode) {
- 	case PHY_INTERFACE_MODE_MII:
- 		intf_val |= PHY_INTF_MII;
- 		break;
- 	case PHY_INTERFACE_MODE_RMII:
--		if (plat->rmii_clk_from_mac)
--			plat->num_clks_to_config++;
- 		intf_val |= (PHY_INTF_RMII | rmii_rxc | rmii_clk_from_mac);
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
-@@ -314,18 +303,34 @@ static int mediatek_dwmac_config_dt(struct mediatek_dwmac_plat_data *plat)
- static int mediatek_dwmac_clk_init(struct mediatek_dwmac_plat_data *plat)
- {
- 	const struct mediatek_dwmac_variant *variant = plat->variant;
--	int i, num = variant->num_clks;
-+	int i, ret;
- 
--	plat->clks = devm_kcalloc(plat->dev, num, sizeof(*plat->clks), GFP_KERNEL);
-+	plat->clks = devm_kcalloc(plat->dev, variant->num_clks, sizeof(*plat->clks), GFP_KERNEL);
- 	if (!plat->clks)
- 		return -ENOMEM;
- 
--	for (i = 0; i < num; i++)
-+	for (i = 0; i < variant->num_clks; i++)
- 		plat->clks[i].id = variant->clk_list[i];
- 
--	plat->num_clks_to_config = variant->num_clks;
-+	ret = devm_clk_bulk_get(plat->dev, variant->num_clks, plat->clks);
-+	if (ret)
-+		return ret;
- 
--	return devm_clk_bulk_get(plat->dev, num, plat->clks);
-+	/* The clock labeled as "rmii_internal" is needed only in RMII(when
-+	 * MAC provides the reference clock), and useless for RGMII/MII or
-+	 * RMII(when PHY provides the reference clock).
-+	 * So, "rmii_internal" clock is got and configured only when
-+	 * reference clock of RMII is from MAC.
-+	 */
-+	if (plat->rmii_clk_from_mac) {
-+		plat->rmii_internal_clk = devm_clk_get(plat->dev, "rmii_internal");
-+		if (IS_ERR(plat->rmii_internal_clk))
-+			ret = PTR_ERR(plat->rmii_internal_clk);
-+	} else {
-+		plat->rmii_internal_clk = NULL;
-+	}
-+
-+	return ret;
- }
- 
- static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
-@@ -350,35 +355,55 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
- 		}
- 	}
- 
--	ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
-+	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
- 	if (ret) {
- 		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
- 		return ret;
- 	}
- 
-+	ret = clk_prepare_enable(plat->rmii_internal_clk);
-+	if (ret) {
-+		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
-+		goto err_clk;
-+	}
-+
- 	return 0;
-+
-+err_clk:
-+	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
-+	return ret;
- }
- 
- static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
- {
- 	struct mediatek_dwmac_plat_data *plat = priv;
-+	const struct mediatek_dwmac_variant *variant = plat->variant;
- 
--	clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
-+	clk_disable_unprepare(plat->rmii_internal_clk);
-+	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
- }
- 
- static int mediatek_dwmac_clks_config(void *priv, bool enabled)
- {
- 	struct mediatek_dwmac_plat_data *plat = priv;
-+	const struct mediatek_dwmac_variant *variant = plat->variant;
- 	int ret = 0;
- 
- 	if (enabled) {
--		ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
-+		ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
- 		if (ret) {
- 			dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
- 			return ret;
- 		}
-+
-+		ret = clk_prepare_enable(plat->rmii_internal_clk);
-+		if (ret) {
-+			dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
-+			return ret;
-+		}
- 	} else {
--		clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
-+		clk_disable_unprepare(plat->rmii_internal_clk);
-+		clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
- 	}
- 
- 	return ret;
--- 
-2.25.1
-
+greg k-h
