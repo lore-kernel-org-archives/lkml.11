@@ -2,76 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3558C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240089AbiCNOyn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 10:54:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45920 "EHLO
+        id S240653AbiCNOyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 10:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233584AbiCNOyZ (ORCPT
+        with ESMTP id S233615AbiCNOy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 10:54:25 -0400
+        Mon, 14 Mar 2022 10:54:26 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 96E802559C;
-        Mon, 14 Mar 2022 07:53:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C1FD2610D;
+        Mon, 14 Mar 2022 07:53:16 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nTm4O-0006nG-03; Mon, 14 Mar 2022 15:53:12 +0100
+        id 1nTm4N-0006nG-01; Mon, 14 Mar 2022 15:53:11 +0100
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 1C409C2E31; Mon, 14 Mar 2022 15:52:52 +0100 (CET)
-Date:   Mon, 14 Mar 2022 15:52:52 +0100
+        id B3FF9C2E31; Mon, 14 Mar 2022 15:51:08 +0100 (CET)
+Date:   Mon, 14 Mar 2022 15:51:08 +0100
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-mips@vger.kernel.org,
-        kernel test robot <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] MIPS: boot/compressed: Use array reference for image
- bounds
-Message-ID: <20220314145252.GF13438@alpha.franken.de>
-References: <20220309185032.229123-1-keescook@chromium.org>
+To:     yaliang.wang@windriver.com
+Cc:     rppt@kernel.org, huangpei@loongson.cn, akpm@linux-foundation.org,
+        kumba@gentoo.org, geert@linux-m68k.org, anshuman.khandual@arm.com,
+        penberg@kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MIPS: pgalloc: fix memory leak caused by pgd_free()
+Message-ID: <20220314145108.GB13438@alpha.franken.de>
+References: <20220310113116.2068859-1-yaliang.wang@windriver.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220309185032.229123-1-keescook@chromium.org>
+In-Reply-To: <20220310113116.2068859-1-yaliang.wang@windriver.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 10:50:32AM -0800, Kees Cook wrote:
-> As done with other image addresses in other architectures, use an
-> explicit flexible array instead of "address of char", which can trip
-> bounds checking done by the compiler. Found when building with
-> -Warray-bounds:
+On Thu, Mar 10, 2022 at 07:31:16PM +0800, yaliang.wang@windriver.com wrote:
+> From: Yaliang Wang <Yaliang.Wang@windriver.com>
 > 
-> In file included from ./include/linux/byteorder/little_endian.h:5,
->                  from ./arch/mips/include/uapi/asm/byteorder.h:15,
->                  from ./arch/mips/include/asm/bitops.h:21,
->                  from ./include/linux/bitops.h:33,
->                  from ./include/linux/kernel.h:22,
->                  from arch/mips/boot/compressed/decompress.c:13:
-> arch/mips/boot/compressed/decompress.c: In function 'decompress_kernel':
-> ./include/asm-generic/unaligned.h:14:8: warning: array subscript -1 is outside array bounds of 'unsigned char[1]' [-Warray-bounds]
->    14 |  __pptr->x;        \
->       |  ~~~~~~^~~
-> ./include/uapi/linux/byteorder/little_endian.h:35:51: note: in definition of macro '__le32_to_cpu'
->    35 | #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
->       |                                                   ^
-> ./include/asm-generic/unaligned.h:32:21: note: in expansion of macro '__get_unaligned_t'
->    32 |  return le32_to_cpu(__get_unaligned_t(__le32, p));
->       |                     ^~~~~~~~~~~~~~~~~
-> arch/mips/boot/compressed/decompress.c:29:37: note: while referencing '__image_end'
->    29 | extern unsigned char __image_begin, __image_end;
->       |                                     ^~~~~~~~~~~
+> pgd page is freed by generic implementation pgd_free() since commit
+> f9cb654cb550 ("asm-generic: pgalloc: provide generic pgd_free()"),
+> however, there are scenarios that the system uses more than one page as
+> the pgd table, in such cases the generic implementation pgd_free() won't
+> be applicable anymore. For example, when PAGE_SIZE_4KB is enabled and
+> MIPS_VA_BITS_48 is not enabled in a 64bit system, the macro "PGD_ORDER"
+> will be set as "1", which will cause allocating two pages as the pgd
+> table. Well, at the same time, the generic implementation pgd_free()
+> just free one pgd page, which will result in the memory leak.
 > 
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Cc: linux-mips@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> The memory leak can be easily detected by executing shell command:
+> "while true; do ls > /dev/null; grep MemFree /proc/meminfo; done"
+> 
+> Fixes: f9cb654cb550 ("asm-generic: pgalloc: provide generic pgd_free()")
+> Signed-off-by: Yaliang Wang <Yaliang.Wang@windriver.com>
 > ---
->  arch/mips/boot/compressed/decompress.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+>  arch/mips/include/asm/pgalloc.h | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
 applied to mips-next.
 
