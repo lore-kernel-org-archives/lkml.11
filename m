@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5313DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242130AbiCNMSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        id S242179AbiCNMSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242392AbiCNMJz (ORCPT
+        with ESMTP id S242388AbiCNMJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 08:09:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58D56404;
-        Mon, 14 Mar 2022 05:07:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CB91FCD4;
+        Mon, 14 Mar 2022 05:07:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 744B5B80DED;
-        Mon, 14 Mar 2022 12:07:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9096C340EC;
-        Mon, 14 Mar 2022 12:07:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4ECADB80DEC;
+        Mon, 14 Mar 2022 12:07:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F65CC340E9;
+        Mon, 14 Mar 2022 12:07:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259668;
-        bh=dQE9AN0W3xhOOojm4d6cc0ZVs/VcgoMmZFSyfL9v3+8=;
+        s=korg; t=1647259655;
+        bh=4Fma61kxyBtoEpmgucDXrTf9L5hhilvU5ts6daQFQuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2H3d7uU+57Zd59ZIej/qiKmal169BeekIH6tY1uFdYkQmbuOszYGvDNcgTacdPzFQ
-         Ax6HMtCuQp5s0XFKJpUpBrnbn/MBsjT20w6aGvRwD+5kAmVOXx+IMRWQUG8lkqbfFK
-         ly2uVu5Uit+gXjAO4u4XjISlHEhHm5GggT0irB8o=
+        b=PZQLZbOnjcAaofkD1G+q7wK9o7HbCkP3icqBWLOs6lv6/zsDOe7B4hjPMBMMcXYPe
+         vvgLtw+oaS+6Bo7mNdJ4JA7EO39xRLuk+Xvs3lnl86sp7C+ODEQ5cp9eNlzs/px8XA
+         9LAqby06fREmPTaS56IiU8a0DBvoYVtaov1M/i2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Jon Lin <jon.lin@rock-chips.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 035/110] tipc: fix incorrect order of state message data sanity check
-Date:   Mon, 14 Mar 2022 12:53:37 +0100
-Message-Id: <20220314112744.017934814@linuxfoundation.org>
+Subject: [PATCH 5.15 059/110] spi: rockchip: terminate dma transmission when slave abort
+Date:   Mon, 14 Mar 2022 12:54:01 +0100
+Message-Id: <20220314112744.682396436@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -50,56 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+From: Jon Lin <jon.lin@rock-chips.com>
 
-[ Upstream commit c79fcc27be90b308b3fa90811aefafdd4078668c ]
+[ Upstream commit 80808768e41324d2e23de89972b5406c1020e6e4 ]
 
-When receiving a state message, function tipc_link_validate_msg()
-is called to validate its header portion. Then, its data portion
-is validated before it can be accessed correctly. However, current
-data sanity  check is done after the message header is accessed to
-update some link variables.
+After slave abort, all DMA should be stopped, or it will affect the
+next transmission and maybe abort again.
 
-This commit fixes this issue by moving the data sanity check to
-the beginning of state message handling and right after the header
-sanity check.
-
-Fixes: 9aa422ad3266 ("tipc: improve size validations for received domain records")
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Link: https://lore.kernel.org/r/20220308021200.9245-1-tung.q.nguyen@dektech.com.au
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+Link: https://lore.kernel.org/r/20220216014028.8123-3-jon.lin@rock-chips.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/link.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/spi/spi-rockchip.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 4e7936d9b442..115a4a7950f5 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -2285,6 +2285,11 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
- 		break;
+diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
+index 4f65ba3dd19c..c6a1bb09be05 100644
+--- a/drivers/spi/spi-rockchip.c
++++ b/drivers/spi/spi-rockchip.c
+@@ -585,6 +585,12 @@ static int rockchip_spi_slave_abort(struct spi_controller *ctlr)
+ {
+ 	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
  
- 	case STATE_MSG:
-+		/* Validate Gap ACK blocks, drop if invalid */
-+		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
-+		if (glen > dlen)
-+			break;
-+
- 		l->rcv_nxt_state = msg_seqno(hdr) + 1;
- 
- 		/* Update own tolerance if peer indicates a non-zero value */
-@@ -2310,10 +2315,6 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
- 			break;
- 		}
- 
--		/* Receive Gap ACK blocks from peer if any */
--		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
--		if(glen > dlen)
--			break;
- 		tipc_mon_rcv(l->net, data + glen, dlen - glen, l->addr,
- 			     &l->mon_state, l->bearer_id);
++	if (atomic_read(&rs->state) & RXDMA)
++		dmaengine_terminate_sync(ctlr->dma_rx);
++	if (atomic_read(&rs->state) & TXDMA)
++		dmaengine_terminate_sync(ctlr->dma_tx);
++	atomic_set(&rs->state, 0);
++	spi_enable_chip(rs, false);
+ 	rs->slave_abort = true;
+ 	spi_finalize_current_transfer(ctlr);
  
 -- 
 2.34.1
