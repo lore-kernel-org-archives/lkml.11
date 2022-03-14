@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8A1C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A8D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241984AbiCNMSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
+        id S242609AbiCNMTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242376AbiCNMJy (ORCPT
+        with ESMTP id S242471AbiCNMKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F39D14004;
-        Mon, 14 Mar 2022 05:07:31 -0700 (PDT)
+        Mon, 14 Mar 2022 08:10:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C03B17A91;
+        Mon, 14 Mar 2022 05:08:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49AF16130D;
-        Mon, 14 Mar 2022 12:07:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D74FC340E9;
-        Mon, 14 Mar 2022 12:07:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99F39B80DF2;
+        Mon, 14 Mar 2022 12:08:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 632A7C340E9;
+        Mon, 14 Mar 2022 12:08:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259646;
-        bh=wqjYFkslxvrZjmqfbYf5nUKxy5nRUxoIo/P8qVlyWeo=;
+        s=korg; t=1647259704;
+        bh=onYlknSgLwbgYWqir8BhpYuP5iyE2EdA/Jrp4+PEz4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2NEWTHpzm0GbK5U9XmID0/rdWPmSfS/25LmNXdb4+pLRwzKQtby98t/swniBVnb1z
-         G5FwI8QK72zr7vXRUu+juBeRDFihe11laTbmf61NDmDgV7oIC9LnmvBTam1g6W2uGk
-         HjYO/0gtIiTQbDMRgdwQvRXH7H+SsSwrX+AscbEM=
+        b=nlMHU1UmaWvY3cFtrr2+WTFw82XDMYp+tMlRDttTfkTLnIFuK2g0lE7jNneo6bGjN
+         UVvLrF6kbHau0kqfgjE34ped/8CElsgH11ziVOzzDm/mfaCZqF32nC+tcDqMD+XVyI
+         pb7boUyuvjVPArrL9rzeq0J1BFCwSf92aeqm3t7M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anton Romanov <romanton@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Niels Dossche <niels.dossche@ugent.be>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 057/110] kvm: x86: Disable KVM_HC_CLOCK_PAIRING if tsc is in always catchup mode
-Date:   Mon, 14 Mar 2022 12:53:59 +0100
-Message-Id: <20220314112744.627462723@linuxfoundation.org>
+Subject: [PATCH 5.15 069/110] ipv6: prevent a possible race condition with lifetimes
+Date:   Mon, 14 Mar 2022 12:54:11 +0100
+Message-Id: <20220314112744.961724588@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,47 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Romanov <romanton@google.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 3a55f729240a686aa8af00af436306c0cd532522 ]
+[ Upstream commit 6c0d8833a605e195ae219b5042577ce52bf71fff ]
 
-If vcpu has tsc_always_catchup set each request updates pvclock data.
-KVM_HC_CLOCK_PAIRING consumers such as ptp_kvm_x86 rely on tsc read on
-host's side and do hypercall inside pvclock_read_retry loop leading to
-infinite loop in such situation.
+valid_lft, prefered_lft and tstamp are always accessed under the lock
+"lock" in other places. Reading these without taking the lock may result
+in inconsistencies regarding the calculation of the valid and preferred
+variables since decisions are taken on these fields for those variables.
 
-v3:
-    Removed warn
-    Changed return code to KVM_EFAULT
-v2:
-    Added warn
-
-Signed-off-by: Anton Romanov <romanton@google.com>
-Message-Id: <20220216182653.506850-1-romanton@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
+Link: https://lore.kernel.org/r/20220223131954.6570-1-niels.dossche@ugent.be
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/ipv6/addrconf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 8213f7fb71a7..61bc54748f22 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8666,6 +8666,13 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
- 	if (clock_type != KVM_CLOCK_PAIRING_WALLCLOCK)
- 		return -KVM_EOPNOTSUPP;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index e852bbc839dd..1fe27807e471 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -5000,6 +5000,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
+ 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
+ 		goto error;
  
-+	/*
-+	 * When tsc is in permanent catchup mode guests won't be able to use
-+	 * pvclock_read_retry loop to get consistent view of pvclock
-+	 */
-+	if (vcpu->arch.tsc_always_catchup)
-+		return -KVM_EOPNOTSUPP;
-+
- 	if (!kvm_get_walltime_and_clockread(&ts, &cycle))
- 		return -KVM_EOPNOTSUPP;
++	spin_lock_bh(&ifa->lock);
+ 	if (!((ifa->flags&IFA_F_PERMANENT) &&
+ 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
+ 		preferred = ifa->prefered_lft;
+@@ -5021,6 +5022,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
+ 		preferred = INFINITY_LIFE_TIME;
+ 		valid = INFINITY_LIFE_TIME;
+ 	}
++	spin_unlock_bh(&ifa->lock);
  
+ 	if (!ipv6_addr_any(&ifa->peer_addr)) {
+ 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
 -- 
 2.34.1
 
