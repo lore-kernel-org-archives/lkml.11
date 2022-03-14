@@ -2,211 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F36C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239613AbiCNLmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:42:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44002 "EHLO
+        id S239504AbiCNLmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239531AbiCNLmO (ORCPT
+        with ESMTP id S239637AbiCNLmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:42:14 -0400
+        Mon, 14 Mar 2022 07:42:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3EDB36;
-        Mon, 14 Mar 2022 04:39:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915A763AC;
+        Mon, 14 Mar 2022 04:39:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C31D161181;
-        Mon, 14 Mar 2022 11:39:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85B7EC340E9;
-        Mon, 14 Mar 2022 11:39:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A063E61188;
+        Mon, 14 Mar 2022 11:39:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20B0C340EC;
+        Mon, 14 Mar 2022 11:39:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257966;
-        bh=sOhKJ71cBuAaHt/m6ItAfjP8NGCJvnBshMw8AZjg6kc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hgD+dhOL9EEIN0DA+2Q5sIhmzv0zOPMP8mvsUWHk61hS2LX18Vh/CMx+Qvu7JTDRJ
-         W2MwZrP1UyOSsTE64pS3DLuHyuPj7XhEmvqFsTksrVgusjlaKuS4QOQ0NKnNd+u3bv
-         8MDgaAopzLYJZfABsZdk1juAkSf/ow5HTDNHBYak=
+        s=korg; t=1647257976;
+        bh=U5DHcUcxX8FAjNZdWFN5814xFjfJkZy9jDYKBuhOVQs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ShRDmxa+MuctUM9Eqlafl8Hf1Pu7pajZNLnD0pxerQrCtPPbOv5wTGCYu+NdZoOs6
+         09+p2zk7JcDIjgERH1Z80oI1t0ND9P1YuCH9uiMCryQUe52Battpyli6Jlpvr0BM0R
+         1a66xoT8PsSn8Q11UH19B+Nd5I/uoFdBUsoJx4p4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.19 00/30] 4.19.235-rc1 review
-Date:   Mon, 14 Mar 2022 12:34:18 +0100
-Message-Id: <20220314112731.785042288@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Halil Pasic" <pasic@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 4.19 24/30] virtio: acknowledge all features before access
+Date:   Mon, 14 Mar 2022 12:34:42 +0100
+Message-Id: <20220314112732.477285418@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220314112731.785042288@linuxfoundation.org>
+References: <20220314112731.785042288@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.235-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.19.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.19.235-rc1
-X-KernelTest-Deadline: 2022-03-16T11:27+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.19.235 release.
-There are 30 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Michael S. Tsirkin <mst@redhat.com>
 
-Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
-Anything received after that time might be too late.
+commit 4fa59ede95195f267101a1b8916992cf3f245cdb upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.235-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-and the diffstat can be found below.
+The feature negotiation was designed in a way that
+makes it possible for devices to know which config
+fields will be accessed by drivers.
 
-thanks,
+This is broken since commit 404123c2db79 ("virtio: allow drivers to
+validate features") with fallout in at least block and net.  We have a
+partial work-around in commit 2f9a174f918e ("virtio: write back
+F_VERSION_1 before validate") which at least lets devices find out which
+format should config space have, but this is a partial fix: guests
+should not access config space without acknowledging features since
+otherwise we'll never be able to change the config space format.
 
-greg k-h
+To fix, split finalize_features from virtio_finalize_features and
+call finalize_features with all feature bits before validation,
+and then - if validation changed any bits - once again after.
 
--------------
-Pseudo-Shortlog of commits:
+Since virtio_finalize_features no longer writes out features
+rename it to virtio_features_ok - since that is what it does:
+checks that features are ok with the device.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.19.235-rc1
+As a side effect, this also reduces the amount of hypervisor accesses -
+we now only acknowledge features once unless we are clearing any
+features when validating (which is uncommon).
 
-Valentin Schneider <valentin.schneider@arm.com>
-    ia64: ensure proper NUMA distance and possible map initialization
+IRC I think that this was more or less always the intent in the spec but
+unfortunately the way the spec is worded does not say this explicitly, I
+plan to address this at the spec level, too.
 
-Dietmar Eggemann <dietmar.eggemann@arm.com>
-    sched/topology: Fix sched_domain_topology_level alloc in sched_init_numa()
+Acked-by: Jason Wang <jasowang@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
+Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
+Cc: "Halil Pasic" <pasic@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/virtio/virtio.c       |   39 +++++++++++++++++++++------------------
+ include/linux/virtio_config.h |    3 ++-
+ 2 files changed, 23 insertions(+), 19 deletions(-)
 
-Valentin Schneider <valentin.schneider@arm.com>
-    sched/topology: Make sched_init_numa() use a set for the deduplicating sort
-
-Qu Wenruo <wqu@suse.com>
-    btrfs: unlock newly allocated extent buffer after error
-
-Josh Triplett <josh@joshtriplett.org>
-    ext4: add check to prevent attempting to resize an fs with sparse_super2
-
-Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-    ARM: fix Thumb2 regression with Spectre BHB
-
-Michael S. Tsirkin <mst@redhat.com>
-    virtio: acknowledge all features before access
-
-Michael S. Tsirkin <mst@redhat.com>
-    virtio: unexport virtio_finalize_features
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Reset PMC_EL0 to avoid a panic() on systems with no PMU
-
-Emil Renner Berthing <kernel@esmil.dk>
-    riscv: Fix auipc+jalr relocation range checks
-
-Robert Hancock <robert.hancock@calian.com>
-    net: macb: Fix lost RX packet wakeup race in NAPI receive
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    staging: gdm724x: fix use after free in gdm_lte_rx()
-
-Randy Dunlap <rdunlap@infradead.org>
-    ARM: Spectre-BHB: provide empty stub for non-config
-
-Mike Kravetz <mike.kravetz@oracle.com>
-    selftests/memfd: clean up mapping in mfd_fail_write
-
-Sven Schnelle <svens@linux.ibm.com>
-    tracing: Ensure trace buffer is at least 4096 bytes large
-
-Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-    Revert "xen-netback: Check for hotplug-status existence before watching"
-
-Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-    Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
-
-suresh kumar <suresh2514@gmail.com>
-    net-sysfs: add check for netdevice being present to speed_show
-
-Eric Dumazet <edumazet@google.com>
-    sctp: fix kernel-infoleak for SCTP sockets
-
-Clément Léger <clement.leger@bootlin.com>
-    net: phy: DP83822: clear MISR2 register to disable interrupts
-
-Miaoqian Lin <linmq006@gmail.com>
-    gianfar: ethtool: Fix refcount leak in gfar_get_ts_info
-
-Mark Featherston <mark@embeddedTS.com>
-    gpio: ts4900: Do not set DAT and OE together
-
-Pavel Skripkin <paskripkin@gmail.com>
-    NFC: port100: fix use-after-free in port100_send_complete
-
-Mohammad Kabat <mohammadkab@nvidia.com>
-    net/mlx5: Fix size field in bufferx_reg struct
-
-Duoming Zhou <duoming@zju.edu.cn>
-    ax25: Fix NULL pointer dereference in ax25_kill_by_device
-
-Jiasheng Jiang <jiasheng@iscas.ac.cn>
-    net: ethernet: lpc_eth: Handle error for clk_enable
-
-Jiasheng Jiang <jiasheng@iscas.ac.cn>
-    net: ethernet: ti: cpts: Handle error for clk_enable
-
-Miaoqian Lin <linmq006@gmail.com>
-    ethernet: Fix error handling in xemaclite_of_probe
-
-Tom Rix <trix@redhat.com>
-    qed: return status of qed_iov_get_link
-
-Jia-Ju Bai <baijiaju1990@gmail.com>
-    net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
-
-
--------------
-
-Diffstat:
-
- Makefile                                         |  4 +-
- arch/arm/include/asm/spectre.h                   |  6 ++
- arch/arm/kernel/entry-armv.S                     |  4 +-
- arch/arm64/kvm/sys_regs.c                        |  4 +-
- arch/ia64/kernel/acpi.c                          |  7 +-
- arch/riscv/kernel/module.c                       | 21 +++--
- drivers/gpio/gpio-ts4900.c                       | 24 ++++--
- drivers/net/ethernet/cadence/macb_main.c         | 25 +++++-
- drivers/net/ethernet/freescale/gianfar_ethtool.c |  1 +
- drivers/net/ethernet/nxp/lpc_eth.c               |  5 +-
- drivers/net/ethernet/qlogic/qed/qed_sriov.c      | 18 +++--
- drivers/net/ethernet/qlogic/qed/qed_vf.c         |  7 ++
- drivers/net/ethernet/ti/cpts.c                   |  4 +-
- drivers/net/ethernet/xilinx/xilinx_emaclite.c    |  4 +-
- drivers/net/phy/dp83822.c                        |  2 +-
- drivers/net/xen-netback/xenbus.c                 | 13 ++--
- drivers/nfc/port100.c                            |  2 +
- drivers/staging/gdm724x/gdm_lte.c                |  5 +-
- drivers/virtio/virtio.c                          | 40 +++++-----
- fs/btrfs/extent-tree.c                           |  1 +
- fs/ext4/resize.c                                 |  5 ++
- include/linux/mlx5/mlx5_ifc.h                    |  4 +-
- include/linux/topology.h                         |  1 +
- include/linux/virtio.h                           |  1 -
- include/linux/virtio_config.h                    |  3 +-
- kernel/sched/topology.c                          | 99 ++++++++++++------------
- kernel/trace/trace.c                             | 10 ++-
- net/ax25/af_ax25.c                               |  7 ++
- net/core/net-sysfs.c                             |  2 +-
- net/sctp/diag.c                                  |  9 +--
- tools/testing/selftests/memfd/memfd_test.c       |  1 +
- 31 files changed, 215 insertions(+), 124 deletions(-)
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -165,14 +165,11 @@ void virtio_add_status(struct virtio_dev
+ }
+ EXPORT_SYMBOL_GPL(virtio_add_status);
+ 
+-static int virtio_finalize_features(struct virtio_device *dev)
++/* Do some validation, then set FEATURES_OK */
++static int virtio_features_ok(struct virtio_device *dev)
+ {
+-	int ret = dev->config->finalize_features(dev);
+ 	unsigned status;
+ 
+-	if (ret)
+-		return ret;
+-
+ 	if (!virtio_has_feature(dev, VIRTIO_F_VERSION_1))
+ 		return 0;
+ 
+@@ -221,17 +218,6 @@ static int virtio_dev_probe(struct devic
+ 		driver_features_legacy = driver_features;
+ 	}
+ 
+-	/*
+-	 * Some devices detect legacy solely via F_VERSION_1. Write
+-	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
+-	 * these when needed.
+-	 */
+-	if (drv->validate && !virtio_legacy_is_little_endian()
+-			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
+-		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
+-		dev->config->finalize_features(dev);
+-	}
+-
+ 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
+ 		dev->features = driver_features & device_features;
+ 	else
+@@ -242,13 +228,26 @@ static int virtio_dev_probe(struct devic
+ 		if (device_features & (1ULL << i))
+ 			__virtio_set_bit(dev, i);
+ 
++	err = dev->config->finalize_features(dev);
++	if (err)
++		goto err;
++
+ 	if (drv->validate) {
++		u64 features = dev->features;
++
+ 		err = drv->validate(dev);
+ 		if (err)
+ 			goto err;
++
++		/* Did validation change any features? Then write them again. */
++		if (features != dev->features) {
++			err = dev->config->finalize_features(dev);
++			if (err)
++				goto err;
++		}
+ 	}
+ 
+-	err = virtio_finalize_features(dev);
++	err = virtio_features_ok(dev);
+ 	if (err)
+ 		goto err;
+ 
+@@ -412,7 +411,11 @@ int virtio_device_restore(struct virtio_
+ 	/* We have a driver! */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
+ 
+-	ret = virtio_finalize_features(dev);
++	ret = dev->config->finalize_features(dev);
++	if (ret)
++		goto err;
++
++	ret = virtio_features_ok(dev);
+ 	if (ret)
+ 		goto err;
+ 
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -51,8 +51,9 @@ struct irq_affinity;
+  *	Returns the first 32 feature bits (all we currently need).
+  * @finalize_features: confirm what device features we'll be using.
+  *	vdev: the virtio_device
+- *	This gives the final feature bits for the device: it can change
++ *	This sends the driver feature bits to the device: it can change
+  *	the dev->feature bits if it wants.
++ * Note: despite the name this can be called any number of times.
+  *	Returns 0 on success or error status
+  * @bus_name: return the bus name associated with the device
+  *	vdev: the virtio_device
 
 
