@@ -2,207 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 686E5C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:34:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2221AC35273
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241563AbiCNMfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42962 "EHLO
+        id S238487AbiCNMf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245593AbiCNMdQ (ORCPT
+        with ESMTP id S245425AbiCNMc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:33:16 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78697260
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:32:06 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2dbd8777564so161519867b3.0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:32:06 -0700 (PDT)
+        Mon, 14 Mar 2022 08:32:59 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355D22BDB
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:29:47 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id s42so14240651pfg.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:29:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SWYiVcad4lyN3MTMCVaEe/kHD8SmjlJLnSNDNu5hEV8=;
-        b=dx89DPmQPGELKQ9URRMTc+sGTgkEbGOiXMkgouXNqdU6gaEGEWf9ADvH/onhhTn9A0
-         i07Y+WDeSjXLEPXUwnNBLIzyoHrmbu+PIZZ56LGMx0d0FQ9XDJHHqdg5B425iKHO0uhY
-         GeVnLJBk8jVDLd84298P3HM89dWltpY/eLhQZkpS27sg45OBX42hMGTtXK8ehdreVn/P
-         jnIg+ChqnI+V8gxqyI8KZRxkMBzg/c6/lt79dm2zyzpe8FjryvOPjxeQhM723GIDLkDr
-         rhNtFsEBSDzig95iZNJVTyfMhKMlVfXY81af0BTKizXB5c2HxE0fmzOMBfUq1Hw/6N38
-         KXKQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=+61bL8B55NzgOqf7v3x/0YUtZZbl/U3fuc66QbGFfZE=;
+        b=kvbcNPZ8AU8hjjuMqdRRJzfMRv9vW8WHAUkY0BVtWGuE3kTb2M4e2gubEeWWT3UWNM
+         ub1mHQaSYRCvHmV3w6vPMALxasxRXBwnlkMu0mtMA/6ATHNOhXl3fUf/zEHhELFD4gS3
+         NPxGMJs4sTMyyzyc7F7hI8WXN65iCmKowwK80REtHveYu/PMyu0qbIyC6pk5GXx4OC05
+         Pdo04W7EK1ip99+LHKQTb0BVPCB8WRnNgC85WGyhoFcT8wREdfnjmSBNMiGLdB2fCNtw
+         swRVXL/zeFAoU1HWhyIkVructY4qmGlbFQPr2lA4uR/hy9u9dYY+Ryl8iuqsuuRtAZFb
+         KJfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SWYiVcad4lyN3MTMCVaEe/kHD8SmjlJLnSNDNu5hEV8=;
-        b=IrACiiqRTZjH2s3elUFBhtHtlyWQalcRAtWczw4oaJpEm9LfGo8PTSyKxuTw3LgHPs
-         y0ds0eVDe9I+5JPbblpztfZwvYOfE/G0lAPSj13gzSb1yp6mtE5P8sClLZrs+45qJ41+
-         cP3JKGoAKyR2+TeTTkmFSlg2SEMTTYL0G+hvLbRDx4lLic7CUdX9C0SOtRmEtuMHTkWN
-         Sk9xnneb3Ce1fiOmfSmQylhDSb2p61fZzvFngr5irTVIgPzFjDV15AWz359boMP5lNkb
-         5HqmEElxSPM9ga6+DXSHb3N662cLmg+G/hqzHymwpZPl210gkNNP6tKx1+O++x2Zq6zC
-         Bllg==
-X-Gm-Message-State: AOAM531Wi/rb8xECnCsOC1Mqnaz7ACSWRkNJQf2fM6GkPaexkfOx8W73
-        GdgQe1eE4tNZM9XImfdub1fabubVga+s0+m4qUTRfQ==
-X-Google-Smtp-Source: ABdhPJw9ptK7cXWIyB+pXX4gxaG81OIr8G6j/SFNJ1dr+spjkllZx+dgElnNqGpEHU1scqv+d/HKw9nNDEh76Lq5I60=
-X-Received: by 2002:a0d:d187:0:b0:2dc:5d83:217d with SMTP id
- t129-20020a0dd187000000b002dc5d83217dmr18485669ywd.189.1647261125395; Mon, 14
- Mar 2022 05:32:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220219183310.557435-1-robdclark@gmail.com> <CA+G9fYv6dPUsPzbFLr9PxJoe4eRAUdQyD4xT4hh4-xw=n9r=Bw@mail.gmail.com>
-In-Reply-To: <CA+G9fYv6dPUsPzbFLr9PxJoe4eRAUdQyD4xT4hh4-xw=n9r=Bw@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 14 Mar 2022 18:01:53 +0530
-Message-ID: <CA+G9fYsipiN2-+g9CGmvf1WVQe22ehnkRuwa45D4rsTa6+Wk=w@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm/gpu: Fix crash on devices without devfreq support
-To:     Rob Clark <robdclark@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+61bL8B55NzgOqf7v3x/0YUtZZbl/U3fuc66QbGFfZE=;
+        b=Y+2qKnMHCAttpBj1iI34AkWQF3f6z6y2auzfpD6ujeN8xVq5LFw8Mm8iu/MSQOWx6j
+         BMVnLKCSpXyNzM9HL/d09RGWGkiUiKsxADo7//nxZGeTx3f97U/1yXX/4B104K4dt3av
+         FEOqPrsifylW/BjwqjmDYu0x24H5NRgR2CI/8KhzkKhG0XqPVXdF8aZ6KEQUhkGCW3N5
+         j26WX0SDPk2axFmh+vczm76NGL2XTLkOBW7WNW/08swRECT4Hcxfmjg2cTqFMe7krpiN
+         gfAoNhzDWyt2N1wB2Azm22AHtKNnD8/Ib5upO4FWGiIMigJUyKdMlAtzI9z//fUhxBqO
+         smmw==
+X-Gm-Message-State: AOAM53036IIayflzuyZizNkUTngfVUrIo5sPgxWrJZDgnS1NOjplRRlL
+        k9Si/Djpn4LWz8PTiyhCFcb2eeIubEWQDw==
+X-Google-Smtp-Source: ABdhPJzvp/C8q1A8LG8IwnlOs9l/uNHFJyL0CoGXtylHk+itAljLyE1slZmcSiRQaO8klIv83082Ng==
+X-Received: by 2002:a65:41cc:0:b0:380:6f53:a550 with SMTP id b12-20020a6541cc000000b003806f53a550mr19757301pgq.471.1647260986752;
+        Mon, 14 Mar 2022 05:29:46 -0700 (PDT)
+Received: from ubuntu.huawei.com ([119.3.119.19])
+        by smtp.googlemail.com with ESMTPSA id 8-20020a056a00070800b004e14ae3e8d7sm20552263pfl.164.2022.03.14.05.29.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 05:29:46 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [RESEND PATCH v2] vt_ioctl: fix potential spectre v1 in VT_DISALLOCATE
+Date:   Mon, 14 Mar 2022 20:29:21 +0800
+Message-Id: <20220314122921.31223-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob and Linus,
+In VT_ACTIVATE an almost identical code path has been patched
+with array_index_nospec. In the VT_DISALLOCATE path, the arg is
+the user input from a system call argument and lately used as a index
+for vc_cons[index].d access, which can be reached through path like
+vt_disallocate->vc_busy or vt_disallocate->vc_deallocate.
+For consistency both code paths should have the same mitigations
+applied. Also, the code style is adjusted as suggested by Jiri.
 
-On Mon, 7 Mar 2022 at 14:07, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
->
-> Hi Rob,
->
-> On Sun, 20 Feb 2022 at 00:02, Rob Clark <robdclark@gmail.com> wrote:
-> >
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > Avoid going down devfreq paths on devices where devfreq is not
-> > initialized.
-> >
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> > Reported-by: Anders Roxell <anders.roxell@linaro.org>
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
->
-> I have tested this patch and the reported kernel crash is fixed [1].
->
-> Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
->
-> > ---
-> >  drivers/gpu/drm/msm/msm_gpu_devfreq.c | 31 +++++++++++++++++++++------
-> >  1 file changed, 25 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > index 9bf319be11f6..26a3669a97b3 100644
-> > --- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > +++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
-> > @@ -83,12 +83,17 @@ static struct devfreq_dev_profile msm_devfreq_profile = {
-> >  static void msm_devfreq_boost_work(struct kthread_work *work);
-> >  static void msm_devfreq_idle_work(struct kthread_work *work);
-> >
-> > +static bool has_devfreq(struct msm_gpu *gpu)
-> > +{
-> > +       return !!gpu->funcs->gpu_busy;
-> > +}
-> > +
-> >  void msm_devfreq_init(struct msm_gpu *gpu)
-> >  {
-> >         struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> >         /* We need target support to do devfreq */
-> > -       if (!gpu->funcs->gpu_busy)
-> > +       if (!has_devfreq(gpu))
-> >                 return;
-> >
-> >         dev_pm_qos_add_request(&gpu->pdev->dev, &df->idle_freq,
-> > @@ -149,6 +154,9 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
-> >  {
-> >         struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > +       if (!has_devfreq(gpu))
-> > +               return;
-> > +
-> >         devfreq_cooling_unregister(gpu->cooling);
-> >         dev_pm_qos_remove_request(&df->boost_freq);
-> >         dev_pm_qos_remove_request(&df->idle_freq);
-> > @@ -156,16 +164,24 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
-> >
-> >  void msm_devfreq_resume(struct msm_gpu *gpu)
-> >  {
-> > -       gpu->devfreq.busy_cycles = 0;
-> > -       gpu->devfreq.time = ktime_get();
-> > +       struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > -       devfreq_resume_device(gpu->devfreq.devfreq);
-> > +       if (!has_devfreq(gpu))
-> > +               return;
-> > +
-> > +       df->busy_cycles = 0;
-> > +       df->time = ktime_get();
-> > +
-> > +       devfreq_resume_device(df->devfreq);
-> >  }
-> >
-> >  void msm_devfreq_suspend(struct msm_gpu *gpu)
-> >  {
-> >         struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > +       if (!has_devfreq(gpu))
-> > +               return;
-> > +
-> >         devfreq_suspend_device(df->devfreq);
-> >
-> >         cancel_idle_work(df);
-> > @@ -185,6 +201,9 @@ void msm_devfreq_boost(struct msm_gpu *gpu, unsigned factor)
-> >         struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >         uint64_t freq;
-> >
-> > +       if (!has_devfreq(gpu))
-> > +               return;
-> > +
-> >         freq = get_freq(gpu);
-> >         freq *= factor;
-> >
-> > @@ -207,7 +226,7 @@ void msm_devfreq_active(struct msm_gpu *gpu)
-> >         struct devfreq_dev_status status;
-> >         unsigned int idle_time;
-> >
-> > -       if (!df->devfreq)
-> > +       if (!has_devfreq(gpu))
-> >                 return;
-> >
-> >         /*
-> > @@ -253,7 +272,7 @@ void msm_devfreq_idle(struct msm_gpu *gpu)
-> >  {
-> >         struct msm_gpu_devfreq *df = &gpu->devfreq;
-> >
-> > -       if (!df->devfreq)
-> > +       if (!has_devfreq(gpu))
-> >                 return;
-> >
-> >         msm_hrtimer_queue_work(&df->idle_work, ms_to_ktime(1),
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-FYI,
-This patch is missing on Linux 5.17-rc8 [1].
-kernel crash log on arm64 db410c device [2] and details [3].
+---
 
-metadata:
-  git_describe: v5.17-rc8
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
-  git_sha: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
-  kernel-config: https://builds.tuxbuild.com/26LbbVLHqxjh5w5ZtjBMjGmh92P/config
-  build: https://builds.tuxbuild.com/26LbbVLHqxjh5w5ZtjBMjGmh92P
+v1 -> v2:
+- Add Reviewed-by
+https://lore.kernel.org/lkml/20220222081101.21233-1-xiam0nd.tong@gmail.com/
 
-- Naresh
-[1] https://lore.kernel.org/dri-devel/20220219183310.557435-1-robdclark@gmail.com/
-[2]  https://lkft.validation.linaro.org/scheduler/job/4714905#L2795
-[3] https://qa-reports.linaro.org/lkft/linux-mainline-master/build/v5.17-rc8/testrun/8446224/suite/linux-log-parser/test/check-kernel-oops-4714905/details/
+RFC -> v1:
+- Adjust code style [Jiri Slaby]
+https://lore.kernel.org/lkml/20220222073954.20212-1-xiam0nd.tong@gmail.com/
 
->
-> --
-> Linaro LKFT
-> https://lkft.linaro.org
->
-> [1] https://lkft.validation.linaro.org/scheduler/job/4664600#L1894
+RFC:
+https://lore.kernel.org/lkml/20220222035648.17984-1-xiam0nd.tong@gmail.com/
+
+---
+ drivers/tty/vt/vt_ioctl.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index 580136986..8c685b501 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -898,11 +898,13 @@ int vt_ioctl(struct tty_struct *tty,
+ 		if (arg > MAX_NR_CONSOLES)
+ 			return -ENXIO;
+ 
+-		if (arg == 0)
++		if (arg == 0) {
+ 			vt_disallocate_all();
+-		else
+-			return vt_disallocate(--arg);
+-		break;
++			break;
++		}
++
++		arg = array_index_nospec(arg - 1, MAX_NR_CONSOLES);
++		return vt_disallocate(arg);
+ 
+ 	case VT_RESIZE:
+ 	{
+-- 
+2.17.1
+
