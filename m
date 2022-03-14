@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBC7C35280
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E067BC3527D
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244275AbiCNMbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:31:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        id S244131AbiCNMbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243592AbiCNMVD (ORCPT
+        with ESMTP id S243225AbiCNMU0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:03 -0400
+        Mon, 14 Mar 2022 08:20:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AEA54F88;
-        Mon, 14 Mar 2022 05:16:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B11053737;
+        Mon, 14 Mar 2022 05:15:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C1D6C60C7C;
-        Mon, 14 Mar 2022 12:16:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2971C340E9;
-        Mon, 14 Mar 2022 12:16:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83F07604F5;
+        Mon, 14 Mar 2022 12:15:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DCB9C340E9;
+        Mon, 14 Mar 2022 12:15:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260184;
-        bh=M8Eeilr5uQ1QF/9Jfq+fvvZOlyudlq7lw2ET7bOjG5w=;
+        s=korg; t=1647260130;
+        bh=poBCh3atWgfX9sp+dz+kc64kDx5yncm1QzRxAHWn7Jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pEbARkhaEGTFYUlWyjhbwbBmUslCXXlItL6IdNpWiPRjtUajJlN6PsNotB/C6knIF
-         G81D233XZmwFobVzdfuwc9Bpd/NdogcXS41d4Yx+yLHL6S9FzMCBtwSkubLbKytoNy
-         Bahld3Wt3Cq0FR//ZriPSW8/ZgIZHh1o92LmUs14=
+        b=0hNV++Rg37h2RyryxxptKQKPROSxC38edkhCfVm0PW7QqCBZXRSFOumOrh9c4LlR3
+         O0pqT7ec01EUNF1JpV3uD2Y+yJUVvuryjN4nvDqhaGHKlIEAA32wGa4w7Di861qqBX
+         cusXeK559Lie+OGOR7YgkEkzH6tFfj6XycH31rP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Niels Dossche <niels.dossche@ugent.be>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 080/121] ipv6: prevent a possible race condition with lifetimes
-Date:   Mon, 14 Mar 2022 12:54:23 +0100
-Message-Id: <20220314112746.354570388@linuxfoundation.org>
+Subject: [PATCH 5.16 025/121] net: gro: move skb_gro_receive_list to udp_offload.c
+Date:   Mon, 14 Mar 2022 12:53:28 +0100
+Message-Id: <20220314112744.832009339@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -51,45 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 6c0d8833a605e195ae219b5042577ce52bf71fff ]
+[ Upstream commit 0b935d7f8c07bf0a192712bdbf76dbf45ef8b115 ]
 
-valid_lft, prefered_lft and tstamp are always accessed under the lock
-"lock" in other places. Reading these without taking the lock may result
-in inconsistencies regarding the calculation of the valid and preferred
-variables since decisions are taken on these fields for those variables.
+This helper is used once, no need to keep it in fat net/core/skbuff.c
 
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
-Link: https://lore.kernel.org/r/20220223131954.6570-1-niels.dossche@ugent.be
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/netdevice.h |  1 -
+ net/core/skbuff.c         | 26 --------------------------
+ net/ipv4/udp_offload.c    | 27 +++++++++++++++++++++++++++
+ 3 files changed, 27 insertions(+), 27 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 7c78e1215ae3..e92ca415756a 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5002,6 +5002,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
- 		goto error;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 049858c671ef..7500ac08c9ba 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3007,7 +3007,6 @@ struct net_device *dev_get_by_napi_id(unsigned int napi_id);
+ int netdev_get_name(struct net *net, char *name, int ifindex);
+ int dev_restart(struct net_device *dev);
+ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb);
+-int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb);
  
-+	spin_lock_bh(&ifa->lock);
- 	if (!((ifa->flags&IFA_F_PERMANENT) &&
- 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
- 		preferred = ifa->prefered_lft;
-@@ -5023,6 +5024,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
- 		preferred = INFINITY_LIFE_TIME;
- 		valid = INFINITY_LIFE_TIME;
- 	}
-+	spin_unlock_bh(&ifa->lock);
+ static inline unsigned int skb_gro_offset(const struct sk_buff *skb)
+ {
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 56e23333e708..f1e3d70e8987 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3919,32 +3919,6 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL_GPL(skb_segment_list);
  
- 	if (!ipv6_addr_any(&ifa->peer_addr)) {
- 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
+-int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
+-{
+-	if (unlikely(p->len + skb->len >= 65536))
+-		return -E2BIG;
+-
+-	if (NAPI_GRO_CB(p)->last == p)
+-		skb_shinfo(p)->frag_list = skb;
+-	else
+-		NAPI_GRO_CB(p)->last->next = skb;
+-
+-	skb_pull(skb, skb_gro_offset(skb));
+-
+-	NAPI_GRO_CB(p)->last = skb;
+-	NAPI_GRO_CB(p)->count++;
+-	p->data_len += skb->len;
+-
+-	/* sk owenrship - if any - completely transferred to the aggregated packet */
+-	skb->destructor = NULL;
+-	p->truesize += skb->truesize;
+-	p->len += skb->len;
+-
+-	NAPI_GRO_CB(skb)->same_flow = 1;
+-
+-	return 0;
+-}
+-
+ /**
+  *	skb_segment - Perform protocol segmentation on skb.
+  *	@head_skb: buffer to segment
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index 86d32a1e62ac..c2398f9e46f0 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -424,6 +424,33 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
+ 	return segs;
+ }
+ 
++static int skb_gro_receive_list(struct sk_buff *p, struct sk_buff *skb)
++{
++	if (unlikely(p->len + skb->len >= 65536))
++		return -E2BIG;
++
++	if (NAPI_GRO_CB(p)->last == p)
++		skb_shinfo(p)->frag_list = skb;
++	else
++		NAPI_GRO_CB(p)->last->next = skb;
++
++	skb_pull(skb, skb_gro_offset(skb));
++
++	NAPI_GRO_CB(p)->last = skb;
++	NAPI_GRO_CB(p)->count++;
++	p->data_len += skb->len;
++
++	/* sk owenrship - if any - completely transferred to the aggregated packet */
++	skb->destructor = NULL;
++	p->truesize += skb->truesize;
++	p->len += skb->len;
++
++	NAPI_GRO_CB(skb)->same_flow = 1;
++
++	return 0;
++}
++
++
+ #define UDP_GRO_CNT_MAX 64
+ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
+ 					       struct sk_buff *skb)
 -- 
 2.34.1
 
