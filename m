@@ -2,144 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABEC6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0203C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238063AbiCNM5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58858 "EHLO
+        id S238106AbiCNM6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237850AbiCNM5e (ORCPT
+        with ESMTP id S241770AbiCNM6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:57:34 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664FC11C01;
-        Mon, 14 Mar 2022 05:56:24 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22ECqOeG023233;
-        Mon, 14 Mar 2022 13:55:57 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=o7DLEGbn0m+Yf0ajxTQI9LUdN6ayif82HxrORI3/zPw=;
- b=ptAvzdZnvqcpeS2PDnklWB3v/ez3fNfkh3g3Z7aR5+00MBXL3VPW5+UHTV8aidd3OQcS
- Z/STudGkYuvCr3dsPWD/JK7cDN2+/KQq+1A6kBI5lXF1dCRZS7DOMsk2x/4nvUCW+Tfj
- zqSIVujCFi8NVYUeGcr3oQOsLJVF3zmw1BebZYU713dVCSfTp+mz2t/9UN2h6thJvY+b
- NtmJLzhpjsB4EJU1gBGULkWG80iHbHj1WhaCWuksY7NMhOKHTlcbciRgZbpdXKsTQaPp
- q6Vabum8yYah1+e4MC+0maMTKVO3xahkQkgpnQbxY8dsUF+sZv1JIlJo8t+DT6fpunMw Fg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3et63h011g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 13:55:57 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C32C810002A;
-        Mon, 14 Mar 2022 13:55:56 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BA61D21ED50;
-        Mon, 14 Mar 2022 13:55:56 +0100 (CET)
-Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 14 Mar 2022 13:55:56
- +0100
-From:   Yann Gautier <yann.gautier@foss.st.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>, <kernel@dh-electronics.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Grzegorz Szymaszek <gszymaszek@short.pl>,
-        Yann Gautier <yann.gautier@foss.st.com>
-Subject: [PATCH v2] mmc: mmci: manage MMC_PM_KEEP_POWER per variant config
-Date:   Mon, 14 Mar 2022 13:55:54 +0100
-Message-ID: <20220314125554.190574-1-yann.gautier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220314095225.53563-1-yann.gautier@foss.st.com>
-References: <20220314095225.53563-1-yann.gautier@foss.st.com>
+        Mon, 14 Mar 2022 08:58:16 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2873811A3E;
+        Mon, 14 Mar 2022 05:57:06 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CBBA6218FE;
+        Mon, 14 Mar 2022 12:57:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647262624; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TaLNlzXGwgt3rIVBhMb8m6A+9RFUlVGbRu4EdMRGlyg=;
+        b=eFmcNQFmrNsywdOeFr5SEDup6JsmNK0K+YScoACNqR2qy1LHFFYhq1WsNq+LI5EPmA8/2Q
+        bQCv7UfngnJKKpainDF0pEVNMNsKVuHf3pi0c/ifsViuOWtm9nfJR/G4o6naP5tiL4+IiB
+        27UYnqde9XPDx7asXLRv5oXrc/eu6lc=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A930B13B34;
+        Mon, 14 Mar 2022 12:57:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wMNRKKA7L2KcTgAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Mon, 14 Mar 2022 12:57:04 +0000
+Date:   Mon, 14 Mar 2022 13:57:03 +0100
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Frank Hofmann <fhofmann@cloudflare.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Daniel Dao <dqminh@cloudflare.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] memcg: sync flush only if periodic flush is delayed
+Message-ID: <20220314125703.GA11645@blackbody.suse.cz>
+References: <20220304184040.1304781-1-shakeelb@google.com>
+ <20220311160051.GA24796@blackbody.suse.cz>
+ <20220312190715.cx4aznnzf6zdp7wv@google.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_04,2022-03-14_01,2022-02-23_01
+In-Reply-To: <20220312190715.cx4aznnzf6zdp7wv@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a disable_keep_power field in variant_data struct. The
-MMC_PM_KEEP_POWER flag will be enabled if disable_keep_power is not set.
-It is only set to true for stm32_sdmmc variants.
+Hi.
 
-The issue was seen on STM32MP157C-DK2 board, which embeds a wifi chip.
-It doesn't correctly support low power on this board. The Wifi chip
-awaits an always-on regulator, but it was connected to v3v3 which is off
-in low-power sequence. MMC_PM_KEEP_POWER should then be disabled.
+On Sat, Mar 12, 2022 at 07:07:15PM +0000, Shakeel Butt <shakeelb@google.com> wrote:
+> So, I will focus on the error rate in this email.
 
-The flag can still be enabled through DT property:
-keep-power-in-suspend.
+(OK, I'll stick to error estimate (for long-term) in this message and
+will send another about the current patch.)
 
-Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
----
-Update in v2:
-Reword commit message to better explain the issue.
+> [...]
+> 
+> > The benefit this was traded for was the greater accuracy, the possible
+> > error is:
+> > - before
+> >    - O(nr_cpus * nr_cgroups(subtree) * MEMCG_CHARGE_BATCH)	(1)
+> 
+> Please note that (1) is the possible error for each stat item and
+> without any time bound.
 
-Resend the patch alone. It was previoulsy in a series [1] for which the
-other patches will be reworked.
+I agree (forgot to highlight this can stuck forever).
 
-[1] https://lore.kernel.org/lkml/20220304135134.47827-1-yann.gautier@foss.st.com/
+> 
+> > - after
+> >      O(nr_cpus * MEMCG_CHARGE_BATCH) // sync. flush
+> 
+> The above is across all the stat items.
 
- drivers/mmc/host/mmci.c | 5 ++++-
- drivers/mmc/host/mmci.h | 1 +
- 2 files changed, 5 insertions(+), 1 deletion(-)
+Can it be used to argue about the error?
+E.g.
+    nr_cpus * MEMCG_CHARGE_BATCH / nr_counters
+looks appealing but that's IMO too optimistic.
 
-diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
-index 45b8608c935c..0e2f2f5d6a52 100644
---- a/drivers/mmc/host/mmci.c
-+++ b/drivers/mmc/host/mmci.c
-@@ -274,6 +274,7 @@ static struct variant_data variant_stm32_sdmmc = {
- 	.busy_detect		= true,
- 	.busy_detect_flag	= MCI_STM32_BUSYD0,
- 	.busy_detect_mask	= MCI_STM32_BUSYD0ENDMASK,
-+	.disable_keep_power	= true,
- 	.init			= sdmmc_variant_init,
- };
- 
-@@ -301,6 +302,7 @@ static struct variant_data variant_stm32_sdmmcv2 = {
- 	.busy_detect		= true,
- 	.busy_detect_flag	= MCI_STM32_BUSYD0,
- 	.busy_detect_mask	= MCI_STM32_BUSYD0ENDMASK,
-+	.disable_keep_power	= true,
- 	.init			= sdmmc_variant_init,
- };
- 
-@@ -2172,7 +2174,8 @@ static int mmci_probe(struct amba_device *dev,
- 	host->stop_abort.flags = MMC_RSP_R1B | MMC_CMD_AC;
- 
- 	/* We support these PM capabilities. */
--	mmc->pm_caps |= MMC_PM_KEEP_POWER;
-+	if (!variant->disable_keep_power)
-+		mmc->pm_caps |= MMC_PM_KEEP_POWER;
- 
- 	/*
- 	 * We can do SGIO
-diff --git a/drivers/mmc/host/mmci.h b/drivers/mmc/host/mmci.h
-index e1a9b96a3396..2cad1ef9766a 100644
---- a/drivers/mmc/host/mmci.h
-+++ b/drivers/mmc/host/mmci.h
-@@ -361,6 +361,7 @@ struct variant_data {
- 	u32			opendrain;
- 	u8			dma_lli:1;
- 	u32			stm32_idmabsize_mask;
-+	u8			disable_keep_power:1;
- 	void (*init)(struct mmci_host *host);
- };
- 
--- 
-2.25.1
+The individual item updates are correlated so in practice a single item
+would see a lower error than my first relation but without delving too
+much into correlations the upper bound is nr_counters independent.
 
+
+> I don't get the reason of breaking 'cr' into individual stat item or
+> counter. What is the benefit? We want to keep the error rate decoupled
+> from the number of counters (or stat items).
+
+It's just a model, it should capture that every stat item (change)
+contributes to the common error estimate. (So it moves more towards the 
+  nr_cpus * MEMCG_CHARGE_BATCH / nr_counters
+per-item error (but here we're asking about processing time.))
+
+[...]
+
+> My main reason behind trying NR_MEMCG_EVENTS was to reduce flush_work by
+> reducing nr_counters and I don't think nr_counters should have an impact
+> on Δt.
+
+The higher number of items is changing, the sooner they accumulate the
+target error, no?
+
+(Δt is not the periodic flush period, it's variable time between two
+sync flushes.)
+
+Michal
