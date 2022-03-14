@@ -2,101 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED618C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E931FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238721AbiCNKzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57486 "EHLO
+        id S238731AbiCNKz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238705AbiCNKzj (ORCPT
+        with ESMTP id S238724AbiCNKzz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:55:39 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B49825E8F;
-        Mon, 14 Mar 2022 03:54:29 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KHCwC55tlzcb4Q;
-        Mon, 14 Mar 2022 18:49:31 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Mar 2022 18:54:27 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <edumazet@google.com>, <sakiwit@gmail.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 1/3] net: ipvlan: fix potential UAF problem for phy_dev
-Date:   Mon, 14 Mar 2022 19:12:12 +0800
-Message-ID: <751f88c0846df798a403643cefcaab53922ffe2f.1647255926.git.william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1647255926.git.william.xuanziyang@huawei.com>
-References: <cover.1647255926.git.william.xuanziyang@huawei.com>
+        Mon, 14 Mar 2022 06:55:55 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F442AC50
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 03:54:44 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id g17so26342450lfh.2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 03:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vRzVdmii+d1cRN7UUZvjKYaaOk5b0ubFZRbbFk1xnRM=;
+        b=WOfWrWmy0naPgZhVqDU9oBsnW9w/GajwOvDdBr8tdiTSrCzoO5S0M0dPAbIpU5oBbv
+         gBHGP5e1shXAYGvRzTab6g/ag4v8nCkOCkvvZ6Sq4xt2XOQaXfDNLPoxIpEwwcit3adK
+         jGSwFUAgxuwohakllItBGBYEkY8j/FrPnFfNH1aPtyJ6rqIjWbNI5fVFAFgB4NHVB1ca
+         9QiMkrr8EygobsrU0AKovYRFPhNOA1MIBLD2B2GA5dRlEULv8ccSnM3sK71+mpizNyLs
+         +pJK7eTiM9aO6Rr2H9mMduAZIV/M5vYhcle29fwiIJYA+XXmsr9Dw4dOTzlIedNXNCJd
+         99ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vRzVdmii+d1cRN7UUZvjKYaaOk5b0ubFZRbbFk1xnRM=;
+        b=dJQR0fB+4Kw162I6MipHiYowaVeBUt0hEvlmrlDKNJ22YAUQ3TikjIKrJ1875fE2QJ
+         ddgam4nR9iHk4MJigEKocqjaj4UjsBQrVD5duNPzU7AMXCdH0Xl/DXgxPrf+i1edoUP4
+         dpelSAt5SXiSvv71UwOapja/ymZSiu2pTB4kRy8xFLN/Qjq9p27qTbkvyfJq9GfGFj0D
+         fZQcTwxHNWnWfNZlKhS5iT/nw5tJS2URKkcKwUGLTJHB0K7skuW9p3I74krCyPo6c1KP
+         YqPS85swDUaT0V79LWDR6wTEpxlM6+VN2KJYg4JxvxhaAGA5D5PeMKK04BQ9raZSzmf2
+         tsfg==
+X-Gm-Message-State: AOAM531tcqggJLuk6rV0kOo/A6MXLv5OyLxfgRYYV5JLCQM/Uxn7f/ch
+        cp+NAkvTgz63b8olqlUBg4Ts3bIOZB9QNwrAMtdH9Q==
+X-Google-Smtp-Source: ABdhPJxIJjYE9r/4kFXslwW+YzFmI5aeSDCVRy6PflGXevF8einmHE4Hrsb5JyQbb3vGO2YaaTn+GEbuLpxxph0yCCU=
+X-Received: by 2002:ac2:4e98:0:b0:448:3039:d170 with SMTP id
+ o24-20020ac24e98000000b004483039d170mr13956278lfr.233.1647255282348; Mon, 14
+ Mar 2022 03:54:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
+References: <20220303164522.129583-1-ulf.hansson@linaro.org>
+In-Reply-To: <20220303164522.129583-1-ulf.hansson@linaro.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 14 Mar 2022 11:54:06 +0100
+Message-ID: <CAPDyKFod3LdfRRgVfdASqgSBAXqJnGkdKMM9qKnAYcfUQptF_g@mail.gmail.com>
+Subject: Re: [PATCH] mmc: core: Improve fallback to speed modes if eMMC HS200 fails
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     linux-mmc@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Yann Gautier <yann.gautier@foss.st.com>,
+        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the reference operation to phy_dev of ipvlan to avoid
-the potential UAF problem under the following known scenario:
+On Thu, 3 Mar 2022 at 17:45, Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>
+> In the error path of mmc_select_hs200() we are trying our best to restore
+> the card/host into a valid state. This makes sense, especially if we
+> encounter a simple switch error (-EBADMSG). However, rather than then
+> continue with using the legacy speed mode, let's try the other better speed
+> modes first. Additionally, let's update the card->mmc_avail_type to avoid
+> us from trying a broken HS200 mode again.
+>
+> In an Amlogic S905W based TV box where the switch to HS200 mode fails for
+> the eMMC, this allows us to use the eMMC in DDR mode in favor of the legacy
+> mode, which greatly improves the performance.
+>
+> Suggested-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Someone module puts the NETDEV_UNREGISTER event handler to a
-work, and phy_dev is accessed in the work handler. But when
-the work is excuted, phy_dev has been destroyed because upper
-ipvlan did not get reference to phy_dev correctly.
+Heiner, does this solve your problems? Can you perhaps run some tests
+at your side to see how it works for you?
 
-That likes as the scenario occurred by
-commit 563bcbae3ba2 ("net: vlan: fix a UAF in vlan_dev_real_dev()").
+Kind regards
+Uffe
 
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- drivers/net/ipvlan/ipvlan_main.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-index 696e245f6d00..dcdc01403f22 100644
---- a/drivers/net/ipvlan/ipvlan_main.c
-+++ b/drivers/net/ipvlan/ipvlan_main.c
-@@ -158,6 +158,10 @@ static int ipvlan_init(struct net_device *dev)
- 	}
- 	port = ipvlan_port_get_rtnl(phy_dev);
- 	port->count += 1;
-+
-+	/* Get ipvlan's reference to phy_dev */
-+	dev_hold(phy_dev);
-+
- 	return 0;
- }
- 
-@@ -665,6 +669,14 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head)
- }
- EXPORT_SYMBOL_GPL(ipvlan_link_delete);
- 
-+static void ipvlan_dev_free(struct net_device *dev)
-+{
-+	struct ipvl_dev *ipvlan = netdev_priv(dev);
-+
-+	/* Get rid of the ipvlan's reference to phy_dev */
-+	dev_put(ipvlan->phy_dev);
-+}
-+
- void ipvlan_link_setup(struct net_device *dev)
- {
- 	ether_setup(dev);
-@@ -674,6 +686,7 @@ void ipvlan_link_setup(struct net_device *dev)
- 	dev->priv_flags |= IFF_UNICAST_FLT | IFF_NO_QUEUE;
- 	dev->netdev_ops = &ipvlan_netdev_ops;
- 	dev->needs_free_netdev = true;
-+	dev->priv_destructor = ipvlan_dev_free;
- 	dev->header_ops = &ipvlan_header_ops;
- 	dev->ethtool_ops = &ipvlan_ethtool_ops;
- }
--- 
-2.25.1
-
+> ---
+>  drivers/mmc/core/mmc.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+> index 141f851c9f58..6e7db45cb8e0 100644
+> --- a/drivers/mmc/core/mmc.c
+> +++ b/drivers/mmc/core/mmc.c
+> @@ -1518,13 +1518,23 @@ static int mmc_select_timing(struct mmc_card *card)
+>         if (!mmc_can_ext_csd(card))
+>                 goto bus_speed;
+>
+> -       if (card->mmc_avail_type & EXT_CSD_CARD_TYPE_HS400ES)
+> +       if (card->mmc_avail_type & EXT_CSD_CARD_TYPE_HS400ES) {
+>                 err = mmc_select_hs400es(card);
+> -       else if (card->mmc_avail_type & EXT_CSD_CARD_TYPE_HS200)
+> +               goto out;
+> +       }
+> +
+> +       if (card->mmc_avail_type & EXT_CSD_CARD_TYPE_HS200) {
+>                 err = mmc_select_hs200(card);
+> -       else if (card->mmc_avail_type & EXT_CSD_CARD_TYPE_HS)
+> +               if (err == -EBADMSG)
+> +                       card->mmc_avail_type &= ~EXT_CSD_CARD_TYPE_HS200;
+> +               else
+> +                       goto out;
+> +       }
+> +
+> +       if (card->mmc_avail_type & EXT_CSD_CARD_TYPE_HS)
+>                 err = mmc_select_hs(card);
+>
+> +out:
+>         if (err && err != -EBADMSG)
+>                 return err;
+>
+> --
+> 2.25.1
+>
