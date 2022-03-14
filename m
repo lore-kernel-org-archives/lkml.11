@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 056C6C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB1BC3526E
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243605AbiCNMbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:31:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49558 "EHLO
+        id S243471AbiCNMa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241775AbiCNMSX (ORCPT
+        with ESMTP id S242856AbiCNMTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:18:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44197FD22;
-        Mon, 14 Mar 2022 05:12:58 -0700 (PDT)
+        Mon, 14 Mar 2022 08:19:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C6050B1A;
+        Mon, 14 Mar 2022 05:14:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7482F61380;
-        Mon, 14 Mar 2022 12:12:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD21C340E9;
-        Mon, 14 Mar 2022 12:12:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 461FFB80DC0;
+        Mon, 14 Mar 2022 12:14:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E06EC340E9;
+        Mon, 14 Mar 2022 12:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259977;
-        bh=P9K/h8KMbQZRQi1PXI9ISur1J4HQLQ4E1D9sSKqTb14=;
+        s=korg; t=1647260082;
+        bh=gtBi2gKBebceaqDKfDa+ChA2WKq5ul1SA5b0xroSsPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q3wWq1wnHrThv3GOt8n8bz0LEYNbaIrNsbF/eip9NuWBwBskyIL9hK6rdL0XYy9cS
-         WwLm4vEaDQoZhizmfF9HcAE9VACEH1dg2XzHJtJwXRRxi8gXEwCGBkrOqejGEixL/a
-         zb+BU1HkBFBe6+snk1Uv6dF4VdS1AAcQ9NKrbjVg=
+        b=qkzaCX10dMWUx/kGp4hT0A1NhGAzlopx/yGxO/Yqo1NxRYGTCtGZp81Krvn6m0LsR
+         Ymnqtu5SUMVSiXsmK2YElDKmkQLo4D7KVm6+MusUEsbE3m9t8VwypARiYQHHP7Pt9+
+         9lio0uYyq6vOFtNsCxWW0jSeNJrdx6x47QmjkOMA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 005/121] ARM: boot: dts: bcm2711: Fix HVS register range
-Date:   Mon, 14 Mar 2022 12:53:08 +0100
-Message-Id: <20220314112744.275113530@linuxfoundation.org>
+Subject: [PATCH 5.16 050/121] selftests: pmtu.sh: Kill tcpdump processes launched by subshell.
+Date:   Mon, 14 Mar 2022 12:53:53 +0100
+Message-Id: <20220314112745.523294658@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -50,39 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Guillaume Nault <gnault@redhat.com>
 
-[ Upstream commit 515415d316168c6521d74ea8280287e28d7303e6 ]
+[ Upstream commit 18dfc667550fe9c032a6dcc3402b50e691e18029 ]
 
-While the HVS has the same context memory size in the BCM2711 than in
-the previous SoCs, the range allocated to the registers doubled and it
-now takes 16k + 16k, compared to 8k + 16k before.
+The cleanup() function takes care of killing processes launched by the
+test functions. It relies on variables like ${tcpdump_pids} to get the
+relevant PIDs. But tests are run in their own subshell, so updated
+*_pids values are invisible to other shells. Therefore cleanup() never
+sees any process to kill:
 
-The KMS driver will use the whole context RAM though, eventually
-resulting in a pointer dereference error when we access the higher half
-of the context memory since it hasn't been mapped.
+$ ./tools/testing/selftests/net/pmtu.sh -t pmtu_ipv4_exception
+TEST: ipv4: PMTU exceptions                                         [ OK ]
+TEST: ipv4: PMTU exceptions - nexthop objects                       [ OK ]
 
-Fixes: 4564363351e2 ("ARM: dts: bcm2711: Enable the display pipeline")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+$ pgrep -af tcpdump
+6084 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
+6085 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
+6086 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
+6087 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
+6088 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
+6089 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
+6090 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
+6091 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
+6228 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
+6229 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
+6230 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
+6231 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
+6232 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
+6233 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
+6234 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
+6235 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
+
+Fix this by running cleanup() in the context of the test subshell.
+Now that each test cleans the environment after completion, there's no
+need for calling cleanup() again when the next test starts. So let's
+drop it from the setup() function. This is okay because cleanup() is
+also called when pmtu.sh starts, so even the first test starts in a
+clean environment.
+
+Also, use tcpdump's immediate mode. Otherwise it might not have time to
+process buffered packets, resulting in missing packets or even empty
+pcap files for short tests.
+
+Note: PAUSE_ON_FAIL is still evaluated before cleanup(), so one can
+still inspect the test environment upon failure when using -p.
+
+Fixes: a92a0a7b8e7c ("selftests: pmtu: Simplify cleanup and namespace names")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2711.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/net/pmtu.sh | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
-index dff18fc9a906..21294f775a20 100644
---- a/arch/arm/boot/dts/bcm2711.dtsi
-+++ b/arch/arm/boot/dts/bcm2711.dtsi
-@@ -290,6 +290,7 @@ pixelvalve4: pixelvalve@7e216000 {
+diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
+index 543ad7513a8e..2e8972573d91 100755
+--- a/tools/testing/selftests/net/pmtu.sh
++++ b/tools/testing/selftests/net/pmtu.sh
+@@ -865,7 +865,6 @@ setup_ovs_bridge() {
+ setup() {
+ 	[ "$(id -u)" -ne 0 ] && echo "  need to run as root" && return $ksft_skip
  
- 		hvs: hvs@7e400000 {
- 			compatible = "brcm,bcm2711-hvs";
-+			reg = <0x7e400000 0x8000>;
- 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
- 		};
+-	cleanup
+ 	for arg do
+ 		eval setup_${arg} || { echo "  ${arg} not supported"; return 1; }
+ 	done
+@@ -876,7 +875,7 @@ trace() {
  
+ 	for arg do
+ 		[ "${ns_cmd}" = "" ] && ns_cmd="${arg}" && continue
+-		${ns_cmd} tcpdump -s 0 -i "${arg}" -w "${name}_${arg}.pcap" 2> /dev/null &
++		${ns_cmd} tcpdump --immediate-mode -s 0 -i "${arg}" -w "${name}_${arg}.pcap" 2> /dev/null &
+ 		tcpdump_pids="${tcpdump_pids} $!"
+ 		ns_cmd=
+ 	done
+@@ -1836,6 +1835,10 @@ run_test() {
+ 
+ 	unset IFS
+ 
++	# Since cleanup() relies on variables modified by this subshell, it
++	# has to run in this context.
++	trap cleanup EXIT
++
+ 	if [ "$VERBOSE" = "1" ]; then
+ 		printf "\n##########################################################################\n\n"
+ 	fi
 -- 
 2.34.1
 
