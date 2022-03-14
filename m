@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7840AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239297AbiCNLkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
+        id S239374AbiCNLkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239377AbiCNLh6 (ORCPT
+        with ESMTP id S239416AbiCNLiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:37:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E498742A27;
-        Mon, 14 Mar 2022 04:36:38 -0700 (PDT)
+        Mon, 14 Mar 2022 07:38:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4C241FBF;
+        Mon, 14 Mar 2022 04:36:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3B434CE108C;
-        Mon, 14 Mar 2022 11:36:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CB2FC340EC;
-        Mon, 14 Mar 2022 11:36:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3548261171;
+        Mon, 14 Mar 2022 11:36:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43B2FC340E9;
+        Mon, 14 Mar 2022 11:36:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257795;
-        bh=MvYMT4b+70eWMffJm65qmhDlhkcPj5Zm+k3nFgv9U04=;
+        s=korg; t=1647257802;
+        bh=pOh6oEdiUiwGX1Cnz0whH2hcdI9uWATi2nDUXmbc9Ic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=amGZywsZvMrnDgplRulfroLaV7WWqOEK+oWiGvRvSZmlDXE+kz1vCDpr0APWoqqDL
-         IwuPbNzreoOidLgeDFWxovFzFKLDeMrrh20QnUhKpDUgq++eTT7S6F7r4HtohDeeH6
-         N1t3UA+D1XqUzseMOyhthPSSO1kezGuHugqrxSgQ=
+        b=mpCe4x9Alt9WCBj0/e5WqeAmYa4J6grWk+kT1bmryc1F1oBuAd/YPGS7ds6tDlAMj
+         3hb8kCJqdDOCH4dughVor+wtDA0DjUlrOdMpiHj1uTFLUq2u/x+lA5zdnxrvTYvQjK
+         YI1yuhtTgamcHT2v7LNwQz96QfbxnQG9Ty7imjP8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 15/23] selftests/memfd: clean up mapping in mfd_fail_write
-Date:   Mon, 14 Mar 2022 12:34:28 +0100
-Message-Id: <20220314112731.500185438@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH 4.14 17/23] staging: gdm724x: fix use after free in gdm_lte_rx()
+Date:   Mon, 14 Mar 2022 12:34:30 +0100
+Message-Id: <20220314112731.556800270@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112731.050583127@linuxfoundation.org>
 References: <20220314112731.050583127@linuxfoundation.org>
@@ -52,57 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit fda153c89af344d21df281009a9d046cf587ea0f ]
+commit fc7f750dc9d102c1ed7bbe4591f991e770c99033 upstream.
 
-Running the memfd script ./run_hugetlbfs_test.sh will often end in error
-as follows:
+The netif_rx_ni() function frees the skb so we can't dereference it to
+save the skb->len.
 
-    memfd-hugetlb: CREATE
-    memfd-hugetlb: BASIC
-    memfd-hugetlb: SEAL-WRITE
-    memfd-hugetlb: SEAL-FUTURE-WRITE
-    memfd-hugetlb: SEAL-SHRINK
-    fallocate(ALLOC) failed: No space left on device
-    ./run_hugetlbfs_test.sh: line 60: 166855 Aborted                 (core dumped) ./memfd_test hugetlbfs
-    opening: ./mnt/memfd
-    fuse: DONE
-
-If no hugetlb pages have been preallocated, run_hugetlbfs_test.sh will
-allocate 'just enough' pages to run the test.  In the SEAL-FUTURE-WRITE
-test the mfd_fail_write routine maps the file, but does not unmap.  As a
-result, two hugetlb pages remain reserved for the mapping.  When the
-fallocate call in the SEAL-SHRINK test attempts allocate all hugetlb
-pages, it is short by the two reserved pages.
-
-Fix by making sure to unmap in mfd_fail_write.
-
-Link: https://lkml.kernel.org/r/20220219004340.56478-1-mike.kravetz@oracle.com
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 61e121047645 ("staging: gdm7240: adding LTE USB driver")
+Cc: stable <stable@vger.kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220228074331.GA13685@kili
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/memfd/memfd_test.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/gdm724x/gdm_lte.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
-index 845e5f67b6f0..cf4c5276eb06 100644
---- a/tools/testing/selftests/memfd/memfd_test.c
-+++ b/tools/testing/selftests/memfd/memfd_test.c
-@@ -416,6 +416,7 @@ static void mfd_fail_write(int fd)
- 			printf("mmap()+mprotect() didn't fail as expected\n");
- 			abort();
- 		}
-+		munmap(p, mfd_def_size);
+--- a/drivers/staging/gdm724x/gdm_lte.c
++++ b/drivers/staging/gdm724x/gdm_lte.c
+@@ -85,14 +85,15 @@ static void tx_complete(void *arg)
+ 
+ static int gdm_lte_rx(struct sk_buff *skb, struct nic *nic, int nic_type)
+ {
+-	int ret;
++	int ret, len;
+ 
++	len = skb->len + ETH_HLEN;
+ 	ret = netif_rx_ni(skb);
+ 	if (ret == NET_RX_DROP) {
+ 		nic->stats.rx_dropped++;
+ 	} else {
+ 		nic->stats.rx_packets++;
+-		nic->stats.rx_bytes += skb->len + ETH_HLEN;
++		nic->stats.rx_bytes += len;
  	}
  
- 	/* verify PUNCH_HOLE fails */
--- 
-2.34.1
-
+ 	return 0;
 
 
