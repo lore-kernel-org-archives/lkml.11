@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B96F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235870AbiCNM1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:27:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
+        id S239744AbiCNM1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242939AbiCNMTz (ORCPT
+        with ESMTP id S242947AbiCNMT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:19:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC0551E6F;
-        Mon, 14 Mar 2022 05:15:04 -0700 (PDT)
+        Mon, 14 Mar 2022 08:19:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EF4522F5;
+        Mon, 14 Mar 2022 05:15:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFA2DB80DFC;
-        Mon, 14 Mar 2022 12:14:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E00DC340E9;
-        Mon, 14 Mar 2022 12:14:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6CA2B80DFF;
+        Mon, 14 Mar 2022 12:15:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D3A9C340E9;
+        Mon, 14 Mar 2022 12:15:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260097;
-        bh=GZLKigzq4Gitbm9huNUFHN9WWFAWoxqfadSve0/aCJM=;
+        s=korg; t=1647260103;
+        bh=5dn8+/NyVA/eNrucFxQnoSAcjC8HjqGn5cqpg5UYb6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z06PiiFC5LDhcQ/4gtzntKVFf7oIxloMMEQALqzFSUvhLjCWSKCqTJz+0ca3/xyxJ
-         klK3Cp3S2quXI3OO7RAyJa6CBnDiK/QVLczo1C+6pwzmXUE2HD1sexq0DovkuBPLFH
-         rVKTh9N4neBSJJcNtoSiVFIF/k0/y/6csxbFLPfE=
+        b=Yk7zxjGitFsSnQrAjIzHR+9dj4nQHKHtk/EVllim5eoHS790yrCYNQxKwSoLyPBWY
+         wDWPhJZxG3amlSnG/R7Ew7nscuhrK2IpISVyRuJcO3OHR2L6iK1N9UKaLf4vt6CH6F
+         /6gWyrkfcuMsicaRKI33iGzIfG2CRadE4xYpTXG0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Jianglei Nie <niejianglei2021@163.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 055/121] net: phy: DP83822: clear MISR2 register to disable interrupts
-Date:   Mon, 14 Mar 2022 12:53:58 +0100
-Message-Id: <20220314112745.662299975@linuxfoundation.org>
+Subject: [PATCH 5.16 057/121] net: arc_emac: Fix use after free in arc_mdio_probe()
+Date:   Mon, 14 Mar 2022 12:54:00 +0100
+Message-Id: <20220314112745.717795416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -52,38 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Clément Léger <clement.leger@bootlin.com>
+From: Jianglei Nie <niejianglei2021@163.com>
 
-[ Upstream commit 37c9d66c95564c85a001d8a035354f0220a1e1c3 ]
+[ Upstream commit bc0e610a6eb0d46e4123fafdbe5e6141d9fff3be ]
 
-MISR1 was cleared twice but the original author intention was probably
-to clear MISR1 & MISR2 to completely disable interrupts. Fix it to
-clear MISR2.
+If bus->state is equal to MDIOBUS_ALLOCATED, mdiobus_free(bus) will free
+the "bus". But bus->name is still used in the next line, which will lead
+to a use after free.
 
-Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
-Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220309142228.761153-1-clement.leger@bootlin.com
+We can fix it by putting the name in a local variable and make the
+bus->name point to the rodata section "name",then use the name in the
+error message without referring to bus to avoid the uaf.
+
+Fixes: 95b5fc03c189 ("net: arc_emac: Make use of the helper function dev_err_probe()")
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+Link: https://lore.kernel.org/r/20220309121824.36529-1-niejianglei2021@163.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/dp83822.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/arc/emac_mdio.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 211b5476a6f5..ce17b2af3218 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -274,7 +274,7 @@ static int dp83822_config_intr(struct phy_device *phydev)
- 		if (err < 0)
- 			return err;
+diff --git a/drivers/net/ethernet/arc/emac_mdio.c b/drivers/net/ethernet/arc/emac_mdio.c
+index 9acf589b1178..87f40c2ba904 100644
+--- a/drivers/net/ethernet/arc/emac_mdio.c
++++ b/drivers/net/ethernet/arc/emac_mdio.c
+@@ -132,6 +132,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ {
+ 	struct arc_emac_mdio_bus_data *data = &priv->bus_data;
+ 	struct device_node *np = priv->dev->of_node;
++	const char *name = "Synopsys MII Bus";
+ 	struct mii_bus *bus;
+ 	int error;
  
--		err = phy_write(phydev, MII_DP83822_MISR1, 0);
-+		err = phy_write(phydev, MII_DP83822_MISR2, 0);
- 		if (err < 0)
- 			return err;
+@@ -142,7 +143,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	priv->bus = bus;
+ 	bus->priv = priv;
+ 	bus->parent = priv->dev;
+-	bus->name = "Synopsys MII Bus";
++	bus->name = name;
+ 	bus->read = &arc_mdio_read;
+ 	bus->write = &arc_mdio_write;
+ 	bus->reset = &arc_mdio_reset;
+@@ -167,7 +168,7 @@ int arc_mdio_probe(struct arc_emac_priv *priv)
+ 	if (error) {
+ 		mdiobus_free(bus);
+ 		return dev_err_probe(priv->dev, error,
+-				     "cannot register MDIO bus %s\n", bus->name);
++				     "cannot register MDIO bus %s\n", name);
+ 	}
  
+ 	return 0;
 -- 
 2.34.1
 
