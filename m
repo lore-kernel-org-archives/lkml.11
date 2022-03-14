@@ -2,102 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 09:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62960C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238280AbiCNKAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
+        id S238166AbiCNKBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238166AbiCNKAq (ORCPT
+        with ESMTP id S232273AbiCNKBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:00:46 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5691013FA9;
-        Mon, 14 Mar 2022 02:59:35 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22E9rqMQ108791;
-        Mon, 14 Mar 2022 04:53:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1647251632;
-        bh=sXDP6FRE9AaNqzed1m1RfsUHilWi4nFVgOEPlOZhFcM=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=p2YmpfJixwk6rzSKyMZ4uABJJHWukEKF7M5iRHHyWqZUBHKDsueKxief1uzzPTFXy
-         lKoRq2MGJsDECgBzvNq2JxICfK+aXBP95nCOHBh7wYgRIfRpJw8iKPtm9wdIozfhru
-         4EgnIcu1MCmR/mM5CupYjrBLf9bjksc/ISOUfyjc=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22E9rqGZ052177
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Mar 2022 04:53:52 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 14
- Mar 2022 04:53:52 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 14 Mar 2022 04:53:52 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22E9rp8V090706;
-        Mon, 14 Mar 2022 04:53:51 -0500
-Date:   Mon, 14 Mar 2022 15:23:50 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-CC:     Niklas =?utf-8?Q?S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Benoit Parrot <bparrot@ti.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Zhou Qingyang <zhou1615@umn.edu>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
-Subject: Re: [PATCH 61/64] media: platform: rename ti-vpe/ to ti/vpe/
-Message-ID: <20220314095350.mbvjs7alqoz4vvml@ti.com>
-References: <cover.1647242578.git.mchehab@kernel.org>
- <fecdb3d1e4fffbb5c3e0003a7d403ef9669ca026.1647242579.git.mchehab@kernel.org>
+        Mon, 14 Mar 2022 06:01:45 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6001719C28;
+        Mon, 14 Mar 2022 03:00:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647252035; x=1678788035;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=LeMnOhM+GEPGEkeVg5rUIbVD4CakRFa9JprrFWKhPWQ=;
+  b=N2oKZ6vMTbK/q+580dyLoe6PGyApoWwIk3xU3hCC+ZsKOx2y3OSD+UZu
+   m+/yxrFmDQOhuPVXm9ob55gUJP34p9ANUdqENJB+jSbA/m6oi8dwJfZm+
+   T0H1IlAJrbErrqBdnuwmiTQc6H1p8LxPUqcBp01YxBQwIfXYJWh8HUBpH
+   s=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Mar 2022 03:00:34 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 03:00:34 -0700
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 14 Mar 2022 03:00:33 -0700
+Received: from hu-ylal-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 14 Mar 2022 03:00:30 -0700
+From:   Yogesh Lal <quic_ylal@quicinc.com>
+To:     <bjorn.andersson@linaro.org>, <quic_sibis@quicinc.com>
+CC:     <linux-arm-msm@vger.kernel.org>,
+        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Yogesh Lal <quic_ylal@quicinc.com>
+Subject: [PATCH] remoteproc: qcom: pas: Add elf64 support to coredump
+Date:   Mon, 14 Mar 2022 15:30:13 +0530
+Message-ID: <1647252013-7794-1-git-send-email-quic_ylal@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <fecdb3d1e4fffbb5c3e0003a7d403ef9669ca026.1647242579.git.mchehab@kernel.org>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mauro,
+Add support to use elf64 coredumps to remote processors.
 
-On 14/03/22 08:55AM, Mauro Carvalho Chehab wrote:
-> As the end goal is to have platform drivers split by vendor,
-> rename ti-vpe/ to ti/vpe/.
+Signed-off-by: Yogesh Lal <quic_ylal@quicinc.com>
+---
+ drivers/remoteproc/qcom_q6v5_pas.c | 67 ++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 64 insertions(+), 3 deletions(-)
 
-I submitted a patch to do something similar [0]. I think it is a better 
-one because there are actually 2 separate IP drivers here: CAL and VPE. 
-My patch puts them both in their own directories, and a later patch 
-introduces a 3rd driver, j721e-csi2rx.
-
-So I would like to see my patch's directory structure being used.
-
-Nacked-by: Pratyush Yadav <p.yadav@ti.com>
-
-[0] https://patchwork.linuxtv.org/project/linux-media/patch/20220121142904.4091481-11-p.yadav@ti.com/
-
-> 
-> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH 00/64] at: https://lore.kernel.org/all/cover.1647242578.git.mchehab@kernel.org/
-> 
-
+diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+index 1ae47cc..58c335e 100644
+--- a/drivers/remoteproc/qcom_q6v5_pas.c
++++ b/drivers/remoteproc/qcom_q6v5_pas.c
+@@ -34,6 +34,7 @@ struct adsp_data {
+ 	const char *firmware_name;
+ 	int pas_id;
+ 	unsigned int minidump_id;
++	bool uses_elf64;
+ 	bool has_aggre2_clk;
+ 	bool auto_boot;
+ 
+@@ -450,7 +451,11 @@ static int adsp_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	rproc->auto_boot = desc->auto_boot;
+-	rproc_coredump_set_elf_info(rproc, ELFCLASS32, EM_NONE);
++
++	if (desc->uses_elf64)
++		rproc_coredump_set_elf_info(rproc, ELFCLASS64, EM_NONE);
++	else
++		rproc_coredump_set_elf_info(rproc, ELFCLASS32, EM_NONE);
+ 
+ 	adsp = (struct qcom_adsp *)rproc->priv;
+ 	adsp->dev = &pdev->dev;
+@@ -617,6 +622,24 @@ static const struct adsp_data sm8350_adsp_resource = {
+ 	.ssctl_id = 0x14,
+ };
+ 
++static const struct adsp_data sm8450_adsp_resource = {
++	.crash_reason_smem = 423,
++	.firmware_name = "adsp.mdt",
++	.pas_id = 1,
++	.uses_elf64 = true,
++	.has_aggre2_clk = false,
++	.auto_boot = true,
++	.proxy_pd_names = (char*[]){
++		"lcx",
++		"lmx",
++		NULL
++	},
++	.load_state = "adsp",
++	.ssr_name = "lpass",
++	.sysmon_name = "adsp",
++	.ssctl_id = 0x14,
++};
++
+ static const struct adsp_data msm8996_adsp_resource = {
+ 		.crash_reason_smem = 423,
+ 		.firmware_name = "adsp.mdt",
+@@ -721,6 +744,24 @@ static const struct adsp_data sm8350_cdsp_resource = {
+ 	.ssctl_id = 0x17,
+ };
+ 
++static const struct adsp_data sm8450_cdsp_resource = {
++	.crash_reason_smem = 601,
++	.firmware_name = "cdsp.mdt",
++	.pas_id = 18,
++	.uses_elf64 = true,
++	.has_aggre2_clk = false,
++	.auto_boot = true,
++	.proxy_pd_names = (char*[]){
++		"cx",
++		"mxc",
++		NULL
++	},
++	.load_state = "cdsp",
++	.ssr_name = "cdsp",
++	.sysmon_name = "cdsp",
++	.ssctl_id = 0x17,
++};
++
+ static const struct adsp_data mpss_resource_init = {
+ 	.crash_reason_smem = 421,
+ 	.firmware_name = "modem.mdt",
+@@ -755,6 +796,25 @@ static const struct adsp_data sc8180x_mpss_resource = {
+ 	.ssctl_id = 0x12,
+ };
+ 
++static const struct adsp_data sm8450_mpss_resource = {
++	.crash_reason_smem = 421,
++	.firmware_name = "modem.mdt",
++	.pas_id = 4,
++	.minidump_id = 3,
++	.uses_elf64 = true,
++	.has_aggre2_clk = false,
++	.auto_boot = false,
++	.proxy_pd_names = (char*[]){
++		"cx",
++		"mss",
++		NULL
++	},
++	.load_state = "modem",
++	.ssr_name = "mpss",
++	.sysmon_name = "modem",
++	.ssctl_id = 0x12,
++};
++
+ static const struct adsp_data slpi_resource_init = {
+ 		.crash_reason_smem = 424,
+ 		.firmware_name = "slpi.mdt",
+@@ -879,10 +939,11 @@ static const struct of_device_id adsp_of_match[] = {
+ 	{ .compatible = "qcom,sm8350-cdsp-pas", .data = &sm8350_cdsp_resource},
+ 	{ .compatible = "qcom,sm8350-slpi-pas", .data = &sm8350_slpi_resource},
+ 	{ .compatible = "qcom,sm8350-mpss-pas", .data = &mpss_resource_init},
+-	{ .compatible = "qcom,sm8450-adsp-pas", .data = &sm8350_adsp_resource},
+-	{ .compatible = "qcom,sm8450-cdsp-pas", .data = &sm8350_cdsp_resource},
++	{ .compatible = "qcom,sm8450-adsp-pas", .data = &sm8450_adsp_resource},
++	{ .compatible = "qcom,sm8450-cdsp-pas", .data = &sm8450_cdsp_resource},
+ 	{ .compatible = "qcom,sm8450-slpi-pas", .data = &sm8350_slpi_resource},
+ 	{ .compatible = "qcom,sm8450-mpss-pas", .data = &mpss_resource_init},
++	{ .compatible = "qcom,sm8450-mpss-pas", .data = &sm8450_mpss_resource},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, adsp_of_match);
 -- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+2.7.4
+
