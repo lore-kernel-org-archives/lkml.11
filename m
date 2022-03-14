@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04570C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240451AbiCNMGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
+        id S240603AbiCNMGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240371AbiCNMFN (ORCPT
+        with ESMTP id S240423AbiCNMFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:05:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4081F628;
-        Mon, 14 Mar 2022 05:02:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 14 Mar 2022 08:05:15 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8778848E7B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 05:02:03 -0700 (PDT)
+Received: from zn.tnic (p5de8e440.dip0.t-ipconnect.de [93.232.228.64])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 311C0CE1268;
-        Mon, 14 Mar 2022 12:02:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01714C340E9;
-        Mon, 14 Mar 2022 12:01:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259320;
-        bh=2z3sHLbs3i+JwZqjq1YXDQcvL9PzzebynVKwSZ/U2TA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T39nAuN1io4XezrKyjB447WLBevhjBGT+6z/Aor2YrEIN/Aat9PWMub8mYz5kkZm/
-         SvXlQE7MYuNqw25MTqjX+1XNhkzPv0z+LBLmHsWNUEcvxQ7GdFtvqKiJ+5rPjGZshr
-         oyZObRRTLuS1wpuZdyfAK/5d0lELr2z0VO8RqWDM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH 5.10 52/71] staging: gdm724x: fix use after free in gdm_lte_rx()
-Date:   Mon, 14 Mar 2022 12:53:45 +0100
-Message-Id: <20220314112739.386426374@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
-References: <20220314112737.929694832@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A37BB1EC01CE;
+        Mon, 14 Mar 2022 13:01:57 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1647259317;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=EXzvUYnVA1bHebasBXnECfFY2YfAaZOPqS4CjTkMFw4=;
+        b=ZdTRD+gl824VDlabbTXdlHHx3TMzcbUecmjNNGhO+H1Mm3SWwi52CpsSCVaf1ZBah2BEip
+        +G+qMtrN9u2V5aBlAVlH3xMe9D/o53X56Wz2M7Ozo5sUz3EHML+WNDNt+d1CTd9gCG+QIX
+        JowryStWJkJv1T7G75KqpfA2kaFoLEk=
+Date:   Mon, 14 Mar 2022 13:01:51 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [tip:locking/core 4/5] vmlinux.o: warning: objtool:
+ do_machine_check()+0x419: call to mca_msr_reg() leaves .noinstr.text section
+Message-ID: <Yi8ur4I5RJ2CT0Rx@zn.tnic>
+References: <202203141947.9KhIyyR7-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202203141947.9KhIyyR7-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+On Mon, Mar 14, 2022 at 07:40:08PM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git locking/core
+> head:   cd27ccfc727e99352321c0c75012ab9c5a90321e
+> commit: acb13ea0baf8db8d05a3910c06e997c90825faad [4/5] asm-generic/bitops: Always inline all bit manipulation helpers
+> config: x86_64-randconfig-a005-20220314 (https://download.01.org/0day-ci/archive/20220314/202203141947.9KhIyyR7-lkp@intel.com/config)
+> compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+> reproduce (this is a W=1 build):
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=acb13ea0baf8db8d05a3910c06e997c90825faad
+>         git remote add tip https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git
+>         git fetch --no-tags tip locking/core
+>         git checkout acb13ea0baf8db8d05a3910c06e997c90825faad
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    vmlinux.o: warning: objtool: mce_read_aux()+0x42: call to mca_msr_reg() leaves .noinstr.text section
+> >> vmlinux.o: warning: objtool: do_machine_check()+0x419: call to mca_msr_reg() leaves .noinstr.text section
+>    vmlinux.o: warning: objtool: enter_from_user_mode()+0x4a: call to on_thread_stack() leaves .noinstr.text section
+>    vmlinux.o: warning: objtool: syscall_enter_from_user_mode()+0x53: call to on_thread_stack() leaves .noinstr.text section
+>    vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare()+0x4a: call to on_thread_stack() leaves .noinstr.text section
+>    vmlinux.o: warning: objtool: irqentry_enter_from_user_mode()+0x4a: call to on_thread_stack() leaves .noinstr.text section
 
-commit fc7f750dc9d102c1ed7bbe4591f991e770c99033 upstream.
+You need to test tip/ras/core with that .config - not some random
+patches inside of locking/core. Fixing the noinstr issues is split into
+a couple of patches in locking/core and ras/core.
 
-The netif_rx_ni() function frees the skb so we can't dereference it to
-save the skb->len.
+Thx.
 
-Fixes: 61e121047645 ("staging: gdm7240: adding LTE USB driver")
-Cc: stable <stable@vger.kernel.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220228074331.GA13685@kili
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/staging/gdm724x/gdm_lte.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+-- 
+Regards/Gruss,
+    Boris.
 
---- a/drivers/staging/gdm724x/gdm_lte.c
-+++ b/drivers/staging/gdm724x/gdm_lte.c
-@@ -76,14 +76,15 @@ static void tx_complete(void *arg)
- 
- static int gdm_lte_rx(struct sk_buff *skb, struct nic *nic, int nic_type)
- {
--	int ret;
-+	int ret, len;
- 
-+	len = skb->len + ETH_HLEN;
- 	ret = netif_rx_ni(skb);
- 	if (ret == NET_RX_DROP) {
- 		nic->stats.rx_dropped++;
- 	} else {
- 		nic->stats.rx_packets++;
--		nic->stats.rx_bytes += skb->len + ETH_HLEN;
-+		nic->stats.rx_bytes += len;
- 	}
- 
- 	return 0;
-
-
+https://people.kernel.org/tglx/notes-about-netiquette
