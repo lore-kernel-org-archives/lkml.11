@@ -2,101 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC5DC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:43:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240183AbiCNOoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 10:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
+        id S240288AbiCNOoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 10:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238554AbiCNOoG (ORCPT
+        with ESMTP id S236436AbiCNOow (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 10:44:06 -0400
-Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8FD2657;
-        Mon, 14 Mar 2022 07:42:56 -0700 (PDT)
-Received: by mail-io1-f42.google.com with SMTP id r2so18430576iod.9;
-        Mon, 14 Mar 2022 07:42:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=ZFm3098Qq38ZihocmoyjymWLRXt7L5rX0Wix1tDlZKI=;
-        b=7XCQEwPqbLm5tVah6hX9ZlYpSUfbq7s9t1GRlAWDlOfwQZxwH/yzmW6slLpGKUurL8
-         qou+/KHhapWzDM4MIHyzqGSE0x5S8tR4B/bOsAVDIbolpI/7/bj+lRGb0b8ZtYkXS1Zx
-         IY7MdBp4Srg+KIyT5EF21LR81ZlTf34u1xr8Fgg9OQIJGkPiCAYF0lNCMdKtwkdabGNa
-         c+4E1oK8nkJ1vehfZeYTm9oWDuqoTIJ/+Y1iZ/LHI3q3A/SAOTU1jMvLRSZ9XttD2pr9
-         EC++C/iZdgBs0Uq/zrhc7YwBli5+kkXiO+0ZmnUck8rqTPPk4thPRFxE1oLrPnUDQ/50
-         yVvA==
-X-Gm-Message-State: AOAM530/bxXQ4Sqy/ZUGxbVRnKQa0dNEobHsQlGhImkJBUEfVvoxblYX
-        wifZ93gP4PCeQU9vfPL6NL/S00Fb6w==
-X-Google-Smtp-Source: ABdhPJyQaBTGAIetjdRf6giyx6SU7LHoFADIdsRp3lXRCDkqAdzyIb0mzuwjvoX1KW3dUpVp8++XJA==
-X-Received: by 2002:a02:6910:0:b0:319:4f4c:eede with SMTP id e16-20020a026910000000b003194f4ceedemr20591642jac.301.1647268976134;
-        Mon, 14 Mar 2022 07:42:56 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id a4-20020a5d9544000000b00640a6eb6e1esm8957167ios.53.2022.03.14.07.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 07:42:55 -0700 (PDT)
-Received: (nullmailer pid 12511 invoked by uid 1000);
-        Mon, 14 Mar 2022 14:42:49 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Prashant Gaikwad <pgaikwad@nvidia.com>,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Peter De Schrijver <pdeschrijver@nvidia.com>
-In-Reply-To: <20220313190419.2207-17-ansuelsmth@gmail.com>
-References: <20220313190419.2207-1-ansuelsmth@gmail.com> <20220313190419.2207-17-ansuelsmth@gmail.com>
-Subject: Re: [PATCH 16/16] dt-bindings: arm: msm: Convert kpss driver Documentation to yaml
-Date:   Mon, 14 Mar 2022 08:42:49 -0600
-Message-Id: <1647268969.336967.12510.nullmailer@robh.at.kernel.org>
+        Mon, 14 Mar 2022 10:44:52 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A821BE9D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 07:43:42 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647269020;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0/DI6YXpJMGkTpnCcqvKYgg+joL/JSfOmxQzgCHpY/U=;
+        b=WA1vHC+jVY/OZy0lTC5spt32zPPavx8HYQPf06ZiyjiGneHiqmxvsGWvWKtbBRAuOwVe3n
+        BleQMvzurFF6kNHB3wHxpErONJr3I3z5Xujofwq/7idBvPlnOLTvpB5mJbJg5aKF/dF2HX
+        nKH+xwzoz7sOe6Z7xlCSE4saQVEkTElRU/vkAIbuW8UqBokO4ETJcZUi07l1omfWlGAsJa
+        EuUuS0eGJ7F40nMAMG6Wd6fnztBmqgGpo49zfJiK+W3GdsfCkcjlLgb6i+16P9yrHFi32Z
+        bNcuti92hVQSvV0to+IlBlHUV2gYu+4g+4hZe9tZdLxmA7Gn4C+d6b4roacGKw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647269020;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0/DI6YXpJMGkTpnCcqvKYgg+joL/JSfOmxQzgCHpY/U=;
+        b=wzj5Dit5IckjlQWzZ5lXmyKzJXi43cr8owxYbBE8y984RGuS/7XURF3nkiE/5HPzaEehS+
+        2Lv9eB4KfhypucAA==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
+ proper kthread support
+In-Reply-To: <Yi9MWKt+PByLsi6Y@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-12-john.ogness@linutronix.de>
+ <YhYKP/UuSKENGwfj@alley> <87tuc7xma0.fsf@jogness.linutronix.de>
+ <YioMcSe0P0Z7ksiW@alley> <87wnh14wp9.fsf@jogness.linutronix.de>
+ <Yisj2PEtjZfHMe6N@alley> <87czisbotz.fsf@jogness.linutronix.de>
+ <Yit2LN1nCaiUo5y4@alley> <87tuc4yvsw.fsf@jogness.linutronix.de>
+ <Yi9MWKt+PByLsi6Y@alley>
+Date:   Mon, 14 Mar 2022 15:49:39 +0106
+Message-ID: <87h780y4pw.fsf@jogness.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 13 Mar 2022 20:04:19 +0100, Ansuel Smith wrote:
-> Convert kpss-acc and kpss-gcc Documentation to yaml. Fix multiple
-> Documentation error and provide additional example for kpss-gcc-v2.
-> 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/arm/msm/qcom,kpss-acc.txt        | 49 ----------
->  .../bindings/arm/msm/qcom,kpss-acc.yaml       | 97 +++++++++++++++++++
->  .../bindings/arm/msm/qcom,kpss-gcc.txt        | 44 ---------
->  .../bindings/arm/msm/qcom,kpss-gcc.yaml       | 62 ++++++++++++
->  4 files changed, 159 insertions(+), 93 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-acc.yaml
->  delete mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.txt
->  create mode 100644 Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml
-> 
+On 2022-03-14, Petr Mladek <pmladek@suse.com> wrote:
+> My intention is to keep the logic as simple and as clear as possible:
+>
+>        + if we need lock then use lock
+>
+>        + if we need trylock then use trylock
+>
+>        + if we want direct mode then block kthreads and try enter
+> 	 the direct mode ASAP.
+>
+>        + if kthreads mode is allowed then do nothing in
+> 	 console_unlock() and leave the job to kthreads.
+>
+>        + console_lock() temporarily blocks kthreads but
+> 	 it handle messages only when direct mode is enforced.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Thank you for your examples, detailed analysis, insight, and summaries.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/arm/msm/qcom,kpss-gcc.yaml:62:4: [error] no new line character at the end of file (new-line-at-end-of-file)
+This particular review became quite complicated because offline you sent
+me a heavily revised version. Several of your comments are criticizing
+your version and not the actual series I posted. For v2 we need to
+handle it better so that the list has a chance at following our
+discussion. ;-)
 
-dtschema/dtc warnings/errors:
+I will post a v2 that attempts to address your concerns and try to frame
+the naming and structures to align with your suggestions.
 
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1604836
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+John
