@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22DD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A39DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240333AbiCNMED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
+        id S240351AbiCNMEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240471AbiCNMCy (ORCPT
+        with ESMTP id S240667AbiCNMDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:02:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF41496B1;
-        Mon, 14 Mar 2022 05:00:20 -0700 (PDT)
+        Mon, 14 Mar 2022 08:03:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD0A4B42A;
+        Mon, 14 Mar 2022 05:00:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F7CEB80DF0;
-        Mon, 14 Mar 2022 12:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFC61C340E9;
-        Mon, 14 Mar 2022 12:00:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09560612DF;
+        Mon, 14 Mar 2022 12:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3D0BC36AF3;
+        Mon, 14 Mar 2022 12:00:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259218;
-        bh=Cj88WQtc6ogjYVx86hH5d5ZgVRyMEWOCQcXPIlCIh4c=;
+        s=korg; t=1647259240;
+        bh=YfpmRIDi6jRVe/IYxm/SbOg5cyruW3iEv4Tg+KggpLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rn7jurmc1Vyb1viMfQ8gjG79bP7UHwcxqmKNhmTIIGHET1PMgESOJ3X+qAzs327EH
-         eHBviwF4Y0jzGlDNarHsI1IMh2u3vd3GXeQ4HQOfl4p8hzte4/nH5LlmCWDQTXiVp3
-         2Ajms5SBWvIeaFfUmukGVWQ7FjAdRJ/s131jrF2U=
+        b=aCujLUexWtlmH1USnY5ghyM/poXVs6yoS390fZyXwluK7V1n20s5NYAgijr0ZxDjo
+         BmkecdqV9kTSt7OPed0ebyLmcLHH2MKnHRq3JP2ujOxW415YKPp0igMso8uVwBnw4L
+         eyuQXfZjY4xAWaQy57W3IZB47B43kPsGAzVJq17k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Mark Featherston <mark@embeddedTS.com>,
+        Kris Bahnsen <kris@embeddedTS.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 29/71] net/mlx5e: Lag, Only handle events from highest priority multipath entry
-Date:   Mon, 14 Mar 2022 12:53:22 +0100
-Message-Id: <20220314112738.748050816@linuxfoundation.org>
+Subject: [PATCH 5.10 32/71] gpio: ts4900: Do not set DAT and OE together
+Date:   Mon, 14 Mar 2022 12:53:25 +0100
+Message-Id: <20220314112738.832032873@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,56 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Mark Featherston <mark@embeddedTS.com>
 
-[ Upstream commit ad11c4f1d8fd1f03639460e425a36f7fd0ea83f5 ]
+[ Upstream commit 03fe003547975680fdb9ff5ab0e41cb68276c4f2 ]
 
-There could be multiple multipath entries but changing the port affinity
-for each one doesn't make much sense and there should be a default one.
-So only track the entry with lowest priority value.
-The commit doesn't affect existing users with a single entry.
+This works around an issue with the hardware where both OE and
+DAT are exposed in the same register. If both are updated
+simultaneously, the harware makes no guarantees that OE or DAT
+will actually change in any given order and may result in a
+glitch of a few ns on a GPIO pin when changing direction and value
+in a single write.
 
-Fixes: 544fe7c2e654 ("net/mlx5e: Activate HW multipath and handle port affinity based on FIB events")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Setting direction to input now only affects OE bit. Setting
+direction to output updates DAT first, then OE.
+
+Fixes: 9c6686322d74 ("gpio: add Technologic I2C-FPGA gpio support")
+Signed-off-by: Mark Featherston <mark@embeddedTS.com>
+Signed-off-by: Kris Bahnsen <kris@embeddedTS.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/gpio/gpio-ts4900.c | 24 +++++++++++++++++++-----
+ 1 file changed, 19 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index 0f0d250bbc15..c04413f449c5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -123,6 +123,10 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 		return;
- 	}
+diff --git a/drivers/gpio/gpio-ts4900.c b/drivers/gpio/gpio-ts4900.c
+index d885032cf814..d918d2df4de2 100644
+--- a/drivers/gpio/gpio-ts4900.c
++++ b/drivers/gpio/gpio-ts4900.c
+@@ -1,7 +1,7 @@
+ /*
+  * Digital I/O driver for Technologic Systems I2C FPGA Core
+  *
+- * Copyright (C) 2015 Technologic Systems
++ * Copyright (C) 2015, 2018 Technologic Systems
+  * Copyright (C) 2016 Savoir-Faire Linux
+  *
+  * This program is free software; you can redistribute it and/or
+@@ -55,19 +55,33 @@ static int ts4900_gpio_direction_input(struct gpio_chip *chip,
+ {
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
  
-+	/* Handle multipath entry with lower priority value */
-+	if (mp->mfi && mp->mfi != fi && fi->fib_priority >= mp->mfi->fib_priority)
-+		return;
+-	/*
+-	 * This will clear the output enable bit, the other bits are
+-	 * dontcare when this is cleared
++	/* Only clear the OE bit here, requires a RMW. Prevents potential issue
++	 * with OE and data getting to the physical pin at different times.
+ 	 */
+-	return regmap_write(priv->regmap, offset, 0);
++	return regmap_update_bits(priv->regmap, offset, TS4900_GPIO_OE, 0);
+ }
+ 
+ static int ts4900_gpio_direction_output(struct gpio_chip *chip,
+ 					unsigned int offset, int value)
+ {
+ 	struct ts4900_gpio_priv *priv = gpiochip_get_data(chip);
++	unsigned int reg;
+ 	int ret;
+ 
++	/* If changing from an input to an output, we need to first set the
++	 * proper data bit to what is requested and then set OE bit. This
++	 * prevents a glitch that can occur on the IO line
++	 */
++	regmap_read(priv->regmap, offset, &reg);
++	if (!(reg & TS4900_GPIO_OE)) {
++		if (value)
++			reg = TS4900_GPIO_OUT;
++		else
++			reg &= ~TS4900_GPIO_OUT;
 +
- 	/* Handle add/replace event */
- 	nhs = fib_info_num_path(fi);
- 	if (nhs == 1) {
-@@ -132,12 +136,13 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 			int i = mlx5_lag_dev_get_netdev_idx(ldev, nh_dev);
- 
- 			if (i < 0)
--				i = MLX5_LAG_NORMAL_AFFINITY;
--			else
--				++i;
-+				return;
- 
-+			i++;
- 			mlx5_lag_set_port_affinity(ldev, i);
- 		}
++		regmap_write(priv->regmap, offset, reg);
++	}
 +
-+		mp->mfi = fi;
- 		return;
- 	}
- 
+ 	if (value)
+ 		ret = regmap_write(priv->regmap, offset, TS4900_GPIO_OE |
+ 							 TS4900_GPIO_OUT);
 -- 
 2.34.1
 
