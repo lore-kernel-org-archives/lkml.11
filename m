@@ -2,209 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D87C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 23:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AC2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 23:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343572AbiCNXIs (ORCPT
+        id S1343586AbiCNXLw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 19:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
+        Mon, 14 Mar 2022 19:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237663AbiCNXIp (ORCPT
+        with ESMTP id S230021AbiCNXLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 19:08:45 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AEC3A701
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 16:07:35 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id w4so14771851ply.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 16:07:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pDvJxNeK4/mp+PjAiryte2+Q60A5QsH2N8XihtD3jS4=;
-        b=BjuT7+qODcVbRzwA28zATXb9bRIgKBC67hrj8WBPuHbfdUoWwwrCjsZ1W2nJJ1iKJW
-         gRIDRDZs9S4FeFpEGFdxBh3S6BWXD6sdKcKUIWwIy3xk/C6ArG2Qx0awVKp6/6MKWFOa
-         OK3zM28cWxjfGv/gP19br1WHeR+PIhhLuuphWKESlXlGjUFYI2lSOWJ6gHJ5tCtWwFQK
-         kS/bzZ1L/3J8oPvO34MSoGnxtY0GR/1wB5+MDAU9xBCNCJdcA6tF1qtAZDuK1vl9IKyw
-         1rht4B5Z3qmRTqTVGfeN5tTxAVIPcAUi+xezNnhsOrSoRluP7+sVRKM2JwnGOaceIkeO
-         DpWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pDvJxNeK4/mp+PjAiryte2+Q60A5QsH2N8XihtD3jS4=;
-        b=XtOqCAqulSI5QXJ6SKkonX2EcuYA5noG2nb7i/3NluKMmlpqj3EgDXPL9AHTDxm5Uq
-         iSH/NmLbdfgu39r/XwwK0vpbAjRZPNlPSoIKuwg78n8Na4RRJLwJHf5/Gi5d4Q/JO4VK
-         KWXYJN/LNbMlRs4pSIggAKEm9eX4j2ZwcZrM0bl9l/c6xhGzc8ewk4JbHlDDgBXzIfl/
-         LXezqlcKE7np48jSTnJg0ZmCPvhmxqqmVEeRlVqP1BcRAEyFzFhkZawbSM3m4afv8vOg
-         1+nMDraF6rxxz/OFDAkiIknKBJ0TfXqz99lXp+T1pCMFQIobrQggZ2L3BvZkLEjv3fa6
-         WU3w==
-X-Gm-Message-State: AOAM532IdvTjjDLTuvtD9x6mMFa3JkIDlldmfj5Qn2aMlol9cr3aBjGw
-        ToopVftMNNCYZvQNZIYSHIXZgslnUu3IS6G7Wmpe
-X-Google-Smtp-Source: ABdhPJzJx+G0De3nXifA4Rs8Uzx1ACdv6yI+B41RIfT/tQphbU/QURIeihiiMh+b1rzkjJ/F9OBW7IU8EwyI3LKC//w=
-X-Received: by 2002:a17:902:720a:b0:151:d7d7:6ac0 with SMTP id
- ba10-20020a170902720a00b00151d7d76ac0mr24866948plb.128.1647299254414; Mon, 14
- Mar 2022 16:07:34 -0700 (PDT)
+        Mon, 14 Mar 2022 19:11:50 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64273BF8E;
+        Mon, 14 Mar 2022 16:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647299440; x=1678835440;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6C9nVg8jyii5VHo88KHjPTiSG9eWD7pgA09gtw2HDFo=;
+  b=RsAX6IxqipUuwfY7L5im2eSk7jSsDzRGNpSRuCJNOK3xhy7X8PCFAaZM
+   +Y9fQWmMewXbJNdDydzHKR99l+Sbu17WRI+QegzDqbac43yL9KdaM1nca
+   4XCvv4J8S2+pUZwfnUrwuUkJXsmZYsRlyNcR0vK0MKYtIFlatUTdm17dA
+   7UmjjRxYqG99NXIXoYV25OFZslmANhf8KzGUCSPDUH4HVcvUZEvjcqtxi
+   fhKiFhY8OJkIqW21P/M+Vj3ua4sdGxT4IIPduhgrx6unKT3o52AlgkS5A
+   1dxpxxuXStS7yo315mwf4lgB4cPd3813eysApsHQft7W7Zs+oH52yMpWV
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="253726560"
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="253726560"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 16:10:40 -0700
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="598096916"
+Received: from agluck-desk3.sc.intel.com ([172.25.222.60])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 16:10:40 -0700
+Date:   Mon, 14 Mar 2022 16:10:39 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jithu Joseph <jithu.joseph@intel.com>, hdegoede@redhat.com,
+        markgross@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, corbet@lwn.net, andriy.shevchenko@linux.intel.com,
+        ashok.raj@intel.com, rostedt@goodmis.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
+        ravi.v.shankar@intel.com, Dan Williams <dan.j.williams@intel.com>
+Subject: Re: [RFC 00/10] Introduce In Field Scan driver
+Message-ID: <Yi/Lb5laEki0JHft@agluck-desk3.sc.intel.com>
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <Yh59rOIH24X+6GyI@kroah.com>
+ <Yh5+om/Nr06V0+Qj@kroah.com>
 MIME-Version: 1.0
-References: <20220210223134.233757-1-morbo@google.com> <20220301201903.4113977-1-morbo@google.com>
-In-Reply-To: <20220301201903.4113977-1-morbo@google.com>
-From:   Bill Wendling <morbo@google.com>
-Date:   Mon, 14 Mar 2022 16:07:23 -0700
-Message-ID: <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com>
-Subject: Re: [PATCH v5] x86: use builtins to read eflags
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh5+om/Nr06V0+Qj@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 12:19 PM Bill Wendling <morbo@google.com> wrote:
->
-Bump for review.
+On Tue, Mar 01, 2022 at 09:14:26PM +0100, Greg KH wrote:
+> On Tue, Mar 01, 2022 at 09:10:20PM +0100, Greg KH wrote:
+> > On Tue, Mar 01, 2022 at 11:54:47AM -0800, Jithu Joseph wrote:
+> > > Note to Maintainers:
+> > > Requesting x86 Maintainers to take a look at patch01 as it
+> > > touches arch/x86 portion of the kernel. Also would like to guide them
+> > > to patch07 which sets up hotplug notifiers and creates kthreads.
+> > > 
+> > > Patch 2/10 - Adds Documentation. Requesting Documentation maintainer to review it.
+> > > 
+> > > Requesting Greg KH to review the sysfs changes added by patch08.
+> > 
+> > "RFC" means you are not comfortable submitting the changes yet, so you
+> > don't need my review at this point in time.  Become confident in your
+> > changes before asking for others to review the code please.
+> 
+> Hint, it needs work, sysfs_emit() for one thing, lack of reference
+> counting on your cpu objects is another...
 
--bw
+Greg,
 
-> This issue arose due to Clang's issue with the "=rm" constraint. Clang
-> chooses to be conservative in these situations and always uses memory
-> instead of registers, resulting in sub-optimal code. (This is a known
-> issue, which is currently being addressed.)
->
-> This function has gone through numerous changes over the years:
->
->   - The original version of this function used the "=g" constraint,
->     which has the following description:
->
->       Any register, memory or immediate integer operand is allowed,
->       except for registers that are not general registers.
->
->   - This was changed to "=r" in commit f1f029c7bfbf ("x86: fix assembly
->     constraints in native_save_fl()"), because someone noticed that:
->
->       the offset of the flags variable from the stack pointer will
->       change when the pushf is performed. gcc doesn't attempt to
->       understand that fact, and address used for pop will still be the
->       same. It will write to somewhere near flags on the stack but not
->       actually into it and overwrite some other value.
->
->   - However, commit f1f029c7bfbf ("x86: fix assembly constraints in
->     native_save_fl()") was partially reverted in commit ab94fcf528d1
->     ("x86: allow "=rm" in native_save_fl()"), because the original
->     reporter of the issue was using a broken x86 simulator. The
->     justification for this change was:
->
->       "=rm" is allowed in this context, because "pop" is explicitly
->       defined to adjust the stack pointer *before* it evaluates its
->       effective address, if it has one.  Thus, we do end up writing to
->       the correct address even if we use an on-stack memory argument.
->
-> Clang generates good code when the builtins are used. On one benchmark,
-> a hotspot in kmem_cache_free went from using 5.18% of cycles popping to
-> a memory address to 0.13% popping to a register. This benefit is
-> magnified given that this code is inlined in numerous places in the
-> kernel.
->
-> The builtins also help GCC. It allows GCC (and Clang) to reduce register
-> pressure and, consequently, register spills by rescheduling
-> instructions. It can't happen with instructions in inline assembly,
-> because compilers view inline assembly blocks as "black boxes," whose
-> instructions can't be rescheduled.
->
-> Another benefit of builtins over asm blocks is that compilers are able
-> to make more precise inlining decisions, since they no longer need to
-> rely on imprecise measures based on newline counts.
->
-> A trivial example demonstrates this code motion.
->
->         void y(void);
->         unsigned long x(void) {
->                 unsigned long v = __builtin_ia32_readeflags_u64();
->                 y();
->                 return v;
->         }
->
-> GCC at -O1:
->         pushq   %rbx
->         pushfq
->         popq    %rbx
->         movl    $0, %eax
->         call    y
->         movq    %rbx, %rax
->         popq    %rbx
->         ret
->
-> GCC at -O2:
->         pushq   %r12
->         pushfq
->         xorl    %eax, %eax
->         popq    %r12
->         call    y
->         movq    %r12, %rax
->         popq    %r12
->         ret
->
-> Link: https://gist.github.com/nickdesaulniers/b4d0f6e26f8cbef0ae4c5352cfeaca67
-> Link: https://github.com/llvm/llvm-project/issues/20571
-> Link: https://gcc.gnu.org/onlinedocs/gcc/Simple-Constraints.html#Simple-Constraints
-> Link: https://godbolt.org/z/5n3Eov1xT
-> Signed-off-by: Bill Wendling <morbo@google.com>
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> ---
-> v5: - Incorporate Nick's suggestion to limit the change to Clang >= 14.0 and
->       GCC.
-> v4: - Clang now no longer generates stack frames when using these builtins.
->     - Corrected misspellings.
-> v3: - Add blurb indicating that GCC's output hasn't changed.
-> v2: - Kept the original function to retain the out-of-line symbol.
->     - Improved the commit message.
->     - Note that I couldn't use Nick's suggestion of
->
->         return IS_ENABLED(CONFIG_X86_64) ? ...
->
->       because Clang complains about using __builtin_ia32_readeflags_u32 in
->       64-bit mode.
-> ---
->  arch/x86/include/asm/irqflags.h | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/arch/x86/include/asm/irqflags.h b/arch/x86/include/asm/irqflags.h
-> index 87761396e8cc..2eded855f6ab 100644
-> --- a/arch/x86/include/asm/irqflags.h
-> +++ b/arch/x86/include/asm/irqflags.h
-> @@ -19,6 +19,11 @@
->  extern inline unsigned long native_save_fl(void);
->  extern __always_inline unsigned long native_save_fl(void)
->  {
-> +#if defined(CC_IS_CLANG) && defined(UNWINDER_ORC) && CLANG_VERSION < 140000
-> +       /*
-> +        * Clang forced frame pointers via the builtins until Clang-14. Use
-> +        * this as a fall-back until the minimum Clang version is >= 14.0.
-> +        */
->         unsigned long flags;
->
->         /*
-> @@ -33,6 +38,11 @@ extern __always_inline unsigned long native_save_fl(void)
->                      : "memory");
->
->         return flags;
-> +#elif defined(CONFIG_X86_64)
-> +       return __builtin_ia32_readeflags_u64();
-> +#else
-> +       return __builtin_ia32_readeflags_u32();
-> +#endif
->  }
->
->  static __always_inline void native_irq_disable(void)
-> --
-> 2.35.1.574.g5d30c73bfb-goog
->
+Thanks for the comments. They triggered a bunch of internal
+re-thinking of the interface.  One idea that has some traction
+(Credit/Blame: Dan Williams) is to:
+
+1) Don't put anything in /sys/devices/system/cpu/*
+2) Driver creates some info/control files in its own
+   corner of /sys/devices/.../ifs
+3) No per-cpu files ... run a test with:
+   # echo ${cpu} > /sys/devices/.../ifs/run_test
+4) No test result files.
+   When tests complete they report using uevents
+
+Using uevent to report means that we can easily have
+mutiple parts to the result (pass/fail/incomplete status, as well
+as diagnostic details about the reason for the failure,
+or why the test was not completed).
+
+This seems a novel use of uevent ... is it OK, or is is abuse?
+
+Thanks
+
+-Tony
