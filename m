@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A5FEC3527B
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF8A1C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234043AbiCNMVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57226 "EHLO
+        id S241984AbiCNMSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240734AbiCNMLe (ORCPT
+        with ESMTP id S242376AbiCNMJy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:11:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85F833A39;
-        Mon, 14 Mar 2022 05:10:24 -0700 (PDT)
+        Mon, 14 Mar 2022 08:09:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F39D14004;
+        Mon, 14 Mar 2022 05:07:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BA87B80DF4;
-        Mon, 14 Mar 2022 12:10:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CFADC340EC;
-        Mon, 14 Mar 2022 12:10:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49AF16130D;
+        Mon, 14 Mar 2022 12:07:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D74FC340E9;
+        Mon, 14 Mar 2022 12:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259822;
-        bh=/ysTpHMR/qo7lmvua99zXU/quYDGz2gZ/U7+mWVtzZo=;
+        s=korg; t=1647259646;
+        bh=wqjYFkslxvrZjmqfbYf5nUKxy5nRUxoIo/P8qVlyWeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SGd6PzOzZMgZL1EZQ9RbUPyk28chcQ9n2dQdg/pfjIQS8u+aCMXLUy0BMk4srhHco
-         RVmn6XuXWER3sTACK1HlXiKbQQvcTxP1H3ADselaQyCpqXA+2uMlfC5kw4ifSkpW4/
-         kGt6BRUbIetaXWTg0adl1xJMVfpDXNSxTVV2oWAI=
+        b=2NEWTHpzm0GbK5U9XmID0/rdWPmSfS/25LmNXdb4+pLRwzKQtby98t/swniBVnb1z
+         G5FwI8QK72zr7vXRUu+juBeRDFihe11laTbmf61NDmDgV7oIC9LnmvBTam1g6W2uGk
+         HjYO/0gtIiTQbDMRgdwQvRXH7H+SsSwrX+AscbEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 097/110] watch_queue: Fix the alloc bitmap size to reflect notes allocated
-Date:   Mon, 14 Mar 2022 12:54:39 +0100
-Message-Id: <20220314112745.733992680@linuxfoundation.org>
+        stable@vger.kernel.org, Anton Romanov <romanton@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 057/110] kvm: x86: Disable KVM_HC_CLOCK_PAIRING if tsc is in always catchup mode
+Date:   Mon, 14 Mar 2022 12:53:59 +0100
+Message-Id: <20220314112744.627462723@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,45 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Anton Romanov <romanton@google.com>
 
-commit 3b4c0371928c17af03e8397ac842346624017ce6 upstream.
+[ Upstream commit 3a55f729240a686aa8af00af436306c0cd532522 ]
 
-Currently, watch_queue_set_size() sets the number of notes available in
-wqueue->nr_notes according to the number of notes allocated, but sets
-the size of the bitmap to the unrounded number of notes originally asked
-for.
+If vcpu has tsc_always_catchup set each request updates pvclock data.
+KVM_HC_CLOCK_PAIRING consumers such as ptp_kvm_x86 rely on tsc read on
+host's side and do hypercall inside pvclock_read_retry loop leading to
+infinite loop in such situation.
 
-Fix this by setting the bitmap size to the number of notes we're
-actually going to make available (ie. the number allocated).
+v3:
+    Removed warn
+    Changed return code to KVM_EFAULT
+v2:
+    Added warn
 
-Fixes: c73be61cede5 ("pipe: Add general notification queue support")
-Reported-by: Jann Horn <jannh@google.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Anton Romanov <romanton@google.com>
+Message-Id: <20220216182653.506850-1-romanton@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/watch_queue.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/x86.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -244,6 +244,7 @@ long watch_queue_set_size(struct pipe_in
- 		goto error;
- 	}
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 8213f7fb71a7..61bc54748f22 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8666,6 +8666,13 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
+ 	if (clock_type != KVM_CLOCK_PAIRING_WALLCLOCK)
+ 		return -KVM_EOPNOTSUPP;
  
-+	nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
- 	ret = pipe_resize_ring(pipe, roundup_pow_of_two(nr_notes));
- 	if (ret < 0)
- 		goto error;
-@@ -269,7 +270,7 @@ long watch_queue_set_size(struct pipe_in
- 	wqueue->notes = pages;
- 	wqueue->notes_bitmap = bitmap;
- 	wqueue->nr_pages = nr_pages;
--	wqueue->nr_notes = nr_pages * WATCH_QUEUE_NOTES_PER_PAGE;
-+	wqueue->nr_notes = nr_notes;
- 	return 0;
++	/*
++	 * When tsc is in permanent catchup mode guests won't be able to use
++	 * pvclock_read_retry loop to get consistent view of pvclock
++	 */
++	if (vcpu->arch.tsc_always_catchup)
++		return -KVM_EOPNOTSUPP;
++
+ 	if (!kvm_get_walltime_and_clockread(&ts, &cycle))
+ 		return -KVM_EOPNOTSUPP;
  
- error_p:
+-- 
+2.34.1
+
 
 
