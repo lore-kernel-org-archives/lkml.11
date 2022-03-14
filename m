@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F132FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4EAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240049AbiCNL7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38092 "EHLO
+        id S240057AbiCNL7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240162AbiCNL6R (ORCPT
+        with ESMTP id S240184AbiCNL6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:58:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5E465D7;
-        Mon, 14 Mar 2022 04:57:08 -0700 (PDT)
+        Mon, 14 Mar 2022 07:58:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F33AC9FCB;
+        Mon, 14 Mar 2022 04:57:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA01161251;
-        Mon, 14 Mar 2022 11:57:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48DDC340E9;
-        Mon, 14 Mar 2022 11:57:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A147EB80DE2;
+        Mon, 14 Mar 2022 11:57:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CCF7C340E9;
+        Mon, 14 Mar 2022 11:57:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259027;
-        bh=IU/bSd/Up1lGH3O2Qg9A2SkcKJiyLwSWHeG6qKlMYTs=;
+        s=korg; t=1647259030;
+        bh=53SuvHqLsdQdV5lGsvyqBuQ/n38DdwjVCycIDj9374k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rxWGQz7L1JLFWj+HNXDkDtlGwa7pfbVj5+RD8fEodESw94vnRdpf7G1It2k3xsCTw
-         ZuyLOrKEoWnooFDj0ckD+ZgxuhXuRFOSdivC3S1qGwpolKVCU1qIgA261TJFEssXzp
-         cddWNvrh9KWga/wt+MmEuo391M/t+jIwyrIAWn8Q=
+        b=z4E0A99EwixVGe7p+WkN6t7Oti65q3BtCT0KTFUi9whMW5gMRgZQe2THs6N/f5lvW
+         yAeUA9RwrzOi/50BiWc+BfVD9tjA9W8TpOMp3Fvg0GLPd6rSpRT8O4LKr9bZE+SZ3J
+         b6sDS8s9g1f3YEBzD6HmO4RpZXTIANhvUNX60Bns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 03/43] virtio-blk: Dont use MAX_DISCARD_SEGMENTS if max_discard_seg is zero
-Date:   Mon, 14 Mar 2022 12:53:14 +0100
-Message-Id: <20220314112734.514655046@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.4 30/43] fuse: fix pipe buffer lifetime for direct_io
+Date:   Mon, 14 Mar 2022 12:53:41 +0100
+Message-Id: <20220314112735.266119159@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -49,49 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Miklos Szeredi <mszeredi@redhat.com>
 
-[ Upstream commit dacc73ed0b88f1a787ec20385f42ca9dd9eddcd0 ]
+commit 0c4bcfdecb1ac0967619ee7ff44871d93c08c909 upstream.
 
-Currently the value of max_discard_segment will be set to
-MAX_DISCARD_SEGMENTS (256) with no basis in hardware if device
-set 0 to max_discard_seg in configuration space. It's incorrect
-since the device might not be able to handle such large descriptors.
-To fix it, let's follow max_segments restrictions in this case.
+In FOPEN_DIRECT_IO mode, fuse_file_write_iter() calls
+fuse_direct_write_iter(), which normally calls fuse_direct_io(), which then
+imports the write buffer with fuse_get_user_pages(), which uses
+iov_iter_get_pages() to grab references to userspace pages instead of
+actually copying memory.
 
-Fixes: 1f23816b8eb8 ("virtio_blk: add discard and write zeroes support")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Link: https://lore.kernel.org/r/20220304100058.116-1-xieyongji@bytedance.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+On the filesystem device side, these pages can then either be read to
+userspace (via fuse_dev_read()), or splice()d over into a pipe using
+fuse_dev_splice_read() as pipe buffers with &nosteal_pipe_buf_ops.
+
+This is wrong because after fuse_dev_do_read() unlocks the FUSE request,
+the userspace filesystem can mark the request as completed, causing write()
+to return. At that point, the userspace filesystem should no longer have
+access to the pipe buffer.
+
+Fix by copying pages coming from the user address space to new pipe
+buffers.
+
+Reported-by: Jann Horn <jannh@google.com>
+Fixes: c3021629a0d8 ("fuse: support splice() reading from fuse device")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/virtio_blk.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ fs/fuse/dev.c    |   12 +++++++++++-
+ fs/fuse/file.c   |    1 +
+ fs/fuse/fuse_i.h |    1 +
+ 3 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 816eb2db7308..4b3645e648ee 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -980,9 +980,15 @@ static int virtblk_probe(struct virtio_device *vdev)
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -933,7 +933,17 @@ static int fuse_copy_page(struct fuse_co
  
- 		virtio_cread(vdev, struct virtio_blk_config, max_discard_seg,
- 			     &v);
-+
-+		/*
-+		 * max_discard_seg == 0 is out of spec but we always
-+		 * handled it.
-+		 */
-+		if (!v)
-+			v = sg_elems - 2;
- 		blk_queue_max_discard_segments(q,
--					       min_not_zero(v,
--							    MAX_DISCARD_SEGMENTS));
-+					       min(v, MAX_DISCARD_SEGMENTS));
- 
- 		blk_queue_flag_set(QUEUE_FLAG_DISCARD, q);
+ 	while (count) {
+ 		if (cs->write && cs->pipebufs && page) {
+-			return fuse_ref_page(cs, page, offset, count);
++			/*
++			 * Can't control lifetime of pipe buffers, so always
++			 * copy user pages.
++			 */
++			if (cs->req->args->user_pages) {
++				err = fuse_copy_fill(cs);
++				if (err)
++					return err;
++			} else {
++				return fuse_ref_page(cs, page, offset, count);
++			}
+ 		} else if (!cs->len) {
+ 			if (cs->move_pages && page &&
+ 			    offset == 0 && count == PAGE_SIZE) {
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -1433,6 +1433,7 @@ static int fuse_get_user_pages(struct fu
+ 			(PAGE_SIZE - ret) & (PAGE_SIZE - 1);
  	}
--- 
-2.34.1
-
+ 
++	ap->args.user_pages = true;
+ 	if (write)
+ 		ap->args.in_pages = 1;
+ 	else
+--- a/fs/fuse/fuse_i.h
++++ b/fs/fuse/fuse_i.h
+@@ -248,6 +248,7 @@ struct fuse_args {
+ 	bool nocreds:1;
+ 	bool in_pages:1;
+ 	bool out_pages:1;
++	bool user_pages:1;
+ 	bool out_argvar:1;
+ 	bool page_zeroing:1;
+ 	bool page_replace:1;
 
 
