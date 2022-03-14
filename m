@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 288DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 691DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240599AbiCNMLz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52190 "EHLO
+        id S240733AbiCNMMD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242599AbiCNMKT (ORCPT
+        with ESMTP id S241244AbiCNMI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:10:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F182286F4;
-        Mon, 14 Mar 2022 05:09:10 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6064B1CE;
+        Mon, 14 Mar 2022 05:04:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7FB461343;
-        Mon, 14 Mar 2022 12:09:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 281E4C340E9;
-        Mon, 14 Mar 2022 12:09:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A20616130A;
+        Mon, 14 Mar 2022 12:04:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85CEDC340ED;
+        Mon, 14 Mar 2022 12:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259744;
-        bh=ICvhCKwHKbHLMWGfifNq3QhX99AN9pHHdmficVHS+zk=;
+        s=korg; t=1647259487;
+        bh=+E5woosn/ZbFLikndWdbKLVKptItEm0e3E0i3Z+4g/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQuZvWto9E3dKdPpom+NidI7CJlKMO7yutPqYHAM8l6UkCUJ4NYQf0FtX5x/68dRZ
-         feC6bQRIJFBhuo7d2Gk+sezJ7fkEh2wB46UqDr5eMhgz1/xYUTA+EMbidSr1DwIBaR
-         9I/twmKbA5uHySrs2P94tvDYBz2vnbOsfAZQexd8=
+        b=1TGXYLMoh1xof65JjsJUlB7X6jv9HHeb8c6W/dy1tkvb3SaKlygATE1BCl3TFxzto
+         LeYjp9JZpod350LNnvkSq9szofVZODvn6ChnFJqTVO8/48Z3rWpVdudMYsnKQegqjx
+         n5/fFlsUXqCZhBKTaJZ63Nd4DidLUde5XOAuDaE8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 038/110] net: marvell: prestera: Add missing of_node_put() in prestera_switch_set_base_mac_addr
-Date:   Mon, 14 Mar 2022 12:53:40 +0100
-Message-Id: <20220314112744.101806199@linuxfoundation.org>
+Subject: [PATCH 5.15 018/110] isdn: hfcpci: check the return value of dma_set_mask() in setup_hw()
+Date:   Mon, 14 Mar 2022 12:53:20 +0100
+Message-Id: <20220314112743.544081971@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,33 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit c9ffa3e2bc451816ce0295e40063514fabf2bd36 ]
+[ Upstream commit d0aeb0d4a3f7d2a0df7e9545892bbeede8f2ac7e ]
 
-This node pointer is returned by of_find_compatible_node() with
-refcount incremented. Calling of_node_put() to aovid the refcount leak.
+The function dma_set_mask() in setup_hw() can fail, so its return value
+should be checked.
 
-Fixes: 501ef3066c89 ("net: marvell: prestera: Add driver for Prestera family ASIC devices")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Fixes: 1700fe1a10dc ("Add mISDN HFC PCI driver")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/prestera/prestera_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/isdn/hardware/mISDN/hfcpci.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index aa543b29799e..656c68cfd7ec 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -492,6 +492,7 @@ static int prestera_switch_set_base_mac_addr(struct prestera_switch *sw)
- 		dev_info(prestera_dev(sw), "using random base mac address\n");
+diff --git a/drivers/isdn/hardware/mISDN/hfcpci.c b/drivers/isdn/hardware/mISDN/hfcpci.c
+index bd087cca1c1d..af17459c1a5c 100644
+--- a/drivers/isdn/hardware/mISDN/hfcpci.c
++++ b/drivers/isdn/hardware/mISDN/hfcpci.c
+@@ -2005,7 +2005,11 @@ setup_hw(struct hfc_pci *hc)
  	}
- 	of_node_put(base_mac_np);
-+	of_node_put(np);
- 
- 	return prestera_hw_switch_mac_set(sw, sw->base_mac);
- }
+ 	/* Allocate memory for FIFOS */
+ 	/* the memory needs to be on a 32k boundary within the first 4G */
+-	dma_set_mask(&hc->pdev->dev, 0xFFFF8000);
++	if (dma_set_mask(&hc->pdev->dev, 0xFFFF8000)) {
++		printk(KERN_WARNING
++		       "HFC-PCI: No usable DMA configuration!\n");
++		return -EIO;
++	}
+ 	buffer = dma_alloc_coherent(&hc->pdev->dev, 0x8000, &hc->hw.dmahandle,
+ 				    GFP_KERNEL);
+ 	/* We silently assume the address is okay if nonzero */
 -- 
 2.34.1
 
