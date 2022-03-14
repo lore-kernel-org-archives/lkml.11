@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90267C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241102AbiCNMOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49218 "EHLO
+        id S238570AbiCNMOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242231AbiCNMJp (ORCPT
+        with ESMTP id S241208AbiCNMI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F2F25E89;
-        Mon, 14 Mar 2022 05:06:54 -0700 (PDT)
+        Mon, 14 Mar 2022 08:08:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78D7F14004;
+        Mon, 14 Mar 2022 05:04:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 299D4612FD;
-        Mon, 14 Mar 2022 12:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40EAAC340E9;
-        Mon, 14 Mar 2022 12:06:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E758F612FF;
+        Mon, 14 Mar 2022 12:04:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F88C340E9;
+        Mon, 14 Mar 2022 12:04:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259613;
-        bh=3FhezaPON0nLfiY9z9jFopos8vB+LldRGOfGCo24UzA=;
+        s=korg; t=1647259483;
+        bh=mcY++hQwosQrmS4VOSstT2y3t/sUeBOpElGTIFDRSu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kRcvR7/wPkkRCNZsSOhAqt4KJ0ja8CXjpRE8l+jOEc8Yh5T/0RJMLolUxNIqoJnqt
-         qryezP0efjumEXXKiSBZ2mkMle3KzuKPiVVz7qV6+xLnsyKHCKkuqk2stAwDRM2ipj
-         OoAjiYdC3iiJSmHBWvsZzjmoPVUwh9b05vD5/ftA=
+        b=a9Pc61W10Tlb2KjwfSRa3ZjSlHiLu9LK/PasSGlo4WzmDo1cMZUldcl05Irm3Xinh
+         tzw6QawjG7rgIs+Hyylsy9MdhJZct+AHZISnMeM266ONAlG+yQlItWjfMODaftWviO
+         +LmlD24hrUzHpziMoAg6ppGCpt+BOYipJazzJEi8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Zhang Min <zhang.min9@zte.com.cn>,
+        Yi Wang <wang.yi59@zte.com.cn>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 049/110] sctp: fix kernel-infoleak for SCTP sockets
-Date:   Mon, 14 Mar 2022 12:53:51 +0100
-Message-Id: <20220314112744.405643096@linuxfoundation.org>
+Subject: [PATCH 5.15 017/110] vdpa: fix use-after-free on vp_vdpa_remove
+Date:   Mon, 14 Mar 2022 12:53:19 +0100
+Message-Id: <20220314112743.516445465@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -54,126 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Zhang Min <zhang.min9@zte.com.cn>
 
-[ Upstream commit 633593a808980f82d251d0ca89730d8bb8b0220c ]
+[ Upstream commit eb057b44dbe35ae14527830236a92f51de8f9184 ]
 
-syzbot reported a kernel infoleak [1] of 4 bytes.
+When vp_vdpa driver is unbind, vp_vdpa is freed in vdpa_unregister_device
+and then vp_vdpa->mdev.pci_dev is dereferenced in vp_modern_remove,
+triggering use-after-free.
 
-After analysis, it turned out r->idiag_expires is not initialized
-if inet_sctp_diag_fill() calls inet_diag_msg_common_fill()
+Call Trace of unbinding driver free vp_vdpa :
+do_syscall_64
+  vfs_write
+    kernfs_fop_write_iter
+      device_release_driver_internal
+        pci_device_remove
+          vp_vdpa_remove
+            vdpa_unregister_device
+              kobject_release
+                device_release
+                  kfree
 
-Make sure to clear idiag_timer/idiag_retrans/idiag_expires
-and let inet_diag_msg_sctpasoc_fill() fill them again if needed.
+Call Trace of dereference vp_vdpa->mdev.pci_dev:
+vp_modern_remove
+  pci_release_selected_regions
+    pci_release_region
+      pci_resource_len
+        pci_resource_end
+          (dev)->resource[(bar)].end
 
-[1]
-
-BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
-BUG: KMSAN: kernel-infoleak in copyout lib/iov_iter.c:154 [inline]
-BUG: KMSAN: kernel-infoleak in _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
- instrument_copy_to_user include/linux/instrumented.h:121 [inline]
- copyout lib/iov_iter.c:154 [inline]
- _copy_to_iter+0x6ef/0x25a0 lib/iov_iter.c:668
- copy_to_iter include/linux/uio.h:162 [inline]
- simple_copy_to_iter+0xf3/0x140 net/core/datagram.c:519
- __skb_datagram_iter+0x2d5/0x11b0 net/core/datagram.c:425
- skb_copy_datagram_iter+0xdc/0x270 net/core/datagram.c:533
- skb_copy_datagram_msg include/linux/skbuff.h:3696 [inline]
- netlink_recvmsg+0x669/0x1c80 net/netlink/af_netlink.c:1977
- sock_recvmsg_nosec net/socket.c:948 [inline]
- sock_recvmsg net/socket.c:966 [inline]
- __sys_recvfrom+0x795/0xa10 net/socket.c:2097
- __do_sys_recvfrom net/socket.c:2115 [inline]
- __se_sys_recvfrom net/socket.c:2111 [inline]
- __x64_sys_recvfrom+0x19d/0x210 net/socket.c:2111
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:737 [inline]
- slab_alloc_node mm/slub.c:3247 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4975
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1158 [inline]
- netlink_dump+0x3e5/0x16c0 net/netlink/af_netlink.c:2248
- __netlink_dump_start+0xcf8/0xe90 net/netlink/af_netlink.c:2373
- netlink_dump_start include/linux/netlink.h:254 [inline]
- inet_diag_handler_cmd+0x2e7/0x400 net/ipv4/inet_diag.c:1341
- sock_diag_rcv_msg+0x24a/0x620
- netlink_rcv_skb+0x40c/0x7e0 net/netlink/af_netlink.c:2494
- sock_diag_rcv+0x63/0x80 net/core/sock_diag.c:277
- netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
- netlink_unicast+0x1093/0x1360 net/netlink/af_netlink.c:1343
- netlink_sendmsg+0x14d9/0x1720 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:705 [inline]
- sock_sendmsg net/socket.c:725 [inline]
- sock_write_iter+0x594/0x690 net/socket.c:1061
- do_iter_readv_writev+0xa7f/0xc70
- do_iter_write+0x52c/0x1500 fs/read_write.c:851
- vfs_writev fs/read_write.c:924 [inline]
- do_writev+0x645/0xe00 fs/read_write.c:967
- __do_sys_writev fs/read_write.c:1040 [inline]
- __se_sys_writev fs/read_write.c:1037 [inline]
- __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Bytes 68-71 of 2508 are uninitialized
-Memory access of size 2508 starts at ffff888114f9b000
-Data copied to user address 00007f7fe09ff2e0
-
-CPU: 1 PID: 3478 Comm: syz-executor306 Not tainted 5.17.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 8f840e47f190 ("sctp: add the sctp_diag.c file")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
-Link: https://lore.kernel.org/r/20220310001145.297371-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Zhang Min <zhang.min9@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Link: https://lore.kernel.org/r/20220301091059.46869-1-wang.yi59@zte.com.cn
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fixes: 64b9f64f80a6 ("vdpa: introduce virtio pci driver")
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/diag.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/vdpa/virtio_pci/vp_vdpa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-index 034e2c74497d..d9c6d8f30f09 100644
---- a/net/sctp/diag.c
-+++ b/net/sctp/diag.c
-@@ -61,10 +61,6 @@ static void inet_diag_msg_sctpasoc_fill(struct inet_diag_msg *r,
- 		r->idiag_timer = SCTP_EVENT_TIMEOUT_T3_RTX;
- 		r->idiag_retrans = asoc->rtx_data_chunks;
- 		r->idiag_expires = jiffies_to_msecs(t3_rtx->expires - jiffies);
--	} else {
--		r->idiag_timer = 0;
--		r->idiag_retrans = 0;
--		r->idiag_expires = 0;
- 	}
+diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
+index 5bcd00246d2e..dead832b4571 100644
+--- a/drivers/vdpa/virtio_pci/vp_vdpa.c
++++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
+@@ -513,8 +513,8 @@ static void vp_vdpa_remove(struct pci_dev *pdev)
+ {
+ 	struct vp_vdpa *vp_vdpa = pci_get_drvdata(pdev);
+ 
+-	vdpa_unregister_device(&vp_vdpa->vdpa);
+ 	vp_modern_remove(&vp_vdpa->mdev);
++	vdpa_unregister_device(&vp_vdpa->vdpa);
  }
  
-@@ -144,13 +140,14 @@ static int inet_sctp_diag_fill(struct sock *sk, struct sctp_association *asoc,
- 	r = nlmsg_data(nlh);
- 	BUG_ON(!sk_fullsock(sk));
- 
-+	r->idiag_timer = 0;
-+	r->idiag_retrans = 0;
-+	r->idiag_expires = 0;
- 	if (asoc) {
- 		inet_diag_msg_sctpasoc_fill(r, sk, asoc);
- 	} else {
- 		inet_diag_msg_common_fill(r, sk);
- 		r->idiag_state = sk->sk_state;
--		r->idiag_timer = 0;
--		r->idiag_retrans = 0;
- 	}
- 
- 	if (inet_diag_msg_attrs_fill(sk, skb, r, ext, user_ns, net_admin))
+ static struct pci_driver vp_vdpa_driver = {
 -- 
 2.34.1
 
