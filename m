@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39499C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56874C352B6
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245535AbiCNMdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        id S245418AbiCNMc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243943AbiCNMVZ (ORCPT
+        with ESMTP id S243895AbiCNMVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:25 -0400
+        Mon, 14 Mar 2022 08:21:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89AEE13D04;
-        Mon, 14 Mar 2022 05:18:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EED6255;
+        Mon, 14 Mar 2022 05:17:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2285660C70;
-        Mon, 14 Mar 2022 12:18:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 704ADC340E9;
-        Mon, 14 Mar 2022 12:18:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF51860B04;
+        Mon, 14 Mar 2022 12:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8644C340E9;
+        Mon, 14 Mar 2022 12:17:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260333;
-        bh=GHcjVNVFmexWPprva3YoZ+5Onj0yOw5uwvJRTbQR+mQ=;
+        s=korg; t=1647260273;
+        bh=hsnUw+fKKfcVjGV4i+TG2vlfsOgpRhvYjcS+730bdBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OXKRYkl5ejURaVosBp08IKiEnQ7NcsOrUcSpivWicz7eRPkap7ZHKOruOYBer6BsB
-         v+T7jfHrlJn3/e/ZkdPVCy74s9nzQvtNE5uJVc4qPYcFUwceEB47VNgn2f2o4qXdv7
-         7aKYUMCbh9D6SJqenfWUKR04aaR/wbou5O4zSSD8=
+        b=xA9otbu2sqfP+HVUCh6OEszy/JbPuOd7gLb3DwSpvBMH+7ki3cKHqOdBTgoMqKFgQ
+         vCCUFXLcWMik4Wm/TH2uhQLpnZjUAdaAmHDKhdnDtZ0o6meu6O7BE1uQnGKw0GUk8O
+         YNY249Sux/XmTxEUo+9mZboeqN2Id7qagEKyFRWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>,
-        Lyude Paul <lyude@redhat.com>, Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        dri-devel@lists.freedesktop.org, Dave Airlie <airlied@redhat.com>
-Subject: [PATCH 5.16 118/121] drm/panel: Select DRM_DP_HELPER for DRM_PANEL_EDP
-Date:   Mon, 14 Mar 2022 12:55:01 +0100
-Message-Id: <20220314112747.405722135@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Halil Pasic" <pasic@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.16 102/121] virtio: acknowledge all features before access
+Date:   Mon, 14 Mar 2022 12:54:45 +0100
+Message-Id: <20220314112746.961371411@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -54,55 +49,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit 3755d35ee1d2454b20b8a1e20d790e56201678a4 upstream.
+commit 4fa59ede95195f267101a1b8916992cf3f245cdb upstream.
 
-As reported in [1], DRM_PANEL_EDP depends on DRM_DP_HELPER. Select
-the option to fix the build failure. The error message is shown
-below.
+The feature negotiation was designed in a way that
+makes it possible for devices to know which config
+fields will be accessed by drivers.
 
-  arm-linux-gnueabihf-ld: drivers/gpu/drm/panel/panel-edp.o: in function
-    `panel_edp_probe': panel-edp.c:(.text+0xb74): undefined reference to
-    `drm_panel_dp_aux_backlight'
-  make[1]: *** [/builds/linux/Makefile:1222: vmlinux] Error 1
+This is broken since commit 404123c2db79 ("virtio: allow drivers to
+validate features") with fallout in at least block and net.  We have a
+partial work-around in commit 2f9a174f918e ("virtio: write back
+F_VERSION_1 before validate") which at least lets devices find out which
+format should config space have, but this is a partial fix: guests
+should not access config space without acknowledging features since
+otherwise we'll never be able to change the config space format.
 
-The issue has been reported before, when DisplayPort helpers were
-hidden behind the option CONFIG_DRM_KMS_HELPER. [2]
+To fix, split finalize_features from virtio_finalize_features and
+call finalize_features with all feature bits before validation,
+and then - if validation changed any bits - once again after.
 
-v2:
-	* fix and expand commit description (Arnd)
+Since virtio_finalize_features no longer writes out features
+rename it to virtio_features_ok - since that is what it does:
+checks that features are ok with the device.
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Fixes: 9d6366e743f3 ("drm: fb_helper: improve CONFIG_FB dependency")
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://lore.kernel.org/dri-devel/CA+G9fYvN0NyaVkRQmA1O6rX7H8PPaZrUAD7=RDy33QY9rUU-9g@mail.gmail.com/ # [1]
-Link: https://lore.kernel.org/all/20211117062704.14671-1-rdunlap@infradead.org/ # [2]
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Lyude Paul <lyude@redhat.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: dri-devel@lists.freedesktop.org
-Link: https://patchwork.freedesktop.org/patch/msgid/20220203093922.20754-1-tzimmermann@suse.de
-Signed-off-by: Dave Airlie <airlied@redhat.com>
+As a side effect, this also reduces the amount of hypervisor accesses -
+we now only acknowledge features once unless we are clearing any
+features when validating (which is uncommon).
+
+IRC I think that this was more or less always the intent in the spec but
+unfortunately the way the spec is worded does not say this explicitly, I
+plan to address this at the spec level, too.
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
+Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
+Cc: "Halil Pasic" <pasic@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/panel/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/virtio/virtio.c       |   39 ++++++++++++++++++++++-----------------
+ include/linux/virtio_config.h |    3 ++-
+ 2 files changed, 24 insertions(+), 18 deletions(-)
 
---- a/drivers/gpu/drm/panel/Kconfig
-+++ b/drivers/gpu/drm/panel/Kconfig
-@@ -95,6 +95,7 @@ config DRM_PANEL_EDP
- 	depends on PM
- 	select VIDEOMODE_HELPERS
- 	select DRM_DP_AUX_BUS
-+	select DRM_DP_HELPER
- 	help
- 	  DRM panel driver for dumb eDP panels that need at most a regulator and
- 	  a GPIO to be powered up. Optionally a backlight can be attached so
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -166,14 +166,13 @@ void virtio_add_status(struct virtio_dev
+ }
+ EXPORT_SYMBOL_GPL(virtio_add_status);
+ 
+-static int virtio_finalize_features(struct virtio_device *dev)
++/* Do some validation, then set FEATURES_OK */
++static int virtio_features_ok(struct virtio_device *dev)
+ {
+-	int ret = dev->config->finalize_features(dev);
+ 	unsigned status;
++	int ret;
+ 
+ 	might_sleep();
+-	if (ret)
+-		return ret;
+ 
+ 	ret = arch_has_restricted_virtio_memory_access();
+ 	if (ret) {
+@@ -238,17 +237,6 @@ static int virtio_dev_probe(struct devic
+ 		driver_features_legacy = driver_features;
+ 	}
+ 
+-	/*
+-	 * Some devices detect legacy solely via F_VERSION_1. Write
+-	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
+-	 * these when needed.
+-	 */
+-	if (drv->validate && !virtio_legacy_is_little_endian()
+-			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
+-		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
+-		dev->config->finalize_features(dev);
+-	}
+-
+ 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
+ 		dev->features = driver_features & device_features;
+ 	else
+@@ -259,13 +247,26 @@ static int virtio_dev_probe(struct devic
+ 		if (device_features & (1ULL << i))
+ 			__virtio_set_bit(dev, i);
+ 
++	err = dev->config->finalize_features(dev);
++	if (err)
++		goto err;
++
+ 	if (drv->validate) {
++		u64 features = dev->features;
++
+ 		err = drv->validate(dev);
+ 		if (err)
+ 			goto err;
++
++		/* Did validation change any features? Then write them again. */
++		if (features != dev->features) {
++			err = dev->config->finalize_features(dev);
++			if (err)
++				goto err;
++		}
+ 	}
+ 
+-	err = virtio_finalize_features(dev);
++	err = virtio_features_ok(dev);
+ 	if (err)
+ 		goto err;
+ 
+@@ -489,7 +490,11 @@ int virtio_device_restore(struct virtio_
+ 	/* We have a driver! */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
+ 
+-	ret = virtio_finalize_features(dev);
++	ret = dev->config->finalize_features(dev);
++	if (ret)
++		goto err;
++
++	ret = virtio_features_ok(dev);
+ 	if (ret)
+ 		goto err;
+ 
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -64,8 +64,9 @@ struct virtio_shm_region {
+  *	Returns the first 64 feature bits (all we currently need).
+  * @finalize_features: confirm what device features we'll be using.
+  *	vdev: the virtio_device
+- *	This gives the final feature bits for the device: it can change
++ *	This sends the driver feature bits to the device: it can change
+  *	the dev->feature bits if it wants.
++ * Note: despite the name this can be called any number of times.
+  *	Returns 0 on success or error status
+  * @bus_name: return the bus name associated with the device (optional)
+  *	vdev: the virtio_device
 
 
