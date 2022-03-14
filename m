@@ -2,72 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F0FC3527B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0680FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242295AbiCNM33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
+        id S242229AbiCNM3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:29:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243861AbiCNMVU (ORCPT
+        with ESMTP id S243848AbiCNMVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:20 -0400
-Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847E2BE5;
-        Mon, 14 Mar 2022 05:17:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yAh5dhSWoezDHAmIMKrnf1fmCmAoJ/u8UhSQGN/+5rg=;
-  b=AOnEnK5rwCG4310Vpj8R+iKPhl+ZQD+1cDacCSAMGCta6CgsSn9yBslL
-   Y1TrJpCX8hv7jCgskW7U1RQ8F6ZnlT4GCA0nKToZhZGvR2wQ42o/C7TAp
-   6Uwkpl70GJ0CwzNzwB5HL+SwW86rfOZM88KpUW0hoMBFN0ZoFvJLVt9bZ
-   Y=;
-Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997353"
-Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 20/30] airo: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:44 +0100
-Message-Id: <20220314115354.144023-21-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+        Mon, 14 Mar 2022 08:21:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01DB71B6;
+        Mon, 14 Mar 2022 05:17:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A55C7B80DC0;
+        Mon, 14 Mar 2022 12:17:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D890FC340E9;
+        Mon, 14 Mar 2022 12:17:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647260234;
+        bh=VuQiuhjqnRPF2PUIDPbSzKC6E5XqH+TQgrvnuZSt+Ko=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kSQGt870F+BGQ4w76RabcAqyWYfmhWfeUZkqjDrTxmAIw4YU1bjVlIp562Syyq8bR
+         Y3qhD8UQuPbsmBIBg5l+rzWSGsEagC7MbyB4zEL/cacv6acuTeBWSyyM5ZNTF71cs3
+         gyfp4Lx0E/Ijjk9sZLKFEt1OceslYGtYSUEeGN3o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jon Lin <jon.lin@rock-chips.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 066/121] spi: rockchip: Fix error in getting num-cs property
+Date:   Mon, 14 Mar 2022 12:54:09 +0100
+Message-Id: <20220314112745.966708059@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
+References: <20220314112744.120491875@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various spelling mistakes in comments.
-Detected with the help of Coccinelle.
+From: Jon Lin <jon.lin@rock-chips.com>
 
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+[ Upstream commit 9382df0a98aad5bbcd4d634790305a1d786ad224 ]
 
+Get num-cs u32 from dts of_node property rather than u16.
+
+Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+Link: https://lore.kernel.org/r/20220216014028.8123-2-jon.lin@rock-chips.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/cisco/airo.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-rockchip.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
-index 452d08545d31..10daef81c355 100644
---- a/drivers/net/wireless/cisco/airo.c
-+++ b/drivers/net/wireless/cisco/airo.c
-@@ -545,7 +545,7 @@ struct ConfigRid {
- #define MODE_CFG_MASK cpu_to_le16(0xff)
- #define MODE_ETHERNET_HOST cpu_to_le16(0<<8) /* rx payloads converted */
- #define MODE_LLC_HOST cpu_to_le16(1<<8) /* rx payloads left as is */
--#define MODE_AIRONET_EXTEND cpu_to_le16(1<<9) /* enable Aironet extenstions */
-+#define MODE_AIRONET_EXTEND cpu_to_le16(1<<9) /* enable Aironet extensions */
- #define MODE_AP_INTERFACE cpu_to_le16(1<<10) /* enable ap interface extensions */
- #define MODE_ANTENNA_ALIGN cpu_to_le16(1<<11) /* enable antenna alignment */
- #define MODE_ETHER_LLC cpu_to_le16(1<<12) /* enable ethernet LLC */
+diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
+index 553b6b9d0222..4f65ba3dd19c 100644
+--- a/drivers/spi/spi-rockchip.c
++++ b/drivers/spi/spi-rockchip.c
+@@ -654,7 +654,7 @@ static int rockchip_spi_probe(struct platform_device *pdev)
+ 	struct spi_controller *ctlr;
+ 	struct resource *mem;
+ 	struct device_node *np = pdev->dev.of_node;
+-	u32 rsd_nsecs;
++	u32 rsd_nsecs, num_cs;
+ 	bool slave_mode;
+ 
+ 	slave_mode = of_property_read_bool(np, "spi-slave");
+@@ -764,8 +764,9 @@ static int rockchip_spi_probe(struct platform_device *pdev)
+ 		 * rk spi0 has two native cs, spi1..5 one cs only
+ 		 * if num-cs is missing in the dts, default to 1
+ 		 */
+-		if (of_property_read_u16(np, "num-cs", &ctlr->num_chipselect))
+-			ctlr->num_chipselect = 1;
++		if (of_property_read_u32(np, "num-cs", &num_cs))
++			num_cs = 1;
++		ctlr->num_chipselect = num_cs;
+ 		ctlr->use_gpio_descriptors = true;
+ 	}
+ 	ctlr->dev.of_node = pdev->dev.of_node;
+-- 
+2.34.1
+
+
 
