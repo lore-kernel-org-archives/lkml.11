@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE1CC35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC43C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242157AbiCNM3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
+        id S242021AbiCNM2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243768AbiCNMVN (ORCPT
+        with ESMTP id S243570AbiCNMU7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5375C36E08;
-        Mon, 14 Mar 2022 05:16:54 -0700 (PDT)
+        Mon, 14 Mar 2022 08:20:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CC735867;
+        Mon, 14 Mar 2022 05:16:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8A4D608C4;
-        Mon, 14 Mar 2022 12:16:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DD1AC340E9;
-        Mon, 14 Mar 2022 12:16:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CE9B6097A;
+        Mon, 14 Mar 2022 12:16:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4725C340E9;
+        Mon, 14 Mar 2022 12:16:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260213;
-        bh=IpUKCrZjShlWu1MKEVWzyPKyAG6itG7kGVkhIIIIOPA=;
+        s=korg; t=1647260180;
+        bh=ggBfsXFAbHLCW/U0wi05vrwQYAKaP3g9I/kK8Sip/XU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gefu7wV3/B9Cuy6FlGUV/AW2RM0hr6BxgPBrZlVLDfpHU05MA0+JzhLQyKMsqFwIi
-         B0WDcH3ssxzM9LUXaAQ9OaXde8scTHfjeNLp1+5i4CkcHlMIewiE/03b17ST/yORAU
-         WeD74D/UuPDOo+N7m1Y4SNfAXF6vjlB1q3lm5ugc=
+        b=QHn7QJ68rO9mMak3Qjci54N/PKtPde8Ezjm2qpwz8Zbu3Dl1Bw5W+BWfzH6NT/cGa
+         nuYZyNqobJab0SQF0Ia9uPYQcIKPIZiB2iSu1yY9E8SKzRfZk1TfP6VRRjAKoplX5n
+         4PXSkxwK0pUFbJdwKW2+SbYO8qxWeDuUra6NoG2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.16 088/121] fuse: fix pipe buffer lifetime for direct_io
-Date:   Mon, 14 Mar 2022 12:54:31 +0100
-Message-Id: <20220314112746.575190006@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
+        Michael Brown <mbrown@fensystems.co.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 079/121] Revert "xen-netback: Check for hotplug-status existence before watching"
+Date:   Mon, 14 Mar 2022 12:54:22 +0100
+Message-Id: <20220314112746.326352044@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -48,79 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miklos Szeredi <mszeredi@redhat.com>
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-commit 0c4bcfdecb1ac0967619ee7ff44871d93c08c909 upstream.
+[ Upstream commit e8240addd0a3919e0fd7436416afe9aa6429c484 ]
 
-In FOPEN_DIRECT_IO mode, fuse_file_write_iter() calls
-fuse_direct_write_iter(), which normally calls fuse_direct_io(), which then
-imports the write buffer with fuse_get_user_pages(), which uses
-iov_iter_get_pages() to grab references to userspace pages instead of
-actually copying memory.
+This reverts commit 2afeec08ab5c86ae21952151f726bfe184f6b23d.
 
-On the filesystem device side, these pages can then either be read to
-userspace (via fuse_dev_read()), or splice()d over into a pipe using
-fuse_dev_splice_read() as pipe buffers with &nosteal_pipe_buf_ops.
+The reasoning in the commit was wrong - the code expected to setup the
+watch even if 'hotplug-status' didn't exist. In fact, it relied on the
+watch being fired the first time - to check if maybe 'hotplug-status' is
+already set to 'connected'. Not registering a watch for non-existing
+path (which is the case if hotplug script hasn't been executed yet),
+made the backend not waiting for the hotplug script to execute. This in
+turns, made the netfront think the interface is fully operational, while
+in fact it was not (the vif interface on xen-netback side might not be
+configured yet).
 
-This is wrong because after fuse_dev_do_read() unlocks the FUSE request,
-the userspace filesystem can mark the request as completed, causing write()
-to return. At that point, the userspace filesystem should no longer have
-access to the pipe buffer.
+This was a workaround for 'hotplug-status' erroneously being removed.
+But since that is reverted now, the workaround is not necessary either.
 
-Fix by copying pages coming from the user address space to new pipe
-buffers.
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
 
-Reported-by: Jann Horn <jannh@google.com>
-Fixes: c3021629a0d8 ("fuse: support splice() reading from fuse device")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
+Reviewed-by: Michael Brown <mbrown@fensystems.co.uk>
+Link: https://lore.kernel.org/r/20220222001817.2264967-2-marmarek@invisiblethingslab.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/dev.c    |   12 +++++++++++-
- fs/fuse/file.c   |    1 +
- fs/fuse/fuse_i.h |    1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/net/xen-netback/xenbus.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
---- a/fs/fuse/dev.c
-+++ b/fs/fuse/dev.c
-@@ -941,7 +941,17 @@ static int fuse_copy_page(struct fuse_co
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index 3fad58d22155..990360d75cb6 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -824,15 +824,11 @@ static void connect(struct backend_info *be)
+ 	xenvif_carrier_on(be->vif);
  
- 	while (count) {
- 		if (cs->write && cs->pipebufs && page) {
--			return fuse_ref_page(cs, page, offset, count);
-+			/*
-+			 * Can't control lifetime of pipe buffers, so always
-+			 * copy user pages.
-+			 */
-+			if (cs->req->args->user_pages) {
-+				err = fuse_copy_fill(cs);
-+				if (err)
-+					return err;
-+			} else {
-+				return fuse_ref_page(cs, page, offset, count);
-+			}
- 		} else if (!cs->len) {
- 			if (cs->move_pages && page &&
- 			    offset == 0 && count == PAGE_SIZE) {
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -1413,6 +1413,7 @@ static int fuse_get_user_pages(struct fu
- 			(PAGE_SIZE - ret) & (PAGE_SIZE - 1);
- 	}
+ 	unregister_hotplug_status_watch(be);
+-	if (xenbus_exists(XBT_NIL, dev->nodename, "hotplug-status")) {
+-		err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch,
+-					   NULL, hotplug_status_changed,
+-					   "%s/%s", dev->nodename,
+-					   "hotplug-status");
+-		if (err)
+-			goto err;
++	err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch, NULL,
++				   hotplug_status_changed,
++				   "%s/%s", dev->nodename, "hotplug-status");
++	if (!err)
+ 		be->have_hotplug_status_watch = 1;
+-	}
  
-+	ap->args.user_pages = true;
- 	if (write)
- 		ap->args.in_pages = true;
- 	else
---- a/fs/fuse/fuse_i.h
-+++ b/fs/fuse/fuse_i.h
-@@ -256,6 +256,7 @@ struct fuse_args {
- 	bool nocreds:1;
- 	bool in_pages:1;
- 	bool out_pages:1;
-+	bool user_pages:1;
- 	bool out_argvar:1;
- 	bool page_zeroing:1;
- 	bool page_replace:1;
+ 	netif_tx_wake_all_queues(be->vif->dev);
+ 
+-- 
+2.34.1
+
 
 
