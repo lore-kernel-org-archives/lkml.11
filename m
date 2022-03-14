@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4E0C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0BE1C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:12:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240724AbiCNMMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
+        id S240992AbiCNMMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:12:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242400AbiCNMJ4 (ORCPT
+        with ESMTP id S242944AbiCNMLW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA31658A;
-        Mon, 14 Mar 2022 05:07:54 -0700 (PDT)
+        Mon, 14 Mar 2022 08:11:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D4233A1D;
+        Mon, 14 Mar 2022 05:10:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9686B6130D;
-        Mon, 14 Mar 2022 12:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4E2BC340E9;
-        Mon, 14 Mar 2022 12:07:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E9A8B80DF4;
+        Mon, 14 Mar 2022 12:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C3D2C340EC;
+        Mon, 14 Mar 2022 12:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259659;
-        bh=Isd6eX3MZTVfTJRJPDZlkUXt7TUV9IkLi7PqQSY8XRk=;
+        s=korg; t=1647259810;
+        bh=AUqtvabMwOT8H1tChuw/4DbeorIaoD6A+b5KC2+sjwI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o9Yjj8J72EMEa1XNwLFT4FosxhOjP9qYvO/4HR6sreqaocmEutjt+oNGsw9mmduvF
-         GbQdfGjOE4h+OPF73OYTAOvwt/blJTe/lAUMqJnOQ2wVwK91Tx7SPDwveX6IRbFcA2
-         U5fTO0afbdUbH8h4AQfjMtubdRCGYOtMZO7q+7bo=
+        b=OpBxBWK0Vfx75ut1DBbC2UvQC+n8HbjrkiDg/JwfkGfgXi5Ti7c3+fZ6CensAXFhy
+         FfRZZvQ3wxHhaB1oA5VdCvDbdI50aEbTEGdgWN2oePxzcLPnWwWKDZVuiwPFngZVLK
+         /FNRhCnONNaAmxeDH2vvjRH8RpAi8LcgAEbrwMcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 060/110] drm/vc4: hdmi: Unregister codec device on unbind
-Date:   Mon, 14 Mar 2022 12:54:02 +0100
-Message-Id: <20220314112744.709890013@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 095/110] watch_queue: Fix to release page in ->release()
+Date:   Mon, 14 Mar 2022 12:54:37 +0100
+Message-Id: <20220314112745.679098297@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,70 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit e40945ab7c7f966d0c37b7bd7b0596497dfe228d ]
+commit c1853fbadcba1497f4907971e7107888e0714c81 upstream.
 
-On bind we will register the HDMI codec device but we don't unregister
-it on unbind, leading to a device leakage. Unregister our device at
-unbind.
+When a pipe ring descriptor points to a notification message, the
+refcount on the backing page is incremented by the generic get function,
+but the release function, which marks the bitmap, doesn't drop the page
+ref.
 
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220127111452.222002-1-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by calling generic_pipe_buf_release() at the end of
+watch_queue_pipe_buf_release().
+
+Fixes: c73be61cede5 ("pipe: Add general notification queue support")
+Reported-by: Jann Horn <jannh@google.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++++++
- drivers/gpu/drm/vc4/vc4_hdmi.h | 1 +
- 2 files changed, 9 insertions(+)
+ kernel/watch_queue.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 9170d948b448..07887cbfd9cb 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1522,6 +1522,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
- 		dev_err(dev, "Couldn't register the HDMI codec: %ld\n", PTR_ERR(codec_pdev));
- 		return PTR_ERR(codec_pdev);
- 	}
-+	vc4_hdmi->audio.codec_pdev = codec_pdev;
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -54,6 +54,7 @@ static void watch_queue_pipe_buf_release
+ 	bit += page->index;
  
- 	dai_link->cpus		= &vc4_hdmi->audio.cpu;
- 	dai_link->codecs	= &vc4_hdmi->audio.codec;
-@@ -1561,6 +1562,12 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
- 
+ 	set_bit(bit, wqueue->notes_bitmap);
++	generic_pipe_buf_release(pipe, buf);
  }
  
-+static void vc4_hdmi_audio_exit(struct vc4_hdmi *vc4_hdmi)
-+{
-+	platform_device_unregister(vc4_hdmi->audio.codec_pdev);
-+	vc4_hdmi->audio.codec_pdev = NULL;
-+}
-+
- static irqreturn_t vc4_hdmi_hpd_irq_thread(int irq, void *priv)
- {
- 	struct vc4_hdmi *vc4_hdmi = priv;
-@@ -2298,6 +2305,7 @@ static void vc4_hdmi_unbind(struct device *dev, struct device *master,
- 	kfree(vc4_hdmi->hdmi_regset.regs);
- 	kfree(vc4_hdmi->hd_regset.regs);
- 
-+	vc4_hdmi_audio_exit(vc4_hdmi);
- 	vc4_hdmi_cec_exit(vc4_hdmi);
- 	vc4_hdmi_hotplug_exit(vc4_hdmi);
- 	vc4_hdmi_connector_destroy(&vc4_hdmi->connector);
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdmi.h
-index 33e9f665ab8e..c0492da73683 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.h
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
-@@ -113,6 +113,7 @@ struct vc4_hdmi_audio {
- 	struct snd_soc_dai_link_component platform;
- 	struct snd_dmaengine_dai_dma_data dma_data;
- 	struct hdmi_audio_infoframe infoframe;
-+	struct platform_device *codec_pdev;
- 	bool streaming;
- };
- 
--- 
-2.34.1
-
+ // No try_steal function => no stealing
 
 
