@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38536C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF84CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239969AbiCNL7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
+        id S240030AbiCNL7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240150AbiCNL7V (ORCPT
+        with ESMTP id S239884AbiCNL5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:59:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407E960CE;
-        Mon, 14 Mar 2022 04:57:47 -0700 (PDT)
+        Mon, 14 Mar 2022 07:57:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971E313F52;
+        Mon, 14 Mar 2022 04:56:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FFBAB80DED;
-        Mon, 14 Mar 2022 11:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA77C340EC;
-        Mon, 14 Mar 2022 11:57:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36D306112C;
+        Mon, 14 Mar 2022 11:56:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9BCCC340F4;
+        Mon, 14 Mar 2022 11:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259065;
-        bh=eKf7exku32BFrG4wg8xA9kLRTfuahP7jg3a2aAF6vEo=;
+        s=korg; t=1647258992;
+        bh=LifRiThbtJzMmdTf0+XH3zzZRhAM1u0Nj2cU5JFV2dY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AF7a9HBUGDVYNE4Fu4vETLZJnu+xpOKh7Ce0ZxAjQNGtE5l6EQ0EW7VsFmqMO3sBw
-         nYMsTGjWz4bDyKhaH3P7vkxfqLkqncLjHfRF/cs9KkReTbuR2xVTn9UNeXq5j5IneN
-         2eiH3J5xi1DoOmdAs+CppYhI3PuBKZzT1sbGg6FQ=
+        b=2dLiZtRhPThIiQKZML8MJjlzD0bMOR6jGDB9wVeBL6E9BqqRh1ntSER+JysNUWv/T
+         1qgKUNA5T5vgJswhL7j4FCAghwQgHsV86EXPZvTtdNK+w3FqTLtYpEf/2oH/bebQnN
+         JoGSrkrGO3la4m64SvLr7snTIdzCmR6SqWIgq+6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        stable@vger.kernel.org, suresh kumar <suresh2514@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 05/43] qed: return status of qed_iov_get_link
-Date:   Mon, 14 Mar 2022 12:53:16 +0100
-Message-Id: <20220314112734.570383560@linuxfoundation.org>
+Subject: [PATCH 5.4 22/43] net-sysfs: add check for netdevice being present to speed_show
+Date:   Mon, 14 Mar 2022 12:53:33 +0100
+Message-Id: <20220314112735.040356766@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 References: <20220314112734.415677317@linuxfoundation.org>
@@ -49,85 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: suresh kumar <suresh2514@gmail.com>
 
-[ Upstream commit d9dc0c84ad2d4cc911ba252c973d1bf18d5eb9cf ]
+[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
 
-Clang static analysis reports this issue
-qed_sriov.c:4727:19: warning: Assigned value is
-  garbage or undefined
-  ivi->max_tx_rate = tx_rate ? tx_rate : link.speed;
-                   ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When bringing down the netdevice or system shutdown, a panic can be
+triggered while accessing the sysfs path because the device is already
+removed.
 
-link is only sometimes set by the call to qed_iov_get_link()
-qed_iov_get_link fails without setting link or returning
-status.  So change the decl to return status.
+    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
+    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
+    ...
+    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
+    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
 
-Fixes: 73390ac9d82b ("qed*: support ndo_get_vf_config")
-Signed-off-by: Tom Rix <trix@redhat.com>
+    crash> bt
+    ...
+    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
+    ...
+     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
+        [exception RIP: dma_pool_alloc+0x1ab]
+        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
+        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
+        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
+        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
+        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
+        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
+        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
+    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
+    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
+    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
+    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
+    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
+    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
+    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
+    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
+    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
+    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
+    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
+    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
+    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
+    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
+    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
+    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
+
+    crash> net_device.state ffff89443b0c0000
+      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
+
+To prevent this scenario, we also make sure that the netdevice is present.
+
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qed/qed_sriov.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ net/core/net-sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-index fb9c3ca5d36c..5e8f8eb916e6 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -3801,11 +3801,11 @@ bool qed_iov_mark_vf_flr(struct qed_hwfn *p_hwfn, u32 *p_disabled_vfs)
- 	return found;
- }
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index bcad7028bbf4..ad45f13a0370 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -212,7 +212,7 @@ static ssize_t speed_show(struct device *dev,
+ 	if (!rtnl_trylock())
+ 		return restart_syscall();
  
--static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
--			     u16 vfid,
--			     struct qed_mcp_link_params *p_params,
--			     struct qed_mcp_link_state *p_link,
--			     struct qed_mcp_link_capabilities *p_caps)
-+static int qed_iov_get_link(struct qed_hwfn *p_hwfn,
-+			    u16 vfid,
-+			    struct qed_mcp_link_params *p_params,
-+			    struct qed_mcp_link_state *p_link,
-+			    struct qed_mcp_link_capabilities *p_caps)
- {
- 	struct qed_vf_info *p_vf = qed_iov_get_vf_info(p_hwfn,
- 						       vfid,
-@@ -3813,7 +3813,7 @@ static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
- 	struct qed_bulletin_content *p_bulletin;
+-	if (netif_running(netdev)) {
++	if (netif_running(netdev) && netif_device_present(netdev)) {
+ 		struct ethtool_link_ksettings cmd;
  
- 	if (!p_vf)
--		return;
-+		return -EINVAL;
- 
- 	p_bulletin = p_vf->bulletin.p_virt;
- 
-@@ -3823,6 +3823,7 @@ static void qed_iov_get_link(struct qed_hwfn *p_hwfn,
- 		__qed_vf_get_link_state(p_hwfn, p_link, p_bulletin);
- 	if (p_caps)
- 		__qed_vf_get_link_caps(p_hwfn, p_caps, p_bulletin);
-+	return 0;
- }
- 
- static int
-@@ -4684,6 +4685,7 @@ static int qed_get_vf_config(struct qed_dev *cdev,
- 	struct qed_public_vf_info *vf_info;
- 	struct qed_mcp_link_state link;
- 	u32 tx_rate;
-+	int ret;
- 
- 	/* Sanitize request */
- 	if (IS_VF(cdev))
-@@ -4697,7 +4699,9 @@ static int qed_get_vf_config(struct qed_dev *cdev,
- 
- 	vf_info = qed_iov_get_public_vf_info(hwfn, vf_id, true);
- 
--	qed_iov_get_link(hwfn, vf_id, NULL, &link, NULL);
-+	ret = qed_iov_get_link(hwfn, vf_id, NULL, &link, NULL);
-+	if (ret)
-+		return ret;
- 
- 	/* Fill information about VF */
- 	ivi->vf = vf_id;
+ 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
 -- 
 2.34.1
 
