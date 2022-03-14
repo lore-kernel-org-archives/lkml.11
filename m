@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF2A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241598AbiCNM1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
+        id S241347AbiCNM1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241394AbiCNMSE (ORCPT
+        with ESMTP id S243062AbiCNMUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:18:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EF04B43F;
-        Mon, 14 Mar 2022 05:12:31 -0700 (PDT)
+        Mon, 14 Mar 2022 08:20:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890D152E7F;
+        Mon, 14 Mar 2022 05:15:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E3E5612FF;
-        Mon, 14 Mar 2022 12:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8383C340E9;
-        Mon, 14 Mar 2022 12:12:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35AF0B80DFE;
+        Mon, 14 Mar 2022 12:15:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97881C340E9;
+        Mon, 14 Mar 2022 12:15:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259949;
-        bh=moZZ85LDf9khSYKSwiQkuRWcmP/GMvfFbmMPYnMwabY=;
+        s=korg; t=1647260114;
+        bh=rg6mB/XZeyc4/94kQYCm4veWrHrTIgQhki3atHfiu7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EOQ1oZFiHkYsoWGSWW13nnqAky9EaFQf1KPWLS79lUp1hbSgl65xasfmXMGqfnSrd
-         XkNFgLtYi55smHkeYo37Kz2hxcQvJ/l26kdNgIPfmJ45DJERTnXoBn+VthQrAQGQqO
-         n7rEMmS+O04vZOJfyLuRBVyJHkCGoZbjAzGmV/T8=
+        b=h1pwZmq+Oq06Y8NK2aCCFOpm2qJ6z9FDg1sId+PDiRjHZl4xZg04e8up+jCKbdT8m
+         urlhV+uRteOGFH4GiarMO02YutuV/VTHtPgedkAgEpoILM1tA9sBRoBbIQN+BnxaGo
+         JDZLWwP93ViJqF7GqRV2osLBTB5LoD+b2713ByPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Erico Nunes <nunes.erico@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 016/121] mISDN: Fix memory leak in dsp_pipeline_build()
-Date:   Mon, 14 Mar 2022 12:53:19 +0100
-Message-Id: <20220314112744.580635482@linuxfoundation.org>
+Subject: [PATCH 5.16 059/121] net: phy: meson-gxl: improve link-up behavior
+Date:   Mon, 14 Mar 2022 12:54:02 +0100
+Message-Id: <20220314112745.772714489@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,50 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit c6a502c2299941c8326d029cfc8a3bc8a4607ad5 ]
+[ Upstream commit 2c87c6f9fbddc5b84d67b2fa3f432fcac6d99d93 ]
 
-dsp_pipeline_build() allocates dup pointer by kstrdup(cfg),
-but then it updates dup variable by strsep(&dup, "|").
-As a result when it calls kfree(dup), the dup variable contains NULL.
+Sometimes the link comes up but no data flows. This patch fixes
+this behavior. It's not clear what's the root cause of the issue.
 
-Found by Linux Driver Verification project (linuxtesting.org) with SVACE.
+According to the tests one other link-up issue remains.
+In very rare cases the link isn't even reported as up.
 
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-Fixes: 960366cf8dbb ("Add mISDN DSP")
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 84c8f773d2dc ("net: phy: meson-gxl: remove the use of .ack_callback()")
+Tested-by: Erico Nunes <nunes.erico@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Link: https://lore.kernel.org/r/e3473452-a1f9-efcf-5fdd-02b6f44c3fcd@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/mISDN/dsp_pipeline.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/phy/meson-gxl.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/mISDN/dsp_pipeline.c b/drivers/isdn/mISDN/dsp_pipeline.c
-index e11ca6bbc7f4..c3b2c99b5cd5 100644
---- a/drivers/isdn/mISDN/dsp_pipeline.c
-+++ b/drivers/isdn/mISDN/dsp_pipeline.c
-@@ -192,7 +192,7 @@ void dsp_pipeline_destroy(struct dsp_pipeline *pipeline)
- int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
- {
- 	int found = 0;
--	char *dup, *tok, *name, *args;
-+	char *dup, *next, *tok, *name, *args;
- 	struct dsp_element_entry *entry, *n;
- 	struct dsp_pipeline_entry *pipeline_entry;
- 	struct mISDN_dsp_element *elem;
-@@ -203,10 +203,10 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
- 	if (!list_empty(&pipeline->list))
- 		_dsp_pipeline_destroy(pipeline);
+diff --git a/drivers/net/phy/meson-gxl.c b/drivers/net/phy/meson-gxl.c
+index c49062ad72c6..73f7962a37d3 100644
+--- a/drivers/net/phy/meson-gxl.c
++++ b/drivers/net/phy/meson-gxl.c
+@@ -243,7 +243,13 @@ static irqreturn_t meson_gxl_handle_interrupt(struct phy_device *phydev)
+ 	    irq_status == INTSRC_ENERGY_DETECT)
+ 		return IRQ_HANDLED;
  
--	dup = kstrdup(cfg, GFP_ATOMIC);
-+	dup = next = kstrdup(cfg, GFP_ATOMIC);
- 	if (!dup)
- 		return 0;
--	while ((tok = strsep(&dup, "|"))) {
-+	while ((tok = strsep(&next, "|"))) {
- 		if (!strlen(tok))
- 			continue;
- 		name = strsep(&tok, "(");
+-	phy_trigger_machine(phydev);
++	/* Give PHY some time before MAC starts sending data. This works
++	 * around an issue where network doesn't come up properly.
++	 */
++	if (!(irq_status & INTSRC_LINK_DOWN))
++		phy_queue_state_machine(phydev, msecs_to_jiffies(100));
++	else
++		phy_trigger_machine(phydev);
+ 
+ 	return IRQ_HANDLED;
+ }
 -- 
 2.34.1
 
