@@ -2,68 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1699C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1048FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243514AbiCNQkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
+        id S243580AbiCNQkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243272AbiCNQgm (ORCPT
+        with ESMTP id S243253AbiCNQgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:36:42 -0400
+        Mon, 14 Mar 2022 12:36:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3EE1DA4A;
-        Mon, 14 Mar 2022 09:35:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB9C33A12;
+        Mon, 14 Mar 2022 09:35:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50B7D614A7;
-        Mon, 14 Mar 2022 16:35:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F099DC36AF3;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E326B6148E;
+        Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 892A3C36B18;
         Mon, 14 Mar 2022 16:35:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647275710;
-        bh=6J1DzTdLkt+wtXSOn8LeDPwVonbZUY5PijYr2Jghub0=;
+        s=k20201202; t=1647275709;
+        bh=yjhk1WnfCME5lgkmc2YABafZxpEaIU+HTH1U4IJx+Lg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BFhfASKbQ5Adc/Ua36MwdM8AQZphIR6W+Klt0QtRYncnRVPrahg+uIVqSqJEo0h8r
-         5WjnQ+TO2B/G/kp+F11CdfsRGR0pr0jx/5nuSOzRBhNpJAlld/vslHa1k19KX/PlOb
-         lZcE1/UO4c5xAa0xFzIF9KaM8yAyqk+f3d/Zn1ipDT+qgkZ0GRMn+GWQDrXdZDpu/9
-         c2108w2hJIXtl0tTl95H3zXASEF8cF+SGpc25+ZFFRRQSbiI9PGDLJHgM/PiRNVdpX
-         8YZ+dti1GEgCFhVcIcEf1zw0SgK88ZPzCZ4Z+ssG1yVdjiQTxm4pehLzVzTFuNcI9d
-         +TtaZegWIh9Tw==
+        b=QIzPOt2jxXOulu7zBGPXid3dKdD78OWbTV5+TsvWTWxgm5U7XvU9e2dHHUwH0JJKh
+         T6ccjBif1n35i02/L95Qy01iThO9zHdZ/kkDXyE9wu/qfuD8AA7E0Lg+0papa73eJi
+         IQfU26pIh3DN0zLq8W8iA0QfvmNe/dpipdEmmGrSQH+hTjLn1z14Ypi97X3leNza7O
+         Cz5zE6fChM7JRnyPKiWSqmYSdZjo/bmnaPAkAXh4c4wpzl4Bl1gAEWsjZD6MjLrcCe
+         dhTFtdmQjW0XaPU6d5VMyot5CovtWJLkoGlzaIS70QYdGNjOuyvs/XzjpvRUEYbyXh
+         lQpvUJSNJq6vQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.94.2)
         (envelope-from <mchehab@kernel.org>)
-        id 1nTnf1-001x4O-Mk; Mon, 14 Mar 2022 17:35:07 +0100
+        id 1nTnf1-001x1V-Cw; Mon, 14 Mar 2022 17:35:07 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
         =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
         <niklas.soderlund+renesas@ragnatech.se>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Colin Ian King <colin.king@intel.com>,
         Dmitry Osipenko <digetx@gmail.com>,
         Eugen Hristev <eugen.hristev@microchip.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Heiko Stuebner <heiko@sntech.de>,
+        Herman <yanshuaijun@yulong.com>,
         Jacopo Mondi <jacopo@jmondi.org>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Ming Qian <ming.qian@nxp.com>, Pratyush Yadav <p.yadav@ti.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
         Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Shijie Qin <shijie.qin@nxp.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Zhou Peng <eagle.zhou@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v2 63/67] media: platform: Create vendor/{Makefile,Kconfig} files
-Date:   Mon, 14 Mar 2022 17:34:58 +0100
-Message-Id: <619701b36108067a84c606d7a2016cf8c3ec33b9.1647274407.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH v2 58/67] media: platform: rename davinci/ to ti/davinci/
+Date:   Mon, 14 Mar 2022 17:34:53 +0100
+Message-Id: <23bb79b3e168d684c5a71cc23db2a01922da0491.1647274407.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647274406.git.mchehab@kernel.org>
 References: <cover.1647274406.git.mchehab@kernel.org>
@@ -74,310 +69,250 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of placing multiple per-vendor entries at the
-platform/{Makefile,Kconfig}, create them at the per-vendor
-directories.
+As the end goal is to have platform drivers split by vendor,
+rename davinci/ to ti/davinci/.
 
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/67] at: https://lore.kernel.org/all/cover.1647274406.git.mchehab@kernel.org/
 
- drivers/media/platform/Kconfig           | 28 +++++-------------------
- drivers/media/platform/Makefile          | 28 ++++++------------------
- drivers/media/platform/amlogic/Kconfig   |  2 ++
- drivers/media/platform/amlogic/Makefile  |  2 ++
- drivers/media/platform/amphion/Kconfig   |  3 +++
- drivers/media/platform/mediatek/Kconfig  |  5 +++++
- drivers/media/platform/mediatek/Makefile |  5 +++++
- drivers/media/platform/nvidia/Kconfig    |  2 ++
- drivers/media/platform/qcom/Makefile     |  3 +++
- drivers/media/platform/rockchip/Makefile |  3 +++
- drivers/media/platform/samsung/Kconfig   |  7 ++++++
- drivers/media/platform/samsung/Makefile  |  7 ++++++
- drivers/media/platform/stm/Kconfig       |  4 ++++
- drivers/media/platform/stm/Makefile      |  7 ++++++
- drivers/media/platform/stm/sti/Makefile  |  6 +++++
- drivers/media/platform/ti/Kconfig        |  5 +++++
- drivers/media/platform/ti/Makefile       |  6 ++++-
- 17 files changed, 79 insertions(+), 44 deletions(-)
- create mode 100644 drivers/media/platform/amlogic/Kconfig
- create mode 100644 drivers/media/platform/amlogic/Makefile
- create mode 100644 drivers/media/platform/mediatek/Kconfig
- create mode 100644 drivers/media/platform/mediatek/Makefile
- create mode 100644 drivers/media/platform/nvidia/Kconfig
- create mode 100644 drivers/media/platform/qcom/Makefile
- create mode 100644 drivers/media/platform/rockchip/Makefile
- create mode 100644 drivers/media/platform/samsung/Kconfig
- create mode 100644 drivers/media/platform/samsung/Makefile
- create mode 100644 drivers/media/platform/stm/Kconfig
- create mode 100644 drivers/media/platform/stm/Makefile
- create mode 100644 drivers/media/platform/stm/sti/Makefile
+ .../media/drivers/davinci-vpbe-devel.rst      | 20 +++++++++----------
+ MAINTAINERS                                   |  2 +-
+ drivers/media/platform/Kconfig                |  2 +-
+ drivers/media/platform/Makefile               |  2 +-
+ .../media/platform/{ => ti}/davinci/Kconfig   |  0
+ .../media/platform/{ => ti}/davinci/Makefile  |  0
+ .../{ => ti}/davinci/ccdc_hw_device.h         |  0
+ .../platform/{ => ti}/davinci/dm355_ccdc.c    |  0
+ .../{ => ti}/davinci/dm355_ccdc_regs.h        |  0
+ .../platform/{ => ti}/davinci/dm644x_ccdc.c   |  0
+ .../{ => ti}/davinci/dm644x_ccdc_regs.h       |  0
+ .../media/platform/{ => ti}/davinci/isif.c    |  0
+ .../platform/{ => ti}/davinci/isif_regs.h     |  0
+ .../media/platform/{ => ti}/davinci/vpbe.c    |  0
+ .../platform/{ => ti}/davinci/vpbe_display.c  |  0
+ .../platform/{ => ti}/davinci/vpbe_osd.c      |  0
+ .../platform/{ => ti}/davinci/vpbe_osd_regs.h |  0
+ .../platform/{ => ti}/davinci/vpbe_venc.c     |  0
+ .../{ => ti}/davinci/vpbe_venc_regs.h         |  0
+ .../platform/{ => ti}/davinci/vpfe_capture.c  |  0
+ .../media/platform/{ => ti}/davinci/vpif.c    |  0
+ .../media/platform/{ => ti}/davinci/vpif.h    |  0
+ .../platform/{ => ti}/davinci/vpif_capture.c  |  0
+ .../platform/{ => ti}/davinci/vpif_capture.h  |  0
+ .../platform/{ => ti}/davinci/vpif_display.c  |  0
+ .../platform/{ => ti}/davinci/vpif_display.h  |  0
+ .../media/platform/{ => ti}/davinci/vpss.c    |  0
+ 27 files changed, 13 insertions(+), 13 deletions(-)
+ rename drivers/media/platform/{ => ti}/davinci/Kconfig (100%)
+ rename drivers/media/platform/{ => ti}/davinci/Makefile (100%)
+ rename drivers/media/platform/{ => ti}/davinci/ccdc_hw_device.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/dm355_ccdc.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/dm355_ccdc_regs.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/dm644x_ccdc.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/dm644x_ccdc_regs.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/isif.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/isif_regs.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpbe.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpbe_display.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpbe_osd.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpbe_osd_regs.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpbe_venc.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpbe_venc_regs.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpfe_capture.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpif.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpif.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpif_capture.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpif_capture.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpif_display.c (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpif_display.h (100%)
+ rename drivers/media/platform/{ => ti}/davinci/vpss.c (100%)
 
+diff --git a/Documentation/driver-api/media/drivers/davinci-vpbe-devel.rst b/Documentation/driver-api/media/drivers/davinci-vpbe-devel.rst
+index f0961672e6a3..4e87bdbc7ae4 100644
+--- a/Documentation/driver-api/media/drivers/davinci-vpbe-devel.rst
++++ b/Documentation/driver-api/media/drivers/davinci-vpbe-devel.rst
+@@ -7,22 +7,22 @@ File partitioning
+ -----------------
+ 
+  V4L2 display device driver
+-         drivers/media/platform/davinci/vpbe_display.c
+-         drivers/media/platform/davinci/vpbe_display.h
++         drivers/media/platform/ti/davinci/vpbe_display.c
++         drivers/media/platform/ti/davinci/vpbe_display.h
+ 
+  VPBE display controller
+-         drivers/media/platform/davinci/vpbe.c
+-         drivers/media/platform/davinci/vpbe.h
++         drivers/media/platform/ti/davinci/vpbe.c
++         drivers/media/platform/ti/davinci/vpbe.h
+ 
+  VPBE venc sub device driver
+-         drivers/media/platform/davinci/vpbe_venc.c
+-         drivers/media/platform/davinci/vpbe_venc.h
+-         drivers/media/platform/davinci/vpbe_venc_regs.h
++         drivers/media/platform/ti/davinci/vpbe_venc.c
++         drivers/media/platform/ti/davinci/vpbe_venc.h
++         drivers/media/platform/ti/davinci/vpbe_venc_regs.h
+ 
+  VPBE osd driver
+-         drivers/media/platform/davinci/vpbe_osd.c
+-         drivers/media/platform/davinci/vpbe_osd.h
+-         drivers/media/platform/davinci/vpbe_osd_regs.h
++         drivers/media/platform/ti/davinci/vpbe_osd.c
++         drivers/media/platform/ti/davinci/vpbe_osd.h
++         drivers/media/platform/ti/davinci/vpbe_osd_regs.h
+ 
+ To be done
+ ----------
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f0b262176a70..4674c70f8859 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19321,7 +19321,7 @@ S:	Maintained
+ W:	https://linuxtv.org
+ Q:	http://patchwork.linuxtv.org/project/linux-media/list/
+ T:	git git://linuxtv.org/mhadli/v4l-dvb-davinci_devices.git
+-F:	drivers/media/platform/davinci/
++F:	drivers/media/platform/ti/davinci/
+ F:	include/media/davinci/
+ 
+ TI ENHANCED QUADRATURE ENCODER PULSE (eQEP) DRIVER
 diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index 43a654e87613..3a5211d8e59a 100644
+index 5d56058fa397..9b1bccf9a621 100644
 --- a/drivers/media/platform/Kconfig
 +++ b/drivers/media/platform/Kconfig
-@@ -62,12 +62,9 @@ config VIDEO_MUX
- 	  This driver provides support for N:1 video bus multiplexers.
- 
- # Platform drivers - Please keep it alphabetically sorted
--
--# TODO: create per-manufacturer directories
--
- source "drivers/media/platform/allegro-dvt/Kconfig"
- source "drivers/media/platform/allwinner/Kconfig"
--source "drivers/media/platform/amlogic/meson-ge2d/Kconfig"
-+source "drivers/media/platform/amlogic/Kconfig"
- source "drivers/media/platform/amphion/Kconfig"
- source "drivers/media/platform/aspeed/Kconfig"
+@@ -73,7 +73,6 @@ source "drivers/media/platform/aspeed/Kconfig"
  source "drivers/media/platform/atmel/Kconfig"
-@@ -75,28 +72,15 @@ source "drivers/media/platform/cadence/Kconfig"
+ source "drivers/media/platform/cadence/Kconfig"
  source "drivers/media/platform/chips-media/Kconfig"
+-source "drivers/media/platform/davinci/Kconfig"
  source "drivers/media/platform/intel/Kconfig"
  source "drivers/media/platform/marvell/Kconfig"
--source "drivers/media/platform/mediatek/mtk-jpeg/Kconfig"
--source "drivers/media/platform/mediatek/mtk-mdp/Kconfig"
--source "drivers/media/platform/mediatek/mtk-vcodec/Kconfig"
--source "drivers/media/platform/mediatek/mtk-vpu/Kconfig"
--source "drivers/media/platform/nvidia/tegra-vde/Kconfig"
-+source "drivers/media/platform/mediatek/Kconfig"
-+source "drivers/media/platform/nvidia/Kconfig"
- source "drivers/media/platform/nxp/Kconfig"
- source "drivers/media/platform/qcom/Kconfig"
- source "drivers/media/platform/renesas/Kconfig"
- source "drivers/media/platform/rockchip/Kconfig"
--source "drivers/media/platform/samsung/exynos-gsc/Kconfig"
--source "drivers/media/platform/samsung/exynos4-is/Kconfig"
--source "drivers/media/platform/samsung/s3c-camif/Kconfig"
--source "drivers/media/platform/samsung/s5p-g2d/Kconfig"
--source "drivers/media/platform/samsung/s5p-jpeg/Kconfig"
--source "drivers/media/platform/samsung/s5p-mfc/Kconfig"
--source "drivers/media/platform/stm/sti/Kconfig"
--source "drivers/media/platform/stm/stm32/Kconfig"
--source "drivers/media/platform/ti-vpe/Kconfig"
--source "drivers/media/platform/ti/am437x/Kconfig"
--source "drivers/media/platform/ti/davinci/Kconfig"
--source "drivers/media/platform/ti/omap/Kconfig"
--source "drivers/media/platform/ti/omap3isp/Kconfig"
-+source "drivers/media/platform/samsung/Kconfig"
-+source "drivers/media/platform/stm/Kconfig"
-+source "drivers/media/platform/ti/Kconfig"
+ source "drivers/media/platform/mediatek/mtk-jpeg/Kconfig"
+@@ -97,6 +96,7 @@ source "drivers/media/platform/stm/sti/Kconfig"
+ source "drivers/media/platform/stm/stm32/Kconfig"
+ source "drivers/media/platform/ti-vpe/Kconfig"
+ source "drivers/media/platform/ti/am437x/Kconfig"
++source "drivers/media/platform/ti/davinci/Kconfig"
  source "drivers/media/platform/via/Kconfig"
  source "drivers/media/platform/xilinx/Kconfig"
  
 diff --git a/drivers/media/platform/Makefile b/drivers/media/platform/Makefile
-index 2c5713ddac09..e5060cb891de 100644
+index f8c4617da0ae..70c87bd6468b 100644
 --- a/drivers/media/platform/Makefile
 +++ b/drivers/media/platform/Makefile
-@@ -7,7 +7,7 @@
- # (e. g. LC_ALL=C sort Makefile)
- obj-y += allegro-dvt/
- obj-y += allwinner/
--obj-y += amlogic/meson-ge2d/
-+obj-y += amlogic/
- obj-y += amphion/
- obj-y += aspeed/
+@@ -13,7 +13,6 @@ obj-y += aspeed/
  obj-y += atmel/
-@@ -15,28 +15,14 @@ obj-y += cadence/
+ obj-y += cadence/
  obj-y += chips-media/
+-obj-y += davinci/
  obj-y += intel/
  obj-y += marvell/
--obj-y += mediatek/mtk-jpeg/
--obj-y += mediatek/mtk-mdp/
--obj-y += mediatek/mtk-vcodec/
--obj-y += mediatek/mtk-vpu/
--obj-y += nvidia/tegra-vde/
-+obj-y += mediatek/
-+obj-y += nvidia/
- obj-y += nxp/
--obj-y += qcom/camss/
--obj-y += qcom/venus/
-+obj-y += qcom/
- obj-y += renesas/
--obj-y += rockchip/rga/
--obj-y += rockchip/rkisp1/
--obj-y += samsung/exynos-gsc/
--obj-y += samsung/exynos4-is/
--obj-y += samsung/s3c-camif/
--obj-y += samsung/s5p-g2d/
--obj-y += samsung/s5p-jpeg/
--obj-y += samsung/s5p-mfc/
--obj-y += stm/sti/bdisp/
--obj-y += stm/sti/c8sectpfe/
--obj-y += stm/sti/delta/
--obj-y += stm/sti/hva/
--obj-y += stm/stm32/
-+obj-y += rockchip/
-+obj-y += samsung/
-+obj-y += stm/
- obj-y += ti/
+ obj-y += mediatek/mtk-jpeg/
+@@ -42,6 +41,7 @@ obj-y += stm/sti/hva/
+ obj-y += stm/stm32/
+ obj-y += ti-vpe/
+ obj-y += ti/am437x/
++obj-y += ti/davinci/
  obj-y += via/
  obj-y += xilinx/
-diff --git a/drivers/media/platform/amlogic/Kconfig b/drivers/media/platform/amlogic/Kconfig
-new file mode 100644
-index 000000000000..c67e00df6202
---- /dev/null
-+++ b/drivers/media/platform/amlogic/Kconfig
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+source "drivers/media/platform/amlogic/meson-ge2d/Kconfig"
-diff --git a/drivers/media/platform/amlogic/Makefile b/drivers/media/platform/amlogic/Makefile
-new file mode 100644
-index 000000000000..d3cdb8fa4ddb
---- /dev/null
-+++ b/drivers/media/platform/amlogic/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-y += meson-ge2d/
-diff --git a/drivers/media/platform/amphion/Kconfig b/drivers/media/platform/amphion/Kconfig
-index 13899649f766..e0e8098965bd 100644
---- a/drivers/media/platform/amphion/Kconfig
-+++ b/drivers/media/platform/amphion/Kconfig
-@@ -1,4 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+
-+comment "Amphion drivers"
-+
- config VIDEO_AMPHION_VPU
- 	tristate "Amphion VPU (Video Processing Unit) Codec IP"
- 	depends on V4L_MEM2MEM_DRIVERS
-diff --git a/drivers/media/platform/mediatek/Kconfig b/drivers/media/platform/mediatek/Kconfig
-new file mode 100644
-index 000000000000..6d74839df3d6
---- /dev/null
-+++ b/drivers/media/platform/mediatek/Kconfig
-@@ -0,0 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+source "drivers/media/platform/mediatek/mtk-jpeg/Kconfig"
-+source "drivers/media/platform/mediatek/mtk-mdp/Kconfig"
-+source "drivers/media/platform/mediatek/mtk-vcodec/Kconfig"
-+source "drivers/media/platform/mediatek/mtk-vpu/Kconfig"
-diff --git a/drivers/media/platform/mediatek/Makefile b/drivers/media/platform/mediatek/Makefile
-new file mode 100644
-index 000000000000..403d5ecd2b10
---- /dev/null
-+++ b/drivers/media/platform/mediatek/Makefile
-@@ -0,0 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-y += mtk-jpeg/
-+obj-y += mtk-mdp/
-+obj-y += mtk-vcodec/
-+obj-y += mtk-vpu/
-diff --git a/drivers/media/platform/nvidia/Kconfig b/drivers/media/platform/nvidia/Kconfig
-new file mode 100644
-index 000000000000..1162e272b5f9
---- /dev/null
-+++ b/drivers/media/platform/nvidia/Kconfig
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+source "drivers/media/platform/nvidia/tegra-vde/Kconfig"
-diff --git a/drivers/media/platform/qcom/Makefile b/drivers/media/platform/qcom/Makefile
-new file mode 100644
-index 000000000000..4f055c396e04
---- /dev/null
-+++ b/drivers/media/platform/qcom/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-y += camss/
-+obj-y += venus/
-diff --git a/drivers/media/platform/rockchip/Makefile b/drivers/media/platform/rockchip/Makefile
-new file mode 100644
-index 000000000000..4f782b876ac9
---- /dev/null
-+++ b/drivers/media/platform/rockchip/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-y += rga/
-+obj-y += rkisp1/
-diff --git a/drivers/media/platform/samsung/Kconfig b/drivers/media/platform/samsung/Kconfig
-new file mode 100644
-index 000000000000..94f30c1bca9b
---- /dev/null
-+++ b/drivers/media/platform/samsung/Kconfig
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+source "drivers/media/platform/samsung/exynos-gsc/Kconfig"
-+source "drivers/media/platform/samsung/exynos4-is/Kconfig"
-+source "drivers/media/platform/samsung/s3c-camif/Kconfig"
-+source "drivers/media/platform/samsung/s5p-g2d/Kconfig"
-+source "drivers/media/platform/samsung/s5p-jpeg/Kconfig"
-+source "drivers/media/platform/samsung/s5p-mfc/Kconfig"
-diff --git a/drivers/media/platform/samsung/Makefile b/drivers/media/platform/samsung/Makefile
-new file mode 100644
-index 000000000000..21fea3330e4b
---- /dev/null
-+++ b/drivers/media/platform/samsung/Makefile
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-y += exynos-gsc/
-+obj-y += exynos4-is/
-+obj-y += s3c-camif/
-+obj-y += s5p-g2d/
-+obj-y += s5p-jpeg/
-+obj-y += s5p-mfc/
-diff --git a/drivers/media/platform/stm/Kconfig b/drivers/media/platform/stm/Kconfig
-new file mode 100644
-index 000000000000..27942626a630
---- /dev/null
-+++ b/drivers/media/platform/stm/Kconfig
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+source "drivers/media/platform/stm/sti/Kconfig"
-+source "drivers/media/platform/stm/stm32/Kconfig"
-diff --git a/drivers/media/platform/stm/Makefile b/drivers/media/platform/stm/Makefile
-new file mode 100644
-index 000000000000..a1f75b2a8225
---- /dev/null
-+++ b/drivers/media/platform/stm/Makefile
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+obj-y += sti/bdisp/
-+obj-y += sti/c8sectpfe/
-+obj-y += sti/delta/
-+obj-y += sti/hva/
-+obj-y += stm32/
-diff --git a/drivers/media/platform/stm/sti/Makefile b/drivers/media/platform/stm/sti/Makefile
-new file mode 100644
-index 000000000000..f9ce8169b040
---- /dev/null
-+++ b/drivers/media/platform/stm/sti/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-y += bdisp/
-+obj-y += c8sectpfe/
-+obj-y += delta/
-+obj-y += hva/
-+obj-y += stm32/
-diff --git a/drivers/media/platform/ti/Kconfig b/drivers/media/platform/ti/Kconfig
-index 82e285c2de64..e1ab56c3be1f 100644
---- a/drivers/media/platform/ti/Kconfig
-+++ b/drivers/media/platform/ti/Kconfig
-@@ -62,3 +62,8 @@ config VIDEO_TI_VPE_DEBUG
- 	depends on VIDEO_TI_VPE
- 	help
- 	  Enable debug messages on VPE driver.
-+
-+source "drivers/media/platform/ti/am437x/Kconfig"
-+source "drivers/media/platform/ti/davinci/Kconfig"
-+source "drivers/media/platform/ti/omap/Kconfig"
-+source "drivers/media/platform/ti/omap3isp/Kconfig"
-diff --git a/drivers/media/platform/ti/Makefile b/drivers/media/platform/ti/Makefile
-index bbc737ccbbea..98c5fe5c40d6 100644
---- a/drivers/media/platform/ti/Makefile
-+++ b/drivers/media/platform/ti/Makefile
-@@ -1,3 +1,7 @@
--# SPDX-License-Identifier: GPL-2.0
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-y += am437x/
- obj-y += cal/
- obj-y += vpe/
-+obj-y += davinci/
-+obj-y += omap/
-+obj-y += omap3isp/
+ 
+diff --git a/drivers/media/platform/davinci/Kconfig b/drivers/media/platform/ti/davinci/Kconfig
+similarity index 100%
+rename from drivers/media/platform/davinci/Kconfig
+rename to drivers/media/platform/ti/davinci/Kconfig
+diff --git a/drivers/media/platform/davinci/Makefile b/drivers/media/platform/ti/davinci/Makefile
+similarity index 100%
+rename from drivers/media/platform/davinci/Makefile
+rename to drivers/media/platform/ti/davinci/Makefile
+diff --git a/drivers/media/platform/davinci/ccdc_hw_device.h b/drivers/media/platform/ti/davinci/ccdc_hw_device.h
+similarity index 100%
+rename from drivers/media/platform/davinci/ccdc_hw_device.h
+rename to drivers/media/platform/ti/davinci/ccdc_hw_device.h
+diff --git a/drivers/media/platform/davinci/dm355_ccdc.c b/drivers/media/platform/ti/davinci/dm355_ccdc.c
+similarity index 100%
+rename from drivers/media/platform/davinci/dm355_ccdc.c
+rename to drivers/media/platform/ti/davinci/dm355_ccdc.c
+diff --git a/drivers/media/platform/davinci/dm355_ccdc_regs.h b/drivers/media/platform/ti/davinci/dm355_ccdc_regs.h
+similarity index 100%
+rename from drivers/media/platform/davinci/dm355_ccdc_regs.h
+rename to drivers/media/platform/ti/davinci/dm355_ccdc_regs.h
+diff --git a/drivers/media/platform/davinci/dm644x_ccdc.c b/drivers/media/platform/ti/davinci/dm644x_ccdc.c
+similarity index 100%
+rename from drivers/media/platform/davinci/dm644x_ccdc.c
+rename to drivers/media/platform/ti/davinci/dm644x_ccdc.c
+diff --git a/drivers/media/platform/davinci/dm644x_ccdc_regs.h b/drivers/media/platform/ti/davinci/dm644x_ccdc_regs.h
+similarity index 100%
+rename from drivers/media/platform/davinci/dm644x_ccdc_regs.h
+rename to drivers/media/platform/ti/davinci/dm644x_ccdc_regs.h
+diff --git a/drivers/media/platform/davinci/isif.c b/drivers/media/platform/ti/davinci/isif.c
+similarity index 100%
+rename from drivers/media/platform/davinci/isif.c
+rename to drivers/media/platform/ti/davinci/isif.c
+diff --git a/drivers/media/platform/davinci/isif_regs.h b/drivers/media/platform/ti/davinci/isif_regs.h
+similarity index 100%
+rename from drivers/media/platform/davinci/isif_regs.h
+rename to drivers/media/platform/ti/davinci/isif_regs.h
+diff --git a/drivers/media/platform/davinci/vpbe.c b/drivers/media/platform/ti/davinci/vpbe.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpbe.c
+rename to drivers/media/platform/ti/davinci/vpbe.c
+diff --git a/drivers/media/platform/davinci/vpbe_display.c b/drivers/media/platform/ti/davinci/vpbe_display.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpbe_display.c
+rename to drivers/media/platform/ti/davinci/vpbe_display.c
+diff --git a/drivers/media/platform/davinci/vpbe_osd.c b/drivers/media/platform/ti/davinci/vpbe_osd.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpbe_osd.c
+rename to drivers/media/platform/ti/davinci/vpbe_osd.c
+diff --git a/drivers/media/platform/davinci/vpbe_osd_regs.h b/drivers/media/platform/ti/davinci/vpbe_osd_regs.h
+similarity index 100%
+rename from drivers/media/platform/davinci/vpbe_osd_regs.h
+rename to drivers/media/platform/ti/davinci/vpbe_osd_regs.h
+diff --git a/drivers/media/platform/davinci/vpbe_venc.c b/drivers/media/platform/ti/davinci/vpbe_venc.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpbe_venc.c
+rename to drivers/media/platform/ti/davinci/vpbe_venc.c
+diff --git a/drivers/media/platform/davinci/vpbe_venc_regs.h b/drivers/media/platform/ti/davinci/vpbe_venc_regs.h
+similarity index 100%
+rename from drivers/media/platform/davinci/vpbe_venc_regs.h
+rename to drivers/media/platform/ti/davinci/vpbe_venc_regs.h
+diff --git a/drivers/media/platform/davinci/vpfe_capture.c b/drivers/media/platform/ti/davinci/vpfe_capture.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpfe_capture.c
+rename to drivers/media/platform/ti/davinci/vpfe_capture.c
+diff --git a/drivers/media/platform/davinci/vpif.c b/drivers/media/platform/ti/davinci/vpif.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpif.c
+rename to drivers/media/platform/ti/davinci/vpif.c
+diff --git a/drivers/media/platform/davinci/vpif.h b/drivers/media/platform/ti/davinci/vpif.h
+similarity index 100%
+rename from drivers/media/platform/davinci/vpif.h
+rename to drivers/media/platform/ti/davinci/vpif.h
+diff --git a/drivers/media/platform/davinci/vpif_capture.c b/drivers/media/platform/ti/davinci/vpif_capture.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpif_capture.c
+rename to drivers/media/platform/ti/davinci/vpif_capture.c
+diff --git a/drivers/media/platform/davinci/vpif_capture.h b/drivers/media/platform/ti/davinci/vpif_capture.h
+similarity index 100%
+rename from drivers/media/platform/davinci/vpif_capture.h
+rename to drivers/media/platform/ti/davinci/vpif_capture.h
+diff --git a/drivers/media/platform/davinci/vpif_display.c b/drivers/media/platform/ti/davinci/vpif_display.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpif_display.c
+rename to drivers/media/platform/ti/davinci/vpif_display.c
+diff --git a/drivers/media/platform/davinci/vpif_display.h b/drivers/media/platform/ti/davinci/vpif_display.h
+similarity index 100%
+rename from drivers/media/platform/davinci/vpif_display.h
+rename to drivers/media/platform/ti/davinci/vpif_display.h
+diff --git a/drivers/media/platform/davinci/vpss.c b/drivers/media/platform/ti/davinci/vpss.c
+similarity index 100%
+rename from drivers/media/platform/davinci/vpss.c
+rename to drivers/media/platform/ti/davinci/vpss.c
 -- 
 2.35.1
 
