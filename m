@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D567EC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CD2C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241805AbiCNMSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
+        id S242045AbiCNMSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242325AbiCNMJv (ORCPT
+        with ESMTP id S242369AbiCNMJy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054F213FA5;
-        Mon, 14 Mar 2022 05:07:10 -0700 (PDT)
+        Mon, 14 Mar 2022 08:09:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC071E3C7;
+        Mon, 14 Mar 2022 05:07:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3D7E61361;
-        Mon, 14 Mar 2022 12:07:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B41C340E9;
-        Mon, 14 Mar 2022 12:07:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0818261343;
+        Mon, 14 Mar 2022 12:07:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D666CC340E9;
+        Mon, 14 Mar 2022 12:07:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259626;
-        bh=0fYqO3/Kwmdjf5miuWSFOMXV9YAehpSgs/ABHv008Co=;
+        s=korg; t=1647259650;
+        bh=VuQiuhjqnRPF2PUIDPbSzKC6E5XqH+TQgrvnuZSt+Ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r1n3iZ+TT2G4Ag3IzOKEZ9Memm/MlZ2Ni1zclnA4l9lMLsCoklq+zLxFSN3HOsqyB
-         YcfORjaYWDgTLHV5ulwLbaTm392jjO5Pc5fTZdkZ90uNG4bGyApBfcSq7AfVy8DI6a
-         lXLOc1ZHG2fGN0HxE3neYA8Ng2nLfK9iM1yXyJ+I=
+        b=k8vpeLbytLUkDB/+ydEPLfl/75asjfRisc7tHlLxmIOuX0sjPSnV+vQkVZZsgPgGX
+         McVieawyfIwlSbpYVgvrMLKglDgO2nVwthTE6GtTVAOv8GK4s6SpvSdFjl6qdpd2Wv
+         1/shBFhZu9l0RPtnSrrb7SUEx9+4lLOA7kPwVgI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Jon Lin <jon.lin@rock-chips.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 052/110] selftests/bpf: Add test for bpf_timer overwriting crash
-Date:   Mon, 14 Mar 2022 12:53:54 +0100
-Message-Id: <20220314112744.489149113@linuxfoundation.org>
+Subject: [PATCH 5.15 058/110] spi: rockchip: Fix error in getting num-cs property
+Date:   Mon, 14 Mar 2022 12:54:00 +0100
+Message-Id: <20220314112744.655203719@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,123 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Jon Lin <jon.lin@rock-chips.com>
 
-[ Upstream commit a7e75016a0753c24d6c995bc02501ae35368e333 ]
+[ Upstream commit 9382df0a98aad5bbcd4d634790305a1d786ad224 ]
 
-Add a test that validates that timer value is not overwritten when doing
-a copy_map_value call in the kernel. Without the prior fix, this test
-triggers a crash.
+Get num-cs u32 from dts of_node property rather than u16.
 
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220209070324.1093182-3-memxor@gmail.com
+Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+Link: https://lore.kernel.org/r/20220216014028.8123-2-jon.lin@rock-chips.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/prog_tests/timer_crash.c    | 32 +++++++++++
- .../testing/selftests/bpf/progs/timer_crash.c | 54 +++++++++++++++++++
- 2 files changed, 86 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/timer_crash.c
- create mode 100644 tools/testing/selftests/bpf/progs/timer_crash.c
+ drivers/spi/spi-rockchip.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/timer_crash.c b/tools/testing/selftests/bpf/prog_tests/timer_crash.c
-new file mode 100644
-index 000000000000..f74b82305da8
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/timer_crash.c
-@@ -0,0 +1,32 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include "timer_crash.skel.h"
-+
-+enum {
-+	MODE_ARRAY,
-+	MODE_HASH,
-+};
-+
-+static void test_timer_crash_mode(int mode)
-+{
-+	struct timer_crash *skel;
-+
-+	skel = timer_crash__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "timer_crash__open_and_load"))
-+		return;
-+	skel->bss->pid = getpid();
-+	skel->bss->crash_map = mode;
-+	if (!ASSERT_OK(timer_crash__attach(skel), "timer_crash__attach"))
-+		goto end;
-+	usleep(1);
-+end:
-+	timer_crash__destroy(skel);
-+}
-+
-+void test_timer_crash(void)
-+{
-+	if (test__start_subtest("array"))
-+		test_timer_crash_mode(MODE_ARRAY);
-+	if (test__start_subtest("hash"))
-+		test_timer_crash_mode(MODE_HASH);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/timer_crash.c b/tools/testing/selftests/bpf/progs/timer_crash.c
-new file mode 100644
-index 000000000000..f8f7944e70da
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/timer_crash.c
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <vmlinux.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_helpers.h>
-+
-+struct map_elem {
-+	struct bpf_timer timer;
-+	struct bpf_spin_lock lock;
-+};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, struct map_elem);
-+} amap SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__uint(max_entries, 1);
-+	__type(key, int);
-+	__type(value, struct map_elem);
-+} hmap SEC(".maps");
-+
-+int pid = 0;
-+int crash_map = 0; /* 0 for amap, 1 for hmap */
-+
-+SEC("fentry/do_nanosleep")
-+int sys_enter(void *ctx)
-+{
-+	struct map_elem *e, value = {};
-+	void *map = crash_map ? (void *)&hmap : (void *)&amap;
-+
-+	if (bpf_get_current_task_btf()->tgid != pid)
-+		return 0;
-+
-+	*(void **)&value = (void *)0xdeadcaf3;
-+
-+	bpf_map_update_elem(map, &(int){0}, &value, 0);
-+	/* For array map, doing bpf_map_update_elem will do a
-+	 * check_and_free_timer_in_array, which will trigger the crash if timer
-+	 * pointer was overwritten, for hmap we need to use bpf_timer_cancel.
-+	 */
-+	if (crash_map == 1) {
-+		e = bpf_map_lookup_elem(map, &(int){0});
-+		if (!e)
-+			return 0;
-+		bpf_timer_cancel(&e->timer);
-+	}
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
+diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
+index 553b6b9d0222..4f65ba3dd19c 100644
+--- a/drivers/spi/spi-rockchip.c
++++ b/drivers/spi/spi-rockchip.c
+@@ -654,7 +654,7 @@ static int rockchip_spi_probe(struct platform_device *pdev)
+ 	struct spi_controller *ctlr;
+ 	struct resource *mem;
+ 	struct device_node *np = pdev->dev.of_node;
+-	u32 rsd_nsecs;
++	u32 rsd_nsecs, num_cs;
+ 	bool slave_mode;
+ 
+ 	slave_mode = of_property_read_bool(np, "spi-slave");
+@@ -764,8 +764,9 @@ static int rockchip_spi_probe(struct platform_device *pdev)
+ 		 * rk spi0 has two native cs, spi1..5 one cs only
+ 		 * if num-cs is missing in the dts, default to 1
+ 		 */
+-		if (of_property_read_u16(np, "num-cs", &ctlr->num_chipselect))
+-			ctlr->num_chipselect = 1;
++		if (of_property_read_u32(np, "num-cs", &num_cs))
++			num_cs = 1;
++		ctlr->num_chipselect = num_cs;
+ 		ctlr->use_gpio_descriptors = true;
+ 	}
+ 	ctlr->dev.of_node = pdev->dev.of_node;
 -- 
 2.34.1
 
