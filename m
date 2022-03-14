@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C06C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F573C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiCNMGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
+        id S231727AbiCNMGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240524AbiCNMFR (ORCPT
+        with ESMTP id S240548AbiCNMFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:05:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C522A1EC66;
-        Mon, 14 Mar 2022 05:02:12 -0700 (PDT)
+        Mon, 14 Mar 2022 08:05:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495B11E3C0;
+        Mon, 14 Mar 2022 05:02:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EA3461298;
-        Mon, 14 Mar 2022 12:02:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 249ADC340E9;
-        Mon, 14 Mar 2022 12:02:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5E10612DD;
+        Mon, 14 Mar 2022 12:02:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F61C340E9;
+        Mon, 14 Mar 2022 12:02:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259331;
-        bh=+iu3YEJGg0Ei9nx0UmPyifith2WwxThQTTrvu8AqV/c=;
+        s=korg; t=1647259344;
+        bh=m6zHTGYUvZzVjWIdetxfz6Kbw/pa9l/jnbZEEOMHaYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DncF7kFRPATQL5t0Lar+shFKYXbi09qxH8+2KJt3BLUI4DQXsGcxNhdQyjx+gORkh
-         /kJLc9omm1mxT0oONxxg1PPEPUskt1pMzJS5WOXpgDMznOv1kOnjbqCex8NS5oVtoi
-         ksBvkAp3VPXgEUH4kTjH/fqe9hWi3a52/SiRvldM=
+        b=xzgnfQNauzZHpLQ/o+z1RwPcGltdH2m5O6f5e4BK9hokB4cRQsk2WWHaiqQrwUJLc
+         /TQvoIzZyS5wvJAJyDDeSV1sAFEVeVfiQTZIqZfDy+7injj71WFKmXQqedZ9U3iAnv
+         BGCZHhVF6SFsSbV3Eh6CTP3iC+JXNp+HknOS1TF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Emil Renner Berthing <kernel@esmil.dk>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.10 55/71] riscv: Fix auipc+jalr relocation range checks
-Date:   Mon, 14 Mar 2022 12:53:48 +0100
-Message-Id: <20220314112739.471380327@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "Halil Pasic" <pasic@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.10 58/71] virtio: acknowledge all features before access
+Date:   Mon, 14 Mar 2022 12:53:51 +0100
+Message-Id: <20220314112739.554442527@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -48,100 +49,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emil Renner Berthing <kernel@esmil.dk>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit 0966d385830de3470b7131db8e86c0c5bc9c52dc upstream.
+commit 4fa59ede95195f267101a1b8916992cf3f245cdb upstream.
 
-RISC-V can do PC-relative jumps with a 32bit range using the following
-two instructions:
+The feature negotiation was designed in a way that
+makes it possible for devices to know which config
+fields will be accessed by drivers.
 
-	auipc	t0, imm20	; t0 = PC + imm20 * 2^12
-	jalr	ra, t0, imm12	; ra = PC + 4, PC = t0 + imm12
+This is broken since commit 404123c2db79 ("virtio: allow drivers to
+validate features") with fallout in at least block and net.  We have a
+partial work-around in commit 2f9a174f918e ("virtio: write back
+F_VERSION_1 before validate") which at least lets devices find out which
+format should config space have, but this is a partial fix: guests
+should not access config space without acknowledging features since
+otherwise we'll never be able to change the config space format.
 
-Crucially both the 20bit immediate imm20 and the 12bit immediate imm12
-are treated as two's-complement signed values. For this reason the
-immediates are usually calculated like this:
+To fix, split finalize_features from virtio_finalize_features and
+call finalize_features with all feature bits before validation,
+and then - if validation changed any bits - once again after.
 
-	imm20 = (offset + 0x800) >> 12
-	imm12 = offset & 0xfff
+Since virtio_finalize_features no longer writes out features
+rename it to virtio_features_ok - since that is what it does:
+checks that features are ok with the device.
 
-..where offset is the signed offset from the auipc instruction. When
-the 11th bit of offset is 0 the addition of 0x800 doesn't change the top
-20 bits and imm12 considered positive. When the 11th bit is 1 the carry
-of the addition by 0x800 means imm20 is one higher, but since imm12 is
-then considered negative the two's complement representation means it
-all cancels out nicely.
+As a side effect, this also reduces the amount of hypervisor accesses -
+we now only acknowledge features once unless we are clearing any
+features when validating (which is uncommon).
 
-However, this addition by 0x800 (2^11) means an offset greater than or
-equal to 2^31 - 2^11 would overflow so imm20 is considered negative and
-result in a backwards jump. Similarly the lower range of offset is also
-moved down by 2^11 and hence the true 32bit range is
+IRC I think that this was more or less always the intent in the spec but
+unfortunately the way the spec is worded does not say this explicitly, I
+plan to address this at the spec level, too.
 
-	[-2^31 - 2^11, 2^31 - 2^11)
-
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
+Acked-by: Jason Wang <jasowang@redhat.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
+Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
+Cc: "Halil Pasic" <pasic@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/module.c |   21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/virtio/virtio.c       |   39 ++++++++++++++++++++++-----------------
+ include/linux/virtio_config.h |    3 ++-
+ 2 files changed, 24 insertions(+), 18 deletions(-)
 
---- a/arch/riscv/kernel/module.c
-+++ b/arch/riscv/kernel/module.c
-@@ -13,6 +13,19 @@
- #include <linux/pgtable.h>
- #include <asm/sections.h>
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -167,14 +167,13 @@ void virtio_add_status(struct virtio_dev
+ }
+ EXPORT_SYMBOL_GPL(virtio_add_status);
  
-+/*
-+ * The auipc+jalr instruction pair can reach any PC-relative offset
-+ * in the range [-2^31 - 2^11, 2^31 - 2^11)
-+ */
-+static bool riscv_insn_valid_32bit_offset(ptrdiff_t val)
-+{
-+#ifdef CONFIG_32BIT
-+	return true;
-+#else
-+	return (-(1L << 31) - (1L << 11)) <= val && val < ((1L << 31) - (1L << 11));
-+#endif
-+}
+-static int virtio_finalize_features(struct virtio_device *dev)
++/* Do some validation, then set FEATURES_OK */
++static int virtio_features_ok(struct virtio_device *dev)
+ {
+-	int ret = dev->config->finalize_features(dev);
+ 	unsigned status;
++	int ret;
+ 
+ 	might_sleep();
+-	if (ret)
+-		return ret;
+ 
+ 	ret = arch_has_restricted_virtio_memory_access();
+ 	if (ret) {
+@@ -239,17 +238,6 @@ static int virtio_dev_probe(struct devic
+ 		driver_features_legacy = driver_features;
+ 	}
+ 
+-	/*
+-	 * Some devices detect legacy solely via F_VERSION_1. Write
+-	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
+-	 * these when needed.
+-	 */
+-	if (drv->validate && !virtio_legacy_is_little_endian()
+-			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
+-		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
+-		dev->config->finalize_features(dev);
+-	}
+-
+ 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
+ 		dev->features = driver_features & device_features;
+ 	else
+@@ -260,13 +248,26 @@ static int virtio_dev_probe(struct devic
+ 		if (device_features & (1ULL << i))
+ 			__virtio_set_bit(dev, i);
+ 
++	err = dev->config->finalize_features(dev);
++	if (err)
++		goto err;
 +
- static int apply_r_riscv_32_rela(struct module *me, u32 *location, Elf_Addr v)
- {
- 	if (v != (u32)v) {
-@@ -95,7 +108,7 @@ static int apply_r_riscv_pcrel_hi20_rela
- 	ptrdiff_t offset = (void *)v - (void *)location;
- 	s32 hi20;
+ 	if (drv->validate) {
++		u64 features = dev->features;
++
+ 		err = drv->validate(dev);
+ 		if (err)
+ 			goto err;
++
++		/* Did validation change any features? Then write them again. */
++		if (features != dev->features) {
++			err = dev->config->finalize_features(dev);
++			if (err)
++				goto err;
++		}
+ 	}
  
--	if (offset != (s32)offset) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		pr_err(
- 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
- 		  me->name, (long long)v, location);
-@@ -197,10 +210,9 @@ static int apply_r_riscv_call_plt_rela(s
- 				       Elf_Addr v)
- {
- 	ptrdiff_t offset = (void *)v - (void *)location;
--	s32 fill_v = offset;
- 	u32 hi20, lo12;
+-	err = virtio_finalize_features(dev);
++	err = virtio_features_ok(dev);
+ 	if (err)
+ 		goto err;
  
--	if (offset != fill_v) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		/* Only emit the plt entry if offset over 32-bit range */
- 		if (IS_ENABLED(CONFIG_MODULE_SECTIONS)) {
- 			offset = module_emit_plt_entry(me, v);
-@@ -224,10 +236,9 @@ static int apply_r_riscv_call_rela(struc
- 				   Elf_Addr v)
- {
- 	ptrdiff_t offset = (void *)v - (void *)location;
--	s32 fill_v = offset;
- 	u32 hi20, lo12;
+@@ -437,7 +438,11 @@ int virtio_device_restore(struct virtio_
+ 	/* We have a driver! */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
  
--	if (offset != fill_v) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		pr_err(
- 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
- 		  me->name, (long long)v, location);
+-	ret = virtio_finalize_features(dev);
++	ret = dev->config->finalize_features(dev);
++	if (ret)
++		goto err;
++
++	ret = virtio_features_ok(dev);
+ 	if (ret)
+ 		goto err;
+ 
+--- a/include/linux/virtio_config.h
++++ b/include/linux/virtio_config.h
+@@ -62,8 +62,9 @@ struct virtio_shm_region {
+  *	Returns the first 64 feature bits (all we currently need).
+  * @finalize_features: confirm what device features we'll be using.
+  *	vdev: the virtio_device
+- *	This gives the final feature bits for the device: it can change
++ *	This sends the driver feature bits to the device: it can change
+  *	the dev->feature bits if it wants.
++ * Note: despite the name this can be called any number of times.
+  *	Returns 0 on success or error status
+  * @bus_name: return the bus name associated with the device (optional)
+  *	vdev: the virtio_device
 
 
