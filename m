@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3582C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CEFBC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 22:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245609AbiCNW2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 18:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S245605AbiCNW3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 18:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbiCNW2v (ORCPT
+        with ESMTP id S233289AbiCNW3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 18:28:51 -0400
-Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27BCE3DDF8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:27:41 -0700 (PDT)
-Received: by mail-oo1-xc2c.google.com with SMTP id q1-20020a4a7d41000000b003211b63eb7bso22135525ooe.6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:27:41 -0700 (PDT)
+        Mon, 14 Mar 2022 18:29:37 -0400
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CB9FD1C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:28:26 -0700 (PDT)
+Received: by mail-oo1-xc29.google.com with SMTP id j7-20020a4ad6c7000000b0031c690e4123so22322857oot.11
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 15:28:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=lpISCI/Ldp2ZkDjSdXy+XxHBdMq+2i8M+iR+Wj/TmxI=;
-        b=FSWP4VZ/rSXb9qrV1Oeet9ZEJaCd66it/y7godMtyQLOuMqXFPz8nhmIAUjynsGqsj
-         xMQ16ip563mQMttvihWIpDXyM+IHlqy0Hu3CGr76bXYXMXevfI5IzcwSVwnTjsDG/T8p
-         6ZqJ0IMMvBkY99NkHpyEG5p7DFJaDjno2AmvEaIMJOR05LosC6ISrOy4FIoXDVw96Sni
-         PpJuNLBa0MxRifeceQQoXPPxQ2b/n4vLqmHIJ8n9/AS2nue0G0GUZ+5dz6lSQEj39eaZ
-         tfCkx7Y0u60ZnMeT8ydGHUSqmumMJEfoIczQMH9R3Fuj1722cTgCiIlz4ZEO33XOMUhu
-         VHcw==
+        bh=nQWuqg+ddOw1oV88Ty6v00QRPKt0GAj8NU+qEDYWO1I=;
+        b=DWIDuPdANPxggwyxysS41MKFKbgxS7fkRxBrxcq4WZhLsEOVoC/190qUjKO0WrcEz2
+         HiK0siER3AD5sgCRTQNgQ8/N5EX2OLxSNRG5cZ0leQS9KUP9kapFMG+dof6VDruanClL
+         hh8qFFy6AiVYFXWrs6N4xXfPTWx6g5ZU1zLrOgwulN+/ejxqi1Pv/GF3zKo/R1ZmghSX
+         yPFU8OfhQva/95dcbXAVEdH9oDcVDxRUT02RDoqZa2FGx3TcjyjRG8U7wOki+KQLldGY
+         XdcI2t/BkHas1esRbgo4ySE9bY98ZY1WelKEct+9PpPijyvyMOujB6o3CErj58wtXgEK
+         C3Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=lpISCI/Ldp2ZkDjSdXy+XxHBdMq+2i8M+iR+Wj/TmxI=;
-        b=tJxKJuBkb/ed0vkSnpQEN7Nj/m8P6icmoKaKKSbFCERZS0LDJl9A2/YazmgwyAtMDo
-         6OvfS8MioeXArleD9qw3CDI9NpNGmU+tbicpQi1Yipz4yhaprV+C1zHL+/RJq/a76VIL
-         45T6N/pf4jwmGPjm9Tizn1dXMa1OmlEqq9QeRClBAJZOTtAWYcqgvrHEgGmCHvJ6Gfmd
-         f7RhS/YKF+7U4DoFnQtxv32zLaQFbnSn6BAaPwNsgbIh/Mr4THqK6Fd3JKivk28if7fF
-         JukXCxTUd4br1dh53AOxPBDWKgmajhm/xU4CtnTGHR+RBEQuC8ZSIGi6FiTQAi8PWR5g
-         HdSA==
-X-Gm-Message-State: AOAM531X4s00RyOkeGbgjybOzgTwZA9y28sWi+bqrAWE/696YgChdzM7
-        3JjT4k0xorum6757r280TYUU9Q==
-X-Google-Smtp-Source: ABdhPJxmeIMIwdljPYgEiOpLwwF50yShXUo59tqn9r0ZE1A2Pyb2elUZbs81pJLhj0EN+3dSb5i+Ng==
-X-Received: by 2002:a4a:d747:0:b0:320:d7c2:4357 with SMTP id h7-20020a4ad747000000b00320d7c24357mr10664075oot.92.1647296860481;
-        Mon, 14 Mar 2022 15:27:40 -0700 (PDT)
+        bh=nQWuqg+ddOw1oV88Ty6v00QRPKt0GAj8NU+qEDYWO1I=;
+        b=RktqM66Wl09Buiiu+AB1Q/z4RO/ScKKoJTuYrOSVkQu4/U3iPRxQGbe3faMfAKCQbP
+         Q+EI2ahYlQ2ctNBjM54OPPTf8nNm9PnFT1i7qOIxxxyJKb9GAYOzQvRsWfrBweM5P+dF
+         AN+XNTveZg1reyM0QsT+RttVCfF0pG8CFIwPk/a8dzeKkRwzpGwYycGEy7FVYZmthjXq
+         YJOmsVeBA4S2Mcjh5CdIC/1VOJ6y3ovohMiJOuC5g/1alRx3y64mT2SSaDQZemuBLF/2
+         QWBHex9c8GieilnKeN82QJ9wiHw3ddaBUKVg5JcfyowDRw557eNapvNgy3FDyQutvMWe
+         JIHQ==
+X-Gm-Message-State: AOAM531VBTUBb1VtdTvPUZ0PZMN8QO/0DjSa0n2FWJW85z32poNcs7Ei
+        q3CJ6m5JnGkIpAQ6NMfP9jy7Mw==
+X-Google-Smtp-Source: ABdhPJwfNTLqkeOQnK1jvXc3XDq+dTSGGjbe07ZUKsKBp7CCf9AnvWDHI5pE6GufZ1uel/pwlnBIow==
+X-Received: by 2002:a05:6870:17a1:b0:da:b3f:3258 with SMTP id r33-20020a05687017a100b000da0b3f3258mr512703oae.264.1647296905949;
+        Mon, 14 Mar 2022 15:28:25 -0700 (PDT)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id ay39-20020a056820152700b003209eddff85sm7905003oob.45.2022.03.14.15.27.38
+        by smtp.gmail.com with ESMTPSA id n128-20020a4a4086000000b0032118eda64bsm7991304ooa.38.2022.03.14.15.28.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 15:27:39 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 17:27:37 -0500
+        Mon, 14 Mar 2022 15:28:25 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 17:28:23 -0500
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Alexandre Bailon <abailon@baylibre.com>
 Cc:     ohad@wizery.com, mathieu.poirier@linaro.org, robh+dt@kernel.or,
@@ -57,14 +57,14 @@ Cc:     ohad@wizery.com, mathieu.poirier@linaro.org, robh+dt@kernel.or,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         stephane.leprovost@mediatek.com, khilman@baylibre.com,
         Julien STEPHAN <jstephan@baylibre.com>
-Subject: Re: [PATCH v4 5/7] remoteproc: mtk_apu: Use match_data
-Message-ID: <Yi/BWTRGu5sbpw7S@builder.lan>
+Subject: Re: [PATCH v4 6/7] remoteproc: mtk-apu: Add support of MT8365
+Message-ID: <Yi/Bh8CsB2bnE9Ca@builder.lan>
 References: <20220304161514.994128-1-abailon@baylibre.com>
- <20220304161514.994128-6-abailon@baylibre.com>
+ <20220304161514.994128-7-abailon@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220304161514.994128-6-abailon@baylibre.com>
+In-Reply-To: <20220304161514.994128-7-abailon@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -73,106 +73,54 @@ On Fri 04 Mar 10:15 CST 2022, Alexandre Bailon wrote:
 
 > From: Julien STEPHAN <jstephan@baylibre.com>
 > 
-> This commits prepare the driver to be more generic in order to support
-> multiple platform using the compatible property.
-> To do that, put some register values and the clocks names inside
-> private data.
+> This adds support of APU available in the MT8365.
 > 
 > Signed-off-by: Julien STEPHAN <jstephan@baylibre.com>
 > Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
 > ---
->  drivers/remoteproc/mtk_apu.c | 35 ++++++++++++++++++++++++++++-------
->  1 file changed, 28 insertions(+), 7 deletions(-)
+>  drivers/remoteproc/mtk_apu.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
 > 
 > diff --git a/drivers/remoteproc/mtk_apu.c b/drivers/remoteproc/mtk_apu.c
-> index 3905eb5b7174..deec51b86ba5 100644
+> index deec51b86ba5..57dd73c63d3f 100644
 > --- a/drivers/remoteproc/mtk_apu.c
 > +++ b/drivers/remoteproc/mtk_apu.c
-> @@ -58,12 +58,20 @@
->  
->  #define APU_RESET_DELAY				(27)
->  
-> +struct mtk_apu_conf {
-> +	u32 core_default0;
-> +	u32 core_default1;
-> +	u32 num_clks;
-> +	const char * const *clk_names;
-> +};
-> +
->  struct mtk_apu_rproc {
->  	struct device *dev;
->  	void __iomem *base;
->  	int irq;
->  	unsigned int num_clks;
->  	struct clk_bulk_data *clks;
-> +	struct mtk_apu_conf *conf;
->  	struct iommu_domain *domain;
->  	struct list_head mappings;
->  
-> @@ -81,6 +89,13 @@ static const char * const mt8183_clk_names[] = {
->  	"jtag"
+> @@ -96,6 +96,24 @@ static const struct mtk_apu_conf mt8183_conf = {
+>  	.clk_names = mt8183_clk_names
 >  };
 >  
-> +static const struct mtk_apu_conf mt8183_conf = {
-> +	.core_default0 = (0x10 << 23) | (0x10 << 18),
+> +static const char * const mt8365_clk_names[] = {
+> +	"if_ck",
+> +	"edma",
+> +	"ahb",
+> +	"axi",
+> +	"ipu",
+> +	"jtag",
+> +	"smi_cam",
+> +	"ifr_apu_axi",
+> +};
+> +
+> +static const struct mtk_apu_conf mt8365_conf = {
+> +	.core_default0 = BIT(26) | BIT(20),
+> +	.core_default1 = BIT(3) | BIT(7),
 
-CORE_DEFAULT0_AWUSER_USE_IOMMU | CORE_DEFAULT0_ARUSER_USE_IOMMU ?
+Would it be possible to get some defines for these bits as well?
 
-> +	.core_default1 = (0x10 << 0) | (0x10 << 5),
-
-CORE_DEFAULT0_AWUSER_IDMA_USE_IOMMU | CORE_DEFAULT0_ARUSER_IDMA_USE_IOMMU ?
-
-Regards,
+Thanks,
 Bjorn
 
-> +	.num_clks = ARRAY_SIZE(mt8183_clk_names),
-> +	.clk_names = mt8183_clk_names
+> +	.num_clks = ARRAY_SIZE(mt8365_clk_names),
+> +	.clk_names = mt8365_clk_names
 > +};
 > +
 >  static int mtk_apu_iommu_map(struct rproc *rproc, struct rproc_mem_entry *entry)
 >  {
 >  	struct mtk_apu_rproc *apu_rproc = rproc->priv;
-> @@ -289,10 +304,9 @@ static int mtk_apu_rproc_start(struct rproc *rproc)
->  	writel(core_ctrl, apu_rproc->base + CORE_CTRL);
->  
->  	/* Configure memory accesses to go through the IOMMU */
-> -	writel(CORE_DEFAULT0_AWUSER_USE_IOMMU | CORE_DEFAULT0_ARUSER_USE_IOMMU |
-> -	      CORE_DEFAULT0_QOS_SWAP_1, apu_rproc->base + CORE_DEFAULT0);
-> -	writel(CORE_DEFAULT0_AWUSER_IDMA_USE_IOMMU |
-> -		CORE_DEFAULT0_ARUSER_IDMA_USE_IOMMU,
-> +	writel(apu_rproc->conf->core_default0 | CORE_DEFAULT0_QOS_SWAP_1,
-> +		apu_rproc->base + CORE_DEFAULT0);
-> +	writel(apu_rproc->conf->core_default1,
->  		apu_rproc->base + CORE_DEFAULT1);
->  
->  	/* Release the APU */
-> @@ -565,11 +579,18 @@ static int mtk_apu_rproc_probe(struct platform_device *pdev)
->  		goto free_rproc;
->  	}
->  
-> -	apu_rproc->num_clks = ARRAY_SIZE(mt8183_clk_names);
-> +
-> +	apu_rproc->conf = (struct mtk_apu_conf *)device_get_match_data(dev);
-> +	if (!apu_rproc->conf) {
-> +		ret = -ENODEV;
-> +		goto free_rproc;
-> +	}
-> +
-> +	apu_rproc->num_clks = apu_rproc->conf->num_clks;
->  	apu_rproc->clks = devm_kcalloc(dev, apu_rproc->num_clks,
->  				     sizeof(*apu_rproc->clks), GFP_KERNEL);
->  	for (i = 0; i < apu_rproc->num_clks; ++i)
-> -		apu_rproc->clks[i].id = mt8183_clk_names[i];
-> +		apu_rproc->clks[i].id = apu_rproc->conf->clk_names[i];
->  
->  	ret = devm_clk_bulk_get(dev, apu_rproc->num_clks, apu_rproc->clks);
->  	if (ret) {
-> @@ -611,7 +632,7 @@ static int mtk_apu_rproc_remove(struct platform_device *pdev)
->  }
+> @@ -633,6 +651,7 @@ static int mtk_apu_rproc_remove(struct platform_device *pdev)
 >  
 >  static const struct of_device_id mtk_apu_rproc_of_match[] = {
-> -	{ .compatible = "mediatek,mt8183-apu", },
-> +	{ .compatible = "mediatek,mt8183-apu", .data = &mt8183_conf },
+>  	{ .compatible = "mediatek,mt8183-apu", .data = &mt8183_conf },
+> +	{ .compatible = "mediatek,mt8365-apu", .data = &mt8365_conf },
 >  	{ /* sentinel */ },
 >  };
 >  MODULE_DEVICE_TABLE(of, mtk_apu_rproc_of_match);
