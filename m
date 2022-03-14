@@ -2,53 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD33C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D102C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240445AbiCNOyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 10:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
+        id S238768AbiCNOyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 10:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233567AbiCNOyZ (ORCPT
+        with ESMTP id S233577AbiCNOyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 10:54:25 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 981FA255B3;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 982E2255BA;
         Mon, 14 Mar 2022 07:53:14 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nTm4O-0006nG-02; Mon, 14 Mar 2022 15:53:12 +0100
+        id 1nTm4O-0006nG-01; Mon, 14 Mar 2022 15:53:12 +0100
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 6D6BDC2E31; Mon, 14 Mar 2022 15:52:34 +0100 (CET)
-Date:   Mon, 14 Mar 2022 15:52:34 +0100
+        id C5EC0C2E31; Mon, 14 Mar 2022 15:52:15 +0100 (CET)
+Date:   Mon, 14 Mar 2022 15:52:15 +0100
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Serge Semin <fancer.lancer@gmail.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mips: cdmm: Fix refcount leak in mips_cdmm_phys_base
-Message-ID: <20220314145234.GE13438@alpha.franken.de>
-References: <20220309091711.3850-1-linmq006@gmail.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Marc Zyngier <maz@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Yanteng Si <siyanteng01@gmail.com>, linux-mips@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2] MIPS: Only use current_stack_pointer on GCC
+Message-ID: <20220314145215.GD13438@alpha.franken.de>
+References: <20220309220939.392227-1-keescook@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220309091711.3850-1-linmq006@gmail.com>
+In-Reply-To: <20220309220939.392227-1-keescook@chromium.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 09:17:10AM +0000, Miaoqian Lin wrote:
-> The of_find_compatible_node() function returns a node pointer with
-> refcount incremented, We should use of_node_put() on it when done
-> Add the missing of_node_put() to release the refcount.
+On Wed, Mar 09, 2022 at 02:09:39PM -0800, Kees Cook wrote:
+> Unfortunately, Clang did not have support for "sp" as a global register
+> definition, and was crashing after the addition of current_stack_pointer.
+> This has been fixed in Clang 15, but earlier Clang versions need to
+> avoid this code, so add a versioned test and revert back to the
+> open-coded asm instances. Fixes Clang build error:
 > 
-> Fixes: 2121aa3e2312 ("mips: cdmm: Add mti,mips-cdmm dtb node support")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> fatal error: error in backend: Invalid register name global variable
+> 
+> Fixes: 200ed341b864 ("mips: Implement "current_stack_pointer"")
+> Reported-by: Nathan Chancellor <nathan@kernel.org>
+> Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+> Link: https://lore.kernel.org/lkml/YikTQRql+il3HbrK@dev-arch.thelio-3990X
+> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Yanteng Si <siyanteng01@gmail.com>
+> Cc: linux-mips@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 > ---
->  drivers/bus/mips_cdmm.c | 1 +
->  1 file changed, 1 insertion(+)
+> v1: https://lore.kernel.org/lkml/20220309204537.390428-1-keescook@chromium.org
+> v2: - adjust Clang version (Nathan)
+> ---
+>  arch/mips/Kconfig                   | 2 +-
+>  arch/mips/include/asm/thread_info.h | 2 ++
+>  arch/mips/kernel/irq.c              | 3 ++-
+>  arch/mips/lib/uncached.c            | 4 +++-
+>  4 files changed, 8 insertions(+), 3 deletions(-)
 
-applied to mips-next.
+applied to mips-next with the Clang version in the decscription fixed.
 
 Thomas.
 
