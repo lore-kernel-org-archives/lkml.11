@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D170C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238485AbiCNKTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S238492AbiCNKTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238235AbiCNKTR (ORCPT
+        with ESMTP id S238486AbiCNKTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:19:17 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676AD2408A;
-        Mon, 14 Mar 2022 03:18:07 -0700 (PDT)
+        Mon, 14 Mar 2022 06:19:39 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603BDE30;
+        Mon, 14 Mar 2022 03:18:29 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: kholk11)
-        with ESMTPSA id 503631F43E42
+        with ESMTPSA id 9BB481F43E42
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647253086;
-        bh=nQGCEaQV4SSt7P7Vs4H6IutV6PQurOMGF3CTakySQ4Y=;
+        s=mail; t=1647253108;
+        bh=Xhm3zTCf6fMF/1xTFWS49KczB8qcaMTMqtJUqaWvAOQ=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=dZPSbnMF4ru8XqiTI61+q3Z0UEJ7yUYvUGIdlnPn8gD/ZAKNSSa9xQKI6cEe39jCT
-         yEn5aSAbkzH4PgPoFNVjWXMx09Knhf/u9WT41z1wMPWXxjAl4e34+gi2RL4gFrD4ZF
-         sm5PKK1jQRFrwxhYg95pzkz9pL9aQgrB/SAjl1aAfSA7ClNhLIOX0G2TNkoHbmfr5s
-         hckhD84BpWv2LmD71gMNYe8wiqVfNke5nffD8VZHRQIGarIxuTViBB3NTIBi+8iTt2
-         aFhq4s1Rrx2Iby/cyGUWO9kkNZaaRVmFoMBdHRzILvvqZNzd5njH38XEpiJU3I0H9V
-         jiA5EFb9NLzHQ==
-Message-ID: <a497b403-5b20-9a2f-498e-b43727b26675@collabora.com>
-Date:   Mon, 14 Mar 2022 11:18:02 +0100
+        b=HebpY9GHsh4/EF1tb4cHCYjdHjqFoVaMStCWf+GYjxlRAznKIX3amuZoiYtQxjE8M
+         IIUk+s1KDRkDTFgsSTXfphKdFlww+OayPkTXu+Jf3EYt5xxqmqgguuIIvvuTOVcZVZ
+         ln9nTOWYrtlF0uoLsEngQLKneKZsZQUE6nB4ez+0c6/gAsrYLdxLLcF9B2yaj47abM
+         Qn150wl9SlffmS6MUiRrpGFpuTBJctTNO79R6IRtJtPfKlyg377hLtWqpE3kLermgu
+         3YlGn4WBRNl4DkHPKZuUZmVqhXH219FD3YThf3h7kDgqzlJkB08my6jvOx9f7vHvdV
+         Hx/+EuJRSsfLQ==
+Message-ID: <5f79e76b-1333-159c-2dc7-0f7e8927e4df@collabora.com>
+Date:   Mon, 14 Mar 2022 11:18:25 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [v3 19/19] ASoC: mediatek: mt6358: add missing EXPORT_SYMBOLs
+Subject: Re: [v3 03/19] ASoC: mediatek: mt8186: support audsys clock control
 Content-Language: en-US
 To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org,
         robh+dt@kernel.org
@@ -44,10 +44,10 @@ Cc:     aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20220313151023.21229-1-jiaxin.yu@mediatek.com>
- <20220313151023.21229-20-jiaxin.yu@mediatek.com>
+ <20220313151023.21229-4-jiaxin.yu@mediatek.com>
 From:   AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220313151023.21229-20-jiaxin.yu@mediatek.com>
+In-Reply-To: <20220313151023.21229-4-jiaxin.yu@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -55,64 +55,19 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Il 13/03/22 16:10, Jiaxin Yu ha scritto:
-> This fixes the following build errors when mt6358 is configured as module:
-> 
->>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
->>> [sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.ko] undefined!
->>> ERROR: modpost: "mt6358_set_mtkaif_protocol"
->>> [sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.ko] undefined!
+> Add mt8186 audio cg control. Audio clock gates are registered to
+> CCF for reference count and clock parent management.
 > 
 > Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 
-Hello Jiaxin,
-
-Can you please add a Fixes tag to this patch and send it separately from
-the MT8186 series?
-
-After adding the Fixes tag:
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Thanks,
-Angelo
-
 > ---
->   sound/soc/codecs/mt6358.c | 4 ++++
->   1 file changed, 4 insertions(+)
+>   sound/soc/mediatek/mt8186/mt8186-audsys-clk.c | 150 ++++++++++++++++++
+>   sound/soc/mediatek/mt8186/mt8186-audsys-clk.h |  15 ++
+>   .../soc/mediatek/mt8186/mt8186-audsys-clkid.h |  45 ++++++
+>   3 files changed, 210 insertions(+)
+>   create mode 100644 sound/soc/mediatek/mt8186/mt8186-audsys-clk.c
+>   create mode 100644 sound/soc/mediatek/mt8186/mt8186-audsys-clk.h
+>   create mode 100644 sound/soc/mediatek/mt8186/mt8186-audsys-clkid.h
 > 
-> diff --git a/sound/soc/codecs/mt6358.c b/sound/soc/codecs/mt6358.c
-> index 1fdd2f8cf877..61f2a7632fd4 100644
-> --- a/sound/soc/codecs/mt6358.c
-> +++ b/sound/soc/codecs/mt6358.c
-> @@ -107,6 +107,7 @@ int mt6358_set_mtkaif_protocol(struct snd_soc_component *cmpnt,
->   	priv->mtkaif_protocol = mtkaif_protocol;
->   	return 0;
->   }
-> +EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_protocol);
->   
->   static void playback_gpio_set(struct mt6358_priv *priv)
->   {
-> @@ -273,6 +274,7 @@ int mt6358_mtkaif_calibration_enable(struct snd_soc_component *cmpnt)
->   			   1 << RG_AUD_PAD_TOP_DAT_MISO_LOOPBACK_SFT);
->   	return 0;
->   }
-> +EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_enable);
->   
->   int mt6358_mtkaif_calibration_disable(struct snd_soc_component *cmpnt)
->   {
-> @@ -296,6 +298,7 @@ int mt6358_mtkaif_calibration_disable(struct snd_soc_component *cmpnt)
->   	capture_gpio_reset(priv);
->   	return 0;
->   }
-> +EXPORT_SYMBOL_GPL(mt6358_mtkaif_calibration_disable);
->   
->   int mt6358_set_mtkaif_calibration_phase(struct snd_soc_component *cmpnt,
->   					int phase_1, int phase_2)
-> @@ -310,6 +313,7 @@ int mt6358_set_mtkaif_calibration_phase(struct snd_soc_component *cmpnt,
->   			   phase_2 << RG_AUD_PAD_TOP_PHASE_MODE2_SFT);
->   	return 0;
->   }
-> +EXPORT_SYMBOL_GPL(mt6358_set_mtkaif_calibration_phase);
->   
->   /* dl pga gain */
->   enum {
-
