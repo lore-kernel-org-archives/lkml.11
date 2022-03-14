@@ -2,174 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F0AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235190AbiCNQ6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S235519AbiCNQ6q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234693AbiCNQ6D (ORCPT
+        with ESMTP id S234693AbiCNQ6n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:58:03 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75073A73B;
-        Mon, 14 Mar 2022 09:56:52 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id r13so35440590ejd.5;
-        Mon, 14 Mar 2022 09:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=63A+VQ/NUEeDaJW7pNGXfcNFAy8DF92o6Jzg0oVXuE4=;
-        b=bLlpoaIizi9w3UjGu1TRPkRkHLgPf6oYVkqZWI2khR0kHkk3u04vcv1O8WJMtUqoxV
-         99B9FR+PioiSsynsRNsE6QFtnlvm+Xj5dH34iH9GlBmn6++ZXau3EED6kY3J+hAEdbL4
-         6XvpbJMXNdp5ZfUy5hujk3Vb+tH4K7lZEAA0K1VUHGTorOS47cPw6eTJP36+Nen6h9kt
-         Rpvzm96daPnQuEl1cJnQKip3IihU9R5UftSOdffgGkJpZbxZYooxKNCxQil0BpG9O5a4
-         MsCtR96HyerXpBZk0C4uERrPw4f/n3yU+y0eD51xhWOlGhXoz0yZljPMLAYu8YgxaF+0
-         vDug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=63A+VQ/NUEeDaJW7pNGXfcNFAy8DF92o6Jzg0oVXuE4=;
-        b=7bDyTtf0XkKhwLVoU2z9Pw1iEi4e/ADWZoL9hYsN7WPg3iEhA2unVUfaF+Y/R97DnN
-         hj/yI5Y3KOKsC3sXG0IgkbVoBe0/QQGs45bZDmrdh1QqDlZIFzYbIw4vl4C3/oYXzKFi
-         AfE3KcHT+vRrpiw+CLvrSc5TYwUo3B+TyQAOSOuMLrIeEemrMb6sVAnHjkVbCBrLnAW7
-         VKdUvJPvOFBhc+s5eYKkG4c4K4NO40iwARub4r/AR9UfmMsobdEk4T411RRfs4TSjk8B
-         bxnJEChByWo7Rbl8wHxvqrgYQXaLN/83w0oSIOHwY+bc5KxwjQYW9EmkCfgSEnOT8mPQ
-         FUcw==
-X-Gm-Message-State: AOAM530Gcrnc9M3uAdgDowzjBXFvfDhsNywGIYpdMITpZkTiUqBXfTXj
-        yMfUP4DYkBabjUhQFly/4i0=
-X-Google-Smtp-Source: ABdhPJy4iP7W3VPKzGvFW/dTiEMVOGUqKn5TPQdRZRefbfStQyIy115mZyar8J0FrnQFf4zbZb8I5A==
-X-Received: by 2002:a17:907:7254:b0:6db:ad8f:27b4 with SMTP id ds20-20020a170907725400b006dbad8f27b4mr12828197ejc.599.1647277011251;
-        Mon, 14 Mar 2022 09:56:51 -0700 (PDT)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id js24-20020a170906ca9800b006c8aeca8fe8sm7029530ejb.58.2022.03.14.09.56.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 09:56:50 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 18:56:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
- for MST
-Message-ID: <20220314165649.vtsd3xqv7htut55d@skbuf>
-References: <20220314095231.3486931-1-tobias@waldekranz.com>
- <20220314095231.3486931-10-tobias@waldekranz.com>
+        Mon, 14 Mar 2022 12:58:43 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2988E3B01A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:57:34 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CEF15210F9;
+        Mon, 14 Mar 2022 16:57:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647277052; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OxXwFHPNzH5Csyhh4StleU/1uE5aiwhYDOtjRtBM8Cs=;
+        b=0ErJaYnJIqPZaBs+I1ty5OXDQBllInMcDso1OSQDpnCeJkCEXe7GqvvyWmjf+G0Ck8EpZq
+        THeQvMj89rYiWZJr2WTsfi9C8G6XAyWK+h8AKNfmzR0kvtSAanOzUmj5c2N3scVIuzeHEX
+        QJNQv4P7ni52vdAIkhatE2h2GKNORFs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647277052;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OxXwFHPNzH5Csyhh4StleU/1uE5aiwhYDOtjRtBM8Cs=;
+        b=AODhh5jhdKhN6dl7oIOx9NiQoT4GhrtmrFrIQBE0M+KjDBi84wWkT8rAT2dKpvytrDlFxN
+        I4pKIJVhsE4A+9Aw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AE9E013B9A;
+        Mon, 14 Mar 2022 16:57:32 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id sGz1KfxzL2I+PAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 14 Mar 2022 16:57:32 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 2/2] mm/early_ioremap: declare early_memremap_pgprot_adjust()
+Date:   Mon, 14 Mar 2022 17:57:24 +0100
+Message-Id: <20220314165724.16071-2-vbabka@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314165724.16071-1-vbabka@suse.cz>
+References: <20220314165724.16071-1-vbabka@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314095231.3486931-10-tobias@waldekranz.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1262; h=from:subject; bh=7vyyC8zALJ4SuHOC5Gb+d+1XDIpeD1sRQmLdSzD1PtI=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiL3PzVFbcI0UT/MAE1ZzpBx7qovtYTchrj7J6OO9A KzJzkROJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYi9z8wAKCRDgIcpz8YmpENlUCA CnUgCA9PKggdYKeRUblvVPEAL3cg75UMqK2D+sXbmrCKeEMZirLx+xgKARoMUzXfBZitHGZi4D8hJX BRGNHk5hZQLVf38pO+jRObxiNsfBmmjGlfyuDpaGlgaqlGVSHhEafjY5gP5gJi9qeasT+/fr049qec CRbPIB3BQCX4jEgd2XC94yWG/KEj5fGgHpM7/Fgw/dVqvlVWcPE+jXhGvFOcY2UwUD1Dm06+3FBvA1 KX74PDGs8wueuKxRMLySgslgOriAT+mYgB6nfsjqok4BB0mzVqVaRsAyQTePmDTiD49PnKHfFTfOYG Kn60Kbud5m9Nj6JHTnt4qzdgThG3oe
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 10:52:26AM +0100, Tobias Waldekranz wrote:
-> When joining a bridge where MST is enabled, we validate that the
-> proper offloading support is in place, otherwise we fallback to
-> software bridging.
-> 
-> When then mode is changed on a bridge in which we are members, we
-> refuse the change if offloading is not supported.
-> 
-> At the moment we only check for configurable learning, but this will
-> be further restricted as we support more MST related switchdev events.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
->  net/dsa/dsa_priv.h |  2 ++
->  net/dsa/port.c     | 20 ++++++++++++++++++++
->  net/dsa/slave.c    |  6 ++++++
->  3 files changed, 28 insertions(+)
-> 
-> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-> index f20bdd8ea0a8..2aba420696ef 100644
-> --- a/net/dsa/dsa_priv.h
-> +++ b/net/dsa/dsa_priv.h
-> @@ -234,6 +234,8 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
->  			    struct netlink_ext_ack *extack);
->  bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
->  int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
-> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
-> +			struct netlink_ext_ack *extack);
->  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
->  			bool targeted_match);
->  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index 58291df14cdb..1a17a0efa2fa 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
->  	if (err && err != -EOPNOTSUPP)
->  		return err;
->  
-> +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
-> +	if (err && err != -EOPNOTSUPP)
-> +		return err;
+The mm/ directory can almost fully be built with W=1, which would help
+in local development. One remaining issue is missing prototype for
+early_memremap_pgprot_adjust().
 
-Sadly this will break down because we don't have unwinding on error in
-place (sorry). We'd end up with an unoffloaded bridge port with
-partially synced bridge port attributes. Could you please add a patch
-previous to this one that handles this, and unoffloads those on error?
+Thus add a declaration for this function. Use mm/internal.h instead of
+asm/early_ioremap.h to avoid missing type definitions and unnecessary
+exposure.
 
-> +
->  	return 0;
->  }
->  
-> @@ -735,6 +739,22 @@ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
->  	return 0;
->  }
->  
-> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
-> +			struct netlink_ext_ack *extack)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!on)
-> +		return 0;
-> +
-> +	if (!dsa_port_can_configure_learning(dp)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Hardware does not support MST");
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
->  			      struct switchdev_brport_flags flags,
->  			      struct netlink_ext_ack *extack)
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index a61a7c54af20..333f5702ea4f 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -463,6 +463,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
->  
->  		ret = dsa_port_ageing_time(dp, attr->u.ageing_time);
->  		break;
-> +	case SWITCHDEV_ATTR_ID_BRIDGE_MST:
-> +		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
-> +			return -EOPNOTSUPP;
-> +
-> +		ret = dsa_port_mst_enable(dp, attr->u.mst, extack);
-> +		break;
->  	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
->  		if (!dsa_port_offloads_bridge_port(dp, attr->orig_dev))
->  			return -EOPNOTSUPP;
-> -- 
-> 2.25.1
-> 
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/early_ioremap.c | 1 +
+ mm/internal.h      | 6 ++++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/mm/early_ioremap.c b/mm/early_ioremap.c
+index 74984c23a87e..9bc12e526ed0 100644
+--- a/mm/early_ioremap.c
++++ b/mm/early_ioremap.c
+@@ -17,6 +17,7 @@
+ #include <linux/vmalloc.h>
+ #include <asm/fixmap.h>
+ #include <asm/early_ioremap.h>
++#include "internal.h"
+ 
+ #ifdef CONFIG_MMU
+ static int early_ioremap_debug __initdata;
+diff --git a/mm/internal.h b/mm/internal.h
+index d80300392a19..e3e2a3c5f655 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -154,6 +154,12 @@ extern unsigned long highest_memmap_pfn;
+  */
+ #define MAX_RECLAIM_RETRIES 16
+ 
++/*
++ * in mm/early_ioremap.c
++ */
++pgprot_t __init early_memremap_pgprot_adjust(resource_size_t phys_addr,
++					unsigned long size, pgprot_t prot);
++
+ /*
+  * in mm/vmscan.c:
+  */
+-- 
+2.35.1
+
