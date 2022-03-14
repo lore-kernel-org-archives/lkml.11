@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B73C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9A2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241045AbiCNM0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51612 "EHLO
+        id S233792AbiCNM0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242428AbiCNMTA (ORCPT
+        with ESMTP id S242559AbiCNMTK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:19:00 -0400
+        Mon, 14 Mar 2022 08:19:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7C24E3AA;
-        Mon, 14 Mar 2022 05:14:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76BC4F9CF;
+        Mon, 14 Mar 2022 05:14:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8EF960B09;
-        Mon, 14 Mar 2022 12:14:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E27D3C340E9;
-        Mon, 14 Mar 2022 12:14:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73A25608C4;
+        Mon, 14 Mar 2022 12:14:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F68C340E9;
+        Mon, 14 Mar 2022 12:14:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260051;
-        bh=ZLHV/ijyzxqyLndfEsqIgFthJJDTK+xbOtWlHN6N4qk=;
+        s=korg; t=1647260060;
+        bh=bXKA+GTpOM+Bd5cpEsUpd3Dxw+oPiBeu+W5ii1xo3ZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z/IhsISbBUSkiUbxg8Q06iVjB1djpB43tYECrvqSHUa9+UjTdZgDoT3FPgcFn30Dk
-         7orQnyPQQFx0bZfqWyX3GG4XlAamhjwvDpt44ogJ+Xor+6msTe1gZpqw4pv5L4qPg2
-         8h+n2kMmD0a9c5wYPXj4vmE3zpLQy0cK7qm5R0Eo=
+        b=VGy6THRm3eGeR0qez/DGgoXx+A4fMKmYCgJm5KGT/wCsDZ1wcjg+CZEJ8ni3CzksB
+         6VtqVHGsS3RUUDcxrtvcouJ3NWPFy2zOQLP9S4pM8VYMIo/OJoW81WdpuF+a+nDekO
+         Mjs4QeUYzBVlWfllJzVjY/g/t/58wzypnZVImDEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        stable@vger.kernel.org, Thomas Osterried <thomas@osterried.de>,
+        Duoming Zhou <duoming@zju.edu.cn>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 041/121] net: ethernet: ti: cpts: Handle error for clk_enable
-Date:   Mon, 14 Mar 2022 12:53:44 +0100
-Message-Id: <20220314112745.274647273@linuxfoundation.org>
+Subject: [PATCH 5.16 044/121] ax25: Fix NULL pointer dereference in ax25_kill_by_device
+Date:   Mon, 14 Mar 2022 12:53:47 +0100
+Message-Id: <20220314112745.357139303@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -49,37 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 6babfc6e6fab068018c36e8f6605184b8c0b349d ]
+[ Upstream commit 71171ac8eb34ce7fe6b3267dce27c313ab3cb3ac ]
 
-As the potential failure of the clk_enable(),
-it should be better to check it and return error
-if fails.
+When two ax25 devices attempted to establish connection, the requester use ax25_create(),
+ax25_bind() and ax25_connect() to initiate connection. The receiver use ax25_rcv() to
+accept connection and use ax25_create_cb() in ax25_rcv() to create ax25_cb, but the
+ax25_cb->sk is NULL. When the receiver is detaching, a NULL pointer dereference bug
+caused by sock_hold(sk) in ax25_kill_by_device() will happen. The corresponding
+fail log is shown below:
 
-Fixes: 8a2c9a5ab4b9 ("net: ethernet: ti: cpts: rework initialization/deinitialization")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+===============================================================
+BUG: KASAN: null-ptr-deref in ax25_device_event+0xfd/0x290
+Call Trace:
+...
+ax25_device_event+0xfd/0x290
+raw_notifier_call_chain+0x5e/0x70
+dev_close_many+0x174/0x220
+unregister_netdevice_many+0x1f7/0xa60
+unregister_netdevice_queue+0x12f/0x170
+unregister_netdev+0x13/0x20
+mkiss_close+0xcd/0x140
+tty_ldisc_release+0xc0/0x220
+tty_release_struct+0x17/0xa0
+tty_release+0x62d/0x670
+...
+
+This patch add condition check in ax25_kill_by_device(). If s->sk is
+NULL, it will goto if branch to kill device.
+
+Fixes: 4e0f718daf97 ("ax25: improve the incomplete fix to avoid UAF and NPD bugs")
+Reported-by: Thomas Osterried <thomas@osterried.de>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/cpts.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/ax25/af_ax25.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
-index dc70a6bfaa6a..92ca739fac01 100644
---- a/drivers/net/ethernet/ti/cpts.c
-+++ b/drivers/net/ethernet/ti/cpts.c
-@@ -568,7 +568,9 @@ int cpts_register(struct cpts *cpts)
- 	for (i = 0; i < CPTS_MAX_EVENTS; i++)
- 		list_add(&cpts->pool_data[i].list, &cpts->pool);
- 
--	clk_enable(cpts->refclk);
-+	err = clk_enable(cpts->refclk);
-+	if (err)
-+		return err;
- 
- 	cpts_write32(cpts, CPTS_EN, control);
- 	cpts_write32(cpts, TS_PEND_EN, int_enable);
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 44a8730c26ac..00bb087c2ca8 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -87,6 +87,13 @@ static void ax25_kill_by_device(struct net_device *dev)
+ 	ax25_for_each(s, &ax25_list) {
+ 		if (s->ax25_dev == ax25_dev) {
+ 			sk = s->sk;
++			if (!sk) {
++				spin_unlock_bh(&ax25_list_lock);
++				s->ax25_dev = NULL;
++				ax25_disconnect(s, ENETUNREACH);
++				spin_lock_bh(&ax25_list_lock);
++				goto again;
++			}
+ 			sock_hold(sk);
+ 			spin_unlock_bh(&ax25_list_lock);
+ 			lock_sock(sk);
 -- 
 2.34.1
 
