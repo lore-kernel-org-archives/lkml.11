@@ -2,119 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CC6C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E81DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 16:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243895AbiCNQld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 12:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
+        id S233116AbiCNQmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 12:42:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243923AbiCNQia (ORCPT
+        with ESMTP id S236642AbiCNQlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 12:38:30 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479D337AA9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:37:08 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id g8so9686538qke.2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 09:37:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dpBAoVsBs5pmN0ITaSoUHzzdcUkZXl3b73bSC3GUG9U=;
-        b=TA0eK4AXTtiOBAwdWRCR6Nv6wWYLsoxxDFGDGXc4JJ1XMmlDmv2YlrJy0HmkG68Ejn
-         I5HoTb/W9Rv6icvi3mH10PiPHPBH7zOUVRP89Z3L3vVSc4BJt822XLFyediPKA/7LCQW
-         C8kE6glKqF1Y4yMxRHzXgsA+v+FKf13UQfGkgGCNFfIA8JiYswThwEjqOJ+F0tdl4WZg
-         SM8u8kxhbBFI+PHfuoHPA8CwyySHEGMM//DvgaD38+DVdE5ocmXYDMzMnq4uSGFcj1OM
-         y5eEXj6z35wZL2YL0fI4oUdSQyX6bfDc2TtSxjpdnaialOlsdhCUnhaawp9nVZ5oKTBc
-         KxKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dpBAoVsBs5pmN0ITaSoUHzzdcUkZXl3b73bSC3GUG9U=;
-        b=FRIWgVsuITUB2j1i597UKV/EYfvDGnPx4e2y45cuu7tMa6YKT8bGZP5BzBc8OhFyw6
-         Exn0JL+uZpyslti1M27XGVJtkk+ycWV4jS8qVcKvNXFQeQ1LSHfP2J/4w1MhXrDWENhZ
-         lR33a2O81rmbITn73GrhDfG6Q8h18xqBDN1aNJE8d4t+vykraeKlzVRqipaivKBGXgCl
-         ykzxp2Z0sfyqeXJ9X9ERliJUBliY5iKMVn3Gcvqa0thBiW74Ha76yye8N+EvaWo8Edxw
-         X8uQkk8PxOBf5/9pVslN82tzHSPrGWDrnIq7nj9zJYbYQkazqxAG4z28EtkdvZ/lcrq8
-         xW7A==
-X-Gm-Message-State: AOAM533kVUNdIYD46gJSVbM3MH2QBi/Vc9GG0np1UnZQuRszGnGg3JcZ
-        iBN1UocvudB07XrjK+VKQ0uvbA==
-X-Google-Smtp-Source: ABdhPJxMjebTF+bOmlEycAd5SxCn5ZJwAsh0pbHUVpZ5dmiWF4Lhr8C02y08OzygCSHYBFNzIpctfA==
-X-Received: by 2002:a37:9a13:0:b0:67b:11f3:231f with SMTP id c19-20020a379a13000000b0067b11f3231fmr14854160qke.641.1647275827168;
-        Mon, 14 Mar 2022 09:37:07 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id g21-20020ac85815000000b002e06e2623a7sm11410178qtg.0.2022.03.14.09.37.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 09:37:06 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1nTngv-000Q4z-HM; Mon, 14 Mar 2022 13:37:05 -0300
-Date:   Mon, 14 Mar 2022 13:37:05 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     GUO Zihua <guozihua@huawei.com>
-Cc:     linux-integrity@vger.kernel.org, wangweiyang2@huawei.com,
-        xiujianfeng@huawei.com, weiyongjun1@huawei.com, peterhuewe@gmx.de,
-        jarkko@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tpm: Fix memory leak in tpmm_chip_alloc
-Message-ID: <20220314163705.GA64706@ziepe.ca>
-References: <20220307104827.40843-1-guozihua@huawei.com>
+        Mon, 14 Mar 2022 12:41:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6917C473B6;
+        Mon, 14 Mar 2022 09:40:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73A07608C3;
+        Mon, 14 Mar 2022 16:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FBEAC340E9;
+        Mon, 14 Mar 2022 16:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647276013;
+        bh=f6j100uU3wgK7s/aNPsFd7DSTWSNi49pn+hCa98zhX0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PLHaIbYAbJ5DfRs37Z8P2qxAM3W2Ogv0jrM0iYjXWzXID+I9IwAHDZfeAAYvSwJcZ
+         SnUz1hHnvAfhGZf//VdZomrWvx1IO/kZ4cawytg2DdAWIQ3QtS5mlFsZsmt0syz4WM
+         DFeYw95mMN5nNAjhOjWxbzIaEzdg40AXLaTe6wXdh8dzTAltF97dh4Z3jLoKe0vjj0
+         GDKiJ9XR/KZkuYiTAQBieYcnx1zUbx8H5ETBgldKsmW8oqdyy2ADBqkuZ+vNJSOKrj
+         MIcmPwPUlvTrsS0Gtx8iNy7saorTqeCpYE+z1dfpln6R/Ll9QjG7+TKPpX6LzXbvJ5
+         rMCr5+TXjJm1w==
+Date:   Mon, 14 Mar 2022 09:40:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     cgel.zte@gmail.com
+Cc:     chi.minghao@zte.com.cn, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        sebastian.hesselbarth@gmail.com, zealci@zte.com.cn
+Subject: Re: [PATCH V3] net: mv643xx_eth: use platform_get_irq() instead of
+ platform_get_resource()
+Message-ID: <20220314094012.3e42cedb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220314024144.2112308-1-chi.minghao@zte.com.cn>
+References: <20220311082051.783b7c0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20220314024144.2112308-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220307104827.40843-1-guozihua@huawei.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 07, 2022 at 06:48:27PM +0800, GUO Zihua wrote:
-> Fix a memory leak in tpmm_chip_alloc. devm_add_action_or_reset would
-> call put_device on error, while tpm->devs is left untouched. Call
-> put_device on tpm->devs as well if devm_add_action_or_reset returns an
-> error.
+On Mon, 14 Mar 2022 02:41:44 +0000 cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
 > 
-> Fixes: fdc915f7f719 ("tpm: expose spaces via a device link /dev/tpmrm")
-> Signed-off-by: GUO Zihua <guozihua@huawei.com>
->  drivers/char/tpm/tpm-chip.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
+> It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+> for requesting IRQ's resources any more, as they can be not ready yet in
+> case of DT-booting.
 > 
-> diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
-> index b009e7479b70..0a92334e8c40 100644
-> +++ b/drivers/char/tpm/tpm-chip.c
-> @@ -308,6 +308,12 @@ static int tpm_class_shutdown(struct device *dev)
->  	return 0;
->  }
->  
-> +static void tpm_chip_free(struct tpm_chip *chip)
-> +{
-> +	put_device(&chip->devs);
-> +	put_device(&chip->dev);
-> +}
-> +
->  /**
->   * tpm_chip_alloc() - allocate a new struct tpm_chip instance
->   * @pdev: device to which the chip is associated
-> @@ -396,8 +402,7 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
->  	return chip;
->  
->  out:
-> -	put_device(&chip->devs);
-> -	put_device(&chip->dev);
-> +	tpm_chip_free(chip);
->  	return ERR_PTR(rc);
->  }
->  EXPORT_SYMBOL_GPL(tpm_chip_alloc);
-> @@ -420,8 +425,8 @@ struct tpm_chip *tpmm_chip_alloc(struct device *pdev,
->  		return chip;
->  
->  	rc = devm_add_action_or_reset(pdev,
-> -				      (void (*)(void *)) put_device,
-> -				      &chip->dev);
-> +				      (void (*)(void *)) tpm_chip_free,
-> +				      chip);
->  	if (rc)
+> platform_get_irq() instead is a recommended way for getting IRQ even if
+> it was not retrieved earlier.
+> 
+> It also makes code simpler because we're getting "int" value right away
+> and no conversion from resource to int is required.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-This looks like the same issue as was adressed by the recent discussion..
+Your previous patch was applied, you must send a incremental fix on top
+of this tree:
 
-Jason
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
