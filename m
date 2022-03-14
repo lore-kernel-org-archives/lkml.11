@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9B8C47088
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241671AbiCNMXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59672 "EHLO
+        id S241697AbiCNMXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241156AbiCNMOs (ORCPT
+        with ESMTP id S240974AbiCNMOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:14:48 -0400
+        Mon, 14 Mar 2022 08:14:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A48C3ED1B;
-        Mon, 14 Mar 2022 05:11:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B59C483A3;
+        Mon, 14 Mar 2022 05:11:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FDE1612FC;
-        Mon, 14 Mar 2022 12:11:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0FE8C340EC;
-        Mon, 14 Mar 2022 12:11:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F6E661314;
+        Mon, 14 Mar 2022 12:11:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D8EC340EC;
+        Mon, 14 Mar 2022 12:11:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259892;
-        bh=Wsxqznz+IquJ0SiSvvBnpxlHeNi7tUeAdIQmNX7KyFY=;
+        s=korg; t=1647259897;
+        bh=+iu3YEJGg0Ei9nx0UmPyifith2WwxThQTTrvu8AqV/c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XlI6bVD4C1pN5MlJJkUCrlE1DgmH0khNpNGtLgA8o7wuPnfcZY5TspMHQ1gfhKq1d
-         OaQqyXDTwhTwCr1yUdHYLNegP6Q1+y7XV8jQrAbt1y2/yQZxcMitEaN1ICzXbgb+Sm
-         +ro6RGqhIOX2IlFGInH6qyLXjoOIw4ew1UBbiWh8=
+        b=u2uTBAYGIqIkbiIVxlI1aq0s61zFb4NEPBEffXwKuY0OT2QCt5wv7eZ2PECRz1ZK1
+         tTi2B3br5lst+IP8bOeaqCz6D+fjBSubFyYORWEHzFXVIXzZbbSyE87eEMc00AeEdj
+         lMFGcX3gmb9zDpm+RyPCw/vSp8GSoDgtAl3tI55A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rong Chen <rong.chen@amlogic.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 081/110] mmc: meson: Fix usage of meson_mmc_post_req()
-Date:   Mon, 14 Mar 2022 12:54:23 +0100
-Message-Id: <20220314112745.291836765@linuxfoundation.org>
+        stable@vger.kernel.org, Emil Renner Berthing <kernel@esmil.dk>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 082/110] riscv: Fix auipc+jalr relocation range checks
+Date:   Mon, 14 Mar 2022 12:54:24 +0100
+Message-Id: <20220314112745.319490791@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,81 +48,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rong Chen <rong.chen@amlogic.com>
+From: Emil Renner Berthing <kernel@esmil.dk>
 
-commit f0d2f15362f02444c5d7ffd5a5eb03e4aa54b685 upstream.
+commit 0966d385830de3470b7131db8e86c0c5bc9c52dc upstream.
 
-Currently meson_mmc_post_req() is called in meson_mmc_request() right
-after meson_mmc_start_cmd(). This could lead to DMA unmapping before the request
-is actually finished.
+RISC-V can do PC-relative jumps with a 32bit range using the following
+two instructions:
 
-To fix, don't call meson_mmc_post_req() until meson_mmc_request_done().
+	auipc	t0, imm20	; t0 = PC + imm20 * 2^12
+	jalr	ra, t0, imm12	; ra = PC + 4, PC = t0 + imm12
 
-Signed-off-by: Rong Chen <rong.chen@amlogic.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Fixes: 79ed05e329c3 ("mmc: meson-gx: add support for descriptor chain mode")
+Crucially both the 20bit immediate imm20 and the 12bit immediate imm12
+are treated as two's-complement signed values. For this reason the
+immediates are usually calculated like this:
+
+	imm20 = (offset + 0x800) >> 12
+	imm12 = offset & 0xfff
+
+..where offset is the signed offset from the auipc instruction. When
+the 11th bit of offset is 0 the addition of 0x800 doesn't change the top
+20 bits and imm12 considered positive. When the 11th bit is 1 the carry
+of the addition by 0x800 means imm20 is one higher, but since imm12 is
+then considered negative the two's complement representation means it
+all cancels out nicely.
+
+However, this addition by 0x800 (2^11) means an offset greater than or
+equal to 2^31 - 2^11 would overflow so imm20 is considered negative and
+result in a backwards jump. Similarly the lower range of offset is also
+moved down by 2^11 and hence the true 32bit range is
+
+	[-2^31 - 2^11, 2^31 - 2^11)
+
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220216124239.4007667-1-rong.chen@amlogic.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/meson-gx-mmc.c |   15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ arch/riscv/kernel/module.c |   21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
---- a/drivers/mmc/host/meson-gx-mmc.c
-+++ b/drivers/mmc/host/meson-gx-mmc.c
-@@ -173,6 +173,8 @@ struct meson_host {
- 	int irq;
+--- a/arch/riscv/kernel/module.c
++++ b/arch/riscv/kernel/module.c
+@@ -13,6 +13,19 @@
+ #include <linux/pgtable.h>
+ #include <asm/sections.h>
  
- 	bool vqmmc_enabled;
-+	bool needs_pre_post_req;
++/*
++ * The auipc+jalr instruction pair can reach any PC-relative offset
++ * in the range [-2^31 - 2^11, 2^31 - 2^11)
++ */
++static bool riscv_insn_valid_32bit_offset(ptrdiff_t val)
++{
++#ifdef CONFIG_32BIT
++	return true;
++#else
++	return (-(1L << 31) - (1L << 11)) <= val && val < ((1L << 31) - (1L << 11));
++#endif
++}
 +
- };
- 
- #define CMD_CFG_LENGTH_MASK GENMASK(8, 0)
-@@ -663,6 +665,8 @@ static void meson_mmc_request_done(struc
- 	struct meson_host *host = mmc_priv(mmc);
- 
- 	host->cmd = NULL;
-+	if (host->needs_pre_post_req)
-+		meson_mmc_post_req(mmc, mrq, 0);
- 	mmc_request_done(host->mmc, mrq);
- }
- 
-@@ -880,7 +884,7 @@ static int meson_mmc_validate_dram_acces
- static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
+ static int apply_r_riscv_32_rela(struct module *me, u32 *location, Elf_Addr v)
  {
- 	struct meson_host *host = mmc_priv(mmc);
--	bool needs_pre_post_req = mrq->data &&
-+	host->needs_pre_post_req = mrq->data &&
- 			!(mrq->data->host_cookie & SD_EMMC_PRE_REQ_DONE);
+ 	if (v != (u32)v) {
+@@ -95,7 +108,7 @@ static int apply_r_riscv_pcrel_hi20_rela
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+ 	s32 hi20;
  
- 	/*
-@@ -896,22 +900,19 @@ static void meson_mmc_request(struct mmc
- 		}
- 	}
+-	if (offset != (s32)offset) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		pr_err(
+ 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
+ 		  me->name, (long long)v, location);
+@@ -197,10 +210,9 @@ static int apply_r_riscv_call_plt_rela(s
+ 				       Elf_Addr v)
+ {
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+-	s32 fill_v = offset;
+ 	u32 hi20, lo12;
  
--	if (needs_pre_post_req) {
-+	if (host->needs_pre_post_req) {
- 		meson_mmc_get_transfer_mode(mmc, mrq);
- 		if (!meson_mmc_desc_chain_mode(mrq->data))
--			needs_pre_post_req = false;
-+			host->needs_pre_post_req = false;
- 	}
+-	if (offset != fill_v) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		/* Only emit the plt entry if offset over 32-bit range */
+ 		if (IS_ENABLED(CONFIG_MODULE_SECTIONS)) {
+ 			offset = module_emit_plt_entry(me, v);
+@@ -224,10 +236,9 @@ static int apply_r_riscv_call_rela(struc
+ 				   Elf_Addr v)
+ {
+ 	ptrdiff_t offset = (void *)v - (void *)location;
+-	s32 fill_v = offset;
+ 	u32 hi20, lo12;
  
--	if (needs_pre_post_req)
-+	if (host->needs_pre_post_req)
- 		meson_mmc_pre_req(mmc, mrq);
- 
- 	/* Stop execution */
- 	writel(0, host->regs + SD_EMMC_START);
- 
- 	meson_mmc_start_cmd(mmc, mrq->sbc ?: mrq->cmd);
--
--	if (needs_pre_post_req)
--		meson_mmc_post_req(mmc, mrq, 0);
- }
- 
- static void meson_mmc_read_resp(struct mmc_host *mmc, struct mmc_command *cmd)
+-	if (offset != fill_v) {
++	if (!riscv_insn_valid_32bit_offset(offset)) {
+ 		pr_err(
+ 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
+ 		  me->name, (long long)v, location);
 
 
