@@ -2,104 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F79C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 02:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 03:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236036AbiCNDAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Mar 2022 23:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45288 "EHLO
+        id S235900AbiCNDFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Mar 2022 23:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230378AbiCNDAy (ORCPT
+        with ESMTP id S229645AbiCNDFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Mar 2022 23:00:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D4B17071;
-        Sun, 13 Mar 2022 19:59:44 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KH1SS1dd6zfYsV;
-        Mon, 14 Mar 2022 10:58:16 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Mar 2022 10:59:41 +0800
-Subject: Re: [PATCH v2 2/3] mm/memory-failure.c: avoid calling
- invalidate_inode_page() with unexpected pages
-To:     =?UTF-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPoyDnm7TkuZ8p?= 
-        <naoya.horiguchi@nec.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
-        "shy828301@gmail.com" <shy828301@gmail.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>
-References: <20220312074613.4798-1-linmiaohe@huawei.com>
- <20220312074613.4798-3-linmiaohe@huawei.com>
- <20220313234157.GB3010057@hori.linux.bs1.fc.nec.co.jp>
- <8aa7cdd9-8104-2fea-879d-61519f6489d1@huawei.com>
- <20220314025034.GA3061370@hori.linux.bs1.fc.nec.co.jp>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <219aeec6-5ff6-5101-8192-13b9f761e7c9@huawei.com>
-Date:   Mon, 14 Mar 2022 10:59:40 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Sun, 13 Mar 2022 23:05:41 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2E56412
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 20:04:30 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id a5so13079732pfv.2
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Mar 2022 20:04:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sslab.ics.keio.ac.jp; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/WZscqLQeE0UBrVt4o3s0SihTxtpjWcEu7i3MAqpyVM=;
+        b=R/1ChIUAucw3Ock0ufVdivfQnF1dlS2KKCXIEQqQFTW1Iq2gPL5uwcBVmiTQdjPYVf
+         AO5n/vMsl9UnGTtHap1YXZgsKktylhyvQpB6lH21X89lRbE2ZjSsdLvR/FSjloRfmYeV
+         9+HBNenqdawijpRjxm4ZwUDBJE2NIRAwYRZ/k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/WZscqLQeE0UBrVt4o3s0SihTxtpjWcEu7i3MAqpyVM=;
+        b=gmzvcceHIuThrFkCHB8O7hMG7AG72HT7TO+P/RqXoKXgwJAgyD+ib9JHeYtHsr6wXp
+         ig8YJje+24rHneODyRPxLcrrqiiH+wWNn7YNaq0Hi+/LdOAwBqeS2A2brE+m5jq77Eg9
+         6DiotfHitg/exjS5zfrCqiJejf4aNq6Pmjis/SEm5ct9bAjQKfgNb0PdCqMxKKlh7gpy
+         QMBDU1BpOxo8/2y6wqkmT5a0SOpfiaLUUahe0gMdR+NP0C7jdV2sAJ1rv7zDa9g8KFQL
+         Pu3ixEg4ydLzY4sgyJRv/xPnY5T0mYHKRSYUCfqFRHK3hmSfIumxtLCmBAZlxNbyundK
+         d+4Q==
+X-Gm-Message-State: AOAM53070+P10xaNTBMSIF6wE8iVoyVKijorxwcH1i2cDJHyPJgAu5yU
+        zQgxY1abhr7ab/JLzJ8zziUdYWcIyQdG2g==
+X-Google-Smtp-Source: ABdhPJwzSLC6xvw2IF7ESyaSlPHaQmP5GbSq4DlQSy5erM5IYHhdLABEeaFqLC0uLXe+bXDaAVpFAg==
+X-Received: by 2002:a63:914b:0:b0:37e:9914:b268 with SMTP id l72-20020a63914b000000b0037e9914b268mr18383366pge.85.1647227070040;
+        Sun, 13 Mar 2022 20:04:30 -0700 (PDT)
+Received: from saltlake.i.sslab.ics.keio.ac.jp (sslab-relay.ics.keio.ac.jp. [131.113.126.173])
+        by smtp.gmail.com with ESMTPSA id l5-20020a056a0016c500b004f140564a00sm18504216pfc.203.2022.03.13.20.04.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Mar 2022 20:04:29 -0700 (PDT)
+From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Cc:     keitasuzuki.park@sslab.ics.keio.ac.jp,
+        heikki.krogerus@linux.intel.com, wsa+renesas@sang-engineering.com,
+        pmalani@chromium.org, Benson Leung <bleung@chromium.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] platform/chrome: chromeos_laptop - Fix potential double free
+Date:   Mon, 14 Mar 2022 03:03:36 +0000
+Message-Id: <20220314030337.777685-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220314025034.GA3061370@hori.linux.bs1.fc.nec.co.jp>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/14 10:50, HORIGUCHI NAOYA(堀口 直也) wrote:
-> On Mon, Mar 14, 2022 at 09:58:49AM +0800, Miaohe Lin wrote:
->> On 2022/3/14 7:41, HORIGUCHI NAOYA(堀口 直也) wrote:
->>> On Sat, Mar 12, 2022 at 03:46:12PM +0800, Miaohe Lin wrote:
->>>> Since commit 042c4f32323b ("mm/truncate: Inline invalidate_complete_page()
->>>
->>> This commit ID does not exist in mainline (or in the latest mmotm?),
->>> so you can't use it in patch description.  Could you update this part?
->>>
->>
->> This commit is in the mmotm but not in mainline yet:
->>
->> commit 042c4f32323beb28146c658202d3e69899e4f245
->> Author: Matthew Wilcox (Oracle) <willy@infradead.org>
->> Date:   Sat Feb 12 15:27:42 2022 -0500
->>
->>     mm/truncate: Inline invalidate_complete_page() into its one caller
->>
->>     invalidate_inode_page() is the only caller of invalidate_complete_page()
->>     and inlining it reveals that the first check is unnecessary (because we
->>     hold the page locked, and we just retrieved the mapping from the page).
->>     Actually, it does make a difference, in that tail pages no longer fail
->>     at this check, so it's now possible to remove a tail page from a mapping.
->>
->>     Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
->>     Reviewed-by: John Hubbard <jhubbard@nvidia.com>
->>     Reviewed-by: Christoph Hellwig <hch@lst.de>
->>
->> Am I "not" supposed to use this commit id as it's not "stable" now?
-> 
-> No, it's not stable yet. In whatever way you get the above commit (I guess
-> you get it from https://github.com/hnaz/linux-mm), all acked mm-related
-> patches are sent to Linus by Andrew *by email*, so the eventual commit IDs
-> should be determined when they are applied to mainline.
-> 
+In chromeos_laptop_prepare(), cros_laptop->i2c_peripherals is allocated
+inside chromeos_prepare_i2c_peripherals(), and is also freed when
+encountering an error. The caller later calls chromeos_laptop_destroy()
+to perform cleanup, which tries to free the same value again. As the
+value is not NULLed, this will cause a double free error.
 
-Many thanks for your explanation. (I get this commit id from linux-next tree:
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git)
-So I should remember always to get the commit id from mainline.
+Fix this by setting cros_laptop->i2c_peripherals to NULL in the error
+handler inside chromeos_prepare_i2c_peripherals() after conducting the
+free.
 
-Thanks again. :)
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+---
+ drivers/platform/chrome/chromeos_laptop.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> Thanks,
-> Naoya Horiguchi
-> 
+diff --git a/drivers/platform/chrome/chromeos_laptop.c b/drivers/platform/chrome/chromeos_laptop.c
+index 4e14b4d6635d..3d10257b1107 100644
+--- a/drivers/platform/chrome/chromeos_laptop.c
++++ b/drivers/platform/chrome/chromeos_laptop.c
+@@ -785,6 +785,7 @@ chromeos_laptop_prepare_i2c_peripherals(struct chromeos_laptop *cros_laptop,
+ 			fwnode_remove_software_node(info->fwnode);
+ 	}
+ 	kfree(cros_laptop->i2c_peripherals);
++	cros_laptop->i2c_peripherals = NULL;
+ 	return error;
+ }
+ 
+-- 
+2.25.1
 
