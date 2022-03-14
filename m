@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C69C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 14:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241620AbiCNOsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 10:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
+        id S241922AbiCNOsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 10:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240624AbiCNOsc (ORCPT
+        with ESMTP id S240664AbiCNOsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 10:48:32 -0400
 Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0420141984;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8ABC41990;
         Mon, 14 Mar 2022 07:47:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1647269241; x=1678805241;
-  h=from:to:cc:subject:date:message-id;
-  bh=f7G/YswmiYVCsRP6W8jrevaUd3XphbqWfCfiw8upItk=;
-  b=ysg9my+a/I0Nx5vGb+YQcNEvqWUqZzmNKl5ZjbS2KW1mpbciW5ncg3Vw
-   MaVQs6psqHCjXQC0q+g2Z+lBMYMzfPz7CtRef7qH/675NsTuAOYlGdJ9n
-   qEXGqSmZZlMz8Rz/b567skWrD/ELgz1uC8Vfyjywnfn3b64ZTjJx3Ra6j
-   w=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=TdkUlkTc3NeqLxANn6FRiCJqHNtK++z5a0zM7aMvP/c=;
+  b=Ukn2N3BBY/XnEcl/fjOzPldyPrKWni8/krEZtCghW+GPCFasRxAfyMBr
+   5isW4tL3Lf+Xe/x76nqyhcr5K6tXPpS6ntRtdtxB5k9YUk1GxGPmb+RgA
+   jl0RQjVzwBo74l+IN27aA2+KDbU7OvzwPrrVI7SJKQaZNo9mNfPmHPDts
+   A=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
   by alexa-out.qualcomm.com with ESMTP; 14 Mar 2022 07:47:21 -0700
 X-QCInternal: smtphost
 Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 14 Mar 2022 07:47:19 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 14 Mar 2022 07:47:19 -0700
 X-QCInternal: smtphost
 Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
   by ironmsg02-blr.qualcomm.com with ESMTP; 14 Mar 2022 20:17:02 +0530
 Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id 29A9C4E31; Mon, 14 Mar 2022 20:17:01 +0530 (IST)
+        id 7368B4E39; Mon, 14 Mar 2022 20:17:01 +0530 (IST)
 From:   Vinod Polimera <quic_vpolimer@quicinc.com>
 To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
         freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
@@ -41,55 +42,55 @@ Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
         linux-kernel@vger.kernel.org, robdclark@gmail.com,
         dmitry.baryshkov@linaro.org, dianders@chromium.org,
         quic_kalyant@quicinc.com
-Subject: [PATCH v6 0/5] Update mdp clk to max supported value to support higher refresh rates 
-Date:   Mon, 14 Mar 2022 20:16:52 +0530
-Message-Id: <1647269217-14064-1-git-send-email-quic_vpolimer@quicinc.com>
+Subject: [PATCH v6 4/5] arm64: dts: qcom: sdm845: remove assigned-clock-rate property for mdp clk
+Date:   Mon, 14 Mar 2022 20:16:56 +0530
+Message-Id: <1647269217-14064-5-git-send-email-quic_vpolimer@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1647269217-14064-1-git-send-email-quic_vpolimer@quicinc.com>
+References: <1647269217-14064-1-git-send-email-quic_vpolimer@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop the assigned clock rate property and vote on the mdp clock to max frequency
-during bind/probe sequence.
+Drop the assigned clock rate property and vote on the mdp clock as per
+calculated value during the usecase.
 
-Changes in v2:
-- Remove assigned-clock-rate property and set mdp clk during resume sequence.
-- Add fixes tag.
+This patch is dependent on below patch
+https://patchwork.kernel.org/patch/12774067/
 
-Changes in v3:
-- Remove extra line after fixes tag.(Stephen Boyd)
-- Add similar changes for sc7180, sdm845 which uses opp table for voting mdp clk.(Stephen Boyd)
-- Drop patch: "drm/msm/disp/dpu1: set mdp clk to the maximum frequency in opp table"
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+ arch/arm64/boot/dts/qcom/sdm845.dtsi | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Changes in v4:
-- Add similar change for sm8250.(Dmitry)
-
-Changes in v5:
-- Add change to set mdp clk to max frequency in opp table during mdp probe/bind.
-
-Changes in v6:
-- Remove change log in dt patch.
-- Fix the leak reference for opp by adding dev_pm_opp_put. (Dmitry)
-
-Vinod Polimera (5):
-  drm/msm/disp/dpu1: set mdp clk to the maximum frequency in opp table
-    during probe
-  arm64: dts: qcom: sm7280: remove assigned-clock-rate property for mdp
-    clk
-  arm64: dts: qcom: sm7180: remove assigned-clock-rate property for mdp
-    clk
-  arm64: dts: qcom: sdm845: remove assigned-clock-rate property for mdp
-    clk
-  arm64: dts: qcom: sm8250: remove assigned-clock-rate property for mdp
-    clk
-
- arch/arm64/boot/dts/qcom/sc7180.dtsi    | 9 ++-------
- arch/arm64/boot/dts/qcom/sc7280.dtsi    | 9 ++-------
- arch/arm64/boot/dts/qcom/sdm845.dtsi    | 9 ++-------
- arch/arm64/boot/dts/qcom/sm8250.dtsi    | 9 ++-------
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 8 ++++++++
- 5 files changed, 16 insertions(+), 28 deletions(-)
-
+diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+index 41f4e46..c0771d2 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+@@ -4240,9 +4240,6 @@
+ 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
+ 			clock-names = "iface", "core";
+ 
+-			assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
+-			assigned-clock-rates = <300000000>;
+-
+ 			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <1>;
+@@ -4273,10 +4270,8 @@
+ 					 <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
+ 				clock-names = "gcc-bus", "iface", "bus", "core", "vsync";
+ 
+-				assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>,
+-						  <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
+-				assigned-clock-rates = <300000000>,
+-						       <19200000>;
++				assigned-clocks = <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
++				assigned-clock-rates = <19200000>;
+ 				operating-points-v2 = <&mdp_opp_table>;
+ 				power-domains = <&rpmhpd SDM845_CX>;
+ 
 -- 
 2.7.4
 
