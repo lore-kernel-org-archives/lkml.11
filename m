@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:03:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C1AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240500AbiCNMFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39142 "EHLO
+        id S240505AbiCNMFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240660AbiCNMDZ (ORCPT
+        with ESMTP id S240412AbiCNMDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:03:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B594B416;
-        Mon, 14 Mar 2022 05:00:38 -0700 (PDT)
+        Mon, 14 Mar 2022 08:03:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D966B49F8D;
+        Mon, 14 Mar 2022 05:01:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A6C86129A;
-        Mon, 14 Mar 2022 12:00:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD8BC340E9;
-        Mon, 14 Mar 2022 12:00:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C953B80DC2;
+        Mon, 14 Mar 2022 12:01:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC9A3C340ED;
+        Mon, 14 Mar 2022 12:01:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259236;
-        bh=SRVucNFu+SI1UyhBcOHF13aWPWJ3Utyz6IgA+QYgTjY=;
+        s=korg; t=1647259274;
+        bh=4dnyVepvitlIwJlr9BRFyX0QDhIjvlzBvc/cJXlsIZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jpjHMsypjWg/KKWg5v2AyWb+kl4vzrDcQxcdu0gwgG0bZWWnJ9VumTbYTb/TYb8Gr
-         WUeDeDEAn43eBNYyNz3OcBLGVOqHu35KXgj18nFNpqP6Nt4ShLtIbwUEY+FQpVNSkv
-         OBV+bGnFYKsCv0NglFK/dgR+/Fqd/VV7lf16MnuI=
+        b=ZqbGmQWgXYZvNcKLsaN7HC+eDUoVbWVWbSwTzmeOAJWoZ00T5raB1c4SafPe0/roq
+         AGbKIlEOZHNNUz8TSuXA8bGV7TiQ/j66u2fnUFjjPNLBD67oy4yyJPox0AEGe8M2/7
+         E+jxerwM1UCgh8sCZ1D4iaN6EmDq08SfDgYw6QAc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 31/71] selftests: pmtu.sh: Kill tcpdump processes launched by subshell.
-Date:   Mon, 14 Mar 2022 12:53:24 +0100
-Message-Id: <20220314112738.803734019@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 04/71] arm64: dts: armada-3720-turris-mox: Add missing ethernet0 alias
+Date:   Mon, 14 Mar 2022 12:52:57 +0100
+Message-Id: <20220314112738.055097540@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
 References: <20220314112737.929694832@linuxfoundation.org>
@@ -50,93 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 18dfc667550fe9c032a6dcc3402b50e691e18029 ]
+[ Upstream commit a0e897d1b36793fe0ab899f2fe93dff25c82f418 ]
 
-The cleanup() function takes care of killing processes launched by the
-test functions. It relies on variables like ${tcpdump_pids} to get the
-relevant PIDs. But tests are run in their own subshell, so updated
-*_pids values are invisible to other shells. Therefore cleanup() never
-sees any process to kill:
+U-Boot uses ethernet* aliases for setting MAC addresses. Therefore define
+also alias for ethernet0.
 
-$ ./tools/testing/selftests/net/pmtu.sh -t pmtu_ipv4_exception
-TEST: ipv4: PMTU exceptions                                         [ OK ]
-TEST: ipv4: PMTU exceptions - nexthop objects                       [ OK ]
-
-$ pgrep -af tcpdump
-6084 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
-6085 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
-6086 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
-6087 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
-6088 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
-6089 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
-6090 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
-6091 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
-6228 tcpdump -s 0 -i veth_A-R1 -w pmtu_ipv4_exception_veth_A-R1.pcap
-6229 tcpdump -s 0 -i veth_R1-A -w pmtu_ipv4_exception_veth_R1-A.pcap
-6230 tcpdump -s 0 -i veth_R1-B -w pmtu_ipv4_exception_veth_R1-B.pcap
-6231 tcpdump -s 0 -i veth_B-R1 -w pmtu_ipv4_exception_veth_B-R1.pcap
-6232 tcpdump -s 0 -i veth_A-R2 -w pmtu_ipv4_exception_veth_A-R2.pcap
-6233 tcpdump -s 0 -i veth_R2-A -w pmtu_ipv4_exception_veth_R2-A.pcap
-6234 tcpdump -s 0 -i veth_R2-B -w pmtu_ipv4_exception_veth_R2-B.pcap
-6235 tcpdump -s 0 -i veth_B-R2 -w pmtu_ipv4_exception_veth_B-R2.pcap
-
-Fix this by running cleanup() in the context of the test subshell.
-Now that each test cleans the environment after completion, there's no
-need for calling cleanup() again when the next test starts. So let's
-drop it from the setup() function. This is okay because cleanup() is
-also called when pmtu.sh starts, so even the first test starts in a
-clean environment.
-
-Also, use tcpdump's immediate mode. Otherwise it might not have time to
-process buffered packets, resulting in missing packets or even empty
-pcap files for short tests.
-
-Note: PAUSE_ON_FAIL is still evaluated before cleanup(), so one can
-still inspect the test environment upon failure when using -p.
-
-Fixes: a92a0a7b8e7c ("selftests: pmtu: Simplify cleanup and namespace names")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 7109d817db2e ("arm64: dts: marvell: add DTS for Turris Mox")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/pmtu.sh | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 3367fb5f2fef..3253fdc780d6 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -799,7 +799,6 @@ setup_ovs_bridge() {
- setup() {
- 	[ "$(id -u)" -ne 0 ] && echo "  need to run as root" && return $ksft_skip
+diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+index 2e437f20da39..ad963b51dcbe 100644
+--- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
++++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+@@ -18,6 +18,7 @@ / {
  
--	cleanup
- 	for arg do
- 		eval setup_${arg} || { echo "  ${arg} not supported"; return 1; }
- 	done
-@@ -810,7 +809,7 @@ trace() {
- 
- 	for arg do
- 		[ "${ns_cmd}" = "" ] && ns_cmd="${arg}" && continue
--		${ns_cmd} tcpdump -s 0 -i "${arg}" -w "${name}_${arg}.pcap" 2> /dev/null &
-+		${ns_cmd} tcpdump --immediate-mode -s 0 -i "${arg}" -w "${name}_${arg}.pcap" 2> /dev/null &
- 		tcpdump_pids="${tcpdump_pids} $!"
- 		ns_cmd=
- 	done
-@@ -1636,6 +1635,10 @@ run_test() {
- 
- 	unset IFS
- 
-+	# Since cleanup() relies on variables modified by this subshell, it
-+	# has to run in this context.
-+	trap cleanup EXIT
-+
- 	if [ "$VERBOSE" = "1" ]; then
- 		printf "\n##########################################################################\n\n"
- 	fi
+ 	aliases {
+ 		spi0 = &spi0;
++		ethernet0 = &eth0;
+ 		ethernet1 = &eth1;
+ 		mmc0 = &sdhci0;
+ 		mmc1 = &sdhci1;
 -- 
 2.34.1
 
