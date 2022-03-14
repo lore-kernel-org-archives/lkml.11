@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06397C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D22C38A05
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241485AbiCNMWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
+        id S241964AbiCNMXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241216AbiCNMNE (ORCPT
+        with ESMTP id S241031AbiCNMQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:13:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE28B366A2;
-        Mon, 14 Mar 2022 05:11:04 -0700 (PDT)
+        Mon, 14 Mar 2022 08:16:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA5435246;
+        Mon, 14 Mar 2022 05:12:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67B8BB80DFB;
-        Mon, 14 Mar 2022 12:11:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B10DBC340E9;
-        Mon, 14 Mar 2022 12:11:01 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9F3F0CE1269;
+        Mon, 14 Mar 2022 12:12:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EFABC340E9;
+        Mon, 14 Mar 2022 12:12:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259862;
-        bh=AOk/3A1maZIhYaKanLu/kz4jEySsk00+Ym/Ql8tG+qc=;
+        s=korg; t=1647259920;
+        bh=Lyw+ZXk7GHxG2xiXqfRcAOOq65X5ixi5FjKzltQwq4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P22duVXNuiildbGMMwt9vqBStlt49nFa3KVxJdyu2ZcQLLAm7JhCfUPZxIgnAiC2Z
-         X3x9IJ5UP5kbEURH0EcRQeTEhaAB6PpkGhUf/AEVwX2YTg8HrhgVrtka7wont0Ehch
-         VGojMM0s97QLQ2FPaqAvvoLcCpK9brKQlxjZmekk=
+        b=dsQnLcFYfFlGfCy8leLh2CABVZdfg9fdUYPk33sRnymEUNAlpau/hllDVsohVjVgL
+         gljpTUYd/x8FzXZorafuYFyO2+H04XmmmkYrc/D6HiIanQC7mVD6m3iB9WD4d6bquC
+         mfucg1eRhDCsyrvf0zswpYy6UkZdQSeyRtdXgzOU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott McNutt <scott.mcnutt@siriusxm.com>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 079/110] net: macb: Fix lost RX packet wakeup race in NAPI receive
-Date:   Mon, 14 Mar 2022 12:54:21 +0100
-Message-Id: <20220314112745.237130901@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 001/121] arm64: dts: qcom: sm8350: Describe GCC dependency clocks
+Date:   Mon, 14 Mar 2022 12:53:04 +0100
+Message-Id: <20220314112744.164558746@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
-References: <20220314112743.029192918@linuxfoundation.org>
+In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
+References: <20220314112744.120491875@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,81 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-commit 0bf476fc3624e3a72af4ba7340d430a91c18cd67 upstream.
+[ Upstream commit 9ea9eb36b3c046fc48e737db4de69f7acd12f9be ]
 
-There is an oddity in the way the RSR register flags propagate to the
-ISR register (and the actual interrupt output) on this hardware: it
-appears that RSR register bits only result in ISR being asserted if the
-interrupt was actually enabled at the time, so enabling interrupts with
-RSR bits already set doesn't trigger an interrupt to be raised. There
-was already a partial fix for this race in the macb_poll function where
-it checked for RSR bits being set and re-triggered NAPI receive.
-However, there was a still a race window between checking RSR and
-actually enabling interrupts, where a lost wakeup could happen. It's
-necessary to check again after enabling interrupts to see if RSR was set
-just prior to the interrupt being enabled, and re-trigger receive in that
-case.
+Add all the clock names that the GCC driver expects to get via DT, so that the
+clock handles can be filled as the development progresses.
 
-This issue was noticed in a point-to-point UDP request-response protocol
-which periodically saw timeouts or abnormally high response times due to
-received packets not being processed in a timely fashion. In many
-applications, more packets arriving, including TCP retransmissions, would
-cause the original packet to be processed, thus masking the issue.
-
-Fixes: 02f7a34f34e3 ("net: macb: Re-enable RX interrupt only when RX is done")
-Cc: stable@vger.kernel.org
-Co-developed-by: Scott McNutt <scott.mcnutt@siriusxm.com>
-Signed-off-by: Scott McNutt <scott.mcnutt@siriusxm.com>
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Tested-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211114012755.112226-8-konrad.dybcio@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cadence/macb_main.c |   25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1606,7 +1606,14 @@ static int macb_poll(struct napi_struct
- 	if (work_done < budget) {
- 		napi_complete_done(napi, work_done);
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index c13858cf50dd..db102b293154 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -583,8 +583,30 @@ gcc: clock-controller@100000 {
+ 			#clock-cells = <1>;
+ 			#reset-cells = <1>;
+ 			#power-domain-cells = <1>;
+-			clock-names = "bi_tcxo", "sleep_clk";
+-			clocks = <&rpmhcc RPMH_CXO_CLK>, <&sleep_clk>;
++			clock-names = "bi_tcxo",
++				      "sleep_clk",
++				      "pcie_0_pipe_clk",
++				      "pcie_1_pipe_clk",
++				      "ufs_card_rx_symbol_0_clk",
++				      "ufs_card_rx_symbol_1_clk",
++				      "ufs_card_tx_symbol_0_clk",
++				      "ufs_phy_rx_symbol_0_clk",
++				      "ufs_phy_rx_symbol_1_clk",
++				      "ufs_phy_tx_symbol_0_clk",
++				      "usb3_phy_wrapper_gcc_usb30_pipe_clk",
++				      "usb3_uni_phy_sec_gcc_usb30_pipe_clk";
++			clocks = <&rpmhcc RPMH_CXO_CLK>,
++				 <&sleep_clk>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>,
++				 <0>;
+ 		};
  
--		/* Packets received while interrupts were disabled */
-+		/* RSR bits only seem to propagate to raise interrupts when
-+		 * interrupts are enabled at the time, so if bits are already
-+		 * set due to packets received while interrupts were disabled,
-+		 * they will not cause another interrupt to be generated when
-+		 * interrupts are re-enabled.
-+		 * Check for this case here. This has been seen to happen
-+		 * around 30% of the time under heavy network load.
-+		 */
- 		status = macb_readl(bp, RSR);
- 		if (status) {
- 			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
-@@ -1614,6 +1621,22 @@ static int macb_poll(struct napi_struct
- 			napi_reschedule(napi);
- 		} else {
- 			queue_writel(queue, IER, bp->rx_intr_mask);
-+
-+			/* In rare cases, packets could have been received in
-+			 * the window between the check above and re-enabling
-+			 * interrupts. Therefore, a double-check is required
-+			 * to avoid losing a wakeup. This can potentially race
-+			 * with the interrupt handler doing the same actions
-+			 * if an interrupt is raised just after enabling them,
-+			 * but this should be harmless.
-+			 */
-+			status = macb_readl(bp, RSR);
-+			if (unlikely(status)) {
-+				queue_writel(queue, IDR, bp->rx_intr_mask);
-+				if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
-+					queue_writel(queue, ISR, MACB_BIT(RCOMP));
-+				napi_schedule(napi);
-+			}
- 		}
- 	}
- 
+ 		ipcc: mailbox@408000 {
+-- 
+2.34.1
+
 
 
