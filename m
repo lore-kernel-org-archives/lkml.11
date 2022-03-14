@@ -2,295 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69967C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FE98C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 10:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238331AbiCNKJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 06:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46116 "EHLO
+        id S238346AbiCNKLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 06:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231854AbiCNKJs (ORCPT
+        with ESMTP id S231645AbiCNKLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 06:09:48 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158071704C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 03:08:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647252519; x=1678788519;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BcmmMpXQborg+/AoJTWaQW8xaUtZNy1RLYwKrihUj9c=;
-  b=mfAWzQvALyomguhqcOHvRd4g8MO56Wbwo/Zhn2PmgAmv9mIV4uCChdAa
-   0GmHF7mdlz91Q4BkHPAjHP/6mh4sp2fKXE7RL0k3U77MxYx/Yzpd+d8td
-   /WcnSEN6NgG6zfuGwihxHeG6772kIqolaB7nI7/ndhL+SHM6maADKkXF/
-   P4jssiz7M6y2+ydAgerD6AIQLxH2nrFbmq6IqWMjyn3KKkzspfJOFmd2O
-   xTWCyQJvMvQZ4ZpXnVGfdB+ErcuendAo+tBpf90PlAKG3mlMmdjEpgK29
-   FnLGtWkR1d/emcUi205TH+A5eo+gowA2gKwAqjdYN9Ca0ytAkVX4H9Ka+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="253545699"
-X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
-   d="scan'208";a="253545699"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 03:08:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
-   d="scan'208";a="515363760"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 14 Mar 2022 03:08:36 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nThcy-0009mo-8e; Mon, 14 Mar 2022 10:08:36 +0000
-Date:   Mon, 14 Mar 2022 18:08:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marcin Szycik <marcin.szycik@linux.intel.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Subject: [ammarfaizi2-block:kvalo/ath/pending 65/109]
- drivers/net/ethernet/intel/ice/ice_switch.c:5568 ice_find_dummy_packet()
- warn: inconsistent indenting
-Message-ID: <202203141819.R8xopRXM-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Mon, 14 Mar 2022 06:11:08 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABB13BF9E;
+        Mon, 14 Mar 2022 03:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647252599; x=1678788599;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=HmjOEo/dn0cDP88bab4lAIJUcE42zK9xqaKpSspNVbc=;
+  b=pBes1IDG0bUKSXbkv52m4PWP0YKeUcY3XAI/Ao/OT0yV4BTBoqdXnE/9
+   mfQQSJgYXedUl01aeyXs+oxp+dKX99VfY1ogrXI6+NO+aMGhI2UP8qsKR
+   8Lvgswc8hpU5Lu6HcoE5eOTQaNnWnjty+Zedms48Hk1SKwa1OfHC5VUo6
+   c=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 14 Mar 2022 03:09:59 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 14 Mar 2022 03:09:57 -0700
+X-QCInternal: smtphost
+Received: from hu-dikshita-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.13])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 14 Mar 2022 15:39:44 +0530
+Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 347544)
+        id 91FA8467A; Mon, 14 Mar 2022 15:39:43 +0530 (+0530)
+From:   quic_dikshita@quicinc.com
+To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hverkuil-cisco@xs4all.nl
+Cc:     linux-arm-msm@vger.kernel.org, ezequiel@collabora.com,
+        stanimir.varbanov@linaro.org, quic_vgarodia@quicinc.com,
+        quic_majja@quicinc.com, quic_jdas@quicinc.com,
+        Dikshita Agarwal <quic_dikshita@quicinc.com>
+Subject: [PATCH v4 1/2] media: v4l2-ctrls: Add intra-refresh type control
+Date:   Mon, 14 Mar 2022 15:39:33 +0530
+Message-Id: <1647252574-30451-2-git-send-email-quic_dikshita@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1647252574-30451-1-git-send-email-quic_dikshita@quicinc.com>
+References: <1647252574-30451-1-git-send-email-quic_dikshita@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block kvalo/ath/pending
-head:   451837c0788abda8deb4df8850b510f414b7fc33
-commit: 9a225f81f540f65225e4b820e303d40d9e747e78 [65/109] ice: Support GTP-U and GTP-C offload in switchdev
-config: riscv-randconfig-m031-20220313 (https://download.01.org/0day-ci/archive/20220314/202203141819.R8xopRXM-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
+From: Dikshita Agarwal <quic_dikshita@quicinc.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Add a control to set intra-refresh type.
 
-smatch warnings:
-drivers/net/ethernet/intel/ice/ice_switch.c:5568 ice_find_dummy_packet() warn: inconsistent indenting
-
-vim +5568 drivers/net/ethernet/intel/ice/ice_switch.c
-
-  5496	
-  5497	/**
-  5498	 * ice_find_dummy_packet - find dummy packet
-  5499	 *
-  5500	 * @lkups: lookup elements or match criteria for the advanced recipe, one
-  5501	 *	   structure per protocol header
-  5502	 * @lkups_cnt: number of protocols
-  5503	 * @tun_type: tunnel type
-  5504	 * @pkt: dummy packet to fill according to filter match criteria
-  5505	 * @pkt_len: packet length of dummy packet
-  5506	 * @offsets: pointer to receive the pointer to the offsets for the packet
-  5507	 */
-  5508	static void
-  5509	ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
-  5510			      enum ice_sw_tunnel_type tun_type,
-  5511			      const u8 **pkt, u16 *pkt_len,
-  5512			      const struct ice_dummy_pkt_offsets **offsets)
-  5513	{
-  5514		bool inner_tcp = false, inner_udp = false, outer_ipv6 = false;
-  5515		bool vlan = false, inner_ipv6 = false, gtp_no_pay = false;
-  5516		u16 i;
-  5517	
-  5518		for (i = 0; i < lkups_cnt; i++) {
-  5519			if (lkups[i].type == ICE_UDP_ILOS)
-  5520				inner_udp = true;
-  5521			else if (lkups[i].type == ICE_TCP_IL)
-  5522				inner_tcp = true;
-  5523			else if (lkups[i].type == ICE_IPV6_OFOS)
-  5524				outer_ipv6 = true;
-  5525			else if (lkups[i].type == ICE_VLAN_OFOS)
-  5526				vlan = true;
-  5527			else if (lkups[i].type == ICE_ETYPE_OL &&
-  5528				 lkups[i].h_u.ethertype.ethtype_id ==
-  5529					cpu_to_be16(ICE_IPV6_ETHER_ID) &&
-  5530				 lkups[i].m_u.ethertype.ethtype_id ==
-  5531					cpu_to_be16(0xFFFF))
-  5532				outer_ipv6 = true;
-  5533			else if (lkups[i].type == ICE_ETYPE_IL &&
-  5534				 lkups[i].h_u.ethertype.ethtype_id ==
-  5535					cpu_to_be16(ICE_IPV6_ETHER_ID) &&
-  5536				 lkups[i].m_u.ethertype.ethtype_id ==
-  5537					cpu_to_be16(0xFFFF))
-  5538				inner_ipv6 = true;
-  5539			else if (lkups[i].type == ICE_IPV6_IL)
-  5540				inner_ipv6 = true;
-  5541			else if (lkups[i].type == ICE_GTP_NO_PAY)
-  5542				gtp_no_pay = true;
-  5543		}
-  5544	
-  5545		if (tun_type == ICE_SW_TUN_GTPU) {
-  5546			if (outer_ipv6) {
-  5547				if (gtp_no_pay) {
-  5548					*pkt = dummy_ipv6_gtp_packet;
-  5549					*pkt_len = sizeof(dummy_ipv6_gtp_packet);
-  5550					*offsets = dummy_ipv6_gtp_no_pay_packet_offsets;
-  5551				} else if (inner_ipv6) {
-  5552					if (inner_udp) {
-  5553						*pkt = dummy_ipv6_gtpu_ipv6_udp_packet;
-  5554						*pkt_len = sizeof(dummy_ipv6_gtpu_ipv6_udp_packet);
-  5555						*offsets = dummy_ipv6_gtpu_ipv6_udp_packet_offsets;
-  5556					} else {
-  5557						*pkt = dummy_ipv6_gtpu_ipv6_tcp_packet;
-  5558						*pkt_len = sizeof(dummy_ipv6_gtpu_ipv6_tcp_packet);
-  5559						*offsets = dummy_ipv6_gtpu_ipv6_tcp_packet_offsets;
-  5560					}
-  5561				} else {
-  5562					if (inner_udp) {
-  5563						*pkt = dummy_ipv6_gtpu_ipv4_udp_packet;
-  5564						*pkt_len = sizeof(dummy_ipv6_gtpu_ipv4_udp_packet);
-  5565						*offsets = dummy_ipv6_gtpu_ipv4_udp_packet_offsets;
-  5566					} else {
-  5567						*pkt = dummy_ipv6_gtpu_ipv4_tcp_packet;
-> 5568					*pkt_len = sizeof(dummy_ipv6_gtpu_ipv4_tcp_packet);
-  5569						*offsets = dummy_ipv6_gtpu_ipv4_tcp_packet_offsets;
-  5570					}
-  5571				}
-  5572			} else {
-  5573				if (gtp_no_pay) {
-  5574					*pkt = dummy_ipv4_gtpu_ipv4_packet;
-  5575					*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_packet);
-  5576					*offsets = dummy_ipv4_gtp_no_pay_packet_offsets;
-  5577				} else if (inner_ipv6) {
-  5578					if (inner_udp) {
-  5579						*pkt = dummy_ipv4_gtpu_ipv6_udp_packet;
-  5580						*pkt_len = sizeof(dummy_ipv4_gtpu_ipv6_udp_packet);
-  5581						*offsets = dummy_ipv4_gtpu_ipv6_udp_packet_offsets;
-  5582					} else {
-  5583						*pkt = dummy_ipv4_gtpu_ipv6_tcp_packet;
-  5584						*pkt_len = sizeof(dummy_ipv4_gtpu_ipv6_tcp_packet);
-  5585						*offsets = dummy_ipv4_gtpu_ipv6_tcp_packet_offsets;
-  5586					}
-  5587				} else {
-  5588					if (inner_udp) {
-  5589						*pkt = dummy_ipv4_gtpu_ipv4_udp_packet;
-  5590						*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_udp_packet);
-  5591						*offsets = dummy_ipv4_gtpu_ipv4_udp_packet_offsets;
-  5592					} else {
-  5593						*pkt = dummy_ipv4_gtpu_ipv4_tcp_packet;
-  5594						*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_tcp_packet);
-  5595						*offsets = dummy_ipv4_gtpu_ipv4_tcp_packet_offsets;
-  5596					}
-  5597				}
-  5598			}
-  5599			return;
-  5600		}
-  5601	
-  5602		if (tun_type == ICE_SW_TUN_GTPC) {
-  5603			if (outer_ipv6) {
-  5604				*pkt = dummy_ipv6_gtp_packet;
-  5605				*pkt_len = sizeof(dummy_ipv6_gtp_packet);
-  5606				*offsets = dummy_ipv6_gtp_no_pay_packet_offsets;
-  5607			} else {
-  5608				*pkt = dummy_ipv4_gtpu_ipv4_packet;
-  5609				*pkt_len = sizeof(dummy_ipv4_gtpu_ipv4_packet);
-  5610				*offsets = dummy_ipv4_gtp_no_pay_packet_offsets;
-  5611			}
-  5612			return;
-  5613		}
-  5614	
-  5615		if (tun_type == ICE_SW_TUN_NVGRE) {
-  5616			if (inner_tcp && inner_ipv6) {
-  5617				*pkt = dummy_gre_ipv6_tcp_packet;
-  5618				*pkt_len = sizeof(dummy_gre_ipv6_tcp_packet);
-  5619				*offsets = dummy_gre_ipv6_tcp_packet_offsets;
-  5620				return;
-  5621			}
-  5622			if (inner_tcp) {
-  5623				*pkt = dummy_gre_tcp_packet;
-  5624				*pkt_len = sizeof(dummy_gre_tcp_packet);
-  5625				*offsets = dummy_gre_tcp_packet_offsets;
-  5626				return;
-  5627			}
-  5628			if (inner_ipv6) {
-  5629				*pkt = dummy_gre_ipv6_udp_packet;
-  5630				*pkt_len = sizeof(dummy_gre_ipv6_udp_packet);
-  5631				*offsets = dummy_gre_ipv6_udp_packet_offsets;
-  5632				return;
-  5633			}
-  5634			*pkt = dummy_gre_udp_packet;
-  5635			*pkt_len = sizeof(dummy_gre_udp_packet);
-  5636			*offsets = dummy_gre_udp_packet_offsets;
-  5637			return;
-  5638		}
-  5639	
-  5640		if (tun_type == ICE_SW_TUN_VXLAN ||
-  5641		    tun_type == ICE_SW_TUN_GENEVE) {
-  5642			if (inner_tcp && inner_ipv6) {
-  5643				*pkt = dummy_udp_tun_ipv6_tcp_packet;
-  5644				*pkt_len = sizeof(dummy_udp_tun_ipv6_tcp_packet);
-  5645				*offsets = dummy_udp_tun_ipv6_tcp_packet_offsets;
-  5646				return;
-  5647			}
-  5648			if (inner_tcp) {
-  5649				*pkt = dummy_udp_tun_tcp_packet;
-  5650				*pkt_len = sizeof(dummy_udp_tun_tcp_packet);
-  5651				*offsets = dummy_udp_tun_tcp_packet_offsets;
-  5652				return;
-  5653			}
-  5654			if (inner_ipv6) {
-  5655				*pkt = dummy_udp_tun_ipv6_udp_packet;
-  5656				*pkt_len = sizeof(dummy_udp_tun_ipv6_udp_packet);
-  5657				*offsets = dummy_udp_tun_ipv6_udp_packet_offsets;
-  5658				return;
-  5659			}
-  5660			*pkt = dummy_udp_tun_udp_packet;
-  5661			*pkt_len = sizeof(dummy_udp_tun_udp_packet);
-  5662			*offsets = dummy_udp_tun_udp_packet_offsets;
-  5663			return;
-  5664		}
-  5665	
-  5666		if (inner_udp && !outer_ipv6) {
-  5667			if (vlan) {
-  5668				*pkt = dummy_vlan_udp_packet;
-  5669				*pkt_len = sizeof(dummy_vlan_udp_packet);
-  5670				*offsets = dummy_vlan_udp_packet_offsets;
-  5671				return;
-  5672			}
-  5673			*pkt = dummy_udp_packet;
-  5674			*pkt_len = sizeof(dummy_udp_packet);
-  5675			*offsets = dummy_udp_packet_offsets;
-  5676			return;
-  5677		} else if (inner_udp && outer_ipv6) {
-  5678			if (vlan) {
-  5679				*pkt = dummy_vlan_udp_ipv6_packet;
-  5680				*pkt_len = sizeof(dummy_vlan_udp_ipv6_packet);
-  5681				*offsets = dummy_vlan_udp_ipv6_packet_offsets;
-  5682				return;
-  5683			}
-  5684			*pkt = dummy_udp_ipv6_packet;
-  5685			*pkt_len = sizeof(dummy_udp_ipv6_packet);
-  5686			*offsets = dummy_udp_ipv6_packet_offsets;
-  5687			return;
-  5688		} else if ((inner_tcp && outer_ipv6) || outer_ipv6) {
-  5689			if (vlan) {
-  5690				*pkt = dummy_vlan_tcp_ipv6_packet;
-  5691				*pkt_len = sizeof(dummy_vlan_tcp_ipv6_packet);
-  5692				*offsets = dummy_vlan_tcp_ipv6_packet_offsets;
-  5693				return;
-  5694			}
-  5695			*pkt = dummy_tcp_ipv6_packet;
-  5696			*pkt_len = sizeof(dummy_tcp_ipv6_packet);
-  5697			*offsets = dummy_tcp_ipv6_packet_offsets;
-  5698			return;
-  5699		}
-  5700	
-  5701		if (vlan) {
-  5702			*pkt = dummy_vlan_tcp_packet;
-  5703			*pkt_len = sizeof(dummy_vlan_tcp_packet);
-  5704			*offsets = dummy_vlan_tcp_packet_offsets;
-  5705		} else {
-  5706			*pkt = dummy_tcp_packet;
-  5707			*pkt_len = sizeof(dummy_tcp_packet);
-  5708			*offsets = dummy_tcp_packet_offsets;
-  5709		}
-  5710	}
-  5711	
-
+Signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
+Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ .../userspace-api/media/v4l/ext-ctrls-codec.rst    | 22 ++++++++++++++++++++++
+ drivers/media/v4l2-core/v4l2-ctrls-defs.c          |  9 +++++++++
+ include/uapi/linux/v4l2-controls.h                 |  5 +++++
+ 3 files changed, 36 insertions(+)
+
+diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+index 4cd7c54..1539cd5 100644
+--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
++++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
+@@ -1180,6 +1180,28 @@ enum v4l2_mpeg_video_h264_entropy_mode -
+     is set to non zero value.
+     Applicable to H264, H263 and MPEG4 encoder.
+ 
++``V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE (enum)``
++
++enum v4l2_mpeg_video_intra_refresh_period_type -
++    Sets the type of intra refresh. The period to refresh
++    the whole frame is specified by V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD.
++    Note that if this control is not present, then it is undefined what
++    refresh type is used and it is up to the drive to decide.
++    Applicable to H264 and HEVC encoders. Possible values are:
++
++.. tabularcolumns:: |p{9.6cm}|p{7.9cm}|
++
++.. flat-table::
++    :header-rows:  0
++    :stub-columns: 0
++
++    * - ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM``
++      - The whole frame is completely refreshed randomly
++      after the specified period.
++    * - ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC``
++      - The whole frame MBs are completely refreshed in cyclic order
++      after the specified period.
++
+ ``V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD (integer)``
+     Intra macroblock refresh period. This sets the period to refresh
+     the whole frame. In other words, this defines the number of frames
+diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+index 54ca4e6..3089e50 100644
+--- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
++++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
+@@ -572,6 +572,11 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
+ 		"VBV/CPB Limit",
+ 		NULL,
+ 	};
++	static const char * const intra_refresh_period_type[] = {
++		"Random",
++		"Cyclic",
++		NULL,
++	};
+ 
+ 	switch (id) {
+ 	case V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ:
+@@ -705,6 +710,8 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
+ 		return hevc_start_code;
+ 	case V4L2_CID_CAMERA_ORIENTATION:
+ 		return camera_orientation;
++	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:
++		return intra_refresh_period_type;
+ 	default:
+ 		return NULL;
+ 	}
+@@ -834,6 +841,7 @@ const char *v4l2_ctrl_get_name(u32 id)
+ 	case V4L2_CID_MPEG_VIDEO_DECODER_SLICE_INTERFACE:	return "Decoder Slice Interface";
+ 	case V4L2_CID_MPEG_VIDEO_DECODER_MPEG4_DEBLOCK_FILTER:	return "MPEG4 Loop Filter Enable";
+ 	case V4L2_CID_MPEG_VIDEO_CYCLIC_INTRA_REFRESH_MB:	return "Number of Intra Refresh MBs";
++	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:	return "Intra Refresh Priod Type";
+ 	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD:		return "Intra Refresh Period";
+ 	case V4L2_CID_MPEG_VIDEO_FRAME_RC_ENABLE:		return "Frame Level Rate Control Enable";
+ 	case V4L2_CID_MPEG_VIDEO_MB_RC_ENABLE:			return "H264 MB Level Rate Control";
+@@ -1360,6 +1368,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
+ 	case V4L2_CID_STATELESS_H264_DECODE_MODE:
+ 	case V4L2_CID_STATELESS_H264_START_CODE:
+ 	case V4L2_CID_CAMERA_ORIENTATION:
++	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:
+ 		*type = V4L2_CTRL_TYPE_MENU;
+ 		break;
+ 	case V4L2_CID_LINK_FREQ:
+diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
+index c8e0f84..e7df4c5 100644
+--- a/include/uapi/linux/v4l2-controls.h
++++ b/include/uapi/linux/v4l2-controls.h
+@@ -443,6 +443,11 @@ enum v4l2_mpeg_video_multi_slice_mode {
+ #define V4L2_CID_MPEG_VIDEO_USE_LTR_FRAMES		(V4L2_CID_CODEC_BASE+234)
+ #define V4L2_CID_MPEG_VIDEO_DEC_CONCEAL_COLOR		(V4L2_CID_CODEC_BASE+235)
+ #define V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD	(V4L2_CID_CODEC_BASE+236)
++#define V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE	(V4L2_CID_CODEC_BASE+237)
++enum v4l2_mpeg_video_intra_refresh_period_type {
++	V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM	= 0,
++	V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC	= 1,
++};
+ 
+ /* CIDs for the MPEG-2 Part 2 (H.262) codec */
+ #define V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL			(V4L2_CID_CODEC_BASE+270)
+-- 
+2.7.4
+
