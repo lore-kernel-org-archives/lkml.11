@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6B3C3527A
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCADDC38A06
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245503AbiCNMdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
+        id S244907AbiCNMcd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243886AbiCNMVV (ORCPT
+        with ESMTP id S243935AbiCNMVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:21:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 487662BD8;
-        Mon, 14 Mar 2022 05:17:37 -0700 (PDT)
+        Mon, 14 Mar 2022 08:21:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0EF13CF8;
+        Mon, 14 Mar 2022 05:18:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 96C74CE1232;
-        Mon, 14 Mar 2022 12:17:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 514B1C340E9;
-        Mon, 14 Mar 2022 12:17:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6BB3608C4;
+        Mon, 14 Mar 2022 12:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE08C340ED;
+        Mon, 14 Mar 2022 12:18:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260253;
-        bh=xlF0zVmafoR0uanVI4UamdWKtIxsBLEAJoBaZ0jV1NM=;
+        s=korg; t=1647260325;
+        bh=NqA27l9xeTHC7nsQWTG2iQ8eiJfiJlCHGnqdQcCijeY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mwrvnNvS3tdSZE8PFZm+Ucuv/5uqI/rzqyysTcKBcL/vVVHQHqh1AVz7hONtM1nsJ
-         TfnK1y5MpX6bTsTGZpnxbEwPqZmMn2VBE45yMYFvwu61GYNmo9tW0hVMMZydAAeqIo
-         0Ha/EZQ8JH9T3zLEdhgyUs7b7/sQHUnM8J0y4KHU=
+        b=IL7frTY7nIqqdKqUi01z8EYQiNnIz0JPTT53YBTQKjmJz8iiy8tJH+KOZMQfrTvIk
+         XVIvcqj4H8qyfGgtUl5HDn2tis9bs3jt864L7hVTCUGAKNoZdB/tYb1cnsEITzDAJD
+         xtZ/6L9NUjcXZKFBXEp0lRyAsKuAE2R2mZuf3VHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>
-Subject: [PATCH 5.16 097/121] arm64: dts: marvell: armada-37xx: Remap IO space to bus address 0x0
-Date:   Mon, 14 Mar 2022 12:54:40 +0100
-Message-Id: <20220314112746.819939643@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.16 116/121] x86/sgx: Free backing memory after faulting the enclave page
+Date:   Mon, 14 Mar 2022 12:54:59 +0100
+Message-Id: <20220314112747.350234935@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
 References: <20220314112744.120491875@linuxfoundation.org>
@@ -50,73 +48,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Jarkko Sakkinen <jarkko@kernel.org>
 
-commit a1cc1697bb56cdf880ad4d17b79a39ef2c294bc9 upstream.
+commit 08999b2489b4c9b939d7483dbd03702ee4576d96 upstream.
 
-Legacy and old PCI I/O based cards do not support 32-bit I/O addressing.
+There is a limited amount of SGX memory (EPC) on each system.  When that
+memory is used up, SGX has its own swapping mechanism which is similar
+in concept but totally separate from the core mm/* code.  Instead of
+swapping to disk, SGX swaps from EPC to normal RAM.  That normal RAM
+comes from a shared memory pseudo-file and can itself be swapped by the
+core mm code.  There is a hierarchy like this:
 
-Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from
-'ranges' DT property") kernel can set different PCIe address on CPU and
-different on the bus for the one A37xx address mapping without any firmware
-support in case the bus address does not conflict with other A37xx mapping.
+	EPC <-> shmem <-> disk
 
-So remap I/O space to the bus address 0x0 to enable support for old legacy
-I/O port based cards which have hardcoded I/O ports in low address space.
+After data is swapped back in from shmem to EPC, the shmem backing
+storage needs to be freed.  Currently, the backing shmem is not freed.
+This effectively wastes the shmem while the enclave is running.  The
+memory is recovered when the enclave is destroyed and the backing
+storage freed.
 
-Note that DDR on A37xx is mapped to bus address 0x0. And mapping of I/O
-space can be set to address 0x0 too because MEM space and I/O space are
-separate and so do not conflict.
+Sort this out by freeing memory with shmem_truncate_range(), as soon as
+a page is faulted back to the EPC.  In addition, free the memory for
+PCMD pages as soon as all PCMD's in a page have been marked as unused
+by zeroing its contents.
 
-Remapping IO space on Turris Mox to different address is not possible to
-due bootloader bug.
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Fixes: 76f6386b25cc ("arm64: dts: marvell: Add Aardvark PCIe support for Armada 3700")
-Cc: stable@vger.kernel.org # 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from 'ranges' DT property")
-Cc: stable@vger.kernel.org # 514ef1e62d65 ("arm64: dts: marvell: armada-37xx: Extend PCIe MEM space")
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Reported-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220303223859.273187-1-jarkko@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts |    7 ++++++-
- arch/arm64/boot/dts/marvell/armada-37xx.dtsi           |    2 +-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ arch/x86/kernel/cpu/sgx/encl.c |   57 ++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 48 insertions(+), 9 deletions(-)
 
---- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-@@ -139,7 +139,9 @@
- 	/*
- 	 * U-Boot port for Turris Mox has a bug which always expects that "ranges" DT property
- 	 * contains exactly 2 ranges with 3 (child) address cells, 2 (parent) address cells and
--	 * 2 size cells and also expects that the second range starts at 16 MB offset. If these
-+	 * 2 size cells and also expects that the second range starts at 16 MB offset. Also it
-+	 * expects that first range uses same address for PCI (child) and CPU (parent) cells (so
-+	 * no remapping) and that this address is the lowest from all specified ranges. If these
- 	 * conditions are not met then U-Boot crashes during loading kernel DTB file. PCIe address
- 	 * space is 128 MB long, so the best split between MEM and IO is to use fixed 16 MB window
- 	 * for IO and the rest 112 MB (64+32+16) for MEM, despite that maximal IO size is just 64 kB.
-@@ -148,6 +150,9 @@
- 	 * https://source.denx.de/u-boot/u-boot/-/commit/cb2ddb291ee6fcbddd6d8f4ff49089dfe580f5d7
- 	 * https://source.denx.de/u-boot/u-boot/-/commit/c64ac3b3185aeb3846297ad7391fc6df8ecd73bf
- 	 * https://source.denx.de/u-boot/u-boot/-/commit/4a82fca8e330157081fc132a591ebd99ba02ee33
-+	 * Bug related to requirement of same child and parent addresses for first range is fixed
-+	 * in U-Boot version 2022.04 by following commit:
-+	 * https://source.denx.de/u-boot/u-boot/-/commit/1fd54253bca7d43d046bba4853fe5fafd034bc17
- 	 */
- 	#address-cells = <3>;
- 	#size-cells = <2>;
---- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-+++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
-@@ -497,7 +497,7 @@
- 			 * (totaling 127 MiB) for MEM.
- 			 */
- 			ranges = <0x82000000 0 0xe8000000   0 0xe8000000   0 0x07f00000   /* Port 0 MEM */
--				  0x81000000 0 0xefff0000   0 0xefff0000   0 0x00010000>; /* Port 0 IO */
-+				  0x81000000 0 0x00000000   0 0xefff0000   0 0x00010000>; /* Port 0 IO */
- 			interrupt-map-mask = <0 0 0 7>;
- 			interrupt-map = <0 0 0 1 &pcie_intc 0>,
- 					<0 0 0 2 &pcie_intc 1>,
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -13,6 +13,30 @@
+ #include "sgx.h"
+ 
+ /*
++ * Calculate byte offset of a PCMD struct associated with an enclave page. PCMD's
++ * follow right after the EPC data in the backing storage. In addition to the
++ * visible enclave pages, there's one extra page slot for SECS, before PCMD
++ * structs.
++ */
++static inline pgoff_t sgx_encl_get_backing_page_pcmd_offset(struct sgx_encl *encl,
++							    unsigned long page_index)
++{
++	pgoff_t epc_end_off = encl->size + sizeof(struct sgx_secs);
++
++	return epc_end_off + page_index * sizeof(struct sgx_pcmd);
++}
++
++/*
++ * Free a page from the backing storage in the given page index.
++ */
++static inline void sgx_encl_truncate_backing_page(struct sgx_encl *encl, unsigned long page_index)
++{
++	struct inode *inode = file_inode(encl->backing);
++
++	shmem_truncate_range(inode, PFN_PHYS(page_index), PFN_PHYS(page_index) + PAGE_SIZE - 1);
++}
++
++/*
+  * ELDU: Load an EPC page as unblocked. For more info, see "OS Management of EPC
+  * Pages" in the SDM.
+  */
+@@ -22,9 +46,11 @@ static int __sgx_encl_eldu(struct sgx_en
+ {
+ 	unsigned long va_offset = encl_page->desc & SGX_ENCL_PAGE_VA_OFFSET_MASK;
+ 	struct sgx_encl *encl = encl_page->encl;
++	pgoff_t page_index, page_pcmd_off;
+ 	struct sgx_pageinfo pginfo;
+ 	struct sgx_backing b;
+-	pgoff_t page_index;
++	bool pcmd_page_empty;
++	u8 *pcmd_page;
+ 	int ret;
+ 
+ 	if (secs_page)
+@@ -32,14 +58,16 @@ static int __sgx_encl_eldu(struct sgx_en
+ 	else
+ 		page_index = PFN_DOWN(encl->size);
+ 
++	page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
++
+ 	ret = sgx_encl_get_backing(encl, page_index, &b);
+ 	if (ret)
+ 		return ret;
+ 
+ 	pginfo.addr = encl_page->desc & PAGE_MASK;
+ 	pginfo.contents = (unsigned long)kmap_atomic(b.contents);
+-	pginfo.metadata = (unsigned long)kmap_atomic(b.pcmd) +
+-			  b.pcmd_offset;
++	pcmd_page = kmap_atomic(b.pcmd);
++	pginfo.metadata = (unsigned long)pcmd_page + b.pcmd_offset;
+ 
+ 	if (secs_page)
+ 		pginfo.secs = (u64)sgx_get_epc_virt_addr(secs_page);
+@@ -55,11 +83,24 @@ static int __sgx_encl_eldu(struct sgx_en
+ 		ret = -EFAULT;
+ 	}
+ 
+-	kunmap_atomic((void *)(unsigned long)(pginfo.metadata - b.pcmd_offset));
++	memset(pcmd_page + b.pcmd_offset, 0, sizeof(struct sgx_pcmd));
++
++	/*
++	 * The area for the PCMD in the page was zeroed above.  Check if the
++	 * whole page is now empty meaning that all PCMD's have been zeroed:
++	 */
++	pcmd_page_empty = !memchr_inv(pcmd_page, 0, PAGE_SIZE);
++
++	kunmap_atomic(pcmd_page);
+ 	kunmap_atomic((void *)(unsigned long)pginfo.contents);
+ 
+ 	sgx_encl_put_backing(&b, false);
+ 
++	sgx_encl_truncate_backing_page(encl, page_index);
++
++	if (pcmd_page_empty)
++		sgx_encl_truncate_backing_page(encl, PFN_DOWN(page_pcmd_off));
++
+ 	return ret;
+ }
+ 
+@@ -579,7 +620,7 @@ static struct page *sgx_encl_get_backing
+ int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
+ 			 struct sgx_backing *backing)
+ {
+-	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
++	pgoff_t page_pcmd_off = sgx_encl_get_backing_page_pcmd_offset(encl, page_index);
+ 	struct page *contents;
+ 	struct page *pcmd;
+ 
+@@ -587,7 +628,7 @@ int sgx_encl_get_backing(struct sgx_encl
+ 	if (IS_ERR(contents))
+ 		return PTR_ERR(contents);
+ 
+-	pcmd = sgx_encl_get_backing_page(encl, pcmd_index);
++	pcmd = sgx_encl_get_backing_page(encl, PFN_DOWN(page_pcmd_off));
+ 	if (IS_ERR(pcmd)) {
+ 		put_page(contents);
+ 		return PTR_ERR(pcmd);
+@@ -596,9 +637,7 @@ int sgx_encl_get_backing(struct sgx_encl
+ 	backing->page_index = page_index;
+ 	backing->contents = contents;
+ 	backing->pcmd = pcmd;
+-	backing->pcmd_offset =
+-		(page_index & (PAGE_SIZE / sizeof(struct sgx_pcmd) - 1)) *
+-		sizeof(struct sgx_pcmd);
++	backing->pcmd_offset = page_pcmd_off & (PAGE_SIZE - 1);
+ 
+ 	return 0;
+ }
 
 
