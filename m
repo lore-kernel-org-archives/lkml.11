@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49788C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5313DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:20:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242085AbiCNMSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35208 "EHLO
+        id S242130AbiCNMSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242366AbiCNMJy (ORCPT
+        with ESMTP id S242392AbiCNMJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:09:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE0312AE8;
-        Mon, 14 Mar 2022 05:07:25 -0700 (PDT)
+        Mon, 14 Mar 2022 08:09:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58D56404;
+        Mon, 14 Mar 2022 05:07:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D5F5B80DEC;
-        Mon, 14 Mar 2022 12:07:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9F5CC340E9;
-        Mon, 14 Mar 2022 12:07:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 744B5B80DED;
+        Mon, 14 Mar 2022 12:07:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9096C340EC;
+        Mon, 14 Mar 2022 12:07:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647259642;
-        bh=PCVEu3eBNh+zp+MeS63pTC8Ozt4hBZwD3A1YpjUvigg=;
+        s=korg; t=1647259668;
+        bh=dQE9AN0W3xhOOojm4d6cc0ZVs/VcgoMmZFSyfL9v3+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zq1rmjIZ0gH7AA75eoSVYS3BrOrOFlYRwHn9gMGQD2FyXjxmGkR6thgTm8XnLStPh
-         XqtXPZkZZhHACDcH5QZagBRydeePNrmXwIIa8GZREsETdxlKgwjlp3FQeKn8ZjQbte
-         0Ppizt+dUvTUjyMIaO3ggM21Bb2fpKlfmQ+LVy1M=
+        b=2H3d7uU+57Zd59ZIej/qiKmal169BeekIH6tY1uFdYkQmbuOszYGvDNcgTacdPzFQ
+         Ax6HMtCuQp5s0XFKJpUpBrnbn/MBsjT20w6aGvRwD+5kAmVOXx+IMRWQUG8lkqbfFK
+         ly2uVu5Uit+gXjAO4u4XjISlHEhHm5GggT0irB8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
+        Tung Nguyen <tung.q.nguyen@dektech.com.au>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 056/110] KVM: Fix lockdep false negative during host resume
-Date:   Mon, 14 Mar 2022 12:53:58 +0100
-Message-Id: <20220314112744.599617078@linuxfoundation.org>
+Subject: [PATCH 5.15 035/110] tipc: fix incorrect order of state message data sanity check
+Date:   Mon, 14 Mar 2022 12:53:37 +0100
+Message-Id: <20220314112744.017934814@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
 References: <20220314112743.029192918@linuxfoundation.org>
@@ -49,56 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Tung Nguyen <tung.q.nguyen@dektech.com.au>
 
-[ Upstream commit 4cb9a998b1ce25fad74a82f5a5c45a4ef40de337 ]
+[ Upstream commit c79fcc27be90b308b3fa90811aefafdd4078668c ]
 
-I saw the below splatting after the host suspended and resumed.
+When receiving a state message, function tipc_link_validate_msg()
+is called to validate its header portion. Then, its data portion
+is validated before it can be accessed correctly. However, current
+data sanity  check is done after the message header is accessed to
+update some link variables.
 
-   WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
-   CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
-   RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
-   Call Trace:
-    <TASK>
-    syscore_resume+0x90/0x340
-    suspend_devices_and_enter+0xaee/0xe90
-    pm_suspend.cold+0x36b/0x3c2
-    state_store+0x82/0xf0
-    kernfs_fop_write_iter+0x1b6/0x260
-    new_sync_write+0x258/0x370
-    vfs_write+0x33f/0x510
-    ksys_write+0xc9/0x160
-    do_syscall_64+0x3b/0xc0
-    entry_SYSCALL_64_after_hwframe+0x44/0xae
+This commit fixes this issue by moving the data sanity check to
+the beginning of state message handling and right after the header
+sanity check.
 
-lockdep_is_held() can return -1 when lockdep is disabled which triggers
-this warning. Let's use lockdep_assert_not_held() which can detect
-incorrect calls while holding a lock and it also avoids false negatives
-when lockdep is disabled.
-
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 9aa422ad3266 ("tipc: improve size validations for received domain records")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Link: https://lore.kernel.org/r/20220308021200.9245-1-tung.q.nguyen@dektech.com.au
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/kvm_main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/tipc/link.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index f8b42e19bc77..fcceb8443aa9 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -5417,9 +5417,7 @@ static int kvm_suspend(void)
- static void kvm_resume(void)
- {
- 	if (kvm_usage_count) {
--#ifdef CONFIG_LOCKDEP
--		WARN_ON(lockdep_is_held(&kvm_count_lock));
--#endif
-+		lockdep_assert_not_held(&kvm_count_lock);
- 		hardware_enable_nolock(NULL);
- 	}
- }
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index 4e7936d9b442..115a4a7950f5 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -2285,6 +2285,11 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 		break;
+ 
+ 	case STATE_MSG:
++		/* Validate Gap ACK blocks, drop if invalid */
++		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
++		if (glen > dlen)
++			break;
++
+ 		l->rcv_nxt_state = msg_seqno(hdr) + 1;
+ 
+ 		/* Update own tolerance if peer indicates a non-zero value */
+@@ -2310,10 +2315,6 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 			break;
+ 		}
+ 
+-		/* Receive Gap ACK blocks from peer if any */
+-		glen = tipc_get_gap_ack_blks(&ga, l, hdr, true);
+-		if(glen > dlen)
+-			break;
+ 		tipc_mon_rcv(l->net, data + glen, dlen - glen, l->addr,
+ 			     &l->mon_state, l->bearer_id);
+ 
 -- 
 2.34.1
 
