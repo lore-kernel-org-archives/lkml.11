@@ -2,163 +2,336 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F322C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6577C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 07:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236812AbiCNHyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 03:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35458 "EHLO
+        id S236823AbiCNH47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 03:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbiCNHyk (ORCPT
+        with ESMTP id S234643AbiCNH45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 03:54:40 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325C332051;
-        Mon, 14 Mar 2022 00:53:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647244411; x=1678780411;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=9WK4o3HN1RtKbNHRl+PUTuLbo5koTnYkQaQV8cV28Bk=;
-  b=WCmsBdurdJocL+Il9GCXhV0DA8AVyHPlTYiKCNXBAvpDF2Uj4XaJUVoj
-   e2kervdHDa6RtumINkcSPH9KCc7PZbJm8dx8MkDIlXCb0QjI3piQD0QK0
-   ZQIOAm0C2Ee1vUODoXALQOkDTVbq7rfOBnbrLlTFmPbzCCPElZI37jGZn
-   c=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 14 Mar 2022 00:53:31 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 14 Mar 2022 00:53:30 -0700
-X-QCInternal: smtphost
-Received: from hu-dikshita-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.110.13])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 14 Mar 2022 13:23:19 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 347544)
-        id D06734679; Mon, 14 Mar 2022 13:23:17 +0530 (+0530)
-From:   quic_dikshita@quicinc.com
-To:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hverkuil-cisco@xs4all.nl
-Cc:     linux-arm-msm@vger.kernel.org, ezequiel@collabora.com,
-        stanimir.varbanov@linaro.org, quic_vgarodia@quicinc.com,
-        quic_majja@quicinc.com, quic_jdas@quicinc.com,
-        Dikshita Agarwal <quic_dikshita@quicinc.com>
-Subject: [PATCH v2 1/2] media: v4l2-ctrls: Add intra-refresh type control
-Date:   Mon, 14 Mar 2022 13:23:03 +0530
-Message-Id: <1647244384-19918-2-git-send-email-quic_dikshita@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647244384-19918-1-git-send-email-quic_dikshita@quicinc.com>
-References: <1647244384-19918-1-git-send-email-quic_dikshita@quicinc.com>
+        Mon, 14 Mar 2022 03:56:57 -0400
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0D6366A4;
+        Mon, 14 Mar 2022 00:55:48 -0700 (PDT)
+Received: by mail-ej1-f50.google.com with SMTP id qx21so31834966ejb.13;
+        Mon, 14 Mar 2022 00:55:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:content-language:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=7uGV18oizWLr5M9hNvuH458elS6tvqvRS3zfK+O9Pvs=;
+        b=T+add/xGtdcHBT8c+ZZXA9Rh+lOhTyzLxhtNnEorkFQ1S0fuEyyZpxucs5aqL1xyYJ
+         N17PL8KvksTNL4/OIqI6Md6Ed5NAlPwF9sCilO/dJTKc+p5rOFWUPj6G4nNL2McGQ6Rt
+         pAIeUXTRyCvolJbSgHRgLXADebkmimraWq5uvydxIf83boUzkQCu5wymK7M4j0Q7ZDXM
+         jKDiCUomQdKaPLwwUYiUk7LeWPSPvB3LAudlHjYsdwXcS/pgjy/TzIJsABOxWPGGGtAA
+         zeUKq4U93NN57km2Ecpz0qhpRChMlq5FaOjzzJi6Ne+2aCCSDgQnjFpaSv3kf2jEWE7V
+         nBnQ==
+X-Gm-Message-State: AOAM5321dLpkJCdgrAJLBnWWQo4yrUi8cTAhcRVjESGDBAzWlRunJU1w
+        5y3Uq0lqFX4eduFO7GyIE1g=
+X-Google-Smtp-Source: ABdhPJxgj6Znqvqof2TeF3HPCVXcS02HnKtHNTq/DZOr3E4eP8wBCaS8v/p1mW50UD5xEHIJsoiJXQ==
+X-Received: by 2002:a17:907:7f1d:b0:6da:74b1:fd65 with SMTP id qf29-20020a1709077f1d00b006da74b1fd65mr18109532ejc.72.1647244546274;
+        Mon, 14 Mar 2022 00:55:46 -0700 (PDT)
+Received: from [192.168.0.152] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.googlemail.com with ESMTPSA id zk1-20020a17090733c100b006dab4a41df8sm6301310ejb.111.2022.03.14.00.55.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 00:55:45 -0700 (PDT)
+Message-ID: <e4ed4b50-c16f-5c46-7d64-f5b2f36f8f44@kernel.org>
+Date:   Mon, 14 Mar 2022 08:55:44 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH v11 2/2] misc: Add iop driver for Sunplus SP7021
+Content-Language: en-US
+To:     =?UTF-8?B?VG9ueSBIdWFuZyDpu4Pmh7fljpo=?= <tony.huang@sunplus.com>,
+        Tony Huang <tonyhuang.sunplus@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "derek.kiernan@xilinx.com" <derek.kiernan@xilinx.com>,
+        "dragan.cvetic@xilinx.com" <dragan.cvetic@xilinx.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+References: <cover.1647095774.git.tonyhuang.sunplus@gmail.com>
+ <07f507a84a9e39d3cd8393f41d1292c250e07642.1647095774.git.tonyhuang.sunplus@gmail.com>
+ <00362767-080a-aa7f-672f-22b83ab35e61@kernel.org>
+ <42f5f710077b40d7b6fde45789f46732@sphcmbx02.sunplus.com.tw>
+In-Reply-To: <42f5f710077b40d7b6fde45789f46732@sphcmbx02.sunplus.com.tw>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dikshita Agarwal <quic_dikshita@quicinc.com>
+On 14/03/2022 07:08, Tony Huang 黃懷厚 wrote:
+> Dear Krzysztof:
+> 
+>> On 12/03/2022 17:16, Tony Huang wrote:
+>>> This driver is load 8051 bin code.
+>>> The IOP core is DQ8051, so also named IOP8051.
+>>> Need Install DQ8051, The DQ8051 bin file generated by keil C.
+>>> We will provide users with 8051 normal and power off source code.
+>>> Path: https://sunplus.atlassian.net/wiki/spaces/doc/pages/610172933/
+>>>
+>> How+to+use+I+O+processor+8051+of+SP7021#5.-Write-C-or-assembly-source-
+>>> files-for-IOP
+>>> Users can follow the operation steps to generate normal.bin and
+>>> poweroff.bin.
+>>> Path: https://sunplus.atlassian.net/wiki/spaces/doc/pages/466190338
+>>> /26.+IOP8051 26.5?How To Create 8051 bin file
+>>>
+>>> PMC in power management purpose:
+>>> Add sp_iop_poweroff() function. pm_power_off=sp_iop_poweroff.
+>>> When the power off command is executed.
+>>> The 8051 has a register(DEF_PWR_EN_0=0) to control the power-on and
+>>> power-off of the system.
+>>>
+>>> Signed-off-by: Tony Huang <tonyhuang.sunplus@gmail.com>
+>>> ---
+>>> Changes in v11:
+>>>  - Addressed comments from Arnd Bergmann.
+>>
+>> How did you address Arnd's comments about splitting the driver to proper
+>> parts? drivers/clk and drivers/power/reset?
+>>
+> 
+> drivers/clk : SP7021 system has clock device driver (clk-sp7021.c).		
+> So I set the IOP clock through the following function.		
+> clk_prepare_enable(iop->iopclk);		
+> clk_disable_unprepare(iop->iopclk);		
+> 		
+> drivers/power/reset : SP7021 system does not have a power off device driver.
 
-Add a control to set intra-refresh type.
+What does it mean? The feedback was to split clk and reset features to
+separate drivers and I still see only two patches here with a misc
+driver. So how is his comments addressed? You did not reply in that thread.
 
-Signed-off-by: Dikshita Agarwal <quic_dikshita@quicinc.com>
-Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
----
- .../userspace-api/media/v4l/ext-ctrls-codec.rst    | 27 ++++++++++++++++++++++
- drivers/media/v4l2-core/v4l2-ctrls-defs.c          |  9 ++++++++
- include/uapi/linux/v4l2-controls.h                 |  5 ++++
- 3 files changed, 41 insertions(+)
+> 
+>>>  - Addressed comments from krzysztof.
+>>>
+>>>  MAINTAINERS                |   1 +
+>>>  drivers/misc/Kconfig       |  23 +++
+>>>  drivers/misc/Makefile      |   1 +
+>>>  drivers/misc/sunplus_iop.c | 411
+>>> +++++++++++++++++++++++++++++++++++++++++++++
+>>
+>> The driver looks like SoC specific driver. Why did you put it in drivers/misc/,
+>> not in usual place - drivers/soc/?
+> 
+> 8051 is designed for processing I/O events, like receiving IR signal from remote controller, 		
+> taking care of power on or off requests from RTC, or other hardware events of external peripherals 		
+> even when power of main system is off.
+> So I put it in drivers/misc.
 
-diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-index 4cd7c54..2406272 100644
---- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
-@@ -1180,6 +1180,33 @@ enum v4l2_mpeg_video_h264_entropy_mode -
-     is set to non zero value.
-     Applicable to H264, H263 and MPEG4 encoder.
- 
-+``V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE (enum)``
-+
-+enum v4l2_mpeg_video_intra_refresh_period_type -
-+    Sets the type of intra refresh. The period to refresh
-+    the whole frame is specified by V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD.
-+    Note if the client sets this control to either
-+    ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM``or
-+    ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC``
-+    the ``V4L2_CID_MPEG_VIDEO_CYCLIC_INTRA_REFRESH_MB`` control
-+    shall be ignored.
-+    And if this control is not present that it is undefined what
-+    refresh type is used and it is upto the drive to decide.
-+    Applicable to H264 and HEVC encoders. Possible values are:
-+
-+.. tabularcolumns:: |p{9.6cm}|p{7.9cm}|
-+
-+.. flat-table::
-+    :header-rows:  0
-+    :stub-columns: 0
-+
-+    * - ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM``
-+      - The whole frame is completely refreshed randomly
-+      after the specified period.
-+    * - ``V4L2_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC``
-+      - The whole frame MBs are completely refreshed in cyclic order
-+      after the specified period.
-+
- ``V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD (integer)``
-     Intra macroblock refresh period. This sets the period to refresh
-     the whole frame. In other words, this defines the number of frames
-diff --git a/drivers/media/v4l2-core/v4l2-ctrls-defs.c b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-index 54ca4e6..451c8b0 100644
---- a/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-+++ b/drivers/media/v4l2-core/v4l2-ctrls-defs.c
-@@ -572,6 +572,11 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
- 		"VBV/CPB Limit",
- 		NULL,
- 	};
-+	static const char * const intra_refresh_period_type[] = {
-+		"Random",
-+		"Cyclic",
-+		NULL,
-+	};
- 
- 	switch (id) {
- 	case V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ:
-@@ -705,6 +710,8 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
- 		return hevc_start_code;
- 	case V4L2_CID_CAMERA_ORIENTATION:
- 		return camera_orientation;
-+	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:
-+		return intra_refresh_period_type;
- 	default:
- 		return NULL;
- 	}
-@@ -834,6 +841,7 @@ const char *v4l2_ctrl_get_name(u32 id)
- 	case V4L2_CID_MPEG_VIDEO_DECODER_SLICE_INTERFACE:	return "Decoder Slice Interface";
- 	case V4L2_CID_MPEG_VIDEO_DECODER_MPEG4_DEBLOCK_FILTER:	return "MPEG4 Loop Filter Enable";
- 	case V4L2_CID_MPEG_VIDEO_CYCLIC_INTRA_REFRESH_MB:	return "Number of Intra Refresh MBs";
-+	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:	return "Intra Refresh Type";
- 	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD:		return "Intra Refresh Period";
- 	case V4L2_CID_MPEG_VIDEO_FRAME_RC_ENABLE:		return "Frame Level Rate Control Enable";
- 	case V4L2_CID_MPEG_VIDEO_MB_RC_ENABLE:			return "H264 MB Level Rate Control";
-@@ -1360,6 +1368,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
- 	case V4L2_CID_STATELESS_H264_DECODE_MODE:
- 	case V4L2_CID_STATELESS_H264_START_CODE:
- 	case V4L2_CID_CAMERA_ORIENTATION:
-+	case V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE:
- 		*type = V4L2_CTRL_TYPE_MENU;
- 		break;
- 	case V4L2_CID_LINK_FREQ:
-diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
-index c8e0f84..e7df4c5 100644
---- a/include/uapi/linux/v4l2-controls.h
-+++ b/include/uapi/linux/v4l2-controls.h
-@@ -443,6 +443,11 @@ enum v4l2_mpeg_video_multi_slice_mode {
- #define V4L2_CID_MPEG_VIDEO_USE_LTR_FRAMES		(V4L2_CID_CODEC_BASE+234)
- #define V4L2_CID_MPEG_VIDEO_DEC_CONCEAL_COLOR		(V4L2_CID_CODEC_BASE+235)
- #define V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD	(V4L2_CID_CODEC_BASE+236)
-+#define V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE	(V4L2_CID_CODEC_BASE+237)
-+enum v4l2_mpeg_video_intra_refresh_period_type {
-+	V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_RANDOM	= 0,
-+	V4L2_CID_MPEG_VIDEO_INTRA_REFRESH_PERIOD_TYPE_CYCLIC	= 1,
-+};
- 
- /* CIDs for the MPEG-2 Part 2 (H.262) codec */
- #define V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL			(V4L2_CID_CODEC_BASE+270)
--- 
-2.7.4
+Is IOP8061 a separate device? Your datasheet is saying its embedded in
+SP7021 SoC, so it is a soc driver. This does not fit misc driver
+description (a "strange device") but a SoC driver description.
 
+> 
+>> sp_iop_poweroff is still here.
+> 
+> sp_iop_poweroff(): SP7021 system does not have a power off device driver.
+> 				I have to put it here.
+
+This should be rather in a reset driver, not in a misc one. What is your
+plan for this driver? You described the hardware and judging by it,
+there will be quite a lot of separate features so it's reasonable to
+split the driver into separate logical elements. However keeping all in
+the same place would be ok, if you do not plan to add any more features.
+This would mean the driver will handle *only* reset and FW loading.
+
+> 
+>>>  4 files changed, 436 insertions(+)
+>>>  create mode 100644 drivers/misc/sunplus_iop.c
+>>>
+>>> diff --git a/MAINTAINERS b/MAINTAINERS index d64c8ed..c282e95 100644
+>>> --- a/MAINTAINERS
+>>> +++ b/MAINTAINERS
+>>> @@ -18246,6 +18246,7 @@ SUNPLUS IOP DRIVER
+>>>  M:	Tony Huang <tonyhuang.sunplus@gmail.com>
+>>>  S:	Maintained
+>>>  F:	Documentation/devicetree/bindings/misc/sunplus,iop.yaml
+>>> +F:	drivers/misc/sunplus_iop.c
+>>>
+>>>  SUPERH
+>>>  M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+>>> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig index
+>>> 0f5a49f..e5f32d8 100644
+>>> --- a/drivers/misc/Kconfig
+>>> +++ b/drivers/misc/Kconfig
+>>> @@ -470,6 +470,29 @@ config HISI_HIKEY_USB
+>>>  	  switching between the dual-role USB-C port and the USB-A host ports
+>>>  	  using only one USB controller.
+>>>
+>>> +config SUNPLUS_IOP
+>>> +	tristate "Sunplus IOP support"
+>>> +	default ARCH_SUNPLUS
+>>> +	help
+>>> +	  This driver is load 8051 bin code.
+>>> +	  The IOP core is DQ8051, so also named IOP8051.
+>>> +	  Need Install DQ8051, The DQ8051 bin file generated by keil C.
+>>> +	  We will provide users with 8051 normal and power off source code.
+>>> +	  Path: https://sunplus.atlassian.net/wiki/spaces/doc/pages/610172933/
+>>> +
+>> How+to+use+I+O+processor+8051+of+SP7021#5.-Write-C-or-assembly-source-
+>> files-for-IOP
+>>> +	  Users can follow the operation steps to generate normal.bin and
+>> poweroff.bin.
+>>> +	  Path:
+>> https://sunplus.atlassian.net/wiki/spaces/doc/pages/466190338/26.+IOP8051
+>>> +	  26.5?How To Create 8051 bin file
+>>> +
+>>> +	  PMC in power management purpose:
+>>> +	  Add sp_iop_poweroff() function. pm_power_off=sp_iop_poweroff.
+>>> +	  When the power off command is executed.
+>>> +	  The 8051 has a register(DEF_PWR_EN_0=0) to control the power-on
+>> and
+>>> +	  power-off of the system.
+>>> +
+>>> +	  This driver can also be built as a module.  If so, the module
+>>> +	  will be called sunplus_iop.
+>>> +
+>>>  source "drivers/misc/c2port/Kconfig"
+>>>  source "drivers/misc/eeprom/Kconfig"
+>>>  source "drivers/misc/cb710/Kconfig"
+>>> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile index
+>>> a086197..eafeab6 100644
+>>> --- a/drivers/misc/Makefile
+>>> +++ b/drivers/misc/Makefile
+>>> @@ -52,6 +52,7 @@ obj-$(CONFIG_DW_XDATA_PCIE)	+= dw-xdata-pcie.o
+>>>  obj-$(CONFIG_PCI_ENDPOINT_TEST)	+= pci_endpoint_test.o
+>>>  obj-$(CONFIG_OCXL)		+= ocxl/
+>>>  obj-$(CONFIG_BCM_VK)		+= bcm-vk/
+>>> +obj-$(CONFIG_SUNPLUS_IOP)	+= sunplus_iop.o
+>>>  obj-y				+= cardreader/
+>>>  obj-$(CONFIG_PVPANIC)   	+= pvpanic/
+>>>  obj-$(CONFIG_HABANA_AI)		+= habanalabs/
+>>> diff --git a/drivers/misc/sunplus_iop.c b/drivers/misc/sunplus_iop.c
+>>> new file mode 100644 index 0000000..5bdce5e
+>>> --- /dev/null
+>>> +++ b/drivers/misc/sunplus_iop.c
+>>> @@ -0,0 +1,411 @@
+>>> +// SPDX-License-Identifier: GPL-2.0
+>>> +/*
+>>> + * The IOP driver for Sunplus SP7021
+>>> + *
+>>> + * Copyright (C) 2021 Sunplus Technology Inc.
+>>> + *
+>>> + * All Rights Reserved.
+>>> + */
+>>> +#include <linux/clk.h>
+>>> +#include <linux/delay.h>
+>>> +#include <linux/dma-mapping.h>
+>>> +#include <linux/firmware.h>
+>>> +#include <linux/iopoll.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/of_platform.h>
+>>> +#include <linux/of_address.h>
+>>> +#include <linux/of_gpio.h>
+>>> +
+>>> +/* IOP register offset */
+>>> +#define IOP_CONTROL	0x00
+>>> +#define IOP_DATA0	0x20
+>>> +#define IOP_DATA1	0x24
+>>> +#define IOP_DATA2	0x28
+>>> +#define IOP_DATA3	0x2c
+>>> +#define IOP_DATA4	0x30
+>>> +#define IOP_DATA5	0x34
+>>> +#define IOP_DATA6	0x38
+>>> +#define IOP_DATA7	0x3c
+>>> +#define IOP_DATA8	0x40
+>>> +#define IOP_DATA9	0x44
+>>> +#define IOP_DATA10	0x48
+>>> +#define IOP_DATA11	0x4c
+>>> +#define IOP_BASE_ADR_L	0x50
+>>> +#define IOP_BASE_ADR_H	0x54
+>>> +
+>>> +/* PMC register offset */
+>>> +#define IOP_PMC_TIMER		0x00
+>>> +#define IOP_PMC_CTRL		0x04
+>>> +#define IOP_XTAL27M_PASSWORD_I	0x08
+>>> +#define IOP_XTAL27M_PASSWORD_II	0x0c
+>>> +#define IOP_XTAL32K_PASSWORD_I	0x10
+>>> +#define IOP_XTAL32K_PASSWORD_II	0x14
+>>> +#define IOP_CLK27M_PASSWORD_I	0x18
+>>> +#define IOP_CLK27M_PASSWORD_II	0x1c
+>>> +#define IOP_PMC_TIMER2		0x20
+>>> +
+>>> +/* Max size of poweroff.bin that can be received */ #define
+>>> +POWEROFF_CODE_MAX_SIZE 0x4000
+>>> +
+>>> +/* 8051 informs linux kerenl. 8051 has been switched to poweroff.bin code.
+>> */
+>>> +#define IOP_READY	0x0004
+>>> +#define RISC_READY	0x0008
+>>> +
+>>> +/* System linux kernel tells 8051 which  gpio pin to wake-up through. */
+>>> +#define WAKEUP_PIN	0xFE02
+>>> +
+>>> +/*
+>>> + * There are 3 power domains in SP7021, AO domain, IOP domain,
+>>> + * Default domain. Default domain is linux kernel system.
+>>> + * System linux kernel tells 8051 to execute power off.
+>>> + */
+>>> +#define DEFAULT_DOMAIN_POWEROFF	0x5331 /* AO&IOP domain on,
+>> Default domain off */
+>>> +#define DEFAULT_AND_IOP_DOMAIN_POWEROFF	0x5333 /* AO domain
+>> on, IOP&Default domain off */
+>>> +
+>>> +struct sp_iop {
+>>> +	struct device *dev;
+>>> +	struct clk *iopclk;
+>>> +	struct reset_control *rstc;
+>>> +	void __iomem *iop_regs;
+>>> +	void __iomem *pmc_regs;
+>>> +	void __iomem *moon0_regs;
+>>> +	int irq;
+>>> +	int gpio_wakeup;
+>>> +	resource_size_t iop_mem_start;
+>>> +	resource_size_t iop_mem_size;
+>>> +	unsigned char bin_code_mode;
+>>> +};
+>>> +
+>>> +static struct sp_iop *iop_poweroff;
+>>> +
+>>> +static void sp_iop_load_normal_code(struct sp_iop *iop) {
+>>> +	const struct firmware *fw;
+>>> +	void __iomem *iop_kernel_base;
+>>> +	unsigned int reg, err;
+>>> +
+>>> +	err = request_firmware(&fw, "normal.bin", iop->dev);
+>>> +	if (err)
+>>> +		dev_err(iop->dev, "get bin file error\n");
+>>> +
+>>> +	iop_kernel_base = ioremap(iop->iop_mem_start, fw->size);
+>>> +	memset(iop_kernel_base, 0, fw->size);
+>>> +	memcpy(iop_kernel_base, fw->data, fw->size);
+>>> +	release_firmware(fw);
+>>> +
+>>> +	clk_prepare_enable(iop->iopclk);
+>>
+>> where do you disable the clock?
+> 
+> I will add disable clock in sp_iop_remove().				
+> Below is my modification				
+> static int sp_iop_remove(struct platform_device *pdev)				
+> {				
+> 	struct sp_iop *iop = iop_poweroff;			
+> 	pm_power_off = NULL;			
+> 	clk_disable_unprepare(iop->iopclk);			
+> 				
+> 	return 0;			
+> }				
+
+How is it balanced then? remove() is symmetric to probe() but you did
+not enable clocks in the probe(). Instead you enable the clocks each
+time in load_normal_code() and load_poweroff_code().
+
+This does not seem right at all.
+
+Best regards,
+Krzysztof
