@@ -2,112 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33ED6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9ECDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 17:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243420AbiCNRaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 13:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56544 "EHLO
+        id S231664AbiCNRci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 13:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiCNRaT (ORCPT
+        with ESMTP id S229899AbiCNRcf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 13:30:19 -0400
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55979DEB6;
-        Mon, 14 Mar 2022 10:29:09 -0700 (PDT)
-Received: by mail-lj1-f172.google.com with SMTP id h11so22992523ljb.2;
-        Mon, 14 Mar 2022 10:29:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wluxvZZRX4EKbcVvJ/eg3d1hoy/ZEcP65mxSGZfR8b8=;
-        b=XbwNDwKpXgp1ZuRwvwpoko54IbbMOYB3f1jXrHsKFNnutQZZNr2zneAW2SgB6xN+qn
-         dN/hzwHJFHB8afHyFrbl6J74UeRKU2KkqC3f/GBNuktY0xYCeR4+UNEToPpvnZ9YW9ut
-         nMvRm/eRguVIFYH9ghX9fnnHD9GVQU8Aek6vb1TPx1aD5nsRHeczjDx+47RaQ6MBYzIo
-         SlFGtgi70yQItdbHaJWwlzzaOfJDoxA5O7tPZ64YFiH9b9pUMIYvTqVgzBvwQLzzSF40
-         g5VEGw3PqIabA8fMo6+FxNlf2JAQQoP+uUje1WomJBKVCFGx4rjHN2OjsCwu+XydO38h
-         /5qg==
-X-Gm-Message-State: AOAM532HCYcmQI0A876T+uTQh98UvI4mVZVv+I+FC7PXcKF+4aQNX6MF
-        TaLgdh/H1oMxo6EP0j84dWRVE6mm3DY+H/e87M0=
-X-Google-Smtp-Source: ABdhPJyDjw6SAJ1pG95ESM8cb9VMKIADALppkjSv7LXf4LGBo6GrfONjwX+IxH0EO7+FzyBugxipqjskb8vqlGjBREY=
-X-Received: by 2002:a05:651c:1051:b0:247:ea0d:a57c with SMTP id
- x17-20020a05651c105100b00247ea0da57cmr14118926ljm.204.1647278947501; Mon, 14
- Mar 2022 10:29:07 -0700 (PDT)
+        Mon, 14 Mar 2022 13:32:35 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E891DEB6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 10:31:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8BA82CE137D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:31:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E6B9C340E9;
+        Mon, 14 Mar 2022 17:31:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647279081;
+        bh=hX9Tqyy6vxbu6BVOcnzI3a9SafOh9xeUfxbU1OKEzW8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HvCr6fPJpW2TN8UmjlWrLR/7KrPpDjyCFKfVCoFxaMZcipnssEs/dzZML+gzbX/NW
+         T+nQ77peJ6ElKCXxQz3MyYqN3zLeJU+goeXfETaPFVGG86Nv9npx3RLOaprd7XKnuo
+         UgrMydSklX+rv1pBjgxdZm0xVvB/p+EhmydGduAI=
+Date:   Mon, 14 Mar 2022 18:30:27 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Martin Kaiser <martin@kaiser.cx>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/6] staging: r8188eu: some rx cleanups
+Message-ID: <Yi97s4Eu20CVE/Ds@kroah.com>
+References: <20220305185351.1409232-1-martin@kaiser.cx>
 MIME-Version: 1.0
-References: <20220310082202.1229345-1-namhyung@kernel.org> <20220310082202.1229345-2-namhyung@kernel.org>
- <CAEf4BzZUEvCqz-zGdKAeyg3vywEEnFWuZ4Q446BrTGOsFqNqyQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzZUEvCqz-zGdKAeyg3vywEEnFWuZ4Q446BrTGOsFqNqyQ@mail.gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Mon, 14 Mar 2022 10:28:56 -0700
-Message-ID: <CAM9d7chtq2DV28GU=_eb+MSUTPFg8oGX8NDeeLdnf=Vr+7E1Yg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] bpf/selftests: Test skipping stacktrace
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Eugene Loh <eugene.loh@oracle.com>, Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220305185351.1409232-1-martin@kaiser.cx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Sat, Mar 05, 2022 at 07:53:45PM +0100, Martin Kaiser wrote:
+> Here's another set with simple cleanups in the code for receiving frames.
+> 
+> Martin Kaiser (6):
+>   staging: r8188eu: remove unnecessary initializations
+>   staging: r8188eu: remove three unused receive defines
+>   staging: r8188eu: remove unused function prototype
+>   staging: r8188eu: make rtl8188e_process_phy_info static
+>   staging: r8188eu: remove some unused local ieee80211 macros
+>   staging: r8188eu: remove local BIT macro
+> 
+>  drivers/staging/r8188eu/hal/rtl8188e_rxdesc.c |  6 +---
+>  .../staging/r8188eu/include/rtl8188e_recv.h   |  6 ----
+>  drivers/staging/r8188eu/include/wifi.h        | 34 +------------------
+>  3 files changed, 2 insertions(+), 44 deletions(-)
+> 
+> -- 
+> 2.30.2
+> 
+> 
 
-On Fri, Mar 11, 2022 at 2:23 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Mar 10, 2022 at 12:22 AM Namhyung Kim <namhyung@kernel.org> wrote:
-> > +SEC("tracepoint/sched/sched_switch")
-> > +int oncpu(struct sched_switch_args *ctx)
-> > +{
-> > +       __u32 max_len = TEST_STACK_DEPTH * sizeof(__u64);
-> > +       __u32 key = 0, val = 0, *value_p;
-> > +       __u64 *stack_p;
-> > +
->
-> please also add filtering by PID to avoid interference from other
-> selftests when run in parallel mode
+This series breaks the build:
 
-Will do!
+drivers/staging/r8188eu/core/rtw_wlan_util.c: In function ‘update_IOT_info’:
+drivers/staging/r8188eu/core/rtw_wlan_util.c:1279:42: error: conversion from ‘long unsigned int’ to ‘u32’ {aka ‘unsigned int’} changes value from ‘18446744073709551611’ to ‘4294967291’ [-Werror=overflow]
+ 1279 |                 Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/staging/r8188eu/core/rtw_wlan_util.c:1285:42: error: conversion from ‘long unsigned int’ to ‘u32’ {aka ‘unsigned int’} changes value from ‘18446744073709551611’ to ‘4294967291’ [-Werror=overflow]
+ 1285 |                 Switch_DM_Func(padapter, (~DYNAMIC_BB_DYNAMIC_TXPWR), false);
+      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
 
-Thanks,
-Namhyung
+I'm going to drop it from my queue now.
 
->
-> > +       value_p = bpf_map_lookup_elem(&control_map, &key);
-> > +       if (value_p && *value_p)
-> > +               return 0; /* skip if non-zero *value_p */
-> > +
-> > +       /* it should allow skipping whole buffer size entries */
-> > +       key = bpf_get_stackid(ctx, &stackmap, TEST_STACK_DEPTH);
-> > +       if ((int)key >= 0) {
-> > +               /* The size of stackmap and stack_amap should be the same */
-> > +               bpf_map_update_elem(&stackid_hmap, &key, &val, 0);
-> > +               stack_p = bpf_map_lookup_elem(&stack_amap, &key);
-> > +               if (stack_p) {
-> > +                       bpf_get_stack(ctx, stack_p, max_len, TEST_STACK_DEPTH);
-> > +                       /* it wrongly skipped all the entries and filled zero */
-> > +                       if (stack_p[0] == 0)
-> > +                               failed = 1;
-> > +               }
-> > +       } else if ((int)key == -14/*EFAULT*/) {
-> > +               /* old kernel doesn't support skipping that many entries */
-> > +               failed = 2;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > --
-> > 2.35.1.723.g4982287a31-goog
-> >
+thanks,
+
+greg k-h
