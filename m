@@ -2,176 +2,440 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30148C38A2B
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F47C35296
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 12:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbiCNMep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 08:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
+        id S245637AbiCNMd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 08:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241682AbiCNM1T (ORCPT
+        with ESMTP id S243957AbiCNMVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 08:27:19 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B40C46152;
-        Mon, 14 Mar 2022 05:21:40 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22ECKJ1M026169;
-        Mon, 14 Mar 2022 13:20:34 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=kW1aXwzAxV2OLtkXdpyvfaQAMdSGkHxK0NAJMN1QqM8=;
- b=IgWAUET0aS/wdTiEr7ToHsOaL7jJizPwf2lECqC+0NcoIhqCXATZpGgN+C/iyAGdWRYY
- 3WyWDAXs04JUbNOKi8kMct7IU6+Yydwrnxkms3ik+mZftGwrRtn4rJ4IYcsOu0ybfXYu
- gT+yVnPoy8mkwnjUOd9zkUzOw/NN8XmRdqdOaAvYIZeyuGABV7EQIM7xntDRQaCS7zL6
- YdzlUDY74mVENTxJX/58ZWHEmXkGy+RSJtimqjLws4QbhwWs07fShNN5Ds+KGlRWhu1o
- 5dkn/uaDggvGxwhgi6+knfbNx9ea70oR8V5Ems4S5kFYENAYonVCzp66l3uPRAPZDY/3 Aw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3et5mg801y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 13:20:34 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1364C100048;
-        Mon, 14 Mar 2022 13:20:34 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0A43721E678;
-        Mon, 14 Mar 2022 13:20:34 +0100 (CET)
-Received: from [10.201.21.172] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 14 Mar
- 2022 13:20:33 +0100
-Message-ID: <cfeeaa0e-7d52-9267-d46f-62eb91363b60@foss.st.com>
-Date:   Mon, 14 Mar 2022 13:20:32 +0100
+        Mon, 14 Mar 2022 08:21:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E07D13D45;
+        Mon, 14 Mar 2022 05:19:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D8E6608C4;
+        Mon, 14 Mar 2022 12:19:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82331C340E9;
+        Mon, 14 Mar 2022 12:19:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647260372;
+        bh=eFpa8pjJJG9srWqOtE6cT5zheTL9nDd5I6JxvyX1VSM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NVeD4nR3l5gxL+r8ac+xzK6gWJRR0JuQmwZJkBrGv78+nEyH5OK5aNjBRuq3zRVnh
+         hcKLlrEqMQ0qgG5i4r4VIJyNVDybqsiQqKihepBX5Y+W/9RdYN61KnIYTiSU+RMRoU
+         Fxm4Pm7m+BsWJAWArvNp68ppbIlV3ct/GL2DxQ8U=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ross Philipson <ross.philipson@oracle.com>,
+        Borislav Petkov <bp@suse.de>,
+        Daniel Kiper <daniel.kiper@oracle.com>
+Subject: [PATCH 5.16 113/121] x86/boot: Fix memremap of setup_indirect structures
+Date:   Mon, 14 Mar 2022 12:54:56 +0100
+Message-Id: <20220314112747.262391105@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220314112744.120491875@linuxfoundation.org>
+References: <20220314112744.120491875@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RESEND] mmc: mmci: manage MMC_PM_KEEP_POWER per variant
- config
-Content-Language: en-US
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ludovic Barre <ludovic.barre@foss.st.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Vasut <marex@denx.de>, <kernel@dh-electronics.com>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Grzegorz Szymaszek <gszymaszek@short.pl>
-References: <20220314095225.53563-1-yann.gautier@foss.st.com>
- <CAPDyKFqObiC2fwZJ_0JArbVhnFZHV6bA0XJg0diwPgmRx1Bntg@mail.gmail.com>
-From:   Yann Gautier <yann.gautier@foss.st.com>
-In-Reply-To: <CAPDyKFqObiC2fwZJ_0JArbVhnFZHV6bA0XJg0diwPgmRx1Bntg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_04,2022-03-14_01,2022-02-23_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/14/22 12:17, Ulf Hansson wrote:
-> On Mon, 14 Mar 2022 at 10:53, Yann Gautier <yann.gautier@foss.st.com> wrote:
->>
->> Add a disable_keep_power field in variant_data struct. The
->> MMC_PM_KEEP_POWER flag will be enabled if disable_keep_power is not set.
->> It is only set to true for stm32_sdmmc variants.
->>
->> The issue was seen on STM32MP157C-DK2 board, which embeds a wifi chip.
->> It doesn't correctly support low power, and we need to unbind the wifi
->> driver before a suspend sequence. But the wifi chip firmware is then
->> lost, and the communication with SDIO fails if MMC_PM_KEEP_POWER is
->> enabled.
-> 
-> So the platform supports to maintain the power for the embedded wifi
-> chip during system suspend, but the SDIO func driver (for the WiFi
-> chip) doesn't implement its part correctly. Did I get that right?
-> 
-> In that case, it sounds to me like we should try to fix the support
-> for power management in the SDIO func driver instead, no?
-> I am happy to help with guidance/review if that is needed. What SDIO
-> func driver is this about?
-> 
-> Kind regards
-> Uffe
-> 
+From: Ross Philipson <ross.philipson@oracle.com>
 
-Hi Ulf,
+commit 7228918b34615ef6317edcd9a058a057bc54aa32 upstream.
 
-I blindly pushed the patch without rechecking it.
-I rephrased it in our downstream to better explain the issue:
+As documented, the setup_indirect structure is nested inside
+the setup_data structures in the setup_data list. The code currently
+accesses the fields inside the setup_indirect structure but only
+the sizeof(struct setup_data) is being memremapped. No crash
+occurred but this is just due to how the area is remapped under the
+covers.
 
-The issue was seen on STM32MP157C-DK2 board, which embeds a wifi chip.
-It doesn't correctly support low power on this board. The Wifi chip
-awaits an always-on regulator, but it was connected to v3v3 which is off
-in low-power sequence. MMC_PM_KEEP_POWER should then be disabled.
+Properly memremap both the setup_data and setup_indirect structures
+in these cases before accessing them.
 
-If it's OK for you, I'll resend the patch with the updated commit message.
+Fixes: b3c72fc9a78e ("x86/boot: Introduce setup_indirect")
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Daniel Kiper <daniel.kiper@oracle.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1645668456-22036-2-git-send-email-ross.philipson@oracle.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/e820.c     |   41 +++++++++++++++++------
+ arch/x86/kernel/kdebugfs.c |   35 +++++++++++++++-----
+ arch/x86/kernel/ksysfs.c   |   77 +++++++++++++++++++++++++++++++++++----------
+ arch/x86/kernel/setup.c    |   34 +++++++++++++++----
+ arch/x86/mm/ioremap.c      |   24 +++++++++++---
+ 5 files changed, 165 insertions(+), 46 deletions(-)
 
-Best regards,
-Yann
+--- a/arch/x86/kernel/e820.c
++++ b/arch/x86/kernel/e820.c
+@@ -995,8 +995,10 @@ early_param("memmap", parse_memmap_opt);
+  */
+ void __init e820__reserve_setup_data(void)
+ {
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+-	u64 pa_data;
++	u64 pa_data, pa_next;
++	u32 len;
+ 
+ 	pa_data = boot_params.hdr.setup_data;
+ 	if (!pa_data)
+@@ -1004,6 +1006,14 @@ void __init e820__reserve_setup_data(voi
+ 
+ 	while (pa_data) {
+ 		data = early_memremap(pa_data, sizeof(*data));
++		if (!data) {
++			pr_warn("e820: failed to memremap setup_data entry\n");
++			return;
++		}
++
++		len = sizeof(*data);
++		pa_next = data->next;
++
+ 		e820__range_update(pa_data, sizeof(*data)+data->len, E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
+ 
+ 		/*
+@@ -1015,18 +1025,27 @@ void __init e820__reserve_setup_data(voi
+ 						 sizeof(*data) + data->len,
+ 						 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
+ 
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-			e820__range_update(((struct setup_indirect *)data->data)->addr,
+-					   ((struct setup_indirect *)data->data)->len,
+-					   E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
+-			e820__range_update_kexec(((struct setup_indirect *)data->data)->addr,
+-						 ((struct setup_indirect *)data->data)->len,
+-						 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
++		if (data->type == SETUP_INDIRECT) {
++			len += data->len;
++			early_memunmap(data, sizeof(*data));
++			data = early_memremap(pa_data, len);
++			if (!data) {
++				pr_warn("e820: failed to memremap indirect setup_data\n");
++				return;
++			}
++
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT) {
++				e820__range_update(indirect->addr, indirect->len,
++						   E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
++				e820__range_update_kexec(indirect->addr, indirect->len,
++							 E820_TYPE_RAM, E820_TYPE_RESERVED_KERN);
++			}
+ 		}
+ 
+-		pa_data = data->next;
+-		early_memunmap(data, sizeof(*data));
++		pa_data = pa_next;
++		early_memunmap(data, len);
+ 	}
+ 
+ 	e820__update_table(e820_table);
+--- a/arch/x86/kernel/kdebugfs.c
++++ b/arch/x86/kernel/kdebugfs.c
+@@ -88,11 +88,13 @@ create_setup_data_node(struct dentry *pa
+ 
+ static int __init create_setup_data_nodes(struct dentry *parent)
+ {
++	struct setup_indirect *indirect;
+ 	struct setup_data_node *node;
+ 	struct setup_data *data;
+-	int error;
++	u64 pa_data, pa_next;
+ 	struct dentry *d;
+-	u64 pa_data;
++	int error;
++	u32 len;
+ 	int no = 0;
+ 
+ 	d = debugfs_create_dir("setup_data", parent);
+@@ -112,12 +114,29 @@ static int __init create_setup_data_node
+ 			error = -ENOMEM;
+ 			goto err_dir;
+ 		}
++		pa_next = data->next;
+ 
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-			node->paddr = ((struct setup_indirect *)data->data)->addr;
+-			node->type  = ((struct setup_indirect *)data->data)->type;
+-			node->len   = ((struct setup_indirect *)data->data)->len;
++		if (data->type == SETUP_INDIRECT) {
++			len = sizeof(*data) + data->len;
++			memunmap(data);
++			data = memremap(pa_data, len, MEMREMAP_WB);
++			if (!data) {
++				kfree(node);
++				error = -ENOMEM;
++				goto err_dir;
++			}
++
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT) {
++				node->paddr = indirect->addr;
++				node->type  = indirect->type;
++				node->len   = indirect->len;
++			} else {
++				node->paddr = pa_data;
++				node->type  = data->type;
++				node->len   = data->len;
++			}
+ 		} else {
+ 			node->paddr = pa_data;
+ 			node->type  = data->type;
+@@ -125,7 +144,7 @@ static int __init create_setup_data_node
+ 		}
+ 
+ 		create_setup_data_node(d, no, node);
+-		pa_data = data->next;
++		pa_data = pa_next;
+ 
+ 		memunmap(data);
+ 		no++;
+--- a/arch/x86/kernel/ksysfs.c
++++ b/arch/x86/kernel/ksysfs.c
+@@ -91,26 +91,41 @@ static int get_setup_data_paddr(int nr,
+ 
+ static int __init get_setup_data_size(int nr, size_t *size)
+ {
+-	int i = 0;
++	u64 pa_data = boot_params.hdr.setup_data, pa_next;
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+-	u64 pa_data = boot_params.hdr.setup_data;
++	int i = 0;
++	u32 len;
+ 
+ 	while (pa_data) {
+ 		data = memremap(pa_data, sizeof(*data), MEMREMAP_WB);
+ 		if (!data)
+ 			return -ENOMEM;
++		pa_next = data->next;
++
+ 		if (nr == i) {
+-			if (data->type == SETUP_INDIRECT &&
+-			    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT)
+-				*size = ((struct setup_indirect *)data->data)->len;
+-			else
++			if (data->type == SETUP_INDIRECT) {
++				len = sizeof(*data) + data->len;
++				memunmap(data);
++				data = memremap(pa_data, len, MEMREMAP_WB);
++				if (!data)
++					return -ENOMEM;
++
++				indirect = (struct setup_indirect *)data->data;
++
++				if (indirect->type != SETUP_INDIRECT)
++					*size = indirect->len;
++				else
++					*size = data->len;
++			} else {
+ 				*size = data->len;
++			}
+ 
+ 			memunmap(data);
+ 			return 0;
+ 		}
+ 
+-		pa_data = data->next;
++		pa_data = pa_next;
+ 		memunmap(data);
+ 		i++;
+ 	}
+@@ -120,9 +135,11 @@ static int __init get_setup_data_size(in
+ static ssize_t type_show(struct kobject *kobj,
+ 			 struct kobj_attribute *attr, char *buf)
+ {
++	struct setup_indirect *indirect;
++	struct setup_data *data;
+ 	int nr, ret;
+ 	u64 paddr;
+-	struct setup_data *data;
++	u32 len;
+ 
+ 	ret = kobj_to_setup_data_nr(kobj, &nr);
+ 	if (ret)
+@@ -135,10 +152,20 @@ static ssize_t type_show(struct kobject
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+-	if (data->type == SETUP_INDIRECT)
+-		ret = sprintf(buf, "0x%x\n", ((struct setup_indirect *)data->data)->type);
+-	else
++	if (data->type == SETUP_INDIRECT) {
++		len = sizeof(*data) + data->len;
++		memunmap(data);
++		data = memremap(paddr, len, MEMREMAP_WB);
++		if (!data)
++			return -ENOMEM;
++
++		indirect = (struct setup_indirect *)data->data;
++
++		ret = sprintf(buf, "0x%x\n", indirect->type);
++	} else {
+ 		ret = sprintf(buf, "0x%x\n", data->type);
++	}
++
+ 	memunmap(data);
+ 	return ret;
+ }
+@@ -149,9 +176,10 @@ static ssize_t setup_data_data_read(stru
+ 				    char *buf,
+ 				    loff_t off, size_t count)
+ {
++	struct setup_indirect *indirect;
++	struct setup_data *data;
+ 	int nr, ret = 0;
+ 	u64 paddr, len;
+-	struct setup_data *data;
+ 	void *p;
+ 
+ 	ret = kobj_to_setup_data_nr(kobj, &nr);
+@@ -165,10 +193,27 @@ static ssize_t setup_data_data_read(stru
+ 	if (!data)
+ 		return -ENOMEM;
+ 
+-	if (data->type == SETUP_INDIRECT &&
+-	    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-		paddr = ((struct setup_indirect *)data->data)->addr;
+-		len = ((struct setup_indirect *)data->data)->len;
++	if (data->type == SETUP_INDIRECT) {
++		len = sizeof(*data) + data->len;
++		memunmap(data);
++		data = memremap(paddr, len, MEMREMAP_WB);
++		if (!data)
++			return -ENOMEM;
++
++		indirect = (struct setup_indirect *)data->data;
++
++		if (indirect->type != SETUP_INDIRECT) {
++			paddr = indirect->addr;
++			len = indirect->len;
++		} else {
++			/*
++			 * Even though this is technically undefined, return
++			 * the data as though it is a normal setup_data struct.
++			 * This will at least allow it to be inspected.
++			 */
++			paddr += sizeof(*data);
++			len = data->len;
++		}
+ 	} else {
+ 		paddr += sizeof(*data);
+ 		len = data->len;
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -368,21 +368,41 @@ static void __init parse_setup_data(void
+ 
+ static void __init memblock_x86_reserve_range_setup_data(void)
+ {
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+-	u64 pa_data;
++	u64 pa_data, pa_next;
++	u32 len;
+ 
+ 	pa_data = boot_params.hdr.setup_data;
+ 	while (pa_data) {
+ 		data = early_memremap(pa_data, sizeof(*data));
++		if (!data) {
++			pr_warn("setup: failed to memremap setup_data entry\n");
++			return;
++		}
++
++		len = sizeof(*data);
++		pa_next = data->next;
++
+ 		memblock_reserve(pa_data, sizeof(*data) + data->len);
+ 
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT)
+-			memblock_reserve(((struct setup_indirect *)data->data)->addr,
+-					 ((struct setup_indirect *)data->data)->len);
++		if (data->type == SETUP_INDIRECT) {
++			len += data->len;
++			early_memunmap(data, sizeof(*data));
++			data = early_memremap(pa_data, len);
++			if (!data) {
++				pr_warn("setup: failed to memremap indirect setup_data\n");
++				return;
++			}
++
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT)
++				memblock_reserve(indirect->addr, indirect->len);
++		}
+ 
+-		pa_data = data->next;
+-		early_memunmap(data, sizeof(*data));
++		pa_data = pa_next;
++		early_memunmap(data, len);
+ 	}
+ }
+ 
+--- a/arch/x86/mm/ioremap.c
++++ b/arch/x86/mm/ioremap.c
+@@ -615,6 +615,7 @@ static bool memremap_is_efi_data(resourc
+ static bool memremap_is_setup_data(resource_size_t phys_addr,
+ 				   unsigned long size)
+ {
++	struct setup_indirect *indirect;
+ 	struct setup_data *data;
+ 	u64 paddr, paddr_next;
+ 
+@@ -627,6 +628,10 @@ static bool memremap_is_setup_data(resou
+ 
+ 		data = memremap(paddr, sizeof(*data),
+ 				MEMREMAP_WB | MEMREMAP_DEC);
++		if (!data) {
++			pr_warn("failed to memremap setup_data entry\n");
++			return false;
++		}
+ 
+ 		paddr_next = data->next;
+ 		len = data->len;
+@@ -636,10 +641,21 @@ static bool memremap_is_setup_data(resou
+ 			return true;
+ 		}
+ 
+-		if (data->type == SETUP_INDIRECT &&
+-		    ((struct setup_indirect *)data->data)->type != SETUP_INDIRECT) {
+-			paddr = ((struct setup_indirect *)data->data)->addr;
+-			len = ((struct setup_indirect *)data->data)->len;
++		if (data->type == SETUP_INDIRECT) {
++			memunmap(data);
++			data = memremap(paddr, sizeof(*data) + len,
++					MEMREMAP_WB | MEMREMAP_DEC);
++			if (!data) {
++				pr_warn("failed to memremap indirect setup_data\n");
++				return false;
++			}
++
++			indirect = (struct setup_indirect *)data->data;
++
++			if (indirect->type != SETUP_INDIRECT) {
++				paddr = indirect->addr;
++				len = indirect->len;
++			}
+ 		}
+ 
+ 		memunmap(data);
 
->> The flag can still be enabled through DT property: keep-power-in-suspend.
->>
->> Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
->> ---
->> Resend the patch alone. It was previoulsy in a series [1] for which the
->> other patches will be reworked.
->>
->> [1] https://lore.kernel.org/lkml/20220304135134.47827-1-yann.gautier@foss.st.com/
->>
->>   drivers/mmc/host/mmci.c | 5 ++++-
->>   drivers/mmc/host/mmci.h | 1 +
->>   2 files changed, 5 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/mmc/host/mmci.c b/drivers/mmc/host/mmci.c
->> index 45b8608c935c..0e2f2f5d6a52 100644
->> --- a/drivers/mmc/host/mmci.c
->> +++ b/drivers/mmc/host/mmci.c
->> @@ -274,6 +274,7 @@ static struct variant_data variant_stm32_sdmmc = {
->>          .busy_detect            = true,
->>          .busy_detect_flag       = MCI_STM32_BUSYD0,
->>          .busy_detect_mask       = MCI_STM32_BUSYD0ENDMASK,
->> +       .disable_keep_power     = true,
->>          .init                   = sdmmc_variant_init,
->>   };
->>
->> @@ -301,6 +302,7 @@ static struct variant_data variant_stm32_sdmmcv2 = {
->>          .busy_detect            = true,
->>          .busy_detect_flag       = MCI_STM32_BUSYD0,
->>          .busy_detect_mask       = MCI_STM32_BUSYD0ENDMASK,
->> +       .disable_keep_power     = true,
->>          .init                   = sdmmc_variant_init,
->>   };
->>
->> @@ -2172,7 +2174,8 @@ static int mmci_probe(struct amba_device *dev,
->>          host->stop_abort.flags = MMC_RSP_R1B | MMC_CMD_AC;
->>
->>          /* We support these PM capabilities. */
->> -       mmc->pm_caps |= MMC_PM_KEEP_POWER;
->> +       if (!variant->disable_keep_power)
->> +               mmc->pm_caps |= MMC_PM_KEEP_POWER;
->>
->>          /*
->>           * We can do SGIO
->> diff --git a/drivers/mmc/host/mmci.h b/drivers/mmc/host/mmci.h
->> index e1a9b96a3396..2cad1ef9766a 100644
->> --- a/drivers/mmc/host/mmci.h
->> +++ b/drivers/mmc/host/mmci.h
->> @@ -361,6 +361,7 @@ struct variant_data {
->>          u32                     opendrain;
->>          u8                      dma_lli:1;
->>          u32                     stm32_idmabsize_mask;
->> +       u8                      disable_keep_power:1;
->>          void (*init)(struct mmci_host *host);
->>   };
->>
->> --
->> 2.25.1
->>
 
