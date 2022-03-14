@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3ADEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE12C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239781AbiCNLzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
+        id S239736AbiCNLze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239709AbiCNLzQ (ORCPT
+        with ESMTP id S239713AbiCNLzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Mar 2022 07:55:16 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC0C65D0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3207365BB;
         Mon, 14 Mar 2022 04:54:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BCUBAaAOQEUcrGBvuQxAMIHInCtiJx7AnmnrXR+WE0k=;
-  b=KbaD26j0Xvr2eNiX5Vv2GGxz9WHi7MRo9Ncp6nEIp7XPbMrK+zO9QBw1
-   HlgLtr3X/5o8tWJb/beNAj+98cqUfsn7QNz5lG+xnfyVyFTzA+Kch87YX
-   b5eJWxaOaPviAxvT0lzRckIzkeijImPgWkvpVbNMLJtG//AbeOLuMFOy9
-   Y=;
+  bh=2bPo/ehC6PvjvjHbIR6MD5i0BWWQ35nkkz07QKW4GuI=;
+  b=ZgoJ9URYLWs39A25c89pC542rz7dKzDlLsyDrSbpIvlorWVFiRRx1OSL
+   Fs/xWAZCor1/YPzDgIfbcR7Zz5Q3pk+uzxOOCZ1kw+wZN6xvyOkVMKYwP
+   JosB127WUZlHPXUXn0FJiWi2847qJ6DN+AO3eJaBzEjVm00mDrPeDdeq2
+   Q=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997340"
+   d="scan'208";a="25997342"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:53:59 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kernel-janitors@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 07/30] staging: rtl8723bs: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:31 +0100
-Message-Id: <20220314115354.144023-8-Julia.Lawall@inria.fr>
+To:     Shunqian Zheng <zhengsq@rock-chips.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 09/30] media: i2c: ov5695: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:33 +0100
+Message-Id: <20220314115354.144023-10-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -51,20 +52,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/staging/rtl8723bs/core/rtw_mlme.c |    2 +-
+ drivers/media/i2c/ov5695.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-index 9202223ebc0c..ed2d3b7d44d9 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-@@ -24,7 +24,7 @@ int	rtw_init_mlme_priv(struct adapter *padapter)
- 	pmlmepriv->fw_state = WIFI_STATION_STATE; /*  Must sync with rtw_wdev_alloc() */
- 	/*  wdev->iftype = NL80211_IFTYPE_STATION */
- 	pmlmepriv->cur_network.network.infrastructure_mode = Ndis802_11AutoUnknown;
--	pmlmepriv->scan_mode = SCAN_ACTIVE;/*  1: active, 0: pasive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
-+	pmlmepriv->scan_mode = SCAN_ACTIVE;/*  1: active, 0: passive. Maybe someday we should rename this varable to "active_mode" (Jeff) */
+diff --git a/drivers/media/i2c/ov5695.c b/drivers/media/i2c/ov5695.c
+index 439385938a51..910309783885 100644
+--- a/drivers/media/i2c/ov5695.c
++++ b/drivers/media/i2c/ov5695.c
+@@ -1122,7 +1122,7 @@ static int ov5695_set_ctrl(struct v4l2_ctrl *ctrl)
  
- 	spin_lock_init(&pmlmepriv->lock);
- 	INIT_LIST_HEAD(&pmlmepriv->free_bss_pool.queue);
+ 	switch (ctrl->id) {
+ 	case V4L2_CID_EXPOSURE:
+-		/* 4 least significant bits of expsoure are fractional part */
++		/* 4 least significant bits of exposure are fractional part */
+ 		ret = ov5695_write_reg(ov5695->client, OV5695_REG_EXPOSURE,
+ 				       OV5695_REG_VALUE_24BIT, ctrl->val << 4);
+ 		break;
 
