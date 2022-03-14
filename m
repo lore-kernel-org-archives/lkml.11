@@ -2,42 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B76C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B9DC35273
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239486AbiCNLpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
+        id S239523AbiCNLpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:45:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239499AbiCNLmo (ORCPT
+        with ESMTP id S239587AbiCNLmh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:42:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F28048E4A;
-        Mon, 14 Mar 2022 04:40:08 -0700 (PDT)
+        Mon, 14 Mar 2022 07:42:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA6B488A2;
+        Mon, 14 Mar 2022 04:40:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B00F8B80DC5;
-        Mon, 14 Mar 2022 11:39:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 235C9C340ED;
-        Mon, 14 Mar 2022 11:39:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72FA261170;
+        Mon, 14 Mar 2022 11:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B26C340EC;
+        Mon, 14 Mar 2022 11:40:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257991;
-        bh=B1z0Mk94B58dvtoO7oaPtiKJAWq3VcQAheMFkCCZn2A=;
+        s=korg; t=1647258005;
+        bh=pVanl608lm9vBB9wPqPyFibFmrjbxufCym3Ml+FPZr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ggMy4RYbwaghHjh9kSOTMV5JCMzbcVbMDD8XEsFACwfYQK8a6XzyGCLHfbuC8qM4b
-         DIZnd+5uPx6A5Cas5NcePRAq6QYfh+ZK9s1i9fOdrtZzkT0jSEPUOeDuVUFZYf4FTd
-         ZyHHniWs4toRqhEugejI0hv/tFG78EmxxfMUNiLU=
+        b=fj6eRojMF6H3N14WRSdI1x1uCBsO1ieDZvdeGo4EASQ1prKM9TozVF+xBJkB8Lx+O
+         zo9Pvh4fQDKptREeUoaxC/zeKHkrNza4jwRXucMsHzzlAO1J92p5RHHRXYFpPXLQ0z
+         2Uww+ocY+8up1xV6x6g7oei5eWRNqOjzbcN//YW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Sun <sunhao.th@gmail.com>,
-        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>,
-        Denis Efremov <denis.e.efremov@oracle.com>
-Subject: [PATCH 4.19 27/30] btrfs: unlock newly allocated extent buffer after error
-Date:   Mon, 14 Mar 2022 12:34:45 +0100
-Message-Id: <20220314112732.559680874@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Sergei Trofimovich <slyfox@gentoo.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Anatoly Pugachev <matorola@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 4.19 30/30] ia64: ensure proper NUMA distance and possible map initialization
+Date:   Mon, 14 Mar 2022 12:34:48 +0100
+Message-Id: <20220314112732.641129681@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314112731.785042288@linuxfoundation.org>
 References: <20220314112731.785042288@linuxfoundation.org>
@@ -49,97 +58,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-commit 19ea40dddf1833db868533958ca066f368862211 upstream.
+commit b22a8f7b4bde4e4ab73b64908ffd5d90ecdcdbfd upstream.
 
-[BUG]
-There is a bug report that injected ENOMEM error could leave a tree
-block locked while we return to user-space:
+John Paul reported a warning about bogus NUMA distance values spurred by
+commit:
 
-  BTRFS info (device loop0): enabling ssd optimizations
-  FAULT_INJECTION: forcing a failure.
-  name failslab, interval 1, probability 0, space 0, times 0
-  CPU: 0 PID: 7579 Comm: syz-executor Not tainted 5.15.0-rc1 #16
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-  rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-  Call Trace:
-   __dump_stack lib/dump_stack.c:88 [inline]
-   dump_stack_lvl+0x8d/0xcf lib/dump_stack.c:106
-   fail_dump lib/fault-inject.c:52 [inline]
-   should_fail+0x13c/0x160 lib/fault-inject.c:146
-   should_failslab+0x5/0x10 mm/slab_common.c:1328
-   slab_pre_alloc_hook.constprop.99+0x4e/0xc0 mm/slab.h:494
-   slab_alloc_node mm/slub.c:3120 [inline]
-   slab_alloc mm/slub.c:3214 [inline]
-   kmem_cache_alloc+0x44/0x280 mm/slub.c:3219
-   btrfs_alloc_delayed_extent_op fs/btrfs/delayed-ref.h:299 [inline]
-   btrfs_alloc_tree_block+0x38c/0x670 fs/btrfs/extent-tree.c:4833
-   __btrfs_cow_block+0x16f/0x7d0 fs/btrfs/ctree.c:415
-   btrfs_cow_block+0x12a/0x300 fs/btrfs/ctree.c:570
-   btrfs_search_slot+0x6b0/0xee0 fs/btrfs/ctree.c:1768
-   btrfs_insert_empty_items+0x80/0xf0 fs/btrfs/ctree.c:3905
-   btrfs_new_inode+0x311/0xa60 fs/btrfs/inode.c:6530
-   btrfs_create+0x12b/0x270 fs/btrfs/inode.c:6783
-   lookup_open+0x660/0x780 fs/namei.c:3282
-   open_last_lookups fs/namei.c:3352 [inline]
-   path_openat+0x465/0xe20 fs/namei.c:3557
-   do_filp_open+0xe3/0x170 fs/namei.c:3588
-   do_sys_openat2+0x357/0x4a0 fs/open.c:1200
-   do_sys_open+0x87/0xd0 fs/open.c:1216
-   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-   do_syscall_64+0x34/0xb0 arch/x86/entry/common.c:80
-   entry_SYSCALL_64_after_hwframe+0x44/0xae
-  RIP: 0033:0x46ae99
-  Code: f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 48 89 f8 48
-  89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
-  01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-  RSP: 002b:00007f46711b9c48 EFLAGS: 00000246 ORIG_RAX: 0000000000000055
-  RAX: ffffffffffffffda RBX: 000000000078c0a0 RCX: 000000000046ae99
-  RDX: 0000000000000000 RSI: 00000000000000a1 RDI: 0000000020005800
-  RBP: 00007f46711b9c80 R08: 0000000000000000 R09: 0000000000000000
-  R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000017
-  R13: 0000000000000000 R14: 000000000078c0a0 R15: 00007ffc129da6e0
+  620a6dc40754 ("sched/topology: Make sched_init_numa() use a set for the deduplicating sort")
 
-  ================================================
-  WARNING: lock held when returning to user space!
-  5.15.0-rc1 #16 Not tainted
-  ------------------------------------------------
-  syz-executor/7579 is leaving the kernel with locks still held!
-  1 lock held by syz-executor/7579:
-   #0: ffff888104b73da8 (btrfs-tree-01/1){+.+.}-{3:3}, at:
-  __btrfs_tree_lock+0x2e/0x1a0 fs/btrfs/locking.c:112
+In this case, the afflicted machine comes up with a reported 256 possible
+nodes, all of which are 0 distance away from one another.  This was
+previously silently ignored, but is now caught by the aforementioned
+commit.
 
-[CAUSE]
-In btrfs_alloc_tree_block(), after btrfs_init_new_buffer(), the new
-extent buffer @buf is locked, but if later operations like adding
-delayed tree ref fail, we just free @buf without unlocking it,
-resulting above warning.
+The culprit is ia64's node_possible_map which remains unchanged from its
+initialization value of NODE_MASK_ALL.  In John's case, the machine
+doesn't have any SRAT nor SLIT table, but AIUI the possible map remains
+untouched regardless of what ACPI tables end up being parsed.  Thus,
+!online && possible nodes remain with a bogus distance of 0 (distances \in
+[0, 9] are "reserved and have no meaning" as per the ACPI spec).
 
-[FIX]
-Unlock @buf in out_free_buf: label.
+Follow x86 / drivers/base/arch_numa's example and set the possible map to
+the parsed map, which in this case seems to be the online map.
 
-Reported-by: Hao Sun <sunhao.th@gmail.com>
-Link: https://lore.kernel.org/linux-btrfs/CACkBjsZ9O6Zr0KK1yGn=1rQi6Crh1yeCRdTSBxx9R99L4xdn-Q@mail.gmail.com/
-CC: stable@vger.kernel.org # 5.4+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Denis Efremov <denis.e.efremov@oracle.com>
+Link: http://lore.kernel.org/r/255d6b5d-194e-eb0e-ecdd-97477a534441@physik.fu-berlin.de
+Link: https://lkml.kernel.org/r/20210318130617.896309-1-valentin.schneider@arm.com
+Fixes: 620a6dc40754 ("sched/topology: Make sched_init_numa() use a set for the deduplicating sort")
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Reported-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Tested-by: Sergei Trofimovich <slyfox@gentoo.org>
+Cc: "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Anatoly Pugachev <matorola@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[ dannf: minor context adjustment in arch/ia64/kernel/acpi.c ]
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/extent-tree.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/ia64/kernel/acpi.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/extent-tree.c
-+++ b/fs/btrfs/extent-tree.c
-@@ -8327,6 +8327,7 @@ struct extent_buffer *btrfs_alloc_tree_b
- out_free_delayed:
- 	btrfs_free_delayed_extent_op(extent_op);
- out_free_buf:
-+	btrfs_tree_unlock(buf);
- 	free_extent_buffer(buf);
- out_free_reserved:
- 	btrfs_free_reserved_extent(fs_info, ins.objectid, ins.offset, 0);
+--- a/arch/ia64/kernel/acpi.c
++++ b/arch/ia64/kernel/acpi.c
+@@ -537,7 +537,8 @@ void __init acpi_numa_fixup(void)
+ 	if (srat_num_cpus == 0) {
+ 		node_set_online(0);
+ 		node_cpuid[0].phys_id = hard_smp_processor_id();
+-		return;
++		slit_distance(0, 0) = LOCAL_DISTANCE;
++		goto out;
+ 	}
+ 
+ 	/*
+@@ -580,7 +581,7 @@ void __init acpi_numa_fixup(void)
+ 			for (j = 0; j < MAX_NUMNODES; j++)
+ 				node_distance(i, j) = i == j ? LOCAL_DISTANCE :
+ 							REMOTE_DISTANCE;
+-		return;
++		goto out;
+ 	}
+ 
+ 	memset(numa_slit, -1, sizeof(numa_slit));
+@@ -605,6 +606,8 @@ void __init acpi_numa_fixup(void)
+ 		printk("\n");
+ 	}
+ #endif
++out:
++	node_possible_map = node_online_map;
+ }
+ #endif				/* CONFIG_ACPI_NUMA */
+ 
 
 
