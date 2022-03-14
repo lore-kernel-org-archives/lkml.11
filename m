@@ -2,186 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C724EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 13:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E53BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 13:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiCNNda (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 09:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47004 "EHLO
+        id S241751AbiCNNeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 09:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231587AbiCNNd0 (ORCPT
+        with ESMTP id S231587AbiCNNeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 09:33:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1FBFC13DCF
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 06:32:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647264735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N2dBQ7kyew540zi+JMXl0o4PlnhZGpL163gOjfNKUtE=;
-        b=XSzwmi+Xa1zHlm10iGCye6q5CiYxCVqDEdYHYoupR1QyQygZPceDEhyqlO/LxhpeppFgTO
-        BeCjCjop/wLWRS3qmd80fdRTzA6JdjBhRzDh5CkKzGGkw+E9RcjJBgGSB6f9cE818AQ1Ga
-        9O2oNd0QkppilwCBohw6TJ9mMC43alw=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-383-Hahtsq7-P8mszRNceM4-CQ-1; Mon, 14 Mar 2022 09:32:13 -0400
-X-MC-Unique: Hahtsq7-P8mszRNceM4-CQ-1
-Received: by mail-ej1-f69.google.com with SMTP id k16-20020a17090632d000b006ae1cdb0f07so7957520ejk.16
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 06:32:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=N2dBQ7kyew540zi+JMXl0o4PlnhZGpL163gOjfNKUtE=;
-        b=CnFwqdePYau2LzgziZ/GP8VyRUn70tQhPBvqFxN9DQKZcWztSAbnXT7wrCnUTy3KNW
-         QuuiS/JW/ixiPTZFEcsK2dVcxghJfCVtJhY5VNEyfQGuPJHPceNXRPfR34AFWu5aF/Bk
-         lJsq0fiVH74cuBJPKuBBUqJmnQZB0HYmlnWzmhhfGRB2MyE9N8p+7c2xlZvDnzaGYXiQ
-         H2LPG7pSiYGayfDF132fTTxhOAtKKEQAE4OE95O9D+sG9FpvPAazclqQCx0u9Pd0KtAM
-         xxlTH+S2XjA3gmgd4BZLgVPTc4zUfOWkeHcyfGR7oyzxN2uXDOmLlL+s5g/nj8lsXiJU
-         nxJg==
-X-Gm-Message-State: AOAM530OnMVFNfML1Xl+AtTPoajGlK7Fk603NnyTAPMz3rcvyHsrgVSN
-        1ycRnJACC7FaUxz/TVDK063Iy7oABf01S6tLM/PSciRiKDIBs3Kinqyt2EZ+hfTI7kV0SnopkBF
-        mQP/A2Wj27YbnVvlyPS4WKEFQ
-X-Received: by 2002:a17:907:608f:b0:6db:af2c:ab7e with SMTP id ht15-20020a170907608f00b006dbaf2cab7emr11800381ejc.694.1647264731571;
-        Mon, 14 Mar 2022 06:32:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw2A4Jg7pFV8JQfJlYOlmkdwJUWsVc9ARLKYhWxh7NvlxsXly+PiHlJ2Xpyw1flCD87GI4MFA==
-X-Received: by 2002:a17:907:608f:b0:6db:af2c:ab7e with SMTP id ht15-20020a170907608f00b006dbaf2cab7emr11800348ejc.694.1647264731307;
-        Mon, 14 Mar 2022 06:32:11 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id g2-20020aa7c842000000b0041314b98872sm7887639edt.22.2022.03.14.06.32.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 06:32:10 -0700 (PDT)
-Message-ID: <9f804acc-00b5-f619-f107-e3dc3c5ec8a6@redhat.com>
-Date:   Mon, 14 Mar 2022 14:32:08 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: WARNING: CPU: 0 PID: 884 at
- arch/x86/kvm/../../../virt/kvm/kvm_main.c:3162 mark_page_dirty_in_slot
-Content-Language: en-US
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Wanpeng Li <wanpengli@tencent.com>
-Cc:     open list <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        lkft-triage@lists.linaro.org
-References: <CA+G9fYsziOWHkV+YbKymtpVBkL=DAHnmMfkeuWvx0pJPg=fMEA@mail.gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <CA+G9fYsziOWHkV+YbKymtpVBkL=DAHnmMfkeuWvx0pJPg=fMEA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Mon, 14 Mar 2022 09:34:18 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863CD13DDC;
+        Mon, 14 Mar 2022 06:33:08 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EDDLpK003427;
+        Mon, 14 Mar 2022 13:33:02 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=2EdUEKO7C2wVnzcjRKMo0ZjnW2dMNP1TkXpUeyGHeUY=;
+ b=b5OGe9mZZYvseIRi5ky5sjPz1pW/jNFP+gHhl3U5V7gyuz2aK4S6CDVZ2yXw3ohXOik/
+ mEIky/A5sv5Egdu/m9LRZMcK4hEJjAIeAy3v56YMbZoEIQwxxRNOoli0Yuy59SP7/+Tr
+ I8jgIh4cF4FcnTjNf8wks2PGmNUQ1tjMGRlJOsf3m07hWok6Q1TCoV1wVKVwFnAnThmP
+ e5dXBcvUMZkrZjaboBRcvzeltZqGY07uYBM9eSOsvr3DtAyca8a400PREmjz2u83FXZS
+ ks2rq1SP1Jm/6PItVbaGVI4DiYMaz5C6UNBJwBUKz+9K0CeaRfSbkWohUTXO4+ShYw+r BQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6d7gus1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 13:33:02 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EDDvI6008286;
+        Mon, 14 Mar 2022 13:33:01 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3et6d7gn81-175
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 13:33:01 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22ECbAFu000559;
+        Mon, 14 Mar 2022 12:53:56 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3erjshm3tn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Mar 2022 12:53:56 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22ECrsS144695854
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Mar 2022 12:53:54 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F422611C2A6;
+        Mon, 14 Mar 2022 12:53:52 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 58AC411C207;
+        Mon, 14 Mar 2022 12:53:51 +0000 (GMT)
+Received: from sig-9-65-88-214.ibm.com (unknown [9.65.88.214])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Mar 2022 12:53:50 +0000 (GMT)
+Message-ID: <3b6693541d6e9055d59163b3f070c1831a93ea36.camel@linux.ibm.com>
+Subject: Re: [PATCH v11 0/4] integrity: support including firmware
+ ".platform" keys at build time
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
+        seth@forshee.me, rnsastry@linux.ibm.com,
+        Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 14 Mar 2022 08:53:50 -0400
+In-Reply-To: <286a9ec3aa052cc1ed61e7257af492325d8e7279.camel@kernel.org>
+References: <20220310214450.676505-1-nayna@linux.ibm.com>
+         <286a9ec3aa052cc1ed61e7257af492325d8e7279.camel@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: cCQ7tIY87CxG-HITufCPkgbARKKr-vLV
+X-Proofpoint-ORIG-GUID: eBuUrsiXZRmx8zM2hDxU40RvGx9hVewb
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-14_08,2022-03-14_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ phishscore=0 impostorscore=0 adultscore=0 mlxlogscore=999 malwarescore=0
+ bulkscore=0 spamscore=0 lowpriorityscore=0 clxscore=1011 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203140085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/14/22 13:51, Naresh Kamboju wrote:
-> While running kselftest kvm tests on Linux mainline 5.17.0-rc8 on x86_64 device
-> the following kernel warning was noticed
+On Fri, 2022-03-11 at 18:39 +0200, Jarkko Sakkinen wrote:
+> On Thu, 2022-03-10 at 16:44 -0500, Nayna Jain wrote:
+> > Some firmware support secure boot by embedding static keys to verify the
+> > Linux kernel during boot. However, these firmware do not expose an
+> > interface for the kernel to load firmware keys onto the ".platform"
+> > keyring, preventing the kernel from verifying the kexec kernel image
+> > signature.
+> > 
+> > This patchset exports load_certificate_list() and defines a new function
+> > load_builtin_platform_cert() to load compiled in certificates onto the
+> > ".platform" keyring.
+> > 
+> > Changelog:
+> > v11:
+> > * Added a new patch to conditionally build extract-cert if
+> > PLATFORM_KEYRING is enabled.
+> > 
+> > v10:
+> > * Fixed the externs warning for Patch 3.
+> > 
+> > v9:
+> > * Rebased on Jarkko's repo - 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
+> > 
+> > v8:
+> > * Includes Jarkko's feedback on patch description and removed Reported-by
+> > for Patch 1.
+> > 
+> > v7:
+> > * Incldues Jarkko's feedback on patch description for Patch 1 and 3.
+> > 
+> > v6:
+> > * Includes Jarkko's feedback:
+> >  * Split Patch 2 into two.
+> >  * Update Patch description.
+> > 
+> > v5:
+> > * Renamed load_builtin_platform_cert() to load_platform_certificate_list()
+> > and config INTEGRITY_PLATFORM_BUILTIN_KEYS to INTEGRITY_PLATFORM_KEYS, as
+> > suggested by Mimi Zohar.
+> > 
+> > v4:
+> > * Split into two patches as per Mimi Zohar and Dimitri John Ledkov
+> > recommendation.
+> > 
+> > v3:
+> > * Included Jarkko's feedback
+> >  ** updated patch description to include approach.
+> >  ** removed extern for function declaration in the .h file.
+> > * Included load_certificate_list() within #ifdef CONFIG_KEYS condition.
+> > 
+> > v2:
+> > * Fixed the error reported by kernel test robot
+> > * Updated patch description based on Jarkko's feedback.
+> > 
+> > Nayna Jain (4):
+> >   certs: export load_certificate_list() to be used outside certs/
+> >   integrity: make integrity_keyring_from_id() non-static
+> >   certs: conditionally build extract-cert if platform keyring is enabled
+> >   integrity: support including firmware ".platform" keys at build time
+> > 
+> >  certs/Makefile                                |  9 ++++++--
+> >  certs/blacklist.c                             |  1 -
+> >  certs/common.c                                |  2 +-
+> >  certs/common.h                                |  9 --------
+> >  certs/system_keyring.c                        |  1 -
+> >  include/keys/system_keyring.h                 |  6 +++++
+> >  security/integrity/Kconfig                    | 10 ++++++++
+> >  security/integrity/Makefile                   | 15 +++++++++++-
+> >  security/integrity/digsig.c                   |  2 +-
+> >  security/integrity/integrity.h                |  9 ++++++++
+> >  .../integrity/platform_certs/platform_cert.S  | 23 +++++++++++++++++++
+> >  .../platform_certs/platform_keyring.c         | 23 +++++++++++++++++++
+> >  12 files changed, 94 insertions(+), 16 deletions(-)
+> >  delete mode 100644 certs/common.h
+> >  create mode 100644 security/integrity/platform_certs/platform_cert.S
+> > 
+> > 
+> > base-commit: fb5abce6b2bb5cb3d628aaa63fa821da8c4600f9
+> 
+> I tuned tags. Nayna, Mimi is this how it should be:
 
-Thanks, this is known.  I'll get back to it this week since Linus gave 
-me an extra week. :)
+Either v11 or v12 is fine by me, except Masahiro Yamada requested to
+move extract_certs back to the scripts/ directory.  v12 moves
+extract_certs back, as requested.  Also Nageswara Sastry tested both
+v11 and v12 versions.
 
-Paolo
+thanks,
 
-> # selftests: kvm: hyperv_clock
-> [   59.752584] ------------[ cut here ]------------
-> [   59.757297] WARNING: CPU: 0 PID: 884 at
-> arch/x86/kvm/../../../virt/kvm/kvm_main.c:3162
-> mark_page_dirty_in_slot+0xba/0xd0
-> [   59.768196] Modules linked in: x86_pkg_temp_thermal fuse
-> [   59.773531] CPU: 0 PID: 884 Comm: hyperv_clock Not tainted 5.17.0-rc8 #1
-> [   59.780242] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
-> 2.5 11/26/2020
-> [   59.787652] RIP: 0010:mark_page_dirty_in_slot+0xba/0xd0
-> [   59.792894] Code: 89 ea 09 c6 e8 07 cd 00 00 5b 41 5c 41 5d 41 5e
-> 5d c3 48 8b 83 c0 00 00 00 49 63 d5 f0 48 0f ab 10 5b 41 5c 41 5d 41
-> 5e 5d c3 <0f> 0b 5b 41 5c 41 5d 41 5e 5d c3 0f 1f 44 00 00 eb 80 0f 1f
-> 40 00
-> [   59.811659] RSP: 0018:ffffa1548109bbe0 EFLAGS: 00010246
-> [   59.816919] RAX: 0000000080000000 RBX: ffff9174c5303a00 RCX: 0000000000000000
-> [   59.824068] RDX: 0000000000000000 RSI: ffffffffb6e29061 RDI: ffffffffb6e29061
-> [   59.831219] RBP: ffffa1548109bc00 R08: 0000000000000000 R09: 0000000000000001
-> [   59.838369] R10: 0000000000000001 R11: 0000000000000000 R12: ffffa1548109d000
-> [   59.845545] R13: 0000000000000022 R14: 0000000000000000 R15: 0000000000000004
-> [   59.852721] FS:  00007f07cc7b9740(0000) GS:ffff917827a00000(0000)
-> knlGS:0000000000000000
-> [   59.860822] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   59.866585] CR2: 0000000000000000 CR3: 0000000106700006 CR4: 00000000003726f0
-> [   59.873737] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [   59.880886] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [   59.888034] Call Trace:
-> [   59.890512]  <TASK>
-> [   59.892641]  __kvm_write_guest_page+0xc8/0x100
-> [   59.897112]  kvm_write_guest+0x61/0xb0
-> [   59.900882]  kvm_hv_invalidate_tsc_page+0xd3/0x140
-> [   59.905688]  ? kvm_hv_invalidate_tsc_page+0x72/0x140
-> [   59.910676]  kvm_arch_vm_ioctl+0x20f/0xb70
-> [   59.914789]  ? __lock_acquire+0x3af/0x2370
-> [   59.918913]  ? __this_cpu_preempt_check+0x13/0x20
-> [   59.923638]  ? lock_is_held_type+0xdd/0x130
-> [   59.927845]  kvm_vm_ioctl+0x774/0xe10
-> [   59.931530]  ? ktime_get_coarse_real_ts64+0xbe/0xd0
-> [   59.936429]  ? __this_cpu_preempt_check+0x13/0x20
-> [   59.941178]  ? lockdep_hardirqs_on+0x7e/0x100
-> [   59.945552]  ? ktime_get_coarse_real_ts64+0xbe/0xd0
-> [   59.950493]  ? ktime_get_coarse_real_ts64+0xbe/0xd0
-> [   59.955459]  ? security_file_ioctl+0x37/0x50
-> [   59.959753]  __x64_sys_ioctl+0x91/0xc0
-> [   59.963524]  do_syscall_64+0x5c/0x80
-> [   59.967125]  ? do_syscall_64+0x69/0x80
-> [   59.970896]  ? syscall_exit_to_user_mode+0x3e/0x50
-> [   59.975706]  ? do_syscall_64+0x69/0x80
-> [   59.979495]  ? exc_page_fault+0x7c/0x250
-> [   59.983453]  ? asm_exc_page_fault+0x8/0x30
-> [   59.987570]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [   59.992637] RIP: 0033:0x7f07cc0b78f7
-> [   59.996234] Code: b3 66 90 48 8b 05 a1 35 2c 00 64 c7 00 26 00 00
-> 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00
-> 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 71 35 2c 00 f7 d8 64 89
-> 01 48
-> [   60.014996] RSP: 002b:00007ffdf0b37478 EFLAGS: 00000246 ORIG_RAX:
-> 0000000000000010
-> [   60.022581] RAX: ffffffffffffffda RBX: 000000004030ae7b RCX: 00007f07cc0b78f7
-> [   60.029729] RDX: 00007ffdf0b374b0 RSI: 000000004030ae7b RDI: 0000000000000006
-> [   60.036880] RBP: 0000000000000007 R08: 000000000040de60 R09: 0000000000000007
-> [   60.044030] R10: 0000000000067816 R11: 0000000000000246 R12: 00007f07cc7bf000
-> [   60.051180] R13: 0000000000000007 R14: 0000000000006592 R15: 0000000000136843
-> [   60.058357]  </TASK>
-> [   60.060566] irq event stamp: 6625
-> [   60.063925] hardirqs last  enabled at (6635): [<ffffffffb7064848>]
-> __up_console_sem+0x58/0x60
-> [   60.072511] hardirqs last disabled at (6644): [<ffffffffb706482d>]
-> __up_console_sem+0x3d/0x60
-> [   60.081044] softirqs last  enabled at (6092): [<ffffffffb8400327>]
-> __do_softirq+0x327/0x493
-> [   60.089407] softirqs last disabled at (6085): [<ffffffffb6fe3a65>]
-> irq_exit_rcu+0xe5/0x130
-> [   60.097735] ---[ end trace 0000000000000000 ]---
-> ok 6 selftests: kvm: hyperv_clock
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
-> metadata:
->    git_describe: v5.17-rc8
->    git_ref: master
->    git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
->    git_sha: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
->    kernel-config: https://builds.tuxbuild.com/26LbaUN6vcuAN7Rd69gZkFWp5J8/config
->    build: https://builds.tuxbuild.com/26LbaUN6vcuAN7Rd69gZkFWp5J8/
-> 
-> --
-> Linaro LKFT
-> https://lkft.linaro.org
-> 
-> [1] https://lkft.validation.linaro.org/scheduler/job/4714912#L1520
-> [2] https://qa-reports.linaro.org/lkft/linux-mainline-master/build/v5.17-rc8/testrun/8445627/suite/linux-log-parser/test/check-kernel-warning-4714912/details/
-> 
+Mimi
 
