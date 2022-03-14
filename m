@@ -2,170 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 396B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B77F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Mar 2022 11:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239044AbiCNLfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 07:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59914 "EHLO
+        id S238907AbiCNLf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 07:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236577AbiCNLfm (ORCPT
+        with ESMTP id S239072AbiCNLfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 07:35:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F773EAB6;
-        Mon, 14 Mar 2022 04:34:32 -0700 (PDT)
+        Mon, 14 Mar 2022 07:35:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14085424B6;
+        Mon, 14 Mar 2022 04:34:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 403ADB80DB9;
-        Mon, 14 Mar 2022 11:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 438E3C340E9;
-        Mon, 14 Mar 2022 11:34:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6329B80DC1;
+        Mon, 14 Mar 2022 11:34:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1168AC340E9;
+        Mon, 14 Mar 2022 11:34:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257670;
-        bh=5P1AInnTFtcNIO11S7NULQT4EovUwJSAepKTNAIVgWo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=yUOBbt+roezK5QuMcgmJrYkdtkoP7i5giF3vWly8vlcimRjqH6dMBr1wWX3oVnzt0
-         jgi6RbK+D3ij1R+0/uxMYUsgEEUld+RdYJn53a4sqpfcvmowoxjw6x/UbWdiaiX5Re
-         vac5BNXp9MKSkA3fkllhEcKw70mju5/37rGIGGZE=
+        s=korg; t=1647257680;
+        bh=hGVLVLeA8FynuEFnSnERRxt926NlxzuJnStotvekel8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jH2817/iLY3vQs4qmLYNW5jhaiAZlu4XphrPF1xgoKOzRihIiW8FDsl5uTcVmWI8G
+         m6svdqi5VG3G0zHeDP90hIqPaVEXqCFrnCYk7mTA4UNjI1wNPmU6Njp+jtYw4iM2ta
+         2RULoCvcVxNYQWG7vczNdbrYktRamyp8J3ZVSgGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.9 00/20] 4.9.307-rc1 review
-Date:   Mon, 14 Mar 2022 12:34:01 +0100
-Message-Id: <20220314112730.388955049@linuxfoundation.org>
+        stable@vger.kernel.org, suresh kumar <suresh2514@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 10/20] net-sysfs: add check for netdevice being present to speed_show
+Date:   Mon, 14 Mar 2022 12:34:11 +0100
+Message-Id: <20220314112730.805998272@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220314112730.388955049@linuxfoundation.org>
+References: <20220314112730.388955049@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.307-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.307-rc1
-X-KernelTest-Deadline: 2022-03-16T11:27+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.307 release.
-There are 20 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: suresh kumar <suresh2514@gmail.com>
 
-Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
-Anything received after that time might be too late.
+[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.307-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+When bringing down the netdevice or system shutdown, a panic can be
+triggered while accessing the sysfs path because the device is already
+removed.
 
-thanks,
+    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
+    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
+    ...
+    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
+    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
 
-greg k-h
+    crash> bt
+    ...
+    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
+    ...
+     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
+        [exception RIP: dma_pool_alloc+0x1ab]
+        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
+        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
+        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
+        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
+        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
+        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
+        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
+    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
+    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
+    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
+    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
+    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
+    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
+    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
+    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
+    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
+    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
+    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
+    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
+    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
+    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
+    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
+    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
 
--------------
-Pseudo-Shortlog of commits:
+    crash> net_device.state ffff89443b0c0000
+      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.307-rc1
+To prevent this scenario, we also make sure that the netdevice is present.
 
-Qu Wenruo <wqu@suse.com>
-    btrfs: unlock newly allocated extent buffer after error
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/core/net-sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-    ARM: fix Thumb2 regression with Spectre BHB
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 3fb5d8ecc849..e42df58b8876 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -198,7 +198,7 @@ static ssize_t speed_show(struct device *dev,
+ 	if (!rtnl_trylock())
+ 		return restart_syscall();
+ 
+-	if (netif_running(netdev)) {
++	if (netif_running(netdev) && netif_device_present(netdev)) {
+ 		struct ethtool_link_ksettings cmd;
+ 
+ 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
+-- 
+2.34.1
 
-Sven Eckelmann <sven@narfation.org>
-    batman-adv: Don't expect inter-netns unique iflink indices
-
-Sven Eckelmann <sven@narfation.org>
-    batman-adv: Request iflink once in batadv-on-batadv check
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Reset PMC_EL0 to avoid a panic() on systems with no PMU
-
-Dan Carpenter <dan.carpenter@oracle.com>
-    staging: gdm724x: fix use after free in gdm_lte_rx()
-
-Randy Dunlap <rdunlap@infradead.org>
-    ARM: Spectre-BHB: provide empty stub for non-config
-
-Mike Kravetz <mike.kravetz@oracle.com>
-    selftests/memfd: clean up mapping in mfd_fail_write
-
-Sven Schnelle <svens@linux.ibm.com>
-    tracing: Ensure trace buffer is at least 4096 bytes large
-
-Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-    Revert "xen-netback: Check for hotplug-status existence before watching"
-
-suresh kumar <suresh2514@gmail.com>
-    net-sysfs: add check for netdevice being present to speed_show
-
-Eric Dumazet <edumazet@google.com>
-    sctp: fix kernel-infoleak for SCTP sockets
-
-Mark Featherston <mark@embeddedTS.com>
-    gpio: ts4900: Do not set DAT and OE together
-
-Pavel Skripkin <paskripkin@gmail.com>
-    NFC: port100: fix use-after-free in port100_send_complete
-
-Mohammad Kabat <mohammadkab@nvidia.com>
-    net/mlx5: Fix size field in bufferx_reg struct
-
-Duoming Zhou <duoming@zju.edu.cn>
-    ax25: Fix NULL pointer dereference in ax25_kill_by_device
-
-Jiasheng Jiang <jiasheng@iscas.ac.cn>
-    net: ethernet: lpc_eth: Handle error for clk_enable
-
-Miaoqian Lin <linmq006@gmail.com>
-    ethernet: Fix error handling in xemaclite_of_probe
-
-Tom Rix <trix@redhat.com>
-    qed: return status of qed_iov_get_link
-
-Jia-Ju Bai <baijiaju1990@gmail.com>
-    net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
-
-
--------------
-
-Diffstat:
-
- Makefile                                      |  4 ++--
- arch/arm/include/asm/spectre.h                |  6 ++++++
- arch/arm/kernel/entry-armv.S                  |  4 ++--
- arch/arm64/kvm/sys_regs.c                     |  4 +++-
- drivers/gpio/gpio-ts4900.c                    | 24 +++++++++++++++++++-----
- drivers/net/ethernet/nxp/lpc_eth.c            |  5 ++++-
- drivers/net/ethernet/qlogic/qed/qed_sriov.c   | 18 +++++++++++-------
- drivers/net/ethernet/qlogic/qed/qed_vf.c      |  7 +++++++
- drivers/net/ethernet/xilinx/xilinx_emaclite.c |  4 +++-
- drivers/net/xen-netback/xenbus.c              | 12 ++++--------
- drivers/nfc/port100.c                         |  2 ++
- drivers/staging/gdm724x/gdm_lte.c             |  5 +++--
- fs/btrfs/extent-tree.c                        |  1 +
- include/linux/mlx5/mlx5_ifc.h                 |  4 ++--
- kernel/trace/trace.c                          | 10 ++++++----
- net/ax25/af_ax25.c                            |  7 +++++++
- net/batman-adv/hard-interface.c               | 13 ++++++++-----
- net/core/net-sysfs.c                          |  2 +-
- net/sctp/sctp_diag.c                          |  9 +++------
- tools/testing/selftests/memfd/memfd_test.c    |  1 +
- 20 files changed, 95 insertions(+), 47 deletions(-)
 
 
