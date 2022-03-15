@@ -2,121 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A986C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 18:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06971C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 19:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351186AbiCOTBB (ORCPT
+        id S1351201AbiCOTDp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 15:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
+        Tue, 15 Mar 2022 15:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343730AbiCOTBA (ORCPT
+        with ESMTP id S1351187AbiCOTDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 15:01:00 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DF650E32;
-        Tue, 15 Mar 2022 11:59:48 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id e3so255626pjm.5;
-        Tue, 15 Mar 2022 11:59:48 -0700 (PDT)
+        Tue, 15 Mar 2022 15:03:43 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65CE551300
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:02:30 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id h15so30433790wrc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:02:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P75noemU3nNM9QREmpWEOIwo6AUAf43zc7dC9ZROgxU=;
-        b=ieoeLFUClHFCNmE61XYmhfqH7JJ9Y6zrtBkhzQvZc/mecvz4an6xlpq4SFiDPrN3Ga
-         Dnm9xmvDjgGJf2MJtScduCG7fQlWJ4eXHclFNRPyswzAyro8UryJAnQD+N06b+7BKqp/
-         8WFC8eLzZiLB8dWerH2e40Zs6h+1UV7LfToNHVO9tGakihPBLG2vgOaoVfGtAa/5iegr
-         kcp/jkm7hFDZ99GMAu3d3l2JE3HvS+nJwMrrAWu60POVVSE5ascgZjj8PYqbRB+koYw/
-         furxvYiQ2zosuFLWXlANqaqK+rvAGE+868qVRctXNOykYG66OEBj8UPGibuqfJNU41q4
-         6gxQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rpWw5GZtUA3skuGiUIeSJI5HadVDx3g4iXvGFptmS4M=;
+        b=SH2jLrHQwgbuOf2DYEmjO0csDoBUNE8FKLoh/ftcJWhhYcCrfmap7iu5VTTYcJP/kN
+         k+sXm02Idlp7BzSU8aFj89xJPlXlB++6ZmT6rVV3wyLVjSit1bikx6zPgOfL+AN5ZbqU
+         5uz6td4bZFNvzFXbxVNZxgAcI3AdkFIhzS1vwy+syIoL7XgAduTbaY246BMOmNQv3rwa
+         U0iPqjSiXLIBEY/kxZIeell3K9qhMFlO4sK4UxgLfBt1cfWrOvlMjPQAX9BBp9zQ45cp
+         RkJPvk74BoSkWWl88G/4gXmAqejGSE9iBS0Q3CbcjN1UYRBBn5iPjhsZOAtUR0VLHPGP
+         72fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P75noemU3nNM9QREmpWEOIwo6AUAf43zc7dC9ZROgxU=;
-        b=4z3NUxGsrqGqxOpr+NeOJjJtlqOOFdLxHyRlOpKeGFsS6tazDIhY5/yWWf3f+GvUZw
-         i2M+u4FFdy9Z+WxReN0Xu6c9pA9hRaQDZrFmjQoWrQc8HQSJnOkt/2Oqt+tF8WOpH6iO
-         TAIsbZSwVZdIHxzjqoXknYMFgSRQ/YAEU3Jb7kDVehL5/Ksumo6e2dJOUAClKVcuBRVv
-         2Ot2IK8V7xhDiF0Rdw7/kvjzoA7VW2cvVPTmYmJ/npW7iXO08+99N9HHP/KTvmtwUHyb
-         TimWPZwDWEbigAqGKiYcI14UmZ2CQ8MHCcG7U46uwp9iLHx8GfGzvRoAN5iK2LybQNhD
-         4tHQ==
-X-Gm-Message-State: AOAM5331qVmPJMtfy22yh+LTJ1KN1EoeuLmVF8rbLaZ1fh6pHCEiWUrQ
-        I9crjV/khUDwl+J/lqNQP4w6yx/x2ruJ1xG/9Ec=
-X-Google-Smtp-Source: ABdhPJyqwD5pEKOAOgA9+l/w1ne5fuCUngwds7DQol2eaWRZcg4mrm9sqF19+ahu81x1RdeiECyWYI4RF/sdosJZFmE=
-X-Received: by 2002:a17:903:32d2:b0:153:9c6a:5750 with SMTP id
- i18-20020a17090332d200b001539c6a5750mr4104519plr.34.1647370787936; Tue, 15
- Mar 2022 11:59:47 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rpWw5GZtUA3skuGiUIeSJI5HadVDx3g4iXvGFptmS4M=;
+        b=bgV8GtsBN4WNaSFLVVHt3/3KXMJln2n92l1dt5f+G8OZ/9zZzALnjTcGGNdyE7bCsP
+         0UnAsQ8MaAUPuFeaDGjWFQL66qAbgdxJ+mPVzy5Z16vWoBnm75tHzEXaP438ts11ZVdi
+         wO5CL/WDfowPUUtb0sflPFbVLfjdt1KLOO907TEqwlr2Bt24cUcEeASdXfdBlgGVR55U
+         I4KaWQCHKCCoMPuM9QBhbw02KbtcoCxdDyzuQHqwpEez5CCJvfQi5brXAllF9N89fuvU
+         YTAkaQa43k4KsQE1bf2PebkufuMHQlalX488LS6wLnfJeeDAj3R7E2cmGUWZI5G5S5vg
+         Jh1g==
+X-Gm-Message-State: AOAM532HaxNcmv70psKpCad1reiqa4UOEEbwVLCLKwe5Ps4PEnyRpx6K
+        Fjjx08i5IQjsvxkMWV+ijf0XwQ==
+X-Google-Smtp-Source: ABdhPJz/r8Jx2umpohv4OylgcEhcq9Sz6p6ok9F0LZtWaxNJR8Nr1StRrB55qMwmtLENo+6mFrItfg==
+X-Received: by 2002:a05:6000:1b07:b0:1f0:248d:bc1d with SMTP id f7-20020a0560001b0700b001f0248dbc1dmr21076218wrz.534.1647370948816;
+        Tue, 15 Mar 2022 12:02:28 -0700 (PDT)
+Received: from ?IPV6:2a01:e34:ed2f:f020:f503:8f92:e04f:4dfc? ([2a01:e34:ed2f:f020:f503:8f92:e04f:4dfc])
+        by smtp.googlemail.com with ESMTPSA id f2-20020a056000128200b001f1f39d05b0sm16298515wrx.100.2022.03.15.12.02.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 12:02:28 -0700 (PDT)
+Message-ID: <04887e91-3116-c7fa-ac48-5d0ca8e42994@linaro.org>
+Date:   Tue, 15 Mar 2022 20:02:26 +0100
 MIME-Version: 1.0
-References: <20220225234339.2386398-1-haoluo@google.com> <20220225234339.2386398-2-haoluo@google.com>
- <YiwXnSGf9Nb79wnm@zeniv-ca.linux.org.uk> <CA+khW7g+T2sAkP1aycmts_82JKWgYk5Y0ZJp+EvjFUyNY8W_5w@mail.gmail.com>
- <Yi/LaZ5id4ZjqFmL@zeniv-ca.linux.org.uk> <CA+khW7jhD0+s9kivrd6PsNEaxmDCewhk_egrsxwdHPZNkubJYA@mail.gmail.com>
-In-Reply-To: <CA+khW7jhD0+s9kivrd6PsNEaxmDCewhk_egrsxwdHPZNkubJYA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 15 Mar 2022 11:59:36 -0700
-Message-ID: <CAADnVQJSMqcv3GPmUDcNKs23veqU-HWQQA5ECqdriMtjTpdv3w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 1/9] bpf: Add mkdir, rmdir, unlink syscalls
- for prog_bpf_syscall
-To:     Hao Luo <haoluo@google.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Tejun Heo <tj@kernel.org>, Josh Don <joshdon@google.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: timer: Convert rda,8810pl-timer to YAML
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-unisoc@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220225173734.GA7573@standask-GA-A55M-S2HP>
+ <20220315140140.GA2558@standask-GA-A55M-S2HP>
+ <09e8fdab-978b-fa9d-9e45-f8625ebc9c52@canonical.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+In-Reply-To: <09e8fdab-978b-fa9d-9e45-f8625ebc9c52@canonical.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 10:27 AM Hao Luo <haoluo@google.com> wrote:
->
-> On Mon, Mar 14, 2022 at 4:12 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> >
-> > On Mon, Mar 14, 2022 at 10:07:31AM -0700, Hao Luo wrote:
-> > > Hello Al,
-> >
-> > > > In which contexts can those be called?
-> > > >
-> > >
-> > > In a sleepable context. The plan is to introduce a certain tracepoints
-> > > as sleepable, a program that attaches to sleepable tracepoints is
-> > > allowed to call these functions. In particular, the first sleepable
-> > > tracepoint introduced in this patchset is one at the end of
-> > > cgroup_mkdir(). Do you have any advices?
-> >
-> > Yes - don't do it, unless you really want a lot of user-triggerable
-> > deadlocks.
-> >
-> > Pathname resolution is not locking-agnostic.  In particular, you can't
-> > do it if you are under any ->i_rwsem, whether it's shared or exclusive.
-> > That includes cgroup_mkdir() callchains.  And if the pathname passed
-> > to these functions will have you walk through the parent directory,
-> > you would get screwed (e.g. if the next component happens to be
-> > inexistent, triggering a lookup, which takes ->i_rwsem shared).
->
-> I'm thinking of two options, let's see if either can work out:
->
-> Option 1: We can put restrictions on the pathname passed into this
-> helper. We can explicitly require the parameter dirfd to be in bpffs
-> (we can verify). In addition, we check pathname to be not containing
-> any dot or dotdot, so the resolved path will end up inside bpffs,
-> therefore won't take ->i_rwsem that is in the callchain of
-> cgroup_mkdir().
->
-> Option 2: We can avoid pathname resolution entirely. Like above, we
-> can adjust the semantics of this helper to be: making an immediate
-> directory under the dirfd passed in. In particular, like above, we can
-> enforce the dirfd to be in bpffs and pathname to consist of only
-> alphabet and numbers. With these restrictions, we call vfs_mkdir() to
-> create directories.
->
-> Being able to mkdir from bpf has useful use cases, let's try to make
-> it happen even with many limitations.
+On 15/03/2022 19:26, Krzysztof Kozlowski wrote:
+> On 15/03/2022 15:01, Stanislav Jakubek wrote:
+>> Hi all,
+>>
+>> anything holding this back? It's been sitting on the mailing lists
+>> with 2 R-B's for ~2 weeks.
+> 
+> Maybe it's too late in the cycle for Daniel to take this?
+> 
+> Daniel,
+> 
+> If you are waiting for Rob's ack, mine should be sufficient.
 
-Option 3. delegate vfs_mkdir to a worker and wait in the helper.
+Right usually, I'm waiting for Rob's ack before picking these changes.
+
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
