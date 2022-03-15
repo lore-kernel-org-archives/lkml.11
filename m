@@ -2,213 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350471AbiCORIS (ORCPT
+        id S1350468AbiCORJG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        Tue, 15 Mar 2022 13:09:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350485AbiCORHy (ORCPT
+        with ESMTP id S242353AbiCORJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 13:07:54 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474C5580C0;
-        Tue, 15 Mar 2022 10:06:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647364002; x=1678900002;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0XG+gX0DCjUrifLHVo4uvhwaHh2d9IKH+kZXF/KXoOE=;
-  b=O0Wh72+SxpnY1kunIVWqpRmr4AoABFX7eBbg6y+nSJgqUhsBCnEzaG8k
-   CkiKrh4J0d+op01OFDYi7NSYbt2AZoblb8vOYGgjfeXa5uOmCCdTTDPQf
-   sCrvxbs/tamlcpN8vfo0SiPc3BcYFBDzIbtR06QihMJtb6PGuSQXR3PQT
-   CwvRoLg8D/gOfFUHOFsVO7+eQWVQX0qiiuk/ELn7Bxu7eeIiaF/DTKICF
-   X9Xl+kDS9gY29uor9gAaWFpl+cVlmxl4VzX1uPhLBcPt+XUQqYPEAY1vi
-   OgGFKcBoRk1mU1i4prehYC61GUjh0bsg4CUs9dCcHvL8DNiyTDYm86NkR
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317085653"
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="317085653"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 10:04:26 -0700
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="690269219"
-Received: from lepple-mobl1.ger.corp.intel.com (HELO [10.252.56.30]) ([10.252.56.30])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 10:04:21 -0700
-Message-ID: <84435254-b072-661f-f108-81a00178d7bc@linux.intel.com>
-Date:   Tue, 15 Mar 2022 19:04:19 +0200
+        Tue, 15 Mar 2022 13:09:03 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0A4639C
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:07:50 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id w7so34153246lfd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:07:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8OwTI3UtdnqUESoKlohwZIL3xHHO7DnZYdKpKk+9gN8=;
+        b=T+8KXwJOwXVyiorrQqYAEcy7XHZKpO6ojbZEyPTVsXpl1EMi8Uklm6Fupyz0/zXQ3t
+         s70j/5coRJYMChxYcdoJSi+mobg6Zrk0EBVr+odk8Rhko8jE54yeCVH50apvJx5fuCGB
+         UXVSqgIT0M14ZwNPtk8DGNiXL2zvr8UU9JkRdUdrP+W1VQB7fwT50tMM9xi8hOVzrRNc
+         15dGLzoO0y/G+rc/+CTXwpQ+ONpVfKJdegMC3A1VjEUb1Ym5rc9t9Ul/HO09WU//bNbs
+         cbWymF7b899NetmXvns0IyzfU3tn8PJuop1pZnP713Xa6vWWvCyrLlE16b2g97HAU6xI
+         50iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8OwTI3UtdnqUESoKlohwZIL3xHHO7DnZYdKpKk+9gN8=;
+        b=8Pi+3KRSahG69sT/H5aqNYupIhSL4WHvKQaL1FFxwXwWZjgW7yTLwCbxzoyRbC3Y4f
+         IL3qkK/37hmslrcZJnzfBCDzmJUT+83b5nH4G/57/q09gyjEKieUJ76CgctHfqr/DxF+
+         RqATWMOkrwyp0c+pMq3tCLvXxtBNKyHRlCuFXXzb7Ib9MB+/DTrdPyhI+wabKmF8pXOO
+         uQW1aJCez/USNwMqNizf2TwUaL6puLAa5QJDuXbkDVuoZur78OlsJy0oFNBAIHHOQ8lf
+         vV686wU7fVde47fu3QJUtXPXvjbo4gLtTDNa4Tgo5Z+tQ5ZLDlx10CSsnCOniJJquEqu
+         zIVA==
+X-Gm-Message-State: AOAM531Xam0z9qNDmB9DbQDQg57TLIBuNEi7y5x3fhHUuDk85JU3Z5xh
+        JiqhfaMgaC5173Yy8Utkh4QWo6ULcnEXTR9sltoAgw==
+X-Google-Smtp-Source: ABdhPJw9hAhG0DNB8EFqKWQtVHVToNYXk82biM84hBl1YWN/4P4/jEnTwAL/yHV5wIyR52SApMeCUusq51PrfjEraBI=
+X-Received: by 2002:a05:6512:3f99:b0:447:1ef5:408a with SMTP id
+ x25-20020a0565123f9900b004471ef5408amr17117476lfa.490.1647364068619; Tue, 15
+ Mar 2022 10:07:48 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH bpf-next v2 00/28] Introduce eBPF support for HID devices
-Content-Language: en-US
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>
-Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
-From:   Tero Kristo <tero.kristo@linux.intel.com>
-In-Reply-To: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220311161406.23497-1-vincent.guittot@linaro.org>
+ <20220311161406.23497-7-vincent.guittot@linaro.org> <CABk29Ns1=2kc3JAESx_Ce7PP86KqiDA4O9K+vaOLZbKfq_XVaQ@mail.gmail.com>
+In-Reply-To: <CABk29Ns1=2kc3JAESx_Ce7PP86KqiDA4O9K+vaOLZbKfq_XVaQ@mail.gmail.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Tue, 15 Mar 2022 18:07:37 +0100
+Message-ID: <CAKfTPtAZVred+GqR5Uj0eGeawhhbSQR5+N4GFvtkM-KsYrcSpw@mail.gmail.com>
+Subject: Re: [RFC 6/6] sched/fair: Add sched group latency support
+To:     Josh Don <joshdon@google.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Benjamin Segall <bsegall@google.com>,
+        Mel Gorman <mgorman@suse.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>, parth@linux.ibm.com,
+        Qais Yousef <qais.yousef@arm.com>,
+        "Hyser,Chris" <chris.hyser@oracle.com>,
+        Pavan Kondeti <pkondeti@codeaurora.org>,
+        Valentin Schneider <Valentin.Schneider@arm.com>,
+        patrick.bellasi@matbug.net, David.Laight@aculab.com,
+        Paul Turner <pjt@google.com>, pavel@ucw.cz,
+        Tejun Heo <tj@kernel.org>,
+        Dhaval Giani <dhaval.giani@oracle.com>, qperret@google.com,
+        Tim Chen <tim.c.chen@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Benjamin,
+On Tue, 15 Mar 2022 at 01:59, Josh Don <joshdon@google.com> wrote:
+>
+> On Fri, Mar 11, 2022 at 8:15 AM Vincent Guittot
+> <vincent.guittot@linaro.org> wrote:
+> >
+> [snip]
+> >
+> >  static struct cftype cpu_legacy_files[] = {
+> > @@ -10649,6 +10673,11 @@ static struct cftype cpu_legacy_files[] = {
+> >                 .read_s64 = cpu_idle_read_s64,
+> >                 .write_s64 = cpu_idle_write_s64,
+> >         },
+> > +       {
+> > +               .name = "latency",
+> > +               .read_s64 = cpu_latency_read_s64,
+> > +               .write_s64 = cpu_latency_write_s64,
+> > +       },
+> >  #endif
+> >  #ifdef CONFIG_CFS_BANDWIDTH
+> >         {
+> > @@ -10866,6 +10895,18 @@ static struct cftype cpu_files[] = {
+> >                 .read_s64 = cpu_idle_read_s64,
+> >                 .write_s64 = cpu_idle_write_s64,
+> >         },
+> > +       {
+> > +               .name = "latency",
+> > +               .flags = CFTYPE_NOT_ON_ROOT,
+> > +               .read_s64 = cpu_latency_read_s64,
+> > +               .write_s64 = cpu_latency_write_s64,
+> > +       },
+> > +       {
+> > +               .name = "latency.nice",
+> > +               .flags = CFTYPE_NOT_ON_ROOT,
+> > +               .read_s64 = cpu_latency_nice_read_s64,
+> > +               .write_s64 = cpu_latency_nice_write_s64,
+> > +       },
+>
+> Something I considered when adding cpu.idle was that negative values
+> could be used to indicate increasing latency sensitivity. Folding the
+> above latency property into cpu.idle could help consolidate the
+> "latency" behavior, especially given that it shouldn't really be
+> possible to configure an entity as both latency sensitive and idle.
 
-On 04/03/2022 19:28, Benjamin Tissoires wrote:
-> Hi,
->
-> This is a followup of my v1 at [0].
->
-> The short summary of the previous cover letter and discussions is that
-> HID could benefit from BPF for the following use cases:
->
-> - simple fixup of report descriptor:
->    benefits are faster development time and testing, with the produced
->    bpf program being shipped in the kernel directly (the shipping part
->    is *not* addressed here).
->
-> - Universal Stylus Interface:
->    allows a user-space program to define its own kernel interface
->
-> - Surface Dial:
->    somehow similar to the previous one except that userspace can decide
->    to change the shape of the exported device
->
-> - firewall:
->    still partly missing there, there is not yet interception of hidraw
->    calls, but it's coming in a followup series, I promise
->
-> - tracing:
->    well, tracing.
->
->
-> I tried to address as many comments as I could and here is the short log
-> of changes:
->
-> v2:
-> ===
->
-> - split the series by subsystem (bpf, HID, libbpf, selftests and
->    samples)
->
-> - Added an extra patch at the beginning to not require CAP_NET_ADMIN for
->    BPF_PROG_TYPE_LIRC_MODE2 (please shout if this is wrong)
->
-> - made the bpf context attached to HID program of dynamic size:
->    * the first 1 kB will be able to be addressed directly
->    * the rest can be retrieved through bpf_hid_{set|get}_data
->      (note that I am definitivey not happy with that API, because there
->      is part of it in bits and other in bytes. ouch)
->
-> - added an extra patch to prevent non GPL HID bpf programs to be loaded
->    of type BPF_PROG_TYPE_HID
->    * same here, not really happy but I don't know where to put that check
->      in verifier.c
->
-> - added a new flag BPF_F_INSERT_HEAD for BPF_LINK_CREATE syscall when in
->    used with HID program types.
->    * this flag is used for tracing, to be able to load a program before
->      any others that might already have been inserted and that might
->      change the data stream.
->
-> Cheers,
-> Benjamin
-
-I posted a couple of comments to the series, but other than that for the 
-whole series you can use:
-
-Reviewed-by: Tero Kristo <tero.kristo@linux.intel.com>
-
-Tested-by: Tero Kristo <tero.kristo@linux.intel.com>
-
-I did test this with my USI-BPF program + userspace code, they work with 
-few minor updates compared to previous version.
-
--Tero
-
->
->
->
-> [0] https://lore.kernel.org/linux-input/20220224110828.2168231-1-benjamin.tissoires@redhat.com/T/#t
->
->
-> Benjamin Tissoires (28):
->    bpf: add new is_sys_admin_prog_type() helper
->    bpf: introduce hid program type
->    HID: hook up with bpf
->    libbpf: add HID program type and API
->    selftests/bpf: add tests for the HID-bpf initial implementation
->    samples/bpf: add new hid_mouse example
->    bpf/hid: add a new attach type to change the report descriptor
->    HID: allow to change the report descriptor from an eBPF program
->    libbpf: add new attach type BPF_HID_RDESC_FIXUP
->    selftests/bpf: add report descriptor fixup tests
->    samples/bpf: add a report descriptor fixup
->    bpf/hid: add hid_{get|set}_data helpers
->    HID: bpf: implement hid_bpf_get|set_data
->    selftests/bpf: add tests for hid_{get|set}_data helpers
->    bpf/hid: add new BPF type to trigger commands from userspace
->    libbpf: add new attach type BPF_HID_USER_EVENT
->    selftests/bpf: add test for user call of HID bpf programs
->    selftests/bpf: hid: rely on uhid event to know if a test device is
->      ready
->    bpf/hid: add bpf_hid_raw_request helper function
->    HID: add implementation of bpf_hid_raw_request
->    selftests/bpf: add tests for bpf_hid_hw_request
->    bpf/verifier: prevent non GPL programs to be loaded against HID
->    HID: bpf: compute only the required buffer size for the device
->    HID: bpf: only call hid_bpf_raw_event() if a ctx is available
->    bpf/hid: Add a flag to add the program at the beginning of the list
->    libbpf: add handling for BPF_F_INSERT_HEAD in HID programs
->    selftests/bpf: Add a test for BPF_F_INSERT_HEAD
->    samples/bpf: fix bpf_program__attach_hid() api change
->
->   drivers/hid/Makefile                         |   1 +
->   drivers/hid/hid-bpf.c                        | 361 +++++++++
->   drivers/hid/hid-core.c                       |  34 +-
->   include/linux/bpf-hid.h                      | 129 +++
->   include/linux/bpf_types.h                    |   4 +
->   include/linux/hid.h                          |  25 +
->   include/uapi/linux/bpf.h                     |  59 ++
->   include/uapi/linux/bpf_hid.h                 |  50 ++
->   kernel/bpf/Makefile                          |   3 +
->   kernel/bpf/hid.c                             | 652 +++++++++++++++
->   kernel/bpf/syscall.c                         |  26 +-
->   kernel/bpf/verifier.c                        |   7 +
->   samples/bpf/.gitignore                       |   1 +
->   samples/bpf/Makefile                         |   4 +
->   samples/bpf/hid_mouse_kern.c                 |  91 +++
->   samples/bpf/hid_mouse_user.c                 | 129 +++
->   tools/include/uapi/linux/bpf.h               |  59 ++
->   tools/lib/bpf/libbpf.c                       |  22 +-
->   tools/lib/bpf/libbpf.h                       |   2 +
->   tools/lib/bpf/libbpf.map                     |   1 +
->   tools/testing/selftests/bpf/prog_tests/hid.c | 788 +++++++++++++++++++
->   tools/testing/selftests/bpf/progs/hid.c      | 216 +++++
->   22 files changed, 2649 insertions(+), 15 deletions(-)
->   create mode 100644 drivers/hid/hid-bpf.c
->   create mode 100644 include/linux/bpf-hid.h
->   create mode 100644 include/uapi/linux/bpf_hid.h
->   create mode 100644 kernel/bpf/hid.c
->   create mode 100644 samples/bpf/hid_mouse_kern.c
->   create mode 100644 samples/bpf/hid_mouse_user.c
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
->   create mode 100644 tools/testing/selftests/bpf/progs/hid.c
->
+The range of latency nice is [-19:20] and it doesn't touch on the
+weight whereas sched_idle behavior impacts both the shares and the
+preemption so I was afraid of possible confusion with what latency
+nice is doing
