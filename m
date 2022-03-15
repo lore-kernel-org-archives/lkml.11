@@ -2,181 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBFAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:35:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241426AbiCOIgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
+        id S245731AbiCOIho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 04:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231668AbiCOIgf (ORCPT
+        with ESMTP id S241937AbiCOIhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:36:35 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A6547554;
-        Tue, 15 Mar 2022 01:35:24 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 229ED51C;
-        Tue, 15 Mar 2022 09:35:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1647333322;
-        bh=2B1abWspufHcU+WluNkys+YV9mGWKvBYO+9++Bkm3NY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pQshLCVv7y+XpgxHB+4/J8hdZXKj/9Ux7RpMusc18nIvYIbx2SbrZICKrYwDpbHz2
-         3g0l4lmMYeH+H+To1GCyd/U+HiiDvpKSaPoogxtT+pp5PE3d3V5w8Hg4JYnARcVw+p
-         6/kz7vCp33yNnqmwiapggEtyAhpU0Mv4ZJSbfB8o=
-Date:   Tue, 15 Mar 2022 10:35:05 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Mikhail Rudenko <mike.rudenko@gmail.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Ondrej Jirman <megous@megous.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Yong Deng <yong.deng@magewell.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v2 47/67] media: platform: rename sunxi/ to allwinner/
-Message-ID: <YjBPuafv1B5dbu/r@pendragon.ideasonboard.com>
-References: <cover.1647274406.git.mchehab@kernel.org>
- <85266b480902079391d4206b8aa276ff131a730f.1647274407.git.mchehab@kernel.org>
- <2816975.e9J7NaK4W3@kista>
- <20220315064005.10ecdab2@coco.lan>
- <YjA4IRD//lb8SKgs@pendragon.ideasonboard.com>
- <20220315092736.7e805c81@coco.lan>
+        Tue, 15 Mar 2022 04:37:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 92CF84A3D2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647333387;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2TjZMMWckYPCusYdTg3nZxKbfkYGtNa7vCLFQzshC50=;
+        b=XcSn76gfc32DlflElyJ3oP53xGMJqq+nvS8NqQVFruAE5eyZZko0N8rLJW0PFZxM8OTLAo
+        vpwQkepw/cAiqn4vKK5351BB542e8sdAGHAABPc0Vy+8uAFLmYWtEEGHfHVEKD8Ao3IFB9
+        fQPYNWPbymbrQi3s3WG0OL+8uznWqTY=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-473-2aVtw6UTPHyXdjtk4QZieg-1; Tue, 15 Mar 2022 04:36:26 -0400
+X-MC-Unique: 2aVtw6UTPHyXdjtk4QZieg-1
+Received: by mail-qv1-f72.google.com with SMTP id n8-20020a0ce488000000b0043519e2750cso16017831qvl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:36:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2TjZMMWckYPCusYdTg3nZxKbfkYGtNa7vCLFQzshC50=;
+        b=f9KO1Bu8OH0e7gt7POT1Gf1ux6qL/RgjhBza0k4hX3Csjfl0piJndFrTUhG1/eNQ05
+         YFTOM28Ucx8hI4IYpALVbY6wcUk1C+Famm0wwjmvaUUvozaFa9FMq7K0IaHGUwbE7JUa
+         OYkJGktCI9A7iajRiSBpv14o2wiVpe+6IDHLZ8m3G0rVRnEviq0kwdUMLAKLvi3CbQ3H
+         iUQdbbWsiQSP8vCuSTCOFh4csqpygNWMXVvqL/s/Sc065DCeKTDFjmB+ayaIUzZxw8jm
+         5oG4kYmDXDcgytJLeDeo6p4xMvAV3SCNJKy72wrPWZiZnuNR2Cim5UdeB3O8Fu6rMw5p
+         HOJg==
+X-Gm-Message-State: AOAM530KUcjmoLyovBOo0drKGcQP6lvnSkRVIqTJ3h0274Vjb19qN8dI
+        3MhNEuRZhoDbp7yiGLsWc1jM0uYlrdB7K5G6RirO8TR+7nXuhWiLgGTGZRA3c/rpWCUwWyu28sH
+        QLK05/JD7wu7zIMrv3pxI/Zw+
+X-Received: by 2002:a05:620a:d87:b0:67b:30f5:971f with SMTP id q7-20020a05620a0d8700b0067b30f5971fmr17004168qkl.512.1647333385879;
+        Tue, 15 Mar 2022 01:36:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyUUZR7bfgjjta9OHY2Ktl6o8mWEeq9gZ09J9XQPwax3/1sk/VOL79Wdy02MvWU+bzlFbRntQ==
+X-Received: by 2002:a05:620a:d87:b0:67b:30f5:971f with SMTP id q7-20020a05620a0d8700b0067b30f5971fmr17004158qkl.512.1647333385560;
+        Tue, 15 Mar 2022 01:36:25 -0700 (PDT)
+Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
+        by smtp.gmail.com with ESMTPSA id h22-20020a05620a245600b0067d6dae634csm7571560qkn.9.2022.03.15.01.36.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 01:36:24 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 09:36:17 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
+Cc:     Krasnov Arseniy <oxffffaa@gmail.com>,
+        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v1 3/3] af_vsock: SOCK_SEQPACKET broken buffer test
+Message-ID: <20220315083617.n33naazzf3se4ozo@sgarzare-redhat>
+References: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
+ <bc309cf9-5bcf-b645-577f-8e5b0cf6f220@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220315092736.7e805c81@coco.lan>
+In-Reply-To: <bc309cf9-5bcf-b645-577f-8e5b0cf6f220@sberdevices.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 09:27:36AM +0100, Mauro Carvalho Chehab wrote:
-> Em Tue, 15 Mar 2022 08:54:25 +0200
-> Laurent Pinchart <laurent.pinchart@ideasonboard.com> escreveu:
-> 
-> > Hi Mauro,
-> > 
-> > On Tue, Mar 15, 2022 at 06:40:05AM +0100, Mauro Carvalho Chehab wrote:
-> > > Em Mon, 14 Mar 2022 18:22:20 +0100 Jernej Škrabec escreveu:
-> > >   
-> > > > Dne ponedeljek, 14. marec 2022 ob 17:34:42 CET je Mauro Carvalho Chehab 
-> > > > napisal(a):  
-> > > > > As the end goal is to have platform drivers split by vendor,
-> > > > > rename sunxi/ to allwinner/.
-> > > > > 
-> > > > > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>    
-> > > > 
-> > > > I would rather not do that. Everything related to Allwinner is called sunxi, 
-> > > > albeit there are a few outliers. This is similar to Amlogic/meson situation.  
-> > > 
-> > > The rationale of having one directory per manufacturer is that, if drivers
-> > > for newer platforms with different names from the same manufacturers are 
-> > > added, those will still fit under allwinner/ and amlogic/.
-> > > 
-> > > The Kconfig names for sunxi and meson didn't change, nor the driver's name. 
-> > > Also, the directories under allwinner preserve sun<x>i name on them:
-> > > 
-> > > 	drivers/media/platform/allwinner/
-> > > 	├── sun4i-csi
-> > > 	├── sun6i-csi
-> > > 	├── sun8i-di
-> > > 	└── sun8i-rotate
-> > > 
-> > > and so the directory under amlogic/:
-> > > 
-> > > 	drivers/media/platform/amlogic/
-> > > 	└── meson-ge2d
-> > > 
-> > > Now, if Allinner decides to release a new platforms named after another star,
-> > > let's say, "Vega" and "Rigel", it would be just a matter of adding 
-> > > "vega/" and "rigel/" directories under allwinner. No need to touch
-> > > media/platform/Kconfig and media/platform/Makefile. Everything will happen
-> > > on much more smaller vendor-specific Kconfig/Makefile.  
-> > 
-> > But the day Allwinner changes its name to Noloser, we'll have a similar
-> > problem. 
-> 
-> Not really. It will still be a single directory per vendor (whatever
-> name it is).
-> 
-> > Thnk about Freescale vs. NXP, or Altera bought by Intel.
-> 
-> Yeah, when some drivers move from one vendor to another one that
-> already exists there, we should probably move the directories, in
-> order to keep things well organized.
+On Fri, Mar 11, 2022 at 10:58:32AM +0000, Krasnov Arseniy Vladimirovich wrote:
+>Add test where sender sends two message, each with own
+>data pattern. Reader tries to read first to broken buffer:
+>it has three pages size, but middle page is unmapped. Then,
+>reader tries to read second message to valid buffer. Test
+>checks, that uncopied part of first message was dropped
+>and thus not copied as part of second message.
+>
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> tools/testing/vsock/vsock_test.c | 121 +++++++++++++++++++++++++++++++
+> 1 file changed, 121 insertions(+)
+>
+>diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+>index aa2de27d0f77..686af712b4ad 100644
+>--- a/tools/testing/vsock/vsock_test.c
+>+++ b/tools/testing/vsock/vsock_test.c
+>@@ -16,6 +16,7 @@
+> #include <linux/kernel.h>
+> #include <sys/types.h>
+> #include <sys/socket.h>
+>+#include <sys/mman.h>
+>
+> #include "timeout.h"
+> #include "control.h"
+>@@ -435,6 +436,121 @@ static void test_seqpacket_timeout_server(const struct test_opts *opts)
+> 	close(fd);
+> }
+>
+>+#define BUF_PATTERN_1 'a'
+>+#define BUF_PATTERN_2 'b'
+>+
+>+static void test_seqpacket_invalid_rec_buffer_client(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+	unsigned char *buf1;
+>+	unsigned char *buf2;
+>+	int buf_size = getpagesize() * 3;
+>+
+>+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
+>+	if (fd < 0) {
+>+		perror("connect");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	buf1 = malloc(buf_size);
+>+	if (buf1 == NULL) {
+>+		perror("'malloc()' for 'buf1'");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	buf2 = malloc(buf_size);
+>+	if (buf2 == NULL) {
+>+		perror("'malloc()' for 'buf2'");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	memset(buf1, BUF_PATTERN_1, buf_size);
+>+	memset(buf2, BUF_PATTERN_2, buf_size);
+>+
+>+	if (send(fd, buf1, buf_size, 0) != buf_size) {
+>+		perror("send failed");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	if (send(fd, buf2, buf_size, 0) != buf_size) {
+>+		perror("send failed");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	close(fd);
+>+}
+>+
+>+static void test_seqpacket_invalid_rec_buffer_server(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+	unsigned char *broken_buf;
+>+	unsigned char *valid_buf;
+>+	int page_size = getpagesize();
+>+	int buf_size = page_size * 3;
+>+	ssize_t res;
+>+	int prot = PROT_READ | PROT_WRITE;
+>+	int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+>+	int i;
+>+
+>+	fd = vsock_seqpacket_accept(VMADDR_CID_ANY, 1234, NULL);
+>+	if (fd < 0) {
+>+		perror("accept");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	/* Setup first buffer. */
+>+	broken_buf = mmap(NULL, buf_size, prot, flags, -1, 0);
+>+	if (broken_buf == MAP_FAILED) {
+>+		perror("mmap for 'broken_buf'");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	/* Unmap "hole" in buffer. */
+>+	if (munmap(broken_buf + page_size, page_size)) {
+>+		perror("'broken_buf' setup");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	valid_buf = mmap(NULL, buf_size, prot, flags, -1, 0);
+>+	if (valid_buf == MAP_FAILED) {
+>+		perror("mmap for 'valid_buf'");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	/* Try to fill buffer with unmapped middle. */
+>+	res = read(fd, broken_buf, buf_size);
+>+	if (res != -1) {
+>+		perror("invalid read result of 'broken_buf'");
 
-I'm not sure we should. We still have arch/arm64/boot/dts/freescale/ for
-instance. We can answer that question later though, when confronted with
-the situation.
+if `res` is valid, errno is not set, better to use fprintf(stderr, ...) 
+printing the expected and received result.
+Take a look at test_stream_connection_reset()
 
-> The worse case scenario is really if, let's say, TI decides to sell their
-> omap architecture to NXP, keeping the rest. On such case, the best would
-> be to move platform/ti/omap* to the directory of its newer owner.
-> 
-> That's said, when things like that happen, there are usually a change
-> at MAINTAINERS, as e-mails, mailing lists and contact people will
-> likely change. So, this will very likely generate patches anyway.
-> 
-> > No
-> > naming scheme is totally future-proof. If the accepted standard through
-> > the kernel is to use sunxi to refer to Allwinner SoCs, I don't think
-> > it's a bit idea to go with that.
-> 
-> I'm not too concerned about the name here, but rather about the
-> process. Needing to do reorg like this is painful, as it causes 
-> all pending work to fail merging against upstream, requiring rebases.
-> So, we should avoid needing to re-do it by trying our best to avoid
-> the need of another global change like that in the future.
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	if (errno != ENOMEM) {
+>+		perror("invalid errno of 'broken_buf'");
 
-Most of the pain we'll go through in the immediate future comes from the
-fact that we never really cared about this. I think renames (of vendors
-or product lines) will be infrequent enough that picking sunxi for
-Allwinner drivers wouldn't be an issue.
+Instead of "invalid", I would say "unexpected".
 
-There's a similar think with Renesas, which had an SH product line and
-then moved to ARM, creating R-Mobile and R-Car (among other product
-liens). That's why we still have drivers/dma/sh/ for Renesas DMA
-drivers.
+>+		exit(EXIT_FAILURE);
+>+	}
 
-> By organizing entries per vendor, while we may need to do puntual
-> per-vendor adjustments when they rename and change IP with other
-> vendors, the global platform Kconfig/Make will contain a single entry
-> per vendor. I can't foresee any need to change this in the future,
-> if we take care of keeping the entries there properly sorted.
-> 
-> With regards to naming the per-vendor directory, while I do prefer to have
-> the  directories named after the vendor, and not after a vendor's nick 
-> name, It should also be ok to use a vendor's nick name, provided that 
-> such name is meant to be used by all their current and future IP.
-> 
-> Not sure if "sunxi" is actually a vendor's nick name. It sounds
-> much likely that it is, instead, a brand name that covers their 
-> current media-related SoC. 
-> 
-> Can someone from the vendor shed a light on it?
 
-Maybe we can let the Allwinner upstream community tell us what name to
-pick ? I'm sure they know better than us :-)
+>+
+>+	/* Try to fill valid buffer. */
+>+	res = read(fd, valid_buf, buf_size);
+>+	if (res != buf_size) {
+>+		perror("invalid read result of 'valid_buf'");
 
--- 
-Regards,
+I would split in 2 checks:
+- (res < 0) then use perror()
+- (res != buf_size) then use fprintf(stderr, ...) printing the expected 
+   and received result.
 
-Laurent Pinchart
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	for (i = 0; i < buf_size; i++) {
+>+		if (valid_buf[i] != BUF_PATTERN_2) {
+>+			perror("invalid pattern for valid buf");
+
+errno is not set here, better to use fprintf(stderr, ...)
+
+>+			exit(EXIT_FAILURE);
+>+		}
+>+	}
+
+What about replace this for with a memcmp()?
+
+>+
+>+
+>+	/* Unmap buffers. */
+>+	munmap(broken_buf, page_size);
+>+	munmap(broken_buf + page_size * 2, page_size);
+>+	munmap(valid_buf, buf_size);
+>+	close(fd);
+>+}
+>+
+> static struct test_case test_cases[] = {
+> 	{
+> 		.name = "SOCK_STREAM connection reset",
+>@@ -480,6 +596,11 @@ static struct test_case test_cases[] = {
+> 		.run_client = test_seqpacket_timeout_client,
+> 		.run_server = test_seqpacket_timeout_server,
+> 	},
+>+	{
+>+		.name = "SOCK_SEQPACKET invalid receive buffer",
+>+		.run_client = test_seqpacket_invalid_rec_buffer_client,
+>+		.run_server = test_seqpacket_invalid_rec_buffer_server,
+>+	},
+
+
+Is this the right behavior? If read() fails because the buffer is 
+invalid, do we throw out the whole packet?
+
+I was expecting the packet not to be consumed, have you tried AF_UNIX, 
+does it have the same behavior?
+
+Thanks,
+Stefano
+
