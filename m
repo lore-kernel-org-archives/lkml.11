@@ -2,289 +2,389 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD051C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344898AbiCOKuv (ORCPT
+        id S1347637AbiCOKu7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:50:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33720 "EHLO
+        Tue, 15 Mar 2022 06:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348678AbiCOKtp (ORCPT
+        with ESMTP id S1344073AbiCOKtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:49:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 779FDFD14
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647341289;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=R31tnBu++6UPYqVpe8Q1wB/BdyCOi3q0COG1iDk9BBU=;
-        b=Afn0dkkhZV8gXIX26rGGSlJm+tNlHNB4MdysmIlOAAzZCrqixwy+pk0CB04FY5aiWHFSo2
-        pf2uxuL57UIC58TYlfIpm/Bz/QRsPJZ9uW88i7OMl1/eKUjBkED51FPv7YSaNIgWef+UvV
-        JM7DGKZ45cFnayGo4w4fpRMFubl5Cjs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-364-y6b87QKSP0CUQXea8E48Lg-1; Tue, 15 Mar 2022 06:48:07 -0400
-X-MC-Unique: y6b87QKSP0CUQXea8E48Lg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8DF573803906;
-        Tue, 15 Mar 2022 10:48:06 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ABA782D465;
-        Tue, 15 Mar 2022 10:47:42 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>,
-        Khalid Aziz <khalid.aziz@oracle.com>
-Subject: [PATCH v2 00/15] mm: COW fixes part 2: reliable GUP pins of anonymous pages
-Date:   Tue, 15 Mar 2022 11:47:26 +0100
-Message-Id: <20220315104741.63071-1-david@redhat.com>
+        Tue, 15 Mar 2022 06:49:55 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76B823BCA;
+        Tue, 15 Mar 2022 03:48:41 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id 25so25834784ljv.10;
+        Tue, 15 Mar 2022 03:48:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=lfhD24riJelDK87kEEewPQwSaRCOfck54Hh4KuX734w=;
+        b=LH+9OAesTwYd+2J9jrenLHUklMfKpsyF3SuvXKhcd5cHgDx4b4wutozI+uPQbgNkis
+         tBZmeM4CJBhaC/2KcyBVQ02grFWgq/lHms25ort9jk/Qmdf5PiCeV+ofKt6nLcNExfaP
+         5DVev7BS8zuBFthw1yjtPcPX7EHRabgY8GfhN4oEtPKgFGRVQuZGd1WIC6b4aPdiLH53
+         7GM0Mty9DVwbbvRLqQ/X/KN5NhglAkY3RUdYt/E3JajhpO1wvN2QBuAUsiC4a4PKHRxB
+         h0qTXTztCCKtw4zA6mXxXtkxunZlrgFLkA8AHOinIx56dWntFAFf72S1x2ZqZ9K7/XZr
+         Cx/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=lfhD24riJelDK87kEEewPQwSaRCOfck54Hh4KuX734w=;
+        b=piuv968v/KdGytLE7sKUedCDZkoexlPfm6AGmmHL1am7a+GxlfYGeq7j1I2tbIcWM0
+         eQhKRjQDuzd/N3fF+b0zvCK2zqkktOzXOoVWXlFxanejDOSBS3MksgvxrTJcE985M5xg
+         KSQJStO0QQO+ja/S2/1nxK8sivZ1lHrXLx3OPnhV4KpxuEqZnFWgupaG0kCq0RCLhPsk
+         cl3UKjugS3r100EODKg/6yEocwE7IhOCkXg/Cnuq0Dcwzv7nRNGX/Zm2RVNkEaI+YmR6
+         YsbrYi3kkb7uieoG+73FTss6VwxoQOK4NmOfy/thKbQ5lo6fhJ1pJ2ZCttuqGlNWJdSp
+         1esg==
+X-Gm-Message-State: AOAM530qlyI/GeEJ0jsNf64Ghrt7b/rjiRX0knUk5XBAFRCg3tBRR5AB
+        FTCL2qR21gl/P6c5J8bIUj0=
+X-Google-Smtp-Source: ABdhPJyV/CAqvia+aNM9NJ5A/e43Oy7D/pF/3+sV8/lcaMYd28pTn95six5tnKU3eC+6xfpzrae9Jg==
+X-Received: by 2002:a2e:aa14:0:b0:245:fd1d:4eba with SMTP id bf20-20020a2eaa14000000b00245fd1d4ebamr16703819ljb.425.1647341319638;
+        Tue, 15 Mar 2022 03:48:39 -0700 (PDT)
+Received: from eldfell ([194.136.85.206])
+        by smtp.gmail.com with ESMTPSA id p41-20020a05651213a900b00443fac7d6ffsm3610457lfa.108.2022.03.15.03.48.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 03:48:39 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 12:48:23 +0200
+From:   Pekka Paalanen <ppaalanen@gmail.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Finn Thain <fthain@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 05/10] drm/fourcc: Add DRM_FORMAT_C[124]
+Message-ID: <20220315124823.2500efe2@eldfell>
+In-Reply-To: <CAMuHMdUK2T4HzN6+ShVgbBUjh6S6oTFD_G79k-QMUwo32COJjQ@mail.gmail.com>
+References: <cover.1646683502.git.geert@linux-m68k.org>
+        <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
+        <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
+        <20220314170539.17400f93@eldfell>
+        <CAMuHMdVj8wxAVbcov1wFsgt_knMkcySBH8nMoKjyr=G+mLQmjQ@mail.gmail.com>
+        <1f915fcc-1d95-99d1-c7b7-dc4e3b49e09f@linux-m68k.org>
+        <20220315093250.71352a56@eldfell>
+        <CAMuHMdVU=JKwEn-=Wf3CYObtaLt2T7NmWrXUwdPHdvNsbgge=g@mail.gmail.com>
+        <20220315104554.1961d62d@eldfell>
+        <CAMuHMdUK2T4HzN6+ShVgbBUjh6S6oTFD_G79k-QMUwo32COJjQ@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: multipart/signed; boundary="Sig_/SFzjUrs7yMIudHjHrw1WOsK";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is the result of the discussion on the previous approach [2].
-More information on the general COW issues can be found there. It is based
-on v5.17-rc8 and [1], which resides in -mm and -next:
-	[PATCH v3 0/9] mm: COW fixes part 1: fix the COW security issue for
-	THP and swap
+--Sig_/SFzjUrs7yMIudHjHrw1WOsK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-v2 is located at:
-	https://github.com/davidhildenbrand/linux/tree/cow_fixes_part_2_v2
+On Tue, 15 Mar 2022 09:57:23 +0100
+Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 
-The plan is to rebase on top of v5.18-rc1 (there will be some collisions
-with folio reworks), pull it early into -next, to then eventually have it
-in v5.19. This should give it some good test coverage in -next. We could
-then decide, whether we want to backport into -stable trees.
+> Hi Pekka,
+>=20
+> On Tue, Mar 15, 2022 at 9:46 AM Pekka Paalanen <ppaalanen@gmail.com> wrot=
+e:
+> > On Tue, 15 Mar 2022 08:51:31 +0100
+> > Geert Uytterhoeven <geert@linux-m68k.org> wrote: =20
+> > > On Tue, Mar 15, 2022 at 8:33 AM Pekka Paalanen <ppaalanen@gmail.com> =
+wrote: =20
+> > > > On Tue, 15 Mar 2022 09:15:08 +1100 (AEDT)
+> > > > Finn Thain <fthain@linux-m68k.org> wrote: =20
+> > > > > On Mon, 14 Mar 2022, Geert Uytterhoeven wrote: =20
+> > > > > > On Mon, Mar 14, 2022 at 4:05 PM Pekka Paalanen <ppaalanen@gmail=
+.com> wrote: =20
+> > > > > > > On Mon, 14 Mar 2022 14:30:18 +0100
+> > > > > > > Geert Uytterhoeven <geert@linux-m68k.org> wrote: =20
+> > > > > > > > On Mon, Mar 7, 2022 at 9:53 PM Geert Uytterhoeven <geert@li=
+nux-m68k.org> wrote: =20
+> > > > > > > > > Introduce fourcc codes for color-indexed frame buffer for=
+mats with
+> > > > > > > > > two, four, and sixteen colors, and provide a mapping from=
+ bit per
+> > > > > > > > > pixel and depth to fourcc codes.
+> > > > > > > > >
+> > > > > > > > > As the number of bits per pixel is less than eight, these=
+ rely on
+> > > > > > > > > proper block handling for the calculation of bits per pix=
+el and
+> > > > > > > > > pitch.
+> > > > > > > > >
+> > > > > > > > > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org> =
+=20
+> > > > > > > > =20
+> > > > > > > > > --- a/include/uapi/drm/drm_fourcc.h
+> > > > > > > > > +++ b/include/uapi/drm/drm_fourcc.h
+> > > > > > > > > @@ -99,7 +99,10 @@ extern "C" {
+> > > > > > > > >  #define DRM_FORMAT_INVALID     0
+> > > > > > > > >
+> > > > > > > > >  /* color index */
+> > > > > > > > > -#define DRM_FORMAT_C8          fourcc_code('C', '8', ' '=
+, ' ') /* [7:0] C */
+> > > > > > > > > +#define DRM_FORMAT_C1          fourcc_code('C', '1', ' '=
+, ' ') /* [7:0] C0:C1:C2:C3:C4:C5:C6:C7 1:1:1:1:1:1:1:1 eight pixels/byte */
+> > > > > > > > > +#define DRM_FORMAT_C2          fourcc_code('C', '2', ' '=
+, ' ') /* [7:0] C0:C1:C2:C3 2:2:2:2 four pixels/byte */
+> > > > > > > > > +#define DRM_FORMAT_C4          fourcc_code('C', '4', ' '=
+, ' ') /* [7:0] C0:C1 4:4 two pixels/byte */
+> > > > > > > > > +#define DRM_FORMAT_C8          fourcc_code('C', '8', ' '=
+, ' ') /* [7:0] C 8 one pixel/byte */
+> > > > > > > > >
+> > > > > > > > >  /* 8 bpp Red */
+> > > > > > > > >  #define DRM_FORMAT_R8          fourcc_code('R', '8', ' '=
+, ' ') /* [7:0] R */ =20
+> > > > > > > >
+> > > > > > > > After replying to Ilia's comment[1], I realized the CFB dra=
+wing
+> > > > > > > > operations use native byte and bit ordering, unless
+> > > > > > > > FBINFO_FOREIGN_ENDIAN is set.
+> > > > > > > > While Amiga, Atari, and Sun-3 use big-endian bit ordering,
+> > > > > > > > e.g. Acorn VIDC[2] uses little endian, and SH7760[3] is con=
+figurable
+> > > > > > > > (sh7760fb configures ordering to match host order).
+> > > > > > > > BTW, ssd130{7fb,x}_update_rect() both assume little-endian,=
+ so I
+> > > > > > > > guess they are broken on big-endian.
+> > > > > > > > Fbtest uses big-endian bit ordering, so < 8 bpp is probably=
+ broken
+> > > > > > > > on little-endian.
+> > > > > > > >
+> > > > > > > > Hence the above should become:
+> > > > > > > >
+> > > > > > > >     #define DRM_FORMAT_C1          fourcc_code('C', '1', ' =
+', ' ') /*
+> > > > > > > > [7:0] C7:C6:C5:C4:C3:C2:C1:C0 1:1:1:1:1:1:1:1 eight pixels/=
+byte */
+> > > > > > > >     #define DRM_FORMAT_C2          fourcc_code('C', '2', ' =
+', ' ') /*
+> > > > > > > > [7:0] C3:C2:C1:C0 2:2:2:2 four pixels/byte */
+> > > > > > > >     #define DRM_FORMAT_C4          fourcc_code('C', '4', ' =
+', ' ') /*
+> > > > > > > > [7:0] C1:C0 4:4 two pixels/byte */
+> > > > > > > >
+> > > > > > > > The same changes should be made for DRM_FORMAT_[RD][124].
+> > > > > > > >
+> > > > > > > > The fbdev emulation code should gain support for these with=
+ and without
+> > > > > > > > DRM_FORMAT_BIG_ENDIAN, the latter perhaps only on big-endia=
+n platforms?
+> > > > > > > >
+> > > > > > > > [1] https://lore.kernel.org/r/CAKb7UvgEdm9U=3D+RyRwL0TGRfA_=
+Qc7NbhCWoZOft2DKdXggtKYw@mail.gmail.com/
+> > > > > > > > [2] See p.30 of the VIDC datasheet
+> > > > > > > >     http://chrisacorns.computinghistory.org.uk/docs/Acorn/M=
+isc/Acorn_VIDC_Datasheet.pdf
+> > > > > > > > [3] See p.1178 of the SH7660 datasheet
+> > > > > > > >     https://datasheet.octopart.com/HD6417760BL200AV-Renesas=
+-datasheet-14105759.pdf =20
+> > > > > > >
+> > > > > > > why would CPU endianess affect the order of bits in a byte? =
+=20
+> > > > > >
+> > > > > > It doesn't, but see below.
+> > > > > > =20
+> > > > > > > Do you mean that bit 0 one machine is (1 << 0), and on anothe=
+r machine
+> > > > > > > bit 0 is (1 << 7)? =20
+> > > > > >
+> > > > > > No, I mean that in case of multiple pixels per byte, the display
+> > > > > > hardware pumps out pixels to the CRTC starting from either the =
+MSB
+> > > > > > or the LSB of the first display byte.  Which order depends on t=
+he
+> > > > > > display hardware, not on the CPU.
+> > > > > > =20
+> > > > > > > In C, we have only one way to address bits of a byte and that=
+ is with
+> > > > > > > arithmetic. You cannot take the address of a bit any other wa=
+y, can you?
+> > > > > > >
+> > > > > > > Can we standardise on "bit n of a byte is addressed as (1 << =
+n)"? =20
+> > > > > >
+> > > > > > BIT(n) in Linux works the same for little- and big-endian CPUs.
+> > > > > > But display hardware may use a different bit order. =20
+> > > > >
+> > > > > Perhaps some of this confusion could be avoided if you describe t=
+he
+> > > > > problem in terms of the sequence of scan-out of pixels, rather th=
+an in
+> > > > > terms of the serialization of bits. The significance of bits with=
+in each
+> > > > > pixel and the ordering of pixels within each memory word are inde=
+pendent,
+> > > > > right? =20
+> > > >
+> > > > Yes, that might help. =20
+> > >
+> > > Display:
+> > >
+> > >      P0  P1  P2  P3  P4  P5  P6  P7  P8  P9 P10 P11 P12 P13 P14 P15
+> > >
+> > >     P15 P14 P13 P12 P11 P10  P9  P8  P7  P6  P5  P4  P3  P2  P1  P0 =
+=20
+> >
+> > Hi Geert,
+> >
+> > does this mean the display hardware emits even rows from left to right
+> > and odd rows from right to left? =20
+>=20
+> No, it means I should have my morning coffee first, and remove all
+> temporary cruft before pressing send :-(
+>=20
+> The above paragraph should have read:
+>=20
+>     Display (16 pixels):
+>=20
+>         P0  P1  P2  P3  P4  P5  P6  P7  P8  P9 P10 P11 P12 P13 P14 P15
+>=20
+> > I'm guessing P stands for "pixel". =20
+>=20
+> Exactly.
+>=20
+> > > Memory:
+> > >
+> > >   1 bpp (MSB first):
+> > >
+> > >               bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0
+> > >               ---- ---- ---- ---- ---- ---- ---- ----
+> > >       byte 0:   P0   P1   P2   P3   P4   P5   P6   P7
+> > >       byte 1:   P8   P9  P10  P11  P12  P13  P14  P15
+> > >
+> > >   1 bpp (LSB first):
+> > >
+> > >               bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0
+> > >               ---- ---- ---- ---- ---- ---- ---- ----
+> > >       byte 0:   P7   P6   P5   P4   P3   P2   P1   P0
+> > >       byte 1:  P15  P14  P13  P12  P11  P10   P9   P8
+> > >
+> > >   2 bpp (MSB first):
+> > >
+> > >               bits7-6 bits5-4 bits3-2 bits1-0
+> > >               ------- ------- ------- -------
+> > >       byte 0:    P0      P1      P2      P3
+> > >       byte 1:    P4      P5      P6      P7
+> > >       byte 2:    P8      P9     P10     P11
+> > >       byte 3:   P12     P13     P14     P15
+> > >
+> > >   2 bpp (LSB first):
+> > >
+> > >               bits7-6 bits5-4 bits3-2 bits1-0
+> > >               ------- ------- ------- -------
+> > >       byte 0:    P3      P2      P1      P0
+> > >       byte 1:    P7      P6      P5      P4
+> > >       byte 2:   P11     P10      P9      P8
+> > >       byte 3:   P15     P14     P13     P12
+> > >
+> > >   4 bpp (MSB first):
+> > >
+> > >               bits7-4 bits3-0
+> > >               ------- -------
+> > >       byte 0:    P0      P1
+> > >       byte 1:    P2      P3
+> > >       byte 2:    P4      P5
+> > >       byte 3:    P6      P7
+> > >       byte 4:    P8      P9
+> > >       byte 5:   P10     P11
+> > >       byte 6:   P12     P13
+> > >       byte 7:   P14     P15
+> > >
+> > >   4 bpp (LSB first):
+> > >
+> > >               bits7-4 bits3-0
+> > >               ------- -------
+> > >       byte 0:    P1      P0
+> > >       byte 1:    P3      P2
+> > >       byte 2:    P5      P4
+> > >       byte 3:    P7      P6
+> > >       byte 4:    P9      P8
+> > >       byte 5:   P11     P10
+> > >       byte 6:   P13     P12
+> > >       byte 7:   P15     P14 =20
+> >
+> > I think I can guess what you meant there, and it looks understandable
+> > to me. These tables are actually very clear, and leave only one thing
+> > undefined: when multiple bits form a pixel, in which order do the bits
+> > form the value. I recall you said fbdev allows for both orderings but
+> > only one order is ever used if I understood right. =20
+>=20
+> Indeed.  The third ordering is the ordering of the bits in a pixel.
+> As fb_bitfield.msb_right is always false, no hardware ever supported by
+> fbdev used the other ordering, so we only have to care about:
+>=20
+>    1 bpp: P =3D [ bitN ]
+>    2 bpp: P =3D [ bitN bitN-1 ]
+>    4 bpp: P =3D [ bitN bitN-1 bitN-2 bitN-3 ]
+
+Excellent!
+
+> > > > Also, when drm_fourcc.h is describing pixel formats, it needs to
+> > > > consider only how a little-endian CPU accesses them. That's how pix=
+el
+> > > > data in memory is described. Display hardware plays no part in that.
+> > > > It is the driver's job to expose the pixel formats that match displ=
+ay
+> > > > hardware behaviour. =20
+> > >
+> > > But if the "CPU format" does not match the "display support",
+> > > all pixel data must be converted? =20
+> >
+> > Of course. If the driver author does not want to convert pixel data in
+> > flight, then the author should not let the driver expose a format that
+> > needs conversion. =20
+>=20
+> ... in which case we need a DRM fourcc code for the format?
+
+Yes. You can define any new formats you need as long as the format
+definition does not depend on (is not affected/modified by) CPU
+endianess or any other CPU or display hardware property. I believe this
+is the convention used with drm_fourcc.
+
+If the format wanted by display hardware depends on something, then you
+need all relevant pixel formats defined and choose at build or driver
+initialisation time which ones to expose.
+
+> BTW, Atari and Amiga use bitplanes for bpp <=3D 8, so they need
+> conversion anyway.
+
+Right, that's probably the most reasonable approach. If you really
+wanted to expose bitplanes, I could imagine that some new format
+modifiers could achieve that.
 
 
-This series fixes memory corruptions when a GUP pin (FOLL_PIN) was taken
-on an anonymous page and COW logic fails to detect exclusivity of the page
-to then replacing the anonymous page by a copy in the page table: The
-GUP pin lost synchronicity with the pages mapped into the page tables.
+Thanks,
+pq
 
-This issue, including other related COW issues, has been summarized in [3]
-under 3):
-"
-  3. Intra Process Memory Corruptions due to Wrong COW (FOLL_PIN)
+--Sig_/SFzjUrs7yMIudHjHrw1WOsK
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-  page_maybe_dma_pinned() is used to check if a page may be pinned for
-  DMA (using FOLL_PIN instead of FOLL_GET). While false positives are
-  tolerable, false negatives are problematic: pages that are pinned for
-  DMA must not be added to the swapcache. If it happens, the (now pinned)
-  page could be faulted back from the swapcache into page tables
-  read-only. Future write-access would detect the pinning and COW the
-  page, losing synchronicity. For the interested reader, this is nicely
-  documented in feb889fb40fa ("mm: don't put pinned pages into the swap
-  cache").
+-----BEGIN PGP SIGNATURE-----
 
-  Peter reports [8] that page_maybe_dma_pinned() as used is racy in some
-  cases and can result in a violation of the documented semantics:
-  giving false negatives because of the race.
+iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmIwbvcACgkQI1/ltBGq
+qqfAhg/8DQHUJDndPyiDXRxGH58HuwSov2bZfYkofTV1pu9CimZO4M13RoulDiDf
+tviAxh0T5zeMavytqQFRyfFskNkcuom/TVGIiZrXaIh4rFpTM1G8tL+bxfkO1/Cc
+jnmZy8KV8mDUc/GRCx+QkTNHZL5Ke47b/P357z2kSWYhU9pc+kUSDawvxJdiP/K7
+iqFPU0jodTISZdsXgN0D4R7ramOxstPU+UVXI1lXvJrvRR6draXcEcn2Ou573ylU
+nHNLky3DRGOApW8gTy6ghUu1xW7zGwAzYIcfUK+bVnY7kBDgvflrQAwg9Rxt9MFF
+rdMMKZwfXqL9OL2k7VxT2smLjojVsKM4KJYcapettYqfvGTu13BMW2ot4jOwH2iM
+XGa/7bX5B6KOrcrsTULym+bbG4RqiDkpEcpFrNNWXbBRSn+ALG+KOESKfCy2GPIu
+IZ9hb/sQDZQSy/YT+mnD7/XZ8WbK13+htMTedDX9LsHOwlIhjK5HsfLqbVMMTQX+
++ENshXPFDDLd79At+Zb9HEUrXyER/2Sb96rgfwjUPy8BoTMLHzdLwC+dHJwGbrI9
+0HyJevyLA8h+DnhFJEIWRp4kN5CgEtC03SmHccSYAjY0wWaCYsE6XgWBKdP8A2tN
+QTEbByH3u+KjDDeQQZHhfCGqMfl9KPn+l8N2DhTE310nwXj4VaY=
+=PJQN
+-----END PGP SIGNATURE-----
 
-  There are cases where we call it without properly taking a per-process
-  sequence lock, turning the usage of page_maybe_dma_pinned() racy. While
-  one case (clear_refs SOFTDIRTY tracking, see below) seems to be easy to
-  handle, there is especially one rmap case (shrink_page_list) that's hard
-  to fix: in the rmap world, we're not limited to a single process.
-
-  The shrink_page_list() issue is really subtle. If we race with
-  someone pinning a page, we can trigger the same issue as in the FOLL_GET
-  case. See the detail section at the end of this mail on a discussion how
-  bad this can bite us with VFIO or other FOLL_PIN user.
-
-  It's harder to reproduce, but I managed to modify the O_DIRECT
-  reproducer to use io_uring fixed buffers [15] instead, which ends up
-  using FOLL_PIN | FOLL_WRITE | FOLL_LONGTERM to pin buffer pages and can
-  similarly trigger a loss of synchronicity and consequently a memory
-  corruption.
-
-  Again, the root issue is that a write-fault on a page that has
-  additional references results in a COW and thereby a loss of
-  synchronicity and consequently a memory corruption if two parties
-  believe they are referencing the same page.
-"
-
-This series makes GUP pins (R/O and R/W) on anonymous pages fully reliable,
-especially also taking care of concurrent pinning via GUP-fast,
-for example, also fully fixing an issue reported regarding NUMA
-balancing [4] recently. While doing that, it further reduces "unnecessary
-COWs", especially when we don't fork()/KSM and don't swapout, and fixes the
-COW security for hugetlb for FOLL_PIN.
-
-In summary, we track via a pageflag (PG_anon_exclusive) whether a mapped
-anonymous page is exclusive. Exclusive anonymous pages that are mapped
-R/O can directly be mapped R/W by the COW logic in the write fault handler.
-Exclusive anonymous pages that want to be shared (fork(), KSM) first have
-to be marked shared -- which will fail if there are GUP pins on the page.
-GUP is only allowed to take a pin on anonymous pages that are exclusive.
-The PT lock is the primary mechanism to synchronize modifications of
-PG_anon_exclusive. We syncronize against GUP-fast either via the
-src_mm->write_protect_seq (during fork()) or via clear/invalidate+flush of
-the relevant page table entry.
-
-Special care has to be taken about swap, migration, and THPs (whereby a
-PMD-mapping can be converted to a PTE mapping and we have to track
-information for subpages). Besides these, we let the rmap code handle most
-magic. For reliable R/O pins of anonymous pages, we need FAULT_FLAG_UNSHARE
-logic as part of our previous approach [2], however, it's now 100% mapcount
-free and I further simplified it a bit.
-
-  #1 is a fix
-  #3-#9 are mostly rmap preparations for PG_anon_exclusive handling
-  #10 introduces PG_anon_exclusive
-  #11 uses PG_anon_exclusive and make R/W pins of anonymous pages
-   reliable
-  #12 is a preparation for reliable R/O pins
-  #13 and #14 is reused/modified GUP-triggered unsharing for R/O GUP pins
-   make R/O pins of anonymous pages reliable
-  #15 adds sanity check when (un)pinning anonymous pages
-
-Patch #11 contains excessive explanations and the main logic for R/W pins.
-#12 and #13 resemble what we proposed in the previous approach [2]. I
-consider the general approach of #15 very nice and helpful, and I
-remember Linus even envisioning something like that for finding BUGs.
-
-It passes my growing set of tests for "wrong COW" and "missed COW",
-including the ones in [3] -- I'd really appreciate some experienced eyes
-to take a close look at corner cases.
-
-I'll be sending out part 3 next, that will remember PG_anon_exclusive for
-ordinary swap entries: this will make FOLL_GET | FOLL_WRITE references
-reliable and fix the memory corruptions for O_DIRECT -- as described in
-[3] under 2) -- as well, as long as there is no fork().
-
-The long term goal should be to convert relevant users of FOLL_GET to
-FOLL_PIN, however, with part 3 it wouldn't be required to fix the obvious
-memory corruptions we are aware of.
-
-[1] https://lkml.kernel.org/r/20220131162940.210846-1-david@redhat.com
-[2] https://lkml.kernel.org/r/20211217113049.23850-1-david@redhat.com
-[3] https://lore.kernel.org/r/3ae33b08-d9ef-f846-56fb-645e3b9b4c66@redhat.com
-[4] https://bugzilla.kernel.org/show_bug.cgi?id=215616
-
-v1 -> v2:
-* Tested on aarch64, ppc64, s390x and x86_64
-* "mm/page-flags: reuse PG_mappedtodisk as PG_anon_exclusive for PageAnon()
-   pages"
-  -> Use PG_mappedtodisk instead of PG_slab (thanks Willy!), this simlifies
-     the patch and necessary handling a lot. Add safety BUG_ON's
-  -> Move most documentation to the patch description, to be placed in a
-     proper documentation doc in the future, once everything's in place
-* ""mm: remember exclusively mapped anonymous pages with PG_anon_exclusive
-  -> Skip check+clearing in page_try_dup_anon_rmap(), otherwise we might
-     trigger a wrong VM_BUG_ON() for KSM pages in ClearPageAnonExclusive()
-  -> In __split_huge_pmd_locked(), call page_try_share_anon_rmap() only
-     for "anon_exclusive", otherwise we might trigger a wrong VM_BUG_ON()
-  -> In __split_huge_page_tail(), drop any remaining PG_anon_exclusive on
-     tail pages, and document why that is fine
-
-RFC -> v1:
-* Rephrased/extended some patch descriptions+comments
-* Tested on aarch64, ppc64 and x86_64
-* "mm/rmap: convert RMAP flags to a proper distinct rmap_t type"
- -> Added
-* "mm/rmap: drop "compound" parameter from page_add_new_anon_rmap()"
- -> Added
-* "mm: remember exclusively mapped anonymous pages with PG_anon_exclusive"
- -> Fixed __do_huge_pmd_anonymous_page() to recheck after temporarily
-    dropping the PT lock.
- -> Use "reuse" label in __do_huge_pmd_anonymous_page()
- -> Slightly simplify logic in hugetlb_cow()
- -> In remove_migration_pte(), remove unrelated changes around
-    page_remove_rmap()
-* "mm: support GUP-triggered unsharing of anonymous pages"
- -> In handle_pte_fault(), trigger pte_mkdirty() only with
-    FAULT_FLAG_WRITE
- -> In __handle_mm_fault(), extend comment regarding anonymous PUDs
-* "mm/gup: trigger FAULT_FLAG_UNSHARE when R/O-pinning a possibly shared
-   anonymous page"
-   -> Added unsharing logic to gup_hugepte() and gup_huge_pud()
-   -> Changed return logic in __follow_hugetlb_must_fault(), making sure
-      that "unshare" is always set
-* "mm/gup: sanity-check with CONFIG_DEBUG_VM that anonymous pages are
-   exclusive when (un)pinning"
-  -> Slightly simplified sanity_check_pinned_pages()
-
-David Hildenbrand (15):
-  mm/rmap: fix missing swap_free() in try_to_unmap() after
-    arch_unmap_one() failed
-  mm/hugetlb: take src_mm->write_protect_seq in
-    copy_hugetlb_page_range()
-  mm/memory: slightly simplify copy_present_pte()
-  mm/rmap: split page_dup_rmap() into page_dup_file_rmap() and
-    page_try_dup_anon_rmap()
-  mm/rmap: convert RMAP flags to a proper distinct rmap_t type
-  mm/rmap: remove do_page_add_anon_rmap()
-  mm/rmap: pass rmap flags to hugepage_add_anon_rmap()
-  mm/rmap: drop "compound" parameter from page_add_new_anon_rmap()
-  mm/rmap: use page_move_anon_rmap() when reusing a mapped PageAnon()
-    page exclusively
-  mm/page-flags: reuse PG_mappedtodisk as PG_anon_exclusive for
-    PageAnon() pages
-  mm: remember exclusively mapped anonymous pages with PG_anon_exclusive
-  mm/gup: disallow follow_page(FOLL_PIN)
-  mm: support GUP-triggered unsharing of anonymous pages
-  mm/gup: trigger FAULT_FLAG_UNSHARE when R/O-pinning a possibly shared
-    anonymous page
-  mm/gup: sanity-check with CONFIG_DEBUG_VM that anonymous pages are
-    exclusive when (un)pinning
-
- include/linux/mm.h         |  46 +++++++-
- include/linux/mm_types.h   |   8 ++
- include/linux/page-flags.h |  39 ++++++-
- include/linux/rmap.h       | 116 +++++++++++++++++--
- include/linux/swap.h       |  15 ++-
- include/linux/swapops.h    |  25 ++++
- kernel/events/uprobes.c    |   2 +-
- mm/gup.c                   | 103 +++++++++++++++-
- mm/huge_memory.c           | 124 +++++++++++++++-----
- mm/hugetlb.c               | 135 ++++++++++++++-------
- mm/khugepaged.c            |   2 +-
- mm/ksm.c                   |  15 ++-
- mm/memory.c                | 232 +++++++++++++++++++++++--------------
- mm/memremap.c              |   9 ++
- mm/migrate.c               |  40 ++++++-
- mm/mprotect.c              |   8 +-
- mm/rmap.c                  |  95 +++++++++++----
- mm/swapfile.c              |   8 +-
- mm/userfaultfd.c           |   2 +-
- tools/vm/page-types.c      |   8 +-
- 20 files changed, 815 insertions(+), 217 deletions(-)
-
--- 
-2.35.1
-
+--Sig_/SFzjUrs7yMIudHjHrw1WOsK--
