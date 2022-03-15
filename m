@@ -2,118 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 271D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 02:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AADC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 02:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344454AbiCOCbm (ORCPT
+        id S1344463AbiCOCbt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 22:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43494 "EHLO
+        Mon, 14 Mar 2022 22:31:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344432AbiCOCbh (ORCPT
+        with ESMTP id S1344432AbiCOCbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 22:31:37 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957AB47079;
-        Mon, 14 Mar 2022 19:30:26 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KHcjT0DVNz9snV;
-        Tue, 15 Mar 2022 10:26:37 +0800 (CST)
-Received: from [10.67.109.61] (10.67.109.61) by canpemm500006.china.huawei.com
- (7.192.105.130) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 15 Mar
- 2022 10:30:24 +0800
-Subject: Re: [PATCH] cpufreq: fix cpufreq_get() can't get correct CPU
- frequency
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-References: <20220311081111.159639-1-zhengzucheng@huawei.com>
- <CAJZ5v0jponp=ijVx6W=eNEGrfTKh0KbGmOQG_V0P-Mq366559g@mail.gmail.com>
-CC:     Viresh Kumar <viresh.kumar@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Len Brown <len.brown@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>
-From:   zhengzucheng <zhengzucheng@huawei.com>
-Message-ID: <100a5228-a941-0ff7-8133-14273472b6f5@huawei.com>
-Date:   Tue, 15 Mar 2022 10:30:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        Mon, 14 Mar 2022 22:31:44 -0400
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA06C473A2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 19:30:29 -0700 (PDT)
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220315023023epoutp011130baf82484eb2d2502b44a906c5706~cbQMN5Jwg1466914669epoutp01H
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:30:23 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220315023023epoutp011130baf82484eb2d2502b44a906c5706~cbQMN5Jwg1466914669epoutp01H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1647311423;
+        bh=yyfDUVLYE4ZIcb9/V6mlxmuF8mgCuNom8jgKs5yo6Sg=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=NJynkPhL7fW0gW2MmJhiChHSDOrO682gw9x1l/yx/4DEt0rSyuWPITSyEblJ90UBV
+         IySZA7OxXKNhFVZLV46S2+t+O/q5rIIky5cvdbK8SblMo0l13hRpI6hOH8uSzz5WDN
+         lKXrtxWheTa4EattvRuBjaQyCv5ICzUa5DbQGxTs=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20220315023023epcas5p422bfcd5dce2ad03f7d1dd49d8bc906cd~cbQLr_Rk72011420114epcas5p4C;
+        Tue, 15 Mar 2022 02:30:23 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.178]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4KHcnf683kz4x9QG; Tue, 15 Mar
+        2022 02:30:14 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        8B.20.06423.23AFF226; Tue, 15 Mar 2022 11:30:10 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220315023010epcas5p4a3bfcfef8714019f03283da047275b89~cbQADCX3O2229122291epcas5p4e;
+        Tue, 15 Mar 2022 02:30:10 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220315023010epsmtrp1a7dd37f8cf989c6a4a64ded48118b935~cbQACW1YR2342423424epsmtrp1k;
+        Tue, 15 Mar 2022 02:30:10 +0000 (GMT)
+X-AuditID: b6c32a49-b01ff70000001917-4c-622ffa32921d
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D4.88.03370.23AFF226; Tue, 15 Mar 2022 11:30:10 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220315023009epsmtip1b885ff1858d1d1222e04692d764f5f96~cbP_v6hoL0325103251epsmtip1B;
+        Tue, 15 Mar 2022 02:30:08 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
+        "'Rob Herring'" <robh+dt@kernel.org>,
+        "'Krzysztof Kozlowski'" <krzk+dt@kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-samsung-soc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Cc:     "'Marek Szyprowski'" <m.szyprowski@samsung.com>,
+        "'Sylwester Nawrocki'" <snawrocki@kernel.org>
+In-Reply-To: <20220314184113.251013-1-krzysztof.kozlowski@canonical.com>
+Subject: RE: [PATCH] ARM: dts: exynos: drop deprecated SFR region from MIPI
+ phy
+Date:   Tue, 15 Mar 2022 08:00:07 +0530
+Message-ID: <045f01d83814$97bf07d0$c73d1770$@samsung.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJZ5v0jponp=ijVx6W=eNEGrfTKh0KbGmOQG_V0P-Mq366559g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.109.61]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500006.china.huawei.com (7.192.105.130)
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQE1z8DeFgUpeTWUYelE+VGwjWiPDQIRWkk3rfP+BrA=
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprPJsWRmVeSWpSXmKPExsWy7bCmlq7RL/0kg/+XzS3mHznHavFy1j02
+        i41vfzBZbHp8jdXi8q45bBYzzu9jslh75C67ReveI+wW7U9fMjtwesxq6GXz2LSqk81j85J6
+        j74tqxg9Pm+SC2CNyrbJSE1MSS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy
+        8QnQdcvMAbpHSaEsMacUKBSQWFyspG9nU5RfWpKqkJFfXGKrlFqQklNgUqBXnJhbXJqXrpeX
+        WmJlaGBgZApUmJCdce3sQvaCtSIVM3fJNzBOFOxi5OSQEDCR+Lx/JnMXIxeHkMBuRom1bT9Z
+        IZxPjBKrr91mgXA+M0p07HjL2MXIAdby6pYbRHwXo8S0CzeYIJyXjBJP7x1jBJnLJqArsWNx
+        GxuILSKwjEnixe5CkGZmgRSJQ+tDQMKcAh4Sz/sfMoHYwgKBEmeWvmICKWERUJVYuVoTJMwr
+        YClx6f0+FghbUOLkzCdgNrOAvMT2t3OYIT5QkPj5dBkrxCYriXmv2pkhasQlXh49wg5ymoTA
+        Ug6J2yf+skI0uEhc33ybDcIWlnh1fAs7hC0l8bK/jR3ix2yJnl3GEOEaiaXzjrFA2PYSB67M
+        YYH4RFNi/S59iFV8Er2/nzBBdPJKdLQJQVSrSjS/uwrVKS0xsbsb6gAPiQf3rjBPYFScheSx
+        WUgem4XkgVkIyxYwsqxilEwtKM5NTy02LTDMSy2Hx3Vyfu4mRnBK1fLcwXj3wQe9Q4xMHIyH
+        GCU4mJVEeM+80E8S4k1JrKxKLcqPLyrNSS0+xGgKDOyJzFKiyfnApJ5XEm9oYmlgYmZmZmJp
+        bGaoJM57On1DopBAemJJanZqakFqEUwfEwenVAOT/ZGjgfLV2RvFtklV9sxXc3ly/wtn1cID
+        qqoSC/v3mAeIXRLqu7XMdZGZKuN+qZKcyOpkddva0I9ON/4WJTKZSHe7GWi9Ob9UT+9L9pWj
+        Ky9ufp8YtOfllM+pLmnnf5yIkFc9vn2G7HtmU4PLMgWGE2JNF3q9VumsP7Rw+xXBnLNGXhzn
+        JqdnzZS3rDnw27ScI8ov8tkj046q29e7u1qkzL4qtqsIsSU8qchPmpBxaFJEwtqteV9Ovyqq
+        /BFq8vno6YkPeHUkD/tk7K6tvKnx8VTj6/DUnnn/105RNNjV+M1r16GkfLcINuf3RVPuNlTa
+        T9HN+f5j3/H00y57G38LRxxzqPzbOeGa/Z3fL8yUWIozEg21mIuKEwHSoVv4MgQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupgkeLIzCtJLcpLzFFi42LZdlhJTtfol36SwYOXMhbzj5xjtXg56x6b
+        xca3P5gsNj2+xmpxedccNosZ5/cxWaw9cpfdonXvEXaL9qcvmR04PWY19LJ5bFrVyeaxeUm9
+        R9+WVYwenzfJBbBGcdmkpOZklqUW6dslcGVcO7uQvWCtSMXMXfINjBMFuxg5OCQETCRe3XLr
+        YuTiEBLYwSjRfXw/YxcjJ1BcWuL6xgnsELawxMp/z9khip4zSsyce40FJMEmoCuxY3EbG4gt
+        IrCKSeJhlxGIzSyQItF8dCUbRMNMRol7l/aCTeIU8JB43v+QCcQWFvCXOPTxHyPIFSwCqhIr
+        V2uChHkFLCUuvd/HAmELSpyc+YQFpIRZQE+ibSMjxHh5ie1v5zBD3KYg8fPpMlaIE6wk5r1q
+        Z4aoEZd4efQI+wRG4VlIJs1CmDQLyaRZSDoWMLKsYpRMLSjOTc8tNiwwykst1ytOzC0uzUvX
+        S87P3cQIjiwtrR2Me1Z90DvEyMTBeIhRgoNZSYT3zAv9JCHelMTKqtSi/Pii0pzU4kOM0hws
+        SuK8F7pOxgsJpCeWpGanphakFsFkmTg4pRqYLhloMsh9sll5ouVxok78tN7zB8pfndo4g6su
+        +NiluRUWrFfnbrO3mXvr6EV3K42LzzfqiovMDDs3xXmjh+Hnvkgl86CjhbYTint5NjwtY+gQ
+        nPvH/ILsE+mjf9dbCwZdiz5Wmr1OVEHDTsu2VWe17PIta7ztt7YGZfOt3nPviuP2w1cuu06z
+        fmh1eXnsPD9tltWrfNYb2+/cpRCpMDFHg1nidPEK/3vTGf89cgzX2MXZaR6apvJ4/apCm8DZ
+        F11Drm/N4Yp3b1qkeixKwLdZZc3uqsnhBXLH7q9etIatbpn/nBf5EzzKrPTvN67dXlay7FQ1
+        Z/uySU9WeCSstCg9c6NvVVzOZ96zIVNXalU3KbEUZyQaajEXFScCACRrA+YbAwAA
+X-CMS-MailID: 20220315023010epcas5p4a3bfcfef8714019f03283da047275b89
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
 X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220314184122epcas5p43627f2cf266da868679cd59cbbbea14a
+References: <CGME20220314184122epcas5p43627f2cf266da868679cd59cbbbea14a@epcas5p4.samsung.com>
+        <20220314184113.251013-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Krzysztof,
 
+>-----Original Message-----
+>From: Krzysztof Kozlowski [mailto:krzysztof.kozlowski@canonical.com]
+>Sent: Tuesday, March 15, 2022 12:11 AM
+>To: Rob Herring <robh+dt@kernel.org>; Krzysztof Kozlowski
+><krzk+dt@kernel.org>; Alim Akhtar <alim.akhtar@samsung.com>;
+>devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+>samsung-soc@vger.kernel.org; linux-kernel@vger.kernel.org
+>Cc: Marek Szyprowski <m.szyprowski@samsung.com>; Sylwester Nawrocki
+><snawrocki@kernel.org>; Krzysztof Kozlowski
+><krzysztof.kozlowski@canonical.com>
+>Subject: [PATCH] ARM: dts: exynos: drop deprecated SFR region from MIPI
+>phy
+>
+>Commit e4b3d38088df ("phy: exynos-video-mipi: Fix regression by adding
+>support for PMU regmap") deprecated the usage of unit address in MIPI phy
+>node, in favor of a syscon phandle.  Deprecating was a correct approach
+>because that unit address was actually coming from Power Management Unit
+>SFR range so its usage here caused overlapped memory mapping.
+>
+>In 2016 commit 26dbadba495f ("phy: exynos-mipi-video: Drop support for
+>direct access to PMU") fully removed support for parsing that MIPI phy unit
+>address (SFR range) but the address stayed in Exynos5250 DTSI for
+>compatibility reasons.
+>
+>Remove that deprecated unit address from Exynos5250 MIPI phy, because it
+>has been almost 6 years since it was deprecated and it causes now DT schema
+>validation warnings:
+>
+>  video-phy@10040710: 'reg' does not match any of the regexes: 'pinctrl-[0-
+>9]+'
+>
+>Any out-of-tree users of Exynos5250 DTSI, should update their code to use
+>newer syscon property.
+>
+>Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>---
 
-On 2022/3/11 23:52, Rafael J. Wysocki wrote:
-> On Fri, Mar 11, 2022 at 9:11 AM z00314508 <zhengzucheng@huawei.com> wrote:
->> From: Zucheng Zheng <zhengzucheng@huawei.com>
->>
->> On some specific platforms, the cpufreq driver does not define
->> cpufreq_driver.get() routine (eg:x86 intel_pstate driver), as a
-> I guess you mean the cpufreq driver ->get callback.
->
-> No, intel_pstate doesn't implement it, because it cannot reliably
-> return the current CPU frequency.
->
->> result, the cpufreq_get() can't get the correct CPU frequency.
-> No, it can't, if intel_pstate is the driver, but what's the problem?
-> This function is only called in one place in the kernel and not on x8
-> even.
->
->> Modern x86 processors include the hardware needed to accurately
->> calculate frequency over an interval -- APERF, MPERF and the TSC.
-> You can compute the average frequency over an interval, but ->get is
-> expected to return the actual current frequency at the time call time.
->
->> Here we use arch_freq_get_on_cpu() in preference to any driver
->> driver-specific cpufreq_driver.get() routine to get CPU frequency.
->>
->> Fixes: f8475cef9008 ("x86: use common aperfmperf_khz_on_cpu() to calculate KHz using APERF/MPERF")
-> No kidding.
->
->> Signed-off-by: Zucheng Zheng <zhengzucheng@huawei.com>
->> ---
->>   drivers/cpufreq/cpufreq.c | 6 +++++-
->>   1 file changed, 5 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
->> index 80f535cc8a75..d777257b4454 100644
->> --- a/drivers/cpufreq/cpufreq.c
->> +++ b/drivers/cpufreq/cpufreq.c
->> @@ -1806,10 +1806,14 @@ unsigned int cpufreq_get(unsigned int cpu)
->>   {
->>          struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
->>          unsigned int ret_freq = 0;
->> +       unsigned int freq;
->>
->>          if (policy) {
->>                  down_read(&policy->rwsem);
->> -               if (cpufreq_driver->get)
->> +               freq = arch_freq_get_on_cpu(policy->cpu);
->> +               if (freq)
->> +                       ret_freq = freq;
->> +               else if (cpufreq_driver->get)
-> Again, what problem exactly does this address?
-Thank you for review.
+Reviewed-by: Alim Akhtar<alim.akhtar@samsung.com>
 
-In some scenarios, cpufreq driver ->get is not defined,
-some driver get the CPU frequency by calling cpufreq_get() will return 0.
-The modification to this problem is inspired by the implementation of 
-the show_scaling_cur_freq().
+> arch/arm/boot/dts/exynos5250.dtsi | 5 ++---
+> 1 file changed, 2 insertions(+), 3 deletions(-)
 >
->>                          ret_freq = __cpufreq_get(policy);
->>                  up_read(&policy->rwsem);
->>
->> --
-> .
+>diff --git a/arch/arm/boot/dts/exynos5250.dtsi
+>b/arch/arm/boot/dts/exynos5250.dtsi
+>index 5baaa7eb71a4..d8d401b5ca48 100644
+>--- a/arch/arm/boot/dts/exynos5250.dtsi
+>+++ b/arch/arm/boot/dts/exynos5250.dtsi
+>@@ -817,15 +817,14 @@ mixer: mixer@14450000 {
+> 			status = "disabled";
+> 		};
 >
+>-		dp_phy: video-phy {
+>+		dp_phy: video-phy-0 {
+> 			compatible = "samsung,exynos5250-dp-video-phy";
+> 			samsung,pmu-syscon = <&pmu_system_controller>;
+> 			#phy-cells = <0>;
+> 		};
+>
+>-		mipi_phy: video-phy@10040710 {
+>+		mipi_phy: video-phy-1 {
+> 			compatible = "samsung,s5pv210-mipi-video-phy";
+>-			reg = <0x10040710 0x100>;
+> 			#phy-cells = <1>;
+> 			syscon = <&pmu_system_controller>;
+> 		};
+>--
+>2.32.0
+
 
