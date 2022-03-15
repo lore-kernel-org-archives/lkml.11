@@ -2,59 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DCFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05554C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346790AbiCOJrN (ORCPT
+        id S1344317AbiCOJsj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:47:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50064 "EHLO
+        Tue, 15 Mar 2022 05:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346781AbiCOJrJ (ORCPT
+        with ESMTP id S1346901AbiCOJsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:47:09 -0400
-X-Greylist: delayed 440 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Mar 2022 02:45:57 PDT
-Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EE64EF78
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:45:55 -0700 (PDT)
-Received: from [192.168.1.100] (unknown [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 15 Mar 2022 05:48:23 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A620E4ECD6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:47:11 -0700 (PDT)
+Received: from zn.tnic (p5de8e440.dip0.t-ipconnect.de [93.232.228.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id E49F13F71B;
-        Tue, 15 Mar 2022 10:38:29 +0100 (CET)
-Message-ID: <cd98da86-2db2-8e28-fd2d-5a3bf76d7255@somainline.org>
-Date:   Tue, 15 Mar 2022 10:38:29 +0100
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1E89C1EC0374;
+        Tue, 15 Mar 2022 10:47:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1647337626;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=nkcnMhMLGkZMB3rh6duTo8CW4F5wZyX3B2sIvZEMXyE=;
+        b=BGQJK5dhi6l8N5MZsrC68XE4hhmKMWxRE6TL6q+1jfW0+zCBEYbK081S4Si4J7S2Wz/70M
+        Xcvx3AifRUbKs/oCuJZTgru7gUuV3s65oGNW3PxRKYZxJEozUQwXGb6sMv6zLGF3mlKv9f
+        R+2AEkMU78qDvwlJuO1sP6L9hPGkaJU=
+Date:   Tue, 15 Mar 2022 10:44:51 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     James Jones <linux@theinnocuous.com>
+Cc:     keescook@chromium.org, x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86: Remove a.out support
+Message-ID: <YjBgE1Howd5WnQ3P@zn.tnic>
+References: <4c449fab-8135-5057-7d2c-7b948ce130cc@theinnocuous.com>
+ <0b31b1d3-852d-6cab-82ae-5eecaec05679@theinnocuous.com>
+ <Yi3b/GpUuhkI5lv7@zn.tnic>
+ <785a6348-e1c5-7900-78bc-af8b6923cc8a@theinnocuous.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH V4 3/6] spi: mediatek: add ipm design support for MT7986
-Content-Language: en-US
-To:     Leilk Liu <leilk.liu@mediatek.com>, Mark Brown <broonie@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-References: <20220315032411.2826-1-leilk.liu@mediatek.com>
- <20220315032411.2826-4-leilk.liu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>
-In-Reply-To: <20220315032411.2826-4-leilk.liu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <785a6348-e1c5-7900-78bc-af8b6923cc8a@theinnocuous.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 15/03/22 04:24, Leilk Liu ha scritto:
-> this patch add the support of ipm design.
-> 
-> Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+On Sun, Mar 13, 2022 at 06:26:31PM +0000, James Jones wrote:
+> ...
+> This all probably seems absurd now, but note the newest version of these
+> tools was released in 1995, when Linux ELF support would have been brand
+> new. I don't know when the tools first shipped on Linux, but it would
+> have been a few years before that, so a.out would have been the only
+> option. It seems some Atari Jaguar developers were rather early Linux
+> adopters.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Ok, that explains it fine, thanks.
 
-> ---
->   drivers/spi/spi-mt65xx.c | 102 +++++++++++++++++++++++++++++++++------
->   1 file changed, 87 insertions(+), 15 deletions(-)
-> 
+Please put that explanation in a text file somewhere in
+Documentation/x86/ so that we know why we're keeping a.out support.
+
+I'll zap the removing patch from the lineup now and you can send me your
+fixes whenever you're ready.
+
+If you're wondering on how to format them and what to do, we have it all
+documented in Documentation/process/. I'd especially suggest reading
+Documentation/process/submitting-patches.rst
+
+HTH.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
