@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2023CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF691C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:46:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237230AbiCOKrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:47:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33300 "EHLO
+        id S232977AbiCOKrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347300AbiCOKpd (ORCPT
+        with ESMTP id S1347347AbiCOKpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:45:33 -0400
+        Tue, 15 Mar 2022 06:45:38 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A1336331;
-        Tue, 15 Mar 2022 03:43:59 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:56 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A1D387A3;
+        Tue, 15 Mar 2022 03:44:05 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:44:02 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341037;
+        s=2020; t=1647341043;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7fG5GG4La4zUUGgDWhcXGVC5Xs1nNxZkXXfVuJN5yqM=;
-        b=kxUbrQTSMXFv3a1kq3Unn9YNvKcRKGuntctye1UNti3dYOH8vn4VNUPzfs2NHYQAi0dBRw
-        zBWvzzdls1+d2VlWntdCABSJfcn2RV/CRur7caj3jtoYEXaq77TEU+l9OPM4dYqu0u5DhG
-        BiqHTKujA7tvQSjpxbsDvXZjHFd4CHkl4XmzO23O2YUOfP0cbIST8948LhYeasTk5c0ZG6
-        Uxj3fZuNxF/Edr5kR5yaJvpV3c+V4nneSdgJw+Xg+ud1Om6kIgO7TxC22PgWdi+3iE52P+
-        blpP+W3aVBAf+npLgDMcC6+vGYm8hq/x0sru98jVllfrmeUPyCY/DDi9Xdw1tQ==
+        bh=QjIqBA18d+6k68nF1JF3P0tCn6XSCRmHUgMmZ3p20Y4=;
+        b=tN84Xxxhstz05GypjccyddASGrvt3zVXZfbwf+4JEqP4PMVHSCW8D96S9D0tn4bkdZeVSM
+        WrO2mGGUASJbMYKBjjF4e0w0oRj4zq4pVuMEaC7gybuuz1VmpXJ25e7OWjqwNu/jBWLLmd
+        +Nprr6kKTYC5FW6U8M4584m+izSUAoGgfWSSWkwZHI2ANGFlDr31sKYY/RTEAjdG34jjr3
+        5cwpJ3xPoGG6RBd+4fiK+GVugsTZGgumVEn1PMvVkgvwBz+yKLbF7bM2LpSD7aJ3nV11dT
+        1HRGUUNP2m3oJAVX5wGEF59ScppHIlrUtZMYesgluFFN/8zdhRdTGfu+GuxXSQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341037;
+        s=2020e; t=1647341043;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7fG5GG4La4zUUGgDWhcXGVC5Xs1nNxZkXXfVuJN5yqM=;
-        b=5THxSxk4TeL4rOF+Gt6cYxYlUYoz2HVlkJyDTVHEnPP0QbW24m+HE8fD9XXDqKOIdCFS8Q
-        GhwLeZjtwdG6bXBA==
+        bh=QjIqBA18d+6k68nF1JF3P0tCn6XSCRmHUgMmZ3p20Y4=;
+        b=di7+i8AFSsb4flUU3Tgz5oXpgoXnniWK/KeGmcZmMraqVj8UgKFrw7ySqKlxFy0aWqYHUQ
+        PAx5HP6w5Z32iQDA==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/alternative: Simplify int3_selftest_ip
+Subject: [tip: x86/core] x86/livepatch: Validate __fentry__ location
 Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154318.700456643@infradead.org>
-References: <20220308154318.700456643@infradead.org>
+In-Reply-To: <20220308154318.285971256@infradead.org>
+References: <20220308154318.285971256@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734103676.16921.14487033480420940559.tip-bot2@tip-bot2>
+Message-ID: <164734104253.16921.15291352375479075056.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,75 +61,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     99c95c5d4f1027130d555fdb27b576520894827d
-Gitweb:        https://git.kernel.org/tip/99c95c5d4f1027130d555fdb27b576520894827d
+Commit-ID:     d15cb3dab1e4f00e29599a4f5e1f6678a530d270
+Gitweb:        https://git.kernel.org/tip/d15cb3dab1e4f00e29599a4f5e1f6678a530d270
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:37 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:30 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:40 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:37 +01:00
 
-x86/alternative: Simplify int3_selftest_ip
+x86/livepatch: Validate __fentry__ location
 
-Similar to ibt_selftest_ip, apply the same pattern.
+Currently livepatch assumes __fentry__ lives at func+0, which is most
+likely untrue with IBT on. Instead make it use ftrace_location() by
+default which both validates and finds the actual ip if there is any
+in the same symbol.
 
 Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154318.700456643@infradead.org
+Link: https://lore.kernel.org/r/20220308154318.285971256@infradead.org
 ---
- arch/x86/kernel/alternative.c | 21 +++++++--------------
- 1 file changed, 7 insertions(+), 14 deletions(-)
+ arch/powerpc/include/asm/livepatch.h | 10 ----------
+ kernel/livepatch/patch.c             | 19 ++-----------------
+ 2 files changed, 2 insertions(+), 27 deletions(-)
 
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index b4470ea..14d1003 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -719,7 +719,7 @@ asm (
- "	.popsection\n"
- );
- 
--extern __initdata unsigned long int3_selftest_ip; /* defined in asm below */
-+extern void int3_selftest_ip(void); /* defined in asm below */
- 
- static int __init
- int3_exception_notify(struct notifier_block *self, unsigned long val, void *data)
-@@ -733,14 +733,15 @@ int3_exception_notify(struct notifier_block *self, unsigned long val, void *data
- 	if (val != DIE_INT3)
- 		return NOTIFY_DONE;
- 
--	if (regs->ip - INT3_INSN_SIZE != int3_selftest_ip)
-+	if (regs->ip - INT3_INSN_SIZE != (unsigned long)&int3_selftest_ip)
- 		return NOTIFY_DONE;
- 
- 	int3_emulate_call(regs, (unsigned long)&int3_magic);
- 	return NOTIFY_STOP;
+diff --git a/arch/powerpc/include/asm/livepatch.h b/arch/powerpc/include/asm/livepatch.h
+index 4fe018c..7b9dcd5 100644
+--- a/arch/powerpc/include/asm/livepatch.h
++++ b/arch/powerpc/include/asm/livepatch.h
+@@ -19,16 +19,6 @@ static inline void klp_arch_set_pc(struct ftrace_regs *fregs, unsigned long ip)
+ 	regs_set_return_ip(regs, ip);
  }
  
--static void __init int3_selftest(void)
-+/* Must be noinline to ensure uniqueness of int3_selftest_ip. */
-+static noinline void __init int3_selftest(void)
+-#define klp_get_ftrace_location klp_get_ftrace_location
+-static inline unsigned long klp_get_ftrace_location(unsigned long faddr)
+-{
+-	/*
+-	 * Live patch works only with -mprofile-kernel on PPC. In this case,
+-	 * the ftrace location is always within the first 16 bytes.
+-	 */
+-	return ftrace_location_range(faddr, faddr + 16);
+-}
+-
+ static inline void klp_init_thread_info(struct task_struct *p)
  {
- 	static __initdata struct notifier_block int3_exception_nb = {
- 		.notifier_call	= int3_exception_notify,
-@@ -753,18 +754,10 @@ static void __init int3_selftest(void)
- 	/*
- 	 * Basically: int3_magic(&val); but really complicated :-)
- 	 *
--	 * Stick the address of the INT3 instruction into int3_selftest_ip,
--	 * then trigger the INT3, padded with NOPs to match a CALL instruction
--	 * length.
-+	 * INT3 padded with NOP to CALL_INSN_SIZE. The int3_exception_nb
-+	 * notifier above will emulate CALL for us.
- 	 */
--	asm volatile ("1: int3; nop; nop; nop; nop\n\t"
--		      ".pushsection .init.data,\"aw\"\n\t"
--		      ".align " __ASM_SEL(4, 8) "\n\t"
--		      ".type int3_selftest_ip, @object\n\t"
--		      ".size int3_selftest_ip, " __ASM_SEL(4, 8) "\n\t"
--		      "int3_selftest_ip:\n\t"
--		      __ASM_SEL(.long, .quad) " 1b\n\t"
--		      ".popsection\n\t"
-+	asm volatile ("int3_selftest_ip: int3; nop; nop; nop; nop\n\t"
- 		      : ASM_CALL_CONSTRAINT
- 		      : __ASM_SEL_RAW(a, D) (&val)
- 		      : "memory");
+ 	/* + 1 to account for STACK_END_MAGIC */
+diff --git a/kernel/livepatch/patch.c b/kernel/livepatch/patch.c
+index fe316c0..c172bf9 100644
+--- a/kernel/livepatch/patch.c
++++ b/kernel/livepatch/patch.c
+@@ -124,19 +124,6 @@ unlock:
+ 	ftrace_test_recursion_unlock(bit);
+ }
+ 
+-/*
+- * Convert a function address into the appropriate ftrace location.
+- *
+- * Usually this is just the address of the function, but on some architectures
+- * it's more complicated so allow them to provide a custom behaviour.
+- */
+-#ifndef klp_get_ftrace_location
+-static unsigned long klp_get_ftrace_location(unsigned long faddr)
+-{
+-	return faddr;
+-}
+-#endif
+-
+ static void klp_unpatch_func(struct klp_func *func)
+ {
+ 	struct klp_ops *ops;
+@@ -153,8 +140,7 @@ static void klp_unpatch_func(struct klp_func *func)
+ 	if (list_is_singular(&ops->func_stack)) {
+ 		unsigned long ftrace_loc;
+ 
+-		ftrace_loc =
+-			klp_get_ftrace_location((unsigned long)func->old_func);
++		ftrace_loc = ftrace_location((unsigned long)func->old_func);
+ 		if (WARN_ON(!ftrace_loc))
+ 			return;
+ 
+@@ -186,8 +172,7 @@ static int klp_patch_func(struct klp_func *func)
+ 	if (!ops) {
+ 		unsigned long ftrace_loc;
+ 
+-		ftrace_loc =
+-			klp_get_ftrace_location((unsigned long)func->old_func);
++		ftrace_loc = ftrace_location((unsigned long)func->old_func);
+ 		if (!ftrace_loc) {
+ 			pr_err("failed to find location for function '%s'\n",
+ 				func->old_name);
