@@ -2,217 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F00EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345980AbiCOInt (ORCPT
+        id S1346017AbiCOIoR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46634 "EHLO
+        Tue, 15 Mar 2022 04:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343500AbiCOInr (ORCPT
+        with ESMTP id S1346002AbiCOIoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:43:47 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B262B4CD62;
-        Tue, 15 Mar 2022 01:42:33 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHn3C5Dkrz4xvg;
-        Tue, 15 Mar 2022 19:42:31 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647333752;
-        bh=3LBWFpfo5KWICck/UJ51RLvAZ87sUmvXzLs4u5w3HjE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AkD5MiHn21Wk1lb1TEiUPo8CEmmxIcVq+vVvh6k8IuU/4iV0tK2vAAJ5P0vlAHnDa
-         b94dvSpyXaXMqHR6ZIDE0sa46PlUH8pFQEBNz1MtOgzFzTTHALirDAJOndOsSV6Ynr
-         kHxYyc7Nha/kV6tVxJPeq9PQJFrb3qbZMQGReeSdn6W/AWhtLx7mcCsaBb6lkwtVIS
-         +/4NCO5Yyr04hOZn/yP1zcqRr0xFKe7c/L4JdWNplJ3VvgwshIsW+pBh7U0CjbBjkt
-         1IC8BjNHgTMFj2Eovm//2YZIc/4CqjbdyAlPjSHVTB50r7OZYadzTw2OjLLfstOzjI
-         kKHTWK2B5epyw==
-Date:   Tue, 15 Mar 2022 19:42:30 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the tip tree
-Message-ID: <20220315194230.62aec8ce@canb.auug.org.au>
-In-Reply-To: <20220315163747.3e11ad15@canb.auug.org.au>
-References: <20220315140644.369d98d6@canb.auug.org.au>
-        <20220315162327.53f7139f@canb.auug.org.au>
-        <20220315163747.3e11ad15@canb.auug.org.au>
+        Tue, 15 Mar 2022 04:44:13 -0400
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3DCCEB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:42:58 -0700 (PDT)
+Received: by mail-wr1-f42.google.com with SMTP id b19so5446387wrh.11
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:42:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SQaJGlyMxDxM92vESERhjv5rcWAKZ6ex7RCbOXz8fBQ=;
+        b=cxkf+zwzED48eNZ3U9UMbxgxLBoDmyb/DDbCr62aZ8V3HYkteoeXj5stXxClB+qzi8
+         TMu6uH/uLigXnPoKT0f60LyPulfejrGgaEaA0U2mOPR5B5eL8XylOgahcL9w4Buj4UlO
+         N9tF8+X6C8bq17r1S15QQGuKcb4rOsnZQ99WtriWZ9mITbeD+kQIzz9/vCpltn6VoObh
+         IV5V1k1T7LOLGQNjZW8xusU5PACsVx4qgamvQNVfUCzHd357iv8nFlokmf5j5fxEMjHV
+         xImYq5foXMdfTNj9aoyZs/E8wxqOHKWTx/JMHzICG7PXVmovm4pCJMEb77VYPnDH4pl0
+         NERw==
+X-Gm-Message-State: AOAM5328StfStnSQ/wGKb6n05gFcH2dRveAtcsqHew3QuG65thLnb8KI
+        nyymFn8aFgMi8v5AEkT3k47tSmGRylI=
+X-Google-Smtp-Source: ABdhPJwz23JwJGrmvxcd66EAJx6dzWlFeuh9jhCzDYWmqMSJXBX+pe4A9nWcHI6GAH4fuHhjqvsRkg==
+X-Received: by 2002:a5d:5986:0:b0:1f1:f971:f02 with SMTP id n6-20020a5d5986000000b001f1f9710f02mr18678032wri.578.1647333777502;
+        Tue, 15 Mar 2022 01:42:57 -0700 (PDT)
+Received: from [192.168.64.180] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
+        by smtp.gmail.com with ESMTPSA id u25-20020a05600c211900b00389d4bdb3d2sm2517865wml.36.2022.03.15.01.42.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 01:42:57 -0700 (PDT)
+Message-ID: <6ac83f8b-01e6-5394-0570-023ac6b1a71d@grimberg.me>
+Date:   Tue, 15 Mar 2022 10:42:56 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/xUX22JvAl0N4LuI3+MZnM1d";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] driver/nvme/host: Support duplicated nsid for the
+ private ns
+Content-Language: en-US
+To:     "hch@lst.de" <hch@lst.de>
+Cc:     Sungup Moon <sungup.moon@samsung.com>,
+        "kbusch@kernel.org" <kbusch@kernel.org>,
+        "axboe@fb.com" <axboe@fb.com>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <CGME20220314110545epcms2p4a227eac7c4652445050e70ee2350635d@epcms2p4>
+ <20220314110545epcms2p4a227eac7c4652445050e70ee2350635d@epcms2p4>
+ <20220315071230.GA2069@lst.de> <20220315071926.GA2137@lst.de>
+ <a3051d85-c08e-a273-c7cc-2eb3e21df717@grimberg.me>
+ <20220315084035.GA3834@lst.de>
+From:   Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <20220315084035.GA3834@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/xUX22JvAl0N4LuI3+MZnM1d
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+>>> +static struct nvme_ns_head *nvme_find_ns_head(struct nvme_ctrl *ctrl,
+>>>    		unsigned nsid)
+>>>    {
+>>> +	struct nvme_subsystem *subsys = ctrl->subsys;
+>>>    	struct nvme_ns_head *h;
+>>>      	lockdep_assert_held(&subsys->lock);
+>>
+>> IMO it is a bit strange that we now don't pass in the subsystem but
+>> require that the subsys->lock is taken...
+> 
+> We do things like that in various places, mostly because information
+> needed that is subsystem-wide hangs of the nvme_ctrl structure, in
+> this case the various feature bitmaps.  We could move them to the
+> subsystem structure, which would be the right thing to do but a fair
+> amout of churn for little savings.
 
-On Tue, 15 Mar 2022 16:37:47 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> On Tue, 15 Mar 2022 16:23:27 +1100 Stephen Rothwell <sfr@canb.auug.org.au=
-> wrote:
-> >
-> > On Tue, 15 Mar 2022 14:06:44 +1100 Stephen Rothwell <sfr@canb.auug.org.=
-au> wrote: =20
-> > >
-> > > After merging the irqchip tree, today's linux-next build (x86_64
-> > > allmodconfig) failed like this:
-> > >=20
-> > > arch/x86/kernel/cpuid.o: warning: objtool: file already has .orc_unwi=
-nd section, skipping
-> > > make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: arch/=
-x86/kernel/cpuid.ko] Error 255
-> > > arch/x86/kernel/msr.o: warning: objtool: file already has .orc_unwind=
- section, skipping
-> > > make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: arch/=
-x86/kernel/msr.ko] Error 255
-> > > arch/x86/events/intel/intel-uncore.o: warning: objtool: file already =
-has .retpoline_sites, skipping
-> > > arch/x86/events/intel/intel-uncore.o: warning: objtool: file already =
-has .ibt_endbr_seal, skipping
-> > > arch/x86/events/intel/intel-uncore.o: warning: objtool: file already =
-has .orc_unwind section, skipping
-> > > make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: arch/=
-x86/events/intel/intel-uncore.ko] Error 255
-> > >=20
-> > > I couldn't see anything int the irqchip tree that would cause this,
-> > > so I deleted my object directory and redid the build and this time
-> > > it succeeded.
-> > >=20
-> > > I suspect some change in the tip tree has brought this on (it is merg=
-ed
-> > > just a bit before the irqchip tree).   =20
-> >=20
-> > This time after the merging usb trees:
-> >=20
-> > drivers/phy/qualcomm/phy-qcom-usb-hs.o: warning: objtool: file already =
-has .orc_unwind section, skipping
-> > make[3]: *** [scripts/Makefile.modfinal:61: drivers/phy/qualcomm/phy-qc=
-om-usb-hs.ko] Error 255
-> > drivers/phy/qualcomm/phy-qcom-usb-hsic.o: warning: objtool: file alread=
-y has .orc_unwind section, skipping
-> > make[3]: *** [scripts/Makefile.modfinal:61: drivers/phy/qualcomm/phy-qc=
-om-usb-hsic.ko] Error 255
-> >=20
-> > I just removed the drivers/phy/qualcomm directory from the object tree
-> > and rebuilt.
-> >=20
-> > Then got this:
-> >=20
-> > drivers/phy/ti/phy-tusb1210.o: warning: objtool: file already has .orc_=
-unwind section, skipping
-> > make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: drivers=
-/phy/ti/phy-tusb1210.ko] Error 255
-> >=20
-> > So removed the drivers/phy/ti directory and rebuilt and the build
-> > succeeded.
-> >=20
-> > I assume that something is being left around or reprocessed when it
-> > should not be. =20
->=20
-> Maybe commit
->=20
->   8856dadf7ad3 ("Kbuild: Allow whole module objtool runs")
->=20
-> ?
+Yea I understand its not universally enforced, just popped up.
 
-And after merging the scsi tree:
+>>> +++ b/drivers/nvme/host/multipath.c
+>>> @@ -504,10 +504,11 @@ int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl, struct nvme_ns_head *head)
+>>>      	/*
+>>>    	 * Add a multipath node if the subsystems supports multiple controllers.
+>>> -	 * We also do this for private namespaces as the namespace sharing data could
+>>> -	 * change after a rescan.
+>>> +	 * We also do this for private namespaces as the namespace sharing flag
+>>> +	 * could change after a rescan.
+>>
+>> What happens in this case? we now have non-unique shared namespaces?
+> 
+> The non-uniqueue NSIDs can only happen for private namespaces.
 
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .stati=
-c_call_sites section, skipping
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .retpo=
-line_sites, skipping
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .ibt_e=
-ndbr_seal, skipping
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .orc_u=
-nwind section, skipping
-arch/x86/crypto/aesni-intel.o: warning: objtool: file already has .static_c=
-all_sites section, skipping
-arch/x86/crypto/aesni-intel.o: warning: objtool: file already has .ibt_endb=
-r_seal, skipping
-arch/x86/crypto/aesni-intel.o: warning: objtool: file already has .orc_unwi=
-nd section, skipping
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .stati=
-c_call_sites section, skipping
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .retpo=
-line_sites, skipping
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .ibt_e=
-ndbr_seal, skipping
-arch/x86/crypto/aegis128-aesni.o: warning: objtool: file already has .orc_u=
-nwind section, skipping
-arch/x86/crypto/aesni-intel.o: warning: objtool: file already has .static_c=
-all_sites section, skipping
-arch/x86/crypto/aesni-intel.o: warning: objtool: file already has .ibt_endb=
-r_seal, skipping
-arch/x86/crypto/aesni-intel.o: warning: objtool: file already has .orc_unwi=
-nd section, skipping
-arch/x86/kernel/cpu/mce/mce-inject.o: warning: objtool: file already has .s=
-tatic_call_sites section, skipping
-arch/x86/kernel/cpu/mce/mce-inject.o: warning: objtool: file already has .r=
-etpoline_sites, skipping
-arch/x86/kernel/cpu/mce/mce-inject.o: warning: objtool: file already has .o=
-rc_unwind section, skipping
-arch/x86/kernel/cpuid.o: warning: objtool: file already has .orc_unwind sec=
-tion, skipping
-arch/x86/kernel/msr.o: warning: objtool: file already has .orc_unwind secti=
-on, skipping
-crypto/aegis128.o: warning: objtool: file already has .static_call_sites se=
-ction, skipping
-crypto/aegis128.o: warning: objtool: file already has .orc_unwind section, =
-skipping
-crypto/arc4.o: warning: objtool: file already has .orc_unwind section, skip=
-ping
-crypto/async_tx/async_memcpy.o: warning: objtool: file already has .static_=
-call_sites section, skipping
-crypto/async_tx/async_memcpy.o: warning: objtool: file already has .retpoli=
-ne_sites, skipping
-crypto/async_tx/async_memcpy.o: warning: objtool: file already has .orc_unw=
-ind section, skipping
-
-and so on ...
-
-I finally got fed up with rebuilding and so reverted these commits
-
-  c7d90e15b895 ("x86: Fix {int3,ibt}_selftest() vs LTO")
-  8959fcf5650e ("x86/alternative: Use .ibt_endbr_seal to seal indirect call=
-s")
-  49f8cb48085d ("objtool: Find unused ENDBR instructions")
-  b87d2fcee362 ("objtool: Validate IBT assumptions")
-  df280fcb49f9 ("objtool: Add IBT/ENDBR decoding")
-  51727f8e4a1a ("objtool: Read the NOENDBR annotation")
-  8856dadf7ad3 ("Kbuild: Allow whole module objtool runs")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/xUX22JvAl0N4LuI3+MZnM1d
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwUXcACgkQAVBC80lX
-0GzM2Af+K92PRl+zHuxwYC66rCvOeqikgiVklVadTooAEDjBlqXRblt0ODiRkSmD
-aKOKe9R3vdnSnh/J7jAT6AvH5CGtkPaxAzcaf8PSJYQGydAL4W0kItcDikThiCVK
-SUh8ud//UA9CxNhcY8c6hxRqyDvpphMNPsNcGluIeJGBT5oFh4RgijwBXbdqeM8M
-3pZNfSb7THCUjnDOgKDDT7Z1G1ulf54emHMR2ggIv6BKnz07Cl6/k4CjIcHx3hl6
-9JEetwehAjazzdOse5Ng6NF65SN9V4EFZgJ0D996HqJZSrBxg3OGJnF4areKXbDm
-C+zixvyXA3YZ4c1CGpBGtTNyl8bZUQ==
-=Fu1e
------END PGP SIGNATURE-----
-
---Sig_/xUX22JvAl0N4LuI3+MZnM1d--
+But what happens if this changes upon a rescan as you commented?
