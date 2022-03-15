@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2002C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 03:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 734C5C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 03:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344660AbiCOD1O (ORCPT
+        id S1344689AbiCOD1U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 23:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        Mon, 14 Mar 2022 23:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235714AbiCOD1L (ORCPT
+        with ESMTP id S1344654AbiCOD1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 23:27:11 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADD5483AE;
-        Mon, 14 Mar 2022 20:26:01 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KHdwH0qDjzcZyY;
-        Tue, 15 Mar 2022 11:21:03 +0800 (CST)
+        Mon, 14 Mar 2022 23:27:14 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6444D4888B;
+        Mon, 14 Mar 2022 20:26:03 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KHdxf3K1Qz9sh2;
+        Tue, 15 Mar 2022 11:22:14 +0800 (CST)
 Received: from dggpeml100016.china.huawei.com (7.185.36.216) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 11:25:59 +0800
+ 15.1.2308.21; Tue, 15 Mar 2022 11:26:01 +0800
 Received: from DESKTOP-27KDQMV.china.huawei.com (10.174.148.223) by
  dggpeml100016.china.huawei.com (7.185.36.216) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 11:25:58 +0800
+ 15.1.2308.21; Tue, 15 Mar 2022 11:26:00 +0800
 From:   "Longpeng(Mike)" <longpeng2@huawei.com>
 To:     <stefanha@redhat.com>, <mst@redhat.com>, <jasowang@redhat.com>,
         <sgarzare@redhat.com>
@@ -35,10 +35,12 @@ CC:     <arei.gonglei@huawei.com>, <yechuan@huawei.com>,
         <virtualization@lists.linux-foundation.org>, <kvm@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         Longpeng <longpeng2@huawei.com>
-Subject: [PATCH v2 0/3] vdpa: add two ioctl commands to support generic vDPA
-Date:   Tue, 15 Mar 2022 11:25:50 +0800
-Message-ID: <20220315032553.455-1-longpeng2@huawei.com>
+Subject: [PATCH v2 3/3] vdpa: support exposing the count of vqs to userspace
+Date:   Tue, 15 Mar 2022 11:25:53 +0800
+Message-ID: <20220315032553.455-4-longpeng2@huawei.com>
 X-Mailer: git-send-email 2.25.0.windows.1
+In-Reply-To: <20220315032553.455-1-longpeng2@huawei.com>
+References: <20220315032553.455-1-longpeng2@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -52,37 +54,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Longpeng <longpeng2@huawei.com>
 
-To support generic vdpa deivce[1], we need add the following ioctls:
-  - GET_CONFIG_SIZE: the size of the virtio config space (Patch 1)
-  - GET_VQS_COUNT: the count of virtqueues that exposed (Patch 2)
+- GET_VQS_COUNT: the count of virtqueues that exposed
 
-Changes v2 -> v3:
-  Patch 2:
-    - use a separate patch for the u32 converting. [Jason]
+Signed-off-by: Longpeng <longpeng2@huawei.com>
+---
+ drivers/vhost/vdpa.c       | 13 +++++++++++++
+ include/uapi/linux/vhost.h |  3 +++
+ 2 files changed, 16 insertions(+)
 
-Changes v1(RFC) -> v2:
-  Patch 1:
-    - be more verbose in commit message and the comment for get_config_size
-      [Jason]
-  Patch 2:
-    - change the type of nvqs to u32 [Jason]
-  Patch 3:
-    - drop from this series because Gautam sent another proposal[2]
-
-[1] https://lore.kernel.org/all/20220105005900.860-1-longpeng2@huawei.com/
-[2] https://patchwork.kernel.org/project/kvm/patch/20220224212314.1326-20-gdawar@xilinx.com/
-
-Longpeng (3):
-  vdpa: support exposing the config size to userspace
-  vdpa: change the type of nvqs to u32
-  vdpa: support exposing the count of vqs to userspace
-
- drivers/vdpa/vdpa.c        |  6 +++---
- drivers/vhost/vdpa.c       | 40 ++++++++++++++++++++++++++++++++++++----
- include/linux/vdpa.h       |  9 +++++----
- include/uapi/linux/vhost.h |  7 +++++++
- 4 files changed, 51 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 0c82eb5..69b3f05 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -370,6 +370,16 @@ static long vhost_vdpa_get_config_size(struct vhost_vdpa *v, u32 __user *argp)
+ 	return 0;
+ }
+ 
++static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
++{
++	struct vdpa_device *vdpa = v->vdpa;
++
++	if (copy_to_user(argp, &vdpa->nvqs, sizeof(vdpa->nvqs)))
++		return -EFAULT;
++
++	return 0;
++}
++
+ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 				   void __user *argp)
+ {
+@@ -510,6 +520,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 	case VHOST_VDPA_GET_CONFIG_SIZE:
+ 		r = vhost_vdpa_get_config_size(v, argp);
+ 		break;
++	case VHOST_VDPA_GET_VQS_COUNT:
++		r = vhost_vdpa_get_vqs_count(v, argp);
++		break;
+ 	default:
+ 		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+ 		if (r == -ENOIOCTLCMD)
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index bc74e95..5d99e7c 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -154,4 +154,7 @@
+ /* Get the config size */
+ #define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
+ 
++/* Get the count of all virtqueues */
++#define VHOST_VDPA_GET_VQS_COUNT	_IOR(VHOST_VIRTIO, 0x80, __u32)
++
+ #endif
 -- 
 1.8.3.1
 
