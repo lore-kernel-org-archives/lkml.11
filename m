@@ -2,114 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 022A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348943AbiCOOMt (ORCPT
+        id S1349043AbiCOONr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
+        Tue, 15 Mar 2022 10:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348850AbiCOOMs (ORCPT
+        with ESMTP id S1344743AbiCOONm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:12:48 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82D49546B5;
-        Tue, 15 Mar 2022 07:11:30 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 15 Mar 2022 22:11:10
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.64.209]
-Date:   Tue, 15 Mar 2022 22:11:10 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
-To:     "Dan Carpenter" <dan.carpenter@oracle.com>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, jreuter@yaina.de, thomas@osterried.de
-Subject: Re: Re: [PATCH net V4 1/2] ax25: Fix refcount leaks caused by
- ax25_cb_del()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220315102657.GX3315@kadam>
-References: <20220315015403.79201-1-duoming@zju.edu.cn>
- <20220315102657.GX3315@kadam>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Tue, 15 Mar 2022 10:13:42 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7858F546AA;
+        Tue, 15 Mar 2022 07:12:30 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id t22so5096784plo.0;
+        Tue, 15 Mar 2022 07:12:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oBjCmranFtHv1vltq1QMGyO83TXiM11V7MrR46Em3wg=;
+        b=flgislALV+7xmb46BtergdR0pysltSIUFlYlXfHfsQ8uuQZPV3r2jE6Aqk7Zk6dTfG
+         tNpHH5+cqF4RYzJYM6XVgc6T6utSbHG3vyBOO2sg0Dd4X1mO/BEj0vwYd8WUA/HsN7K1
+         izZxh0pArEDoqTxYpoXKdmfZxIw1B+WUdYJxxZ2XvqHm5PDW4x0FDsjR13XuFpwWfwl/
+         D0cdQYuAt0gE/oaOp7mOVow+HfkptY4r0SZ9CM34QzE0GpZvwqkkthk7XR9BLJVal0KT
+         x5jdq8Ea3uL5Zx0Gmoy7397guqa4ZMZg0wOQ16gyUMztFYDNbdjfUajEb+sM8EaJ6QfT
+         22JA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oBjCmranFtHv1vltq1QMGyO83TXiM11V7MrR46Em3wg=;
+        b=eoaMFiGavupTUf/3QBzNJ06hYkdEG9Ko7jZOUbwtPxfnGRq1ZGARo1x4eoBKAjBahy
+         Hr0XZHiwgYFKPl8zmp8hMyhdoEIAUOCfCwWuRYGJAkD8RLRnsk0ZIJPysUjYT0WHCuOm
+         QEDlHizap4izwR6TLzEwcwsdLdmTUtdmmg/BoPB83bihYvHyJghexDZ1vj1UnHYhEYj6
+         JJJxUTIwhjZy632UoetWyj00rTNMKWUcaTVeXBtqWhEec1N/Z3dKj6WZwz00HEkAbQ39
+         kckMKFCL7L+gURIsijNiMB+ChjPR1I/6FQwYTTOc80qPtGGvLPXT9dVoeiJzeOVUEs96
+         c7+Q==
+X-Gm-Message-State: AOAM532Q3SvII62qOM2oSq5cRWvJMi4/wFGiuxUDmCPSNf8Iffe1JTMI
+        ilgpdIzda6ziGwbTOumxe5E=
+X-Google-Smtp-Source: ABdhPJz+bw0vZYPd6K41rTu627G1+NBT2paw4d81Ygh+VlOZIvUqJwJj0ZxHPLteYixdQSJavNgtkw==
+X-Received: by 2002:a17:90b:3b8c:b0:1c5:ce7c:51de with SMTP id pc12-20020a17090b3b8c00b001c5ce7c51demr4854334pjb.182.1647353549828;
+        Tue, 15 Mar 2022 07:12:29 -0700 (PDT)
+Received: from localhost.localdomain ([2001:288:7001:2708:9207:10e8:3cd5:9c86])
+        by smtp.gmail.com with ESMTPSA id t9-20020a655549000000b0036570f81245sm20167129pgr.84.2022.03.15.07.12.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 07:12:28 -0700 (PDT)
+From:   Jui-Tse Huang <juitse.huang@gmail.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Huaixin Chang <changhuaixin@linux.alibaba.com>,
+        Beata Michalska <beata.michalska@arm.com>,
+        Chun-Hung Tseng <henrybear327@gmail.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jui-Tse Huang <juitse.huang@gmail.com>,
+        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Yiwei Lin <s921975628@gmail.com>
+Subject: [PATCH v3] docs/scheduler: Introduce the doc of load average
+Date:   Tue, 15 Mar 2022 22:08:57 +0800
+Message-Id: <20220315140857.41697-1-juitse.huang@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <15e4111b.5339.17f8deb1f24.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgDn77N+njBiObIWAA--.2995W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwKAVZdtYsAUQABsg
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBUdWUsIDE1IE1hciAyMDIyIDEzOjI2OjU3ICswMzAwLCBEYW4gQ2FycGVudGVy
-IHdyb3RlOgo+IEknbSBoYXBweSB0aGF0IHRoaXMgaXMgc2ltcGxlci4gIEknbSBub3Qgc3VwZXIg
-aGFwcHkgYWJvdXQgdGhlCj4gaWYgKHNrLT5za193cSkgY2hlY2suICBUaGF0IHNlZW1zIGxpa2Ug
-YSBmcmFnaWxlIHNpZGUtZWZmZWN0IGNvbmRpdGlvbgo+IGluc3RlYWQgb2Ygc29tZXRoaW5nIGRl
-bGliZXJhdGUuICBCdXQgSSBkb24ndCBrbm93IG5ldHdvcmtpbmcgc28gbWF5YmUKPiB0aGlzIGlz
-IHNvbWV0aGluZyB3aGljaCB3ZSBjYW4gcmVseSBvbi4KClRoZSB2YXJpYWJsZSBzay0+c2tfd3Eg
-aXMgdGhlIGFkZHJlc3Mgb2Ygd2FpdGluZyBxdWV1ZSBvZiBzb2NrLCBpdCBpcyBpbml0aWFsaXpl
-ZCB0byB0aGUgCmFkZHJlc3Mgb2Ygc29jay0+d3EgdGhyb3VnaCB0aGUgZm9sbG93aW5nIHBhdGg6
-CnNvY2tfY3JlYXRlLT5fX3NvY2tfY3JlYXRlLT5heDI1X2NyZWF0ZSgpLT5zb2NrX2luaXRfZGF0
-YSgpLT5SQ1VfSU5JVF9QT0lOVEVSKHNrLT5za193cSwgJnNvY2stPndxKS4KQmVjYXVzZSB3ZSBo
-YXZlIHVzZWQgc29ja19hbGxvYygpIHRvIGFsbG9jYXRlIHRoZSBzb2NrZXQgaW4gX19zb2NrX2Ny
-ZWF0ZSgpLCBzb2NrIG9yIHRoZSBhZGRyZXNzIG9mCnNvY2stPndxIGlzIG5vdCBudWxsLgpXaGF0
-YHMgbW9yZSwgc2stPnNrX3dxIGlzIHNldCB0byBudWxsIG9ubHkgaW4gc29ja19vcnBoYW4oKS4K
-CkFub3RoZXIgc29sdXRpb246CldlIGNvdWxkIGFsc28gdXNlIHNrLT5za19zb2NrZXQgdG8gY2hl
-Y2suIFdlIHNldCBzay0+c2tfc29ja2V0IHRvIHNvY2sgaW4gdGhlIGZvbGxvd2luZyBwYXRoOgpz
-b2NrX2NyZWF0ZSgpLT5fX3NvY2tfY3JlYXRlKCktPmF4MjVfY3JlYXRlKCktPnNvY2tfaW5pdF9k
-YXRhKCktPnNrX3NldF9zb2NrZXQoc2ssIHNvY2spLgpCZWNhdXNlIHdlIGhhdmUgdXNlZCBzb2Nr
-X2FsbG9jKCkgdG8gYWxsb2NhdGUgdGhlIHNvY2tldCBpbiBfX3NvY2tfY3JlYXRlKCksIHNvY2sg
-b3Igc2stPnNrX3NvY2tldAppcyBub3QgbnVsbC4KV2hhdGBzIG1vcmUsIHNrLT5za19zb2NrZXQg
-aXMgc2V0IHRvIG51bGwgb25seSBpbiBzb2NrX29ycGhhbigpLgoKSSB3aWxsIGNoYW5nZSB0aGUg
-aWYgKHNrLT5za193cSkgY2hlY2sgdG8gaWYoc2stPnNrX3NvY2tldCkgY2hlY2ssIGJlY2F1c2Ug
-SSB0aGluayBpdCBpcyAKZWFzaWVyIHRvIHVuZGVyc3RhbmQuCgo+IFdoZW4geW91IHNlbnQgdGhl
-IGVhcmxpZXIgcGF0Y2ggdGhlbiBJIGFza2VkIGlmIHRoZSBkZXZpY2VzIGluCj4gYXgyNV9raWxs
-X2J5X2RldmljZSgpIHdlcmUgYWx3YXlzIGJvdW5kIGFuZCBpZiB3ZSBjb3VsZCBqdXN0IHVzZSBh
-IGxvY2FsCj4gdmFyaWFibGUgaW5zdGVhZCBvZiBzb21ldGhpbmcgdGllZCB0byB0aGUgYXgyNV9k
-ZXYgc3RydWN0LiAgSSBzdGlsbAo+IHdvbmRlciBhYm91dCB0aGF0LiAgSW4gb3RoZXIgd29yZHMs
-IGNvdWxkIHdlIGp1c3QgZG8gdGhpcz8KPiAKPiBkaWZmIC0tZ2l0IGEvbmV0L2F4MjUvYWZfYXgy
-NS5jIGIvbmV0L2F4MjUvYWZfYXgyNS5jCj4gaW5kZXggNmJkMDk3MTgwNzcyLi40YWY5ZDlhOTM5
-YzYgMTAwNjQ0Cj4gLS0tIGEvbmV0L2F4MjUvYWZfYXgyNS5jCj4gKysrIGIvbmV0L2F4MjUvYWZf
-YXgyNS5jCj4gQEAgLTc4LDYgKzc4LDcgQEAgc3RhdGljIHZvaWQgYXgyNV9raWxsX2J5X2Rldmlj
-ZShzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQo+ICAJYXgyNV9kZXYgKmF4MjVfZGV2Owo+ICAJYXgy
-NV9jYiAqczsKPiAgCXN0cnVjdCBzb2NrICpzazsKPiArCWJvb2wgZm91bmQgPSBmYWxzZTsKPiAg
-Cj4gIAlpZiAoKGF4MjVfZGV2ID0gYXgyNV9kZXZfYXgyNWRldihkZXYpKSA9PSBOVUxMKQo+ICAJ
-CXJldHVybjsKPiBAQCAtODYsNiArODcsNyBAQCBzdGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2
-aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCj4gIGFnYWluOgo+ICAJYXgyNV9mb3JfZWFjaChz
-LCAmYXgyNV9saXN0KSB7Cj4gIAkJaWYgKHMtPmF4MjVfZGV2ID09IGF4MjVfZGV2KSB7Cj4gKwkJ
-CWZvdW5kID0gdHJ1ZTsKPiAgCQkJc2sgPSBzLT5zazsKPiAgCQkJaWYgKCFzaykgewo+ICAJCQkJ
-c3Bpbl91bmxvY2tfYmgoJmF4MjVfbGlzdF9sb2NrKTsKPiBAQCAtMTE1LDYgKzExNywxMSBAQCBz
-dGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCj4g
-IAkJfQo+ICAJfQo+ICAJc3Bpbl91bmxvY2tfYmgoJmF4MjVfbGlzdF9sb2NrKTsKPiArCj4gKwlp
-ZiAoIWZvdW5kKSB7Cj4gKwkJZGV2X3B1dF90cmFjayhheDI1X2Rldi0+ZGV2LCAmYXgyNV9kZXYt
-PmRldl90cmFja2VyKTsKPiArCQlheDI1X2Rldl9wdXQoYXgyNV9kZXYpOwo+ICsJfQo+ICB9CgpJ
-ZiB3ZSBqdXN0IHVzZSBheDI1X2Rldl9kZXZpY2VfdXAoKSB0byBicmluZyBkZXZpY2UgdXAgd2l0
-aG91dCB1c2luZyBheDI1X2JpbmQoKSwKdGhlICJmb3VuZCIgZmxhZyBjb3VsZCBiZSBmYWxzZSB3
-aGVuIHdlIGVudGVyIGF4MjVfa2lsbF9ieV9kZXZpY2UoKSBhbmQgdGhlIHJlZmNvdW50cyAKdW5k
-ZXJmbG93IHdpbGwgaGFwcGVuLiBTbyB3ZSBzaG91bGQgdXNlIHR3byBhZGRpdGlvbmFsIHZhcmlh
-Ymxlcy4KCklmIHdlIHVzZSBhZGRpdGlvbmFsIHZhcmlhYmxlcyB0byBmaXggdGhlIGJ1ZywgSSB0
-aGluayB0aGVyZSBpcyBhIHByb2JsZW0uCkluIHRoZSByZWFsIHdvcmxkLCB0aGUgZGV2aWNlIGNv
-dWxkIGJlIGRldGFjaGVkIG9ubHkgb25jZS4gSWYgdGhlIGZvbGxvd2luZwpyYWNlIGNvbmRpdGlv
-biBoYXBwZW5zLCB3ZSBjb3VsZCBub3QgZGVhbGxvY2F0ZSBheDI1X2RldiBhbmQgbmV0X2Rldmlj
-ZSBhbnltb3JlLApiZWNhdXNlIHdlIGNvdWxkIG5vdCBjYWxsIGF4MjVfa2lsbF9ieV9kZXZpY2Uo
-KSBhZ2Fpbi4KCiAgICAgICAoVGhyZWFkIDEpICAgICAgICAgICAgICAgICB8ICAgICAgKFRocmVh
-ZCAyKQogICAgYXgyNV9iaW5kKCkgICAgICAgICAgICAgICAgICAgfAogICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgfCAgYXgyNV9raWxsX2J5X2RldmljZSgpIC8vZGVjcmVhc2UgcmVm
-Y291bnRzCiAgICAgICAoVGhyZWFkIDMpICAgICAgICAgICAgICAgICB8CiAgICBheDI1X2JpbmQo
-KSAgICAgICAgICAgICAgICAgICB8CiAgICAgLi4uICAgICAgICAgICAgICAgICAgICAgICAgICB8
-ICAgIC4uLgogICAgIGF4MjVfZGV2X2hvbGQoKSAvLygxKSAgICAgICAgfCAgCiAgICAgZGV2X2hv
-bGRfdHJhY2soKSAvLygyKSAgICAgICB8ICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIHwgIGF4MjVfZGV2X2RldmljZV9kb3duKCkKCkluIHBhdGNoICJbUEFUQ0ggbmV0IFY0IDEv
-Ml0gYXgyNTogRml4IHJlZmNvdW50IGxlYWtzIGNhdXNlZCBieSBheDI1X2NiX2RlbCgpIiwKZXZl
-biB0aGUgZGV2aWNlIGhhcyBiZWVuIGRldGFjaGVkLCB3ZSBjb3VsZCBhbHNvIGRlY3JlYXNlIHRo
-ZSByZWZjb3VucyBieSB1c2luZwpheDI1X3JlbGVhc2UoKSwgd2hpY2ggY291bGQgZW5zdXJlIGF4
-MjVfZGV2IGFuZCBuZXRfZGV2aWNlIGNvdWxkIGJlIGRlYWxsb2NhdGVkLgpTbyBJIHRoaW5rICJb
-UEFUQ0ggbmV0IFY0IDEvMl0iIGlzIGJldHRlci4KCkJlc3Qgd2lzaGVzLApEdW9taW5nIFpob3U=
+The load average is one of a common as well as easy observed statistic
+provied by Linux, but still not well documented, which makes the numbers
+that users observes from the output of top, htop or other system
+monitoring application are only numbers. This patch gives a discussion
+on how Linux calculates the load average as well as what metrics are
+concerned while calculating the load average.
+
+The discussion flow is divided into several parts:
+1. The expression used to get the load average.
+2. Why Linux choose such average method from the other.
+2. The meaning of each term in the expression.
+3. The metrics, that is, the type of tasks that will be covered in the
+   calculation.
+4. A brief explanation over the fixed-point nubmer since the weights
+   defined in the Linux kernel are based on it.
+
+Signed-off-by: Jui-Tse Huang <juitse.huang@gmail.com>
+Signed-off-by: Yiwei Lin <s921975628@gmail.com>
+Signed-off-by: Ching-Chun (Jim) Huang <jserv@ccns.ncku.edu.tw>
+Co-Developed-by: Yiwei Lin <s921975628@gmail.com>
+
+---
+
+v3:
+  - Fix typo (Randy Dunlap)
+  - Add further reading that links to Brendan Gregg's blog
+
+v2:
+  - Fix typo (Chun-Hung Tseng) 
+
+ Documentation/scheduler/index.rst        |  1 +
+ Documentation/scheduler/load-average.rst | 82 ++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+)
+ create mode 100644 Documentation/scheduler/load-average.rst
+
+diff --git a/Documentation/scheduler/index.rst b/Documentation/scheduler/index.rst
+index 88900aabdbf7..bdc779b4190f 100644
+--- a/Documentation/scheduler/index.rst
++++ b/Documentation/scheduler/index.rst
+@@ -17,6 +17,7 @@ Linux Scheduler
+     sched-nice-design
+     sched-rt-group
+     sched-stats
++    load-average
+ 
+     text_files
+ 
+diff --git a/Documentation/scheduler/load-average.rst b/Documentation/scheduler/load-average.rst
+new file mode 100644
+index 000000000000..27ce6cbae5f4
+--- /dev/null
++++ b/Documentation/scheduler/load-average.rst
+@@ -0,0 +1,82 @@
++============
++Load Average
++============
++
++The load average, provided by common operating systems, indicates the average
++number of system load over a period of time.  In Linux, it shows the average
++number of tasks running and waiting for CPU time. The following expression is
++used in Linux to update the load average::
++
++                / 0                                      , if t = 0
++    load_{t} = |
++                \ load_{t - 1} * exp + active * (1 - exp), otherwise
++
++The expression represents the exponential moving average of the historical
++loading of the system. There are several reasons that Linux kernel chooses
++exponential moving average from other similar average equations such as simple
++moving average or cumulative moving average:
++
++#. The exponential moving average consumes fixed memory space, while the simple
++   moving average has O(n) space complexity where n is the number of timeslices
++   within a given interval.
++#. The exponential moving average not only applies a higher weight to the most
++   recent record but also declines the weight exponentially, which makes the
++   resulting load average reflect the situation of the current system. Neither
++   the simple moving average nor cumulative moving average has this feature.
++
++In the expression, the load_{t} indicates the calculated load average at the
++given time t.
++The active is the most recent recorded system load. In Linux, the system load
++means the number of tasks in the state of TASK_RUNNING or TASK_UNINTERRUPTIBLE
++of the entire system. Tasks with TASK_UNINTERRUPTIBLE state are usually waiting
++for disk I/O or holding an uninterruptible lock, which is considered as a part
++of system resource, thus, Linux kernel covers them while calculating the load
++average.
++The exp means the weight applied to the previous report of load average, while
++(1 - exp) is the weight applied to the most recently recorded system load.
++There are three different weights defined in the Linux kernel, in
++include/linux/sched/loadavg.h, to perform statistics in various timescales::
++
++    // include/linux/sched/loadavg.h
++    ...
++    #define EXP_1    1884    /* 1/exp(5sec/1min) as fixed-point */
++    #define EXP_5    2014    /* 1/exp(5sec/5min) */
++    #define EXP_15   2037    /* 1/exp(5sec/15min) */
++    ...
++
++According to the expression shown on the top of this page, the weight (exp)
++controls how much of the last load load_{t - 1} will take place in the
++calculation of current load, while (1 - exp) is the weight applied to the most
++recent record of system load active.
++
++Due to the security issue, the weights are defined as fixed-point numbers based
++on the unsigned integer rather than floating-pointing numbers. The introduction
++of the fixed-point number keeps the FPU away from the calculation process. Since
++the precision of the fixed-point used in the Linux kernel is 11 bits, a
++fixed-point can be converted to a floating-point by dividing it by 2048, as in
++the expressions shown bellow::
++
++    EXP_1  = 1884 / 2048 = 0.919922
++    EXP_5  = 2014 / 2048 = 0.983398
++    EXP_15 = 2037 / 2048 = 0.994629
++
++Which indicates the weights applied to active are::
++
++    (1 - EXP_1)  = (1 - 0.919922) = 0.080078
++    (1 - EXP_5)  = (1 - 0.983398) = 0.016602
++    (1 - EXP_15) = (1 - 0.994629) = 0.005371
++
++The load average will be updated every 5 seconds. Each time the scheduler_tick()
++be called, the function calc_global_load_tick() will also be invoked, which
++makes the active of each CPU core be calculated and be merged globally. Finally,
++the load average will be updated with that global active.
++
++As a user, the load average can be observed via top, htop, or other system
++monitor application, or more directly, by the following command::
++
++    $ cat /proc/loadavg
++
++Further Reading
++---------------
++The explanation and analysis done by Brendan Gregg on `his blog
++<https://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html>`_.
+-- 
+2.25.1
 
