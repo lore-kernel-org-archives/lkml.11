@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D40C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24303C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346197AbiCOIqH (ORCPT
+        id S1346274AbiCOIqL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50814 "EHLO
+        Tue, 15 Mar 2022 04:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346163AbiCOIpn (ORCPT
+        with ESMTP id S1346145AbiCOIpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:45:43 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B0A45AC1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:44:04 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id i8so27806751wrr.8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:44:04 -0700 (PDT)
+        Tue, 15 Mar 2022 04:45:21 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4944CD7D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:44:03 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id p9so27768567wra.12
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:44:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=77pcSomeQnKShKXrvlesy60okMS3aTQ/Iv6cZiSzCOs=;
-        b=TVJar/qlM8CWQr0Qf2F+gKbWJ+N5OOqoxwsklwdsBn6/BNPUEIxq5kASw1Nh/7Z2qV
-         pXx0PPdF2iqsr41GDFVst36rJLYrMzuHy4Q0MRRGVd7FlJhsFrJ0Cfr9yPCYSzSzas7/
-         qa8PxPa7XdBbw/w6cN4KJ4fDTS1/dfdg8OdxlZg65zLRQCbT3IYX5+8GftjyJ2rdkLuh
-         GHVk6N2VmIFaRFNdRlTCy6DghvYEetmuiIixw5Dxvl5kLAENyF6lC/KaUdDJvBuKIEs8
-         emGb1GqXlgGBW7Qjyb2mKEVDwjEafq3MyyWBRN82m6sukqO6acHNl5zmrth/wcAtx9HU
-         BTaA==
+        bh=KY1G/hNwjUlBePE2ZVsqVFVqg40+RQ73iJFBjzwX3UY=;
+        b=VaQCzPFvc6gtrXjrOVTaHng32EKCgrpOKFRwKXdGHL3vjaqvp9oU8WJuCtXcyeSei8
+         2j1NVgnIvi/OITGXFHHtvLlc4MZMUIU/Cxj3NrK9+jFTBMZRg2TaU4qOBVHK6W7TlcBn
+         NBWD3a5kxQXCVJpkCBzDndfp+6Em6F8x7yDxoLELdupn3YolG1aoy95JjHXQUZooZ4P1
+         tVpN6HofIrXiDObrbGASiTx6PWZNxzLaNVVq3yF9H/LhG0aDHmiB7ka4ljpUJiN38v6Y
+         ldWg/Y20y7xR723ld7AxMNcyrX2neBJi/prA44z0pXR64nFyzW5AMmPhHbjPdGAFQ1Dw
+         PtBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=77pcSomeQnKShKXrvlesy60okMS3aTQ/Iv6cZiSzCOs=;
-        b=atVqDhx8MzM+9Extp/P8FdWCWz/ZARIaIVpA/6pX2Xh78HCiikHALqKyi/g87eAt79
-         5ms60C4b2Bkz93GyeA+7cDAABiYnRe6S5j4aT8OWqCt6fXm7vQCkvHH8x5kanmuKCPVL
-         mHqze31RRcQYg87pATCTRzOtSJuEGcVpcDTQa2p75gQhH76VrC+4YOUKazGqTyp5acHp
-         Ngctse9QwquIDw56Asxnhz6ryVMZMPzCRYMTKfKM32XftblErAJ0IP71OsYMQEmaQJk2
-         JqHoAgtyIcJ8UYe7aOokxnc/FMBUyshiWhiZbgkYaCfLPRpJhzIRoCQs2VJ7uTpztg8t
-         gArg==
-X-Gm-Message-State: AOAM533BPwa7Ghe599VywF4YSmprvOdcBsfd5AA0wiHhYyZ7TSZD7KHX
-        V9BS3azxeHo7ByDWm70xQNoMubzCorQ=
-X-Google-Smtp-Source: ABdhPJzWKBkPN97RucCYLQEd/Fnc8uNqwHg38moB8k4EYlSdXh/1Ejv6Pl6FdJLYnQI9CHBkAyPynA==
-X-Received: by 2002:a5d:4dc5:0:b0:1f0:73e4:2cd9 with SMTP id f5-20020a5d4dc5000000b001f073e42cd9mr19693711wru.212.1647333843026;
-        Tue, 15 Mar 2022 01:44:03 -0700 (PDT)
+        bh=KY1G/hNwjUlBePE2ZVsqVFVqg40+RQ73iJFBjzwX3UY=;
+        b=l2uTHgVZ65MEfv61YYEJy3t/ug/wupihpkFRQ2lfHxRLTU5CyYKUojHGuDEYIVgguT
+         n9jWB2oFvR1RhOnDHfrr7C9BgDcWsmHaH9ul/XzarryO6IWe1COM2e56hacSNQxl9MQT
+         sQplZ3beV3kmN+RNROMOFEqT04U3KQ27ICGWeMx64+w21E6kLvBRZx/HS/kXi6rnQC/n
+         8l76SOiKWklWvAhHa2blbF0QlZIBE9pNdNB9UIbm5fb+MxQychcMqFQwF5UEnE+coa8/
+         U59nHutk2/DJgEYwgXndY95kWjGDjAmL6GIvSjKdyqh5DL+rvBRZQPS6y9PU8WWqSBZy
+         7ImA==
+X-Gm-Message-State: AOAM532tnj8NZCkOn0JhjG6dd2suZB6Z1nh3C1Kgs9nHdPM6Dd7Z7FOY
+        HIyVmIlsdHvGApcvA8LROUt4Anc9IuI=
+X-Google-Smtp-Source: ABdhPJyiC5sLyH+DNjtIOlZBRK900kTKx50/7PnRjNGtmI2TrXF4WnahcgPd2dAjf+zzEaTZk+QnnQ==
+X-Received: by 2002:a5d:62cf:0:b0:203:d97c:3bae with SMTP id o15-20020a5d62cf000000b00203d97c3baemr192727wrv.237.1647333841905;
+        Tue, 15 Mar 2022 01:44:01 -0700 (PDT)
 Received: from kepler.. (0526F1FC.dsl.pool.telekom.hu. [5.38.241.252])
-        by smtp.gmail.com with ESMTPSA id e6-20020a5d5006000000b0020374784350sm15078503wrt.64.2022.03.15.01.44.02
+        by smtp.gmail.com with ESMTPSA id e6-20020a5d5006000000b0020374784350sm15078503wrt.64.2022.03.15.01.44.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 01:44:02 -0700 (PDT)
+        Tue, 15 Mar 2022 01:44:01 -0700 (PDT)
 Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
 From:   Ingo Molnar <mingo@kernel.org>
 To:     linux-kernel@vger.kernel.org
@@ -62,9 +62,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Borislav Petkov <bp@alien8.de>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 13/15] sched/headers: Reorganize, clean up and optimize kernel/sched/build_policy.c dependencies
-Date:   Tue, 15 Mar 2022 09:42:45 +0100
-Message-Id: <20220315084247.40783-14-mingo@kernel.org>
+Subject: [PATCH 12/15] sched/headers: Reorganize, clean up and optimize kernel/sched/fair.c dependencies
+Date:   Tue, 15 Mar 2022 09:42:44 +0100
+Message-Id: <20220315084247.40783-13-mingo@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220315084247.40783-1-mingo@kernel.org>
 References: <20220315084247.40783-1-mingo@kernel.org>
@@ -82,50 +82,49 @@ Sort the sections alphabetically.
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 Reviewed-by: Peter Zijlstra <peterz@infradead.org>
 ---
- kernel/sched/build_policy.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ kernel/sched/fair.c | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
-diff --git a/kernel/sched/build_policy.c b/kernel/sched/build_policy.c
-index 9a169b2f97e6..a2e4023771a0 100644
---- a/kernel/sched/build_policy.c
-+++ b/kernel/sched/build_policy.c
-@@ -12,12 +12,36 @@
-  * core.c and fair.c are built separately.
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 7391c9287503..89d21fda106c 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -20,6 +20,35 @@
+  *  Adaptive scheduling granularity, math enhancements by Peter Zijlstra
+  *  Copyright (C) 2007 Red Hat, Inc., Peter Zijlstra
   */
- 
-+/* Headers: */
++#include <linux/energy_model.h>
++#include <linux/mmap_lock.h>
++#include <linux/hugetlb_inline.h>
++#include <linux/jiffies.h>
++#include <linux/mm_api.h>
++#include <linux/highmem.h>
++#include <linux/spinlock_api.h>
++#include <linux/cpumask_api.h>
++#include <linux/lockdep_api.h>
++#include <linux/softirq.h>
++#include <linux/refcount_api.h>
++#include <linux/topology.h>
 +#include <linux/sched/clock.h>
++#include <linux/sched/cond_resched.h>
 +#include <linux/sched/cputime.h>
-+#include <linux/sched/posix-timers.h>
-+#include <linux/sched/rt.h>
++#include <linux/sched/isolation.h>
 +
 +#include <linux/cpuidle.h>
-+#include <linux/jiffies.h>
-+#include <linux/livepatch.h>
++#include <linux/interrupt.h>
++#include <linux/mempolicy.h>
++#include <linux/mutex_api.h>
++#include <linux/profile.h>
 +#include <linux/psi.h>
-+#include <linux/seqlock_api.h>
-+#include <linux/slab.h>
-+#include <linux/suspend.h>
-+#include <linux/tsacct_kern.h>
-+#include <linux/vtime.h>
++#include <linux/ratelimit.h>
 +
-+#ifdef CONFIG_PARAVIRT
-+# include <asm/paravirt.h>
-+#endif
++#include <asm/switch_to.h>
 +
-+#include <uapi/linux/sched/types.h>
++#include <linux/sched/cond_resched.h>
 +
  #include "sched.h"
- 
- #include "autogroup.h"
  #include "stats.h"
- #include "pelt.h"
- 
-+/* Source code modules: */
-+
- #include "idle.c"
- 
- #include "rt.c"
+ #include "autogroup.h"
 -- 
 2.32.0
 
