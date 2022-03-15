@@ -2,102 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBEEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 18:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 18:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350984AbiCOSJM (ORCPT
+        id S1350975AbiCOSKH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 14:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54032 "EHLO
+        Tue, 15 Mar 2022 14:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350970AbiCOSJI (ORCPT
+        with ESMTP id S1346008AbiCOSKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 14:09:08 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94A0F6373;
-        Tue, 15 Mar 2022 11:07:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0A3A41474;
-        Tue, 15 Mar 2022 11:07:54 -0700 (PDT)
-Received: from [10.57.42.204] (unknown [10.57.42.204])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6B68B3F73D;
-        Tue, 15 Mar 2022 11:07:52 -0700 (PDT)
-Message-ID: <21d33a75-8c0e-7734-b3d1-dbe33cfe0ab0@arm.com>
-Date:   Tue, 15 Mar 2022 18:07:47 +0000
+        Tue, 15 Mar 2022 14:10:04 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9CB59A4D;
+        Tue, 15 Mar 2022 11:08:51 -0700 (PDT)
+X-UUID: 372c819213d64504b3eac5393916279e-20220316
+X-UUID: 372c819213d64504b3eac5393916279e-20220316
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1023954275; Wed, 16 Mar 2022 02:08:47 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Mar 2022 02:08:45 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
+ 2022 02:08:45 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Mar 2022 02:08:45 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>
+CC:     <johan.hedberg@gmail.com>, <sean.wang@mediatek.com>,
+        <Soul.Huang@mediatek.com>, <YN.Chen@mediatek.com>,
+        <Leon.Yen@mediatek.com>, <Eric-SY.Chang@mediatek.com>,
+        <Deren.Wu@mediatek.com>, <km.lin@mediatek.com>,
+        <robin.chiu@mediatek.com>, <Eddie.Chen@mediatek.com>,
+        <ch.yeh@mediatek.com>, <posh.sun@mediatek.com>,
+        <ted.huang@mediatek.com>, <Eric.Liang@mediatek.com>,
+        <Stella.Chang@mediatek.com>, <Tom.Chou@mediatek.com>,
+        <steve.lee@mediatek.com>, <jsiuda@google.com>,
+        <frankgor@google.com>, <abhishekpandit@google.com>,
+        <michaelfsun@google.com>, <mcchou@chromium.org>,
+        <shawnku@google.com>, <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 1/5] Bluetooth: btmtksdio: Fix kernel oops in btmtksdio_interrupt
+Date:   Wed, 16 Mar 2022 02:08:44 +0800
+Message-ID: <1647367724-5486-1-git-send-email-sean.wang@mediatek.com>
+X-Mailer: git-send-email 1.7.9.5
+In-Reply-To: <7b4627d5017be2c26ded9daf7fd297bed6614852.1647366404.git.objelf@gmail.com--annotate>
+References: <7b4627d5017be2c26ded9daf7fd297bed6614852.1647366404.git.objelf@gmail.com--annotate>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH 2/2] thunderbolt: Use pre-boot DMA protection on AMD
- systems
-Content-Language: en-GB
-To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     Michael Jamet <michael.jamet@intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Will Deacon <will@kernel.org>
-References: <20220315162455.5190-1-mario.limonciello@amd.com>
- <20220315162455.5190-2-mario.limonciello@amd.com>
- <YjDDUUeZ/dvUZoDN@infradead.org>
- <BL1PR12MB5157D7B7734122684D47923AE2109@BL1PR12MB5157.namprd12.prod.outlook.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <BL1PR12MB5157D7B7734122684D47923AE2109@BL1PR12MB5157.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-15 16:54, Limonciello, Mario via iommu wrote:
-> [Public]
-> 
-> 
->> On Tue, Mar 15, 2022 at 11:24:55AM -0500, Mario Limonciello wrote:
->>> -	 * handled natively using IOMMU. It is enabled when IOMMU is
->>> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
->>> +	 * handled natively using IOMMU. It is enabled when the IOMMU is
->>> +	 * enabled and either:
->>> +	 * ACPI DMAR table has DMAR_PLATFORM_OPT_IN set
->>> +	 * or
->>> +	 * ACPI IVRS table has DMA_REMAP bitset
->>>   	 */
->>>   	return sprintf(buf, "%d\n",
->>> -		       iommu_present(&pci_bus_type) &&
->> dmar_platform_optin());
->>> +		       iommu_present(&pci_bus_type) &&
->>> +		       (dmar_platform_optin() || amd_ivrs_remap_support()));
->>
->> Yikes.  No, the thunderbot code does not have any business poking into
->> either dmar_platform_optin or amd_ivrs_remap_support.  This needs
->> a proper abstration from the IOMMU code.
-> 
-> To make sure I follow your ask - it's to make a new generic iommu function
-> That would check dmar/ivrs, and switch out thunderbolt domain.c to use the
-> symbol?
-> 
-> I'm happy to rework that if that is what you want.
-> Do you have a preferred proposed function name for that?
+From: Sean Wang <sean.wang@mediatek.com>
 
-But why? Either IOMMU translation is enabled or it isn't, and if it is, 
-what's to gain from guessing at *why* it might have been? And even if 
-the IOMMU's firmware table did tell the IOMMU driver to enable the 
-IOMMU, why should that be Thunderbolt's business?
+Hi Marcel,
 
-Furthermore, looking at patch #1 I can only conclude that this is 
-entirely meaningless anyway. AFAICS it's literally reporting whether the 
-firmware flag was set or not. Not whether it's actually been honoured 
-and the IOMMU is enforcing any kind of DMA protection at all. Even on 
-Intel where the flag does at least have some effect on the IOMMU driver, 
-that can still be overridden.
+Please ignore the series because I put a wrong version as the prefix
 
-I already have a patch refactoring this to get rid of iommu_present(), 
-but at the time I wasn't looking to closely at what it's trying to *do* 
-with the information. If it's supposed to accurately reflect whether the 
-Thunderbolt device is subject to IOMMU translation and not bypassed, I 
-can fix that too (and unexport dmar_platform_optin() in the process...)
+I will send the series later.
 
-Robin.
+        Sean
+
+>
+>From: Yake Yang <yake.yang@mediatek.com>
+>
+>Fix the following kernel oops in btmtksdio_interrrupt
+>
+>[   14.339134]  btmtksdio_interrupt+0x28/0x54
+>[   14.339139]  process_sdio_pending_irqs+0x68/0x1a0
+>[   14.339144]  sdio_irq_work+0x40/0x70
+>[   14.339154]  process_one_work+0x184/0x39c
+>[   14.339160]  worker_thread+0x228/0x3e8
+>[   14.339168]  kthread+0x148/0x3ac
+>[   14.339176]  ret_from_fork+0x10/0x30
+>
+>That happened because hdev->power_on is already called before sdio_set_drvdata which btmtksdio_interrupt handler relies on is not properly set up.
+>
+>The details are shown as the below: hci_register_dev would run queue_work(hdev->req_workqueue, &hdev->power_on) as WQ_HIGHPRI workqueue_struct to complete the power-on sequeunce and thus hci_power_on may run before sdio_set_drvdata is done in btmtksdio_probe.
+>
+>The hci_dev_do_open in hci_power_on would initialize the device and enable the interrupt and thus it is possible that btmtksdio_interrupt is being called right before sdio_set_drvdata is filled out.
+>
+>When btmtksdio_interrupt is being called and sdio_set_drvdata is not filled , the kernel oops is going to happen because btmtksdio_interrupt access an uninitialized pointer.
+>
+>Fixes: 9aebfd4a2200 ("Bluetooth: mediatek: add support for MediaTek MT7663S and MT7668S SDIO devices")
+>Reviewed-by: Mark Chen <markyawenchen@gmail.com>
+>Co-developed-by: Sean Wang <sean.wang@mediatek.com>
+>Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+>Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+>---
+> drivers/bluetooth/btmtksdio.c | 4 ++--
+> 1 file changed, 2 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c index df3f9d090529..9644069cecbb 100644
+>--- a/drivers/bluetooth/btmtksdio.c
+>+++ b/drivers/bluetooth/btmtksdio.c
+>@@ -1281,6 +1281,8 @@ static int btmtksdio_probe(struct sdio_func *func,
+>	hdev->manufacturer = 70;
+>	set_bit(HCI_QUIRK_NON_PERSISTENT_SETUP, &hdev->quirks);
+>
+>+	sdio_set_drvdata(func, bdev);
+>+
+>	err = hci_register_dev(hdev);
+>	if (err < 0) {
+>		dev_err(&func->dev, "Can't register HCI device\n"); @@ -1288,8 +1290,6 @@ static int btmtksdio_probe(struct sdio_func *func,
+>		return err;
+>	}
+>
+>-	sdio_set_drvdata(func, bdev);
+>-
+>	/* pm_runtime_enable would be done after the firmware is being
+>	 * downloaded because the core layer probably already enables
+>	 * runtime PM for this func such as the case host->caps &
+>--
+>2.25.1
+>
+>
