@@ -2,113 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D841EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC157C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351650AbiCOUTQ (ORCPT
+        id S1351653AbiCOUT2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 16:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34656 "EHLO
+        Tue, 15 Mar 2022 16:19:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234688AbiCOUTO (ORCPT
+        with ESMTP id S234688AbiCOUTR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 16:19:14 -0400
+        Tue, 15 Mar 2022 16:19:17 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E860C1A809;
-        Tue, 15 Mar 2022 13:18:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE4D1AD98;
+        Tue, 15 Mar 2022 13:18:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647375482; x=1678911482;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=A0S0recbfR0lN7an2K5m+iODUM7Djv92LfoqIfc3vRI=;
-  b=EIOhu6K96/w+hp7gzESMHCzQv1r5dTDUh6RGGxiV8U35Ll2LLUhXZTrs
-   r3dkQMciaesCxYSy+TvtIhgSZqnOEKbQsQihfE4d5ZS5VYIXmr1qYvEYN
-   CY5oJjFjpHKUXdkm6ek7KK6ygexcArmQciesz8vlNwzx0zBZIEkqKf1Uv
-   ZMSgLB7/Ye3g69+DowYCVY5jfttN6XB4AGvZjvsAppgtnDaXmgWN0LmsJ
-   Qm3q0Sgm60dpuOXKg2aFcCevRlOE1iHsbb3YOqrLrI/y2d11tN+8MlD10
-   vUSvzTUKNo6YUn6oXm8vhQ7hjC8x8wmiqsj9Vre30dFq9cam6UTFUxab+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="319634452"
+  t=1647375484; x=1678911484;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=vuA7XbnQ6rC1+p0Fyp1Bl6T35Kp8er8BP8rVhhABkRQ=;
+  b=fHwtdUZhoJ7MAL/D6Dq6W/vNcBwZCyHh5OYgonrFSpiz299HVnptC5Gy
+   VU83VXAsqqfEJmNeRee6l96kL4wdAnMN3FfLTKPMhuIA+rD5xtZhckpQx
+   RBg3Q9fhE+mqDlrCCkIf976U/73Lyxy1U5SI5Pq9RK0oKAbcylFW71R6q
+   7owdmAH/drF82BQJktjk6zHVnCB31O3hV/gzzKzeVrQelakH9wFGxM9VC
+   T5MZ1Z878kTmqQbL7ThU5XcMxr9ap4/t22g/rELC0/4iTT1tRVEY2wrff
+   gQbC+Hf4v1VYr5HW66zhJOQEQinSVVFPivj6y6jrYseqb1Wf7ygozn7j2
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="319634461"
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="319634452"
+   d="scan'208";a="319634461"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 13:18:01 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 13:18:03 -0700
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="598448297"
+   d="scan'208";a="598448328"
 Received: from anirudhk-mobl1.amr.corp.intel.com (HELO rpedgeco-desk.amr.corp.intel.com) ([10.212.229.227])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 13:18:00 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 13:18:02 -0700
 From:   Rick Edgecombe <rick.p.edgecombe@intel.com>
 To:     dave.hansen@intel.com, len.brown@intel.com, tony.luck@intel.com,
         rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
         dan.j.williams@intel.com, viro@zeniv.linux.org.uk,
         ebiederm@xmission.com, keescook@chromium.org
 Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] Regset cleanups
-Date:   Tue, 15 Mar 2022 13:17:03 -0700
-Message-Id: <20220315201706.7576-1-rick.p.edgecombe@intel.com>
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yu-cheng Yu <yu-cheng.yu@intel.com>
+Subject: [PATCH 3/3] elf: Don't write past end of notes for regset gap
+Date:   Tue, 15 Mar 2022 13:17:06 -0700
+Message-Id: <20220315201706.7576-4-rick.p.edgecombe@intel.com>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220315201706.7576-1-rick.p.edgecombe@intel.com>
+References: <20220315201706.7576-1-rick.p.edgecombe@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+In fill_thread_core_info() the ptrace accessible registers are collected
+to be written out as notes in a core file. The note array is allocated
+from a size calculated by iterating the user regset view, and counting the
+regsets that have a non-zero core_note_type. However, this only allows for
+there to be non-zero core_note_type at the end of the regset view. If
+there are any gaps in the middle, fill_thread_core_info() will overflow the
+note allocation, as it iterates over the size of the view and the
+allocation would be smaller than that.
 
-I’m looking for ack’s from Intel reviewer’s before this is ready for official
-submission to x86 maintainers. Patch 3 is in core code, so also including
-relevant MAINTAINERS file people for that one. If you are not an Intel reviewer,
-feel free to ignore this until it has had more review. Glad for any feedback all
-the same. I’m also, wondering if this is something that could go through the x86
-tree all together or I should split it out.
+There doesn't appear to be any arch that has gaps such that they exceed
+the notes allocation, but the code is brittle and tries to support
+something it doesn't. It could be fixed by increasing the allocation size,
+but instead just have the note collecting code utilize the array better.
+This way the allocation can stay smaller.
 
+Even in the case of no arch's that have gaps in their regset views, this
+introduces a change in the resulting indicies of t->notes. It does not
+introduce any changes to the core file itself, because any blank notes are
+skipped in write_note_info().
 
+This fix is derrived from an earlier one[0] by Yu-cheng Yu.
 
-While working on CET ptrace support, I found some suggested cleanups [0] [1] on
-past postings of that patch. So this small series is doing those cleanups and
-some related changes.
+[0] https://lore.kernel.org/lkml/20180717162502.32274-1-yu-cheng.yu@intel.com/
 
-Way back then, it was noticed that CET ptrace patches were aliasing names in the
-enum that indexes the regsets. It turns out this was partly because of a
-limitation in core dump code that reads the registers for dumping. But excluding
-gaps in the regset array also allows them to be smaller, so just fixing the core
-dump code doesn’t remove all need for the specially crafted enum. So series
-changes the way the enums are defined such that enum has to be less carefully
-crafted, and also fixes the core dump code.
+Co-developed-by: Yu-cheng Yu <yu-cheng.yu@intel.com>
+Signed-off-by: Yu-cheng Yu <yu-cheng.yu@intel.com>
+Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+---
+ fs/binfmt_elf.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-Patch 1 is improving the enums in x86 ptrace code.
-
-Patch 2 is some x86 ptrace code formatting changes suggested by Ingo. [0]
-
-Patch 3 is the fix to the core dump code. Just to be clear, there is no actual
-bug fixed. It would only overflow an array if the regset views were not laid out
-just so. But the regsets appear to be laid out so that the brittle code is not
-broken, from a quick scan of the archs.
-
-Testing consisted of doing some core dumps and seeing that notes were in the
-same position, and verifying that the enum’s generated the same ints using
-printks.
-
-Thanks,
-
-Rick
-
-[0] https://lore.kernel.org/lkml/20180711102035.GB8574@gmail.com/
-[1] https://lore.kernel.org/lkml/A7775E11-8837-4727-921A-C88566FA01AF@amacapital.net/
-
-Rick Edgecombe (3):
-  x86: Separate out x86_regset for 32 and 64 bit
-  x86: Improve formatting of user_regset arrays
-  elf: Don't write past end of notes for regset gap
-
- arch/x86/kernel/ptrace.c | 165 ++++++++++++++++++++++++---------------
- fs/binfmt_elf.c          |  15 ++--
- 2 files changed, 111 insertions(+), 69 deletions(-)
-
-base-commit: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index d61543fbd652..a48f85e3c017 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -1757,7 +1757,7 @@ static int fill_thread_core_info(struct elf_thread_core_info *t,
+ 				 const struct user_regset_view *view,
+ 				 long signr, size_t *total)
+ {
+-	unsigned int i;
++	unsigned int note_iter, view_iter;
+ 
+ 	/*
+ 	 * NT_PRSTATUS is the one special case, because the regset data
+@@ -1777,11 +1777,11 @@ static int fill_thread_core_info(struct elf_thread_core_info *t,
+ 
+ 	/*
+ 	 * Each other regset might generate a note too.  For each regset
+-	 * that has no core_note_type or is inactive, we leave t->notes[i]
+-	 * all zero and we'll know to skip writing it later.
++	 * that has no core_note_type or is inactive, skip it.
+ 	 */
+-	for (i = 1; i < view->n; ++i) {
+-		const struct user_regset *regset = &view->regsets[i];
++	note_iter = 1;
++	for (view_iter = 1; view_iter < view->n; ++view_iter) {
++		const struct user_regset *regset = &view->regsets[view_iter];
+ 		int note_type = regset->core_note_type;
+ 		bool is_fpreg = note_type == NT_PRFPREG;
+ 		void *data;
+@@ -1800,10 +1800,11 @@ static int fill_thread_core_info(struct elf_thread_core_info *t,
+ 		if (is_fpreg)
+ 			SET_PR_FPVALID(&t->prstatus);
+ 
+-		fill_note(&t->notes[i], is_fpreg ? "CORE" : "LINUX",
++		fill_note(&t->notes[note_iter], is_fpreg ? "CORE" : "LINUX",
+ 			  note_type, ret, data);
+ 
+-		*total += notesize(&t->notes[i]);
++		*total += notesize(&t->notes[note_iter]);
++		note_iter++;
+ 	}
+ 
+ 	return 1;
 -- 
 2.17.1
 
