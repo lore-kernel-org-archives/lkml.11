@@ -2,143 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1BA3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93152C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243951AbiCOIeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
+        id S238552AbiCOIe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 04:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346299AbiCOIdI (ORCPT
+        with ESMTP id S1346113AbiCOIeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:33:08 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E2704C7AB
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:31:50 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 09:31:47 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647333109;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Tue, 15 Mar 2022 04:34:14 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E95C10F8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:32:46 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 07B491F37E;
+        Tue, 15 Mar 2022 08:32:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647333165; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=8WxJ1iaVzDHKBMho9TQMsvxPMKiQqA5PZTrAtw2jnv8=;
-        b=BPIpWH72QRrvfRzOcWqpwKwzfuY8FdeeIloC1VA+pej4kqcUfVhLqyCRSNzzjDNOCkUjgG
-        iQjJ+SOhBxYHspU/HLwhFc/e+YG56+3Qb8L+EnD5KKyI0eOkJzXyIznJ0nToSBmlZ8Or8o
-        soGsGNI0fNUEZEnaSpGg9wxBucUl3cfuLaTDuorRLR3aM+Q4RQiUhZMnSVYsKDwHdcOF5G
-        aDyJIvNNp0PayhlDYxSXFkAo32orhsLDvQdktiQGpf9oxraRwx8ysww3fGEB/a2qjIMCjq
-        yGVQLOHoOIQfFyOlmRCh6nfNiW7HvXoklarWh9ieHmnYWpuvQh0SSw2ldhBBPg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647333109;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        bh=bYkhOc7jYnnaJzo+1Uv/M+ohxdNO0S/jT3vuFCDsVq0=;
+        b=tYVVwupkSeyTkjuwC7GpGjykJWyIg0x1HfB8jJm6mimuRYUph0g8UTUQCdlRC2N4ZB5eKX
+        ypjBzvT8agH+7xZwFvfK3G5hxO46HseVzv0cTeiPRHMIIIcVSrm3Wk2J2AK4y88kmSqw3v
+        tT+lmUV0xKRyt8xM0LbFz3Hc2GZyaqE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647333165;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=8WxJ1iaVzDHKBMho9TQMsvxPMKiQqA5PZTrAtw2jnv8=;
-        b=YoDL3b/dgZ9wa3peqZ2X4fJfO8va3wyTVUFp92D0ikwI3Drj1oO3f5mnnNbCFhebX4MuYk
-        FdA+5pnXAo/Ni/Cg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH] ptrace: fix ptrace vs tasklist_lock race on PREEMPT_RT.
-Message-ID: <YjBO8yzxdmjTGNiy@linutronix.de>
-References: <Yh/b19JikC+Vnm8i@linutronix.de>
- <20220314185429.GA30364@redhat.com>
+        bh=bYkhOc7jYnnaJzo+1Uv/M+ohxdNO0S/jT3vuFCDsVq0=;
+        b=JKMGLIfKHl/kcVKS1aposzv2vEEp3oEOhbC4yLi9tZVRs7XOP46OlBqJBP5GPGAam4h9Td
+        HfFFjPpRdg//y6Ag==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8E84813B4E;
+        Tue, 15 Mar 2022 08:32:44 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wWoEICxPMGLdZgAAMHmgww
+        (envelope-from <osalvador@suse.de>); Tue, 15 Mar 2022 08:32:44 +0000
+Date:   Tue, 15 Mar 2022 09:32:42 +0100
+From:   Oscar Salvador <osalvador@suse.de>
+To:     "Huang, Ying" <ying.huang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Abhishek Goel <huntbag@linux.vnet.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] mm: Only re-generate demotion targets when a numa
+ node changes its N_CPU state
+Message-ID: <YjBPKmIpPNoJU/67@localhost.localdomain>
+References: <20220314150945.12694-1-osalvador@suse.de>
+ <87pmmn3eh6.fsf@yhuang6-desk2.ccr.corp.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220314185429.GA30364@redhat.com>
+In-Reply-To: <87pmmn3eh6.fsf@yhuang6-desk2.ccr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-14 19:54:30 [+0100], Oleg Nesterov wrote:
-> I never really understood ->saved_state logic. Will read this patch
-> tomorrow, but at first glance this patch doesn't solve all problems.
+On Tue, Mar 15, 2022 at 02:40:53PM +0800, Huang, Ying wrote:
+> Oscar Salvador <osalvador@suse.de> writes:
+> CPUHP_MM_DEMOTION_DEAD and CPUHP_AP_MM_DEMOTION_ONLINE needs to be
+> deleted from include/linux/cpuhotplug.h too.
 
-Let me explain the ->saved_state logic:
-On !RT, this
+Hi Huang Ying,
 
-   set_current_state(TASK_UNINTERRUPTIBLE); 	// 1
-   spin_lock(&lock);				// 2
-   spin_unlock(&lock);				// 3
-   schedule();					// 4
+Right.
 
-will assign ->state, spin on &lock and then invoke schedule() while
-->state is still TASK_UNINTERRUPTIBLE.
-On RT however, the spinlock_t becomes a sleeping lock and won't spin on
-&lock but rather sleep want waiting for the lock. While at sleep waiting
-for the lock, the ->state needs to be preserved or otherwise the ->state
-gets lost on the wake-up with the lock acquired. 
+Andrew, can you apply this on top? Thanks
 
-That means RT that happens:
-- 1 assigns ->state as with !RT
-- 2 acquires &lock. If the is contained then
-    with current->pi_lock acquired
-    (current_save_and_set_rtlock_wait_state):
-       ->saved_state = ->state (TASK_UNINTERRUPTIBLE)
-       ->state = TASK_RTLOCK_WAIT
-   and the task sleeps until &lock is available.
-   Once the lock is acquired, the task will be woken up and its state is
-   updated with ->pi_lock acquired (current_restore_rtlock_saved_state):
-      ->state = ->saved_state (TASK_UNINTERRUPTIBLE)
-      ->state = TASK_RUNNING
+diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+index 411a428ace4d..8a9a2d01b7c6 100644
+--- a/include/linux/cpuhotplug.h
++++ b/include/linux/cpuhotplug.h
+@@ -72,8 +72,6 @@ enum cpuhp_state {
+ 	CPUHP_SLUB_DEAD,
+ 	CPUHP_DEBUG_OBJ_DEAD,
+ 	CPUHP_MM_WRITEBACK_DEAD,
+-	/* Must be after CPUHP_MM_VMSTAT_DEAD */
+-	CPUHP_MM_DEMOTION_DEAD,
+ 	CPUHP_MM_VMSTAT_DEAD,
+ 	CPUHP_SOFTIRQ_DEAD,
+ 	CPUHP_NET_MVNETA_DEAD,
+@@ -244,8 +242,6 @@ enum cpuhp_state {
+ 	CPUHP_AP_BASE_CACHEINFO_ONLINE,
+ 	CPUHP_AP_ONLINE_DYN,
+ 	CPUHP_AP_ONLINE_DYN_END		= CPUHP_AP_ONLINE_DYN + 30,
+-	/* Must be after CPUHP_AP_ONLINE_DYN for node_states[N_CPU] update */
+-	CPUHP_AP_MM_DEMOTION_ONLINE,
+ 	CPUHP_AP_X86_HPET_ONLINE,
+ 	CPUHP_AP_X86_KVM_CLK_ONLINE,
+ 	CPUHP_AP_ACTIVE,
 
-- 3 unlocks &lock, ->state still TASK_UNINTERRUPTIBLE
-- 4 invokes schedule with TASK_UNINTERRUPTIBLE.
+Huang Ying, it would be great to have your Reviewed-by/Acked-by if you
+are ok with the outome.
 
-The sleeping locks on RT are spinlock_t and rwlock_t.
+Thanks
 
-Side note: If !RT at step 2 spins on the lock then it may receive a wake
-up at which point TASK_UNINTERRUPTIBLE becomes TASK_RUNNING and then it
-would invoke schedule() with TASK_RUNNING (assuming the condition
-becomes sooner available).
-On RT, this also works and the task at step 2 may sleep or be in
-transition to/ from sleep. Therefore the wake up (under ->pi_lock)
-looks at ->state and if it is TASK_RTLOCK_WAIT then it updates
-saved_state instead (ttwu_state_match()).
-
-> On 03/02, Sebastian Andrzej Siewior wrote:
-> >
-> > +static inline bool __task_state_match_eq(struct task_struct *tsk, long state)
-> > +{
-> > +	bool match = false;
-> > +
-> > +	if (READ_ONCE(tsk->__state) == state)
-> > +		match = true;
-> > +	else if (tsk->saved_state == state)
-> > +		match = true;
-> > +	return match;
-> > +}
-> 
-> ...
-> 
-> > --- a/kernel/sched/core.c
-> > +++ b/kernel/sched/core.c
-> > @@ -3239,7 +3239,8 @@ unsigned long wait_task_inactive(struct task_struct *p, unsigned int match_state
-> >  		 * is actually now running somewhere else!
-> >  		 */
-> >  		while (task_running(rq, p)) {
-> > -			if (match_state && unlikely(READ_ONCE(p->__state) != match_state))
-> > +			if (match_state &&
-> > +			    unlikely(!task_state_match_eq(p, match_state)))
-> >  				return 0;
-> 
-> So wait_task_inactive() can return 0 but the task can run after that, right?
-> This is not what we want...
-
-Without checking both states you may never observe the requested state
-because it is set to TASK_RTLOCK_WAIT while waiting for a lock. Other
-than that, it may run briefly because it tries to acquire a lock or just
-acquired and this shouldn't be different from a task spinning on a lock.
-
-> Oleg.
-
-Sebastian
+-- 
+Oscar Salvador
+SUSE Labs
