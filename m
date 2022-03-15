@@ -2,108 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C3CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E1AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348244AbiCOM1I (ORCPT
+        id S1348253AbiCOM2w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53878 "EHLO
+        Tue, 15 Mar 2022 08:28:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348238AbiCOM1H (ORCPT
+        with ESMTP id S239134AbiCOM2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:27:07 -0400
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F05532E0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:25:55 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V7I11eB_1647347151;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V7I11eB_1647347151)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 15 Mar 2022 20:25:53 +0800
-Date:   Tue, 15 Mar 2022 20:25:51 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Dongliang Mu <mudongliangabcd@gmail.com>
-Cc:     Huang Jianan <jnhuang95@gmail.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>, Gao Xiang <xiang@kernel.org>,
-        Chao Yu <chao@kernel.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-erofs@lists.ozlabs.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] fs: erofs: remember if kobject_init_and_add was done
-Message-ID: <YjCFz1dxVJZnF3M/@B-P7TQMD6M-0146.local>
-References: <20220315075152.63789-1-dzm91@hust.edu.cn>
- <bca8f865-bc3e-44d7-7298-c2c7e8973580@gmail.com>
- <YjBwtqsEOZ5JbqvS@B-P7TQMD6M-0146.local>
- <8d832e7a-c8da-d2fa-571a-ea150b8deb1b@gmail.com>
- <CAD-N9QX2cajf0LXKcOji_Em26-0bw9wfhx7KDV_TLDWhgQ90hQ@mail.gmail.com>
+        Tue, 15 Mar 2022 08:28:48 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86D9532E4;
+        Tue, 15 Mar 2022 05:27:36 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id g7so75213wrb.4;
+        Tue, 15 Mar 2022 05:27:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vsPzKwTS+IeFWwMuAO6niSRyxPXe0xb+6y4I6aL7QW0=;
+        b=NL+6mVXVc1ULntZn6zGAnso0FAmQ76WRKZ3Jvq9anuufLIQW4RBIIiMcAPEm4jCuDK
+         ykfi02g0nCetjIZaq5XYPak7KEGHV0Ad6AXxKhvlnFKzhFx6o/EwwV499I3AQh0hgaS3
+         h7UQAbtGfuQ/V2n4944je+hTfTSIBRRPO7CKnDvjsFGWZqviwTzPkndcYnfsNyCkH9cu
+         UswbkIffl6AtqT74VVSlcS0rSP1/c5uN4reY/b6n3JRGBFmzko/7MzeQZZ3EMK/yQ7pE
+         /BK1OjThtOw472gixxuHu8oGbPSO+0VuluSIHvK+IDe+gOdO92LFnLdmGGsM65nW3ieQ
+         B06Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vsPzKwTS+IeFWwMuAO6niSRyxPXe0xb+6y4I6aL7QW0=;
+        b=NuXIwvrKI36Xp+KlqDa41kSncuz98xG8C5BCKwsQGm7xSAC7wdw7G0h3nimCigva8A
+         McPRoqKXjYUpxLw2n4b9WE0iOZV72RHMK1oSP1r8HDW1Vs708gt265vx4xaApKJnoagB
+         rAR0htYIRCpXdSVitTPl9LPBinNg4DrrsSFBN3+U+uVWkk3W3lQiWpxdJh5RtwXp4y9+
+         R6PiLVSZRAbqzFIWGlgv88kIDTrV34olbQ5dcUKw6c+WQPqLMkkRvBzSn/NfqdAU81K3
+         t0Ci/YhK0YMgJb+g+m44HGB+mhr6t0mfxThQmYQZSmJiKiPm0FnZzmuN0qpsXIPJBqae
+         zoBw==
+X-Gm-Message-State: AOAM5323K2U+cpR/RRpWGUVftla8LdsuDx2d29rneT5MdemyZI/aC4gj
+        sy9Orb5COe55R6EMu8bSlb9ZVo/U3oE=
+X-Google-Smtp-Source: ABdhPJw9ZyXSSVehYTlyuH3WFHXnRE2RC1Xiin6VmXbIKq+x3kPvEhih+fOd4MhV9lnNokBxAfg6/A==
+X-Received: by 2002:a05:6000:144d:b0:203:7add:fa71 with SMTP id v13-20020a056000144d00b002037addfa71mr19819711wrx.526.1647347255342;
+        Tue, 15 Mar 2022 05:27:35 -0700 (PDT)
+Received: from debian (host-78-145-97-89.as13285.net. [78.145.97.89])
+        by smtp.gmail.com with ESMTPSA id g12-20020a5d698c000000b001f1d8bb4618sm24282118wru.36.2022.03.15.05.27.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 05:27:34 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 12:27:32 +0000
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 4.19 00/29] 4.19.235-rc2 review
+Message-ID: <YjCGNH2AWqpbIICA@debian>
+References: <20220314145920.247358804@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD-N9QX2cajf0LXKcOji_Em26-0bw9wfhx7KDV_TLDWhgQ90hQ@mail.gmail.com>
+In-Reply-To: <20220314145920.247358804@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dongliang,
+Hi Greg,
 
-On Tue, Mar 15, 2022 at 07:59:26PM +0800, Dongliang Mu wrote:
-> On Tue, Mar 15, 2022 at 7:05 PM Huang Jianan <jnhuang95@gmail.com> wrote:
-> >
-> > 在 2022/3/15 18:55, Gao Xiang 写道:
-> > > On Tue, Mar 15, 2022 at 06:43:01PM +0800, Huang Jianan wrote:
-> > >> 在 2022/3/15 15:51, Dongliang Mu 写道:
-> > >>> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> > >>>
-> > >>> Syzkaller hit 'WARNING: kobject bug in erofs_unregister_sysfs'. This bug
-> > >>> is triggered by injecting fault in kobject_init_and_add of
-> > >>> erofs_unregister_sysfs.
-> > >>>
-> > >>> Fix this by remembering if kobject_init_and_add is successful.
-> > >>>
-> > >>> Note that I've tested the patch and the crash does not occur any more.
-> > >>>
-> > >>> Reported-by: syzkaller <syzkaller@googlegroups.com>
-> > >>> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > >>> ---
-> > >>>    fs/erofs/internal.h | 1 +
-> > >>>    fs/erofs/sysfs.c    | 9 ++++++---
-> > >>>    2 files changed, 7 insertions(+), 3 deletions(-)
-> > >>>
-> > >>> diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-> > >>> index 5aa2cf2c2f80..9e20665e3f68 100644
-> > >>> --- a/fs/erofs/internal.h
-> > >>> +++ b/fs/erofs/internal.h
-> > >>> @@ -144,6 +144,7 @@ struct erofs_sb_info {
-> > >>>     u32 feature_incompat;
-> > >>>     /* sysfs support */
-> > >>> +   bool s_sysfs_inited;
-> > >> Hi Dongliang,
-> > >>
-> > >> How about using sbi->s_kobj.state_in_sysfs to avoid adding a extra member in
-> > >> sbi ?
-> > > Ok, I have no tendency of these (I'm fine with either ways).
-> > > I've seen some usage like:
-> > >
-> > > static inline int device_is_registered(struct device *dev)
-> > > {
-> > >          return dev->kobj.state_in_sysfs;
-> > > }
-> > >
-> > > But I'm still not sure if we need to rely on such internal
-> > > interface.. More thoughts?
-> >
-> > Yeah... It seems that it is better to use some of the interfaces
-> > provided by kobject,
-> > otherwise we should still maintain this state in sbi.
-> >
+On Mon, Mar 14, 2022 at 04:00:14PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.235 release.
+> There are 29 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> I am fine with either way. Let me know if you reach to an agreement.
+> Responses should be made by Wed, 16 Mar 2022 14:59:12 +0000.
+> Anything received after that time might be too late.
 
-If you have time, would you mind sending another patch by using
-state_in_sysfs? I'd like to know Chao's perference later, and
-apply one of them...
+Build test:
+mips (gcc version 11.2.1 20220301): 63 configs -> no  failure
+arm (gcc version 11.2.1 20220301): 116 configs -> no new failure
+arm64 (gcc version 11.2.1 20220301): 2 configs -> no failure
+x86_64 (gcc version 11.2.1 20220301): 4 configs -> no failure
 
-Thanks,
-Gao Xiang
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/880
+
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
 
