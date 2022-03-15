@@ -2,152 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B61C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F487C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348068AbiCOLxw (ORCPT
+        id S1348064AbiCOL42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 07:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46260 "EHLO
+        Tue, 15 Mar 2022 07:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348005AbiCOLxq (ORCPT
+        with ESMTP id S237957AbiCOL40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 07:53:46 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E758506F6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:52:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647345154; x=1678881154;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Cq4Pk617PcjJPsbbqjl+pk5hh/VfPh2oGmmkdgt4sWc=;
-  b=hW/lBPbz03LWbd28ZLr1wphAD6cwNMkBSQ+F0qKdOTKs7vdu8gA7FkYj
-   XqOKR3Qa4TkAESRge4oFo2E+NqKmuGol/tS6osotnwnV8U5xIO3+0si03
-   dxPh3G7dl4jc5WBBF0yPDmPfI94X62llilgO5bCFRNIn67n7MsY2phVjD
-   LpZ84YizzM9h+zoZcTuqFFfk0MmMBOwn1PUL6rafArfso8Kg1gp7SpdCL
-   w0qZOaeYA0wsNxkuM9nNuCJ3FIrcoauVv/8+ck+QHJz3sJRyYMIXAC/x7
-   RA5M96edPlahyf0zvYEtSQE4yfJbDywvsB6qudZvkxwo7VTweFaydSr2M
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255108130"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="255108130"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 04:52:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="819749449"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 15 Mar 2022 04:52:29 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU5j2-000AuR-QF; Tue, 15 Mar 2022 11:52:28 +0000
-Date:   Tue, 15 Mar 2022 19:52:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Qing Wang <wangqing@vivo.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Cc:     kbuild-all@lists.01.org, Wang Qing <wangqing@vivo.com>
-Subject: Re: [PATCH] sched: dynamic config sd_flags if described in DT
-Message-ID: <202203151939.NI7Rsold-lkp@intel.com>
-References: <1647331137-69890-1-git-send-email-wangqing@vivo.com>
+        Tue, 15 Mar 2022 07:56:26 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4A338BCE;
+        Tue, 15 Mar 2022 04:55:14 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id E527E1F4063A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647345312;
+        bh=q9ZMDxGcBq6i17q95dW6qoYLwEwtrTbxOKEO8H8wJAc=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=KDGhPyRI3qYm86VqFmBHaGQyL25cUs4aIooCH/NdL5uIuHurRz6L9f81Ypm6iz2L0
+         JP+DJDf4fj5WIsnizGU8uJTrVT1Zja2hST2oUwqu79n75NLXAUoXyHoaYUJnMtV8vm
+         hiPhMjaClA7xkP6XC7+3RTyqMb0xGGe98LCbD2bDQl2ooLKMQ7jIirW1Nl0Ld0H/Jl
+         vcRTgeYZ8nrwS6lr/NzeTDFB4BrypQfhRifexzdZon4ymNJVSRDAnSHWg3gDMG88fV
+         8OSefyyevmZZ9xOvuN1qToSCfBiBzL6I4ExRH/ng5nCOOcyx23cMvagXDQwTklGUuK
+         kr2zfqs8uKL6Q==
+Message-ID: <aaeaefb7-3655-2863-46ae-162bf5ab761c@collabora.com>
+Date:   Tue, 15 Mar 2022 16:55:05 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1647331137-69890-1-git-send-email-wangqing@vivo.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Cc:     usama.anjum@collabora.com, Shuah Khan <shuah@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@collabora.com, kernelci@groups.io,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] selftests/lkdtm: add config
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>
+References: <20220217205620.2512094-1-usama.anjum@collabora.com>
+ <20220217205620.2512094-2-usama.anjum@collabora.com>
+ <202203091123.33E89F5@keescook>
+ <76529762-1a36-142d-0aa9-beb5fa2bb27b@collabora.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <76529762-1a36-142d-0aa9-beb5fa2bb27b@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qing,
+On 3/10/22 10:22 PM, Muhammad Usama Anjum wrote:
+> On 3/10/22 12:23 AM, Kees Cook wrote:
+>> On Fri, Feb 18, 2022 at 01:56:20AM +0500, Muhammad Usama Anjum wrote:
+>>> Add config option which is needed for SLAB_LINEAR_OVERFLOW test. It
+>>> needs KASAN enabled.
+>>
+>> I'd prefer this use the SLAB_DEBUG options -- KASAN is very heavy.
+> I'll test it out and update in the next patch version.
+> I've tested by removing KASAN and adding the following config:
+CONFIG_SLAB=y
+CONFIG_DEBUG_SLAB=y
 
-Thank you for the patch! Yet something to improve:
+The result of SLAB_LINEAR_OVERFLOW test doesn't remain deterministic in
+this config. The task never crashes and hence stack trace never appears.
+When executed several times we get "Slab corruption" logs and after some
+more tries whole kernel crashes. I've not used DEBUG_SLAB before and not
+sure if this is the expected behavior. If we aren't sure, we can keep
+KASAN turned on instead.
 
-[auto build test ERROR on arm64/for-next/core]
-[also build test ERROR on driver-core/driver-core-testing tip/sched/core linus/master v5.17-rc8 next-20220310]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Qing-Wang/sched-dynamic-config-sd_flags-if-described-in-DT/20220315-160039
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-config: riscv-nommu_k210_sdcard_defconfig (https://download.01.org/0day-ci/archive/20220315/202203151939.NI7Rsold-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/3322560249c42b0a3e719b19842a3ace7d5ffb6a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Qing-Wang/sched-dynamic-config-sd_flags-if-described-in-DT/20220315-160039
-        git checkout 3322560249c42b0a3e719b19842a3ace7d5ffb6a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash drivers/base/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/base/arch_topology.c: In function 'cpus_share_self_cache':
->> drivers/base/arch_topology.c:648:37: error: 'cpu' undeclared (first use in this function)
-     648 |                 if (!cache_topology[cpu][cache_level])
-         |                                     ^~~
-   drivers/base/arch_topology.c:648:37: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +/cpu +648 drivers/base/arch_topology.c
-
-   639	
-   640	int cpus_share_self_cache(const struct cpumask *cpu_map)
-   641	{
-   642		int cache_level, cpu_id;
-   643		int first, last;
-   644		int id = cpumask_first(cpu_map);
-   645		int size = cpumask_weight(cpu_map);
-   646	
-   647		for (cache_level = 0; cache_level < MAX_CACHE_LEVEL; cache_level++) {
- > 648			if (!cache_topology[cpu][cache_level])
-   649				return -1;
-   650	
-   651			first = -1;
-   652			last = id;
-   653			for (cpu_id = 0; cpu_id < NR_CPUS; cpu_id++) {
-   654				if (cache_topology[cpu][cache_level] == cache_topology[cpu_id][cache_level]) {
-   655					if (cpu_id < id || cpu_id >= id + size)
-   656						return 0;
-   657	
-   658					first = (first == -1)?cpu_id:first;
-   659					last = cpu_id;
-   660				}
-   661			}
-   662	
-   663			if (first == id && last == id + size)
-   664				return 1;
-   665		}
-   666	
-   667		return 0;
-   668	}
-   669	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Muhammad Usama Anjum
