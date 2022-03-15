@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B0EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8007CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351696AbiCOU24 (ORCPT
+        id S1351712AbiCOU3N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 16:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
+        Tue, 15 Mar 2022 16:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351688AbiCOU2y (ORCPT
+        with ESMTP id S241868AbiCOU3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 16:28:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B84E527CF;
-        Tue, 15 Mar 2022 13:27:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE81B60C11;
-        Tue, 15 Mar 2022 20:27:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8594C340E8;
-        Tue, 15 Mar 2022 20:27:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647376061;
-        bh=lPid5CXtPfW3o72M2MpfIOFm7dpvPR/IEytoPY4JkGA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=j1UldcV/o+ezaF2TgjsCVr+8NhHzHqV1B1SGmZBuMhbsajxalAJBsvBAxadGAzmbd
-         iD2WuMRSZM8M2ZePgXX5GJ+ErfWowM2Aq585kFJ1kjS7PNR5nelOLKOakwYtdxxoDt
-         YUl0MufwZXwGuq51SBNqo7gjQhtK/N5YRVo9wmKpWwlYA2rP7+exU8W46KLxMmE0VH
-         qgmuaInlKQFGMmjPmDHtd5955jksDC09onSZu5U9qXJTHwrUd6HXTRLDY+c7r3HjXi
-         gD06ViV8drCFXA+gf2IC/KQ6uanS5U1xTnK9X9IBEtofGnFHZnJG+GsLP134yJuVTQ
-         tu7SWA1Jwh0cA==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH -next v2] dt-bindings: kbuild: Make DT_SCHEMA_LINT a recursive variable
-Date:   Tue, 15 Mar 2022 13:25:43 -0700
-Message-Id: <20220315202542.2071351-1-nathan@kernel.org>
+        Tue, 15 Mar 2022 16:29:11 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BA713D79;
+        Tue, 15 Mar 2022 13:27:59 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id x15so155076wru.13;
+        Tue, 15 Mar 2022 13:27:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h0qv9mDXmv5p2CFMjUqbXa1C/c2t8JyqpwfD6/zqQ/M=;
+        b=fjiVnzPc4UZCBBrTPKOfYYmoXaUOtGyPRHh4ux1ZLiyfmsCcqUiOe1IB/LzQ1CyQt3
+         IXGfKSN9eJrFDlOp3zY9DqxR38Qe1EK0Vvd62scS6r3EB2J6yW8x2+PINXyXpBQ9aGDV
+         Xxlj5UAK2kc9OwuNWBiSKufcxt25YGZWTq5SXvG8QdQcl1D9CfThWz0+GP9CF/HYRv9e
+         XveWpnYyXuESbrnUb6OZBQkG9nrFPE3N0ILVguJ4qPAB6+MSqTVaOHwj3OSyfXdFv5L0
+         Dnv+QVQkEQRXBtWeRjAqnZgvrWOepS+AeZ8P7dah3xMRuOUff8pWEcxnCHmsl552b+AH
+         A+3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h0qv9mDXmv5p2CFMjUqbXa1C/c2t8JyqpwfD6/zqQ/M=;
+        b=Gyt70LKYAHC6gVxQb3WGnP8ZUZULa23i8AG2Bi8olrd3DaUZzH5fcd3EUpGM9yk314
+         b+y8RE5XVOvxA39ycR5+3iSbrEZtu5Sr5gXk2gWXC/kqrNl8BVRaolDYNKp69tEuXzD2
+         zeD7mNmGihECqW7QjPFA3zz+ROphio1mYO1pWNVSpQPJVejpGKGXcFGdeN3lfmJvgv48
+         /MntK9obr7zDVA6BcNky1218Dng8he5/H+VvIOivuHQ5kA+9eGDELaEqJFYkYdrSgvSE
+         Alu8qs3K3ViWQKr6LqF7s8ioAyZc6fahdlFVo+n4zYZGPNsFIS5kTS0TfF0ErEjKzVnq
+         YGMw==
+X-Gm-Message-State: AOAM530Izjw9etZ27J/tFqVJeHBd+G38kulzaJKItAVQow+crzpr+TaL
+        6jCFyftOO6JJObigp6LnU2+Tjmuod7QOlQ==
+X-Google-Smtp-Source: ABdhPJxWml19jK5phIRP74Sz6aAEW6VQiwapgaPeuLaXEULiFk2g8DMD+bAHm+XedIs+G/5tQnMSOQ==
+X-Received: by 2002:adf:b64c:0:b0:1e3:16d0:3504 with SMTP id i12-20020adfb64c000000b001e316d03504mr21433640wre.333.1647376077808;
+        Tue, 15 Mar 2022 13:27:57 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id bg42-20020a05600c3caa00b00380deeaae72sm2300849wmb.1.2022.03.15.13.27.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 13:27:57 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        linux-acpi@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] mailbox: pcc: Fix spelling mistake "Plaform" -> "Platform"
+Date:   Tue, 15 Mar 2022 20:27:56 +0000
+Message-Id: <20220315202756.2953329-1-colin.i.king@gmail.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A recent change added a warning when yamllint is not installed, as it is
-needed for 'make dt_binding_check'. However, it also changed
-DT_SCHEMA_LINT to be a simple make variable, which is evaluated when a
-Makefile is evaluated. This causes a warning when running 'make clean',
-as Documentation/devicetree/bindings/Makefile has a "clean-files"
-variable:
+There is a spelling mistake in a pr_err error message. Fix it.
 
-  $ make -s clean
-  which: no yamllint in (...)
-  warning: python package 'yamllint' not installed, skipping
-
-Make DT_SCHEMA_LINT a recursive variable so it is evaluated only when it
-is used. The warning still triggers when 'make dt_binding_check' is run.
-
-Fixes: b3e664a7f449 ("dt-bindings: kbuild: Print a warning if yamllint is not found")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
-
-v1 -> v2: https://lore.kernel.org/r/20220315202032.538911-1-nathan@kernel.org/
-
-* Fix stray "i" in commit title (I promise I know how to use vim...),
-  sorry for the mistake and extra patch.
-
- Documentation/devicetree/bindings/Makefile | 2 +-
+ drivers/mailbox/pcc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/Makefile b/Documentation/devicetree/bindings/Makefile
-index e594e5898be0..c9953f86b19d 100644
---- a/Documentation/devicetree/bindings/Makefile
-+++ b/Documentation/devicetree/bindings/Makefile
-@@ -3,7 +3,7 @@ DT_DOC_CHECKER ?= dt-doc-validate
- DT_EXTRACT_EX ?= dt-extract-example
- DT_MK_SCHEMA ?= dt-mk-schema
+diff --git a/drivers/mailbox/pcc.c b/drivers/mailbox/pcc.c
+index ed18936b8ce6..2b209acdbab2 100644
+--- a/drivers/mailbox/pcc.c
++++ b/drivers/mailbox/pcc.c
+@@ -676,7 +676,7 @@ static int pcc_mbox_probe(struct platform_device *pdev)
  
--DT_SCHEMA_LINT := $(shell which yamllint || \
-+DT_SCHEMA_LINT = $(shell which yamllint || \
-   echo "warning: python package 'yamllint' not installed, skipping" >&2)
- 
- DT_SCHEMA_MIN_VERSION = 2022.3
-
-base-commit: 593adaa6459903728cb59392239f2c615b8dadbb
+ 		if (pcct_entry->type == ACPI_PCCT_TYPE_EXT_PCC_SLAVE_SUBSPACE &&
+ 		    !pcc_mbox_ctrl->txdone_irq) {
+-			pr_err("Plaform Interrupt flag must be set to 1");
++			pr_err("Platform Interrupt flag must be set to 1");
+ 			rc = -EINVAL;
+ 			goto err;
+ 		}
 -- 
 2.35.1
 
