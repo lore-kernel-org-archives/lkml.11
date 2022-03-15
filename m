@@ -2,81 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D841EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351637AbiCOUTK (ORCPT
+        id S1351650AbiCOUTQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 16:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34336 "EHLO
+        Tue, 15 Mar 2022 16:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234688AbiCOUTI (ORCPT
+        with ESMTP id S234688AbiCOUTO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 16:19:08 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F516DFEB;
-        Tue, 15 Mar 2022 13:17:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
-        bh=JnUa+YRu6mZZPEMLjHBkJ1cwcALvqIyW++Bmuo2cvXs=; b=2fXsfiQkV73mUutJWA7sFKeBeW
-        E3OL9EMestEQlmiD0Fzsx52rTPC01+dtQ2InsC1u8f4GFk7Nh4SKqb8n1OvKqZRRcT6fKkfQOQS2q
-        FrHfUXZ2B9DhV2tZCJ5u2GBm3IDu/OCCEDyr7BdsFKLY92/OUIbNvUSY1SR/HH37y6vjqX/2Fz5xV
-        M3xbO870Xd3AKnJximmfkX9+kJR07Ubt8Hmn2PTJOn5rJl1e43ASEwl2f5io684WV2rqz8s83NyGF
-        8FHdP0PgDIZLxc3G/qszTIzdhHDTMjTgq1BxnXe4ehVHjhz8c4mN+Wo2edllrS/PtAyM/5oZXWN7c
-        rCb3xLLQ==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUDbz-00AYjf-7H; Tue, 15 Mar 2022 20:17:43 +0000
-Date:   Tue, 15 Mar 2022 13:17:43 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Zhen Ni <nizhen@uniontech.com>
-Subject: Re: linux-next: manual merge of the sysctl tree with the tip tree
-Message-ID: <YjD0Z7UQ0psJT7b0@bombadil.infradead.org>
-References: <20220315201840.6146f234@canb.auug.org.au>
+        Tue, 15 Mar 2022 16:19:14 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E860C1A809;
+        Tue, 15 Mar 2022 13:18:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647375482; x=1678911482;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=A0S0recbfR0lN7an2K5m+iODUM7Djv92LfoqIfc3vRI=;
+  b=EIOhu6K96/w+hp7gzESMHCzQv1r5dTDUh6RGGxiV8U35Ll2LLUhXZTrs
+   r3dkQMciaesCxYSy+TvtIhgSZqnOEKbQsQihfE4d5ZS5VYIXmr1qYvEYN
+   CY5oJjFjpHKUXdkm6ek7KK6ygexcArmQciesz8vlNwzx0zBZIEkqKf1Uv
+   ZMSgLB7/Ye3g69+DowYCVY5jfttN6XB4AGvZjvsAppgtnDaXmgWN0LmsJ
+   Qm3q0Sgm60dpuOXKg2aFcCevRlOE1iHsbb3YOqrLrI/y2d11tN+8MlD10
+   vUSvzTUKNo6YUn6oXm8vhQ7hjC8x8wmiqsj9Vre30dFq9cam6UTFUxab+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="319634452"
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="319634452"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 13:18:01 -0700
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="598448297"
+Received: from anirudhk-mobl1.amr.corp.intel.com (HELO rpedgeco-desk.amr.corp.intel.com) ([10.212.229.227])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 13:18:00 -0700
+From:   Rick Edgecombe <rick.p.edgecombe@intel.com>
+To:     dave.hansen@intel.com, len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, viro@zeniv.linux.org.uk,
+        ebiederm@xmission.com, keescook@chromium.org
+Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] Regset cleanups
+Date:   Tue, 15 Mar 2022 13:17:03 -0700
+Message-Id: <20220315201706.7576-1-rick.p.edgecombe@intel.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220315201840.6146f234@canb.auug.org.au>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 08:18:40PM +1100, Stephen Rothwell wrote:
-> Hi all,
->=20
-> Today's linux-next merge of the sysctl tree got a conflict in:
->=20
->   kernel/sched/deadline.c
->=20
-> between commit:
->=20
->   eb77cf1c151c ("sched/deadline: Remove unused def_dl_bandwidth")
->=20
-> from the tip tree and commit:
->=20
->   ebb891f03580 ("sched: Move deadline_period sysctls to deadline.c")
->=20
-> from the sysctl tree.
+Hi,
 
-Peter,
+I’m looking for ack’s from Intel reviewer’s before this is ready for official
+submission to x86 maintainers. Patch 3 is in core code, so also including
+relevant MAINTAINERS file people for that one. If you are not an Intel reviewer,
+feel free to ignore this until it has had more review. Glad for any feedback all
+the same. I’m also, wondering if this is something that could go through the x86
+tree all together or I should split it out.
 
-to help avoid conflicts I spinned up a sysctl-next tree to collect
-different cleanups going on kernel/sysctl.c. I can drop=20
-ebb891f03580 ("sched: Move deadline_period sysctls to deadline.c")
-but I think we'd still run into conflicts as other sysctls are
-trimmed out. Would you be OK in me taking in eb77cf1c151c
-("sched/deadline: Remove unused def_dl_bandwidth") to avoid this
-conflict?
 
-  Luis
+
+While working on CET ptrace support, I found some suggested cleanups [0] [1] on
+past postings of that patch. So this small series is doing those cleanups and
+some related changes.
+
+Way back then, it was noticed that CET ptrace patches were aliasing names in the
+enum that indexes the regsets. It turns out this was partly because of a
+limitation in core dump code that reads the registers for dumping. But excluding
+gaps in the regset array also allows them to be smaller, so just fixing the core
+dump code doesn’t remove all need for the specially crafted enum. So series
+changes the way the enums are defined such that enum has to be less carefully
+crafted, and also fixes the core dump code.
+
+Patch 1 is improving the enums in x86 ptrace code.
+
+Patch 2 is some x86 ptrace code formatting changes suggested by Ingo. [0]
+
+Patch 3 is the fix to the core dump code. Just to be clear, there is no actual
+bug fixed. It would only overflow an array if the regset views were not laid out
+just so. But the regsets appear to be laid out so that the brittle code is not
+broken, from a quick scan of the archs.
+
+Testing consisted of doing some core dumps and seeing that notes were in the
+same position, and verifying that the enum’s generated the same ints using
+printks.
+
+Thanks,
+
+Rick
+
+[0] https://lore.kernel.org/lkml/20180711102035.GB8574@gmail.com/
+[1] https://lore.kernel.org/lkml/A7775E11-8837-4727-921A-C88566FA01AF@amacapital.net/
+
+Rick Edgecombe (3):
+  x86: Separate out x86_regset for 32 and 64 bit
+  x86: Improve formatting of user_regset arrays
+  elf: Don't write past end of notes for regset gap
+
+ arch/x86/kernel/ptrace.c | 165 ++++++++++++++++++++++++---------------
+ fs/binfmt_elf.c          |  15 ++--
+ 2 files changed, 111 insertions(+), 69 deletions(-)
+
+base-commit: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+-- 
+2.17.1
+
