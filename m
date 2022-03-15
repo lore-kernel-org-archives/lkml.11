@@ -2,140 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8982C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D36C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346822AbiCOJxx (ORCPT
+        id S1346862AbiCOJyR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
+        Tue, 15 Mar 2022 05:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346757AbiCOJxu (ORCPT
+        with ESMTP id S1346854AbiCOJyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:53:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 763A34F47F
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:52:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647337957;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N5IW2ZO+i2H4FBZWSS5hn4aliQk4aAVWjsRwugmKOuA=;
-        b=IJriEEimqoVFuHclqYTe53PgHwrfe70+YcVvLJqu40Env95ZqBy3/H3lkgFK9JVwLs7duM
-        D84TleK3knakvy94DqHfvJ3mFu6ZNqJDOUq5bRJ8axL0LZyyESxHHpfsVTryaehRsxJ2WC
-        rz3ht5aPQayBSJG/Qyc68yKjDyz1woQ=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-7-qq8CX2ZwNZqAamecpeRCJg-1; Tue, 15 Mar 2022 05:52:36 -0400
-X-MC-Unique: qq8CX2ZwNZqAamecpeRCJg-1
-Received: by mail-qk1-f197.google.com with SMTP id h68-20020a376c47000000b0067e05dade89so935896qkc.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:52:36 -0700 (PDT)
+        Tue, 15 Mar 2022 05:54:12 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999E4CDE
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:52:57 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id qa43so39710868ejc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:52:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nzL1DPOauY6xrdeyfpwRODojKdw/bFm68FMajovYo6g=;
+        b=aPQtqBpjqL26lRUuA67dWSdBYZ+P/OnQD5b5DPaPCNVFC8mllI1F5Z4DrykGC7Nm52
+         NYVARAcB6EKihQiU3nR7auLh2RMcX5iG4aZzNurSihePLSCDNafmV6aDnPt7iohqmzPT
+         i+1RJQbOuQTUsiLaWuynMdfIp2D0pEXMbRgq3gppylA50fxe/er+TcNS8B7LqPy9DwNd
+         xK4POQpl6tAPqXHcYYhL9RoWDsmggj0qIBO3em3KQdtOCCzH995aYYhNiMf7y+PmHirW
+         gmes5oNZhwRimfcWiHSC/2oYzvBdzMMM04H84ESMBLL84WRaxdlbwsUak7eTTugCNdve
+         PEXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N5IW2ZO+i2H4FBZWSS5hn4aliQk4aAVWjsRwugmKOuA=;
-        b=OOSBR1kX2sF1oMbpLZmwv1Fw3TeKyF6N/Di8Ppqf4/w0945Upt6avHZxxHCnSCibgZ
-         5XxXKrOrZmdB4kZV2eF6NZloU/tcE98TrJR/1LEBAeny2RyeWVlg5wU76qGvm1CAhIjd
-         ybIcJOPdtJHkvaxO6HAhS5U4welF289c44EobcinDP9Tk/KAHjEod+Q38QYxossyi9NV
-         FeDkzt/51pxdsPe0Y1s2/TMYpkhNu7Env2qY/cRb07qUW+VndAOwV5jvNY94AtIEAgNS
-         JyKjM0FO0ynI+cJxzDP0lv5bwHk0APH2YP2j8rvoEBdG8csjRplxSqXeKcV2Y737WRw1
-         xIsQ==
-X-Gm-Message-State: AOAM533WCRwKsHdtZrjFq+6U9NlPOS7cN55cnkmArMDcSpD79ygOGgGO
-        xPT6YvU0+2gc/PmOvOtS57uo2DDLUglkASt7ipsOR/gh+IfCSdJ3forPxd6NYvRMSc78Q9Xb8nC
-        NOMH09fHlFbBEMc0eCt/Kal0u
-X-Received: by 2002:a05:6214:19c4:b0:440:b035:594b with SMTP id j4-20020a05621419c400b00440b035594bmr6906957qvc.110.1647337955340;
-        Tue, 15 Mar 2022 02:52:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzYTGoAIi2s1TzUq1JTWuGCm8A+zaGPrqws9RQeK42gHYAbCHsAokQeH5UfPekVFaxnkxUqmw==
-X-Received: by 2002:a05:6214:19c4:b0:440:b035:594b with SMTP id j4-20020a05621419c400b00440b035594bmr6906945qvc.110.1647337955103;
-        Tue, 15 Mar 2022 02:52:35 -0700 (PDT)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id s12-20020a05622a018c00b002e1cd88645dsm5162039qtw.74.2022.03.15.02.52.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 02:52:34 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:52:29 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Longpeng(Mike)" <longpeng2@huawei.com>
-Cc:     stefanha@redhat.com, mst@redhat.com, jasowang@redhat.com,
-        arei.gonglei@huawei.com, yechuan@huawei.com,
-        huangzhichao@huawei.com, virtualization@lists.linux-foundation.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] vdpa: support exposing the count of vqs to
- userspace
-Message-ID: <20220315095229.e6to3g6juxbacjgk@sgarzare-redhat>
-References: <20220315032553.455-1-longpeng2@huawei.com>
- <20220315032553.455-4-longpeng2@huawei.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nzL1DPOauY6xrdeyfpwRODojKdw/bFm68FMajovYo6g=;
+        b=iB0LWXT7QoPghJLzoyNiL/nb9UxPpdAcxunzKTzlJFZEtU62e6CHDPl9Qw3KElAlHI
+         zGZBTgY2X//yaZWbjfVebio3VnZ/XALzvPdt8V62nyCTu7mDAF3tBfemt/bOZDexYfnb
+         UDGFAi2os+Edm8hYCyGaVSRfftoe41QvYUeaaGqumAsZwX45AUxOwFtFeD1GgAp+KbeV
+         1u62C9W4p9J99JFXZ0ejxWMmwGvsPNQ+XfFuoTRwiFOAUMcRlYLzRZU9C7z/tqasBYcp
+         6j36fY7G6uqZdv9qsd+tRPe4TGilf5wkcgS5LiNzUn65qyigNQJWwNs4ajL2gflKX8gY
+         Ys3Q==
+X-Gm-Message-State: AOAM533FQhdRHnXSFT3TUxGRaKpaxy/JqUtZKeAAWADe/uRLtQuiNlz1
+        PkWiQF5nj6vANeqfVCj4coTPTQ==
+X-Google-Smtp-Source: ABdhPJyQkxhiMyLn0VYaZCt9sQO44O40CE85NeRb10VArr61L3n9t7cm6DbwGGYW3nPA3mCgwXjBGg==
+X-Received: by 2002:a17:906:d555:b0:6da:ac8c:f66b with SMTP id cr21-20020a170906d55500b006daac8cf66bmr21422702ejc.107.1647337975509;
+        Tue, 15 Mar 2022 02:52:55 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id a102-20020a509eef000000b0041614c8f79asm9346624edf.88.2022.03.15.02.52.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 02:52:55 -0700 (PDT)
+Message-ID: <5c05d8b8-9c40-e38d-5c4d-e25526407e51@blackwall.org>
+Date:   Tue, 15 Mar 2022 11:52:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220315032553.455-4-longpeng2@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 net-next 03/15] net: bridge: mst: Support setting and
+ reporting MST port states
+Content-Language: en-US
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+References: <20220315002543.190587-1-tobias@waldekranz.com>
+ <20220315002543.190587-4-tobias@waldekranz.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220315002543.190587-4-tobias@waldekranz.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 11:25:53AM +0800, Longpeng(Mike) wrote:
->From: Longpeng <longpeng2@huawei.com>
->
->- GET_VQS_COUNT: the count of virtqueues that exposed
->
->Signed-off-by: Longpeng <longpeng2@huawei.com>
->---
-> drivers/vhost/vdpa.c       | 13 +++++++++++++
-> include/uapi/linux/vhost.h |  3 +++
-> 2 files changed, 16 insertions(+)
->
->diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->index 0c82eb5..69b3f05 100644
->--- a/drivers/vhost/vdpa.c
->+++ b/drivers/vhost/vdpa.c
->@@ -370,6 +370,16 @@ static long vhost_vdpa_get_config_size(struct vhost_vdpa *v, u32 __user *argp)
-> 	return 0;
-> }
->
->+static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
->+{
->+	struct vdpa_device *vdpa = v->vdpa;
->+
->+	if (copy_to_user(argp, &vdpa->nvqs, sizeof(vdpa->nvqs)))
->+		return -EFAULT;
->+
->+	return 0;
->+}
->+
-> static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
-> 				   void __user *argp)
-> {
->@@ -510,6 +520,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-> 	case VHOST_VDPA_GET_CONFIG_SIZE:
-> 		r = vhost_vdpa_get_config_size(v, argp);
-> 		break;
->+	case VHOST_VDPA_GET_VQS_COUNT:
->+		r = vhost_vdpa_get_vqs_count(v, argp);
->+		break;
-> 	default:
-> 		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
-> 		if (r == -ENOIOCTLCMD)
->diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
->index bc74e95..5d99e7c 100644
->--- a/include/uapi/linux/vhost.h
->+++ b/include/uapi/linux/vhost.h
->@@ -154,4 +154,7 @@
-> /* Get the config size */
-> #define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
->
->+/* Get the count of all virtqueues */
->+#define VHOST_VDPA_GET_VQS_COUNT	_IOR(VHOST_VIRTIO, 0x80, __u32)
+On 15/03/2022 02:25, Tobias Waldekranz wrote:
+> Make it possible to change the port state in a given MSTI by extending
+> the bridge port netlink interface (RTM_SETLINK on PF_BRIDGE).The
+> proposed iproute2 interface would be:
+> 
+>     bridge mst set dev <PORT> msti <MSTI> state <STATE>
+> 
+> Current states in all applicable MSTIs can also be dumped via a
+> corresponding RTM_GETLINK. The proposed iproute interface looks like
+> this:
+> 
+> $ bridge mst
+> port              msti
+> vb1               0
+> 		    state forwarding
+> 		  100
+> 		    state disabled
+> vb2               0
+> 		    state forwarding
+> 		  100
+> 		    state forwarding
+> 
+> The preexisting per-VLAN states are still valid in the MST
+> mode (although they are read-only), and can be queried as usual if one
+> is interested in knowing a particular VLAN's state without having to
+> care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
+> bound to MSTI 100):
+> 
+> $ bridge -d vlan
+> port              vlan-id
+> vb1               10
+> 		    state forwarding mcast_router 1
+> 		  20
+> 		    state disabled mcast_router 1
+> 		  30
+> 		    state disabled mcast_router 1
+> 		  40
+> 		    state forwarding mcast_router 1
+> vb2               10
+> 		    state forwarding mcast_router 1
+> 		  20
+> 		    state forwarding mcast_router 1
+> 		  30
+> 		    state forwarding mcast_router 1
+> 		  40
+> 		    state forwarding mcast_router 1
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  include/uapi/linux/if_bridge.h |  16 +++++
+>  include/uapi/linux/rtnetlink.h |   1 +
+>  net/bridge/br_mst.c            | 127 +++++++++++++++++++++++++++++++++
+>  net/bridge/br_netlink.c        |  44 +++++++++++-
+>  net/bridge/br_private.h        |  23 ++++++
+>  5 files changed, 210 insertions(+), 1 deletion(-)
+> 
+[snip]
+> diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
+> index 78ef5fea4d2b..355ad102d6b1 100644
+> --- a/net/bridge/br_mst.c
+> +++ b/net/bridge/br_mst.c
+> @@ -124,3 +124,130 @@ int br_mst_set_enabled(struct net_bridge *br, bool on,
+>  	br_opt_toggle(br, BROPT_MST_ENABLED, on);
+>  	return 0;
+>  }
+> +
+> +size_t br_mst_info_size(const struct net_bridge_vlan_group *vg)
+> +{
+> +	DECLARE_BITMAP(seen, VLAN_N_VID) = { 0 };
+> +	const struct net_bridge_vlan *v;
+> +	size_t sz;
+> +
+> +	/* IFLA_BRIDGE_MST */
+> +	sz = nla_total_size(0);
+> +
+> +	list_for_each_entry(v, &vg->vlan_list, vlist) {
 
-I'd prefer VHOST_VDPA_GET_NUM_QUEUES, since we use "num_queues" also in 
-the spec [1].
+Note that rtnl_calcit() (which ends up indirectly using this function) is called
+only with rcu so you need to use list_for_each_entry_rcu() here.
 
-But I'm fine also with this:
-
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-
-[1] 
-https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html#x1-1120003
-
+> +		if (test_bit(v->brvlan->msti, seen))
+> +			continue;
+> +
+> +		/* IFLA_BRIDGE_MST_ENTRY */
+> +		sz += nla_total_size(0) +
+> +			/* IFLA_BRIDGE_MST_ENTRY_MSTI */
+> +			nla_total_size(sizeof(u16)) +
+> +			/* IFLA_BRIDGE_MST_ENTRY_STATE */
+> +			nla_total_size(sizeof(u8));
+> +
+> +		__set_bit(v->brvlan->msti, seen);
+> +	}
+> +
+> +	return sz;
+> +}
+> +
