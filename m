@@ -2,143 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE289C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BDECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350150AbiCOQuG (ORCPT
+        id S1350214AbiCOQv6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55316 "EHLO
+        Tue, 15 Mar 2022 12:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350203AbiCOQt6 (ORCPT
+        with ESMTP id S234843AbiCOQv4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:49:58 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D42517D0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:48:45 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id qa43so42410003ejc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qheZ1ENvb9x/0d1hNVlELAPpvFkCjTkbEefvApG+abE=;
-        b=YcBDtxazXi0/rbjjeFXc0/+X6MOk72vz+oc9wZNmmn/hyEyD5oDZ7/AFOtAUlfpJvx
-         zvgLtC1TjtUmIfQiW2e35EfuMYVxo8igY34EIWuJEvC0eQFMdcRv//N2etI/2VA7mS1J
-         Bk6WIPQUFn5kuQlrCq5PRwBxaphVupZiUFKvI9w4Y1s2szE78fIh7jJbCNLpwH7Ix/Ok
-         2vTiQdu2VUqkkQfiZw9dWkJhWTtgsjYbtHrUzmQZEMxDhUAp7DTW3ICVJvlrav7065jX
-         b2AKguiStJ5f8kWKa7DwXAUV8xIPITyxe6XR8jaBaM1MH3Z1cNaJY8I8lD/HVVkmwdof
-         2bow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qheZ1ENvb9x/0d1hNVlELAPpvFkCjTkbEefvApG+abE=;
-        b=XWF2HN1Gh9nHoNvbfzmuCIitD88B8jOb+rBkMu9i8C8KeagAaytJJIOTHUabVzUbBE
-         AoDmYVOnwiX9TDjqv6+lKMW9El7ZiDiV1vBG8KUb5JKE/C0qIv29UGvbOn8rDdU5dio1
-         9391PBvpo1Eb+ZW6nKS2JYOeDTwncRxWnfl7gMp84JffMiq03Dxj1uwSipU0pyN9I5N7
-         V46k4xvvZduNKpryXXLzrL1yU/HoRWL1k44NLmWfFAtAsdGSWaSTUY2CmYps1JabuD32
-         a/yt/5E6JGl6MrEou3SPjD6c7O2NRYWsdTR9Dptb+nPVLa/zDbbFNaco3sqGXLgFSZQn
-         bHMA==
-X-Gm-Message-State: AOAM530KX7dng31mTDET67qFgb4m03J1JKteHicNvjRZR011hk0Z0KHX
-        wPz90tgikIYduXY+XBkWKbRUU+ZVlc2eGnxONiCu+w==
-X-Google-Smtp-Source: ABdhPJy/j/+WVGZMrpefriH/4KTxPVQAncdabGacEKN41CTV4aFHTGEr8BLYhNPCvCOkv0N/tiEAP018t4ftP0pkVPE=
-X-Received: by 2002:a17:907:3f24:b0:6da:68fa:b2cc with SMTP id
- hq36-20020a1709073f2400b006da68fab2ccmr23711912ejc.734.1647362923497; Tue, 15
- Mar 2022 09:48:43 -0700 (PDT)
+        Tue, 15 Mar 2022 12:51:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCF8517D0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:50:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA33F614FC
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 16:50:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10159C340EE;
+        Tue, 15 Mar 2022 16:50:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647363043;
+        bh=PaV7AwkshyvE4Lfti1SblNPa211DHEWxqbXO7sKsCRk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Og1X89vk27Mfhrr5wPHnFa2yJZw+LqMN8tyrR5EpVCePstR88m2Uf/v1pjWOS2AFK
+         mQLx9ZeDeMh5aoa1soFBR0fdbVBAC8BF0dCBQNEiNK4ZqCh7+SR0cIHxvc4w2p6sme
+         2e8/hF26CBZYtFVk8M62y+hAF8ZSDDZIpiIo12jlPWc4BbmboxEIa0SIaNJkn8RZwv
+         cHZFGHL9L3xPebhS42Y+NuxNX7cTDo9U7Vyf2nzeTv3VjC1O9DyO9qs731mWHH/BPy
+         wV9gsEHUdA64QN33gBjPa7RDvL6cWLeOt6siUbcY1T5tXDWh5d1P/HxTneGC1vw68U
+         /ICo9PT7mwZ5Q==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUANc-00EhkO-P2; Tue, 15 Mar 2022 16:50:40 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eric Auger <eric.auger@redhat.com>
+Subject: [PATCH 0/3] irqchip/gic-v3: Assorted fixes and improvements
+Date:   Tue, 15 Mar 2022 16:50:31 +0000
+Message-Id: <20220315165034.794482-1-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <CAHk-=wiHa0vsZseZES=1T0rJ4Z_bC5cwHMUJfqFL9hVpvB283g@mail.gmail.com>
- <20220314192522.GA3031157@roeck-us.net> <CAHk-=wiEhs+4P1TNh2sNnk04D1FFdNThk6XLOMxzkRL72PEXFw@mail.gmail.com>
- <CACjc_5paC=X4znTty8LBtobqBW2nq4mbQYnw_TMgVEFb1A7mhA@mail.gmail.com> <CAHk-=wh0QBksyaTEn4gk=mn6hgAhp3e8i9mRsr657Dd-kQ3MKg@mail.gmail.com>
-In-Reply-To: <CAHk-=wh0QBksyaTEn4gk=mn6hgAhp3e8i9mRsr657Dd-kQ3MKg@mail.gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Tue, 15 Mar 2022 17:48:32 +0100
-Message-ID: <CAMRc=MfK1ak6BN27BuLAV3cyD8kRSdfQOovOsKqF35GBhJqpWQ@mail.gmail.com>
-Subject: Re: Linux 5.17-rc8
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Thierry Reding <treding@nvidia.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Vidya Sagar <vidyas@nvidia.com>,
-        Edmond Chung <edmondchung@google.com>,
-        Andrew Chant <achant@google.com>,
-        Will McVicker <willmcvicker@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, andre.przywara@arm.com, tglx@linutronix.de, eric.auger@redhat.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 2:47 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Mon, Mar 14, 2022 at 5:45 PM Marcelo Roberto Jimenez
-> <marcelo.jimenez@gmail.com> wrote:
-> >
-> > At a certain point, I tried Thorsten's suggestion to add a gpio-ranges
-> > property in a way similar to another patch, but the kernel went into
-> > an EPROBE_DEFER deadlock. Thierry Reding made some comments about this
-> > in the sequence.
->
-> Hmm. The problem does sound like that particular driver doesn't use
-> the pin_ranges thing, so then the tests for an empty pin_ranges will
-> always be true.
->
-> The EPROBE_DEFER deadlock then sounds like something went wrong in the
-> gpio-ranges patch when you tried to fix it - but I don't actually find
-> that patch or that attempt, so I can't even guess at it.
->
-> This whole code pin_ranges code looks very odd:
-> gpiochip_add_pin{group}_range() seems to add the pin ranges properly,
-> but that actual gpiochip_add_pin_ranges() function does *not*.
->
-> It just expects that that the 'add_pin_ranges()' callback exists, and
-> if it doesn't, does nothing at all.
->
-> Which then makes those
->
->         if (list_empty(&gc->gpiodev->pin_ranges))
->                 return 0;
->
-> tests very suspicious - because if some doesn't implement that
-> add_pin_ranges() callback, it looks like nothing at all ever gets
-> done, because nothing calls the function to actually add the pinrange.
-> And then that "list_empty()" test very much will trigger.
->
-> IOW, it looks like either a gpio controller has to implement that
-> 'add_pin_ranges()' function (only tegra), or it needs to always add
-> the pin ranges at probe time.
->
-> Am I guessing right that the driver that you use does neither?
->
+This is a small series that happens on the back of [1], which
+implements additional features in KVM's vgic.
 
-There are more drivers than just tegra that implement add_pin_ranges()
-but you're right, pinctrl-at91.c used by Marcelo does not.
+The first patch fixes a pretty embarrassing bug, which is fortunately
+unlikely to cause any issue in real life. The next two patches are
+performance optimisations.
 
-> LinusW/Bartoz - this all really sounds strange to me. Maybe I'm
+Thanks,
 
-It's BartoSz actually. :)
+        M.
 
-> misreading the situation entirely. Should there be some sanity-test
-> that any gpio/pinctrl driver that uses gpiochip_generic_request()
-> would either have to have that add_pin_ranges() callback, or a
-> successful probe needs to always populate that 'gpiodev->pin_ranges'
-> list?
->
+[1] https://lore.kernel.org/r/20220314164044.772709-1-maz@kernel.org
 
-This sounds right to me but I need to spend some more time on this, I
-didn't author the code in question.
+Marc Zyngier (3):
+  irqchip/gic-v3: Fix GICR_CTLR.RWP polling
+  irqchip/gic-v3: Detect LPI invalidation MMIO registers
+  irqchip/gic-v3: Relax polling of GIC{R,D}_CTLR.RWP
 
-> Or maybe I'm misreading the situation entirely. I don't know the code
-> - I'm just grepping for things and trying to make sense of how that
-> '->pin_ranges' list is supposed to work.
->
-> But for now, I think that patch has to be reverted.
->
+ drivers/irqchip/irq-gic-v3.c       | 51 +++++++++++++++---------------
+ include/linux/irqchip/arm-gic-v3.h |  2 ++
+ 2 files changed, 28 insertions(+), 25 deletions(-)
 
-Sounds good, I'll send a revert and make another PR with fixes before v5.17.
+-- 
+2.34.1
 
-Bartosz
-
->                Linus
