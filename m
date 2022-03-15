@@ -2,226 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0714C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348677AbiCONan (ORCPT
+        id S1348689AbiCONbh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 09:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45364 "EHLO
+        Tue, 15 Mar 2022 09:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347971AbiCONal (ORCPT
+        with ESMTP id S1348681AbiCONbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 09:30:41 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D4B04A3DF;
-        Tue, 15 Mar 2022 06:29:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1647350942; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=ScvkKBtXG0qdn0mauPdahMW+RjSCyD8vzYY6IXSzGqrqJ0uRruKCYGR41Phb8QjJ3aKV407ZfFYB/fdejI1d+Q9WhdJNfqLekkGWdwpX74l/4A6GPHQ8M7cAtY8BgGMMBZeSuDfDyh28+j39irhywl0CwAM9r4yyXCUgDBM/864=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1647350942; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=sNhaXvyi8YDqFUl3xFmq63+uF4zWI49tDG+hI38O0eo=; 
-        b=cZkUgC/+yvgvb6xdpejJgIhXcJ0icbm4QZBl43GFyfjjHJe2s/lWPErhyd3srDRHlftFTnit3JSyk1SV2vuX7F1hcYifx2FoKb2QaP9nRFiogIwGj9aW4ySMyCJquQT14xGWIGirbcAzCQsZIpMtSawujo40Youomt8fmmFFhyA=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1647350942;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=sNhaXvyi8YDqFUl3xFmq63+uF4zWI49tDG+hI38O0eo=;
-        b=D+jcP5Krmiwo62ABhcPFRY+6OpnpNyDOG+KbsVeLbpDbsejFzqAYhFKWJrdYWJu+
-        pSi5encngtrTTNnxOIDUgmeuObiPVwZxAzyMpy1rWKP5bqwNiX31nh/D3hP/VQIFNFC
-        esqARFZtTZM0sdQAryi7ci+JxklShiqeVSVTFSaY=
-Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1647350940373463.6171585371825; Tue, 15 Mar 2022 06:29:00 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        NeilBrown <neil@brown.name>, DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        erkin.bozoglu@xeront.com
-Cc:     linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH] mips: dts: ralink: add MT7621 SoC
-Date:   Tue, 15 Mar 2022 16:28:36 +0300
-Message-Id: <20220315132836.1062-1-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 15 Mar 2022 09:31:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9ECE1527DB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 06:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647351022;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wZtmaY3QY+M2yy/RC8DM8e+OTFH19E+LWuDTX+tqqXg=;
+        b=amzF1+A5GXZrdNsxPMVmTO67B2kDWpnwelbzpmZgJvyofRY24qzibvJ83g0yMIuwsk+GV4
+        NnQjO51jGl6c/k01fJ/Z3GHF3MU4/Mi9o0CAEsG0iUG04lHTDlWGM3jBJg+wfkBV4zk7o4
+        DK5EtsMZFjg9e2b8oXQ+XRrk5NMti4I=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-18-isGtHm1fNq-uOUDynsuy-g-1; Tue, 15 Mar 2022 09:30:21 -0400
+X-MC-Unique: isGtHm1fNq-uOUDynsuy-g-1
+Received: by mail-wm1-f70.google.com with SMTP id a26-20020a7bc1da000000b003857205ec7cso1181559wmj.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 06:30:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wZtmaY3QY+M2yy/RC8DM8e+OTFH19E+LWuDTX+tqqXg=;
+        b=jJLE0d2AxtEw7jB6Ha7oJymC2vm69x0+7D5YbXTDTmTlarZHuzP++azBaIAqUqw7mb
+         EqV5y+/p5F1RQePHjrqsm2+lb6jMvhr9l+J0EkxN+goyjdaP0Dfw/FypsVREe7NMSjAk
+         UClWHXLGNOURcc0xAMDfycuKILdJzWHdW7kffCrhfY6iaeW2PHqC8IMfDOuWe4aLVn5X
+         UXR8HAmHhweIm6oCZLyUFBS5BmUID3trkjWXkQXTjZmnokDuMmqfXnv4LMiSZJdPgCMo
+         UVkWnSZrtN3k5kFzAAaP/8GON667DIC6FAPSSruv8BThjemo+//CtGa0efYliYIz8pSn
+         NhyA==
+X-Gm-Message-State: AOAM533TCAzJ94YgGuxxcufg/AxQvSpl4mZQGWxoSzPA9bulx8Ry+Bfw
+        FDJpTf1S2rcy3Jn+lyfyD3OjbN547PKYPK+20p8so1vEtRYL6+r2FeSSXnf92lTffnPYRoCHztf
+        pIUN/YL2KqlQy81TX+/rn3M6I
+X-Received: by 2002:a05:6000:15c1:b0:1f0:73d6:b716 with SMTP id y1-20020a05600015c100b001f073d6b716mr20330940wry.293.1647351020079;
+        Tue, 15 Mar 2022 06:30:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzdY0tDepaN3E0R9C8xSHxKp7c5DEvBWlJLZSGDDqbc8x3hCbPBn4KS7IxZ9d8Y4vz2d7ox3g==
+X-Received: by 2002:a05:6000:15c1:b0:1f0:73d6:b716 with SMTP id y1-20020a05600015c100b001f073d6b716mr20330928wry.293.1647351019893;
+        Tue, 15 Mar 2022 06:30:19 -0700 (PDT)
+Received: from redhat.com ([2.53.2.35])
+        by smtp.gmail.com with ESMTPSA id w10-20020a5d680a000000b001f1dabec837sm15515573wru.113.2022.03.15.06.30.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 06:30:19 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 09:30:15 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Anirudh Rayabharam <mail@anirudhrb.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com
+Subject: Re: [PATCH 5.15 015/110] vhost: fix hung thread due to erroneous
+ iotlb entries
+Message-ID: <20220315092949-mutt-send-email-mst@kernel.org>
+References: <20220314112743.029192918@linuxfoundation.org>
+ <20220314112743.460512435@linuxfoundation.org>
+ <Yi9p8xsrWV+GD9c3@anirudhrb.com>
+ <YjBaOClDdNQkxtM8@kroah.com>
+ <20220315074834-mutt-send-email-mst@kernel.org>
+ <YjCI/Gd6oFiC1J8Z@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjCI/Gd6oFiC1J8Z@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MT7621 system-on-a-chip includes a 880 MHz MIPS1004Kc dual-core CPU,
-a 5-port 10/100/1000 switch/PHY and one RGMII.
+On Tue, Mar 15, 2022 at 01:39:24PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Mar 15, 2022 at 07:50:10AM -0400, Michael S. Tsirkin wrote:
+> > On Tue, Mar 15, 2022 at 10:19:52AM +0100, Greg Kroah-Hartman wrote:
+> > > On Mon, Mar 14, 2022 at 09:44:43PM +0530, Anirudh Rayabharam wrote:
+> > > > Mon, Mar 14, 2022 at 12:53:17PM +0100, Greg Kroah-Hartman wrote:
+> > > > > From: Anirudh Rayabharam <mail@anirudhrb.com>
+> > > > > 
+> > > > > [ Upstream commit e2ae38cf3d91837a493cb2093c87700ff3cbe667 ]
+> > > > 
+> > > > This breaks batching of IOTLB messages. [1] fixes it but hasn't landed in
+> > > > Linus' tree yet.
+> > > > 
+> > > > [1]: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?h=linux-next&id=95932ab2ea07b79cdb33121e2f40ccda9e6a73b5
+> > > 
+> > > Why is this tree not in linux-next?  I don't see this commit there, so
+> > > how can it get to Linus properly?
+> > > 
+> > > thanks,
+> > > 
+> > > greg k-h
+> > 
+> > It is in next normally. I was sure this commit was there too. I'm not sure
+> > what happened, maybe I forgot to push :(
+> > 
+> 
+> It's on kernel.org already though.
+> 
+> Anyway, I'll just take it from here directly, thanks.
+> 
+> greg k-h
 
-Add the devicetrees for GB-PC1 and GB-PC2 devices which use MT7621 SoC.
+Thanks!
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
----
-I'm not sure which repository/branch this patch is supposed to be applied
-to. This patch does changes on top of commit dcd520af4eac ("staging:
-mt7621-dts: fix cpuintc and fixedregulator dtc warnings, fix xhci") which
-is currently applied on gregkh/staging.git staging-next branch.
-
-Arınç
-
----
- MAINTAINERS                                           |  7 +++++++
- arch/mips/boot/dts/ralink/Makefile                    |  4 ++++
- .../mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts     |  0
- .../mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts     |  0
- .../mips/boot/dts/ralink}/mt7621.dtsi                 |  0
- arch/mips/ralink/Kconfig                              |  5 +++++
- drivers/staging/Kconfig                               |  2 --
- drivers/staging/Makefile                              |  1 -
- drivers/staging/mt7621-dts/Kconfig                    | 11 -----------
- drivers/staging/mt7621-dts/Makefile                   |  5 -----
- drivers/staging/mt7621-dts/TODO                       |  5 -----
- 11 files changed, 16 insertions(+), 24 deletions(-)
- rename drivers/staging/mt7621-dts/gbpc1.dts => arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts (100%)
- rename drivers/staging/mt7621-dts/gbpc2.dts => arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts (100%)
- rename {drivers/staging/mt7621-dts => arch/mips/boot/dts/ralink}/mt7621.dtsi (100%)
- delete mode 100644 drivers/staging/mt7621-dts/Kconfig
- delete mode 100644 drivers/staging/mt7621-dts/Makefile
- delete mode 100644 drivers/staging/mt7621-dts/TODO
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 62d6758bf8c4..92eda5adca44 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16181,6 +16181,13 @@ L:	linux-mips@vger.kernel.org
- S:	Maintained
- F:	arch/mips/ralink
- 
-+RALINK MT7621 MIPS ARCHITECTURE
-+M:	Arınç ÜNAL <arinc.unal@arinc9.com>
-+M:	Sergio Paracuellos <sergio.paracuellos@gmail.com>
-+L:	linux-mips@vger.kernel.org
-+S:	Maintained
-+F:	arch/mips/boot/dts/ralink/mt7621*
-+
- RALINK RT2X00 WIRELESS LAN DRIVER
- M:	Stanislaw Gruszka <stf_xl@wp.pl>
- M:	Helmut Schaa <helmut.schaa@googlemail.com>
-diff --git a/arch/mips/boot/dts/ralink/Makefile b/arch/mips/boot/dts/ralink/Makefile
-index 6c26dfa0a903..11732b8c8163 100644
---- a/arch/mips/boot/dts/ralink/Makefile
-+++ b/arch/mips/boot/dts/ralink/Makefile
-@@ -6,4 +6,8 @@ dtb-$(CONFIG_DTB_MT7620A_EVAL)	+= mt7620a_eval.dtb
- dtb-$(CONFIG_DTB_OMEGA2P)	+= omega2p.dtb
- dtb-$(CONFIG_DTB_VOCORE2)	+= vocore2.dtb
- 
-+dtb-$(CONFIG_SOC_MT7621) += \
-+	mt7621-gnubee-gb-pc1.dtb \
-+	mt7621-gnubee-gb-pc2.dtb
-+
- obj-$(CONFIG_BUILTIN_DTB)	+= $(addsuffix .o, $(dtb-y))
-diff --git a/drivers/staging/mt7621-dts/gbpc1.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-similarity index 100%
-rename from drivers/staging/mt7621-dts/gbpc1.dts
-rename to arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
-similarity index 100%
-rename from drivers/staging/mt7621-dts/gbpc2.dts
-rename to arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
-diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/arch/mips/boot/dts/ralink/mt7621.dtsi
-similarity index 100%
-rename from drivers/staging/mt7621-dts/mt7621.dtsi
-rename to arch/mips/boot/dts/ralink/mt7621.dtsi
-diff --git a/arch/mips/ralink/Kconfig b/arch/mips/ralink/Kconfig
-index 120adad51d6a..841c0f69a3bf 100644
---- a/arch/mips/ralink/Kconfig
-+++ b/arch/mips/ralink/Kconfig
-@@ -54,10 +54,15 @@ choice
- 		select HAVE_PCI
- 		select PCI_DRIVERS_GENERIC
- 		select SOC_BUS
-+
-+		help
-+		  The MT7621 system-on-a-chip includes a 880 MHz MIPS1004Kc dual-core CPU,
-+		  a 5-port 10/100/1000 switch/PHY and one RGMII.
- endchoice
- 
- choice
- 	prompt "Devicetree selection"
-+	depends on !SOC_MT7621
- 	default DTB_RT_NONE
- 	help
- 	  Select the devicetree.
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index d1ce500c0319..efa194ec12fb 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -82,8 +82,6 @@ source "drivers/staging/vc04_services/Kconfig"
- 
- source "drivers/staging/pi433/Kconfig"
- 
--source "drivers/staging/mt7621-dts/Kconfig"
--
- source "drivers/staging/axis-fifo/Kconfig"
- 
- source "drivers/staging/fieldbus/Kconfig"
-diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index 82e912a7586f..db876663a1e3 100644
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@ -31,7 +31,6 @@ obj-$(CONFIG_KS7010)		+= ks7010/
- obj-$(CONFIG_GREYBUS)		+= greybus/
- obj-$(CONFIG_BCM2835_VCHIQ)	+= vc04_services/
- obj-$(CONFIG_PI433)		+= pi433/
--obj-$(CONFIG_SOC_MT7621)	+= mt7621-dts/
- obj-$(CONFIG_XIL_AXIS_FIFO)	+= axis-fifo/
- obj-$(CONFIG_FIELDBUS_DEV)     += fieldbus/
- obj-$(CONFIG_QLGE)		+= qlge/
-diff --git a/drivers/staging/mt7621-dts/Kconfig b/drivers/staging/mt7621-dts/Kconfig
-deleted file mode 100644
-index 6932ab7acadf..000000000000
---- a/drivers/staging/mt7621-dts/Kconfig
-+++ /dev/null
-@@ -1,11 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--config DTB_GNUBEE1
--	bool "GnuBee1 2.5inch NAS"
--	depends on SOC_MT7621 && DTB_RT_NONE
--	select BUILTIN_DTB
--
--config DTB_GNUBEE2
--	bool "GnuBee2 3.5inch NAS"
--	depends on SOC_MT7621 && DTB_RT_NONE
--	select BUILTIN_DTB
--
-diff --git a/drivers/staging/mt7621-dts/Makefile b/drivers/staging/mt7621-dts/Makefile
-deleted file mode 100644
-index b4ab99fed932..000000000000
---- a/drivers/staging/mt7621-dts/Makefile
-+++ /dev/null
-@@ -1,5 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--dtb-$(CONFIG_DTB_GNUBEE1)      += gbpc1.dtb
--dtb-$(CONFIG_DTB_GNUBEE2)      += gbpc2.dtb
--
--obj-y				+= $(patsubst %.dtb, %.dtb.o, $(dtb-y))
-diff --git a/drivers/staging/mt7621-dts/TODO b/drivers/staging/mt7621-dts/TODO
-deleted file mode 100644
-index 1b758e5c84e0..000000000000
---- a/drivers/staging/mt7621-dts/TODO
-+++ /dev/null
-@@ -1,5 +0,0 @@
--
--- ensure all usage matches code
--- ensure all features used are documented
--
--Cc: NeilBrown <neil@brown.name>
 -- 
-2.25.1
+MST
 
