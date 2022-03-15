@@ -2,128 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A56D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AABA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244235AbiCOOjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52932 "EHLO
+        id S1349195AbiCOOji (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 10:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244198AbiCOOjA (ORCPT
+        with ESMTP id S244213AbiCOOjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:39:00 -0400
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2FF2E7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:37:47 -0700 (PDT)
-Received: by mail-oo1-xc32.google.com with SMTP id y27-20020a4a9c1b000000b0032129651bb0so24588596ooj.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:37:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=landley-net.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rpmKOoeraRuQGQUThehNRRx57Aisb5avAtGzINvQREA=;
-        b=btYHhIM/2AcNT2mHGxMQPLP23iKlNVDyc/vZohM3qpDd7+3O/i/a2gd+sL94O0MNmE
-         as02/VxgKVf31ZMRpUKgErJLODlFTaVhOcYu2+ESfiqlzPXtbyWkfTDpNmxPt3xVMhOn
-         iL2pIzOqtP63EW/rpznJdR20E2Czy/P7+hFV+9+d7A9r1IsR6el4+qICVp6d9tudWqyy
-         PU5vc4wCDO0tSwkcVXStOPm02tVPmKINAIcxy/vE4Kljap5BICXGKBemh4RtgicAlEgS
-         ZUA/oAcTydN2vOzeCEFHuwNx1PP/KdrPv2syTmdHRAvKTtjKivWUkdgXTfsJM+NddxMG
-         1msQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rpmKOoeraRuQGQUThehNRRx57Aisb5avAtGzINvQREA=;
-        b=UrrbEMJN3MPbjEq/c2aOhhPkBgZMOJUf8bwDIzMgbH70Sdmt3vyjZkUsO+7aK0K5go
-         W/3iFwW8oLTuMP44lJfMIjYYPJPIbFWrcstwUqVpYmz9UvNCeBKCXW5QUAmwZemq533R
-         ZNQrM2fin2/Am0f+4bbyGXM5WcauPC9jt9GPpkjut9Y6Qt5DgSlcn7t/NUWo7Sjh4O/Q
-         3nW4dArdcjNoxo14pvNOYDHvVD75tDdq0GFkWg/fPasqQNzOG/fA+frZpLtvyWl+9ip6
-         /IRMp4V+D5b6SmustWoFXUCHCSQICacZy2FtGhf4ibMjMp9SOIxkQU2AML8W0CdIngj3
-         5BTQ==
-X-Gm-Message-State: AOAM533HxL2LIsBxozyZlehg5SPOUybiAQFPHhV4vlZiCYX2ZBtxzlm4
-        xCychKCJQoCb4CJBCuQo0i3H0g==
-X-Google-Smtp-Source: ABdhPJyvcljfmAWOAbxTQiajM8RYB5b1DsFb2rJguap6VrzxZaYDzEGfjeZQOutf0ny2oZHd4aTvXw==
-X-Received: by 2002:a05:6870:4251:b0:d9:b7ee:f0ab with SMTP id v17-20020a056870425100b000d9b7eef0abmr1726880oac.56.1647355066566;
-        Tue, 15 Mar 2022 07:37:46 -0700 (PDT)
-Received: from [192.168.86.188] ([136.62.4.88])
-        by smtp.gmail.com with ESMTPSA id f10-20020a4a8f4a000000b00320e5ecfecdsm8863070ool.46.2022.03.15.07.37.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 07:37:46 -0700 (PDT)
-Subject: Re: [PATCH v13 1/6] soc: mediatek: mutex: add common interface to
- accommodate multiple modules operationg MUTEX
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Moudy Ho <moudy.ho@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jernej Skrabec <jernej.skrabec@siol.net>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Courbot <acourbot@chromium.org>, tfiga@chromium.org,
-        drinkcat@chromium.org, pihsun@chromium.org, hsinyi@google.com,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        menghui.lin@mediatek.com, sj.huang@mediatek.com,
-        allen-kh.cheng@mediatek.com, randy.wu@mediatek.com,
-        jason-jh.lin@mediatek.com, roy-cw.yeh@mediatek.com,
-        river.cheng@mediatek.com, srv_heupstream@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220315061031.21642-1-moudy.ho@mediatek.com>
- <20220315061031.21642-2-moudy.ho@mediatek.com>
- <ed5418b4-e353-d879-f9b0-7a9de8fed862@collabora.com>
-From:   Rob Landley <rob@landley.net>
-Message-ID: <4fa1dd33-adeb-a8ae-0ded-51a813347252@landley.net>
-Date:   Tue, 15 Mar 2022 09:41:25 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 15 Mar 2022 10:39:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B107B55231
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:38:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647355100;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oIP9eWTq1MZaXmiOhkKg9VYEpBhdJtYGb5hpV7ZOjz8=;
+        b=Q4kLC5IX3BjQrHNoRawbNw3Bmvhm/FU0oz6Iz+gNnlpCPrOnH/BRMMf1ttHPpewjRMbVPw
+        SXiV493t5wYfjC8RmxfTjJQ2JmHRCwQfrptMVIc/b5O+nnsDPbgqAbkaC2n668CukBY3wd
+        nAi7qP/9bbCr9LaWmud17ljHYPVpdmI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-mOGPsvbkMpqlRSkpcsHQfQ-1; Tue, 15 Mar 2022 10:38:19 -0400
+X-MC-Unique: mOGPsvbkMpqlRSkpcsHQfQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E249438008A2;
+        Tue, 15 Mar 2022 14:38:18 +0000 (UTC)
+Received: from T590 (ovpn-8-28.pek2.redhat.com [10.72.8.28])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 80DADC28100;
+        Tue, 15 Mar 2022 14:38:11 +0000 (UTC)
+Date:   Tue, 15 Mar 2022 22:38:05 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     John Garry <john.garry@huawei.com>
+Cc:     damien.lemoal@opensource.wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, bvanassche@acm.org, hch@lst.de,
+        hare@suse.de, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        martin.wilck@suse.com
+Subject: Re: [PATCH 1/2] scsi: core: Fix sbitmap depth in
+ scsi_realloc_sdev_budget_map()
+Message-ID: <YjCkzSDc6HQ6hhKR@T590>
+References: <1647340746-17600-1-git-send-email-john.garry@huawei.com>
+ <1647340746-17600-2-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <ed5418b4-e353-d879-f9b0-7a9de8fed862@collabora.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1647340746-17600-2-git-send-email-john.garry@huawei.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 3/15/22 4:10 AM, AngeloGioacchino Del Regno wrote:
-> Il 15/03/22 07:10, Moudy Ho ha scritto:
->> In order to allow multiple modules to operate MUTEX hardware through
->> a common interfrace, a flexible index "mtk_mutex_table_index" needs to
->> be added to replace original component ID so that like DDP and MDP
->> can add their own MUTEX table settings independently.
->> 
->> In addition, 4 generic interface "mtk_mutex_set_mod", "mtk_mutex_set_sof",
->> "mtk_mutex_clear_mod" and "mtk_mutex_clear_sof" have been added, which is
->> expected to replace the "mtk_mutex_add_comp" and "mtk_mutex_remove_comp"
->> pair originally dedicated to DDP in the future.
->> 
->> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
->> ---
->>   drivers/soc/mediatek/mtk-mutex.c       | 122 +++++++++++++++++++++++++
->>   include/linux/soc/mediatek/mtk-mutex.h |  33 +++++++
->>   2 files changed, 155 insertions(+)
->> 
->> diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
->> index aaf8fc1abb43..778b01ce9e8f 100644
->> --- a/drivers/soc/mediatek/mtk-mutex.c
->> +++ b/drivers/soc/mediatek/mtk-mutex.c
->> @@ -156,6 +156,7 @@ struct mtk_mutex_data {
->>   	const unsigned int *mutex_sof;
->>   	const unsigned int mutex_mod_reg;
->>   	const unsigned int mutex_sof_reg;
->> +	const unsigned long long *mutex_table_mod;
+On Tue, Mar 15, 2022 at 06:39:05PM +0800, John Garry wrote:
+> In commit edb854a3680b ("scsi: core: Reallocate device's budget map on
+> queue depth change"), the sbitmap for the device budget map may be
+> reallocated after the slave device depth is configured.
 > 
-> Can we change this to u64 instead?
+> When the sbitmap is reallocated we use the result from
+> scsi_device_max_queue_depth() for the sbitmap size, but don't resize to
+> match the actual device queue depth.
+> 
+> Fix by resizing the sbitmap after reallocating the budget sbitmap.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>  drivers/scsi/scsi_scan.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
+> index f4e6c68ac99e..2ef78083f1ef 100644
+> --- a/drivers/scsi/scsi_scan.c
+> +++ b/drivers/scsi/scsi_scan.c
+> @@ -223,6 +223,8 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
+>  	int ret;
+>  	struct sbitmap sb_backup;
+>  
+> +	depth = min_t(unsigned int, depth, scsi_device_max_queue_depth(sdev));
+> +
+>  	/*
+>  	 * realloc if new shift is calculated, which is caused by setting
+>  	 * up one new default queue depth after calling ->slave_configure
+> @@ -245,6 +247,9 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
+>  				scsi_device_max_queue_depth(sdev),
+>  				new_shift, GFP_KERNEL,
+>  				sdev->request_queue->node, false, true);
+> +	if (!ret)
+> +		sbitmap_resize(&sdev->budget_map, depth);
+> +
 
-Linux is still LP64, correct?
+Looks fine, 
 
-Rob
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+
+
+Thanks,
+Ming
+
