@@ -2,177 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343586AbiCOPel (ORCPT
+        id S1349660AbiCOPf7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 11:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35172 "EHLO
+        Tue, 15 Mar 2022 11:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244057AbiCOPee (ORCPT
+        with ESMTP id S231708AbiCOPf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 11:34:34 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD3E3BF83;
-        Tue, 15 Mar 2022 08:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647358402; x=1678894402;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=BrkCwsrMScpDdULJP2t9eWLoVN/539qVzRcEKcaOnQY=;
-  b=A+ABZgqSL+UwVVbTe5kXSkB+24n4+QKPkr6M5FXc2D34oopUOV/1ecmY
-   yWeuFWwpfLG8xtVlFbBNL73ap3ZYuuQgLDQLEzAeeEbxfnJREvovIkVpO
-   l0uOTQcfCn3SdmrUKdbw15G2ynSZIM/f7/A4qQ1+Z0isTXOAgFYSpKnn2
-   Y=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 15 Mar 2022 08:33:22 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 08:33:21 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 15 Mar 2022 08:33:21 -0700
-Received: from [10.216.59.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 15 Mar
- 2022 08:33:15 -0700
-Message-ID: <919b576d-8074-8c78-106e-af2c769413be@quicinc.com>
-Date:   Tue, 15 Mar 2022 21:03:12 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v10 7/7] pinctrl: qcom: Update clock voting as optional
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <lgirdwood@gmail.com>, <broonie@kernel.org>,
-        <robh+dt@kernel.org>, <quic_plai@quicinc.com>,
-        <bgoswami@codeaurora.org>, <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>,
-        Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1646737394-4740-1-git-send-email-quic_srivasam@quicinc.com>
- <1646737394-4740-8-git-send-email-quic_srivasam@quicinc.com>
- <Yieczzo96xSaA7jp@ripper>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <Yieczzo96xSaA7jp@ripper>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Tue, 15 Mar 2022 11:35:57 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A592B53B7F
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 08:34:45 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 531F41F391;
+        Tue, 15 Mar 2022 15:34:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647358484; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5ha63cA1iMjHX8s87c7n2kolHfqFbmLzNe1WLNjs1WE=;
+        b=bMCllI0OEAhpTR/xo/nQZpGembmiqDKLvCjpZsLaRwk38/hIQOlo2N0vLq7HJPuH9lzS6C
+        Uq1Uc2Ce5qyLN0s4/EHpmvktOGsUCXnAcSspEMS4bvDPOhARI/cHcN9Jt2JPrtKBDAY4Cz
+        Jtb/OpIJ0w5dzanOsSGBN6/ilO/CG10=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647358484;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5ha63cA1iMjHX8s87c7n2kolHfqFbmLzNe1WLNjs1WE=;
+        b=IYqjuc4KM10+WvhWGIkJ3JehgCkXUN0ALfdgcnbvvFSNq9VIgyt/PUFiRFAJLN0bTkDd4x
+        /X7ED/9OJsRhglDw==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id F14DBA3B81;
+        Tue, 15 Mar 2022 15:34:43 +0000 (UTC)
+Date:   Tue, 15 Mar 2022 16:34:43 +0100
+Message-ID: <s5h5yof8c18.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+Cc:     Daniel Palmer <daniel@0x0f.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ASoC: sti: sti_uniperif: Remove driver
+In-Reply-To: <PAXPR10MB4718531B374721399E9C5D08F1109@PAXPR10MB4718.EURPRD10.PROD.OUTLOOK.COM>
+References: <20220315091319.3351522-1-daniel@0x0f.com>
+        <s5h8rtba4to.wl-tiwai@suse.de>
+        <PAXPR10MB47185B76D5F38482FB1125A5F1109@PAXPR10MB4718.EURPRD10.PROD.OUTLOOK.COM>
+        <s5hee338etb.wl-tiwai@suse.de>
+        <PAXPR10MB4718531B374721399E9C5D08F1109@PAXPR10MB4718.EURPRD10.PROD.OUTLOOK.COM>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 15 Mar 2022 16:27:40 +0100,
+Arnaud POULIQUEN wrote:
+> 
+> 
+> 
+> 
+> ST Restricted
+> 
+> > -----Original Message-----
+> > From: Takashi Iwai <tiwai@suse.de>
+> > Sent: mardi 15 mars 2022 15:35
+> > To: Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+> > Cc: Daniel Palmer <daniel@0x0f.com>; broonie@kernel.org; tiwai@suse.com;
+> > alsa-devel@alsa-project.org; linux-kernel@vger.kernel.org
+> > Subject: Re: [PATCH] ASoC: sti: sti_uniperif: Remove driver
+> > 
+> > On Tue, 15 Mar 2022 14:15:20 +0100,
+> > Arnaud POULIQUEN wrote:
+> > >
+> > > Hello,
+> > >
+> > >
+> > > ST Restricted
+> > >
+> > > > -----Original Message-----
+> > > > From: Takashi Iwai <tiwai@suse.de>
+> > > > Sent: mardi 15 mars 2022 11:28
+> > > > To: Daniel Palmer <daniel@0x0f.com>
+> > > > Cc: broonie@kernel.org; tiwai@suse.com; Arnaud POULIQUEN
+> > > > <arnaud.pouliquen@st.com>; alsa-devel@alsa-project.org; linux-
+> > > > kernel@vger.kernel.org
+> > > > Subject: Re: [PATCH] ASoC: sti: sti_uniperif: Remove driver
+> > > >
+> > > > On Tue, 15 Mar 2022 10:13:19 +0100,
+> > > > Daniel Palmer wrote:
+> > > > >
+> > > > > This driver seems to be in the "only good for attracting bot
+> > > > > generated patches" phase of it's life.
+> > > > >
+> > > > > It doesn't seem like anyone actually tested the patches that have
+> > > > > been applied in the last few years as uni_reader_irq_handler() had
+> > > > > a dead lock added to it (it locks the stream, then calls
+> > > > > snd_pcm_stop_xrun() which will also lock the stream).
+> > > >
+> > > > Mea culpa, that was an obvious deadlock I overlooked in the patch
+> > > > series.
+> > > >
+> > > > > Seems best just to remove it.
+> > > > >
+> > > > > Signed-off-by: Daniel Palmer <daniel@0x0f.com>
+> > > > > ---
+> > > > >  I've never used this driver, don't have the hardware etc.
+> > > > >  I just noticed that this looks broken when debugging my  own
+> > > > > driver that uses snd_pcm_stop_xrun() and was looking  at other
+> > > > > users to see if I was using it wrong and noticed  this was the
+> > > > > only place that locked the stream before  calling
+> > > > > snd_pcm_stop_xrun().
+> > > > >
+> > > > >  There are probably some other bits of the driver that  should be
+> > > > > removed but I didn't look that hard.
+> > > > >
+> > > > >  TL;DR; This driver seems broken, seems like nobody uses  it.
+> > > > > Maybe it should be deleted?
+> > > >
+> > > > Yeah, that looks dead.
+> > > >
+> > >
+> > > The platform is still used for instance:
+> > > https://lore.kernel.org/all/1d95209f-9cb4-47a3-2696-7a93df7cdc05@foss.
+> > > st.com/
+> > >
+> > > So please do not remove the driver
+> > 
+> > Ah, it's always good to see a vital sign!
+> > 
+> > > The issue has not been detected because it is related to an error that
+> > > occurs only when we reach the limit of the platform, with application
+> > > that stop the stream at same time.
+> > > So almost no chance to occur.
+> > >
+> > > > OTOH, if anyone really wants to keep the stuff, please revert the
+> > > > commit dc865fb9e7c2251c9585ff6a7bf185d499db13e4.
+> > >
+> > > Yes reverting the commit is one solution.
+> > > The other is to clean-up the snd_pcm_stream_lock/
+> > > snd_pcm_stream_unlock in the Handler.
+> > 
+> > That would work, but maybe it's safer to keep that lock, as the state change
+> > isn't protected by irq_lock but only implicitly by stream lock in start/stop
+> > callbacks.
+>  
+> You are right, trying to use the snd_pcm_stop_xrun needs deeper update
+> that could introduce regression. 
+> It seems wiser to revert your commit  dc865fb9e7c2 as you propose.
 
-On 3/8/2022 11:43 PM, Bjorn Andersson wrote:
-Thanks for your time Bjorn!!!
-> On Tue 08 Mar 03:03 PST 2022, Srinivasa Rao Mandadapu wrote:
->
->> Update bulk clock voting to optional voting as ADSP bypass platform doesn't
->> need macro and decodec clocks,
-> Even I am not sure what "ADSP bypass platform" means, so please express
-> this better.
+OK, I'm going to submit the revert.
 
-Actually LPASS contains internal DSP for post processing and other 
-activities. Some vendors are
 
-provided LPASS HW without enabling DSP. That's why, we call ADSP Bypass.
+thanks,
 
->
-> Are they optional because sc7280 typically come with ADSP based audio,
-> but it might not and if not then we shouldn't control those clocks?
-
-They are GDSC switches. In ADSP based solution, HLOS intiate as clock to 
-DSP firmware and it
-
-handles GDSC switch. In case of ADSP bypass solution,  kernel Clock 
-drivers handles them as power domains.
-
-These GDSCs in genaral gets on if we vote for any clock which depends on 
-them.
-
->
->> these are maintained as power domains and
->> operated from lpass audio core cc.
->>
-> So there are clocks, but they are exposed as power-domains? Or are you
-> just trying to say that the LPASS LPI pinctrl block is always in a
-> power-domain controlled by the audio clock-controller?
->
-> Regards,
-> Bjorn
-
-Yes, They are actually GDSC switches, but they are controlled as power 
-domains in case of ADSP bypass case and
-
-as clocks in ADSP based solutions.
-
->
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   drivers/pinctrl/qcom/pinctrl-lpass-lpi.c        | 12 +++++++++---
->>   drivers/pinctrl/qcom/pinctrl-lpass-lpi.h        |  1 +
->>   drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c |  1 +
->>   3 files changed, 11 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
->> index 1ab572f..c618b74 100644
->> --- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
->> +++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
->> @@ -407,9 +407,15 @@ int lpi_pinctrl_probe(struct platform_device *pdev)
->>   		return dev_err_probe(dev, PTR_ERR(pctrl->slew_base),
->>   				     "Slew resource not provided\n");
->>   
->> -	ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
->> -	if (ret)
->> -		return dev_err_probe(dev, ret, "Can't get clocks\n");
->> +	if (data->is_clk_optional) {
->> +		ret = devm_clk_bulk_get_optional(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
->> +		if (ret)
->> +			return dev_err_probe(dev, ret, "Can't get clocks\n");
->> +	} else {
->> +		ret = devm_clk_bulk_get(dev, MAX_LPI_NUM_CLKS, pctrl->clks);
->> +		if (ret)
->> +			return dev_err_probe(dev, ret, "Can't get clocks\n");
->> +	}
->>   
->>   	ret = clk_bulk_prepare_enable(MAX_LPI_NUM_CLKS, pctrl->clks);
->>   	if (ret)
->> diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
->> index afbac2a..3bcede6 100644
->> --- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
->> +++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
->> @@ -77,6 +77,7 @@ struct lpi_pinctrl_variant_data {
->>   	int ngroups;
->>   	const struct lpi_function *functions;
->>   	int nfunctions;
->> +	int is_clk_optional;
->>   };
->>   
->>   int lpi_pinctrl_probe(struct platform_device *pdev);
->> diff --git a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
->> index d67ff25..304d8a2 100644
->> --- a/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
->> +++ b/drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
->> @@ -142,6 +142,7 @@ static const struct lpi_pinctrl_variant_data sc7280_lpi_data = {
->>   	.ngroups = ARRAY_SIZE(sc7280_groups),
->>   	.functions = sc7280_functions,
->>   	.nfunctions = ARRAY_SIZE(sc7280_functions),
->> +	.is_clk_optional = 1,
->>   };
->>   
->>   static const struct of_device_id lpi_pinctrl_of_match[] = {
->> -- 
->> 2.7.4
->>
+Takashi
