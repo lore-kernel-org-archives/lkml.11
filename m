@@ -2,173 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E62ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F93CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347616AbiCOKuV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:50:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33946 "EHLO
+        id S243060AbiCOKua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348553AbiCOKtd (ORCPT
+        with ESMTP id S1348700AbiCOKtr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:49:33 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B4352B25
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:23 -0700 (PDT)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 15 Mar 2022 06:49:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3439D275F3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:48:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647341314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2SNuouyRzX4GVO8cSj3iXN07fP9GTVoyu2qUwM1ekiY=;
+        b=KWQr4aROIguUpZpKniI9N040Jvr8tGfXIJgLsBxRVuunnxF77C7urPks7gsehnvWGIYpSB
+        /YSKiyEGLGRDBlXiLKn/09PL1esjrh4m59s8HwFFNDy+sJXHf0+uMC2icLEE6AwdEuy37o
+        5oK4/kUqOhDWouo+BvVEboG2M1tS4oA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-316-DwkkVnvfPyWb2iS_j_XfUw-1; Tue, 15 Mar 2022 06:48:31 -0400
+X-MC-Unique: DwkkVnvfPyWb2iS_j_XfUw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 25BCC3F220
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:47:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647341221;
-        bh=Lmjm3yJ63K0GrvAMWP5PfVOb2pmYpXft2AVK3iZtb90=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=qbwgPUj6x31pOvFpugsy0Vk5pH3/RYfG0uWWdUyjhYlfB3ASR1YF63RjkKjXJyh2z
-         2fJSTdnZQNe83ucgHKRcb65PJVTnkoLDW0gq6s9bNLC3F2tITM0/drq+a1CKdUBNt7
-         JPWxg2I8vsEvbQZ+WsxRL1sVlpUaEagMVGYAbmkQ65Y+Uql014Mx+0gMgOwI4G33hD
-         pjbTt+VsyRXaLkUzw2mUgyzmtfX/T13c0TQ2KpCqswxqh2XB9g6EdmFgIL/STcOTjB
-         ZAE1GfMHdm92oPTdbZi95OzJB3IR/DAOBdtzyOw/+lddWH7CXL4vIVw8uRLQNk7QNf
-         xV6gWADANsMuw==
-Received: by mail-ej1-f69.google.com with SMTP id el10-20020a170907284a00b006db9df1f3bbso6039416ejc.5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Lmjm3yJ63K0GrvAMWP5PfVOb2pmYpXft2AVK3iZtb90=;
-        b=qQ9i9n6gJlrSgzJOFFPcD6uRafNuXzLVgcGcJL1ul4rDfDShzolkEN02F6qp1FLs7T
-         EkrFfm3E09Z1rhEW3x04VYTq93g/bxA0Zyhzy7B6kdfdjaT43GOu66i6Kykn0lzPbzo7
-         17v0lz9d9IpNYzs4rHP4Irt4jN9YZzvf/+3OAOLTLvjE/kEFa1Qg2vnNo5+y6mZX7Uo7
-         zb93qyNMp3Fre19pIpfD5Z907E8MbuQu/Lv5UHGM0aU9NVxE0pv0GcKoUqR22y9pIXsk
-         s/NSoZqd1SmYVJ+uoyrwjr0gIYCbtuoBWxFc2hIlrbIjXtUlQSvimoC5KDE84qVYTZ+h
-         73Hw==
-X-Gm-Message-State: AOAM531I0x/JRI07DkhjhIXESlKDuTgsvEObfUN9MMORtYQX4UN3+PLb
-        KUcray80ByrF+PRe0+W2Wu41dl6xf6oi03hSzXnLI1IUL3zcujqQ0Fa0JKCRxHHrivjw7IbdMbB
-        UCGk+dHNmQkNB1FAgiawnFMVAqDPeYIz1k3/z5On2lA==
-X-Received: by 2002:a05:6402:278a:b0:418:ad9e:8b65 with SMTP id b10-20020a056402278a00b00418ad9e8b65mr2485507ede.9.1647341220842;
-        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz6nL12RCswbaC6DHPibcw16xO79D+Y2bi8IcqJHpaussAYU5/NVDJTAcwtyw7Q2DBt1I45Kg==
-X-Received: by 2002:a05:6402:278a:b0:418:ad9e:8b65 with SMTP id b10-20020a056402278a00b00418ad9e8b65mr2485476ede.9.1647341220628;
-        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
-Received: from [192.168.0.155] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.googlemail.com with ESMTPSA id w15-20020a056402268f00b00416474fbb42sm9477594edd.19.2022.03.15.03.46.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
-Message-ID: <4e6df448-5562-8f50-6f46-91acb279bc1a@canonical.com>
-Date:   Tue, 15 Mar 2022 11:46:59 +0100
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E2213101CC60;
+        Tue, 15 Mar 2022 10:48:29 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ED6692D465;
+        Tue, 15 Mar 2022 10:48:06 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>,
+        Khalid Aziz <khalid.aziz@oracle.com>
+Subject: [PATCH v2 01/15] mm/rmap: fix missing swap_free() in try_to_unmap() after arch_unmap_one() failed
+Date:   Tue, 15 Mar 2022 11:47:27 +0100
+Message-Id: <20220315104741.63071-2-david@redhat.com>
+In-Reply-To: <20220315104741.63071-1-david@redhat.com>
+References: <20220315104741.63071-1-david@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/8] dt-bindings: pinctrl: mvebu: Document bindings for
- AC5
-Content-Language: en-US
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
-        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
-        kostap@marvell.com, robert.marko@sartura.hr
-Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
- <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/03/2022 22:31, Chris Packham wrote:
-> Add JSON schema for marvell,ac5-pinctrl present on the Marvell 98DX2530
-> SoC.
-> 
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> ---
-> 
-> Notes:
->     Changes in v2:
->     - Remove syscon and simple-mfd compatibles
-> 
->  .../bindings/pinctrl/marvell,ac5-pinctrl.yaml | 70 +++++++++++++++++++
->  1 file changed, 70 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
-> new file mode 100644
-> index 000000000000..65af1d5f5fe0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
-> @@ -0,0 +1,70 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pinctrl/marvell,ac5-pinctrl.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Marvell AC5 pin controller
-> +
-> +maintainers:
-> +  - Chris Packham <chris.packham@alliedtelesis.co.nz>
-> +
-> +description:
-> +  Bindings for Marvell's AC5 memory-mapped pin controller.
-> +
-> +properties:
-> +  compatible:
-> +    const: marvell,ac5-pinctrl
-> +
-> +patternProperties:
-> +  '-pins$':
-> +    type: object
-> +    $ref: pinmux-node.yaml#
-> +
-> +    properties:
-> +      marvell,function:
-> +        $ref: "/schemas/types.yaml#/definitions/string"
-> +        description:
-> +          Indicates the function to select.
-> +        enum: [ gpio, i2c0, i2c1, nand, sdio, spi0, spi1, uart0, uart1, uart2, uart3 ]
-> +
-> +      marvell,pins:
-> +        $ref: /schemas/types.yaml#/definitions/string-array
-> +        description:
-> +          Array of MPP pins to be used for the given function.
-> +        minItems: 1
-> +        items:
-> +          enum: [ mpp0, mpp1, mpp2, mpp3, mpp4, mpp5, mpp6, mpp7, mpp8, mpp9,
-> +                  mpp10, mpp11, mpp12, mpp13, mpp14, mpp15, mpp16, mpp17, mpp18, mpp19,
-> +                  mpp20, mpp21, mpp22, mpp23, mpp24, mpp25, mpp26, mpp27, mpp28, mpp29,
-> +                  mpp30, mpp31, mpp32, mpp33, mpp34, mpp35, mpp36, mpp37, mpp38, mpp39,
-> +                  mpp40, mpp41, mpp42, mpp43, mpp44, mpp45 ]
-> +
-> +allOf:
-> +  - $ref: "pinctrl.yaml#"
-> +
-> +required:
-> +  - compatible
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    system-controller@80020100 {
-> +      compatible = "syscon", "simple-mfd";
-> +      reg = <0x80020000 0x20>;
+In case arch_unmap_one() fails, we already did a swap_duplicate(). let's
+undo that properly via swap_free().
 
-This is unusual. Usually the pinctrl should be a device @80020100, not
-child of syscon node. Why do you need it? In v1 you mentioned that
-vendor sources do like this, but it's not correct to copy wrong DTS. :)
+Fixes: ca827d55ebaa ("mm, swap: Add infrastructure for saving page metadata on swap")
+Reviewed-by: Khalid Aziz <khalid.aziz@oracle.com>
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ mm/rmap.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 6a1e8c7f6213..f825aeef61ca 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1625,6 +1625,7 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+ 				break;
+ 			}
+ 			if (arch_unmap_one(mm, vma, address, pteval) < 0) {
++				swap_free(entry);
+ 				set_pte_at(mm, address, pvmw.pte, pteval);
+ 				ret = false;
+ 				page_vma_mapped_walk_done(&pvmw);
+-- 
+2.35.1
 
-
-Best regards,
-Krzysztof
