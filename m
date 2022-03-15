@@ -2,82 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A8B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350760AbiCORwq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:52:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49626 "EHLO
+        id S245191AbiCORy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 13:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350728AbiCORwi (ORCPT
+        with ESMTP id S235290AbiCORyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 13:52:38 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C626251301
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:51:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647366685; x=1678902685;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=TIHdA+AKHcJYGnhjeoFev4M5zL94iMlaKtK+VcDIR+A=;
-  b=jxmzdy/l72LSt2jWWyEm+BiGJVpsFRR3e2t83LUO0XZcoCVsJaCQsXOy
-   0FQIIgiFXPkgaMH4r6Okdn5s9RzFuqGKoxuha0sMvNdbJZwKJzuLgXIsH
-   Bch+03vBjfy9y7VpMDRQkNnyCv2Ws/R6MMNu+9BBUu9kptbCemPWNcZv2
-   05tMrV5T0WMYG4KsjHYecwo4F6OGkSmh028OdHd8/pfF3WY/NNS2yxGRy
-   wzlRcrgbvzgYVCrBOoFdpi5TTw2JL/VdsRNWXwA4+IVfc45r5RnIb5ah8
-   PRvumjPoincXLkaFIiMDwUObbDDG4iz4gs0E1f/anTgcUeEhsZ/nDSfmQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317106860"
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="317106860"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 10:46:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="613358396"
-Received: from otc-lr-04.jf.intel.com ([10.54.39.41])
-  by fmsmga004.fm.intel.com with ESMTP; 15 Mar 2022 10:46:37 -0700
-From:   kan.liang@linux.intel.com
-To:     peterz@infradead.org, mingo@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Kan Liang <kan.liang@linux.intel.com>
-Subject: [PATCH V2 3/4] perf/x86/msr: Add Raptor Lake CPU support
-Date:   Tue, 15 Mar 2022 10:45:59 -0700
-Message-Id: <1647366360-82824-3-git-send-email-kan.liang@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647366360-82824-1-git-send-email-kan.liang@linux.intel.com>
-References: <1647366360-82824-1-git-send-email-kan.liang@linux.intel.com>
+        Tue, 15 Mar 2022 13:54:25 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6DB366AF;
+        Tue, 15 Mar 2022 10:53:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=52rHBF+vZNkINQkzy+dQdKO7m6EguFtfzcKt22qdjiM=; b=HPlL8HyK99RwRZsRjeZp9Cpjg4
+        kISmRHdkZ49afWq1i4XuJmFWaG55ZUixdCnFq6GiXS3Dum+u2pUiRYSDCexImxtj91un1A+z2DhRz
+        SANGmL9f1drkYJPxYA91MhQPebwpPhLoAef9WkkDOltg6gHJGUYOa4AEOAT1jtzA9XMPmfpBqwL3n
+        QBYuLtvZB6p+f82lu7MzZl8+16TmJDfHVaGFcQNnoVDv8EkpwMf3hmBKmbiRlm5Sxb7zs2BQo25BX
+        yOWqlIAWFs9fFXCIDsQFWb3L1HtUu2oBjf7uo2sbIDyxI+55Jvy6Jf3O2e6TthmbW0UR2Fwi8dVQH
+        /CZcrmAA==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUBLk-00A6wK-1k; Tue, 15 Mar 2022 17:52:48 +0000
+Date:   Tue, 15 Mar 2022 10:52:48 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Maninder Singh <maninder1.s@samsung.com>
+Cc:     pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org,
+        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
+        akpm@linux-foundation.org, wangkefeng.wang@huawei.com,
+        v.narang@samsung.com, swboyd@chromium.org, ojeda@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        avimalin@gmail.com, atomlin@redhat.com
+Subject: Re: [PATCH v3] kallsyms: enhance %pS/s/b printing when KALLSYSMS is
+ disabled
+Message-ID: <YjDScHjMUbqYV4s4@bombadil.infradead.org>
+References: <CGME20220315155109epcas5p249963f50d68ee368edb569b1a9e7d63c@epcas5p2.samsung.com>
+ <20220315155100.516107-1-maninder1.s@samsung.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220315155100.516107-1-maninder1.s@samsung.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+On Tue, Mar 15, 2022 at 09:21:00PM +0530, Maninder Singh wrote:
+> print module information when KALLSYMS is disabled.
+> 
+> No change for %pB, as it needs to know symbol name to adjust address
+> value which can't be done without KALLSYMS.
+> 
+> (A) original output with KALLSYMS:
+> [8.842129] ps function_1 [crash]
+> [8.842735] pS function_1+0x4/0x2c [crash]
+> [8.842890] pSb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
+> [8.843175] pB function_1+0x4/0x2c [crash]
+> [8.843362] pBb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
+> 
+> (B) original output without KALLSYMS:
+> [12.487424] ps 0xffff800000eb008c
+> [12.487598] pS 0xffff800000eb008c
+> [12.487723] pSb 0xffff800000eb008c
+> [12.487850] pB 0xffff800000eb008c
+> [12.487967] pBb 0xffff800000eb008c
+> 
+> (C) With patched kernel 
+> with KALLYSMS:
+> [41.974576] ps function_1 [crash]
+> [41.975173] pS function_1+0x4/0x2c [crash]
+> [41.975386] pSb function_1+0x4/0x2c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
+> [41.975879] pB function_1+0x4/0x2c [crash]
+> [41.976076] pBb function_1+0x4/0x2c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
+> 
+> without KALLSYMS:
+> [9.624152] ps 0xffff800001bd008c [crash]	// similar to original, no changes
+> [9.624548] pS 0x(____ptrval____)+0x8c [crash]   // base address hashed and offset is without hash
+> [9.624847] pSb 0x(____ptrval____)+0x8c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
+> [9.625388] pB 0x(____ptrval____)+0x8c [crash]
+> [9.625594] pBb 0x(____ptrval____)+0x8c [crash a8b20caaec9635b316cf4812f6b55598fe2b7cee]
+> 
+> with disable hashing:
+> [8.563916] ps 0xffff800000f2008c [crash]
+> [8.564574] pS 0xffff800000f20000+0x8c [crash]
+> [8.564749] pSb 0xffff800000f20000+0x8c [crash 3423a8993a7033fb79e5add14bf9d8d6b56330ca]
+> [8.565008] pB 0xffff800000f20000+0x8c [crash]
+> [8.565154] pBb 0xffff800000f20000+0x8c [crash 3423a8993a7033fb79e5add14bf9d8d6b56330ca]
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Co-developed-by: Vaneet Narang <v.narang@samsung.com>
+> Signed-off-by: Vaneet Narang <v.narang@samsung.com>
+> Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
+> ---
+> commit id 'kallsyms: print module name in %ps/S case when KALLSYMS is disabled'
+> 	needs to be removed from mm(linux-next) tree, current change is
+> 	with ignorance of this commit. I was not sure how to send patch, with 2 patches
+> 	consisting reversal commit also, or current approach is correct.
+> 
+> v1->v2: hash base address of module, change *fmt to fmt[0] and removed
+>         copy paste.
+> v2->v3: fixed review comments from Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+>  include/linux/kallsyms.h |  2 +
+>  include/linux/module.h   | 20 ++++++++++
+>  kernel/kallsyms.c        | 27 +++++++------
+>  kernel/module.c          |  4 +-
+>  lib/vsprintf.c           | 85 ++++++++++++++++++++++++++++++++++------
 
-Raptor Lake is Intel's successor to Alder lake. PPERF and SMI_COUNT MSRs
-are also supported.
+Hey Maninder, thanks for your patch!
 
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
----
+Since this touches kernel/module.c and include/linux/module.h I'd prefer
+this go through modules-next [0], and as you will see that's a different
+world right now. I also have a set of at least 2 other patch sets to
+merge there before yours.
 
-No changes since V1
+Also, what is on modules-next is not intended to go to Linus for the
+next merge window as the changes there got merged only late, and I want
+at least 2 months of testing on linux-newt before any pull requiest is
+sent to Linus.
 
- arch/x86/events/msr.c | 1 +
- 1 file changed, 1 insertion(+)
+Can you rebase to modules-next? I can evaluate the patches then for
+integration there once the other stuff gets merged into that tree too.
 
-diff --git a/arch/x86/events/msr.c b/arch/x86/events/msr.c
-index 96c775a..6d759f8 100644
---- a/arch/x86/events/msr.c
-+++ b/arch/x86/events/msr.c
-@@ -103,6 +103,7 @@ static bool test_intel(int idx, void *data)
- 	case INTEL_FAM6_ROCKETLAKE:
- 	case INTEL_FAM6_ALDERLAKE:
- 	case INTEL_FAM6_ALDERLAKE_L:
-+	case INTEL_FAM6_RAPTORLAKE:
- 		if (idx == PERF_MSR_SMI || idx == PERF_MSR_PPERF)
- 			return true;
- 		break;
--- 
-2.7.4
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/log/?h=modules-next
 
+  Luis
