@@ -2,60 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 06:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A6E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 06:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345264AbiCOGmq (ORCPT
+        id S1345274AbiCOGpT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 02:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        Tue, 15 Mar 2022 02:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345261AbiCOGmo (ORCPT
+        with ESMTP id S231530AbiCOGpP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 02:42:44 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40E74A91A
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 23:41:32 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R901e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=18;SR=0;TI=SMTPD_---0V7FyDb8_1647326487;
-Received: from B-X3VXMD6M-2058.local(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0V7FyDb8_1647326487)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 15 Mar 2022 14:41:29 +0800
-To:     james.morse@arm.com
-Cc:     Babu.Moger@amd.com, bobo.shaobowang@huawei.com, bp@alien8.de,
-        fenghua.yu@intel.com, hpa@zytor.com, jamie@nuviainc.com,
-        lcherian@marvell.com, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, reinette.chatre@intel.com,
-        scott@os.amperecomputing.com, shameerali.kolothum.thodi@huawei.com,
-        tan.shaopeng@fujitsu.com, tglx@linutronix.de, x86@kernel.org,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Erik Yuan <Erik.Yuan@arm.com>
-References: <20220217182110.7176-1-james.morse@arm.com>
-Subject: Re: [PATCH v3 00/21] x86/resctrl: Make resctrl_arch_rmid_read()
- return values in bytes
-Reply-To: xhao@linux.alibaba.com
-From:   Xin Hao <xhao@linux.alibaba.com>
-Message-ID: <28638a5e-540c-c52e-bce3-67619dc59461@linux.alibaba.com>
-Date:   Tue, 15 Mar 2022 14:41:26 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.14.0
+        Tue, 15 Mar 2022 02:45:15 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F48713E8C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 23:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647326644; x=1678862644;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=jR3MJL4gXTNQ576BRDKhPzca3lSZ3JltBv9pfDAGOa0=;
+  b=Unw28t3IzJUJ1DLPnF+j5Wm4kVy8R9i3er3qInT5upRZUFZzMI/6WZs7
+   Hggs37P+ww2ouKzMBN5tVowJoek16DJ6WuxP2fTXff1GFXzWVKAilos3c
+   BTwfVQU3T4HkxdLuJDi3WbNOS/DHi0O5QvTnlQVLC+1+FM5UF1eKg+lYx
+   l1d0UjxDA0ZVNahPiyh9FVpFvceWuU1/XtW0I+9bNrH0cWYBQm5xaMth7
+   XjVNtMWWG3JG0rec+7cSZrutFse+g800XLP7PJnsU9U5ebAk9syccpccV
+   tCXe/6M2QquWAW5wcPUWolEgZWd8Zzt1hJn3u8NYo0oWwpcd73mg9sM2y
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236831771"
+X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
+   d="scan'208";a="236831771"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 23:44:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
+   d="scan'208";a="497907733"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 14 Mar 2022 23:43:57 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nU0uS-000Aeg-OU; Tue, 15 Mar 2022 06:43:56 +0000
+Date:   Tue, 15 Mar 2022 14:43:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Atish Patra <atish.patra@wdc.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>
+Subject: [esmil:visionfive 58/61] ERROR: modpost: "arch_setup_dma_ops"
+ [drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.ko] undefined!
+Message-ID: <202203151435.QVWE4rZm-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220217182110.7176-1-james.morse@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi james,
+tree:   https://github.com/esmil/linux visionfive
+head:   ab93b1bae004d1d7f4c795e15ea6ed6478d2789c
+commit: 934d9f79bd88d515916fc39f0fa0c4c5d3e6d5ed [58/61] RISC-V: Support non-coherent DMA operations
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220315/202203151435.QVWE4rZm-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/esmil/linux/commit/934d9f79bd88d515916fc39f0fa0c4c5d3e6d5ed
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout 934d9f79bd88d515916fc39f0fa0c4c5d3e6d5ed
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash
 
-I have done some verification on x86 machine(Intel(R) Xeon(R) Platinum 
-8269CY), and "CAT, CMT, MBA, MBM"  have been tested,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-They all work well.
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-So please add Tested-by: Xin Hao <xhao@linux.alibaba.com>
+ERROR: modpost: missing MODULE_LICENSE() in drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.o
+>> ERROR: modpost: "arch_setup_dma_ops" [drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.ko] undefined!
 
--- 
-Best Regards!
-Xin Hao
-
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
