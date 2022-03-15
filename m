@@ -2,404 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B4DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 06:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42574C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 06:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345310AbiCOG4U (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 02:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
+        id S233080AbiCOG6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 02:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345304AbiCOG4P (ORCPT
+        with ESMTP id S242365AbiCOG6u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 02:56:15 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C89403DB
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 23:55:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647327303; x=1678863303;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=K4nJgs5xtwq4yKb4yM+G38J43n1l2K0izWthYKyK94E=;
-  b=nyJPOEEyZzzaA/qvcfCDT5WYv838C3rorCiG2DQBwnKHKUv7JFlcMrJi
-   yb5GqTx6G1VdVihRMJksAzYmizPtmd+Zf2tvgaHeq8I8Ybq7HpHSXovNm
-   BHmKwfoD1HQ49pNddFVkw+YFFc4HadhhOWk/64dbQ4unR/QFBbRwvWKQ1
-   fHx+nzjEgJwuVMf1S7OPCGaBbdeRI0y8RrhSzrfpSG+yDbG1Uh5cTw6iT
-   16NCyUfuH0lJY1HTcQvS9/6COVDFDKRqAkW/6YbNrvRMXgnhyWrL6Ka6C
-   rlCZj0uXbB4p4O71CJOGLJx8siu9IQ1huS9jNUbrw/cDpkYcZy8UsNNmG
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236833187"
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="236833187"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 23:55:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="646113955"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 14 Mar 2022 23:54:59 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU158-000AfM-PB; Tue, 15 Mar 2022 06:54:58 +0000
-Date:   Tue, 15 Mar 2022 14:54:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Xiubo Li <xiubli@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Jeff Layton <jlayton@kernel.org>
-Subject: [jlayton:ceph-fscrypt-sparse 66/74] fs/ceph/dir.c:424:10: error:
- implicit declaration of function 'ceph_encode_encrypted_dname'
-Message-ID: <202203151450.7EtYHIru-lkp@intel.com>
+        Tue, 15 Mar 2022 02:58:50 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B14948E68;
+        Mon, 14 Mar 2022 23:57:39 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id t5so18142628pfg.4;
+        Mon, 14 Mar 2022 23:57:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UBeQBCJmOepMxU2vOhtDNrSPsuDmo4uuTc3HaJMT3LU=;
+        b=MtybojESzRQB06WcKD5WS+9xp51kMNkkDxPuwFiFHEvmgy3Nzs2rN6CiWA8YJjXjCl
+         x8hF35c/ERyPNDI8/DoAd5lQFOg1lXB8+1TjKkQ5dmmxd3OADLsFC24KWB0ZfpOSqMJY
+         hur7QbUH2RDNzQcJFdhSkkC5RkCEFHVBajirg6/aBp5eUs6GUgxCC+LGXDY2aw063l/Z
+         HxpH3EXsv3YZs61t+1Q2DI9NJaYREUf/PQ/vzXzaNC6st1uWY3la2so6mSZ6GuG4p1Eh
+         R/uWPysUKPW6PySVuP04JFAuCZ3J/1//6q2TNmfQKFotQPQW5y78thROKnfbUI5k/ZI8
+         88gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=UBeQBCJmOepMxU2vOhtDNrSPsuDmo4uuTc3HaJMT3LU=;
+        b=gWEs5azt9VgzEaVfbMcE1u2wpk/ZSv2FZdwXOnc4WP2aMttoULfH0LQbfV5clgZi45
+         Ki9OkA1BFaMCfnUdwRnuEcuD+CI0U1cn8/Wir0ObyqK8OiH7Yjeq9fk7i7Qq7qIBCHnI
+         q3muTA7NWZki7AyuRGi0yoGs9yDkK8czNATYQxpSnsv7tVrOluviZCYVfKRVHAuHipnU
+         LBZIvA79rRpu+9UUfZlHrdhRZCn8pENB6JPmmoZs40NBAtYjotQpV3fkxsSkRySvk9QF
+         iZS4AT6ZY51kQWFqaqDInFNvfJuApG7sP/o+XgLgYtLsYt/V+um1gZUMbWhrh2B+g53s
+         2P3g==
+X-Gm-Message-State: AOAM532Y/5y/4lgkUlkYaQQifKEXjrJyBtkHFNxcfdGmpUnn9TPOKZ7U
+        gC2FJz6nf9BUkmIZyGVTeSI=
+X-Google-Smtp-Source: ABdhPJxVBy4oSOWYnDp0lFYUio2rIOXmDQSWdXyliWWSHRf8OTRm0lla6zNstZvf/hfNShX82i9Rfg==
+X-Received: by 2002:a05:6a00:1824:b0:4f6:9b4a:4a with SMTP id y36-20020a056a00182400b004f69b4a004amr26916131pfa.8.1647327458125;
+        Mon, 14 Mar 2022 23:57:38 -0700 (PDT)
+Received: from google.com ([2620:15c:211:201:9e2b:8986:bc6:f3b6])
+        by smtp.gmail.com with ESMTPSA id d14-20020a056a0024ce00b004f7281cda21sm22110677pfv.167.2022.03.14.23.57.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 23:57:37 -0700 (PDT)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+Date:   Mon, 14 Mar 2022 23:57:35 -0700
+From:   Minchan Kim <minchan@kernel.org>
+To:     Ivan Babrou <ivan@cloudflare.com>
+Cc:     Linux MM <linux-mm@kvack.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nitin Gupta <ngupta@vflare.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        kernel-team <kernel-team@cloudflare.com>
+Subject: Re: zram corruption due to uninitialized do_swap_page fault
+Message-ID: <YjA439FwajtHsahr@google.com>
+References: <CABWYdi2a=Tc3dRfQ+037PG0GHKvZd5SEXJxBBbNspsrHK1zNpQ@mail.gmail.com>
+ <CABWYdi1PeNbgnM4qE001+_BzHJxQcaaY9sLOK=Y7gjqfXZO0=g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CABWYdi1PeNbgnM4qE001+_BzHJxQcaaY9sLOK=Y7gjqfXZO0=g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git ceph-fscrypt-sparse
-head:   0d355bda666e44314f11974167e8d9bb010a539e
-commit: 4378b10dd7df64ef085e3fe2a2251034ee98c4dc [66/74] ceph: dencrypt the dentry names early and once for readdir
-config: hexagon-randconfig-r012-20220313 (https://download.01.org/0day-ci/archive/20220315/202203151450.7EtYHIru-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6b2f50fb47da3baeee10b1906da6e30ac5d26ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git/commit/?id=4378b10dd7df64ef085e3fe2a2251034ee98c4dc
-        git remote add jlayton https://git.kernel.org/pub/scm/linux/kernel/git/jlayton/linux.git
-        git fetch --no-tags jlayton ceph-fscrypt-sparse
-        git checkout 4378b10dd7df64ef085e3fe2a2251034ee98c4dc
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/net/ethernet/mscc/ fs/ceph/
+On Mon, Mar 14, 2022 at 09:18:43PM -0700, Ivan Babrou wrote:
+> On Fri, Mar 11, 2022 at 11:51 AM Ivan Babrou <ivan@cloudflare.com> wrote:
+> >
+> > Hello,
+> >
+> > We're looking into using zram, but unfortunately we ran into some
+> > corruption issues. We've seen rocksdb complaining about "Corruption:
+> > bad entry in block", and we've also seen some coredumps that point at
+> > memory being zeroed out. One of our Rust processes coredumps contains
+> > a non-null pointer pointing at zero, among other things:
+> >
+> > * core::ptr::non_null::NonNull<u8> {pointer: 0x0}
+> >
+> > In fact, a whole bunch of memory around this pointer was all zeros.
+> >
+> > Disabling zram resolves all issues, and we can't reproduce any of
+> > these issues with other swap setups. I've tried adding crc32
+> > checksumming for pages that are compressed, but it didn't catch the
+> > issue either, even though userspace facing symptoms were present. My
+> > crc32 code doesn't touch ZRAM_SAME pages, though.
+> >
+> > Unfortunately, this isn't trivial to replicate, and I believe that it
+> > depends on zram used for swap specifically, not for zram as a block
+> > device. Specifically, swap_slot_free_notify looks suspicious.
+> >
+> > Here's a patch that I have to catch the issue in the act:
+> >
+> > diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
+> > index 438ce34ee760..fea46a70a3c9 100644
+> > --- a/drivers/block/zram/zram_drv.c
+> > +++ b/drivers/block/zram/zram_drv.c
+> > @@ -1265,6 +1265,9 @@ static int __zram_bvec_read(struct zram *zram,
+> > struct page *page, u32 index,
+> >   unsigned long value;
+> >   void *mem;
+> >
+> > + if (WARN_ON(!handle && !zram_test_flag(zram, index, ZRAM_SAME)))
+> > + pr_warn("Page %u read from zram without previous write\n", index);
+> > +
+> >   value = handle ? zram_get_element(zram, index) : 0;
+> >   mem = kmap_atomic(page);
+> >   zram_fill_page(mem, PAGE_SIZE, value);
+> >
+> > In essence, it warns whenever a page is read from zram that was not
+> > previously written to. To make this work, one needs to zero out zram
+> > prior to running mkswap on it.
+> >
+> > I have prepared a GitHub repo with my observations and a reproduction:
+> >
+> > * https://github.com/bobrik/zram-corruptor
+> >
+> > I'm able to trigger the following in an aarch64 VM with two threads
+> > reading the same memory out of swap:
+> >
+> > [ 512.651752][ T7285] ------------[ cut here ]------------
+> > [ 512.652279][ T7285] WARNING: CPU: 0 PID: 7285 at
+> > drivers/block/zram/zram_drv.c:1285 __zram_bvec_read+0x28c/0x2e8 [zram]
+> > [ 512.653923][ T7285] Modules linked in: zram zsmalloc kheaders nfsv3
+> > nfs lockd grace sunrpc xt_conntrack nft_chain_nat xt_MASQUERADE nf_nat
+> > nf_conntrack_netlink nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4
+> > nft_counter xt_addrtype nft_compat nf_tables nfnetlink bridge stp llc
+> > overlay xfs libcrc32c zstd zstd_compress af_packet aes_ce_blk
+> > aes_ce_cipher ghash_ce gf128mul virtio_net sha3_ce net_failover
+> > sha3_generic failover sha512_ce sha512_arm64 sha2_ce sha256_arm64
+> > virtio_mmio virtio_ring qemu_fw_cfg rtc_pl031 virtio fuse ip_tables
+> > x_tables ext4 mbcache crc16 jbd2 nvme nvme_core pci_host_generic
+> > pci_host_common unix [last unloaded: zsmalloc]
+> > [ 512.659238][ T7285] CPU: 0 PID: 7285 Comm: zram-corruptor Tainted: G
+> > W 5.16.0-ivan #1 0877d306c6dc0716835d43cafe4399473d09e406
+> > [ 512.660413][ T7285] Hardware name: linux,dummy-virt (DT)
+> > [ 512.661077][ T7285] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT
+> > -SSBS BTYPE=--)
+> > [ 512.661788][ T7285] pc : __zram_bvec_read+0x28c/0x2e8 [zram]
+> > [ 512.662099][ T7285] lr : zram_bvec_rw+0x70/0x204 [zram]
+> > [ 512.662422][ T7285] sp : ffffffc01018bac0
+> > [ 512.662720][ T7285] x29: ffffffc01018bae0 x28: ffffff9e4e725280 x27:
+> > ffffff9e4e725280
+> > [ 512.663122][ T7285] x26: ffffff9e4e725280 x25: 00000000000001f6 x24:
+> > 0000000100033e6c
+> > [ 512.663601][ T7285] x23: 00000000000001f6 x22: 0000000000000000 x21:
+> > fffffffe7a36d840
+> > [ 512.664252][ T7285] x20: 00000000000001f6 x19: ffffff9e69423c00 x18:
+> > ffffffc010711068
+> > [ 512.664812][ T7285] x17: 0000000000000008 x16: ffffffd34aed51bc x15:
+> > 0000000000000000
+> > [ 512.665507][ T7285] x14: 0000000000000a88 x13: 0000000000000000 x12:
+> > 0000000000000000
+> > [ 512.666183][ T7285] x11: 0000000100033e6c x10: ffffffc01091d000 x9 :
+> > 0000000001000000
+> > [ 512.666627][ T7285] x8 : 0000000000002f10 x7 : 80b75f8fb90b52c4 x6 :
+> > 051609fe50833de3
+> > [ 512.667276][ T7285] x5 : 0000000000000000 x4 : 0000000000000000 x3 :
+> > 0000000000000000
+> > [ 512.667875][ T7285] x2 : 00000000000001f6 x1 : 00000000000001f6 x0 :
+> > ffffffd305b746af
+> > [ 512.668483][ T7285] Call trace:
+> > [ 512.668682][ T7285] __zram_bvec_read+0x28c/0x2e8 [zram
+> > 745969ed35ea0fb382bfd518d6f70e13966e9b52]
+> > [ 512.669405][ T7285] zram_bvec_rw+0x70/0x204 [zram
+> > 745969ed35ea0fb382bfd518d6f70e13966e9b52]
+> > [ 512.670066][ T7285] zram_rw_page+0xb4/0x16c [zram
+> > 745969ed35ea0fb382bfd518d6f70e13966e9b52]
+> > [ 512.670584][ T7285] bdev_read_page+0x74/0xac
+> > [ 512.670843][ T7285] swap_readpage+0x5c/0x2e4
+> > [ 512.671243][ T7285] do_swap_page+0x2f4/0x988
+> > [ 512.671560][ T7285] handle_pte_fault+0xcc/0x1fc
+> > [ 512.671935][ T7285] handle_mm_fault+0x284/0x4a8
+> > [ 512.672412][ T7285] do_page_fault+0x274/0x428
+> > [ 512.672704][ T7285] do_translation_fault+0x5c/0xf8
+> > [ 512.673083][ T7285] do_mem_abort+0x50/0xc8
+> > [ 512.673293][ T7285] el0_da+0x3c/0x74
+> > [ 512.673549][ T7285] el0t_64_sync_handler+0xc4/0xec
+> > [ 512.673972][ T7285] el0t_64_sync+0x1a4/0x1a8
+> > [ 512.674495][ T7285] ---[ end trace cf983b7507c20343 ]---
+> > [ 512.675359][ T7285] zram: Page 502 read from zram without previous write
+> >
+> > I can also trace accesses to zram to catch the unfortunate sequence:
+> >
+> > zram_bvec_write index = 502 [cpu = 3, tid = 7286]
+> > zram_free_page index = 502 [cpu = 3, tid = 7286]
+> > zram_bvec_read index = 502 [cpu = 3, tid = 7286]
+> > zram_free_page index = 502 [cpu = 3, tid = 7286] <-- problematic free
+> > zram_bvec_read index = 502 [cpu = 0, tid = 7285] <-- problematic read
+> >
+> > With stacks for zram_free_page:
+> >
+> > zram_bvec_write index = 502 [cpu = 3, tid = 7286]
+> > zram_free_page  index = 502 [cpu = 3, tid = 7286]
+> >
+> >         zram_free_page+0
+> >         $x.97+32
+> >         zram_rw_page+180
+> >         bdev_write_page+124
+> >         __swap_writepage+116
+> >         swap_writepage+160
+> >         pageout+284
+> >         shrink_page_list+2892
+> >         shrink_inactive_list+688
+> >         shrink_lruvec+360
+> >         shrink_node_memcgs+148
+> >         shrink_node+860
+> >         shrink_zones+368
+> >         do_try_to_free_pages+232
+> >         try_to_free_mem_cgroup_pages+292
+> >         try_charge_memcg+608
+> >
+> > zram_bvec_read  index = 502 [cpu = 3, tid = 7286]
+> > zram_free_page  index = 502 [cpu = 3, tid = 7286] <-- problematic free
+> >
+> >         zram_free_page+0
+> >         swap_range_free+220
+> >         swap_entry_free+244
+> >         swapcache_free_entries+152
+> >         free_swap_slot+288
+> >         __swap_entry_free+216
+> >         swap_free+108
+> >         do_swap_page+1776
+> >         handle_pte_fault+204
+> >         handle_mm_fault+644
+> >         do_page_fault+628
+> >         do_translation_fault+92
+> >         do_mem_abort+80
+> >         el0_da+60
+> >         el0t_64_sync_handler+196
+> >         el0t_64_sync+420
+> >
+> > zram_bvec_read  index = 502 [cpu = 0, tid = 7285] <-- problematic read
+> >
+> > The very last read is the same one that triggered the warning from my
+> > patch in dmesg. You can see that the slot is freed before reading by
+> > swapcache_free_entries. As far as I can see, only zram implements
+> > swap_slot_free_notify. Swapping in an uninitialized zram page results
+> > in all zeroes copied, which matches the symptoms.
+> >
+> > The issue doesn't reproduce if I pin both threads to the same CPU. It
+> > also doesn't reproduce with a single thread. All of this seems to
+> > point at some sort of race condition.
+> >
+> > I was able to reproduce this on x86_64 bare metal server as well.
+> >
+> > I'm happy to try out mitigation approaches for this. If my
+> > understanding here is incorrect, I'm also happy to try out patches
+> > that could help me catch the issue in the wild.
+> 
+> I poked around the swapping code a bit. In the failing read stack:
+> 
+> [ 1298.167823][ T7004]  swap_readpage+0x60/0x328
+> [ 1298.168317][ T7004]  do_swap_page+0x438/0x904
+> 
+> You can see that swap_readpage is only called from do_swap_page for
+> synchronous IO:
+> 
+> if (data_race(si->flags & SWP_SYNCHRONOUS_IO) &&
+>     __swap_count(entry) == 1) {
+>     // ...
+>     if (page) {
+>         // ...
+>         swap_readpage(page, true);
+> 
+> See: https://elixir.bootlin.com/linux/v5.15.28/source/mm/memory.c#L3548
+> 
+> I looked around some more and found 0bcac06f27d7:
+> 
+> * mm, swap: skip swapcache for swapin of synchronous device
+> 
+> Zram is considered fast synchronous storage. Reverting that notion
+> makes my reproduction not complain anymore:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+Yeah, that was the part I was chasing since we had problem there
 
->> fs/ceph/dir.c:424:10: error: implicit declaration of function 'ceph_encode_encrypted_dname' [-Werror,-Wimplicit-function-declaration]
-                           err = ceph_encode_encrypted_dname(inode, &d_name, req->r_path2);
-                                 ^
-   fs/ceph/dir.c:424:10: note: did you mean 'ceph_encode_encrypted_fname'?
-   fs/ceph/crypto.h:175:19: note: 'ceph_encode_encrypted_fname' declared here
-   static inline int ceph_encode_encrypted_fname(const struct inode *parent,
-                     ^
-   1 error generated.
+5df373e95689b, mm/page_io.c: do not free shared swap slots
 
+Initially, I suspected __swap_count race(I still believe it has
+swap_slot_free_notify and do_swap_page) and fixed the race
+with workaround but the problem still happened. 
 
-vim +/ceph_encode_encrypted_dname +424 fs/ceph/dir.c
+Looks like your test program clone the child with CLONE_VM
+which never call swap_duplicate to increase swap_map count.
+It means the 0bcac06f27d7 and 5df373e95689b couldn't work
+with CLONE_VM.
 
-   307	
-   308	static int ceph_readdir(struct file *file, struct dir_context *ctx)
-   309	{
-   310		struct ceph_dir_file_info *dfi = file->private_data;
-   311		struct inode *inode = file_inode(file);
-   312		struct ceph_inode_info *ci = ceph_inode(inode);
-   313		struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
-   314		struct ceph_mds_client *mdsc = fsc->mdsc;
-   315		int i;
-   316		int err;
-   317		unsigned frag = -1;
-   318		struct ceph_mds_reply_info_parsed *rinfo;
-   319	
-   320		dout("readdir %p file %p pos %llx\n", inode, file, ctx->pos);
-   321		if (dfi->file_info.flags & CEPH_F_ATEND)
-   322			return 0;
-   323	
-   324		/* always start with . and .. */
-   325		if (ctx->pos == 0) {
-   326			dout("readdir off 0 -> '.'\n");
-   327			if (!dir_emit(ctx, ".", 1, ceph_present_inode(inode),
-   328				    inode->i_mode >> 12))
-   329				return 0;
-   330			ctx->pos = 1;
-   331		}
-   332		if (ctx->pos == 1) {
-   333			u64 ino;
-   334			struct dentry *dentry = file->f_path.dentry;
-   335	
-   336			spin_lock(&dentry->d_lock);
-   337			ino = ceph_present_inode(dentry->d_parent->d_inode);
-   338			spin_unlock(&dentry->d_lock);
-   339	
-   340			dout("readdir off 1 -> '..'\n");
-   341			if (!dir_emit(ctx, "..", 2, ino, inode->i_mode >> 12))
-   342				return 0;
-   343			ctx->pos = 2;
-   344		}
-   345	
-   346		err = fscrypt_prepare_readdir(inode);
-   347		if (err)
-   348			return err;
-   349	
-   350		spin_lock(&ci->i_ceph_lock);
-   351		/* request Fx cap. if have Fx, we don't need to release Fs cap
-   352		 * for later create/unlink. */
-   353		__ceph_touch_fmode(ci, mdsc, CEPH_FILE_MODE_WR);
-   354		/* can we use the dcache? */
-   355		if (ceph_test_mount_opt(fsc, DCACHE) &&
-   356		    !ceph_test_mount_opt(fsc, NOASYNCREADDIR) &&
-   357		    ceph_snap(inode) != CEPH_SNAPDIR &&
-   358		    __ceph_dir_is_complete_ordered(ci) &&
-   359		    __ceph_caps_issued_mask_metric(ci, CEPH_CAP_FILE_SHARED, 1)) {
-   360			int shared_gen = atomic_read(&ci->i_shared_gen);
-   361	
-   362			spin_unlock(&ci->i_ceph_lock);
-   363			err = __dcache_readdir(file, ctx, shared_gen);
-   364			if (err != -EAGAIN)
-   365				return err;
-   366		} else {
-   367			spin_unlock(&ci->i_ceph_lock);
-   368		}
-   369	
-   370		/* proceed with a normal readdir */
-   371	more:
-   372		/* do we have the correct frag content buffered? */
-   373		if (need_send_readdir(dfi, ctx->pos)) {
-   374			struct ceph_mds_request *req;
-   375			int op = ceph_snap(inode) == CEPH_SNAPDIR ?
-   376				CEPH_MDS_OP_LSSNAP : CEPH_MDS_OP_READDIR;
-   377	
-   378			/* discard old result, if any */
-   379			if (dfi->last_readdir) {
-   380				ceph_mdsc_put_request(dfi->last_readdir);
-   381				dfi->last_readdir = NULL;
-   382			}
-   383	
-   384			if (is_hash_order(ctx->pos)) {
-   385				/* fragtree isn't always accurate. choose frag
-   386				 * based on previous reply when possible. */
-   387				if (frag == (unsigned)-1)
-   388					frag = ceph_choose_frag(ci, fpos_hash(ctx->pos),
-   389								NULL, NULL);
-   390			} else {
-   391				frag = fpos_frag(ctx->pos);
-   392			}
-   393	
-   394			dout("readdir fetching %llx.%llx frag %x offset '%s'\n",
-   395			     ceph_vinop(inode), frag, dfi->last_name);
-   396			req = ceph_mdsc_create_request(mdsc, op, USE_AUTH_MDS);
-   397			if (IS_ERR(req)) {
-   398				err = PTR_ERR(req);
-   399				goto out;
-   400			}
-   401			err = ceph_alloc_readdir_reply_buffer(req, inode);
-   402			if (err) {
-   403				ceph_mdsc_put_request(req);
-   404				goto out;
-   405			}
-   406			/* hints to request -> mds selection code */
-   407			req->r_direct_mode = USE_AUTH_MDS;
-   408			if (op == CEPH_MDS_OP_READDIR) {
-   409				req->r_direct_hash = ceph_frag_value(frag);
-   410				__set_bit(CEPH_MDS_R_DIRECT_IS_HASH, &req->r_req_flags);
-   411				req->r_inode_drop = CEPH_CAP_FILE_EXCL;
-   412			}
-   413			if (dfi->last_name) {
-   414				struct qstr d_name = { .name = dfi->last_name,
-   415						       .len = strlen(dfi->last_name) };
-   416	
-   417				req->r_path2 = kzalloc(NAME_MAX + 1, GFP_KERNEL);
-   418				if (!req->r_path2) {
-   419					ceph_mdsc_put_request(req);
-   420					err = -ENOMEM;
-   421					goto out;
-   422				}
-   423	
- > 424				err = ceph_encode_encrypted_dname(inode, &d_name, req->r_path2);
-   425				if (err < 0) {
-   426					ceph_mdsc_put_request(req);
-   427					goto out;
-   428				}
-   429			} else if (is_hash_order(ctx->pos)) {
-   430				req->r_args.readdir.offset_hash =
-   431					cpu_to_le32(fpos_hash(ctx->pos));
-   432			}
-   433	
-   434			req->r_dir_release_cnt = dfi->dir_release_count;
-   435			req->r_dir_ordered_cnt = dfi->dir_ordered_count;
-   436			req->r_readdir_cache_idx = dfi->readdir_cache_idx;
-   437			req->r_readdir_offset = dfi->next_offset;
-   438			req->r_args.readdir.frag = cpu_to_le32(frag);
-   439			req->r_args.readdir.flags =
-   440					cpu_to_le16(CEPH_READDIR_REPLY_BITFLAGS);
-   441	
-   442			req->r_inode = inode;
-   443			ihold(inode);
-   444			req->r_dentry = dget(file->f_path.dentry);
-   445			err = ceph_mdsc_do_request(mdsc, NULL, req);
-   446			if (err < 0) {
-   447				ceph_mdsc_put_request(req);
-   448				goto out;
-   449			}
-   450			dout("readdir got and parsed readdir result=%d on "
-   451			     "frag %x, end=%d, complete=%d, hash_order=%d\n",
-   452			     err, frag,
-   453			     (int)req->r_reply_info.dir_end,
-   454			     (int)req->r_reply_info.dir_complete,
-   455			     (int)req->r_reply_info.hash_order);
-   456	
-   457			rinfo = &req->r_reply_info;
-   458			if (le32_to_cpu(rinfo->dir_dir->frag) != frag) {
-   459				frag = le32_to_cpu(rinfo->dir_dir->frag);
-   460				if (!rinfo->hash_order) {
-   461					dfi->next_offset = req->r_readdir_offset;
-   462					/* adjust ctx->pos to beginning of frag */
-   463					ctx->pos = ceph_make_fpos(frag,
-   464								  dfi->next_offset,
-   465								  false);
-   466				}
-   467			}
-   468	
-   469			dfi->frag = frag;
-   470			dfi->last_readdir = req;
-   471	
-   472			if (test_bit(CEPH_MDS_R_DID_PREPOPULATE, &req->r_req_flags)) {
-   473				dfi->readdir_cache_idx = req->r_readdir_cache_idx;
-   474				if (dfi->readdir_cache_idx < 0) {
-   475					/* preclude from marking dir ordered */
-   476					dfi->dir_ordered_count = 0;
-   477				} else if (ceph_frag_is_leftmost(frag) &&
-   478					   dfi->next_offset == 2) {
-   479					/* note dir version at start of readdir so
-   480					 * we can tell if any dentries get dropped */
-   481					dfi->dir_release_count = req->r_dir_release_cnt;
-   482					dfi->dir_ordered_count = req->r_dir_ordered_cnt;
-   483				}
-   484			} else {
-   485				dout("readdir !did_prepopulate\n");
-   486				/* disable readdir cache */
-   487				dfi->readdir_cache_idx = -1;
-   488				/* preclude from marking dir complete */
-   489				dfi->dir_release_count = 0;
-   490			}
-   491	
-   492			/* note next offset and last dentry name */
-   493			if (rinfo->dir_nr > 0) {
-   494				struct ceph_mds_reply_dir_entry *rde =
-   495						rinfo->dir_entries + (rinfo->dir_nr-1);
-   496				unsigned next_offset = req->r_reply_info.dir_end ?
-   497						2 : (fpos_off(rde->offset) + 1);
-   498				err = note_last_dentry(dfi, rde->name, rde->name_len,
-   499						       next_offset);
-   500				if (err) {
-   501					ceph_mdsc_put_request(dfi->last_readdir);
-   502					dfi->last_readdir = NULL;
-   503					goto out;
-   504				}
-   505			} else if (req->r_reply_info.dir_end) {
-   506				dfi->next_offset = 2;
-   507				/* keep last name */
-   508			}
-   509		}
-   510	
-   511		rinfo = &dfi->last_readdir->r_reply_info;
-   512		dout("readdir frag %x num %d pos %llx chunk first %llx\n",
-   513		     dfi->frag, rinfo->dir_nr, ctx->pos,
-   514		     rinfo->dir_nr ? rinfo->dir_entries[0].offset : 0LL);
-   515	
-   516		i = 0;
-   517		/* search start position */
-   518		if (rinfo->dir_nr > 0) {
-   519			int step, nr = rinfo->dir_nr;
-   520			while (nr > 0) {
-   521				step = nr >> 1;
-   522				if (rinfo->dir_entries[i + step].offset < ctx->pos) {
-   523					i +=  step + 1;
-   524					nr -= step + 1;
-   525				} else {
-   526					nr = step;
-   527				}
-   528			}
-   529		}
-   530		for (; i < rinfo->dir_nr; i++) {
-   531			struct ceph_mds_reply_dir_entry *rde = rinfo->dir_entries + i;
-   532	
-   533			BUG_ON(rde->offset < ctx->pos);
-   534			BUG_ON(!rde->inode.in);
-   535	
-   536			ctx->pos = rde->offset;
-   537			dout("readdir (%d/%d) -> %llx '%.*s' %p\n",
-   538			     i, rinfo->dir_nr, ctx->pos,
-   539			     rde->name_len, rde->name, &rde->inode.in);
-   540	
-   541			if (!dir_emit(ctx, rde->name, rde->name_len,
-   542				      ceph_present_ino(inode->i_sb, le64_to_cpu(rde->inode.in->ino)),
-   543				      le32_to_cpu(rde->inode.in->mode) >> 12)) {
-   544				/*
-   545				 * NOTE: Here no need to put the 'dfi->last_readdir',
-   546				 * because when dir_emit stops us it's most likely
-   547				 * doesn't have enough memory, etc. So for next readdir
-   548				 * it will continue.
-   549				 */
-   550				dout("filldir stopping us...\n");
-   551				err = 0;
-   552				goto out;
-   553			}
-   554	
-   555			/* Reset the lengths to their original allocated vals */
-   556			ctx->pos++;
-   557		}
-   558	
-   559		ceph_mdsc_put_request(dfi->last_readdir);
-   560		dfi->last_readdir = NULL;
-   561	
-   562		if (dfi->next_offset > 2) {
-   563			frag = dfi->frag;
-   564			goto more;
-   565		}
-   566	
-   567		/* more frags? */
-   568		if (!ceph_frag_is_rightmost(dfi->frag)) {
-   569			frag = ceph_frag_next(dfi->frag);
-   570			if (is_hash_order(ctx->pos)) {
-   571				loff_t new_pos = ceph_make_fpos(ceph_frag_value(frag),
-   572								dfi->next_offset, true);
-   573				if (new_pos > ctx->pos)
-   574					ctx->pos = new_pos;
-   575				/* keep last_name */
-   576			} else {
-   577				ctx->pos = ceph_make_fpos(frag, dfi->next_offset,
-   578								false);
-   579				kfree(dfi->last_name);
-   580				dfi->last_name = NULL;
-   581			}
-   582			dout("readdir next frag is %x\n", frag);
-   583			goto more;
-   584		}
-   585		dfi->file_info.flags |= CEPH_F_ATEND;
-   586	
-   587		/*
-   588		 * if dir_release_count still matches the dir, no dentries
-   589		 * were released during the whole readdir, and we should have
-   590		 * the complete dir contents in our cache.
-   591		 */
-   592		if (atomic64_read(&ci->i_release_count) ==
-   593						dfi->dir_release_count) {
-   594			spin_lock(&ci->i_ceph_lock);
-   595			if (dfi->dir_ordered_count ==
-   596					atomic64_read(&ci->i_ordered_count)) {
-   597				dout(" marking %p complete and ordered\n", inode);
-   598				/* use i_size to track number of entries in
-   599				 * readdir cache */
-   600				BUG_ON(dfi->readdir_cache_idx < 0);
-   601				i_size_write(inode, dfi->readdir_cache_idx *
-   602					     sizeof(struct dentry*));
-   603			} else {
-   604				dout(" marking %p complete\n", inode);
-   605			}
-   606			__ceph_dir_set_complete(ci, dfi->dir_release_count,
-   607						dfi->dir_ordered_count);
-   608			spin_unlock(&ci->i_ceph_lock);
-   609		}
-   610		err = 0;
-   611		dout("readdir %p file %p done.\n", inode, file);
-   612	out:
-   613		return err;
-   614	}
-   615	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I think reverting them is best at this moment unless someone
+has an idea.
