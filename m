@@ -2,94 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91835C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:02:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A620BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352472AbiCOXDu (ORCPT
+        id S1352493AbiCOXE4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 19:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
+        Tue, 15 Mar 2022 19:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352465AbiCOXDs (ORCPT
+        with ESMTP id S1344119AbiCOXEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 19:03:48 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A225D655;
-        Tue, 15 Mar 2022 16:02:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
-        bh=nXUiSJnw39LzfU6KtBZXkXRWVC6rLAnFMW3xW6PdEto=; b=WYYT0ddfZoDelK5Y7/l0KM8hgz
-        0gc+qy2FR1lntA5GXYQiBEMpXnnO4SP1ZtN7cdSFUNbN5vn3iDhejVSWvFjGU4WbVtKqFYIMVZ1FS
-        p5bCQzMFKVQ/7OO8HeXG6uzV8WDV5f3orU553OlALrZPYE/YqOZOsbT+cVc47Vy7/Lysc/jEeCWxv
-        bA+dU6wqi6fF9IajgjD79QJsiwtqC3G6Eg+2jbrm0sWBA8fFwZME4oyDDWO++yAUnyzh6Dztc4DBS
-        /LJXGXrOOzd3kYnPOoJTvLFrIWWGBWzZ8hyvSfMya5tYDbugAIUGvv6ZVRlSclNgI7ojKeWPn9uZQ
-        vyOO17+Q==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUGBO-00ApGW-8i; Tue, 15 Mar 2022 23:02:26 +0000
-Date:   Tue, 15 Mar 2022 16:02:26 -0700
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Tue, 15 Mar 2022 19:04:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E793E2AC7;
+        Tue, 15 Mar 2022 16:03:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93079B8190D;
+        Tue, 15 Mar 2022 23:03:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD318C340E8;
+        Tue, 15 Mar 2022 23:03:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647385417;
+        bh=TzB71EHsQSxi9ycyQW305aKb38kU4PoZa65+ZUbL93c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gxcMWeCpBQjsYX9XnajV96+qEiT05QvvAx+rpLrcAIzeNueu3XWZgwe1bu+82MSBo
+         8QtaTDP9fJx5OgfCXARIFUexLMi0jPJs/vNLyeFZqi1jS8CkFc0ovgc57dSyCUNkOW
+         EaGMwjv3hwlNYVX/NmwlmTf7otRdnACrkJEFDFsl2nqjvl01R5QjRk3a5rO2gsXXPP
+         rAY9iKskfNSakrlT0SzC7D+j1L3AG8RJRn1nH9ENRUJ+KeoaiPR+qQyQt2K4Jcmx28
+         W7FavvnKY13dgKnurZpxAFG/STrJFbgl9ESVSWN0O3sFE1hLCsPzbip00dWz2/B2Z0
+         jKUsesoPwf9cQ==
+Received: by pali.im (Postfix)
+        id F1C44824; Wed, 16 Mar 2022 00:03:33 +0100 (CET)
+Date:   Wed, 16 Mar 2022 00:03:33 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Zhen Ni <nizhen@uniontech.com>
-Subject: Re: linux-next: manual merge of the sysctl tree with the tip tree
-Message-ID: <YjEbAo2126TjKNeE@bombadil.infradead.org>
-References: <20220315201840.6146f234@canb.auug.org.au>
- <YjD0Z7UQ0psJT7b0@bombadil.infradead.org>
- <20220316080215.46eb8cd5@canb.auug.org.au>
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Ziji Hu <huziji@marvell.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Kostya Porotchkin <kostap@marvell.com>,
+        Alex Leibovich <alexl@marvell.com>,
+        "# 4.0+" <stable@vger.kernel.org>
+Subject: Re: [PATCH] mmc: sdhci-xenon: fix 1.8v regulator stabilization
+Message-ID: <20220315230333.eyznbu5tuxneizbs@pali>
+References: <20201211141656.24915-1-mw@semihalf.com>
+ <CAPDyKFqsSO+f9iG8vccwXZXDDNHgLEg7bfUe-KfHn2C-ZnOU4A@mail.gmail.com>
+ <20220314154033.4x74zscayee32rrj@pali>
+ <CAPv3WKc4MFeLgnJMWx=YNT5Ta5yi6fVhb4f-Rf211FTEmkvyog@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220316080215.46eb8cd5@canb.auug.org.au>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKc4MFeLgnJMWx=YNT5Ta5yi6fVhb4f-Rf211FTEmkvyog@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 08:02:15AM +1100, Stephen Rothwell wrote:
-> Hi Luis,
->=20
-> On Tue, 15 Mar 2022 13:17:43 -0700 Luis Chamberlain <mcgrof@kernel.org> w=
-rote:
+Hello!
+
+On Monday 14 March 2022 16:51:25 Marcin Wojtas wrote:
+> Hi Pali,
+> 
+> 
+> pon., 14 mar 2022 o 16:40 Pali Rohár <pali@kernel.org> napisał(a):
 > >
-> > On Tue, Mar 15, 2022 at 08:18:40PM +1100, Stephen Rothwell wrote:
-> > > Hi all,
-> > >=20
-> > > Today's linux-next merge of the sysctl tree got a conflict in:
-> > >=20
-> > >   kernel/sched/deadline.c
-> > >=20
-> > > between commit:
-> > >=20
-> > >   eb77cf1c151c ("sched/deadline: Remove unused def_dl_bandwidth")
-> > >=20
-> > > from the tip tree and commit:
-> > >=20
-> > >   ebb891f03580 ("sched: Move deadline_period sysctls to deadline.c")
-> > >=20
-> > > from the sysctl tree. =20
-> >=20
-> > Peter,
-> >=20
-> > to help avoid conflicts I spinned up a sysctl-next tree to collect
-> > different cleanups going on kernel/sysctl.c. I can drop=20
-> > ebb891f03580 ("sched: Move deadline_period sysctls to deadline.c")
-> > but I think we'd still run into conflicts as other sysctls are
-> > trimmed out. Would you be OK in me taking in eb77cf1c151c
-> > ("sched/deadline: Remove unused def_dl_bandwidth") to avoid this
-> > conflict?
->=20
-> Its really a trivial conflict and just needs to be mentioned to Linus
-> in the pull requests.
+> > On Monday 11 January 2021 19:06:24 Ulf Hansson wrote:
+> > > On Fri, 11 Dec 2020 at 15:17, Marcin Wojtas <mw@semihalf.com> wrote:
+> > > >
+> > > > From: Alex Leibovich <alexl@marvell.com>
+> > > >
+> > > > Automatic Clock Gating is a feature used for the power
+> > > > consumption optimisation. It turned out that
+> > > > during early init phase it may prevent the stable voltage
+> > > > switch to 1.8V - due to that on some platfroms an endless
+> > > > printout in dmesg can be observed:
+> > > > "mmc1: 1.8V regulator output did not became stable"
+> > > > Fix the problem by disabling the ACG at very beginning
+> > > > of the sdhci_init and let that be enabled later.
+> > > >
+> > > > Fixes: 3a3748dba881 ("mmc: sdhci-xenon: Add Marvell Xenon SDHC core functionality")
+> > > > Signed-off-by: Alex Leibovich <alexl@marvell.com>
+> > > > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> > > > Cc: stable@vger.kernel.org
+> > >
+> > > Applied for fixes (by fixing the typos), thanks!
+> >
+> > Hello!
+> >
+> > Is not this patch address same issue which was fixed by patch which was
+> > merged earlier?
+> >
+> > bb32e1987bc5 ("mmc: sdhci-xenon: fix annoying 1.8V regulator warning")
+> > https://lore.kernel.org/linux-mmc/CAPDyKFqAsvgAjfL-c9ukFNWeGJmufQosR2Eg9SKjXMVpNitdkA@mail.gmail.com/
+> >
+> 
+> This indeed look similar. This fix was originally developed for CN913x
+> platform without the mentioned patch (I'm wondering if it would also
+> suffice to fix A3k board's problem). Anyway, I don't think we have an
+> issue here, as everything seems to work fine on top of mainline Linux
+> with both changes.
 
-Ah alrighty! Thanks!
+Yea, there should be no issue. Just question is if we need _both_ fixes.
 
-  Luis
+I could probably try to revert bb32e1987bc5 and check what happens on
+A3k board.
+
+> Best regards,
+> Marcin
+> 
+> > > Kind regards
+> > > Uffe
+> > >
+> > >
+> > > > ---
+> > > >  drivers/mmc/host/sdhci-xenon.c | 7 ++++++-
+> > > >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/mmc/host/sdhci-xenon.c b/drivers/mmc/host/sdhci-xenon.c
+> > > > index c67611fdaa8a..4b05f6fdefb4 100644
+> > > > --- a/drivers/mmc/host/sdhci-xenon.c
+> > > > +++ b/drivers/mmc/host/sdhci-xenon.c
+> > > > @@ -168,7 +168,12 @@ static void xenon_reset_exit(struct sdhci_host *host,
+> > > >         /* Disable tuning request and auto-retuning again */
+> > > >         xenon_retune_setup(host);
+> > > >
+> > > > -       xenon_set_acg(host, true);
+> > > > +       /*
+> > > > +        * The ACG should be turned off at the early init time, in order
+> > > > +        * to solve a possile issues with the 1.8V regulator stabilization.
+> > > > +        * The feature is enabled in later stage.
+> > > > +        */
+> > > > +       xenon_set_acg(host, false);
+> > > >
+> > > >         xenon_set_sdclk_off_idle(host, sdhc_id, false);
+> > > >
+> > > > --
+> > > > 2.29.0
+> > > >
