@@ -2,86 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344217AbiCOBQY (ORCPT
+        id S1344225AbiCOBSa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 21:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39954 "EHLO
+        Mon, 14 Mar 2022 21:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344207AbiCOBQS (ORCPT
+        with ESMTP id S1344207AbiCOBS3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 21:16:18 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF6A34642
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:15:07 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id 15-20020a17090a098f00b001bef0376d5cso1011282pjo.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:15:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=YYXrSkA7DcKX+OZWoRaWmcezxkTTC0s3clPNsqj0tSs=;
-        b=zf7n+VLD+TlQXBul0FjxSYL20r03zWROyOA5y4hxMFq+RWaP03LQynIiq5YiSKbkkk
-         4FokEd9K2SBXzY3lcpBYaxnM/XggXqkIcGAl5r05eOeLMuqueQt1qHpL0y8ONY4UkRWB
-         nBOQR2g1Id/IcgIVc7vZwbInbJNmzdP7pfzuyCm25Qt9oioTkTV7badO8iz5bBmcssLB
-         0KIgZROVlTgkXqbEl5+PXmSTXM8mvNynBnTBPRurvJ4XazuIINdwhDb2y8z6I8b9DvMa
-         CFUppDDNwXn58Mk4IdX6/z8JxMriMX7GpU4cFu1j/62+ZYdkJ1XGn6qd4uA2m29bS33j
-         5CfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=YYXrSkA7DcKX+OZWoRaWmcezxkTTC0s3clPNsqj0tSs=;
-        b=IKpkLip1QC+E31/G+onGxq2YWEXXxfNlNn/YqgBEmSI3Cn8kj9oMlKNs5cIZhhh8E1
-         Rxgx+8rJzI6u3o6hOiAY6+dj5HT2dLsP8X1s1n1tx7wRqpaydM2wzM7HKlOGo8t79Uc+
-         aC57JJK9XNau12+WX74Q318EvZ9BIBerdMuj15W5s8EVE+oZ+rwL/4CbreMeUN9tzATP
-         nRm1UfVqy4KYSCuiFngkxcAYrlJRQjjVLciXzGwtqM6YR7XmaazviznRkviRQfOEBF/0
-         5qfF6jNBE20BAvVN5Fc9BTh32aWq3ftXP03vdIyB8OgrVYQi1YH/hHhQn69UE0XJ+kuk
-         fW7A==
-X-Gm-Message-State: AOAM5309g7Ubhr5YRRpLkUJlDqrZtZEsoXPsr+sPuJCgJKj87VFYPCgk
-        +O9xrRKF/Itid9Qld059WBR0tA==
-X-Google-Smtp-Source: ABdhPJybZTuIVdsdqiq9XXOjoE5OhuzK9g5Qb+orkGS7bDm7/WhD/PUXavEFFaj8efC60jR46TlAXQ==
-X-Received: by 2002:a17:90a:1f4d:b0:1bb:a657:ace5 with SMTP id y13-20020a17090a1f4d00b001bba657ace5mr1830551pjy.39.1647306907272;
-        Mon, 14 Mar 2022 18:15:07 -0700 (PDT)
-Received: from [127.0.1.1] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id k6-20020a17090a7f0600b001c63352cadbsm510847pjl.29.2022.03.14.18.15.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 18:15:06 -0700 (PDT)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Josef Bacik <josef@toxicpanda.com>, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, kernel-team@fb.com
-In-Reply-To: <Yi/eE/6zFNyWJ+qd@slm.duckdns.org>
-References: <Yi71WZ3O9/YViHSb@slm.duckdns.org> <Yi/Us896/ftt5l4f@slm.duckdns.org> <Yi/eE/6zFNyWJ+qd@slm.duckdns.org>
-Subject: Re: [PATCH v3 for-5.18/block] block: don't merge across cgroup boundaries if blkcg is enabled
-Message-Id: <164730690621.219116.11184082869298025827.b4-ty@kernel.dk>
-Date:   Mon, 14 Mar 2022 19:15:06 -0600
+        Mon, 14 Mar 2022 21:18:29 -0400
+X-Greylist: delayed 1441 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 18:17:18 PDT
+Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.53.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C1D369C3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:17:18 -0700 (PDT)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id 25CED400D02B6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 19:53:17 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id TvR6nkVUy9AGSTvR7nsf0O; Mon, 14 Mar 2022 19:53:17 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
+        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
+        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=l4HlY2A3RyIuVlIUqMI8DA5II9OGtAKGgEJS/9G/IU8=; b=UwM7+/k4b9G+zTM9P+s4t/+waM
+        RSu9TZkFaJMsAsaT8CMjfM8VIoNHGKFNUbZwZYWCilHaOAAah8JHiqL7SFMExaNGrC/gobeJUEDyN
+        MfPE8Dy9Z8BwoDodIIPDmM1ft9VHDDq0jbD6qQxoZe2lSq6+9E6baOAM2W8B6ofILC6WrFMex34SY
+        AI+MRwzB9DYOAKvZaMiE9qCNRJrpgRC0OGFO3y2Ismv0eR4Zg7nzCFbAMR1RN+jqig3ocbYAH6VrM
+        nunNhzaLObduIvah6s5uzAdS4ZzFVpF+IDVOmTPwKjYO30aOaxY4rdeH2ZygMg9oPIzLovjkB9sHT
+        VObWTeww==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57474 helo=localhost)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nTvR6-003rYa-6X; Tue, 15 Mar 2022 00:53:16 +0000
+Date:   Mon, 14 Mar 2022 17:53:15 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/71] 5.10.106-rc1 review
+Message-ID: <20220315005315.GE1943350@roeck-us.net>
+References: <20220314112737.929694832@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nTvR6-003rYa-6X
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57474
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 64
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 14:30:11 -1000, Tejun Heo wrote:
-> blk-iocost and iolatency are cgroup aware rq-qos policies but they didn't
-> disable merges across different cgroups. This obviously can lead to
-> accounting and control errors but more importantly to priority inversions -
-> e.g. an IO which belongs to a higher priority cgroup or IO class may end up
-> getting throttled incorrectly because it gets merged to an IO issued from a
-> low priority cgroup.
+On Mon, Mar 14, 2022 at 12:52:53PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.106 release.
+> There are 71 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> [...]
+> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
+> Anything received after that time might be too late.
+> 
 
-Applied, thanks!
+Build results:
+	total: 161 pass: 161 fail: 0
+Qemu test results:
+	total: 477 pass: 477 fail: 0
 
-[1/1] block: don't merge across cgroup boundaries if blkcg is enabled
-      commit: 6b2b04590b51aa4cf395fcd185ce439cab5961dc
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
-Best regards,
--- 
-Jens Axboe
-
-
+Guenter
