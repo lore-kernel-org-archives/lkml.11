@@ -2,238 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E1CC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6656C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349899AbiCOQGR (ORCPT
+        id S1349808AbiCOQHQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
+        Tue, 15 Mar 2022 12:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349837AbiCOQGL (ORCPT
+        with ESMTP id S239056AbiCOQHO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:06:11 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526A72AE2E;
-        Tue, 15 Mar 2022 09:04:59 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22FEoi77012311;
-        Tue, 15 Mar 2022 16:04:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=tdEYLDx1G8bzKxisHf7Abo3qouFpdoa7ZzkGJTm29gw=;
- b=tUTvlYrCkbrSz9VorIEtZFp+W7P4gTPyEdEHyZUGQz293eSXrybnSZsptki9aa8/OPew
- w6CyKpL2s0GC2jipsBUUJBViBBa8wzKPtQyjElbQUGayNvjR0puS5Q9pjhLABsWCIFqz
- SwF7b8wN8LW0eIXQjEEjEXXyhwmqDtAq6P2f8l/9k8wHZjgGLhJyDc9Fmre76BCe/mek
- K/iA3fnV13LuOFT9P27E4qCpykHtMnmqVXxdbpEisv6iAdWtKD2Zctg/YHJeGn5vYmOW
- mRDDt/hiI1igFRsGGzCWTVrKzxb9yEoLp1/IJn7HtG+cEqFiVF6Nzu0ifCYNx8rJS92F Ag== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3etvx09vsx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Mar 2022 16:04:52 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22FFoSrE031868;
-        Tue, 15 Mar 2022 16:04:51 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3etvx09vry-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Mar 2022 16:04:51 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22FFxtjY005384;
-        Tue, 15 Mar 2022 16:04:50 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma02dal.us.ibm.com with ESMTP id 3etaj6r9ut-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Mar 2022 16:04:50 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22FG4mXB33948066
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 16:04:48 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A8426AC05E;
-        Tue, 15 Mar 2022 16:04:48 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 34488AC05F;
-        Tue, 15 Mar 2022 16:04:37 +0000 (GMT)
-Received: from [9.211.32.184] (unknown [9.211.32.184])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 15 Mar 2022 16:04:36 +0000 (GMT)
-Message-ID: <dbe8488f-2539-f81a-b730-26e58b78856a@linux.ibm.com>
-Date:   Tue, 15 Mar 2022 12:04:35 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v4 15/32] vfio: introduce KVM-owned IOMMU type
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>, borntraeger@linux.ibm.com
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        linux-s390@vger.kernel.org, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com, pmorel@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, frankja@linux.ibm.com, david@redhat.com,
-        imbrenda@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, thuth@redhat.com,
-        pasic@linux.ibm.com, joro@8bytes.org, will@kernel.org,
-        pbonzini@redhat.com, corbet@lwn.net, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-doc@vger.kernel.org
-References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
- <20220314194451.58266-16-mjrosato@linux.ibm.com>
- <20220314165033.6d2291a5.alex.williamson@redhat.com>
- <20220314231801.GN11336@nvidia.com>
- <9618afae-2a91-6e4e-e8c3-cb83e2f5c3d9@linux.ibm.com>
- <20220315145520.GZ11336@nvidia.com>
-From:   Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20220315145520.GZ11336@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: -w36gmF1H8rJjnaDs5OGV7pUR03jgs89
-X-Proofpoint-ORIG-GUID: OH7K6C4R5v45F-_abHJQ5ckSN6hzhDCe
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 15 Mar 2022 12:07:14 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01AC56414
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:06:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647360362; x=1678896362;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=BFrRqs9qFVnUa13ULOspS26Ceq0rJNvWyPQRN3j1Kl8=;
+  b=JJRPS342IslocYGw07wvZxLN24bstElEsy+fmkCcF3RWQHGAVjYavGLh
+   uUJHl1Eylf5VPnRSvQptoLlBHWKRnhoTH/bMkqoU5FYStouBxfGQNiJNR
+   QpocmJY9kIHyQQXd25Do6QFdF9/JN1sKtZCVQlRK4l5/G3poedEunrVGD
+   XqM7KpZsTSmSkOx7JuLnvY4j0/gXaW8EE4lfWDYVN1MB+1OLfSap5QxCH
+   8FQaiC7Hem83sKhT2zu68gdj1UW6wM080lW7l124mDwuXTCGanYKY0au3
+   hAp5Ht2iiOzWkI7agD5mVrUuF9WQ9LxAjbF6M2mBU78Ywx9TpsCckdAzE
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317066720"
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="317066720"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:03:34 -0700
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="549645392"
+Received: from rgatlin-mobl.amr.corp.intel.com (HELO [10.251.10.152]) ([10.251.10.152])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:03:33 -0700
+Message-ID: <5b5ae505-84c7-1a46-832a-68bdfd8fd61c@intel.com>
+Date:   Tue, 15 Mar 2022 09:03:26 -0700
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-15_03,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 mlxscore=0 malwarescore=0 phishscore=0 suspectscore=0
- bulkscore=0 spamscore=0 mlxlogscore=999 adultscore=0 impostorscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203150102
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220311005742.1060992-1-ira.weiny@intel.com>
+ <20220311005742.1060992-6-ira.weiny@intel.com>
+ <42e0aa73-04c8-a4c2-2d64-80812634b627@intel.com>
+ <YjC2jcn7kJKdHrf3@iweiny-desk3>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 5/5] x86/pkeys: Standardize on u8 for pkey type
+In-Reply-To: <YjC2jcn7kJKdHrf3@iweiny-desk3>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/15/22 10:55 AM, Jason Gunthorpe wrote:
-> On Tue, Mar 15, 2022 at 09:36:08AM -0400, Matthew Rosato wrote:
->>> If we do try to stick this into VFIO it should probably use the
->>> VFIO_TYPE1_NESTING_IOMMU instead - however, we would like to delete
->>> that flag entirely as it was never fully implemented, was never used,
->>> and isn't part of what we are proposing for IOMMU nesting on ARM
->>> anyhow. (So far I've found nobody to explain what the plan here was..)
+On 3/15/22 08:53, Ira Weiny wrote:
+> On Mon, Mar 14, 2022 at 04:49:12PM -0700, Dave Hansen wrote:
+>> On 3/10/22 16:57, ira.weiny@intel.com wrote:
+>>> From: Ira Weiny <ira.weiny@intel.com>
 >>>
+>>> The number of pkeys supported on x86 and powerpc are much smaller than a
+>>> u16 value can hold.  It is desirable to standardize on the type for
+>>> pkeys.  powerpc currently supports the most pkeys at 32.  u8 is plenty
+>>> large for that.
+>>>
+>>> Standardize on the pkey types by changing u16 to u8.
 >>
->> I'm open to suggestions on how better to tie this into vfio.  The scenario
->> basically plays out that:
+>> How widely was this intended to "standardize" things?  Looks like it may
+>> have missed a few spots.
 > 
-> Ideally I would like it to follow the same 'user space page table'
-> design that Eric and Kevin are working on for HW iommu.
+> Sorry I think the commit message is misleading you.  The justification of u8 as
+> the proper type is that no arch has a need for more than 255 pkeys.
+> 
+> This specific patch was intended to only change x86.  Per that goal I don't see
+> any other places in x86 which uses u16 after this patch.
+> 
+> $ git grep u16 arch/x86 | grep key
+> arch/x86/events/intel/uncore_discovery.c:	const u16 *type_id = key;
+> arch/x86/include/asm/intel_pconfig.h:	u16 keyid;
+> arch/x86/include/asm/mmu.h:	u16 pkey_allocation_map;
+> arch/x86/include/asm/pkeys.h:	u16 all_pkeys_mask = ((1U << arch_max_pkey()) - 1);
 
-'[RFC v16 0/9] SMMUv3 Nested Stage Setup (IOMMU part)' ??
+I was also looking at the generic mm code.
 
-https://lore.kernel.org/linux-iommu/20211027104428.1059740-1-eric.auger@redhat.com/
+>> Also if we're worried about the type needing to changY or with the wrong
+>> type being used, I guess we could just to a pkey_t typedef.
+> 
+> I'm not 'worried' about it.  But I do think it makes the code cleaner and more
+> self documenting.
 
-> 
-> You have an 1st iommu_domain that maps and pins the entire guest physical
-> address space.
-
-Ahh, I see.
-
-@Christian would it be OK to pursue a model that pins all of guest 
-memory upfront?
-
-> 
-> You have an nested iommu_domain that represents the user page table
-> (the ioat in your language I think)
-
-Yes
-
-> 
-> When the guest says it wants to set a user page table then you create
-> the nested iommu_domain representing that user page table and pass in
-> the anchor (guest address of the root IOPTE) to the kernel to do the
-> work. >
-> The rule for all other HW's is that the user space page table is
-> translated by the top level kernel page table. So when you traverse it
-> you fetch the CPU page storing the guest's IOPTE by doing an IOVA
-> translation through the first level page table - not through KVM.
-> 
-> Since the first level page table an the KVM GPA should be 1:1 this is
-> an equivalent operation.
-> 
->> 1) the iommu will be domain_alloc'd once VFIO_SET_IOMMU is issued -- so at
->> that time (or earlier) we have to make the decision on whether to use the
->> standard IOMMU or this alternate KVM/nested IOMMU.
-> 
-> So in terms of iommufd I would see it this would be an iommufd 'create
-> a device specific iomm_domain' IOCTL and you can pass in a S390
-> specific data blob to make it into this special mode.
-> 
->>> This is why I said the second level should be an explicit iommu_domain
->>> all on its own that is explicitly coupled to the KVM to read the page
->>> tables, if necessary.
->>
->> Maybe I misunderstood this.  Are you proposing 2 layers of IOMMU that
->> interact with each other within host kernel space?
->>
->> A second level runs the guest tables, pins the appropriate pieces from the
->> guest to get the resulting phys_addr(s) which are then passed via iommu to a
->> first level via map (or unmap)?
-> 
-> 
-> The first level iommu_domain has the 'type1' map and unmap and pins
-> the pages. This is the 1:1 map with the GPA and ends up pinning all
-> guest memory because the point is you don't want to take a memory pin
-> on your performance path
-> 
-> The second level iommu_domain points to a single IO page table in GPA
-> and is created/destroyed whenever the guest traps to the hypervisor to
-> manipulate the anchor (ie the GPA of the guest IO page table).
-> 
-
-That makes sense, thanks for clarifying.
-
->>> But I'm not sure that reading the userspace io page tables with KVM is
->>> even the best thing to do - the iommu driver already has the pinned
->>> memory, it would be faster and more modular to traverse the io page
->>> tables through the pfns in the root iommu_domain than by having KVM do
->>> the translations. Lets see what Matthew says..
->>
->> OK, you lost me a bit here.  And this may be associated with the above.
->>
->> So, what the current implementation is doing is reading the guest DMA tables
->> (which we must pin the first time we access them) and then map the PTEs of
->> the associated guest DMA entries into the associated host DMA table (so,
->> again pin and place the address, or unpin and invalidate).  Basically we are
->> shadowing the first level DMA table as a copy of the second level DMA table
->> with the host address(es) of the pinned guest page(s).
-> 
-> You can't pin/unpin in this path, there is no real way to handle error
-> and ulimit stuff here, plus it is really slow. I didn't notice any of
-> this in your patches, so what do you mean by 'pin' above?
-
-patch 18 does some symbol_get for gfn_to_page (which will drive 
-hva_to_pfn under the covers) and kvm_release_pfn_dirty and uses those 
-symbols for pin/unpin.
-
-pin/unpin errors in this series are reliant on the fact that RPCIT is 
-architected to include a panic response to the guest of 'mappings failed 
-for the specified range, go refresh your tables and make room', thus 
-allowing this to work for pageable guests.
-
-Agreed this would be unnecessary if we've already mapped all of guest 
-memory via a 1st iommu domain.
-
-> 
-> To be like other IOMMU nesting drivers the pages should already be
-> pinned and stored in the 1st iommu_domain, lets say in an xarray. This
-> xarray is populated by type1 map/unmap sytem calls like any
-> iommu_domain.
-> 
-> A nested iommu_domain should create the real HW IO page table and
-> associate it with the real HW IOMMU and record the parent 1st level iommu_domain.
-> 
-> When you do the shadowing you use the xarray of the 1st level
-> iommu_domain to translate from GPA to host physical and there is no
-> pinning/etc involved. After walking the guest table and learning the
-> final vIOVA it is translated through the xarray to a CPU physical and
-> then programmed into the real HW IO page table.
-> 
-> There is no reason to use KVM to do any of this, and is actively wrong
-> to place CPU pages from KVM into an IOPTE that did not come through
-> the type1 map/unmap calls that do all the proper validation and
-> accounting.
-> 
-> Jason
-
+Yeah, consistency is good.  Do you mind taking a look at how a pkey_t
+would look, and also seeing how much core mm code should use it?
