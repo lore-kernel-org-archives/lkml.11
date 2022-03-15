@@ -2,164 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3757FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352271AbiCOWgV (ORCPT
+        id S1352278AbiCOWiR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 18:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
+        Tue, 15 Mar 2022 18:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237247AbiCOWgT (ORCPT
+        with ESMTP id S244881AbiCOWiP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 18:36:19 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14565AA62
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 15:35:06 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id w27so885185lfa.5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 15:35:06 -0700 (PDT)
+        Tue, 15 Mar 2022 18:38:15 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E37F5C856;
+        Tue, 15 Mar 2022 15:37:02 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id k8-20020a05600c1c8800b003899c7ac55dso1650446wms.1;
+        Tue, 15 Mar 2022 15:37:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=WG7wAjUqAepF5ItMqejD0JSQeopv4zw5TgTzR3nTVpg=;
-        b=08bbh2q2doQ/hf09T5YToBREVzd93tB1dJg+jlIcEZvH3cwaNw0qpNdLWn+A/zuNX8
-         Z8fTqKdoh51qK+8sigaTMCHFoQKXa23V9rzd5g25dCU/pIkjrm+AJ5CTBDWo1QNrUglM
-         caEA76zCeUAC2BVn4jGOkicaSI+koUtPKQ3dvSte2rHMZxRHo1xXFcwQc0NAfD+TZogS
-         AHxG8BJaICXP5JunIZ+6AwE5ayH27QiI4vyOS8RtRDmFq0KgXbIxE7DjMmilTflPy5nX
-         8SwX4X02D6zypf6GMr8hknSnnxAZlrQWcZzrLPGlW4BTLaD8+jxfjh3PbvPWLknwNW9v
-         bnEA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BAJ42Sw5cn2QVZO4B0ryJMqINKH0u5yKfMlL7xZRHdY=;
+        b=S3HdweX4UDsfvRuFHYL/7/VcxXYn3QnEjH0RIb/qFpmRvIA/MX8LoZbBdSlDxvXKRC
+         xmKw6G8Kvd1gvuPtq8NaiWnIleqMsArx/bXGvbfe0lpoG78YcMpw8H1QO9nDQ5J8o1ov
+         +Emjsk5GnBxWPrc0t0MG+QFTUgjlfW5PlI6FbpKTaS9mHs6Up1YZLW0nPCRE2zxX/Tzv
+         95Ds2I+kVj7Lb4RW2rDIlDdsGbOh2dA77uSH2TlOXRDXbeQWxfvsl796Ht82LMOM91Ab
+         Rigol+MeonELE10CsRMlbTeZGghW7IHRPZXq7FybsmkADTceusjcNQJqWwGGjNvBP7dP
+         RFGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=WG7wAjUqAepF5ItMqejD0JSQeopv4zw5TgTzR3nTVpg=;
-        b=YtfrGZtp9Pd7qahbkRUvC/sYalD5fHLO6OnBKHDeH9JiHCbFu7wRvaa2mgAzNRyxqO
-         BRt4Yx8qAJKmcxwu9xMoGfmW9rcyn1cxHtFdz/wfXq3riCwFxOFI5yTRiZA3/i04Onxx
-         tGBrpDHAFzyfjVxRfZZxssJzJGWbzwVk67dALt3r2cJkjrMOKscw2W738ik+z6CEm7fT
-         dEd9P3Ok1Q3ufFyk2ugty4OtIs4O9Z+7T9dJjLNJghyOMNXobhSN7XLCXNYhsHEp1pNR
-         3MBYzB876VpFdoC+WRxfsKO9TkRywJLIwUabIezR3odaetDvHUBvBaPTkNFs8iWVgiqn
-         +t8Q==
-X-Gm-Message-State: AOAM533IZMOCGv1IJnjuGkqkDYziIk0R11GCyAmXA9vEDeO5pRblRkdn
-        1LmUJChPAmuavyLzsLniWKktJg==
-X-Google-Smtp-Source: ABdhPJwQqGoHou+iDNZj+gXfz4ZxqVT1PcTU4zpn7U0Gnp6jyqD5tE8fL0oUqR7ILv8rSynTGNNDMQ==
-X-Received: by 2002:a05:6512:3e0c:b0:448:3480:1fe5 with SMTP id i12-20020a0565123e0c00b0044834801fe5mr17628788lfv.358.1647383704869;
-        Tue, 15 Mar 2022 15:35:04 -0700 (PDT)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id s5-20020ac24645000000b00448628b8462sm19133lfo.249.2022.03.15.15.35.03
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BAJ42Sw5cn2QVZO4B0ryJMqINKH0u5yKfMlL7xZRHdY=;
+        b=P5hjrhdCnZEAfCa38/WiGAGlCLpY2KcOfxFilnKFbU+akmqRN173P11phppkX1auin
+         etuXbCU5RM6o9c+BNZwsGwC1745SXWPH7THjZIoSgTRfRA8Xa3oATGipUiBEMRS1bnWE
+         SM/SwaUt7IMdOQB83EZufXQukNyqXz0rwpj3idV455v+1PUS/XrqrIstVbq+T04TmmMe
+         RA3MsxbYvxZ5+WXlTcAu6/df6wD82lb6VF5YQfiZXPm2kEhPI9sXpXz4UCwBJI+HcBiG
+         EL75Ir5Kkwyg+e9c+rjXPF+/GwUu2uvLABuRN9vr2oKuGpFHLh0Mpy7/DyFPU1KuOXal
+         nWvw==
+X-Gm-Message-State: AOAM530DaAYh32rZxRhKYOZhLgBwaai9v26x1lfqeN+Acuyg4Ppxpavj
+        Whthcl1qUdlNbsTOcBpmuP9zNqoUlno5HA==
+X-Google-Smtp-Source: ABdhPJy0fWCYuKdUbrMBGPM3SGYfsPMr5qWsNgcZByVXd5VHELf3+IGIrj/Ln2RMX17UACoUY+nvNA==
+X-Received: by 2002:a1c:7c06:0:b0:389:7fd0:f6ec with SMTP id x6-20020a1c7c06000000b003897fd0f6ecmr4957514wmc.44.1647383821156;
+        Tue, 15 Mar 2022 15:37:01 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id r17-20020a05600c35d100b00389f368cf1esm93834wmq.40.2022.03.15.15.37.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 15:35:04 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v4 net-next 03/15] net: bridge: mst: Support setting and
- reporting MST port states
-In-Reply-To: <20220315165455.3nakoccbm7c7d2w5@skbuf>
-References: <20220315002543.190587-1-tobias@waldekranz.com>
- <20220315002543.190587-4-tobias@waldekranz.com>
- <20220315165455.3nakoccbm7c7d2w5@skbuf>
-Date:   Tue, 15 Mar 2022 23:35:03 +0100
-Message-ID: <878rtalu94.fsf@waldekranz.com>
+        Tue, 15 Mar 2022 15:37:00 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] power: supply: bq2415x: Fix spelling mistake "vender" -> "vendor"
+Date:   Tue, 15 Mar 2022 22:37:00 +0000
+Message-Id: <20220315223700.2961660-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 18:54, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Mar 15, 2022 at 01:25:31AM +0100, Tobias Waldekranz wrote:
->> Make it possible to change the port state in a given MSTI by extending
->> the bridge port netlink interface (RTM_SETLINK on PF_BRIDGE).The
->> proposed iproute2 interface would be:
->> 
->>     bridge mst set dev <PORT> msti <MSTI> state <STATE>
->> 
->> Current states in all applicable MSTIs can also be dumped via a
->> corresponding RTM_GETLINK. The proposed iproute interface looks like
->> this:
->> 
->> $ bridge mst
->> port              msti
->> vb1               0
->> 		    state forwarding
->> 		  100
->> 		    state disabled
->> vb2               0
->> 		    state forwarding
->> 		  100
->> 		    state forwarding
->> 
->> The preexisting per-VLAN states are still valid in the MST
->> mode (although they are read-only), and can be queried as usual if one
->> is interested in knowing a particular VLAN's state without having to
->> care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
->> bound to MSTI 100):
->> 
->> $ bridge -d vlan
->> port              vlan-id
->> vb1               10
->> 		    state forwarding mcast_router 1
->> 		  20
->> 		    state disabled mcast_router 1
->> 		  30
->> 		    state disabled mcast_router 1
->> 		  40
->> 		    state forwarding mcast_router 1
->> vb2               10
->> 		    state forwarding mcast_router 1
->> 		  20
->> 		    state forwarding mcast_router 1
->> 		  30
->> 		    state forwarding mcast_router 1
->> 		  40
->> 		    state forwarding mcast_router 1
->> 
->> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
->> ---
->> +static int br_mst_process_one(struct net_bridge_port *p,
->> +			      const struct nlattr *attr,
->> +			      struct netlink_ext_ack *extack)
->> +{
->> +	struct nlattr *tb[IFLA_BRIDGE_MST_ENTRY_MAX + 1];
->> +	u16 msti;
->> +	u8 state;
->> +	int err;
->> +
->> +	err = nla_parse_nested(tb, IFLA_BRIDGE_MST_ENTRY_MAX, attr,
->> +			       br_mst_nl_policy, extack);
->> +	if (err)
->> +		return err;
->> +
->> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_MSTI]) {
->> +		NL_SET_ERR_MSG_MOD(extack, "MSTI not specified");
->> +		return -EINVAL;
->> +	}
->> +
->> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_STATE]) {
->> +		NL_SET_ERR_MSG_MOD(extack, "State not specified");
->> +		return -EINVAL;
->> +	}
->> +
->> +	msti = nla_get_u16(tb[IFLA_BRIDGE_MST_ENTRY_MSTI]);
->> +	state = nla_get_u8(tb[IFLA_BRIDGE_MST_ENTRY_STATE]);
->> +
->> +	br_mst_set_state(p, msti, state);
->
-> Is there any reason why this isn't propagating the error?
+There are several spelling mistakes in comments, function names
+and literal strings. Fix these.
 
-No, we definitely should. Thanks.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/power/supply/bq2415x_charger.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
->> +	return 0;
->> +}
+diff --git a/drivers/power/supply/bq2415x_charger.c b/drivers/power/supply/bq2415x_charger.c
+index 5724001e66b9..b35700071966 100644
+--- a/drivers/power/supply/bq2415x_charger.c
++++ b/drivers/power/supply/bq2415x_charger.c
+@@ -71,7 +71,7 @@
+ #define BQ2415X_BIT_OTG_PL		1
+ #define BQ2415X_BIT_OTG_EN		0
+ 
+-/* vender register */
++/* vendor register */
+ #define BQ2415X_MASK_VENDER		(BIT(5)|BIT(6)|BIT(7))
+ #define BQ2415X_SHIFT_VENDER		5
+ #define BQ2415X_MASK_PN			(BIT(3)|BIT(4))
+@@ -491,8 +491,8 @@ static int bq2415x_detect_revision(struct bq2415x_device *bq)
+ 	return -1;
+ }
+ 
+-/* return chip vender code */
+-static int bq2415x_get_vender_code(struct bq2415x_device *bq)
++/* return chip vendor code */
++static int bq2415x_get_vendor_code(struct bq2415x_device *bq)
+ {
+ 	int ret;
+ 
+@@ -1501,9 +1501,9 @@ static int bq2415x_power_supply_init(struct bq2415x_device *bq)
+ 		sprintf(revstr, "1.%d", ret);
+ 
+ 	bq->model = kasprintf(GFP_KERNEL,
+-				"chip %s, revision %s, vender code %.3d",
++				"chip %s, revision %s, vendor code %.3d",
+ 				bq2415x_chip_name[chip], revstr,
+-				bq2415x_get_vender_code(bq));
++				bq2415x_get_vendor_code(bq));
+ 	if (!bq->model) {
+ 		dev_err(bq->dev, "failed to allocate model name\n");
+ 		return -ENOMEM;
+-- 
+2.35.1
+
