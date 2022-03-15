@@ -2,126 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E11C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6BACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345001AbiCOFld (ORCPT
+        id S1344899AbiCOFoE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 01:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52026 "EHLO
+        Tue, 15 Mar 2022 01:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344987AbiCOFl0 (ORCPT
+        with ESMTP id S236070AbiCOFoA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 01:41:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5785D2B25A;
-        Mon, 14 Mar 2022 22:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0D5C61230;
-        Tue, 15 Mar 2022 05:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19E2AC340E8;
-        Tue, 15 Mar 2022 05:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647322814;
-        bh=wXWPVXRPXENP8NALGralEqtS/drLb+SU4td0zBti85A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SjyYaCDrBrxyzNRbxFxckn94UJrvFdqkrAYM80hBMEh14/035F6SfjhZOIczhfubO
-         U8PI9fVMEk4CJKylYZH6Frv8NlKImGJuhlyI+LSnVT8jXqNwYDkjgJPh7VAO4kubf1
-         P3G+OsBafh6RuaazbR2aOdcVAsYAsoAhlvdy6f5MvAbanXIiqZrr4xqnlsInx6HlUx
-         pR3WOwBPhShKg2I0OsAaFGRMVZG0yFEAk5YhdVU5jhOa/mXRgR7fUpySIMA5N1zBvy
-         Lno+1T4Oqu+ZUzJRhfri+MST2t/4RS+rb4quJR331WRe3RZuMuGNIuTMvr0PPvh8h2
-         OX32b4tZQh53w==
-Date:   Tue, 15 Mar 2022 06:40:05 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-Cc:     Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Mikhail Rudenko <mike.rudenko@gmail.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Ondrej Jirman <megous@megous.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Yong Deng <yong.deng@magewell.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v2 47/67] media: platform: rename sunxi/ to allwinner/
-Message-ID: <20220315064005.10ecdab2@coco.lan>
-In-Reply-To: <2816975.e9J7NaK4W3@kista>
-References: <cover.1647274406.git.mchehab@kernel.org>
-        <85266b480902079391d4206b8aa276ff131a730f.1647274407.git.mchehab@kernel.org>
-        <2816975.e9J7NaK4W3@kista>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Tue, 15 Mar 2022 01:44:00 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AF542EC8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:42:44 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nTzx9-00020F-RU; Tue, 15 Mar 2022 06:42:39 +0100
+Message-ID: <e5302bda-ba48-4308-2b3a-a686e9430055@leemhuis.info>
+Date:   Tue, 15 Mar 2022 06:42:39 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Linux 5.17-rc8
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Thierry Reding <treding@nvidia.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vidya Sagar <vidyas@nvidia.com>,
+        Edmond Chung <edmondchung@google.com>,
+        Andrew Chant <achant@google.com>,
+        Will McVicker <willmcvicker@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Michael Walle <michael@walle.cc>
+References: <CAHk-=wiHa0vsZseZES=1T0rJ4Z_bC5cwHMUJfqFL9hVpvB283g@mail.gmail.com>
+ <20220314192522.GA3031157@roeck-us.net>
+ <CAHk-=wiEhs+4P1TNh2sNnk04D1FFdNThk6XLOMxzkRL72PEXFw@mail.gmail.com>
+ <CACjc_5paC=X4znTty8LBtobqBW2nq4mbQYnw_TMgVEFb1A7mhA@mail.gmail.com>
+ <CAHk-=wh0QBksyaTEn4gk=mn6hgAhp3e8i9mRsr657Dd-kQ3MKg@mail.gmail.com>
+From:   Thorsten Leemhuis <linux@leemhuis.info>
+In-Reply-To: <CAHk-=wh0QBksyaTEn4gk=mn6hgAhp3e8i9mRsr657Dd-kQ3MKg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1647322964;af7b6a34;
+X-HE-SMSGID: 1nTzx9-00020F-RU
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, 14 Mar 2022 18:22:20 +0100
-Jernej =C5=A0krabec <jernej.skrabec@gmail.com> escreveu:
+[CCing regressions list and Michael Walle]
 
-> Dne ponedeljek, 14. marec 2022 ob 17:34:42 CET je Mauro Carvalho Chehab=20
-> napisal(a):
-> > As the end goal is to have platform drivers split by vendor,
-> > rename sunxi/ to allwinner/.
-> >=20
-> > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org> =20
->=20
-> I would rather not do that. Everything related to Allwinner is called sun=
-xi,=20
-> albeit there are a few outliers. This is similar to Amlogic/meson situati=
-on.
+FWIW, I was a bit surprised to see this, I had assumed the revert that
+causing trouble (fc328a7d1fcc) would go in the next merge window. Seems
+my regression tracking work did more harm then good here. :-/ Whatever:
 
-The rationale of having one directory per manufacturer is that, if drivers
-for newer platforms with different names from the same manufacturers are=20
-added, those will still fit under allwinner/ and amlogic/.
+On 15.03.22 02:47, Linus Torvalds wrote:
+> On Mon, Mar 14, 2022 at 5:45 PM Marcelo Roberto Jimenez
+> <marcelo.jimenez@gmail.com> wrote:
+>>
+>> At a certain point, I tried Thorsten's suggestion to add a gpio-ranges
+>> property in a way similar to another patch, but the kernel went into
+>> an EPROBE_DEFER deadlock. Thierry Reding made some comments about this
+>> in the sequence.
+> 
+> Hmm. The problem does sound like that particular driver doesn't use
+> the pin_ranges thing, so then the tests for an empty pin_ranges will
+> always be true.
+>
+> [...]
+>
+> IOW, it looks like either a gpio controller has to implement that
+> 'add_pin_ranges()' function (only tegra), or it needs to always add
+> the pin ranges at probe time.
+> 
+> Am I guessing right that the driver that you use does neither?
+> 
+> LinusW/Bartoz - this all really sounds strange to me. Maybe I'm
+> misreading the situation entirely. Should there be some sanity-test
+> that any gpio/pinctrl driver that uses gpiochip_generic_request()
+> would either have to have that add_pin_ranges() callback, or a
+> successful probe needs to always populate that 'gpiodev->pin_ranges'
+> list?
+> 
+> Or maybe I'm misreading the situation entirely. I don't know the code
+> - I'm just grepping for things and trying to make sense of how that
+> '->pin_ranges' list is supposed to work.
+> 
+> But for now, I think that patch has to be reverted.
 
-The Kconfig names for sunxi and meson didn't change, nor the driver's name.=
-=20
-Also, the directories under allwinner preserve sun<x>i name on them:
+There is a another reason to do so: Michael Walle reported that the
+revert is causing a regression for him:
+https://lore.kernel.org/stable/20220314155509.552218-1-michael@walle.cc/
 
-	drivers/media/platform/allwinner/
-	=E2=94=9C=E2=94=80=E2=94=80 sun4i-csi
-	=E2=94=9C=E2=94=80=E2=94=80 sun6i-csi
-	=E2=94=9C=E2=94=80=E2=94=80 sun8i-di
-	=E2=94=94=E2=94=80=E2=94=80 sun8i-rotate
+To quote:
 
-and so the directory under amlogic/:
+```
+> This breaks the pinctrl-microchip-sgpio driver as far as I can see.
+> 
+> I tried to debug it and this is what I have discovered so far:
+>  (1) the sgpio driver will use the gpio_stub_drv for its child nodes.
+>      Looks like a workaround, see [1].
+>  (2) these will have an empty gpio range
+>  (3) with the changes of this patch, pinctrl_gpio_request() will now
+>      be called and will fail with -EPROBE_DEFER.
+> 
+> I'm not exactly sure what to do here. Saravana Kannan once suggested
+> to use devm_of_platform_populate() to probe the child nodes [2]. But
+> I haven't found any other driver doing that.
+> 
+> Also, I'm not sure if there are any other other driver which get
+> broken by this. I.e. ones falling into the gpio_stub_drv category.
+> 
+> [1] https://lore.kernel.org/lkml/20210122193600.1415639-1-saravanak@google.com/
+> [2] https://lore.kernel.org/lkml/CAGETcx9PiX==mLxB9PO8Myyk6u2vhPVwTMsA5NkD-ywH5xhusw@mail.gmail.com/
+> 
+> -michael
+> 
+> NB. this patch doesn't contain a Fixes tag. Was this on purpose?
+```
 
-	drivers/media/platform/amlogic/
-	=E2=94=94=E2=94=80=E2=94=80 meson-ge2d
-
-Now, if Allinner decides to release a new platforms named after another sta=
-r,
-let's say, "Vega" and "Rigel", it would be just a matter of adding=20
-"vega/" and "rigel/" directories under allwinner. No need to touch
-media/platform/Kconfig and media/platform/Makefile. Everything will happen
-on much more smaller vendor-specific Kconfig/Makefile.
-
-See for instance, TI. We had initially a single driver, and everywhere it
-was called "omap", which was had gained different versions (omap2, omap3,=20
-...). Then, TI decided to use other names for newer IP (davinci, am437x),=20
-and now the current development is at cal and vpe.
-
-If we had placed a ti/ directory by the time omap were added (and the
-same for the other vendors), we would have avoided the need of this
-reorg.
-
-Thanks,
-Mauro
+Ciao, Thorsten
