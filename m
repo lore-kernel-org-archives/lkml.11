@@ -2,300 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61991C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 354E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349027AbiCOOEA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
+        id S244863AbiCOOLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 10:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349017AbiCOODz (ORCPT
+        with ESMTP id S231674AbiCOOLX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:03:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531BE5469B;
-        Tue, 15 Mar 2022 07:02:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E36E861685;
-        Tue, 15 Mar 2022 14:02:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A864C340E8;
-        Tue, 15 Mar 2022 14:02:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647352962;
-        bh=gYl4Kdz77UQE5JD3kUI4FvgjNtnkg0CruIjvyq/cUEQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIykNzyR/1l/mQrXCe7Qiz1hbCWb986Y5AWpAQYS4EpFO+wHWBDx4TGtlKnkPTKmv
-         DaVMA7zO4LCirp2Qu+Lz7ml2vVsdxlEy7uvocsRzALwfySfAfEINpec9jt9eva7Z+W
-         XZ3bJxXiVE7RibfK0UYuSYoCso6wFPI4t1PUtHIeWnMPbfqmIlpvie4H9hTrd8Gk9b
-         5c5gJKDpP0Mc66Nn1AlzfX6tExsvdtWuFi4ZYJC1Pr0G0pWt/Iu6t8rgOnqfMrbBZ4
-         XXwsI55sOSs7S9IejouR5zNjcSdJQiUJJ+QINpTYSCd9uksJZkVT4vCR4ZBTkm2Bfe
-         kyFm2dyAyCLlQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v12 bpf-next 12/12] fprobe: Add a selftest for fprobe
-Date:   Tue, 15 Mar 2022 23:02:35 +0900
-Message-Id: <164735295554.1084943.18347620679928750960.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164735281449.1084943.12438881786173547153.stgit@devnote2>
-References: <164735281449.1084943.12438881786173547153.stgit@devnote2>
-User-Agent: StGit/0.19
+        Tue, 15 Mar 2022 10:11:23 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F056454193;
+        Tue, 15 Mar 2022 07:10:10 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id j5so15015281qvs.13;
+        Tue, 15 Mar 2022 07:10:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HYr3pi4BMwg8XurxUPEZOXVcmILs5yF8kfiWA1uwWus=;
+        b=NBpL3yZTX3rX0rCVBAuLqTfzWQY3EjPLV9UlQY32nw3JjfqwKXu2qlti4/amjtA6F8
+         K+gAg/4j+JQmhirKtqCHd+EguMw3VQTAmcjRgPz7oHTJsGWRpOLCWcog3IAXYLK5tjwz
+         PMXsH8ZIqwTlcn9prXj0KWS2PkPeih5i85ohY31gQpaDN84SKpUVYhj9tPtL3jgUCMI4
+         DLk4Kxez315tGBQGvjXghs3PAuQWBvNtSEGhlroIgeJy/RYuzosBN3tJju40kA5yHsga
+         zaPgOku5S+N8Dcjtuc6kvSnki5qIN0RarapspOmRBDUHtRlNB3bQtvU2tvhy7D2na96A
+         HAyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HYr3pi4BMwg8XurxUPEZOXVcmILs5yF8kfiWA1uwWus=;
+        b=IooiOJMmGc46pl4KMKtRLgxnbY2a4YDspmze8ur3jnm8y+fHKQ1sbjJc7iMLuhi/w8
+         E+AM4rqMoKgrJE/v6Gims1MzkH1kBNeKSMZlM1ouzvArRhzw78HUuLOD4/oJiVEM5fto
+         IXTnpH4XM+TNwtOPsskd43nsTbasqTuDbkgST/ia70FfvS+IzfXtHKhRuaBwwT/Dxywz
+         P0zpPftQcJS19FQVUKFpD9cZ428p+iSnuIxQj5ypNWxDRxJIoBlss+AAnyZ3pW8ciYEB
+         NROdLDQx+glE8zpF7Xh/1pqgLLYPOMx3vkBOgvOBaWB6kjuhPhRzb3pCPWHMIcimej7+
+         2tpg==
+X-Gm-Message-State: AOAM532r9dzyTHDfNis+UHtTHJp+ZUjcAvH3ZUG5HsoOs2KZ2CIddNcx
+        eisWi3jTeslUBjABlmMFQ7pIHLCezdh/OKU4M5pDtukZ
+X-Google-Smtp-Source: ABdhPJwX9RjMlXP9UtTr655sw8v9+9Wy4M6MdUPRxYFoY+iCcim+TEUlnE4V1K7Av56MRgYc0uli2eoP+wCzmajoxl8=
+X-Received: by 2002:a0c:e781:0:b0:42c:4e4f:a6db with SMTP id
+ x1-20020a0ce781000000b0042c4e4fa6dbmr21035527qvn.107.1647353410051; Tue, 15
+ Mar 2022 07:10:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20220315132836.1062-1-arinc.unal@arinc9.com>
+In-Reply-To: <20220315132836.1062-1-arinc.unal@arinc9.com>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Tue, 15 Mar 2022 15:09:58 +0100
+Message-ID: <CAMhs-H-PSNHMB-AWZ7B_sFH_Fu9N4RtS9=ieuLH2-jq1A3hSmg@mail.gmail.com>
+Subject: Re: [PATCH] mips: dts: ralink: add MT7621 SoC
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        NeilBrown <neil@brown.name>, DENG Qingfang <dqfext@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        erkin.bozoglu@xeront.com, linux-staging@lists.linux.dev,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a KUnit based selftest for fprobe interface.
+Hi Arinc,
 
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v11:
-  - Build selftest only if KUNIT=y.
- Changes in v9:
-  - Rename fprobe_target* to fprobe_selftest_target*.
-  - Find the correct expected ip by ftrace_location_range().
-  - Since the ftrace_location_range() is not exposed to module, make
-    this test only for embedded.
-  - Add entry only test.
-  - Reset the fprobe structure before reuse it.
----
- lib/Kconfig.debug |   12 ++++
- lib/Makefile      |    2 +
- lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 188 insertions(+)
- create mode 100644 lib/test_fprobe.c
+On Tue, Mar 15, 2022 at 2:29 PM Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc=
+9.com> wrote:
+>
+> The MT7621 system-on-a-chip includes a 880 MHz MIPS1004Kc dual-core CPU,
+> a 5-port 10/100/1000 switch/PHY and one RGMII.
+>
+> Add the devicetrees for GB-PC1 and GB-PC2 devices which use MT7621 SoC.
+>
+> Signed-off-by: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> ---
+> I'm not sure which repository/branch this patch is supposed to be applied
+> to. This patch does changes on top of commit dcd520af4eac ("staging:
+> mt7621-dts: fix cpuintc and fixedregulator dtc warnings, fix xhci") which
+> is currently applied on gregkh/staging.git staging-next branch.
+>
+> Ar=C4=B1n=C3=A7
+>
+> ---
+>  MAINTAINERS                                           |  7 +++++++
+>  arch/mips/boot/dts/ralink/Makefile                    |  4 ++++
+>  .../mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts     |  0
+>  .../mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts     |  0
+>  .../mips/boot/dts/ralink}/mt7621.dtsi                 |  0
+>  arch/mips/ralink/Kconfig                              |  5 +++++
+>  drivers/staging/Kconfig                               |  2 --
+>  drivers/staging/Makefile                              |  1 -
+>  drivers/staging/mt7621-dts/Kconfig                    | 11 -----------
+>  drivers/staging/mt7621-dts/Makefile                   |  5 -----
+>  drivers/staging/mt7621-dts/TODO                       |  5 -----
+>  11 files changed, 16 insertions(+), 24 deletions(-)
+>  rename drivers/staging/mt7621-dts/gbpc1.dts =3D> arch/mips/boot/dts/rali=
+nk/mt7621-gnubee-gb-pc1.dts (100%)
+>  rename drivers/staging/mt7621-dts/gbpc2.dts =3D> arch/mips/boot/dts/rali=
+nk/mt7621-gnubee-gb-pc2.dts (100%)
+>  rename {drivers/staging/mt7621-dts =3D> arch/mips/boot/dts/ralink}/mt762=
+1.dtsi (100%)
+>  delete mode 100644 drivers/staging/mt7621-dts/Kconfig
+>  delete mode 100644 drivers/staging/mt7621-dts/Makefile
+>  delete mode 100644 drivers/staging/mt7621-dts/TODO
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 62d6758bf8c4..92eda5adca44 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16181,6 +16181,13 @@ L:     linux-mips@vger.kernel.org
+>  S:     Maintained
+>  F:     arch/mips/ralink
+>
+> +RALINK MT7621 MIPS ARCHITECTURE
+> +M:     Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+> +M:     Sergio Paracuellos <sergio.paracuellos@gmail.com>
+> +L:     linux-mips@vger.kernel.org
+> +S:     Maintained
+> +F:     arch/mips/boot/dts/ralink/mt7621*
+> +
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 72ca4684beda..b0bf0d224b2c 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2118,6 +2118,18 @@ config KPROBES_SANITY_TEST
- 
- 	  Say N if you are unsure.
- 
-+config FPROBE_SANITY_TEST
-+	bool "Self test for fprobe"
-+	depends on DEBUG_KERNEL
-+	depends on FPROBE
-+	depends on KUNIT=y
-+	help
-+	  This option will enable testing the fprobe when the system boot.
-+	  A series of tests are made to verify that the fprobe is functioning
-+	  properly.
-+
-+	  Say N if you are unsure.
-+
- config BACKTRACE_SELF_TEST
- 	tristate "Self test for the backtrace code"
- 	depends on DEBUG_KERNEL
-diff --git a/lib/Makefile b/lib/Makefile
-index 300f569c626b..154008764b16 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
- obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
- obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
- obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-+CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-+obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
- #
- # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
- # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-new file mode 100644
-index 000000000000..ed70637a2ffa
---- /dev/null
-+++ b/lib/test_fprobe.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * test_fprobe.c - simple sanity test for fprobe
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/fprobe.h>
-+#include <linux/random.h>
-+#include <kunit/test.h>
-+
-+#define div_factor 3
-+
-+static struct kunit *current_test;
-+
-+static u32 rand1, entry_val, exit_val;
-+
-+/* Use indirect calls to avoid inlining the target functions */
-+static u32 (*target)(u32 value);
-+static u32 (*target2)(u32 value);
-+static unsigned long target_ip;
-+static unsigned long target2_ip;
-+
-+static noinline u32 fprobe_selftest_target(u32 value)
-+{
-+	return (value / div_factor);
-+}
-+
-+static noinline u32 fprobe_selftest_target2(u32 value)
-+{
-+	return (value / div_factor) + 1;
-+}
-+
-+static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-+	if (ip != target_ip)
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+	entry_val = (rand1 / div_factor);
-+}
-+
-+static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	unsigned long ret = regs_return_value(regs);
-+
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	if (ip != target_ip) {
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-+	} else
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-+	KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-+	exit_val = entry_val + div_factor;
-+}
-+
-+/* Test entry only (no rethook) */
-+static void test_fprobe_entry(struct kunit *test)
-+{
-+	struct fprobe fp_entry = {
-+		.entry_handler = fp_entry_handler,
-+	};
-+
-+	current_test = test;
-+
-+	/* Before register, unregister should be failed. */
-+	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-+}
-+
-+static void test_fprobe(struct kunit *test)
-+{
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static void test_fprobe_syms(struct kunit *test)
-+{
-+	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static unsigned long get_ftrace_location(void *func)
-+{
-+	unsigned long size, addr = (unsigned long)func;
-+
-+	if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-+		return 0;
-+
-+	return ftrace_location_range(addr, addr + size - 1);
-+}
-+
-+static int fprobe_test_init(struct kunit *test)
-+{
-+	do {
-+		rand1 = prandom_u32();
-+	} while (rand1 <= div_factor);
-+
-+	target = fprobe_selftest_target;
-+	target2 = fprobe_selftest_target2;
-+	target_ip = get_ftrace_location(target);
-+	target2_ip = get_ftrace_location(target2);
-+
-+	return 0;
-+}
-+
-+static struct kunit_case fprobe_testcases[] = {
-+	KUNIT_CASE(test_fprobe_entry),
-+	KUNIT_CASE(test_fprobe),
-+	KUNIT_CASE(test_fprobe_syms),
-+	{}
-+};
-+
-+static struct kunit_suite fprobe_test_suite = {
-+	.name = "fprobe_test",
-+	.init = fprobe_test_init,
-+	.test_cases = fprobe_testcases,
-+};
-+
-+kunit_test_suites(&fprobe_test_suite);
-+
-+MODULE_LICENSE("GPL");
+Acked-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
 
+Thanks,
+    Sergio Paracuellos
