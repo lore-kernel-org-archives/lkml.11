@@ -2,135 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF70C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F49CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347926AbiCOLcH (ORCPT
+        id S1347934AbiCOLce (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 07:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59092 "EHLO
+        Tue, 15 Mar 2022 07:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235350AbiCOLcF (ORCPT
+        with ESMTP id S1347342AbiCOLcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 07:32:05 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670244DF57
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:30:53 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id b19so6135502wrh.11
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:30:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=EYYuHyt2hfMuLYpzRmaFvZ7rGRg3CV+dVi1SACxyN1g=;
-        b=J+LJeudlY3t+gwvfFTXzkdnQpLh2Vj8tw00WlB0O9qqa3aPI4alG1186vge0CJ1IOV
-         tpITaGr5NwuM2R+iv9cPpweCc82A23MBdrOVmLYETVIl0SV17Zr4mMdY5bpAMzDa9f8O
-         tAJyITYew27Svl8gPkJpzVpPuzyJMw5yxjWYl86u8b4reveTiktUBjkpXPhDP6NWf90T
-         GHMBosdezWzCAav4lH3BWQB/bR5PYByglm4MZjDqSk/2dYbYy1PizAtYRyuc1HWV7OFe
-         xWXMuaxCQUaQthNaKz59LSa7/1XXgTNRhvn88YxhxerCHMDcw708MaXnfYH0aU/ZmmeR
-         q2GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=EYYuHyt2hfMuLYpzRmaFvZ7rGRg3CV+dVi1SACxyN1g=;
-        b=DvkeCnPv7miXywgoDX0cUbqXpASFFYCZmD1d3im1BFUOhGoDdrshZovcDOvMIjAUhm
-         nnUFvlafZ/SWP232EZhzNjGJS6j2ogBXe0kycglSROdWmwludy5uduxFMfL+SmXxzsTc
-         5hWAsM+YNSOhgVaNpo2//w7a7D4RosZp8MT4EPLKUpZbeKIuU519LmNdR31LWvogbEkx
-         Lre/iY0UQ+ySwwWUXI7Gkk9V/LOn4u1e3a7lT9CLYlfWAR9Jd1uBUHjdF6nms1ANnLrx
-         4t/2PlAiGas8O/uBqKUJOg9Fw3wxsTSUCNwuRYWwWobPg0B69LP853ZLrRE/Pk2zazWB
-         k2mQ==
-X-Gm-Message-State: AOAM5337PFrARrO05mqkWiJxrAr2hqhL9e31v9VsMBURQvLMSf2fuhJ/
-        jYRSIVDFQ3LOqMtqtv73IcCzOg==
-X-Google-Smtp-Source: ABdhPJz9/IHvVKOJyJQXyPB3LrlixMC2NTiqc9RfTL3qZ+GtdUt7xPPjp89EHJ0DeLXO6RZC/i52xw==
-X-Received: by 2002:a5d:6c62:0:b0:203:9579:c3b0 with SMTP id r2-20020a5d6c62000000b002039579c3b0mr14973421wrz.139.1647343851982;
-        Tue, 15 Mar 2022 04:30:51 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id o41-20020a05600c512900b00389d8c3e2b9sm2143181wms.15.2022.03.15.04.30.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 04:30:51 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 11:30:49 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Benson Leung <bleung@chromium.org>,
-        linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Guenter Roeck <groeck@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Craig Hesling <hesling@chromium.org>,
-        Tom Hughes <tomhughes@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>
-Subject: Re: [PATCH 1/2] dt-bindings: mfd: Add ChromeOS fingerprint binding
-Message-ID: <YjB46Sq3IwvgR8MB@google.com>
-References: <20220314232214.4183078-1-swboyd@chromium.org>
- <20220314232214.4183078-2-swboyd@chromium.org>
- <e7f9466e-03c9-7754-0dc6-a04823d1047a@canonical.com>
- <YjB0JOKysPpg2KGF@google.com>
- <9ec3c26a-3b85-4bea-5a5b-de9ac570cfca@canonical.com>
+        Tue, 15 Mar 2022 07:32:31 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383954DF57
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:31:15 -0700 (PDT)
+X-UUID: 5540667e3a5a4bf3a40b41640f294bf4-20220315
+X-UUID: 5540667e3a5a4bf3a40b41640f294bf4-20220315
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <cheng-jui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 741151367; Tue, 15 Mar 2022 19:26:00 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Tue, 15 Mar 2022 19:25:53 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 15 Mar 2022 19:25:52 +0800
+From:   Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+CC:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Bart Van Assche" <bvanassche@acm.org>,
+        <wsd_upstream@mediatek.com>,
+        Eason-YH Lin <eason-yh.lin@mediatek.com>,
+        Kobe-CP Wu <kobe-cp.wu@mediatek.com>,
+        "Jeff-cc Hsu" <jeff-cc.hsu@mediatek.com>,
+        Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+Subject: [PATCH] lockdep: Zap lock classes with debug_locks == false again
+Date:   Tue, 15 Mar 2022 19:25:21 +0800
+Message-ID: <20220315112521.29093-1-cheng-jui.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9ec3c26a-3b85-4bea-5a5b-de9ac570cfca@canonical.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022, Krzysztof Kozlowski wrote:
+If a lock_class_key has been registered but lockdep_unregister_key() is
+called with debug_locks == false. The lockdep_unregister_key() will not
+unregister the key and just return without error.
+Users may assume lockdep_unregister_key() always succeed and free the
+lock_class_key even if it is still remained in lockdep structures.
 
-> On 15/03/2022 12:10, Lee Jones wrote:
-> > On Tue, 15 Mar 2022, Krzysztof Kozlowski wrote:
-> > 
-> >> On 15/03/2022 00:22, Stephen Boyd wrote:
-> >>> Add a binding to describe the fingerprint processor found on Chromeboks
-> >>> with a fingerprint sensor.
-> >>>
-> >>> Cc: Rob Herring <robh+dt@kernel.org>
-> >>> Cc: <devicetree@vger.kernel.org>
-> >>> Cc: Guenter Roeck <groeck@chromium.org>
-> >>> Cc: Douglas Anderson <dianders@chromium.org>
-> >>> Cc: Craig Hesling <hesling@chromium.org>
-> >>> Cc: Tom Hughes <tomhughes@chromium.org>
-> >>> Cc: Alexandru M Stan <amstan@chromium.org>
-> >>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> >>> ---
-> >>>  .../bindings/mfd/google,cros-ec-fp.yaml       | 89 +++++++++++++++++++
-> >>>  1 file changed, 89 insertions(+)
-> >>>  create mode 100644 Documentation/devicetree/bindings/mfd/google,cros-ec-fp.yaml
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/mfd/google,cros-ec-fp.yaml b/Documentation/devicetree/bindings/mfd/google,cros-ec-fp.yaml
-> >>> new file mode 100644
-> >>> index 000000000000..05d2b2b9b713
-> >>> --- /dev/null
-> >>> +++ b/Documentation/devicetree/bindings/mfd/google,cros-ec-fp.yaml
-> >>> @@ -0,0 +1,89 @@
-> >>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> >>> +%YAML 1.2
-> >>> +---
-> >>> +$id: http://devicetree.org/schemas/mfd/google,cros-ec-fp.yaml#
-> >>
-> >> Why is this in the MFD directory? Is it really a Multi Function Device?
-> >> Description is rather opposite. You also did not CC MFD maintainer.
-> > 
-> > A lot of the ChromeOS Embedded Controller support used to be located
-> > in MFD.  There are still remnants, but most was moved to
-> > drivers/platform IIRC.
-> > 
-> > Please see: drivers/mfd/cros_ec_dev.c
-> 
-> Yes, I know, that part is a MFD. But why the fingerprint controller part
-> is MFD? To me it is closer to input device.
+Which lead to following crash when 'cat /proc/lockdep' after
+debug_locks == false:
 
-It's tough to say from what I was sent above.
+==================================================================
+BUG: KASAN: invalid-access in string+0x50/0x10c
+Read at addr f2ffff81ac61c880 by ...
+Pointer tag: [f2], memory tag: [fb]
+...
+Call trace:
+ dump_backtrace.cfi_jt+0x0/0x8
+ show_stack+0x1c/0x2c
+ dump_stack_lvl+0xd8/0x16c
+ print_address_description+0x90/0x2e8
+ __kasan_report+0x144/0x224
+ kasan_report+0x50/0xa0
+ __do_kernel_fault+0xf4/0x2a8
+ do_bad_area+0x34/0xf8
+ do_tag_check_fault+0x24/0x38
+ do_mem_abort+0x68/0x168
+ el1_abort+0x4c/0x74
+ el1_sync_handler+0x4c/0x8c
+ el1_sync+0x8c/0x140
+ string+0x50/0x10c
+ vsnprintf+0x468/0x69c
+ seq_printf+0x8c/0xd8
+ print_name+0x64/0xf4
+ l_show+0x1a8/0x278
+ seq_read_iter+0x3cc/0x5fc
+ proc_reg_read_iter+0xdc/0x1d4
+ vfs_read+0x2e0/0x354
+ ksys_read+0x7c/0xec
+ __arm64_sys_read+0x20/0x30
+ el0_svc_common.llvm.8008154191216078041+0xd8/0x20c
+ do_el0_svc+0x28/0xa0
+ el0_svc+0x24/0x38
+ el0_sync_handler+0x88/0xec
+ el0_sync+0x1b4/0x1c0
 
-But yes, sounds like it.
+...
+==================================================================
 
-We do not want any device 'functionality' in MFD ideally.
+Allow lockdep_unregister_key to zap lock classes with
+debug_locks == false again.
+Remove the WARN_ON_ONCE(!found) and only zap lock classes when the key
+can be found.
 
+Fixes: 8b39adbee805 ("locking/lockdep: Make lockdep_unregister_key() honor 'debug_locks' again")
+Signed-off-by: Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+---
+ kernel/locking/lockdep.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index f8a0212189ca..90dadecb2577 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -6305,8 +6305,7 @@ void lockdep_unregister_key(struct lock_class_key *key)
+ 		return;
+ 
+ 	raw_local_irq_save(flags);
+-	if (!graph_lock())
+-		goto out_irq;
++	lockdep_lock();
+ 
+ 	pf = get_pending_free();
+ 	hlist_for_each_entry_rcu(k, hash_head, hash_entry) {
+@@ -6316,11 +6315,11 @@ void lockdep_unregister_key(struct lock_class_key *key)
+ 			break;
+ 		}
+ 	}
+-	WARN_ON_ONCE(!found);
+-	__lockdep_free_key_range(pf, key, 1);
+-	call_rcu_zapped(pf);
+-	graph_unlock();
+-out_irq:
++	if (found) {
++		__lockdep_free_key_range(pf, key, 1);
++		call_rcu_zapped(pf);
++	}
++	lockdep_unlock();
+ 	raw_local_irq_restore(flags);
+ 
+ 	/* Wait until is_dynamic_key() has finished accessing k->hash_entry. */
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.18.0
+
