@@ -2,84 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B93C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346955AbiCOKJA (ORCPT
+        id S1346956AbiCOKJt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
+        Tue, 15 Mar 2022 06:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237073AbiCOKIz (ORCPT
+        with ESMTP id S238877AbiCOKJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:08:55 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F01C4F9C5;
-        Tue, 15 Mar 2022 03:07:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=i6Es+miNOhVFoYvPslhvsNAp95qNKVCECTxVycj5tYw=; b=EHqFIFhbEzudn+v67MJF2tGlky
-        7Dhjow/ap/VQwtms4x+CVa6hOBbqIE+25PnM227wriMRmMdTNUi3568Q0fzkOt4vceMGj/9FdbJnK
-        NktO1E0SxlGZoOoMoIQvWJAcxfdOxVF8IylGBqQ6vGDNKDooMnYRcJ5MkpgpL/o6zDMLG8y7ngVBH
-        VMr5tOPcxmziICVkdI4TIY3CWglMK/TfhVQYQhIMtfKE6MbgruKjL6NuXpzxNa0UumMPk6Tjn/jMa
-        +t6S5ul8kGr22VM10PXandtYLdK7iDRK8LzNTNsDwG62cUCQ54bFwcgrpvoqbEtpQG/B3E6Jb64hr
-        l0KyoqhA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nU456-001BNV-Lo; Tue, 15 Mar 2022 10:07:08 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8068D98620D; Tue, 15 Mar 2022 11:07:06 +0100 (CET)
-Date:   Tue, 15 Mar 2022 11:07:06 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        X86 ML <x86@kernel.org>, joao@overdrivepizza.com,
-        hjl.tools@gmail.com, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mark Rutland <mark.rutland@arm.com>, alyssa.milburn@intel.com,
-        Miroslav Benes <mbenes@suse.cz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-Message-ID: <20220315100706.GA14330@worktop.programming.kicks-ass.net>
-References: <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
- <YinGZObp37b27LjK@hirez.programming.kicks-ass.net>
- <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
- <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net>
- <YisnG9lW6kp8lBp3@hirez.programming.kicks-ass.net>
- <CAADnVQJfffD9tH_cWThktCCwXeoRV1XLZq69rKK5vKy_y6BN8A@mail.gmail.com>
- <20220312154407.GF28057@worktop.programming.kicks-ass.net>
- <CAADnVQL7xrafAviUJg47LfvFSJpgZLwyP18Bm3S_KQwRyOpheQ@mail.gmail.com>
- <20220314204402.rpd5hqzzev4ugtdt@apollo>
- <20220315090043.GB8939@worktop.programming.kicks-ass.net>
+        Tue, 15 Mar 2022 06:09:44 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AB6212604
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:08:32 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 21DC71474;
+        Tue, 15 Mar 2022 03:08:32 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0A1DA3F66F;
+        Tue, 15 Mar 2022 03:08:30 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:08:28 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Ionela Voinescu <ionela.voinescu@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 0/3] arch_topology: Correct CPU capacity scaling
+Message-ID: <YjBlnMvcagdbKnEz@bogus>
+References: <20220313055512.248571-1-leo.yan@linaro.org>
+ <Yi+FMrG9NyBnMX0i@arm.com>
+ <20220315032919.GA217475@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220315090043.GB8939@worktop.programming.kicks-ass.net>
+In-Reply-To: <20220315032919.GA217475@leoy-ThinkPad-X240s>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 10:00:43AM +0100, Peter Zijlstra wrote:
-> I don't seem able to run this mod_race test, it keeps saying:
+On Tue, Mar 15, 2022 at 11:29:19AM +0800, Leo Yan wrote:
+> Hi Ionela,
 > 
->   tgl-build# ./test_progs -v -t mod_race
->   bpf_testmod.ko is already unloaded.
->   Loading bpf_testmod.ko...
->   Successfully loaded bpf_testmod.ko.
->   Summary: 0/0 PASSED, 0 SKIPPED, 0 FAILED
->   Successfully unloaded bpf_testmod.ko.
+> On Mon, Mar 14, 2022 at 06:10:58PM +0000, Ionela Voinescu wrote:
 > 
-> Which I'm taking to mean I'm doing it wrong... 
+> [...]
+> 
+> > > Patch 03 is to handle the case for absenting "capacity-dmips-mhz"
+> > > property in CPU nodes, the patch proceeds to do CPU capacity scaling based
+> > > on CPU maximum capacity.  Thus it can reflect the correct CPU capacity for
+> > > Arm platforms with "fast" and "slow" clusters (CPUs in two clusters have
+> > > the same raw capacity but with different maximum frequencies).
+> > > 
+> > 
+> > In my opinion it's difficult to handle absent "capacity-dmips-mhz"
+> > properties, as they can be a result of 3 scenarios: potential..
+> >  1. bug in DT
+> >  2. unwillingness to fill this information in DT
+> >  3. suggestion that we're dealing with CPUs with same u-arch
+> >     (same capacity-dmips-mhz)
+> 
+> For absent "capacity-dmips-mhz" properties, I think we could divide into
+> two sub classes:
+> 
+> For all CPU nodes are absent "capacity-dmips-mhz" properties, it's
+> likely all CPUs have the same micro architecture, thus developers are
+> not necessarily to explictly set the property.
+>
 
-That.. I was building the wrong tree, mod_race comes from bpf-next and I
-was building a tree without that merged in... let me to see what it does
-now.
+I completely disagree and NACK to deal with absence of the property in DT.
+The binding clearly states:
+
+"CPU capacity is a number that provides the scheduler information about CPUs
+heterogeneity. Such heterogeneity can come from micro-architectural differences
+(e.g., ARM big.LITTLE systems) or maximum frequency at which CPUs can run
+(e.g., SMP systems with multiple frequency domains). Heterogeneity in this
+context is about differing performance characteristics; this binding tries to
+capture a first-order approximation of the relative performance of CPUs."
+
+So it is clear that using same uarch can't be an excuse to miss this property.
+So if you need the scheduler to be aware of this heterogeneity, better update
+the DT with property. Absence will always means scheduler need not be aware
+of this heterogeneity.
+
+> For partial CPUs absent "capacity-dmips-mhz" properties, this is an
+> usage issue in DT and kernel should handle this as an error and report
+> it.
+>
+
+That makes sense. As I mentioned in my earlier email, we can always flag
+up error in the kernel, but it would be good to catch these much earlier
+in DT via schema if possible.
+
+> > I'm not sure it's up to us to interpret suggestions in the code so I
+> > believe treating missing information as error is the right choice, which
+> > is how we're handling this now.
+> 
+> Yes, current kernel means to treat missing info as error, whatever if
+> all CPUs or partial CPUs are absent "capacity-dmips-mhz" properties.
+>
+
+OK, so no change needed ? I am confused as what is missing today.
+
+> > For 3. (and patch 03), isn't it easier to populate capacity-dmips-mhz to
+> > the same value (say 1024) in DT? That is a clear message that we're
+> > dealing with CPUs with the same u-arch.
+>
+> "capacity-dmips-mhz" is defined as a _optional_ property in the DT
+> document (see devicetree/bindings/arm/cpu-capacity.txt).
+>
+
+That means that the kernel can operate without the info and nothing more
+than that. We are not providing guarantee that the same performance is
+possible with or without this optional property.
+
+> Current kernel rolls back every CPU raw capacity to 1024 if DT doesn't
+> bind "capacity-dmips-mhz" properties, given many SoCs with same CPU
+> u-arch this is right thing to do; here I think kernel should proceed to
+> scale CPU capacity with its maximum frequency.
+>
+
+As stated above, I completely disagree and once again NACK.
+
+> When I worked on a platform with a fast and a slow clusters (two clusters
+> have different max frequencies and with the same CPU u-arch), it's a bit
+> puzzle when I saw all CPU's capacities are always 1024.  In this case,
+> since a platform have no CPU capacity modeling, and "capacity-dmips-mhz"
+> property is not needed to populate in DT, but at the end the kernel
+> should can reflect the scaled CPU capacity correctly.
+>
+
+Fix the broken DT with respect to this feature. I mean DT is not broken, but
+if once needs this feature then they should teach the kernel the hardware
+difference with this property.
+
+Another possible issue I can see if this is dealt within the kernel is if
+on some platform for thermal or any valid hardware errata reasons, one set
+of CPUs can run at max one frequency while the other is restricted at a
+suitable lower frequency, it may not be good idea to mark that as difference
+in cpu capacity as they are SMP CPUs just in different perf domains with
+different limits. I assume the scale invariance must deal with that.
+I may be wrong here but that's my understanding, happy to be corrected.
+
+--
+Regards,
+Sudeep
