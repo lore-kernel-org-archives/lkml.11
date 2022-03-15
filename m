@@ -2,241 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D72DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346620AbiCOJnC (ORCPT
+        id S1346758AbiCOJnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
+        Tue, 15 Mar 2022 05:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346587AbiCOJmx (ORCPT
+        with ESMTP id S1346742AbiCOJnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:42:53 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E3734EF49
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:41:41 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2e57826a10bso36212017b3.7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:41:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XSQQR6oOJbSZhoFKqF6hj+IKioXVuBCA6nvzAYTEE4Y=;
-        b=BMznJ8MEXB6qf+XEFAjAstoXhAH9PMsaaoGM6dThhWcw0HSqJI4ozUjZWv7qZmym8V
-         lHsGAR9O6EqCtu6U9BCw0jmtxptvPiA9bvRxAA++1NSwbs1032FXd2EHOPE/p3kvCvxA
-         YjUopuGGsRpmLjrCivcjwJOxO6J/3CpZNJ3J3oMAfvWl/VNtAaXChzFQu3qcO3y+3UPF
-         8DLyvyF57fZaypAsyF1W8Q0t2eSmQMI11t3w7AlFhcpGoS5LdR1kbtsPDMX/O71Gf8Ym
-         7HRuOi4MYr/rOlXz9rSE5jiRYjdimzOC6O3B4fT73S5id148Hav7zD8bx3MhtopOg9tc
-         CeSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XSQQR6oOJbSZhoFKqF6hj+IKioXVuBCA6nvzAYTEE4Y=;
-        b=GxGVKSDRDQPbGfdDJPxk+/FBkscC1fYvvhCYm6DHa4Jsot1BZLC4zlLzpOV0UiZvjS
-         NOkUgJ8+p3F3ZJodSQd534ppC3RzHQgsz4LBvcbeNIFTH5oS1ZOhXYCjULgjIREDWQca
-         pObRwrr/271KsJSiq67tzTAUcMQmcYvpaVaokNwepTT1EyGtU49GMAuzjFb+fVmULzwi
-         umJZypmjIgW7+Dtast2fvYPHqkhmZDtijcu0U0jl9RtM8PFRCy1qUR425tvKo9zvytJC
-         Ahjxhx8elrPBJOvT+HzxlVwsKJZmnHWIRVpwUQJ5N6hdaX8LE7njaqMVu9IT/OtLpQXM
-         HPZw==
-X-Gm-Message-State: AOAM533TasgyD3ZHClU/yI2Kk3ITZgor2RPaG7+g16Y2wwSL7swN6Wu1
-        EvFLCQezi55gVdtKWdROpvM5XHY9UYOIlTzMJN5k+g==
-X-Google-Smtp-Source: ABdhPJz7rmPM5hJ1bFKP+cVfII3U9NMG3L6xYJ48W5DadaOZb4VIr9SVFGyUNdVspLwNV0IF4E3fMiJSv1x1LtwXMTQ=
-X-Received: by 2002:a81:e90c:0:b0:2db:d63e:56ff with SMTP id
- d12-20020a81e90c000000b002dbd63e56ffmr24013644ywm.60.1647337300477; Tue, 15
- Mar 2022 02:41:40 -0700 (PDT)
+        Tue, 15 Mar 2022 05:43:43 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767744EF62
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:42:31 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KHpNP6vFQz9sSm;
+        Tue, 15 Mar 2022 10:42:29 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id dF2zyDWcfBkw; Tue, 15 Mar 2022 10:42:29 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KHpNP5ySrz9sSj;
+        Tue, 15 Mar 2022 10:42:29 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id B8C778B770;
+        Tue, 15 Mar 2022 10:42:29 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id LEBbleLzX4BU; Tue, 15 Mar 2022 10:42:29 +0100 (CET)
+Received: from [192.168.202.50] (unknown [192.168.202.50])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 0465E8B763;
+        Tue, 15 Mar 2022 10:42:28 +0100 (CET)
+Message-ID: <2f2cafaa-e1f3-7f75-10a5-b8edb6de26d7@csgroup.eu>
+Date:   Tue, 15 Mar 2022 10:42:28 +0100
 MIME-Version: 1.0
-References: <20220314112734.415677317@linuxfoundation.org>
-In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 15 Mar 2022 15:11:29 +0530
-Message-ID: <CA+G9fYs6xdfUV36zptfuP3OvWt9f7Kaqn5s97kD-h5-RSyd+mg@mail.gmail.com>
-Subject: Re: [PATCH 5.4 00/43] 5.4.185-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH -next] powerpc/eeh: Add correct inline functions
+Content-Language: fr-FR
+To:     YueHaibing <yuehaibing@huawei.com>, ruscur@russell.cc,
+        oohall@gmail.com, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, sbobroff@linux.ibm.com
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20210331125313.24036-1-yuehaibing@huawei.com>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+In-Reply-To: <20210331125313.24036-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Mar 2022 at 17:28, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.4.185 release.
-> There are 43 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.4.185-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.4.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Le 31/03/2021 à 14:53, YueHaibing a écrit :
+> pseries_eeh_add_device_early()/pseries_eeh_add_device_tree_early() is
+> never used since adding, however pseries_eeh_init_edev() and
+> pseries_eeh_init_edev_recursive() need their inline versions.
+> 
+> Fixes: b6eebb093cad ("powerpc/eeh: Make early EEH init pseries specific")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Those inline are not needed at all:
+- pseries_eeh_init_edev_recursive() is only called from files build wich 
+CONFIG_HOTPLUG_PCI_RPA which depends on CONFIG_PSERIES and CONFIG_EEH
+- pseries_eeh_init_edev() is used exclusively in
+arch/powerpc/platforms/pseries/eeh_pseries.c and should be made static.
 
-## Build
-* kernel: 5.4.185-rc1
-* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
-rc.git
-* git branch: linux-5.4.y
-* git commit: cb0af18075f051a9c4e242e027f1c6d08ac573a8
-* git describe: v5.4.184-44-gcb0af18075f0
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.1=
-84-44-gcb0af18075f0
+Can you update your patch ?
 
-## Test Regressions (compared to v5.4.184)
-No test regressions found.
+Thanks
+Christophe
 
-## Metric Regressions (compared to v5.4.184)
-No metric regressions found.
-
-## Test Fixes (compared to v5.4.184)
-No test fixes found.
-
-## Metric Fixes (compared to v5.4.184)
-No metric fixes found.
-
-## Test result summary
-total: 85257, pass: 71966, fail: 508, skip: 11477, xfail: 1306
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 290 total, 290 passed, 0 failed
-* arm64: 25 total, 24 passed, 1 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 20 total, 20 passed, 0 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 37 total, 36 passed, 1 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 60 total, 49 passed, 11 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 12 total, 12 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 40 total, 40 passed, 0 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-bpf
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* perf/Zstd-perf.data-compression
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
+> ---
+>   arch/powerpc/include/asm/eeh.h | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/powerpc/include/asm/eeh.h b/arch/powerpc/include/asm/eeh.h
+> index b1a5bba2e0b9..0b6c2a6711d3 100644
+> --- a/arch/powerpc/include/asm/eeh.h
+> +++ b/arch/powerpc/include/asm/eeh.h
+> @@ -357,8 +357,8 @@ static inline int eeh_phb_pe_create(struct pci_controller *phb) { return 0; }
+>   void pseries_eeh_init_edev(struct pci_dn *pdn);
+>   void pseries_eeh_init_edev_recursive(struct pci_dn *pdn);
+>   #else
+> -static inline void pseries_eeh_add_device_early(struct pci_dn *pdn) { }
+> -static inline void pseries_eeh_add_device_tree_early(struct pci_dn *pdn) { }
+> +static inline void pseries_eeh_init_edev(struct pci_dn *pdn) { }
+> +static inline void pseries_eeh_init_edev_recursive(struct pci_dn *pdn) { }
+>   #endif
+>   
+>   #ifdef CONFIG_PPC64
