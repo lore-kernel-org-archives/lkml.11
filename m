@@ -2,268 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 499F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5CFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347590AbiCOK4T (ORCPT
+        id S1347654AbiCOK5L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
+        Tue, 15 Mar 2022 06:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347652AbiCOK4P (ORCPT
+        with ESMTP id S242648AbiCOK5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:56:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F007535269
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:54:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647341698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EfSxENXABUzWEi6595f9m2xdiaElSuc4XbEmP3Q1PZ0=;
-        b=NDM7ubL/f/ruGZ5dB74o0aLsYavFcpI+1vh/ks/zr83miGu/dEuhq6+V1oylX5FuehUUBn
-        j6A+hzYOsVn6JPgbRoEsiEV0JCzCM+XUQLNuL/tZJQxDzvLdFXszT43oJ757OJ/4Ehqwd2
-        YUEn2GwtAkYzOIOEBnSnuLjgndoW7tU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-549-Vu4qQFWBMJa4ILpT_hfcrw-1; Tue, 15 Mar 2022 06:54:54 -0400
-X-MC-Unique: Vu4qQFWBMJa4ILpT_hfcrw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8BEA92999B49;
-        Tue, 15 Mar 2022 10:54:51 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B5B1C9E94;
-        Tue, 15 Mar 2022 10:54:16 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v2 15/15] mm/gup: sanity-check with CONFIG_DEBUG_VM that anonymous pages are exclusive when (un)pinning
-Date:   Tue, 15 Mar 2022 11:47:41 +0100
-Message-Id: <20220315104741.63071-16-david@redhat.com>
-In-Reply-To: <20220315104741.63071-1-david@redhat.com>
-References: <20220315104741.63071-1-david@redhat.com>
+        Tue, 15 Mar 2022 06:57:09 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4C96550
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:55:56 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R411e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V7HTLPm_1647341751;
+Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V7HTLPm_1647341751)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 15 Mar 2022 18:55:53 +0800
+Date:   Tue, 15 Mar 2022 18:55:50 +0800
+From:   Gao Xiang <hsiangkao@linux.alibaba.com>
+To:     Huang Jianan <jnhuang95@gmail.com>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>, Gao Xiang <xiang@kernel.org>,
+        Chao Yu <chao@kernel.org>,
+        syzkaller <syzkaller@googlegroups.com>,
+        linux-erofs@lists.ozlabs.org,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fs: erofs: remember if kobject_init_and_add was done
+Message-ID: <YjBwtqsEOZ5JbqvS@B-P7TQMD6M-0146.local>
+References: <20220315075152.63789-1-dzm91@hust.edu.cn>
+ <bca8f865-bc3e-44d7-7298-c2c7e8973580@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+In-Reply-To: <bca8f865-bc3e-44d7-7298-c2c7e8973580@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's verify when (un)pinning anonymous pages that we always deal with
-exclusive anonymous pages, which guarantees that we'll have a reliable
-PIN, meaning that we cannot end up with the GUP pin being inconsistent
-with he pages mapped into the page tables due to a COW triggered
-by a write fault.
+On Tue, Mar 15, 2022 at 06:43:01PM +0800, Huang Jianan wrote:
+> 在 2022/3/15 15:51, Dongliang Mu 写道:
+> > From: Dongliang Mu <mudongliangabcd@gmail.com>
+> > 
+> > Syzkaller hit 'WARNING: kobject bug in erofs_unregister_sysfs'. This bug
+> > is triggered by injecting fault in kobject_init_and_add of
+> > erofs_unregister_sysfs.
+> > 
+> > Fix this by remembering if kobject_init_and_add is successful.
+> > 
+> > Note that I've tested the patch and the crash does not occur any more.
+> > 
+> > Reported-by: syzkaller <syzkaller@googlegroups.com>
+> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > ---
+> >   fs/erofs/internal.h | 1 +
+> >   fs/erofs/sysfs.c    | 9 ++++++---
+> >   2 files changed, 7 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+> > index 5aa2cf2c2f80..9e20665e3f68 100644
+> > --- a/fs/erofs/internal.h
+> > +++ b/fs/erofs/internal.h
+> > @@ -144,6 +144,7 @@ struct erofs_sb_info {
+> >   	u32 feature_incompat;
+> >   	/* sysfs support */
+> > +	bool s_sysfs_inited;
+> 
+> Hi Dongliang,
+> 
+> How about using sbi->s_kobj.state_in_sysfs to avoid adding a extra member in
+> sbi ?
 
-When pinning pages, after conditionally triggering GUP unsharing of
-possibly shared anonymous pages, we should always only see exclusive
-anonymous pages. Note that anonymous pages that are mapped writable
-must be marked exclusive, otherwise we'd have a BUG.
+Ok, I have no tendency of these (I'm fine with either ways).
+I've seen some usage like:
 
-When pinning during ordinary GUP, simply add a check after our
-conditional GUP-triggered unsharing checks. As we know exactly how the
-page is mapped, we know exactly in which page we have to check for
-PageAnonExclusive().
+static inline int device_is_registered(struct device *dev)
+{
+        return dev->kobj.state_in_sysfs;
+}
 
-When pinning via GUP-fast we have to be careful, because we can race with
-fork(): verify only after we made sure via the seqcount that we didn't
-race with concurrent fork() that we didn't end up pinning a possibly
-shared anonymous page.
+But I'm still not sure if we need to rely on such internal
+interface.. More thoughts?
 
-Similarly, when unpinning, verify that the pages are still marked as
-exclusive: otherwise something turned the pages possibly shared, which
-can result in random memory corruptions, which we really want to catch.
+Thanks,
+Gao Xiang
 
-With only the pinned pages at hand and not the actual page table entries
-we have to be a bit careful: hugetlb pages are always mapped via a
-single logical page table entry referencing the head page and
-PG_anon_exclusive of the head page applies. Anon THP are a bit more
-complicated, because we might have obtained the page reference either via
-a PMD or a PTE -- depending on the mapping type we either have to check
-PageAnonExclusive of the head page (PMD-mapped THP) or the tail page
-(PTE-mapped THP) applies: as we don't know and to make our life easier,
-check that either is set.
-
-Take care to not verify in case we're unpinning during GUP-fast because
-we detected concurrent fork(): we might stumble over an anonymous page
-that is now shared.
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/gup.c         | 58 +++++++++++++++++++++++++++++++++++++++++++++++-
- mm/huge_memory.c |  3 +++
- mm/hugetlb.c     |  3 +++
- 3 files changed, 63 insertions(+), 1 deletion(-)
-
-diff --git a/mm/gup.c b/mm/gup.c
-index 92dcd92f9d67..72e39b77da10 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -45,6 +45,38 @@ static void hpage_pincount_sub(struct page *page, int refs)
- 	atomic_sub(refs, compound_pincount_ptr(page));
- }
- 
-+static inline void sanity_check_pinned_pages(struct page **pages,
-+					     unsigned long npages)
-+{
-+#ifdef CONFIG_DEBUG_VM
-+	/*
-+	 * We only pin anonymous pages if they are exclusive. Once pinned, we
-+	 * can no longer turn them possibly shared and PageAnonExclusive() will
-+	 * stick around until the page is freed.
-+	 *
-+	 * We'd like to verify that our pinned anonymous pages are still mapped
-+	 * exclusively. The issue with anon THP is that we don't know how
-+	 * they are/were mapped when pinning them. However, for anon
-+	 * THP we can assume that either the given page (PTE-mapped THP) or
-+	 * the head page (PMD-mapped THP) should be PageAnonExclusive(). If
-+	 * neither is the case, there is certainly something wrong.
-+	 */
-+	for (; npages; npages--, pages++) {
-+		struct page *page = *pages;
-+		struct page *head = compound_head(page);
-+
-+		if (!PageAnon(head))
-+			continue;
-+		if (!PageCompound(head) || PageHuge(head))
-+			VM_BUG_ON_PAGE(!PageAnonExclusive(head), page);
-+		else
-+			/* Either a PTE-mapped or a PMD-mapped THP. */
-+			VM_BUG_ON_PAGE(!PageAnonExclusive(head) &&
-+				       !PageAnonExclusive(page), page);
-+	}
-+#endif /* CONFIG_DEBUG_VM */
-+}
-+
- /* Equivalent to calling put_page() @refs times. */
- static void put_page_refs(struct page *page, int refs)
- {
-@@ -250,6 +282,7 @@ bool __must_check try_grab_page(struct page *page, unsigned int flags)
-  */
- void unpin_user_page(struct page *page)
- {
-+	sanity_check_pinned_pages(&page, 1);
- 	put_compound_head(compound_head(page), 1, FOLL_PIN);
- }
- EXPORT_SYMBOL(unpin_user_page);
-@@ -340,6 +373,7 @@ void unpin_user_pages_dirty_lock(struct page **pages, unsigned long npages,
- 		return;
- 	}
- 
-+	sanity_check_pinned_pages(pages, npages);
- 	for_each_compound_head(index, pages, npages, head, ntails) {
- 		/*
- 		 * Checking PageDirty at this point may race with
-@@ -404,6 +438,21 @@ void unpin_user_page_range_dirty_lock(struct page *page, unsigned long npages,
- }
- EXPORT_SYMBOL(unpin_user_page_range_dirty_lock);
- 
-+static void unpin_user_pages_lockless(struct page **pages, unsigned long npages)
-+{
-+	unsigned long index;
-+	struct page *head;
-+	unsigned int ntails;
-+
-+	/*
-+	 * Don't perform any sanity checks because we might have raced with
-+	 * fork() and some anonymous pages might now actually be shared --
-+	 * which is why we're unpinning after all.
-+	 */
-+	for_each_compound_head(index, pages, npages, head, ntails)
-+		put_compound_head(head, ntails, FOLL_PIN);
-+}
-+
- /**
-  * unpin_user_pages() - release an array of gup-pinned pages.
-  * @pages:  array of pages to be marked dirty and released.
-@@ -426,6 +475,7 @@ void unpin_user_pages(struct page **pages, unsigned long npages)
- 	 */
- 	if (WARN_ON(IS_ERR_VALUE(npages)))
- 		return;
-+	sanity_check_pinned_pages(pages, npages);
- 
- 	for_each_compound_head(index, pages, npages, head, ntails)
- 		put_compound_head(head, ntails, FOLL_PIN);
-@@ -572,6 +622,10 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
- 		page = ERR_PTR(-EMLINK);
- 		goto out;
- 	}
-+
-+	VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
-+		  !PageAnonExclusive(page));
-+
- 	/* try_grab_page() does nothing unless FOLL_GET or FOLL_PIN is set. */
- 	if (unlikely(!try_grab_page(page, flags))) {
- 		page = ERR_PTR(-ENOMEM);
-@@ -2876,8 +2930,10 @@ static unsigned long lockless_pages_from_mm(unsigned long start,
- 	 */
- 	if (gup_flags & FOLL_PIN) {
- 		if (read_seqcount_retry(&current->mm->write_protect_seq, seq)) {
--			unpin_user_pages(pages, nr_pinned);
-+			unpin_user_pages_lockless(pages, nr_pinned);
- 			return 0;
-+		} else {
-+			sanity_check_pinned_pages(pages, nr_pinned);
- 		}
- 	}
- 	return nr_pinned;
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 1896388b1e30..0cc34addd911 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -1392,6 +1392,9 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
- 	if (!pmd_write(*pmd) && gup_must_unshare(flags, page))
- 		return ERR_PTR(-EMLINK);
- 
-+	VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
-+		  !PageAnonExclusive(page));
-+
- 	if (!try_grab_page(page, flags))
- 		return ERR_PTR(-ENOMEM);
- 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index c40478b5bead..8ba2fdd6f2e3 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -6090,6 +6090,9 @@ long follow_hugetlb_page(struct mm_struct *mm, struct vm_area_struct *vma,
- 		pfn_offset = (vaddr & ~huge_page_mask(h)) >> PAGE_SHIFT;
- 		page = pte_page(huge_ptep_get(pte));
- 
-+		VM_BUG_ON((flags & FOLL_PIN) && PageAnon(page) &&
-+			  !PageAnonExclusive(page));
-+
- 		/*
- 		 * If subpage information not requested, update counters
- 		 * and skip the same_page loop below.
--- 
-2.35.1
-
+> 
+> Thanks,
+> Jianan
+> 
+> >   	struct kobject s_kobj;		/* /sys/fs/erofs/<devname> */
+> >   	struct completion s_kobj_unregister;
+> >   };
+> > diff --git a/fs/erofs/sysfs.c b/fs/erofs/sysfs.c
+> > index dac252bc9228..2b48a4df19b4 100644
+> > --- a/fs/erofs/sysfs.c
+> > +++ b/fs/erofs/sysfs.c
+> > @@ -209,6 +209,7 @@ int erofs_register_sysfs(struct super_block *sb)
+> >   				   "%s", sb->s_id);
+> >   	if (err)
+> >   		goto put_sb_kobj;
+> > +	sbi->s_sysfs_inited = true;
+> >   	return 0;
+> >   put_sb_kobj:
+> > @@ -221,9 +222,11 @@ void erofs_unregister_sysfs(struct super_block *sb)
+> >   {
+> >   	struct erofs_sb_info *sbi = EROFS_SB(sb);
+> > -	kobject_del(&sbi->s_kobj);
+> > -	kobject_put(&sbi->s_kobj);
+> > -	wait_for_completion(&sbi->s_kobj_unregister);
+> > +	if (sbi->s_sysfs_inited) {
+> > +		kobject_del(&sbi->s_kobj);
+> > +		kobject_put(&sbi->s_kobj);
+> > +		wait_for_completion(&sbi->s_kobj_unregister);
+> > +	}
+> >   }
+> >   int __init erofs_init_sysfs(void)
