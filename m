@@ -2,73 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A301C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 00:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 524ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 00:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343814AbiCOA1j (ORCPT
+        id S1343832AbiCOA1q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 20:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
+        Mon, 14 Mar 2022 20:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236893AbiCOA1d (ORCPT
+        with ESMTP id S243681AbiCOA1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 20:27:33 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227A43CFF9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:26:22 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id u7so24279734ljk.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:26:22 -0700 (PDT)
+        Mon, 14 Mar 2022 20:27:35 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC263D1CB
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:26:23 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w27so30214081lfa.5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:26:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=ec58JOIkOTTKzCKr2jXeDEf3Rw8k2rtjgb1MBmxLJ1E=;
-        b=QVNDsNUvC/rx7Kz3ufShdR0v73ddYa8VE/PYciU7R1mnbreuq2FK96FD35LR+Xvucd
-         qd3FytQCFfLzzDbHVyZiP29Lxht4jZmVV12bRnR1xwbBgimzMFdaiyFg81CXXPq0FbzB
-         6tLuhg+IwhABOKkC5k6LFZTwfy6wEVCHtvoGRImrwb1x+6Ba0jObt8qbzFEPa6klXh3l
-         BansazG1L+I+C/SkJhkoLgYqum0b0nZvSqllnmJOZyaol7Kay6siW+xMR1ow6jD7FWxv
-         jTOFpHIYziV7cedWxKL3wPb3JSri+YHlL0b+Oju8SrUQBlSRS0uqNnLvqzMeQAKd6QVa
-         ibSg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=ifE/90L+JCsTSi4RUhywC6bB94IKAbWKaW5qXHdRgig=;
+        b=OPv2xKS59wIOChxbJlIFZqrMgWrJr7dPZfJMUvPECBLkWNhfBgsjlRMwZPxkpIvMGB
+         WYOZbGJM9ajrPz8bv+QOdh+4Vn+Q0GDmLAS1Bp7kGuYlfF4ayJrgQi39cdTG7iIlul1I
+         jhOCch0BGa7QoVkcoy4PKmxtc65SeCq3nQaBbwgh09d+ZUEAnrYD5YYKBWhqjLrMd/4z
+         fsj5VDQnlpW7ryzNL1lcdZETlVp7DMW50QmUTLEIbgtMOTN+ZQhkyPptW8sP1W0euuj0
+         4Ujc2HZXkDMmOPBmPcKkS41HPyhgN+ryEDwr+zSmDyMDm6XuuUwRW0/5GEoQdVo3hDwn
+         gK6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=ec58JOIkOTTKzCKr2jXeDEf3Rw8k2rtjgb1MBmxLJ1E=;
-        b=z2IsZy3OzcD1wCKpnMUdb7Faju3OFcYWy2Po7fTL8/jv1RCUL08gyBTkZHr4JT+VGN
-         5VUAv+YV+h0e6Y063pcXgKDWV4jJkIhcwNVxVlmooBfASIQ2Pu1MG5tOTx3szujcdult
-         qdQlPQ4R/iLJW6pp7ImMc02UbrWE2di8a77wZo0VLtD2K/ZsfaI7lwnQ9byZKev5yTdQ
-         hrlYP7ejDMT6tgHgt5eVs2k4vk4TdGyhBrwx8hhOIPHMcau/S36xQJfERNv6MpGiVPwh
-         vOn/YSVd5rqwRw9W/u7HojMytDP6SRUr339NlFKsM2CqgGFksDdC3dBBn8N81GnQABlq
-         c0Xg==
-X-Gm-Message-State: AOAM5326FWipzcOTSevyTZmV8bMi1VeTt3gJJesWDhTu104pqoAKrYh0
-        Sv2X8a7v4Lm33VoxzpRTMmRpBg==
-X-Google-Smtp-Source: ABdhPJyxesLMiK7JReVVdTYrnYO1m7W2p2e0LbH+TwKWf4MfpoDyy9xADCyyygoVxN0TqSVjPx1Fzw==
-X-Received: by 2002:a2e:bc0e:0:b0:247:f348:d6dd with SMTP id b14-20020a2ebc0e000000b00247f348d6ddmr15800785ljf.323.1647303980242;
-        Mon, 14 Mar 2022 17:26:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=ifE/90L+JCsTSi4RUhywC6bB94IKAbWKaW5qXHdRgig=;
+        b=EEKZUMj6hj3n74rS2sDCMiomymws+OtUa3wZftGw+5opr3vYMgkJXHAz4sz9XnNk5n
+         mDHcDhXULKXQsBMoA6eGSLFmfFdkMOz5WrACkabEYahh3JQPr8E8pI7NMezam5zIcj2U
+         Qi/roL1uS9xQpaxQS3gL9X5QR4xEbGsubg0YngjqzdyK63X+Xt3fp4VyRXTHdZ1tybRe
+         UGCegtl5dDcGfH1L/4V5krv23FmzCXCNZlHZ9lunC80HUc0xu32q9gIBpwh6DIsDBw9W
+         mP9KlJuBX/htxvG+e8GNVKCrXAt3QA25691BH0Bmg6AObdJe1RT0tg0+F4V0yOb3AjrV
+         8b5A==
+X-Gm-Message-State: AOAM5324zjyEBZ5PqYaiIPOWpfa1Mbo9d45zYLIQM7KpDoWYsgxhXV5Y
+        xgGsiWP9mb0OC53ufhwqfV2g9w==
+X-Google-Smtp-Source: ABdhPJz5eK6mfrK8im9mQ5lWqtmPDxS7qT8a0d5q+sUmXUs0illLY7AwX2loMy1QqpWxvZWMc1wzMw==
+X-Received: by 2002:a05:6512:b13:b0:448:90c6:dc49 with SMTP id w19-20020a0565120b1300b0044890c6dc49mr5598524lfu.542.1647303982306;
+        Mon, 14 Mar 2022 17:26:22 -0700 (PDT)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id y14-20020a2e544e000000b0024800f8286bsm4219923ljd.78.2022.03.14.17.26.18
+        by smtp.gmail.com with ESMTPSA id y14-20020a2e544e000000b0024800f8286bsm4219923ljd.78.2022.03.14.17.26.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 17:26:19 -0700 (PDT)
+        Mon, 14 Mar 2022 17:26:21 -0700 (PDT)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>,
         Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
         Russell King <linux@armlinux.org.uk>,
         Petr Machata <petrm@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>,
         Matt Johnston <matt@codeconstruct.com.au>,
         Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: [PATCH v4 net-next 00/15] net: bridge: Multiple Spanning Trees
-Date:   Tue, 15 Mar 2022 01:25:28 +0100
-Message-Id: <20220315002543.190587-1-tobias@waldekranz.com>
+Subject: [PATCH v4 net-next 02/15] net: bridge: mst: Allow changing a VLAN's MSTI
+Date:   Tue, 15 Mar 2022 01:25:30 +0100
+Message-Id: <20220315002543.190587-3-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220315002543.190587-1-tobias@waldekranz.com>
+References: <20220315002543.190587-1-tobias@waldekranz.com>
 MIME-Version: 1.0
 Organization: Westermo
 Content-Transfer-Encoding: 8bit
@@ -76,194 +78,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The bridge has had per-VLAN STP support for a while now, since:
+Allow a VLAN to move out of the CST (MSTI 0), to an independent tree.
 
-https://lore.kernel.org/netdev/20200124114022.10883-1-nikolay@cumulusnetworks.com/
+The user manages the VID to MSTI mappings via a global VLAN
+setting. The proposed iproute2 interface would be:
 
-The current implementation has some problems:
+    bridge vlan global set dev br0 vid <VID> msti <MSTI>
 
-- The mapping from VLAN to STP state is fixed as 1:1, i.e. each VLAN
-  is managed independently. This is awkward from an MSTP (802.1Q-2018,
-  Clause 13.5) point of view, where the model is that multiple VLANs
-  are grouped into MST instances.
+Changing the state in non-zero MSTIs is still not supported, but will
+be addressed in upcoming changes.
 
-  Because of the way that the standard is written, presumably, this is
-  also reflected in hardware implementations. It is not uncommon for a
-  switch to support the full 4k range of VIDs, but that the pool of
-  MST instances is much smaller. Some examples:
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
+---
+ include/uapi/linux/if_bridge.h |  1 +
+ net/bridge/br_mst.c            | 42 ++++++++++++++++++++++++++++++++++
+ net/bridge/br_private.h        |  1 +
+ net/bridge/br_vlan_options.c   | 15 ++++++++++++
+ 4 files changed, 59 insertions(+)
 
-  Marvell LinkStreet (mv88e6xxx): 4k VLANs, but only 64 MSTIs
-  Marvell Prestera: 4k VLANs, but only 128 MSTIs
-  Microchip SparX-5i: 4k VLANs, but only 128 MSTIs
-
-- By default, the feature is enabled, and there is no way to disable
-  it. This makes it hard to add offloading in a backwards compatible
-  way, since any underlying switchdevs have no way to refuse the
-  function if the hardware does not support it
-
-- The port-global STP state has precedence over per-VLAN states. In
-  MSTP, as far as I understand it, all VLANs will use the common
-  spanning tree (CST) by default - through traffic engineering you can
-  then optimize your network to group subsets of VLANs to use
-  different trees (MSTI). To my understanding, the way this is
-  typically managed in silicon is roughly:
-
-  Incoming packet:
-  .----.----.--------------.----.-------------
-  | DA | SA | 802.1Q VID=X | ET | Payload ...
-  '----'----'--------------'----'-------------
-                        |
-                        '->|\     .----------------------------.
-                           | +--> | VID | Members | ... | MSTI |
-                   PVID -->|/     |-----|---------|-----|------|
-                                  |   1 | 0001001 | ... |    0 |
-                                  |   2 | 0001010 | ... |   10 |
-                                  |   3 | 0001100 | ... |   10 |
-                                  '----------------------------'
-                                                             |
-                               .-----------------------------'
-                               |  .------------------------.
-                               '->| MSTI | Fwding | Lrning |
-                                  |------|--------|--------|
-                                  |    0 | 111110 | 111110 |
-                                  |   10 | 110111 | 110111 |
-                                  '------------------------'
-
-  What this is trying to show is that the STP state (whether MSTP is
-  used, or ye olde STP) is always accessed via the VLAN table. If STP
-  is running, all MSTI pointers in that table will reference the same
-  index in the STP stable - if MSTP is running, some VLANs may point
-  to other trees (like in this example).
-
-  The fact that in the Linux bridge, the global state (think: index 0
-  in most hardware implementations) is supposed to override the
-  per-VLAN state, is very awkward to offload. In effect, this means
-  that when the global state changes to blocking, drivers will have to
-  iterate over all MSTIs in use, and alter them all to match. This
-  also means that you have to cache whether the hardware state is
-  currently tracking the global state or the per-VLAN state. In the
-  first case, you also have to cache the per-VLAN state so that you
-  can restore it if the global state transitions back to forwarding.
-
-This series adds a new mst_enable bridge setting (as suggested by Nik)
-that can only be changed when no VLANs are configured on the
-bridge. Enabling this mode has the following effect:
-
-- The port-global STP state is used to represent the CST (Common
-  Spanning Tree) (1/15)
-
-- Ingress STP filtering is deferred until the frame's VLAN has been
-  resolved (1/15)
-
-- The preexisting per-VLAN states can no longer be controlled directly
-  (1/15). They are instead placed under the MST module's control,
-  which is managed using a new netlink interface (described in 3/15)
-
-- VLANs can br mapped to MSTIs in an arbitrary M:N fashion, using a
-  new global VLAN option (2/15)
-
-Switchdev notifications are added so that a driver can track:
-- MST enabled state
-- VID to MSTI mappings
-- MST port states
-
-An offloading implementation is this provided for mv88e6xxx.
-
-A proposal for the corresponding iproute2 interface is available here:
-
-https://github.com/wkz/iproute2/tree/mst
-
-v3 -> v4:
-  Bridge:
-  - Constify arguments where possible (Nik)
-  - Use non-atomic bitmap operators (Nik)
-  - Rename br_mst_parse -> br_mst_process (Nik)
-  - Account for the dynamic size of generated MST netlink data (Nik)
-  - Provide proper error reporting on invalid input (Nik)
-  - Export bridge helpers under GPL (Nik)
-  - Fix build when bridge VLAN filtering is compiled out (Intel bot)
-  - Allocate VLAN bitmaps on the stack (Vladimir)
-  DSA:
-  - Propagate MST state change errors back to the bridge layer
-    (Vladimir)
-  - Fix issue with software fallback (Vladimir)
-  - Ignore FDB events on software bridged ports
-  mv88e6xxx:
-  - Use non-atomic bitmap operators (Vladimir)
-  - Restore refcount in error path (Vladimir)
-
-v2 -> v3:
-  Bridge:
-  - Use new boolopt API to enable/disable the MST mode (Nik)
-  - Mark br_mst_vlan_set_state as static (Vladimir)
-  - Avoid updates/notifications on repeated VLAN to MSTI mapping
-    configurations (Vladimir)
-  - Configure MSTI states via the existing RTM_GET/SETLINK interface
-    (Roopa)
-  - Refactor switchdev replay logic (Vladimir)
-  - Send switchdev notifications when enabling/disabling MST
-    (Vladimir)
-  DSA:
-  - Align VLAN MSTI callback with existing APIs (Vladimir)
-  - Only flush entries in the affected VLANs when changing an MST
-    state (Vladimir)
-  - Refuse offloading, unless all required ops are implemented
-    (Vladimir)
-  mv88e6xxx:
-  - Always keep the driver's MST state in sync with hardware
-    (Vladimir)
-  - Fix SID leaks (Vladimir)
-  - Only flush entries in the affected VLANs when changing an MST
-    state (Vladimir)
-
-v1 (RFC) -> v2:
-  - Add a separate MST mode that is distinct from the exiting per-VLAN
-    state functionality
-  - Control MSTI states explicitly, rather than via an associated VLAN
-
-Tobias Waldekranz (15):
-  net: bridge: mst: Multiple Spanning Tree (MST) mode
-  net: bridge: mst: Allow changing a VLAN's MSTI
-  net: bridge: mst: Support setting and reporting MST port states
-  net: bridge: mst: Notify switchdev drivers of MST mode changes
-  net: bridge: mst: Notify switchdev drivers of VLAN MSTI migrations
-  net: bridge: mst: Notify switchdev drivers of MST state changes
-  net: bridge: mst: Add helper to map an MSTI to a VID set
-  net: bridge: mst: Add helper to check if MST is enabled
-  net: dsa: Never offload FDB entries on standalone ports
-  net: dsa: Validate hardware support for MST
-  net: dsa: Pass VLAN MSTI migration notifications to driver
-  net: dsa: Handle MST state changes
-  net: dsa: mv88e6xxx: Disentangle STU from VTU
-  net: dsa: mv88e6xxx: Export STU as devlink region
-  net: dsa: mv88e6xxx: MST Offloading
-
- drivers/net/dsa/mv88e6xxx/chip.c        | 304 +++++++++++++++++++++-
- drivers/net/dsa/mv88e6xxx/chip.h        |  38 +++
- drivers/net/dsa/mv88e6xxx/devlink.c     |  94 +++++++
- drivers/net/dsa/mv88e6xxx/global1.h     |  10 +
- drivers/net/dsa/mv88e6xxx/global1_vtu.c | 311 ++++++++++++----------
- include/linux/if_bridge.h               |  13 +
- include/net/dsa.h                       |   6 +
- include/net/switchdev.h                 |  16 ++
- include/uapi/linux/if_bridge.h          |  18 ++
- include/uapi/linux/rtnetlink.h          |   1 +
- net/bridge/Makefile                     |   2 +-
- net/bridge/br.c                         |   5 +
- net/bridge/br_input.c                   |  17 +-
- net/bridge/br_mst.c                     | 332 ++++++++++++++++++++++++
- net/bridge/br_netlink.c                 |  44 +++-
- net/bridge/br_private.h                 |  56 ++++
- net/bridge/br_stp.c                     |   3 +
- net/bridge/br_switchdev.c               |  46 ++++
- net/bridge/br_vlan.c                    |  20 +-
- net/bridge/br_vlan_options.c            |  20 ++
- net/dsa/dsa_priv.h                      |   6 +
- net/dsa/port.c                          | 106 +++++++-
- net/dsa/slave.c                         |  21 ++
- 23 files changed, 1337 insertions(+), 152 deletions(-)
- create mode 100644 net/bridge/br_mst.c
-
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 30a242195ced..f60244b747ae 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -564,6 +564,7 @@ enum {
+ 	BRIDGE_VLANDB_GOPTS_MCAST_QUERIER,
+ 	BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS,
+ 	BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_STATE,
++	BRIDGE_VLANDB_GOPTS_MSTI,
+ 	__BRIDGE_VLANDB_GOPTS_MAX
+ };
+ #define BRIDGE_VLANDB_GOPTS_MAX (__BRIDGE_VLANDB_GOPTS_MAX - 1)
+diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
+index e1ec9d39c660..78ef5fea4d2b 100644
+--- a/net/bridge/br_mst.c
++++ b/net/bridge/br_mst.c
+@@ -43,6 +43,48 @@ void br_mst_set_state(struct net_bridge_port *p, u16 msti, u8 state)
+ 	}
+ }
+ 
++static void br_mst_vlan_sync_state(struct net_bridge_vlan *pv, u16 msti)
++{
++	struct net_bridge_vlan_group *vg = nbp_vlan_group(pv->port);
++	struct net_bridge_vlan *v;
++
++	list_for_each_entry(v, &vg->vlan_list, vlist) {
++		/* If this port already has a defined state in this
++		 * MSTI (through some other VLAN membership), inherit
++		 * it.
++		 */
++		if (v != pv && v->brvlan->msti == msti) {
++			br_mst_vlan_set_state(pv->port, pv, v->state);
++			return;
++		}
++	}
++
++	/* Otherwise, start out in a new MSTI with all ports disabled. */
++	return br_mst_vlan_set_state(pv->port, pv, BR_STATE_DISABLED);
++}
++
++int br_mst_vlan_set_msti(struct net_bridge_vlan *mv, u16 msti)
++{
++	struct net_bridge_vlan_group *vg;
++	struct net_bridge_vlan *pv;
++	struct net_bridge_port *p;
++
++	if (mv->msti == msti)
++		return 0;
++
++	mv->msti = msti;
++
++	list_for_each_entry(p, &mv->br->port_list, list) {
++		vg = nbp_vlan_group(p);
++
++		pv = br_vlan_find(vg, mv->vid);
++		if (pv)
++			br_mst_vlan_sync_state(pv, msti);
++	}
++
++	return 0;
++}
++
+ void br_mst_vlan_init_state(struct net_bridge_vlan *v)
+ {
+ 	/* VLANs always start out in MSTI 0 (CST) */
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 934c3dc4a927..d8c641c70589 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1779,6 +1779,7 @@ static inline bool br_mst_is_enabled(struct net_bridge *br)
+ }
+ 
+ void br_mst_set_state(struct net_bridge_port *p, u16 msti, u8 state);
++int br_mst_vlan_set_msti(struct net_bridge_vlan *v, u16 msti);
+ void br_mst_vlan_init_state(struct net_bridge_vlan *v);
+ int br_mst_set_enabled(struct net_bridge *br, bool on,
+ 		       struct netlink_ext_ack *extack);
+diff --git a/net/bridge/br_vlan_options.c b/net/bridge/br_vlan_options.c
+index 09112b56e79c..a2724d03278c 100644
+--- a/net/bridge/br_vlan_options.c
++++ b/net/bridge/br_vlan_options.c
+@@ -296,6 +296,7 @@ bool br_vlan_global_opts_can_enter_range(const struct net_bridge_vlan *v_curr,
+ 					 const struct net_bridge_vlan *r_end)
+ {
+ 	return v_curr->vid - r_end->vid == 1 &&
++		v_curr->msti == r_end->msti &&
+ 	       ((v_curr->priv_flags ^ r_end->priv_flags) &
+ 		BR_VLFLAG_GLOBAL_MCAST_ENABLED) == 0 &&
+ 		br_multicast_ctx_options_equal(&v_curr->br_mcast_ctx,
+@@ -384,6 +385,9 @@ bool br_vlan_global_opts_fill(struct sk_buff *skb, u16 vid, u16 vid_range,
+ #endif
+ #endif
+ 
++	if (nla_put_u16(skb, BRIDGE_VLANDB_GOPTS_MSTI, v_opts->msti))
++		goto out_err;
++
+ 	nla_nest_end(skb, nest);
+ 
+ 	return true;
+@@ -415,6 +419,7 @@ static size_t rtnl_vlan_global_opts_nlmsg_size(const struct net_bridge_vlan *v)
+ 		+ nla_total_size(0) /* BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS */
+ 		+ br_rports_size(&v->br_mcast_ctx) /* BRIDGE_VLANDB_GOPTS_MCAST_ROUTER_PORTS */
+ #endif
++		+ nla_total_size(sizeof(u16)) /* BRIDGE_VLANDB_GOPTS_MSTI */
+ 		+ nla_total_size(sizeof(u16)); /* BRIDGE_VLANDB_GOPTS_RANGE */
+ }
+ 
+@@ -564,6 +569,15 @@ static int br_vlan_process_global_one_opts(const struct net_bridge *br,
+ 	}
+ #endif
+ #endif
++	if (tb[BRIDGE_VLANDB_GOPTS_MSTI]) {
++		u16 msti;
++
++		msti = nla_get_u16(tb[BRIDGE_VLANDB_GOPTS_MSTI]);
++		err = br_mst_vlan_set_msti(v, msti);
++		if (err)
++			return err;
++		*changed = true;
++	}
+ 
+ 	return 0;
+ }
+@@ -583,6 +597,7 @@ static const struct nla_policy br_vlan_db_gpol[BRIDGE_VLANDB_GOPTS_MAX + 1] = {
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_QUERIER_INTVL]	= { .type = NLA_U64 },
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_STARTUP_QUERY_INTVL]	= { .type = NLA_U64 },
+ 	[BRIDGE_VLANDB_GOPTS_MCAST_QUERY_RESPONSE_INTVL] = { .type = NLA_U64 },
++	[BRIDGE_VLANDB_GOPTS_MSTI] = NLA_POLICY_MAX(NLA_U16, VLAN_N_VID - 1),
+ };
+ 
+ int br_vlan_rtm_process_global_options(struct net_device *dev,
 -- 
 2.25.1
 
