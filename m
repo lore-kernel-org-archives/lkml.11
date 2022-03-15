@@ -2,116 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B54C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349852AbiCOPxa (ORCPT
+        id S1344405AbiCOPxu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 11:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        Tue, 15 Mar 2022 11:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349923AbiCOPxC (ORCPT
+        with ESMTP id S1349874AbiCOPxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 11:53:02 -0400
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A75656408;
-        Tue, 15 Mar 2022 08:51:41 -0700 (PDT)
-Received: by mail-oo1-xc33.google.com with SMTP id h16-20020a4a6f10000000b00320507b9ccfso24844485ooc.7;
-        Tue, 15 Mar 2022 08:51:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hXJSr2Riukg6sLC81qnw2+4YK/hUVT2VEwcL13m5MRw=;
-        b=F5UxW4xBOA4id2EKViUjwaTL2L7Rne8ANhJGB6eRDgcEkf0Ez4sxDLUTUJXuYLH9i/
-         ikXZw67iyjjgDfKx3WO1bGSQwoqivnkyzLsPNZNwo3Hk37oUNPplkqnqAcYedC0rAzBZ
-         mq2qQn0Drt/hLDv2KYGOrRDPIZHxzRbm/0jU+NEijcmsk0xJ3SpHcygIOy9VbqLf00b2
-         OcYNHPDs/LX7aPqN0Mgx12t4a/oQg6+sIfHAYQ+PunKcCoy4UhI6nvf9eljlibVvUuvj
-         72fQMLBmghTQzGYJi5VNTLLRu/jZflDHG/QeZI5ughzB7tJzTI2F7oIqajoZk+7P5Rue
-         Bieg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hXJSr2Riukg6sLC81qnw2+4YK/hUVT2VEwcL13m5MRw=;
-        b=5O0dvn3HQAYh8t/M1zr/6zPKEuWCWuNKT0w5Mg1NPu1BUgqzlm5VeRENxxr8oTLV+L
-         LVtq7KaWJtbbrAD/2HnkSmeH2vbSGeCclAhHdGFwG4DQZrrpvMbaxxASmm68S8oPEDY+
-         +acIRFNVYKj2dQwZeCfNKhj5sBg7iorvxpBBc5WXawa7VgmTH+FlaPPhOgLqzQalteE4
-         8mWx1II+SIVjzu+lyfjpzt+6nKYSLrJopa2fkj2gYldQ85KK6YU1JGJdGNiG/9O4i4P9
-         EesnWNS0/GdWFPqmhdzSgzUpwqyLMc2z/TU7YGQg04yXrW1/BHqxkWpNxjapyNqMw3tE
-         s/XA==
-X-Gm-Message-State: AOAM533DhH6gCn7bZeXh4ftThuPk02jqqZuhxU32SInuDpKapPZFMTQL
-        m4WFKSQDED+ifEoDPc/MJ5skrU2K2GMCkeNV+Ec=
-X-Google-Smtp-Source: ABdhPJwxx1IWwZmVPysAWToOvN9DlgTFvAw4uemt8AVvgMLB/Lqxvpyu2g0j5plBDR8QwAPwsdCLZMpJJpzi28U3hb4=
-X-Received: by 2002:a05:6870:630c:b0:da:b3f:324d with SMTP id
- s12-20020a056870630c00b000da0b3f324dmr1821885oao.253.1647359500464; Tue, 15
- Mar 2022 08:51:40 -0700 (PDT)
+        Tue, 15 Mar 2022 11:53:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A38B55BD7
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 08:52:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42FDC6134E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 15:52:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19281C340ED;
+        Tue, 15 Mar 2022 15:52:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647359549;
+        bh=zjDOtndMSP12811nc1wYenpXv0yI+HChpWPOg9L3V4g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eObWNAZfYH1Ruq+q76YTgA+6fMA1ki9pMImj9pPbmw54sj/hhV9uEy+A/Ud9FebQc
+         jgevnmxaNXaYHKalS/Osr9qvV6Eh0+b6boP8ujbBXX8gjzmzscqFFwIDZEJ5iprmxX
+         TXk4BLtxZa+MtoeKY7pbmaV3V7EnzmEoT1s+xIpFYwhn7tfDwOZdUXLm62nMpwTJQB
+         EAaEIB3mtmA1gTPcpgLbHj742X4WXuMEvj0J3rmgohPxUm9aq8NqoPWq/2wN4/Z+n4
+         dD2FLlnumIHwRaJtUs8PWIfC1zY2eyC1t9b7Hpakm8qWJ3a0WpGEn/6Uk75jyNr5BG
+         grYKyM+lm10WQ==
+Date:   Tue, 15 Mar 2022 16:52:26 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Marco Elver <elver@google.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Uladzislau Rezki <uladzislau.rezki@sony.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Subject: Re: [PATCH 0/3] rcu: synchronize_rcu[_expedited]() related fixes
+Message-ID: <20220315155226.GC274290@lothringen>
+References: <20220314133738.269522-1-frederic@kernel.org>
+ <20220314202610.GW4285@paulmck-ThinkPad-P17-Gen-1>
+ <20220314223504.GA1150279@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-References: <20220314115354.144023-1-Julia.Lawall@inria.fr> <20220314115354.144023-24-Julia.Lawall@inria.fr>
-In-Reply-To: <20220314115354.144023-24-Julia.Lawall@inria.fr>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Tue, 15 Mar 2022 11:51:28 -0400
-Message-ID: <CADnq5_PqHgorHeLbZhF2MKt39GDhJvcD6yjWRN209h1A4fQgcg@mail.gmail.com>
-Subject: Re: [PATCH 23/30] drm/amdgpu/dc: fix typos in comments
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>, kernel-janitors@vger.kernel.org,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        David Airlie <airlied@linux.ie>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220314223504.GA1150279@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On Mon, Mar 14, 2022 at 03:35:04PM -0700, Paul E. McKenney wrote:
+> On Mon, Mar 14, 2022 at 01:26:10PM -0700, Paul E. McKenney wrote:
+> > On Mon, Mar 14, 2022 at 02:37:35PM +0100, Frederic Weisbecker wrote:
+> > > 
+> > > A few fixes especially for expedited GP polling causing a stall on TREE07,
+> > > as reported by Paul.
+> > > 
+> > > We may still want to optimize start_poll_synchronize_rcu_expedited() on
+> > > UP-no-preempt but I think Paul may be implying this while doing other
+> > > fixes.
+> > > 
+> > > git://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+> > > 	rcu/dev
+> > > 
+> > > HEAD: 6e5fd7e614fd5c8f0fffeaa140b7ea697bfeb096
+> > > 
+> > > Thanks,
+> > > 	Frederic
+> > 
+> > I have pulled these in for review and testing, thank you!!!  I have
+> > started a ~90-minute test and will let you know how that goes.
+> 
+> And TREE05 doesn't like this much.  I get too-short grace periods.
+> TREE05 is unusual in being the one with the kernel build with
+> CONFIG_PREEMPT_NONE=y but also with CONFIG_PREEMPT_DYNAMIC=n.
+> 
+> Running tests of the commits individually.
 
-On Mon, Mar 14, 2022 at 8:01 AM Julia Lawall <Julia.Lawall@inria.fr> wrote:
->
-> Various spelling mistakes in comments.
-> Detected with the help of Coccinelle.
->
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
->
-> ---
->  drivers/gpu/drm/amd/display/dc/bios/command_table.c |    6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dc/bios/command_table.c b/drivers/gpu/drm/amd/display/dc/bios/command_table.c
-> index ad13e4e36d77..0e36cd800fc9 100644
-> --- a/drivers/gpu/drm/amd/display/dc/bios/command_table.c
-> +++ b/drivers/gpu/drm/amd/display/dc/bios/command_table.c
-> @@ -456,7 +456,7 @@ static enum bp_result transmitter_control_v2(
->                 if ((CONNECTOR_ID_DUAL_LINK_DVII == connector_id) ||
->                                 (CONNECTOR_ID_DUAL_LINK_DVID == connector_id))
->                         /* on INIT this bit should be set according to the
-> -                        * phisycal connector
-> +                        * physical connector
->                          * Bit0: dual link connector flag
->                          * =0 connector is single link connector
->                          * =1 connector is dual link connector
-> @@ -468,7 +468,7 @@ static enum bp_result transmitter_control_v2(
->                                 cpu_to_le16((uint8_t)cntl->connector_obj_id.id);
->                 break;
->         case TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS:
-> -               /* votage swing and pre-emphsis */
-> +               /* voltage swing and pre-emphsis */
->                 params.asMode.ucLaneSel = (uint8_t)cntl->lane_select;
->                 params.asMode.ucLaneSet = (uint8_t)cntl->lane_settings;
->                 break;
-> @@ -2120,7 +2120,7 @@ static enum bp_result program_clock_v5(
->         memset(&params, 0, sizeof(params));
->         if (!bp->cmd_helper->clock_source_id_to_atom(
->                         bp_params->pll_id, &atom_pll_id)) {
-> -               BREAK_TO_DEBUGGER(); /* Invalid Inpute!! */
-> +               BREAK_TO_DEBUGGER(); /* Invalid Input!! */
->                 return BP_RESULT_BADINPUT;
->         }
->
->
+Ouch, please test the following:
+
+---
+From f180dd5809d2c3a6343cbd13f244b7b7f110a506 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Tue, 15 Mar 2022 16:33:38 +0100
+Subject: [PATCH] rcutorture: Call preempt_schedule() through static call/key
+
+rcutorture sometimes want to trigger a random scheduler preemption call
+while simulating a read delay. However a direct call to
+preempt_schedule() is not desirable because it bypasses the static
+call/key filter used by CONFIG_PREEMPT_DYNAMIC. This breaks the
+no-preempt assumption in case the dynamic preemption mode is "none".
+
+For example rcu_blocking_is_gp() is fooled and abbreviates grace periods
+when the CPU runs in no-preempt UP mode.
+
+Fix this with making torture_preempt_schedule() to call through
+preempt dynamic static call/key.
+
+Reported-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+---
+ include/linux/torture.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/torture.h b/include/linux/torture.h
+index 63fa4196e51c..7038104463e4 100644
+--- a/include/linux/torture.h
++++ b/include/linux/torture.h
+@@ -118,7 +118,7 @@ void _torture_stop_kthread(char *m, struct task_struct **tp);
+ 	_torture_stop_kthread("Stopping " #n " task", &(tp))
+ 
+ #ifdef CONFIG_PREEMPTION
+-#define torture_preempt_schedule() preempt_schedule()
++#define torture_preempt_schedule() __preempt_schedule()
+ #else
+ #define torture_preempt_schedule()	do { } while (0)
+ #endif
+-- 
+2.25.1
+
