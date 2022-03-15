@@ -2,166 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42253C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 03:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6207FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 03:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344696AbiCOD1W (ORCPT
+        id S1344684AbiCOD3g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 23:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57822 "EHLO
+        Mon, 14 Mar 2022 23:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344657AbiCOD1O (ORCPT
+        with ESMTP id S1344276AbiCOD3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 23:27:14 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C70483AE;
-        Mon, 14 Mar 2022 20:26:02 -0700 (PDT)
-Received: from dggpeml500025.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KHdxd4GSsz9sgC;
-        Tue, 15 Mar 2022 11:22:13 +0800 (CST)
-Received: from dggpeml100016.china.huawei.com (7.185.36.216) by
- dggpeml500025.china.huawei.com (7.185.36.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 11:26:00 +0800
-Received: from DESKTOP-27KDQMV.china.huawei.com (10.174.148.223) by
- dggpeml100016.china.huawei.com (7.185.36.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 11:26:00 +0800
-From:   "Longpeng(Mike)" <longpeng2@huawei.com>
-To:     <stefanha@redhat.com>, <mst@redhat.com>, <jasowang@redhat.com>,
-        <sgarzare@redhat.com>
-CC:     <arei.gonglei@huawei.com>, <yechuan@huawei.com>,
-        <huangzhichao@huawei.com>,
-        <virtualization@lists.linux-foundation.org>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Longpeng <longpeng2@huawei.com>
-Subject: [PATCH v2 2/3] vdpa: change the type of nvqs to u32
-Date:   Tue, 15 Mar 2022 11:25:52 +0800
-Message-ID: <20220315032553.455-3-longpeng2@huawei.com>
-X-Mailer: git-send-email 2.25.0.windows.1
-In-Reply-To: <20220315032553.455-1-longpeng2@huawei.com>
-References: <20220315032553.455-1-longpeng2@huawei.com>
+        Mon, 14 Mar 2022 23:29:32 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE0E1115E;
+        Mon, 14 Mar 2022 20:28:20 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22F3HfYX008028;
+        Tue, 15 Mar 2022 03:28:17 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : message-id : references : date : in-reply-to : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=hU+WSS0qRSmdawqGuhgmJmFeIHrs6CB3Vj5aMA+ekTA=;
+ b=X5XkcbLMORRWPeMda6GTH0jqmwLzhDDw/QYy1AT8Unh6s3EXraCn5+WVvXhoy2h32CPL
+ A2aj68OzCVVAZDE3AxV1t5cB+8YrM7re7sSRVifFiGOx69tiRNUwNVKcen28ZhMLeEwd
+ 5AUZ6WKdj8JbMAR7lDLk2ZW1FxQHaBexk83lYa7FVL577Q2KOSZyeV03bHgNaHUR8haw
+ WjhJIf91nfwaG6NPK759npRA0gPHXOoPY886a95WhCcV+7FA5QhD8tdsQFXtKKBdHkAq
+ iDSj7jC+psOUCVTkkCs21baT2PKYHlCv0Eo0aCIJv2brqJq3QGkhzRS7NFQ+LwZ26L5g wA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3et5s6hxdh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Mar 2022 03:28:17 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22F3FirJ178951;
+        Tue, 15 Mar 2022 03:28:16 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2100.outbound.protection.outlook.com [104.47.58.100])
+        by aserp3020.oracle.com with ESMTP id 3et64jkubu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Mar 2022 03:28:16 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jHsmtNmNEqIjIHrn7cph0KqD276aQl5i8pM/64YhA3kV8eiCJaAOh4NUOpK2qhOmoGVFkzOqj+Lge/xe+grWi1pfwjmZ8HXvMaz8kds4mJiG+AjF0DRJz60HYo7wR838i63r2xFp27TGIdqVCleJZ8pSxYM9cTb+7VLj3VtL1fn7ExZ2dQFy51+i3VbTyEIKdjVfUgS1LkZ83xzzhjw7aIqxOYOyWMEHLrrlxNEwkSRKnOA3h+n2NbK+t7wMmLAWEMCyhtEXo5gAeDHVnJECprYlg/b9m8aCmjVipG83vKnWxq+biJq9tvT8mgiY5jxDcGkcdjlWI6C9hIU6oP7Hog==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hU+WSS0qRSmdawqGuhgmJmFeIHrs6CB3Vj5aMA+ekTA=;
+ b=MJX/xbmRSQbQ62hjZRTL0SQEpetr9QRuatg58gnYozV26KY8xaRLph9OCBf6Xi2ITuh0o0LbSIlo/8t0/zrTeLaPAxqbwyJXD3palGi1qS7z8OxxBwWGSO2cPmifKM0W6hPiRoFXVaAwkhtAmuXAh4epZ+FnVLbC+YY8NHxpslM0YhMVAJWEEVDBGKfA3/kHvAUBUJ9GXvLHHMmDkgmBvCrv19bMy8dqr00yqOF+oaG6hXsP7dzP0O4bBuh5+yPBMhCpvvOaWO8dQ1v8NJqUmpf0BwT26EpujZoTehwvAQB0E8R1upJfH+sbMjp0876hq8dxBDc2cZkcZYu/oyd/Aw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hU+WSS0qRSmdawqGuhgmJmFeIHrs6CB3Vj5aMA+ekTA=;
+ b=vSvbqDMER0tRsBT7RmFEqB7z2YWhj6DgKsbTIkL36CptVr4sAQx/AMaEADf7rmgNetZjaiRVs4paU/4+15n9P9t8qdGQNWo/hPr1bmwjc4TFN2BN2lPreyMEJJGM84Gez2ZtBtEGSR/pebo426vV/v/7uT67n6ONusheo/g+ULI=
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
+ by BN6PR10MB1556.namprd10.prod.outlook.com (2603:10b6:404:3d::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.21; Tue, 15 Mar
+ 2022 03:28:14 +0000
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::48e3:d153:6df4:fbed]) by PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::48e3:d153:6df4:fbed%4]) with mapi id 15.20.5061.029; Tue, 15 Mar 2022
+ 03:28:14 +0000
+To:     Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+Cc:     "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Kees Cook <keescook@chromium.org>,
+        Sathya Prakash <sathya.prakash@broadcom.com>,
+        Suganath Prabu Subramani 
+        <suganath-prabu.subramani@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        linux-hardening@vger.kernel.org,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        PDL-MPT-FUSIONLINUX <MPT-FusionLinux.pdl@broadcom.com>
+Subject: Re: [PATCH] scsi: mpt3sas: Convert to flexible arrays
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <yq1a6drevyn.fsf@ca-mkp.ca.oracle.com>
+References: <20220201223948.1455637-1-keescook@chromium.org>
+        <164462189850.7606.6908949862618145181.b4-ty@oracle.com>
+        <CAK=zhgpQcJkRKVNFHy6mDqV9hOyzFsV_uqOWur8UsNLRZy-VdA@mail.gmail.com>
+        <yq1ee3blsqp.fsf@ca-mkp.ca.oracle.com>
+        <CAK=zhgoiQ_ZeSO875DmLUrE2gGDRCUcPUdY9b9Yw+oftZ0=f1Q@mail.gmail.com>
+Date:   Mon, 14 Mar 2022 23:28:11 -0400
+In-Reply-To: <CAK=zhgoiQ_ZeSO875DmLUrE2gGDRCUcPUdY9b9Yw+oftZ0=f1Q@mail.gmail.com>
+        (Sreekanth Reddy's message of "Wed, 9 Mar 2022 12:14:35 +0530")
+Content-Type: text/plain
+X-ClientProxiedBy: DM5PR22CA0012.namprd22.prod.outlook.com
+ (2603:10b6:3:101::22) To PH0PR10MB4759.namprd10.prod.outlook.com
+ (2603:10b6:510:3d::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.148.223]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml100016.china.huawei.com (7.185.36.216)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0e5c3f16-7d18-4dc8-9c6f-08da0633d6cb
+X-MS-TrafficTypeDiagnostic: BN6PR10MB1556:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR10MB1556621D96CD9BE0916726C18E109@BN6PR10MB1556.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: q9B0JLpYCnbeKegwjxhHd6bUTHsaN+t+EZFF1GxZXDmc69EtX2JIm6mVFq+WmrYMu2P761w0TJ5VO/qOac9PjGCLBY8QJmVV8cUJMpK4Jz70jupDxzRjE2mIDGl3wRq0+wUpMIv/ViVteRKB8yrPkNb+8DrDTIzGfyg1UDbo4K+nwcJTc/Z/Pul78Z8XtXMavdgQLt4R8XpW0qoC+GPabuxYsKX54QI6cbfJFDU40W067Eq4fOLerMMTt8kgmVv+Vm54uKT4eRAe1rmBldDpAOK1jaV7hW7C+B1h+v6VrCF2C8S02hGh/ziDO4DzeYV/+feGWKIXcvgNwM245KI+ylV/brbVl05FSLjuDD92OdQupZvnTyOFXfNSXe2sg/21P4DJxKNJxGf391XWdQU76bmsOmQWxjtm3PDcW9oPYPBRrJAb5qQhxaO9fZUdiMAYbwG5shYOpSL8w5qwzldyfvxsWAWuPdBTmXGJwWeQ6EqktMQ9Ae+/nCxwsMRNTjKpz7NPOtEtA++mSjpQ1HK3krWGFA1qWLu0pDyuaWsQv+cHnCG1qVyvUtAiy0bPgdLcz5BiFQoNUoTWYyAyl0owEb7bvUEQ4OU/XN2A5+Mle53WV+V7ar9mbLNAjL4YOTad2NHjn72vnVVBjDJOan2B09Z0o041gl6ZnNdnUYKiUo64mWksHYedqjT+alu7bf82HvXxOPJUduMKWD9hD18Fl9cYXNfe0ukwFThklMwBwW8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(558084003)(6506007)(36916002)(38100700002)(38350700002)(52116002)(8936002)(5660300002)(6666004)(6512007)(86362001)(26005)(186003)(316002)(66556008)(66476007)(6916009)(54906003)(66946007)(6486002)(8676002)(4326008)(508600001)(32563001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZEWvs7qh3JvqX8zIwVvkFUmI78I00IxeU11sCVMu+C0J/egRoK44pLqTqLaf?=
+ =?us-ascii?Q?IV3uZiacZz/GLJ0DCJnGzLyuVXmdRCYZb6hy45owEp3PvLBx4KUG9RiCLH7c?=
+ =?us-ascii?Q?2Ben8ciitC7LzS+7K2X0ocwoscRiKCoa0QsDc847pmLjSob2MeqR+wRy6oYA?=
+ =?us-ascii?Q?YdtAsxBq6FmTBGVu32PJRygF8jJ85aTdutlt7GHr0Y0fmGJ+4B3SX+V0nppk?=
+ =?us-ascii?Q?1WH+SjI9L85cqqLFmMB51lHZGmOd0ZRl6F8k5Rn5zTkEMWFztvIrNyzDBq0/?=
+ =?us-ascii?Q?XeNINCN6ZxEV3IiLxgSEL1zewAdY+DqtqQYcjWXY2WLtaBLup8Nc6p0fsYq+?=
+ =?us-ascii?Q?YdD4SSz0dw8VprySlXuVpTSzoCrerV9+Z696Fb0D9pFMmzbDYfUicJxAWtjZ?=
+ =?us-ascii?Q?6h/4xHqg7fVpWNgXZ2Zl1vAryr6xa8WBY6wNpRhC4lDdy9EKBoESHl6J2krG?=
+ =?us-ascii?Q?lSxw105CDlMGH6EgNtI4HbEANLs8ncCoP0oA5xykNq1DkLa+jFPdwZAqGegv?=
+ =?us-ascii?Q?IQqSskjnl7gQH4jaSUViIdt7TN3Fto/2HjtDhueAUB+4/wEtOVY2EQODPMG5?=
+ =?us-ascii?Q?D2eU3tdGs/x2QAKW8NRVy4toMEb8WnrYY0Asi67WJ595GlunO5oxS1qoROXW?=
+ =?us-ascii?Q?RGtFciL/9UPMsdi9lnUReW+DuHxhGTC5FQM9hdjpTBMJgpGxbWTpe4piFb7w?=
+ =?us-ascii?Q?aqCNtbNteKu+O3uZSE8YZ7CpKpLFu22oc2DQcWOVHUG3es14BNEQR5pibEK/?=
+ =?us-ascii?Q?iyAGw16q21dDI743gCCYlcalt6z+wpSmBAdJ2jKptFd44lDb+MHBk2p2v173?=
+ =?us-ascii?Q?MU0feFt/yv/TYpN2avGosFmLlS662Vm+xmIvm63GQ3tyHBoGpJQdmUAGxTce?=
+ =?us-ascii?Q?/XpYbVebBe8EFJ83WuROupqgIGfy6E4ypJc8xXMoKGYGzedsANeDT3RGo9UZ?=
+ =?us-ascii?Q?Sd9/HLqoXRl7T5voSfDZGzfbRbHJar8xusXWDdxH+w6gNZQNB5K/BUIkFhCz?=
+ =?us-ascii?Q?7HvpnQl1PtjLN0MAK+oHbhM6GCVgQqXxCvN0CTZjBxTrfQqvRs8STWle1FB/?=
+ =?us-ascii?Q?8HoP02dPbweuHQ7KoCv1tTALA3+MJs+BBvjzvRBXwiA/6P/mj/fD/JQ6k+jB?=
+ =?us-ascii?Q?8orlvaHs/6ZGx0N6LrnIGH0c7DsbAqQYeLJQ46TPcesGmHhxt+r53k4Z/F3m?=
+ =?us-ascii?Q?hWcEBz7z9k1mp5zHF7rvpKYvAdGiwcD8jPFC1nv1lyFahXlCOmSZAHe7zOpk?=
+ =?us-ascii?Q?Va93Yqc21RJ7rX28AQWrSjSaQR4G9cu9+3zh2Wxp8TfCRJgdpH7wzbh94qaO?=
+ =?us-ascii?Q?JiOx7QdjJcjZAZuKArIklRPwHnyhZYQFERKJfN8p4c7TXAr++HutEQGGSego?=
+ =?us-ascii?Q?QYaxwTn3CudLLaxy1iWb+W2EaN2m9vKzEDsyb59PBFyB2lk3k2FuRmZhywzp?=
+ =?us-ascii?Q?q5EpfrkGnLkQxCZzPFRzp3OyLeoqjBRRjEfskInBCFASy19Blxenqg=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e5c3f16-7d18-4dc8-9c6f-08da0633d6cb
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 03:28:14.4363
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uSzHpTPSY08jiDXGPSx1NzkOWeIDznCeOd4/SEUFxw0mfN3xdfOuZ2jJ7QQ25Pg/9nAaVS4TktUpHpwOUCwQ2jallJSqmCvYRASpQAubCH8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR10MB1556
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10286 signatures=693139
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
+ malwarescore=0 mlxscore=0 suspectscore=0 spamscore=0 bulkscore=0
+ mlxlogscore=868 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203150019
+X-Proofpoint-GUID: UocnzZ9VpO8hK3_cqsZZqQILTL6ko81j
+X-Proofpoint-ORIG-GUID: UocnzZ9VpO8hK3_cqsZZqQILTL6ko81j
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Longpeng <longpeng2@huawei.com>
 
-Change vdpa_device.nvqs and vhost_vdpa.nvqs to use u32
+Sreekanth,
 
-Signed-off-by: Longpeng <longpeng2@huawei.com>
----
- drivers/vdpa/vdpa.c  |  6 +++---
- drivers/vhost/vdpa.c | 10 ++++++----
- include/linux/vdpa.h |  6 +++---
- 3 files changed, 12 insertions(+), 10 deletions(-)
+> Looks like we will observe this issue only if DIF Type 2 drive is
+> connected to the HBA. When this panic occurred I had connected one DIF
+> Type2 drive to the HBA.
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 1ea5254..2b75c00 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -232,7 +232,7 @@ static int vdpa_name_match(struct device *dev, const void *data)
- 	return (strcmp(dev_name(&vdev->dev), data) == 0);
- }
- 
--static int __vdpa_register_device(struct vdpa_device *vdev, int nvqs)
-+static int __vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
- {
- 	struct device *dev;
- 
-@@ -257,7 +257,7 @@ static int __vdpa_register_device(struct vdpa_device *vdev, int nvqs)
-  *
-  * Return: Returns an error when fail to add device to vDPA bus
-  */
--int _vdpa_register_device(struct vdpa_device *vdev, int nvqs)
-+int _vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
- {
- 	if (!vdev->mdev)
- 		return -EINVAL;
-@@ -274,7 +274,7 @@ int _vdpa_register_device(struct vdpa_device *vdev, int nvqs)
-  *
-  * Return: Returns an error when fail to add to vDPA bus
-  */
--int vdpa_register_device(struct vdpa_device *vdev, int nvqs)
-+int vdpa_register_device(struct vdpa_device *vdev, u32 nvqs)
- {
- 	int err;
- 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 605c7ae..0c82eb5 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -42,7 +42,7 @@ struct vhost_vdpa {
- 	struct device dev;
- 	struct cdev cdev;
- 	atomic_t opened;
--	int nvqs;
-+	u32 nvqs;
- 	int virtio_id;
- 	int minor;
- 	struct eventfd_ctx *config_ctx;
-@@ -158,7 +158,8 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
- 	u8 status, status_old;
--	int ret, nvqs = v->nvqs;
-+	u32 nvqs = v->nvqs;
-+	int ret;
- 	u16 i;
- 
- 	if (copy_from_user(&status, statusp, sizeof(status)))
-@@ -965,7 +966,8 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- 	struct vhost_vdpa *v;
- 	struct vhost_dev *dev;
- 	struct vhost_virtqueue **vqs;
--	int nvqs, i, r, opened;
-+	int r, opened;
-+	u32 i, nvqs;
- 
- 	v = container_of(inode->i_cdev, struct vhost_vdpa, cdev);
- 
-@@ -1018,7 +1020,7 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- 
- static void vhost_vdpa_clean_irq(struct vhost_vdpa *v)
- {
--	int i;
-+	u32 i;
- 
- 	for (i = 0; i < v->nvqs; i++)
- 		vhost_vdpa_unsetup_vq_irq(v, i);
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index a526919..8943a20 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -83,7 +83,7 @@ struct vdpa_device {
- 	unsigned int index;
- 	bool features_valid;
- 	bool use_va;
--	int nvqs;
-+	u32 nvqs;
- 	struct vdpa_mgmt_dev *mdev;
- };
- 
-@@ -338,10 +338,10 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
- 				       dev_struct, member)), name, use_va), \
- 				       dev_struct, member)
- 
--int vdpa_register_device(struct vdpa_device *vdev, int nvqs);
-+int vdpa_register_device(struct vdpa_device *vdev, u32 nvqs);
- void vdpa_unregister_device(struct vdpa_device *vdev);
- 
--int _vdpa_register_device(struct vdpa_device *vdev, int nvqs);
-+int _vdpa_register_device(struct vdpa_device *vdev, u32 nvqs);
- void _vdpa_unregister_device(struct vdpa_device *vdev);
- 
- /**
+No problems with Type 2 devices observed here.
+
 -- 
-1.8.3.1
-
+Martin K. Petersen	Oracle Linux Engineering
