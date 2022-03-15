@@ -2,196 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8821AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 19:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D794FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351630AbiCOT5g (ORCPT
+        id S1351579AbiCOUK7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 15:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50314 "EHLO
+        Tue, 15 Mar 2022 16:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351595AbiCOT5I (ORCPT
+        with ESMTP id S1351559AbiCOUK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 15:57:08 -0400
+        Tue, 15 Mar 2022 16:10:56 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C9CE56436
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:55:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6AD9E50B2D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 13:09:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647374144;
+        s=mimecast20190719; t=1647374982;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=SFA0aX9cGD48CfHcuic+RMDAM3RDbSgOQBi5s+CdCbk=;
-        b=Lp1vPZYloig28gsZLXs2gkerMDAO3+8wAe8JYTkYUX1FIGJruXlYhHa4bU7h3wkjp0iLft
-        pqwoVHy+p6P/7FClAdQTtyEkChtvPr7w1y1BQbJCIZPfQ3PK6b4XJtb9XHmLr51suyhtH9
-        PAdkeI5X2H9GsruJSK2L5i4CsP0C7wM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cVuRUCzWQ8sHp4iijGuH6jG3CMenp456hE40B3rmy5w=;
+        b=WTWxPsBNVgrjsNcItL4TKpbs2/Jd47s1zOx/cZOi0lKbY0gdyxu8kxVl99Z3BmzJGcWtDN
+        OZ2vTN9JPIfupI8MLVF1SOW8HSH79esBcjK1pWwSzT9iPD3RAukhmdc8tzAaGDFCBvOk2s
+        mV2HytoCqCVzzq/blVnwPr5jOdsilZc=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-136-tuKAgMfgNmWVLTp1B5Q9AA-1; Tue, 15 Mar 2022 15:55:41 -0400
-X-MC-Unique: tuKAgMfgNmWVLTp1B5Q9AA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 992B282A6C2;
-        Tue, 15 Mar 2022 19:55:40 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EB08B30BA2;
-        Tue, 15 Mar 2022 19:55:27 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id BF66E416EECB; Tue, 15 Mar 2022 12:33:58 -0300 (-03)
-Message-ID: <20220315153314.130167792@fedora.localdomain>
-User-Agent: quilt/0.66
-Date:   Tue, 15 Mar 2022 12:31:41 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
+ us-mta-386-kej1uDuLOD-DFNZm2KpZGg-1; Tue, 15 Mar 2022 16:09:41 -0400
+X-MC-Unique: kej1uDuLOD-DFNZm2KpZGg-1
+Received: by mail-qk1-f197.google.com with SMTP id v16-20020a376110000000b0067b2749e0fbso268825qkb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 13:09:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cVuRUCzWQ8sHp4iijGuH6jG3CMenp456hE40B3rmy5w=;
+        b=YlUahKMTqD3qfmaIi10qS2BHhfQEhTrLMOpmFof2VWCvt5VfH+lHv0VMGRTF73WkT5
+         qvYzYMU1j0m1z4sMz4hDljaNHWqMQ7JlwxPS/bvCZFYCxGpyDXNrcNq8/wDwsE5VG2n1
+         f+B+8GqSNTv95JnurkXFDjUANyhO3t+HUM1MW8zm6rtkARTYyVTwsCpy6UKtXMc3aRTJ
+         Z6/RAJXWK6WtCiEAn8IElACd3eF2bTKomD02CuahsD0bjC9dDpxIfTd872pzol1dXUon
+         ut2k82qIhh58EUSt97iN5mU+0/R/P6HYpW2L704XeAf7gFufqhGpdWnwKivqKVWNt80E
+         lugg==
+X-Gm-Message-State: AOAM5319pn5E/vmYte/3L/RcRUmJa5TwQ2mREgfL8pbF4t/VhlkNiL9M
+        prEmiGOEob3qHc4RI3ZwB02RuyZhhIxrhPkQGxEncdDV7Zo4q2vhN8UzBoZMRVvroMVEoTnuqlB
+        EnVxf9sbMlvhk4dQ0JnuHl5zONQPno2bVEHLGUX/k2O1IvrsLQ+wIJ1mMm0hz0b8T4NIt7vMmEu
+        Ag
+X-Received: by 2002:a05:6214:2689:b0:435:be79:a17e with SMTP id gm9-20020a056214268900b00435be79a17emr22493344qvb.35.1647374981069;
+        Tue, 15 Mar 2022 13:09:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzuPkjuOo9bT0rnQm4l+mCvOeMmKIO0U+oT7rObYdgyQ8gKGTTXcMrZp9grdWrNFpk95GFfDA==
+X-Received: by 2002:a05:6214:2689:b0:435:be79:a17e with SMTP id gm9-20020a056214268900b00435be79a17emr22493322qvb.35.1647374980830;
+        Tue, 15 Mar 2022 13:09:40 -0700 (PDT)
+Received: from fedora.hitronhub.home (modemcable200.11-22-96.mc.videotron.ca. [96.22.11.200])
+        by smtp.gmail.com with ESMTPSA id 197-20020a3703ce000000b0067af869ffa6sm9582433qkd.127.2022.03.15.13.09.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 13:09:40 -0700 (PDT)
+From:   Adrien Thierry <athierry@redhat.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Oscar Shiang <oscar0225@livemail.tw>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: [patch v12 09/13] task isolation: add preempt notifier to sync per-CPU vmstat dirty info to thread info
-References: <20220315153132.717153751@fedora.localdomain>
+Cc:     Adrien Thierry <athierry@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gaston Gonzalez <gascoar@gmail.com>,
+        Ojaswin Mujoo <ojaswin98@gmail.com>,
+        linux-staging@lists.linux.dev
+Subject: [PATCH 0/2] Add support for bcm2711 in vchiq_arm
+Date:   Tue, 15 Mar 2022 16:09:27 -0400
+Message-Id: <20220315200929.74952-1-athierry@redhat.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a thread has task isolation activated, is preempted by thread B,
-which marks vmstat information dirty, and is preempted back in,
-one might return to userspace with vmstat dirty information on the 
-CPU in question.
+The goal of this patch series is to use the bcm2711 compatible string in
+vchiq_arm for the Raspberry Pi 4. This allows using the downstream device
+tree with the upstream kernel.
 
-To address this problem, add a preempt notifier that transfers vmstat dirty
-information to TIF_TASK_ISOL thread flag.
+Adrien Thierry (2):
+  dt-bindings: soc: bcm: bcm2835-vchiq: Add support for bcm2711
+  staging: vchiq_arm: Use bcm2711 compatible string for bcm2711-based
+    RPi
 
-Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+ .../devicetree/bindings/soc/bcm/brcm,bcm2835-vchiq.yaml     | 6 ++++++
+ arch/arm/boot/dts/bcm2711-rpi.dtsi                          | 1 +
+ .../staging/vc04_services/interface/vchiq_arm/vchiq_arm.c   | 5 +++++
+ 3 files changed, 12 insertions(+)
 
----
 
-v12: 
- - switch from raw_cpu_read to __this_cpu_read (Frederic)
-
----
- include/linux/task_isolation.h |    2 ++
- include/linux/vmstat.h         |    6 ++++++
- kernel/task_isolation.c        |   23 +++++++++++++++++++++++
- mm/vmstat.c                    |    7 +++++++
- 4 files changed, 38 insertions(+)
-
-Index: linux-2.6/kernel/task_isolation.c
-===================================================================
---- linux-2.6.orig/kernel/task_isolation.c
-+++ linux-2.6/kernel/task_isolation.c
-@@ -19,6 +19,7 @@
- #include <linux/sched/task.h>
- #include <linux/mm.h>
- #include <linux/vmstat.h>
-+#include <linux/preempt.h>
- #include <linux/task_isolation.h>
- 
- void __task_isol_exit(struct task_struct *tsk)
-@@ -30,6 +31,9 @@ void __task_isol_exit(struct task_struct
- 		return;
- 
- 	static_key_slow_dec(&vmstat_sync_enabled);
-+
-+	preempt_notifier_unregister(&i->preempt_notifier);
-+	preempt_notifier_dec();
- }
- 
- void __task_isol_free(struct task_struct *tsk)
-@@ -40,6 +44,21 @@ void __task_isol_free(struct task_struct
- 	tsk->task_isol_info = NULL;
- }
- 
-+static void task_isol_sched_in(struct preempt_notifier *pn, int cpu)
-+{
-+	vmstat_dirty_to_thread_flag();
-+}
-+
-+static void task_isol_sched_out(struct preempt_notifier *pn,
-+				struct task_struct *next)
-+{
-+}
-+
-+static __read_mostly struct preempt_ops task_isol_preempt_ops = {
-+	.sched_in	= task_isol_sched_in,
-+	.sched_out	= task_isol_sched_out,
-+};
-+
- static struct task_isol_info *task_isol_alloc_context(void)
- {
- 	struct task_isol_info *info;
-@@ -48,6 +67,10 @@ static struct task_isol_info *task_isol_
- 	if (unlikely(!info))
- 		return ERR_PTR(-ENOMEM);
- 
-+	preempt_notifier_inc();
-+	preempt_notifier_init(&info->preempt_notifier, &task_isol_preempt_ops);
-+	preempt_notifier_register(&info->preempt_notifier);
-+
- 	preempt_disable();
- 	init_sync_vmstat();
- 	preempt_enable();
-Index: linux-2.6/include/linux/task_isolation.h
-===================================================================
---- linux-2.6.orig/include/linux/task_isolation.h
-+++ linux-2.6/include/linux/task_isolation.h
-@@ -17,6 +17,8 @@ struct task_isol_info {
- 	u64 oneshot_mask;
- 
- 	u8 inherit_mask;
-+
-+	struct preempt_notifier preempt_notifier;
- };
- 
- extern void __task_isol_free(struct task_struct *tsk);
-Index: linux-2.6/include/linux/vmstat.h
-===================================================================
---- linux-2.6.orig/include/linux/vmstat.h
-+++ linux-2.6/include/linux/vmstat.h
-@@ -34,10 +34,16 @@ static inline void sync_vmstat(void)
- }
- 
- void init_sync_vmstat(void);
-+
-+void vmstat_dirty_to_thread_flag(void);
- #else
- static inline void sync_vmstat(void)
- {
- }
-+
-+static inline void vmstat_dirty_to_thread_flag(void)
-+{
-+}
- #endif
- 
- struct reclaim_stat {
-Index: linux-2.6/mm/vmstat.c
-===================================================================
---- linux-2.6.orig/mm/vmstat.c
-+++ linux-2.6/mm/vmstat.c
-@@ -353,6 +353,13 @@ void init_sync_vmstat(void)
- 	set_thread_flag(TIF_TASK_ISOL);
- }
- EXPORT_SYMBOL_GPL(vmstat_dirty);
-+
-+void vmstat_dirty_to_thread_flag(void)
-+{
-+	if (__this_cpu_read(vmstat_dirty) == true)
-+		set_thread_flag(TIF_TASK_ISOL);
-+}
-+EXPORT_SYMBOL_GPL(vmstat_dirty_to_thread_flag);
- #else
- static inline void mark_vmstat_dirty(void)
- {
-
+base-commit: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+-- 
+2.35.1
 
