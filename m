@@ -2,86 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91019C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B85C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346985AbiCOKLF (ORCPT
+        id S1346986AbiCOKOV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
+        Tue, 15 Mar 2022 06:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239017AbiCOKLC (ORCPT
+        with ESMTP id S239017AbiCOKOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:11:02 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227224FC63;
-        Tue, 15 Mar 2022 03:09:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647338991; x=1678874991;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fQdJwp3QYFB6RzA76W+Kf3fw3JbIyIWnKEdmFYEY0Rc=;
-  b=cnSZxhNOVfO8ZVqouCPZc6Krbti2zEcWE3Y8TUFAH5jLzE/lmosyvi2K
-   t9yyxC18zihIJnT3+phK+hM5dpzHwJgzM4kaFy8B1zr8Ef1JGnbmTFvB2
-   QxSqTOwiC5ndqAnDcrM7TQu2Go93QJGE3XOhXNnP5y0ALExKArqY/F3qh
-   gmhmlAtAc3nVIJa0+lzq+fUE0h/M1Rm0L15T+yksKh2UkqOWZPzfszmZ0
-   uuUYkDqLNEwFMur7PxrshDeIDDT/SunWTjQc6MQJy1+CH7IQ3kB9pSOTy
-   6Mlzz6keo+bpJsZMkUyJ4nC/LkLejKh7tVl+pknUiRt8sY5pWbOPFE8rB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="253822133"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="253822133"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 03:09:50 -0700
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="515807284"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 03:09:49 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nU472-000CDY-QY;
-        Tue, 15 Mar 2022 12:09:08 +0200
-Date:   Tue, 15 Mar 2022 12:09:08 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, micklorain@protonmail.com
-Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
-Message-ID: <YjBlxOi0ljZVUb/D@smile.fi.intel.com>
-References: <20220314101448.90074-1-andriy.shevchenko@linux.intel.com>
- <20220314194253.GA515821@bhelgaas>
+        Tue, 15 Mar 2022 06:14:17 -0400
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79F946173;
+        Tue, 15 Mar 2022 03:13:04 -0700 (PDT)
+IronPort-Data: =?us-ascii?q?A9a23=3AtRSjFqkBDuL/XMJ+DwpEVxjo5gyOJ0RdPkR7XQ2?=
+ =?us-ascii?q?eYbTBsI5bpzdUzTQbD2uEOvyOZTOkLd5+Ptvk90IB6pDUm9QyTQBr+CA2RRqmi?=
+ =?us-ascii?q?+KfW43BcR2Y0wB+jyH7ZBs+qZ1YM7EsFehsJpPnjkrrYuiJQUVUj/nSHOKmULe?=
+ =?us-ascii?q?cY0ideCc/IMsfoUM68wIGqt4w6TSJK1vlVeLa+6UzCnf8s9JHGj58B5a4lf9al?=
+ =?us-ascii?q?K+aVAX0EbAJTasjUFf2zxH5BX+ETE27ByOQroJ8RoZWSwtfpYxV8F81/z91Yj+?=
+ =?us-ascii?q?kur39NEMXQL/OJhXIgX1TM0SgqkEa4HVsjeBgb7xBAatUo2zhc9RZzNRftZ2yS?=
+ =?us-ascii?q?A4vFqPRmuUBSAQeGCZ7VUFD0Oadeybj4ZXLkyUqdFOpmZ2CFnoeJ5UV8/xsBmd?=
+ =?us-ascii?q?O7fEwJzUEbxTFjOWzqJqpW+t+l8Z5dJGzFIwas3BkizreCJ4ORZHKRarV6NlA0?=
+ =?us-ascii?q?TE/rsBTFOnTZowSbj8HRBjJZVtNfEgWDJY/leKzrnj5bzBc7lmSoMIf/2/WxRd?=
+ =?us-ascii?q?jlrf3N9/cds6JRO1UmFqVoiTN+GGRKhUXM9q3yjef9H+owOjVkkvTUYIbDrq+8?=
+ =?us-ascii?q?tZsnlyfx2VVAxoTPXO+q/2+gU6WXcxeJ00dvCEpqMAa6EuuZsX0WwW1sTiPuRt?=
+ =?us-ascii?q?0c95RFfAqrQKA0KzZ5y6HCWUeCD1MctorsIkxXzNC/luImc75QCZjtbS9V32Q7?=
+ =?us-ascii?q?PGXoCm0NCxTKnUNDQcGQgQt8djuuIx1hRunczrJOMZZlfWsQXepnW/M93N42t0?=
+ =?us-ascii?q?uYQcw//3T1Tj6b/iE//AlljII2zg=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3Ad/6iVq/MPezAO+fXgz5uk+C2I+orL9Y04lQ7?=
+ =?us-ascii?q?vn2ZKCY1TiX2rayTdZggviMc6wx+ZJhDo7+90cC7KBvhHPVOjLX5U43JYDXb?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="122648104"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 15 Mar 2022 18:13:03 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id 6930B4D16FD8;
+        Tue, 15 Mar 2022 18:13:02 +0800 (CST)
+Received: from G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Tue, 15 Mar 2022 18:13:02 +0800
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXJMPEKD02.g08.fujitsu.local (10.167.33.202) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Tue, 15 Mar 2022 18:13:04 +0800
+Received: from localhost.localdomain (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Tue, 15 Mar 2022 18:13:00 +0800
+From:   Li Zhijian <lizhijian@fujitsu.com>
+To:     <linux-rdma@vger.kernel.org>, <zyjzyj2000@gmail.com>,
+        <jgg@ziepe.ca>, <aharonl@nvidia.com>, <leon@kernel.org>,
+        <tom@talpey.com>, <tomasz.gromadzki@intel.com>
+CC:     <linux-kernel@vger.kernel.org>, <mbloch@nvidia.com>,
+        <liangwenpeng@huawei.com>, <yangx.jy@fujitsu.com>,
+        <y-goto@fujitsu.com>, <rpearsonhpe@gmail.com>,
+        <dan.j.williams@intel.com>, Li Zhijian <lizhijian@fujitsu.com>
+Subject: [RFC PATCH v3 2/7] RDMA/rxe: Allow registering persistent flag for pmem MR only
+Date:   Tue, 15 Mar 2022 18:18:40 +0800
+Message-ID: <20220315101845.4166983-3-lizhijian@fujitsu.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220315101845.4166983-1-lizhijian@fujitsu.com>
+References: <20220315101845.4166983-1-lizhijian@fujitsu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314194253.GA515821@bhelgaas>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 6930B4D16FD8.AFDAF
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: lizhijian@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
-> On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
-> > ATI PCIe-USB adapter advertises MSI, but it doesn't work if INTx is disabled.
-> > Enable the respective quirk as it's done for other ATI devices on this chipset,
-> > 
-> > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI devices")
-> 
-> This is interesting because there must be a TON of these AMD/ATI SB600
-> USB devices in the field, and 306c54d0edb6 was merged in July 2020 and
-> appeared in v5.9.
-> 
-> So why would we only get a report now, in February 2022?  Is there
-> some change more recent than 306c54d0edb6 that exposed this problem?
+Memory region could at most support 2 placement types:
+IB_ACCESS_FLUSH_PERSISTENT and IB_ACCESS_FLUSH_GLOBAL_VISIBILITY
 
-I think it's a rhetorical question. To me it's as simple as the latency
-between getting the change into the kernel.
+But we only allow user to register persistence flush to non-pmem MR.
 
-However, I'm a bit worried that in case of ATI there are not so many
-platforms that are kept up-to-dated.
+Signed-off-by: Li Zhijian <lizhijian@fujitsu.com>
+---
+V3: combine [RFC PATCH v2 1/9] RDMA: mr: Introduce is_pmem
+V2: update commit message, get rid of confusing ib_check_flush_access_flags() # Tom
+---
+ drivers/infiniband/sw/rxe/rxe_mr.c | 32 ++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
+diff --git a/drivers/infiniband/sw/rxe/rxe_mr.c b/drivers/infiniband/sw/rxe/rxe_mr.c
+index 453ef3c9d535..4f5c4af19fe0 100644
+--- a/drivers/infiniband/sw/rxe/rxe_mr.c
++++ b/drivers/infiniband/sw/rxe/rxe_mr.c
+@@ -161,6 +161,28 @@ void rxe_mr_init_dma(struct rxe_pd *pd, int access, struct rxe_mr *mr)
+ 	mr->type = IB_MR_TYPE_DMA;
+ }
+ 
++static bool iova_in_pmem(struct rxe_mr *mr, u64 iova, int length)
++{
++	char *vaddr;
++	int is_pmem;
++
++	/* XXX: Shall me allow length == 0 */
++	if (length == 0) {
++		return false;
++	}
++	/* check the 1st byte only to avoid crossing page boundary */
++	vaddr = iova_to_vaddr(mr, iova, 1);
++	if (!vaddr) {
++		pr_warn("not a valid iova 0x%llx\n", iova);
++		return false;
++	}
++
++	is_pmem = region_intersects(virt_to_phys(vaddr), 1, IORESOURCE_MEM,
++				    IORES_DESC_PERSISTENT_MEMORY);
++
++	return is_pmem == REGION_INTERSECTS;
++}
++
+ int rxe_mr_init_user(struct rxe_pd *pd, u64 start, u64 length, u64 iova,
+ 		     int access, struct rxe_mr *mr)
+ {
+@@ -235,6 +257,16 @@ int rxe_mr_init_user(struct rxe_pd *pd, u64 start, u64 length, u64 iova,
+ 	set->va = start;
+ 	set->offset = ib_umem_offset(umem);
+ 
++	// iova_in_pmem() must be called after set is updated
++	if (!iova_in_pmem(mr, iova, length) &&
++	    access & IB_ACCESS_FLUSH_PERSISTENT) {
++		pr_warn("Cannot register IB_ACCESS_FLUSH_PERSISTENT for non-pmem memory\n");
++		mr->state = RXE_MR_STATE_INVALID;
++		mr->umem = NULL;
++		err = -EINVAL;
++		goto err_release_umem;
++	}
++
+ 	return 0;
+ 
+ err_release_umem:
 -- 
-With Best Regards,
-Andy Shevchenko
+2.31.1
+
 
 
