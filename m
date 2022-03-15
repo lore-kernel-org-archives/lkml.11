@@ -2,153 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F729C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D07FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350620AbiCORdU (ORCPT
+        id S1350634AbiCORdl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:33:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35896 "EHLO
+        Tue, 15 Mar 2022 13:33:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350676AbiCORdH (ORCPT
+        with ESMTP id S238293AbiCORdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 13:33:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD02556775;
-        Tue, 15 Mar 2022 10:31:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 15 Mar 2022 13:33:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4723A58831
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:32:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647365540;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vIoYTkbN3Ug6dTUhmuqPkv63yNtg6n8OcRSZGx3ZPto=;
+        b=g4a+O2sFhVe1fNLB9X3ukxpCjicfSkITwfA1UudW7h75TYUKWJj+tSoJRx38KqA+Mf1ScX
+        uvbPJ//YtRolA8QjAMsmr0BAuSMy57b8wSMsMj8ZRx61KRi0U1sRfYzR7YX4416izcd8F8
+        25L5GZz/Vxj4NJgPCaGPwLcmkSvCRjk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-354-DnOvd3EJMken7kVGUZ0rGw-1; Tue, 15 Mar 2022 13:32:17 -0400
+X-MC-Unique: DnOvd3EJMken7kVGUZ0rGw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67B97615AC;
-        Tue, 15 Mar 2022 17:31:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 581E2C340E8;
-        Tue, 15 Mar 2022 17:31:53 +0000 (UTC)
-Date:   Tue, 15 Mar 2022 13:31:51 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: linux-next: manual merge of the ftrace tree with the nfsd tree
-Message-ID: <20220315133151.7e415bb3@gandalf.local.home>
-In-Reply-To: <A1869114-7192-4DF2-BD0F-B2A970F79CC2@oracle.com>
-References: <20220315145828.413e9301@canb.auug.org.au>
-        <A1869114-7192-4DF2-BD0F-B2A970F79CC2@oracle.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AAA8A802809;
+        Tue, 15 Mar 2022 17:32:16 +0000 (UTC)
+Received: from localhost (unknown [10.39.194.62])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6410C404C33F;
+        Tue, 15 Mar 2022 17:32:16 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Alex Williamson <alex.williamson@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
+        yishaih@nvidia.com, linux-doc@vger.kernel.org, corbet@lwn.net
+Subject: Re: [PATCH v3] vfio-pci: Provide reviewers and acceptance criteria
+ for vendor drivers
+In-Reply-To: <20220315102200.15a86b16.alex.williamson@redhat.com>
+Organization: Red Hat GmbH
+References: <164728932975.54581.1235687116658126625.stgit@omen>
+ <87a6drh8hy.fsf@redhat.com> <20220315155304.GC11336@nvidia.com>
+ <20220315102200.15a86b16.alex.williamson@redhat.com>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Tue, 15 Mar 2022 18:32:14 +0100
+Message-ID: <87zglrf7fl.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 13:33:30 +0000
-Chuck Lever III <chuck.lever@oracle.com> wrote:
+On Tue, Mar 15 2022, Alex Williamson <alex.williamson@redhat.com> wrote:
 
-> > On Mar 14, 2022, at 11:58 PM, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> > 
-> > Hi all,
-> > 
-> > Today's linux-next merge of the ftrace tree got a conflict in:
-> > 
-> >  include/trace/trace_events.h
-> > 
-> > between commit:
-> > 
-> >  d07c9ad62247 ("tracing: Introduce helpers to safely handle dynamic-sized sockaddrs")
-> > 
-> > from the nfsd tree and commit:
-> > 
-> >  af6b9668e85f ("tracing: Move the defines to create TRACE_EVENTS into their own files")
-> > 
-> > from the ftrace tree.
-> > 
-> > Well, this is a pain :-(  
-> 
-> Apologies. Steven, can you take the sockaddr patches in your tree
-> and resolve the x86_64 build issue?
+> On Tue, 15 Mar 2022 12:53:04 -0300
+> Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+>> On Tue, Mar 15, 2022 at 10:26:17AM +0100, Cornelia Huck wrote:
+>> > On Mon, Mar 14 2022, Alex Williamson <alex.williamson@redhat.com> wrote:
 
-Actually, the issue is not with your tree. It's a conflict with:
+>> In general I wonder if this is a bit too specific to PCI, really this
+>> is just review criteria for any driver making a struct vfio_device_ops
+>> implementation, and we have some specific guidance for migration here
+>> as well.
+>> 
+>> Like if IBM makes s390 migration drivers all of this applies just as
+>> well even though they are not PCI.
+>
+> Are you volunteering to be a reviewer under drivers/vfio/?  Careful,
+> I'll add you ;)
+>
+> What you're saying is true of course and it could be argued that this
+> sort of criteria is true for any new driver, I think the unique thing
+> here that raises it to a point where we want to formalize the breadth
+> of reviews is how significantly lower the bar is to create a device
+> specific driver now that we have a vfio-pci-core library.  Shameer's
+> stub driver is 100 LoC.  I also expect that the pool of people willing
+> to volunteer to be reviewers for PCI related device specific drivers is
+> large than we might see for arbitrary drivers.
 
-  fa2c3254d7cff ("sched/tracing: Don't re-read p->state when emitting sched_switch event")
+Yes. Also, I expect that more people understand how a PCI driver works
+than how an s390 channel subsystem driver works :)
 
-Which changed the sched_switch event that my example was attaching to.
+I think we'll just have to hope that attempts to add e.g. migration
+support to a driver outside of vfio-pci show up on the correct mailing
+lists and that the right people notice it or can be pointed towards it.
 
-At least this proves that it will not compile if your custom event does not
-match the prototype of the event that the custom event is modifying :-)
+>
+>> > > +New driver submissions are therefore requested to have approval via
+>> > > +Sign-off/Acked-by/etc for any interactions with parent drivers.  
+>> > 
+>> > s/Sign-off/Reviewed-by/ ?
+>> > 
+>> > I would not generally expect the reviewers listed to sign off on other
+>> > people's patches.  
+>> 
+>> It happens quite a lot when those people help write the patches too :)
+>
+> This is what "etc" is for, the owners are involved and have endorsed it
+> in some way, that's all we care about.
 
-
-> > 
-> > However, my x86_64 allmodconfig build then failed like this:
-> > 
-> > In file included from include/trace/define_custom_trace.h:55,
-> >                 from samples/trace_events/trace_custom_sched.h:95,
-> >                 from samples/trace_events/trace_custom_sched.c:24:
-> > samples/trace_events/./trace_custom_sched.h: In function 'ftrace_test_custom_probe_sched_switch':
-> > include/trace/trace_custom_events.h:178:42: error: passing argument 1 of 'check_trace_callback_type_sched_switch' from incompatible pointer type [-Werror=incompatible-pointer-types]
-> >  178 |         check_trace_callback_type_##call(trace_custom_event_raw_event_##template); \
-> >      |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >      |                                          |
-> >      |                                          void (*)(void *, bool,  struct task_struct *, struct task_struct *) {aka void (*)(void *, _Bool,  struct task_struct *, struct task_struct *)}
-> > include/trace/trace_custom_events.h:34:9: note: in expansion of macro 'DEFINE_CUSTOM_EVENT'
-> >   34 |         DEFINE_CUSTOM_EVENT(name, name, PARAMS(proto), PARAMS(args));
-> >      |         ^~~~~~~~~~~~~~~~~~~
-> > samples/trace_events/./trace_custom_sched.h:21:1: note: in expansion of macro 'TRACE_CUSTOM_EVENT'
-> >   21 | TRACE_CUSTOM_EVENT(sched_switch,
-> >      | ^~~~~~~~~~~~~~~~~~
-> > In file included from include/linux/trace_events.h:11,
-> >                 from samples/trace_events/trace_custom_sched.c:10:
-> > include/linux/tracepoint.h:279:49: note: expected 'void (*)(void *, bool,  unsigned int,  struct task_struct *, struct task_struct *)' {aka 'void (*)(void *, _Bool,  unsigned int,  struct task_struct *, struct task_struct *)'} but argument is of type 'void (*)(void *, bool,  struct task_struct *, struct task_struct *)' {aka 'void (*)(void *, _Bool,  struct task_struct *, struct task_struct *)'}
-> >  279 |         check_trace_callback_type_##name(void (*cb)(data_proto))        \
-
-
-It's the type check code that failed. The above is complaining that it
-expects:
-
- 'void (*)(void *, bool,  unsigned int,  struct task_struct *, struct
- task_struct *)' {aka 'void (*)(void *, _Bool,  unsigned int,  struct task_struct *, struct task_struct *)'}
-
-But it found:
-
- 'void (*)(void *, bool,  struct task_struct *, struct task_struct *)' {aka
- 'void (*)(void *, _Bool,  struct task_struct *, struct task_struct *)'}
-
-
-That's because the sched_switch event had the int prev_state added to it,
-but my custom event was unaware of that.
-
-Stephen, I pushed out a branch on my tree that merges my for-next branch
-with next-20220315 and pushed it to:
-
-git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
-
-branch: trace-merge-next-20220315
-
--- Steve
-
-
-
-
-> >      |                                          ~~~~~~~^~~~~~~~~~~~~~~
-> > include/linux/tracepoint.h:419:9: note: in expansion of macro '__DECLARE_TRACE'
-> >  419 |         __DECLARE_TRACE(name, PARAMS(proto), PARAMS(args),              \
-> >      |         ^~~~~~~~~~~~~~~
-> > include/linux/tracepoint.h:553:9: note: in expansion of macro 'DECLARE_TRACE'
-> >  553 |         DECLARE_TRACE(name, PARAMS(proto), PARAMS(args))
-> >      |         ^~~~~~~~~~~~~
-> > include/trace/events/sched.h:222:1: note: in expansion of macro 'TRACE_EVENT'
-> >  222 | TRACE_EVENT(sched_switch,
-> >      | ^~~~~~~~~~~
-> > 
-> > So I gave up and uses the ftrace tree from next-20220310 for today.
-> > 
-> > I am going to need some help with this mess, please.
-> > -- 
-> > Cheers,
-> > Stephen Rothwell  
-> 
-> --
-> Chuck Lever
-> 
-> 
+Fair enough.
 
