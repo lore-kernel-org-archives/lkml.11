@@ -2,79 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D9F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C591C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348301AbiCOMbC (ORCPT
+        id S1348303AbiCOMbQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
+        Tue, 15 Mar 2022 08:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237425AbiCOMa7 (ORCPT
+        with ESMTP id S1348308AbiCOMbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:30:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D622D53701;
-        Tue, 15 Mar 2022 05:29:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85EF7B8122D;
-        Tue, 15 Mar 2022 12:29:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4292C340ED;
-        Tue, 15 Mar 2022 12:29:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647347385;
-        bh=yu1IZzfDQbWy54cvNCINeIZqwhUe63idE+YJeXm73Og=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CapuCZmc1rLoomDXg3av9VkLre/R2z5lX0fJTda4v0qGKzMzg6oYxa2CZHmEw6dhH
-         VGnWzMHRQ7Wf6Xklg0oTYY6S/vFvu9Q5yJlHrk3LCOVGQyVL6Vy7NebX3NpZqSW05K
-         vF7Snkt4Ds/0fTMir4PXsuymBxWKEBj4YNXWoXlY=
-Date:   Tue, 15 Mar 2022 13:29:40 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     James Morse <james.morse@arm.com>
-Cc:     Pavel Machek <pavel@denx.de>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>
-Subject: Re: [PATCH 5.10 38/58] KVM: arm64: Allow indirect vectors to be used
- without SPECTRE_V3A
-Message-ID: <YjCGtM8INuLORSNb@kroah.com>
-References: <20220310140812.869208747@linuxfoundation.org>
- <20220310140813.956533242@linuxfoundation.org>
- <20220310234858.GB16308@amd>
- <YirvObKn0ADrEOk+@kroah.com>
- <ef538a31-5f73-dfc5-12a9-f5222514035c@arm.com>
+        Tue, 15 Mar 2022 08:31:12 -0400
+Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BB7E53724;
+        Tue, 15 Mar 2022 05:29:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=fUx1d
+        Hz8QOuYbxTSkHxz9OhPu6LyF9InCSqHJeq1ve0=; b=hR82SILuBzQIHN2h0NZYK
+        4e1SRPtxqDAvn6BW+HFFrg5j+ig+As701URoSvEyisrvkykJsyLcB32QibFJwi6F
+        HgXiwxwqiKIu+OJh0w1hq1UPWflYd60kntbPZ+ElHcQMF871wGvoKmkxCRYi4fVW
+        YwaHXx+tCilS6lj7Sva0no=
+Received: from localhost (unknown [116.30.193.133])
+        by smtp14 (Coremail) with SMTP id EsCowACX3iSchjBiVp1zAg--.65133S2;
+        Tue, 15 Mar 2022 20:29:16 +0800 (CST)
+From:   wujunwen <wudaemon@163.com>
+To:     davem@davemloft.net, kuba@kernel.org, m.grzeschik@pengutronix.de,
+        chenhao288@hisilicon.com, arnd@arndb.de, pabeni@redhat.com
+Cc:     wudaemon@163.com, shenyang39@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [net-next PATCH v4] net: ksz884x: optimize netdev_open flow and remove static variable
+Date:   Tue, 15 Mar 2022 12:28:57 +0000
+Message-Id: <20220315122857.78601-1-wudaemon@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ef538a31-5f73-dfc5-12a9-f5222514035c@arm.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EsCowACX3iSchjBiVp1zAg--.65133S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJryktw1DtFW7Kr45uFWUCFg_yoW8Aryxpa
+        y7Aa40vrW8W3WxWayqy3y8ZF15Gw1UKFyxGFyxK34S9347Kr98tFs5KrWYyr45CrZ5XF1S
+        v39YvF9rCF93Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U5ucNUUUUU=
+X-Originating-IP: [116.30.193.133]
+X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbiUBnEbVWBt4TKGwABsX
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 12:20:31PM +0000, James Morse wrote:
-> Hi guys,
-> 
-> On 3/11/22 6:42 AM, Greg Kroah-Hartman wrote:
-> > On Fri, Mar 11, 2022 at 12:48:59AM +0100, Pavel Machek wrote:
-> > > What is going on here?
-> > > 
-> > > > commit 5bdf3437603d4af87f9c7f424b0c8aeed2420745 upstream.
-> > > 
-> > > Upstream commit 5bdf is very different from this. In particular,
-> > > 
-> > > >   arch/arm64/kvm/hyp/smccc_wa.S    |   66 +++++++++++++++++++++++++++++++++++++++
-> > > 
-> > > I can't find smccc_wa.S, neither in mainline, nor in -next. And it
-> > > looks buggy. I suspect loop_k24 should loop 24 times, but it does 8
-> > > loops AFAICT. Same problem with loop_k32.
-> 
-> Yup, that's a bug. Thanks for spotting it!
-> I'll post a replacement for this patch.
+remove the static next_jiffies variable, and reinitialize next_jiffies 
+to simplify netdev_open
 
-That's going to be hard as this is now in a merged tree :(
+Signed-off-by: wujunwen <wudaemon@163.com>
+---
+ drivers/net/ethernet/micrel/ksz884x.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Can you just send a fixup?
+diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
+index d024983815da..2b3eb5ed8233 100644
+--- a/drivers/net/ethernet/micrel/ksz884x.c
++++ b/drivers/net/ethernet/micrel/ksz884x.c
+@@ -5225,7 +5225,6 @@ static irqreturn_t netdev_intr(int irq, void *dev_id)
+  * Linux network device functions
+  */
+ 
+-static unsigned long next_jiffies;
+ 
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ static void netdev_netpoll(struct net_device *dev)
+@@ -5411,10 +5410,12 @@ static int netdev_open(struct net_device *dev)
+ 	struct dev_info *hw_priv = priv->adapter;
+ 	struct ksz_hw *hw = &hw_priv->hw;
+ 	struct ksz_port *port = &priv->port;
++	unsigned long next_jiffies;
+ 	int i;
+ 	int p;
+ 	int rc = 0;
+ 
++	next_jiffies = jiffies + HZ * 2;
+ 	priv->multicast = 0;
+ 	priv->promiscuous = 0;
+ 
+@@ -5428,10 +5429,7 @@ static int netdev_open(struct net_device *dev)
+ 		if (rc)
+ 			return rc;
+ 		for (i = 0; i < hw->mib_port_cnt; i++) {
+-			if (next_jiffies < jiffies)
+-				next_jiffies = jiffies + HZ * 2;
+-			else
+-				next_jiffies += HZ * 1;
++			next_jiffies += HZ * 1;
+ 			hw_priv->counter[i].time = next_jiffies;
+ 			hw->port_mib[i].state = media_disconnected;
+ 			port_init_cnt(hw, i);
+@@ -6563,6 +6561,7 @@ static void mib_read_work(struct work_struct *work)
+ 	struct dev_info *hw_priv =
+ 		container_of(work, struct dev_info, mib_read);
+ 	struct ksz_hw *hw = &hw_priv->hw;
++	unsigned long next_jiffies;
+ 	struct ksz_port_mib *mib;
+ 	int i;
+ 
+-- 
+2.25.1
 
-thanks,
-
-greg k-h
