@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF62C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56AF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244577AbiCOKpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59294 "EHLO
+        id S1347295AbiCOKpo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:45:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347253AbiCOKpF (ORCPT
+        with ESMTP id S1347229AbiCOKo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:45:05 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08AD132995;
-        Tue, 15 Mar 2022 03:43:49 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:46 -0000
+        Tue, 15 Mar 2022 06:44:59 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D7A2FFFE;
+        Tue, 15 Mar 2022 03:43:46 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:43:44 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341027;
+        s=2020; t=1647341025;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1mmzYc9b/LcoRKMAbTkvhuOjQ0e1B3LxaHEakfD1YVg=;
-        b=a3oUOXnvpJTPH/Dd2T+NET0ErmydrbwryYczjxzqK+ROe4ENaHCqVYhLB7Tv5TOUTfZYx+
-        3eDprlfLg85giMN5CJLiS2nEVurduwblMK6lamf5I3pGJ0AiqM4OCx0Jai0wArFQsUqiTc
-        G5SHcrvEZwYg+DpshSTN0B4igs6w479feRhr9weHtC+BHw7b5lqXluZT0kwwowBIfcE1Fj
-        um+Nj7gugzCeIigAEM8bPx87lhheksiaLdfMBt+IOY4fjEWat/LhNjvCoqOIqNJTXQFURw
-        IU3ulkspzVfsre300I/maD5fIhcVbqs7zCPctCUNb/mq3N8A6zh5gA1M7pzE6Q==
+        bh=Hxu6HAo9k3r6P9W+82qGb8nz5Vk89mWlb5WKvszBbSk=;
+        b=Ke1S8EuDTveo1AOl5NiFXcHrPBUJqq46dG6xfL/NrszVsDlKiWM4KumWawUdasEBh9r3o9
+        k+i+Qwsr7iX16qogvhfcXhcP6KQwvk1VA8fM2WGVRnpL1QDMMMqnKJ9M6tIcD2qJoxpzhB
+        jJaHFMr907UzXpEek5bjAbltp6E44MOggdoIk3TwRYXQpkLniy/BdgKCFPy4S6HbJ6VGn/
+        Ua0L2e3xqBlclT5jE9pkGujN5MpsRVIur7gXOsPmZSSmR+uP39rQCP4XJOM0RnCwxkzcn6
+        R7XEfBe33uy5GQ7855FvMLqO1yfqgb143nY2bG0YCycwSmVg/qAqysF2/I+LQg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341027;
+        s=2020e; t=1647341025;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1mmzYc9b/LcoRKMAbTkvhuOjQ0e1B3LxaHEakfD1YVg=;
-        b=kWk4yep0bXJqZltZOXgYAaxCXrEP+uuoSYv1UTxs4VTEslmlZJe1UXAKuVmfWfYqWmmAUl
-        wIwvltU+0HmJnhDg==
+        bh=Hxu6HAo9k3r6P9W+82qGb8nz5Vk89mWlb5WKvszBbSk=;
+        b=IO83sPTK6ajbp+CNcrLz7LRHwYoaHiPgoJP+0gFX/KZIEtLUFWLDZ6juPUFiP5+NE/nyqh
+        UoNYERtQr/KrJMCQ==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] objtool: Rework ASM_REACHABLE
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
+Subject: [tip: x86/core] x86,objtool: Move the ASM_REACHABLE annotation to objtool.h
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154319.410010807@infradead.org>
-References: <20220308154319.410010807@infradead.org>
+In-Reply-To: <Yi9gOW9f1GGwwUD6@hirez.programming.kicks-ass.net>
+References: <Yi9gOW9f1GGwwUD6@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Message-ID: <164734102649.16921.17671353163928907701.tip-bot2@tip-bot2>
+Message-ID: <164734102445.16921.13366804686413251320.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,114 +61,167 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     0e5b613b4d4be3345dda349fb90dd73d2103302f
-Gitweb:        https://git.kernel.org/tip/0e5b613b4d4be3345dda349fb90dd73d2103302f
+Commit-ID:     dca5da2abe406168b85f97e22109710ebe0bda08
+Gitweb:        https://git.kernel.org/tip/dca5da2abe406168b85f97e22109710ebe0bda08
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:49 +01:00
+AuthorDate:    Mon, 14 Mar 2022 18:05:52 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:44 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:45 +01:00
 
-objtool: Rework ASM_REACHABLE
+x86,objtool: Move the ASM_REACHABLE annotation to objtool.h
 
-Currently ASM_REACHABLE only works for UD2 instructions; reorder
-things to also allow over-riding dead_end_function().
-
-To that end:
-
- - Mark INSN_BUG instructions in decode_instructions(), this saves
-   having to iterate all instructions yet again.
-
- - Have add_call_destinations() set insn->dead_end for
-   dead_end_function() calls.
-
- - Move add_dead_ends() *after* add_call_destinations() such that
-   ASM_REACHABLE can clear the ->dead_end mark.
-
- - have validate_branch() only check ->dead_end.
+Because we need a variant for .S files too.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154319.410010807@infradead.org
+Link: https://lkml.kernel.org/r/Yi9gOW9f1GGwwUD6@hirez.programming.kicks-ass.net
 ---
- tools/objtool/check.c | 33 ++++++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 13 deletions(-)
+ arch/x86/include/asm/bug.h       |  1 +
+ arch/x86/include/asm/irq_stack.h |  1 +
+ include/linux/compiler.h         |  7 -------
+ include/linux/objtool.h          | 16 ++++++++++++++++
+ tools/include/linux/objtool.h    | 16 ++++++++++++++++
+ 5 files changed, 34 insertions(+), 7 deletions(-)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 0c857e7..894c9a7 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -395,6 +395,14 @@ static int decode_instructions(struct objtool_file *file)
- 			if (ret)
- 				goto err;
+diff --git a/arch/x86/include/asm/bug.h b/arch/x86/include/asm/bug.h
+index bab883c..4d20a29 100644
+--- a/arch/x86/include/asm/bug.h
++++ b/arch/x86/include/asm/bug.h
+@@ -4,6 +4,7 @@
  
-+			/*
-+			 * By default, "ud2" is a dead end unless otherwise
-+			 * annotated, because GCC 7 inserts it for certain
-+			 * divide-by-zero cases.
-+			 */
-+			if (insn->type == INSN_BUG)
-+				insn->dead_end = true;
-+
- 			hash_add(file->insn_hash, &insn->hash, sec_offset_hash(sec, insn->offset));
- 			list_add_tail(&insn->list, &file->insn_list);
- 			nr_insns++;
-@@ -524,14 +532,6 @@ static int add_dead_ends(struct objtool_file *file)
- 	struct instruction *insn;
+ #include <linux/stringify.h>
+ #include <linux/instrumentation.h>
++#include <linux/objtool.h>
  
- 	/*
--	 * By default, "ud2" is a dead end unless otherwise annotated, because
--	 * GCC 7 inserts it for certain divide-by-zero cases.
--	 */
--	for_each_insn(file, insn)
--		if (insn->type == INSN_BUG)
--			insn->dead_end = true;
+ /*
+  * Despite that some emulators terminate on UD2, we use it for WARN().
+diff --git a/arch/x86/include/asm/irq_stack.h b/arch/x86/include/asm/irq_stack.h
+index 05af249..63f818a 100644
+--- a/arch/x86/include/asm/irq_stack.h
++++ b/arch/x86/include/asm/irq_stack.h
+@@ -3,6 +3,7 @@
+ #define _ASM_X86_IRQ_STACK_H
+ 
+ #include <linux/ptrace.h>
++#include <linux/objtool.h>
+ 
+ #include <asm/processor.h>
+ 
+diff --git a/include/linux/compiler.h b/include/linux/compiler.h
+index 0f7fd20..219aa5d 100644
+--- a/include/linux/compiler.h
++++ b/include/linux/compiler.h
+@@ -125,18 +125,11 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
+ })
+ #define annotate_unreachable() __annotate_unreachable(__COUNTER__)
+ 
+-#define ASM_REACHABLE							\
+-	"998:\n\t"							\
+-	".pushsection .discard.reachable\n\t"				\
+-	".long 998b - .\n\t"						\
+-	".popsection\n\t"
 -
--	/*
- 	 * Check for manually annotated dead ends.
- 	 */
- 	sec = find_section_by_name(file->elf, ".rela.discard.unreachable");
-@@ -1114,6 +1114,9 @@ static void annotate_call_site(struct objtool_file *file,
- 		list_add_tail(&insn->call_node, &file->mcount_loc_list);
- 		return;
- 	}
+ /* Annotate a C jump table to allow objtool to follow the code flow */
+ #define __annotate_jump_table __section(".rodata..c_jump_table")
+ 
+ #else
+ #define annotate_unreachable()
+-# define ASM_REACHABLE
+ #define __annotate_jump_table
+ #endif
+ 
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index f797368..586d357 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -83,6 +83,12 @@ struct unwind_hint {
+ 	_ASM_PTR " 986b\n\t"					\
+ 	".popsection\n\t"
+ 
++#define ASM_REACHABLE							\
++	"998:\n\t"							\
++	".pushsection .discard.reachable\n\t"				\
++	".long 998b - .\n\t"						\
++	".popsection\n\t"
 +
-+	if (!sibling && dead_end_function(file, sym))
-+		insn->dead_end = true;
- }
+ #else /* __ASSEMBLY__ */
  
- static void add_call_dest(struct objtool_file *file, struct instruction *insn,
-@@ -2089,10 +2092,6 @@ static int decode_sections(struct objtool_file *file)
- 	if (ret)
- 		return ret;
+ /*
+@@ -142,6 +148,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
  
--	ret = add_dead_ends(file);
--	if (ret)
--		return ret;
--
- 	add_ignores(file);
- 	add_uaccess_safe(file);
- 
-@@ -2131,6 +2130,14 @@ static int decode_sections(struct objtool_file *file)
- 	if (ret)
- 		return ret;
- 
-+	/*
-+	 * Must be after add_call_destinations() such that it can override
-+	 * dead_end_function() marks.
-+	 */
-+	ret = add_dead_ends(file);
-+	if (ret)
-+		return ret;
++.macro REACHABLE
++.Lhere_\@:
++	.pushsection .discard.reachable
++	.long	.Lhere_\@ - .
++	.popsection
++.endm
 +
- 	ret = add_jump_table_alts(file);
- 	if (ret)
- 		return ret;
-@@ -3138,7 +3145,7 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
- 				return 1;
- 			}
+ #endif /* __ASSEMBLY__ */
  
--			if (dead_end_function(file, insn->call_dest))
-+			if (insn->dead_end)
- 				return 0;
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -153,6 +166,7 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #define ANNOTATE_NOENDBR
++#define ASM_REACHABLE
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+@@ -161,6 +175,8 @@ struct unwind_hint {
+ .endm
+ .macro ANNOTATE_NOENDBR
+ .endm
++.macro REACHABLE
++.endm
+ #endif
  
- 			break;
+ #endif /* CONFIG_STACK_VALIDATION */
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index f797368..586d357 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -83,6 +83,12 @@ struct unwind_hint {
+ 	_ASM_PTR " 986b\n\t"					\
+ 	".popsection\n\t"
+ 
++#define ASM_REACHABLE							\
++	"998:\n\t"							\
++	".pushsection .discard.reachable\n\t"				\
++	".long 998b - .\n\t"						\
++	".popsection\n\t"
++
+ #else /* __ASSEMBLY__ */
+ 
+ /*
+@@ -142,6 +148,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro REACHABLE
++.Lhere_\@:
++	.pushsection .discard.reachable
++	.long	.Lhere_\@ - .
++	.popsection
++.endm
++
+ #endif /* __ASSEMBLY__ */
+ 
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -153,6 +166,7 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #define ANNOTATE_NOENDBR
++#define ASM_REACHABLE
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+@@ -161,6 +175,8 @@ struct unwind_hint {
+ .endm
+ .macro ANNOTATE_NOENDBR
+ .endm
++.macro REACHABLE
++.endm
+ #endif
+ 
+ #endif /* CONFIG_STACK_VALIDATION */
