@@ -2,99 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66727C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:02:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36035C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348984AbiCOODM (ORCPT
+        id S1349006AbiCOODR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
+        Tue, 15 Mar 2022 10:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348991AbiCOODC (ORCPT
+        with ESMTP id S1349013AbiCOODD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:03:02 -0400
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39135546A2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:01:36 -0700 (PDT)
-Received: by mail-qk1-f181.google.com with SMTP id q194so15535514qke.5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:01:36 -0700 (PDT)
+        Tue, 15 Mar 2022 10:03:03 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD807546BC;
+        Tue, 15 Mar 2022 07:01:44 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id q20so11308801wmq.1;
+        Tue, 15 Mar 2022 07:01:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6v123dHCCsOJtTJvGC+VnaP4Nv3UWBYufrflzDBOQBs=;
+        b=lYilOcXdx2VQxAYxa2v/7DNG0Wh4kP2ilXaGAuIrjfEjQNqDr+YImN4ICA8vn65MZO
+         2ngwYfP7mRWfrn34VTPPmJ/BAZ1aF+v2pQj/EHgwbWjHTNedGTwhybaKhrpfad5yZVoN
+         FUM0HxSKoDeFI6N7ZcRU0Uv258orgWaX60Smsi5Fjw0LgMVNbcFyMYxej5CZbXYkzgnx
+         PRTrET13NP6C0/Z9CMnt14csABKzhEwBK+JX31MYU7NOVwqm/17m753CoDpEmolU1g8r
+         zFLGejeAnxvc14XhKh38VBAZYknvqv4LJj7+i57+x/x3Vb2tga6aoG1thEWVpwQ7hcvD
+         f3OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YGgF9LWm/bth2hHo7Fl5/pn1/+WNkNT5qOPZV+7l+iA=;
-        b=Hz0MIq5llHrEeTTI1frLKAnv1sutQLuMBMAcAopGd+KLzjDYput7R/NuZQfAF+lDiT
-         gaenALOjUpfzPRyJXUSE6GHaVOJWarr/1fw87YKRwVTvCLNubs2ul1w5W79qRx0OnqKF
-         5jvlyN63U2QsTcsRZIrlo/c7kzfd1afh94UTJFa5n6tP4xLj9duqGYV9XkBJZNmXYk0M
-         9cL0Q9laB/J6Xez1hnFFjFC0E85atj+YA+DjnEvL3vAgWMaaK4kZtJdsQ+PXpWdGUez+
-         g+s22frPGB4Y8KovtvhTDrfOhilSXsL1Z6ybxfKJAawzvJBltnVKlUdPPRmGKwyqhnoa
-         7+zw==
-X-Gm-Message-State: AOAM531eVBLFZn7RjPBK2TFsPSvSi9+fBbJLMNC2S3pXdNJeHOSAEIvn
-        o0j5GICM6sJ1D+FoFxosLkEqMfFE9/dAbw==
-X-Google-Smtp-Source: ABdhPJxuJf9UqVcNQJ7ZZ5sGs66B0bM/cTyqLKgMSRkOWQiTalPXD+Yl0RiqP3YhRUdiOaYF3bSFhQ==
-X-Received: by 2002:a05:620a:244f:b0:67d:ccec:3eaa with SMTP id h15-20020a05620a244f00b0067dccec3eaamr6965710qkn.744.1647352895423;
-        Tue, 15 Mar 2022 07:01:35 -0700 (PDT)
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
-        by smtp.gmail.com with ESMTPSA id g9-20020a05620a108900b0067b13036bd5sm9294345qkk.52.2022.03.15.07.01.34
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 07:01:35 -0700 (PDT)
-Received: by mail-yb1-f173.google.com with SMTP id j2so37606281ybu.0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:01:34 -0700 (PDT)
-X-Received: by 2002:a25:4fc4:0:b0:633:25c8:7d9 with SMTP id
- d187-20020a254fc4000000b0063325c807d9mr11648807ybb.506.1647352894696; Tue, 15
- Mar 2022 07:01:34 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6v123dHCCsOJtTJvGC+VnaP4Nv3UWBYufrflzDBOQBs=;
+        b=uikVOuAzpiPDBoFWs+4mZAz5AbRLsLf95xuw99UGik6284O1i4CkkWtAwjMGm6Od4m
+         wzPR2Eq/0be/7esTNr9zjOTmfUUP4Hs1VYskDagR6emz0B51FFo3QIhInnyAnfwAHcdg
+         RB9KdWxWf3Pr7hz1UALOv0nY6gaPSRXkQlkGKNouMunpCS3ew9S83bYqWhfWR8mJe5kj
+         Gx4IsZLM//U9pczIT6+X+0OVfaBBo8cHY4JhZC8Olu1GZAPIQtF/WgcEJQm9nwc6TAuP
+         1WS3XPcbfZxoTZhrWxjopfhInGtyfvgnT3GI6OiLMWFzrQ1jCmQe/rDnB6+1p/zJTlg7
+         +0Sw==
+X-Gm-Message-State: AOAM5337nGBRLkKqQKsr8c2G1X6nW8gO0/dGV086HdHtfMVYrh0NspUs
+        xObhLfdXmUPJs2e6Fba8430=
+X-Google-Smtp-Source: ABdhPJz/FT85q+INrm11sWSpa461VrEebgeDXHHY2E/V+1vYHeL+7GgLOP/wkEetve8caUeUM8yzvg==
+X-Received: by 2002:a05:600c:4f09:b0:389:cf43:eaf8 with SMTP id l9-20020a05600c4f0900b00389cf43eaf8mr3486624wmq.201.1647352903140;
+        Tue, 15 Mar 2022 07:01:43 -0700 (PDT)
+Received: from standask-GA-A55M-S2HP ([188.123.115.255])
+        by smtp.gmail.com with ESMTPSA id l9-20020a5d6d89000000b00203d62072c4sm1696768wrs.43.2022.03.15.07.01.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 07:01:42 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 15:01:40 +0100
+From:   Stanislav Jakubek <stano.jakubek@gmail.com>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-unisoc@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: timer: Convert rda,8810pl-timer to YAML
+Message-ID: <20220315140140.GA2558@standask-GA-A55M-S2HP>
+References: <20220225173734.GA7573@standask-GA-A55M-S2HP>
 MIME-Version: 1.0
-References: <20220315110707.628166-1-geert@linux-m68k.org> <20220315110707.628166-5-geert@linux-m68k.org>
- <YjCZkkv//EhvxszH@smile.fi.intel.com>
-In-Reply-To: <YjCZkkv//EhvxszH@smile.fi.intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 15 Mar 2022 15:01:23 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXisdGd2QWPEpi0sUMP3ZZr1S82=S9A=BSYmeYHySGemQ@mail.gmail.com>
-Message-ID: <CAMuHMdXisdGd2QWPEpi0sUMP3ZZr1S82=S9A=BSYmeYHySGemQ@mail.gmail.com>
-Subject: Re: [PATCH 4/5] drm: ssd130x: Reduce temporary buffer sizes
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225173734.GA7573@standask-GA-A55M-S2HP>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+Hi all,
 
-On Tue, Mar 15, 2022 at 2:50 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
-> On Tue, Mar 15, 2022 at 12:07:06PM +0100, Geert Uytterhoeven wrote:
-> > ssd130x_clear_screen() allocates a temporary buffer sized to hold one
-> > byte per pixel, while it only needs to hold one bit per pixel.
-> >
-> > ssd130x_fb_blit_rect() allocates a temporary buffer sized to hold one
-> > byte per pixel for the whole frame buffer, while it only needs to hold
-> > one bit per pixel for the part that is to be updated.
-> > Pass dst_pitch to drm_fb_xrgb8888_to_mono_reversed(), as we have already
-> > calculated it anyway.
->
-> Can we use bitmap API? bitmap_zalloc() / etc ?
+anything holding this back? It's been sitting on the mailing lists
+with 2 R-B's for ~2 weeks.
 
-Why? There is no need to operate on an array of longs, only on an
-array of bytes. Going to longs would expose us to endianness.
-There's also no need to use any of the bitmap operations to modify the data.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Stanislav
