@@ -2,129 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345781AbiCOIQp (ORCPT
+        id S1345786AbiCOIQ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
+        Tue, 15 Mar 2022 04:16:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345767AbiCOIQn (ORCPT
+        with ESMTP id S1345782AbiCOIQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:16:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B68D4AE15
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:15:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647332130;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tCvl2VW1cmsTMiDGSIxoASCMFsGS7CwQX41mH9mi7og=;
-        b=DLCOt/nnQszNEAlLGn/a1+bkvc2x8+GC7wTd6+5M3R/a33zQ2urEIKpBYSlZrfCy7htH94
-        7AiAG5PsPnprnHUX/hgMa8IMiIddGCEeAlLyHcyBa61a4tiTGABqmna3ArZhVKox36VgPG
-        L/KQJlHcYdvv8jBsqg5VTnrxdUNKw1M=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-328-uBzbiPxDPB66M4q86R-Peg-1; Tue, 15 Mar 2022 04:15:27 -0400
-X-MC-Unique: uBzbiPxDPB66M4q86R-Peg-1
-Received: by mail-qk1-f198.google.com with SMTP id 68-20020a370847000000b0067e0cd1c855so328249qki.4
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:15:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tCvl2VW1cmsTMiDGSIxoASCMFsGS7CwQX41mH9mi7og=;
-        b=Iw8BVrSz3Sz8CZe+0CCy0NjMSMqHvUWcVED+OEyN0xh9K1B6wH0gwfQOvemlpTHwrQ
-         ODJ6Bht0g7YjjZjGPqgJ6B95mehX6In9aY+3QG/vVVQvgIi6URLG6WpmdJa3QTd7JBpt
-         6VT5/5rmAnoKoipel7Xo29ch+ny4FerCzmlrvFFqoTQm3capJeWFDmI+3BShbS0EyUzS
-         DqWDDvD1R/Fl1GZeKqCpv0NDPTkYEBAaes9oh+AJ4o9Nx0oEMGIaRjcEVQHqgKdB2sAF
-         3eTHxoR1YJ7pNl2HLatdu9JjNbzAwkZb5Cq+kM6CuWfvvKg+u2p56BMoV5HMwQOZm/K+
-         hkIg==
-X-Gm-Message-State: AOAM533xrkD4vpyVpElRXBt2ur71jrmcej7fc6LDiiJVre/ygUmTogkv
-        wDD0ZtiTsoEimsVahYNpA+TPcDkGLGT+qlspJOh4k+3LkFwhJdaCarsYm1BfQ3Zf9MhzGwnWQPm
-        KvSefpSk9HPKT2ovJuxqsSyFy
-X-Received: by 2002:a05:620a:424e:b0:67d:3607:6b50 with SMTP id w14-20020a05620a424e00b0067d36076b50mr17091974qko.194.1647332127179;
-        Tue, 15 Mar 2022 01:15:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzjgYb2HPocNtGnS6faY8OIC23ZTZlsPZ5W/DCuKMZo/aQnXkwFKl2eu1filb04x820ASXlIQ==
-X-Received: by 2002:a05:620a:424e:b0:67d:3607:6b50 with SMTP id w14-20020a05620a424e00b0067d36076b50mr17091955qko.194.1647332126634;
-        Tue, 15 Mar 2022 01:15:26 -0700 (PDT)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id b126-20020a376784000000b0067d21404704sm8982966qkc.131.2022.03.15.01.15.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 01:15:26 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 09:15:17 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Cc:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1 2/3] af_vsock: SOCK_SEQPACKET receive timeout test
-Message-ID: <20220315081517.m7rvlpintqipdu6i@sgarzare-redhat>
-References: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
- <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
+        Tue, 15 Mar 2022 04:16:53 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB69D4BFD4;
+        Tue, 15 Mar 2022 01:15:41 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHmSD0QY4z4xvr;
+        Tue, 15 Mar 2022 19:15:39 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647332140;
+        bh=mONG+UlY5rxH+SXgTIx9QXycu8XqaesFU2xLTtjz1dU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=iD1LZR99sgmEmlApVmJE9DZwTpB0t4ddd4zSWHV/UpaVJmDOCTLFogluAIn4tSOBL
+         rKxgLPxAE/CBLpfU2Ul5uFIbmYMMsyDNsknznikFtWrRuVhsapMWjw2hicKZ8yutDC
+         /PYuzpC2XDCggwQIfOBIgdQR+hifLS8fdQd+IXDZGjm15QQAU2zlhTz53VF6cLU8Kz
+         Xo3mfcgnH+ycg9OoKe+O2D+aZPdEuDsmuVj247JDeXKlz9i4jyHE5KhvDPImdncu/5
+         9+m83HVW39pXxNBpF5LgTFw7g5uJmJcPJCbegLaduvv7xeX92S1+WE9HE+qOsfNWUS
+         Xfu1vadW2AYMA==
+Date:   Tue, 15 Mar 2022 19:15:38 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Dan Williams <dan.j.williams@intel.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        PowerPC <linuxppc-dev@lists.ozlabs.org>
+Cc:     Kajol Jain <kjain@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Shivaprasad G Bhat <sbhat@linux.ibm.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>
+Subject: linux-next: manual merge of the nvdimm tree with the powerpc tree
+Message-ID: <20220315191538.323eefbb@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
+Content-Type: multipart/signed; boundary="Sig_/7yT_38cpgq4K6cE.N/rQ9Gr";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 10:55:42AM +0000, Krasnov Arseniy Vladimirovich wrote:
->Test for receive timeout check: connection is established,
->receiver sets timeout, but sender does nothing. Receiver's
->'read()' call must return EAGAIN.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> tools/testing/vsock/vsock_test.c | 49 ++++++++++++++++++++++++++++++++
-> 1 file changed, 49 insertions(+)
->
->diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
->index 2a3638c0a008..aa2de27d0f77 100644
->--- a/tools/testing/vsock/vsock_test.c
->+++ b/tools/testing/vsock/vsock_test.c
->@@ -391,6 +391,50 @@ static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
-> 	close(fd);
-> }
->
->+static void test_seqpacket_timeout_client(const struct test_opts *opts)
->+{
->+	int fd;
->+	struct timeval tv;
->+	char dummy;
->+
->+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
->+	if (fd < 0) {
->+		perror("connect");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	tv.tv_sec = 1;
->+	tv.tv_usec = 0;
->+
->+	if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&tv, sizeof(tv)) == -1) {
->+		perror("setsockopt 'SO_RCVTIMEO'");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	if ((read(fd, &dummy, sizeof(dummy)) != -1) ||
->+	    (errno != EAGAIN)) {
->+		perror("EAGAIN expected");
->+		exit(EXIT_FAILURE);
->+	}
+--Sig_/7yT_38cpgq4K6cE.N/rQ9Gr
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-The patch LGTM, maybe the only thing I would add here is a check on the 
-time spent in the read(), to see that it is approximately the timeout we 
-have set.
+Hi all,
 
-Thanks,
-Stefano
+Today's linux-next merge of the nvdimm tree got a conflict in:
 
+  arch/powerpc/platforms/pseries/papr_scm.c
+
+between commit:
+
+  bbbca72352bb ("powerpc/papr_scm: Implement initial support for injecting =
+smart errors")
+
+from the powerpc tree and commit:
+
+  4c08d4bbc089 ("powerpc/papr_scm: Add perf interface support")
+
+from the nvdimm tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc arch/powerpc/platforms/pseries/papr_scm.c
+index 1238b94b3cc1,4dd513d7c029..000000000000
+--- a/arch/powerpc/platforms/pseries/papr_scm.c
++++ b/arch/powerpc/platforms/pseries/papr_scm.c
+@@@ -121,9 -124,8 +124,11 @@@ struct papr_scm_priv=20
+  	/* length of the stat buffer as expected by phyp */
+  	size_t stat_buffer_len;
+ =20
+ +	/* The bits which needs to be overridden */
+ +	u64 health_bitmap_inject_mask;
+ +
++ 	 /* array to have event_code and stat_id mappings */
++ 	char **nvdimm_events_map;
+  };
+ =20
+  static int papr_scm_pmem_flush(struct nd_region *nd_region,
+
+--Sig_/7yT_38cpgq4K6cE.N/rQ9Gr
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwSyoACgkQAVBC80lX
+0GyI+wf+L9l4xP1s6s+BeHdWb+klzvUTm1TNtwuIXUuPTakfHbJQdkqCQGErkAXM
+c1DPXNCR8BHBiJP8RYiPlEADjYDmVPw+We4Q+BcaMGXrYfmWwVG48Z6zAGmDvubt
+49XdW9Pb7XlfE35BYDZ6Z90FeKP4JtP3uAX2oxEIHwfs06rcnfQWiCFw/L2W8sos
+Fy26F1USxOLcSedndo0/BeG45weJ1OPDq32c2EK8JRMhLFMvbShXs2wq48FX9Qyq
+xSiI6Gzm5HyUfd6Y+5QTnCZLsthFgtX72IS/Jv0tF5glRUxlEjFIc9cFlNTOCkbP
+3l1J6WfoB2fKHE3EsZwA3HMSVusqgA==
+=+mLq
+-----END PGP SIGNATURE-----
+
+--Sig_/7yT_38cpgq4K6cE.N/rQ9Gr--
