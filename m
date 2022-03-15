@@ -2,160 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE11C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3802AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347821AbiCOL03 (ORCPT
+        id S1347494AbiCOL2m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 07:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48434 "EHLO
+        Tue, 15 Mar 2022 07:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233729AbiCOL01 (ORCPT
+        with ESMTP id S229821AbiCOL2i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 07:26:27 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEE64ECFC;
-        Tue, 15 Mar 2022 04:25:15 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 266CD21900;
-        Tue, 15 Mar 2022 11:25:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647343514; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BKrRwVuw72BzaglAlmSnLaAKxBvpnYrC6+CTmMlmAIY=;
-        b=EyGdUI6H6HT3KSpuL20Nz2Xq2T3sTqiyHr3cEFJNr+TV5qrRUeuKiB3CW6pu25G57HuXJ/
-        f9irrfuh4q8+vHogrUkg4ftkzUvhIilHewfS96GI8dY6ZKr20CS9jtB3DXUHIMq/y/Z2mL
-        j0LQPboP5xGY3WEhRy2GzovrYV6bDPY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647343514;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BKrRwVuw72BzaglAlmSnLaAKxBvpnYrC6+CTmMlmAIY=;
-        b=rl1NWrhB7QGS7mg42YkFQ6lFLwSaqN4v4kXcpeh2QOTClGCUsqoXHAM/NA1lq8qcftsV/4
-        gE00On8d2rk7UqAQ==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 18941A3B87;
-        Tue, 15 Mar 2022 11:25:14 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 87835A0615; Tue, 15 Mar 2022 12:25:12 +0100 (CET)
-Date:   Tue, 15 Mar 2022 12:25:12 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>, Jan Kara <jack@suse.cz>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the folio tree with the ext4 tree
-Message-ID: <20220315112512.yl7dewzglimjurh5@quack3.lan>
-References: <20220315204007.05ad4817@canb.auug.org.au>
+        Tue, 15 Mar 2022 07:28:38 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E280F4F9F9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:27:26 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id r6so28040382wrr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:27:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Xsy+hdBDmUEEW9oGx4D4eHqInkltCSE2p0AuseWmMgg=;
+        b=NN5nqsh5i2xYRMZXD4nVNF44ylsoZUN1zOSa8Vzd4saL/27OcGoHbKQSfiEqQbnx7+
+         Eft7dWXkDfTrx7LuODBh7+p3+qJQDwsy5n5Jp8eoWvlZWGulbQqK27lYw4cgD2fxDdGK
+         jlgVl5VVl0GV/w8Mw7cV7mLIU8CG4phu5pwPOm0orA8CQFVFWTDgZC8MoGspUSQ46AKx
+         lkGZ/fpYCyerOUjUbrFm5lyOmIoRNE2Aqa5mU92mx3ZjtED1k8eFhJaIldK6mkV34T30
+         afZlNazQE9o5zyTKePlKUNCHT73/Fm3P+amBqUwUPPUjeSkCHyCfbDz2fHFIqQEgW+/p
+         NYPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Xsy+hdBDmUEEW9oGx4D4eHqInkltCSE2p0AuseWmMgg=;
+        b=IMhspA3iT8B/caNKgB0J6xeJ9OoHXJ3PzdNe16qP+nTMqCz3Y0L/bSn3QN28AH+BjJ
+         sQ8pPMiKthTyux2jVMrfvd/OasFfZKJ0CDwhBXCoynZkvhJjT1PMuWt+qkh9FK5PEDVN
+         LUrvFInK53O+xLOYhx9f+zRN/KjotswU5eiwu+aRv8th7O7M1WOj/VpohBoBZAy/z/qr
+         mLXJCt7En8Y1ZpqMZ+8tDfkuOYMn2QMtTIQGOJbEzoOb4pAWeGTFUF3rNfnpHXr5olvh
+         +BIDMz//KeVCa7AkcCWKCCuts2nL2943REE/s7ROTYm3ugixb3bqiWuKcJwkQr4WaIhu
+         PSug==
+X-Gm-Message-State: AOAM533BNGPkM5p8hR5Lnxau7vxJAWn2pEijnrSJR1FHLQobVV9+ZL6/
+        MzIJQUPyDcHDdElc3ABrxFipBA==
+X-Google-Smtp-Source: ABdhPJxjD95iUAyVMeq2yyB+8Hz8TYrdwXdaaEoOsEgDVOLullCXgK01LaViQhsTRhCAEfA2ljtKjw==
+X-Received: by 2002:adf:cd8f:0:b0:1ed:af02:2295 with SMTP id q15-20020adfcd8f000000b001edaf022295mr19238184wrj.226.1647343645473;
+        Tue, 15 Mar 2022 04:27:25 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id n8-20020a5d5988000000b00203d5f1f3e4sm1348294wri.105.2022.03.15.04.27.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 04:27:25 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 11:26:59 +0000
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
+Message-ID: <YjB4AyrgsnbUrlLe@myrica>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220315204007.05ad4817@canb.auug.org.au>
+In-Reply-To: <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 15-03-22 20:40:07, Stephen Rothwell wrote:
-> Hi all,
+On Mon, Mar 14, 2022 at 10:07:06PM -0700, Jacob Pan wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
 > 
-> Today's linux-next merge of the folio tree got a conflict in:
+> An IOMMU domain represents an address space which can be attached by
+> devices that perform DMA within a domain. However, for platforms with
+> PASID capability the domain attachment needs be handled at device+PASID
+> level. There can be multiple PASIDs within a device and multiple devices
+> attached to a given domain.
+> This patch introduces a new IOMMU op which support device, PASID, and
+> IOMMU domain attachment. The immediate use case is for PASID capable
+> devices to perform DMA under DMA APIs.
 > 
->   fs/ext4/inode.c
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  include/linux/iommu.h | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> between commit:
-> 
->   2bb8dd401a4f ("ext4: warn when dirtying page w/o buffers in data=journal mode")
-> 
-> from the ext4 tree and commit:
-> 
->   821405cf3ebb ("fs: Convert trivial uses of __set_page_dirty_nobuffers to filemap_dirty_folio")
-> 
-> from the folio tree.
-> 
-> I didn't know how to complete this fix up ans so just commented out the
-> new WARN_ON().
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 369f05c2a4e2..fde5b933dbe3 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
+>   * @aux_get_pasid: get the pasid given an aux-domain
+>   * @sva_bind: Bind process address space to device
+>   * @sva_unbind: Unbind process address space from device
+> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
 
-Thanks for the notice Stephen! The resolution should be like:
+Isn't that operation "assign a PASID to a domain" instead?  In patch 5,
+the domain is already attached to the device, so set_domain_pasid() might
+be clearer and to the point. If the IOMMU driver did the allocation we
+could also avoid patch 1.
 
-- 	WARN_ON_ONCE(!page_has_buffers(page));
-+ 	WARN_ON_ONCE(!folio_buffers(folio));
+If I understand correctly this series is not about a generic PASID API
+that allows drivers to manage multiple DMA address spaces, because there
+still doesn't seem to be any interest in that. It's about the specific
+IDXD use-case, so let's focus on that. We can introduce a specialized call
+such as (iommu|dma)_set_device_pasid(), which will be easy to consolidate
+later into a more generic "dma_enable_pasid()" API if that ever seems
+useful.
 
-How are we going to handle this conflict Ted? Just tell Linus about the
-conflict and resolution?
+Thanks,
+Jean
 
-								Honza
-
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
-> 
+>   * @sva_get_pasid: Get PASID associated to a SVA handle
+>   * @page_response: handle page request response
+>   * @cache_invalidate: invalidate translation caches
+> @@ -296,6 +298,10 @@ struct iommu_ops {
+>  	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm,
+>  				      void *drvdata);
+>  	void (*sva_unbind)(struct iommu_sva *handle);
+> +	int (*attach_dev_pasid)(struct iommu_domain *domain,
+> +				struct device *dev, ioasid_t id);
+> +	void (*detach_dev_pasid)(struct iommu_domain *domain,
+> +				 struct device *dev, ioasid_t id);
+>  	u32 (*sva_get_pasid)(struct iommu_sva *handle);
+>  
+>  	int (*page_response)(struct device *dev,
 > -- 
-> Cheers,
-> Stephen Rothwell
+> 2.25.1
 > 
-> diff --cc fs/ext4/inode.c
-> index 3d0ca48d20c8,436efd31cc27..000000000000
-> --- a/fs/ext4/inode.c
-> +++ b/fs/ext4/inode.c
-> @@@ -3573,31 -3541,30 +3573,32 @@@ const struct iomap_ops ext4_iomap_repor
->   };
->   
->   /*
-> -  * Whenever the page is being dirtied, corresponding buffers should already be
->  - * Folios can be marked dirty completely asynchronously from ext4's
->  - * journalling activity.  By filemap_sync_pte(), try_to_unmap_one(), etc.
->  - * We cannot do much here because ->dirty_folio may be called with the
->  - * page table lock held.  The folio is not necessarily locked.
-> ++ * Whenever the folio is being dirtied, corresponding buffers should already be
->  + * attached to the transaction (we take care of this in ext4_page_mkwrite() and
->  + * ext4_write_begin()). However we cannot move buffers to dirty transaction
-> -  * lists here because ->set_page_dirty is called under VFS locks and the page
-> ++ * lists here because ->dirty_folio is called under VFS locks and the folio
->  + * is not necessarily locked.
->    *
-> -  * We cannot just dirty the page and leave attached buffers clean, because the
-> +  * We cannot just dirty the folio and leave attached buffers clean, because the
->    * buffers' dirty state is "definitive".  We cannot just set the buffers dirty
->    * or jbddirty because all the journalling code will explode.
->    *
-> -  * So what we do is to mark the page "pending dirty" and next time writepage
-> +  * So what we do is to mark the folio "pending dirty" and next time writepage
->    * is called, propagate that into the buffers appropriately.
->    */
-> - static int ext4_journalled_set_page_dirty(struct page *page)
-> + static bool ext4_journalled_dirty_folio(struct address_space *mapping,
-> + 		struct folio *folio)
->   {
-> - 	WARN_ON_ONCE(!page_has_buffers(page));
-> - 	SetPageChecked(page);
-> - 	return __set_page_dirty_nobuffers(page);
-> ++/*	WARN_ON_ONCE(!page_has_buffers(page)); */
-> + 	folio_set_checked(folio);
-> + 	return filemap_dirty_folio(mapping, folio);
->   }
->   
-> - static int ext4_set_page_dirty(struct page *page)
-> + static bool ext4_dirty_folio(struct address_space *mapping, struct folio *folio)
->   {
-> - 	WARN_ON_ONCE(!PageLocked(page) && !PageDirty(page));
-> - 	WARN_ON_ONCE(!page_has_buffers(page));
-> - 	return __set_page_dirty_buffers(page);
-> + 	WARN_ON_ONCE(!folio_test_locked(folio) && !folio_test_dirty(folio));
-> + 	WARN_ON_ONCE(!folio_buffers(folio));
-> + 	return block_dirty_folio(mapping, folio);
->   }
->   
->   static int ext4_iomap_swap_activate(struct swap_info_struct *sis,
-
-
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
