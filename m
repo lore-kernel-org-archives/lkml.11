@@ -2,147 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66781C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 191F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347698AbiCOKwD (ORCPT
+        id S1347510AbiCOKwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51564 "EHLO
+        Tue, 15 Mar 2022 06:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347643AbiCOKvz (ORCPT
+        with ESMTP id S1347458AbiCOKv5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:51:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EEDDC3BA4A;
-        Tue, 15 Mar 2022 03:49:11 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 945BE1474;
-        Tue, 15 Mar 2022 03:49:11 -0700 (PDT)
-Received: from [10.57.42.204] (unknown [10.57.42.204])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B3C03F66F;
-        Tue, 15 Mar 2022 03:49:06 -0700 (PDT)
-Message-ID: <a9637631-c23b-4158-d2cb-597a36b09a6b@arm.com>
-Date:   Tue, 15 Mar 2022 10:49:02 +0000
+        Tue, 15 Mar 2022 06:51:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0A594F9EB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:49:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647341353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eY3A0k6GTwUDUpKdTvLl9zbVe/yaBt7RxMilI8lKV6g=;
+        b=E0w8XSAdQybLJ18czffSW7JkY2xXkknoGfH4U7iO4IWTqb/Kgg75DPgJZsUOsVsWL8MA/Q
+        ufXE6GqjwfgBO2DbBhq1p4sAq8dvoyjIBG8paNN271WOBHbJ/VwqAkVgTJa8KiswxMMl9v
+        5pGiDIkZSFq9mEl+tB5c9e9/c6gKF2c=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-131-y4_gIEMiPQau9hRN8VwVGA-1; Tue, 15 Mar 2022 06:49:12 -0400
+X-MC-Unique: y4_gIEMiPQau9hRN8VwVGA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C1E59833961;
+        Tue, 15 Mar 2022 10:49:10 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4DB3E9E94;
+        Tue, 15 Mar 2022 10:48:30 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH v2 02/15] mm/hugetlb: take src_mm->write_protect_seq in copy_hugetlb_page_range()
+Date:   Tue, 15 Mar 2022 11:47:28 +0100
+Message-Id: <20220315104741.63071-3-david@redhat.com>
+In-Reply-To: <20220315104741.63071-1-david@redhat.com>
+References: <20220315104741.63071-1-david@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v4 14/32] iommu: introduce iommu_domain_alloc_type and the
- KVM type
-Content-Language: en-GB
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     kvm@vger.kernel.org, david@redhat.com, thuth@redhat.com,
-        linux-kernel@vger.kernel.org, vneethv@linux.ibm.com,
-        agordeev@linux.ibm.com, imbrenda@linux.ibm.com, will@kernel.org,
-        frankja@linux.ibm.com, corbet@lwn.net, linux-doc@vger.kernel.org,
-        pasic@linux.ibm.com, jgg@nvidia.com, gerald.schaefer@linux.ibm.com,
-        borntraeger@linux.ibm.com, farman@linux.ibm.com, gor@linux.ibm.com,
-        schnelle@linux.ibm.com, hca@linux.ibm.com,
-        alex.williamson@redhat.com, freude@linux.ibm.com,
-        pmorel@linux.ibm.com, cohuck@redhat.com, oberpar@linux.ibm.com,
-        iommu@lists.linux-foundation.org, svens@linux.ibm.com,
-        pbonzini@redhat.com,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
- <20220314194451.58266-15-mjrosato@linux.ibm.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220314194451.58266-15-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-14 19:44, Matthew Rosato wrote:
-> s390x will introduce an additional domain type that is used for
-> managing IOMMU owned by KVM.  Define the type here and add an
-> interface for allocating a specified type vs the default type.
+Let's do it just like copy_page_range(), taking the seqlock and making
+sure the mmap_lock is held in write mode.
 
-I'm also not a huge fan of adding a new domain_alloc interface like 
-this, however if it is justifiable, then please make it take struct 
-device rather than struct bus_type as an argument.
+This allows for add a VM_BUG_ON to page_needs_cow_for_dma() and
+properly synchronizes cocnurrent fork() with GUP-fast of hugetlb pages,
+which will be relevant for further changes.
 
-It also sounds like there may be a degree of conceptual overlap here 
-with what Jean-Philippe is working on for sharing pagetables between KVM 
-and SMMU for Android pKVM, so it's probably worth some thought over 
-whether there's any scope for common interfaces in terms of actual 
-implementation.
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ include/linux/mm.h | 4 ++++
+ mm/hugetlb.c       | 8 ++++++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-Thanks,
-Robin.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 9530f950f156..391b950e919d 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1323,6 +1323,8 @@ static inline bool is_cow_mapping(vm_flags_t flags)
+ /*
+  * This should most likely only be called during fork() to see whether we
+  * should break the cow immediately for a page on the src mm.
++ *
++ * The caller has to hold the PT lock and the vma->vm_mm->->write_protect_seq.
+  */
+ static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+ 					  struct page *page)
+@@ -1330,6 +1332,8 @@ static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+ 	if (!is_cow_mapping(vma->vm_flags))
+ 		return false;
+ 
++	VM_BUG_ON(!(raw_read_seqcount(&vma->vm_mm->write_protect_seq) & 1));
++
+ 	if (!test_bit(MMF_HAS_PINNED, &vma->vm_mm->flags))
+ 		return false;
+ 
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index f294db835f4b..d3ce89697855 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -4710,6 +4710,8 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+ 					vma->vm_start,
+ 					vma->vm_end);
+ 		mmu_notifier_invalidate_range_start(&range);
++		mmap_assert_write_locked(src);
++		raw_write_seqcount_begin(&src->write_protect_seq);
+ 	} else {
+ 		/*
+ 		 * For shared mappings i_mmap_rwsem must be held to call
+@@ -4842,10 +4844,12 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+ 		spin_unlock(dst_ptl);
+ 	}
+ 
+-	if (cow)
++	if (cow) {
++		raw_write_seqcount_end(&src->write_protect_seq);
+ 		mmu_notifier_invalidate_range_end(&range);
+-	else
++	} else {
+ 		i_mmap_unlock_read(mapping);
++	}
+ 
+ 	return ret;
+ }
+-- 
+2.35.1
 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   drivers/iommu/iommu.c |  7 +++++++
->   include/linux/iommu.h | 12 ++++++++++++
->   2 files changed, 19 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f2c45b85b9fc..8bb57e0e3945 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1976,6 +1976,13 @@ void iommu_domain_free(struct iommu_domain *domain)
->   }
->   EXPORT_SYMBOL_GPL(iommu_domain_free);
->   
-> +struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
-> +					     unsigned int t)
-> +{
-> +	return __iommu_domain_alloc(bus, t);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_domain_alloc_type);
-> +
->   static int __iommu_attach_device(struct iommu_domain *domain,
->   				 struct device *dev)
->   {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 9208eca4b0d1..b427bbb9f387 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -63,6 +63,7 @@ struct iommu_domain_geometry {
->   					      implementation              */
->   #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
->   #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
-> +#define __IOMMU_DOMAIN_KVM	(1U << 4)  /* Domain is controlled by KVM */
->   
->   /*
->    * This are the possible domain-types
-> @@ -77,6 +78,7 @@ struct iommu_domain_geometry {
->    *				  certain optimizations for these domains
->    *	IOMMU_DOMAIN_DMA_FQ	- As above, but definitely using batched TLB
->    *				  invalidation.
-> + *	IOMMU_DOMAIN_KVM	- DMA mappings managed by KVM, used for VMs
->    */
->   #define IOMMU_DOMAIN_BLOCKED	(0U)
->   #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
-> @@ -86,6 +88,8 @@ struct iommu_domain_geometry {
->   #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
->   				 __IOMMU_DOMAIN_DMA_API |	\
->   				 __IOMMU_DOMAIN_DMA_FQ)
-> +#define IOMMU_DOMAIN_KVM	(__IOMMU_DOMAIN_PAGING |	\
-> +				 __IOMMU_DOMAIN_KVM)
->   
->   struct iommu_domain {
->   	unsigned type;
-> @@ -421,6 +425,8 @@ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
->   extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
->   extern struct iommu_group *iommu_group_get_by_id(int id);
->   extern void iommu_domain_free(struct iommu_domain *domain);
-> +extern struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
-> +						    unsigned int t);
->   extern int iommu_attach_device(struct iommu_domain *domain,
->   			       struct device *dev);
->   extern void iommu_detach_device(struct iommu_domain *domain,
-> @@ -708,6 +714,12 @@ static inline void iommu_domain_free(struct iommu_domain *domain)
->   {
->   }
->   
-> +static inline struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
-> +							   unsigned int t)
-> +{
-> +	return NULL;
-> +}
-> +
->   static inline int iommu_attach_device(struct iommu_domain *domain,
->   				      struct device *dev)
->   {
