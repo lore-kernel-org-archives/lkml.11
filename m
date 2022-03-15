@@ -2,123 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA251C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:58:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349502AbiCOO6g (ORCPT
+        id S1349508AbiCOO7m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
+        Tue, 15 Mar 2022 10:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349435AbiCOO6a (ORCPT
+        with ESMTP id S241079AbiCOO7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:58:30 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA59555779;
-        Tue, 15 Mar 2022 07:57:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647356238; x=1678892238;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Wiowgzt+S+zwJZOS0VvV/vb4jvXFxf9uHBLJ2GB62nk=;
-  b=Sh+HbAdT1sFN5xpwkYdQ07ER9q5ajL33CdMnKR4iapKeZXh9LWtIL1p6
-   crx40T7FOiS98VbO3G/ckDQjfV6YhGL/3CCHvzsM/I6xcgc7fx3QjwZX3
-   1dvWThSxjLvteuK4AD322g4BXHkagRO3NF+uWqfuRZkzvyUtDVwuZZXQZ
-   c1bXj6CBCAQFtKEtUX5ZJUd+7TW6BMmMyErDXDp18sAfdsnH7ubyJ1RG/
-   klcmmC/u1RWAbW9EfJTINc33/TwsEtuIlcrghPHwYuQyqDt5ASODXVeXM
-   LbtimZtOFLGbgZfIJXDzW0OJTQwvfZSWIQA764rjkcAFaWwU8c+fpqQt9
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255153951"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="255153951"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 07:57:09 -0700
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="515899241"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 07:57:03 -0700
-Date:   Tue, 15 Mar 2022 23:10:34 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Zeng Guang <guang.zeng@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>
-Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
- unconditionally
-Message-ID: <20220315151033.GA6038@gao-cwp>
-References: <Yifg4bea6zYEz1BK@google.com>
- <20220309052013.GA2915@gao-cwp>
- <YihCtvDps/qJ2TOW@google.com>
- <6dc7cff15812864ed14b5c014769488d80ce7f49.camel@redhat.com>
- <YirPkr5efyylrD0x@google.com>
- <29c76393-4884-94a8-f224-08d313b73f71@intel.com>
- <01586c518de0c72ff3997d32654b8fa6e7df257d.camel@redhat.com>
- <2900660d947a878e583ebedf60e7332e74a1af5f.camel@redhat.com>
- <20220313135335.GA18405@gao-cwp>
- <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
+        Tue, 15 Mar 2022 10:59:39 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784101ADBF;
+        Tue, 15 Mar 2022 07:58:27 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id E624A1F4304F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647356306;
+        bh=W9WWZDCyjKEZgWKToHqeZGf4O53uVfpYv5D8zJtmRDo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=gHPADtLHCuVqGguDHAaJ1a2jKzV9eCmr8++OqcQ3bFBpYkoApAALnlRUaXDI4e4fa
+         slN2Le3XPPHQmDS9ekVrOowehTsP22iwQlPf9ZQwp5qTCCjzWzd04jwZQcNoL2tcOD
+         FLtNnMsgNkJZge5v9hS3KuiGVy2M9n3m2w8wUToO1cooZfl2ITl3bjFc8QEaC3An8N
+         3dfgaEJ5qGMd5jUBbWbRFAcUeuAeXAxA+vMH922vNIHy1ERMSPfTguw/0jd23XdjL4
+         10VzQYAy6/B0lbj+EhMJdyT2i7XAxxg8z6357u4AC9MqCoJu9U744kSbGHveQcWWXg
+         TQvpyEsWA/ouA==
+Message-ID: <cdcf08d4-8b77-a94c-7906-073155b9865f@collabora.com>
+Date:   Tue, 15 Mar 2022 15:58:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v13 1/6] soc: mediatek: mutex: add common interface to
+ accommodate multiple modules operationg MUTEX
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Rob Landley <rob@landley.net>
+Cc:     Moudy Ho <moudy.ho@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Tomasz Figa <tfiga@chromium.org>, drinkcat@chromium.org,
+        Pi-Hsun Shih <pihsun@chromium.org>,
+        Hsin-Yi Wang <hsinyi@google.com>,
+        Maoguang Meng <maoguang.meng@mediatek.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        menghui.lin@mediatek.com, sj.huang@mediatek.com,
+        allen-kh.cheng@mediatek.com, randy.wu@mediatek.com,
+        jason-jh.lin@mediatek.com, roy-cw.yeh@mediatek.com,
+        river.cheng@mediatek.com, srv_heupstream@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220315061031.21642-1-moudy.ho@mediatek.com>
+ <20220315061031.21642-2-moudy.ho@mediatek.com>
+ <ed5418b4-e353-d879-f9b0-7a9de8fed862@collabora.com>
+ <4fa1dd33-adeb-a8ae-0ded-51a813347252@landley.net>
+ <CAMuHMdXA=Wo2mW_N9GGDY_NBgyhK3fDBpUO=mJb-CdoYvKU70w@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CAMuHMdXA=Wo2mW_N9GGDY_NBgyhK3fDBpUO=mJb-CdoYvKU70w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 05:09:08PM +0200, Maxim Levitsky wrote:
->> > > This won't work with nested AVIC - we can't just inhibit a nested guest using its own AVIC,
->> > > because migration happens.
->> > 
->> > I mean because host decided to change its apic id, which it can in theory do any time,
->> > even after the nested guest has started. Seriously, the only reason guest has to change apic id,
->> > is to try to exploit some security hole.
->> 
->> Hi
->> 
->> Thanks for the information.  
->> 
->> IIUC, you mean KVM applies APICv inhibition only to L1 VM, leaving APICv
->> enabled for L2 VM. Shouldn't KVM disable APICv for L2 VM in this case?
->> It looks like a generic issue in dynamically toggling APICv scheme,
->> e.g., qemu can set KVM_GUESTDBG_BLOCKIRQ after nested guest has started.
->> 
->
->That is the problem - you can't disable it for L2, unless you are willing to emulate it in software.
->Or in other words, when nested guest uses a hardware feature, you can't at some point say to it:
->sorry buddy - hardware feature disappeared.
+Il 15/03/22 15:50, Geert Uytterhoeven ha scritto:
+> Hi Rob,
+> 
+> On Tue, Mar 15, 2022 at 3:37 PM Rob Landley <rob@landley.net> wrote:
+>> On 3/15/22 4:10 AM, AngeloGioacchino Del Regno wrote:
+>>> Il 15/03/22 07:10, Moudy Ho ha scritto:
+>>>> In order to allow multiple modules to operate MUTEX hardware through
+>>>> a common interfrace, a flexible index "mtk_mutex_table_index" needs to
+>>>> be added to replace original component ID so that like DDP and MDP
+>>>> can add their own MUTEX table settings independently.
+>>>>
+>>>> In addition, 4 generic interface "mtk_mutex_set_mod", "mtk_mutex_set_sof",
+>>>> "mtk_mutex_clear_mod" and "mtk_mutex_clear_sof" have been added, which is
+>>>> expected to replace the "mtk_mutex_add_comp" and "mtk_mutex_remove_comp"
+>>>> pair originally dedicated to DDP in the future.
+>>>>
+>>>> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+> 
+>>>> --- a/drivers/soc/mediatek/mtk-mutex.c
+>>>> +++ b/drivers/soc/mediatek/mtk-mutex.c
+>>>> @@ -156,6 +156,7 @@ struct mtk_mutex_data {
+>>>>       const unsigned int *mutex_sof;
+>>>>       const unsigned int mutex_mod_reg;
+>>>>       const unsigned int mutex_sof_reg;
+>>>> +    const unsigned long long *mutex_table_mod;
+>>>
+>>> Can we change this to u64 instead?
+>>
+>> Linux is still LP64, correct?
+> 
+> On 64-bit platforms, yes.
+> 
+> Note that this is about "long long", which is 64-bit on all Linux platforms.
+> But as the table seems to be used to store 2 32-bit values, it doesn't hurt
+> to be explicit and use "u64"? Or a struct with 2 "u32" values?
+> 
 
-Hi Maxim,
+Exactly. I wanted this to be a hint of what's happening in the background,
+without using unions to describe this.
 
-I may miss something. When reading Sean's APICv inhibition cleanups, I
-find AVIC is disabled for L1 when nested is enabled (SVM is advertised
-to L1). Then, I think the new inhibition introduced for changed xAPIC ID
-shouldn't be a problem for L2 VM. Or, you plan to remove
-APICV_INHIBIT_REASON_NESTED and expose AVIC to L1?
+Geert, thanks for immediately understanding my intention.
 
-svm_vcpu_after_set_cpuid:
-                /*
-                 * Currently, AVIC does not work with nested virtualization.
-                 * So, we disable AVIC when cpuid for SVM is set in the L1 guest.
-                 */
-                if (nested && guest_cpuid_has(vcpu, X86_FEATURE_SVM))
-                        kvm_request_apicv_update(vcpu->kvm, false,
-                                                 APICV_INHIBIT_REASON_NESTED);
+Cheers,
+Angelo
+
+> Gr{oetje,eeting}s,
+> 
+>                          Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                  -- Linus Torvalds
+
