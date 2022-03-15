@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7FB2C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF14C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347593AbiCOKr7 (ORCPT
+        id S1347770AbiCOKsK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33818 "EHLO
+        Tue, 15 Mar 2022 06:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347405AbiCOKpx (ORCPT
+        with ESMTP id S1347439AbiCOKqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:45:53 -0400
+        Tue, 15 Mar 2022 06:46:17 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26EB5132F;
-        Tue, 15 Mar 2022 03:44:17 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:44:14 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34F8517EB;
+        Tue, 15 Mar 2022 03:44:20 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:44:17 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341055;
+        s=2020; t=1647341058;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ofiVoDxNxT7b89G+pCs4a9qqcM1lqY7Fm+d3WtFPzXo=;
-        b=1BDMEFONE3cXrMCu5RyMNL2Gjuc3HjViG2kLu1Ym4vzS61QiPcUkBY1xXhKA+NBhEyVqeC
-        C9c09imt+5Lc6+JjsdF41nXDAwxjPGqX3+aBY4vSeHdYlmJMk8YZ8gCNoZxYFl/BZKzyGj
-        F/1BzcO86zrJartQLz6n13tIWdY9kNEAmiBoGfipLDH0SMGaXCB7zru6hpkYEh/hpISI+9
-        4clXsa5E7Ojb1C14wtwpOHabVw9pwgqWTE9n1cJugSgDEn45JuMZTUTctBO4MOr8sYBfO0
-        gWh5BtrL0NKKEFsZyZAKvdgqGU5uTb9KdTZt16Z8WyLq8ortLe14CwIpGfnV4w==
+        bh=EZC3/kc1HTY+XXoQPROWdI9AV7DgxswUrZQiDvHRmSQ=;
+        b=wkP6R//JdhXK+fS9vM2rUcstzrQqroC6LZR2GQiK5FMghlmIztCfJaEJrJWFK4VigmrLv9
+        glsOHbL2kA9oCafyLbJJ/9sSUTaLQREDZVdL3LrbPeayoHYW1UoIxbYt8vjlRlwtN6G2fX
+        9NUduiowRx+KLuS5btXI8bSizZPCM1/h7/jZdRDv0EX06nANCtMdzBSjNpvh0ElqgMiEUw
+        bGdzWy7Z3pwPlHOjpsN+8cn3NeDuhVcUbD1ku2Pg/C3CI2NKKtStDWNZOPOGNa1GglcEeS
+        j0/E5GCfN337MAMTA2doevGTPpMzcQypPjzkii7w6h4jamPOcNU809m1Sj5Rww==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341055;
+        s=2020e; t=1647341058;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ofiVoDxNxT7b89G+pCs4a9qqcM1lqY7Fm+d3WtFPzXo=;
-        b=j44IKHvyh/KBYM+Hzj4VwbBzX5KVf29QMCXCkF8X8GKRBMh+EYW53kPM4WWbH+7L9MB+N0
-        ZMD41z7lTqdvTcCw==
+        bh=EZC3/kc1HTY+XXoQPROWdI9AV7DgxswUrZQiDvHRmSQ=;
+        b=cHduqrcOx1GMlJBKhGL49kGdpyGFthsZb1S+ZUnIuaC89/I3LhjuNAF0I3+QPUWwt/pWm7
+        7CvQdXlgPwRxjLCw==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] objtool,efi: Update __efi64_thunk annotation
+Subject: [tip: x86/core] static_call: Avoid building empty .static_call_sites
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154317.402118218@infradead.org>
-References: <20220308154317.402118218@infradead.org>
+In-Reply-To: <20220308154317.223798256@infradead.org>
+References: <20220308154317.223798256@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734105479.16921.842689798874309480.tip-bot2@tip-bot2>
+Message-ID: <164734105718.16921.7882247983946373837.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,66 +62,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     537da1ed54658e916141e50923a7f5b20c728856
-Gitweb:        https://git.kernel.org/tip/537da1ed54658e916141e50923a7f5b20c728856
+Commit-ID:     b44544fe0298ee2224960a31f795e317029e2a60
+Gitweb:        https://git.kernel.org/tip/b44544fe0298ee2224960a31f795e317029e2a60
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:15 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:12 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:32 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:31 +01:00
 
-objtool,efi: Update __efi64_thunk annotation
+static_call: Avoid building empty .static_call_sites
 
-The current annotation relies on not running objtool on the file; this
-won't work when running objtool on vmlinux.o. Instead explicitly mark
-__efi64_thunk() to be ignored.
-
-This preserves the status quo, which is somewhat unfortunate. Luckily
-this code is hardly ever used.
+Without CONFIG_HAVE_STATIC_CALL_INLINE there's no point in creating
+the .static_call_sites section and it's related symbols.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154317.402118218@infradead.org
+Link: https://lore.kernel.org/r/20220308154317.223798256@infradead.org
 ---
- arch/x86/platform/efi/Makefile       | 1 -
- arch/x86/platform/efi/efi_thunk_64.S | 6 ++++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ include/asm-generic/vmlinux.lds.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/x86/platform/efi/Makefile b/arch/x86/platform/efi/Makefile
-index 84b09c2..a502451 100644
---- a/arch/x86/platform/efi/Makefile
-+++ b/arch/x86/platform/efi/Makefile
-@@ -1,5 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
--OBJECT_FILES_NON_STANDARD_efi_thunk_$(BITS).o := y
- KASAN_SANITIZE := n
- GCOV_PROFILE := n
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 42f3866..a41e623 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -404,6 +404,7 @@
+ 	KEEP(*(__jump_table))						\
+ 	__stop___jump_table = .;
  
-diff --git a/arch/x86/platform/efi/efi_thunk_64.S b/arch/x86/platform/efi/efi_thunk_64.S
-index 25799d7..854dd81 100644
---- a/arch/x86/platform/efi/efi_thunk_64.S
-+++ b/arch/x86/platform/efi/efi_thunk_64.S
-@@ -20,12 +20,14 @@
-  */
++#ifdef CONFIG_HAVE_STATIC_CALL_INLINE
+ #define STATIC_CALL_DATA						\
+ 	. = ALIGN(8);							\
+ 	__start_static_call_sites = .;					\
+@@ -412,6 +413,9 @@
+ 	__start_static_call_tramp_key = .;				\
+ 	KEEP(*(.static_call_tramp_key))					\
+ 	__stop_static_call_tramp_key = .;
++#else
++#define STATIC_CALL_DATA
++#endif
  
- #include <linux/linkage.h>
-+#include <linux/objtool.h>
- #include <asm/page_types.h>
- #include <asm/segment.h>
- 
- 	.text
- 	.code64
--SYM_CODE_START(__efi64_thunk)
-+SYM_FUNC_START(__efi64_thunk)
-+STACK_FRAME_NON_STANDARD __efi64_thunk
- 	push	%rbp
- 	push	%rbx
- 
-@@ -79,7 +81,7 @@ SYM_CODE_START(__efi64_thunk)
- 2:	pushl	$__KERNEL_CS
- 	pushl	%ebp
- 	lret
--SYM_CODE_END(__efi64_thunk)
-+SYM_FUNC_END(__efi64_thunk)
- 
- 	.bss
- 	.balign 8
+ /*
+  * Allow architectures to handle ro_after_init data on their
