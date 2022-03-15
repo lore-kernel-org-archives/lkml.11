@@ -2,936 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 918EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:33:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345456AbiCOHdp (ORCPT
+        id S1345476AbiCOHeb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 03:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
+        Tue, 15 Mar 2022 03:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345480AbiCOHdg (ORCPT
+        with ESMTP id S1345499AbiCOHeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 03:33:36 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03E7D4B42B;
-        Tue, 15 Mar 2022 00:32:21 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.48:41014.619685907
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id 01E1D2800B6;
-        Tue, 15 Mar 2022 15:32:16 +0800 (CST)
-X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 1b1ab0a1f6894caa8df9c9a64bed0849 for j.vosburgh@gmail.com;
-        Tue, 15 Mar 2022 15:32:20 CST
-X-Transaction-ID: 1b1ab0a1f6894caa8df9c9a64bed0849
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, oliver@neukum.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
-Subject: [PATCH v2 3/4] net:bonding:Add support for IPV6 RLB to balance-alb mode
-Date:   Tue, 15 Mar 2022 03:30:07 -0400
-Message-Id: <20220315073008.17441-4-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220315073008.17441-1-sunshouxin@chinatelecom.cn>
-References: <20220315073008.17441-1-sunshouxin@chinatelecom.cn>
+        Tue, 15 Mar 2022 03:34:25 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE584E68;
+        Tue, 15 Mar 2022 00:33:03 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id w7so31418480lfd.6;
+        Tue, 15 Mar 2022 00:33:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=wUvXJkVzRf7uiYTXXhHFwsbeVUmmFqsvpsimZzyPA9g=;
+        b=SSigJxLDv4rhWnbg41qyLZn9tsjJ/AVEbALDktvR/rDDWAv1vtsr5no7rWcdaZczyt
+         /FSc9PerajzZxVHIOJRKvmpoNYXz/hlRAbpJ4mCgoxreXVIDXnXbWpUAk4KEtwLndtYA
+         zPAk4N9TU9j1/0PvD/yS4hYXNNkVRNb9upL4lXoK08gcXpC1ItfSenBaQKbzemhGJSbI
+         gtNlnUsR0ydB3q9bVCG2ADyjj6Fb2BZaF2pdERzclY6BFyu+KOo97rWBnCya98j3d4w7
+         fe1P3Hf25I8J6lviGRukOVtv8sTxza4w3N7QoFggflEitnjVbOu3YUNmFxZhvp7LwJWm
+         V9aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=wUvXJkVzRf7uiYTXXhHFwsbeVUmmFqsvpsimZzyPA9g=;
+        b=Pr1t1h2pG1KnOdXCKObchhiAnSExQOIRGYGQctuUAjgIlp56QenmCPTv909V6l1WYe
+         uA8AV0ZR+SE/wKnRsVDe7/bA7/R5uzBP2K81gpTYXeuIHWUebsZcTNtLArLtIw+VnNwc
+         4BBwJoGt2AKhHiDjccXxkHiBgra+hCMsvcExfsPqqbfeohRRLTEYZCDj2OOKlIQVO3Hw
+         uwaVNKhr0eeBSus6uwaykV3NH36LtgyvtUbpoX+Co6bfL8Kw+nzcRPlHNrWvUxbWzmRU
+         NA8c2fquLxWclttOzf621ud0HTuPucWFWKMHWIhX5bDzRjYOfb7mKS8Hcqy3Zwroo06c
+         ke+Q==
+X-Gm-Message-State: AOAM531dfUwc0TBf9Ls6jujINQiNqGF9mhlfIor4VbnJPr9CGH/JCdM9
+        4F4JWGzCN9uwdVekkZmPoao=
+X-Google-Smtp-Source: ABdhPJybvUA4sYux81g0rksKI0ZITXHxk0DnVHZuDaIQe/kSBcvm8BkyEnmjPI3SoGwyAiIclLV0wA==
+X-Received: by 2002:a05:6512:b25:b0:448:98bb:efae with SMTP id w37-20020a0565120b2500b0044898bbefaemr4262623lfu.151.1647329581185;
+        Tue, 15 Mar 2022 00:33:01 -0700 (PDT)
+Received: from eldfell ([194.136.85.206])
+        by smtp.gmail.com with ESMTPSA id o4-20020a2eb444000000b00247f29888fcsm4281640ljm.124.2022.03.15.00.33.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 00:33:00 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 09:32:50 +0200
+From:   Pekka Paalanen <ppaalanen@gmail.com>
+To:     Finn Thain <fthain@linux-m68k.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Linux/m68k <linux-m68k@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 05/10] drm/fourcc: Add DRM_FORMAT_C[124]
+Message-ID: <20220315093250.71352a56@eldfell>
+In-Reply-To: <1f915fcc-1d95-99d1-c7b7-dc4e3b49e09f@linux-m68k.org>
+References: <cover.1646683502.git.geert@linux-m68k.org>
+        <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
+        <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
+        <20220314170539.17400f93@eldfell>
+        <CAMuHMdVj8wxAVbcov1wFsgt_knMkcySBH8nMoKjyr=G+mLQmjQ@mail.gmail.com>
+        <1f915fcc-1d95-99d1-c7b7-dc4e3b49e09f@linux-m68k.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/98Z3rW3o3S.LMmex9/1NFgW";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch is implementing IPV6 RLB for balance-alb mode.
+--Sig_/98Z3rW3o3S.LMmex9/1NFgW
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
----
-changelog:
-v1-->v2:
-1.In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
-2.Don't send neighbor advertisement message when receiving
-neighbor advertisement message in rlb6_update_entry_from_na.
----
- drivers/net/bonding/bond_3ad.c     |   2 +-
- drivers/net/bonding/bond_alb.c     | 591 ++++++++++++++++++++++++++++-
- drivers/net/bonding/bond_debugfs.c |  14 +
- drivers/net/bonding/bond_main.c    |   6 +-
- include/net/bond_3ad.h             |   2 +-
- include/net/bond_alb.h             |   7 +
- include/net/bonding.h              |   6 +-
- 7 files changed, 614 insertions(+), 14 deletions(-)
+On Tue, 15 Mar 2022 09:15:08 +1100 (AEDT)
+Finn Thain <fthain@linux-m68k.org> wrote:
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index a86b1f71762e..3cba269f12e2 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2682,7 +2682,7 @@ int bond_3ad_get_active_agg_info(struct bonding *bond, struct ad_info *ad_info)
- 	return ret;
- }
- 
--int bond_3ad_lacpdu_recv(const struct sk_buff *skb, struct bonding *bond,
-+int bond_3ad_lacpdu_recv(struct sk_buff *skb, struct bonding *bond,
- 			 struct slave *slave)
- {
- 	struct lacpdu *lacpdu, _lacpdu;
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 303c8d32d451..bf6a01dd2a25 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -23,6 +23,8 @@
- #include <asm/byteorder.h>
- #include <net/bonding.h>
- #include <net/bond_alb.h>
-+#include <net/addrconf.h>
-+#include <net/ip6_checksum.h>
- 
- static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
- 	0x33, 0x33, 0x00, 0x00, 0x00, 0x01
-@@ -57,6 +59,13 @@ static void rlb_purge_src_ip(struct bonding *bond, struct arp_pkt *arp);
- static void rlb_src_unlink(struct bonding *bond, u32 index);
- static void rlb_src_link(struct bonding *bond, u32 ip_src_hash,
- 			 u32 ip_dst_hash);
-+static void rlb6_delete_table_entry(struct bonding *bond, u32 index);
-+static u8 *alb_get_lladdr(struct sk_buff *skb);
-+static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
-+			      struct slave *tx_slave);
-+static bool alb_determine_ipv6_nd(struct sk_buff *skb, struct bonding *bond);
-+static int rlb_recv(struct sk_buff *skb, struct bonding *bond,
-+		    struct slave *slave);
- 
- static inline u8 _simple_hash(const u8 *hash_start, int hash_size)
- {
-@@ -269,7 +278,7 @@ static void rlb_update_entry_from_arp(struct bonding *bond, struct arp_pkt *arp)
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
--static int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
-+static int rlb_arp_recv(struct sk_buff *skb, struct bonding *bond,
- 			struct slave *slave)
- {
- 	struct arp_pkt *arp, _arp;
-@@ -415,6 +424,31 @@ static void rlb_clear_slave(struct bonding *bond, struct slave *slave)
- 		}
- 	}
- 
-+	rx_hash_table = bond_info->rx6_hashtbl;
-+	index = bond_info->rx6_hashtbl_used_head;
-+	for (; index != RLB_NULL_INDEX; index = next_index) {
-+		next_index = rx_hash_table[index].used_next;
-+		if (rx_hash_table[index].slave == slave) {
-+			struct slave *assigned_slave = rlb_next_rx_slave(bond);
-+
-+			if (assigned_slave) {
-+				u8 mac_dst[ETH_ALEN];
-+
-+				rx_hash_table[index].slave = assigned_slave;
-+				memcpy(mac_dst, rx_hash_table[index].mac_dst,
-+				       sizeof(mac_dst));
-+				if (is_valid_ether_addr(mac_dst)) {
-+					bond_info->rx6_hashtbl[index].ntt = 1;
-+					bond_info->rx6_ntt = 1;
-+					bond_info->rlb6_update_retry_counter =
-+						RLB_UPDATE_RETRY;
-+				}
-+			} else {  /* there is no active slave */
-+				rx_hash_table[index].slave = NULL;
-+			}
-+		}
-+	}
-+
- 	spin_unlock_bh(&bond->mode_lock);
- 
- 	if (slave != rtnl_dereference(bond->curr_active_slave))
-@@ -704,7 +738,7 @@ static void rlb_rebalance(struct bonding *bond)
- 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
- 	struct slave *assigned_slave;
- 	struct rlb_client_info *client_info;
--	int ntt;
-+	int ntt, ntt_ip6;
- 	u32 hash_index;
- 
- 	spin_lock_bh(&bond->mode_lock);
-@@ -724,9 +758,27 @@ static void rlb_rebalance(struct bonding *bond)
- 		}
- 	}
- 
-+	ntt_ip6 = 0;
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+		 hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		assigned_slave = __rlb_next_rx_slave(bond);
-+		if (assigned_slave && client_info->slave != assigned_slave) {
-+			client_info->slave = assigned_slave;
-+			if (!is_zero_ether_addr(client_info->mac_dst)) {
-+				client_info->ntt = 1;
-+				ntt_ip6 = 1;
-+			}
-+		}
-+	}
-+
- 	/* update the team's flag only after the whole iteration */
- 	if (ntt)
- 		bond_info->rx_ntt = 1;
-+
-+	if (ntt_ip6)
-+		bond_info->rx6_ntt = 1;
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
-@@ -846,6 +898,7 @@ static int rlb_initialize(struct bonding *bond)
- {
- 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
- 	struct rlb_client_info	*new_hashtbl;
-+	struct rlb_client_info	*new6_hashtbl;
- 	int size = RLB_HASH_TABLE_SIZE * sizeof(struct rlb_client_info);
- 	int i;
- 
-@@ -853,19 +906,29 @@ static int rlb_initialize(struct bonding *bond)
- 	if (!new_hashtbl)
- 		return -1;
- 
-+	new6_hashtbl = kmalloc(size, GFP_KERNEL);
-+	if (!new6_hashtbl) {
-+		kfree(new_hashtbl);
-+		return -1;
-+	}
-+
- 	spin_lock_bh(&bond->mode_lock);
- 
- 	bond_info->rx_hashtbl = new_hashtbl;
-+	bond_info->rx6_hashtbl = new6_hashtbl;
- 
- 	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
-+	bond_info->rx6_hashtbl_used_head = RLB_NULL_INDEX;
- 
--	for (i = 0; i < RLB_HASH_TABLE_SIZE; i++)
-+	for (i = 0; i < RLB_HASH_TABLE_SIZE; i++) {
- 		rlb_init_table_entry(bond_info->rx_hashtbl + i);
-+		rlb_init_table_entry(bond_info->rx6_hashtbl + i);
-+	}
- 
- 	spin_unlock_bh(&bond->mode_lock);
- 
- 	/* register to receive ARPs */
--	bond->recv_probe = rlb_arp_recv;
-+	bond->recv_probe = rlb_recv;
- 
- 	return 0;
- }
-@@ -880,6 +943,10 @@ static void rlb_deinitialize(struct bonding *bond)
- 	bond_info->rx_hashtbl = NULL;
- 	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
- 
-+	kfree(bond_info->rx6_hashtbl);
-+	bond_info->rx6_hashtbl = NULL;
-+	bond_info->rx6_hashtbl_used_head = RLB_NULL_INDEX;
-+
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
-@@ -901,9 +968,397 @@ static void rlb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
- 		curr_index = next_index;
- 	}
- 
-+	curr_index = bond_info->rx6_hashtbl_used_head;
-+	while (curr_index != RLB_NULL_INDEX) {
-+		struct rlb_client_info *curr = &bond_info->rx6_hashtbl[curr_index];
-+		u32 next_index = bond_info->rx6_hashtbl[curr_index].used_next;
-+
-+		if (curr->vlan_id == vlan_id)
-+			rlb6_delete_table_entry(bond, curr_index);
-+
-+		curr_index = next_index;
-+	}
-+
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+/*********************** ipv6 rlb specific functions ***************************/
-+static void rlb6_update_client(struct rlb_client_info *client_info)
-+{
-+	struct nd_sendinfo sendinfo;
-+	int i;
-+
-+	if (!client_info->slave || !is_valid_ether_addr(client_info->mac_dst))
-+		return;
-+
-+	sendinfo.vlanid = client_info->vlan_id;
-+	sendinfo.mac_dst = client_info->mac_dst;
-+	sendinfo.mac_src = client_info->slave->dev->dev_addr;
-+
-+	for (i = 0; i < RLB_ARP_BURST_SIZE; i++) {
-+		ndisc_send_na(client_info->slave->dev,
-+			      &client_info->ip6_dst,
-+			      &client_info->ip6_src,
-+			      false, false, true, true,
-+			      &sendinfo);
-+	}
-+}
-+
-+static void rlb6_update_rx_clients(struct bonding *bond)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 hash_index;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+	    hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		if (client_info->ntt) {
-+			rlb6_update_client(client_info);
-+			if (bond_info->rlb6_update_retry_counter == 0)
-+				client_info->ntt = 0;
-+		}
-+	}
-+
-+	bond_info->rlb6_update_delay_counter = RLB_UPDATE_DELAY;
-+
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+static void rlb6_delete_table_entry_dst(struct bonding *bond, u32 index)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	u32 next_index = bond_info->rx6_hashtbl[index].used_next;
-+	u32 prev_index = bond_info->rx6_hashtbl[index].used_prev;
-+
-+	if (index == bond_info->rx6_hashtbl_used_head)
-+		bond_info->rx6_hashtbl_used_head = next_index;
-+
-+	if (next_index != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[next_index].used_prev = prev_index;
-+
-+	if (prev_index != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[prev_index].used_next = next_index;
-+}
-+
-+static void rlb6_src_link(struct bonding *bond, u32 ip_src_hash,
-+			  u32 ip_dst_hash)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	u32 next;
-+
-+	bond_info->rx6_hashtbl[ip_dst_hash].src_prev = ip_src_hash;
-+	next = bond_info->rx6_hashtbl[ip_src_hash].src_first;
-+	bond_info->rx6_hashtbl[ip_dst_hash].src_next = next;
-+	if (next != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[next].src_prev = ip_dst_hash;
-+	bond_info->rx6_hashtbl[ip_src_hash].src_first = ip_dst_hash;
-+}
-+
-+static void rlb6_src_unlink(struct bonding *bond, u32 index)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	u32 next_index = bond_info->rx6_hashtbl[index].src_next;
-+	u32 prev_index = bond_info->rx6_hashtbl[index].src_prev;
-+
-+	bond_info->rx6_hashtbl[index].src_next = RLB_NULL_INDEX;
-+	bond_info->rx6_hashtbl[index].src_prev = RLB_NULL_INDEX;
-+
-+	if (next_index != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[next_index].src_prev = prev_index;
-+
-+	if (prev_index == RLB_NULL_INDEX)
-+		return;
-+
-+	if (bond_info->rx6_hashtbl[prev_index].src_first == index)
-+		bond_info->rx6_hashtbl[prev_index].src_first = next_index;
-+	else
-+		bond_info->rx6_hashtbl[prev_index].src_next = next_index;
-+}
-+
-+static void rlb6_req_update_slave_clients(struct bonding *bond,
-+					  struct slave *slave)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 hash_index;
-+	int ntt = 0;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+	    hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		if (client_info->slave == slave &&
-+		    is_valid_ether_addr(client_info->mac_dst)) {
-+			client_info->ntt = 1;
-+			ntt = 1;
-+		}
-+	}
-+
-+	if (ntt) {
-+		bond_info->rx6_ntt = 1;
-+		bond_info->rlb6_update_retry_counter =
-+			RLB_UPDATE_RETRY;
-+	}
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+static struct slave *rlb6_nd_choose_channel(struct sk_buff *skb,
-+					    struct bonding *bond,
-+					    struct ipv6hdr *ip6hdr,
-+					    u8 type)
-+{
-+	struct nd_msg *msg;
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct slave *assigned_slave, *curr_active_slave;
-+	struct rlb_client_info *client_info;
-+	struct ethhdr *eth_data;
-+	u8 *dst_ip;
-+	u32 hash_index = 0;
-+
-+	spin_lock(&bond->mode_lock);
-+
-+	msg = (struct nd_msg *)skb_transport_header(skb);
-+	eth_data = eth_hdr(skb);
-+	curr_active_slave = rcu_dereference(bond->curr_active_slave);
-+
-+	if (type == NDISC_NEIGHBOUR_SOLICITATION)
-+		dst_ip = (u8 *)msg->target.s6_addr;
-+	else
-+		dst_ip = (u8 *)ip6hdr->daddr.s6_addr;
-+
-+	hash_index = _simple_hash(dst_ip,
-+				  sizeof(struct in6_addr));
-+	client_info = &bond_info->rx6_hashtbl[hash_index];
-+
-+	if (client_info->assigned) {
-+		if (!memcmp(client_info->ip6_dst.s6_addr, dst_ip,
-+			    sizeof(struct in6_addr)) &&
-+			    !memcmp(client_info->ip6_src.s6_addr,
-+			    ip6hdr->saddr.s6_addr,
-+			    sizeof(ip6hdr->saddr.s6_addr))) {
-+			ether_addr_copy(client_info->mac_src,
-+					eth_data->h_source);
-+
-+			assigned_slave = client_info->slave;
-+			if (assigned_slave) {
-+				spin_unlock(&bond->mode_lock);
-+				return assigned_slave;
-+			}
-+		} else {
-+			if (curr_active_slave &&
-+			    curr_active_slave != client_info->slave) {
-+				client_info->slave = curr_active_slave;
-+				rlb6_update_client(client_info);
-+			}
-+		}
-+	}
-+
-+	/* assign a new slave */
-+	assigned_slave = __rlb_next_rx_slave(bond);
-+
-+	if (assigned_slave) {
-+		if (!(client_info->assigned &&
-+		      !memcmp(client_info->ip6_src.s6_addr,
-+		      ip6hdr->saddr.s6_addr, sizeof(ip6hdr->saddr.s6_addr)))) {
-+			u32 hash_src = _simple_hash((u8 *)ip6hdr->saddr.s6_addr,
-+						sizeof(ip6hdr->saddr.s6_addr));
-+
-+			rlb6_src_unlink(bond, hash_index);
-+			rlb6_src_link(bond, hash_src, hash_index);
-+		}
-+
-+		memcpy(client_info->ip6_src.s6_addr, ip6hdr->saddr.s6_addr,
-+		       sizeof(ip6hdr->saddr.s6_addr));
-+		memcpy(client_info->ip6_dst.s6_addr, dst_ip,
-+		       sizeof(struct in6_addr));
-+
-+		ether_addr_copy(client_info->mac_dst, eth_data->h_dest);
-+		ether_addr_copy(client_info->mac_src, eth_data->h_source);
-+
-+		client_info->slave = assigned_slave;
-+
-+		if (is_valid_ether_addr(client_info->mac_dst)) {
-+			client_info->ntt = 1;
-+			bond->alb_info.rx6_ntt = 1;
-+		} else {
-+			client_info->ntt = 0;
-+		}
-+
-+		if (vlan_get_tag(skb, &client_info->vlan_id))
-+			client_info->vlan_id = 0;
-+
-+		if (!client_info->assigned) {
-+			u32 prev_tbl_head = bond_info->rx6_hashtbl_used_head;
-+
-+			bond_info->rx6_hashtbl_used_head = hash_index;
-+			client_info->used_next = prev_tbl_head;
-+			if (prev_tbl_head != RLB_NULL_INDEX)
-+				bond_info->rx6_hashtbl[prev_tbl_head].used_prev = hash_index;
-+			client_info->assigned = 1;
-+		}
-+	}
-+
-+	spin_unlock(&bond->mode_lock);
-+
-+	return assigned_slave;
-+}
-+
-+static struct slave *rlb_nd_xmit(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct slave *tx_slave = NULL;
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+	u8 *lladdr;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
-+		return NULL;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+	if (ip6hdr->nexthdr != IPPROTO_ICMPV6)
-+		return NULL;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
-+		return NULL;
-+
-+	hdr = icmp6_hdr(skb);
-+
-+	if (hdr->icmp6_type != NDISC_NEIGHBOUR_ADVERTISEMENT &&
-+	    hdr->icmp6_type != NDISC_NEIGHBOUR_SOLICITATION) {
-+		return NULL;
-+	}
-+
-+	lladdr = alb_get_lladdr(skb);
-+	if (!lladdr)
-+		return NULL;
-+
-+	if (!bond_slave_has_mac_rx(bond, lladdr)) {
-+		tx_slave = rcu_dereference(bond->curr_active_slave);
-+		return tx_slave;
-+	}
-+
-+	tx_slave = rlb6_nd_choose_channel(skb, bond, ip6hdr, hdr->icmp6_type);
-+	if (!tx_slave)
-+		return NULL;
-+
-+	alb_set_nd_option(skb, bond, tx_slave);
-+
-+	return tx_slave;
-+}
-+
-+static void rlb6_update_entry_from_na(struct bonding *bond,
-+				      struct ipv6hdr *ip6hdr, u8 *lladdr)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 hash_index;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	hash_index = _simple_hash(ip6hdr->saddr.s6_addr,
-+				  sizeof(ip6hdr->saddr.s6_addr));
-+	client_info = &bond_info->rx6_hashtbl[hash_index];
-+
-+	if (client_info->assigned &&
-+	    !memcmp(ip6hdr->saddr.s6_addr, client_info->ip6_dst.s6_addr,
-+	    sizeof(ip6hdr->saddr.s6_addr)) && !memcmp(ip6hdr->daddr.s6_addr,
-+	    client_info->ip6_src.s6_addr, sizeof(ip6hdr->daddr.s6_addr)) &&
-+	    !ether_addr_equal_64bits(client_info->mac_dst, lladdr)) {
-+		memcpy(client_info->mac_dst, lladdr,
-+		       sizeof(client_info->mac_dst));
-+	}
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
-+static void rlb6_delete_table_entry(struct bonding *bond, u32 index)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *entry = &bond_info->rx_hashtbl[index];
-+
-+	rlb6_delete_table_entry_dst(bond, index);
-+	rlb_init_table_entry_dst(entry);
-+	rlb6_src_unlink(bond, index);
-+}
-+
-+static void rlb6_purge_src_ip(struct bonding *bond, struct ipv6hdr *ip6hdr,
-+			      u8 *lladdr)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 ip_src_hash = _simple_hash((u8 *)ip6hdr->saddr.s6_addr,
-+					sizeof(ip6hdr->saddr.s6_addr));
-+	u32 index, next_index;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	index = bond_info->rx6_hashtbl[ip_src_hash].src_first;
-+	while (index != RLB_NULL_INDEX) {
-+		client_info = &bond_info->rx6_hashtbl[index];
-+		next_index = client_info->src_next;
-+
-+		if (!memcmp(client_info->ip6_src.s6_addr,
-+			    ip6hdr->saddr.s6_addr,
-+			    sizeof(ip6hdr->saddr.s6_addr)) &&
-+			    !ether_addr_equal_64bits(lladdr,
-+			    client_info->mac_src))
-+			rlb6_delete_table_entry(bond, index);
-+		index = next_index;
-+	}
-+
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+static int rlb_nd_recv(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct nd_msg *msg;
-+	struct inet6_ifaddr *ifp;
-+	u8 *lladdr;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
-+		return RX_HANDLER_ANOTHER;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+
-+	ifp = ipv6_get_ifaddr(dev_net(skb->dev), &ip6hdr->saddr, NULL, 0);
-+	if (ifp) {
-+		in6_ifa_put(ifp);
-+		return RX_HANDLER_ANOTHER;
-+	}
-+
-+	if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr) +
-+				sizeof(struct nd_msg)))
-+		return RX_HANDLER_ANOTHER;
-+
-+	msg = (struct nd_msg *)skb_transport_header(skb);
-+	lladdr = alb_get_lladdr(skb);
-+	if (!lladdr)
-+		return RX_HANDLER_ANOTHER;
-+
-+	rlb6_purge_src_ip(bond, ip6hdr, lladdr);
-+
-+	if (msg->icmph.icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT)
-+		rlb6_update_entry_from_na(bond, ip6hdr, lladdr);
-+
-+	return RX_HANDLER_ANOTHER;
-+}
-+
-+static int rlb_recv(struct sk_buff *skb, struct bonding *bond,
-+		    struct slave *slave)
-+{
-+	if (skb->protocol == cpu_to_be16(ETH_P_ARP))
-+		return rlb_arp_recv(skb, bond, slave);
-+	else if (alb_determine_ipv6_nd(skb, bond))
-+		return rlb_nd_recv(skb, bond);
-+
-+	return RX_HANDLER_ANOTHER;
-+}
-+
- /*********************** tlb/rlb shared functions *********************/
- 
- static void alb_send_lp_vid(struct slave *slave, const u8 mac_addr[],
-@@ -1068,6 +1523,7 @@ static void alb_fasten_mac_swap(struct bonding *bond, struct slave *slave1,
- 			 * has changed
- 			 */
- 			rlb_req_update_slave_clients(bond, slave1);
-+			rlb6_req_update_slave_clients(bond, slave1);
- 		}
- 	} else {
- 		disabled_slave = slave1;
-@@ -1080,6 +1536,7 @@ static void alb_fasten_mac_swap(struct bonding *bond, struct slave *slave1,
- 			 * has changed
- 			 */
- 			rlb_req_update_slave_clients(bond, slave2);
-+			rlb6_req_update_slave_clients(bond, slave2);
- 		}
- 	} else {
- 		disabled_slave = slave2;
-@@ -1291,6 +1748,111 @@ static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
- 		hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION;
- }
- 
-+static bool alb_determine_ipv6_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		if (skb_vlan_tag_present(skb))
-+			skb->transport_header = skb->network_header + sizeof(struct ipv6hdr);
-+		return alb_determine_nd(skb, bond);
-+	}
-+
-+	return false;
-+}
-+
-+static void alb_change_nd_option(struct sk_buff *skb, const void *data)
-+{
-+	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
-+	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
-+	struct net_device *dev = skb->dev;
-+	struct icmp6hdr *icmp6h = icmp6_hdr(skb);
-+	struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
-+	u8 *lladdr = NULL;
-+	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
-+				offsetof(struct nd_msg, opt));
-+
-+	while (ndoptlen) {
-+		int l;
-+
-+		switch (nd_opt->nd_opt_type) {
-+		case ND_OPT_SOURCE_LL_ADDR:
-+		case ND_OPT_TARGET_LL_ADDR:
-+			lladdr = ndisc_opt_addr_data(nd_opt, dev);
-+			break;
-+
-+		default:
-+			lladdr = NULL;
-+			break;
-+		}
-+
-+		l = nd_opt->nd_opt_len << 3;
-+
-+		if (ndoptlen < l || l == 0)
-+			return;
-+
-+		if (lladdr) {
-+			memcpy(lladdr, data, dev->addr_len);
-+			icmp6h->icmp6_cksum = 0;
-+
-+			icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
-+							      &ip6hdr->daddr,
-+						ntohs(ip6hdr->payload_len),
-+						IPPROTO_ICMPV6,
-+						csum_partial(icmp6h,
-+							     ntohs(ip6hdr->payload_len),
-+							     0));
-+			return;
-+		}
-+		ndoptlen -= l;
-+		nd_opt = ((void *)nd_opt) + l;
-+	}
-+}
-+
-+static u8 *alb_get_lladdr(struct sk_buff *skb)
-+{
-+	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
-+	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
-+	struct net_device *dev = skb->dev;
-+	u8 *lladdr = NULL;
-+	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
-+				offsetof(struct nd_msg, opt));
-+
-+	while (ndoptlen) {
-+		int l;
-+
-+		switch (nd_opt->nd_opt_type) {
-+		case ND_OPT_SOURCE_LL_ADDR:
-+		case ND_OPT_TARGET_LL_ADDR:
-+			lladdr = ndisc_opt_addr_data(nd_opt, dev);
-+			break;
-+
-+		default:
-+			break;
-+		}
-+
-+		l = nd_opt->nd_opt_len << 3;
-+
-+		if (ndoptlen < l || l == 0)
-+			return NULL;
-+
-+		if (lladdr)
-+			return lladdr;
-+
-+		ndoptlen -= l;
-+		nd_opt = ((void *)nd_opt) + l;
-+	}
-+
-+	return lladdr;
-+}
-+
-+static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
-+			      struct slave *tx_slave)
-+{
-+	if (tx_slave != rcu_access_pointer(bond->curr_active_slave)) {
-+		if (alb_determine_nd(skb, bond))
-+			alb_change_nd_option(skb, tx_slave->dev->dev_addr);
-+	}
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1457,12 +2019,17 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
--		if (alb_determine_nd(skb, bond)) {
-+		tx_slave = rlb_nd_xmit(skb, bond);
-+		if (tx_slave) {
-+			do_tx_balance = false;
-+			break;
-+		}
-+
-+		if (!pskb_network_may_pull(skb, sizeof(*ip6hdr))) {
- 			do_tx_balance = false;
- 			break;
- 		}
- 
--		/* The IPv6 header is pulled by alb_determine_nd */
- 		/* Additionally, DAD probes should not be tx-balanced as that
- 		 * will lead to false positives for duplicate addresses and
- 		 * prevent address configuration from working.
-@@ -1612,6 +2179,17 @@ void bond_alb_monitor(struct work_struct *work)
- 					bond_info->rx_ntt = 0;
- 			}
- 		}
-+		if (bond_info->rx6_ntt) {
-+			if (bond_info->rlb6_update_delay_counter) {
-+				--bond_info->rlb6_update_delay_counter;
-+			} else {
-+				rlb6_update_rx_clients(bond);
-+				if (bond_info->rlb6_update_retry_counter)
-+					--bond_info->rlb6_update_retry_counter;
-+				else
-+					bond_info->rx6_ntt = 0;
-+			}
-+		}
- 	}
- 	rcu_read_unlock();
- re_arm:
-@@ -1812,6 +2390,7 @@ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr)
- 		if (bond->alb_info.rlb_enabled) {
- 			/* inform clients mac address has changed */
- 			rlb_req_update_slave_clients(bond, curr_active);
-+			rlb6_req_update_slave_clients(bond, curr_active);
- 		}
- 	}
- 
-diff --git a/drivers/net/bonding/bond_debugfs.c b/drivers/net/bonding/bond_debugfs.c
-index 4f9b4a18c74c..90e88ff9b2bf 100644
---- a/drivers/net/bonding/bond_debugfs.c
-+++ b/drivers/net/bonding/bond_debugfs.c
-@@ -41,6 +41,20 @@ static int bond_debug_rlb_hash_show(struct seq_file *m, void *v)
- 			client_info->slave->dev->name);
- 	}
- 
-+	seq_puts(m, "SourceIP                                 DestinationIP                           Destination MAC   Src MAC           DEV\n");
-+
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+	     hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		seq_printf(m, "%-40pI6 %-40pI6 %-17pM %-17pM %s\n",
-+			   &client_info->ip6_src,
-+			   &client_info->ip6_dst,
-+			   &client_info->mac_dst,
-+			   &client_info->mac_src,
-+			   client_info->slave->dev->name);
-+	}
-+
- 	spin_unlock_bh(&bond->mode_lock);
- 
- 	return 0;
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 15eddca7b4b6..b6252b181940 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1510,8 +1510,8 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
- 	struct sk_buff *skb = *pskb;
- 	struct slave *slave;
- 	struct bonding *bond;
--	int (*recv_probe)(const struct sk_buff *, struct bonding *,
--			  struct slave *);
-+	int (*recv_probe)(struct sk_buff *skb, struct bonding *bond,
-+			  struct slave *slave);
- 	int ret = RX_HANDLER_ANOTHER;
- 
- 	skb = skb_share_check(skb, GFP_ATOMIC);
-@@ -3228,7 +3228,7 @@ static int bond_na_rcv(const struct sk_buff *skb, struct bonding *bond,
- }
- #endif
- 
--int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond,
-+int bond_rcv_validate(struct sk_buff *skb, struct bonding *bond,
- 		      struct slave *slave)
- {
- #if IS_ENABLED(CONFIG_IPV6)
-diff --git a/include/net/bond_3ad.h b/include/net/bond_3ad.h
-index 184105d68294..51886d9c928d 100644
---- a/include/net/bond_3ad.h
-+++ b/include/net/bond_3ad.h
-@@ -300,7 +300,7 @@ void bond_3ad_handle_link_change(struct slave *slave, char link);
- int  bond_3ad_get_active_agg_info(struct bonding *bond, struct ad_info *ad_info);
- int  __bond_3ad_get_active_agg_info(struct bonding *bond,
- 				    struct ad_info *ad_info);
--int bond_3ad_lacpdu_recv(const struct sk_buff *skb, struct bonding *bond,
-+int bond_3ad_lacpdu_recv(struct sk_buff *skb, struct bonding *bond,
- 			 struct slave *slave);
- int bond_3ad_set_carrier(struct bonding *bond);
- void bond_3ad_update_lacp_active(struct bonding *bond);
-diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index 191c36afa1f4..b1a572eead31 100644
---- a/include/net/bond_alb.h
-+++ b/include/net/bond_alb.h
-@@ -94,6 +94,8 @@ struct tlb_client_info {
- struct rlb_client_info {
- 	__be32 ip_src;		/* the server IP address */
- 	__be32 ip_dst;		/* the client IP address */
-+	struct in6_addr	ip6_src;
-+	struct in6_addr	ip6_dst;
- 	u8  mac_src[ETH_ALEN];	/* the server MAC address */
- 	u8  mac_dst[ETH_ALEN];	/* the client MAC address */
- 
-@@ -131,10 +133,13 @@ struct alb_bond_info {
- 	/* -------- rlb parameters -------- */
- 	int rlb_enabled;
- 	struct rlb_client_info	*rx_hashtbl;	/* Receive hash table */
-+	struct rlb_client_info	*rx6_hashtbl;	/* Receive hash table */
- 	u32			rx_hashtbl_used_head;
-+	u32			rx6_hashtbl_used_head;
- 	u8			rx_ntt;	/* flag - need to transmit
- 					 * to all rx clients
- 					 */
-+	u8			rx6_ntt;
- 	struct slave		*rx_slave;/* last slave to xmit from */
- 	u8			primary_is_promisc;	   /* boolean */
- 	u32			rlb_promisc_timeout_counter;/* counts primary
-@@ -144,6 +149,8 @@ struct alb_bond_info {
- 	u32			rlb_update_retry_counter;/* counter of retries
- 							  * of client update
- 							  */
-+	u32			rlb6_update_delay_counter;
-+	u32			rlb6_update_retry_counter;
- 	u8			rlb_rebalance;	/* flag - indicates that the
- 						 * rx traffic should be
- 						 * rebalanced
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index b14f4c0b4e9e..552bce0168d1 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -220,8 +220,8 @@ struct bonding {
- 	struct   bond_up_slave __rcu *all_slaves;
- 	bool     force_primary;
- 	s32      slave_cnt; /* never change this value outside the attach/detach wrappers */
--	int     (*recv_probe)(const struct sk_buff *, struct bonding *,
--			      struct slave *);
-+	int     (*recv_probe)(struct sk_buff *skb, struct bonding *bond,
-+			      struct slave *slave);
- 	/* mode_lock is used for mode-specific locking needs, currently used by:
- 	 * 3ad mode (4) - protect against running bond_3ad_unbind_slave() and
- 	 *                bond_3ad_state_machine_handler() concurrently and also
-@@ -639,7 +639,7 @@ struct bond_net {
- 	struct class_attribute	class_attr_bonding_masters;
- };
- 
--int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond, struct slave *slave);
-+int bond_rcv_validate(struct sk_buff *skb, struct bonding *bond, struct slave *slave);
- netdev_tx_t bond_dev_queue_xmit(struct bonding *bond, struct sk_buff *skb, struct net_device *slave_dev);
- int bond_create(struct net *net, const char *name);
- int bond_create_sysfs(struct bond_net *net);
--- 
-2.27.0
+> Hi Geert,
+>=20
+> On Mon, 14 Mar 2022, Geert Uytterhoeven wrote:
+>=20
+> > On Mon, Mar 14, 2022 at 4:05 PM Pekka Paalanen <ppaalanen@gmail.com> wr=
+ote: =20
+> > > On Mon, 14 Mar 2022 14:30:18 +0100
+> > > Geert Uytterhoeven <geert@linux-m68k.org> wrote: =20
+> > > > On Mon, Mar 7, 2022 at 9:53 PM Geert Uytterhoeven <geert@linux-m68k=
+.org> wrote: =20
+> > > > > Introduce fourcc codes for color-indexed frame buffer formats wit=
+h=20
+> > > > > two, four, and sixteen colors, and provide a mapping from bit per=
+=20
+> > > > > pixel and depth to fourcc codes.
+> > > > >
+> > > > > As the number of bits per pixel is less than eight, these rely on=
+=20
+> > > > > proper block handling for the calculation of bits per pixel and=20
+> > > > > pitch.
+> > > > >
+> > > > > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org> =20
+> > > > =20
+> > > > > --- a/include/uapi/drm/drm_fourcc.h
+> > > > > +++ b/include/uapi/drm/drm_fourcc.h
+> > > > > @@ -99,7 +99,10 @@ extern "C" {
+> > > > >  #define DRM_FORMAT_INVALID     0
+> > > > >
+> > > > >  /* color index */
+> > > > > -#define DRM_FORMAT_C8          fourcc_code('C', '8', ' ', ' ') /=
+* [7:0] C */
+> > > > > +#define DRM_FORMAT_C1          fourcc_code('C', '1', ' ', ' ') /=
+* [7:0] C0:C1:C2:C3:C4:C5:C6:C7 1:1:1:1:1:1:1:1 eight pixels/byte */
+> > > > > +#define DRM_FORMAT_C2          fourcc_code('C', '2', ' ', ' ') /=
+* [7:0] C0:C1:C2:C3 2:2:2:2 four pixels/byte */
+> > > > > +#define DRM_FORMAT_C4          fourcc_code('C', '4', ' ', ' ') /=
+* [7:0] C0:C1 4:4 two pixels/byte */
+> > > > > +#define DRM_FORMAT_C8          fourcc_code('C', '8', ' ', ' ') /=
+* [7:0] C 8 one pixel/byte */
+> > > > >
+> > > > >  /* 8 bpp Red */
+> > > > >  #define DRM_FORMAT_R8          fourcc_code('R', '8', ' ', ' ') /=
+* [7:0] R */ =20
+> > > >
+> > > > After replying to Ilia's comment[1], I realized the CFB drawing
+> > > > operations use native byte and bit ordering, unless
+> > > > FBINFO_FOREIGN_ENDIAN is set.
+> > > > While Amiga, Atari, and Sun-3 use big-endian bit ordering,
+> > > > e.g. Acorn VIDC[2] uses little endian, and SH7760[3] is configurable
+> > > > (sh7760fb configures ordering to match host order).
+> > > > BTW, ssd130{7fb,x}_update_rect() both assume little-endian, so I
+> > > > guess they are broken on big-endian.
+> > > > Fbtest uses big-endian bit ordering, so < 8 bpp is probably broken
+> > > > on little-endian.
+> > > >
+> > > > Hence the above should become:
+> > > >
+> > > >     #define DRM_FORMAT_C1          fourcc_code('C', '1', ' ', ' ') =
+/*
+> > > > [7:0] C7:C6:C5:C4:C3:C2:C1:C0 1:1:1:1:1:1:1:1 eight pixels/byte */
+> > > >     #define DRM_FORMAT_C2          fourcc_code('C', '2', ' ', ' ') =
+/*
+> > > > [7:0] C3:C2:C1:C0 2:2:2:2 four pixels/byte */
+> > > >     #define DRM_FORMAT_C4          fourcc_code('C', '4', ' ', ' ') =
+/*
+> > > > [7:0] C1:C0 4:4 two pixels/byte */
+> > > >
+> > > > The same changes should be made for DRM_FORMAT_[RD][124].
+> > > >
+> > > > The fbdev emulation code should gain support for these with and wit=
+hout
+> > > > DRM_FORMAT_BIG_ENDIAN, the latter perhaps only on big-endian platfo=
+rms?
+> > > >
+> > > > [1] https://lore.kernel.org/r/CAKb7UvgEdm9U=3D+RyRwL0TGRfA_Qc7NbhCW=
+oZOft2DKdXggtKYw@mail.gmail.com/
+> > > > [2] See p.30 of the VIDC datasheet
+> > > >     http://chrisacorns.computinghistory.org.uk/docs/Acorn/Misc/Acor=
+n_VIDC_Datasheet.pdf
+> > > > [3] See p.1178 of the SH7660 datasheet
+> > > >     https://datasheet.octopart.com/HD6417760BL200AV-Renesas-datashe=
+et-14105759.pdf =20
+> > >
+> > > why would CPU endianess affect the order of bits in a byte? =20
+> >=20
+> > It doesn't, but see below.
+> >  =20
+> > > Do you mean that bit 0 one machine is (1 << 0), and on another machine
+> > > bit 0 is (1 << 7)? =20
+> >=20
+> > No, I mean that in case of multiple pixels per byte, the display
+> > hardware pumps out pixels to the CRTC starting from either the MSB
+> > or the LSB of the first display byte.  Which order depends on the
+> > display hardware, not on the CPU.
+> >  =20
+> > > In C, we have only one way to address bits of a byte and that is with
+> > > arithmetic. You cannot take the address of a bit any other way, can y=
+ou?
+> > >
+> > > Can we standardise on "bit n of a byte is addressed as (1 << n)"? =20
+> >=20
+> > BIT(n) in Linux works the same for little- and big-endian CPUs.
+> > But display hardware may use a different bit order.
+> >  =20
+>=20
+> Perhaps some of this confusion could be avoided if you describe the=20
+> problem in terms of the sequence of scan-out of pixels, rather than in=20
+> terms of the serialization of bits. The significance of bits within each=
+=20
+> pixel and the ordering of pixels within each memory word are independent,=
+=20
+> right?
 
+Yes, that might help.
+
+Also, when drm_fourcc.h is describing pixel formats, it needs to
+consider only how a little-endian CPU accesses them. That's how pixel
+data in memory is described. Display hardware plays no part in that.
+It is the driver's job to expose the pixel formats that match display
+hardware behaviour.
+
+
+Thanks,
+pq
+
+--Sig_/98Z3rW3o3S.LMmex9/1NFgW
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmIwQSIACgkQI1/ltBGq
+qqdWYxAArFJHkgpQMmmEJF2XjJ7YkFz1RwOBneGVxoSiwu34NGvFYNI9RQrxIRMZ
+6Veq3hEcMsi3IpHXBDklk6UeL/AuVkVK6mngFDczy4amGO4fonk3x6OsnJn2Hb3D
+bW/We2Ua68RsJu7FGVjO4XW07h5gNKUsdDlK6Mp2ENoo5K3eabxaD9ZkOoPmeerh
+JQ28LWf+xtk54sOR8uukwnJvogoEzo/0h1+9birqPnKBJlEW22CYzJrRSiaEhLfn
+PE0ql688tq/KgH0Rhi769hauO/fmrj6oRAqQbwljfZvtKWx9L53T6OW7MvpK6AXw
+FYsvXksK3IpOrhxm7ahZsW9Iis7GwNeU/NmKLb47SnKKIluMQTBFFkcvMX1mSjRC
+nCq82HG1e0E/yOQZYs+Ug7JRIKveCgJFEhnHIGgSIdQANA+hCLMPZvXgtpinZAlD
+t1hDpSfTTO8biGhvB2EhHPDZnqdJ1SmoAvQXb7vJYIgBK/CpKDAAWUAzel7T+mZt
+BGJnQQN8eN8B+iKrgWYiQbCGaNODiL1PLXTt7LbqKB/pCXHlLRYpJY3ig1Ks/Xx7
+JDx1vdAFXGeSBaerSL/gNx1Ltl2W6/4I8y1BkKMOUCLkhPUBCw8/bXrvFqNkyYKR
+MuOOHqniK8XN77rE4x92pYoVTaR0vAKNPuLcJx7GyhY0JCYrlQ4=
+=Lr2I
+-----END PGP SIGNATURE-----
+
+--Sig_/98Z3rW3o3S.LMmex9/1NFgW--
