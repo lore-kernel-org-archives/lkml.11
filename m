@@ -2,157 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A55CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4824C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:26:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348645AbiCON1R (ORCPT
+        id S1348654AbiCON2H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 09:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38226 "EHLO
+        Tue, 15 Mar 2022 09:28:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348631AbiCON1M (ORCPT
+        with ESMTP id S1345854AbiCON2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 09:27:12 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2084D42ED0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 06:26:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647350761; x=1678886761;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DUJkbhEMYFfC7vCg5ediYDdzNR4Ys1q6v/5bpfUlhlo=;
-  b=ldyBJymT44HD7cLPTGQ9hqxOHQiMRGL8YbRGSM86J6PvxiSyG3YRp1OS
-   PqkFgqFWrTjoFmCIthoDg7hMMzf3nOxNVPWc0cTeamf5YZyo3tz4ATKdc
-   oEd81U4hLPZqBkCD7w1vE93Gmj52kavcY6HFppQH1lf4cMCGWWwOdWF4+
-   JtR4xe/T5PY7lBxDU01i8DLphp01Gq7IIDuP3H2td2mAnkjmOOEoWi8rB
-   0ZK8w/Bv85FRww3+EsqgYbqCtxXZv5ZBU969iQQO3EP+47kCdZQEiBT+3
-   VFw3GcZlyJ8GmDBKzcCvAE1ddz0CI9+K/zc34uug+mLGe+fFic+0BX4IZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="253856931"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="253856931"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 06:26:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="515864016"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 15 Mar 2022 06:25:54 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU7BS-000B1u-5i; Tue, 15 Mar 2022 13:25:54 +0000
-Date:   Tue, 15 Mar 2022 21:24:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Qing Wang <wangqing@vivo.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Wang Qing <wangqing@vivo.com>
-Subject: Re: [PATCH] sched: dynamic config sd_flags if described in DT
-Message-ID: <202203152145.vPr4Qv42-lkp@intel.com>
-References: <1647331137-69890-1-git-send-email-wangqing@vivo.com>
+        Tue, 15 Mar 2022 09:28:05 -0400
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A063464B
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 06:26:53 -0700 (PDT)
+Received: by mail-vs1-xe2b.google.com with SMTP id u124so20713682vsb.10
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 06:26:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=0x0f.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9EPLFc0pdiuZLGXfUBeoV2QJLlEOKY+cBVSdJpmJdi4=;
+        b=Cezrbq+lnRkFY0MX7mLsPbWtmtsVEYwFF0sXofNAVhJqqsedLgC8CeZk4WC4sVzpHm
+         tvUN8w/6Yl3GJQBsuhQIKFUCthYzCBaw6fymHmE0OpKWrv7M367uk4bRhGGRpoVh+QSY
+         +8plcP8lKntM5RNuAM20n+Dr404RQhdw/vCn0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9EPLFc0pdiuZLGXfUBeoV2QJLlEOKY+cBVSdJpmJdi4=;
+        b=JY/sLd47g9vySb82Ei7UiY+UacURmQF7zaUENrdt525yX1yw5ITlL3zOrvXHKH4WNP
+         M+N0uLQRSijhuo05dZ4CTkzlnJB7LlCP9h9W4Lxv1esDQaxeZ2rYApyS8MXW7UfpWKXs
+         Tw2Afuolj06IEKeZDttym2r+Y0jSdNVTo0kHJiLoitXvxxS6RB6atd7IAsiCtfEihP4U
+         0ML31DIE1NrSClKJnzXq2OINIUDodvRmSmqCqdvZzWBA64iK0pYlFEWDodR9tskOM0oa
+         S7bQlAyr0SwwACdDui8zrIWxQNmdvTXtXBQCPNdcSiu0T7WJoad++hJAW8WyERsqrbgJ
+         bXpg==
+X-Gm-Message-State: AOAM530stABE00pav5hRTdVAdE8+nxsFM9fAzF7u37P0DRLRAHf8QlQZ
+        EiEhatKpnRWj7s1vt/xnOSeg0j9kR5uLGnFketMZVg==
+X-Google-Smtp-Source: ABdhPJxwjbIQYTYfnoZMHaBdjvlurSIvTJDn2QMMRqzQ9bJmaqZBacvvQyMn7vZEJQ7pL3Sgi+3M61OKTD+3EpMCktw=
+X-Received: by 2002:a05:6102:c4d:b0:322:b188:3842 with SMTP id
+ y13-20020a0561020c4d00b00322b1883842mr9866634vss.12.1647350812654; Tue, 15
+ Mar 2022 06:26:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1647331137-69890-1-git-send-email-wangqing@vivo.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220315091319.3351522-1-daniel@0x0f.com> <s5h8rtba4to.wl-tiwai@suse.de>
+ <PAXPR10MB47185B76D5F38482FB1125A5F1109@PAXPR10MB4718.EURPRD10.PROD.OUTLOOK.COM>
+In-Reply-To: <PAXPR10MB47185B76D5F38482FB1125A5F1109@PAXPR10MB4718.EURPRD10.PROD.OUTLOOK.COM>
+From:   Daniel Palmer <daniel@0x0f.com>
+Date:   Tue, 15 Mar 2022 22:26:41 +0900
+Message-ID: <CAFr9PXn=vRV4Jvxc+w9XJiAB8eAzq9MUfu+frMkS1P83Vp2Ujw@mail.gmail.com>
+Subject: Re: [PATCH] ASoC: sti: sti_uniperif: Remove driver
+To:     Arnaud POULIQUEN <arnaud.pouliquen@st.com>
+Cc:     Takashi Iwai <tiwai@suse.de>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Qing,
+Hi Arnaud,
 
-Thank you for the patch! Yet something to improve:
+On Tue, 15 Mar 2022 at 22:15, Arnaud POULIQUEN <arnaud.pouliquen@st.com> wrote:
+> > Yeah, that looks dead.
+> >
+>
+> The platform is still used for instance:
+> https://lore.kernel.org/all/1d95209f-9cb4-47a3-2696-7a93df7cdc05@foss.st.com/
+>
+> So please do not remove the driver
+>
+> The issue has not been detected because it is related to an error that
+> occurs only when we reach the limit of the platform, with application
+> that stop the stream at same time.
+> So almost no chance to occur.
+>
+> > OTOH, if anyone really wants to keep the stuff, please revert the
+> > commit dc865fb9e7c2251c9585ff6a7bf185d499db13e4.
+>
+> Yes reverting the commit is one solution.
+> The other is to clean-up the snd_pcm_stream_lock/ snd_pcm_stream_unlock in the
+> Handler.
+>
+> I will try to address this in few weeks
 
-[auto build test ERROR on arm64/for-next/core]
-[also build test ERROR on driver-core/driver-core-testing tip/sched/core linus/master v5.17-rc8 next-20220310]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Feel free to ignore my patch then. I couldn't find anything that used
+it's DT compatible etc and assumed it was orphaned.
 
-url:    https://github.com/0day-ci/linux/commits/Qing-Wang/sched-dynamic-config-sd_flags-if-described-in-DT/20220315-160039
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-next/core
-config: riscv-randconfig-r025-20220314 (https://download.01.org/0day-ci/archive/20220315/202203152145.vPr4Qv42-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6b2f50fb47da3baeee10b1906da6e30ac5d26ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/0day-ci/linux/commit/3322560249c42b0a3e719b19842a3ace7d5ffb6a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Qing-Wang/sched-dynamic-config-sd_flags-if-described-in-DT/20220315-160039
-        git checkout 3322560249c42b0a3e719b19842a3ace7d5ffb6a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/base/
+Cheers,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/base/arch_topology.c:648:23: error: use of undeclared identifier 'cpu'
-                   if (!cache_topology[cpu][cache_level])
-                                       ^
-   drivers/base/arch_topology.c:654:23: error: use of undeclared identifier 'cpu'
-                           if (cache_topology[cpu][cache_level] == cache_topology[cpu_id][cache_level]) {
-                                              ^
-   2 errors generated.
-
-
-vim +/cpu +648 drivers/base/arch_topology.c
-
-   639	
-   640	int cpus_share_self_cache(const struct cpumask *cpu_map)
-   641	{
-   642		int cache_level, cpu_id;
-   643		int first, last;
-   644		int id = cpumask_first(cpu_map);
-   645		int size = cpumask_weight(cpu_map);
-   646	
-   647		for (cache_level = 0; cache_level < MAX_CACHE_LEVEL; cache_level++) {
- > 648			if (!cache_topology[cpu][cache_level])
-   649				return -1;
-   650	
-   651			first = -1;
-   652			last = id;
-   653			for (cpu_id = 0; cpu_id < NR_CPUS; cpu_id++) {
-   654				if (cache_topology[cpu][cache_level] == cache_topology[cpu_id][cache_level]) {
-   655					if (cpu_id < id || cpu_id >= id + size)
-   656						return 0;
-   657	
-   658					first = (first == -1)?cpu_id:first;
-   659					last = cpu_id;
-   660				}
-   661			}
-   662	
-   663			if (first == id && last == id + size)
-   664				return 1;
-   665		}
-   666	
-   667		return 0;
-   668	}
-   669	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Daniel
