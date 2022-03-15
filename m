@@ -2,176 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D603C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D209C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345003AbiCOFiM (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 01:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43998 "EHLO
+        id S243438AbiCOFjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 01:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345034AbiCOFhv (ORCPT
+        with ESMTP id S232739AbiCOFjD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 01:37:51 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71EC849CA2;
-        Mon, 14 Mar 2022 22:36:25 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 283301474;
-        Mon, 14 Mar 2022 22:36:25 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.34.48])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 794173F766;
-        Mon, 14 Mar 2022 22:36:18 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        peterz@infradead.org, acme@kernel.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Suzuki Poulose <suzuki.poulose@arm.com>,
-        James Clark <james.clark@arm.com>,
+        Tue, 15 Mar 2022 01:39:03 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFD85F3C;
+        Mon, 14 Mar 2022 22:37:49 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHhy36zS8z4xRB;
+        Tue, 15 Mar 2022 16:37:47 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647322668;
+        bh=I3Md9Wu+rXCekQ9TIyD4E1Jl3dFK5nZ9S4CAzhVMEG8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NiLhsVZgjCvvW0GRG6dpmaiYmOppcTKvuBtkT+kuzOGDvlG6ecvHoxQFeDc9hZ1dq
+         YdMijfxKkFWgqrZgf6YCEFyljpFPDtaKB3H3bf+2H0YC0KRbXSqc+h81HHgWdK5q42
+         jcHAaDaaWdkWZxBnjIW8oCYfEtanpmT5Y9/zwhJ5azCBfhCFtInaW1jWqJWpwqFAuK
+         DZqzS2P6WyZTH/EnM1+m5aLwVZgiyLA2e++JwXst8qfCWgAHzhSVjBOYeDc7loKjgQ
+         Z2GoOng0MuweT83goRvBKARdKQmqhelKWY20lbFptBgRBcezU/26nP5oMcMoqrZL1q
+         AOnPEk1nDiF/g==
+Date:   Tue, 15 Mar 2022 16:37:47 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH V4 09/10] perf/tools: Add branch privilege information request flag
-Date:   Tue, 15 Mar 2022 11:05:15 +0530
-Message-Id: <20220315053516.431515-10-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220315053516.431515-1-anshuman.khandual@arm.com>
-References: <20220315053516.431515-1-anshuman.khandual@arm.com>
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the tip tree
+Message-ID: <20220315163747.3e11ad15@canb.auug.org.au>
+In-Reply-To: <20220315162327.53f7139f@canb.auug.org.au>
+References: <20220315140644.369d98d6@canb.auug.org.au>
+        <20220315162327.53f7139f@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/Fk/whrzBZEABgv+GiSKQFUO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This updates the perf tools with branch privilege information request flag
-i.e PERF_SAMPLE_BRANCH_PRIV_SAVE that has been added earlier in the kernel.
-This also updates 'perf record' documentation, branch_modes[], and generic
-branch privilege level enumeration as added earlier in the kernel.
+--Sig_/Fk/whrzBZEABgv+GiSKQFUO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-perf-users@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- tools/include/uapi/linux/perf_event.h     | 14 +++++++++++++-
- tools/perf/Documentation/perf-record.txt  |  1 +
- tools/perf/util/branch.h                  |  3 ++-
- tools/perf/util/parse-branch-options.c    |  1 +
- tools/perf/util/perf_event_attr_fprintf.c |  2 +-
- 5 files changed, 18 insertions(+), 3 deletions(-)
+Hi all,
 
-diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
-index d29280adc3c4..193dba2ecdc1 100644
---- a/tools/include/uapi/linux/perf_event.h
-+++ b/tools/include/uapi/linux/perf_event.h
-@@ -204,6 +204,8 @@ enum perf_branch_sample_type_shift {
- 
- 	PERF_SAMPLE_BRANCH_HW_INDEX_SHIFT	= 17, /* save low level index of raw branch records */
- 
-+	PERF_SAMPLE_BRANCH_PRIV_SAVE_SHIFT	= 18, /* save privilege mode */
-+
- 	PERF_SAMPLE_BRANCH_MAX_SHIFT		/* non-ABI */
- };
- 
-@@ -233,6 +235,8 @@ enum perf_branch_sample_type {
- 
- 	PERF_SAMPLE_BRANCH_HW_INDEX	= 1U << PERF_SAMPLE_BRANCH_HW_INDEX_SHIFT,
- 
-+	PERF_SAMPLE_BRANCH_PRIV_SAVE	= 1U << PERF_SAMPLE_BRANCH_PRIV_SAVE_SHIFT,
-+
- 	PERF_SAMPLE_BRANCH_MAX		= 1U << PERF_SAMPLE_BRANCH_MAX_SHIFT,
- };
- 
-@@ -271,6 +275,13 @@ enum {
- 	PERF_BR_NEW_MAX,
- };
- 
-+enum {
-+	PERF_BR_PRIV_UNKNOWN	= 0,
-+	PERF_BR_PRIV_USER	= 1,
-+	PERF_BR_PRIV_KERNEL	= 2,
-+	PERF_BR_PRIV_HV		= 3,
-+};
-+
- #define PERF_SAMPLE_BRANCH_PLM_ALL \
- 	(PERF_SAMPLE_BRANCH_USER|\
- 	 PERF_SAMPLE_BRANCH_KERNEL|\
-@@ -1386,7 +1397,8 @@ struct perf_branch_entry {
- 		cycles:16,  /* cycle count to last branch */
- 		type:4,     /* branch type */
- 		new_type:4, /* additional branch type */
--		reserved:36;
-+		priv:3,     /* privilege level */
-+		reserved:33;
- };
- 
- union perf_sample_weight {
-diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
-index 9ccc75935bc5..3e33686977a1 100644
---- a/tools/perf/Documentation/perf-record.txt
-+++ b/tools/perf/Documentation/perf-record.txt
-@@ -387,6 +387,7 @@ following filters are defined:
- 	- abort_tx: only when the target is a hardware transaction abort
- 	- cond: conditional branches
- 	- save_type: save branch type during sampling in case binary is not available later
-+	- priv: save privilege state during sampling in case binary is not available later
- 
- +
- The option requires at least one branch type among any, any_call, any_ret, ind_call, cond.
-diff --git a/tools/perf/util/branch.h b/tools/perf/util/branch.h
-index 37b6ed546c46..68453a4e8943 100644
---- a/tools/perf/util/branch.h
-+++ b/tools/perf/util/branch.h
-@@ -25,7 +25,8 @@ struct branch_flags {
- 			u64 cycles:16;
- 			u64 type:4;
- 			u64 new_type:4;
--			u64 reserved:36;
-+			u64 priv:3;
-+			u64 reserved:33;
- 		};
- 	};
- };
-diff --git a/tools/perf/util/parse-branch-options.c b/tools/perf/util/parse-branch-options.c
-index bb4aa88c50a8..00588b9db474 100644
---- a/tools/perf/util/parse-branch-options.c
-+++ b/tools/perf/util/parse-branch-options.c
-@@ -32,6 +32,7 @@ static const struct branch_mode branch_modes[] = {
- 	BRANCH_OPT("call", PERF_SAMPLE_BRANCH_CALL),
- 	BRANCH_OPT("save_type", PERF_SAMPLE_BRANCH_TYPE_SAVE),
- 	BRANCH_OPT("stack", PERF_SAMPLE_BRANCH_CALL_STACK),
-+	BRANCH_OPT("priv", PERF_SAMPLE_BRANCH_PRIV_SAVE),
- 	BRANCH_END
- };
- 
-diff --git a/tools/perf/util/perf_event_attr_fprintf.c b/tools/perf/util/perf_event_attr_fprintf.c
-index 98af3fa4ea35..4b0db27b7199 100644
---- a/tools/perf/util/perf_event_attr_fprintf.c
-+++ b/tools/perf/util/perf_event_attr_fprintf.c
-@@ -52,7 +52,7 @@ static void __p_branch_sample_type(char *buf, size_t size, u64 value)
- 		bit_name(ABORT_TX), bit_name(IN_TX), bit_name(NO_TX),
- 		bit_name(COND), bit_name(CALL_STACK), bit_name(IND_JUMP),
- 		bit_name(CALL), bit_name(NO_FLAGS), bit_name(NO_CYCLES),
--		bit_name(TYPE_SAVE), bit_name(HW_INDEX),
-+		bit_name(TYPE_SAVE), bit_name(HW_INDEX), bit_name(PRIV_SAVE),
- 		{ .name = NULL, }
- 	};
- #undef bit_name
--- 
-2.25.1
+On Tue, 15 Mar 2022 16:23:27 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> On Tue, 15 Mar 2022 14:06:44 +1100 Stephen Rothwell <sfr@canb.auug.org.au=
+> wrote:
+> >
+> > After merging the irqchip tree, today's linux-next build (x86_64
+> > allmodconfig) failed like this:
+> >=20
+> > arch/x86/kernel/cpuid.o: warning: objtool: file already has .orc_unwind=
+ section, skipping
+> > make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: arch/x8=
+6/kernel/cpuid.ko] Error 255
+> > arch/x86/kernel/msr.o: warning: objtool: file already has .orc_unwind s=
+ection, skipping
+> > make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: arch/x8=
+6/kernel/msr.ko] Error 255
+> > arch/x86/events/intel/intel-uncore.o: warning: objtool: file already ha=
+s .retpoline_sites, skipping
+> > arch/x86/events/intel/intel-uncore.o: warning: objtool: file already ha=
+s .ibt_endbr_seal, skipping
+> > arch/x86/events/intel/intel-uncore.o: warning: objtool: file already ha=
+s .orc_unwind section, skipping
+> > make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: arch/x8=
+6/events/intel/intel-uncore.ko] Error 255
+> >=20
+> > I couldn't see anything int the irqchip tree that would cause this,
+> > so I deleted my object directory and redid the build and this time
+> > it succeeded.
+> >=20
+> > I suspect some change in the tip tree has brought this on (it is merged
+> > just a bit before the irqchip tree). =20
+>=20
+> This time after the merging usb trees:
+>=20
+> drivers/phy/qualcomm/phy-qcom-usb-hs.o: warning: objtool: file already ha=
+s .orc_unwind section, skipping
+> make[3]: *** [scripts/Makefile.modfinal:61: drivers/phy/qualcomm/phy-qcom=
+-usb-hs.ko] Error 255
+> drivers/phy/qualcomm/phy-qcom-usb-hsic.o: warning: objtool: file already =
+has .orc_unwind section, skipping
+> make[3]: *** [scripts/Makefile.modfinal:61: drivers/phy/qualcomm/phy-qcom=
+-usb-hsic.ko] Error 255
+>=20
+> I just removed the drivers/phy/qualcomm directory from the object tree
+> and rebuilt.
+>=20
+> Then got this:
+>=20
+> drivers/phy/ti/phy-tusb1210.o: warning: objtool: file already has .orc_un=
+wind section, skipping
+> make[3]: *** [/home/sfr/next/next/scripts/Makefile.modfinal:61: drivers/p=
+hy/ti/phy-tusb1210.ko] Error 255
+>=20
+> So removed the drivers/phy/ti directory and rebuilt and the build
+> succeeded.
+>=20
+> I assume that something is being left around or reprocessed when it
+> should not be.
 
+Maybe commit
+
+  8856dadf7ad3 ("Kbuild: Allow whole module objtool runs")
+
+?
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Fk/whrzBZEABgv+GiSKQFUO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwJisACgkQAVBC80lX
+0GwOKQf/VmiNnr36IEaDTWouwCaohGm5c4EslYAwPWXzfj2jMbp1SKBd+0hv7B5C
+o9DG9rmLdtsD8d4uRrX1L7jez3YJOv3YRFhSA4R34VkDeCvx7JqHxAxR5CIjPcpr
+magpmh7PEsrIzqwkSTTf9T6yjSJLZxHlHG8hv/9lvCRFE2/wxMLTbU+6KCIA2a1L
+pOAjgb64iG6NweGD1DhyEwtp7Q5BJidrWKk/akD0tVmXaaek5ZGFFSjDm74uOTgR
+RNpk9Z+xjT4hzjqa7ve0k/V84JxSbY+kT86HTd/G10V5M66H8F6/OHCwZOhHoFlG
+rB4UGEKcdY2woVS7ymgiUDZpt6aSqA==
+=Zgtw
+-----END PGP SIGNATURE-----
+
+--Sig_/Fk/whrzBZEABgv+GiSKQFUO--
