@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 19:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C16B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 19:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351607AbiCOT5Q (ORCPT
+        id S1351574AbiCOT5W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 15:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50178 "EHLO
+        Tue, 15 Mar 2022 15:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351523AbiCOT4q (ORCPT
+        with ESMTP id S1351597AbiCOT5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 15:56:46 -0400
+        Tue, 15 Mar 2022 15:57:09 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E3B456208
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:55:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 613D356438
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:55:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647374132;
+        s=mimecast20190719; t=1647374144;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=38DxtezcbsPH3GE2fOqFRXG7ww80lFsCaLv2fHu/vZU=;
-        b=Yu9+gk5HdB35RxrT1OK+l7iR8EcM8Q4pmhM4KHk/06iXQj7wB6kzPutS7TE0c8d+Zoosh7
-        hcuahTo26SnW9tJVtLZ8NuQU1JsoCRouhljTWLod1h1eup4QYVYvhlIUM2PxcUePqUqBTH
-        5jNCbALaCsjmMEcoxdUbR4vfxNZzGMw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+         references:references; bh=bPxELY9f1rlMmVJpyx0EHBimwlSNOJPDDdWa4BckiXk=;
+        b=V6J0r4KrbE2W58Aa7U4QHIaQmNQipNPzeEFHQ8M9/NLmlubApu5ZBfV5LV82GhRnLhbqmb
+        4z/oqOMQtOvBZWRT6z5OSPQXYM5BPz1w2/sZr63N+gm/+ATX1XIvb+zSgJSrlua4GHlhFu
+        Wtvlwl8wXpblfZkd5a+k9QcE0ZtmC6s=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-ekULvisbO6GAU8Srmy6QxQ-1; Tue, 15 Mar 2022 15:55:28 -0400
-X-MC-Unique: ekULvisbO6GAU8Srmy6QxQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+ us-mta-160-6q6eCT3bOg6UZy9u8UNH_A-1; Tue, 15 Mar 2022 15:55:41 -0400
+X-MC-Unique: 6q6eCT3bOg6UZy9u8UNH_A-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4AD721011597;
-        Tue, 15 Mar 2022 19:55:28 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9747138035AF;
+        Tue, 15 Mar 2022 19:55:40 +0000 (UTC)
 Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1664F404D8F4;
-        Tue, 15 Mar 2022 19:55:28 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B9B7630B9D;
+        Tue, 15 Mar 2022 19:55:27 +0000 (UTC)
 Received: by fuller.cnet (Postfix, from userid 1000)
-        id C60E64169511; Tue, 15 Mar 2022 12:33:58 -0300 (-03)
-Message-ID: <20220315153314.287031403@fedora.localdomain>
+        id BD07B416EEC5; Tue, 15 Mar 2022 12:33:58 -0300 (-03)
+Message-ID: <20220315153314.088347398@fedora.localdomain>
 User-Agent: quilt/0.66
-Date:   Tue, 15 Mar 2022 12:31:44 -0300
+Date:   Tue, 15 Mar 2022 12:31:40 -0300
 From:   Marcelo Tosatti <mtosatti@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Nitesh Lal <nilal@redhat.com>,
@@ -55,101 +55,72 @@ Cc:     Nitesh Lal <nilal@redhat.com>,
         Daniel Bristot de Oliveira <bristot@redhat.com>,
         Oscar Shiang <oscar0225@livemail.tw>,
         Marcelo Tosatti <mtosatti@redhat.com>
-Subject: [patch v12 12/13] mm: vmstat_refresh: avoid queueing work item if cpu stats are clean
+Subject: [patch v12 08/13] task isolation: enable return to userspace processing
 References: <20220315153132.717153751@fedora.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is not necessary to queue work item to run refresh_vm_stats 
-on a remote CPU if that CPU has no dirty stats and no per-CPU
-allocations for remote nodes.
-
-This fixes sosreport hang (which uses vmstat_refresh) with 
-spinning SCHED_FIFO process.
+Enable processing of pending task isolation work if per-CPU vmstats
+are out of sync with global vmstats.
 
 Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 
 ---
- mm/vmstat.c |   49 ++++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 44 insertions(+), 5 deletions(-)
 
-Index: linux-2.6/mm/vmstat.c
+v11:
+   Fold patch to add task_isol_exit hooks into
+  "sync vmstats on return to userspace" patch.          (Frederic W. Weisbecker)
+
+ include/linux/task_isolation.h |   22 +++++++++++++++++++++-
+ kernel/task_isolation.c        |   13 +++++++++++++
+ 2 files changed, 34 insertions(+), 1 deletion(-)
+
+Index: linux-2.6/kernel/task_isolation.c
 ===================================================================
---- linux-2.6.orig/mm/vmstat.c
-+++ linux-2.6/mm/vmstat.c
-@@ -1924,6 +1924,31 @@ static bool need_update(int cpu)
+--- linux-2.6.orig/kernel/task_isolation.c
++++ linux-2.6/kernel/task_isolation.c
+@@ -10,7 +10,6 @@
+  */
+ 
+ #include <linux/sched.h>
+-#include <linux/task_isolation.h>
+ #include <linux/prctl.h>
+ #include <linux/slab.h>
+ #include <linux/kobject.h>
+@@ -20,9 +19,17 @@
+ #include <linux/sched/task.h>
+ #include <linux/mm.h>
+ #include <linux/vmstat.h>
++#include <linux/task_isolation.h>
+ 
+ void __task_isol_exit(struct task_struct *tsk)
+ {
++	struct task_isol_info *i;
++
++	i = tsk->task_isol_info;
++	if (!i)
++		return;
++
++	static_key_slow_dec(&vmstat_sync_enabled);
  }
  
- #ifdef CONFIG_PROC_FS
-+static bool need_drain_remote_zones(int cpu)
-+{
-+#ifdef CONFIG_NUMA
-+	struct zone *zone;
-+
-+	for_each_populated_zone(zone) {
-+		struct per_cpu_pages *pcp;
-+
-+		pcp = per_cpu_ptr(zone->per_cpu_pageset, cpu);
-+		if (!pcp->count)
-+			continue;
-+
-+		if (!pcp->expire)
-+			continue;
-+
-+		if (zone_to_nid(zone) == cpu_to_node(cpu))
-+			continue;
-+
-+		return true;
-+	}
-+#endif
-+
-+	return false;
-+}
-+
- static void refresh_vm_stats(struct work_struct *work)
- {
- 	refresh_cpu_vm_stats(true);
-@@ -1933,8 +1958,12 @@ int vmstat_refresh(struct ctl_table *tab
- 		   void *buffer, size_t *lenp, loff_t *ppos)
- {
- 	long val;
--	int err;
--	int i;
-+	int i, cpu;
-+	struct work_struct __percpu *works;
-+
-+	works = alloc_percpu(struct work_struct);
-+	if (!works)
-+		return -ENOMEM;
+ void __task_isol_free(struct task_struct *tsk)
+@@ -41,6 +48,12 @@ static struct task_isol_info *task_isol_
+ 	if (unlikely(!info))
+ 		return ERR_PTR(-ENOMEM);
  
- 	/*
- 	 * The regular update, every sysctl_stat_interval, may come later
-@@ -1948,9 +1977,19 @@ int vmstat_refresh(struct ctl_table *tab
- 	 * transiently negative values, report an error here if any of
- 	 * the stats is negative, so we know to go looking for imbalance.
- 	 */
--	err = schedule_on_each_cpu(refresh_vm_stats);
--	if (err)
--		return err;
-+	cpus_read_lock();
-+	for_each_online_cpu(cpu) {
-+		struct work_struct *work = per_cpu_ptr(works, cpu);
++	preempt_disable();
++	init_sync_vmstat();
++	preempt_enable();
 +
-+		INIT_WORK(work, refresh_vm_stats);
-+		if (need_update(cpu) || need_drain_remote_zones(cpu))
-+			schedule_work_on(cpu, work);
-+	}
-+	for_each_online_cpu(cpu)
-+		flush_work(per_cpu_ptr(works, cpu));
-+	cpus_read_unlock();
-+	free_percpu(works);
++	static_key_slow_inc(&vmstat_sync_enabled);
 +
- 	for (i = 0; i < NR_VM_ZONE_STAT_ITEMS; i++) {
- 		/*
- 		 * Skip checking stats known to go negative occasionally.
+ 	return info;
+ }
+ 
 
 
