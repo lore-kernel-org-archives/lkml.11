@@ -2,56 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E493C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344374AbiCOKrn (ORCPT
+        id S1347374AbiCOKrq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
+        Tue, 15 Mar 2022 06:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347407AbiCOKpx (ORCPT
+        with ESMTP id S1347408AbiCOKpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 06:45:53 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D279051330;
-        Tue, 15 Mar 2022 03:44:15 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:44:13 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A51351316;
+        Tue, 15 Mar 2022 03:44:14 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:44:12 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341054;
+        s=2020; t=1647341053;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v+2Pljqb1A90qyzgo7De+ro0rM0b1dzG9jiLHXA2mpU=;
-        b=WEOvdk8MkfsB1a4KQ6dxsLL7kVfp2wo+2GJk/vlpr1eyqPmls8uLqej+ss4NkRIiBdhGoA
-        66BO69dXhG35rwkgxu4v3+MajXm3AWq7bmqEVbnSklmwLSHU8uFm7N4mAYRNDb6EA1ehno
-        KYPaYlHJBv8kvjdzGyUWX/PieLQGpr6vB7716KDufC/FNWI9ftXz8FEQArAXdxx7zDMXwV
-        8W+E/UsukkKdkqqr5mpP0AoM61BQ/bUp2ZAmE5vGL0a21wPgY13jxFzAhXOrw3CbwKCb8G
-        1aQCC1ggpEL/GxcTVckjNrkTgs9kW0Hjr2ixMrGuFWwIKOpoav8tMwh93bs5ZA==
+        bh=th9wlFvuAi/z/VLkuNyschT/woD6lbuLfOlTayI0RL4=;
+        b=nPiaZGD7oDWS8JSHm4Q/RdgezPDID0BmbOcd+edy9NCAOcR6r/IzqBI5k1/gUdO9NRQjmC
+        WspQ4qypoEpbxciVi8eiOlwOJ12J6m6mMeOyDjBjSJy33I2+teNFfzXL5MSFgFbFJHtHel
+        w/dwCEJkifjE14k3pAH6xDjED40536UM3vGVlw+N7szar2GDHMTjf6VhGH/pMvjZBpXGoJ
+        O/UqPXtv4tXPWH6NH+ndDPPXaD9YuwLLpyRnn2axuluI85zJ5nYNlhnPyUfkvTuZ4/NyF0
+        zM6zUaJ2PDlQGeSBB/7d74qovEQeEwBSzPEQo11KVmtSU3aRCOUPPrmO2gTfRw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341054;
+        s=2020e; t=1647341053;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v+2Pljqb1A90qyzgo7De+ro0rM0b1dzG9jiLHXA2mpU=;
-        b=zDerp/V4HSxTF1lotBM9A2VMnVzFLb7pu+Wf8YJKbvwjVAXqDVra49XB2wChmqwWMZh5dI
-        jHMBgYQ/xazouwCA==
+        bh=th9wlFvuAi/z/VLkuNyschT/woD6lbuLfOlTayI0RL4=;
+        b=0H1EV1T2JePPQxOmWz3AepJu4oQxWjvaS+GnugrciYPavSf5tUdYe59zN4bxqEirKv/u7L
+        u+lwzyaeZdroBUAw==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/ibt: Base IBT bits
+Subject: [tip: x86/core] x86/ibt: Add ANNOTATE_NOENDBR
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154317.519875203@infradead.org>
-References: <20220308154317.519875203@infradead.org>
+In-Reply-To: <20220308154317.578968224@infradead.org>
+References: <20220308154317.578968224@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734105314.16921.357071508436313451.tip-bot2@tip-bot2>
+Message-ID: <164734105230.16921.2670196975839251214.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,190 +63,120 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     156ff4a544ae13c5fd6759a09ecb069f7059c1a1
-Gitweb:        https://git.kernel.org/tip/156ff4a544ae13c5fd6759a09ecb069f7059c1a1
+Commit-ID:     c8c301abeae58ec756b8fcb2178a632bd3c9e284
+Gitweb:        https://git.kernel.org/tip/c8c301abeae58ec756b8fcb2178a632bd3c9e284
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:17 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:18 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
 CommitterDate: Tue, 15 Mar 2022 10:32:33 +01:00
 
-x86/ibt: Base IBT bits
+x86/ibt: Add ANNOTATE_NOENDBR
 
-Add Kconfig, Makefile and basic instruction support for x86 IBT.
-
-(Ab)use __DISABLE_EXPORTS to disable IBT since it's already employed
-to mark compressed and purgatory. Additionally mark realmode with it
-as well to avoid inserting ENDBR instructions there. While ENDBR is
-technically a NOP, inserting them was causing some grief due to code
-growth. There's also a problem with using __noendbr in code compiled
-without -fcf-protection=branch.
+In order to have objtool warn about code references to !ENDBR
+instruction, we need an annotation to allow this for non-control-flow
+instances -- consider text range checks, text patching, or return
+trampolines etc.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154317.519875203@infradead.org
+Link: https://lore.kernel.org/r/20220308154317.578968224@infradead.org
 ---
- arch/x86/Kconfig           | 20 +++++++++-
- arch/x86/Makefile          | 16 ++++++-
- arch/x86/include/asm/ibt.h | 87 +++++++++++++++++++++++++++++++++++++-
- 3 files changed, 121 insertions(+), 2 deletions(-)
- create mode 100644 arch/x86/include/asm/ibt.h
+ include/linux/objtool.h       | 16 ++++++++++++++++
+ tools/include/linux/objtool.h | 16 ++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41..19d16c0 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1861,6 +1861,26 @@ config X86_UMIP
- 	  specific cases in protected and virtual-8086 modes. Emulated
- 	  results are dummy.
+diff --git a/include/linux/objtool.h b/include/linux/objtool.h
+index aca52db..f797368 100644
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -77,6 +77,12 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #endif
  
-+config CC_HAS_IBT
-+	# GCC >= 9 and binutils >= 2.29
-+	# Retpoline check to work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93654
-+	# Clang/LLVM >= 14
-+	# fentry check to work around https://reviews.llvm.org/D111108
-+	def_bool ((CC_IS_GCC && $(cc-option, -fcf-protection=branch -mindirect-branch-register)) || \
-+		  (CC_IS_CLANG && $(success,echo "void a(void) {}" | $(CC) -Werror $(CLANG_FLAGS) -fcf-protection=branch -mfentry -pg -x c - -c -o /dev/null))) && \
-+		  $(as-instr,endbr64)
++#define ANNOTATE_NOENDBR					\
++	"986: \n\t"						\
++	".pushsection .discard.noendbr\n\t"			\
++	_ASM_PTR " 986b\n\t"					\
++	".popsection\n\t"
 +
-+config X86_KERNEL_IBT
-+	prompt "Indirect Branch Tracking"
-+	bool
-+	depends on X86_64 && CC_HAS_IBT
-+	help
-+	  Build the kernel with support for Indirect Branch Tracking, a
-+	  hardware support course-grain forward-edge Control Flow Integrity
-+	  protection. It enforces that all indirect calls must land on
-+	  an ENDBR instruction, as such, the compiler will instrument the
-+	  code with them to make this happen.
-+
- config X86_INTEL_MEMORY_PROTECTION_KEYS
- 	prompt "Memory Protection Keys"
- 	def_bool y
-diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index e84cdd4..f29c2c9 100644
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -36,7 +36,7 @@ endif
+ #else /* __ASSEMBLY__ */
  
- # How to compile the 16-bit code.  Note we always compile for -march=i386;
- # that way we can complain to the user if the CPU is insufficient.
--REALMODE_CFLAGS	:= -m16 -g -Os -DDISABLE_BRANCH_PROFILING \
-+REALMODE_CFLAGS	:= -m16 -g -Os -DDISABLE_BRANCH_PROFILING -D__DISABLE_EXPORTS \
- 		   -Wall -Wstrict-prototypes -march=i386 -mregparm=3 \
- 		   -fno-strict-aliasing -fomit-frame-pointer -fno-pic \
- 		   -mno-mmx -mno-sse $(call cc-option,-fcf-protection=none)
-@@ -62,8 +62,20 @@ export BITS
- #
- KBUILD_CFLAGS += -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx
+ /*
+@@ -129,6 +135,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
  
--# Intel CET isn't enabled in the kernel
-+ifeq ($(CONFIG_X86_KERNEL_IBT),y)
-+#
-+# Kernel IBT has S_CET.NOTRACK_EN=0, as such the compilers must not generate
-+# NOTRACK prefixes. Current generation compilers unconditionally employ NOTRACK
-+# for jump-tables, as such, disable jump-tables for now.
-+#
-+# (jump-tables are implicitly disabled by RETPOLINE)
-+#
-+#   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=104816
-+#
-+KBUILD_CFLAGS += $(call cc-option,-fcf-protection=branch -fno-jump-tables)
-+else
- KBUILD_CFLAGS += $(call cc-option,-fcf-protection=none)
-+endif
++.macro ANNOTATE_NOENDBR
++.Lhere_\@:
++	.pushsection .discard.noendbr
++	.quad	.Lhere_\@
++	.popsection
++.endm
++
+ #endif /* __ASSEMBLY__ */
  
- ifeq ($(CONFIG_X86_32),y)
-         BITS := 32
-diff --git a/arch/x86/include/asm/ibt.h b/arch/x86/include/asm/ibt.h
-new file mode 100644
-index 0000000..fcaf6a4
---- /dev/null
-+++ b/arch/x86/include/asm/ibt.h
-@@ -0,0 +1,87 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_IBT_H
-+#define _ASM_X86_IBT_H
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -139,12 +152,15 @@ struct unwind_hint {
+ 	"\n\t"
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
++#define ANNOTATE_NOENDBR
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
++.macro ANNOTATE_NOENDBR
++.endm
+ #endif
+ 
+ #endif /* CONFIG_STACK_VALIDATION */
+diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
+index aca52db..f797368 100644
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -77,6 +77,12 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #endif
+ 
++#define ANNOTATE_NOENDBR					\
++	"986: \n\t"						\
++	".pushsection .discard.noendbr\n\t"			\
++	_ASM_PTR " 986b\n\t"					\
++	".popsection\n\t"
 +
-+#include <linux/types.h>
+ #else /* __ASSEMBLY__ */
+ 
+ /*
+@@ -129,6 +135,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
+ 
++.macro ANNOTATE_NOENDBR
++.Lhere_\@:
++	.pushsection .discard.noendbr
++	.quad	.Lhere_\@
++	.popsection
++.endm
 +
-+/*
-+ * The rules for enabling IBT are:
-+ *
-+ *  - CC_HAS_IBT:         the toolchain supports it
-+ *  - X86_KERNEL_IBT:     it is selected in Kconfig
-+ *  - !__DISABLE_EXPORTS: this is regular kernel code
-+ *
-+ * Esp. that latter one is a bit non-obvious, but some code like compressed,
-+ * purgatory, realmode etc.. is built with custom CFLAGS that do not include
-+ * -fcf-protection=branch and things will go *bang*.
-+ *
-+ * When all the above are satisfied, HAS_KERNEL_IBT will be 1, otherwise 0.
-+ */
-+#if defined(CONFIG_X86_KERNEL_IBT) && !defined(__DISABLE_EXPORTS)
-+
-+#define HAS_KERNEL_IBT	1
-+
-+#ifndef __ASSEMBLY__
-+
-+#ifdef CONFIG_X86_64
-+#define ASM_ENDBR	"endbr64\n\t"
-+#else
-+#define ASM_ENDBR	"endbr32\n\t"
-+#endif
-+
-+#define __noendbr	__attribute__((nocf_check))
-+
-+static inline __attribute_const__ u32 gen_endbr(void)
-+{
-+	u32 endbr;
-+
-+	/*
-+	 * Generate ENDBR64 in a way that is sure to not result in
-+	 * an ENDBR64 instruction as immediate.
-+	 */
-+	asm ( "mov $~0xfa1e0ff3, %[endbr]\n\t"
-+	      "not %[endbr]\n\t"
-+	       : [endbr] "=&r" (endbr) );
-+
-+	return endbr;
-+}
-+
-+static inline bool is_endbr(u32 val)
-+{
-+	val &= ~0x01000000U; /* ENDBR32 -> ENDBR64 */
-+	return val == gen_endbr();
-+}
-+
-+#else /* __ASSEMBLY__ */
-+
-+#ifdef CONFIG_X86_64
-+#define ENDBR	endbr64
-+#else
-+#define ENDBR	endbr32
-+#endif
-+
-+#endif /* __ASSEMBLY__ */
-+
-+#else /* !IBT */
-+
-+#define HAS_KERNEL_IBT	0
-+
-+#ifndef __ASSEMBLY__
-+
-+#define ASM_ENDBR
-+
-+#define __noendbr
-+
-+static inline bool is_endbr(u32 val) { return false; }
-+
-+#else /* __ASSEMBLY__ */
-+
-+#define ENDBR
-+
-+#endif /* __ASSEMBLY__ */
-+
-+#endif /* CONFIG_X86_KERNEL_IBT */
-+
-+#define ENDBR_INSN_SIZE		(4*HAS_KERNEL_IBT)
-+
-+#endif /* _ASM_X86_IBT_H */
+ #endif /* __ASSEMBLY__ */
+ 
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -139,12 +152,15 @@ struct unwind_hint {
+ 	"\n\t"
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
++#define ANNOTATE_NOENDBR
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
++.macro ANNOTATE_NOENDBR
++.endm
+ #endif
+ 
+ #endif /* CONFIG_STACK_VALIDATION */
