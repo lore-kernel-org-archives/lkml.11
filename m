@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21337C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344880AbiCOFMe (ORCPT
+        id S1344867AbiCOFMk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 01:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
+        Tue, 15 Mar 2022 01:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344842AbiCOFMT (ORCPT
+        with ESMTP id S1344841AbiCOFMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 01:12:19 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9188A49250
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE36A49253
         for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:11:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647321067; x=1678857067;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Ol0nXzisKyEPOLK+60+mhBiQ8qX4SQP0mQu06nsUuvU=;
-  b=R7klZzYOg5Hmtx0aGtul9HX0RNXHOYSHxpQ25zf/RbQ5xKO5JPTLcrdB
-   3qWWJWbJKv4950gn/8SC9nSNtC8CppQkMZwOaFg3zYB1anlT6DoDG1EjK
-   2RRk8lKrBF9UDmwhpkemIKFvGtwVxWLANUL7f81e2MDK1JPeNpTUjNIZZ
-   6qWx8FiDAxrstu/c3BljOY34/kJhzZtKNJhmJ3SUQ1fIw06y5YsnJrVws
-   go+0I7ayxK+4eXVajnsuxJvNSjeNOaRK63KLZDeqcORDQ4bUUQCtoyZgp
-   T95C71dNDBip9Cs38RYDS96gSiQnXwpfCc4LeYXEkPYPHqjaJzkRWFZdG
+  bh=PtNrYq5SgtOh4S5p2eFwtPOoZIVbpRJnL3OhUjSFkCY=;
+  b=Mo1Lr7yD0yFf6gtoIdn2x0RT+Y94tfmQaHISTDPk+sm2cI7NKYJ5rli3
+   8IjQi7VPk7vewlIoiRoK8Y9MuUhZpju3hIHNAdWJG6cDUpTbkZckqP7tn
+   cTLF2dCyPfwKXMs8/bNIpddUK9hiZEXdg0edfRyGQWptMpcLx3SZXWlVp
+   q5EK6t6QpD/3fRnEJv5NnXqfLZzoQq/h7wvIALwA7mmDC4swthco1mylK
+   WWxo6JDGVKV8Z42eUuic3TgRZgVlrjgM/0jPg/9rL81m+eVjV6yUM5JPE
+   5T3I/N6XaySPnvSF4X8PzeI0JXWcDfrypcyhxvqA5/+bS5EkxtqanU+fV
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236159100"
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236159102"
 X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="236159100"
+   d="scan'208";a="236159102"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 22:03:58 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 22:03:59 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="580383571"
+   d="scan'208";a="580383579"
 Received: from otc-wp-03.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.79])
   by orsmga001.jf.intel.com with ESMTP; 14 Mar 2022 22:03:58 -0700
 From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -55,9 +55,9 @@ Cc:     Jacob Pan <jacob.jun.pan@intel.com>,
         "Zanussi, Tom" <tom.zanussi@intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
-Date:   Mon, 14 Mar 2022 22:07:06 -0700
-Message-Id: <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 4/8] iommu/vt-d: Use device_pasid attach op for RID2PASID
+Date:   Mon, 14 Mar 2022 22:07:08 -0700
+Message-Id: <20220315050713.2000518-5-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
 References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
@@ -67,47 +67,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+With the availability of a generic device-PASID-domain attachment API,
+there's no need to special case RID2PASID.  Use the API to replace
+duplicated code.
 
-An IOMMU domain represents an address space which can be attached by
-devices that perform DMA within a domain. However, for platforms with
-PASID capability the domain attachment needs be handled at device+PASID
-level. There can be multiple PASIDs within a device and multiple devices
-attached to a given domain.
-This patch introduces a new IOMMU op which support device, PASID, and
-IOMMU domain attachment. The immediate use case is for PASID capable
-devices to perform DMA under DMA APIs.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- include/linux/iommu.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/intel/iommu.c | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 369f05c2a4e2..fde5b933dbe3 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
-  * @aux_get_pasid: get the pasid given an aux-domain
-  * @sva_bind: Bind process address space to device
-  * @sva_unbind: Unbind process address space from device
-+ * @attach_dev_pasid: attach an iommu domain to a pasid of device
-+ * @detach_dev_pasid: detach an iommu domain from a pasid of device
-  * @sva_get_pasid: Get PASID associated to a SVA handle
-  * @page_response: handle page request response
-  * @cache_invalidate: invalidate translation caches
-@@ -296,6 +298,10 @@ struct iommu_ops {
- 	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm,
- 				      void *drvdata);
- 	void (*sva_unbind)(struct iommu_sva *handle);
-+	int (*attach_dev_pasid)(struct iommu_domain *domain,
-+				struct device *dev, ioasid_t id);
-+	void (*detach_dev_pasid)(struct iommu_domain *domain,
-+				 struct device *dev, ioasid_t id);
- 	u32 (*sva_get_pasid)(struct iommu_sva *handle);
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 9267194eaed3..f832b7599d21 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1683,9 +1683,6 @@ static void domain_flush_piotlb(struct intel_iommu *iommu,
+ 		qi_flush_piotlb(iommu, did, domain->default_pasid,
+ 				addr, npages, ih);
  
- 	int (*page_response)(struct device *dev,
+-	if (!list_empty(&domain->devices))
+-		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, npages, ih);
+-
+ 	if (list_empty(&domain->devices) || xa_empty(&domain->pasids))
+ 		return;
+ 
+@@ -2826,17 +2823,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 		}
+ 
+ 		/* Setup the PASID entry for requests without PASID: */
+-		spin_lock_irqsave(&iommu->lock, flags);
+-		if (hw_pass_through && domain_type_is_si(domain))
+-			ret = intel_pasid_setup_pass_through(iommu, domain,
+-					dev, PASID_RID2PASID);
+-		else if (domain_use_first_level(domain))
+-			ret = domain_setup_first_level(iommu, domain, dev,
+-					PASID_RID2PASID);
+-		else
+-			ret = intel_pasid_setup_second_level(iommu, domain,
+-					dev, PASID_RID2PASID);
+-		spin_unlock_irqrestore(&iommu->lock, flags);
++		ret = intel_iommu_attach_dev_pasid(&domain->domain, dev, PASID_RID2PASID);
+ 		if (ret) {
+ 			dev_err(dev, "Setup RID2PASID failed\n");
+ 			dmar_remove_one_dev_info(dev);
+@@ -4618,8 +4605,7 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
+ 
+ 	if (info->dev && !dev_is_real_dma_subdevice(info->dev)) {
+ 		if (dev_is_pci(info->dev) && sm_supported(iommu))
+-			intel_pasid_tear_down_entry(iommu, info->dev,
+-					PASID_RID2PASID, false);
++			intel_iommu_detach_dev_pasid(&domain->domain, info->dev, PASID_RID2PASID);
+ 
+ 		iommu_disable_dev_iotlb(info);
+ 		domain_context_clear(info);
 -- 
 2.25.1
 
