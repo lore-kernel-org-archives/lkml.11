@@ -2,622 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E938C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C61E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237588AbiCOH6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 03:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        id S1345742AbiCOIAw (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 04:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345721AbiCOH6c (ORCPT
+        with ESMTP id S229500AbiCOIAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 03:58:32 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1DF4BBAF;
-        Tue, 15 Mar 2022 00:57:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647331040; x=1678867040;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=F1S8LpfKX5S7zmZYIuR+5PWkpHLWiUnjD5YgcjFZ7k0=;
-  b=ZOzkcB85Wf/op7X45jF6X5t6B7aWJbljlM7LSZg2dHBP1YFrH7XHtRD7
-   /HF3EUeA/v8sDrK91GAC+tc8cfUoOcGdahkUdbgxiMToNCUHpFAyi6RSg
-   ByTPQMVHqgR+jYliHfOsz6awR/81sa2kyv9e6x9DaVpED6gOPCIcklb3N
-   vMinBKduC5LfW8UJT0E4c+lSmz46reX1PNXLNjEDfUi0atIz9NdpBx2PX
-   4A+R0MsKmGv8TlpTpd7g2k6byakfWhqtm+0W4mA+YA/W/4iVvGbCDJIux
-   9cOkS2JRS2sB0AXnLD428XtCiIw8V6HDBc8YBol1KSL8zAh7SQyZl96Wd
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255967351"
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="255967351"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 00:57:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="714064174"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 15 Mar 2022 00:57:12 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU23L-000Ahv-O9; Tue, 15 Mar 2022 07:57:11 +0000
-Date:   Tue, 15 Mar 2022 15:56:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Haowen Bai <baihaowen@meizu.com>, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com
-Cc:     kbuild-all@lists.01.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>
-Subject: Re: [PATCH] s390/tape: Use bitwise instead of arithmetic operator
- for flags
-Message-ID: <202203151554.mlaV8elU-lkp@intel.com>
-References: <1647311083-25388-1-git-send-email-baihaowen@meizu.com>
+        Tue, 15 Mar 2022 04:00:51 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2125.outbound.protection.outlook.com [40.107.215.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381042B278
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:59:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AtRXVB5LWeRZ4+l8SwvV7sfVqvoqBAc3zESYnkOMN/ByVUZ4LzYNnOm7e6ZrdO+17GsCi80LJ17GUhHcKpdNqAP+9ii5lQpG5xgQAhdDUbO0C2PdOG1ITTC8jEOEu3HbBR+dPgFJdcxYd977/OFQZJaYH/2LXK936kE1oPnuTw1HelcRjA1RJMh5SnVialmGMAsjg74CmgbUTt7F5RfyyNM7+kzaILxF9cHhboLjYb/S0KHydu2C2m1BoJXB8/IFWe7mDE6FYKl+3TgpKPnIgdCC3UxFM8Y+U+z60/3mDee4CDjZZHzGrV3gxfQNQTMjRDO6fkTV0jo5x6CidZ9hMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NVENytnd0DY4upwZTTub86qNF/K0XZ1OFm9Gb0yxNhI=;
+ b=nlDFCqzsMsBM2iQtaPL5EB9TfFvbmiIel6zY4fznA26QVl6TdtZhL6PeGVcFFmcfYKJGctIbbX3ppHtZiQTRzP3KCwHScS9AsIPUs0zIYjQI8g9O9qmSiokH67EOat/OvufCkwgyKZVHLzcmgQ+yMwiNtLbIHRWUdie5o8PggDLFBLGkv/AIDfNdqYLz89fjv6qkLeB/3Y0dYGowrz2Ee4gENMTF4SMe7J1Sup5Es5XOrnREU/+foIK4x9DzwE+wrAqQIy8I27qTj/jEtTlKbvyJxAyKrwARCLnBhopxEV687EoiVV/cGiXcrSdCBxDuGaXbZbH5yEXGNpBh3pVtjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NVENytnd0DY4upwZTTub86qNF/K0XZ1OFm9Gb0yxNhI=;
+ b=PTmyuyOPc6CpEwat/0ghA2iDpEqYM+SDT+3us+7MoDFh4TK2Af8bXFoXJHfgUivz3jQ+XeV0YT8tooO6BT4joocmcFz2yH0rQYkdueUth2J+IFTDgKOQeBuZUudtL+3A6hm6dvLo9aCSGH8fXA3168GjM6h1Itt5FbP1radyzrw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
+ by HK0PR06MB3650.apcprd06.prod.outlook.com (2603:1096:203:ad::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22; Tue, 15 Mar
+ 2022 07:59:33 +0000
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::49ef:baa:8c3b:cb3d]) by SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::49ef:baa:8c3b:cb3d%5]) with mapi id 15.20.5061.028; Tue, 15 Mar 2022
+ 07:59:33 +0000
+From:   Qing Wang <wangqing@vivo.com>
+To:     Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Cc:     Wang Qing <wangqing@vivo.com>
+Subject: [PATCH] sched: dynamic config sd_flags if described in DT
+Date:   Tue, 15 Mar 2022 00:58:54 -0700
+Message-Id: <1647331137-69890-1-git-send-email-wangqing@vivo.com>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0129.apcprd02.prod.outlook.com
+ (2603:1096:4:188::19) To SL2PR06MB3082.apcprd06.prod.outlook.com
+ (2603:1096:100:37::17)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1647311083-25388-1-git-send-email-baihaowen@meizu.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: acd76b9c-e1e0-4e25-72b5-08da0659bd84
+X-MS-TrafficTypeDiagnostic: HK0PR06MB3650:EE_
+X-Microsoft-Antispam-PRVS: <HK0PR06MB36509A699763F9FFEB00F5AEBD109@HK0PR06MB3650.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cwxRa1a+x+OVA61bsPhvCMoAPrTCc4yBPgTwMntRKHYuYxIX6jaJQP5TfpbZC+eW0rMfKBMZedfbzB+tc9MGjMc334Po3pVx2Yc83JIU4CBwpherv5fGCjaQJszaZW/uGraF4qwBTiaz4KwmjIroSTSCojLkCzYnzD4cqKBCpPvl0kfn0IRoFx/098maCkw6yqewBdnnGGLOO6+FGtUkhx6j02B6gVh9ESVcW4Uj1kD7AJ6MkIJW66ySkEbStxuCfFfbZFjY7pTD5uYU4kX1LuFKrZsvQto7Bvgz9Hp6bl/Z3KDPWR1yTLrvjtN1ooYyrqyuID/HHbRhmWzE8papo0Mibt4leq3D48yT9lfra20LepT9EPI7N7z+ZCTiZRgqbcAd5JSoeujODA/iyZHxpm34rJVBVJr2sNXy0FbYvTYs5Yd1lnsl3AmF6J8xZPX+L/3L2X2xw37ZWRHm0Up0UVxVGS7JNwW7YvzoQKGVWG7X4X7q2bb+kUaK7g5wfOKdSDMTb7ibacIM1roeXRy34j0Hr/zkeJv3eGjICDDLadQLtFxFKuR7LvB3j9gBi2tsJ2NyrkOZs2dAPo4R+AGZRSQ87IBY2vIjA26MZM9GY3Y5i+8q2yThY7iF+gSFYWyN5mbL8JcdGO4bNT8UUE1vXhgGKsOTsIHo6EX27sfolFd2rmvOm4uLeqwwVMDJKosUMees8nYKJTRzDAhZg3LH/DQ9RSwiDtv8SIVkbArOjmM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(38100700002)(921005)(38350700002)(66476007)(66946007)(66556008)(4326008)(8676002)(316002)(110136005)(2906002)(7416002)(5660300002)(8936002)(26005)(107886003)(2616005)(186003)(6486002)(508600001)(6506007)(6512007)(52116002)(36756003)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SGVly2sLk7K1EB3wQcw7yQrB+amL+gzqpD13rU9kEXtD7JOBM6l7slBHK0dj?=
+ =?us-ascii?Q?qhS1QN+AKYRef13vDJVRGkwAaN3xz+lVJFCCiGuZKNPQuVjo/DtPVwDDIJhf?=
+ =?us-ascii?Q?87V2qfGe+WzHA8QritS+4Gu/8RqDZ3Vorz638VjTykb3b0VZIE0gCC769fhd?=
+ =?us-ascii?Q?TiJXFoz0om05G2WeSYFdveMhDfuB1usuUFZhaSZdZ7HArE8sERGkUo9iDYqY?=
+ =?us-ascii?Q?Do02vv1DJoC5xHD5ncqjd313+TLR17a/6MX9T7ocF2FGw7ejU1Frg3jDqJQf?=
+ =?us-ascii?Q?QAPn4qGHylDI3FVg+kjm/IlHmrz8BywGpbkPCSTx+sKjT8i5whleXPFmbZOX?=
+ =?us-ascii?Q?4sZ3/DsPpcfy/QX/R9z72olX/6lYLi6VfYQP7NCbb+ur+3KoeYGzjuRaQwzq?=
+ =?us-ascii?Q?l2Uw7jfhdH/93el6kgeF3JKzE91rQE5xAx7JqsoAbybMiOGP9vKV277dfC8K?=
+ =?us-ascii?Q?0pE7vUjQy5g8SZObyLFLOfbxUWXF+nSZ06Ro1GezRaXB+vK4yNlwiRtF5PgE?=
+ =?us-ascii?Q?eNdvlKq1xd5AcxlKGJ6gHUwLF+dV4+R+RSHhKEowcoQMXAGcerXwFZE1JD3P?=
+ =?us-ascii?Q?AyirKlVnXS8m4jxvmwBpLXJWonUSXWMdsutVdvnr0mai9eLxrRrkyx1cyhrI?=
+ =?us-ascii?Q?wrN0wg2ARFPIcws9xGzX1VwzZ2iaEnf5XN/xweCt5Mcx1ijgW712NWXV2UKj?=
+ =?us-ascii?Q?b8qMb4b+uVSiUlQFZYatS0mHuDMT5t5xj08p9sYBwKtNOFguR0TKaWIy6HUX?=
+ =?us-ascii?Q?shkPvCsN45R7gZqYT8HL0wieY2jG8l850BJX0e/vdGHPCHQOU9yfZNZK3CXF?=
+ =?us-ascii?Q?Ueyo6H1wOXQnm705UA9yOmZXcWiXaIoI8g28TK0wf4YfY++hYWYohXPTwvo6?=
+ =?us-ascii?Q?rNszYRPlaTL6D4GJ0PCJWciu10fwzxLY7tyFLDCJx0jm1rPWjvp4M9n914f+?=
+ =?us-ascii?Q?0x4dOOvQNzAo8as9CarodIzmCH3QSFGRMGG13hFJ4Va8/+yYUZlxelVaRQaL?=
+ =?us-ascii?Q?OfpSMQsTZrtSOiXoK0q2dZmQmy/UW27vylo5kXBDB7Y1FAoHKd0LFryES8qX?=
+ =?us-ascii?Q?6UHZLPSibfokUmBlW4O7P3ifKYRj62HZ2YuMkuAZ+2D0bLHT/5qJ491uXoAT?=
+ =?us-ascii?Q?ti6o4GJvjTd/wsiHzsAHzcawAJ4P2+zZfmw9VSOoCPKwncGYWyOhF/xV/yEN?=
+ =?us-ascii?Q?Rj4jplMBWW68vTnOUUDGyutBm9wsEv2BKalOAD3ju5PzmTlFxWWtUTWYxOu8?=
+ =?us-ascii?Q?gVtE7qGNiU3WoZu9TWnWiPHFGL+fsWYtmvvABh/4aJAjYu0NqwLG3ISVdfiq?=
+ =?us-ascii?Q?svLDG/ldX49J/ZQdxzVqI8+WltTvuo/bqAoFPBYsDddmq4TxAYB9cI3vuIbv?=
+ =?us-ascii?Q?LpkaH0JTXMvyaSFglFxkdkHg5u6if03MSGFT2w0vjlRV0OU1SI6UgFStYrs7?=
+ =?us-ascii?Q?q6dqdGr5LAKzKqFBbZAdak8jpib3TvPY?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: acd76b9c-e1e0-4e25-72b5-08da0659bd84
+X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 07:59:33.0276
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ldSsjBMDiWujWafJJbR0Hp8j61e7r7PauMlKcRaJCU+1Pkiog103ySL3UJ5DdsPvrxl82AGghei3yb5h6vTRww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB3650
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Haowen,
+From: Wang Qing <wangqing@vivo.com>
 
-Thank you for the patch! Perhaps something to improve:
+The device tree can describe cache topology by "next-level-cache",
+Prefer configuring SD_SHARE_PKG_RESOURCES from DT instead of default value.
 
-[auto build test WARNING on s390/features]
-[also build test WARNING on v5.17-rc8 next-20220310]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Haowen-Bai/s390-tape-Use-bitwise-instead-of-arithmetic-operator-for-flags/20220315-102644
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git features
-config: s390-defconfig (https://download.01.org/0day-ci/archive/20220315/202203151554.mlaV8elU-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/c549742b07b69efbf79208adc82f8a5650cc7311
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Haowen-Bai/s390-tape-Use-bitwise-instead-of-arithmetic-operator-for-flags/20220315-102644
-        git checkout c549742b07b69efbf79208adc82f8a5650cc7311
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash drivers/s390/char/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/s390/char/tape_34xx.c: In function 'tape_34xx_unit_check':
->> drivers/s390/char/tape_34xx.c:357:26: warning: suggest parentheses around comparison in operand of '|' [-Wparentheses]
-     357 |                 sense[0] == SENSE_EQUIPMENT_CHECK | SENSE_DEFERRED_UNIT_CHECK
-   drivers/s390/char/tape_34xx.c:360:26: warning: suggest parentheses around comparison in operand of '|' [-Wparentheses]
-     360 |                 sense[1] == SENSE_BEGINNING_OF_TAPE | SENSE_WRITE_MODE
-
-
-vim +357 drivers/s390/char/tape_34xx.c
-
-   310	
-   311	/*
-   312	 * This function analyses the tape's sense-data in case of a unit-check.
-   313	 * If possible, it tries to recover from the error. Else the user is
-   314	 * informed about the problem.
-   315	 */
-   316	static int
-   317	tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
-   318			     struct irb *irb)
-   319	{
-   320		int inhibit_cu_recovery;
-   321		__u8* sense;
-   322	
-   323		inhibit_cu_recovery = (*device->modeset_byte & 0x80) ? 1 : 0;
-   324		sense = irb->ecw;
-   325	
-   326		if (
-   327			sense[0] & SENSE_COMMAND_REJECT &&
-   328			sense[1] & SENSE_WRITE_PROTECT
-   329		) {
-   330			if (
-   331				request->op == TO_DSE ||
-   332				request->op == TO_WRI ||
-   333				request->op == TO_WTM
-   334			) {
-   335				/* medium is write protected */
-   336				return tape_34xx_erp_failed(request, -EACCES);
-   337			} else {
-   338				return tape_34xx_erp_bug(device, request, irb, -3);
-   339			}
-   340		}
-   341	
-   342		/*
-   343		 * Special cases for various tape-states when reaching
-   344		 * end of recorded area
-   345		 *
-   346		 * FIXME: Maybe a special case of the special case:
-   347		 *        sense[0] == SENSE_EQUIPMENT_CHECK &&
-   348		 *        sense[1] == SENSE_DRIVE_ONLINE    &&
-   349		 *        sense[3] == 0x47 (Volume Fenced)
-   350		 *
-   351		 *        This was caused by continued FSF or FSR after an
-   352		 *        'End Of Data'.
-   353		 */
-   354		if ((
-   355			sense[0] == SENSE_DATA_CHECK      ||
-   356			sense[0] == SENSE_EQUIPMENT_CHECK ||
- > 357			sense[0] == SENSE_EQUIPMENT_CHECK | SENSE_DEFERRED_UNIT_CHECK
-   358		) && (
-   359			sense[1] == SENSE_DRIVE_ONLINE ||
-   360			sense[1] == SENSE_BEGINNING_OF_TAPE | SENSE_WRITE_MODE
-   361		)) {
-   362			switch (request->op) {
-   363			/*
-   364			 * sense[0] == SENSE_DATA_CHECK   &&
-   365			 * sense[1] == SENSE_DRIVE_ONLINE
-   366			 * sense[3] == 0x36 (End Of Data)
-   367			 *
-   368			 * Further seeks might return a 'Volume Fenced'.
-   369			 */
-   370			case TO_FSF:
-   371			case TO_FSB:
-   372				/* Trying to seek beyond end of recorded area */
-   373				return tape_34xx_erp_failed(request, -ENOSPC);
-   374			case TO_BSB:
-   375				return tape_34xx_erp_retry(request);
-   376	
-   377			/*
-   378			 * sense[0] == SENSE_DATA_CHECK   &&
-   379			 * sense[1] == SENSE_DRIVE_ONLINE &&
-   380			 * sense[3] == 0x36 (End Of Data)
-   381			 */
-   382			case TO_LBL:
-   383				/* Block could not be located. */
-   384				tape_34xx_delete_sbid_from(device, 0);
-   385				return tape_34xx_erp_failed(request, -EIO);
-   386	
-   387			case TO_RFO:
-   388				/* Read beyond end of recorded area -> 0 bytes read */
-   389				return tape_34xx_erp_failed(request, 0);
-   390	
-   391			/*
-   392			 * sense[0] == SENSE_EQUIPMENT_CHECK &&
-   393			 * sense[1] == SENSE_DRIVE_ONLINE    &&
-   394			 * sense[3] == 0x38 (Physical End Of Volume)
-   395			 */
-   396			case TO_WRI:
-   397				/* Writing at physical end of volume */
-   398				return tape_34xx_erp_failed(request, -ENOSPC);
-   399			default:
-   400				return tape_34xx_erp_failed(request, 0);
-   401			}
-   402		}
-   403	
-   404		/* Sensing special bits */
-   405		if (sense[0] & SENSE_BUS_OUT_CHECK)
-   406			return tape_34xx_erp_retry(request);
-   407	
-   408		if (sense[0] & SENSE_DATA_CHECK) {
-   409			/*
-   410			 * hardware failure, damaged tape or improper
-   411			 * operating conditions
-   412			 */
-   413			switch (sense[3]) {
-   414			case 0x23:
-   415				/* a read data check occurred */
-   416				if ((sense[2] & SENSE_TAPE_SYNC_MODE) ||
-   417				    inhibit_cu_recovery)
-   418					// data check is not permanent, may be
-   419					// recovered. We always use async-mode with
-   420					// cu-recovery, so this should *never* happen.
-   421					return tape_34xx_erp_bug(device, request,
-   422								 irb, -4);
-   423	
-   424				/* data check is permanent, CU recovery has failed */
-   425				dev_warn (&device->cdev->dev, "A read error occurred "
-   426					"that cannot be recovered\n");
-   427				return tape_34xx_erp_failed(request, -EIO);
-   428			case 0x25:
-   429				// a write data check occurred
-   430				if ((sense[2] & SENSE_TAPE_SYNC_MODE) ||
-   431				    inhibit_cu_recovery)
-   432					// data check is not permanent, may be
-   433					// recovered. We always use async-mode with
-   434					// cu-recovery, so this should *never* happen.
-   435					return tape_34xx_erp_bug(device, request,
-   436								 irb, -5);
-   437	
-   438				// data check is permanent, cu-recovery has failed
-   439				dev_warn (&device->cdev->dev, "A write error on the "
-   440					"tape cannot be recovered\n");
-   441				return tape_34xx_erp_failed(request, -EIO);
-   442			case 0x26:
-   443				/* Data Check (read opposite) occurred. */
-   444				return tape_34xx_erp_read_opposite(device, request);
-   445			case 0x28:
-   446				/* ID-Mark at tape start couldn't be written */
-   447				dev_warn (&device->cdev->dev, "Writing the ID-mark "
-   448					"failed\n");
-   449				return tape_34xx_erp_failed(request, -EIO);
-   450			case 0x31:
-   451				/* Tape void. Tried to read beyond end of device. */
-   452				dev_warn (&device->cdev->dev, "Reading the tape beyond"
-   453					" the end of the recorded area failed\n");
-   454				return tape_34xx_erp_failed(request, -ENOSPC);
-   455			case 0x41:
-   456				/* Record sequence error. */
-   457				dev_warn (&device->cdev->dev, "The tape contains an "
-   458					"incorrect block ID sequence\n");
-   459				return tape_34xx_erp_failed(request, -EIO);
-   460			default:
-   461				/* all data checks for 3480 should result in one of
-   462				 * the above erpa-codes. For 3490, other data-check
-   463				 * conditions do exist. */
-   464				if (device->cdev->id.driver_info == tape_3480)
-   465					return tape_34xx_erp_bug(device, request,
-   466								 irb, -6);
-   467			}
-   468		}
-   469	
-   470		if (sense[0] & SENSE_OVERRUN)
-   471			return tape_34xx_erp_overrun(device, request, irb);
-   472	
-   473		if (sense[1] & SENSE_RECORD_SEQUENCE_ERR)
-   474			return tape_34xx_erp_sequence(device, request, irb);
-   475	
-   476		/* Sensing erpa codes */
-   477		switch (sense[3]) {
-   478		case 0x00:
-   479			/* Unit check with erpa code 0. Report and ignore. */
-   480			return TAPE_IO_SUCCESS;
-   481		case 0x21:
-   482			/*
-   483			 * Data streaming not operational. CU will switch to
-   484			 * interlock mode. Reissue the command.
-   485			 */
-   486			return tape_34xx_erp_retry(request);
-   487		case 0x22:
-   488			/*
-   489			 * Path equipment check. Might be drive adapter error, buffer
-   490			 * error on the lower interface, internal path not usable,
-   491			 * or error during cartridge load.
-   492			 */
-   493			dev_warn (&device->cdev->dev, "A path equipment check occurred"
-   494				" for the tape device\n");
-   495			return tape_34xx_erp_failed(request, -EIO);
-   496		case 0x24:
-   497			/*
-   498			 * Load display check. Load display was command was issued,
-   499			 * but the drive is displaying a drive check message. Can
-   500			 * be threated as "device end".
-   501			 */
-   502			return tape_34xx_erp_succeeded(request);
-   503		case 0x27:
-   504			/*
-   505			 * Command reject. May indicate illegal channel program or
-   506			 * buffer over/underrun. Since all channel programs are
-   507			 * issued by this driver and ought be correct, we assume a
-   508			 * over/underrun situation and retry the channel program.
-   509			 */
-   510			return tape_34xx_erp_retry(request);
-   511		case 0x29:
-   512			/*
-   513			 * Function incompatible. Either the tape is idrc compressed
-   514			 * but the hardware isn't capable to do idrc, or a perform
-   515			 * subsystem func is issued and the CU is not on-line.
-   516			 */
-   517			return tape_34xx_erp_failed(request, -EIO);
-   518		case 0x2a:
-   519			/*
-   520			 * Unsolicited environmental data. An internal counter
-   521			 * overflows, we can ignore this and reissue the cmd.
-   522			 */
-   523			return tape_34xx_erp_retry(request);
-   524		case 0x2b:
-   525			/*
-   526			 * Environmental data present. Indicates either unload
-   527			 * completed ok or read buffered log command completed ok.
-   528			 */
-   529			if (request->op == TO_RUN) {
-   530				/* Rewind unload completed ok. */
-   531				tape_med_state_set(device, MS_UNLOADED);
-   532				return tape_34xx_erp_succeeded(request);
-   533			}
-   534			/* tape_34xx doesn't use read buffered log commands. */
-   535			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   536		case 0x2c:
-   537			/*
-   538			 * Permanent equipment check. CU has tried recovery, but
-   539			 * did not succeed.
-   540			 */
-   541			return tape_34xx_erp_failed(request, -EIO);
-   542		case 0x2d:
-   543			/* Data security erase failure. */
-   544			if (request->op == TO_DSE)
-   545				return tape_34xx_erp_failed(request, -EIO);
-   546			/* Data security erase failure, but no such command issued. */
-   547			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   548		case 0x2e:
-   549			/*
-   550			 * Not capable. This indicates either that the drive fails
-   551			 * reading the format id mark or that that format specified
-   552			 * is not supported by the drive.
-   553			 */
-   554			dev_warn (&device->cdev->dev, "The tape unit cannot process "
-   555				"the tape format\n");
-   556			return tape_34xx_erp_failed(request, -EMEDIUMTYPE);
-   557		case 0x30:
-   558			/* The medium is write protected. */
-   559			dev_warn (&device->cdev->dev, "The tape medium is write-"
-   560				"protected\n");
-   561			return tape_34xx_erp_failed(request, -EACCES);
-   562		case 0x32:
-   563			// Tension loss. We cannot recover this, it's an I/O error.
-   564			dev_warn (&device->cdev->dev, "The tape does not have the "
-   565				"required tape tension\n");
-   566			return tape_34xx_erp_failed(request, -EIO);
-   567		case 0x33:
-   568			/*
-   569			 * Load Failure. The cartridge was not inserted correctly or
-   570			 * the tape is not threaded correctly.
-   571			 */
-   572			dev_warn (&device->cdev->dev, "The tape unit failed to load"
-   573				" the cartridge\n");
-   574			tape_34xx_delete_sbid_from(device, 0);
-   575			return tape_34xx_erp_failed(request, -EIO);
-   576		case 0x34:
-   577			/*
-   578			 * Unload failure. The drive cannot maintain tape tension
-   579			 * and control tape movement during an unload operation.
-   580			 */
-   581			dev_warn (&device->cdev->dev, "Automatic unloading of the tape"
-   582				" cartridge failed\n");
-   583			if (request->op == TO_RUN)
-   584				return tape_34xx_erp_failed(request, -EIO);
-   585			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   586		case 0x35:
-   587			/*
-   588			 * Drive equipment check. One of the following:
-   589			 * - cu cannot recover from a drive detected error
-   590			 * - a check code message is shown on drive display
-   591			 * - the cartridge loader does not respond correctly
-   592			 * - a failure occurs during an index, load, or unload cycle
-   593			 */
-   594			dev_warn (&device->cdev->dev, "An equipment check has occurred"
-   595				" on the tape unit\n");
-   596			return tape_34xx_erp_failed(request, -EIO);
-   597		case 0x36:
-   598			if (device->cdev->id.driver_info == tape_3490)
-   599				/* End of data. */
-   600				return tape_34xx_erp_failed(request, -EIO);
-   601			/* This erpa is reserved for 3480 */
-   602			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   603		case 0x37:
-   604			/*
-   605			 * Tape length error. The tape is shorter than reported in
-   606			 * the beginning-of-tape data.
-   607			 */
-   608			dev_warn (&device->cdev->dev, "The tape information states an"
-   609				" incorrect length\n");
-   610			return tape_34xx_erp_failed(request, -EIO);
-   611		case 0x38:
-   612			/*
-   613			 * Physical end of tape. A read/write operation reached
-   614			 * the physical end of tape.
-   615			 */
-   616			if (request->op==TO_WRI ||
-   617			    request->op==TO_DSE ||
-   618			    request->op==TO_WTM)
-   619				return tape_34xx_erp_failed(request, -ENOSPC);
-   620			return tape_34xx_erp_failed(request, -EIO);
-   621		case 0x39:
-   622			/* Backward at Beginning of tape. */
-   623			return tape_34xx_erp_failed(request, -EIO);
-   624		case 0x3a:
-   625			/* Drive switched to not ready. */
-   626			dev_warn (&device->cdev->dev, "The tape unit is not ready\n");
-   627			return tape_34xx_erp_failed(request, -EIO);
-   628		case 0x3b:
-   629			/* Manual rewind or unload. This causes an I/O error. */
-   630			dev_warn (&device->cdev->dev, "The tape medium has been "
-   631				"rewound or unloaded manually\n");
-   632			tape_34xx_delete_sbid_from(device, 0);
-   633			return tape_34xx_erp_failed(request, -EIO);
-   634		case 0x42:
-   635			/*
-   636			 * Degraded mode. A condition that can cause degraded
-   637			 * performance is detected.
-   638			 */
-   639			dev_warn (&device->cdev->dev, "The tape subsystem is running "
-   640				"in degraded mode\n");
-   641			return tape_34xx_erp_retry(request);
-   642		case 0x43:
-   643			/* Drive not ready. */
-   644			tape_34xx_delete_sbid_from(device, 0);
-   645			tape_med_state_set(device, MS_UNLOADED);
-   646			/* Some commands commands are successful even in this case */
-   647			if (sense[1] & SENSE_DRIVE_ONLINE) {
-   648				switch(request->op) {
-   649					case TO_ASSIGN:
-   650					case TO_UNASSIGN:
-   651					case TO_DIS:
-   652					case TO_NOP:
-   653						return tape_34xx_done(request);
-   654						break;
-   655					default:
-   656						break;
-   657				}
-   658			}
-   659			return tape_34xx_erp_failed(request, -ENOMEDIUM);
-   660		case 0x44:
-   661			/* Locate Block unsuccessful. */
-   662			if (request->op != TO_BLOCK && request->op != TO_LBL)
-   663				/* No locate block was issued. */
-   664				return tape_34xx_erp_bug(device, request,
-   665							 irb, sense[3]);
-   666			return tape_34xx_erp_failed(request, -EIO);
-   667		case 0x45:
-   668			/* The drive is assigned to a different channel path. */
-   669			dev_warn (&device->cdev->dev, "The tape unit is already "
-   670				"assigned\n");
-   671			return tape_34xx_erp_failed(request, -EIO);
-   672		case 0x46:
-   673			/*
-   674			 * Drive not on-line. Drive may be switched offline,
-   675			 * the power supply may be switched off or
-   676			 * the drive address may not be set correctly.
-   677			 */
-   678			dev_warn (&device->cdev->dev, "The tape unit is not online\n");
-   679			return tape_34xx_erp_failed(request, -EIO);
-   680		case 0x47:
-   681			/* Volume fenced. CU reports volume integrity is lost. */
-   682			dev_warn (&device->cdev->dev, "The control unit has fenced "
-   683				"access to the tape volume\n");
-   684			tape_34xx_delete_sbid_from(device, 0);
-   685			return tape_34xx_erp_failed(request, -EIO);
-   686		case 0x48:
-   687			/* Log sense data and retry request. */
-   688			return tape_34xx_erp_retry(request);
-   689		case 0x49:
-   690			/* Bus out check. A parity check error on the bus was found. */
-   691			dev_warn (&device->cdev->dev, "A parity error occurred on the "
-   692				"tape bus\n");
-   693			return tape_34xx_erp_failed(request, -EIO);
-   694		case 0x4a:
-   695			/* Control unit erp failed. */
-   696			dev_warn (&device->cdev->dev, "I/O error recovery failed on "
-   697				"the tape control unit\n");
-   698			return tape_34xx_erp_failed(request, -EIO);
-   699		case 0x4b:
-   700			/*
-   701			 * CU and drive incompatible. The drive requests micro-program
-   702			 * patches, which are not available on the CU.
-   703			 */
-   704			dev_warn (&device->cdev->dev, "The tape unit requires a "
-   705				"firmware update\n");
-   706			return tape_34xx_erp_failed(request, -EIO);
-   707		case 0x4c:
-   708			/*
-   709			 * Recovered Check-One failure. Cu develops a hardware error,
-   710			 * but is able to recover.
-   711			 */
-   712			return tape_34xx_erp_retry(request);
-   713		case 0x4d:
-   714			if (device->cdev->id.driver_info == tape_3490)
-   715				/*
-   716				 * Resetting event received. Since the driver does
-   717				 * not support resetting event recovery (which has to
-   718				 * be handled by the I/O Layer), retry our command.
-   719				 */
-   720				return tape_34xx_erp_retry(request);
-   721			/* This erpa is reserved for 3480. */
-   722			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   723		case 0x4e:
-   724			if (device->cdev->id.driver_info == tape_3490) {
-   725				/*
-   726				 * Maximum block size exceeded. This indicates, that
-   727				 * the block to be written is larger than allowed for
-   728				 * buffered mode.
-   729				 */
-   730				dev_warn (&device->cdev->dev, "The maximum block size"
-   731					" for buffered mode is exceeded\n");
-   732				return tape_34xx_erp_failed(request, -ENOBUFS);
-   733			}
-   734			/* This erpa is reserved for 3480. */
-   735			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   736		case 0x50:
-   737			/*
-   738			 * Read buffered log (Overflow). CU is running in extended
-   739			 * buffered log mode, and a counter overflows. This should
-   740			 * never happen, since we're never running in extended
-   741			 * buffered log mode.
-   742			 */
-   743			return tape_34xx_erp_retry(request);
-   744		case 0x51:
-   745			/*
-   746			 * Read buffered log (EOV). EOF processing occurs while the
-   747			 * CU is in extended buffered log mode. This should never
-   748			 * happen, since we're never running in extended buffered
-   749			 * log mode.
-   750			 */
-   751			return tape_34xx_erp_retry(request);
-   752		case 0x52:
-   753			/* End of Volume complete. Rewind unload completed ok. */
-   754			if (request->op == TO_RUN) {
-   755				tape_med_state_set(device, MS_UNLOADED);
-   756				tape_34xx_delete_sbid_from(device, 0);
-   757				return tape_34xx_erp_succeeded(request);
-   758			}
-   759			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   760		case 0x53:
-   761			/* Global command intercept. */
-   762			return tape_34xx_erp_retry(request);
-   763		case 0x54:
-   764			/* Channel interface recovery (temporary). */
-   765			return tape_34xx_erp_retry(request);
-   766		case 0x55:
-   767			/* Channel interface recovery (permanent). */
-   768			dev_warn (&device->cdev->dev, "A channel interface error cannot be"
-   769				" recovered\n");
-   770			return tape_34xx_erp_failed(request, -EIO);
-   771		case 0x56:
-   772			/* Channel protocol error. */
-   773			dev_warn (&device->cdev->dev, "A channel protocol error "
-   774				"occurred\n");
-   775			return tape_34xx_erp_failed(request, -EIO);
-   776		case 0x57:
-   777			/*
-   778			 * 3480: Attention intercept.
-   779			 * 3490: Global status intercept.
-   780			 */
-   781			return tape_34xx_erp_retry(request);
-   782		case 0x5a:
-   783			/*
-   784			 * Tape length incompatible. The tape inserted is too long,
-   785			 * which could cause damage to the tape or the drive.
-   786			 */
-   787			dev_warn (&device->cdev->dev, "The tape unit does not support "
-   788				"the tape length\n");
-   789			return tape_34xx_erp_failed(request, -EIO);
-   790		case 0x5b:
-   791			/* Format 3480 XF incompatible */
-   792			if (sense[1] & SENSE_BEGINNING_OF_TAPE)
-   793				/* The tape will get overwritten. */
-   794				return tape_34xx_erp_retry(request);
-   795			dev_warn (&device->cdev->dev, "The tape unit does not support"
-   796				" format 3480 XF\n");
-   797			return tape_34xx_erp_failed(request, -EIO);
-   798		case 0x5c:
-   799			/* Format 3480-2 XF incompatible */
-   800			dev_warn (&device->cdev->dev, "The tape unit does not support tape "
-   801				"format 3480-2 XF\n");
-   802			return tape_34xx_erp_failed(request, -EIO);
-   803		case 0x5d:
-   804			/* Tape length violation. */
-   805			dev_warn (&device->cdev->dev, "The tape unit does not support"
-   806				" the current tape length\n");
-   807			return tape_34xx_erp_failed(request, -EMEDIUMTYPE);
-   808		case 0x5e:
-   809			/* Compaction algorithm incompatible. */
-   810			dev_warn (&device->cdev->dev, "The tape unit does not support"
-   811				" the compaction algorithm\n");
-   812			return tape_34xx_erp_failed(request, -EMEDIUMTYPE);
-   813	
-   814			/* The following erpas should have been covered earlier. */
-   815		case 0x23: /* Read data check. */
-   816		case 0x25: /* Write data check. */
-   817		case 0x26: /* Data check (read opposite). */
-   818		case 0x28: /* Write id mark check. */
-   819		case 0x31: /* Tape void. */
-   820		case 0x40: /* Overrun error. */
-   821		case 0x41: /* Record sequence error. */
-   822			/* All other erpas are reserved for future use. */
-   823		default:
-   824			return tape_34xx_erp_bug(device, request, irb, sense[3]);
-   825		}
-   826	}
-   827	
-
+Signed-off-by: Wang Qing <wangqing@vivo.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/arm/kernel/smp.c         |  1 +
+ arch/arm64/kernel/smp.c       |  1 +
+ arch/riscv/kernel/smpboot.c   |  1 +
+ drivers/base/arch_topology.c  | 59 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/arch_topology.h |  2 ++
+ kernel/sched/topology.c       | 10 ++++++++
+ 6 files changed, 74 insertions(+)
+
+diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
+index 73fc645..62bbd9a
+--- a/arch/arm/kernel/smp.c
++++ b/arch/arm/kernel/smp.c
+@@ -508,6 +508,7 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
+ 	unsigned int ncores = num_possible_cpus();
+ 
+ 	init_cpu_topology();
++	init_cpu_cache_topology();
+ 
+ 	smp_store_cpu_info(smp_processor_id());
+ 
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 27df5c1..94cf649
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -723,6 +723,7 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
+ 	unsigned int this_cpu;
+ 
+ 	init_cpu_topology();
++	init_cpu_cache_topology();
+ 
+ 	this_cpu = smp_processor_id();
+ 	store_cpu_topology(this_cpu);
+diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
+index 622f226..4f5a8b7
+--- a/arch/riscv/kernel/smpboot.c
++++ b/arch/riscv/kernel/smpboot.c
+@@ -41,6 +41,7 @@ static DECLARE_COMPLETION(cpu_running);
+ void __init smp_prepare_boot_cpu(void)
+ {
+ 	init_cpu_topology();
++	init_cpu_cache_topology();
+ #ifdef CONFIG_RISCV_ERRATA_ALTERNATIVE
+ 	apply_boot_alternatives();
+ #endif
+diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+index 9761541..127f540
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -609,6 +609,65 @@ static int __init parse_dt_topology(void)
+ #endif
+ 
+ /*
++ * cpu cache topology table
++ */
++#define MAX_CACHE_LEVEL 7
++struct device_node *cache_topology[NR_CPUS][MAX_CACHE_LEVEL];
++
++void init_cpu_cache_topology(void)
++{
++	struct device_node *node_cpu, *node_cache;
++	int cpu, level;
++
++	for_each_possible_cpu(cpu) {
++		node_cpu = of_get_cpu_node(cpu, NULL);
++		if (!node_cpu)
++			continue;
++
++		level = 0;
++		node_cache = node_cpu;
++		while (level < MAX_CACHE_LEVEL) {
++			node_cache = of_parse_phandle(node_cache, "next-level-cache", 0);
++			if (!node_cache)
++				break;
++
++			cache_topology[cpu][level++] = node_cache;
++		}
++		of_node_put(node_cpu);
++	}
++}
++
++int cpus_share_self_cache(const struct cpumask *cpu_map)
++{
++	int cache_level, cpu_id;
++	int first, last;
++	int id = cpumask_first(cpu_map);
++	int size = cpumask_weight(cpu_map);
++
++	for (cache_level = 0; cache_level < MAX_CACHE_LEVEL; cache_level++) {
++		if (!cache_topology[cpu][cache_level])
++			return -1;
++
++		first = -1;
++		last = id;
++		for (cpu_id = 0; cpu_id < NR_CPUS; cpu_id++) {
++			if (cache_topology[cpu][cache_level] == cache_topology[cpu_id][cache_level]) {
++				if (cpu_id < id || cpu_id >= id + size)
++					return 0;
++
++				first = (first == -1)?cpu_id:first;
++				last = cpu_id;
++			}
++		}
++
++		if (first == id && last == id + size)
++			return 1;
++	}
++
++	return 0;
++}
++
++/*
+  * cpu topology table
+  */
+ struct cpu_topology cpu_topology[NR_CPUS];
+diff --git a/include/linux/arch_topology.h b/include/linux/arch_topology.h
+index cce6136b..862e584
+--- a/include/linux/arch_topology.h
++++ b/include/linux/arch_topology.h
+@@ -82,6 +82,8 @@ extern struct cpu_topology cpu_topology[NR_CPUS];
+ #define topology_cluster_cpumask(cpu)	(&cpu_topology[cpu].cluster_sibling)
+ #define topology_llc_cpumask(cpu)	(&cpu_topology[cpu].llc_sibling)
+ void init_cpu_topology(void);
++void init_cpu_cache_topology(void);
++int cpus_share_self_cache(const struct cpumask *cpu_map);
+ void store_cpu_topology(unsigned int cpuid);
+ const struct cpumask *cpu_coregroup_mask(int cpu);
+ const struct cpumask *cpu_clustergroup_mask(int cpu);
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index d201a70..8264e2d
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1527,6 +1527,7 @@ sd_init(struct sched_domain_topology_level *tl,
+ 	struct sched_domain *sd = *per_cpu_ptr(sdd->sd, cpu);
+ 	int sd_id, sd_weight, sd_flags = 0;
+ 	struct cpumask *sd_span;
++	int ret;
+ 
+ #ifdef CONFIG_NUMA
+ 	/*
+@@ -1539,6 +1540,15 @@ sd_init(struct sched_domain_topology_level *tl,
+ 
+ 	if (tl->sd_flags)
+ 		sd_flags = (*tl->sd_flags)();
++
++#ifdef CONFIG_GENERIC_ARCH_TOPOLOGY
++	ret = cpus_share_self_cache(cpu_map);
++	if (ret == 1)
++		sd_flags |= SD_SHARE_PKG_RESOURCES;
++	else if (ret == 0)
++		sd_flags &= ~SD_SHARE_PKG_RESOURCES;
++#endif
++
+ 	if (WARN_ONCE(sd_flags & ~TOPOLOGY_SD_FLAGS,
+ 			"wrong sd_flags in topology description\n"))
+ 		sd_flags &= TOPOLOGY_SD_FLAGS;
+-- 
+2.7.4
+
