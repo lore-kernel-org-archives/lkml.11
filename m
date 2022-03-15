@@ -2,237 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 870BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B293C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345507AbiCOHjT (ORCPT
+        id S1345510AbiCOHk1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 03:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
+        Tue, 15 Mar 2022 03:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233563AbiCOHjR (ORCPT
+        with ESMTP id S1345470AbiCOHkV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 03:39:17 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFCC1D307
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:38:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647329885; x=1678865885;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FYNhQYCA7hfsUV9fqsiMThE6b9nySacqxqWFdbXGZ+4=;
-  b=bgPyY5LB5236wWqsWm2e0TMJbk8C5sA+TmJ3UYYM9ZnnEBnML2eMElcV
-   iHdwH9XyaWEgpNvVu/jk304pN9ADQerSY/HLtX0LGymf+vkojCq34Gg2+
-   kAMxKLT5qGc/qsKqhA8YCvZQ+8AWif9vJDS+GVldKQO6MC47ygJPheaEd
-   FJqAsf7AhHusYZf3iWs6XtwEuMSyXTgNexnGdL6SENeYObA3Y4N69e4u+
-   rz7s0r6JBN19o3dDPZ1xLlctpVT8ETw/+CeiEFoMg4ELl5yDoQlrKhOJC
-   rg2pTECRCAjKQHv4X5fnmPSUE1vNSxPDGWA9XFrLBg2PJLoSUDLcOmNZh
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="243687420"
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="243687420"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 00:36:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="540320693"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 15 Mar 2022 00:36:11 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU1j0-000Ah3-Ll; Tue, 15 Mar 2022 07:36:10 +0000
-Date:   Tue, 15 Mar 2022 15:35:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Isaku Yamahata <isaku.yamahata@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [intel-tdx:kvm-upstream-workaround 149/296]
- arch/x86/kvm/vmx/main.c:175:51: error: invalid application of 'sizeof' to an
- incomplete type 'struct kvm_tdx'
-Message-ID: <202203151531.zATdFM5Y-lkp@intel.com>
+        Tue, 15 Mar 2022 03:40:21 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32014B427
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:39:08 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id p8so18281892pfh.8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VNL6t5lwu7FCHObLJDj3kpok06MyY7kYsdfPJh4pywU=;
+        b=hstT9zAftdIPC5pYGMSL7Y2WtiyiwooMIijoCRCV1UUsCoyWP0LVsGmT8Y4ajqKtf3
+         9joK6+jWLV9GINxEGRBMKwEFChVeulxZX5CcdQ0dQmq3la5oCcZWgHQ9MlHzbLe93GAv
+         oVdMB4vd0qiLXr68pG4pzJIlAUZai5Fp73tZqPI/4Kjv8lSeHH+Y3FwRNtdD2rttvDMg
+         HuwptlKnOvJvdMNodaq7VQSRypNoJXfaW6rT+Kqs8PxV3PvXkVSjZPNrew4g8cKYUXC+
+         zRJvkQuoIKupNMnEWGLE0Zk/RGdhr6Nv4cNNFIDk63kybVDHnp3s5sTi3WlhFInCoKXI
+         LQZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VNL6t5lwu7FCHObLJDj3kpok06MyY7kYsdfPJh4pywU=;
+        b=7105pOYEc0nlMQqGJf5tSPM1J3k8lo1l3eNW5SvyJm8MOH/GjM7HKt44MyOxgewvc2
+         ZY1D6UzfHsfl9jQDMTY3wJMXeepxfwIeU05Rf7i0l7dx0EF6xTQOGHdxAhitKakJ2ZU7
+         CAjz4d2GysDN9bMYH11/CZt09llFXcNYtc/itFIdxD6bn72PcHgLp3XgbqkTka6Yri3M
+         GpViNVp6grrKrHZEjvJZmgo3kHsa3T5jcj/VaIKArRei0wFpJm8PzJ7r2rk2cixd8iKV
+         fxQmBl2Fqeqyb9IC2ZU0LkCxXo0FJHDEO6rILJq+C/21QnIDc9WcgBYpbxZ7Loy2sPmC
+         MNtQ==
+X-Gm-Message-State: AOAM533iWXyWdYAz8rrcF99I7Y1kITNHR+Fyn5Kji4CzKm50p4eEwl8g
+        qvSlGc/vd5PGgCWgfOZTABHmArOLKxw=
+X-Google-Smtp-Source: ABdhPJwVQ0onuw3jsYfZDZyp6MG6Fav/xGeAj/UA9hOFNTk1uTnNby4WS3T24WTRI3XvIEwjV27j7Q==
+X-Received: by 2002:aa7:8896:0:b0:4f7:b8f7:772e with SMTP id z22-20020aa78896000000b004f7b8f7772emr12425950pfe.62.1647329948114;
+        Tue, 15 Mar 2022 00:39:08 -0700 (PDT)
+Received: from localhost ([47.251.4.198])
+        by smtp.gmail.com with ESMTPSA id j7-20020a637a47000000b003803fbcc005sm19116279pgn.59.2022.03.15.00.39.07
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 15 Mar 2022 00:39:07 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     x86@kernel.org, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: [PATCH V3 0/7] x86/entry: Clean up entry code
+Date:   Tue, 15 Mar 2022 15:39:42 +0800
+Message-Id: <20220315073949.7541-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   97612c5f3be3447870b5d6fd476931a4c5ff280f
-commit: 540e161d6f1b1e4ca7535ef11258660947ae7b00 [149/296] KVM: TDX: Add placeholders for TDX VM/vcpu structure
-config: i386-randconfig-a011 (https://download.01.org/0day-ci/archive/20220315/202203151531.zATdFM5Y-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6b2f50fb47da3baeee10b1906da6e30ac5d26ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel/tdx/commit/540e161d6f1b1e4ca7535ef11258660947ae7b00
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx kvm-upstream-workaround
-        git checkout 540e161d6f1b1e4ca7535ef11258660947ae7b00
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kvm/
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This patchset moves the stack-switch code to the place where
+error_entry() return, unravels error_entry() from XENpv and makes
+entry_INT80_compat use idtentry macro.
 
-All errors (new ones prefixed by >>):
+This patchset is highly related to XENpv, because it does the extra
+cleanup to convert SWAPGS to swapgs after major cleanup is done.
 
->> arch/x86/kvm/vmx/main.c:175:51: error: invalid application of 'sizeof' to an incomplete type 'struct kvm_tdx'
-           vt_x86_ops.vm_size = max(sizeof(struct kvm_vmx), sizeof(struct kvm_tdx));
-                                                            ^     ~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:52:36: note: expanded from macro 'max'
-   #define max(x, y)       __careful_cmp(x, y, >)
-                                            ^
-   include/linux/minmax.h:36:38: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                               ^
-   include/linux/minmax.h:26:19: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                                   ^
-   include/linux/minmax.h:20:39: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                                                ^
-   arch/x86/kvm/vmx/tdx.h:38:8: note: forward declaration of 'struct kvm_tdx'
-   struct kvm_tdx;
-          ^
->> arch/x86/kvm/vmx/main.c:175:51: error: invalid application of 'sizeof' to an incomplete type 'struct kvm_tdx'
-           vt_x86_ops.vm_size = max(sizeof(struct kvm_vmx), sizeof(struct kvm_tdx));
-                                                            ^     ~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:52:36: note: expanded from macro 'max'
-   #define max(x, y)       __careful_cmp(x, y, >)
-                                            ^
-   include/linux/minmax.h:36:38: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                               ^
-   include/linux/minmax.h:26:46: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                                                              ^
-   include/linux/minmax.h:23:40: note: expanded from macro '__no_side_effects'
-                   (__is_constexpr(x) && __is_constexpr(y))
-                                                        ^
-   include/linux/const.h:12:48: note: expanded from macro '__is_constexpr'
-           (sizeof(int) == sizeof(*(8 ? ((void *)((long)(x) * 0l)) : (int *)8)))
-                                                         ^
-   arch/x86/kvm/vmx/tdx.h:38:8: note: forward declaration of 'struct kvm_tdx'
-   struct kvm_tdx;
-          ^
->> arch/x86/kvm/vmx/main.c:176:43: error: invalid application of 'sizeof' to an incomplete type 'struct vcpu_tdx'
-           vcpu_size = max(sizeof(struct vcpu_vmx), sizeof(struct vcpu_tdx));
-                                                    ^     ~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:52:36: note: expanded from macro 'max'
-   #define max(x, y)       __careful_cmp(x, y, >)
-                                            ^
-   include/linux/minmax.h:36:38: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                               ^
-   include/linux/minmax.h:26:19: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                                   ^
-   include/linux/minmax.h:20:39: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                                                ^
-   arch/x86/kvm/vmx/tdx.h:39:8: note: forward declaration of 'struct vcpu_tdx'
-   struct vcpu_tdx;
-          ^
->> arch/x86/kvm/vmx/main.c:176:43: error: invalid application of 'sizeof' to an incomplete type 'struct vcpu_tdx'
-           vcpu_size = max(sizeof(struct vcpu_vmx), sizeof(struct vcpu_tdx));
-                                                    ^     ~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:52:36: note: expanded from macro 'max'
-   #define max(x, y)       __careful_cmp(x, y, >)
-                                            ^
-   include/linux/minmax.h:36:38: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                               ^
-   include/linux/minmax.h:26:46: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                                                              ^
-   include/linux/minmax.h:23:40: note: expanded from macro '__no_side_effects'
-                   (__is_constexpr(x) && __is_constexpr(y))
-                                                        ^
-   include/linux/const.h:12:48: note: expanded from macro '__is_constexpr'
-           (sizeof(int) == sizeof(*(8 ? ((void *)((long)(x) * 0l)) : (int *)8)))
-                                                         ^
-   arch/x86/kvm/vmx/tdx.h:39:8: note: forward declaration of 'struct vcpu_tdx'
-   struct vcpu_tdx;
-          ^
->> arch/x86/kvm/vmx/main.c:178:4: error: invalid application of '__alignof' to an incomplete type 'struct vcpu_tdx'
-                           __alignof__(struct vcpu_tdx));
-                           ^          ~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:52:36: note: expanded from macro 'max'
-   #define max(x, y)       __careful_cmp(x, y, >)
-                                            ^
-   include/linux/minmax.h:36:38: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                               ^
-   include/linux/minmax.h:26:19: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                                   ^
-   include/linux/minmax.h:20:39: note: expanded from macro '__typecheck'
-           (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                                                ^
-   arch/x86/kvm/vmx/tdx.h:39:8: note: forward declaration of 'struct vcpu_tdx'
-   struct vcpu_tdx;
-          ^
->> arch/x86/kvm/vmx/main.c:178:4: error: invalid application of '__alignof' to an incomplete type 'struct vcpu_tdx'
-                           __alignof__(struct vcpu_tdx));
-                           ^          ~~~~~~~~~~~~~~~~~
-   include/linux/minmax.h:52:36: note: expanded from macro 'max'
-   #define max(x, y)       __careful_cmp(x, y, >)
-                                            ^
-   include/linux/minmax.h:36:38: note: expanded from macro '__careful_cmp'
-           __builtin_choose_expr(__safe_cmp(x, y), \
-                                               ^
-   include/linux/minmax.h:26:46: note: expanded from macro '__safe_cmp'
-                   (__typecheck(x, y) && __no_side_effects(x, y))
-                                                              ^
-   include/linux/minmax.h:23:40: note: expanded from macro '__no_side_effects'
-                   (__is_constexpr(x) && __is_constexpr(y))
-                                                        ^
-   include/linux/const.h:12:48: note: expanded from macro '__is_constexpr'
-           (sizeof(int) == sizeof(*(8 ? ((void *)((long)(x) * 0l)) : (int *)8)))
-                                                         ^
-   arch/x86/kvm/vmx/tdx.h:39:8: note: forward declaration of 'struct vcpu_tdx'
-   struct vcpu_tdx;
-          ^
-   6 errors generated.
+The patches are the third try to pick patches from the patchset
+https://lore.kernel.org/lkml/20211126101209.8613-1-jiangshanlai@gmail.com/
+which converts ASM code to C code.  These patches are prepared for that
+purpose.  But this patchset has it own value: it simplifies the stack
+switch, avoids leaving the old stack inside a function call, and
+separates XENpv code with native code without adding new code.
 
+Changed from V2:
+	Make the patch of folding int80 thing as the first patch
+	Add more changelog in "Switch the stack after error_entry() returns"
 
-vim +175 arch/x86/kvm/vmx/main.c
+Changed from V1
+	Squash cleanup patches converting SWAPGS to swapgs into one patch
 
-   169	
-   170	static int __init vt_init(void)
-   171	{
-   172		unsigned int vcpu_size, vcpu_align;
-   173		int r;
-   174	
- > 175		vt_x86_ops.vm_size = max(sizeof(struct kvm_vmx), sizeof(struct kvm_tdx));
- > 176		vcpu_size = max(sizeof(struct vcpu_vmx), sizeof(struct vcpu_tdx));
-   177		vcpu_align = max(__alignof__(struct vcpu_vmx),
- > 178				__alignof__(struct vcpu_tdx));
-   179	
-   180		hv_vp_assist_page_init();
-   181	
-   182		r = kvm_init(&vt_init_ops, vcpu_size, vcpu_align, THIS_MODULE);
-   183		if (r)
-   184			goto err_vmx_post_exit;
-   185	
-   186		r = vmx_init();
-   187		if (r)
-   188			goto err_kvm_exit;
-   189	
-   190		return 0;
-   191	
-   192	err_kvm_exit:
-   193		kvm_exit();
-   194	err_vmx_post_exit:
-   195		hv_vp_assist_page_exit();
-   196		return r;
-   197	}
-   198	module_init(vt_init);
-   199	
+	Use my official email address (Ant Group).  The work is backed
+	by my company and I was incorrectly misunderstood that
+	XXX@linux.alibaba.com is the only portal for opensource work
+	in the corporate group.
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+[V2]: https://lore.kernel.org/lkml/20220303035434.20471-1-jiangshanlai@gmail.com/
+[V1]: https://lore.kernel.org/lkml/20211208110833.65366-1-jiangshanlai@gmail.com/
+
+Lai Jiangshan (7):
+  x86/entry: Use idtentry macro for entry_INT80_compat
+  x86/traps: Move pt_regs only in fixup_bad_iret()
+  x86/entry: Switch the stack after error_entry() returns
+  x86/entry: move PUSH_AND_CLEAR_REGS out of error_entry
+  x86/entry: Move cld to the start of idtentry
+  x86/entry: Don't call error_entry for XENPV
+  x86/entry: Convert SWAPGS to swapgs and remove the definition of
+    SWAPGS
+
+ arch/x86/entry/entry_64.S        |  61 +++++++++++++-----
+ arch/x86/entry/entry_64_compat.S | 105 +------------------------------
+ arch/x86/include/asm/idtentry.h  |  47 ++++++++++++++
+ arch/x86/include/asm/irqflags.h  |   8 ---
+ arch/x86/include/asm/proto.h     |   4 --
+ arch/x86/include/asm/traps.h     |   2 +-
+ arch/x86/kernel/traps.c          |  17 ++---
+ 7 files changed, 100 insertions(+), 144 deletions(-)
+
+-- 
+2.19.1.6.gb485710b
+
