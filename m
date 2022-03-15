@@ -2,251 +2,338 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C4DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B673AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:50:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348487AbiCOMvK (ORCPT
+        id S1348495AbiCOMvR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        Tue, 15 Mar 2022 08:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348389AbiCOMvI (ORCPT
+        with ESMTP id S1348494AbiCOMvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:51:08 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52635004B
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647348591; x=1678884591;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SfW00ZwuA7gEkmiM+FXaiu2fQPLJNs0OT34MPTvSSQs=;
-  b=XnTHuINrC/cW7bnNpgJfbHzuBPheA8zYaiK1/3TzqEgCaPmyn62V6L+u
-   CoNyv05ibkw74AYvi0sJjjlIiIedkm10LIsYc6xsTHLTejEHgsU3AK9Jy
-   fwEUWz/OzyjWKUpTtHLW3OJB3FHZ7Tya7kg2SQukVEaT7v7cO4M5v9oqP
-   DvIuU9acW14RP/gaPanjhd2DiJb5GiJ98vHMpkhwNTKyjQc9MuEae7nqx
-   l04NpXgfCsYKUfa8a7/q4MqOSbd3NeuW4aA4cckmennbxsTTDfQB6X6W+
-   LpBlIVlDG1qR1a4Kp6W2nkHiLSd6rxFjI5S9MEMgpM2p4matb+c1uxJcK
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256479668"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="256479668"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 05:49:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="580499979"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 15 Mar 2022 05:49:49 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU6cX-000AyP-62; Tue, 15 Mar 2022 12:49:49 +0000
-Date:   Tue, 15 Mar 2022 20:48:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:irq/core] BUILD SUCCESS
- 411472ae5bb4ffe1404dc5f1505f07e0f04770a8
-Message-ID: <62308b33.8UkgkMRjr/LI873X%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Tue, 15 Mar 2022 08:51:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CE349C9E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:50:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA054B81636
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54109C340E8;
+        Tue, 15 Mar 2022 12:49:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647348597;
+        bh=GQi+Mk8CaO7M1q/tv2FzaVzOwe4zE8I9zScA3Q1gXgo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=OHzTnH2jrIuXyXQ99SJ4IPcg/HzKCZeqq06MtrQxgdw/BtZPXpMZvs/fk54TwYtTp
+         TlIdMOegagexnm2/ddfKno5HLHK7q4+iIt6xTeveQww0GfIBiPP+bH1OO+HNVZR1GF
+         9R1W8DMrYRs+iyJwKocOQlCPlzLNpSnGTtOPMVDTUDqOnHdUltmMRbFZCgx9t+hMIH
+         MQkZ/MUfnVR1KYyx5wrfdyzLCHD5wOiac5zzlDlE2hiftzoGOkYdKHRO+dBaZJ4JpJ
+         8FGLAuF44kHIDy6VBR5ACOeZctKISCjX6zI0ZkMzSeluwuhxAdFERSdqlKZK5JzMAK
+         vzeBRwtx1BKKA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id CAAE040407; Tue, 15 Mar 2022 09:49:54 -0300 (-03)
+Date:   Tue, 15 Mar 2022 09:49:54 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Namhyung Kim <namhyung@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: 'perf stat --null sleep 1' segfault related to
+ evlist__for_each_entry with affinity == NULL
+Message-ID: <YjCLcpcX2peeQVCH@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
-branch HEAD: 411472ae5bb4ffe1404dc5f1505f07e0f04770a8  Merge tag 'v5.17-rc8' into irq/core, to fix conflicts
+This bounced yesterday, resending :-\
 
-elapsed time: 725m
+-----
 
-configs tested: 170
-configs skipped: 3
+Hi Ian,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+	I just noticed this:
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                          randconfig-c001
-i386                 randconfig-c001-20220314
-mips                 randconfig-c004-20220314
-powerpc              randconfig-c003-20220313
-powerpc                      pasemi_defconfig
-arm                       imx_v6_v7_defconfig
-xtensa                              defconfig
-arm                         nhk8815_defconfig
-x86_64                              defconfig
-sh                        edosk7760_defconfig
-powerpc                     taishan_defconfig
-sh                          lboxre2_defconfig
-um                           x86_64_defconfig
-arm                         lpc18xx_defconfig
-arm                       aspeed_g5_defconfig
-m68k                        stmark2_defconfig
-arc                          axs101_defconfig
-openrisc                  or1klitex_defconfig
-arm                            xcep_defconfig
-riscv             nommu_k210_sdcard_defconfig
-sh                            migor_defconfig
-sh                             sh03_defconfig
-m68k                           sun3_defconfig
-m68k                        m5272c3_defconfig
-powerpc                        cell_defconfig
-sh                           se7705_defconfig
-powerpc                      bamboo_defconfig
-csky                             alldefconfig
-parisc                generic-32bit_defconfig
-powerpc                 mpc837x_mds_defconfig
-powerpc                  storcenter_defconfig
-arm                         vf610m4_defconfig
-mips                           jazz_defconfig
-sh                   secureedge5410_defconfig
-h8300                     edosk2674_defconfig
-m68k                         apollo_defconfig
-powerpc                      arches_defconfig
-m68k                                defconfig
-arm                           h5000_defconfig
-sh                          rsk7201_defconfig
-arc                          axs103_defconfig
-parisc                generic-64bit_defconfig
-powerpc                 mpc834x_mds_defconfig
-sh                         microdev_defconfig
-sh                     sh7710voipgw_defconfig
-powerpc                     pq2fads_defconfig
-sh                          kfr2r09_defconfig
-parisc                              defconfig
-openrisc                 simple_smp_defconfig
-m68k                       m5208evb_defconfig
-mips                        bcm47xx_defconfig
-arm                         axm55xx_defconfig
-powerpc                mpc7448_hpc2_defconfig
-mips                  decstation_64_defconfig
-arm                  randconfig-c002-20220313
-arm                  randconfig-c002-20220314
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nds32                               defconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64               randconfig-a004-20220314
-x86_64               randconfig-a005-20220314
-x86_64               randconfig-a003-20220314
-x86_64               randconfig-a002-20220314
-x86_64               randconfig-a006-20220314
-x86_64               randconfig-a001-20220314
-i386                 randconfig-a003-20220314
-i386                 randconfig-a004-20220314
-i386                 randconfig-a001-20220314
-i386                 randconfig-a006-20220314
-i386                 randconfig-a002-20220314
-i386                 randconfig-a005-20220314
-arc                  randconfig-r043-20220313
-riscv                randconfig-r042-20220313
-s390                 randconfig-r044-20220313
-arc                  randconfig-r043-20220314
-riscv                    nommu_k210_defconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                                  kexec
+(gdb) run stat --null sleep 1
+`/var/home/acme/bin/perf' has changed; re-reading symbols.
+Starting program: /var/home/acme/bin/perf stat --null sleep 1
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+[Detaching after fork from child process 900002]
 
-clang tested configs:
-arm                  randconfig-c002-20220313
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220313
-riscv                randconfig-c006-20220313
-mips                 randconfig-c004-20220313
-i386                          randconfig-c001
-mips                   sb1250_swarm_defconfig
-arm                     davinci_all_defconfig
-powerpc                       ebony_defconfig
-mips                      bmips_stb_defconfig
-arm                       cns3420vb_defconfig
-arm                      pxa255-idp_defconfig
-arm                        magician_defconfig
-powerpc                 mpc8315_rdb_defconfig
-arm                          imote2_defconfig
-mips                           mtx1_defconfig
-powerpc                      pmac32_defconfig
-powerpc                          allyesconfig
-powerpc               mpc834x_itxgp_defconfig
-mips                     cu1000-neo_defconfig
-arm                           omap1_defconfig
-mips                          ath25_defconfig
-i386                             allyesconfig
-mips                malta_qemu_32r6_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64               randconfig-a014-20220314
-x86_64               randconfig-a015-20220314
-x86_64               randconfig-a016-20220314
-x86_64               randconfig-a012-20220314
-x86_64               randconfig-a013-20220314
-x86_64               randconfig-a011-20220314
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-i386                 randconfig-a013-20220314
-i386                 randconfig-a015-20220314
-i386                 randconfig-a014-20220314
-i386                 randconfig-a011-20220314
-i386                 randconfig-a016-20220314
-i386                 randconfig-a012-20220314
-hexagon              randconfig-r045-20220314
-hexagon              randconfig-r045-20220313
-riscv                randconfig-r042-20220314
-hexagon              randconfig-r041-20220313
-hexagon              randconfig-r041-20220314
-s390                 randconfig-r044-20220314
+Program received signal SIGSEGV, Segmentation fault.
+0x0000000000596790 in create_perf_stat_counter (evsel=3D0xda9580, config=3D=
+0xcbeac0 <stat_config>, target=3D0xcbe8a0 <target>, cpu_map_idx=3D0) at uti=
+l/stat.c:548
+548		if (leader->core.nr_members > 1)
+Missing separate debuginfos, use: dnf debuginfo-install bzip2-libs-1.0.8-6.=
+fc34.x86_64 cyrus-sasl-lib-2.1.27-8.fc34.x86_64 elfutils-debuginfod-client-=
+0.186-1.fc34.x86_64 elfutils-libelf-0.186-1.fc34.x86_64 elfutils-libs-0.186=
+-1.fc34.x86_64 glib2-2.68.4-1.fc34.x86_64 glibc-2.33-21.fc34.x86_64 keyutil=
+s-libs-1.6.1-2.fc34.x86_64 libbabeltrace-1.5.8-6.fc34.x86_64 libbrotli-1.0.=
+9-4.fc34.x86_64 libcap-2.48-2.fc34.x86_64 libcom_err-1.45.6-5.fc34.x86_64 l=
+ibcurl-7.76.1-12.fc34.x86_64 libgcc-11.2.1-9.fc34.x86_64 libidn2-2.3.2-1.fc=
+34.x86_64 libnghttp2-1.43.0-2.fc34.x86_64 libpsl-0.21.1-3.fc34.x86_64 libss=
+h-0.9.6-1.fc34.x86_64 libstdc++-11.2.1-9.fc34.x86_64 libunistring-0.9.10-10=
+=2Efc34.x86_64 libunwind-1.4.0-5.fc34.x86_64 libuuid-2.36.2-1.fc34.x86_64 l=
+ibxcrypt-4.4.28-1.fc34.x86_64 libzstd-1.5.2-1.fc34.x86_64 numactl-libs-2.0.=
+14-3.fc34.x86_64 opencsd-1.1.1-1.fc34.x86_64 openldap-2.4.57-6.fc34.x86_64 =
+openssl-libs-1.1.1l-2.fc34.x86_64 pcre-8.44-3.fc34.1.x86_64 perl-libs-5.32.=
+1-477.fc34.x86_64 popt-1.18-4.fc34.x86_64 python3-libs-3.9.10-1.fc34.x86_64=
+ slang-2.3.2-9.fc34.x86_64 xz-libs-5.2.5-5.fc34.x86_64
+(gdb) bt
+#0  0x0000000000596790 in create_perf_stat_counter (evsel=3D0xda9580, confi=
+g=3D0xcbeac0 <stat_config>, target=3D0xcbe8a0 <target>, cpu_map_idx=3D0) at=
+ util/stat.c:548
+#1  0x0000000000438c2c in __run_perf_stat (argc=3D2, argv=3D0x7fffffffe1f0,=
+ run_idx=3D0) at builtin-stat.c:835
+#2  0x00000000004395d5 in run_perf_stat (argc=3D2, argv=3D0x7fffffffe1f0, r=
+un_idx=3D0) at builtin-stat.c:1047
+#3  0x000000000043ce17 in cmd_stat (argc=3D2, argv=3D0x7fffffffe1f0) at bui=
+ltin-stat.c:2561
+#4  0x00000000004dc2d1 in run_builtin (p=3D0xcd5760 <commands+288>, argc=3D=
+4, argv=3D0x7fffffffe1f0) at perf.c:313
+#5  0x00000000004dc538 in handle_internal_command (argc=3D4, argv=3D0x7ffff=
+fffe1f0) at perf.c:365
+#6  0x00000000004dc684 in run_argv (argcp=3D0x7fffffffe03c, argv=3D0x7fffff=
+ffe030) at perf.c:409
+#7  0x00000000004dca50 in main (argc=3D4, argv=3D0x7fffffffe1f0) at perf.c:=
+539
+(gdb) p leader
+$1 =3D (struct evsel *) 0x0
+(gdb) fr 1
+#1  0x0000000000438c2c in __run_perf_stat (argc=3D2, argv=3D0x7fffffffe1f0,=
+ run_idx=3D0) at builtin-stat.c:835
+835			if (create_perf_stat_counter(counter, &stat_config, &target,
+(gdb) p evsel_list
+$2 =3D (struct evlist *) 0xda9580
+(gdb) p evsel_list->core.nr_entries
+$3 =3D 0
+(gdb)
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I've bisected it to a patch I added that avoids setting up affinity when
+there is no need to do so, like when running 'perf stat sleep 1', this
+one:
+
+commit 49de179577e7b05b57f625bf05cdc60a72de38d0
+Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date:   Mon Jan 17 13:09:29 2022 -0300
+
+    perf stat: No need to setup affinities when starting a workload
+
+    I.e. the simple:
+
+      $ perf stat sleep 1
+
+    Uses a dummy CPU map and thus there is no need to setup/cleanup
+    affinities to avoid IPIs, etc.
+
+    With this we're down to a sched_getaffinity() call, in the libnuma
+    initialization, that probably can be removed in a followup patch.
+
+    Acked-by: Ian Rogers <irogers@google.com>
+
+The problem is that when using --null we end up with an empty evlist
+and:
+
+  evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity)
+
+in __run_perf_stat()
+
+gets called with affinity =3D=3D NULL.
+
+Looking at its code it checks if affinity is NULL, etc, so I thought it
+would be ok, but it ends up passing, IIRC, the empty list head:
+
+(gdb) p evsel->core.node
+$4 =3D {next =3D 0xda9580, prev =3D 0xda9580}
+(gdb) p evsel
+$5 =3D (struct evsel *) 0xda9580
+(gdb) fr 1
+#1  0x0000000000438c2c in __run_perf_stat (argc=3D2, argv=3D0x7fffffffe1f0,=
+ run_idx=3D0) at builtin-stat.c:835
+835			if (create_perf_stat_counter(counter, &stat_config, &target,
+(gdb) p evsel_list->core.entries
+$6 =3D {next =3D 0xda9580, prev =3D 0xda9580}
+(gdb)
+
+I.e. it gets confused with its end condition when
+evlist->core.nr_entries is zero.
+
+Can you take a look at improving this? I'm going AFK now, so just wanted
+to dump what I found so far.
+
+I guess the problem got introduced in:
+
+commit 472832d2c000b9611feaea66fe521055c3dbf17a
+Author: Ian Rogers <irogers@google.com>
+Date:   Tue Jan 4 22:13:37 2022 -0800
+
+    perf evlist: Refactor evlist__for_each_cpu()
+
+    Previously evlist__for_each_cpu() needed to iterate over the evlist in
+    an inner loop and call "skip" routines. Refactor this so that the
+    iteratr is smarter and the next function can update both the current CPU
+    and evsel.
+
+    By using a cpu map index, fix apparent off-by-1 in __run_perf_stat's
+    call to perf_evsel__close_cpu().
+
+-----------------
+
+And was dormant as the affinity was being always setup, which we don't
+want when it isn't needed.
+
+I'm trying to use:
+
+	perf trace --summary perf stat --null sleep 1
+
+to see what is that perf is unconditionally doing that should be
+deferred till it is really needed, for now I'll continue with:
+
+[root@five ~]# perf trace -s perf stat -e dummy sleep 1
+
+ Performance counter stats for 'sleep 1':
+
+                 0      dummy                                              =
+        =20
+
+       1.000945692 seconds time elapsed
+
+       0.000000000 seconds user
+       0.000861000 seconds sys
+
+
+
+ Summary of events:
+
+ perf (900261), 3127 events, 94.7%
+
+   syscall            calls  errors  total       min       avg       max   =
+    stddev
+                                     (msec)    (msec)    (msec)    (msec)  =
+      (%)
+   --------------- --------  ------ -------- --------- --------- --------- =
+    ------
+   wait4                  1      0  1000.903  1000.903  1000.903  1000.903 =
+     0.00%
+   openat               364    187     1.144     0.002     0.003     0.020 =
+     1.90%
+   mmap                 263      0     0.796     0.001     0.003     0.015 =
+     2.60%
+   clone                  1      0     0.620     0.620     0.620     0.620 =
+     0.00%
+   read                 263      0     0.441     0.001     0.002     0.094 =
+    21.06%
+   access                80     49     0.277     0.002     0.003     0.006 =
+     2.75%
+   mprotect              80      0     0.269     0.002     0.003     0.006 =
+     3.15%
+   newfstatat           174      1     0.210     0.001     0.001     0.007 =
+     3.57%
+   close                183      0     0.171     0.001     0.001     0.003 =
+     1.64%
+   getdents64            35      0     0.065     0.001     0.002     0.012 =
+    17.24%
+   write                 18      0     0.052     0.001     0.003     0.009 =
+    15.24%
+   brk                   12      0     0.034     0.001     0.003     0.005 =
+    11.27%
+   ioctl                 29     29     0.029     0.001     0.001     0.003 =
+     8.38%
+   futex                 20      0     0.026     0.001     0.001     0.002 =
+     8.30%
+   perf_event_open        1      0     0.016     0.016     0.016     0.016 =
+     0.00%
+   statfs                 3      0     0.011     0.002     0.004     0.006 =
+    38.92%
+   rt_sigaction           8      0     0.009     0.001     0.001     0.002 =
+    12.76%
+   pread64                6      0     0.006     0.001     0.001     0.001 =
+     1.44%
+   pipe                   2      0     0.006     0.002     0.003     0.004 =
+    32.45%
+   rt_sigprocmask         4      0     0.006     0.001     0.001     0.002 =
+    22.35%
+   prctl                  6      4     0.005     0.001     0.001     0.001 =
+     6.86%
+   munmap                 1      0     0.004     0.004     0.004     0.004 =
+     0.00%
+   kill                   1      0     0.003     0.003     0.003     0.003 =
+     0.00%
+   arch_prctl             2      1     0.002     0.001     0.001     0.001 =
+    11.96%
+   sysinfo                1      0     0.002     0.002     0.002     0.002 =
+     0.00%
+   sched_getaffinity      1      0     0.001     0.001     0.001     0.001 =
+     0.00%
+   getpid                 1      0     0.001     0.001     0.001     0.001 =
+     0.00%
+   fcntl                  1      0     0.001     0.001     0.001     0.001 =
+     0.00%
+   set_tid_address        1      0     0.001     0.001     0.001     0.001 =
+     0.00%
+   prlimit64              1      0     0.001     0.001     0.001     0.001 =
+     0.00%
+   set_robust_list        1      0     0.001     0.001     0.001     0.001 =
+     0.00%
+   execve                 1      0     0.000     0.000     0.000     0.000 =
+     0.00%
+
+
+ sleep (900262), 107 events, 3.2%
+
+   syscall            calls  errors  total       min       avg       max   =
+    stddev
+                                     (msec)    (msec)    (msec)    (msec)  =
+      (%)
+   --------------- --------  ------ -------- --------- --------- --------- =
+    ------
+   clock_nanosleep        1      0  1000.050  1000.050  1000.050  1000.050 =
+     0.00%
+   execve                 8      7     0.282     0.008     0.035     0.198 =
+    66.26%
+   read                   2      0     0.058     0.002     0.029     0.056 =
+    94.56%
+   mmap                   9      0     0.027     0.002     0.003     0.005 =
+     9.92%
+   mprotect               4      0     0.015     0.003     0.004     0.005 =
+    10.85%
+   close                  8      0     0.013     0.001     0.002     0.003 =
+    13.67%
+   prctl                  1      0     0.012     0.012     0.012     0.012 =
+     0.00%
+   openat                 3      0     0.010     0.003     0.003     0.004 =
+     4.99%
+   arch_prctl             2      1     0.006     0.001     0.003     0.005 =
+    68.42%
+   brk                    3      0     0.006     0.001     0.002     0.002 =
+    21.26%
+   access                 1      1     0.005     0.005     0.005     0.005 =
+     0.00%
+   munmap                 1      0     0.005     0.005     0.005     0.005 =
+     0.00%
+   newfstatat             3      0     0.005     0.001     0.002     0.002 =
+     8.55%
+   pread64                4      0     0.005     0.001     0.001     0.001 =
+     5.39%
+   rt_sigaction           1      0     0.002     0.002     0.002     0.002 =
+     0.00%
+   fcntl                  1      0     0.002     0.002     0.002     0.002 =
+     0.00%
+   set_robust_list        1      0     0.002     0.002     0.002     0.002 =
+     0.00%
+   clone                  1      0     0.000     0.000     0.000     0.000 =
+     0.00%
+
+
+[root@five ~]#
+
+- Arnaldo
