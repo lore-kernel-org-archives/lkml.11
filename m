@@ -2,86 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F08C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2702C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344963AbiCOFhV (ORCPT
+        id S1344956AbiCOFh1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 01:37:21 -0400
+        Tue, 15 Mar 2022 01:37:27 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243007AbiCOFhJ (ORCPT
+        with ESMTP id S1344927AbiCOFhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 01:37:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E09D31505;
-        Mon, 14 Mar 2022 22:35:58 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 03F131480;
-        Mon, 14 Mar 2022 22:35:58 -0700 (PDT)
-Received: from a077893.arm.com (unknown [10.163.34.48])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 453FD3F766;
-        Mon, 14 Mar 2022 22:35:51 -0700 (PDT)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        peterz@infradead.org, acme@kernel.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Suzuki Poulose <suzuki.poulose@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH V4 05/10] perf: Add PERF_BR_NEW_ARCH_[N] map for BRBE on arm64 platform
-Date:   Tue, 15 Mar 2022 11:05:11 +0530
-Message-Id: <20220315053516.431515-6-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220315053516.431515-1-anshuman.khandual@arm.com>
-References: <20220315053516.431515-1-anshuman.khandual@arm.com>
+        Tue, 15 Mar 2022 01:37:06 -0400
+Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE353152D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:35:51 -0700 (PDT)
+Received: from omf10.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay11.hostedemail.com (Postfix) with ESMTP id 63A798052C;
+        Tue, 15 Mar 2022 05:35:50 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf10.hostedemail.com (Postfix) with ESMTPA id BC86E35;
+        Tue, 15 Mar 2022 05:35:49 +0000 (UTC)
+Message-ID: <b9c4dba1af41d8ef618267a1bd2a8497b3aa51a9.camel@perches.com>
+Subject: Re: [PATCH 00/30] fix typos in comments
+From:   Joe Perches <joe@perches.com>
+To:     Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Date:   Mon, 14 Mar 2022 22:35:48 -0700
+In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Queue-Id: BC86E35
+X-Stat-Signature: 3cw4bcpy8xz951b36ddt56t1zrdzb146
+X-Rspamd-Server: rspamout01
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19LeeX9Mq4ndFS2it54iNu/TdLy0aiPhOc=
+X-HE-Tag: 1647322549-511863
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-BRBE captured branch types will overflow perf_branch_entry.type and generic
-branch types in perf_branch_entry.new_type. So override each available arch
-specific branch type in the following manner to comprehensively process all
-reported branch types in BRBE.
+Care to describe _how_ coccinelle was helpful in finding
+these typos in comments?
 
-PERF_BR_ARM64_FIQ            PERF_BR_NEW_ARCH_1
-PERF_BR_ARM64_DEBUG_HALT     PERF_BR_NEW_ARCH_2
-PERF_BR_ARM64_DEBUG_EXIT     PERF_BR_NEW_ARCH_3
-PERF_BR_ARM64_DEBUG_INST     PERF_BR_NEW_ARCH_4
-PERF_BR_ARM64_DEBUG_DATA     PERF_BR_NEW_ARCH_5
-
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- include/uapi/linux/perf_event.h | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-index 193dba2ecdc1..4cf1c8e22cab 100644
---- a/include/uapi/linux/perf_event.h
-+++ b/include/uapi/linux/perf_event.h
-@@ -282,6 +282,12 @@ enum {
- 	PERF_BR_PRIV_HV		= 3,
- };
- 
-+#define PERF_BR_ARM64_FIQ		PERF_BR_NEW_ARCH_1
-+#define PERF_BR_ARM64_DEBUG_HALT	PERF_BR_NEW_ARCH_2
-+#define PERF_BR_ARM64_DEBUG_EXIT	PERF_BR_NEW_ARCH_3
-+#define PERF_BR_ARM64_DEBUG_INST	PERF_BR_NEW_ARCH_4
-+#define PERF_BR_ARM64_DEBUG_DATA	PERF_BR_NEW_ARCH_5
-+
- #define PERF_SAMPLE_BRANCH_PLM_ALL \
- 	(PERF_SAMPLE_BRANCH_USER|\
- 	 PERF_SAMPLE_BRANCH_KERNEL|\
--- 
-2.25.1
 
