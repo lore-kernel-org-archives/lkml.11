@@ -2,83 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D31C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFF4C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346925AbiCOKIS (ORCPT
+        id S1346934AbiCOKIk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
+        Tue, 15 Mar 2022 06:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241048AbiCOKIR (ORCPT
+        with ESMTP id S1346924AbiCOKIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:08:17 -0400
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1F24D631
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:07:05 -0700 (PDT)
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 8E45668AA6; Tue, 15 Mar 2022 11:07:01 +0100 (CET)
-Date:   Tue, 15 Mar 2022 11:07:01 +0100
-From:   "hch@lst.de" <hch@lst.de>
-To:     Sungup Moon <sungup.moon@samsung.com>
-Cc:     "hch@lst.de" <hch@lst.de>, "kbusch@kernel.org" <kbusch@kernel.org>,
-        "axboe@fb.com" <axboe@fb.com>,
-        "sagi@grimberg.me" <sagi@grimberg.me>,
-        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: (2) [PATCH v2] driver/nvme/host: Support duplicated nsid for
- the private ns
-Message-ID: <20220315100701.GA5639@lst.de>
-References: <20220315071230.GA2069@lst.de> <20220314110545epcms2p4a227eac7c4652445050e70ee2350635d@epcms2p4> <CGME20220314110545epcms2p4a227eac7c4652445050e70ee2350635d@epcms2p3> <20220315095612epcms2p304482f5160ae91a120d719c88dbe368d@epcms2p3>
+        Tue, 15 Mar 2022 06:08:40 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8E94D636
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:07:28 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id y142so1954677ybe.11
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:07:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=52KNiuJ+/FvHOPGcQ/6L99f2s1fjypA6SSoO7jVwNgQ=;
+        b=s2JYRuJJBxWjbhSdPxCdACGYkWysL+aTUVneClF2zw+pEl51Li0NO9p9imkbw1xdWS
+         ZtZld+ANq9QxAjqTYxp2tpCbvR+4QTNPchQfv4tTGcuHUbqXbrydTyULnO8rbtNwjqXt
+         c2m+tWOTT2JWwlyhj3zVlzR1taTrSgng/o+lKQZKo7eDDvCiPmzDRDwQ5SuygargY41d
+         FTWiNCufvO2sWwVEWWff7D/XbIgvZ1cIldYGnu5rgPgZNJtg5bJY3Qnj5P8IX1pE82z2
+         uxhgLmlT7eBJHmk6qwOQkk2+GdgrZD51ojTtViuiF7w8HUndyelh51nT5Bp19gMgnDI9
+         JF1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=52KNiuJ+/FvHOPGcQ/6L99f2s1fjypA6SSoO7jVwNgQ=;
+        b=uCzdGwZxZDGkbXVnO14Lv0JA9bGh86dXceG8GbethnncVCLYGN8YBZMdnNwhiEla9v
+         Kue63vbabamC4aAARa1icL4e9BtMXc5eDBGHhfqSuTm9JrofWWdTRSIVi/BzMrabPqyh
+         ywciidz6RO8CVmYEVOFh7sEUuhQS2EaxV9AMxB2gMAL9XGNa6vfpUKzL9qg+6pumdo38
+         M0y5krWMLVVmD528uANqUEEGFr9D7x7N59wjBuZTDo7NzJZxIZJ1YBlYLxYsIjSju2wf
+         uZmRnOlJskGY7RoDRLmFJLsQgsB9yAMXelKREvEpXnMOIH9IbKyDy4ERadM2YTCXr9Qh
+         p/Vw==
+X-Gm-Message-State: AOAM532OvRPhQUzZ8WLEt4pDlDFnJ2ilZOmYOQq6cyC9puYrrT+ms9/J
+        zraRn1huoGiBxkyY3DOuV2r22NkXj57EUXz/p8GsEA==
+X-Google-Smtp-Source: ABdhPJwlHBBJgzvpc8Xa+pOZNv8mCz2UQiQHFPG8CecgyadTVWhZfRtvh5n4J4eJS6qLBJDup09xD5KHh6yG2DS5r5A=
+X-Received: by 2002:a25:9846:0:b0:61a:3deb:4d39 with SMTP id
+ k6-20020a259846000000b0061a3deb4d39mr22471047ybo.537.1647338847141; Tue, 15
+ Mar 2022 03:07:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315095612epcms2p304482f5160ae91a120d719c88dbe368d@epcms2p3>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+References: <20220314145920.247358804@linuxfoundation.org>
+In-Reply-To: <20220314145920.247358804@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 15 Mar 2022 15:37:15 +0530
+Message-ID: <CA+G9fYsdmbeT_uEw618vCRqrizOKKDP1BoddKYgScQF5Muww5w@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/29] 4.19.235-rc2 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 06:56:12PM +0900, Sungup Moon wrote:
-> I'll answer your opinion.
-> 
-> 1. ns_head leak issue
-> 
-> I don't think that is leaked ns_head. Because although all ids and nsid are same
-> through all namespaces, each namespaces are indenpendent namespace and each of that
-> should have independent data structure.
-> Duplicated nsid private namespace is different from the shared namespace even though
-> same information.
+On Mon, 14 Mar 2022 at 20:30, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.235 release.
+> There are 29 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 16 Mar 2022 14:59:12 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.19.235-rc2.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-In your patch if nvme_find_ns_head returns a head for a private namespace
-with a non-uniqueue ID, that returned head already has an additional
-reference, which we'll never drop as the head variable is overriden just
-below.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-> 2. nvme_mpath_set_disk_name issue
-> 
-> Yes, I also agree that subsystem-wide IDA is very important data. However, I
-> implemented without nvme_mpath_set_disk_name modification at the first time, it is
-> hard to decide which namespace are connected to private controller.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-It is not just very important, it can't work without that.  The two
-separate IDAs can will have conflicts, so you can up with two namespaces
-with the same name without that change.
+## Build
+* kernel: 4.19.235-rc2
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-4.19.y
+* git commit: 4401d649cac2c3bf2cca0caf51a27f17b4f8bc26
+* git describe: v4.19.234-30-g4401d649cac2
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
+.234-30-g4401d649cac2
 
-> As you know, each nvme controller start initiating at a time. So, each controller
-> structures are sequentially initiated, but each namespaces structures are initiated
-> independently because of multi-processing on cpu. So, all namespace can have different
-> instance number every boot-up time, and it makes hard to track and control the private
-> namespace on the controller or device failure.
+## Test Regressions (compared to v4.19.233-19-g83f8068e02bc)
+No test regressions found.
 
-Yes, but that is true of all Linux device enumeration.  That is why
-everyone should use table identifiers like the UUID or GUID to identify
-the namespaces.
+## Metric Regressions (compared to v4.19.233-19-g83f8068e02bc)
+No metric regressions found.
 
-> Anyway, the private namespace is same condition with no-multipath situation (because
-> private namespace cannot shared between controllers) so I think that the private
-> namespace should follow the naming rule with no-multipath situation.
+## Test Fixes (compared to v4.19.233-19-g83f8068e02bc)
+No test fixes found.
 
-We can't use the non-multipath cabale naming as it will cause conflicts
-in the naming.  If anything in the system supports multipathing we have
-to use subsystem based instances for the naming.
+## Metric Fixes (compared to v4.19.233-19-g83f8068e02bc)
+No metric fixes found.
+
+## Test result summary
+total: 73008, pass: 60870, fail: 357, skip: 10332, xfail: 1449
+
+## Build Summary
+* arm: 281 total, 275 passed, 6 failed
+* arm64: 39 total, 39 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 27 total, 27 passed, 0 failed
+* powerpc: 60 total, 49 passed, 11 failed
+* s390: 12 total, 12 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 38 total, 38 passed, 0 failed
+
+## Test suites summary
+* fwts
+* kselftest-android
+* kselftest-bpf
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
