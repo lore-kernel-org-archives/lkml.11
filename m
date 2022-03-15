@@ -2,231 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5711CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:22:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB82C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241094AbiCOQXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
+        id S241737AbiCOQYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 12:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239900AbiCOQXo (ORCPT
+        with ESMTP id S239900AbiCOQYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:23:44 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF27156777;
-        Tue, 15 Mar 2022 09:22:31 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22FGEQbg019652;
-        Tue, 15 Mar 2022 16:21:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=UW+pjKjsIWdwIjUe8EKCM7nF6A55i4kkxk6KEUWHHTw=;
- b=VOEhXfV24hITYknHaw/91LuBkl5CFArG8mxjFbgCMaObzXkpr8ceek5tHxjI0OQBtUEk
- 8tCGGJ8saE0Ycxh/pGbhMujl/nzzGGRkoH8E67+Kg5MpPpv6SQsFUwu6Ue7Em/d1VsjL
- SRyNuSVTaBGZyUd6FNkzcYQ26+d18Br/wKuxZb14JpVnMBjL3dnPz3ZM2vBp1ycYMb/6
- A/bcSMWEa0Zgfeqcxp7kbTKb04ih3AdPtxsCdJbl3UJNxmYhLOBm+I6J322vwsZhTfci
- 8aGv75kavHaK6ldEgH60zyuOQSE9jyk4PoZDaYC+wqSa3u4WT7uX8fshnnky85VjXo7/ 1A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3etvbmbbtx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Mar 2022 16:21:13 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22FGEq1i024701;
-        Tue, 15 Mar 2022 16:21:13 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3etvbmbbs1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Mar 2022 16:21:12 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22FFxLUG017851;
-        Tue, 15 Mar 2022 16:21:10 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma01fra.de.ibm.com with ESMTP id 3erk58p0g5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Mar 2022 16:21:10 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22FGL6rF27066832
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 16:21:06 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4BC08AE055;
-        Tue, 15 Mar 2022 16:21:06 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8EE82AE045;
-        Tue, 15 Mar 2022 16:21:04 +0000 (GMT)
-Received: from thinkpad (unknown [9.171.6.24])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Tue, 15 Mar 2022 16:21:04 +0000 (GMT)
-Date:   Tue, 15 Mar 2022 17:21:02 +0100
-From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, linux-mm@kvack.org,
-        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v1 5/7] s390/pgtable: support
- __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-Message-ID: <20220315172102.771bd2cf@thinkpad>
-In-Reply-To: <20220315141837.137118-6-david@redhat.com>
-References: <20220315141837.137118-1-david@redhat.com>
-        <20220315141837.137118-6-david@redhat.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Tue, 15 Mar 2022 12:24:15 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9761B5F66
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:23:01 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <a.fatoum@pengutronix.de>)
+        id 1nU9wq-0001IY-Bn; Tue, 15 Mar 2022 17:23:00 +0100
+Message-ID: <c22a0f1c-883d-5122-ef88-0d7c57ab4e66@pengutronix.de>
+Date:   Tue, 15 Mar 2022 17:23:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Possible performance regression with CONFIG_SQUASHFS_DECOMP_SINGLE
+To:     squashfs-devel@lists.sourceforge.net,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: eRCSI5w-tlE5sK1rQh4ufLQ4p6TxCS6h
-X-Proofpoint-ORIG-GUID: 7RtkXXw2cQTrBuz4kjlLUBH_amFhVLPx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-15_03,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- priorityscore=1501 clxscore=1011 phishscore=0 mlxlogscore=999
- lowpriorityscore=0 malwarescore=0 spamscore=0 impostorscore=0
- suspectscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203150102
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 15:18:35 +0100
-David Hildenbrand <david@redhat.com> wrote:
+Hello,
 
-> Let's steal one bit from the offset. While at it, document the meaning
-> of bit 62 for swap ptes.
+This an issue we had with v5.15 that we have since successfully worked around.
+I am reporting it here as a pointer in case someone else runs into this and as
+a heads up that there seems to be an underlying performance regression, so
+here it goes:
 
-You define _PAGE_SWP_EXCLUSIVE as _PAGE_LARGE, which is bit 52, and
-this is not part of the swap pte offset IIUC. So stealing any bit might
-actually not be necessary, see below.
+We have an i.MX8MM (4x Cortex-A53) system with squashfs on eMMC as a root file
+system. The system originally ran NXP's "imx_5.4.24_2.1.0" which has about
+5000 patches on top of upstream v5.4.24 including PREEMPT_RT.
 
-Also, bit 62 should be the soft dirty bit for normal PTEs, and this
-doesn't seem to be used for swap PTEs at all. But I might be missing
-some use case where softdirty also needs to be preserved in swap PTEs.
+The system was updated to mainline Linux + PREEMPT_RT and boot time suffered
+considerably growing from 40s with vendor kernel to 1m20s with mainline-based
+kernel.
 
-> 
-> Signed-off-by: David Hildenbrand <david@redhat.com>
-> ---
->  arch/s390/include/asm/pgtable.h | 37 ++++++++++++++++++++++++++-------
->  1 file changed, 30 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/s390/include/asm/pgtable.h b/arch/s390/include/asm/pgtable.h
-> index 008a6c856fa4..c182212a2b44 100644
-> --- a/arch/s390/include/asm/pgtable.h
-> +++ b/arch/s390/include/asm/pgtable.h
-> @@ -181,6 +181,8 @@ static inline int is_module_addr(void *addr)
->  #define _PAGE_SOFT_DIRTY 0x000
->  #endif
->  
-> +#define _PAGE_SWP_EXCLUSIVE _PAGE_LARGE	/* SW pte exclusive swap bit */
-> +
->  /* Set of bits not changed in pte_modify */
->  #define _PAGE_CHG_MASK		(PAGE_MASK | _PAGE_SPECIAL | _PAGE_DIRTY | \
->  				 _PAGE_YOUNG | _PAGE_SOFT_DIRTY)
-> @@ -796,6 +798,24 @@ static inline int pmd_protnone(pmd_t pmd)
->  }
->  #endif
->  
-> +#define __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-> +static inline pte_t pte_swp_mkexclusive(pte_t pte)
-> +{
-> +	pte_val(pte) |= _PAGE_SWP_EXCLUSIVE;
-> +	return pte;
-> +}
-> +
-> +static inline int pte_swp_exclusive(pte_t pte)
-> +{
-> +	return pte_val(pte) & _PAGE_SWP_EXCLUSIVE;
-> +}
-> +
-> +static inline pte_t pte_swp_clear_exclusive(pte_t pte)
-> +{
-> +	pte_val(pte) &= ~_PAGE_SWP_EXCLUSIVE;
-> +	return pte;
-> +}
-> +
->  static inline int pte_soft_dirty(pte_t pte)
->  {
->  	return pte_val(pte) & _PAGE_SOFT_DIRTY;
-> @@ -1675,16 +1695,19 @@ static inline int has_transparent_hugepage(void)
->   * information in the lowcore.
->   * Bits 54 and 63 are used to indicate the page type.
->   * A swap pte is indicated by bit pattern (pte & 0x201) == 0x200
-> - * This leaves the bits 0-51 and bits 56-62 to store type and offset.
-> - * We use the 5 bits from 57-61 for the type and the 52 bits from 0-51
-> + * This leaves the bits 0-50 and bits 56-61 to store type and offset.
-> + * We use the 5 bits from 57-61 for the type and the 51 bits from 0-50
->   * for the offset.
-> - * |			  offset			|01100|type |00|
-> - * |0000000000111111111122222222223333333333444444444455|55555|55566|66|
-> - * |0123456789012345678901234567890123456789012345678901|23456|78901|23|
-> + * |			  offset		       |E|01100|type |S0|
-> + * |000000000011111111112222222222333333333344444444445|5|55555|55566|66|
-> + * |012345678901234567890123456789012345678901234567890|1|23456|78901|23|
-> + *
-> + * S (bit 62) is used for softdirty tracking.
+The slowdown on mainline was reproducible for all scheduling models (with
+or without PREEMPT_RT) except for PREEMPT_NONE, which was back at 40s.
 
-Unless there is some use for softdirty tracking in swap PTEs, I think
-this description does not belong here, to the swap PTE layout.
+The services most impacted by the slowdown were C++ applications with many
+shared libraries dynamically loaded from the rootfs.
 
-> + * E (bit 51) is used to remember PG_anon_exclusive.
+Looking through the original kernel configuration we found that it has
+CONFIG_SQUASHFS_DECOMP_SINGLE=y and CONFIG_SQUASHFS_FILE_CACHE=y.
 
-It is bit 52, at least with this patch, so I guess this could all be
-done w/o stealing anything. That is, of course, only if it is allowed
-to use bit 52 in this case. The POP says bit 52 has to be 0, or else
-a "translation-specification exception" is recognized. However, I think
-it could be OK for PTEs marked as invalid, like it is the case for swap
-PTEs.
+Once changed to CONFIG_SQUASHFS_FILE_DIRECT=y and
+CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y, we were below 40s as we want.
 
-The comment here says at the beginning:
-/*
- * 64 bit swap entry format:
- * A page-table entry has some bits we have to treat in a special way.
- * Bits 52 and bit 55 have to be zero, otherwise a specification
- * exception will occur instead of a page translation exception. The
- * specification exception has the bad habit not to store necessary
- * information in the lowcore.
+That's clearly the preferred configuration and it resolves our problem
+It doesn't solve the underlying issue though:
 
-This would mean that it is not OK to have bit 52 not zero for swap PTEs.
-But if I read the POP correctly, all bits except for the DAT-protection
-would be ignored for invalid PTEs, so maybe this comment needs some update
-(for both bits 52 and also 55).
+  - CONFIG_PREEMPT_VOLUNTARY performs much worse than CONFIG_PREEMPT_NONE
+    for some workloads when CONFIG_SQUASHFS_DECOMP_SINGLE=y
 
-Heiko might also have some more insight.
+  - And this might not have been the case with v5.4. Unfortunately we can't
+    bisect, because there wasn't enough i.MX8MM support mainline back then
+    to boot the system. Earliest mainline-based kernel we reproduced this on
+    was v5.11.
 
-Anyway, stealing bit 51 might still be an option, but then
-_PAGE_SWP_EXCLUSIVE would need to be defined appropriately.
+TL;DR: Check if CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y in your configuration
+
+Cheers,
+Ahmad
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
