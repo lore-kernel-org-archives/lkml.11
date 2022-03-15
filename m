@@ -2,84 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79DF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 06:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79292C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 06:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345226AbiCOGdH (ORCPT
+        id S1345228AbiCOGdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 02:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36888 "EHLO
+        Tue, 15 Mar 2022 02:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345230AbiCOGcz (ORCPT
+        with ESMTP id S1345231AbiCOGdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 02:32:55 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31C14A3F6;
-        Mon, 14 Mar 2022 23:31:42 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22F3M3Dn021977;
-        Tue, 15 Mar 2022 05:02:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=mmXx/wyVMz9ehfry6mGcafZhCzbcd2rWgC9pmyVkFkk=;
- b=0FN7NCCytyY1CJBlAnDjN3ZuSNx+yd09hFzT+lLas8MVqc3t+y5fzzPCA/Vf5R7iP4yo
- 9Y74HRrOt/u/Uhdyclt7DykeiiK+p1KHvtyvm8vPKFZFij8kZAC9DvbmGp+xziT6B8Vc
- ZUY9bVi7rDtH7qEDKsDwlCEDIhtvoJW4NF6XKA7ZmNKpvFEfk/VThb4zy9T+g/adfShE
- PzYTYIQS05ja+HYEoVYWRRa/1yPgmPdQI9Dk+9vo4ib6/T3Qr8wjwnLIaf8tzG0TMplW
- boDdjh4u2URRTn97CYYMUh9N52dUL4HsgzBluM/cjJNprrjkP9u/nUyHwxyGJp99O676 Gw== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3et60r9y1q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 05:02:40 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 22F51JUb004847;
-        Tue, 15 Mar 2022 05:02:39 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3erhy25wub-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 05:02:39 +0000
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 22F52cq5007094;
-        Tue, 15 Mar 2022 05:02:39 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3erhy25wts-2;
-        Tue, 15 Mar 2022 05:02:39 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     hare@suse.de, Jianglei Nie <niejianglei2021@163.com>,
-        jejb@linux.ibm.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] scsi: libfc: Fix use after free in fc_exch_abts_resp()
-Date:   Tue, 15 Mar 2022 01:02:32 -0400
-Message-Id: <164732052813.23186.105308943748760649.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220303015115.459778-1-niejianglei2021@163.com>
-References: <20220303015115.459778-1-niejianglei2021@163.com>
+        Tue, 15 Mar 2022 02:33:13 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C524A927
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 23:32:00 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id h126so35397632ybc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 23:32:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bC/2gCrAoQ2lchEZ5qkbyu3pFJoZ4KVQMge0RpKDA9Q=;
+        b=dfcISV5u5AKS+WLviKJJ9yxoVPnO9wGv3w6PnUxuoXTV7+6LK0J+AIDXJDHkKhQ1d3
+         ir6uUEJHl2lTMTzGfQ0qv4SihDkwnbHGFio5F08ow//yVlO0GyRAkQCWUvQr6EJAViUF
+         mTM/bhkCkRkrqRws+5KsKd3yunwnf+yK6LEqgvuLBqG+fkYWNsWtBxbVEkW0i7HIkE3k
+         8RYmRJh6Kx626bqgB9yV9sN8dxg72CptSuajdMoO7TrMDReqg7vuR9iMtIq2iHJDDzKB
+         fFYTc1c7xV6WTwDEsXZqb708FyiZ86CZ+m3OBm/KqyC2BsHFIN0LMe60dv7oI1vH+MvM
+         pM8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bC/2gCrAoQ2lchEZ5qkbyu3pFJoZ4KVQMge0RpKDA9Q=;
+        b=A+49+JhPbGZuzXRXNkBZaI7COvWmTCLu4gXh/OFavTllVe/t+1wzshk4/8szUzWfCz
+         pPj5yPUH5Q6AlOS4h6OoYJPECQL1x5lUd+sUpFa5WuWQFTO60G+8NCi7oUf2KDJrfPYl
+         iZYTto+D+CNefmzUK8trzk6yzs4MjEQ8pvgQNJsNW0xtja696pibRQL5W/2wtAGKGJmV
+         ODBUI0BsGcPTnSNCJ0kCkWo0FUlMHZKQc6NUfwIjtIzXG0/x8irJvEwGKj8LACXJnIh0
+         tpAWDGnggNlXwTf20Ij7EILqd90bCUzJBaHD64811PsiZ8I/T27nbfSm4oKNfU1SSje4
+         FYdw==
+X-Gm-Message-State: AOAM532DnIMAw6qGEZWEmlDAFUZN/h6dcPWwym9KSk0qr4Zrf0aY8UsB
+        yrz2foyFM9YcSqIws9pVPN7bSvrJ/iLyQEhoM/y2NLNn04aEPLvr
+X-Google-Smtp-Source: ABdhPJwczPmgdFMqwJ3G7OLF06gZjRwRikJpmCznYjngqHJyY2IZLI8W8Tn326sJ0ZeUmBltKZ0joGqM34rnuAFylzM=
+X-Received: by 2002:a25:9846:0:b0:61a:3deb:4d39 with SMTP id
+ k6-20020a259846000000b0061a3deb4d39mr21859369ybo.537.1647325919690; Mon, 14
+ Mar 2022 23:31:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: lCP9KMjawGnv-9AMLq_C4YB7byUd88FD
-X-Proofpoint-ORIG-GUID: lCP9KMjawGnv-9AMLq_C4YB7byUd88FD
+References: <20220314112737.929694832@linuxfoundation.org>
+In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 15 Mar 2022 12:01:47 +0530
+Message-ID: <CA+G9fYutPYhZ9nbYeZ2-ttdJ4fbbCj=hEhUr_3NodYVTPH5Wqw@mail.gmail.com>
+Subject: Re: [PATCH 5.10 00/71] 5.10.106-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 3 Mar 2022 09:51:15 +0800, Jianglei Nie wrote:
+On Mon, 14 Mar 2022 at 17:31, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.10.106 release.
+> There are 71 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.10.106-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.10.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-> fc_exch_release(ep) will decrease the ep's reference count. When the
-> reference count reaches zero, it is freed. But ep is still used in the
-> following code, which will lead to a use after free.
-> 
-> We should return the function after the call of fc_exch_release() to
-> avoid use after free.
-> 
-> [...]
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Applied to 5.18/scsi-queue, thanks!
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-[1/1] scsi: libfc: Fix use after free in fc_exch_abts_resp()
-      https://git.kernel.org/mkp/scsi/c/271add11994b
+## Build
+* kernel: 5.10.106-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.10.y
+* git commit: 1ef0e2b3149031c288a85198919cc1778754e515
+* git describe: v5.10.105-72-g1ef0e2b31490
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
+.105-72-g1ef0e2b31490
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+## Test Regressions (compared to v5.10.105)
+No test regressions found.
+
+## Metric Regressions (compared to v5.10.105)
+No metric regressions found.
+
+## Test Fixes (compared to v5.10.105)
+No test fixes found.
+
+## Metric Fixes (compared to v5.10.105)
+No metric fixes found.
+
+## Test result summary
+total: 95856, pass: 82843, fail: 543, skip: 11705, xfail: 765
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 291 total, 291 passed, 0 failed
+* arm64: 41 total, 41 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 40 total, 40 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 37 total, 37 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 60 total, 46 passed, 14 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 41 total, 41 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-bpf
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
