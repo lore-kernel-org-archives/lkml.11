@@ -2,183 +2,315 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4951FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348514AbiCONFL (ORCPT
+        id S1348531AbiCONGB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 09:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52772 "EHLO
+        Tue, 15 Mar 2022 09:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238074AbiCONFH (ORCPT
+        with ESMTP id S242105AbiCONF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 09:05:07 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E2F35DE5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 06:03:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647349434; x=1678885434;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Og5007/yax74F7mTPuGmY7Dr9RZENppU/9CL0MTRpjM=;
-  b=H9NGdzVvL2HKa9gyADMxYMZA3KhXVzvEYklMGQZNZlPuFggD/PzIIREQ
-   aAQfc9+C8H8NLRcDbDgmYz5WHXp2ZBgNAL3pxDJveZWNQWGhMUdwvep66
-   zudVeb+zY2yRDSXoYsETmyU8dsaqMr2qOPEaPzyKE5AngCegoyyB8Xgf/
-   fZT9A/Ovb8BjqV8qvTfAAItbjy6Sm2xEEthbBbn7ZfwXBmp9JuQzHPits
-   aGY1+VOOa+5wmtEqAo0Voz7ukgK8jf8cxivmYB3+TufRbP2gy1JFf9O96
-   Edd0Xm0EvPCiwxn3op8CbfPo7xV86LysRrY2w64zjEoHj8PhB4z7ShRFL
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236896464"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="236896464"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 06:03:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="819792584"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 15 Mar 2022 06:03:52 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU6q8-000Azi-0T; Tue, 15 Mar 2022 13:03:52 +0000
-Date:   Tue, 15 Mar 2022 21:03:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Palmer <daniel@0x0f.com>, broonie@kernel.org,
-        tiwai@suse.com, arnaud.pouliquen@st.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Daniel Palmer <daniel@0x0f.com>
-Subject: Re: [PATCH] ASoC: sti: sti_uniperif: Remove driver
-Message-ID: <202203152101.Ld99AKpt-lkp@intel.com>
-References: <20220315091319.3351522-1-daniel@0x0f.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        Tue, 15 Mar 2022 09:05:59 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2101.outbound.protection.outlook.com [40.107.215.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8881836B7E;
+        Tue, 15 Mar 2022 06:04:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kSYUcQBgI528+6UADNk/qqWFTLoZlrN8+mp4wj+PA0F2fvbJLM+WgtqlGl2YfMvZwdZnADJsH+yOl405kXole4CWtyDIBfy2i+JPJsXJ/hBkRzfSyPSAn8EQHJuzzPkoR9MDgt5tvNGWudkVlJTYX///BJe12sYv9oELioM6DCmr7tMrqQfpChYNOgze7Y1kA9T7XOAZTtap5e+9ZORIxMUu1TW6Ex1jhfwJK8JwqMUzAvYIa3P7Ejv7pOSnBj8Dgrvm3kXH4NaPuqPrp3Ysdmn/kc6sAlCAiDg+jmSv/4YvqVcuBFQe976BZc3TQVslXV69edm/Yehmcq2fvXmunA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=z4YoUmE3WzDSQZhdMQI1WpiPhAX/oDntsolql+Z8IDE=;
+ b=MUMFqUcoMT99UsJ88pFyYn1qIbrouqJUPqUr4PcqlFjRRRdFxYllmCG7nQNHQZE2ua3j888jmgNiSz1Af7in8zZfVFbC1te0v6hWwIMGlj7cZj9d0qXFsI76UiGWfQ4Hv9zVHDOEQo7+rR6LsbbS6au8UopGEGobPGb56S3JvRRX6DeoSMdzOr4EmccSi9StIJDdtIMMO3isV4tfwGc2RRil4pv/EC3iTrRjLiYEDpvLFxx/XwkBaBJk7B3r9yK0b26YrR9//4L5sXNUrPOQ3/J5ChWAF+CjFW4+2dxNXcR5FJ1ol4p5O3CgiB6oIIX1zpYpv7KSXpZ5CJRHzHc+ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z4YoUmE3WzDSQZhdMQI1WpiPhAX/oDntsolql+Z8IDE=;
+ b=hXv+cfsIIDr+fM8famu2aSiO3I/tOUYzRgqOlLriGAaPVGnTCaKQdHqhdT+muRHQMc5dd6AfekLIsgQCL3D5VlkHDGA50OzTjIC50CNAAxGJ0SdzRcawjte7IQvrLPXKujOkZknnrDDXR0eS8TPFmUXj6A7u2iuH4TD5NAIY8JQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
+ by SL2PR06MB3130.apcprd06.prod.outlook.com (2603:1096:100:36::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22; Tue, 15 Mar
+ 2022 13:04:41 +0000
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59]) by HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59%5]) with mapi id 15.20.5061.029; Tue, 15 Mar 2022
+ 13:04:41 +0000
+From:   Guo Zhengkui <guozhengkui@vivo.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Guo Zhengkui <guozhengkui@vivo.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Yucong Sun <sunyucong@gmail.com>,
+        Christy Lee <christylee@fb.com>,
+        Delyan Kratunov <delyank@fb.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     zhengkui_guo@outlook.com
+Subject: [PATCH v3] selftests/bpf: fix array_size.cocci warning
+Date:   Tue, 15 Mar 2022 21:01:26 +0800
+Message-Id: <20220315130143.2403-1-guozhengkui@vivo.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <ba71e22a-cf59-b2bd-50c0-d0c9fb3f4e08@iogearbox.net>
+References: <ba71e22a-cf59-b2bd-50c0-d0c9fb3f4e08@iogearbox.net>
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220315091319.3351522-1-daniel@0x0f.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR06CA0012.apcprd06.prod.outlook.com
+ (2603:1096:202:2e::24) To HK2PR06MB3492.apcprd06.prod.outlook.com
+ (2603:1096:202:2f::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 269b7e0a-2655-47a4-f5b2-08da06845e25
+X-MS-TrafficTypeDiagnostic: SL2PR06MB3130:EE_
+X-Microsoft-Antispam-PRVS: <SL2PR06MB313050E2B045CADEF519152DC7109@SL2PR06MB3130.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BG9s+YAqoU3E1Ar1+G/4s/QKSKFJ4tBPvV7OzzV5tJtW1o8rpMxhYqojnOa3dPR76jys7TVNFXlAFRBIhTBySwCt4NFrVSdegNQp2MorA5jmU/kDuVBLaLRQ60+7co/NDEmdb+RS+rqpjj+c4hTAJUpajnvTAI99VSgfIBtqjuUjMQSvaZ1so8GVAe9YWA93qhENv8bJATxuAKEmzFUHmlV49vWt8Z1syJXFqkziyBFTtwk4SCqRclXlOOppCMlA+lSvtCac0uPAOlC4yVSRNWTZFaGhAMm6gA6++RrYiZ3XFVWrZjN2lPD10fP4yZRGG9eYiNAk59eovwb9V5mIcc9gijzPb1MHjxcsQ4pAQD5nIuG3EYL9uofa96ly+anyzR3jyM34n7/TgDmqns5sEcHam8+RzJN0Lu9UdWfwZUKwPqE9kqlvcsp7Hpq5sv2W42XY9mUSRgSN0rYuuFBK+Li1DewSw63aX7oz2lx7AdK1BAvzu5ln1K3X+gUPtjgX2QMqps5JuyI62JscRNgIPo95/0fUVrgS9K20ymcrulwYK+VCVZvC6xKdrR4Ez/r3F4mX2D6TOXQBePSq8mnYCqDq7MudH8L4csiYeCgaZamNQwUClqkuFxjIiuWxBGW89N3u0k+GO0u8XFthHoPqG1pEyaMBqA42rGsgvpqaCUR1WcKEqkQCPVAEkvunEJOy2L8WyNHOEgoigDzhaS3Ez0dPjrbjlLZqcn1Zf3YjDOU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7416002)(8936002)(5660300002)(2906002)(52116002)(316002)(36756003)(6486002)(921005)(110136005)(38350700002)(38100700002)(1076003)(86362001)(508600001)(2616005)(186003)(26005)(8676002)(6666004)(6512007)(6506007)(66476007)(66556008)(66946007)(83380400001)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ScDlcFmfuefDTGoaXkAKR5P3dpp3v/LwMOwp0KGz3am+AK699UOlSCvRTD7e?=
+ =?us-ascii?Q?Jxp0gd8Jdks5BvFLN5jVYAQ7wTkQbbQnKkdbSjvSwpwsXE1n9SwFdxJJBrAW?=
+ =?us-ascii?Q?roj/Bo5eWIuikfUvRFAQagpGqlyInvUO2yPxzlE2PEZELLUU+g4xsPwZSe3K?=
+ =?us-ascii?Q?LC4OMHRJn5Ut1r6+P0JKvtWvjebI5koxYaNGY99pu+5Z/BBuJiS1akMl1Lju?=
+ =?us-ascii?Q?f9TK/BBrPNVwXK1+lltwUAkU3NcHvGF+0FoXoVHGsVKBOGhNQdNtxd/N3aGG?=
+ =?us-ascii?Q?9DaaA8lzDt/KEnUWVBEUc/qCNTpgR4NzlzaziNinncSRTRuyOg7iJDWlYPlo?=
+ =?us-ascii?Q?HrOaMMU5fUe9k+7AnP6BjzQUiTnQyYNgav2mvRegH4ZagTudrDwumW6JMNJ9?=
+ =?us-ascii?Q?PCkuL/X3wMIwazcxmwrp4pw1fp5Dt5Cl1oh3occTLe9Ka+QrfNYaOLg2UCUw?=
+ =?us-ascii?Q?q6wtAfQsjN+aTM4MFId9nOx7ujyp3ig8ilWPnSd6qyXwOedZ0HLfZzIDkULQ?=
+ =?us-ascii?Q?0czhUdQgqIfHqW65vslM53YzuJIuSTiF/jksLZBjmTIvuBYHNvTmdNTmp3ML?=
+ =?us-ascii?Q?yV4HFUVXds322dn6Wn8uFgjtxwbgvynDD56aL1GKdnZtohJ8MP7zINwiyXdP?=
+ =?us-ascii?Q?nZ/xhvL0KsSRrhM4LjjI3LuPwTnCfG3Wtfl8gNZCVCwTHOifQzLDtIeld7ar?=
+ =?us-ascii?Q?TT0Noc8+Da7elQyGRpMBxQbfo5hzgvGowk33fkOGpOrR7BE4QqTTduCvYReL?=
+ =?us-ascii?Q?6I24+NOghug8xIZqJCrAWZ2Sg0xjSBUrKuzZFF22Xp6FFSm7EvPU9DHjiBOk?=
+ =?us-ascii?Q?wQgREZZUa6uDSbMJKsQcNNrOfwljW4bdTSDHMcrU5Qa6CDIpwHScPujsv1lr?=
+ =?us-ascii?Q?RoSrcEwxTr5u8DTkk+pOM9yTA+osPWvdB/A3xb2Dvf/yhRdzFLCxp1yO3rZ8?=
+ =?us-ascii?Q?bZCP8S6L+YRW/QJzfsYpddXrUrUgLLPv48TOC9b9WGa4bDZ2XSvNqdhEZDVw?=
+ =?us-ascii?Q?L88iPz2U69o5MrUPC3CM+dyv3Lz8G4yqQUVnJsksSb2QIOqPIZGpN0GlZMFC?=
+ =?us-ascii?Q?SWbUM4q5Nc8o3RowholzhHbybldaOzb0snin5uVyUY5OuxJ9osoZvqbkJ0A0?=
+ =?us-ascii?Q?zhMqvxBVO9P4IUPDziTXvfVeTi02dQ2CD8NhbFUSJO4zILOaU3vthZ9fowkW?=
+ =?us-ascii?Q?mcfSfZnfarWQ085P1rJZsjGPWOUaHhYG87RWYehBEawVKt4gShz7Y9GJLjKI?=
+ =?us-ascii?Q?Xb5hfJWW0HPxtKYPLfnH37RvSs7BW7CCwYb2Qc/zYR7OhYN+0aVSZGI+mS3V?=
+ =?us-ascii?Q?iZbPtN+FG3LpbzDHBwTXa+TwPHzeQ8nkKg2kL+ziEoQPw7rG4zbRHmS83ekl?=
+ =?us-ascii?Q?IWReCPQM7T+UAat44KnkveervMNlEBvOAwFryVmBpmtfPUIBIPnVwAnoJyZr?=
+ =?us-ascii?Q?PMHYBA9kxZ0mRaChaFVKX5gToS2XZBqf?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 269b7e0a-2655-47a4-f5b2-08da06845e25
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 13:04:41.3529
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rt2YBaY2bcZt7Lajf8MWMHp81lT8onkwHfeh/0A790GHTrNCVxdZYUT9ErBGxDxEAK2L1F1AK+Pkx9CrwYlb8w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SL2PR06MB3130
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Fix the array_size.cocci warning in tools/testing/selftests/bpf/
 
-I love your patch! Yet something to improve:
+Use `ARRAY_SIZE(arr)` instead of forms like `sizeof(arr)/sizeof(arr[0])`.
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.17-rc8 next-20220310]
-[cannot apply to broonie-sound/for-next tiwai-sound/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+tools/testing/selftests/bpf/test_cgroup_storage.c uses ARRAY_SIZE() defined
+in tools/include/linux/kernel.h (sys/sysinfo.h -> linux/kernel.h), while
+others use ARRAY_SIZE() in bpf_util.h.
 
-url:    https://github.com/0day-ci/linux/commits/Daniel-Palmer/ASoC-sti-sti_uniperif-Remove-driver/20220315-171525
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
-config: x86_64-randconfig-a011-20220314
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6b2f50fb47da3baeee10b1906da6e30ac5d26ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/7970e4bb3de4ff810c1dafb8ac38d222d90ca071
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Daniel-Palmer/ASoC-sti-sti_uniperif-Remove-driver/20220315-171525
-        git checkout 7970e4bb3de4ff810c1dafb8ac38d222d90ca071
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=x86_64  randconfig
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 ARCH=x86_64 
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> sound/soc/Kconfig:86: can't open file "sound/soc/sti/Kconfig"
-   make[2]: *** [scripts/kconfig/Makefile:77: oldconfig] Error 1
-   make[1]: *** [Makefile:619: oldconfig] Error 2
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'oldconfig' not remade because of errors.
---
->> sound/soc/Kconfig:86: can't open file "sound/soc/sti/Kconfig"
-   make[2]: *** [scripts/kconfig/Makefile:77: olddefconfig] Error 1
-   make[1]: *** [Makefile:619: olddefconfig] Error 2
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'olddefconfig' not remade because of errors.
-
-
-vim +86 sound/soc/Kconfig
-
-89fe5117928b2c1 Takashi Iwai                 2008-05-23  25  
-89fe5117928b2c1 Takashi Iwai                 2008-05-23  26  config SND_SOC_AC97_BUS
-89fe5117928b2c1 Takashi Iwai                 2008-05-23  27  	bool
-89fe5117928b2c1 Takashi Iwai                 2008-05-23  28  
-28c4468b00a1e55 Lars-Peter Clausen           2013-04-15  29  config SND_SOC_GENERIC_DMAENGINE_PCM
-28c4468b00a1e55 Lars-Peter Clausen           2013-04-15  30  	bool
-b7ae6f31d8243ec Daniel Mack                  2013-08-12  31  	select SND_DMAENGINE_PCM
-28c4468b00a1e55 Lars-Peter Clausen           2013-04-15  32  
-6f0c42269f000b1 Jie Yang                     2015-10-13  33  config SND_SOC_COMPRESS
-6f0c42269f000b1 Jie Yang                     2015-10-13  34  	bool
-6f0c42269f000b1 Jie Yang                     2015-10-13  35  	select SND_COMPRESS_OFFLOAD
-6f0c42269f000b1 Jie Yang                     2015-10-13  36  
-78b50f39142612d Mark Brown                   2015-08-15  37  config SND_SOC_TOPOLOGY
-78b50f39142612d Mark Brown                   2015-08-15  38  	bool
-2635c226036c1bf Peter Ujfalusi               2021-07-26  39  	select SND_DYNAMIC_MINORS
-78b50f39142612d Mark Brown                   2015-08-15  40  
-b5fb388da472a69 Nico Pache                   2021-04-14  41  config SND_SOC_TOPOLOGY_KUNIT_TEST
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  42  	tristate "KUnit tests for SoC topology"
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  43  	depends on KUNIT
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  44  	depends on SND_SOC_TOPOLOGY
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  45  	default KUNIT_ALL_TESTS
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  46  	help
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  47  	  If you want to perform tests on ALSA SoC topology support say Y here.
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  48  
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  49  	  This builds a module which can be later manually loaded to run KUNIT
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  50  	  test cases against soc-topology.c API. This should be primarily used
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  51  	  by developers to test their changes to ASoC.
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  52  
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  53  	  Do note that it creates fake playback devices which do not interact
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  54  	  well with userspace. When running tests one may want to disable
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  55  	  userspace applications such as pulseaudio, to prevent unnecessary
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  56  	  problems.
-d52bbf747cfa8a2 Amadeusz Sławiński           2021-01-20  57  
-7feb2f786a46d34 Pierre-Louis Bossart         2017-10-12  58  config SND_SOC_ACPI
-7feb2f786a46d34 Pierre-Louis Bossart         2017-10-12  59  	tristate
-7feb2f786a46d34 Pierre-Louis Bossart         2017-10-12  60  
-0b34a3d03e2fa61 Mark Brown                   2008-12-16  61  # All the supported SoCs
-8f2fe346822419e Lars-Peter Clausen           2013-12-06  62  source "sound/soc/adi/Kconfig"
-7c31335a03b6aff Maruthi Srinivas Bayyavarapu 2016-01-08  63  source "sound/soc/amd/Kconfig"
-6c7425095c9ee23 Sedji Gaouaou                2008-10-03  64  source "sound/soc/atmel/Kconfig"
-4a161d235b68eb7 Manuel Lauss                 2008-07-09  65  source "sound/soc/au1x/Kconfig"
-c6aeb7de226dd08 Florian Meier                2013-11-22  66  source "sound/soc/bcm/Kconfig"
-0ed275eff31029c Alexander Shiyan             2012-08-21  67  source "sound/soc/cirrus/Kconfig"
-3a9cf8efd7b64f2 Rajeev Kumar                 2012-06-21  68  source "sound/soc/dwc/Kconfig"
-0b34a3d03e2fa61 Mark Brown                   2008-12-16  69  source "sound/soc/fsl/Kconfig"
-0bf750f4cbe1406 Andy Green                   2017-03-31  70  source "sound/soc/hisilicon/Kconfig"
-9af8381023e48bf Mark Brown                   2010-07-05  71  source "sound/soc/jz4740/Kconfig"
-f9b95980f87f021 apatard@mandriva.com         2010-05-31  72  source "sound/soc/kirkwood/Kconfig"
-14b947d9ced4f72 Damien.Horsley               2015-11-04  73  source "sound/soc/img/Kconfig"
-784cbf8ab4641c8 Jarkko Nikula                2013-11-21  74  source "sound/soc/intel/Kconfig"
-ee0bcaff109f36d Koro Chen                    2015-06-15  75  source "sound/soc/mediatek/Kconfig"
-6dc4fa179fb86d2 Jerome Brunet                2018-07-17  76  source "sound/soc/meson/Kconfig"
-009ad054b71b772 Dong Aisheng                 2011-07-21  77  source "sound/soc/mxs/Kconfig"
-734c2d4bb7cfcca Liam Girdwood                2006-10-12  78  source "sound/soc/pxa/Kconfig"
-6a328885896ef08 Kenneth Westfield            2015-03-13  79  source "sound/soc/qcom/Kconfig"
-4495c89fcf2624d Jianqun Xu                   2014-07-05  80  source "sound/soc/rockchip/Kconfig"
-5033f43c6675429 Jassi Brar                   2010-11-22  81  source "sound/soc/samsung/Kconfig"
-aef3b06ac69783d Manuel Lauss                 2007-05-14  82  source "sound/soc/sh/Kconfig"
-7e978fa37df7f77 Liam Girdwood                2019-04-12  83  source "sound/soc/sof/Kconfig"
-e58070ee4fdf797 Rajeev Kumar                 2013-06-10  84  source "sound/soc/spear/Kconfig"
-42fea318e1d19c0 Baolin Wang                  2019-01-29  85  source "sound/soc/sprd/Kconfig"
-1e6babb417f76bd Arnaud Pouliquen             2015-07-16 @86  source "sound/soc/sti/Kconfig"
-3e086edfe0c73da olivier moysan               2017-04-10  87  source "sound/soc/stm/Kconfig"
-45fb6b6f2aa3f6b Emilio López                 2015-09-12  88  source "sound/soc/sunxi/Kconfig"
-8b75d714a6ae644 Stephen Warren               2011-01-07  89  source "sound/soc/tegra/Kconfig"
-f2055e145f2975a Peter Ujfalusi               2018-12-17  90  source "sound/soc/ti/Kconfig"
-3a47b1dfa291303 Katsuhiro Suzuki             2017-11-22  91  source "sound/soc/uniphier/Kconfig"
-3592b7f69a54388 Ola Lilja                    2012-05-08  92  source "sound/soc/ux500/Kconfig"
-33f8db9a89200c1 Maruthi Srinivas Bayyavarapu 2018-12-08  93  source "sound/soc/xilinx/Kconfig"
-57b7068de5d0cca Max Filippov                 2014-12-26  94  source "sound/soc/xtensa/Kconfig"
-8dafc0fb49b903c Frank Mandarino              2006-10-06  95  
-
+Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ .../selftests/bpf/prog_tests/cgroup_attach_autodetach.c     | 2 +-
+ .../testing/selftests/bpf/prog_tests/cgroup_attach_multi.c  | 2 +-
+ .../selftests/bpf/prog_tests/cgroup_attach_override.c       | 2 +-
+ tools/testing/selftests/bpf/prog_tests/global_data.c        | 6 +++---
+ tools/testing/selftests/bpf/prog_tests/obj_name.c           | 2 +-
+ tools/testing/selftests/bpf/test_cgroup_storage.c           | 2 +-
+ tools/testing/selftests/bpf/test_lru_map.c                  | 4 ++--
+ tools/testing/selftests/bpf/test_sock_addr.c                | 6 +++---
+ tools/testing/selftests/bpf/test_sockmap.c                  | 4 ++--
+ 9 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c
+index 858916d11e2e..9367bd2f0ae1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c
++++ b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_autodetach.c
+@@ -14,7 +14,7 @@ static int prog_load(void)
+ 		BPF_MOV64_IMM(BPF_REG_0, 1), /* r0 = 1 */
+ 		BPF_EXIT_INSN(),
+ 	};
+-	size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
++	size_t insns_cnt = ARRAY_SIZE(prog);
+ 
+ 	return bpf_test_load_program(BPF_PROG_TYPE_CGROUP_SKB,
+ 			       prog, insns_cnt, "GPL", 0,
+diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
+index 38b3c47293da..db0b7bac78d1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
++++ b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_multi.c
+@@ -63,7 +63,7 @@ static int prog_load_cnt(int verdict, int val)
+ 		BPF_MOV64_IMM(BPF_REG_0, verdict), /* r0 = verdict */
+ 		BPF_EXIT_INSN(),
+ 	};
+-	size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
++	size_t insns_cnt = ARRAY_SIZE(prog);
+ 	int ret;
+ 
+ 	ret = bpf_test_load_program(BPF_PROG_TYPE_CGROUP_SKB,
+diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c
+index 356547e849e2..9421a5b7f4e1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c
++++ b/tools/testing/selftests/bpf/prog_tests/cgroup_attach_override.c
+@@ -16,7 +16,7 @@ static int prog_load(int verdict)
+ 		BPF_MOV64_IMM(BPF_REG_0, verdict), /* r0 = verdict */
+ 		BPF_EXIT_INSN(),
+ 	};
+-	size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
++	size_t insns_cnt = ARRAY_SIZE(prog);
+ 
+ 	return bpf_test_load_program(BPF_PROG_TYPE_CGROUP_SKB,
+ 			       prog, insns_cnt, "GPL", 0,
+diff --git a/tools/testing/selftests/bpf/prog_tests/global_data.c b/tools/testing/selftests/bpf/prog_tests/global_data.c
+index 6fb3d3155c35..027685858925 100644
+--- a/tools/testing/selftests/bpf/prog_tests/global_data.c
++++ b/tools/testing/selftests/bpf/prog_tests/global_data.c
+@@ -29,7 +29,7 @@ static void test_global_data_number(struct bpf_object *obj, __u32 duration)
+ 		{ "relocate .rodata reference", 10, ~0 },
+ 	};
+ 
+-	for (i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
++	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+ 		err = bpf_map_lookup_elem(map_fd, &tests[i].key, &num);
+ 		CHECK(err || num != tests[i].num, tests[i].name,
+ 		      "err %d result %llx expected %llx\n",
+@@ -58,7 +58,7 @@ static void test_global_data_string(struct bpf_object *obj, __u32 duration)
+ 		{ "relocate .bss reference",    4, "\0\0hello" },
+ 	};
+ 
+-	for (i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
++	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+ 		err = bpf_map_lookup_elem(map_fd, &tests[i].key, str);
+ 		CHECK(err || memcmp(str, tests[i].str, sizeof(str)),
+ 		      tests[i].name, "err %d result \'%s\' expected \'%s\'\n",
+@@ -92,7 +92,7 @@ static void test_global_data_struct(struct bpf_object *obj, __u32 duration)
+ 		{ "relocate .data reference",   3, { 41, 0xeeeeefef, 0x2111111111111111ULL, } },
+ 	};
+ 
+-	for (i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
++	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+ 		err = bpf_map_lookup_elem(map_fd, &tests[i].key, &val);
+ 		CHECK(err || memcmp(&val, &tests[i].val, sizeof(val)),
+ 		      tests[i].name, "err %d result { %u, %u, %llu } expected { %u, %u, %llu }\n",
+diff --git a/tools/testing/selftests/bpf/prog_tests/obj_name.c b/tools/testing/selftests/bpf/prog_tests/obj_name.c
+index 6194b776a28b..7093edca6e08 100644
+--- a/tools/testing/selftests/bpf/prog_tests/obj_name.c
++++ b/tools/testing/selftests/bpf/prog_tests/obj_name.c
+@@ -20,7 +20,7 @@ void test_obj_name(void)
+ 	__u32 duration = 0;
+ 	int i;
+ 
+-	for (i = 0; i < sizeof(tests) / sizeof(tests[0]); i++) {
++	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+ 		size_t name_len = strlen(tests[i].name) + 1;
+ 		union bpf_attr attr;
+ 		size_t ncopy;
+diff --git a/tools/testing/selftests/bpf/test_cgroup_storage.c b/tools/testing/selftests/bpf/test_cgroup_storage.c
+index 5b8314cd77fd..d6a1be4d8020 100644
+--- a/tools/testing/selftests/bpf/test_cgroup_storage.c
++++ b/tools/testing/selftests/bpf/test_cgroup_storage.c
+@@ -36,7 +36,7 @@ int main(int argc, char **argv)
+ 		BPF_MOV64_REG(BPF_REG_0, BPF_REG_1),
+ 		BPF_EXIT_INSN(),
+ 	};
+-	size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
++	size_t insns_cnt = ARRAY_SIZE(prog);
+ 	int error = EXIT_FAILURE;
+ 	int map_fd, percpu_map_fd, prog_fd, cgroup_fd;
+ 	struct bpf_cgroup_storage_key key;
+diff --git a/tools/testing/selftests/bpf/test_lru_map.c b/tools/testing/selftests/bpf/test_lru_map.c
+index 6e6235185a86..563bbe18c172 100644
+--- a/tools/testing/selftests/bpf/test_lru_map.c
++++ b/tools/testing/selftests/bpf/test_lru_map.c
+@@ -878,11 +878,11 @@ int main(int argc, char **argv)
+ 	assert(nr_cpus != -1);
+ 	printf("nr_cpus:%d\n\n", nr_cpus);
+ 
+-	for (f = 0; f < sizeof(map_flags) / sizeof(*map_flags); f++) {
++	for (f = 0; f < ARRAY_SIZE(map_flags); f++) {
+ 		unsigned int tgt_free = (map_flags[f] & BPF_F_NO_COMMON_LRU) ?
+ 			PERCPU_FREE_TARGET : LOCAL_FREE_TARGET;
+ 
+-		for (t = 0; t < sizeof(map_types) / sizeof(*map_types); t++) {
++		for (t = 0; t < ARRAY_SIZE(map_types); t++) {
+ 			test_lru_sanity0(map_types[t], map_flags[f]);
+ 			test_lru_sanity1(map_types[t], map_flags[f], tgt_free);
+ 			test_lru_sanity2(map_types[t], map_flags[f], tgt_free);
+diff --git a/tools/testing/selftests/bpf/test_sock_addr.c b/tools/testing/selftests/bpf/test_sock_addr.c
+index f0c8d05ba6d1..f3d5d7ac6505 100644
+--- a/tools/testing/selftests/bpf/test_sock_addr.c
++++ b/tools/testing/selftests/bpf/test_sock_addr.c
+@@ -723,7 +723,7 @@ static int xmsg_ret_only_prog_load(const struct sock_addr_test *test,
+ 		BPF_MOV64_IMM(BPF_REG_0, rc),
+ 		BPF_EXIT_INSN(),
+ 	};
+-	return load_insns(test, insns, sizeof(insns) / sizeof(struct bpf_insn));
++	return load_insns(test, insns, ARRAY_SIZE(insns));
+ }
+ 
+ static int sendmsg_allow_prog_load(const struct sock_addr_test *test)
+@@ -795,7 +795,7 @@ static int sendmsg4_rw_asm_prog_load(const struct sock_addr_test *test)
+ 		BPF_EXIT_INSN(),
+ 	};
+ 
+-	return load_insns(test, insns, sizeof(insns) / sizeof(struct bpf_insn));
++	return load_insns(test, insns, ARRAY_SIZE(insns));
+ }
+ 
+ static int recvmsg4_rw_c_prog_load(const struct sock_addr_test *test)
+@@ -858,7 +858,7 @@ static int sendmsg6_rw_dst_asm_prog_load(const struct sock_addr_test *test,
+ 		BPF_EXIT_INSN(),
+ 	};
+ 
+-	return load_insns(test, insns, sizeof(insns) / sizeof(struct bpf_insn));
++	return load_insns(test, insns, ARRAY_SIZE(insns));
+ }
+ 
+ static int sendmsg6_rw_asm_prog_load(const struct sock_addr_test *test)
+diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
+index 1ba7e7346afb..dfb4f5c0fcb9 100644
+--- a/tools/testing/selftests/bpf/test_sockmap.c
++++ b/tools/testing/selftests/bpf/test_sockmap.c
+@@ -1786,7 +1786,7 @@ static int populate_progs(char *bpf_file)
+ 		i++;
+ 	}
+ 
+-	for (i = 0; i < sizeof(map_fd)/sizeof(int); i++) {
++	for (i = 0; i < ARRAY_SIZE(map_fd); i++) {
+ 		maps[i] = bpf_object__find_map_by_name(obj, map_names[i]);
+ 		map_fd[i] = bpf_map__fd(maps[i]);
+ 		if (map_fd[i] < 0) {
+@@ -1867,7 +1867,7 @@ static int __test_selftests(int cg_fd, struct sockmap_options *opt)
+ 	}
+ 
+ 	/* Tests basic commands and APIs */
+-	for (i = 0; i < sizeof(test)/sizeof(struct _test); i++) {
++	for (i = 0; i < ARRAY_SIZE(test); i++) {
+ 		struct _test t = test[i];
+ 
+ 		if (check_whitelist(&t, opt) != 0)
+-- 
+2.20.1
+
