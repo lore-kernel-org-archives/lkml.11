@@ -2,85 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4194C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64433C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344235AbiCOBTC (ORCPT
+        id S1344236AbiCOBTL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 21:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
+        Mon, 14 Mar 2022 21:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344227AbiCOBTA (ORCPT
+        with ESMTP id S1344227AbiCOBTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 21:19:00 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1845626D9;
-        Mon, 14 Mar 2022 18:17:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647307070; x=1678843070;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DWo909LPMfp/xcTS2ZhK17ummZUcNpAQabmYluiBYfs=;
-  b=B5lESyfSk3KSU+uK8URBBXyWxnvm91nsZImSXHR3J9cFP9w5x5QTN4EY
-   8cB/4D90GHemEU0GhK6gXQEUFmrDbKwAfvCcMkPze1BnuXarWiqxgeco3
-   xM5MIVjRL9P/gXgdO7aro/8q5zpP+zKPDQqCblWG/DVYuzLB42xNVtivF
-   40JBfX7YdYPNC14CS5tkrk3KcxOGBmRtXO+T5wtcYzA32lzH+2OWd6q16
-   l2ji/dnY+hOCpnjJhLtoZLyLTkmzVKhgUYmD5MR4RJ45mQd7lL/g6NKE8
-   mL2OvbqKyEiLfQrwF1C7BaddsIFQNMTPZKt2Kx9OQ9lIouVEnoRPeEjm7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="280951703"
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="280951703"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 18:17:49 -0700
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="515673019"
-Received: from aholley-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.24.246])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 18:17:44 -0700
-Message-ID: <0ffa85dbb54ddeecdbfdef3a22c077156268001b.camel@intel.com>
-Subject: Re: [RFC 0/3] Expose Confidential Computing capabilities on sysfs
-From:   Kai Huang <kai.huang@intel.com>
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
-        Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        luto@kernel.org, peterz@infradead.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, kirill.shutemov@linux.intel.com,
-        hpa@zytor.com, pbonzini@redhat.com, seanjc@google.com,
-        srutherford@google.com, ashish.kalra@amd.com,
-        darren.kenny@oracle.com, venu.busireddy@oracle.com,
-        boris.ostrovsky@oracle.com, kvm@vger.kernel.org
-Date:   Tue, 15 Mar 2022 14:17:42 +1300
-In-Reply-To: <20220314224346.GA3426703@ls.amr.corp.intel.com>
-References: <20220309220608.16844-1-alejandro.j.jimenez@oracle.com>
-         <8498cff4-3c31-f596-04fe-62013b94d7a4@intel.com>
-         <746497ff-992d-4659-aa32-a54c68ae83bf@oracle.com>
-         <20220314224346.GA3426703@ls.amr.corp.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Mon, 14 Mar 2022 21:19:09 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB97513DE7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:17:55 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 21E772C072F;
+        Tue, 15 Mar 2022 01:17:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1647307073;
+        bh=UivpbKymV5CHwwJgz2qOrdXwYdgZWXTFgTeVW/TVydM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aCVY4N27u7p+ilXSVJz9m3XiMJq/r7Ga/qcu7md0eWQu7t9ui23EaYJgP+MoWieWz
+         YJjf2qyNhQo4nC2Nv+mxcHEqUa1agkekYJ3C/41CYM3lsRFAGD0jJLK5+QSxej/hm5
+         0Bz7BlNwVHAIYjDnJo2Hp8STEBY71E3/K1SGEi3VL9HQaQsMX1U/MzCbvdgyf4Kfso
+         7f+v6aCZsQBembYP4oU6lX7PttK0qjfgxhXUsta6OV/yJcpASuYuRJYcaQrNRVHwtx
+         qyTLxPxgtXeIR7C6vyUQJycLch3T9xV8PC6G66NGaUJn8oaDsVOmMsmx8mY8V/6BGO
+         vLkB3jDu9u9jg==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B622fe9400000>; Tue, 15 Mar 2022 14:17:52 +1300
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id C564813EE2B;
+        Tue, 15 Mar 2022 14:17:52 +1300 (NZDT)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id 552692A2678; Tue, 15 Mar 2022 14:17:50 +1300 (NZDT)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        thomas.petazzoni@bootlin.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH net-next v3 0/2] net: mvneta: Armada 98DX2530 SoC
+Date:   Tue, 15 Mar 2022 14:17:40 +1300
+Message-Id: <20220315011742.2465356-1-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=VwQbUJbxAAAA:8 a=fHwNDZncxhfn92sU-sUA:9 a=AjGcO6oz07-iQ99wixmX:22
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is split off from [1] to let it go in via net-next rather than waiti=
+ng for
+the rest of the series to land.
 
-> 
-> More concretely
-> - CPU feature (Secure Arbitration Mode: SEAM) as "seam" flag in /proc/cpuinfo
+[1] - https://lore.kernel.org/lkml/20220314213143.2404162-1-chris.packham=
+@alliedtelesis.co.nz/
 
-In my current patchset we don't have "seam" flag in /proc/cpuinfo.  
+Chris Packham (2):
+  dt-bindings: net: mvneta: Add marvell,armada-ac5-neta
+  net: mvneta: Add support for 98DX2530 Ethernet port
 
-https://lore.kernel.org/kvm/cover.1647167475.git.kai.huang@intel.com/T/#m02542eb723394a81c35b9542b2763c783222d594
+ .../bindings/net/marvell-armada-370-neta.txt        |  1 +
+ drivers/net/ethernet/marvell/mvneta.c               | 13 +++++++++++++
+ 2 files changed, 14 insertions(+)
 
-TDX architecture doesn't have a CPUID to report SEAM, so we will need a
-synthetic flag if we want to add.  If userspace has requirement to use it, then
-it makes sense to add it and expose to /proc/cpuinfo.  But so far I don't know
-there's any.
-
-Thanks
--Kai
-
+--=20
+2.35.1
 
