@@ -2,56 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C507C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347480AbiCOKqU (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:46:20 -0400
+        id S242465AbiCOKqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:46:23 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347296AbiCOKpc (ORCPT
+        with ESMTP id S1347278AbiCOKpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 06:45:32 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF82F35847;
-        Tue, 15 Mar 2022 03:43:53 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:51 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6863344EF;
+        Tue, 15 Mar 2022 03:43:56 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:43:54 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341032;
+        s=2020; t=1647341035;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=P+qfUZVpHczYEW0kS8HtXKpkSCQmQWfhUhFmtspzyTo=;
-        b=ZctZK5P5DrZwPFBfH+nH1oafJBCuqzJj+B9ibomPTO131BDezdS1luPiAxa+D0hjlEDHUT
-        NgRZTahPX+orrJMllUBhGFWAN8CGoJpLxp6ijJQpWQx+oyKB7VPSFcS+HUbtXF8pkzOsM4
-        wfYWrXQxwEHTyN5IXnmY09jlqyEOk+17D0YudWD19CAdUGp9wqmuHQM4N/DMfYLyg8itxc
-        Ffx8+2GKUryKfsaiQRsdpXfGhScfk+blnq7Zqr+ss50cvNb2JFgOl7pZg+/L+RoPWKJEMl
-        kaV1t03LjRgwahKU6cJK9vMgWPkqy6rV5xI9jcPdFAPHP8IMFuzBNQe7LI6AcQ==
+        bh=XQTL4lw8prEg4ZsF/2IcY+D8LEtbABpQAQdVVCpEUCI=;
+        b=POZBaVfg3Z4vJNzn11m8bHqZSUj2vHa2aejvkWHmxM4jcSRz5PA2pXN0fxlQKGZcJQIUcP
+        ERAo1A47zlSFmd7Gl7WjP784DGNcBk5es5CIqU3xNEbvAXWL3nR9vat8kOIhC3PkENdjgN
+        VCgS1GA+A3V7aWoazuhhHaNOIAl3zBY7AqOdKxtgtIqU59pW/Wy2IfXFJtcWe60LA+huZO
+        IMDeUjHJ861TD8hD7J7IpkpNJgw1Ha53fBDrodUr9HIYfbtu4KT3skPzdNVeArorpZfQb4
+        jTw3UL+yL6PdTTQUv45OIz/TEPRu6uGjDqZvgh+qqIx6WjTempJwORKYVb8GoQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341032;
+        s=2020e; t=1647341035;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=P+qfUZVpHczYEW0kS8HtXKpkSCQmQWfhUhFmtspzyTo=;
-        b=kGTld0nQTJwdgPSnxQH2Bd6ldtnUTRcTEaHLSBHwF0/JYz/a24jkWWixPHxE7EvobimNxQ
-        8DcFBiTt8+RECWCg==
+        bh=XQTL4lw8prEg4ZsF/2IcY+D8LEtbABpQAQdVVCpEUCI=;
+        b=UmXF52EdrMvfPSZtYqHf0SH5TaitpIYRqdYLTgtQaJDRQAH+/vRAF9gMyS4YVopUzQPRq/
+        gOeK0KQ8LiUewrAw==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] objtool: Rename --duplicate to --lto
+Subject: [tip: x86/core] x86/ibt,ftrace: Annotate ftrace code patching
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154319.172584233@infradead.org>
-References: <20220308154319.172584233@infradead.org>
+In-Reply-To: <20220308154318.936599479@infradead.org>
+References: <20220308154318.936599479@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734103111.16921.16454813627296029660.tip-bot2@tip-bot2>
+Message-ID: <164734103435.16921.12087221192544447210.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,98 +61,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     53f7109ef957315ab53205ba3a3f4f48874c0428
-Gitweb:        https://git.kernel.org/tip/53f7109ef957315ab53205ba3a3f4f48874c0428
+Commit-ID:     3215de84c06d747bb748b98945add83e3ec8a6e2
+Gitweb:        https://git.kernel.org/tip/3215de84c06d747bb748b98945add83e3ec8a6e2
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:45 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:41 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:42 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:41 +01:00
 
-objtool: Rename --duplicate to --lto
+x86/ibt,ftrace: Annotate ftrace code patching
 
-In order to prepare for LTO like objtool runs for modules, rename the
-duplicate argument to lto.
+These are code patching sites, not indirect targets.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154319.172584233@infradead.org
+Link: https://lore.kernel.org/r/20220308154318.936599479@infradead.org
 ---
- scripts/link-vmlinux.sh                 | 2 +-
- tools/objtool/builtin-check.c           | 4 ++--
- tools/objtool/check.c                   | 7 ++++++-
- tools/objtool/include/objtool/builtin.h | 2 +-
- 4 files changed, 10 insertions(+), 5 deletions(-)
+ arch/x86/kernel/ftrace_64.S | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index 666f7bb..9b08dca 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -115,7 +115,7 @@ objtool_link()
- 			objtoolcmd="orc generate"
- 		fi
+diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
+index e32b5cd..4ec1360 100644
+--- a/arch/x86/kernel/ftrace_64.S
++++ b/arch/x86/kernel/ftrace_64.S
+@@ -145,6 +145,7 @@ SYM_FUNC_START(ftrace_caller)
+ 	movq %rcx, RSP(%rsp)
  
--		objtoolopt="${objtoolopt} --duplicate"
-+		objtoolopt="${objtoolopt} --lto"
+ SYM_INNER_LABEL(ftrace_caller_op_ptr, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	/* Load the ftrace_ops into the 3rd parameter */
+ 	movq function_trace_op(%rip), %rdx
  
- 		if is_enabled CONFIG_FTRACE_MCOUNT_USE_OBJTOOL; then
- 			objtoolopt="${objtoolopt} --mcount"
-diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
-index 853af93..5c2fcaa 100644
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -20,7 +20,7 @@
- #include <objtool/objtool.h>
+@@ -155,6 +156,7 @@ SYM_INNER_LABEL(ftrace_caller_op_ptr, SYM_L_GLOBAL)
+ 	movq $0, CS(%rsp)
  
- bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
--     validate_dup, vmlinux, mcount, noinstr, backup, sls, dryrun;
-+     lto, vmlinux, mcount, noinstr, backup, sls, dryrun;
+ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	call ftrace_stub
  
- static const char * const check_usage[] = {
- 	"objtool check [<options>] file.o",
-@@ -40,7 +40,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN('b', "backtrace", &backtrace, "unwind on error"),
- 	OPT_BOOLEAN('a', "uaccess", &uaccess, "enable uaccess checking"),
- 	OPT_BOOLEAN('s', "stats", &stats, "print statistics"),
--	OPT_BOOLEAN('d', "duplicate", &validate_dup, "duplicate validation for vmlinux.o"),
-+	OPT_BOOLEAN(0, "lto", &lto, "whole-archive like runs"),
- 	OPT_BOOLEAN('n', "noinstr", &noinstr, "noinstr validation for vmlinux.o"),
- 	OPT_BOOLEAN('l', "vmlinux", &vmlinux, "vmlinux.o validation"),
- 	OPT_BOOLEAN('M', "mcount", &mcount, "generate __mcount_loc"),
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 311bfc6..ae1d4f9 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -3499,6 +3499,11 @@ int check(struct objtool_file *file)
- {
- 	int ret, warnings = 0;
+ 	/* Handlers can change the RIP */
+@@ -169,6 +171,7 @@ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
+ 	 * layout here.
+ 	 */
+ SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
  
-+	if (lto && !(vmlinux || module)) {
-+		fprintf(stderr, "--lto requires: --vmlinux or --module\n");
-+		return 1;
-+	}
-+
- 	arch_initial_func_cfi_state(&initial_func_cfi);
- 	init_cfi_state(&init_cfi);
- 	init_cfi_state(&func_cfi);
-@@ -3519,7 +3524,7 @@ int check(struct objtool_file *file)
- 	if (list_empty(&file->insn_list))
- 		goto out;
+ 	jmp ftrace_epilogue
+ SYM_FUNC_END(ftrace_caller);
+@@ -192,6 +195,7 @@ SYM_FUNC_START(ftrace_regs_caller)
+ 	/* save_mcount_regs fills in first two parameters */
  
--	if (vmlinux && !validate_dup) {
-+	if (vmlinux && !lto) {
- 		ret = validate_vmlinux_functions(file);
- 		if (ret < 0)
- 			goto out;
-diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
-index 7b4b124..0cbe739 100644
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -9,7 +9,7 @@
+ SYM_INNER_LABEL(ftrace_regs_caller_op_ptr, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	/* Load the ftrace_ops into the 3rd parameter */
+ 	movq function_trace_op(%rip), %rdx
  
- extern const struct option check_options[];
- extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
--            validate_dup, vmlinux, mcount, noinstr, backup, sls, dryrun;
-+	    lto, vmlinux, mcount, noinstr, backup, sls, dryrun;
+@@ -221,6 +225,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_op_ptr, SYM_L_GLOBAL)
+ 	leaq (%rsp), %rcx
  
- extern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);
+ SYM_INNER_LABEL(ftrace_regs_call, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	call ftrace_stub
  
+ 	/* Copy flags back to SS, to restore them */
+@@ -248,6 +253,7 @@ SYM_INNER_LABEL(ftrace_regs_call, SYM_L_GLOBAL)
+ 	 */
+ 	testq	%rax, %rax
+ SYM_INNER_LABEL(ftrace_regs_caller_jmp, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	jnz	1f
+ 
+ 	restore_mcount_regs
+@@ -261,6 +267,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_jmp, SYM_L_GLOBAL)
+ 	 * to the return.
+ 	 */
+ SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
++	ANNOTATE_NOENDBR
+ 	jmp ftrace_epilogue
+ 
+ 	/* Swap the flags with orig_rax */
