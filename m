@@ -2,97 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB194C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3DCC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:52:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345684AbiCOHxo (ORCPT
+        id S1345687AbiCOHxu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 03:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
+        Tue, 15 Mar 2022 03:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345661AbiCOHxn (ORCPT
+        with ESMTP id S1345685AbiCOHxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 03:53:43 -0400
-Received: from hust.edu.cn (mail.hust.edu.cn [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAA84BB9A
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:52:29 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 22F7pr4U009621-22F7pr4X009621
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Tue, 15 Mar 2022 15:51:58 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Gao Xiang <xiang@kernel.org>, Chao Yu <chao@kernel.org>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-erofs@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] fs: erofs: remember if kobject_init_and_add was done
-Date:   Tue, 15 Mar 2022 15:51:52 +0800
-Message-Id: <20220315075152.63789-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 15 Mar 2022 03:53:46 -0400
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6714BB9F;
+        Tue, 15 Mar 2022 00:52:35 -0700 (PDT)
+Received: by mail-qv1-f53.google.com with SMTP id im7so14425392qvb.4;
+        Tue, 15 Mar 2022 00:52:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dLrWH/HTunHeNVedUT22wD7fuCnOVdEr3MibPq0EL+Y=;
+        b=bWDLP7LVucTaZ+It9568Zs7W5OTWxw7DW+8xLKUZEKGn0R1EAroa5aFzxG3cyA7a1G
+         BwwHES9sGgP/YCvi/AeygU0mADEdt5D8t3dQEHan42mZEfOsNMmnLUeYuH5cuRlJhw+C
+         5400yDWKDBMnAh2M4kjaZwMQtL1hxTviAkse1E9GeTHum18CVZetkfYQ4o0CN5OE09tc
+         8/ctSX2WfPrM8D2XNWMeLrmZp0EstKP4IDOa2TaFaljJ3mjei5LnZh4EB025ohQEs4GH
+         IV5Fi/KpLHiavcQZz7PrF48uB4UYT2gtsfkjjhCTODZTIKNh2k1YXzIxKBsoycxibWjq
+         uCig==
+X-Gm-Message-State: AOAM533lGPKVvQMJjNJK+mQNgYmus+VWuClic/3GtmziNcYFmiA/pZik
+        uz/j9J6QYVaAeHE7AOwXy+RA2MRoHR+mSw==
+X-Google-Smtp-Source: ABdhPJwnGOcVjQQdgTn6iyrfVUcGkW82/pSUkvILuxFkyhghLPZibE7XkFBL83fx/k8/SBfUFiokzQ==
+X-Received: by 2002:ad4:5b81:0:b0:440:a6f5:1fc3 with SMTP id 1-20020ad45b81000000b00440a6f51fc3mr7820809qvp.57.1647330754021;
+        Tue, 15 Mar 2022 00:52:34 -0700 (PDT)
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
+        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm12770033qta.49.2022.03.15.00.52.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 00:52:33 -0700 (PDT)
+Received: by mail-yb1-f172.google.com with SMTP id t11so3941506ybi.6;
+        Tue, 15 Mar 2022 00:52:33 -0700 (PDT)
+X-Received: by 2002:a25:bc8f:0:b0:628:8649:5c4b with SMTP id
+ e15-20020a25bc8f000000b0062886495c4bmr21295331ybk.207.1647330753044; Tue, 15
+ Mar 2022 00:52:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+References: <cover.1646683502.git.geert@linux-m68k.org> <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
+ <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
+ <20220314170539.17400f93@eldfell> <CAMuHMdVj8wxAVbcov1wFsgt_knMkcySBH8nMoKjyr=G+mLQmjQ@mail.gmail.com>
+ <1f915fcc-1d95-99d1-c7b7-dc4e3b49e09f@linux-m68k.org> <20220315093250.71352a56@eldfell>
+ <CAMuHMdVU=JKwEn-=Wf3CYObtaLt2T7NmWrXUwdPHdvNsbgge=g@mail.gmail.com>
+In-Reply-To: <CAMuHMdVU=JKwEn-=Wf3CYObtaLt2T7NmWrXUwdPHdvNsbgge=g@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 15 Mar 2022 08:52:21 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUOwVLBLmxaVUO4yADVCf1k7CyhBZiesHx2Fr4LW3QWMQ@mail.gmail.com>
+Message-ID: <CAMuHMdUOwVLBLmxaVUO4yADVCf1k7CyhBZiesHx2Fr4LW3QWMQ@mail.gmail.com>
+Subject: Re: [PATCH v2 05/10] drm/fourcc: Add DRM_FORMAT_C[124]
+To:     Pekka Paalanen <ppaalanen@gmail.com>
+Cc:     Finn Thain <fthain@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+On Tue, Mar 15, 2022 at 8:51 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > Also, when drm_fourcc.h is describing pixel formats, it needs to
+> > consider only how a little-endian CPU accesses them. That's how pixel
+> > data in memory is described. Display hardware plays no part in that.
+> > It is the driver's job to expose the pixel formats that match display
+> > hardware behaviour.
+>
+> But if the "CPU format" does not match the "display support",
 
-Syzkaller hit 'WARNING: kobject bug in erofs_unregister_sysfs'. This bug
-is triggered by injecting fault in kobject_init_and_add of
-erofs_unregister_sysfs.
+s/support/format/
 
-Fix this by remembering if kobject_init_and_add is successful.
+> all pixel data must be converted?
 
-Note that I've tested the patch and the crash does not occur any more.
+Gr{oetje,eeting}s,
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- fs/erofs/internal.h | 1 +
- fs/erofs/sysfs.c    | 9 ++++++---
- 2 files changed, 7 insertions(+), 3 deletions(-)
+                        Geert
 
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 5aa2cf2c2f80..9e20665e3f68 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -144,6 +144,7 @@ struct erofs_sb_info {
- 	u32 feature_incompat;
- 
- 	/* sysfs support */
-+	bool s_sysfs_inited;
- 	struct kobject s_kobj;		/* /sys/fs/erofs/<devname> */
- 	struct completion s_kobj_unregister;
- };
-diff --git a/fs/erofs/sysfs.c b/fs/erofs/sysfs.c
-index dac252bc9228..2b48a4df19b4 100644
---- a/fs/erofs/sysfs.c
-+++ b/fs/erofs/sysfs.c
-@@ -209,6 +209,7 @@ int erofs_register_sysfs(struct super_block *sb)
- 				   "%s", sb->s_id);
- 	if (err)
- 		goto put_sb_kobj;
-+	sbi->s_sysfs_inited = true;
- 	return 0;
- 
- put_sb_kobj:
-@@ -221,9 +222,11 @@ void erofs_unregister_sysfs(struct super_block *sb)
- {
- 	struct erofs_sb_info *sbi = EROFS_SB(sb);
- 
--	kobject_del(&sbi->s_kobj);
--	kobject_put(&sbi->s_kobj);
--	wait_for_completion(&sbi->s_kobj_unregister);
-+	if (sbi->s_sysfs_inited) {
-+		kobject_del(&sbi->s_kobj);
-+		kobject_put(&sbi->s_kobj);
-+		wait_for_completion(&sbi->s_kobj_unregister);
-+	}
- }
- 
- int __init erofs_init_sysfs(void)
--- 
-2.25.1
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
