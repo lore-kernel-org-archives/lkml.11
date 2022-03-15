@@ -2,140 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F343C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15220C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350727AbiCORv5 (ORCPT
+        id S1350724AbiCORwh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
+        Tue, 15 Mar 2022 13:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350662AbiCORvz (ORCPT
+        with ESMTP id S237757AbiCORwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 13:51:55 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2071.outbound.protection.outlook.com [40.107.100.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6A951301;
-        Tue, 15 Mar 2022 10:50:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HvlM0YznE+rn/48vCygGw0UbF/27z2m+4J7mLH2qFL74QZMyuqjV9lQQLd9LF03CHSTkYMxaW+82euVwjsB6v9IkeCoMbR/JBmcDR5pu6lonuYLkWgZceW5vIN9QBGXcmod1W46/bZErI3oT9Xnm40w6EE4nvYU2y+Qo4c2lgotDurUhfpmuEmkOdwk1R+UR6vgr/v3dXfF2/i4VGWPVEDq7jwzIxSZ0cPmDF9+s+rSc5/SZlKvthWVEFC0OAlL3FDTfCEtIM7CuziT8c5kaVhBdWpISuF/GfJ8uLnDMJltfgTO0mT2Tmx/leKBrnFJ9yhWFNfjdXWHBxzc/vlyRTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5P1CYAqFz3lTC02e6frW2CdE9hLxqE/RH5gebK8exyc=;
- b=ZyfqPOUX+1Rrruau7GwnLz5WTxXbNmHHYtsAf70u8a9Gh9F41nFuHnOXLTH5NQi4n/eMN5/Gio1DAs+v1/fXIeHYZBloO3gkRInq6ByYWWdEh0fe89YXmr/otoxcBEPvOy97rr8Hu62ITm9p04OM2chDBVPFQBhsNmHIuDA9JH9R6R4tcr6z6436eM3He2j/pFZM7OGUQPmcg4yubom8ybn1nYiD+tWGoNkcMQ/5Yd00cUuonWflDQJgldqxp+RL9Umw4xjl5SB4x6IX7+/XIaJrkG9p3Ckict651xJSjbE5I0tU4OjW4eAUNl4HEUjxcAP+AOgKsZEhn82iUewVUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5P1CYAqFz3lTC02e6frW2CdE9hLxqE/RH5gebK8exyc=;
- b=AtYQ9newn5ke0qVH2J4TQY0gz7tpzfG7dII9Xb0a7EtauCLu6eR0o2bz0INjYavfL211njbXXBTxW6icdJ0Aijo0ebbJd5h1gEHNK/s57uTXIGBzPJ/jm9/2TpDIhQL+6VJU6hXY+PSu8FFDSpCJmawpKZ+m/NPML43O96c2WlhuwSLaNUTRb5BsZm4Flf4eX4KMqTC9aUhlDcS/y300vmgmDR9+yoj6xqgYBpBQP+Znnrin/jrv1bkSOK9AGjgL2b/TP9J+uC7kKJWHrwOSZcuplfDimOCZADc8PqcZwTf72EIkRoETJQ4kPtNAPpugHUJe6gksONOWcMjCuGxtxw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB3660.namprd12.prod.outlook.com (2603:10b6:5:1c3::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Tue, 15 Mar
- 2022 17:50:40 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::51a0:4aee:2b4c:ca28]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::51a0:4aee:2b4c:ca28%4]) with mapi id 15.20.5061.029; Tue, 15 Mar 2022
- 17:50:40 +0000
-Date:   Tue, 15 Mar 2022 14:50:39 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
-        yishaih@nvidia.com, linux-doc@vger.kernel.org, corbet@lwn.net,
-        hch@infradead.org
-Subject: Re: [PATCH v4] vfio-pci: Provide reviewers and acceptance criteria
- for variant drivers
-Message-ID: <20220315175039.GL11336@nvidia.com>
-References: <164736509088.181560.2887686123582116702.stgit@omen>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <164736509088.181560.2887686123582116702.stgit@omen>
-X-ClientProxiedBy: MN2PR19CA0004.namprd19.prod.outlook.com
- (2603:10b6:208:178::17) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1f9378c3-6e40-4455-3042-08da06ac51dd
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3660:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB366021C59E615A169DD3AC35C2109@DM6PR12MB3660.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zrXadGddDrQU7kI7Ws11FTYmFoU9ke5hSJkNd51DCytthEweK7PLrVPQUwtxwcbHNZMqd6vU5UnM1mrFEXszh6TQim6o5dpcIVf4S2Jr7mPgE1IFFkPajzwfs4GqXUAkU1xeMZs2LztFXLMjePLPO5RbPL0NRpPk1DJ0aT+V76ocBA0l5xc1xiqxWWJYTU+aAO4wuv50oFkMXUHSY/x0vgXAccwZITrq/dEndbxxETOHvDlu7d0R0y9A8VBHrBy4AqLWLVTdU7Trh8Q8wb7ePSMo32RmHbxWNXkMXmjfT02UVbRSqNwqv/fHPbl/vtrOboZYWHZPjZF3Oq/NsSnBCnhMV6AabOjEl/lqEfK79MDhBloVokk+sfqeDJVlBJOm/PonDFoZl94PJN5VHxyFVOi+N4P1i72v7FZ+Yc/uASh+Z4G0nGOtNy4cNR2Gb2TR6IWiXjOVVyJtCCvl2Rh5zSfQxiXzUAVXV41lmdt/mQVU5upDvapBGXlBxTSNo1nZaDb6iXRQKzpH76GHTk+KeK81XHrjrDDty+7hwUzqmUO361s+//9CgWtUAhdXYHO7SXQyDAEcbfcgTs0dp67JuV3FdW8MI9boyQwaqcp4yQ13k7x8CcHdIa7o0fPqTcR8RZoVYlcN49LCOBRlWY30pA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(316002)(33656002)(6916009)(6512007)(83380400001)(1076003)(2616005)(186003)(26005)(38100700002)(86362001)(5660300002)(508600001)(8676002)(4326008)(66556008)(66946007)(66476007)(8936002)(36756003)(6506007)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?agPS09rsJ4YQFJEpOQic7O0SXZHgI3Gd4s46JU5qIs0CnjEi3SD1zBK6ppF3?=
- =?us-ascii?Q?D/DdYpLvGfYrhZH2MGOjhzR1eCXJdg1mI2ZtXMI0xPhwn4NW99/dAuptsnry?=
- =?us-ascii?Q?mD+yvxjbFS3TtJtRNan59FwTIA/NG91DkPFXownMoojwzBeBLHq8fl3dqIhR?=
- =?us-ascii?Q?Mmg6p0qnemwOEUfa+XsqnAGxlJxMfqaK7J6qui9+BqEbkZn4xAzB6sRAZ3d3?=
- =?us-ascii?Q?cNOQIdw9ZHelByPh83+kUPGA0gcYXVwdOkb1/97zqYOmGGSj2Jh6qZqd11mv?=
- =?us-ascii?Q?lcu7O/QudKeRPoi64zNk7MCf9g/pflsP3T+rMrulUIvWiq3Vg5EALAywDidK?=
- =?us-ascii?Q?Bmv7ogS6s4dXZItWf84FVIa/ZhUcUq1iYVwaFP0QDvYyNFi8QozZkP/gpnPU?=
- =?us-ascii?Q?gts8d09Nm5aU9rjLxmaBsh1q7y5szpQGHl5kEPoniP9M45RJLZdswxUDmIW5?=
- =?us-ascii?Q?r01oKQjMAhtC3CfQnSg62wcPnFxRTNPEE8XcT/iBgBA5q5VJfiwFU5v+uLO3?=
- =?us-ascii?Q?Uf92o9Wn4DWCh+hQx4AqlUQ6MqkLyJPsQJqpCqGGC1oHUvsgypCS+/5pCBjx?=
- =?us-ascii?Q?qYxYQ+4wZXGvn+KfbNt0g75pBCvVuGrS3jzxQ2oEQ38ssKbrb5volQH+qMy3?=
- =?us-ascii?Q?nL03cmSjJPUWIfqzLbV8/9ikUek3EK377fL3vcYvLLZx0uCkbU1Nti8WM7on?=
- =?us-ascii?Q?Eyap+Hd0sxPnB5heksCNRe6maTAtCktsBPYOjoeksmtcFvCm6oeh1LnHVCzQ?=
- =?us-ascii?Q?bC+pAR4uArLHFjcP9oSuGPofIryTcQv1JCXcIJyUT3Y9C0oHll8H1cRvo3lC?=
- =?us-ascii?Q?woT4I8It/aRcGOOoDGWKGGtALDlXHXYBexZxpsB1A0rT+kv0bjlnCRGAmI+9?=
- =?us-ascii?Q?TwK27FwSCpy8k0TVn6CYyzJj0eR/hDkGg0LjHntOCAIPUeDpf3b/60mUwDVt?=
- =?us-ascii?Q?ZPPhXPxuN8ix4TGrf934zcD1XAwyFTCSZi8xmivfimYRourzc3EBtPsmuva9?=
- =?us-ascii?Q?+7FxZGemlumf2WUi8HuWGbjy/fSwft/l9JSzpFKeC3uTkjbfVx/9GooFT3Fi?=
- =?us-ascii?Q?jqRLuGduocIy4WGRlkn/uWqLSQnjR55IycvlVvMTt7q4Y+p3135OY4EHQeSs?=
- =?us-ascii?Q?XU+VqUS//V19MyDnfh2oIDs6GxOKPczrQz9GSfZMzdT0zd+Dc+1cgzdDd7mG?=
- =?us-ascii?Q?HjrjtcFdG2xKiYV1cFvElxZsJbrcHpwL2AvOLnvmuxJhOJA67Rm1KuNI3Cxi?=
- =?us-ascii?Q?cRfaUBXHHHN/Kw4o8k0syQO0HNWfGu4POFe/4h8lvjjenwWPeA6PWNcRG0oz?=
- =?us-ascii?Q?dkFn3AWmvcLGMaLcJ9uI9QmTkJzEp7bUVqIjXwkWZfSownYfYh6PdBiZUAhY?=
- =?us-ascii?Q?6e/0csyhVqHGyA940CE+IYcdMVO5mcsG8LWLx3zSAy+RvRMnd12HM2Sagjbw?=
- =?us-ascii?Q?ogdv89xySatYv31YbuOv/dhMxJFMXamm?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f9378c3-6e40-4455-3042-08da06ac51dd
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 17:50:40.6764
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7ro9aML2eNCcNTMbo4cqQVBwq/3t1xDKplh/NhnAk6hNdTTAEYLoSxbCQZuaZkFG
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3660
+        Tue, 15 Mar 2022 13:52:36 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48AB55130A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:51:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647366684; x=1678902684;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=ZBs2WmIJK+gkVpayynSj0LA0+cFSOrZwR7W3ic+d43g=;
+  b=iJ2TtZKUzdHFZXlPAXy5dt46lSpOuZSNs5m2slhiGV5hndmA5BOiZBTl
+   HNTqgIIM3B8sEhpxcVAzsGwR7/SjiLdsr2tg1UmdCVKaEKCRkD8UKrQ6w
+   WSAjkRSEAU2Pb1ka4Yfh1fwzdTmlwTWMNr0O5ZftLW3bB4ZUWEjJKkHw7
+   MRBBC+RzaYFYrHAP2Osm4AegzPGqnJ7MHL1EKAj5atnBpo0JqmQ7jnLIE
+   dTSPRcCYlTrygSGR7CF9YmAQSur6+Z67pctZKMwckxt84+W/g0ibaFyVg
+   yWMN28ay5j5S251+YtdPm9vLyo+9kh+Wgw8Cdu6EtW3N/IhM37x1fpuGT
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317106858"
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="317106858"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 10:46:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="613358392"
+Received: from otc-lr-04.jf.intel.com ([10.54.39.41])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Mar 2022 10:46:37 -0700
+From:   kan.liang@linux.intel.com
+To:     peterz@infradead.org, mingo@kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH V2 2/4] perf/x86/cstate: Add Raptor Lake support
+Date:   Tue, 15 Mar 2022 10:45:58 -0700
+Message-Id: <1647366360-82824-2-git-send-email-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1647366360-82824-1-git-send-email-kan.liang@linux.intel.com>
+References: <1647366360-82824-1-git-send-email-kan.liang@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 11:29:57AM -0600, Alex Williamson wrote:
-> Device specific extensions for devices exposed to userspace through
-> the vfio-pci-core library open both new functionality and new risks.
-> Here we attempt to provided formalized requirements and expectations
-> to ensure that future drivers both collaborate in their interaction
-> with existing host drivers, as well as receive additional reviews
-> from community members with experience in this area.
-> 
-> Cc: Jason Gunthorpe <jgg@nvidia.com>
-> Acked-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
-> Acked-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> 
-> v4:
-> 
-> Banish the word "vendor", replace with "device specific"
-> Minor wording changes in docs file
-> Add sign-offs from Kevin and Yishai
-> 
-> I'll drop Jason from reviewers if there's no positive approval
-> after this round.
+From: Kan Liang <kan.liang@linux.intel.com>
 
-Sorry, you are looking for this?
+Raptor Lake is Intel's successor to Alder lake. From the perspective of
+Intel cstate residency counters, there is nothing changed compared with
+Alder lake.
 
-Acked-by: Jason Gunthorpe <jgg@nvidia.com>
+Share adl_cstates with Alder lake.
+Update the comments for Raptor Lake.
 
-Thanks,
-Jason
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+---
+
+No changes since V1
+
+ arch/x86/events/intel/cstate.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/events/intel/cstate.c b/arch/x86/events/intel/cstate.c
+index c6262b1..5d77622 100644
+--- a/arch/x86/events/intel/cstate.c
++++ b/arch/x86/events/intel/cstate.c
+@@ -40,7 +40,7 @@
+  * Model specific counters:
+  *	MSR_CORE_C1_RES: CORE C1 Residency Counter
+  *			 perf code: 0x00
+- *			 Available model: SLM,AMT,GLM,CNL,ICX,TNT,ADL
++ *			 Available model: SLM,AMT,GLM,CNL,ICX,TNT,ADL,RPL
+  *			 Scope: Core (each processor core has a MSR)
+  *	MSR_CORE_C3_RESIDENCY: CORE C3 Residency Counter
+  *			       perf code: 0x01
+@@ -51,49 +51,50 @@
+  *			       perf code: 0x02
+  *			       Available model: SLM,AMT,NHM,WSM,SNB,IVB,HSW,BDW,
+  *						SKL,KNL,GLM,CNL,KBL,CML,ICL,ICX,
+- *						TGL,TNT,RKL,ADL
++ *						TGL,TNT,RKL,ADL,RPL
+  *			       Scope: Core
+  *	MSR_CORE_C7_RESIDENCY: CORE C7 Residency Counter
+  *			       perf code: 0x03
+  *			       Available model: SNB,IVB,HSW,BDW,SKL,CNL,KBL,CML,
+- *						ICL,TGL,RKL,ADL
++ *						ICL,TGL,RKL,ADL,RPL
+  *			       Scope: Core
+  *	MSR_PKG_C2_RESIDENCY:  Package C2 Residency Counter.
+  *			       perf code: 0x00
+  *			       Available model: SNB,IVB,HSW,BDW,SKL,KNL,GLM,CNL,
+- *						KBL,CML,ICL,ICX,TGL,TNT,RKL,ADL
++ *						KBL,CML,ICL,ICX,TGL,TNT,RKL,ADL,
++ *						RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C3_RESIDENCY:  Package C3 Residency Counter.
+  *			       perf code: 0x01
+  *			       Available model: NHM,WSM,SNB,IVB,HSW,BDW,SKL,KNL,
+  *						GLM,CNL,KBL,CML,ICL,TGL,TNT,RKL,
+- *						ADL
++ *						ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C6_RESIDENCY:  Package C6 Residency Counter.
+  *			       perf code: 0x02
+  *			       Available model: SLM,AMT,NHM,WSM,SNB,IVB,HSW,BDW,
+  *						SKL,KNL,GLM,CNL,KBL,CML,ICL,ICX,
+- *						TGL,TNT,RKL,ADL
++ *						TGL,TNT,RKL,ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C7_RESIDENCY:  Package C7 Residency Counter.
+  *			       perf code: 0x03
+  *			       Available model: NHM,WSM,SNB,IVB,HSW,BDW,SKL,CNL,
+- *						KBL,CML,ICL,TGL,RKL,ADL
++ *						KBL,CML,ICL,TGL,RKL,ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C8_RESIDENCY:  Package C8 Residency Counter.
+  *			       perf code: 0x04
+  *			       Available model: HSW ULT,KBL,CNL,CML,ICL,TGL,RKL,
+- *						ADL
++ *						ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C9_RESIDENCY:  Package C9 Residency Counter.
+  *			       perf code: 0x05
+  *			       Available model: HSW ULT,KBL,CNL,CML,ICL,TGL,RKL,
+- *						ADL
++ *						ADL,RPL
+  *			       Scope: Package (physical package)
+  *	MSR_PKG_C10_RESIDENCY: Package C10 Residency Counter.
+  *			       perf code: 0x06
+  *			       Available model: HSW ULT,KBL,GLM,CNL,CML,ICL,TGL,
+- *						TNT,RKL,ADL
++ *						TNT,RKL,ADL,RPL
+  *			       Scope: Package (physical package)
+  *
+  */
+@@ -680,6 +681,7 @@ static const struct x86_cpu_id intel_cstates_match[] __initconst = {
+ 	X86_MATCH_INTEL_FAM6_MODEL(ROCKETLAKE,		&icl_cstates),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE,		&adl_cstates),
+ 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L,		&adl_cstates),
++	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE,		&adl_cstates),
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(x86cpu, intel_cstates_match);
+-- 
+2.7.4
+
