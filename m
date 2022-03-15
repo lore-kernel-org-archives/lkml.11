@@ -2,48 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2702C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1331FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344956AbiCOFh1 (ORCPT
+        id S1344977AbiCOFh3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 01:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
+        Tue, 15 Mar 2022 01:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344927AbiCOFhG (ORCPT
+        with ESMTP id S1344953AbiCOFhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 01:37:06 -0400
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE353152D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:35:51 -0700 (PDT)
-Received: from omf10.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay11.hostedemail.com (Postfix) with ESMTP id 63A798052C;
-        Tue, 15 Mar 2022 05:35:50 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf10.hostedemail.com (Postfix) with ESMTPA id BC86E35;
-        Tue, 15 Mar 2022 05:35:49 +0000 (UTC)
-Message-ID: <b9c4dba1af41d8ef618267a1bd2a8497b3aa51a9.camel@perches.com>
-Subject: Re: [PATCH 00/30] fix typos in comments
-From:   Joe Perches <joe@perches.com>
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Date:   Mon, 14 Mar 2022 22:35:48 -0700
-In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Tue, 15 Mar 2022 01:37:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8FF4E48E68;
+        Mon, 14 Mar 2022 22:36:04 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 59BBE1476;
+        Mon, 14 Mar 2022 22:36:04 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.34.48])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9A0673F766;
+        Mon, 14 Mar 2022 22:35:58 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org, acme@kernel.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH V4 06/10] perf/tools: Add irq and exception return branch types
+Date:   Tue, 15 Mar 2022 11:05:12 +0530
+Message-Id: <20220315053516.431515-7-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220315053516.431515-1-anshuman.khandual@arm.com>
+References: <20220315053516.431515-1-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: BC86E35
-X-Stat-Signature: 3cw4bcpy8xz951b36ddt56t1zrdzb146
-X-Rspamd-Server: rspamout01
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19LeeX9Mq4ndFS2it54iNu/TdLy0aiPhOc=
-X-HE-Tag: 1647322549-511863
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Care to describe _how_ coccinelle was helpful in finding
-these typos in comments?
+This updates the perf tool with generic branch type classification with two
+new branch types i.e irq (PERF_BR_IRQ) and exception return (PERF_BR_ERET)
+which got updated earlier in the kernel. This also updates corresponding
+branch type strings in branch_type_name().
 
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-perf-users@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ tools/include/uapi/linux/perf_event.h | 2 ++
+ tools/perf/util/branch.c              | 4 +++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/tools/include/uapi/linux/perf_event.h b/tools/include/uapi/linux/perf_event.h
+index 82858b697c05..d37629dbad72 100644
+--- a/tools/include/uapi/linux/perf_event.h
++++ b/tools/include/uapi/linux/perf_event.h
+@@ -251,6 +251,8 @@ enum {
+ 	PERF_BR_SYSRET		= 8,	/* syscall return */
+ 	PERF_BR_COND_CALL	= 9,	/* conditional function call */
+ 	PERF_BR_COND_RET	= 10,	/* conditional function return */
++	PERF_BR_ERET		= 11,	/* exception return */
++	PERF_BR_IRQ		= 12,	/* irq */
+ 	PERF_BR_MAX,
+ };
+ 
+diff --git a/tools/perf/util/branch.c b/tools/perf/util/branch.c
+index 2285b1eb3128..a9a909db8cc7 100644
+--- a/tools/perf/util/branch.c
++++ b/tools/perf/util/branch.c
+@@ -49,7 +49,9 @@ const char *branch_type_name(int type)
+ 		"SYSCALL",
+ 		"SYSRET",
+ 		"COND_CALL",
+-		"COND_RET"
++		"COND_RET",
++		"ERET",
++		"IRQ"
+ 	};
+ 
+ 	if (type >= 0 && type < PERF_BR_MAX)
+-- 
+2.25.1
 
