@@ -2,109 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 585B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DCA1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344149AbiCOBEc (ORCPT
+        id S1344111AbiCOBFc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 21:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
+        Mon, 14 Mar 2022 21:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344141AbiCOBEG (ORCPT
+        with ESMTP id S234460AbiCOBF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 21:04:06 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE4C205FC;
-        Mon, 14 Mar 2022 18:02:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647306175; x=1678842175;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=JFNihO4l29+MrWjhjoI4e3nVb3jT6juj+eYhE7RWgIs=;
-  b=FhP3eW6L7SlROa5uaNDak/AIru28vxND2TxNZUPiGErUaZrqVCI5jD6X
-   X/1zugtKI1HNk8P+9ZA6hXjc5q9Wg5mXClIh08sh92NqLaQq6ScyMU5NR
-   B38TDRi8zwYeTzR4Y0Hmd7tdotUWC6d/l/+qQiC7E68/HbfQH77rV1WJX
-   uEkACdwZutmxYy+5GIQOMEk0f2lO08P9hSObS+i8t+OE+wovMUyF/9//k
-   8fm5ysmu9eH515lwjr0aoIvxke14An6haKtonpclTfJBcUjQh8IIpUGgG
-   HOSzKsMgf81RUg2biGI2lGekAlkabI3osBssdmgkYC1dmF2sPJDJiQU5n
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255912383"
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="255912383"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 18:02:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="515669396"
-Received: from cathy-vostro-3670.bj.intel.com ([10.238.156.128])
-  by orsmga006.jf.intel.com with ESMTP; 14 Mar 2022 18:02:53 -0700
-From:   Cathy Zhang <cathy.zhang@intel.com>
-To:     linux-sgx@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     dave.hansen@intel.com, ashok.raj@intel.com, cathy.zhang@intel.com
-Subject: [RFC PATCH v2 10/10] x86/sgx: Call ENCLS[EUPDATESVN] during SGX initialization
-Date:   Tue, 15 Mar 2022 09:03:00 +0800
-Message-Id: <20220315010300.10199-11-cathy.zhang@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220315010300.10199-1-cathy.zhang@intel.com>
-References: <20220315010300.10199-1-cathy.zhang@intel.com>
+        Mon, 14 Mar 2022 21:05:29 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2409140AA
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:04:18 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id l2so34307048ybe.8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:04:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=G3dFlqRFL9HlfyNgNPQqYqQNaHrZZteRUE5RE+XDmFo=;
+        b=xHeNq3qL2wnSyQEpGFv10jR9dWRPb48//FYTkZChRDbk6GjpEQ/TlXPk7E9AUWEc9o
+         bclzeHNVl5x0ydjrVG1RdqFQr9ua1cQWKKMYGgi1oB4/gCJybdPvJGgoYkUDI+qCWw+g
+         juAtgNvxt+NQjoPc6ewwv9PGOw39OlQ3Bb4K6Jd5Vn236c+gtJkz++nGNpAXhjhESbVV
+         NAusH5eYB45L6hXc8f11T8gnuUI0zxpyGoojPJ3egcitgbsMRLgV6nNMgCduZAuK36ao
+         CUk8YBUUS5OvXzmcNh4d+VX1r/5D7sTfD6DBHkh+jSa+Pv4vE2rzupca2CSAG05kfmpd
+         TJRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=G3dFlqRFL9HlfyNgNPQqYqQNaHrZZteRUE5RE+XDmFo=;
+        b=F0sfIgDELQvKc8ehh35lu8B56VSqboEuHmNoVxoHmAByDngHDp6DlZqM6z9tQenZ26
+         Aedie18gc+iDMz8aTzmQ9zRQBQsI/1PcBDaefOjvPhmi4wxRkVexOIqp3PSTqqlsa1KT
+         YJMxNdHnhsF76EIPCYRRAxL9eWV2usNZaN6rDcesF4coxhRX08r/KMLSKKiRb10r10VB
+         /9wkY7TekEF7Luug47n0XbZKQABnr0/ic3aMdxO0+0e+JdjqPIsZMFsW8AxLjKn5OCLT
+         rDJbT2gyhoW/MAkIOxV+6Ooc634APRE3xeCHj6DQbTrfZz3VnJpQjYrE2o3gGm6Zlu3O
+         cW/w==
+X-Gm-Message-State: AOAM532cmHBbPfdqt6vr1JEyjkRC22z16xOsh9NgZBO4aTm3ntzBTE9K
+        3HNRTg9Yd8WR6bdsvNbmzAruy8W5UfXZfFKNPJ2FHA==
+X-Google-Smtp-Source: ABdhPJzcee/3Zb1HhaKysHMmvVuapmBALaDYIGI3ZPQmes767jIHWsrqo+TpcpZ/9cslSe2RX4+gI+gKsFuisV7Tte4=
+X-Received: by 2002:a25:e710:0:b0:633:67d3:7264 with SMTP id
+ e16-20020a25e710000000b0063367d37264mr3565636ybh.291.1647306257955; Mon, 14
+ Mar 2022 18:04:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220308221132.1423218-1-bjorn.andersson@linaro.org>
+In-Reply-To: <20220308221132.1423218-1-bjorn.andersson@linaro.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 15 Mar 2022 02:04:06 +0100
+Message-ID: <CACRpkdbJFtNqtvfmqPffHW-gWJdTD6xa07z33gnDbm=QpJLgMg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: pinctrl: qcom: Add sc8280xp TLMM binding
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A snapshot of the processor microcode SVN is taken each boot cycle at
-the time when Intel SGX is first used. This results in microcode
-updates being loadable at any time, fixing microcode issues. However,
-if system boot up through kexec() from error recovery, no hardware
-reset happens, any SGX leaf execution during boot up is not assumed
-as the first use in such case, and no snapshot of SVN is taken. So,
-it's necessary to call ENCLS[EUPDATESVN] to update SVN automatically,
-rather than waiting for the admin to do it when he/she is even not
-aware of that.
+On Tue, Mar 8, 2022 at 11:09 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
 
-Call ENCLS[EUPDATESVN] after sanitizing pages will increase the chance
-of success, for it requires that EPC is empty.
+> The Qualcomm SC8280XP platform contains a single block of registers
+> for the TLMM block. This provides pinconf and pinmux for 228 GPIOs, 2
+> UFS_RESET pins and one SDC interface.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Signed-off-by: Cathy Zhang <cathy.zhang@intel.com>
+Patch applied!
 
----
-Changes since v1:
- - Update accordingly for update_cpusvn_intel() return *void*.
----
- arch/x86/kernel/cpu/sgx/main.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/kernel/cpu/sgx/main.c b/arch/x86/kernel/cpu/sgx/main.c
-index d86745d8cc7d..5c1fe860540c 100644
---- a/arch/x86/kernel/cpu/sgx/main.c
-+++ b/arch/x86/kernel/cpu/sgx/main.c
-@@ -397,8 +397,10 @@ void sgx_direct_reclaim(void)
- 		sgx_reclaim_pages();
- }
- 
-+void update_cpusvn_intel(void);
- static int ksgxd(void *p)
- {
-+	int ret;
- 	int srcu_idx;
- 
- 	set_freezable();
-@@ -411,7 +413,14 @@ static int ksgxd(void *p)
- 	__sgx_sanitize_pages(&sgx_dirty_page_list);
- 
- 	/* sanity check: */
--	WARN_ON(!list_empty(&sgx_dirty_page_list));
-+	if (!WARN_ON(!list_empty(&sgx_dirty_page_list))) {
-+		/*
-+		 * Do SVN update for kexec(). It should complete without error, for
-+		 * all EPC pages are unused at this point.
-+		 */
-+		if (cpuid_eax(SGX_CPUID) & SGX_CPUID_EUPDATESVN)
-+			update_cpusvn_intel();
-+	}
- 
- 	while (!kthread_should_stop()) {
- 		if (try_to_freeze())
--- 
-2.17.1
-
+Yours,
+Linus Walleij
