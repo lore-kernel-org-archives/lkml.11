@@ -2,101 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCB2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345759AbiCOIJg (ORCPT
+        id S1345781AbiCOIQp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
+        Tue, 15 Mar 2022 04:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238106AbiCOIJe (ORCPT
+        with ESMTP id S1345767AbiCOIQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:09:34 -0400
+        Tue, 15 Mar 2022 04:16:43 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A64971261D
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:08:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B68D4AE15
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:15:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647331699;
+        s=mimecast20190719; t=1647332130;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=vBxdygrDGnIdQovqZjnOBUiE0fFV5TKmJtEmU95vBEM=;
-        b=UaDEf5iXYXl2xgIyf2JFZVzihSrcOyXxLViKJctWbox8rw/kB2cjRDq6qpK+msVOeodC10
-        c1afdy+JDq7uv2BBMleLzKvu2Ay1pc3B/TAuFjh7KXJitnWcAGmLGX/nLMIIsaTuEIENUD
-        SAX1GDe0Cf3zw0HaK+QOmiwpi/Qqvfw=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=tCvl2VW1cmsTMiDGSIxoASCMFsGS7CwQX41mH9mi7og=;
+        b=DLCOt/nnQszNEAlLGn/a1+bkvc2x8+GC7wTd6+5M3R/a33zQ2urEIKpBYSlZrfCy7htH94
+        7AiAG5PsPnprnHUX/hgMa8IMiIddGCEeAlLyHcyBa61a4tiTGABqmna3ArZhVKox36VgPG
+        L/KQJlHcYdvv8jBsqg5VTnrxdUNKw1M=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-630-6b817DeGPQyyAwWY5mDNkg-1; Tue, 15 Mar 2022 04:08:18 -0400
-X-MC-Unique: 6b817DeGPQyyAwWY5mDNkg-1
-Received: by mail-wr1-f69.google.com with SMTP id p9-20020adf9589000000b001e333885ac1so5014461wrp.10
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:08:18 -0700 (PDT)
+ us-mta-328-uBzbiPxDPB66M4q86R-Peg-1; Tue, 15 Mar 2022 04:15:27 -0400
+X-MC-Unique: uBzbiPxDPB66M4q86R-Peg-1
+Received: by mail-qk1-f198.google.com with SMTP id 68-20020a370847000000b0067e0cd1c855so328249qki.4
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:15:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=vBxdygrDGnIdQovqZjnOBUiE0fFV5TKmJtEmU95vBEM=;
-        b=7gR5RGYF0AGfFXvNOMxik3iMFYUCObR/MivrwFdK1FAc+5aLSA/jCjzQqYLS7mGnBo
-         z8Qp2iEe9nsmnzpJFvaK38VYZbfo3sYZsOSOtEyxwEhU3/gW8NBRwXpLLO+OZBsStKTc
-         QD1W4A2VKT5NO4NkX4QnY7Txx+RSoQOqyaUNh8tu7A/gp0ioXjd8f+mLMM0AuIeerhQb
-         lR+VUPQwQvxbgcb2J54lysabz0t+VAm/2zeVzH7V5HsiE8jnrQF+06xYPQKVPKOzdusi
-         tCMgg6yNAizCLx5YHJei7XXwgbhEX9cPFVQdz2kheZhINZI01SvNpMY7Sb7rJiVQzFjg
-         x50Q==
-X-Gm-Message-State: AOAM531kG/Ze2HtV+oU5FhMa7LLMpRHbIGGN8WruCGwvQ/nyvaiem24c
-        Ru663mlnbOYvyqW6UvUOH3pd9PgnpS8YN+6fLasafdgbkYgMJM5CvdhTl3IITfb0emgI0iUBhgT
-        j9Hf2zV78I+ToZ40D17x75FXY
-X-Received: by 2002:adf:dc86:0:b0:1f0:250a:265 with SMTP id r6-20020adfdc86000000b001f0250a0265mr19331376wrj.85.1647331697396;
-        Tue, 15 Mar 2022 01:08:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJycN8k8k30GqvbuzPk3qK11Jv29vfX/EQcOg+NXt/NpyhDzihkbEOBexiZimm3rtZNSjRc4pA==
-X-Received: by 2002:adf:dc86:0:b0:1f0:250a:265 with SMTP id r6-20020adfdc86000000b001f0250a0265mr19331361wrj.85.1647331697232;
-        Tue, 15 Mar 2022 01:08:17 -0700 (PDT)
-Received: from gator (cst2-173-70.cust.vodafone.cz. [31.30.173.70])
-        by smtp.gmail.com with ESMTPSA id f7-20020a0560001a8700b00203c23e55e0sm3467969wry.78.2022.03.15.01.08.16
+        bh=tCvl2VW1cmsTMiDGSIxoASCMFsGS7CwQX41mH9mi7og=;
+        b=Iw8BVrSz3Sz8CZe+0CCy0NjMSMqHvUWcVED+OEyN0xh9K1B6wH0gwfQOvemlpTHwrQ
+         ODJ6Bht0g7YjjZjGPqgJ6B95mehX6In9aY+3QG/vVVQvgIi6URLG6WpmdJa3QTd7JBpt
+         6VT5/5rmAnoKoipel7Xo29ch+ny4FerCzmlrvFFqoTQm3capJeWFDmI+3BShbS0EyUzS
+         DqWDDvD1R/Fl1GZeKqCpv0NDPTkYEBAaes9oh+AJ4o9Nx0oEMGIaRjcEVQHqgKdB2sAF
+         3eTHxoR1YJ7pNl2HLatdu9JjNbzAwkZb5Cq+kM6CuWfvvKg+u2p56BMoV5HMwQOZm/K+
+         hkIg==
+X-Gm-Message-State: AOAM533xrkD4vpyVpElRXBt2ur71jrmcej7fc6LDiiJVre/ygUmTogkv
+        wDD0ZtiTsoEimsVahYNpA+TPcDkGLGT+qlspJOh4k+3LkFwhJdaCarsYm1BfQ3Zf9MhzGwnWQPm
+        KvSefpSk9HPKT2ovJuxqsSyFy
+X-Received: by 2002:a05:620a:424e:b0:67d:3607:6b50 with SMTP id w14-20020a05620a424e00b0067d36076b50mr17091974qko.194.1647332127179;
+        Tue, 15 Mar 2022 01:15:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzjgYb2HPocNtGnS6faY8OIC23ZTZlsPZ5W/DCuKMZo/aQnXkwFKl2eu1filb04x820ASXlIQ==
+X-Received: by 2002:a05:620a:424e:b0:67d:3607:6b50 with SMTP id w14-20020a05620a424e00b0067d36076b50mr17091955qko.194.1647332126634;
+        Tue, 15 Mar 2022 01:15:26 -0700 (PDT)
+Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
+        by smtp.gmail.com with ESMTPSA id b126-20020a376784000000b0067d21404704sm8982966qkc.131.2022.03.15.01.15.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 01:08:16 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 09:08:14 +0100
-From:   Andrew Jones <drjones@redhat.com>
-To:     Oliver Upton <oupton@google.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Thomas Huth <thuth@redhat.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [RFC PATCH 000/105] KVM: selftests: Overhaul APIs, purge VCPU_ID
-Message-ID: <20220315080814.sqfhamts5tekhxlj@gator>
-References: <20220311055056.57265-1-seanjc@google.com>
- <20220314110653.a46vy5hqegt75wpb@gator>
- <Yi+B5bZ1LpaNCUJT@google.com>
+        Tue, 15 Mar 2022 01:15:26 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 09:15:17 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
+Cc:     Krasnov Arseniy <oxffffaa@gmail.com>,
+        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v1 2/3] af_vsock: SOCK_SEQPACKET receive timeout test
+Message-ID: <20220315081517.m7rvlpintqipdu6i@sgarzare-redhat>
+References: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
+ <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <Yi+B5bZ1LpaNCUJT@google.com>
+In-Reply-To: <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 05:56:53PM +0000, Oliver Upton wrote:
-> 
-> I think it may make more sense to only define optional functions as
-> weak and let the compiler do the screaming for the required ones. Only
-> discovering that functions are missing at runtime could be annoying if
-> you're cross-compiling and running on a separate host with a different
-> architecture.
+On Fri, Mar 11, 2022 at 10:55:42AM +0000, Krasnov Arseniy Vladimirovich wrote:
+>Test for receive timeout check: connection is established,
+>receiver sets timeout, but sender does nothing. Receiver's
+>'read()' call must return EAGAIN.
 >
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> tools/testing/vsock/vsock_test.c | 49 ++++++++++++++++++++++++++++++++
+> 1 file changed, 49 insertions(+)
+>
+>diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
+>index 2a3638c0a008..aa2de27d0f77 100644
+>--- a/tools/testing/vsock/vsock_test.c
+>+++ b/tools/testing/vsock/vsock_test.c
+>@@ -391,6 +391,50 @@ static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
+> 	close(fd);
+> }
+>
+>+static void test_seqpacket_timeout_client(const struct test_opts *opts)
+>+{
+>+	int fd;
+>+	struct timeval tv;
+>+	char dummy;
+>+
+>+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
+>+	if (fd < 0) {
+>+		perror("connect");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	tv.tv_sec = 1;
+>+	tv.tv_usec = 0;
+>+
+>+	if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&tv, sizeof(tv)) == -1) {
+>+		perror("setsockopt 'SO_RCVTIMEO'");
+>+		exit(EXIT_FAILURE);
+>+	}
+>+
+>+	if ((read(fd, &dummy, sizeof(dummy)) != -1) ||
+>+	    (errno != EAGAIN)) {
+>+		perror("EAGAIN expected");
+>+		exit(EXIT_FAILURE);
+>+	}
 
-Ah, indeed, no reason to push the lack of required arch functions to
-runtime detection, compile time is much better. And, in those cases,
-the _arch_ naming will also provide a nice hint that one must implement
-it in arch specific code.
+The patch LGTM, maybe the only thing I would add here is a check on the 
+time spent in the read(), to see that it is approximately the timeout we 
+have set.
 
 Thanks,
-drew
+Stefano
 
