@@ -2,131 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A99C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F343C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350707AbiCORqr (ORCPT
+        id S1350727AbiCORv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
+        Tue, 15 Mar 2022 13:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238809AbiCORqo (ORCPT
+        with ESMTP id S1350662AbiCORvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 13:46:44 -0400
-Received: from mail1.bemta31.messagelabs.com (mail1.bemta31.messagelabs.com [67.219.246.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C72E4F9DF;
-        Tue, 15 Mar 2022 10:45:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=motorola.com;
-        s=Selector; t=1647366330; i=@motorola.com;
-        bh=5E5zxINeV0hdwni5VHVJAAVrPJoXGXxiqslzNvn1vRQ=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:
-         Content-Transfer-Encoding;
-        b=S/7dLSZKO7q9C3Drqhco+gKO2kfp9BF+Svlq8G0SdZgsZJHJc1GVToJRqEI1bZCRY
-         YlXH9bzphBxkPhNhwTDg/m6nGOOjoRwTWPNLsGrEtb0oF1QHVIn4QY0teNXI7ON8+G
-         pOTy/kP1gij4k4TCAVbGLB7r13CnOy+wWBloO05N7sqIgJ2SHUcoTgRJvNQ0yJgJFN
-         HvwntMXi6NjggcENRzR/Mil/u7X8/iAyxZGbV7HNOi9BHMm1dNovMJ8KHpxJLnibmU
-         eoPeE17kes2hYWZqCy9SVOz/6iYt0rfHsZAOYwXfByFqoLZoXUdduA77l66UsrhdJp
-         0Ve/mYzI7zaig==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrIIsWRWlGSWpSXmKPExsUyYU+Ds+6uCwZ
-  JBuuULI61PWG3aF68ns2ic+ISdovLu+awWSxa1spssWDjI0YHNo/ZHTNZPTat6mTz2D93DbvH
-  501yASxRrJl5SfkVCawZixcXF3zjr5i/4SdbA+Mn3i5GLg4hgWlMEjcP9LBCOEuYJO62r2XvY
-  uTkYBNQk1jwehUziC0iICtx+MpvMJtZ4DmjxO9+ZRBbWMBfYseJmYwgNouAqkT77FUsIDavgI
-  XEvG9PwOISAvISp5YdZIKIC0qcnPmEBWKOvETz1tnMExi5ZyFJzUKSWsDItIrRIqkoMz2jJDc
-  xM0fX0MBA19DQRNdE11wvsUo3Ua+0WDc1sbhE11AvsbxYL7W4WK+4Mjc5J0UvL7VkEyMw9FKK
-  WNh3MK7t+al3iFGSg0lJlLew3CBJiC8pP6UyI7E4I76oNCe1+BCjDAeHkgTv7rNAOcGi1PTUi
-  rTMHGAcwKQlOHiURHhXHgNK8xYXJOYWZ6ZDpE4x6nI8vXplL7MQS15+XqqUOG/PeaAiAZCijN
-  I8uBGwmLzEKCslzMvIwMAgxFOQWpSbWYIq/4pRnINRSZj3EsgUnsy8ErhNr4COYAI6Yp60Hsg
-  RJYkIKakGprXfGR7mGBgIzH9fvaX6u6PWlnB/2wkpH1yXhxR8/i2hMeEVq/ZOsUcSh+53JJ0s
-  trbk/yTyTEZHbIszT+DfcNOtnewRVaVi775Mrf417f7Tg+l9ikuizes+SDUdr/078/GM2G3zS
-  tN7S8I371wwjy3svcRSsaoNnzfbuplI27WZvfn44Iee8aQpMkLmjAvail762ovl+YSszxUt5z
-  /vdfvjNj1jfraNQXsf8bpmWpXJs/vtWbXmsqlUFqfX5durYp81ewW5pkrsLVmwZf30yQpJc24
-  e9/p9OFPQ/EdBAKvGKaanfUt22cz0UrAOfHamNFrYlL8hWTtNNWaNata7St3XOrIqjCtrwyZd
-  K21XYinOSDTUYi4qTgQAkRt2mUQDAAA=
-X-Env-Sender: w36195@motorola.com
-X-Msg-Ref: server-5.tower-706.messagelabs.com!1647366329!9570!1
-X-Originating-IP: [144.188.128.67]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.81.9; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 9506 invoked from network); 15 Mar 2022 17:45:29 -0000
-Received: from unknown (HELO ilclpfpp01.lenovo.com) (144.188.128.67)
-  by server-5.tower-706.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 15 Mar 2022 17:45:29 -0000
-Received: from va32lmmrp02.lenovo.com (va32lmmrp02.mot.com [10.62.176.191])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by ilclpfpp01.lenovo.com (Postfix) with ESMTPS id 4KJ15j41nvzfBZq;
-        Tue, 15 Mar 2022 17:45:29 +0000 (UTC)
-Received: from p1g3.. (unknown [10.45.4.46])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: w36195)
-        by va32lmmrp02.lenovo.com (Postfix) with ESMTPSA id 4KJ15j0VzSzf6Wf;
-        Tue, 15 Mar 2022 17:45:29 +0000 (UTC)
-From:   Dan Vacura <w36195@motorola.com>
-To:     linux-usb@vger.kernel.org
-Cc:     stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] usb: gadget: uvc: Fix crash when encoding data for usb request
-Date:   Tue, 15 Mar 2022 12:41:46 -0500
-Message-Id: <20220315174146.27155-1-w36195@motorola.com>
-X-Mailer: git-send-email 2.32.0
+        Tue, 15 Mar 2022 13:51:55 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2071.outbound.protection.outlook.com [40.107.100.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6A951301;
+        Tue, 15 Mar 2022 10:50:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HvlM0YznE+rn/48vCygGw0UbF/27z2m+4J7mLH2qFL74QZMyuqjV9lQQLd9LF03CHSTkYMxaW+82euVwjsB6v9IkeCoMbR/JBmcDR5pu6lonuYLkWgZceW5vIN9QBGXcmod1W46/bZErI3oT9Xnm40w6EE4nvYU2y+Qo4c2lgotDurUhfpmuEmkOdwk1R+UR6vgr/v3dXfF2/i4VGWPVEDq7jwzIxSZ0cPmDF9+s+rSc5/SZlKvthWVEFC0OAlL3FDTfCEtIM7CuziT8c5kaVhBdWpISuF/GfJ8uLnDMJltfgTO0mT2Tmx/leKBrnFJ9yhWFNfjdXWHBxzc/vlyRTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5P1CYAqFz3lTC02e6frW2CdE9hLxqE/RH5gebK8exyc=;
+ b=ZyfqPOUX+1Rrruau7GwnLz5WTxXbNmHHYtsAf70u8a9Gh9F41nFuHnOXLTH5NQi4n/eMN5/Gio1DAs+v1/fXIeHYZBloO3gkRInq6ByYWWdEh0fe89YXmr/otoxcBEPvOy97rr8Hu62ITm9p04OM2chDBVPFQBhsNmHIuDA9JH9R6R4tcr6z6436eM3He2j/pFZM7OGUQPmcg4yubom8ybn1nYiD+tWGoNkcMQ/5Yd00cUuonWflDQJgldqxp+RL9Umw4xjl5SB4x6IX7+/XIaJrkG9p3Ckict651xJSjbE5I0tU4OjW4eAUNl4HEUjxcAP+AOgKsZEhn82iUewVUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5P1CYAqFz3lTC02e6frW2CdE9hLxqE/RH5gebK8exyc=;
+ b=AtYQ9newn5ke0qVH2J4TQY0gz7tpzfG7dII9Xb0a7EtauCLu6eR0o2bz0INjYavfL211njbXXBTxW6icdJ0Aijo0ebbJd5h1gEHNK/s57uTXIGBzPJ/jm9/2TpDIhQL+6VJU6hXY+PSu8FFDSpCJmawpKZ+m/NPML43O96c2WlhuwSLaNUTRb5BsZm4Flf4eX4KMqTC9aUhlDcS/y300vmgmDR9+yoj6xqgYBpBQP+Znnrin/jrv1bkSOK9AGjgL2b/TP9J+uC7kKJWHrwOSZcuplfDimOCZADc8PqcZwTf72EIkRoETJQ4kPtNAPpugHUJe6gksONOWcMjCuGxtxw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB3660.namprd12.prod.outlook.com (2603:10b6:5:1c3::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Tue, 15 Mar
+ 2022 17:50:40 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28%4]) with mapi id 15.20.5061.029; Tue, 15 Mar 2022
+ 17:50:40 +0000
+Date:   Tue, 15 Mar 2022 14:50:39 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
+        yishaih@nvidia.com, linux-doc@vger.kernel.org, corbet@lwn.net,
+        hch@infradead.org
+Subject: Re: [PATCH v4] vfio-pci: Provide reviewers and acceptance criteria
+ for variant drivers
+Message-ID: <20220315175039.GL11336@nvidia.com>
+References: <164736509088.181560.2887686123582116702.stgit@omen>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <164736509088.181560.2887686123582116702.stgit@omen>
+X-ClientProxiedBy: MN2PR19CA0004.namprd19.prod.outlook.com
+ (2603:10b6:208:178::17) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1f9378c3-6e40-4455-3042-08da06ac51dd
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3660:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB366021C59E615A169DD3AC35C2109@DM6PR12MB3660.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zrXadGddDrQU7kI7Ws11FTYmFoU9ke5hSJkNd51DCytthEweK7PLrVPQUwtxwcbHNZMqd6vU5UnM1mrFEXszh6TQim6o5dpcIVf4S2Jr7mPgE1IFFkPajzwfs4GqXUAkU1xeMZs2LztFXLMjePLPO5RbPL0NRpPk1DJ0aT+V76ocBA0l5xc1xiqxWWJYTU+aAO4wuv50oFkMXUHSY/x0vgXAccwZITrq/dEndbxxETOHvDlu7d0R0y9A8VBHrBy4AqLWLVTdU7Trh8Q8wb7ePSMo32RmHbxWNXkMXmjfT02UVbRSqNwqv/fHPbl/vtrOboZYWHZPjZF3Oq/NsSnBCnhMV6AabOjEl/lqEfK79MDhBloVokk+sfqeDJVlBJOm/PonDFoZl94PJN5VHxyFVOi+N4P1i72v7FZ+Yc/uASh+Z4G0nGOtNy4cNR2Gb2TR6IWiXjOVVyJtCCvl2Rh5zSfQxiXzUAVXV41lmdt/mQVU5upDvapBGXlBxTSNo1nZaDb6iXRQKzpH76GHTk+KeK81XHrjrDDty+7hwUzqmUO361s+//9CgWtUAhdXYHO7SXQyDAEcbfcgTs0dp67JuV3FdW8MI9boyQwaqcp4yQ13k7x8CcHdIa7o0fPqTcR8RZoVYlcN49LCOBRlWY30pA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(316002)(33656002)(6916009)(6512007)(83380400001)(1076003)(2616005)(186003)(26005)(38100700002)(86362001)(5660300002)(508600001)(8676002)(4326008)(66556008)(66946007)(66476007)(8936002)(36756003)(6506007)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?agPS09rsJ4YQFJEpOQic7O0SXZHgI3Gd4s46JU5qIs0CnjEi3SD1zBK6ppF3?=
+ =?us-ascii?Q?D/DdYpLvGfYrhZH2MGOjhzR1eCXJdg1mI2ZtXMI0xPhwn4NW99/dAuptsnry?=
+ =?us-ascii?Q?mD+yvxjbFS3TtJtRNan59FwTIA/NG91DkPFXownMoojwzBeBLHq8fl3dqIhR?=
+ =?us-ascii?Q?Mmg6p0qnemwOEUfa+XsqnAGxlJxMfqaK7J6qui9+BqEbkZn4xAzB6sRAZ3d3?=
+ =?us-ascii?Q?cNOQIdw9ZHelByPh83+kUPGA0gcYXVwdOkb1/97zqYOmGGSj2Jh6qZqd11mv?=
+ =?us-ascii?Q?lcu7O/QudKeRPoi64zNk7MCf9g/pflsP3T+rMrulUIvWiq3Vg5EALAywDidK?=
+ =?us-ascii?Q?Bmv7ogS6s4dXZItWf84FVIa/ZhUcUq1iYVwaFP0QDvYyNFi8QozZkP/gpnPU?=
+ =?us-ascii?Q?gts8d09Nm5aU9rjLxmaBsh1q7y5szpQGHl5kEPoniP9M45RJLZdswxUDmIW5?=
+ =?us-ascii?Q?r01oKQjMAhtC3CfQnSg62wcPnFxRTNPEE8XcT/iBgBA5q5VJfiwFU5v+uLO3?=
+ =?us-ascii?Q?Uf92o9Wn4DWCh+hQx4AqlUQ6MqkLyJPsQJqpCqGGC1oHUvsgypCS+/5pCBjx?=
+ =?us-ascii?Q?qYxYQ+4wZXGvn+KfbNt0g75pBCvVuGrS3jzxQ2oEQ38ssKbrb5volQH+qMy3?=
+ =?us-ascii?Q?nL03cmSjJPUWIfqzLbV8/9ikUek3EK377fL3vcYvLLZx0uCkbU1Nti8WM7on?=
+ =?us-ascii?Q?Eyap+Hd0sxPnB5heksCNRe6maTAtCktsBPYOjoeksmtcFvCm6oeh1LnHVCzQ?=
+ =?us-ascii?Q?bC+pAR4uArLHFjcP9oSuGPofIryTcQv1JCXcIJyUT3Y9C0oHll8H1cRvo3lC?=
+ =?us-ascii?Q?woT4I8It/aRcGOOoDGWKGGtALDlXHXYBexZxpsB1A0rT+kv0bjlnCRGAmI+9?=
+ =?us-ascii?Q?TwK27FwSCpy8k0TVn6CYyzJj0eR/hDkGg0LjHntOCAIPUeDpf3b/60mUwDVt?=
+ =?us-ascii?Q?ZPPhXPxuN8ix4TGrf934zcD1XAwyFTCSZi8xmivfimYRourzc3EBtPsmuva9?=
+ =?us-ascii?Q?+7FxZGemlumf2WUi8HuWGbjy/fSwft/l9JSzpFKeC3uTkjbfVx/9GooFT3Fi?=
+ =?us-ascii?Q?jqRLuGduocIy4WGRlkn/uWqLSQnjR55IycvlVvMTt7q4Y+p3135OY4EHQeSs?=
+ =?us-ascii?Q?XU+VqUS//V19MyDnfh2oIDs6GxOKPczrQz9GSfZMzdT0zd+Dc+1cgzdDd7mG?=
+ =?us-ascii?Q?HjrjtcFdG2xKiYV1cFvElxZsJbrcHpwL2AvOLnvmuxJhOJA67Rm1KuNI3Cxi?=
+ =?us-ascii?Q?cRfaUBXHHHN/Kw4o8k0syQO0HNWfGu4POFe/4h8lvjjenwWPeA6PWNcRG0oz?=
+ =?us-ascii?Q?dkFn3AWmvcLGMaLcJ9uI9QmTkJzEp7bUVqIjXwkWZfSownYfYh6PdBiZUAhY?=
+ =?us-ascii?Q?6e/0csyhVqHGyA940CE+IYcdMVO5mcsG8LWLx3zSAy+RvRMnd12HM2Sagjbw?=
+ =?us-ascii?Q?ogdv89xySatYv31YbuOv/dhMxJFMXamm?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f9378c3-6e40-4455-3042-08da06ac51dd
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 17:50:40.6764
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7ro9aML2eNCcNTMbo4cqQVBwq/3t1xDKplh/NhnAk6hNdTTAEYLoSxbCQZuaZkFG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3660
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During the uvcg_video_pump() process, if an error occurs and
-uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
-the current marker (queue->buf_used) of the active buffer (no longer
-active) is not reset. On the next iteration of uvcg_video_pump() the
-stale buf_used count will be used and the logic of min((unsigned
-int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
-nbytes size, causing an invalid memory access.
+On Tue, Mar 15, 2022 at 11:29:57AM -0600, Alex Williamson wrote:
+> Device specific extensions for devices exposed to userspace through
+> the vfio-pci-core library open both new functionality and new risks.
+> Here we attempt to provided formalized requirements and expectations
+> to ensure that future drivers both collaborate in their interaction
+> with existing host drivers, as well as receive additional reviews
+> from community members with experience in this area.
+> 
+> Cc: Jason Gunthorpe <jgg@nvidia.com>
+> Acked-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
+> Acked-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> 
+> v4:
+> 
+> Banish the word "vendor", replace with "device specific"
+> Minor wording changes in docs file
+> Add sign-offs from Kevin and Yishai
+> 
+> I'll drop Jason from reviewers if there's no positive approval
+> after this round.
 
-[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
-with status -18.
-...
-uvcg_queue_cancel() is called and the queue is cleared out, but the
-marker queue->buf_used is not reset.
-...
-[80802.262328][ T8682] Unable to handle kernel paging request at virtual
-address ffffffc03af9f000
-...
-...
-[80802.263138][ T8682] Call trace:
-[80802.263146][ T8682]  __memcpy+0x12c/0x180
-[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
-[80802.263165][ T8682]  process_one_work+0x2cc/0x568
-[80802.263173][ T8682]  worker_thread+0x28c/0x518
-[80802.263181][ T8682]  kthread+0x160/0x170
-[80802.263188][ T8682]  ret_from_fork+0x10/0x18
-[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
+Sorry, you are looking for this?
 
-Signed-off-by: Dan Vacura <w36195@motorola.com>
----
- drivers/usb/gadget/function/uvc_queue.c | 2 ++
- 1 file changed, 2 insertions(+)
+Acked-by: Jason Gunthorpe <jgg@nvidia.com>
 
-diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
-index d852ac9e47e7..2cda982f3765 100644
---- a/drivers/usb/gadget/function/uvc_queue.c
-+++ b/drivers/usb/gadget/function/uvc_queue.c
-@@ -264,6 +264,8 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
- 		buf->state = UVC_BUF_STATE_ERROR;
- 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
- 	}
-+	queue->buf_used = 0;
-+
- 	/* This must be protected by the irqlock spinlock to avoid race
- 	 * conditions between uvc_queue_buffer and the disconnection event that
- 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
--- 
-2.32.0
-
+Thanks,
+Jason
