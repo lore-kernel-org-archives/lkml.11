@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4761BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7434C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352389AbiCOWva (ORCPT
+        id S1352406AbiCOWve (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 18:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
+        Tue, 15 Mar 2022 18:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242937AbiCOWv1 (ORCPT
+        with ESMTP id S243678AbiCOWv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 18:51:27 -0400
+        Tue, 15 Mar 2022 18:51:28 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A905D1A8;
-        Tue, 15 Mar 2022 15:50:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E2C5D1A2;
+        Tue, 15 Mar 2022 15:50:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647384613; x=1678920613;
+  t=1647384616; x=1678920616;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7cHtBavUZQpj+upBdcXGP4IKZQedaVsnZ7sJicl2SlE=;
-  b=GZYoKuvzDMmRa3+NqihARUENjeKPlSIJq41lUn7vgyuD7VISExoC0RKN
-   R0Xi07XsI7DqK4aL5pdMh9gciudoWzJz2Em9T/TFYsbyDEu3NxkZf2OZ7
-   7N3c0yVMEZf5zwNpwC5cnjYeH6myng4sa65aCvOlGE1yWat/z4nIhA+Pd
-   z6O/SBlh3M/rA+2+3avWl8uxKxdOYHVP0tbHnrXPS9d7/g221GZmNQzE6
-   Puc8bePfwwQpXpu51H9WrZrmwT3b68gTJiwdL7VfjYKhYRWcH4fD4Gp61
-   53vIJAme+XqMgrN+CvsfrKJKBC7veDL6rCpTnG2Q0JbNiTQ0mCXnzjyYJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256390615"
+  bh=DcYwzhG3BAwKMmOKfVqm6mROgZ/YXgBVRreQCgMf4e4=;
+  b=mcxReMi3TBrKxXGKeREvHU7go2IIqu3VKcNO2ibLy4VuByIS2ZjHUcAa
+   2GTOWMcX1YNaaHoQNSD+mOExO/UrT8s40WFuOUDQt4J026a9il93og8li
+   Ij7NPHEeW/i0zYZV+5pw9XXY268CSSGWvZhTgbbrg83e8+OlJT8LYsZ1M
+   zQuxilBvCmCXlUgZvElHtUpkz9SWcWe4GchfbIZjv+1iQgxfCJUjFCuUN
+   yOggmVau9MTGFUfrIQqAy0IraXrvqPhsqazY8rHQuVQ+ionc4LhDi65ab
+   vhgYxRrj2GuUkxfqhYFWWGSaJuyEs9jY9xmoABjyUDH7zTzvqneWyfRb/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256390617"
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="256390615"
+   d="scan'208";a="256390617"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 15:50:12 -0700
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="690368455"
+   d="scan'208";a="690368461"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 15:50:12 -0700
 From:   isaku.yamahata@intel.com
@@ -45,9 +45,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Jim Mattson <jmattson@google.com>, erdemaktas@google.com,
         Connor Kuehl <ckuehl@redhat.com>,
         Sean Christopherson <seanjc@google.com>
-Subject: [PATCH 1/6] KVM: Enable hardware before doing arch VM initialization
-Date:   Tue, 15 Mar 2022 15:50:05 -0700
-Message-Id: <ba4545085ed499f48752593731532cd65d3a656f.1647384147.git.isaku.yamahata@intel.com>
+Subject: [PATCH 3/6] KVM: x86: Refactor KVM VMX module init/exit functions
+Date:   Tue, 15 Mar 2022 15:50:07 -0700
+Message-Id: <cc018c435253c8855fe49aa8228918cb0f620095.1647384147.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1647384147.git.isaku.yamahata@intel.com>
 References: <cover.1647384147.git.isaku.yamahata@intel.com>
@@ -57,64 +57,232 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-Swap the order of hardware_enable_all() and kvm_arch_init_vm() to
-accommodate Intel's TDX, which needs VMX to be enabled during VM init in
-order to make SEAMCALLs.
+Currently, KVM VMX module initialization/exit functions are a single
+function each.  Refactor KVM VMX module initialization functions into KVM
+common part and VMX part so that TDX specific part can be added cleanly.
+Opportunistically refactor module exit function as well.
 
-This also provides consistent ordering between kvm_create_vm() and
-kvm_destroy_vm() with respect to calling kvm_arch_destroy_vm() and
-hardware_disable_all().
+The current module initialization flow is, 1.) calculate the sizes of VMX
+kvm structure and VMX vcpu structure, 2.) hyper-v specific initialization
+3.) report those sizes to the KVM common layer and KVM common
+initialization, and 4.) VMX specific system-wide initialization.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Refactor the KVM VMX module initialization function into functions with a
+wrapper function to separate VMX logic in vmx.c from a file, main.c, common
+among VMX and TDX.  We have a wrapper function, "vt_init() {vmx kvm/vcpu
+size calculation; hv_vp_assist_page_init(); kvm_init(); vmx_init(); }" in
+main.c, and hv_vp_assist_page_init() and vmx_init() in vmx.c.
+hv_vp_assist_page_init() initializes hyper-v specific assist pages,
+kvm_init() does system-wide initialization of the KVM common layer, and
+vmx_init() does system-wide VMX initialization.
+
+The KVM architecture common layer allocates struct kvm with reported size
+for architecture-specific code.  The KVM VMX module defines its structure
+as struct vmx_kvm { struct kvm; VMX specific members;} and uses it as
+struct vmx kvm.  Similar for vcpu structure. TDX KVM patches will define
+TDX specific kvm and vcpu structures.
+
+The current module exit function is also a single function, a combination
+of VMX specific logic and common KVM logic.  Refactor it into VMX specific
+logic and KVM common logic.  This is just refactoring to keep the VMX
+specific logic in vmx.c from main.c.
+
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- virt/kvm/kvm_main.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/main.c    | 37 +++++++++++++++
+ arch/x86/kvm/vmx/vmx.c     | 94 ++++++++++++++++++--------------------
+ arch/x86/kvm/vmx/x86_ops.h |  5 +-
+ 3 files changed, 86 insertions(+), 50 deletions(-)
 
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 0afc016cc54d..52f72a366beb 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1105,19 +1105,19 @@ static struct kvm *kvm_create_vm(unsigned long type)
- 		rcu_assign_pointer(kvm->buses[i],
- 			kzalloc(sizeof(struct kvm_io_bus), GFP_KERNEL_ACCOUNT));
- 		if (!kvm->buses[i])
--			goto out_err_no_arch_destroy_vm;
-+			goto out_err_no_disable;
- 	}
+diff --git a/arch/x86/kvm/vmx/main.c b/arch/x86/kvm/vmx/main.c
+index b08ea9c42a11..8b50427f404b 100644
+--- a/arch/x86/kvm/vmx/main.c
++++ b/arch/x86/kvm/vmx/main.c
+@@ -152,3 +152,40 @@ struct kvm_x86_init_ops vt_init_ops __initdata = {
  
- 	kvm->max_halt_poll_ns = halt_poll_ns;
- 
--	r = kvm_arch_init_vm(kvm, type);
--	if (r)
--		goto out_err_no_arch_destroy_vm;
--
- 	r = hardware_enable_all();
- 	if (r)
- 		goto out_err_no_disable;
- 
-+	r = kvm_arch_init_vm(kvm, type);
-+	if (r)
-+		goto out_err_no_arch_destroy_vm;
+ 	.runtime_ops = &vt_x86_ops,
+ };
 +
- #ifdef CONFIG_HAVE_KVM_IRQFD
- 	INIT_HLIST_HEAD(&kvm->irq_ack_notifier_list);
++static int __init vt_init(void)
++{
++	unsigned int vcpu_size, vcpu_align;
++	int r;
++
++	vt_x86_ops.vm_size = sizeof(struct kvm_vmx);
++	vcpu_size = sizeof(struct vcpu_vmx);
++	vcpu_align = __alignof__(struct vcpu_vmx);
++
++	hv_vp_assist_page_init();
++
++	r = kvm_init(&vt_init_ops, vcpu_size, vcpu_align, THIS_MODULE);
++	if (r)
++		goto err_vmx_post_exit;
++
++	r = vmx_init();
++	if (r)
++		goto err_kvm_exit;
++
++	return 0;
++
++err_kvm_exit:
++	kvm_exit();
++err_vmx_post_exit:
++	hv_vp_assist_page_exit();
++	return r;
++}
++module_init(vt_init);
++
++static void vt_exit(void)
++{
++	vmx_exit();
++	kvm_exit();
++	hv_vp_assist_page_exit();
++}
++module_exit(vt_exit);
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index f1c44ad712f7..538b91380c06 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -7935,48 +7935,8 @@ static void vmx_cleanup_l1d_flush(void)
+ 	l1tf_vmx_mitigation = VMENTER_L1D_FLUSH_AUTO;
+ }
+ 
+-static void vmx_exit(void)
++void __init hv_vp_assist_page_init(void)
+ {
+-#ifdef CONFIG_KEXEC_CORE
+-	RCU_INIT_POINTER(crash_vmclear_loaded_vmcss, NULL);
+-	synchronize_rcu();
+-#endif
+-
+-	kvm_exit();
+-
+-#if IS_ENABLED(CONFIG_HYPERV)
+-	if (static_branch_unlikely(&enable_evmcs)) {
+-		int cpu;
+-		struct hv_vp_assist_page *vp_ap;
+-		/*
+-		 * Reset everything to support using non-enlightened VMCS
+-		 * access later (e.g. when we reload the module with
+-		 * enlightened_vmcs=0)
+-		 */
+-		for_each_online_cpu(cpu) {
+-			vp_ap =	hv_get_vp_assist_page(cpu);
+-
+-			if (!vp_ap)
+-				continue;
+-
+-			vp_ap->nested_control.features.directhypercall = 0;
+-			vp_ap->current_nested_vmcs = 0;
+-			vp_ap->enlighten_vmentry = 0;
+-		}
+-
+-		static_branch_disable(&enable_evmcs);
+-	}
+-#endif
+-	vmx_cleanup_l1d_flush();
+-
+-	allow_smaller_maxphyaddr = false;
+-}
+-module_exit(vmx_exit);
+-
+-static int __init vmx_init(void)
+-{
+-	int r, cpu;
+-
+ #if IS_ENABLED(CONFIG_HYPERV)
+ 	/*
+ 	 * Enlightened VMCS usage should be recommended and the host needs
+@@ -8010,11 +7970,38 @@ static int __init vmx_init(void)
+ 		enlightened_vmcs = false;
+ 	}
  #endif
-@@ -1145,10 +1145,10 @@ static struct kvm *kvm_create_vm(unsigned long type)
- 		mmu_notifier_unregister(&kvm->mmu_notifier, current->mm);
- #endif
- out_err_no_mmu_notifier:
--	hardware_disable_all();
--out_err_no_disable:
- 	kvm_arch_destroy_vm(kvm);
- out_err_no_arch_destroy_vm:
-+	hardware_disable_all();
-+out_err_no_disable:
- 	WARN_ON_ONCE(!refcount_dec_and_test(&kvm->users_count));
- 	for (i = 0; i < KVM_NR_BUSES; i++)
- 		kfree(kvm_get_bus(kvm, i));
++}
+ 
+-	r = kvm_init(&vt_init_ops, sizeof(struct vcpu_vmx),
+-		__alignof__(struct vcpu_vmx), THIS_MODULE);
+-	if (r)
+-		return r;
++void hv_vp_assist_page_exit(void)
++{
++#if IS_ENABLED(CONFIG_HYPERV)
++	if (static_branch_unlikely(&enable_evmcs)) {
++		int cpu;
++		struct hv_vp_assist_page *vp_ap;
++		/*
++		 * Reset everything to support using non-enlightened VMCS
++		 * access later (e.g. when we reload the module with
++		 * enlightened_vmcs=0)
++		 */
++		for_each_online_cpu(cpu) {
++			vp_ap =	hv_get_vp_assist_page(cpu);
++
++			if (!vp_ap)
++				continue;
++
++			vp_ap->nested_control.features.directhypercall = 0;
++			vp_ap->current_nested_vmcs = 0;
++			vp_ap->enlighten_vmentry = 0;
++		}
++
++		static_branch_disable(&enable_evmcs);
++	}
++#endif
++}
++
++int __init vmx_init(void)
++{
++	int r, cpu;
+ 
+ 	/*
+ 	 * Must be called after kvm_init() so enable_ept is properly set
+@@ -8024,10 +8011,8 @@ static int __init vmx_init(void)
+ 	 * mitigation mode.
+ 	 */
+ 	r = vmx_setup_l1d_flush(vmentry_l1d_flush_param);
+-	if (r) {
+-		vmx_exit();
++	if (r)
+ 		return r;
+-	}
+ 
+ 	for_each_possible_cpu(cpu) {
+ 		INIT_LIST_HEAD(&per_cpu(loaded_vmcss_on_cpu, cpu));
+@@ -8051,4 +8036,15 @@ static int __init vmx_init(void)
+ 
+ 	return 0;
+ }
+-module_init(vmx_init);
++
++void vmx_exit(void)
++{
++#ifdef CONFIG_KEXEC_CORE
++	RCU_INIT_POINTER(crash_vmclear_loaded_vmcss, NULL);
++	synchronize_rcu();
++#endif
++
++	vmx_cleanup_l1d_flush();
++
++	allow_smaller_maxphyaddr = false;
++}
+diff --git a/arch/x86/kvm/vmx/x86_ops.h b/arch/x86/kvm/vmx/x86_ops.h
+index 40c64fb1f505..74465c3d3c5f 100644
+--- a/arch/x86/kvm/vmx/x86_ops.h
++++ b/arch/x86/kvm/vmx/x86_ops.h
+@@ -8,7 +8,10 @@
+ 
+ #include "x86.h"
+ 
+-extern struct kvm_x86_init_ops vt_init_ops __initdata;
++void __init hv_vp_assist_page_init(void);
++void hv_vp_assist_page_exit(void);
++int __init vmx_init(void);
++void vmx_exit(void);
+ 
+ __init int vmx_cpu_has_kvm_support(void);
+ __init int vmx_disabled_by_bios(void);
 -- 
 2.25.1
 
