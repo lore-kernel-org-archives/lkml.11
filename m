@@ -2,95 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 725B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2648C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:56:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344575AbiCOW5L (ORCPT
+        id S1352375AbiCOW6K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 18:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
+        Tue, 15 Mar 2022 18:58:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344423AbiCOW5I (ORCPT
+        with ESMTP id S242097AbiCOW6G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 18:57:08 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305E95D5E1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 15:55:55 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id u7so854454ljk.13
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 15:55:55 -0700 (PDT)
+        Tue, 15 Mar 2022 18:58:06 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9705D5E8;
+        Tue, 15 Mar 2022 15:56:54 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id r64so298512wmr.4;
+        Tue, 15 Mar 2022 15:56:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=353ErsK+RGDyNPxQky3skb4+jiks6X7CPsq9uRQTVb4=;
-        b=L6/T4rpw8WvPr3573NYwtD1rNDtLBVQhNsCYrmwLv+NkgCN7Yw4pp3lP8uplbUZojD
-         pyOf8RRVzciVkb8rIBMWXnSu/Xr5Qx8oSbLjdj5lhNu4rQL+2SSQ+R9TeYG0Omq1TgFL
-         Sii7aIxy9lb0SUxbnzNauaFAEQNgf0B/Atzv6snv1iKF231IHrSfU3ln8FgGC+lJ7Y5o
-         yI1bUvJcYJjuDulZmw4h2tCHsEsLUqGOzXNrsKFVLaFfns29ns6pRL3CbFlLFbt7Wm+J
-         Ynt80jfSlsdVM54NIs/Ozbb8dzMfmcAzmImF4BO39/GRakEEr9yQRdnIvqTspZKxvClS
-         IdLA==
+        bh=24VtKr5EZlRUAniNrHl7Vqv7yBDi06kzFW/0QHQhnB8=;
+        b=iOXBAO77/3BxYFKnUR3HJOj0oYwu2mPCVP8ro8d1TeO7WOc5+Kh2QIm4LdvrPudqmP
+         qrqrcW3y/qQlOeFsejQIYAyQ2MR3JdPg41qlgHh+dFDn7Qx1mXD7adIxjt9DueUwZbvj
+         CvaPHqLgeNznzoSypSlSrZJ3XB58BKfJFy7sDlG3ehc+eLpWCzcKTpDmOce7MUgDk6+6
+         pNM+bgxX5z//NS4rZStaKpNhd3F0DIQiXJrZXl3VkfYRjb0rlrfRsH6BYWe8YieIzROL
+         0lZIkySK+NCTeybzHBE/f87UQT+tv7b//Swo2qeX9tiY+wSNqyKfuEUAKvq1lpmXf00c
+         w+zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=353ErsK+RGDyNPxQky3skb4+jiks6X7CPsq9uRQTVb4=;
-        b=2ZNVoaCA5m9VUjOWMu9Ia9hBtvaSEjfWXu9SO96ugfiWt8+w3Pw/KKoLEc/4wWcLhy
-         YnrwqmxqHPWgea7qrnpDIo4xDhD5qdmuCQCWRVHExeGW8bKh9b/PCv1jXVEFXh4I8WBu
-         DvVjv8urefZlRGD8gPjy7fP8ZswickVax7XjikmsCNKaO2suuy5CtjWp9j4pMCEnRMoX
-         vuhu0x1D5IaGVNzdImhTubNgDwdqcK2O6syRsO2wDa5iHGX5NJ7CcYi66HXMYWk3jbqI
-         XycxUmyFJ/3PPY3TECXt83wMmHSrjKXMw6iHnERiFb9TYF7Ka0pNPZxHpMzz9b0awFyP
-         xV1w==
-X-Gm-Message-State: AOAM530B2CCXvYR/QEASgWUUkXKeOJFuK2MmDA6tC7bCh93w4EDNV2Ny
-        ZXMISM1PXqW98NJz9qZIvMp7Ag==
-X-Google-Smtp-Source: ABdhPJzYA7g7r6z6hBDKdXhfFziYg1jj95qbG394ogx9KGZh1RJJ+T13V3Dd1E6WLqyyb5F/FAlF/w==
-X-Received: by 2002:a2e:b0f5:0:b0:249:2986:4fa8 with SMTP id h21-20020a2eb0f5000000b0024929864fa8mr10504755ljl.128.1647384953430;
-        Tue, 15 Mar 2022 15:55:53 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id 5-20020a2e1445000000b002491768821asm29445lju.49.2022.03.15.15.55.52
+         :content-transfer-encoding;
+        bh=24VtKr5EZlRUAniNrHl7Vqv7yBDi06kzFW/0QHQhnB8=;
+        b=O62r/36SdGqjKQYypp3ZBQuJdq7BQ7uWsSfkxaHn6NntU6H5zXkvnqWs20Gx6xOH5s
+         20n8xMUsPBgnLisAMvjyQQABMf+Bd7eFAwywk8PkBU3osa7mkB8rM1iiD5szakFEx0za
+         gymXXbxWBPgUMqu2KlBEeyGVeD/l48Mp+2GbhQ8td/PdVPr1p2DSYZlm46wIJhNz53gL
+         LswRnBpJrOLRgFJmgT0vkDd3wcMSSGCl+yDWL7r7p1V/D6CpKyLEGvhNx+uBIXDSJ0pa
+         arQoD5cd2g4qS4qz7W/746LREU/rKiufAArcaUnA+VXwQHbSq6No2apXDI1Jjx6aH2tT
+         vTNw==
+X-Gm-Message-State: AOAM531cYPnOBkxUzquua/6oBCy0FA99vMolLqr2ucLNmkl98sk9P+3t
+        B1fxOVcDfKBFcLBazoVHDug=
+X-Google-Smtp-Source: ABdhPJxxZGPsRiBZgZTSNbvIqcIom80atjiTUxAC5vg9WqZDEpWBmtueEfZ+7k4YNsyBiUizj6d+sA==
+X-Received: by 2002:a7b:c844:0:b0:37b:b986:7726 with SMTP id c4-20020a7bc844000000b0037bb9867726mr5167966wml.160.1647385012614;
+        Tue, 15 Mar 2022 15:56:52 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id bg18-20020a05600c3c9200b0037c2ef07493sm150641wmb.3.2022.03.15.15.56.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 15:55:52 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: Never offload FDB entries on standalone ports
-Date:   Tue, 15 Mar 2022 23:50:18 +0100
-Message-Id: <20220315225018.1399269-1-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 15 Mar 2022 15:56:52 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] kselftests/sched: Fix spelling mistake "hiearchy" -> "hierarchy"
+Date:   Tue, 15 Mar 2022 22:56:51 +0000
+Message-Id: <20220315225651.2963692-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Organization: Westermo
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a port joins a bridge that it can't offload, it will fallback to
-standalone mode and software bridging. In this case, we never want to
-offload any FDB entries to hardware either.
+There is a spelling mistake in a message. Fix it.
 
-Fixes: c26933639b54 ("net: dsa: request drivers to perform FDB isolation")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- net/dsa/slave.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/sched/cs_prctl_test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index f9cecda791d5..d24b6bf845c1 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2847,6 +2847,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	if (ctx && ctx != dp)
- 		return 0;
+diff --git a/tools/testing/selftests/sched/cs_prctl_test.c b/tools/testing/selftests/sched/cs_prctl_test.c
+index 8109b17dc764..62b579b601bf 100644
+--- a/tools/testing/selftests/sched/cs_prctl_test.c
++++ b/tools/testing/selftests/sched/cs_prctl_test.c
+@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
+ 	if (setpgid(0, 0) != 0)
+ 		handle_error("process group");
  
-+	if (!dp->bridge)
-+		return 0;
-+
- 	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
- 		if (dsa_port_offloads_bridge_port(dp, orig_dev))
- 			return 0;
+-	printf("\n## Create a thread/process/process group hiearchy\n");
++	printf("\n## Create a thread/process/process group hierarchy\n");
+ 	create_processes(num_processes, num_threads, procs);
+ 	need_cleanup = 1;
+ 	disp_processes(num_processes, procs);
 -- 
-2.25.1
+2.35.1
 
