@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A592C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51640C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346054AbiCOIdt (ORCPT
+        id S1346028AbiCOId4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
+        Tue, 15 Mar 2022 04:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345995AbiCOIcU (ORCPT
+        with ESMTP id S1345981AbiCOIcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:32:20 -0400
+        Tue, 15 Mar 2022 04:32:22 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944E34C7BD;
-        Tue, 15 Mar 2022 01:31:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546C44C419;
+        Tue, 15 Mar 2022 01:31:08 -0700 (PDT)
 Date:   Tue, 15 Mar 2022 08:31:05 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647333066;
+        s=2020; t=1647333067;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=PAIfHzuLRTya4FtPeZFGwa7r26FL64VKw4IcqyzpqZ8=;
-        b=f5zRCkxeIzLqsCRBSJcuttc8dFdhhIw2iTW+OQPH7BzLQd7UH05xj85P1E0S4BBjbjpISB
-        LenlNt9VDOVznP50bTywBh9kQfQCsDcSjHqGK4jl/DuQrSeHY30rLRC4UmbM34sSEa3zGM
-        SsEiLW5+20gIEuqlIY6lC0xplCfWTKA42cqBxuDbt5BZzhCQex074kKIFP8qCA8wzcKwtF
-        8yP47NDj5RzkPn1BKUXmALHtSdGyOe3oOgdirDQhJWfL9zzg5QodUXeNeim2On0gsFWTQA
-        20soWe1BdcfVdkZ8JKQQBSWm2FEQjzJJAa2n/JtM7DLUijKg4iol14ryPjt62w==
+        bh=UAIRvPHhLICHuzpmGnHhZ3b8PdOAJg3TecYBKbJl/bw=;
+        b=uhtsO7O82VpidByscYeyRbcKRoRnOLipgruFFSCtfM8zFxGDd1rEA1imrlQwermyHng2PW
+        +UIqX7OCgvkgeAlDhxm2ZuJyL0nIH183wnYI39PQAZcXUzkU8SgoIZ5cHloSmRxh8il6RW
+        L44GTYK5uHsKRXW4snIlDcmUsF5sOKWidj1DqKRG1taLG3B5EatN1UPuCFq8V5uzM8SHyc
+        y0/UINX32zKNxppDSPTRxwg+A1LGNu1PzagYZChCS6BJ0Ymn2rTTgWgwNkRn0hFxZGb+Bw
+        yJo+ou5r0QKrHDMyDAGuYT/Vuqu6DWFcPeaBIBDKwO9WZ9KbujgB3S57zExNLA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647333066;
+        s=2020e; t=1647333067;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=PAIfHzuLRTya4FtPeZFGwa7r26FL64VKw4IcqyzpqZ8=;
-        b=iTmzHV54KqmegI9+7xKYI1nr/g5BmLLjqFdLmjwFX7eCVMr2t79HBABkLYwIgzUQFPuktR
-        LX3KzkGIMG5nRRDg==
+        bh=UAIRvPHhLICHuzpmGnHhZ3b8PdOAJg3TecYBKbJl/bw=;
+        b=6eJbi4iJ7YE62jVXojY7Zah86anL1HuzAqOBgw4vwOWlBo50BkdLz1yhaGwgw6uHQJdXPO
+        x7//stMiiU9DOWAA==
 From:   "tip-bot2 for Ingo Molnar" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/headers: Add header guard to kernel/sched/sched.h
+Subject: [tip: sched/core] sched/headers: Fix header to build standalone:
+ <linux/sched_clock.h>
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Message-ID: <164733306511.16921.3387492917730056941.tip-bot2@tip-bot2>
+Message-ID: <164733306599.16921.3819732401528699569.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -56,39 +57,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     95458477f5b2dc436e3aa6aa25c0f84bb83e6195
-Gitweb:        https://git.kernel.org/tip/95458477f5b2dc436e3aa6aa25c0f84bb83e6195
+Commit-ID:     d0b9d6dcaa5ac480c272683919f387cc6d82b638
+Gitweb:        https://git.kernel.org/tip/d0b9d6dcaa5ac480c272683919f387cc6d82b638
 Author:        Ingo Molnar <mingo@kernel.org>
-AuthorDate:    Tue, 22 Feb 2022 14:50:43 +01:00
+AuthorDate:    Thu, 23 Sep 2021 20:42:44 +02:00
 Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Wed, 23 Feb 2022 08:21:56 +01:00
+CommitterDate: Wed, 23 Feb 2022 08:21:32 +01:00
 
-sched/headers: Add header guard to kernel/sched/sched.h
+sched/headers: Fix header to build standalone: <linux/sched_clock.h>
 
-Use the canonical header guard naming of the full path to the header.
+Uses various kernel types that don't build standalone.
 
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 Reviewed-by: Peter Zijlstra <peterz@infradead.org>
 ---
- kernel/sched/sched.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/sched_clock.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 3da5718..eab4a18 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -2,6 +2,9 @@
- /*
-  * Scheduler internal types and methods:
-  */
-+#ifndef _KERNEL_SCHED_SCHED_H
-+#define _KERNEL_SCHED_SCHED_H
+diff --git a/include/linux/sched_clock.h b/include/linux/sched_clock.h
+index 835ee87..cb41c5e 100644
+--- a/include/linux/sched_clock.h
++++ b/include/linux/sched_clock.h
+@@ -5,6 +5,8 @@
+ #ifndef LINUX_SCHED_CLOCK
+ #define LINUX_SCHED_CLOCK
+ 
++#include <linux/types.h>
 +
- #include <linux/sched.h>
- 
- #include <linux/sched/autogroup.h>
-@@ -3137,3 +3140,4 @@ extern int sched_dynamic_mode(const char *str);
- extern void sched_dynamic_update(int mode);
- #endif
- 
-+#endif /* _KERNEL_SCHED_SCHED_H */
+ #ifdef CONFIG_GENERIC_SCHED_CLOCK
+ /**
+  * struct clock_read_data - data required to read from sched_clock()
