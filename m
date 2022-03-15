@@ -2,68 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E5CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA5A2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346700AbiCOJkr (ORCPT
+        id S1346704AbiCOJl0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37318 "EHLO
+        Tue, 15 Mar 2022 05:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbiCOJkp (ORCPT
+        with ESMTP id S233221AbiCOJlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:40:45 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA94A3BF87;
-        Tue, 15 Mar 2022 02:39:33 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 65A1D1F436D5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647337172;
-        bh=/omHuW1SBHtv3icmbq+E6xjfrNJbrtd1dBgkplAsHXM=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=fPqGt4lG/y1cdMJv/FxZOzqQGn3I2ukezczjNlal/QNlmVFwYBjY+tWMbv0BY0VO8
-         v0Av7diONYTnTW/u3eVVi4WGvNCJ9z7g5WtRmoCjj/7Lrqly/6tUye0FqQvZpZhenv
-         NITjYji4vkUY9bl+dXKuSF9BV42Nu8dSA9CNdKxy/2qt8LNdgeybpkAtGYnW+S5by9
-         H4vj365CYfPE1W5n+L+d/4YJK3VKjjuubSWZaqckTrO+t72v2q6d5P19bvN2jzjTa9
-         tQ51+K0WHdE8tnGaIghot81smD0eitUHtw2REmRM/Jdk/hwB6hdQ3TcyFoc5OTYyi6
-         gvwHzDqpyzbVA==
-Message-ID: <49e44863-af2d-84e8-dc97-795740864aba@collabora.com>
-Date:   Tue, 15 Mar 2022 10:39:30 +0100
+        Tue, 15 Mar 2022 05:41:23 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C96D84ECFF;
+        Tue, 15 Mar 2022 02:40:10 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHpKh4GfCz4xLQ;
+        Tue, 15 Mar 2022 20:40:08 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647337209;
+        bh=+W7q2MrZPwI4JUFKKW5+cHmHOtdaZBaq4G59lSvj7Ak=;
+        h=Date:From:To:Cc:Subject:From;
+        b=TsVIs/uuO088y47w/sYf4HFTyDIV3nIy/epSQecJsPHTLDUX6p9eMoZXBHAuNDycO
+         xuzzbmdPhpfSBG2V3gryun6a+OFrB4+ivraqvMJKe08djW7/8h9e+m5YE0n0Bj7L87
+         ouEGER9Xcbd9o3thQnqjTF1kdT8TXsccQ5x6U2ZDiOPL3N32z+RgMUc/vCEx978VJX
+         mKiGfBnxqMg2O9kxZUvVovneksgNxZZoAfsLceRdZ2ReMIao3BJtt/DfkK/2NNFMvt
+         +AG27srJEPBgmnqw/fgyVDBDM09UKKr2ouvP97hx98ypmgjiqoi0dKuOy/Cunme6K+
+         Ume+hCGtWlZvQ==
+Date:   Tue, 15 Mar 2022 20:40:07 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Matthew Wilcox <willy@infradead.org>, Theodore Ts'o <tytso@mit.edu>
+Cc:     Jan Kara <jack@suse.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the folio tree with the ext4 tree
+Message-ID: <20220315204007.05ad4817@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH V4 3/6] spi: mediatek: add ipm design support for MT7986
-Content-Language: en-US
-To:     Leilk Liu <leilk.liu@mediatek.com>, Mark Brown <broonie@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-References: <20220315032411.2826-1-leilk.liu@mediatek.com>
- <20220315032411.2826-4-leilk.liu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220315032411.2826-4-leilk.liu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/73g1OV73vFjk/_BE4rBQFdx";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 15/03/22 04:24, Leilk Liu ha scritto:
-> this patch add the support of ipm design.
-> 
-> Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+--Sig_/73g1OV73vFjk/_BE4rBQFdx
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Sorry for the double email, the first one was sent from the wrong address.
+Hi all,
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Today's linux-next merge of the folio tree got a conflict in:
 
-> ---
->   drivers/spi/spi-mt65xx.c | 102 +++++++++++++++++++++++++++++++++------
->   1 file changed, 87 insertions(+), 15 deletions(-)
-> 
+  fs/ext4/inode.c
 
+between commit:
+
+  2bb8dd401a4f ("ext4: warn when dirtying page w/o buffers in data=3Djourna=
+l mode")
+
+from the ext4 tree and commit:
+
+  821405cf3ebb ("fs: Convert trivial uses of __set_page_dirty_nobuffers to =
+filemap_dirty_folio")
+
+from the folio tree.
+
+I didn't know how to complete this fix up ans so just commented out the
+new WARN_ON().
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc fs/ext4/inode.c
+index 3d0ca48d20c8,436efd31cc27..000000000000
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@@ -3573,31 -3541,30 +3573,32 @@@ const struct iomap_ops ext4_iomap_repor
+  };
+ =20
+  /*
+-  * Whenever the page is being dirtied, corresponding buffers should alrea=
+dy be
+ - * Folios can be marked dirty completely asynchronously from ext4's
+ - * journalling activity.  By filemap_sync_pte(), try_to_unmap_one(), etc.
+ - * We cannot do much here because ->dirty_folio may be called with the
+ - * page table lock held.  The folio is not necessarily locked.
+++ * Whenever the folio is being dirtied, corresponding buffers should alre=
+ady be
+ + * attached to the transaction (we take care of this in ext4_page_mkwrite=
+() and
+ + * ext4_write_begin()). However we cannot move buffers to dirty transacti=
+on
+-  * lists here because ->set_page_dirty is called under VFS locks and the =
+page
+++ * lists here because ->dirty_folio is called under VFS locks and the fol=
+io
+ + * is not necessarily locked.
+   *
+-  * We cannot just dirty the page and leave attached buffers clean, becaus=
+e the
++  * We cannot just dirty the folio and leave attached buffers clean, becau=
+se the
+   * buffers' dirty state is "definitive".  We cannot just set the buffers =
+dirty
+   * or jbddirty because all the journalling code will explode.
+   *
+-  * So what we do is to mark the page "pending dirty" and next time writep=
+age
++  * So what we do is to mark the folio "pending dirty" and next time write=
+page
+   * is called, propagate that into the buffers appropriately.
+   */
+- static int ext4_journalled_set_page_dirty(struct page *page)
++ static bool ext4_journalled_dirty_folio(struct address_space *mapping,
++ 		struct folio *folio)
+  {
+- 	WARN_ON_ONCE(!page_has_buffers(page));
+- 	SetPageChecked(page);
+- 	return __set_page_dirty_nobuffers(page);
+++/*	WARN_ON_ONCE(!page_has_buffers(page)); */
++ 	folio_set_checked(folio);
++ 	return filemap_dirty_folio(mapping, folio);
+  }
+ =20
+- static int ext4_set_page_dirty(struct page *page)
++ static bool ext4_dirty_folio(struct address_space *mapping, struct folio =
+*folio)
+  {
+- 	WARN_ON_ONCE(!PageLocked(page) && !PageDirty(page));
+- 	WARN_ON_ONCE(!page_has_buffers(page));
+- 	return __set_page_dirty_buffers(page);
++ 	WARN_ON_ONCE(!folio_test_locked(folio) && !folio_test_dirty(folio));
++ 	WARN_ON_ONCE(!folio_buffers(folio));
++ 	return block_dirty_folio(mapping, folio);
+  }
+ =20
+  static int ext4_iomap_swap_activate(struct swap_info_struct *sis,
+
+--Sig_/73g1OV73vFjk/_BE4rBQFdx
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwXvcACgkQAVBC80lX
+0GyiVgf/Wm79pLAeGzGaH3YG60NjrGjCFkMwL24tW2HbBe2gVRm4g/F4niVymkvv
+1QZMG7fnX7B+K10YTw98G97bgjl+ghKnnAxb0E4aq26slrRsJ6hrm21dSHDJy7Wr
+TP8uLpcd4QnZ11YBy35SHXS2ccB4wwgDhrKw9KHTY3/9qVEHg4E9MAn2tVBT7PTt
+vElRkDcg590/Rh4u/3la9j9NwXxJKSE8mDT0f0eRMmzbIRyyaQas7DECQd1dfsyc
+mduw/PLuDF7Ppbk+Win45stZnrai90rMdl4pkIuVLRGc6FUY0R2JEiAUSKKcdzhm
+C3VfK131cnssBFS0sN8PD05JmI70YQ==
+=r9HF
+-----END PGP SIGNATURE-----
+
+--Sig_/73g1OV73vFjk/_BE4rBQFdx--
