@@ -2,141 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE630C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4931C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349533AbiCOPAQ (ORCPT
+        id S1349520AbiCOPAX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 11:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48538 "EHLO
+        Tue, 15 Mar 2022 11:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349520AbiCOPAN (ORCPT
+        with ESMTP id S1349545AbiCOPAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 11:00:13 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D1C237FE
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:59:00 -0700 (PDT)
+        Tue, 15 Mar 2022 11:00:20 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8C32655F;
+        Tue, 15 Mar 2022 07:59:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647356340; x=1678892340;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BYnnyv9X5T2BKkwKlwpsPI4UkWTK+ZkTG1MysC+XAAY=;
-  b=hak4KnXd97cUPmojJMD+4cdMYLnr23OEbWHz1IBC5QczWVAtY2ajVBLE
-   EsMg2X2BWvt45BSo7yPCy5s1Mxq31WnqiSQGfq3ibEaNsApHgyyEJOqRu
-   tMdPlQoeetz8QBBxFjLA6iC6KhSvRCGLCWzxNKoctLhYH0hf+jMmhzUH9
-   k6A7StNFRd7yl0uV8qZEfuMwVM8E5CZLbDOHfJKBgZAi453WIsp6h4lV1
-   G2OVl0RzCoUP/35jwRtFHsDaFZKukMOPUUp+yPIjxYjCJRAFvzRM4Q+iW
-   fMC/0kMgCQBxfumehQCnaea/sHz2Dk0ZK/vHbPebztlpstpu4dOoruUli
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="319544177"
+  t=1647356346; x=1678892346;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=GyNyfKahJzTHsEIBBRJIhFWT/tnEv+2kPDiw/r6E+k4=;
+  b=HQLlDw9qtrAfxhh7fFJY3uga7lyOQJf7GrhSSKj1r86OqsEGXdsXuWpj
+   mCKkk5bE+X3p/zEf9LhvwLrqmo/Y8CVZb5kBJBLdHUNvpoWhK0MrCpqBP
+   jTcrMH2VFFwJe7sdrE789dutF7l1BC5ud4SOv+GZ3+gQWBJmDj0dRCCpA
+   AQs4O36GnYFy4mHak25NoxKYJwyGBwgzQY5+viwiKR15n9GHtw2Q5VXto
+   6CE3CVeegHf7DUXGT9O/WhlWueB7vVwanaAdu09yKIBDEv4unl+ZyJZBp
+   IUL6uwunywTC1h14xcOrt26gOsHk1mkOOvSdcl1NtKPWsXd+RdIudJoSE
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236929303"
 X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="319544177"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 07:59:00 -0700
+   d="scan'208";a="236929303"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 07:59:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="580541994"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 15 Mar 2022 07:58:59 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU8dW-000B7z-CF; Tue, 15 Mar 2022 14:58:58 +0000
-Date:   Tue, 15 Mar 2022 22:58:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org
-Subject: arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef
- expression
-Message-ID: <202203152229.15m9xTw1-lkp@intel.com>
+   d="scan'208";a="644286209"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga002.fm.intel.com with ESMTP; 15 Mar 2022 07:59:06 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 07:59:05 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 07:59:04 -0700
+Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
+ fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.021;
+ Tue, 15 Mar 2022 07:59:04 -0700
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>
+Subject: RE: [RFC 00/10] Introduce In Field Scan driver
+Thread-Topic: [RFC 00/10] Introduce In Field Scan driver
+Thread-Index: AQHYLaZcmKq0UuRYGU6xp1k7P7vRw6yre5AAgAABJQCAFBlxgIABAjIAgAAEKTA=
+Date:   Tue, 15 Mar 2022 14:59:03 +0000
+Message-ID: <c4af81bd788e43dda915a1052af0be55@intel.com>
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <Yh59rOIH24X+6GyI@kroah.com> <Yh5+om/Nr06V0+Qj@kroah.com>
+ <Yi/Lb5laEki0JHft@agluck-desk3.sc.intel.com> <YjBBmEjbIaqTbVt+@kroah.com>
+In-Reply-To: <YjBBmEjbIaqTbVt+@kroah.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   09688c0166e76ce2fb85e86b9d99be8b0084cdf9
-commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
-date:   7 months ago
-config: arc-randconfig-s032-20220315 (https://download.01.org/0day-ci/archive/20220315/202203152229.15m9xTw1-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e188f3330a13df904d77003846eafd3edf99009d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/kernel/
+>> This seems a novel use of uevent ... is it OK, or is is abuse?
+>
+> Don't create "novel" uses of uevents.  They are there to express a
+> change in state of a device so that userspace can then go and do
+> something with that information.  If that pattern fits here, wonderful.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Maybe Dan will chime in here to better explain his idea. I think for
+the case where the core test fails, there is a good match with uevent.
+The device (one CPU core) has changed state from "working" to
+"untrustworthy". Userspace can do things like: take the logical CPUs
+on that core offline, initiate a service call, or in a VMM cluster environm=
+ent
+migrate work to a different node.
 
+> I doubt you can report "test results" via a uevent in a way that the
+> current uevent states and messages would properly convey, but hey, maybe
+> I'm wrong.
 
-sparse warnings: (new ones prefixed by >>)
-   arch/arc/kernel/smp.c:264:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned long [noderef] __percpu *ipi_data_ptr @@     got unsigned long * @@
-   arch/arc/kernel/smp.c:264:48: sparse:     expected unsigned long [noderef] __percpu *ipi_data_ptr
-   arch/arc/kernel/smp.c:264:48: sparse:     got unsigned long *
-   arch/arc/kernel/smp.c:279:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile *v @@     got unsigned long [noderef] __percpu *__ai_ptr @@
-   arch/arc/kernel/smp.c:279:18: sparse:     expected void const volatile *v
-   arch/arc/kernel/smp.c:279:18: sparse:     got unsigned long [noderef] __percpu *__ai_ptr
-   arch/arc/kernel/smp.c:277:29: sparse: sparse: cast removes address space '__percpu' of expression
-   arch/arc/kernel/smp.c:413:72: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int *dev @@
-   arch/arc/kernel/smp.c:413:72: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/arc/kernel/smp.c:413:72: sparse:     got int *dev
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
+But here things get a bit sketchy. Reporting "pass", or "didn't complete th=
+e test"
+isn't a state change.  But it seems like a poor interface if there is no fe=
+edback
+that the test was run. Using different methods to report pass/fail/incomple=
+te
+also seems user hostile.
 
-vim +279 arch/arc/kernel/smp.c
+> good luck!
+Thanks ... we may need it :-)
 
-41195d236e84458 Vineet Gupta    2013-01-18  261  
-ddf84433f411b61 Vineet Gupta    2013-11-25  262  static void ipi_send_msg_one(int cpu, enum ipi_msg_type msg)
-41195d236e84458 Vineet Gupta    2013-01-18  263  {
-f2a4aa5646687f9 Vineet Gupta    2013-11-26 @264  	unsigned long __percpu *ipi_data_ptr = per_cpu_ptr(&ipi_data, cpu);
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  265  	unsigned long old, new;
-41195d236e84458 Vineet Gupta    2013-01-18  266  	unsigned long flags;
-41195d236e84458 Vineet Gupta    2013-01-18  267  
-f2a4aa5646687f9 Vineet Gupta    2013-11-26  268  	pr_debug("%d Sending msg [%d] to %d\n", smp_processor_id(), msg, cpu);
-f2a4aa5646687f9 Vineet Gupta    2013-11-26  269  
-41195d236e84458 Vineet Gupta    2013-01-18  270  	local_irq_save(flags);
-41195d236e84458 Vineet Gupta    2013-01-18  271  
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  272  	/*
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  273  	 * Atomically write new msg bit (in case others are writing too),
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  274  	 * and read back old value
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  275  	 */
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  276  	do {
-6aa7de059173a98 Mark Rutland    2017-10-23  277  		new = old = READ_ONCE(*ipi_data_ptr);
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  278  		new |= 1U << msg;
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28 @279  	} while (cmpxchg(ipi_data_ptr, old, new) != old);
-41195d236e84458 Vineet Gupta    2013-01-18  280  
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  281  	/*
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  282  	 * Call the platform specific IPI kick function, but avoid if possible:
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  283  	 * Only do so if there's no pending msg from other concurrent sender(s).
-82a423053eb3cf2 Changcheng Deng 2021-08-14  284  	 * Otherwise, receiver will see this msg as well when it takes the
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  285  	 * IPI corresponding to that msg. This is true, even if it is already in
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  286  	 * IPI handler, because !@old means it has not yet dequeued the msg(s)
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  287  	 * so @new msg can be a free-loader
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  288  	 */
-d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  289  	if (plat_smp_ops.ipi_send && !old)
-ddf84433f411b61 Vineet Gupta    2013-11-25  290  		plat_smp_ops.ipi_send(cpu);
-41195d236e84458 Vineet Gupta    2013-01-18  291  
-41195d236e84458 Vineet Gupta    2013-01-18  292  	local_irq_restore(flags);
-41195d236e84458 Vineet Gupta    2013-01-18  293  }
-41195d236e84458 Vineet Gupta    2013-01-18  294  
+-Tony
 
-:::::: The code at line 279 was first introduced by commit
-:::::: d8e8c7dda11f5d5cf90495f2e89d917a83509bc0 ARC: [SMP] optimize IPI send and receive
-
-:::::: TO: Vineet Gupta <vgupta@synopsys.com>
-:::::: CC: Vineet Gupta <vgupta@synopsys.com>
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
