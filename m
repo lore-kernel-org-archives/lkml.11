@@ -2,121 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB66C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE630C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349517AbiCOPAN (ORCPT
+        id S1349533AbiCOPAQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 11:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
+        Tue, 15 Mar 2022 11:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231588AbiCOPAI (ORCPT
+        with ESMTP id S1349520AbiCOPAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 11:00:08 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BCE122BE0
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:58:55 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id q7-20020a7bce87000000b00382255f4ca9so1586536wmj.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:58:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=POhFPKDu05rnolEnCMUfGWyfG7SKY0U5Ki6iIBt2QSc=;
-        b=IBHTPOQcn29kklQGIliTcHYKIlLy1dPyQq5MpQtQ8Rur3tD04R7Y+eUXGEt1fzLVQx
-         YIZL2dYJxijss5RL7iOr9hlNcGqQT33rAntIGNNjyH/O5yI5OdL9zZYFi+FpumuGVt17
-         tmg9yV0NlLZEpcDrhh60IiQQcnlIkltBGP9tfOgyQRPExk+dLmcFoSnEiU775LZOU7+S
-         Hg/lKJ7Ge0hO9wW31M6fXsQRogJIf38lBdD2kS47wH0P1vj9PhRYJ+ZItuDjO3P7hfqq
-         zpzziIwKe+EYrLat07rpOVazT0RRsZ4ybUb81s3QBbqI9Qln6+f9XEPRutI7nD6brxY8
-         I9YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=POhFPKDu05rnolEnCMUfGWyfG7SKY0U5Ki6iIBt2QSc=;
-        b=FomRksPSeNB27zw1Lozq+KJuf4sX+gPgSzZULC/vsyGonBtXWB2yzZdWKsz2BEv1/B
-         1frk+cRGVjfgu0Lzbe3dpgzd9+FYa5IuA4xNpOkZB8F1kYt0aVVPcdlE7iAcFESCmcLj
-         kuyEcLhkOmMjQuQdd56H2ylUVmDl5P1IV+rnZE0n0tcCvOHh1Kv1VMG/nxxTmd6e3jNf
-         aWWaH/TIIXdw/lFIy9in6OumCtYOqp0P5zheOZc89iVh9grismtmBq2xNrqibjcFzrLD
-         Bd3CBTNcV0c2w65Ft3JzOvSHoJW4MzY2/nicofSSx0BrEhMW7IdYWmSySu0xORz1OmzM
-         EUvw==
-X-Gm-Message-State: AOAM5323dw0qJV8FI63jTQYQwLiCOWKjaE9vSXK2dzQFG5vdbsM4f3QR
-        Wjm9BWZ2fM82PVDeZKZCF0trvQ==
-X-Google-Smtp-Source: ABdhPJxmiznixQ5WYnAHb2k3VoyxMtuqDjeDIZk/Mm1XFptDScHBiIL7knyiv2Vf5YursjLargeEbw==
-X-Received: by 2002:a05:600c:4608:b0:38c:6ba3:1c9f with SMTP id m8-20020a05600c460800b0038c6ba31c9fmr93477wmo.39.1647356333964;
-        Tue, 15 Mar 2022 07:58:53 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id y12-20020adff14c000000b001f04d1959easm15759411wro.13.2022.03.15.07.58.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 07:58:53 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 14:58:51 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     frank zago <frank@zago.net>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Jan-Niklas Burfeind <kernel@aiyionpri.me>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
-        linux-usb@vger.kernel.org, gunar@schorcht.net
-Subject: Re: [PATCH v3] mfd: ch341: add driver for the WCH CH341 in I2C/GPIO
- mode
-Message-ID: <YjCpq8YVwmZzOzwE@google.com>
-References: <20220314030937.22762-1-frank@zago.net>
+        Tue, 15 Mar 2022 11:00:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D1C237FE
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:59:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647356340; x=1678892340;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BYnnyv9X5T2BKkwKlwpsPI4UkWTK+ZkTG1MysC+XAAY=;
+  b=hak4KnXd97cUPmojJMD+4cdMYLnr23OEbWHz1IBC5QczWVAtY2ajVBLE
+   EsMg2X2BWvt45BSo7yPCy5s1Mxq31WnqiSQGfq3ibEaNsApHgyyEJOqRu
+   tMdPlQoeetz8QBBxFjLA6iC6KhSvRCGLCWzxNKoctLhYH0hf+jMmhzUH9
+   k6A7StNFRd7yl0uV8qZEfuMwVM8E5CZLbDOHfJKBgZAi453WIsp6h4lV1
+   G2OVl0RzCoUP/35jwRtFHsDaFZKukMOPUUp+yPIjxYjCJRAFvzRM4Q+iW
+   fMC/0kMgCQBxfumehQCnaea/sHz2Dk0ZK/vHbPebztlpstpu4dOoruUli
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="319544177"
+X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
+   d="scan'208";a="319544177"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 07:59:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
+   d="scan'208";a="580541994"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 15 Mar 2022 07:58:59 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nU8dW-000B7z-CF; Tue, 15 Mar 2022 14:58:58 +0000
+Date:   Tue, 15 Mar 2022 22:58:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vineet Gupta <vgupta@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org
+Subject: arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef
+ expression
+Message-ID: <202203152229.15m9xTw1-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220314030937.22762-1-frank@zago.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 13 Mar 2022, frank zago wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
+date:   7 months ago
+config: arc-randconfig-s032-20220315 (https://download.01.org/0day-ci/archive/20220315/202203152229.15m9xTw1-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout e188f3330a13df904d77003846eafd3edf99009d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/kernel/
 
-> The CH341 is a multifunction chip, presenting 3 different USB PID. One
-> of these functions is for I2C/SPI/GPIO. This new driver manages I2C
-> and GPIO.
-> 
-> The I2C interface can run at 4 different speeds. This driver currently
-> only offer 100MHz. Tested with a variety of I2C sensors, and the IIO
-> subsystem.
-> 
-> The GPIO interface offers 16 GPIOs. 6 are read/write, and 10 are
-> read-only.
-> 
-> Signed-off-by: frank zago <frank@zago.net>
-> ---
-> 
-> Changes from v2:
->   - bug fixes
->   - more robust USB enumeration
->   - Changed to an MFD driver as suggested
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Perhaps you should have engaged with me before potentially wasting
-your valuable time.
 
-MFD is designed to take a parent platform driver and split it out into
-various sub-systems.  If you don't use the MFD Core API (which is the
-case here) it is not an MFD.  MFD is not a dumping ground for
-collections of random device drivers.
+sparse warnings: (new ones prefixed by >>)
+   arch/arc/kernel/smp.c:264:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned long [noderef] __percpu *ipi_data_ptr @@     got unsigned long * @@
+   arch/arc/kernel/smp.c:264:48: sparse:     expected unsigned long [noderef] __percpu *ipi_data_ptr
+   arch/arc/kernel/smp.c:264:48: sparse:     got unsigned long *
+   arch/arc/kernel/smp.c:279:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile *v @@     got unsigned long [noderef] __percpu *__ai_ptr @@
+   arch/arc/kernel/smp.c:279:18: sparse:     expected void const volatile *v
+   arch/arc/kernel/smp.c:279:18: sparse:     got unsigned long [noderef] __percpu *__ai_ptr
+   arch/arc/kernel/smp.c:277:29: sparse: sparse: cast removes address space '__percpu' of expression
+   arch/arc/kernel/smp.c:413:72: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int *dev @@
+   arch/arc/kernel/smp.c:413:72: sparse:     expected void [noderef] __percpu *percpu_dev_id
+   arch/arc/kernel/smp.c:413:72: sparse:     got int *dev
+>> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
+>> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
 
-I have no problem with you placing registration and core code inside
-MFD (that *is* what it was designed for), but the leaf 'functionality'
-should be placed in more appropriate locations.
+vim +279 arch/arc/kernel/smp.c
 
-I2C  => drivers/i2c
-SPI  => drivers/spi
-GPIO => drivers/gpio (or perhaps drivers/pinctrl)
-USB  => drivers/usb
-UART => drivers/tty/serial
+41195d236e84458 Vineet Gupta    2013-01-18  261  
+ddf84433f411b61 Vineet Gupta    2013-11-25  262  static void ipi_send_msg_one(int cpu, enum ipi_msg_type msg)
+41195d236e84458 Vineet Gupta    2013-01-18  263  {
+f2a4aa5646687f9 Vineet Gupta    2013-11-26 @264  	unsigned long __percpu *ipi_data_ptr = per_cpu_ptr(&ipi_data, cpu);
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  265  	unsigned long old, new;
+41195d236e84458 Vineet Gupta    2013-01-18  266  	unsigned long flags;
+41195d236e84458 Vineet Gupta    2013-01-18  267  
+f2a4aa5646687f9 Vineet Gupta    2013-11-26  268  	pr_debug("%d Sending msg [%d] to %d\n", smp_processor_id(), msg, cpu);
+f2a4aa5646687f9 Vineet Gupta    2013-11-26  269  
+41195d236e84458 Vineet Gupta    2013-01-18  270  	local_irq_save(flags);
+41195d236e84458 Vineet Gupta    2013-01-18  271  
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  272  	/*
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  273  	 * Atomically write new msg bit (in case others are writing too),
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  274  	 * and read back old value
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  275  	 */
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  276  	do {
+6aa7de059173a98 Mark Rutland    2017-10-23  277  		new = old = READ_ONCE(*ipi_data_ptr);
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  278  		new |= 1U << msg;
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28 @279  	} while (cmpxchg(ipi_data_ptr, old, new) != old);
+41195d236e84458 Vineet Gupta    2013-01-18  280  
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  281  	/*
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  282  	 * Call the platform specific IPI kick function, but avoid if possible:
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  283  	 * Only do so if there's no pending msg from other concurrent sender(s).
+82a423053eb3cf2 Changcheng Deng 2021-08-14  284  	 * Otherwise, receiver will see this msg as well when it takes the
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  285  	 * IPI corresponding to that msg. This is true, even if it is already in
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  286  	 * IPI handler, because !@old means it has not yet dequeued the msg(s)
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  287  	 * so @new msg can be a free-loader
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  288  	 */
+d8e8c7dda11f5d5 Vineet Gupta    2013-11-28  289  	if (plat_smp_ops.ipi_send && !old)
+ddf84433f411b61 Vineet Gupta    2013-11-25  290  		plat_smp_ops.ipi_send(cpu);
+41195d236e84458 Vineet Gupta    2013-01-18  291  
+41195d236e84458 Vineet Gupta    2013-01-18  292  	local_irq_restore(flags);
+41195d236e84458 Vineet Gupta    2013-01-18  293  }
+41195d236e84458 Vineet Gupta    2013-01-18  294  
 
-Etc ... Find places for everything.
+:::::: The code at line 279 was first introduced by commit
+:::::: d8e8c7dda11f5d5cf90495f2e89d917a83509bc0 ARC: [SMP] optimize IPI send and receive
 
-Anything left over, give to Greg (drivers/misc). :)
+:::::: TO: Vineet Gupta <vgupta@synopsys.com>
+:::::: CC: Vineet Gupta <vgupta@synopsys.com>
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
