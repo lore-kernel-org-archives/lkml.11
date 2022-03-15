@@ -2,82 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3921C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BC0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348721AbiCONci (ORCPT
+        id S1348724AbiCONd2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 09:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
+        Tue, 15 Mar 2022 09:33:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348699AbiCONcb (ORCPT
+        with ESMTP id S1343569AbiCONd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 09:32:31 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA6E51307;
-        Tue, 15 Mar 2022 06:31:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647351079; x=1678887079;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=l3FFNBnyruc55ZkrcTRN2YwGaSvieHvJ8ZAP2IQOlf0=;
-  b=nt3d/Yv5PNM34fQDOrIjj1zKC6ko900JLfWDS08ZV8mE8WPpiJFvAN2Y
-   M2kQTl4jdYJjnN0n+5tS87wqzhEZQ/dZb2PcfGFJKM0cQ+a29tPeHdXR8
-   evcT3FGHS4TnkpQuV77XrfWBdouRgbKDVXhRrFBQA9DSt62abKzsRuOMN
-   ydI/YI6Tvoo+FS5GOqiujsyVHp80mDmBzd1ONrR/jPgGMTPt7K0XAx6DS
-   h657en2XHfoMoed+4rN8RE8B3kHJkGVELxR6imMpDAJkDSgeO6G+ncfDH
-   AWnyo0p93iEsC8+yqW0xbscSDV0A4vIRdZN4IAQH04wB82SEOzUS4ga3s
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="281069239"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="281069239"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 06:30:53 -0700
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="549596268"
-Received: from rgatlin-mobl.amr.corp.intel.com (HELO [10.251.10.152]) ([10.251.10.152])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 06:30:52 -0700
-Message-ID: <314aea98-7054-09aa-042d-a91796dcbd43@intel.com>
-Date:   Tue, 15 Mar 2022 06:30:44 -0700
+        Tue, 15 Mar 2022 09:33:26 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 343F652E04;
+        Tue, 15 Mar 2022 06:32:14 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KHvRm5zvzzfZ0w;
+        Tue, 15 Mar 2022 21:30:44 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 21:32:12 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 21:32:11 +0800
+Subject: Re: [PATCH v21 1/5] kdump: return -ENOENT if required cmdline option
+ does not exist
+To:     Baoquan He <bhe@redhat.com>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        <kexec@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        "John Donnelly" <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+References: <20220227030717.1464-1-thunder.leizhen@huawei.com>
+ <20220227030717.1464-2-thunder.leizhen@huawei.com>
+ <YjB/QILintgvo1AL@MiWiFi-R3L-srv> <YjCE0Scp2YiEJXBM@MiWiFi-R3L-srv>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <d237a2ae-300c-2c51-d97c-417bdfaa5fda@huawei.com>
+Date:   Tue, 15 Mar 2022 21:32:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
+In-Reply-To: <YjCE0Scp2YiEJXBM@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
-        Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com,
-        kirill.shutemov@linux.intel.com, hpa@zytor.com,
-        pbonzini@redhat.com, seanjc@google.com, srutherford@google.com,
-        ashish.kalra@amd.com, darren.kenny@oracle.com,
-        venu.busireddy@oracle.com, boris.ostrovsky@oracle.com,
-        kvm@vger.kernel.org
-References: <20220309220608.16844-1-alejandro.j.jimenez@oracle.com>
- <8498cff4-3c31-f596-04fe-62013b94d7a4@intel.com>
- <746497ff-992d-4659-aa32-a54c68ae83bf@oracle.com>
- <20220314224346.GA3426703@ls.amr.corp.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [RFC 0/3] Expose Confidential Computing capabilities on sysfs
-In-Reply-To: <20220314224346.GA3426703@ls.amr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/14/22 15:43, Isaku Yamahata wrote:
->                 xfam_fixed0        fixed-0 value for TD xfam value as a
->                                    hexadecimal number with the "0x" prefix.
->                 xfam_fixed1        fixed-1 value for TD xfam value as a
->                                    hexadecimal number with the "0x" prefix.
-
-I don't think we should be exporting things and creating ABI just for
-the heck of it.  These are a prime example.  XFAM is reported to the
-guest in CPUID.  Yes, these may be used to help *build* XFAM, but
-userspace doesn't need to know how XFAM was built.  It just needs to
-know what features it can use.
 
 
+On 2022/3/15 20:21, Baoquan He wrote:
+> On 03/15/22 at 07:57pm, Baoquan He wrote:
+>> On 02/27/22 at 11:07am, Zhen Lei wrote:
+>>> The crashkernel=Y,low is an optional command-line option. When it doesn't
+>>> exist, kernel will try to allocate minimum required memory below 4G
+>>> automatically. Give it a unique error code to distinguish it from other
+>>> error scenarios.
+>>>
+>>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>>> ---
+>>>  kernel/crash_core.c | 3 +--
+>>>  1 file changed, 1 insertion(+), 2 deletions(-)
+>>>
+>>> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+>>> index 256cf6db573cd09..4d57c03714f4e13 100644
+>>> --- a/kernel/crash_core.c
+>>> +++ b/kernel/crash_core.c
+>>> @@ -243,9 +243,8 @@ static int __init __parse_crashkernel(char *cmdline,
+>>>  	*crash_base = 0;
+>>>  
+>>>  	ck_cmdline = get_last_crashkernel(cmdline, name, suffix);
+>>> -
+>>>  	if (!ck_cmdline)
+>>> -		return -EINVAL;
+>>> +		return -ENOENT;
+>>
+>> Firstly, I am not sure if '-ENOENT' is a right value to return. From the
+>> code comment of ENOENT, it's used for file or dir?
+>> #define ENOENT           2      /* No such file or directory */
+
+This error code does not return to user mode, so there is no problem.
+There are a lot of places in the kernel that are used this way. For example:
+
+int stop_one_cpu(unsigned int cpu, cpu_stop_fn_t fn, void *arg)
+{
+	if (!cpu_stop_queue_work(cpu, &work))
+		return -ENOENT;
+
+>>
+>> Secondly, we ever discussed the case including
+>>  - no crashkernel=,low is provided;
+>>  - messy code is provied, e.g crashkernel=aaaaaabbbb,low
+> 
+> Checking the 3rd pach, this is handled. Take back my below words,
+> continue reviewing.
+
+Yes.
+
+> 
+>>
+>> The 2nd one is not handled in this patchset. How about taking the
+>> handling into another round of patches. This patchset just adds
+>> crashkernel=,high purely.
+>>
+>>>  
+>>>  	ck_cmdline += strlen(name);
+>>>  
+>>> -- 
+>>> 2.25.1
+>>>
+>>
+> 
+> .
+> 
+
+-- 
+Regards,
+  Zhen Lei
