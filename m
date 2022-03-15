@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A03C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCADC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240198AbiCOKqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
+        id S1347360AbiCOKqs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347298AbiCOKpd (ORCPT
+        with ESMTP id S1347333AbiCOKpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:45:33 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6858F34B89;
-        Tue, 15 Mar 2022 03:43:58 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:55 -0000
+        Tue, 15 Mar 2022 06:45:34 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF02437020;
+        Tue, 15 Mar 2022 03:44:01 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:43:59 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341037;
+        s=2020; t=1647341040;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AESOGUl5behUc4E+X66bv+zbJxndpsxvDwtbt9GxUtk=;
-        b=1KHQ7O6TjxC+o+ngACdS8ML8bVoK+AjL2Lhsm8BHttdTGuynjup9mt+dV2MVoztY1UsnT1
-        +VP8xXF8Xif452v1hggf0yQelS8vG/xYELO+qy3neV9XQ7Yq4gTM+N1NnG7KLgFiIOPOe3
-        I3adu0vjBsXgxS/CaqPsswcKf8scT5k+AiA1apR1mfH3ptJU7yYELCSzoUIkHVwE3yCjRO
-        taUGLxDSaQuu16r9opQ6OVn4tdbGaOwQf9y+i8VLU+ACMpvWPvMLs4OBPnIhw4sqclyUU7
-        x8iNsXS0k7eG+0krZWdBXSHWqLlWwTdl4LF5nKnuVIoeTZ8zKhgARnwofRB/zQ==
+        bh=BArpg0luzrNqYekEmkMHjjGR+Qr0GLlZhXr+w9OnlbQ=;
+        b=F6vu84bqIYR45E2G6iXuv4GSK2rTlrRf6qRa5jWOI/Fz0S0KcmXoyo++liXTsDIA7YeZe0
+        T9wSqTL3VDBe6bNxSX+XzFo9DtihYisGuMJfWoWQbsg7cVgMznoBJ5ajVgNW8FgmQg/JCS
+        WWx0cue8FwlfU29f5ptQfkGeAPZAe0eAHHzPC++Ce5GYNQ1iUVvhHavrujiiVYlfi3GCC1
+        4aYEBktM1jOS6YwKvkk62ERWanpF4FSYdzXBZDvT6j6SXFUPHC9p7i2VrGSArJ70SWirSe
+        Ycf0vcuRI0QcuSTFUD8k3CduxV73ZVSEXyLPPnvH7QWeP9DqNS6EMWZqThiR1A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341037;
+        s=2020e; t=1647341040;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AESOGUl5behUc4E+X66bv+zbJxndpsxvDwtbt9GxUtk=;
-        b=LxhHHFc4tvUKFMcXNpF/aSo1cAzF0Gj152UUsSrOFg2KqogLGanRB+OnY0QbUSJ/3oJAYG
-        DN04jIqudKZ0DeDg==
+        bh=BArpg0luzrNqYekEmkMHjjGR+Qr0GLlZhXr+w9OnlbQ=;
+        b=lZnW2SOsjjbGoLM3vIXid8uFP4DZdRNgI8oH/NVjoR51CaFLKmgZMnzlKTIwAoAjsX233c
+        eNWavtRDHVfBbFDQ==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/ibt: Disable IBT around firmware
+Subject: [tip: x86/core] x86/ibt,ftrace: Add ENDBR to samples/ftrace
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Kees Cook <keescook@chromium.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154318.759989383@infradead.org>
-References: <20220308154318.759989383@infradead.org>
+In-Reply-To: <20220308154318.523421433@infradead.org>
+References: <20220308154318.523421433@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734103596.16921.3686146131158647702.tip-bot2@tip-bot2>
+Message-ID: <164734103928.16921.15454561124281816294.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,170 +62,163 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     fe379fa4d199abc52d5b4a256e52cf94eff685cf
-Gitweb:        https://git.kernel.org/tip/fe379fa4d199abc52d5b4a256e52cf94eff685cf
+Commit-ID:     0aec21cfb51bc1856206f312d8c13bf1f368d78e
+Gitweb:        https://git.kernel.org/tip/0aec21cfb51bc1856206f312d8c13bf1f368d78e
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:38 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:34 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:40 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:38 +01:00
 
-x86/ibt: Disable IBT around firmware
-
-Assume firmware isn't IBT clean and disable it across calls.
+x86/ibt,ftrace: Add ENDBR to samples/ftrace
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154318.759989383@infradead.org
+Link: https://lore.kernel.org/r/20220308154318.523421433@infradead.org
 ---
- arch/x86/include/asm/efi.h   |  9 +++++++--
- arch/x86/include/asm/ibt.h   |  6 ++++++
- arch/x86/kernel/apm_32.c     |  7 +++++++
- arch/x86/kernel/cpu/common.c | 28 ++++++++++++++++++++++++++++
- 4 files changed, 48 insertions(+), 2 deletions(-)
+ samples/ftrace/ftrace-direct-modify.c       |  5 +++++
+ samples/ftrace/ftrace-direct-multi-modify.c | 10 +++++++---
+ samples/ftrace/ftrace-direct-multi.c        |  5 ++++-
+ samples/ftrace/ftrace-direct-too.c          |  3 +++
+ samples/ftrace/ftrace-direct.c              |  3 +++
+ 5 files changed, 22 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/efi.h b/arch/x86/include/asm/efi.h
-index 03cb127..98938a6 100644
---- a/arch/x86/include/asm/efi.h
-+++ b/arch/x86/include/asm/efi.h
-@@ -7,6 +7,7 @@
- #include <asm/tlb.h>
- #include <asm/nospec-branch.h>
- #include <asm/mmu_context.h>
-+#include <asm/ibt.h>
- #include <linux/build_bug.h>
- #include <linux/kernel.h>
- #include <linux/pgtable.h>
-@@ -120,8 +121,12 @@ extern asmlinkage u64 __efi_call(void *fp, ...);
- 	efi_enter_mm();							\
- })
- 
--#define arch_efi_call_virt(p, f, args...)				\
--	efi_call((void *)p->f, args)					\
-+#define arch_efi_call_virt(p, f, args...) ({				\
-+	u64 ret, ibt = ibt_save();					\
-+	ret = efi_call((void *)p->f, args);				\
-+	ibt_restore(ibt);						\
-+	ret;								\
-+})
- 
- #define arch_efi_call_virt_teardown()					\
- ({									\
-diff --git a/arch/x86/include/asm/ibt.h b/arch/x86/include/asm/ibt.h
-index fcaf6a4..52fb05d 100644
---- a/arch/x86/include/asm/ibt.h
-+++ b/arch/x86/include/asm/ibt.h
-@@ -52,6 +52,9 @@ static inline bool is_endbr(u32 val)
- 	return val == gen_endbr();
- }
- 
-+extern __noendbr u64 ibt_save(void);
-+extern __noendbr void ibt_restore(u64 save);
-+
- #else /* __ASSEMBLY__ */
+diff --git a/samples/ftrace/ftrace-direct-modify.c b/samples/ftrace/ftrace-direct-modify.c
+index 2c7c318..39146fa 100644
+--- a/samples/ftrace/ftrace-direct-modify.c
++++ b/samples/ftrace/ftrace-direct-modify.c
+@@ -24,20 +24,25 @@ static unsigned long my_ip = (unsigned long)schedule;
  
  #ifdef CONFIG_X86_64
-@@ -74,6 +77,9 @@ static inline bool is_endbr(u32 val)
  
- static inline bool is_endbr(u32 val) { return false; }
- 
-+static inline u64 ibt_save(void) { return 0; }
-+static inline void ibt_restore(u64 save) { }
-+
- #else /* __ASSEMBLY__ */
- 
- #define ENDBR
-diff --git a/arch/x86/kernel/apm_32.c b/arch/x86/kernel/apm_32.c
-index 241dda6..60e330c 100644
---- a/arch/x86/kernel/apm_32.c
-+++ b/arch/x86/kernel/apm_32.c
-@@ -232,6 +232,7 @@
- #include <asm/paravirt.h>
- #include <asm/reboot.h>
- #include <asm/nospec-branch.h>
 +#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp1, @function\n"
+ "	.globl		my_tramp1\n"
+ "   my_tramp1:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	call my_direct_func1\n"
+ "	leave\n"
+ "	.size		my_tramp1, .-my_tramp1\n"
+ 	ASM_RET
++
+ "	.type		my_tramp2, @function\n"
+ "	.globl		my_tramp2\n"
+ "   my_tramp2:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	call my_direct_func2\n"
+diff --git a/samples/ftrace/ftrace-direct-multi-modify.c b/samples/ftrace/ftrace-direct-multi-modify.c
+index 6f43a39..65aa94d 100644
+--- a/samples/ftrace/ftrace-direct-multi-modify.c
++++ b/samples/ftrace/ftrace-direct-multi-modify.c
+@@ -22,11 +22,14 @@ extern void my_tramp2(void *);
  
- #if defined(CONFIG_APM_DISPLAY_BLANK) && defined(CONFIG_VT)
- extern int (*console_blank_hook)(int);
-@@ -598,6 +599,7 @@ static long __apm_bios_call(void *_call)
- 	struct desc_struct	save_desc_40;
- 	struct desc_struct	*gdt;
- 	struct apm_bios_call	*call = _call;
-+	u64			ibt;
+ #ifdef CONFIG_X86_64
  
- 	cpu = get_cpu();
- 	BUG_ON(cpu != 0);
-@@ -607,11 +609,13 @@ static long __apm_bios_call(void *_call)
++#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp1, @function\n"
+ "	.globl		my_tramp1\n"
+ "   my_tramp1:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+@@ -34,12 +37,13 @@ asm (
+ "	call my_direct_func1\n"
+ "	popq %rdi\n"
+ "	leave\n"
+-"	ret\n"
++	ASM_RET
+ "	.size		my_tramp1, .-my_tramp1\n"
++
+ "	.type		my_tramp2, @function\n"
+-"\n"
+ "	.globl		my_tramp2\n"
+ "   my_tramp2:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+@@ -47,7 +51,7 @@ asm (
+ "	call my_direct_func2\n"
+ "	popq %rdi\n"
+ "	leave\n"
+-"	ret\n"
++	ASM_RET
+ "	.size		my_tramp2, .-my_tramp2\n"
+ "	.popsection\n"
+ );
+diff --git a/samples/ftrace/ftrace-direct-multi.c b/samples/ftrace/ftrace-direct-multi.c
+index 2fafc9a..41ded7c 100644
+--- a/samples/ftrace/ftrace-direct-multi.c
++++ b/samples/ftrace/ftrace-direct-multi.c
+@@ -17,11 +17,14 @@ extern void my_tramp(void *);
  
- 	apm_irq_save(flags);
- 	firmware_restrict_branch_speculation_start();
-+	ibt = ibt_save();
- 	APM_DO_SAVE_SEGS;
- 	apm_bios_call_asm(call->func, call->ebx, call->ecx,
- 			  &call->eax, &call->ebx, &call->ecx, &call->edx,
- 			  &call->esi);
- 	APM_DO_RESTORE_SEGS;
-+	ibt_restore(ibt);
- 	firmware_restrict_branch_speculation_end();
- 	apm_irq_restore(flags);
- 	gdt[0x40 / 8] = save_desc_40;
-@@ -676,6 +680,7 @@ static long __apm_bios_call_simple(void *_call)
- 	struct desc_struct	save_desc_40;
- 	struct desc_struct	*gdt;
- 	struct apm_bios_call	*call = _call;
-+	u64			ibt;
+ #ifdef CONFIG_X86_64
  
- 	cpu = get_cpu();
- 	BUG_ON(cpu != 0);
-@@ -685,10 +690,12 @@ static long __apm_bios_call_simple(void *_call)
++#include <asm/ibt.h>
++
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp, @function\n"
+ "	.globl		my_tramp\n"
+ "   my_tramp:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+@@ -29,7 +32,7 @@ asm (
+ "	call my_direct_func\n"
+ "	popq %rdi\n"
+ "	leave\n"
+-"	ret\n"
++	ASM_RET
+ "	.size		my_tramp, .-my_tramp\n"
+ "	.popsection\n"
+ );
+diff --git a/samples/ftrace/ftrace-direct-too.c b/samples/ftrace/ftrace-direct-too.c
+index c93fb0e..6690468 100644
+--- a/samples/ftrace/ftrace-direct-too.c
++++ b/samples/ftrace/ftrace-direct-too.c
+@@ -19,11 +19,14 @@ extern void my_tramp(void *);
  
- 	apm_irq_save(flags);
- 	firmware_restrict_branch_speculation_start();
-+	ibt = ibt_save();
- 	APM_DO_SAVE_SEGS;
- 	error = apm_bios_call_simple_asm(call->func, call->ebx, call->ecx,
- 					 &call->eax);
- 	APM_DO_RESTORE_SEGS;
-+	ibt_restore(ibt);
- 	firmware_restrict_branch_speculation_end();
- 	apm_irq_restore(flags);
- 	gdt[0x40 / 8] = save_desc_40;
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 709acab..03bd73f 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -517,6 +517,34 @@ static __init int setup_disable_pku(char *arg)
- __setup("nopku", setup_disable_pku);
- #endif /* CONFIG_X86_64 */
+ #ifdef CONFIG_X86_64
  
-+#ifdef CONFIG_X86_KERNEL_IBT
++#include <asm/ibt.h>
 +
-+__noendbr u64 ibt_save(void)
-+{
-+	u64 msr = 0;
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp, @function\n"
+ "	.globl		my_tramp\n"
+ "   my_tramp:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
+diff --git a/samples/ftrace/ftrace-direct.c b/samples/ftrace/ftrace-direct.c
+index 8b551e5..e8f1e44 100644
+--- a/samples/ftrace/ftrace-direct.c
++++ b/samples/ftrace/ftrace-direct.c
+@@ -16,11 +16,14 @@ extern void my_tramp(void *);
+ 
+ #ifdef CONFIG_X86_64
+ 
++#include <asm/ibt.h>
 +
-+	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
-+		rdmsrl(MSR_IA32_S_CET, msr);
-+		wrmsrl(MSR_IA32_S_CET, msr & ~CET_ENDBR_EN);
-+	}
-+
-+	return msr;
-+}
-+
-+__noendbr void ibt_restore(u64 save)
-+{
-+	u64 msr;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_IBT)) {
-+		rdmsrl(MSR_IA32_S_CET, msr);
-+		msr &= ~CET_ENDBR_EN;
-+		msr |= (save & CET_ENDBR_EN);
-+		wrmsrl(MSR_IA32_S_CET, msr);
-+	}
-+}
-+
-+#endif
-+
- static __always_inline void setup_cet(struct cpuinfo_x86 *c)
- {
- 	u64 msr = CET_ENDBR_EN;
+ asm (
+ "	.pushsection    .text, \"ax\", @progbits\n"
+ "	.type		my_tramp, @function\n"
+ "	.globl		my_tramp\n"
+ "   my_tramp:"
++	ASM_ENDBR
+ "	pushq %rbp\n"
+ "	movq %rsp, %rbp\n"
+ "	pushq %rdi\n"
