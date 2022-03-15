@@ -2,162 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD8AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D130C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348484AbiCOMuR (ORCPT
+        id S1348489AbiCOMuy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        Tue, 15 Mar 2022 08:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235032AbiCOMuP (ORCPT
+        with ESMTP id S1348389AbiCOMuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:50:15 -0400
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E4ADF3F
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:49:02 -0700 (PDT)
-Received: by mail-qk1-f176.google.com with SMTP id b67so15343013qkc.6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:49:02 -0700 (PDT)
+        Tue, 15 Mar 2022 08:50:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F28031205
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:49:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647348577;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A8YB/zouyCs2m8bIpB0HNPrzD15OIyDhGFrmSggKmO0=;
+        b=f27hGqUVLcOihoYodU66FUI2mBxNzxrOvKNTYY0ysVVA63Pf6EmcYhDZK4xGWQJpXG85Ys
+        7RHIyb4jhjS/HTgDLxI0gXvTaP///1x5QYpOBZUz55EFJM4dY6CBSktfBWil9u7AAtZQ/5
+        8Jj1BqEKJga6U7ZURMEfZ1qGEh+fD0U=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-2IqbUVpZPrGgkp17VXO5dQ-1; Tue, 15 Mar 2022 08:49:36 -0400
+X-MC-Unique: 2IqbUVpZPrGgkp17VXO5dQ-1
+Received: by mail-qk1-f197.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so14166975qkb.23
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:49:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CKZh5yP21BRJU6B3iVZohrjJUcGpXAcyv437fSYRC0Y=;
-        b=Yv1MkmspeBbwsRJ2pamOnZE1WC5H25bDWwOngkXuqoBHKv1RwetJKfDBhO5KC+CN6f
-         G7nJo/AwN6nt3dBgrnuryWu2c9Lmu3AHoKrRmwJRug27mzXAp5IH7WVNR4KlpUs1YAY+
-         mP1ayzFjodrY5qk3bTXnLTzZmX6VNRdv3ZwUw0zsJKvb31VTVSNau2cg5pGcBLfNAo2c
-         +SnnHvign1o6aTjFrq9NQj0w6YeFbHWNxMG/Y8X2M4YbQVpUtUv1nLFczkpk/7nQfI6W
-         9bE4NMi3JkkcOuMXg2P/Mpq838BnD0nJTA8x4sWQpDzchM+iOQd4EwrERdudzh+azoBh
-         W3cg==
-X-Gm-Message-State: AOAM533yefA24/Ti/tKuYaHUR+qIOwi1wA9ZWhaJWwmOuXl8WIPgeY4D
-        h2fZ7b/nDQ6ioErb/F7h9HUPhMg2RLs3Xw==
-X-Google-Smtp-Source: ABdhPJyxGcR73e86Ig648PVGCnCHgzdK7E53jVPCTyd9yJ037yU9qLMTKRmCFYoFn4dCiYm704M8+A==
-X-Received: by 2002:a05:620a:f03:b0:67b:1465:d447 with SMTP id v3-20020a05620a0f0300b0067b1465d447mr17756793qkl.364.1647348541477;
-        Tue, 15 Mar 2022 05:49:01 -0700 (PDT)
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com. [209.85.128.175])
-        by smtp.gmail.com with ESMTPSA id l18-20020a05622a051200b002e1e5e57e0csm406063qtx.11.2022.03.15.05.49.00
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 05:49:00 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2dbd97f9bfcso199791827b3.9
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:49:00 -0700 (PDT)
-X-Received: by 2002:a81:49d0:0:b0:2db:dc6d:445d with SMTP id
- w199-20020a8149d0000000b002dbdc6d445dmr24764496ywa.512.1647348539863; Tue, 15
- Mar 2022 05:48:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220315110707.628166-1-geert@linux-m68k.org> <20220315110707.628166-3-geert@linux-m68k.org>
- <27e1c911-798a-c14b-e5a0-622a7c5d8755@redhat.com>
-In-Reply-To: <27e1c911-798a-c14b-e5a0-622a7c5d8755@redhat.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 15 Mar 2022 13:48:48 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUQ=A1uRYdO+da9wFpzLbGEDprVjnuFcD8B=MPkOePEKw@mail.gmail.com>
-Message-ID: <CAMuHMdUQ=A1uRYdO+da9wFpzLbGEDprVjnuFcD8B=MPkOePEKw@mail.gmail.com>
-Subject: Re: [PATCH 2/5] drm/format-helper: Fix XRGB888 to monochrome conversion
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Pekka Paalanen <pekka.paalanen@collabora.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=A8YB/zouyCs2m8bIpB0HNPrzD15OIyDhGFrmSggKmO0=;
+        b=Jqam4C/uXfoUABKBiWbpJrEBzVObnzZIcrEBidpyZDpsJ+iXegHCpvYtEQuPxNi5RU
+         jyRJJFCA4OkvbMOAjF6DLKkka4jmeTQeU3T/t4/aVJ06C6BwSuY6ejAiyU6bYqToud8G
+         dgumGJn4CyqNs/w8mIpiPZGwnvqC9Vq8CW5LXymzjv/9oTq0jcqg7+RLXM1tDkG58GAZ
+         HHPTGKvA7Hsbn085IRrI1AeRLu1e8ZSFv9NdUr6dj0tQI1vW4HOsn7lKA1LR575XKiim
+         1SRNfQuqXnzj4ipi0iR5YwJR4HSj/+YuTccnhgDxN9IHo50ELGG+v0vRupsZES3mLgFn
+         sgCQ==
+X-Gm-Message-State: AOAM531XsyXcPXoGMQzXFPu6RaNimg/9TKumG+OXZ+vjzSM+ZuRrUt3F
+        mjpPrQj/qltFn+WHCZ+k6RjXvTiTEvlj7IwDCH2CjJ/vml2h0O23JdkLThBeqIBirQlP2tIR08Y
+        n9f+t/4C0EK2wyFexfrn4Bpb2
+X-Received: by 2002:a05:622a:43:b0:2e1:4e:a784 with SMTP id y3-20020a05622a004300b002e1004ea784mr22472649qtw.240.1647348575276;
+        Tue, 15 Mar 2022 05:49:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJySZNgzLvqshSrfyIaulX9BUiVIIovtIEdrD1Ud0s8XPceC7N4NZNZ0FQQO4xA+4EEcVHK/8g==
+X-Received: by 2002:a05:622a:43:b0:2e1:4e:a784 with SMTP id y3-20020a05622a004300b002e1004ea784mr22472621qtw.240.1647348575015;
+        Tue, 15 Mar 2022 05:49:35 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
+        by smtp.gmail.com with ESMTPSA id k1-20020ac85fc1000000b002e1c6420790sm7984298qta.40.2022.03.15.05.49.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 05:49:34 -0700 (PDT)
+Message-ID: <5ebf8873334a3a38855e378748cb6d8948fbd0c7.camel@redhat.com>
+Subject: Re: [PATCH net-next 2/3] net: icmp: add skb drop reasons to
+ ping_queue_rcv_skb()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     menglong8.dong@gmail.com, dsahern@kernel.org, kuba@kernel.org
+Cc:     davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
+        yoshfuji@linux-ipv6.org, imagedong@tencent.com,
+        edumazet@google.com, kafai@fb.com, talalahmad@google.com,
+        keescook@chromium.org, alobakin@pm.me, dongli.zhang@oracle.com,
+        maze@google.com, aahringo@redhat.com, weiwan@google.com,
+        yangbo.lu@nxp.com, fw@strlen.de, tglx@linutronix.de,
+        rpalethorpe@suse.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Date:   Tue, 15 Mar 2022 13:49:29 +0100
+In-Reply-To: <20220314113225.151959-3-imagedong@tencent.com>
+References: <20220314113225.151959-1-imagedong@tencent.com>
+         <20220314113225.151959-3-imagedong@tencent.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Javier,
+Hello,
 
-On Tue, Mar 15, 2022 at 1:18 PM Javier Martinez Canillas
-<javierm@redhat.com> wrote:
-> On 3/15/22 12:07, Geert Uytterhoeven wrote:
-> > The conversion functions drm_fb_xrgb8888_to_mono() and
-> > drm_fb_gray8_to_mono_line() do not behave correctly when the
-> > horizontal boundaries of the clip rectangle are not multiples of 8:
-> >   a. When x1 % 8 != 0, the calculated pitch is not correct,
-> >   b. When x2 % 8 != 0, the pixel data for the last byte is wrong.
-> >
->
-> Thanks a lot for tracking down and fixing these issues.
->
-> > Simplify the code and fix (a) by:
-> >   1. Removing start_offset, and always storing the first pixel in the
-> >      first bit of the monochrome destination buffer.
-> >      Drivers that require the first pixel in a byte to be located at an
-> >      x-coordinate that is a multiple of 8 can always align the clip
-> >      rectangle before calling drm_fb_xrgb8888_to_mono().
-> >      Note that:
-> >        - The ssd130x driver does not need the alignment, as the
-> >        monochrome buffer is a temporary format,
-> >        - The repaper driver always updates the full screen, so the clip
-> >        rectangle is always aligned.
-> >   2. Passing the number of pixels to drm_fb_gray8_to_mono_line(),
-> >      instead of the number of bytes, and the number of pixels in the
-> >      last byte.
-> >
-> > Fix (b) by explicitly setting the target bit, instead of always setting
-> > bit 7 and shifting the value in each loop iteration.
-> >
-> > Remove the bogus pitch check, which operates on bytes instead of pixels,
-> > and triggers when e.g. flashing the cursor on a text console with a font
-> > that is 8 pixels wide.
-> >
-> > Drop the confusing comment about scanlines, as a pitch in bytes always
-> > contains a multiple of 8 pixels.
-> >
-> > While at it, use the drm_rect_height() helper instead of open-coding the
-> > same operation.
-> >
-> > Update the comments accordingly.
-> >
-> > Fixes: bcf8b616deb87941 ("drm/format-helper: Add drm_fb_xrgb8888_to_mono_reversed()")
-> > Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > ---
->
-> Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+On Mon, 2022-03-14 at 19:32 +0800, menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> In order to get the reasons of skb drops, replace sock_queue_rcv_skb()
+> used in ping_queue_rcv_skb() with sock_queue_rcv_skb_reason().
+> Meanwhile, use kfree_skb_reason() instead of kfree_skb().
+> 
+> As we can see in ping_rcv(), 'skb' will be freed if '-1' is returned
+> by ping_queue_rcv_skb(). In order to get the drop reason of 'skb',
+> make ping_queue_rcv_skb() return the drop reason.
+> 
+> As ping_queue_rcv_skb() is used as 'ping_prot.backlog_rcv()', we can't
+> change its return type. (Seems ping_prot.backlog_rcv() is not used?)
+> Therefore, make it return 'drop_reason * -1' to keep the origin logic.
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+>  net/ipv4/ping.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+> index 3ee947557b88..cd4eb211431a 100644
+> --- a/net/ipv4/ping.c
+> +++ b/net/ipv4/ping.c
+> @@ -936,12 +936,13 @@ EXPORT_SYMBOL_GPL(ping_recvmsg);
+>  
+>  int ping_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+>  {
+> +	enum skb_drop_reason reason;
+
+Please insert an empty line between variable declaration and code.
+
+>  	pr_debug("ping_queue_rcv_skb(sk=%p,sk->num=%d,skb=%p)\n",
+>  		 inet_sk(sk), inet_sk(sk)->inet_num, skb);
+> -	if (sock_queue_rcv_skb(sk, skb) < 0) {
+> -		kfree_skb(skb);
+> +	if (sock_queue_rcv_skb_reason(sk, skb, &reason) < 0) {
+> +		kfree_skb_reason(skb, reason);
+>  		pr_debug("ping_queue_rcv_skb -> failed\n");
+> -		return -1;
+> +		return -reason;
+
+This changes the return value for the release callback.  Such callback
+has a long and non trivial call chain via sk_backlog_rcv. 
+
+It *should* be safe, but have you considered factoring out an
+__ping_queue_rcv_skb() variant returning the full drop reason, use it
+in the next patch and build ping_queue_rcv_skb() on top of such helper
+to that backlog_rcv() return code will not change?
+
+The above should additionally avoid the IMHO not so nice:
+
+	reason = ping_queue_rcv_skb(sk, skb2) * -1;
+
+in the next patch - it will become:
+
+	reason = __ping_queue_rcv_skb(sk, skb2);
 
 Thanks!
 
-> I just have a small comment below.
->
-> [snip]
->
-> > +static void drm_fb_gray8_to_mono_line(u8 *dst, const u8 *src, unsigned int pixels)
-> > +{
-> > +     while (pixels) {
-> > +             unsigned int i, bits = min(pixels, 8U);
-> > +             u8 byte = 0;
-> >
-> > -                     byte >>= 1;
-> > -                     if (src[x] >> 7)
-> > -                             byte |= BIT(7);
-> > +             for (i = 0; i < bits; i++, pixels--) {
->
-> I think is worth to add a comment here explaining that the pixel is set to
-> 1 for brightness > 127 and to 0 for brightness < 128. Or as kernel-doc for
-> this helper function.
->
-> > +                     if (*src++ & BIT(7))
->
-> Pekka also mentioned that if (*src++ > 127) would make this easier to read.
+Paolo
 
-Sure, will update. Nicely removes the need for a comment.
-
-> > +                             byte |= BIT(i);
-> >               }
-> >               *dst++ = byte;
-> >       }
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
