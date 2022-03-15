@@ -2,289 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9BECC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27BB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349985AbiCOQ2g (ORCPT
+        id S1349265AbiCOQ3j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38430 "EHLO
+        Tue, 15 Mar 2022 12:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241023AbiCOQ2f (ORCPT
+        with ESMTP id S1350029AbiCOQ3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:28:35 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4589956C13
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:27:21 -0700 (PDT)
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 22FGR9dr025638;
-        Wed, 16 Mar 2022 01:27:09 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 22FGR9dr025638
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1647361630;
-        bh=BOExbP66O/Uw83XDrn7rpBs8+RR88II8AzpWN9E7Ij8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=rA9hroOKKerr19Bw4b7PXizh9fqj0afiUYGVwhUHwpvJ2bkD1AYoPUizxA26Hehgc
-         4dTPwZUXzvwb30kBQtUoKeA7DxBP1/7E95zjiSoSfF8Heaoodu5RJuxEh8OH5gIklh
-         QRgjv5lW9jT1sgrMdYdVhK5UW9KnC2Gl5EwUTRuD5fVtttbD308l1nye5TUqa27Ft9
-         6KJncFlXCu5RFVCiYPPj/T98I+0w9ENcCTdhuWpXxthBuTLlk7Dd7WX9nDIt/UyppB
-         6uWPQTY0d/FAKufm7eHTX4rxsEUSXmAlt5ePMfKIY75EL6sSXIeSpzfoYt3CwubmnL
-         OWoCzGmIKkBcg==
-X-Nifty-SrcIP: [209.85.214.173]
-Received: by mail-pl1-f173.google.com with SMTP id n15so16682437plh.2;
-        Tue, 15 Mar 2022 09:27:09 -0700 (PDT)
-X-Gm-Message-State: AOAM533EcG/ATJT6Mzg0mkGYmxbZEFYnxGtltclLqR5an4GjbFAaxZzm
-        24N7XFk9LNrofoFnm0VtnnSPB0kVtfRbFRj6M4A=
-X-Google-Smtp-Source: ABdhPJxBZNGNRIITAORFdnjsxJn8chKL2ZYd6FUuJo3h2ECaHhs7DII5mfIECrcrNqbnXKgYHaifSPRjWImr0MzXGYY=
-X-Received: by 2002:a17:902:eb84:b0:151:f80e:e98b with SMTP id
- q4-20020a170902eb8400b00151f80ee98bmr29180354plg.99.1647361628703; Tue, 15
- Mar 2022 09:27:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <Yif8nO2xg6QnVQfD@hirez.programming.kicks-ass.net>
- <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
- <YinGZObp37b27LjK@hirez.programming.kicks-ass.net> <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
- <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net> <YisnG9lW6kp8lBp3@hirez.programming.kicks-ass.net>
- <CAADnVQJfffD9tH_cWThktCCwXeoRV1XLZq69rKK5vKy_y6BN8A@mail.gmail.com>
- <20220312154407.GF28057@worktop.programming.kicks-ass.net>
- <CAADnVQL7xrafAviUJg47LfvFSJpgZLwyP18Bm3S_KQwRyOpheQ@mail.gmail.com>
- <20220313085214.GK28057@worktop.programming.kicks-ass.net> <Yi9YOdn5Nbq9BBwd@hirez.programming.kicks-ass.net>
-In-Reply-To: <Yi9YOdn5Nbq9BBwd@hirez.programming.kicks-ass.net>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 16 Mar 2022 01:26:25 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASOjsSRixifxxUBKiFdR_Q_pSoBu98zYU_u_z1rtUD=zA@mail.gmail.com>
-Message-ID: <CAK7LNASOjsSRixifxxUBKiFdR_Q_pSoBu98zYU_u_z1rtUD=zA@mail.gmail.com>
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        X86 ML <x86@kernel.org>, joao@overdrivepizza.com,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Tue, 15 Mar 2022 12:29:32 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECD42BB2F
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:28:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647361700; x=1678897700;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=9NlMuHVWGQMaaogSGPp+bKQ4Qb4Uj1fNrUqrs9vh7KA=;
+  b=meVPf+2z9MaGY0dIh7bO4K15rO0tzigxrG8EhjRtSzpMmeu5iWxIxxBh
+   XDj+6oFkFDuTmH5cxlMmsFfR0EFr3BJd/LPKhw6zYdtZn8SlSdnmS9VqM
+   0DtucWCT5O4Ml+5d1YNItqWaSpFqIawbhrrfnOaUKHSyK+WOCS77euRWP
+   14LppnBh6DtmclGBR4UJ4/oLNRNktdnsbwpLvUI+SrfKT9EdA5VXHTRId
+   hZNmcBitM4QXXIB9aq3AbTX3UOugl/+pk0DtvbHNH9EUA7R0MFFdcqVQM
+   GW+HVswEMRGA2Ar7W+y7dZfB62rWwExnfN9oz1Bh2wYGucnmbw/FGWWEF
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255180783"
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="255180783"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:28:20 -0700
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="646287929"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:28:20 -0700
+Date:   Tue, 15 Mar 2022 09:31:35 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        iommu@lists.linux-foundation.org,
         LKML <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mark Rutland <mark.rutland@arm.com>, alyssa.milburn@intel.com,
-        Miroslav Benes <mbenes@suse.cz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 5/8] iommu: Add PASID support for DMA mapping API
+ users
+Message-ID: <20220315093135.5c11066d@jacob-builder>
+In-Reply-To: <20220315142216.GV11336@nvidia.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+        <20220315050713.2000518-6-jacob.jun.pan@linux.intel.com>
+        <00286dbb-fe73-3604-4dec-340eb91912c3@arm.com>
+        <20220315142216.GV11336@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 11:59 PM Peter Zijlstra <peterz@infradead.org> wrot=
-e:
->
-> On Sun, Mar 13, 2022 at 09:52:14AM +0100, Peter Zijlstra wrote:
-> > On Sat, Mar 12, 2022 at 05:33:39PM -0800, Alexei Starovoitov wrote:
-> > > During the build with gcc 8.5 I see:
-> > >
-> > > arch/x86/crypto/crc32c-intel.o: warning: objtool: file already has
-> > > .ibt_endbr_seal, skipping
-> > > arch/x86/crypto/crc32c-intel.o: warning: objtool: file already has
-> > > .orc_unwind section, skipping
-> > >   LD [M]  crypto/async_tx/async_xor.ko
-> > >   LD [M]  crypto/authenc.ko
-> > > make[3]: *** [../scripts/Makefile.modfinal:61:
-> > > arch/x86/crypto/crc32c-intel.ko] Error 255
-> > > make[3]: *** Waiting for unfinished jobs....
-> > >
-> > > but make clean cures it.
-> > > I suspect it's some missing makefile dependency.
-> >
-> > Yes, I recently ran into it; I've been trying to kick Makefile into
-> > submission but have not had success yet. Will try again on Monday.
-> >
-> > Problem appears to be that it will re-link .ko even though .o hasn't
-> > changed, resulting in duplicate objtool runs. I've been trying to have
-> > makefile generate .o.objtool empty file to serve as dependency marker t=
-o
-> > avoid doing second objtool run, but like said, no luck yet.
->
-> Masahiro-san, I'm trying the below, but afaict it's not working because
-> the rule for the .o file itself:
->
-> $(multi-obj-m): FORCE
->         $(call if_changed,link_multi-m)
->
-> will in fact update the timestamp of the .o file, even if if_changed
-> nops out the cmd. Concequently all rules that try to use if_changed with
-> this .o file as a dependency will find it newer and run anyway.
->
->
-> remake -x output of a fs/f2fs/ module (re)build:
->
->      Prerequisite 'FORCE' of target 'fs/f2fs/f2fs.o' does not exist.
->     Must remake target 'fs/f2fs/f2fs.o'.
-> ../scripts/Makefile.build:454: target 'fs/f2fs/f2fs.o' does not exist
-> ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-> :
-> ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->     Successfully remade target file 'fs/f2fs/f2fs.o'.
->    Prerequisite 'fs/f2fs/f2fs.o' is newer than target 'fs/f2fs/f2fs.mod'.
->    Prerequisite 'FORCE' of target 'fs/f2fs/f2fs.mod' does not exist.
->   Must remake target 'fs/f2fs/f2fs.mod'.
-> ../scripts/Makefile.build:281: update target 'fs/f2fs/f2fs.mod' due to: f=
-s/f2fs/f2fs.o
-> ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-> set -e;   { echo  fs/f2fs/dir.o fs/f2fs/file.o fs/f2fs/inode.o fs/f2fs/na=
-mei.o fs/f2fs/hash.o fs/f2fs/super.o fs/f2fs/inline.o fs/f2fs/checkpoint.o =
-fs/f2fs/gc.o fs/f2fs/data.o fs/f2fs/node.o fs/f2fs/segment.o fs/f2fs/recove=
-ry.o fs/f2fs/shrinker.o fs/f2fs/extent_cache.o fs/f2fs/sysfs.o fs/f2fs/debu=
-g.o fs/f2fs/xattr.o fs/f2fs/acl.o fs/f2fs/iostat.o;  echo; } > fs/f2fs/f2fs=
-.mod; printf '%s\n' 'cmd_fs/f2fs/f2fs.mod :=3D { echo  fs/f2fs/dir.o fs/f2f=
-s/file.o fs/f2fs/inode.o fs/f2fs/namei.o fs/f2fs/hash.o fs/f2fs/super.o fs/=
-f2fs/inline.o fs/f2fs/checkpoint.o fs/f2fs/gc.o fs/f2fs/data.o fs/f2fs/node=
-.o fs/f2fs/segment.o fs/f2fs/recovery.o fs/f2fs/shrinker.o fs/f2fs/extent_c=
-ache.o fs/f2fs/sysfs.o fs/f2fs/debug.o fs/f2fs/xattr.o fs/f2fs/acl.o fs/f2f=
-s/iostat.o;  echo; } > fs/f2fs/f2fs.mod' > fs/f2fs/.f2fs.mod.cmd
-> ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
->   Successfully remade target file 'fs/f2fs/f2fs.mod'.
->    Prerequisite 'fs/f2fs/f2fs.o' is newer than target 'fs/f2fs/f2fs.objto=
-ol'.
->    Prerequisite 'FORCE' of target 'fs/f2fs/f2fs.objtool' does not exist.
->   Must remake target 'fs/f2fs/f2fs.objtool'.
-> ../scripts/Makefile.build:287: update target 'fs/f2fs/f2fs.objtool' due t=
-o: fs/f2fs/f2fs.o
-> ##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-> set -e;   { echo fs/f2fs/f2fs.o  ; ./tools/objtool/objtool orc generate  =
---module  --lto --ibt  --no-fp    --uaccess   fs/f2fs/f2fs.o ; } > fs/f2fs/=
-f2fs.objtool; printf '%s\n' 'cmd_fs/f2fs/f2fs.objtool :=3D { echo fs/f2fs/f=
-2fs.o  ; ./tools/objtool/objtool orc generate  --module  --lto --ibt  --no-=
-fp    --uaccess   fs/f2fs/f2fs.o ; } > fs/f2fs/f2fs.objtool' > fs/f2fs/.f2f=
-s.objtool.cmd
-> ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-> fs/f2fs/f2fs.o: warning: objtool: file already has .static_call_sites sec=
-tion, skipping
-> fs/f2fs/f2fs.o: warning: objtool: file already has .ibt_endbr_seal, skipp=
-ing
-> fs/f2fs/f2fs.o: warning: objtool: file already has .orc_unwind section, s=
-kipping
-> ../scripts/Makefile.build:286: *** [fs/f2fs/f2fs.objtool] error 255
->
->
-> Where we can see that we don't re-generate f2fs.o (empty command), but
-> then we do re-generate f2fs.mod because f2fs.o is newer and the same
-> happens for the new f2fs.objtool.
->
-> Help?
+Hi Jason,
 
+On Tue, 15 Mar 2022 11:22:16 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Help?
+> On Tue, Mar 15, 2022 at 11:16:41AM +0000, Robin Murphy wrote:
+> > On 2022-03-15 05:07, Jacob Pan wrote:  
+> > > DMA mapping API is the de facto standard for in-kernel DMA. It
+> > > operates on a per device/RID basis which is not PASID-aware.
+> > > 
+> > > Some modern devices such as Intel Data Streaming Accelerator, PASID is
+> > > required for certain work submissions. To allow such devices use DMA
+> > > mapping API, we need the following functionalities:
+> > > 1. Provide device a way to retrieve a PASID for work submission within
+> > > the kernel
+> > > 2. Enable the kernel PASID on the IOMMU for the device
+> > > 3. Attach the kernel PASID to the device's default DMA domain, let it
+> > > be IOVA or physical address in case of pass-through.
+> > > 
+> > > This patch introduces a driver facing API that enables DMA API
+> > > PASID usage. Once enabled, device drivers can continue to use DMA
+> > > APIs as is. There is no difference in dma_handle between without
+> > > PASID and with PASID.  
+> > 
+> > Surely the main point of PASIDs is to be able to use more than one
+> > of them?  
+> 
+> IMHO, not for the DMA API.
+> 
+Right, but we really need two here. One for DMA request w/o PASID (PASID 0)
+and a kernel PASID for DMA request tagged w/ PASID.
+Since DMA API is not per process, there is no need for more right now.
 
-I had never noticed this thread before because
-you did not CC me or kbuild ML.
+> I can't think of good reasons why a single in-kernel device should
+> require more than one iommu_domain for use by the DMA API. Even with
+> the SIOV cases we have been looking at we don't really see a use case
+> for more than one DMA API iommu_domain on a single physical device.
+> Do you know of something on the horizon?
+> 
+Not that I know.
 
+> From my view the main point of PASIDs is to assign iommu_domains that
+> are not used by the DMA API.
+> 
+Right, DMA API default to PASID 0. But IDXD device cannot use PASID 0 for
+enqcmds.
 
-Looking at the build system changes:
-https://lore.kernel.org/all/20220308154319.528181453@infradead.org/
-https://lore.kernel.org/all/20220308154319.822545231@infradead.org/
+> IMHO it is a device mis-design of IDXD to require all DMA be PASID
+> tagged. Devices should be able to do DMA on their RID when the PCI
+IDXD can do DMA w/ RID, the PASID requirement is only for shared WQ where
+ENQCMDS is used. ENQCMDS has the benefit of avoiding locking where work
+submission is done from multiple CPUs.
+Tony, Dave?
 
-Both patches are wrong.
-So is the fix-up you appended lator in this thread.
+> function is controlled by a kernel driver. I see this driver facing
+> API as addressing a device quirk by aliasing the DMA API of the RID
+> into a PASID and that is really all it is good for.
+> 
+> In any case I think we are better to wait for an actual user for multi
+> DMA API iommu_domains to come forward before we try to build an API
+> for it.
+> 
+What would you recommend in the interim?
 
-Apparently, you were screwing up Kbuild in a brown paper bag.
-So scared.
+Shall we let VT-d driver set up a special global PASID for DMA API? Then
+IDXD driver can retrieve it somehow? But that still needs an API similar to
+what I did in the previous version where PASID #1 was used.
 
+Thanks,
 
-
-
-
-
-
->
-> ---
-> Index: linux-2.6/scripts/Makefile.build
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- linux-2.6.orig/scripts/Makefile.build
-> +++ linux-2.6/scripts/Makefile.build
-> @@ -92,6 +92,10 @@ ifdef CONFIG_LTO_CLANG
->  targets-for-modules +=3D $(patsubst %.o, %.lto.o, $(filter %.o, $(obj-m)=
-))
->  endif
->
-> +ifdef CONFIG_X86_KERNEL_IBT
-> +targets-for-modules +=3D $(patsubst %.o, %.objtool, $(filter %.o, $(obj-=
-m)))
-> +endif
-> +
->  ifdef need-modorder
->  targets-for-modules +=3D $(obj)/modules.order
->  endif
-> @@ -276,6 +280,12 @@ cmd_mod =3D { \
->  $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
->         $(call if_changed,mod)
->
-> +cmd_objtool_mod =3D                                                     =
- \
-> +       { echo $< $(cmd_objtool) ; } > $@
-> +
-> +$(obj)/%.objtool: $(obj)/%$(mod-prelink-ext).o FORCE
-> +       $(call if_changed,objtool_mod)
-> +
->  quiet_cmd_cc_lst_c =3D MKLST   $@
->        cmd_cc_lst_c =3D $(CC) $(c_flags) -g -c -o $*.o $< && \
->                      $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
-> Index: linux-2.6/scripts/Makefile.lib
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- linux-2.6.orig/scripts/Makefile.lib
-> +++ linux-2.6/scripts/Makefile.lib
-> @@ -552,9 +552,8 @@ objtool_args =3D                                     =
-                         \
->         $(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)             \
->         $(if $(CONFIG_SLS), --sls)
->
-> -cmd_objtool =3D $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@=
-)
-> -cmd_objtool_mod =3D $(if $(objtool-enabled), $(objtool) $(objtool_args) =
-$(@:.ko=3D.o) ; )
-> -cmd_gen_objtooldep =3D $(if $(objtool-enabled), { echo ; echo '$@: $$(wi=
-ldcard $(objtool))' ; } >> $(dot-target).cmd)
-> +cmd_objtool =3D $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $(=
-@:.objtool=3D.o))
-> +cmd_gen_objtooldep =3D $(if $(objtool-enabled), { echo ; echo '$(@:.objt=
-ool=3D.o): $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
->
->  endif # CONFIG_STACK_VALIDATION
->
-> @@ -575,8 +574,8 @@ $(obj)/%.o: objtool-enabled :=3D
->
->  # instead run objtool on the module as a whole, right before
->  # the final link pass with the linker script.
-> -%.ko: objtool-enabled =3D y
-> -%.ko: part-of-module :=3D y
-> +$(obj)/%.objtool: objtool-enabled =3D y
-> +$(obj)/%.objtool: part-of-module :=3D y
->
->  else
->
-> Index: linux-2.6/scripts/Makefile.modfinal
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> --- linux-2.6.orig/scripts/Makefile.modfinal
-> +++ linux-2.6/scripts/Makefile.modfinal
-> @@ -32,7 +32,6 @@ ARCH_POSTLINK :=3D $(wildcard $(srctree)/a
->
->  quiet_cmd_ld_ko_o =3D LD [M]  $@
->        cmd_ld_ko_o +=3D                                                  =
- \
-> -       $(cmd_objtool_mod)                                              \
->         $(LD) -r $(KBUILD_LDFLAGS)                                      \
->                 $(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)              \
->                 -T scripts/module.lds -o $@ $(filter %.o, $^);          \
-
-
-
---=20
-Best Regards
-Masahiro Yamada
+Jacob
