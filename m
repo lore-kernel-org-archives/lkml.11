@@ -2,88 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1218CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5849C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349163AbiCOOaT (ORCPT
+        id S1349211AbiCOOa3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
+        Tue, 15 Mar 2022 10:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233525AbiCOOaQ (ORCPT
+        with ESMTP id S1349170AbiCOOaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:30:16 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1457344779;
-        Tue, 15 Mar 2022 07:29:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GxMzfNRQtZ04+lHo/O1UCEwaB2Ydbfpf2yzGh5HPxHc=; b=olC8YY+DSx6sXmlZVmrtQDGF50
-        04E3CKz3W/4CMUH8fsWmF8Mu0+RcSMZEzzPIkruCbYjw5rkXzg0lzMSycIvLuXicr9N9VEON67G9l
-        lxmB3rRgBHTIH85AAh/Vjr9VDBs+sZLs3TteZ/CveoanmoAm0TA4/npRKzTXwCXWz8Xg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nU8AM-00AyZC-FB; Tue, 15 Mar 2022 15:28:50 +0100
-Date:   Tue, 15 Mar 2022 15:28:50 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 7/8] arm64: dts: marvell: Add Armada 98DX2530 SoC and
- RD-AC5X board
-Message-ID: <YjCiot+PSv3ZRS4J@lunn.ch>
-References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
- <20220314213143.2404162-8-chris.packham@alliedtelesis.co.nz>
- <Yi/cyUJ6oIs96UW2@lunn.ch>
- <7b78853e-71ec-7c57-4cac-5cd6303f3b13@alliedtelesis.co.nz>
+        Tue, 15 Mar 2022 10:30:23 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617B95520C;
+        Tue, 15 Mar 2022 07:29:11 -0700 (PDT)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22FDTRnY000974;
+        Tue, 15 Mar 2022 14:29:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pp1; bh=FLU9puj/Xqg6RFneYuMWVXxMv3H+XMSCS5Uotgaugv8=;
+ b=gUr2CJaOj8rrBgni6xw8ufnVFnrUcJ1WsmwMWDkRsgmkFISPVyMTiIMhaHInzEQ8yopq
+ BhWt36nRco+rozuBt1bJVOG6wZjJcBoAuPCrLUI7UMdR3Dx6hDh6UHGVOjg7z2DStbqB
+ k/6a1hegfCfkDFAgs6QcNWpxug18HiGPg1y2NzMLrSaBlXLl3l9HDTX++MQblodYZtYj
+ KVuQorV19Tfmd0hBMu402SqOZaakEvqEGpXTU9OV+2QvDMnbDRvkCNF3WsyIVyEIGuBF
+ 3Pqa5cIp9Zue7rqyV3K5eapmVqFY7Vnpnq7mdeQjHDIJpGNCQqpTwVH8nufYB6fwVuni YA== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3etuqvsg33-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Mar 2022 14:29:10 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22FET8xR026817;
+        Tue, 15 Mar 2022 14:29:08 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3erk58ntnk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Mar 2022 14:29:08 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22FET6Dl33358274
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Mar 2022 14:29:06 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 21D0E11C050;
+        Tue, 15 Mar 2022 14:29:06 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A73DE11C04C;
+        Tue, 15 Mar 2022 14:29:05 +0000 (GMT)
+Received: from localhost (unknown [9.43.32.151])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 15 Mar 2022 14:29:05 +0000 (GMT)
+From:   Ritesh Harjani <riteshh@linux.ibm.com>
+To:     fstests <fstests@vger.kernel.org>
+Cc:     linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Ritesh Harjani <riteshh@linux.ibm.com>
+Subject: [PATCHv2 1/4] generic/468: Add another falloc test entry
+Date:   Tue, 15 Mar 2022 19:58:56 +0530
+Message-Id: <08bd90fa8c291a4ccba2e5d6182a8595b7e6d7ab.1647342932.git.riteshh@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <cover.1647342932.git.riteshh@linux.ibm.com>
+References: <cover.1647342932.git.riteshh@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: UpLqvbReOIrdLH9wmoRjQOnuSZJLPPWb
+X-Proofpoint-ORIG-GUID: UpLqvbReOIrdLH9wmoRjQOnuSZJLPPWb
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7b78853e-71ec-7c57-4cac-5cd6303f3b13@alliedtelesis.co.nz>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-15_03,2022-03-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
+ phishscore=0 malwarescore=0 mlxlogscore=715 impostorscore=0
+ lowpriorityscore=0 clxscore=1015 priorityscore=1501 mlxscore=0
+ suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2203150092
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 02:11:56AM +0000, Chris Packham wrote:
-> 
-> On 15/03/22 13:24, Andrew Lunn wrote:
-> >> diff --git a/arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi b/arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
-> >> new file mode 100644
-> >> index 000000000000..ebe464b9ebd2
-> >> --- /dev/null
-> >> +++ b/arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
-> >> @@ -0,0 +1,343 @@
-> >> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-> >> +/*
-> >> + * Device Tree For AC5.
-> >> + *
-> >> + * Copyright (C) 2021 Marvell
-> >> + *
-> >> + */
-> >> +
-> >> +/dts-v1/;
-> >> +	memory@0 {
-> >> +		device_type = "memory";
-> >> +		reg = <0x2 0x00000000 0x0 0x40000000>;
-> >> +		// linux,usable-memory = <0x2 0x00000000 0x0 0x80000000>;
-> >> +	};
-> > Is the memory part of the SoC, or is it on the board? Normally it is
-> > on the board, so should be in the .dts file. But Apple M1 etc...
+Add another falloc test entry which could hit a kernel bug
+with ext4 fast_commit feature w/o below kernel commit [1].
 
-> I also wasn't sure about linux,usable-memory. It's commented out so it's 
-> obviously doing nothing but should it? No other in-tree dts files have it.
+<log>
+[  410.888496][ T2743] BUG: KASAN: use-after-free in ext4_mb_mark_bb+0x26a/0x6c0
+[  410.890432][ T2743] Read of size 8 at addr ffff888171886000 by task mount/2743
 
-Hi Chris
+This happens when falloc -k size is huge which spans across more than
+1 flex block group in ext4. This causes a bug in fast_commit replay
+code which is fixed by kernel commit at [1].
 
-I've no idea what it means. Maybe search the SDK and see if they have
-some code and what it does. But i would drop it.
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git/commit/?h=dev&id=bfdc502a4a4c058bf4cbb1df0c297761d528f54d
 
-     Andrew
+Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+---
+ tests/generic/468     | 4 ++++
+ tests/generic/468.out | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/tests/generic/468 b/tests/generic/468
+index 95752d3b..cbef9746 100755
+--- a/tests/generic/468
++++ b/tests/generic/468
+@@ -34,6 +34,9 @@ _scratch_mkfs >/dev/null 2>&1
+ _require_metadata_journaling $SCRATCH_DEV
+ _scratch_mount
+
++blocksize=4096
++fact=18
++
+ testfile=$SCRATCH_MNT/testfile
+
+ # check inode metadata after shutdown
+@@ -85,6 +88,7 @@ for i in fsync fdatasync; do
+ 	test_falloc $i "-k " 1024
+ 	test_falloc $i "-k " 4096
+ 	test_falloc $i "-k " 104857600
++	test_falloc $i "-k " $((32768*$blocksize*$fact))
+ done
+
+ status=0
+diff --git a/tests/generic/468.out b/tests/generic/468.out
+index b3a28d5e..a09cedb8 100644
+--- a/tests/generic/468.out
++++ b/tests/generic/468.out
+@@ -5,9 +5,11 @@ QA output created by 468
+ ==== falloc -k 1024 test with fsync ====
+ ==== falloc -k 4096 test with fsync ====
+ ==== falloc -k 104857600 test with fsync ====
++==== falloc -k 2415919104 test with fsync ====
+ ==== falloc 1024 test with fdatasync ====
+ ==== falloc 4096 test with fdatasync ====
+ ==== falloc 104857600 test with fdatasync ====
+ ==== falloc -k 1024 test with fdatasync ====
+ ==== falloc -k 4096 test with fdatasync ====
+ ==== falloc -k 104857600 test with fdatasync ====
++==== falloc -k 2415919104 test with fdatasync ====
+--
+2.31.1
+
