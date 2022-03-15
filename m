@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C507C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D08C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242465AbiCOKqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
+        id S1347367AbiCOKq2 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347278AbiCOKpc (ORCPT
+        with ESMTP id S1347306AbiCOKpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 06:45:32 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6863344EF;
-        Tue, 15 Mar 2022 03:43:56 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:54 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65ACE35DED;
+        Tue, 15 Mar 2022 03:43:55 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:43:52 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341035;
+        s=2020; t=1647341033;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XQTL4lw8prEg4ZsF/2IcY+D8LEtbABpQAQdVVCpEUCI=;
-        b=POZBaVfg3Z4vJNzn11m8bHqZSUj2vHa2aejvkWHmxM4jcSRz5PA2pXN0fxlQKGZcJQIUcP
-        ERAo1A47zlSFmd7Gl7WjP784DGNcBk5es5CIqU3xNEbvAXWL3nR9vat8kOIhC3PkENdjgN
-        VCgS1GA+A3V7aWoazuhhHaNOIAl3zBY7AqOdKxtgtIqU59pW/Wy2IfXFJtcWe60LA+huZO
-        IMDeUjHJ861TD8hD7J7IpkpNJgw1Ha53fBDrodUr9HIYfbtu4KT3skPzdNVeArorpZfQb4
-        jTw3UL+yL6PdTTQUv45OIz/TEPRu6uGjDqZvgh+qqIx6WjTempJwORKYVb8GoQ==
+        bh=K+o6I8oQdSzG94ZoMorRTafAdaflX8apvASfxN5k9OE=;
+        b=sEd3E15R5eFMBP3Or/fws/QAFfvvbo5Xdm1wSfD6Ir1CsP9rzzMZ5uze872ui27J4Kvi6c
+        S3EBDjBj7iySVmTDUqKrfTgicn8GZVLUZ3+NIZ54GeKHsAdAZeqt+PMyu7ZPCai+hRuHyg
+        jFmgUaSIUhWK5pPPxPxoRsi5XlFiNTFCMM6/5wwf99TfuLKwo17OJV2gma9LtpvYJPbOXO
+        OXIC90Iu6BiektEVpa8Rktyvj0aR2TaV44iVzgNJSb8MqUVgFOIZ6jl8hldvocbRooDT+3
+        Bl/eAqLjX15DL9iiUedjivKVPKXqwjtc5Ea392Viay1EseL6iyI+++uz1RAGDg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341035;
+        s=2020e; t=1647341033;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XQTL4lw8prEg4ZsF/2IcY+D8LEtbABpQAQdVVCpEUCI=;
-        b=UmXF52EdrMvfPSZtYqHf0SH5TaitpIYRqdYLTgtQaJDRQAH+/vRAF9gMyS4YVopUzQPRq/
-        gOeK0KQ8LiUewrAw==
+        bh=K+o6I8oQdSzG94ZoMorRTafAdaflX8apvASfxN5k9OE=;
+        b=6+GQnT6LTiN2kbrR0gNfQHrEFMue1MKxOJVPzh+nat51BGOzjgyNb8Z1Z8EiTNgpJwR+Ii
+        zTPzuGosSr9eByDw==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/ibt,ftrace: Annotate ftrace code patching
+Subject: [tip: x86/core] x86/ibt: Dont generate ENDBR in .discard.text
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154318.936599479@infradead.org>
-References: <20220308154318.936599479@infradead.org>
+In-Reply-To: <20220308154319.054842742@infradead.org>
+References: <20220308154319.054842742@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734103435.16921.12087221192544447210.tip-bot2@tip-bot2>
+Message-ID: <164734103274.16921.8036469935210805019.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,81 +62,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     3215de84c06d747bb748b98945add83e3ec8a6e2
-Gitweb:        https://git.kernel.org/tip/3215de84c06d747bb748b98945add83e3ec8a6e2
+Commit-ID:     2b6ff7dea670a4623fae1d2349806fc7f8e305d1
+Gitweb:        https://git.kernel.org/tip/2b6ff7dea670a4623fae1d2349806fc7f8e305d1
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:41 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:43 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:41 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:42 +01:00
 
-x86/ibt,ftrace: Annotate ftrace code patching
+x86/ibt: Dont generate ENDBR in .discard.text
 
-These are code patching sites, not indirect targets.
+Having ENDBR in discarded sections can easily lead to relocations into
+discarded sections which the linkers aren't really fond of. Objtool
+also shouldn't generate them, but why tempt fate.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154318.936599479@infradead.org
+Link: https://lore.kernel.org/r/20220308154319.054842742@infradead.org
 ---
- arch/x86/kernel/ftrace_64.S | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/include/asm/setup.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index e32b5cd..4ec1360 100644
---- a/arch/x86/kernel/ftrace_64.S
-+++ b/arch/x86/kernel/ftrace_64.S
-@@ -145,6 +145,7 @@ SYM_FUNC_START(ftrace_caller)
- 	movq %rcx, RSP(%rsp)
+diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
+index a12458a..896e48d 100644
+--- a/arch/x86/include/asm/setup.h
++++ b/arch/x86/include/asm/setup.h
+@@ -8,6 +8,7 @@
  
- SYM_INNER_LABEL(ftrace_caller_op_ptr, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	/* Load the ftrace_ops into the 3rd parameter */
- 	movq function_trace_op(%rip), %rdx
+ #include <linux/linkage.h>
+ #include <asm/page_types.h>
++#include <asm/ibt.h>
  
-@@ -155,6 +156,7 @@ SYM_INNER_LABEL(ftrace_caller_op_ptr, SYM_L_GLOBAL)
- 	movq $0, CS(%rsp)
+ #ifdef __i386__
  
- SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	call ftrace_stub
- 
- 	/* Handlers can change the RIP */
-@@ -169,6 +171,7 @@ SYM_INNER_LABEL(ftrace_call, SYM_L_GLOBAL)
- 	 * layout here.
- 	 */
- SYM_INNER_LABEL(ftrace_caller_end, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 
- 	jmp ftrace_epilogue
- SYM_FUNC_END(ftrace_caller);
-@@ -192,6 +195,7 @@ SYM_FUNC_START(ftrace_regs_caller)
- 	/* save_mcount_regs fills in first two parameters */
- 
- SYM_INNER_LABEL(ftrace_regs_caller_op_ptr, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	/* Load the ftrace_ops into the 3rd parameter */
- 	movq function_trace_op(%rip), %rdx
- 
-@@ -221,6 +225,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_op_ptr, SYM_L_GLOBAL)
- 	leaq (%rsp), %rcx
- 
- SYM_INNER_LABEL(ftrace_regs_call, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	call ftrace_stub
- 
- 	/* Copy flags back to SS, to restore them */
-@@ -248,6 +253,7 @@ SYM_INNER_LABEL(ftrace_regs_call, SYM_L_GLOBAL)
- 	 */
- 	testq	%rax, %rax
- SYM_INNER_LABEL(ftrace_regs_caller_jmp, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	jnz	1f
- 
- 	restore_mcount_regs
-@@ -261,6 +267,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_jmp, SYM_L_GLOBAL)
- 	 * to the return.
- 	 */
- SYM_INNER_LABEL(ftrace_regs_caller_end, SYM_L_GLOBAL)
-+	ANNOTATE_NOENDBR
- 	jmp ftrace_epilogue
- 
- 	/* Swap the flags with orig_rax */
+@@ -119,7 +120,7 @@ void *extend_brk(size_t size, size_t align);
+  * executable.)
+  */
+ #define RESERVE_BRK(name,sz)						\
+-	static void __section(".discard.text") __used notrace		\
++	static void __section(".discard.text") __noendbr __used notrace	\
+ 	__brk_reservation_fn_##name##__(void) {				\
+ 		asm volatile (						\
+ 			".pushsection .brk_reservation,\"aw\",@nobits;" \
