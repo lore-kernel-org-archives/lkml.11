@@ -2,77 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64433C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF49EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344236AbiCOBTL (ORCPT
+        id S1344244AbiCOBTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 21:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        Mon, 14 Mar 2022 21:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344227AbiCOBTJ (ORCPT
+        with ESMTP id S1344241AbiCOBTK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 21:19:09 -0400
+        Mon, 14 Mar 2022 21:19:10 -0400
 Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB97513DE7
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6851400A
         for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:17:55 -0700 (PDT)
 Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 21E772C072F;
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 4D3852C0A56;
         Tue, 15 Mar 2022 01:17:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
         s=mail181024; t=1647307073;
-        bh=UivpbKymV5CHwwJgz2qOrdXwYdgZWXTFgTeVW/TVydM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=aCVY4N27u7p+ilXSVJz9m3XiMJq/r7Ga/qcu7md0eWQu7t9ui23EaYJgP+MoWieWz
-         YJjf2qyNhQo4nC2Nv+mxcHEqUa1agkekYJ3C/41CYM3lsRFAGD0jJLK5+QSxej/hm5
-         0Bz7BlNwVHAIYjDnJo2Hp8STEBY71E3/K1SGEi3VL9HQaQsMX1U/MzCbvdgyf4Kfso
-         7f+v6aCZsQBembYP4oU6lX7PttK0qjfgxhXUsta6OV/yJcpASuYuRJYcaQrNRVHwtx
-         qyTLxPxgtXeIR7C6vyUQJycLch3T9xV8PC6G66NGaUJn8oaDsVOmMsmx8mY8V/6BGO
-         vLkB3jDu9u9jg==
+        bh=p8tBUemvUZ1bjRc8f+KeSaAtHGCEVnZWTcvNI577MMY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hZuy5m6+K5SSU8lKaNV9Xs5PTM4jxMRO1p+IFde5ZHfaSiqbhr6ariWtew60KpEeW
+         Cbt4dADnHOYKy8Yw9XE66o/n5vWHPTHqfNZtVqJ6YIjqRht1hUImRmjmPGJpplJcTH
+         YDA/70ny0Myjye62Uuhjw66Ctx49ALFFLMlBlCY+JfVbEdp4FvwsNqrhQZ9mm81yF5
+         lxCNbBIK7f+Dw35lU3JaCM3yQfZ889PM53+wmfIjC4vMECkumTIl7r8pBu5KgHyZQq
+         pE9PxtDTeSava9l9DkR5/J0S5TpAZh9WFOQNQNui6HuR26uXwWLzZptBvK24yjjYa0
+         aeLr9Go5ZisrA==
 Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B622fe9400000>; Tue, 15 Mar 2022 14:17:52 +1300
+        id <B622fe9400001>; Tue, 15 Mar 2022 14:17:52 +1300
 Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id C564813EE2B;
+        by pat.atlnz.lc (Postfix) with ESMTP id C636713EE43;
         Tue, 15 Mar 2022 14:17:52 +1300 (NZDT)
 Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 552692A2678; Tue, 15 Mar 2022 14:17:50 +1300 (NZDT)
+        id 56BD82A2677; Tue, 15 Mar 2022 14:17:50 +1300 (NZDT)
 From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
 To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
         thomas.petazzoni@bootlin.com
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH net-next v3 0/2] net: mvneta: Armada 98DX2530 SoC
-Date:   Tue, 15 Mar 2022 14:17:40 +1300
-Message-Id: <20220315011742.2465356-1-chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH net-next v3 1/2] dt-bindings: net: mvneta: Add marvell,armada-ac5-neta
+Date:   Tue, 15 Mar 2022 14:17:41 +1300
+Message-Id: <20220315011742.2465356-2-chris.packham@alliedtelesis.co.nz>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220315011742.2465356-1-chris.packham@alliedtelesis.co.nz>
+References: <20220315011742.2465356-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=VwQbUJbxAAAA:8 a=fHwNDZncxhfn92sU-sUA:9 a=AjGcO6oz07-iQ99wixmX:22
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=GiZJWJlgZr2mIF3OtF0A:9
 X-SEG-SpamProfiler-Score: 0
 x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is split off from [1] to let it go in via net-next rather than waiti=
-ng for
-the rest of the series to land.
+The out of band port on the 98DX2530 SoC is similar to the armada-3700
+except it requires a slightly different MBUS window configuration. Add a
+new compatible string so this difference can be accounted for.
 
-[1] - https://lore.kernel.org/lkml/20220314213143.2404162-1-chris.packham=
-@alliedtelesis.co.nz/
+Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
 
-Chris Packham (2):
-  dt-bindings: net: mvneta: Add marvell,armada-ac5-neta
-  net: mvneta: Add support for 98DX2530 Ethernet port
+Notes:
+    Changes in v3:
+    - Split from larger series
+    - Add review from Andrew
+    Changes in v2:
+    - New
 
- .../bindings/net/marvell-armada-370-neta.txt        |  1 +
- drivers/net/ethernet/marvell/mvneta.c               | 13 +++++++++++++
- 2 files changed, 14 insertions(+)
+ .../devicetree/bindings/net/marvell-armada-370-neta.txt          | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/net/marvell-armada-370-net=
+a.txt b/Documentation/devicetree/bindings/net/marvell-armada-370-neta.txt
+index 691f886cfc4a..2bf31572b08d 100644
+--- a/Documentation/devicetree/bindings/net/marvell-armada-370-neta.txt
++++ b/Documentation/devicetree/bindings/net/marvell-armada-370-neta.txt
+@@ -5,6 +5,7 @@ Required properties:
+ 	"marvell,armada-370-neta"
+ 	"marvell,armada-xp-neta"
+ 	"marvell,armada-3700-neta"
++	"marvell,armada-ac5-neta"
+ - reg: address and length of the register set for the device.
+ - interrupts: interrupt for the device
+ - phy: See ethernet.txt file in the same directory.
 --=20
 2.35.1
 
