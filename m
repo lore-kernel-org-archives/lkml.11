@@ -2,133 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2CCDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12DCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245401AbiCOOdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:33:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        id S1343564AbiCOOek (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 10:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236895AbiCOOdd (ORCPT
+        with ESMTP id S238497AbiCOOei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:33:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B0155217;
-        Tue, 15 Mar 2022 07:32:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14E4660DBB;
-        Tue, 15 Mar 2022 14:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C26C340E8;
-        Tue, 15 Mar 2022 14:32:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647354739;
-        bh=tkMjL/wZdYB0I49Qx/18oHUvgPG/8y/8tmdU+zCoigg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Hx6eKOuA9YxuYo7BT1lUIIvVrCV4wNNIynQ89obART+lGnFAIuYv7CfLaRSmalJiq
-         3Xf2HAt2brKseIEQcVnk8zF1f3sPaGAMy5aCUlEEtKqGO+bhwbgFUvmZspjV2sRRWR
-         kf7A9DmqBPArTFkR1yeXJit2wX4BaRpidllkVW4g=
-Date:   Tue, 15 Mar 2022 15:32:01 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andrey Konovalov <andreyknvl@gmail.com>
-Cc:     Wei Ming Chen <jj251510319013@gmail.com>,
+        Tue, 15 Mar 2022 10:34:38 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2074.outbound.protection.outlook.com [40.107.223.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3FEE62C4
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:33:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AWBQiCkFXW2U+Itzfe0tL/ixCRSosXKpeQOx0GQeQrPFD/tjsxwYRcfbi5X11Z53GBYbe81kewum6uUtLjkRBX5Wp2q7ZcdlcIOuyjfINW+Srx52Qk6+ScQat7JqefsXV7Of/tuK9vrA1rCrn9chUo0Oko/Aga4nKCCOyTSBlMFIvpoGE5zDpqwU1PkpgvXw0aNOs77WYOsl2lhSGoEaSHnfBTxDXMFtok2PrpH+kzybUHQS3xJ5BgUo44LnyPRreRl62gX5Gvks48FxV/lq4dwTobDIhhy5QUSTijuXsYLCV4THzWIg+IWLwRxjYl6Gup3IZ6b5jSOlG8zWaRDidQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KcG0A+QHKnD/LxSg5aNCpDL0iKYnd8nBYbuGQBWKtGc=;
+ b=D8g8+H/iIDcIKNgccAJXaCZIsHiOrG6+q9bkbDrHBv0yVw6/7RkkBEEkyKP/x4CB3A4hcTbvrIHITiMh8vNn5sAqF1heqWFCONcPHzcHsF6+CBY7imB5WkUINRnBdbj6f8L+v2qv1+smVoKiCvXNmrnzVn8NEsUa5PeXbLyY+5POYXJD3ZYsfSSqIAbMYIDz0pZ5R6X5pXVuHMCcDH5HCIlB4d7YFICNznAyWmvFQHyW/45UaobvOSfMuBQiBNfvPK/ywIXjedoj8I+xdH36y2urMcdMLVGKJZKhUw6ISfY4xIDH2epbEzIQcbUizQeIuct9MVRDZArXoBGT+fPAZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KcG0A+QHKnD/LxSg5aNCpDL0iKYnd8nBYbuGQBWKtGc=;
+ b=UKSzxbMjjrcNSE9rM2gK1oEbTGASOR8Gm/fTIRUZI0Q8UKmv6tzMqXdd52tuSRu0VGlRe35TzIp+vuoYZiYYbTm4u6Ijt8mEYH0VUQQAnEjP2YEw16xF5HnOHw2uRUO8Wu1n/el9JOOtGGetzoirnF3apSEm/KhYSVyBaCiV88FWH0TAG7XTcKvo62xAKMkiHP/JSHE1nXqZB2zpCSQLazaKXThGsTZKc2GrSWNST5r/nc0YEWcKXaNda73qFKzS+fjIwd0kBXyWxw+wbfgxJM9B1RhfYapG8ISLNkNACOD4c0hpEuKO7ROCTZv8f5e3yqXfreN+co2dcxGhNrccdA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by MN2PR12MB4454.namprd12.prod.outlook.com (2603:10b6:208:26c::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.23; Tue, 15 Mar
+ 2022 14:33:23 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::51a0:4aee:2b4c:ca28%4]) with mapi id 15.20.5061.029; Tue, 15 Mar 2022
+ 14:33:23 +0000
+Date:   Tue, 15 Mar 2022 11:33:22 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc:     iommu@lists.linux-foundation.org,
         LKML <linux-kernel@vger.kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        USB list <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH v2] usb: raw-gadget: return -EINVAL if no proper ep
- address available
-Message-ID: <YjCjYeIdrWvyINpX@kroah.com>
-References: <CA+fCnZd2GoU6LVvT4eBT3w7TigRrp_9XcAGyL55K5nbi3yt4sA@mail.gmail.com>
- <20220311082944.4881-1-jj251510319013@gmail.com>
- <CA+fCnZeXMKXBzJm=akMNm4OVN53T_1aQw4n+yYZ6Vkqmj8+KAQ@mail.gmail.com>
-MIME-Version: 1.0
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 3/8] iommu/vt-d: Implement device_pasid domain attach
+ ops
+Message-ID: <20220315143322.GW11336@nvidia.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+fCnZeXMKXBzJm=akMNm4OVN53T_1aQw4n+yYZ6Vkqmj8+KAQ@mail.gmail.com>
+In-Reply-To: <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
+X-ClientProxiedBy: MN2PR10CA0021.namprd10.prod.outlook.com
+ (2603:10b6:208:120::34) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 83cc4c89-f263-4df7-be6e-08da0690c292
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4454:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB445484A98E194E3A686322BBC2109@MN2PR12MB4454.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Tqavi9RZLvBHIy56H1InH9Rmz3Y+H/ZprDiQJAaAQHmgt7IvWkVSpEL6163qOIH92YfXCyhh2mzyiMDL16+SC1Jq677o8Jom0ban5T83RnCHjIdXzU3R6gwnNPE2jL+M/UzmuXvqW2L6oEin+vl1bpLlX4hOpAGBOYAJJNsUpyHd5MOPxDnSjK0+Wo3FQ493MjFSrX/6Md4dqzup+EllchBUHcGoax4hl/+8AWpo8G24oqq4jao+rPOXNBo1enCE/+CegA2KUpIGz+VfZ6parEgdmo0+V0Sg+jIuvv5JEzJmdFuDOUU0SiXN3A2sDYZjzfQTcguedX2HcUn60h3whHoxgfGdHx3NPjltoQQtjL+8YIxeoHAzdewRchHtXGfQB2rfLa+MpZioQcjm+yVBvfWk70jNVu+p2YDEHvnf/QfRnharKTzcYFfLFvlOufAtR5ICJdvJ/bUuEJ8xOAEvDPnaCVFblZF2q0eU1lTTc+N27OKXLEYIviLCAapcchFv87Uk+ge/uZu0x4OwafGu7pbZz/Dj9qLApbcbJvfzHsa+kNVguDYo2C8yiuR2pKEOuOOjq7fIexcNQBQm3y/6ohd79c+1vGoyr2NvJ/WiJhxanyZTUMKfJmTwEu4hytHhL4k7SNaCkmmnlBquOtT5sg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6512007)(6506007)(2616005)(6486002)(33656002)(508600001)(5660300002)(38100700002)(7416002)(2906002)(316002)(86362001)(54906003)(6916009)(8936002)(66476007)(66556008)(8676002)(4326008)(66946007)(83380400001)(36756003)(186003)(1076003)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nXvkfRspKSncSE7MHhnu8obyVchpEYxyIUaVKNZV9FXWEciS7CCrkFMc50IC?=
+ =?us-ascii?Q?x8SKuNtbmmugS2z5HI/QE5kHHuZGeJqSNgdi8MVaySZZGre5SHMYI9mzqKeG?=
+ =?us-ascii?Q?NFq0C592GDO/7WJQaKT/z+JwwSbdBmgpFzTFw51ud9kOJrs+weIZCcXzxpT3?=
+ =?us-ascii?Q?k/nU0SMCCkGcNCNJ8tTY3LupYsGUrMxqhYU7a3dJlZaBDK+wxNbSNjDWaSKA?=
+ =?us-ascii?Q?NPsRUnC7nliVpLlnI1PxpyMAhb7DO9wmpdG+6UxTsBZq6RbLIrPK3ZNlf6bs?=
+ =?us-ascii?Q?2UkcU6wFqqONHnHM7Dp5wYYutLqthUd6Ub+mDdOAWTgs8U3qfJDY2nfiAGeX?=
+ =?us-ascii?Q?C4fqcw8t/zQDNLnCbMSCttVe8ui0CdCdq69ynsXprPza3b8XXPodPxztgPm2?=
+ =?us-ascii?Q?v+WmtzjT6pYkSBBjtx5L+qXobfixX2rpQPDrVAet5DRFq+4CQ1Mym/pCzbdr?=
+ =?us-ascii?Q?8fZATzSR2gFlwylrd4DlnN1pffObp2sdOPvyEkjNEwyhPOVvnc3nWMCrWYIi?=
+ =?us-ascii?Q?9MtBeOqVbWq4d+6vr7fqdtdrXcyHFsWrOC7rw7Tf9vXXpBU+ssR+qnjJRtSA?=
+ =?us-ascii?Q?05pLFxv9L1zxG6W5dh+8od51QMISo4iq3mbhFalK9bAbRL7XK+ryGATyUwzS?=
+ =?us-ascii?Q?yLuqzIdD1OVFu4zv9sYQ5i6Sio4BuVNzIOWBgCz2MvzmNtlK5YJlhkmQkzPt?=
+ =?us-ascii?Q?z/4jCSR2d2aMiLMDy3DN2O72zGX/EwOIaaLFkw1tVyev0E0w0LPI+6UBO0IP?=
+ =?us-ascii?Q?LrRORVLus0yAXHzV/yt9KlvyyC3MlNM8jxPPV8JUhLoewL2SDOPkpu5RlQMO?=
+ =?us-ascii?Q?gGK3niBq7IbKod9BR7yGvndDMKfTZGvkbYFAR+DQ4g2tRdyCLdfytqM+ikau?=
+ =?us-ascii?Q?jPXmnBNNCX82qYYvmr0k/roxKnu7HFm6QSZxp4qHOzjHIzaG1ZUsDA4jGbk2?=
+ =?us-ascii?Q?rLmJh2+c/h/D9qSuwyASg30nl3/YS2Qg0L0GwIYIwC5tOo2XR0QGkHDu9LfR?=
+ =?us-ascii?Q?IyS/v6B9wm6t3CaFilq/mKMR4Zcx8NFyF7+5hW0WT3e0VQ7QDZM3Af3Ggbju?=
+ =?us-ascii?Q?Es41gcR2o0ttd3411qCLRXMCTnJ7OVSy9822rxxWhXsHTVMP3/OYgZ0vQSv5?=
+ =?us-ascii?Q?b9QGxAgO+J/pGGcpaE0MCaDQgCRvp+d0/y9knOixLGz94GAJmDqG4AdolJ5T?=
+ =?us-ascii?Q?Ss8SYSdxmrX5AoTR6/vhOdZ512VdBEMhKJ4yztcTvMM5yRXcq6bqhXgaj7YW?=
+ =?us-ascii?Q?XtPkKknYr0UQe1fljT6WMwE9MdkiCjQk8amJtvuZCz+Xym3PdB0dkVXgcgtw?=
+ =?us-ascii?Q?pSgteUQP6PAEE74uIpU8F8pVc3YZqwYWy6+6MmagxT2ui5A34Eh/xhuko0xo?=
+ =?us-ascii?Q?TglNBs8AByeyQbPNOSgtcEQmpymGSFGT9XTvDXYFaKXmykarFOurvdYz+uHH?=
+ =?us-ascii?Q?VFR0czU6CxO28EFYBagLihhFGyQiMnnO?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83cc4c89-f263-4df7-be6e-08da0690c292
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 14:33:23.7362
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6qXjgqjj9oKZxoQG32cBfwp5YkeVYvHjE+J5B0ASrnO3c3VXmA1sfQ6flF37P2aG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4454
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 03:52:35PM +0100, Andrey Konovalov wrote:
-> On Fri, Mar 11, 2022 at 9:30 AM Wei Ming Chen <jj251510319013@gmail.com> wrote:
-> >
-> > If we try to use raw_ioctl_ep_enable() for ep5in on a hardware that
-> > only support from ep1-ep4 for both in and out direction, it will return
-> > -EBUSY originally.
-> >
-> > I think it will be more intuitive if we return -EINVAL, because -EBUSY
-> > sounds like ep5in is not available now, but might be available in the
-> > future.
-> >
-> > Signed-off-by: Wei Ming Chen <jj251510319013@gmail.com>
-> > ---
-> >
-> > Changes in v2:
-> > - Rename variable from ep_num_matched to ep_props_matched
-> > - Incorporate the patch from Andrey Konovalov that cover
-> >   the foloowing cases:
-> >     1. If there are no endpoints that match the provided descriptor, return
-> >        EINVAL.
-> >     2. If there are matching endpoints, but they are all already enabled,
-> >        return EBUSY.
-> >
-> >  drivers/usb/gadget/legacy/raw_gadget.c | 15 +++++++++++----
-> >  1 file changed, 11 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/usb/gadget/legacy/raw_gadget.c b/drivers/usb/gadget/legacy/raw_gadget.c
-> > index d86c3a36441e..e5707626c4d4 100644
-> > --- a/drivers/usb/gadget/legacy/raw_gadget.c
-> > +++ b/drivers/usb/gadget/legacy/raw_gadget.c
-> > @@ -758,6 +758,7 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
-> >         unsigned long flags;
-> >         struct usb_endpoint_descriptor *desc;
-> >         struct raw_ep *ep;
-> > +       bool ep_props_matched = false;
-> >
-> >         desc = memdup_user((void __user *)value, sizeof(*desc));
-> >         if (IS_ERR(desc))
-> > @@ -787,13 +788,14 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
-> >
-> >         for (i = 0; i < dev->eps_num; i++) {
-> >                 ep = &dev->eps[i];
-> > -               if (ep->state != STATE_EP_DISABLED)
-> > -                       continue;
-> >                 if (ep->addr != usb_endpoint_num(desc) &&
-> >                                 ep->addr != USB_RAW_EP_ADDR_ANY)
-> >                         continue;
-> >                 if (!usb_gadget_ep_match_desc(dev->gadget, ep->ep, desc, NULL))
-> >                         continue;
-> > +               ep_props_matched = true;
-> > +               if (ep->state != STATE_EP_DISABLED)
-> > +                       continue;
-> >                 ep->ep->desc = desc;
-> >                 ret = usb_ep_enable(ep->ep);
-> >                 if (ret < 0) {
-> > @@ -815,8 +817,13 @@ static int raw_ioctl_ep_enable(struct raw_dev *dev, unsigned long value)
-> >                 goto out_unlock;
-> >         }
-> >
-> > -       dev_dbg(&dev->gadget->dev, "fail, no gadget endpoints available\n");
-> > -       ret = -EBUSY;
-> > +       if (!ep_props_matched) {
-> > +               dev_dbg(&dev->gadget->dev, "fail, bad endpoint descriptor\n");
-> > +               ret = -EINVAL;
-> > +       } else {
-> > +               dev_dbg(&dev->gadget->dev, "fail, no endpoints available\n");
-> > +               ret = -EBUSY;
-> > +       }
-> >
-> >  out_free:
-> >         kfree(desc);
-> > --
-> > 2.25.1
-> >
-> 
-> Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
-> 
-> Greg, could you consider picking this up?
+On Mon, Mar 14, 2022 at 10:07:07PM -0700, Jacob Pan wrote:
+> +	/*
+> +	 * Each domain could have multiple devices attached with shared or per
+> +	 * device PASIDs. At the domain level, we keep track of unique PASIDs and
+> +	 * device user count.
+> +	 * E.g. If a domain has two devices attached, device A has PASID 0, 1;
+> +	 * device B has PASID 0, 2. Then the domain would have PASID 0, 1, 2.
+> +	 */
 
-Now picked up, thanks.
+A 2d array of xarray's seems like a poor data structure for this task.
 
-greg k-h
+AFACIT this wants to store a list of (device, pasid) tuples, so a
+simple linked list, 1d xarray vector or a red black tree seems more
+appropriate..
+
+> +	if (entry) {
+> +		pinfo = entry;
+> +	} else {
+> +		pinfo = kzalloc(sizeof(*pinfo), GFP_ATOMIC);
+> +		if (!pinfo)
+> +			return -ENOMEM;
+> +		pinfo->pasid = pasid;
+> +		/* Store the new PASID info in the per domain array */
+> +		ret = xa_err(__xa_store(&dmar_domain->pasids, pasid, pinfo,
+> +			     GFP_ATOMIC));
+> +		if (ret)
+> +			goto xa_store_err;
+> +	}
+> +	/* Store PASID in per device-domain array, this is for tracking devTLB */
+> +	ret = xa_err(xa_store(&info->pasids, pasid, pinfo, GFP_ATOMIC));
+> +	if (ret)
+> +		goto xa_store_err;
+> +
+> +	atomic_inc(&pinfo->users);
+> +	xa_unlock(&dmar_domain->pasids);
+> +
+> +	return 0;
+> +
+> +xa_store_err:
+> +	xa_unlock(&dmar_domain->pasids);
+> +	spin_lock_irqsave(&iommu->lock, flags);
+> +	intel_pasid_tear_down_entry(iommu, dev, pasid, false);
+> +	spin_unlock_irqrestore(&iommu->lock, flags);
+> +
+> +	if (!atomic_read(&pinfo->users)) {
+> +		__xa_erase(&dmar_domain->pasids, pasid);
+
+This isn't locked right
+
+Jason
