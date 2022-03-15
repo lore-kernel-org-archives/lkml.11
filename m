@@ -2,160 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67172C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4498C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348117AbiCOMBL (ORCPT
+        id S1348126AbiCOMBS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        Tue, 15 Mar 2022 08:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348090AbiCOMBJ (ORCPT
+        with ESMTP id S1348123AbiCOMBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:01:09 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BFB52B3C
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:59:57 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id w4so23857275edc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:59:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0IagKtBfxcpixmoMTBMoMWqgkvRfAgiw9IXMcNoH3GM=;
-        b=Jc9BG6ebO65hDOwsgATtbOXJvK1Nwh0MvD9yTfeAlBn09fSSqU5uLdc0yYMD/CzYjF
-         JnA11+NIRsQUEwt9kiwjEFDlZwfCrWxDFwUDSNYSXIhoDCPaIyZIKuL27gkfcOFZiCQm
-         z9FBxmOYVeOM0ikZxPziEZMZ8mdLjim6v/ApfuIpGgWeDuBUmdY0DId/ie9x+DfpIGcg
-         nPPGw6ALMItE3tm6tnPloiV4VNVxqYBmbjS9zwf4NDHUirNgj/B5SEw3QIF2tMCvKZ8k
-         oMcOJ+Xuc38ORVemUSrVid3OJZTTygqvkM7UeN9391ASp0+4BaJ2h//dGllAYKUp6FA3
-         TutA==
+        Tue, 15 Mar 2022 08:01:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC5ED52E10
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:00:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647345601;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EfHwLZ6WtwFkxJceJihq9t4icqNtwFmMvMop7qIav68=;
+        b=bXv6wqA4rVgQgqFNdGVTdjaIc0mh7ZJWPaH5C/AqXuTMszh3TnITsn6iAKZh/qqntBcbE0
+        tP+RebvngWIz7/Te1LwT00ZP93Q9EJUd+hkL36UhE+TvPvel8S7B/eOoHPgu8CnuFtnmfr
+        TD7dI8J1yhYvTczs4HDdLzdC+OCt7Mc=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-587-x4uekkyNNX-NgR5n81u8Eg-1; Tue, 15 Mar 2022 07:59:59 -0400
+X-MC-Unique: x4uekkyNNX-NgR5n81u8Eg-1
+Received: by mail-wm1-f72.google.com with SMTP id l1-20020a1c2501000000b00389c7b9254cso829965wml.1
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:59:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0IagKtBfxcpixmoMTBMoMWqgkvRfAgiw9IXMcNoH3GM=;
-        b=yRgRPu/9Qns1V2CJid3NkaikgIzI3sY55fwopxNZSct7O5kyvSDri6kIZJgngXO0bI
-         MAYylvbUrW7JlxxbbPVVKQc0kSASOHTQzmK7dK6vDQ8FRgr1XlXdq6pk91PWkNEfSqDz
-         iHSS5G95ztttTw7jQoCRNO9QTY9geSzNwmzhkoCCMJK5+70Ft0J91co3Vro4yIFFIJKj
-         6kJuLNGZtl5qmY74rGIZoVMEY4qeeMJRRlpD+3+ORbS36oNCJbFoBTCsendj6XwSaBOH
-         3BqM3VQfh0aWqD3PW73HDd5mmBhpQofiJ7PKXti6EJho93M4flsRgFtoG2tfBYpBCE4U
-         NRtw==
-X-Gm-Message-State: AOAM5334rAGn2YZ6iXEntPl3sTfEapsf+bDx+V/9gNF6/nK3cbRjsElc
-        NqG6hyvOSwM8+TlUpWmSKHq3U4qs2owoIIUEgRk=
-X-Google-Smtp-Source: ABdhPJw3vTWKpyc85/05ZqjGiVLTuKEo7jyXrBXqyusgxTgudMfdBBD+qF4ycHQkWAL3HNHktvM2aSHO8cd+cELAabI=
-X-Received: by 2002:a05:6402:5cb:b0:415:e04a:5230 with SMTP id
- n11-20020a05640205cb00b00415e04a5230mr25066821edx.352.1647345595723; Tue, 15
- Mar 2022 04:59:55 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EfHwLZ6WtwFkxJceJihq9t4icqNtwFmMvMop7qIav68=;
+        b=e8w+w61HmVsm9LewuV6pywxyHISM4iitlhne4utKDYb05z+QGclf0tmFsPETCPUs8U
+         Q/clxV7krersb76P4kPFdDhVJqNMFzgcNDB1RGlWcpaX0sl2U5ZGzGmzdh7rnuu9FeIm
+         xknNNvu1rZIZmXzmRoo0SCiFRDXR+05y76cHfoSvIgw9ozgYoCee3xgqC/DjKL1UiFbF
+         JHXLuW9niAoXMHInR8KIUxPT9xs4S5A8wgNLQWJjvAYdiDak8oauJpYOlhROmVo/otdv
+         rr8BhJL4mDLHMbw7UItlqsnHW2UNibU/LaqtqYCgvZld6CGR1ZyW1C3rl9XaST4DKyfD
+         IJiQ==
+X-Gm-Message-State: AOAM531u5+ry/RKlQaE1WEzkxVjQvGRqWON+vmzFhhMk0N87EX3WbHeZ
+        mCd006iUpsQwMk3HN/oD1jh1ECrUvT81lAnPfer79otIMTzrYyzYfCSZOSR3K9yTKZPB7NyDbqP
+        qOE8ZHIWmxDNQ5uWZnT8Ltoic
+X-Received: by 2002:adf:f18f:0:b0:1f0:761:491d with SMTP id h15-20020adff18f000000b001f00761491dmr19493106wro.505.1647345597811;
+        Tue, 15 Mar 2022 04:59:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz3q7Jx4Hf6PlL7mAci9EOXtUzatt6VVmdN2f4A2ddwH+xm8/PGXivwu6Wk/5IPV5J/w+aB6Q==
+X-Received: by 2002:adf:f18f:0:b0:1f0:761:491d with SMTP id h15-20020adff18f000000b001f00761491dmr19493097wro.505.1647345597567;
+        Tue, 15 Mar 2022 04:59:57 -0700 (PDT)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id i8-20020a1c5408000000b00389bf11ba0csm2079941wmb.38.2022.03.15.04.59.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 04:59:57 -0700 (PDT)
+Message-ID: <8d672df4-0078-2777-bde7-89f65b1e60c0@redhat.com>
+Date:   Tue, 15 Mar 2022 12:59:56 +0100
 MIME-Version: 1.0
-References: <20220315075152.63789-1-dzm91@hust.edu.cn> <bca8f865-bc3e-44d7-7298-c2c7e8973580@gmail.com>
- <YjBwtqsEOZ5JbqvS@B-P7TQMD6M-0146.local> <8d832e7a-c8da-d2fa-571a-ea150b8deb1b@gmail.com>
-In-Reply-To: <8d832e7a-c8da-d2fa-571a-ea150b8deb1b@gmail.com>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 15 Mar 2022 19:59:26 +0800
-Message-ID: <CAD-N9QX2cajf0LXKcOji_Em26-0bw9wfhx7KDV_TLDWhgQ90hQ@mail.gmail.com>
-Subject: Re: [PATCH] fs: erofs: remember if kobject_init_and_add was done
-To:     Huang Jianan <jnhuang95@gmail.com>
-Cc:     Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>, Gao Xiang <xiang@kernel.org>,
-        Chao Yu <chao@kernel.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-erofs@lists.ozlabs.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/5] drm/format-helper: Rename
+ drm_fb_xrgb8888_to_mono_reversed()
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220315110707.628166-1-geert@linux-m68k.org>
+ <20220315110707.628166-2-geert@linux-m68k.org>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <20220315110707.628166-2-geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 7:05 PM Huang Jianan <jnhuang95@gmail.com> wrote:
->
-> =E5=9C=A8 2022/3/15 18:55, Gao Xiang =E5=86=99=E9=81=93:
-> > On Tue, Mar 15, 2022 at 06:43:01PM +0800, Huang Jianan wrote:
-> >> =E5=9C=A8 2022/3/15 15:51, Dongliang Mu =E5=86=99=E9=81=93:
-> >>> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> >>>
-> >>> Syzkaller hit 'WARNING: kobject bug in erofs_unregister_sysfs'. This =
-bug
-> >>> is triggered by injecting fault in kobject_init_and_add of
-> >>> erofs_unregister_sysfs.
-> >>>
-> >>> Fix this by remembering if kobject_init_and_add is successful.
-> >>>
-> >>> Note that I've tested the patch and the crash does not occur any more=
-.
-> >>>
-> >>> Reported-by: syzkaller <syzkaller@googlegroups.com>
-> >>> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> >>> ---
-> >>>    fs/erofs/internal.h | 1 +
-> >>>    fs/erofs/sysfs.c    | 9 ++++++---
-> >>>    2 files changed, 7 insertions(+), 3 deletions(-)
-> >>>
-> >>> diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-> >>> index 5aa2cf2c2f80..9e20665e3f68 100644
-> >>> --- a/fs/erofs/internal.h
-> >>> +++ b/fs/erofs/internal.h
-> >>> @@ -144,6 +144,7 @@ struct erofs_sb_info {
-> >>>     u32 feature_incompat;
-> >>>     /* sysfs support */
-> >>> +   bool s_sysfs_inited;
-> >> Hi Dongliang,
-> >>
-> >> How about using sbi->s_kobj.state_in_sysfs to avoid adding a extra mem=
-ber in
-> >> sbi ?
-> > Ok, I have no tendency of these (I'm fine with either ways).
-> > I've seen some usage like:
-> >
-> > static inline int device_is_registered(struct device *dev)
-> > {
-> >          return dev->kobj.state_in_sysfs;
-> > }
-> >
-> > But I'm still not sure if we need to rely on such internal
-> > interface.. More thoughts?
->
-> Yeah... It seems that it is better to use some of the interfaces
-> provided by kobject,
-> otherwise we should still maintain this state in sbi.
->
+Hello Geert,
 
-I am fine with either way. Let me know if you reach to an agreement.
+Thanks for your patch.
 
-> Thanks,
-> Jianan
->
-> > Thanks,
-> > Gao Xiang
-> >> Thanks,
-> >> Jianan
-> >>
-> >>>     struct kobject s_kobj;          /* /sys/fs/erofs/<devname> */
-> >>>     struct completion s_kobj_unregister;
-> >>>    };
-> >>> diff --git a/fs/erofs/sysfs.c b/fs/erofs/sysfs.c
-> >>> index dac252bc9228..2b48a4df19b4 100644
-> >>> --- a/fs/erofs/sysfs.c
-> >>> +++ b/fs/erofs/sysfs.c
-> >>> @@ -209,6 +209,7 @@ int erofs_register_sysfs(struct super_block *sb)
-> >>>                                "%s", sb->s_id);
-> >>>     if (err)
-> >>>             goto put_sb_kobj;
-> >>> +   sbi->s_sysfs_inited =3D true;
-> >>>     return 0;
-> >>>    put_sb_kobj:
-> >>> @@ -221,9 +222,11 @@ void erofs_unregister_sysfs(struct super_block *=
-sb)
-> >>>    {
-> >>>     struct erofs_sb_info *sbi =3D EROFS_SB(sb);
-> >>> -   kobject_del(&sbi->s_kobj);
-> >>> -   kobject_put(&sbi->s_kobj);
-> >>> -   wait_for_completion(&sbi->s_kobj_unregister);
-> >>> +   if (sbi->s_sysfs_inited) {
-> >>> +           kobject_del(&sbi->s_kobj);
-> >>> +           kobject_put(&sbi->s_kobj);
-> >>> +           wait_for_completion(&sbi->s_kobj_unregister);
-> >>> +   }
-> >>>    }
-> >>>    int __init erofs_init_sysfs(void)
->
+On 3/15/22 12:07, Geert Uytterhoeven wrote:
+> There is no "reversed" handling in drm_fb_xrgb8888_to_mono_reversed():
+> the function just converts from color to grayscale, and reduces the
+> number of grayscale levels from 256 to 2 (i.e. brightness 0-127 is
+> mapped to 0, 128-255 to 1).  All "reversed" handling is done in the
+> repaper driver, where this function originated.
+> 
+> Hence make this clear by renaming drm_fb_xrgb8888_to_mono_reversed() to
+> drm_fb_xrgb8888_to_mono(), and documenting the black/white pixel
+> mapping.
+> 
+> Fixes: bcf8b616deb87941 ("drm/format-helper: Add drm_fb_xrgb8888_to_mono_reversed()")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+As you mentioned the function originally came from the repaper driver
+(that uses white-on-black) and I wrongly assumed that the destination
+buffer for the OLED panels were also monochrome reversed.
+
+Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+
+-- 
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
