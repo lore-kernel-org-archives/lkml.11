@@ -2,116 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 680E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 04:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 04:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344734AbiCOEQq (ORCPT
+        id S1344744AbiCOERD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 00:16:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
+        Tue, 15 Mar 2022 00:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229532AbiCOEQo (ORCPT
+        with ESMTP id S229532AbiCOERB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 00:16:44 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148693D1C6;
-        Mon, 14 Mar 2022 21:15:33 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id h14so30799090lfk.11;
-        Mon, 14 Mar 2022 21:15:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MX+6thpdmH9Fmh6G8WI/hYT23j8vgEmJnH4dIzx5fhI=;
-        b=VYtL8vemdJkuH/Vis/B8Rof9Cp3UWDhYCJj/PVdFco+0KeaZ8btcr5zxL/DxWpUOOZ
-         nuUiJMoTnqiAIb5l1ZywONQgyQF2U3KUwkYHZAL2y3JpWG+bsocGuEY/cHWxkwn2SBSc
-         fcZ0ZL38lizuWMJjn9Vzp7a9bZt414Nn26+BD+F5xBTzfwsgW2t6tFPDuO7A+F32ATHi
-         Ooytl5VhT02NLwbgaduZySpG0XfqkxTA4dCo6LuKypk5jZGHX2ENR5ReRTWpAiXwS9KJ
-         OPPxH09ZwYSCbUGLeKXJxThPoNkXkDPdKzDUFpHs1Dj9d03WONUwopdi+dgAZVpbsxLc
-         8MuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MX+6thpdmH9Fmh6G8WI/hYT23j8vgEmJnH4dIzx5fhI=;
-        b=giio+/I44tZBP11iJHy+ybzt7Tp76ZHwNhkIH++ujg0QUt7wgUrKRToSNdAb3BrYVt
-         AMMJw9gb0D0IHIOhUd7Ot8yO+oXYvoDOGOrKVpKZriBNJVgTJ/DuFDF4YewPtYgXkt+T
-         qTsR+mF6Jmpe/oPcaqmS5i9rKyGV1rRltm0vYj5TzEJsvjy9fHXBazCSkmrBCPMcvIG+
-         t+AGFvnFFT7+ySo/qY9iXLGBIQJdaYo8BPii/pzE+LG/VHk0mHN7mSlvkxhgnjnG452Y
-         v0LkekIjhi+3eGSfFAqLe8qVpMGwuAh1Bm6tf2h3C+qByyINxWEXuYrLGVWW/rhy7wa7
-         L8UQ==
-X-Gm-Message-State: AOAM531AR2xIBt/uD4XJllE6I6cITTFin+Hckez1mIfnfTQPnWZImJSw
-        l02PjQxH8jbaKHAvmbRgnLFZxnEtI3dyebQgJtOs3C87vC8=
-X-Google-Smtp-Source: ABdhPJz37KwMUSCRY+zf4rBXiMdU8hH8Ijn8GNbH3cY07jiXP3+drPZ9RfdPXYk9LDPnv/CO8u6fcDfxk+ak4Ncq8+0=
-X-Received: by 2002:a19:490f:0:b0:448:4bf8:6084 with SMTP id
- w15-20020a19490f000000b004484bf86084mr14810015lfa.537.1647317731326; Mon, 14
- Mar 2022 21:15:31 -0700 (PDT)
+        Tue, 15 Mar 2022 00:17:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 935F4434BF;
+        Mon, 14 Mar 2022 21:15:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77C456116C;
+        Tue, 15 Mar 2022 04:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49192C340E8;
+        Tue, 15 Mar 2022 04:13:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647317620;
+        bh=15p/KaVYaxWzWonuFHEiv7EQDsXjsCk3AwEGygt0bHs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bUFTicAUoniRLAU9/f0cSzeehhp2Na04I2MPZ0L3rebCTUxUpFroF2D6QZm7R7eHJ
+         v3q0tklAnlnSC6HlEQAOnvYGviH+YSJ3TGclYvjbM3OAT2/X+zEDpEkhIL2DRZu3YL
+         Lb1+e9W+DxysjG9VyMyzx5omY0t5DjRAoyzmWBilMSh0xKm8ahUldBMMUqwdT4enis
+         08Yofelc8B7uYauphm8J36UsVeix2A+LR9+E4L02dBKjoq1h0rG8xYZA5Q/8T/yKKm
+         1l93EwIGKN/LMPJnrLft3YCU+AphQ9q0q8puMCNLnV5nMr9Y+G9lviJFV8tbHPmsCt
+         OuxoY6GrDDN/Q==
+Date:   Mon, 14 Mar 2022 23:22:23 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Adaptec OEM Raid Solutions <aacraid@microsemi.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 0/8] scsi: aacraid: Replace one-element arrays with
+ flexible-array members
+Message-ID: <20220315042223.GA2385465@embeddedor>
+References: <cover.1645513670.git.gustavoars@kernel.org>
+ <20220310040347.GA2295236@embeddedor>
+ <yq1h77zdg37.fsf@ca-mkp.ca.oracle.com>
 MIME-Version: 1.0
-References: <20220312102705.71413-1-Julia.Lawall@inria.fr> <20220312102705.71413-2-Julia.Lawall@inria.fr>
-In-Reply-To: <20220312102705.71413-2-Julia.Lawall@inria.fr>
-From:   Steve French <smfrench@gmail.com>
-Date:   Mon, 14 Mar 2022 23:15:20 -0500
-Message-ID: <CAH2r5mtD3=BiSDE4pLMpsc708dkP43hXosdyorfENawV9ura9g@mail.gmail.com>
-Subject: Re: [PATCH 1/6] cifs: use kzalloc
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     kernel-janitors <kernel-janitors@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        samba-technical <samba-technical@lists.samba.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq1h77zdg37.fsf@ca-mkp.ca.oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Which tree should this be merged from?  cifs-2.6.git for-next ... or
-do you prefer that these all go together through a different tree
+On Tue, Mar 15, 2022 at 12:02:13AM -0400, Martin K. Petersen wrote:
+> 
+> Gustavo,
+> 
+> > Friendly ping: who can review or comment on this series, please?
+> 
+> I'm afraid I don't have any hardware to test it on and the generated
+> output differs substantially from the original code.
 
-On Sun, Mar 13, 2022 at 11:36 AM Julia Lawall <Julia.Lawall@inria.fr> wrote:
->
-> Use kzalloc instead of kmalloc + memset.
->
-> The semantic patch that makes this change is:
-> (https://coccinelle.gitlabpages.inria.fr/website/)
->
-> //<smpl>
-> @@
-> expression res, size, flag;
-> @@
-> - res = kmalloc(size, flag);
-> + res = kzalloc(size, flag);
->   ...
-> - memset(res, 0, size);
-> //</smpl>
->
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
->
-> ---
->  fs/cifs/transport.c |    3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/fs/cifs/transport.c b/fs/cifs/transport.c
-> index eeb1a699bd6f..4ff8e165a180 100644
-> --- a/fs/cifs/transport.c
-> +++ b/fs/cifs/transport.c
-> @@ -464,13 +464,12 @@ smb_send_rqst(struct TCP_Server_Info *server, int num_rqst,
->                 return -EIO;
->         }
->
-> -       tr_hdr = kmalloc(sizeof(*tr_hdr), GFP_NOFS);
-> +       tr_hdr = kzalloc(sizeof(*tr_hdr), GFP_NOFS);
->         if (!tr_hdr)
->                 return -ENOMEM;
->
->         memset(&cur_rqst[0], 0, sizeof(cur_rqst));
->         memset(&iov, 0, sizeof(iov));
-> -       memset(tr_hdr, 0, sizeof(*tr_hdr));
->
->         iov.iov_base = tr_hdr;
->         iov.iov_len = sizeof(*tr_hdr);
->
+Yeah; this series requires careful review from the people that
+knows the code better. 
 
+It took me a day of work to go through all the places that needed
+to be changed due to the flexible array transformation. However,
+due to the kind of changes, it'd be great to have a second opinion
+or at least someone that could take a look at the changes.
 
--- 
-Thanks,
-
-Steve
+Thanks
+--
+Gustavo
