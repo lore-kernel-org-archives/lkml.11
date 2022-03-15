@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FF4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC1B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346022AbiCOIdj (ORCPT
+        id S1346031AbiCOIdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
+        Tue, 15 Mar 2022 04:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345991AbiCOIcU (ORCPT
+        with ESMTP id S1345983AbiCOIcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 04:32:20 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9104C7B5;
-        Tue, 15 Mar 2022 01:31:06 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 08:31:04 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12484C420;
+        Tue, 15 Mar 2022 01:31:04 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 08:31:02 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647333065;
+        s=2020; t=1647333063;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=G1ArYyEHOd1xXfjFotnqm8kTqfvGJHVvjPOLnY3Aa0M=;
-        b=ekPgttry6AysXwInT5J3c9owHW081QsJI2x3g6UgrQJSBkOIwTkN7lR82sJF5jVSU8pJMw
-        DJ4pfp0Eme9yx6kNHXNQfg6j1V+UxeLw4FUBz3Aq0NBkZRSBRMqHiEV5G5DoO1k7W+bDJU
-        qJj4CrAJFjSe/hJaVcj8LsRU6YWgj4mivmwsR7UDbGn6xzlPd5WDNHeNs//ehg7MUdvpkV
-        uJyJUNuwMUq+LxHMACfHSF8YC4mOIB91VJZ6hX9ZYGfwnS/W98KSkXDeGssnYq+FZlXAKl
-        uX97hDeaVOS7WcZJ2cyq1Hzt2ui/jzCtAhqQO6pc3eBN4FJKtVtzkUN6t/hFpA==
+        bh=SYD7zjZDtfZ5BuQ5NJRiVy6wFgJXXo5h1G9nvMVNt4Q=;
+        b=N5UB0rKpOARt1VEYVd2Tb5hor/xJf+Xwd2396Wsa+p7dZ8FLxH8IFsPuSb9ZsP28gRT5d9
+        vOduPgha/oIKDzKKgcUPA4y4jSsPFbW1/V57JuCDUwluifbV83VLRgx31PPuMkOYzDKqFG
+        i5Hhn5wRy9PRsSnQtqjOJM6n7Odv11VDWX+2biQukirTlim8pu27CJsImy4Cyr5cFYV0vY
+        aIQgmo/uFVoitm8yjzCarBQSHs3Kk/4j6HZ0xZP6zUyCLrRPxn2rPrsHLGJ//bjuFCKYRA
+        zDnFUuW+1C0RTLqNP5YNmf1CmKof9xpyhf6rX2viXk61paHzxv6M545/owY2HA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647333065;
+        s=2020e; t=1647333063;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=G1ArYyEHOd1xXfjFotnqm8kTqfvGJHVvjPOLnY3Aa0M=;
-        b=cG04VWnBDlfSioCABrbVSzte20GMbe0EcXJQ4YDh+N9nPV6Lpwc2IBvcw9Ws7mks+KLHlY
-        vPyrgsdYVbtBQZCg==
+        bh=SYD7zjZDtfZ5BuQ5NJRiVy6wFgJXXo5h1G9nvMVNt4Q=;
+        b=sb3Ubc/MRp7VM65OZiwEkzCX1+uUqrpHr4peENR5CVKwoqdphZnwjr4gknspTcHAsCHhse
+        RqPwiGQWoomz7LDA==
 From:   "tip-bot2 for Ingo Molnar" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/headers: Add header guard to
- kernel/sched/stats.h and kernel/sched/autogroup.h
+Subject: [tip: sched/core] sched/headers: Add initial new headers as identity mappings
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Message-ID: <164733306423.16921.13170771691611393113.tip-bot2@tip-bot2>
+Message-ID: <164733306259.16921.13780763615278410417.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -57,63 +56,326 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     d90a2f160a1cd9a1745896c381afdf8d2812fd6b
-Gitweb:        https://git.kernel.org/tip/d90a2f160a1cd9a1745896c381afdf8d2812fd6b
+Commit-ID:     669f45f19cf7feea7066dce86a0ce89dfc8a2065
+Gitweb:        https://git.kernel.org/tip/669f45f19cf7feea7066dce86a0ce89dfc8a2065
 Author:        Ingo Molnar <mingo@kernel.org>
-AuthorDate:    Sat, 20 Nov 2021 10:39:20 +01:00
+AuthorDate:    Tue, 22 Feb 2022 13:23:59 +01:00
 Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Wed, 23 Feb 2022 08:22:00 +01:00
+CommitterDate: Wed, 23 Feb 2022 10:58:28 +01:00
 
-sched/headers: Add header guard to kernel/sched/stats.h and kernel/sched/autogroup.h
+sched/headers: Add initial new headers as identity mappings
 
-Protect against multiple inclusion.
-
-Also include "sched.h" in "stat.h", as it relies on it.
+This allows code sharing between fast-headers tree and the vanilla
+scheduler tree.
 
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 Reviewed-by: Peter Zijlstra <peterz@infradead.org>
 ---
- kernel/sched/autogroup.h | 5 +++++
- kernel/sched/stats.h     | 6 ++++++
- 2 files changed, 11 insertions(+)
+ arch/arm64/include/asm/paravirt_api_clock.h | 1 +
+ arch/x86/include/asm/paravirt_api_clock.h   | 1 +
+ include/linux/cgroup_api.h                  | 1 +
+ include/linux/cpumask_api.h                 | 1 +
+ include/linux/fs_api.h                      | 1 +
+ include/linux/gfp_api.h                     | 1 +
+ include/linux/hashtable_api.h               | 1 +
+ include/linux/hrtimer_api.h                 | 1 +
+ include/linux/kobject_api.h                 | 1 +
+ include/linux/kref_api.h                    | 1 +
+ include/linux/ktime_api.h                   | 1 +
+ include/linux/llist_api.h                   | 1 +
+ include/linux/lockdep_api.h                 | 1 +
+ include/linux/mm_api.h                      | 1 +
+ include/linux/mutex_api.h                   | 1 +
+ include/linux/perf_event_api.h              | 1 +
+ include/linux/pgtable_api.h                 | 1 +
+ include/linux/ptrace_api.h                  | 1 +
+ include/linux/rcuwait_api.h                 | 1 +
+ include/linux/refcount_api.h                | 1 +
+ include/linux/sched/affinity.h              | 1 +
+ include/linux/sched/cond_resched.h          | 1 +
+ include/linux/sched/posix-timers.h          | 1 +
+ include/linux/sched/rseq_api.h              | 1 +
+ include/linux/sched/task_flags.h            | 1 +
+ include/linux/sched/thread_info_api.h       | 1 +
+ include/linux/seqlock_api.h                 | 1 +
+ include/linux/softirq.h                     | 1 +
+ include/linux/spinlock_api.h                | 1 +
+ include/linux/swait_api.h                   | 1 +
+ include/linux/syscalls_api.h                | 1 +
+ include/linux/u64_stats_sync_api.h          | 1 +
+ include/linux/wait_api.h                    | 1 +
+ include/linux/workqueue_api.h               | 1 +
+ 34 files changed, 34 insertions(+)
+ create mode 100644 arch/arm64/include/asm/paravirt_api_clock.h
+ create mode 100644 arch/x86/include/asm/paravirt_api_clock.h
+ create mode 100644 include/linux/cgroup_api.h
+ create mode 100644 include/linux/cpumask_api.h
+ create mode 100644 include/linux/fs_api.h
+ create mode 100644 include/linux/gfp_api.h
+ create mode 100644 include/linux/hashtable_api.h
+ create mode 100644 include/linux/hrtimer_api.h
+ create mode 100644 include/linux/kobject_api.h
+ create mode 100644 include/linux/kref_api.h
+ create mode 100644 include/linux/ktime_api.h
+ create mode 100644 include/linux/llist_api.h
+ create mode 100644 include/linux/lockdep_api.h
+ create mode 100644 include/linux/mm_api.h
+ create mode 100644 include/linux/mutex_api.h
+ create mode 100644 include/linux/perf_event_api.h
+ create mode 100644 include/linux/pgtable_api.h
+ create mode 100644 include/linux/ptrace_api.h
+ create mode 100644 include/linux/rcuwait_api.h
+ create mode 100644 include/linux/refcount_api.h
+ create mode 100644 include/linux/sched/affinity.h
+ create mode 100644 include/linux/sched/cond_resched.h
+ create mode 100644 include/linux/sched/posix-timers.h
+ create mode 100644 include/linux/sched/rseq_api.h
+ create mode 100644 include/linux/sched/task_flags.h
+ create mode 100644 include/linux/sched/thread_info_api.h
+ create mode 100644 include/linux/seqlock_api.h
+ create mode 100644 include/linux/softirq.h
+ create mode 100644 include/linux/spinlock_api.h
+ create mode 100644 include/linux/swait_api.h
+ create mode 100644 include/linux/syscalls_api.h
+ create mode 100644 include/linux/u64_stats_sync_api.h
+ create mode 100644 include/linux/wait_api.h
+ create mode 100644 include/linux/workqueue_api.h
 
-diff --git a/kernel/sched/autogroup.h b/kernel/sched/autogroup.h
-index 90fcbfd..90d69f2 100644
---- a/kernel/sched/autogroup.h
-+++ b/kernel/sched/autogroup.h
-@@ -1,4 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _KERNEL_SCHED_AUTOGROUP_H
-+#define _KERNEL_SCHED_AUTOGROUP_H
-+
- #ifdef CONFIG_SCHED_AUTOGROUP
- 
- struct autogroup {
-@@ -59,3 +62,5 @@ static inline int autogroup_path(struct task_group *tg, char *buf, int buflen)
- }
- 
- #endif /* CONFIG_SCHED_AUTOGROUP */
-+
-+#endif /* _KERNEL_SCHED_AUTOGROUP_H */
-diff --git a/kernel/sched/stats.h b/kernel/sched/stats.h
-index 3a3c826..edc0d13 100644
---- a/kernel/sched/stats.h
-+++ b/kernel/sched/stats.h
-@@ -1,7 +1,11 @@
- /* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _KERNEL_STATS_H
-+#define _KERNEL_STATS_H
- 
- #ifdef CONFIG_SCHEDSTATS
- 
-+#include "sched.h"
-+
- extern struct static_key_false sched_schedstats;
- 
- /*
-@@ -298,3 +302,5 @@ sched_info_switch(struct rq *rq, struct task_struct *prev, struct task_struct *n
- # define sched_info_dequeue(rq, t)	do { } while (0)
- # define sched_info_switch(rq, t, next)	do { } while (0)
- #endif /* CONFIG_SCHED_INFO */
-+
-+#endif /* _KERNEL_STATS_H */
+diff --git a/arch/arm64/include/asm/paravirt_api_clock.h b/arch/arm64/include/asm/paravirt_api_clock.h
+new file mode 100644
+index 0000000..65ac7ce
+--- /dev/null
++++ b/arch/arm64/include/asm/paravirt_api_clock.h
+@@ -0,0 +1 @@
++#include <asm/paravirt.h>
+diff --git a/arch/x86/include/asm/paravirt_api_clock.h b/arch/x86/include/asm/paravirt_api_clock.h
+new file mode 100644
+index 0000000..65ac7ce
+--- /dev/null
++++ b/arch/x86/include/asm/paravirt_api_clock.h
+@@ -0,0 +1 @@
++#include <asm/paravirt.h>
+diff --git a/include/linux/cgroup_api.h b/include/linux/cgroup_api.h
+new file mode 100644
+index 0000000..d0cfe80
+--- /dev/null
++++ b/include/linux/cgroup_api.h
+@@ -0,0 +1 @@
++#include <linux/cgroup.h>
+diff --git a/include/linux/cpumask_api.h b/include/linux/cpumask_api.h
+new file mode 100644
+index 0000000..83bd3eb
+--- /dev/null
++++ b/include/linux/cpumask_api.h
+@@ -0,0 +1 @@
++#include <linux/cpumask.h>
+diff --git a/include/linux/fs_api.h b/include/linux/fs_api.h
+new file mode 100644
+index 0000000..83be38d
+--- /dev/null
++++ b/include/linux/fs_api.h
+@@ -0,0 +1 @@
++#include <linux/fs.h>
+diff --git a/include/linux/gfp_api.h b/include/linux/gfp_api.h
+new file mode 100644
+index 0000000..5a05a27
+--- /dev/null
++++ b/include/linux/gfp_api.h
+@@ -0,0 +1 @@
++#include <linux/gfp.h>
+diff --git a/include/linux/hashtable_api.h b/include/linux/hashtable_api.h
+new file mode 100644
+index 0000000..c268ac2
+--- /dev/null
++++ b/include/linux/hashtable_api.h
+@@ -0,0 +1 @@
++#include <linux/hashtable.h>
+diff --git a/include/linux/hrtimer_api.h b/include/linux/hrtimer_api.h
+new file mode 100644
+index 0000000..8d97008
+--- /dev/null
++++ b/include/linux/hrtimer_api.h
+@@ -0,0 +1 @@
++#include <linux/hrtimer.h>
+diff --git a/include/linux/kobject_api.h b/include/linux/kobject_api.h
+new file mode 100644
+index 0000000..6e36a05
+--- /dev/null
++++ b/include/linux/kobject_api.h
+@@ -0,0 +1 @@
++#include <linux/kobject.h>
+diff --git a/include/linux/kref_api.h b/include/linux/kref_api.h
+new file mode 100644
+index 0000000..d67e554
+--- /dev/null
++++ b/include/linux/kref_api.h
+@@ -0,0 +1 @@
++#include <linux/kref.h>
+diff --git a/include/linux/ktime_api.h b/include/linux/ktime_api.h
+new file mode 100644
+index 0000000..f697d49
+--- /dev/null
++++ b/include/linux/ktime_api.h
+@@ -0,0 +1 @@
++#include <linux/ktime.h>
+diff --git a/include/linux/llist_api.h b/include/linux/llist_api.h
+new file mode 100644
+index 0000000..625bec0
+--- /dev/null
++++ b/include/linux/llist_api.h
+@@ -0,0 +1 @@
++#include <linux/llist.h>
+diff --git a/include/linux/lockdep_api.h b/include/linux/lockdep_api.h
+new file mode 100644
+index 0000000..907e669
+--- /dev/null
++++ b/include/linux/lockdep_api.h
+@@ -0,0 +1 @@
++#include <linux/lockdep.h>
+diff --git a/include/linux/mm_api.h b/include/linux/mm_api.h
+new file mode 100644
+index 0000000..a5ace2b
+--- /dev/null
++++ b/include/linux/mm_api.h
+@@ -0,0 +1 @@
++#include <linux/mm.h>
+diff --git a/include/linux/mutex_api.h b/include/linux/mutex_api.h
+new file mode 100644
+index 0000000..85ab949
+--- /dev/null
++++ b/include/linux/mutex_api.h
+@@ -0,0 +1 @@
++#include <linux/mutex.h>
+diff --git a/include/linux/perf_event_api.h b/include/linux/perf_event_api.h
+new file mode 100644
+index 0000000..c2fd604
+--- /dev/null
++++ b/include/linux/perf_event_api.h
+@@ -0,0 +1 @@
++#include <linux/perf_event.h>
+diff --git a/include/linux/pgtable_api.h b/include/linux/pgtable_api.h
+new file mode 100644
+index 0000000..ff367a4
+--- /dev/null
++++ b/include/linux/pgtable_api.h
+@@ -0,0 +1 @@
++#include <linux/pgtable.h>
+diff --git a/include/linux/ptrace_api.h b/include/linux/ptrace_api.h
+new file mode 100644
+index 0000000..26e7d27
+--- /dev/null
++++ b/include/linux/ptrace_api.h
+@@ -0,0 +1 @@
++#include <linux/ptrace.h>
+diff --git a/include/linux/rcuwait_api.h b/include/linux/rcuwait_api.h
+new file mode 100644
+index 0000000..f962e28
+--- /dev/null
++++ b/include/linux/rcuwait_api.h
+@@ -0,0 +1 @@
++#include <linux/rcuwait.h>
+diff --git a/include/linux/refcount_api.h b/include/linux/refcount_api.h
+new file mode 100644
+index 0000000..5f03258
+--- /dev/null
++++ b/include/linux/refcount_api.h
+@@ -0,0 +1 @@
++#include <linux/refcount.h>
+diff --git a/include/linux/sched/affinity.h b/include/linux/sched/affinity.h
+new file mode 100644
+index 0000000..227f5be
+--- /dev/null
++++ b/include/linux/sched/affinity.h
+@@ -0,0 +1 @@
++#include <linux/sched.h>
+diff --git a/include/linux/sched/cond_resched.h b/include/linux/sched/cond_resched.h
+new file mode 100644
+index 0000000..227f5be
+--- /dev/null
++++ b/include/linux/sched/cond_resched.h
+@@ -0,0 +1 @@
++#include <linux/sched.h>
+diff --git a/include/linux/sched/posix-timers.h b/include/linux/sched/posix-timers.h
+new file mode 100644
+index 0000000..523a381
+--- /dev/null
++++ b/include/linux/sched/posix-timers.h
+@@ -0,0 +1 @@
++#include <linux/posix-timers.h>
+diff --git a/include/linux/sched/rseq_api.h b/include/linux/sched/rseq_api.h
+new file mode 100644
+index 0000000..cf2af72
+--- /dev/null
++++ b/include/linux/sched/rseq_api.h
+@@ -0,0 +1 @@
++#include <linux/rseq.h>
+diff --git a/include/linux/sched/task_flags.h b/include/linux/sched/task_flags.h
+new file mode 100644
+index 0000000..227f5be
+--- /dev/null
++++ b/include/linux/sched/task_flags.h
+@@ -0,0 +1 @@
++#include <linux/sched.h>
+diff --git a/include/linux/sched/thread_info_api.h b/include/linux/sched/thread_info_api.h
+new file mode 100644
+index 0000000..2c60fbc
+--- /dev/null
++++ b/include/linux/sched/thread_info_api.h
+@@ -0,0 +1 @@
++#include <linux/thread_info.h>
+diff --git a/include/linux/seqlock_api.h b/include/linux/seqlock_api.h
+new file mode 100644
+index 0000000..be91e7d
+--- /dev/null
++++ b/include/linux/seqlock_api.h
+@@ -0,0 +1 @@
++#include <linux/seqlock.h>
+diff --git a/include/linux/softirq.h b/include/linux/softirq.h
+new file mode 100644
+index 0000000..c73d7dc
+--- /dev/null
++++ b/include/linux/softirq.h
+@@ -0,0 +1 @@
++#include <linux/interrupt.h>
+diff --git a/include/linux/spinlock_api.h b/include/linux/spinlock_api.h
+new file mode 100644
+index 0000000..6338b27
+--- /dev/null
++++ b/include/linux/spinlock_api.h
+@@ -0,0 +1 @@
++#include <linux/spinlock.h>
+diff --git a/include/linux/swait_api.h b/include/linux/swait_api.h
+new file mode 100644
+index 0000000..1eeaaaa
+--- /dev/null
++++ b/include/linux/swait_api.h
+@@ -0,0 +1 @@
++#include <linux/swait.h>
+diff --git a/include/linux/syscalls_api.h b/include/linux/syscalls_api.h
+new file mode 100644
+index 0000000..23e012b
+--- /dev/null
++++ b/include/linux/syscalls_api.h
+@@ -0,0 +1 @@
++#include <linux/syscalls.h>
+diff --git a/include/linux/u64_stats_sync_api.h b/include/linux/u64_stats_sync_api.h
+new file mode 100644
+index 0000000..c72ca63
+--- /dev/null
++++ b/include/linux/u64_stats_sync_api.h
+@@ -0,0 +1 @@
++#include <linux/u64_stats_sync.h>
+diff --git a/include/linux/wait_api.h b/include/linux/wait_api.h
+new file mode 100644
+index 0000000..4e93054
+--- /dev/null
++++ b/include/linux/wait_api.h
+@@ -0,0 +1 @@
++#include <linux/wait.h>
+diff --git a/include/linux/workqueue_api.h b/include/linux/workqueue_api.h
+new file mode 100644
+index 0000000..77debb5
+--- /dev/null
++++ b/include/linux/workqueue_api.h
+@@ -0,0 +1 @@
++#include <linux/workqueue.h>
