@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D50DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A337C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347425AbiCOKqK (ORCPT
+        id S1347433AbiCOKqQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
+        Tue, 15 Mar 2022 06:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347270AbiCOKpG (ORCPT
+        with ESMTP id S1347246AbiCOKpJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:45:06 -0400
+        Tue, 15 Mar 2022 06:45:09 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E3B344C5;
-        Tue, 15 Mar 2022 03:43:51 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:48 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC1435867;
+        Tue, 15 Mar 2022 03:43:54 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:43:51 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341029;
+        s=2020; t=1647341033;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WynPuqtvSk3tNeoJjd8WM0oBjbfgUYONTW/HOOxG9go=;
-        b=SGxcvQuuudiXtzVjHjYXdEqylexfsEa3ddb/9e4GZLKvDTLyhomME5gOz6zo13lVgfUjg7
-        rwN5y5WkJdLUdqw0GIi07AWclaTKkea9AZxFMjWlgZrgHxjwMBXqPWcmlJ/kaRHV5LtHdT
-        MC8A3sob2Yy+HP3tnF8TpokkXyY5FiTn+FT1+XTAKlcinq9G0e7OVZO9uyOUSE9rytdAjq
-        V4vwcp4UxkSwfFwo+5zlB4TGPf8SHZ1BbR/9UZTR1xVzb9O7iDPVu71vzaQnJZe84UsySh
-        3XRVLXHyW4kQbdUG2dhebdNaDqhlNA138+o8jWW8mu5lSE2Bnl2JAsbU4t96vw==
+        bh=PyPfSNK7F9E0Re0Lyq39CuljWYLxINrwTkbxkDLqxw8=;
+        b=FRWoVL69dxaUNkB/De2Jsj4rYQExAcMIyvi1+znzVzY/tqumBzhLo9Ru42yr+iUufzkR2d
+        m6x/+qOBga62Oz9fILaiqZRBY3R1yCrmRcEDPfpDByKmPMrIuQKzbqfX8lBU2VEElHUSXB
+        L0v1Ssyb9FgY4DJEg0uGbGT3qvqPKlAJlcFCd9Coz23gXrbMPQVfBALzcK1ndz4o29sN8W
+        ll92fn7Blejt1gofd3aTiQj4VU57nPowFoQlQBTwSRFCB8u7wBH1T/ONJSm4VkOYZn9Qud
+        IlLQXdIHi92nG4CC7cwgkgs0v+69rdqR2dg9xJM4C2WNqYhDyuKi+Jr+b5L50w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341029;
+        s=2020e; t=1647341033;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WynPuqtvSk3tNeoJjd8WM0oBjbfgUYONTW/HOOxG9go=;
-        b=FvXOwlwOZPQRVujVdVyv/+tCyPSoUiAo2uVGYDH7E+/+jbTaDshTGoe0hMkpXCMQn4h//+
-        b8YzQ+HyfG/M0wCw==
+        bh=PyPfSNK7F9E0Re0Lyq39CuljWYLxINrwTkbxkDLqxw8=;
+        b=K6HNccWu2zNmPfNOm8LyMsRjn/Hso7maEaQ2ym8z+PwOb+HrEjEEdomVGlLhJRg8KHEcNH
+        007TsFkbKTCzkNCw==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] exit: Mark do_group_exit() __noreturn
+Subject: [tip: x86/core] x86/ibt: Ensure module init/exit points have references
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154319.351270711@infradead.org>
-References: <20220308154319.351270711@infradead.org>
+In-Reply-To: <20220308154319.113767246@infradead.org>
+References: <20220308154319.113767246@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734102844.16921.13560403311950117445.tip-bot2@tip-bot2>
+Message-ID: <164734103192.16921.3948203360443496828.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,66 +62,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     eae654f1c21216daa9fbb92591c0d9f5ae46cfc5
-Gitweb:        https://git.kernel.org/tip/eae654f1c21216daa9fbb92591c0d9f5ae46cfc5
+Commit-ID:     cb9010f87dcbcdbb51cc96b922c6260848cecbd1
+Gitweb:        https://git.kernel.org/tip/cb9010f87dcbcdbb51cc96b922c6260848cecbd1
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:48 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:44 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:43 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:42 +01:00
 
-exit: Mark do_group_exit() __noreturn
+x86/ibt: Ensure module init/exit points have references
 
-vmlinux.o: warning: objtool: get_signal()+0x108: unreachable instruction
-
-0000 000000000007f930 <get_signal>:
-...
-0103    7fa33:  e8 00 00 00 00          call   7fa38 <get_signal+0x108> 7fa34: R_X86_64_PLT32   do_group_exit-0x4
-0108    7fa38:  41 8b 45 74             mov    0x74(%r13),%eax
+Since the references to the module init/exit points only have external
+references, a module LTO run will consider them 'unused' and seal
+them, leading to an immediate fail on module load.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154319.351270711@infradead.org
+Link: https://lore.kernel.org/r/20220308154319.113767246@infradead.org
 ---
- include/linux/sched/task.h | 2 +-
- kernel/exit.c              | 2 +-
- tools/objtool/check.c      | 1 +
- 3 files changed, 3 insertions(+), 2 deletions(-)
+ include/linux/cfi.h | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
-index e84e54d..719c9a6 100644
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -79,7 +79,7 @@ static inline void exit_thread(struct task_struct *tsk)
- {
- }
- #endif
--extern void do_group_exit(int);
-+extern __noreturn void do_group_exit(int);
+diff --git a/include/linux/cfi.h b/include/linux/cfi.h
+index 879744a..c6dfc1e 100644
+--- a/include/linux/cfi.h
++++ b/include/linux/cfi.h
+@@ -34,8 +34,17 @@ static inline void cfi_module_remove(struct module *mod, unsigned long base_addr
  
- extern void exit_files(struct task_struct *);
- extern void exit_itimers(struct signal_struct *);
-diff --git a/kernel/exit.c b/kernel/exit.c
-index b00a25b..b71f9df 100644
---- a/kernel/exit.c
-+++ b/kernel/exit.c
-@@ -906,7 +906,7 @@ SYSCALL_DEFINE1(exit, int, error_code)
-  * Take down every thread in the group.  This is called by fatal signals
-  * as well as by sys_exit_group (below).
-  */
--void
-+void __noreturn
- do_group_exit(int exit_code)
- {
- 	struct signal_struct *sig = current->signal;
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index c3ddcec..9896562 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -181,6 +181,7 @@ static bool __dead_end_function(struct objtool_file *file, struct symbol *func,
- 		"kunit_try_catch_throw",
- 		"xen_start_kernel",
- 		"cpu_bringup_and_idle",
-+		"do_group_exit",
- 		"stop_this_cpu",
- 	};
+ #else /* !CONFIG_CFI_CLANG */
  
+-#define __CFI_ADDRESSABLE(fn, __attr)
++#ifdef CONFIG_X86_KERNEL_IBT
++
++#define __CFI_ADDRESSABLE(fn, __attr) \
++	const void *__cfi_jt_ ## fn __visible __attr = (void *)&fn
++
++#endif /* CONFIG_X86_KERNEL_IBT */
+ 
+ #endif /* CONFIG_CFI_CLANG */
+ 
++#ifndef __CFI_ADDRESSABLE
++#define __CFI_ADDRESSABLE(fn, __attr)
++#endif
++
+ #endif /* _LINUX_CFI_H */
