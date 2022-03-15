@@ -2,84 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7637FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345650AbiCOHwD (ORCPT
+        id S1345669AbiCOHwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 03:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55936 "EHLO
+        Tue, 15 Mar 2022 03:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232675AbiCOHwA (ORCPT
+        with ESMTP id S1345651AbiCOHwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 03:52:00 -0400
-Received: from smtpbg153.qq.com (smtpbg153.qq.com [13.245.218.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD16E12AD8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:50:47 -0700 (PDT)
-X-QQ-mid: bizesmtp65t1647330599t5jaxgpj
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 15 Mar 2022 15:49:53 +0800 (CST)
-X-QQ-SSF: 01400000002000D0H000B00A0000000
-X-QQ-FEAT: F3yR32iATbgMpCjbikc3BWSKeichddKAGID8W5xikXF3OmtDM7BGzcFt33YO1
-        Bl123JlrOMf2XGDP9jYKyTX29QEBr4qU+cbjYb4/z1x0YZy/OElwmyMj2wsE83OekJNjX5l
-        XGt4Nl59hWdWuqD2ExSFSrRrRQtDOpcdCi5x4Ng4pSqUK6ouzIr21OVYcXlmE7cabFs6C2i
-        jHkeROi0AC6KMwhqqCJc9Wte26kq4GfGBPfojflnUxlqZ+eT3J23mVzwpoKqnXiGrt3+Gjh
-        WuE2onOmnqJugzMoXfC+Bcw6Q6sdzxXSnt/5Bg87rIh2f4YcY5BknCME4LinZD0a/eoUHXL
-        OjFo53XoCpiuXJYo4CM+4x1zgxrL21PgTDttKSX
-X-QQ-GoodBg: 2
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH] net: tulip: de4x5: Optimize if branch in de4x5_parse_params
-Date:   Tue, 15 Mar 2022 15:49:52 +0800
-Message-Id: <20220315074952.6577-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Tue, 15 Mar 2022 03:52:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD37A4B87A;
+        Tue, 15 Mar 2022 00:51:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 418D161466;
+        Tue, 15 Mar 2022 07:51:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B89B2C340E8;
+        Tue, 15 Mar 2022 07:51:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647330665;
+        bh=WIiE5/Y8InLMDxSnOFGgcjcEamhcDTf2E4cGNCrfJIo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AiRZtNq/KPPzYbiB4dZ/JZFPOoEoitkPYehdbuZxxfVrTv273vcA+98PRkhhW52eh
+         rNOojssfryS72K3iFabfsw1VcgD8oLIUEo2tDjn6bMm6uaPRlC834j9ZVydRIcJvkW
+         9QpEaFFAbCJsdoebJ7/TZvzZLBY0Bdhk10sE+JXo=
+Date:   Tue, 15 Mar 2022 08:51:02 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Bastien =?iso-8859-1?Q?Roucari=E8s?= <rouca@debian.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, stable@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Revert "ARM: dts: sun7i: A20-olinuxino-lime2: Fix
+ ethernet phy-mode"
+Message-ID: <YjBFZm496HUnvBgQ@kroah.com>
+References: <20220308125531.27305-1-ynezz@true.cz>
+ <20220315072846.GA9129@meh.true.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign2
-X-QQ-Bgrelay: 1
+In-Reply-To: <20220315072846.GA9129@meh.true.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the de4x5_parse_params, 'if (strstr(p, "BNC_AUI"))' condition and
-'if (strstr(p, "BNC_AUI"))' condition are both execute the statement
-'lp->params.autosense = BNC', these two conditions can be combined.
+On Tue, Mar 15, 2022 at 08:28:58AM +0100, Petr Štetiar wrote:
+> Petr Štetiar <ynezz@true.cz> [2022-03-08 13:55:30]:
+> 
+> Hi Greg,
+> 
+> one week has passed and as I didn't received any feedback, I'm providing more
+> details in a hope to make it more clear, why I think, that this fix is wrong
+> and should be reverted in LTS kernels 5.10 and 5.15.
 
-In addition, in the current code logic, when p = "BNC", the judgments
-need to be executed four times. In order to simplify the execution
-process and keep the original code design, I used the statement which
-is 'if (strstr(p, "BNC") || strstr(p, "BNC_AUI"))' to deal with it,
-after that once 'strstr(p, "BNC")' is established, we no longer need
-to judge whether 'strstr(p, "BNC_AUI")' is true(not NULL).
+Why not reverted in Linus's tree first?  Shouldn't that be also broken
+here?
 
-In this way, we can execute the judgment statement one time less.
+thanks,
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
----
- drivers/net/ethernet/dec/tulip/de4x5.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
-index 71730ef4cd57..5900b8ef7f6f 100644
---- a/drivers/net/ethernet/dec/tulip/de4x5.c
-+++ b/drivers/net/ethernet/dec/tulip/de4x5.c
-@@ -5208,9 +5208,7 @@ de4x5_parse_params(struct net_device *dev)
- 		lp->params.autosense = TP_NW;
- 	    } else if (strstr(p, "TP")) {
- 		lp->params.autosense = TP;
--	    } else if (strstr(p, "BNC_AUI")) {
--		lp->params.autosense = BNC;
--	    } else if (strstr(p, "BNC")) {
-+	    } else if (strstr(p, "BNC") || strstr(p, "BNC_AUI")) {
- 		lp->params.autosense = BNC;
- 	    } else if (strstr(p, "AUI")) {
- 		lp->params.autosense = AUI;
--- 
-2.20.1
-
-
-
+greg k-h
