@@ -2,89 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E01C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A1EC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244426AbiCOKuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
+        id S1347506AbiCOKuN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348451AbiCOKt1 (ORCPT
+        with ESMTP id S1348663AbiCOKto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:49:27 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50EB517EB
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:09 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id a5so18993102pfv.2
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=wistron-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=L0zB6xiTLN7TUWW0GnFoc7P7DsjjNa+huYBviFNpk/k=;
-        b=kurHOyncJijHKQ/3NU/w4TnCG4BMWG7pbxNOcYWuXQ/xXSBjk8A4LBzinXx6+nXYo8
-         ddg5aBlyeH2nOKElyxrDjgcTu9bP5Uu9tFZ1sbRaIFmrLJtvQYtd9W8WJ97iLZ64r+nB
-         WxSa+5pA6UakEfS4S8StqdQNAtzBK7VQtx8gp0pBDetC/cgD5BHm0tZx9yUgrUkvCVhL
-         kr6symltjySqL7Cwfx6URza/fxWatbf50CmTo3HDDxE2a7Q6CY13J0T542TeVSThMAzF
-         3bUIpiSW5KL9MAIdFZkpjCi9fPQRtWiicn8HwyFBIoI0+wCIqngNm76PmSf2VdUhnK2W
-         1rFg==
+        Tue, 15 Mar 2022 06:49:44 -0400
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E5B2BB09;
+        Tue, 15 Mar 2022 03:47:47 -0700 (PDT)
+Received: by mail-yb1-f177.google.com with SMTP id o5so7560522ybe.2;
+        Tue, 15 Mar 2022 03:47:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=L0zB6xiTLN7TUWW0GnFoc7P7DsjjNa+huYBviFNpk/k=;
-        b=8D3IE3mJM3GpZa4Y7f7bHj0T/ZjAqP5RGuZsa5JH/D7DwCl/GCnYlNQakIUU9e4qzK
-         QvEGPfwNybgz7xPReBwtPIZCcsM9wo9RmeYw341pYq/GE2HjOUCjdPhgyPESxBN2aQPJ
-         Lp1x+7UbSrd2ujWCEg+RhViVcWRVIdIony3aD92Cxp8yvhuL8rstQP5zQO3G2zuqsPiz
-         jvtmTL16wEA8IaiSAXOat5H14ctaRJzP3nJo/5NjphlVg/JudJOqo6sQ84aJ3OxX19d5
-         TZQOYbQR4Ffbocmf4IVDEpy0RvBTlSdRpIftbweOQ0M7pS+YzbcC3SvvPThy6oqR6PJy
-         P9hg==
-X-Gm-Message-State: AOAM530qFvevQfEiIl4lYXkEmkI64a9Q/ll58I+H/A86hR/7Pr+Uyjdg
-        r1DTS5UadvIq6b5w3ohkx9mwGq78YbPrCQ==
-X-Google-Smtp-Source: ABdhPJxA2V6ApdodQ8a2vNaSyz81PLMVWnDWdh3IHXNxCSKTXOy7wpqb+nBs6S14gJeSDmqUCo2VtQ==
-X-Received: by 2002:a62:7793:0:b0:4f6:27a8:ae6d with SMTP id s141-20020a627793000000b004f627a8ae6dmr28183056pfc.65.1647341227975;
-        Tue, 15 Mar 2022 03:47:07 -0700 (PDT)
-Received: from localhost.localdomain (60-251-182-145.hinet-ip.hinet.net. [60.251.182.145])
-        by smtp.gmail.com with ESMTPSA id il7-20020a17090b164700b001bfc017a0adsm2740346pjb.37.2022.03.15.03.47.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 03:47:07 -0700 (PDT)
-From:   Mark Hsieh <mark_hsieh@wistron.corp-partner.google.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
-        axboe@fb.com, kbusch@kernel.org, Mark_Hsieh@wistron.com,
-        Mark Hsieh <mark_hsieh@wistron.corp-partner.google.com>
-Subject: [PATCH] nvme-pci: disable write zeros support on specific SSDs
-Date:   Tue, 15 Mar 2022 18:47:02 +0800
-Message-Id: <20220315104702.20798-1-mark_hsieh@wistron.corp-partner.google.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9PldGcjBa0JTGcjD5vlBABlzXMAzHs2EeEmRgowZ+/0=;
+        b=drxBHxSOCd3erDdf4oJp9pBviGPO4SxdorjF+2S8WKN2TqNfXK3xR2WFLU5M6JFD1X
+         Wc++nsXZLk/kmVtjRyBOalqy0mkySbs0D3L0O/HuAeyuX64zEifU+Ch64bg3xmvmjRn6
+         IZ3Kdh3npn9ft7X6auXwXOEEJ6E3RMVq3nikfBYhZMIsX4IXryTBS117cygdR36u7TOG
+         Ckb65tDTdXihXOPCR/0yZpSMKGcc4vGpzCMA08Kke5floZVznGbbeFClW/UumvOwXRU4
+         7iYz+mVfUKoPgHMDzpozk45NK0mjHBzZILDZyzC9LApJTf6K/vr4pRYI4+KOSx4gHduO
+         kVYQ==
+X-Gm-Message-State: AOAM531ecsmcQWpDfXnPfua41jiowyaen5JLqFGpIgIWwvVB9/5AKw2u
+        9jlWvYByWKX8rCH7DZ6oCW73fCxTKgc8S1+yDxY=
+X-Google-Smtp-Source: ABdhPJwfV5tUV70S6cOpeBS40bDAmQlYNQTWZLSGirDiSZJsrPNaLHOQqJyGmXVIbI3Fs10Vx7cOslcHb+DxmtObygk=
+X-Received: by 2002:a25:3a41:0:b0:628:86a2:dbc with SMTP id
+ h62-20020a253a41000000b0062886a20dbcmr21529994yba.633.1647341266808; Tue, 15
+ Mar 2022 03:47:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220311081111.159639-1-zhengzucheng@huawei.com>
+ <CAJZ5v0jponp=ijVx6W=eNEGrfTKh0KbGmOQG_V0P-Mq366559g@mail.gmail.com> <100a5228-a941-0ff7-8133-14273472b6f5@huawei.com>
+In-Reply-To: <100a5228-a941-0ff7-8133-14273472b6f5@huawei.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 15 Mar 2022 11:47:35 +0100
+Message-ID: <CAJZ5v0jL03nfk7Zof3rrXtupdNY1YK-o-gFhRxbOGvp-vnT6fw@mail.gmail.com>
+Subject: Re: [PATCH] cpufreq: fix cpufreq_get() can't get correct CPU frequency
+To:     zhengzucheng <zhengzucheng@huawei.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Len Brown <len.brown@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like commit 5611ec2b9814 ("nvme-pci: prevent SK hynix PC400 from using
-Write Zeroes command"), Micron has the same issue:
-[ 6305.633887] blk_update_request: operation not supported error, dev
-nvme0n1, sector 340812032 op 0x9:(WRITE_ZEROES) flags 0x0 phys_seg 0 prio class 0
+On Tue, Mar 15, 2022 at 3:30 AM zhengzucheng <zhengzucheng@huawei.com> wrote:
+>
+>
+>
+> On 2022/3/11 23:52, Rafael J. Wysocki wrote:
+> > On Fri, Mar 11, 2022 at 9:11 AM z00314508 <zhengzucheng@huawei.com> wrote:
+> >> From: Zucheng Zheng <zhengzucheng@huawei.com>
+> >>
+> >> On some specific platforms, the cpufreq driver does not define
+> >> cpufreq_driver.get() routine (eg:x86 intel_pstate driver), as a
+> > I guess you mean the cpufreq driver ->get callback.
+> >
+> > No, intel_pstate doesn't implement it, because it cannot reliably
+> > return the current CPU frequency.
+> >
+> >> result, the cpufreq_get() can't get the correct CPU frequency.
+> > No, it can't, if intel_pstate is the driver, but what's the problem?
+> > This function is only called in one place in the kernel and not on x8
+> > even.
+> >
+> >> Modern x86 processors include the hardware needed to accurately
+> >> calculate frequency over an interval -- APERF, MPERF and the TSC.
+> > You can compute the average frequency over an interval, but ->get is
+> > expected to return the actual current frequency at the time call time.
+> >
+> >> Here we use arch_freq_get_on_cpu() in preference to any driver
+> >> driver-specific cpufreq_driver.get() routine to get CPU frequency.
+> >>
+> >> Fixes: f8475cef9008 ("x86: use common aperfmperf_khz_on_cpu() to calculate KHz using APERF/MPERF")
+> > No kidding.
+> >
+> >> Signed-off-by: Zucheng Zheng <zhengzucheng@huawei.com>
+> >> ---
+> >>   drivers/cpufreq/cpufreq.c | 6 +++++-
+> >>   1 file changed, 5 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+> >> index 80f535cc8a75..d777257b4454 100644
+> >> --- a/drivers/cpufreq/cpufreq.c
+> >> +++ b/drivers/cpufreq/cpufreq.c
+> >> @@ -1806,10 +1806,14 @@ unsigned int cpufreq_get(unsigned int cpu)
+> >>   {
+> >>          struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
+> >>          unsigned int ret_freq = 0;
+> >> +       unsigned int freq;
+> >>
+> >>          if (policy) {
+> >>                  down_read(&policy->rwsem);
+> >> -               if (cpufreq_driver->get)
+> >> +               freq = arch_freq_get_on_cpu(policy->cpu);
+> >> +               if (freq)
+> >> +                       ret_freq = freq;
+> >> +               else if (cpufreq_driver->get)
+> > Again, what problem exactly does this address?
+> Thank you for review.
+>
+> In some scenarios, cpufreq driver ->get is not defined,
+> some driver get the CPU frequency by calling cpufreq_get() will return 0.
 
-So also disable Write Zeroes command on Micron.
+Which driver?  Again, there is only one calling cpufreq_get() in the
+kernel tree and it is not on x86.
 
-Signed-off-by: Mark Hsieh <mark_hsieh@wistron.corp-partner.google.com>
-Change-Id: Ic6ebfe141702d1869490bbf210627055b5b4d80f
----
- drivers/nvme/host/pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+> The modification to this problem is inspired by the implementation of
+> the show_scaling_cur_freq().
+> >
+> >>                          ret_freq = __cpufreq_get(policy);
+> >>                  up_read(&policy->rwsem);
+> >>
+> >> --
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index a7a502a5b2b5..68745e1d7b6a 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3245,6 +3245,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
- 	{ PCI_DEVICE(0x2646, 0x500d),   /* Kingston OM3PDP3256B-AH 256G */
- 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
-+	{ PCI_DEVICE(0x1344, 0x5411),   /* Micron 2450 MTFDKCD256TFK 256G */
-+		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
- 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
- 	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
- 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
--- 
-2.17.1
+The answer to my question appears to be that you want cpufreq_get() to
+be consistent with show_scaling_cur_freq().
 
+Fair enough, but in that case please make them both call the same
+lower-level routine implementing the desired behavior so as to avoid
+code duplication.
