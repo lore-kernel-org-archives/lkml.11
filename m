@@ -2,133 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A1EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E62ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347506AbiCOKuN (ORCPT
+        id S1347616AbiCOKuV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34116 "EHLO
+        Tue, 15 Mar 2022 06:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348663AbiCOKto (ORCPT
+        with ESMTP id S1348553AbiCOKtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:49:44 -0400
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E5B2BB09;
-        Tue, 15 Mar 2022 03:47:47 -0700 (PDT)
-Received: by mail-yb1-f177.google.com with SMTP id o5so7560522ybe.2;
-        Tue, 15 Mar 2022 03:47:47 -0700 (PDT)
+        Tue, 15 Mar 2022 06:49:33 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B4352B25
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:23 -0700 (PDT)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 25BCC3F220
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:47:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647341221;
+        bh=Lmjm3yJ63K0GrvAMWP5PfVOb2pmYpXft2AVK3iZtb90=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=qbwgPUj6x31pOvFpugsy0Vk5pH3/RYfG0uWWdUyjhYlfB3ASR1YF63RjkKjXJyh2z
+         2fJSTdnZQNe83ucgHKRcb65PJVTnkoLDW0gq6s9bNLC3F2tITM0/drq+a1CKdUBNt7
+         JPWxg2I8vsEvbQZ+WsxRL1sVlpUaEagMVGYAbmkQ65Y+Uql014Mx+0gMgOwI4G33hD
+         pjbTt+VsyRXaLkUzw2mUgyzmtfX/T13c0TQ2KpCqswxqh2XB9g6EdmFgIL/STcOTjB
+         ZAE1GfMHdm92oPTdbZi95OzJB3IR/DAOBdtzyOw/+lddWH7CXL4vIVw8uRLQNk7QNf
+         xV6gWADANsMuw==
+Received: by mail-ej1-f69.google.com with SMTP id el10-20020a170907284a00b006db9df1f3bbso6039416ejc.5
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9PldGcjBa0JTGcjD5vlBABlzXMAzHs2EeEmRgowZ+/0=;
-        b=drxBHxSOCd3erDdf4oJp9pBviGPO4SxdorjF+2S8WKN2TqNfXK3xR2WFLU5M6JFD1X
-         Wc++nsXZLk/kmVtjRyBOalqy0mkySbs0D3L0O/HuAeyuX64zEifU+Ch64bg3xmvmjRn6
-         IZ3Kdh3npn9ft7X6auXwXOEEJ6E3RMVq3nikfBYhZMIsX4IXryTBS117cygdR36u7TOG
-         Ckb65tDTdXihXOPCR/0yZpSMKGcc4vGpzCMA08Kke5floZVznGbbeFClW/UumvOwXRU4
-         7iYz+mVfUKoPgHMDzpozk45NK0mjHBzZILDZyzC9LApJTf6K/vr4pRYI4+KOSx4gHduO
-         kVYQ==
-X-Gm-Message-State: AOAM531ecsmcQWpDfXnPfua41jiowyaen5JLqFGpIgIWwvVB9/5AKw2u
-        9jlWvYByWKX8rCH7DZ6oCW73fCxTKgc8S1+yDxY=
-X-Google-Smtp-Source: ABdhPJwfV5tUV70S6cOpeBS40bDAmQlYNQTWZLSGirDiSZJsrPNaLHOQqJyGmXVIbI3Fs10Vx7cOslcHb+DxmtObygk=
-X-Received: by 2002:a25:3a41:0:b0:628:86a2:dbc with SMTP id
- h62-20020a253a41000000b0062886a20dbcmr21529994yba.633.1647341266808; Tue, 15
- Mar 2022 03:47:46 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Lmjm3yJ63K0GrvAMWP5PfVOb2pmYpXft2AVK3iZtb90=;
+        b=qQ9i9n6gJlrSgzJOFFPcD6uRafNuXzLVgcGcJL1ul4rDfDShzolkEN02F6qp1FLs7T
+         EkrFfm3E09Z1rhEW3x04VYTq93g/bxA0Zyhzy7B6kdfdjaT43GOu66i6Kykn0lzPbzo7
+         17v0lz9d9IpNYzs4rHP4Irt4jN9YZzvf/+3OAOLTLvjE/kEFa1Qg2vnNo5+y6mZX7Uo7
+         zb93qyNMp3Fre19pIpfD5Z907E8MbuQu/Lv5UHGM0aU9NVxE0pv0GcKoUqR22y9pIXsk
+         s/NSoZqd1SmYVJ+uoyrwjr0gIYCbtuoBWxFc2hIlrbIjXtUlQSvimoC5KDE84qVYTZ+h
+         73Hw==
+X-Gm-Message-State: AOAM531I0x/JRI07DkhjhIXESlKDuTgsvEObfUN9MMORtYQX4UN3+PLb
+        KUcray80ByrF+PRe0+W2Wu41dl6xf6oi03hSzXnLI1IUL3zcujqQ0Fa0JKCRxHHrivjw7IbdMbB
+        UCGk+dHNmQkNB1FAgiawnFMVAqDPeYIz1k3/z5On2lA==
+X-Received: by 2002:a05:6402:278a:b0:418:ad9e:8b65 with SMTP id b10-20020a056402278a00b00418ad9e8b65mr2485507ede.9.1647341220842;
+        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz6nL12RCswbaC6DHPibcw16xO79D+Y2bi8IcqJHpaussAYU5/NVDJTAcwtyw7Q2DBt1I45Kg==
+X-Received: by 2002:a05:6402:278a:b0:418:ad9e:8b65 with SMTP id b10-20020a056402278a00b00418ad9e8b65mr2485476ede.9.1647341220628;
+        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
+Received: from [192.168.0.155] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.googlemail.com with ESMTPSA id w15-20020a056402268f00b00416474fbb42sm9477594edd.19.2022.03.15.03.46.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
+Message-ID: <4e6df448-5562-8f50-6f46-91acb279bc1a@canonical.com>
+Date:   Tue, 15 Mar 2022 11:46:59 +0100
 MIME-Version: 1.0
-References: <20220311081111.159639-1-zhengzucheng@huawei.com>
- <CAJZ5v0jponp=ijVx6W=eNEGrfTKh0KbGmOQG_V0P-Mq366559g@mail.gmail.com> <100a5228-a941-0ff7-8133-14273472b6f5@huawei.com>
-In-Reply-To: <100a5228-a941-0ff7-8133-14273472b6f5@huawei.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 15 Mar 2022 11:47:35 +0100
-Message-ID: <CAJZ5v0jL03nfk7Zof3rrXtupdNY1YK-o-gFhRxbOGvp-vnT6fw@mail.gmail.com>
-Subject: Re: [PATCH] cpufreq: fix cpufreq_get() can't get correct CPU frequency
-To:     zhengzucheng <zhengzucheng@huawei.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Len Brown <len.brown@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/8] dt-bindings: pinctrl: mvebu: Document bindings for
+ AC5
+Content-Language: en-US
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
+        kostap@marvell.com, robert.marko@sartura.hr
+Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+ <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 3:30 AM zhengzucheng <zhengzucheng@huawei.com> wrote:
->
->
->
-> On 2022/3/11 23:52, Rafael J. Wysocki wrote:
-> > On Fri, Mar 11, 2022 at 9:11 AM z00314508 <zhengzucheng@huawei.com> wrote:
-> >> From: Zucheng Zheng <zhengzucheng@huawei.com>
-> >>
-> >> On some specific platforms, the cpufreq driver does not define
-> >> cpufreq_driver.get() routine (eg:x86 intel_pstate driver), as a
-> > I guess you mean the cpufreq driver ->get callback.
-> >
-> > No, intel_pstate doesn't implement it, because it cannot reliably
-> > return the current CPU frequency.
-> >
-> >> result, the cpufreq_get() can't get the correct CPU frequency.
-> > No, it can't, if intel_pstate is the driver, but what's the problem?
-> > This function is only called in one place in the kernel and not on x8
-> > even.
-> >
-> >> Modern x86 processors include the hardware needed to accurately
-> >> calculate frequency over an interval -- APERF, MPERF and the TSC.
-> > You can compute the average frequency over an interval, but ->get is
-> > expected to return the actual current frequency at the time call time.
-> >
-> >> Here we use arch_freq_get_on_cpu() in preference to any driver
-> >> driver-specific cpufreq_driver.get() routine to get CPU frequency.
-> >>
-> >> Fixes: f8475cef9008 ("x86: use common aperfmperf_khz_on_cpu() to calculate KHz using APERF/MPERF")
-> > No kidding.
-> >
-> >> Signed-off-by: Zucheng Zheng <zhengzucheng@huawei.com>
-> >> ---
-> >>   drivers/cpufreq/cpufreq.c | 6 +++++-
-> >>   1 file changed, 5 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-> >> index 80f535cc8a75..d777257b4454 100644
-> >> --- a/drivers/cpufreq/cpufreq.c
-> >> +++ b/drivers/cpufreq/cpufreq.c
-> >> @@ -1806,10 +1806,14 @@ unsigned int cpufreq_get(unsigned int cpu)
-> >>   {
-> >>          struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
-> >>          unsigned int ret_freq = 0;
-> >> +       unsigned int freq;
-> >>
-> >>          if (policy) {
-> >>                  down_read(&policy->rwsem);
-> >> -               if (cpufreq_driver->get)
-> >> +               freq = arch_freq_get_on_cpu(policy->cpu);
-> >> +               if (freq)
-> >> +                       ret_freq = freq;
-> >> +               else if (cpufreq_driver->get)
-> > Again, what problem exactly does this address?
-> Thank you for review.
->
-> In some scenarios, cpufreq driver ->get is not defined,
-> some driver get the CPU frequency by calling cpufreq_get() will return 0.
+On 14/03/2022 22:31, Chris Packham wrote:
+> Add JSON schema for marvell,ac5-pinctrl present on the Marvell 98DX2530
+> SoC.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> ---
+> 
+> Notes:
+>     Changes in v2:
+>     - Remove syscon and simple-mfd compatibles
+> 
+>  .../bindings/pinctrl/marvell,ac5-pinctrl.yaml | 70 +++++++++++++++++++
+>  1 file changed, 70 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
+> new file mode 100644
+> index 000000000000..65af1d5f5fe0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
+> @@ -0,0 +1,70 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pinctrl/marvell,ac5-pinctrl.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Marvell AC5 pin controller
+> +
+> +maintainers:
+> +  - Chris Packham <chris.packham@alliedtelesis.co.nz>
+> +
+> +description:
+> +  Bindings for Marvell's AC5 memory-mapped pin controller.
+> +
+> +properties:
+> +  compatible:
+> +    const: marvell,ac5-pinctrl
+> +
+> +patternProperties:
+> +  '-pins$':
+> +    type: object
+> +    $ref: pinmux-node.yaml#
+> +
+> +    properties:
+> +      marvell,function:
+> +        $ref: "/schemas/types.yaml#/definitions/string"
+> +        description:
+> +          Indicates the function to select.
+> +        enum: [ gpio, i2c0, i2c1, nand, sdio, spi0, spi1, uart0, uart1, uart2, uart3 ]
+> +
+> +      marvell,pins:
+> +        $ref: /schemas/types.yaml#/definitions/string-array
+> +        description:
+> +          Array of MPP pins to be used for the given function.
+> +        minItems: 1
+> +        items:
+> +          enum: [ mpp0, mpp1, mpp2, mpp3, mpp4, mpp5, mpp6, mpp7, mpp8, mpp9,
+> +                  mpp10, mpp11, mpp12, mpp13, mpp14, mpp15, mpp16, mpp17, mpp18, mpp19,
+> +                  mpp20, mpp21, mpp22, mpp23, mpp24, mpp25, mpp26, mpp27, mpp28, mpp29,
+> +                  mpp30, mpp31, mpp32, mpp33, mpp34, mpp35, mpp36, mpp37, mpp38, mpp39,
+> +                  mpp40, mpp41, mpp42, mpp43, mpp44, mpp45 ]
+> +
+> +allOf:
+> +  - $ref: "pinctrl.yaml#"
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    system-controller@80020100 {
+> +      compatible = "syscon", "simple-mfd";
+> +      reg = <0x80020000 0x20>;
 
-Which driver?  Again, there is only one calling cpufreq_get() in the
-kernel tree and it is not on x86.
+This is unusual. Usually the pinctrl should be a device @80020100, not
+child of syscon node. Why do you need it? In v1 you mentioned that
+vendor sources do like this, but it's not correct to copy wrong DTS. :)
 
-> The modification to this problem is inspired by the implementation of
-> the show_scaling_cur_freq().
-> >
-> >>                          ret_freq = __cpufreq_get(policy);
-> >>                  up_read(&policy->rwsem);
-> >>
-> >> --
 
-The answer to my question appears to be that you want cpufreq_get() to
-be consistent with show_scaling_cur_freq().
 
-Fair enough, but in that case please make them both call the same
-lower-level routine implementing the desired behavior so as to avoid
-code duplication.
+Best regards,
+Krzysztof
