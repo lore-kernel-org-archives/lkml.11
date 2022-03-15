@@ -2,226 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4273C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2643AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:04:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349818AbiCOQEC (ORCPT
+        id S1349820AbiCOQFt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:04:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        Tue, 15 Mar 2022 12:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347922AbiCOQD5 (ORCPT
+        with ESMTP id S238915AbiCOQFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:03:57 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1451656225;
-        Tue, 15 Mar 2022 09:02:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1647360144; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=dnUi3IF9WFyf72Np0V7lshq0/PciQLx8SFA/fjN1lgCYgIplCUVaYO4/nV0ZNEjUBR8M6xUBZgHhh/JxH/0BT8Ma+lk4QB2slYrkNbJF4cQrVZ6Ova7WZgVNphyKXPndJ11yCWPswPv2nz7JEFNYnlGULyENh3yQUpiqpHzMWCo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1647360144; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=9QYT7YBZFzIhi342CZK/oTLnwstuIL2UHk0zVABW6xc=; 
-        b=WJqvbGnJooO4YynJpU38S9qWe8X28yQo7DSyZtfRPon3hnNpPQJ+F0o7Z8zCViKrmhSq4vnunb9d53c19FM1FJJMJP4EUua9ldaqnKtkXQ4zTN37zxkJyPuleYq0RF/rehL2kI5fs1Z1WkMjODQq7o+5GtVCB3VSaXLq98cTM8Y=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1647360144;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=9QYT7YBZFzIhi342CZK/oTLnwstuIL2UHk0zVABW6xc=;
-        b=XHNXgLIHo2cjXaQU7bfK2gZaHl5i5MNHJnU1xV15U9kwj/FUABHupKCYlEHYy3d7
-        4MFdSNm6ThZT27NK3a9AX8Mj67f5JTfLPJFZmfPLira+3yolIZ11ilRL7ovnHxJdbUG
-        pKeW2pb6qc0BkEbht+RoT7sG9mR1+RUXrmSxdKww=
-Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1647360139402372.50112931275726; Tue, 15 Mar 2022 09:02:19 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        NeilBrown <neil@brown.name>, DENG Qingfang <dqfext@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        erkin.bozoglu@xeront.com
-Cc:     linux-staging@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v2] mips: dts: ralink: add MT7621 SoC
-Date:   Tue, 15 Mar 2022 19:01:50 +0300
-Message-Id: <20220315160149.3617-1-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 15 Mar 2022 12:05:45 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0331FA79
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:04:32 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id mm23-20020a17090b359700b001bfceefd8c6so2690256pjb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gvkC3jGwM0BSWnuGpgckFHOiTk6SWYeHrSDlcpLuLck=;
+        b=3gqdwDRiCpRYgnbCiljAUJPe+a2nTGkGs2zkB5QHuuedEezypdquacGD/eUaQO1L48
+         W8q+bQNYgZzYuWRLozKeXY/T6eFQRQeF0zEZJj2Uj51n8r+WEVn59ZGNDqZ3WRH9Ixbr
+         vjfaZmO3t+A/a04EBXTmKgmCaYz6pFUFvcPblzGN9GWeI0uTrZv+8qlpHoRUapzOJIA0
+         0LAxv4xPNTNd8ErCac5s+GPIxnEWbZF6vtS5bIIgEOOeBIDJ+DEp1UkRkXlpE8LPq4pU
+         4LskO51J4VqSAb83p4KhKkgt/VPsn4Al4Dr/pozZ5fSQdu/gp2Ukcgmrc5f3QRI8t8tu
+         7VRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gvkC3jGwM0BSWnuGpgckFHOiTk6SWYeHrSDlcpLuLck=;
+        b=Uf98LMQI1I3pEVV9quIZCQydJF2pk4eUvvNGsseKSGrDrZdjtKM14DFEdoe2CPwAjH
+         N7y4H9TXppJ/C7nEuBV3eP3pcpk3cp1GrUmCIu28c3q51Y8a6aHl3ejCpaabj5kYkWcF
+         bzzpWNN4mY5ePYqXYJ80zJ3ZSGBMtgYz6dD/5Hlv7rQf+Ej3UB0jtLoXoTNsTwb/fol3
+         Km1PSZbjkvp40BZ6J42lxtV4kVh0jCUafHq/qYPWfhOqGSuMhEQY7voQGkAvUhA0Kemo
+         OboNoAhPiU8jpSNJce6Z224RL4RkQHosvyhB2hL/xjotnByg6NFKU07kT6/S6Hek4BdZ
+         rfWg==
+X-Gm-Message-State: AOAM5322eljO1EXYSsnetMnIoc+qsrjYMejs14IkUHC2obfvRZu+UUUR
+        rz0o57qhUeVsf2sKY4yzz0MS/XHNWU8OUktzJ24hhw==
+X-Google-Smtp-Source: ABdhPJx4iexvZ9E7ec4YTysWAlz/seulvJb3IeWy/vdbRcyyJyL0GKEJRsaIdVfIyVQD8KsXXN09cpfz7Pj3dHUw5t0=
+X-Received: by 2002:a17:90a:430d:b0:1bc:f340:8096 with SMTP id
+ q13-20020a17090a430d00b001bcf3408096mr5395590pjg.93.1647360271908; Tue, 15
+ Mar 2022 09:04:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <Yh59rOIH24X+6GyI@kroah.com> <Yh5+om/Nr06V0+Qj@kroah.com> <Yi/Lb5laEki0JHft@agluck-desk3.sc.intel.com>
+ <YjBBmEjbIaqTbVt+@kroah.com> <c4af81bd788e43dda915a1052af0be55@intel.com> <YjCwI4N00reBuIqA@kroah.com>
+In-Reply-To: <YjCwI4N00reBuIqA@kroah.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 15 Mar 2022 09:04:20 -0700
+Message-ID: <CAPcyv4iU5mXAjkUe-c_-Ba4Ejse90gqd=db+00jybnkV1-K6=g@mail.gmail.com>
+Subject: Re: [RFC 00/10] Introduce In Field Scan driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "Luck, Tony" <tony.luck@intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MT7621 system-on-a-chip includes an 880 MHz MIPS1004Kc dual-core CPU,
-a 5-port 10/100/1000 switch/PHY and one RGMII.
+On Tue, Mar 15, 2022 at 8:27 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Mar 15, 2022 at 02:59:03PM +0000, Luck, Tony wrote:
+> > >> This seems a novel use of uevent ... is it OK, or is is abuse?
+> > >
+> > > Don't create "novel" uses of uevents.  They are there to express a
+> > > change in state of a device so that userspace can then go and do
+> > > something with that information.  If that pattern fits here, wonderful.
+> >
+> > Maybe Dan will chime in here to better explain his idea. I think for
+> > the case where the core test fails, there is a good match with uevent.
+> > The device (one CPU core) has changed state from "working" to
+> > "untrustworthy". Userspace can do things like: take the logical CPUs
+> > on that core offline, initiate a service call, or in a VMM cluster environment
+> > migrate work to a different node.
+>
+> Again, I have no idea what you are doing at all with this driver, nor
+> what you want to do with it.
+>
+> Start over please.
+>
+> What is the hardware you have to support?
+>
+> What is the expectation from userspace with regards to using the
+> hardware?
 
-Add the devicetrees for GB-PC1 and GB-PC2 devices which use MT7621 SoC.
+Here is what I have learned about this driver since engaging on this
+patch set. Cores go bad at run time. Datacenters can detect them at
+scale. When I worked at Facebook there was an epic story of debugging
+random user login failures that resulted in the discovery of a
+marginal lot-number of CPUs in a certain cluster. In that case the
+crypto instructions on a few cores of those CPUs gave wrong answers.
+Whether that was an electromigration effect, or just a marginal bin of
+CPUs, the only detection method was A-B testing different clusters of
+CPUs to isolate the differences.
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Acked-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
----
-v2: fix a tiny grammar mistake, add Sergio's acked-by.
+This driver takes advantage of a CPU feature to inject a diagnostic
+test similar to what can be done via JTAG to validate the
+functionality of a given core on a CPU at a low level. The diagnostic
+is run periodically since some failures may be sensitive to thermals
+while other failures may be be related to the lifetime of the CPU. The
+result of the diagnostic is "here are 1 or more cores that may
+miscalculate, stop using them and replace the CPU".
 
-This patch does changes on top of commit dcd520af4eac ("staging:
-mt7621-dts: fix cpuintc and fixedregulator dtc warnings, fix xhci") which
-is currently applied on gregkh/staging.git staging-next branch.
+At a base level the ABI need only be something that conveys "core X
+failed its last diagnostic". All the other details are just extra, and
+in my opinion can be dropped save for maybe "core X was unable to run
+the diagnostic".
 
----
- MAINTAINERS                                           |  7 +++++++
- arch/mips/boot/dts/ralink/Makefile                    |  4 ++++
- .../mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts     |  0
- .../mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts     |  0
- .../mips/boot/dts/ralink}/mt7621.dtsi                 |  0
- arch/mips/ralink/Kconfig                              |  5 +++++
- drivers/staging/Kconfig                               |  2 --
- drivers/staging/Makefile                              |  1 -
- drivers/staging/mt7621-dts/Kconfig                    | 11 -----------
- drivers/staging/mt7621-dts/Makefile                   |  5 -----
- drivers/staging/mt7621-dts/TODO                       |  5 -----
- 11 files changed, 16 insertions(+), 24 deletions(-)
- rename drivers/staging/mt7621-dts/gbpc1.dts => arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts (100%)
- rename drivers/staging/mt7621-dts/gbpc2.dts => arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts (100%)
- rename {drivers/staging/mt7621-dts => arch/mips/boot/dts/ralink}/mt7621.dtsi (100%)
- delete mode 100644 drivers/staging/mt7621-dts/Kconfig
- delete mode 100644 drivers/staging/mt7621-dts/Makefile
- delete mode 100644 drivers/staging/mt7621-dts/TODO
+The thought process that got me from the proposal on the table "extend
+/sys/devices/system/cpu with per-cpu result state and other details"
+to "emit uevents on each test completion" were the following:
+-The complexity and maintenance burden of dynamically extending
+/sys/devices/system/cpu: Given that you identified a reference
+counting issue, I wondered why this was trying to use
+/sys/devices/system/cpu in the first instance.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 62d6758bf8c4..92eda5adca44 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16181,6 +16181,13 @@ L:	linux-mips@vger.kernel.org
- S:	Maintained
- F:	arch/mips/ralink
- 
-+RALINK MT7621 MIPS ARCHITECTURE
-+M:	Arınç ÜNAL <arinc.unal@arinc9.com>
-+M:	Sergio Paracuellos <sergio.paracuellos@gmail.com>
-+L:	linux-mips@vger.kernel.org
-+S:	Maintained
-+F:	arch/mips/boot/dts/ralink/mt7621*
-+
- RALINK RT2X00 WIRELESS LAN DRIVER
- M:	Stanislaw Gruszka <stf_xl@wp.pl>
- M:	Helmut Schaa <helmut.schaa@googlemail.com>
-diff --git a/arch/mips/boot/dts/ralink/Makefile b/arch/mips/boot/dts/ralink/Makefile
-index 6c26dfa0a903..11732b8c8163 100644
---- a/arch/mips/boot/dts/ralink/Makefile
-+++ b/arch/mips/boot/dts/ralink/Makefile
-@@ -6,4 +6,8 @@ dtb-$(CONFIG_DTB_MT7620A_EVAL)	+= mt7620a_eval.dtb
- dtb-$(CONFIG_DTB_OMEGA2P)	+= omega2p.dtb
- dtb-$(CONFIG_DTB_VOCORE2)	+= vocore2.dtb
- 
-+dtb-$(CONFIG_SOC_MT7621) += \
-+	mt7621-gnubee-gb-pc1.dtb \
-+	mt7621-gnubee-gb-pc2.dtb
-+
- obj-$(CONFIG_BUILTIN_DTB)	+= $(addsuffix .o, $(dtb-y))
-diff --git a/drivers/staging/mt7621-dts/gbpc1.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-similarity index 100%
-rename from drivers/staging/mt7621-dts/gbpc1.dts
-rename to arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc1.dts
-diff --git a/drivers/staging/mt7621-dts/gbpc2.dts b/arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
-similarity index 100%
-rename from drivers/staging/mt7621-dts/gbpc2.dts
-rename to arch/mips/boot/dts/ralink/mt7621-gnubee-gb-pc2.dts
-diff --git a/drivers/staging/mt7621-dts/mt7621.dtsi b/arch/mips/boot/dts/ralink/mt7621.dtsi
-similarity index 100%
-rename from drivers/staging/mt7621-dts/mt7621.dtsi
-rename to arch/mips/boot/dts/ralink/mt7621.dtsi
-diff --git a/arch/mips/ralink/Kconfig b/arch/mips/ralink/Kconfig
-index 120adad51d6a..f9fe15630abb 100644
---- a/arch/mips/ralink/Kconfig
-+++ b/arch/mips/ralink/Kconfig
-@@ -54,10 +54,15 @@ choice
- 		select HAVE_PCI
- 		select PCI_DRIVERS_GENERIC
- 		select SOC_BUS
-+
-+		help
-+		  The MT7621 system-on-a-chip includes an 880 MHz MIPS1004Kc dual-core CPU,
-+		  a 5-port 10/100/1000 switch/PHY and one RGMII.
- endchoice
- 
- choice
- 	prompt "Devicetree selection"
-+	depends on !SOC_MT7621
- 	default DTB_RT_NONE
- 	help
- 	  Select the devicetree.
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index d1ce500c0319..efa194ec12fb 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -82,8 +82,6 @@ source "drivers/staging/vc04_services/Kconfig"
- 
- source "drivers/staging/pi433/Kconfig"
- 
--source "drivers/staging/mt7621-dts/Kconfig"
--
- source "drivers/staging/axis-fifo/Kconfig"
- 
- source "drivers/staging/fieldbus/Kconfig"
-diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index 82e912a7586f..db876663a1e3 100644
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@ -31,7 +31,6 @@ obj-$(CONFIG_KS7010)		+= ks7010/
- obj-$(CONFIG_GREYBUS)		+= greybus/
- obj-$(CONFIG_BCM2835_VCHIQ)	+= vc04_services/
- obj-$(CONFIG_PI433)		+= pi433/
--obj-$(CONFIG_SOC_MT7621)	+= mt7621-dts/
- obj-$(CONFIG_XIL_AXIS_FIFO)	+= axis-fifo/
- obj-$(CONFIG_FIELDBUS_DEV)     += fieldbus/
- obj-$(CONFIG_QLGE)		+= qlge/
-diff --git a/drivers/staging/mt7621-dts/Kconfig b/drivers/staging/mt7621-dts/Kconfig
-deleted file mode 100644
-index 6932ab7acadf..000000000000
---- a/drivers/staging/mt7621-dts/Kconfig
-+++ /dev/null
-@@ -1,11 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--config DTB_GNUBEE1
--	bool "GnuBee1 2.5inch NAS"
--	depends on SOC_MT7621 && DTB_RT_NONE
--	select BUILTIN_DTB
--
--config DTB_GNUBEE2
--	bool "GnuBee2 3.5inch NAS"
--	depends on SOC_MT7621 && DTB_RT_NONE
--	select BUILTIN_DTB
--
-diff --git a/drivers/staging/mt7621-dts/Makefile b/drivers/staging/mt7621-dts/Makefile
-deleted file mode 100644
-index b4ab99fed932..000000000000
---- a/drivers/staging/mt7621-dts/Makefile
-+++ /dev/null
-@@ -1,5 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--dtb-$(CONFIG_DTB_GNUBEE1)      += gbpc1.dtb
--dtb-$(CONFIG_DTB_GNUBEE2)      += gbpc2.dtb
--
--obj-y				+= $(patsubst %.dtb, %.dtb.o, $(dtb-y))
-diff --git a/drivers/staging/mt7621-dts/TODO b/drivers/staging/mt7621-dts/TODO
-deleted file mode 100644
-index 1b758e5c84e0..000000000000
---- a/drivers/staging/mt7621-dts/TODO
-+++ /dev/null
-@@ -1,5 +0,0 @@
--
--- ensure all usage matches code
--- ensure all features used are documented
--
--Cc: NeilBrown <neil@brown.name>
--- 
-2.25.1
+- The result of the test is an event that kicks off remediation
+actions: When this fails a tech is paged to replace the CPU and in the
+meantime the system can either be taken offline, or if some of the
+cores are still good the workloads can be moved off of the bad cores
+to keep some capacity online until the replacement can be made.
 
+- KOBJ_CHANGE uevents are already deployed in NVME for AEN
+(Asynchronous Event Notifications): If the results of the test were
+conveyed only in sysfs then there would be a program that would scrape
+sysfs and turn around and fire an event for the downstream remediation
+actions. Uevent cuts to the chase and lets udev rule policy log,
+notify, and/or take pre-emptive CPU offline action. The CPU state has
+changed after a test run. It has either changed to a failed CPU, or it
+has changed to one that has recently asserted its health.
+
+> > > I doubt you can report "test results" via a uevent in a way that the
+> > > current uevent states and messages would properly convey, but hey, maybe
+> > > I'm wrong.
+> >
+> > But here things get a bit sketchy. Reporting "pass", or "didn't complete the test"
+> > isn't a state change.  But it seems like a poor interface if there is no feedback
+> > that the test was run. Using different methods to report pass/fail/incomplete
+> > also seems user hostile.
+>
+> We have an in-kernel "test" framework.  Yes, it's for kernel code, but
+> why not extend that to also include hardware tests?
+
+This is where my head was at when starting out with this, but this is
+more of an asynchronous error reporting mechanism like machine check,
+or PCIe AER, than a test. The only difference being that the error in
+this case is only reported by first requesting an error check. So it
+is more similar to something like a background patrol scrub that seeks
+out latent ECC errors in memory.
