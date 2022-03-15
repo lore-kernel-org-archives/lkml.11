@@ -2,96 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2339C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 00:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 00:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344046AbiCOAz7 (ORCPT
+        id S1344055AbiCOA6m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 20:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52220 "EHLO
+        Mon, 14 Mar 2022 20:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235828AbiCOAz6 (ORCPT
+        with ESMTP id S235828AbiCOA6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 20:55:58 -0400
-Received: from gateway33.websitewelcome.com (gateway33.websitewelcome.com [192.185.145.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99C427B2B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:54:47 -0700 (PDT)
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id 0106188B63
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 19:54:47 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id TvQcnUH4CXvvJTvQcnhfJQ; Mon, 14 Mar 2022 19:52:46 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=htoZwZUfHuOpP52y38D5k5UHn/4JM3TYhzWoh/FqF0k=; b=J2fn1MpyTpj0BPKtIvBi0kBNjG
-        nu6MyCcM2RGaRL1HKICRhYrlGbhbbzdx+DqE7RBX83VXFbCIR6xOirIV1tasc38aA/pCC/48hUi5e
-        AlHfBCgCWKtYCoAeCu5MBv/1IicDyb27rLJwBF0u7gCI+l6xXfWFIyZE7XIHeO9+hV57vi7K7LkzI
-        y+ECOp/GToAMw22Ji/zQRfsibtB8GLxsPGsdFReyvHbjVLZ5fjNU6at4DXeDLk0w74IVUhENj64r7
-        fJD4TQPBEFxjb5dMOPFwepMLVRkJJUZSkgOIEveHOzfRGVs75uHYyItDW52+yZOe8dkMZ6dEXj8Ts
-        y+RTnMig==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57472 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nTvQb-003r6K-MN; Tue, 15 Mar 2022 00:52:45 +0000
-Date:   Mon, 14 Mar 2022 17:52:44 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.4 00/43] 5.4.185-rc1 review
-Message-ID: <20220315005244.GD1943350@roeck-us.net>
-References: <20220314112734.415677317@linuxfoundation.org>
+        Mon, 14 Mar 2022 20:58:40 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12032899A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:57:28 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id e186so34274939ybc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:57:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=URKjjowY0h/0Z8zQ1fAqigHaBDlWDlO+XfCZxksc+d4=;
+        b=RICGTgRYNylyisjerEuIWzJ8fZdKLcskLqhxucD/uGx3zgwwzUK+U00nyTB8KwDYpb
+         yuBtphxFdvM5/Jwd4YaSzSrW7tdFzaMhHvbGc4LbaFJvudS89VA+B9A65kb0PYPlgkdC
+         RWgfuEvV+dqfb4Jh/EmnSfmm4umVdB1tvi0FyP0hF8a99YqZGHtO2XJKpOVvZF18Xz1u
+         y+AHhFWztDgC6Gc2ioucRkoDth3cdTPIlK4AYeCqUudeIq/UpO0eD/WV4m1swNO2aRrM
+         jTdF6rZIrWK30Yl4v/e0OXHqa7ym1DBc6D+T+Pt4XyOt9aOQuG+Q0tdQleZBY4EF2qGa
+         Hhsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=URKjjowY0h/0Z8zQ1fAqigHaBDlWDlO+XfCZxksc+d4=;
+        b=6sd1l1UPbVdjA+9cfeqJ04ZL55UQxv4giSMQJbOVgZY5K2ZNun1gzdufnkNXsSgAzD
+         K5xIMv7O6DPVVWcrD8TzNLhyIrACIsIJMvGOVfoeNVTKAnVooUzmhzqr7TTNt/FyAYM4
+         4rXX6ukjrOng8YViOcrx8K95bFTE+JErJR3ME5XSQtiV7oImiaF/e81CfF6xOPOj9d9H
+         iGcCzorrrGRAsTTLRNMx8C/w6D/T2QDex72o5ugA6fetWPjxBYbQvweHYm+dbtQgphPe
+         cQbiAeg84fBqBaICntEIsVxbVYk7mMjD0qXiDx2XROoq5/xGKR4cwKZYHRjDv1eePqBE
+         uOaA==
+X-Gm-Message-State: AOAM533PhJunsAko96gW24W82l1vzLtMo5XuNgdW7E/OwrjOhgVlEh6k
+        Pa2MEqKK2kH5hth164ieK5XNQk5gbGb37ddvhCqXsY5kZm8=
+X-Google-Smtp-Source: ABdhPJzzoq1w5Z5Ax8LKyjNFwGBQHKqhXx+iO7JkJYga4JSoMD2kRDmPq24+htGemMNNEVXVseUw9tVaZmXH6imEkKM=
+X-Received: by 2002:a05:6902:203:b0:628:7b6f:2845 with SMTP id
+ j3-20020a056902020300b006287b6f2845mr21211853ybs.533.1647305847868; Mon, 14
+ Mar 2022 17:57:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nTvQb-003r6K-MN
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57472
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 51
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+References: <20220226204507.2511633-1-michael@walle.cc>
+In-Reply-To: <20220226204507.2511633-1-michael@walle.cc>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 15 Mar 2022 01:57:16 +0100
+Message-ID: <CACRpkdaDxYntOxnJiX-fwUU8UPFu7SFR_5UnoUPzhWG-xtJphQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] pinctrl: microchip-sgpio: locking and synchronous output
+To:     Michael Walle <michael@walle.cc>
+Cc:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Colin Foster <colin.foster@in-advantage.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 12:53:11PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.185 release.
-> There are 43 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
-> Anything received after that time might be too late.
-> 
+On Sat, Feb 26, 2022 at 9:45 PM Michael Walle <michael@walle.cc> wrote:
 
-Build results:
-	total: 159 pass: 159 fail: 0
-Qemu test results:
-	total: 449 pass: 449 fail: 0
+> There are boards which use the output of the SGPIO to drive I2C muxers.
+> SGPIO right now is broken in a way that when the software sets this bit
+> there is a rather large delay until that value ends up on the hardware
+> pin.
+>
+> While digging into this, I've noticed that there is no locking at all
+> in this driver. Add locking for all RWM accesses.
+>
+> Please note, that parts of the modification of the first patch are
+> removed again in a later patch. This is because the first patch is
+> intended to be backported to the stable trees.
+>
+> This was also just tested on a LAN9668 SoC. If you have additional
+> hardware, please test.
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+Nobody is protesting for three weeks or so, I just applied the patches
+for v5.18.
 
-Guenter
+If there are problems we can fix them in the v5.18-rc:s
+
+Yours,
+Linus Walleij
