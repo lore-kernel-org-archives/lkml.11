@@ -2,106 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58814C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F36CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352568AbiCOXYa (ORCPT
+        id S1352579AbiCOX2z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 19:24:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
+        Tue, 15 Mar 2022 19:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236358AbiCOXY0 (ORCPT
+        with ESMTP id S237567AbiCOX2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 19:24:26 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF3610BB
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 16:23:08 -0700 (PDT)
-X-UUID: 8ebb0015a59b4c658ba084e1c10eee93-20220316
-X-UUID: 8ebb0015a59b4c658ba084e1c10eee93-20220316
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 145980776; Wed, 16 Mar 2022 07:23:04 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 16 Mar 2022 07:23:02 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
- 2022 07:23:02 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Mar 2022 07:23:02 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jie Qiu <jie.qiu@mediatek.com>,
-        Junzhi Zhao <junzhi.zhao@mediatek.com>
-CC:     Miles Chen <miles.chen@mediatek.com>,
-        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
-        CK Hu <ck.hu@mediatek.com>,
-        "AngeloGioacchino Del Regno" 
-        <angelogioacchino.delregno@collabora.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [RESEND v4 PATCH] drm/mediatek: Fix mtk_cec_mask()
-Date:   Wed, 16 Mar 2022 07:23:00 +0800
-Message-ID: <20220315232301.2434-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Tue, 15 Mar 2022 19:28:54 -0400
+Received: from mx4.wp.pl (mx4.wp.pl [212.77.101.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D64255777
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 16:27:39 -0700 (PDT)
+Received: (wp-smtpd smtp.wp.pl 22402 invoked from network); 16 Mar 2022 00:27:35 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1647386855; bh=hJ+qdh3Bw1sIbKkDYuKS6Akrf10RAxifL7o5WrQxLQA=;
+          h=From:To:Subject;
+          b=LAJXvPpV3Q3gqZWq/RTWWiswTbL/23EoUx2u5590LDo2e59bjxkyVic4WYc1IENUu
+           Sq9IAMAg1v56dS8HNKeMu0YRGWfrPPHJ7/8r1X0FDDw+NAxWZGR94QOPbwss/5JkmB
+           ZpRskcQvOurOwVGuA1Xrf+XFxDktvZPa4It1bIbc=
+Received: from riviera.nat.ds.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.1])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <davem@davemloft.net>; 16 Mar 2022 00:27:35 +0100
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     davem@davemloft.net, kuba@kernel.org, olek2@wp.pl, jgg@ziepe.ca,
+        yangyingliang@huawei.com, arnd@arndb.de, rdunlap@infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: lantiq_etop: add stats support
+Date:   Wed, 16 Mar 2022 00:27:33 +0100
+Message-Id: <20220315232733.134340-1-olek2@wp.pl>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: e283813718b3eadf1b032ce0390b3a3c
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000000 [IeME]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In current implementation, mtk_cec_mask() writes val into target register
-and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
-should read a register, clean only mask bits, and update (val | mask) bits
-to the register.
+This patch adds support for software packet and byte counters.
 
-Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
-Cc: CK Hu <ck.hu@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
+Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
 ---
+ drivers/net/ethernet/lantiq_etop.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Change since v1:
-add Fixes tag
-
-Change since v2:
-add explanation of mtk_cec_mask()
-
-Change since v3:
-change misleading subject and modify the commit message since this is a bug fix patch
-
----
- drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
-index e9cef5c0c8f7..cdfa648910b2 100644
---- a/drivers/gpu/drm/mediatek/mtk_cec.c
-+++ b/drivers/gpu/drm/mediatek/mtk_cec.c
-@@ -85,7 +85,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
- 	u32 tmp = readl(cec->regs + offset) & ~mask;
- 
- 	tmp |= val & mask;
--	writel(val, cec->regs + offset);
-+	writel(tmp, cec->regs + offset);
+diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+index 9b6fa27b7daf..9841551796f2 100644
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -145,6 +145,8 @@ ltq_etop_hw_receive(struct ltq_etop_chan *ch)
+ 	skb_put(skb, len);
+ 	skb->protocol = eth_type_trans(skb, ch->netdev);
+ 	netif_receive_skb(skb);
++	ch->netdev->stats.rx_packets++;
++	ch->netdev->stats.rx_bytes += len;
  }
  
- void mtk_cec_set_hpd_event(struct device *dev,
+ static int
+@@ -182,6 +184,8 @@ ltq_etop_poll_tx(struct napi_struct *napi, int budget)
+ 	spin_lock_irqsave(&priv->lock, flags);
+ 	while ((ch->dma.desc_base[ch->tx_free].ctl &
+ 			(LTQ_DMA_OWN | LTQ_DMA_C)) == LTQ_DMA_C) {
++		ch->netdev->stats.tx_packets++;
++		ch->netdev->stats.tx_bytes += ch->skb[ch->tx_free]->len;
+ 		dev_kfree_skb_any(ch->skb[ch->tx_free]);
+ 		ch->skb[ch->tx_free] = NULL;
+ 		memset(&ch->dma.desc_base[ch->tx_free], 0,
 -- 
-2.18.0
+2.30.2
 
