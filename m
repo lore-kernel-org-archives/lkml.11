@@ -2,104 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5267EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346051AbiCOIiU (ORCPT
+        id S1346075AbiCOIiX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
+        Tue, 15 Mar 2022 04:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346178AbiCOIiL (ORCPT
+        with ESMTP id S1346165AbiCOIiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:38:11 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528D34CD4F;
+        Tue, 15 Mar 2022 04:38:07 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05EA547554;
         Tue, 15 Mar 2022 01:36:55 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 289265FD05;
-        Tue, 15 Mar 2022 11:36:51 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1647333411;
-        bh=zQ9KUNJidOTBi9mTlrAbIUsZPD9xnMaIuG+Kuj/2tcE=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=anSKvlDeqcVp9CUMnL3fjh9YutsByeHYXMpVn4YlJ3Aup6LVF3/utT3sYvaqFigwb
-         PhpjSNk2g2exhqm1LTsdHhzMetMw98GkEF8BQztzN5XdOVCOxivO4+31wN0EVBsO8y
-         y+jr9sguu74LNZSM7sN32T3ZUE7qfIdyJRXkOLENdLxSooUJ8/XYcNYh1mYLwhYqTQ
-         daIL9x+vaNDri0l1OFyr8301VH9B+MAy0WzNKnXd9Cv9t4nx0z8O0tOaKvjoRPlI99
-         qnLChCmmLBr+P1Wfm24HHRg7gC1Mw6s0w9kw7O/cDowUp5mjMRaFHjsctFjevXwPof
-         11AKiwweUvBCg==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 15 Mar 2022 11:36:41 +0300 (MSK)
-From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1 2/3] af_vsock: SOCK_SEQPACKET receive timeout test
-Thread-Topic: [RFC PATCH v1 2/3] af_vsock: SOCK_SEQPACKET receive timeout test
-Thread-Index: AQHYNTaJU61+cjcYFEaSzJHWUZnmpKy/7OSAgAAF6wA=
-Date:   Tue, 15 Mar 2022 08:35:44 +0000
-Message-ID: <457e03a0-7f74-4b9d-3699-ce8775ed69c0@sberdevices.ru>
-References: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
- <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
- <20220315081517.m7rvlpintqipdu6i@sgarzare-redhat>
-In-Reply-To: <20220315081517.m7rvlpintqipdu6i@sgarzare-redhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <10AC6C659A6A99489263F3BE18C16D3E@sberdevices.ru>
-Content-Transfer-Encoding: base64
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647333415; x=1678869415;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=n0A3plTvIIoubhjtpKetM9js3bT0UPpG0+z4b0bbcEY=;
+  b=Ms1c+8bbM6HP8ff/HwcDHRy9HmAijJJqRo7kIi44QcQKWnH8LmT7P4/f
+   r5FTZ+CaT5R7cfA9SkU0kUYxoPhq2oYjw2d6wTSAW9ne798nBbZMQnD+z
+   zbXubvT4jpA99crrQevNU4lCVpGcb7CaGDklQ8GUJu0ZoTaa3CZw8AqDL
+   g=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 15 Mar 2022 01:36:55 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 01:36:55 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 15 Mar 2022 01:36:54 -0700
+Received: from [10.253.9.165] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 15 Mar
+ 2022 01:36:51 -0700
+Message-ID: <9cbb2e86-640f-4b5d-22ff-00c63a1b9743@quicinc.com>
+Date:   Tue, 15 Mar 2022 16:36:48 +0800
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/15 06:52:00 #18973197
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v3] coresight: core: Fix coresight device probe failure
+ issue
+Content-Language: en-US
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+CC:     <coresight@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        "Tingwei Zhang" <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>
+References: <20220309142206.15632-1-quic_jinlmao@quicinc.com>
+ <a1790ad9-b5e0-9a00-debc-fc8ef2c757cb@arm.com>
+From:   Jinlong Mao <quic_jinlmao@quicinc.com>
+In-Reply-To: <a1790ad9-b5e0-9a00-debc-fc8ef2c757cb@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMTUuMDMuMjAyMiAxMToxNSwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBGcmks
-IE1hciAxMSwgMjAyMiBhdCAxMDo1NTo0MkFNICswMDAwLCBLcmFzbm92IEFyc2VuaXkgVmxhZGlt
-aXJvdmljaCB3cm90ZToNCj4+IFRlc3QgZm9yIHJlY2VpdmUgdGltZW91dCBjaGVjazogY29ubmVj
-dGlvbiBpcyBlc3RhYmxpc2hlZCwNCj4+IHJlY2VpdmVyIHNldHMgdGltZW91dCwgYnV0IHNlbmRl
-ciBkb2VzIG5vdGhpbmcuIFJlY2VpdmVyJ3MNCj4+ICdyZWFkKCknIGNhbGwgbXVzdCByZXR1cm4g
-RUFHQUlOLg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92
-QHNiZXJkZXZpY2VzLnJ1Pg0KPj4gLS0tDQo+PiB0b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rl
-c3QuYyB8IDQ5ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+PiAxIGZpbGUgY2hh
-bmdlZCwgNDkgaW5zZXJ0aW9ucygrKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS90b29scy90ZXN0aW5n
-L3Zzb2NrL3Zzb2NrX3Rlc3QuYyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jDQo+
-PiBpbmRleCAyYTM2MzhjMGEwMDguLmFhMmRlMjdkMGY3NyAxMDA2NDQNCj4+IC0tLSBhL3Rvb2xz
-L3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jDQo+PiArKysgYi90b29scy90ZXN0aW5nL3Zzb2Nr
-L3Zzb2NrX3Rlc3QuYw0KPj4gQEAgLTM5MSw2ICszOTEsNTAgQEAgc3RhdGljIHZvaWQgdGVzdF9z
-ZXFwYWNrZXRfbXNnX3RydW5jX3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0K
-Pj4gwqDCoMKgwqBjbG9zZShmZCk7DQo+PiB9DQo+Pg0KPj4gK3N0YXRpYyB2b2lkIHRlc3Rfc2Vx
-cGFja2V0X3RpbWVvdXRfY2xpZW50KGNvbnN0IHN0cnVjdCB0ZXN0X29wdHMgKm9wdHMpDQo+PiAr
-ew0KPj4gK8KgwqDCoCBpbnQgZmQ7DQo+PiArwqDCoMKgIHN0cnVjdCB0aW1ldmFsIHR2Ow0KPj4g
-K8KgwqDCoCBjaGFyIGR1bW15Ow0KPj4gKw0KPj4gK8KgwqDCoCBmZCA9IHZzb2NrX3NlcXBhY2tl
-dF9jb25uZWN0KG9wdHMtPnBlZXJfY2lkLCAxMjM0KTsNCj4+ICvCoMKgwqAgaWYgKGZkIDwgMCkg
-ew0KPj4gK8KgwqDCoMKgwqDCoMKgIHBlcnJvcigiY29ubmVjdCIpOw0KPj4gK8KgwqDCoMKgwqDC
-oMKgIGV4aXQoRVhJVF9GQUlMVVJFKTsNCj4+ICvCoMKgwqAgfQ0KPj4gKw0KPj4gK8KgwqDCoCB0
-di50dl9zZWMgPSAxOw0KPj4gK8KgwqDCoCB0di50dl91c2VjID0gMDsNCj4+ICsNCj4+ICvCoMKg
-wqAgaWYgKHNldHNvY2tvcHQoZmQsIFNPTF9TT0NLRVQsIFNPX1JDVlRJTUVPLCAodm9pZCAqKSZ0
-diwgc2l6ZW9mKHR2KSkgPT0gLTEpIHsNCj4+ICvCoMKgwqDCoMKgwqDCoCBwZXJyb3IoInNldHNv
-Y2tvcHQgJ1NPX1JDVlRJTUVPJyIpOw0KPj4gK8KgwqDCoMKgwqDCoMKgIGV4aXQoRVhJVF9GQUlM
-VVJFKTsNCj4+ICvCoMKgwqAgfQ0KPj4gKw0KPj4gK8KgwqDCoCBpZiAoKHJlYWQoZmQsICZkdW1t
-eSwgc2l6ZW9mKGR1bW15KSkgIT0gLTEpIHx8DQo+PiArwqDCoMKgwqDCoMKgwqAgKGVycm5vICE9
-IEVBR0FJTikpIHsNCj4+ICvCoMKgwqDCoMKgwqDCoCBwZXJyb3IoIkVBR0FJTiBleHBlY3RlZCIp
-Ow0KPj4gK8KgwqDCoMKgwqDCoMKgIGV4aXQoRVhJVF9GQUlMVVJFKTsNCj4+ICvCoMKgwqAgfQ0K
-PiANCj4gVGhlIHBhdGNoIExHVE0sIG1heWJlIHRoZSBvbmx5IHRoaW5nIEkgd291bGQgYWRkIGhl
-cmUgaXMgYSBjaGVjayBvbiB0aGUgdGltZSBzcGVudCBpbiB0aGUgcmVhZCgpLCB0byBzZWUgdGhh
-dCBpdCBpcyBhcHByb3hpbWF0ZWx5IHRoZSB0aW1lb3V0IHdlIGhhdmUgc2V0Lg0KDQpBY2ssIEkn
-bGwgYWRkIGl0IG9uIHYyDQoNCj4gDQo+IFRoYW5rcywNCj4gU3RlZmFubw0KPiANCg0K
+On 3/10/2022 5:10 PM, Suzuki K Poulose wrote:
+> Hi Jinlong
+>
+>
+> On 09/03/2022 14:22, Mao Jinlong wrote:
+>> It is possibe that probe failure issue happens when the device
+>> and its child_device's probe happens at the same time.
+>> In coresight_make_links, has_conns_grp is true for parent, but
+>> has_conns_grp is false for child device as has_conns_grp is set
+>> to true in coresight_create_conns_sysfs_group. The probe of parent
+>> device will fail at this condition. Add has_conns_grp check for
+>> child device before make the links and make the process from
+>> device_register to connection_create be atomic to avoid this
+>> probe failure issue.
+>>
+>> Suggested-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+>> Suggested-by: Mike Leach <mike.leach@linaro.org>
+>> Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+>
+> Thanks for the rework. The patch looks good to me.
+>
+> Suzuki
+Thanks Suzuki.
+
+Hi Mathieu & Mike,
+
+Could you please help to review and provide your comments for the PATCH V3 ?
+
+Thanks
+Jinlong Mao
