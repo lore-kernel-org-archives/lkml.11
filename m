@@ -2,112 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB14C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352536AbiCOXNy (ORCPT
+        id S1352544AbiCOXUZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 19:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49248 "EHLO
+        Tue, 15 Mar 2022 19:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236985AbiCOXNx (ORCPT
+        with ESMTP id S1352542AbiCOXUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 19:13:53 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027BB2E0A7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 16:12:41 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id w16so1338718ybi.12
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 16:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bY5xtSrH39029xqE3mOOcec5o9mj3nUWmGzVJpEccxo=;
-        b=Kd8Hv0JDmH3YkSwU8rpWKqK11gwQ5RHa2i26ofq5z9ax+InqOEKhrdmlftL5mlCHG5
-         jwk+gYxQeGW5zFpWK1LImFyaoTxjzGO2tJVtCaPzS97kLptqsz2lexAXlEGun6UleVpr
-         ZwyGMoN/HrFcIZfbPRVFXczcc1F/axmnlaCZywOX1zrb/6tvTeu925CdgSI9zhVTEB9i
-         AEsZBBMGbAE8qEhhLCCJhXUYpgKlqSr9nLQsZNh1TGk0iS78WY79WwrRZzt1991xIKmw
-         wQ7oWPzLQMpQ0BNWzic6O7cBBTlZPtbQTvEIAh791Ls5NFLsEEy8tySw8htT/ExgLOzX
-         kmOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bY5xtSrH39029xqE3mOOcec5o9mj3nUWmGzVJpEccxo=;
-        b=Q+3tZuFE5mLFQOfM4si+DUsHWDQ/8l2yUZoQu+HMtaDEyvqRlafo5Ylp3MyXoHEGlF
-         XPB+zdN4jnUWXSxqdyhzlxQwyLoNt1D9LPkSf/VkbesYAkiKbzPQ7ce40GehGKtdptZQ
-         y6dHHDCKEfnq5GWyZySRSbhMoeI8VZvzOn+hcQnAR7tHwa/uqU2vERaUr+7N/JGhq//z
-         cWBihxdKEOZNiwfa4nH1mk0879X+6A4G/jcFGmwDF373/SOWgmkEPEhiOTFHC8IM0z0i
-         cGdQUn5sa1jbr1PoKd5Z2jz+JnXjAa/fwV2OAVr6ybRr2hYoNp1qHzH7UbHAdVDnUms0
-         mjPg==
-X-Gm-Message-State: AOAM530ZliNIIxyccrNzCtqYoftS5Iqns8tWt3mI6MOi54+gpZzasenE
-        cCGRVpR1hoiP07Nb4VMgYHAa+P16EgnveJXlrwPT4Q==
-X-Google-Smtp-Source: ABdhPJw+a9V+CQ42uBU5RiZg8cgJJ4ma0rpA3cptTi+WEytuDbMct0Evs4q6GtxXBTEDrLJRR3pheOqaWghQ31HrSqY=
-X-Received: by 2002:a25:bf87:0:b0:622:1e66:e7fd with SMTP id
- l7-20020a25bf87000000b006221e66e7fdmr25848318ybk.341.1647385959996; Tue, 15
- Mar 2022 16:12:39 -0700 (PDT)
+        Tue, 15 Mar 2022 19:20:21 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80902B1AD;
+        Tue, 15 Mar 2022 16:19:08 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:49304)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nUGRX-000gSW-46; Tue, 15 Mar 2022 17:19:07 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:37848 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nUGRW-00EYhW-AA; Tue, 15 Mar 2022 17:19:06 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     <linux-kernel@vger.kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@ZenIV.linux.org.uk>, <linux-api@vger.kernel.org>,
+        Jens Axboe <axboe@kernel.dk>
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+        <87bl1kunjj.fsf@email.froward.int.ebiederm.org>
+        <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org>
+        <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
+Date:   Tue, 15 Mar 2022 18:18:59 -0500
+In-Reply-To: <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Tue, 08 Mar 2022 18:13:34 -0600")
+Message-ID: <87tubyx0rg.fsf_-_@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20220310164532.1821490-1-bgardon@google.com> <Yio8QtuMd6COcnEw@google.com>
- <CANgfPd9xr5ev7fEiwBVUi89iHkuywq-Ba9zOeCMSTFmLkO243w@mail.gmail.com> <YiqxtIz+T1LGE1Ju@google.com>
-In-Reply-To: <YiqxtIz+T1LGE1Ju@google.com>
-From:   Ben Gardon <bgardon@google.com>
-Date:   Tue, 15 Mar 2022 17:12:29 -0600
-Message-ID: <CANgfPd9N0UsA7_uMU4vs43gdH7A3UrcrY-OdmXoxQ2PyctwxsA@mail.gmail.com>
-Subject: Re: [PATCH 00/13] KVM: x86: Add a cap to disable NX hugepages on a VM
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-XM-SPF: eid=1nUGRW-00EYhW-AA;;;mid=<87tubyx0rg.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18q0QTOMQzEBUR9felhWzseChKcq8/iNIs=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: [PATCH 0/2] ptrace: Making the ptrace changes atomic
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Okay, I'll hold off on the memslot refactor in v2, but if folks have
-feedback on the other aspects of the v1 patch series, I'd appreciate
-it.
-If not, I'll try to get a v2 sent out.
-I think that the commits adding utility functions for the binary stats
-interface to the binary stats test could be queued separately from the
-rest of this series and will be helpful for other folks working on new
-selftests.
 
-On Thu, Mar 10, 2022 at 8:19 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Thu, Mar 10, 2022, Ben Gardon wrote:
-> > Those patches are a lot of churn, but at least to me, they make the
-> > code much more readable. Currently there are many functions which just
-> > pass along 0 for the memslot, and often have multiple other numerical
-> > arguments, which makes it hard to understand what the function is
-> > doing.
->
-> Yeah, my solution for that was to rip out all the params.  E.g. the most used
-> function I ended up with is
->
->   static inline struct kvm_vm *vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
->                                                      void *guest_code)
->   {
->         return __vm_create_with_one_vcpu(vcpu, 0, guest_code);
->   }
->
-> and then the usage is
->
->         vm = vm_create_with_one_vcpu(&vcpu, guest_main);
->
->         supp_cpuid = kvm_get_supported_cpuid();
->         cpuid2 = vcpu_get_cpuid(vcpu);
->
-> My overarching complaint with the selftests is that they make the hard things hard,
-> and the easy things harder.  If a test wants to be backed by hugepages, it shouldn't
-> have to manually specify a memslot.
->
-> Let me post my selftests rework as RFC (_very_ RFC at this point).  I was hoping to
-> do more than compile test before posting anything, but it's going to be multiple
-> weeks before I'll get back to it.  Hopefully it'll start a discussion on actually
-> rewriting the framework so that writing new tests is less painful, and so that every
-> new thing that comes along doesn't require poking at 50 different tests.
+While working on cleaning up the exit path it have had occasion to look
+at what guarantees are provided for setting and reading the fields that
+are provided in task_struct for ptraces.  Namely exit_code,
+ptrace_message, and last_siginfo. It turns out as the ptrace interface
+in the kernel was extended in the kernel the old existing interfaces
+in the kernel were just wrapped and not properly updated to handle
+the new functionality.  This lead to races and inconsistencies.
+
+This fixes the reason for the races and inconsistencies by moving the
+work of maintaining the ptrace fields into ptrace_stop.
+
+The inconsistency that results in some ptrace_stop points continuing
+with a signal while others will not I have left alone as it appears to
+be part of our userspace ABI, and changing that risks breaking
+userspace.
+
+Eric W. Biederman (2):
+      ptrace: Move setting/clearing ptrace_message into ptrace_stop
+      ptrace: Return the signal to continue with from ptrace_stop
+
+ include/linux/ptrace.h      | 17 +++++++----------
+ include/uapi/linux/ptrace.h |  2 +-
+ kernel/signal.c             | 40 ++++++++++++++++++++++++----------------
+ 3 files changed, 32 insertions(+), 27 deletions(-)
+
+Eric
