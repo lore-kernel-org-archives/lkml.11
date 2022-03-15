@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04455C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9667DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345019AbiCOFNI (ORCPT
+        id S1344907AbiCOFNS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 01:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        Tue, 15 Mar 2022 01:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344848AbiCOFMU (ORCPT
+        with ESMTP id S1344851AbiCOFMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 01:12:20 -0400
+        Tue, 15 Mar 2022 01:12:21 -0400
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8879749249
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:11:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350304924A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:11:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647321069; x=1678857069;
+  t=1647321070; x=1678857070;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=6bPP85I/X2JN+a+CF0RYCDiAmljsVzkxdKPwz9WA20I=;
-  b=lC5d9QQvyIDKpkS1oew0pMOQwQl5BS2eJg+Hk6wScABUpV5HWII4G8FH
-   7+lSf4pWdarjAFGFx5duayzLd8kmuSkjgvTk9yDU08jW5GIrR1YMPpKmD
-   Mc9FvB6PqOHjlrjNuQWLQqjbH4JHgchsGlMuyWQ0ia7TFoj2vLZjkXvfx
-   MBSiufVsCoReLUbR8fz9/69CI3G9jnX63T4wEm/i3VKNsLH/QKZNF9M4Q
-   jNXnwrP2lA5lCJHnaw4T4FSlpXzNUYV9y1BEqepnOH1dwLwM84qBPVPWM
-   0lC+8JNXxEEqyLj+NnxGebS1umCM1ryOe1Fwut1e6HJeJkCrh+3SDcmtA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236159107"
+  bh=6uSpqGl1pbsEqnfIlo3vVDu6SwoYiBP9Hzf6kLLgWR8=;
+  b=d9CYuwcTPTkqpN8Munh15JCMAam9CC9OQHu+6q9cM9/yQiUNvjQInBeq
+   BpPhFDZvLJ99s0jsXx8atZwYoraF/IrqROn3+Ixd71q/GygZElT6+XzsJ
+   KagRk0viMHoC+LDq4/z26xwyIoWsk6LMJKibFplDUEnbzUhMvo9CZGG3v
+   Q1vwWuvRHrl+OvX5Mxxo2EkLkzB0WRDGvskOceC2FdjFxY3yt9JnVpGhC
+   5I6EJJOhk/KY7+kC9jFiBX3yxOdgf83fd0np42N1rJkfRqxoYsrCaYbPo
+   qIc92tXKU5jXDFQeRI+CNoaHKH8STIO+tCIxi8bA0A05XQvu2kYRYoEG1
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236159110"
 X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="236159107"
+   d="scan'208";a="236159110"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 22:03:59 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 22:04:00 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="580383590"
+   d="scan'208";a="580383598"
 Received: from otc-wp-03.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.79])
-  by orsmga001.jf.intel.com with ESMTP; 14 Mar 2022 22:03:59 -0700
+  by orsmga001.jf.intel.com with ESMTP; 14 Mar 2022 22:04:00 -0700
 From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
 To:     iommu@lists.linux-foundation.org,
         LKML <linux-kernel@vger.kernel.org>,
@@ -55,9 +55,9 @@ Cc:     Jacob Pan <jacob.jun.pan@intel.com>,
         "Zanussi, Tom" <tom.zanussi@intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v2 7/8] iommu/vt-d: Delete supervisor/kernel SVA
-Date:   Mon, 14 Mar 2022 22:07:11 -0700
-Message-Id: <20220315050713.2000518-8-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 9/9] dmaengine: idxd: separate user and kernel pasid enabling
+Date:   Mon, 14 Mar 2022 22:07:13 -0700
+Message-Id: <20220315050713.2000518-10-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
 References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
@@ -67,102 +67,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In-kernel DMA with PASID should use DMA API now, remove supervisor PASID
-SVA support. Remove special cases in bind mm and page request service.
+From: Dave Jiang <dave.jiang@intel.com>
 
+The idxd driver always gated the pasid enabling under a single knob and
+this assumption is incorrect. The pasid used for kernel operation can be
+independently toggled and has no dependency on the user pasid (and vice
+versa). Split the two so they are independent "enabled" flags.
+
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/intel/svm.c | 42 ++++++++-------------------------------
- 1 file changed, 8 insertions(+), 34 deletions(-)
+ drivers/dma/idxd/cdev.c |  4 ++--
+ drivers/dma/idxd/idxd.h |  6 ++++++
+ drivers/dma/idxd/init.c | 30 ++++++++++++++++++------------
+ 3 files changed, 26 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 2c53689da461..37d6218f173b 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -516,11 +516,10 @@ static void intel_svm_free_pasid(struct mm_struct *mm)
+diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
+index 312ec37ebf91..addaebca7683 100644
+--- a/drivers/dma/idxd/cdev.c
++++ b/drivers/dma/idxd/cdev.c
+@@ -99,7 +99,7 @@ static int idxd_cdev_open(struct inode *inode, struct file *filp)
+ 	ctx->wq = wq;
+ 	filp->private_data = ctx;
  
- static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 					   struct device *dev,
--					   struct mm_struct *mm,
--					   unsigned int flags)
-+					   struct mm_struct *mm)
+-	if (device_pasid_enabled(idxd)) {
++	if (device_user_pasid_enabled(idxd)) {
+ 		sva = iommu_sva_bind_device(dev, current->mm);
+ 		if (IS_ERR(sva)) {
+ 			rc = PTR_ERR(sva);
+@@ -152,7 +152,7 @@ static int idxd_cdev_release(struct inode *node, struct file *filep)
+ 	if (wq_shared(wq)) {
+ 		idxd_device_drain_pasid(idxd, ctx->pasid);
+ 	} else {
+-		if (device_pasid_enabled(idxd)) {
++		if (device_user_pasid_enabled(idxd)) {
+ 			/* The wq disable in the disable pasid function will drain the wq */
+ 			rc = idxd_wq_disable_pasid(wq);
+ 			if (rc < 0)
+diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
+index a09ab4a6e1c1..190b08bd7c08 100644
+--- a/drivers/dma/idxd/idxd.h
++++ b/drivers/dma/idxd/idxd.h
+@@ -239,6 +239,7 @@ enum idxd_device_flag {
+ 	IDXD_FLAG_CONFIGURABLE = 0,
+ 	IDXD_FLAG_CMD_RUNNING,
+ 	IDXD_FLAG_PASID_ENABLED,
++	IDXD_FLAG_USER_PASID_ENABLED,
+ };
+ 
+ struct idxd_dma_dev {
+@@ -468,6 +469,11 @@ static inline bool device_pasid_enabled(struct idxd_device *idxd)
+ 	return test_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
+ }
+ 
++static inline bool device_user_pasid_enabled(struct idxd_device *idxd)
++{
++	return test_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
++}
++
+ static inline bool device_swq_supported(struct idxd_device *idxd)
  {
- 	struct device_domain_info *info = get_domain_info(dev);
--	unsigned long iflags, sflags;
-+	unsigned long iflags, sflags = 0;
- 	struct intel_svm_dev *sdev;
- 	struct intel_svm *svm;
- 	int ret = 0;
-@@ -533,16 +532,13 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 	return (support_enqcmd && device_pasid_enabled(idxd));
+diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
+index 5d1f8dd4abf6..981150b7d09b 100644
+--- a/drivers/dma/idxd/init.c
++++ b/drivers/dma/idxd/init.c
+@@ -500,16 +500,19 @@ static int idxd_probe(struct idxd_device *idxd)
  
- 		svm->pasid = mm->pasid;
- 		svm->mm = mm;
--		svm->flags = flags;
- 		INIT_LIST_HEAD_RCU(&svm->devs);
- 
--		if (!(flags & SVM_FLAG_SUPERVISOR_MODE)) {
--			svm->notifier.ops = &intel_mmuops;
--			ret = mmu_notifier_register(&svm->notifier, mm);
--			if (ret) {
--				kfree(svm);
--				return ERR_PTR(ret);
+ 	if (IS_ENABLED(CONFIG_INTEL_IDXD_SVM) && sva) {
+ 		rc = iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA);
+-		if (rc == 0) {
+-			rc = idxd_enable_system_pasid(idxd);
+-			if (rc < 0) {
+-				iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
+-				dev_warn(dev, "Failed to enable PASID. No SVA support: %d\n", rc);
+-			} else {
+-				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
 -			}
-+		svm->notifier.ops = &intel_mmuops;
-+		ret = mmu_notifier_register(&svm->notifier, mm);
-+		if (ret) {
-+			kfree(svm);
-+			return ERR_PTR(ret);
+-		} else {
++		if (rc) {
++			/*
++			 * Do not bail here since legacy DMA is still
++			 * supported, both user and in-kernel DMA with
++			 * PASID rely on SVA feature.
++			 */
+ 			dev_warn(dev, "Unable to turn on SVA feature.\n");
++		} else {
++			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
++			if (idxd_enable_system_pasid(idxd))
++				dev_warn(dev, "No in-kernel DMA with PASID.\n");
++			else
++				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
  		}
- 
- 		ret = pasid_private_add(svm->pasid, svm);
-@@ -583,8 +579,6 @@ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
  	}
+ 	idxd_read_caps(idxd);
+@@ -545,7 +548,8 @@ static int idxd_probe(struct idxd_device *idxd)
+  err:
+ 	if (device_pasid_enabled(idxd))
+ 		idxd_disable_system_pasid(idxd);
+-	iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
++	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
++		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
+ 	return rc;
+ }
  
- 	/* Setup the pasid table: */
--	sflags = (flags & SVM_FLAG_SUPERVISOR_MODE) ?
--			PASID_FLAG_SUPERVISOR_MODE : 0;
- 	sflags |= cpu_feature_enabled(X86_FEATURE_LA57) ? PASID_FLAG_FL5LP : 0;
- 	spin_lock_irqsave(&iommu->lock, iflags);
- 	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm->pasid,
-@@ -957,7 +951,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 			 * to unbind the mm while any page faults are outstanding.
- 			 */
- 			svm = pasid_private_find(req->pasid);
--			if (IS_ERR_OR_NULL(svm) || (svm->flags & SVM_FLAG_SUPERVISOR_MODE))
-+			if (IS_ERR_OR_NULL(svm))
- 				goto bad_req;
- 		}
+@@ -558,7 +562,8 @@ static void idxd_cleanup(struct idxd_device *idxd)
+ 	idxd_cleanup_internals(idxd);
+ 	if (device_pasid_enabled(idxd))
+ 		idxd_disable_system_pasid(idxd);
+-	iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
++	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
++		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
+ }
  
-@@ -1011,29 +1005,9 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
- {
- 	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
--	unsigned int flags = 0;
- 	struct iommu_sva *sva;
- 	int ret;
- 
--	if (drvdata)
--		flags = *(unsigned int *)drvdata;
--
--	if (flags & SVM_FLAG_SUPERVISOR_MODE) {
--		if (!ecap_srs(iommu->ecap)) {
--			dev_err(dev, "%s: Supervisor PASID not supported\n",
--				iommu->name);
--			return ERR_PTR(-EOPNOTSUPP);
--		}
--
--		if (mm) {
--			dev_err(dev, "%s: Supervisor PASID with user provided mm\n",
--				iommu->name);
--			return ERR_PTR(-EINVAL);
--		}
--
--		mm = &init_mm;
--	}
--
- 	mutex_lock(&pasid_mutex);
- 	ret = intel_svm_alloc_pasid(dev, mm, flags);
- 	if (ret) {
+ static int idxd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -677,7 +682,8 @@ static void idxd_remove(struct pci_dev *pdev)
+ 	free_irq(irq_entry->vector, irq_entry);
+ 	pci_free_irq_vectors(pdev);
+ 	pci_iounmap(pdev, idxd->reg_base);
+-	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
++	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
++		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
+ 	pci_disable_device(pdev);
+ 	destroy_workqueue(idxd->wq);
+ 	perfmon_pmu_remove(idxd);
 -- 
 2.25.1
 
