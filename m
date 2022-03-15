@@ -2,69 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79668C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94FC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 22:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352413AbiCOW6M (ORCPT
+        id S1352430AbiCOW6T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 18:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44026 "EHLO
+        Tue, 15 Mar 2022 18:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244735AbiCOW6I (ORCPT
+        with ESMTP id S244735AbiCOW6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 18:58:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A30A5D5EA;
-        Tue, 15 Mar 2022 15:56:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 396DDB81905;
-        Tue, 15 Mar 2022 22:56:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDAD1C340E8;
-        Tue, 15 Mar 2022 22:56:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647385012;
-        bh=N0VKvWBXk7mkDxQ+/L+M4POKqwF9FuwJqmqkJlnxmlI=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=sgvcKJLNDDW+o7EHkrLO3ydsvTNzqopH7ZWr5kG+MNyZuOyh0cMRc6BamAfHn3+d/
-         dqM9ugmNfdYU7rCLOKhhT2WympchfaBtos01Nf6RFPJc/qiBHMevLUIfeOgKGpvHrQ
-         /DysRybj4ZBSlndCsuR7GWLPVHvteaoUORXMJP1y1LulZ3TJlENn2kGeJzbU8yX8VR
-         9h6TrolfiXQA4kwq30OQ9qZGb4SvZOQ1EB3yrmDUChcD8KPwm6NAbl/sKNnhMmDu1a
-         pLuMNdGVT5q7Kgs6fpSbZ/wSimpQLXnNWAvUa/MgkhldzNOlvEZ5AVIzLM0SjJUpr3
-         WsGREJTHuKi1A==
-Content-Type: text/plain; charset="utf-8"
+        Tue, 15 Mar 2022 18:58:17 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E165D5FE
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 15:57:04 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id l20so898398lfg.12
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 15:57:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=AckR/coIxOb10tv+spqnXBr+Bpips1bwCHH84e6FTSM=;
+        b=FCVeUrS472oDWiDqhyo4Ws4t2jUTRUzskbKDGjh1i4yV9sGjgTDZPif753HOrdYB1v
+         +IoBKY5p+5LMXn4pzvHYzgUjCG9MlulNyimV9n4tTkdI41HZLW2Lm/nJZOEBpiyk1ZnQ
+         lNPJNIavokMhsayNWMImIfqVk/j9xYgjjg2sUwwdLZC57cPqPPeD8LE9MO3aBqnIDS+X
+         pihRjdSJFuj4TE/JRq4fZvSUQiM10UijL305ffL1EfHnSbTlbe7FI8MmSfxhveFUBzCJ
+         OXx1sZbUrYln41S3aDx+/5r793aunkI+XLWkywP+v8/X+e7U0haSNfobmO7oekIDfqtu
+         yNUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=AckR/coIxOb10tv+spqnXBr+Bpips1bwCHH84e6FTSM=;
+        b=rtFL0+dfGeRnSBB5WlIbgmw0Own4Z6Ze+s/TkJv3+0BXJ582JIbbM8I4jYejQ3omA6
+         DeL0Q2rb+GVS54cfuM+bph1ugqUma7Hncm8/Bcsriw0PeevWZ89NX7Hqg9cNHvJ4R6/R
+         gIb/UORfuCEZUwi8p8k0hObpemTH++FOFURGy7iDcsnfisDLdrfqUSe8KrKjKa5mGWIt
+         aNdc+EBs8MrwciZZng8YyrjKRaciskbr76TojMVAhcV3oifcKYMkIJkzASUPKUfpqEE9
+         k1JX3JyEqnFqXyttEGDU/x+FWbQiXYJ/2Vukds3pSw7jxK0YEOOBMzVNLvAr93Gd9Bh8
+         btpg==
+X-Gm-Message-State: AOAM532fajlH5V+oQi9RNWrpcv5ktpx8h5wAaIGq6f7Un7aB8y17SzF9
+        p5zRPfvPiwg7/wOPwIIr8p0rFNSB+A9urXK9
+X-Google-Smtp-Source: ABdhPJw2KWlYZiyQRjRnqb4/L4mhvft8SvJA9g41H5Uxa1E1S0kNfhbTWB2cHcRvCCOCdthsakGn4Q==
+X-Received: by 2002:ac2:55a7:0:b0:448:3023:e645 with SMTP id y7-20020ac255a7000000b004483023e645mr18084066lfg.266.1647385022741;
+        Tue, 15 Mar 2022 15:57:02 -0700 (PDT)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id p11-20020a19f10b000000b004488b82a87esm25531lfh.39.2022.03.15.15.57.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 15:57:02 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v4 net-next 09/15] net: dsa: Never offload FDB entries
+ on standalone ports
+In-Reply-To: <20220315224205.jzz3m2mroytanesh@skbuf>
+References: <20220315002543.190587-1-tobias@waldekranz.com>
+ <20220315002543.190587-10-tobias@waldekranz.com>
+ <20220315163349.k2rmfdzrd3jvzbor@skbuf> <87ee32lumk.fsf@waldekranz.com>
+ <20220315224205.jzz3m2mroytanesh@skbuf>
+Date:   Tue, 15 Mar 2022 23:57:01 +0100
+Message-ID: <875yoelt8i.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220315225459.73F2DC340E8@smtp.kernel.org>
-References: <cover.1646388139.git.zong.li@sifive.com> <db92d209fa700f7da8bc8028083476fcc138d80e.1646388139.git.zong.li@sifive.com> <20220315225459.73F2DC340E8@smtp.kernel.org>
-Subject: Re: [PATCH v2 3/5] riscv: dts: Change the macro name of prci in each device node
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Zong Li <zong.li@sifive.com>, Palmer Dabbelt <palmer@rivosinc.com>
-To:     Zong Li <zong.li@sifive.com>, devicetree@vger.kernel.org,
-        lee.jones@linaro.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        mturquette@baylibre.com, palmer@dabbelt.com,
-        paul.walmsley@sifive.com, robh+dt@kernel.org
-Date:   Tue, 15 Mar 2022 15:56:50 -0700
-User-Agent: alot/0.10
-Message-Id: <20220315225652.CDAD1C340E8@smtp.kernel.org>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Stephen Boyd (2022-03-15 15:54:57)
-> Quoting Zong Li (2022-03-04 02:03:19)
-> > We currently change the macro name for fu540 and fu740 by adding the
-> > prefix respectively, these marcos are referenced by some device nodes,
-> > they should be modified as well.
-> >=20
-> > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
-> > ---
->=20
-> Cool. So it looks like I can take the clk patches and not this one and
-> it should be OK?
+On Wed, Mar 16, 2022 at 00:42, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Mar 15, 2022 at 11:26:59PM +0100, Tobias Waldekranz wrote:
+>> On Tue, Mar 15, 2022 at 18:33, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> > On Tue, Mar 15, 2022 at 01:25:37AM +0100, Tobias Waldekranz wrote:
+>> >> If a port joins a bridge that it can't offload, it will fallback to
+>> >> standalone mode and software bridging. In this case, we never want to
+>> >> offload any FDB entries to hardware either.
+>> >> 
+>> >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> >> ---
+>> >
+>> > When you resend, please send this patch separately, unless something
+>> > breaks really ugly with your MST series in place.
+>> 
+>> Sure. I found this while testing the software fallback. It prevents a
+>> segfault in dsa_port_bridge_host_fdb_add, which (rightly, I think)
+>> assumes that dp->bridge is valid. I feel like this should have a Fixes:
+>> tag, but I'm not sure which commit to blame. Any suggestions?
+>
+> Ok, makes sense. So far, unoffloaded bridge ports meant that the DSA
+> switch driver didn't have a ->port_bridge_join() implementation.
+> Presumably that also came along with a missing ->port_fdb_add()
+> implementation. So probably no NPD for the existing code paths, it is
+> just your unoffloaded MST support that opens up new possibilities.
+>
+> Anyway, the dereference of dp->bridge first appeared in commit
+> c26933639b54 ("net: dsa: request drivers to perform FDB isolation")
+> which is still just in net-next.
 
-To speed things up I can take the whole pile. Thanks for fixing the
-bisection problem.
+Thanks, I just sent it separately:
+
+https://lore.kernel.org/netdev/20220315225018.1399269-1-tobias@waldekranz.com
+
+>> >>  net/dsa/slave.c | 3 +++
+>> >>  1 file changed, 3 insertions(+)
+>> >> 
+>> >> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+>> >> index a61a7c54af20..647adee97f7f 100644
+>> >> --- a/net/dsa/slave.c
+>> >> +++ b/net/dsa/slave.c
+>> >> @@ -2624,6 +2624,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+>> >>  	if (ctx && ctx != dp)
+>> >>  		return 0;
+>> >>  
+>> >> +	if (!dp->bridge)
+>> >> +		return 0;
+>> >> +
+>> >>  	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
+>> >>  		if (dsa_port_offloads_bridge_port(dp, orig_dev))
+>> >>  			return 0;
+>> >> -- 
+>> >> 2.25.1
+>> >> 
