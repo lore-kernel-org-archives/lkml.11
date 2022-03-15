@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E493C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347374AbiCOKrq (ORCPT
+        id S1347462AbiCOKrx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35138 "EHLO
+        Tue, 15 Mar 2022 06:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347408AbiCOKpx (ORCPT
+        with ESMTP id S1347414AbiCOKpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 06:45:53 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A51351316;
-        Tue, 15 Mar 2022 03:44:14 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:44:12 -0000
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017E65133A;
+        Tue, 15 Mar 2022 03:44:18 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:44:16 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341053;
+        s=2020; t=1647341057;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=th9wlFvuAi/z/VLkuNyschT/woD6lbuLfOlTayI0RL4=;
-        b=nPiaZGD7oDWS8JSHm4Q/RdgezPDID0BmbOcd+edy9NCAOcR6r/IzqBI5k1/gUdO9NRQjmC
-        WspQ4qypoEpbxciVi8eiOlwOJ12J6m6mMeOyDjBjSJy33I2+teNFfzXL5MSFgFbFJHtHel
-        w/dwCEJkifjE14k3pAH6xDjED40536UM3vGVlw+N7szar2GDHMTjf6VhGH/pMvjZBpXGoJ
-        O/UqPXtv4tXPWH6NH+ndDPPXaD9YuwLLpyRnn2axuluI85zJ5nYNlhnPyUfkvTuZ4/NyF0
-        zM6zUaJ2PDlQGeSBB/7d74qovEQeEwBSzPEQo11KVmtSU3aRCOUPPrmO2gTfRw==
+        bh=q09XAzJjkLf7Xkw/YaQeeAhtQSprnJ4QqL0hxdYpv9w=;
+        b=jm+NsyMeVGDdT45J/XRWYZq7kUoPzTeVHqmRA5gK9JhSEo/tKkXzLcPJ3qGVkHKMivJOag
+        vJW3T5wZjIn7MWcAcOtiXytn+pKvER7x28ijfve48Xle+1NIDvPhAkfajl97zWeTZFAZIS
+        spL7xi2Ptk7My908+AQ0kO0YXbH+C3tuJ1R7Ls9hG7bUJrIAxdzHrOSTYnS/GBG4A541DZ
+        FjNK/Y6Ua0H+lh+8WkYuW4UHdg6zui+pdHAtB1RqDIB7wgzlHu6PwOoILcgX6px11haPo9
+        YfVgGJUsdjFkFMEXzrHTxoz7NO4KkoaimEyiJWOx+RVFFiH7Oz0/MvMFjawPgw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341053;
+        s=2020e; t=1647341057;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=th9wlFvuAi/z/VLkuNyschT/woD6lbuLfOlTayI0RL4=;
-        b=0H1EV1T2JePPQxOmWz3AepJu4oQxWjvaS+GnugrciYPavSf5tUdYe59zN4bxqEirKv/u7L
-        u+lwzyaeZdroBUAw==
+        bh=q09XAzJjkLf7Xkw/YaQeeAhtQSprnJ4QqL0hxdYpv9w=;
+        b=7FyjIflxZqyWuiQm/1adrVylrNGVrMO/ek4XxSDTPaHR+FrQnwlVwc7uSVP40zdlEmTeGW
+        HWtPbufwadoI0tCg==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86/ibt: Add ANNOTATE_NOENDBR
+Subject: [tip: x86/core] objtool: Add --dry-run
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Kees Cook <keescook@chromium.org>,
+        Miroslav Benes <mbenes@suse.cz>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154317.578968224@infradead.org>
-References: <20220308154317.578968224@infradead.org>
+In-Reply-To: <20220308154317.282720146@infradead.org>
+References: <20220308154317.282720146@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734105230.16921.2670196975839251214.tip-bot2@tip-bot2>
+Message-ID: <164734105637.16921.360308990098148427.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,120 +64,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     c8c301abeae58ec756b8fcb2178a632bd3c9e284
-Gitweb:        https://git.kernel.org/tip/c8c301abeae58ec756b8fcb2178a632bd3c9e284
+Commit-ID:     f2d3a250897133cc36c13a641bd6a9b4dd5ad234
+Gitweb:        https://git.kernel.org/tip/f2d3a250897133cc36c13a641bd6a9b4dd5ad234
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:18 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:13 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:33 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:32 +01:00
 
-x86/ibt: Add ANNOTATE_NOENDBR
+objtool: Add --dry-run
 
-In order to have objtool warn about code references to !ENDBR
-instruction, we need an annotation to allow this for non-control-flow
-instances -- consider text range checks, text patching, or return
-trampolines etc.
+Add a --dry-run argument to skip writing the modifications. This is
+convenient for debugging.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154317.578968224@infradead.org
+Link: https://lore.kernel.org/r/20220308154317.282720146@infradead.org
 ---
- include/linux/objtool.h       | 16 ++++++++++++++++
- tools/include/linux/objtool.h | 16 ++++++++++++++++
- 2 files changed, 32 insertions(+)
+ tools/objtool/builtin-check.c           | 3 ++-
+ tools/objtool/elf.c                     | 3 +++
+ tools/objtool/include/objtool/builtin.h | 2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/objtool.h b/include/linux/objtool.h
-index aca52db..f797368 100644
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -77,6 +77,12 @@ struct unwind_hint {
- #define STACK_FRAME_NON_STANDARD_FP(func)
- #endif
+diff --git a/tools/objtool/builtin-check.c b/tools/objtool/builtin-check.c
+index 38070f2..853af93 100644
+--- a/tools/objtool/builtin-check.c
++++ b/tools/objtool/builtin-check.c
+@@ -20,7 +20,7 @@
+ #include <objtool/objtool.h>
  
-+#define ANNOTATE_NOENDBR					\
-+	"986: \n\t"						\
-+	".pushsection .discard.noendbr\n\t"			\
-+	_ASM_PTR " 986b\n\t"					\
-+	".popsection\n\t"
+ bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
+-     validate_dup, vmlinux, mcount, noinstr, backup, sls;
++     validate_dup, vmlinux, mcount, noinstr, backup, sls, dryrun;
+ 
+ static const char * const check_usage[] = {
+ 	"objtool check [<options>] file.o",
+@@ -46,6 +46,7 @@ const struct option check_options[] = {
+ 	OPT_BOOLEAN('M', "mcount", &mcount, "generate __mcount_loc"),
+ 	OPT_BOOLEAN('B', "backup", &backup, "create .orig files before modification"),
+ 	OPT_BOOLEAN('S', "sls", &sls, "validate straight-line-speculation"),
++	OPT_BOOLEAN(0, "dry-run", &dryrun, "don't write the modifications"),
+ 	OPT_END(),
+ };
+ 
+diff --git a/tools/objtool/elf.c b/tools/objtool/elf.c
+index 4b384c9..456ac22 100644
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -1019,6 +1019,9 @@ int elf_write(struct elf *elf)
+ 	struct section *sec;
+ 	Elf_Scn *s;
+ 
++	if (dryrun)
++		return 0;
 +
- #else /* __ASSEMBLY__ */
+ 	/* Update changed relocation sections and section headers: */
+ 	list_for_each_entry(sec, &elf->sections, list) {
+ 		if (sec->changed) {
+diff --git a/tools/objtool/include/objtool/builtin.h b/tools/objtool/include/objtool/builtin.h
+index 89ba869..7b4b124 100644
+--- a/tools/objtool/include/objtool/builtin.h
++++ b/tools/objtool/include/objtool/builtin.h
+@@ -9,7 +9,7 @@
  
- /*
-@@ -129,6 +135,13 @@ struct unwind_hint {
- 	.popsection
- .endm
+ extern const struct option check_options[];
+ extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
+-            validate_dup, vmlinux, mcount, noinstr, backup, sls;
++            validate_dup, vmlinux, mcount, noinstr, backup, sls, dryrun;
  
-+.macro ANNOTATE_NOENDBR
-+.Lhere_\@:
-+	.pushsection .discard.noendbr
-+	.quad	.Lhere_\@
-+	.popsection
-+.endm
-+
- #endif /* __ASSEMBLY__ */
+ extern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);
  
- #else /* !CONFIG_STACK_VALIDATION */
-@@ -139,12 +152,15 @@ struct unwind_hint {
- 	"\n\t"
- #define STACK_FRAME_NON_STANDARD(func)
- #define STACK_FRAME_NON_STANDARD_FP(func)
-+#define ANNOTATE_NOENDBR
- #else
- #define ANNOTATE_INTRA_FUNCTION_CALL
- .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
- .endm
- .macro STACK_FRAME_NON_STANDARD func:req
- .endm
-+.macro ANNOTATE_NOENDBR
-+.endm
- #endif
- 
- #endif /* CONFIG_STACK_VALIDATION */
-diff --git a/tools/include/linux/objtool.h b/tools/include/linux/objtool.h
-index aca52db..f797368 100644
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -77,6 +77,12 @@ struct unwind_hint {
- #define STACK_FRAME_NON_STANDARD_FP(func)
- #endif
- 
-+#define ANNOTATE_NOENDBR					\
-+	"986: \n\t"						\
-+	".pushsection .discard.noendbr\n\t"			\
-+	_ASM_PTR " 986b\n\t"					\
-+	".popsection\n\t"
-+
- #else /* __ASSEMBLY__ */
- 
- /*
-@@ -129,6 +135,13 @@ struct unwind_hint {
- 	.popsection
- .endm
- 
-+.macro ANNOTATE_NOENDBR
-+.Lhere_\@:
-+	.pushsection .discard.noendbr
-+	.quad	.Lhere_\@
-+	.popsection
-+.endm
-+
- #endif /* __ASSEMBLY__ */
- 
- #else /* !CONFIG_STACK_VALIDATION */
-@@ -139,12 +152,15 @@ struct unwind_hint {
- 	"\n\t"
- #define STACK_FRAME_NON_STANDARD(func)
- #define STACK_FRAME_NON_STANDARD_FP(func)
-+#define ANNOTATE_NOENDBR
- #else
- #define ANNOTATE_INTRA_FUNCTION_CALL
- .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
- .endm
- .macro STACK_FRAME_NON_STANDARD func:req
- .endm
-+.macro ANNOTATE_NOENDBR
-+.endm
- #endif
- 
- #endif /* CONFIG_STACK_VALIDATION */
