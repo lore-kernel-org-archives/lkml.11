@@ -2,86 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C514C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10108C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349632AbiCOPbZ (ORCPT
+        id S1349646AbiCOPb6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 11:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
+        Tue, 15 Mar 2022 11:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349630AbiCOPbX (ORCPT
+        with ESMTP id S245691AbiCOPbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 11:31:23 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9619853736;
-        Tue, 15 Mar 2022 08:30:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647358211; x=1678894211;
-  h=from:to:cc:subject:date:message-id;
-  bh=MSsunkUnlmNWEh3N5eSOabu0L52iP8P30Mp1QA9CPbQ=;
-  b=LSaLVfTgx8G/tYj14kZPVhNQp8x9B1wdBtKTI/7hRu1irRXBfSEE8wlS
-   7rm3FQn3wIp0NZmNxdnLxIBE6T1mqKzoaO9iPz1Q8emkR9kMbWRMGhAw+
-   DWCkcjQAXuahTE2xLMT3acRzBFos7dGL7q05lM5Ai1cJhKkarFGIpkXlq
-   /KPiRSXvnVlxQp62IsFZuyFcyszrmkZxntWTnx0ceRLjT9jUZUQSTvz+/
-   gT94QioLjkicAmbpWej/4i4CAfC7iKLhHnU4M5za3Ko9cT4DKGtPeF0Bs
-   XyLyk5vhfBpM4OjiKUvCinZPWGwlkHPZKDEiQhwllXQjECWwDnc3NKPxZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256061573"
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="256061573"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 08:30:11 -0700
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="556977185"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 08:30:08 -0700
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Tue, 15 Mar 2022 11:31:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1565C5372C
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 08:30:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647358242;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L47ys7Ju+ra6uvzgdggF4XXVDzazg4VAs7Nuc4o2sMU=;
+        b=IXnrp7nrX4/UZzSLqeMT2R6UBdm1dJd6fLnh3rJiQoThAf4HXFPVnpVtDE83+0Zd2C7rgW
+        yp69kzw+rPHqRnbQx1nTp+ip6YV9Eyh3ZoMHz9SwIUDBtBZiZzjiwHpdy/fLA7bZkMzYLn
+        ku+hWN+Rby3fK1zCLJrtEbBE2hhi6E4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-262-nmT2wb9tMqizw23om19_jA-1; Tue, 15 Mar 2022 11:30:38 -0400
+X-MC-Unique: nmT2wb9tMqizw23om19_jA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CAB44106655C;
+        Tue, 15 Mar 2022 15:30:37 +0000 (UTC)
+Received: from starship (unknown [10.40.192.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 28B50C33260;
+        Tue, 15 Mar 2022 15:30:32 +0000 (UTC)
+Message-ID: <c903e82ed2a1e98f66910c35b5aabdcf56e08e72.camel@redhat.com>
+Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
+ unconditionally
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     Zeng Guang <guang.zeng@intel.com>,
         Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH] KVM: VMX: Prepare VMCS setting for posted interrupt enabling when APICv is available
-Date:   Tue, 15 Mar 2022 22:58:36 +0800
-Message-Id: <20220315145836.9910-1-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>
+Date:   Tue, 15 Mar 2022 17:30:32 +0200
+In-Reply-To: <20220315151033.GA6038@gao-cwp>
+References: <Yifg4bea6zYEz1BK@google.com> <20220309052013.GA2915@gao-cwp>
+         <YihCtvDps/qJ2TOW@google.com>
+         <6dc7cff15812864ed14b5c014769488d80ce7f49.camel@redhat.com>
+         <YirPkr5efyylrD0x@google.com>
+         <29c76393-4884-94a8-f224-08d313b73f71@intel.com>
+         <01586c518de0c72ff3997d32654b8fa6e7df257d.camel@redhat.com>
+         <2900660d947a878e583ebedf60e7332e74a1af5f.camel@redhat.com>
+         <20220313135335.GA18405@gao-cwp>
+         <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
+         <20220315151033.GA6038@gao-cwp>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently KVM setup posted interrupt VMCS only depending on
-per-vcpu APICv activation status at the vCPU creation time.
-However, this status can be toggled dynamically under some
-circumstance. So potentially, later posted interrupt enabling
-may be problematic without VMCS readiness.
+On Tue, 2022-03-15 at 23:10 +0800, Chao Gao wrote:
+> On Sun, Mar 13, 2022 at 05:09:08PM +0200, Maxim Levitsky wrote:
+> > > > > This won't work with nested AVIC - we can't just inhibit a nested guest using its own AVIC,
+> > > > > because migration happens.
+> > > > 
+> > > > I mean because host decided to change its apic id, which it can in theory do any time,
+> > > > even after the nested guest has started. Seriously, the only reason guest has to change apic id,
+> > > > is to try to exploit some security hole.
+> > > 
+> > > Hi
+> > > 
+> > > Thanks for the information.  
+> > > 
+> > > IIUC, you mean KVM applies APICv inhibition only to L1 VM, leaving APICv
+> > > enabled for L2 VM. Shouldn't KVM disable APICv for L2 VM in this case?
+> > > It looks like a generic issue in dynamically toggling APICv scheme,
+> > > e.g., qemu can set KVM_GUESTDBG_BLOCKIRQ after nested guest has started.
+> > > 
+> > 
+> > That is the problem - you can't disable it for L2, unless you are willing to emulate it in software.
+> > Or in other words, when nested guest uses a hardware feature, you can't at some point say to it:
+> > sorry buddy - hardware feature disappeared.
+> 
+> Hi Maxim,
+> 
+> I may miss something. When reading Sean's APICv inhibition cleanups, I
+> find AVIC is disabled for L1 when nested is enabled (SVM is advertised
+> to L1). Then, I think the new inhibition introduced for changed xAPIC ID
+> shouldn't be a problem for L2 VM. Or, you plan to remove
+> APICV_INHIBIT_REASON_NESTED and expose AVIC to L1?
 
-To fix this, always settle the VMCS setting for posted interrupt
-as long as APICv is available and lapic locates in kernel.
-
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
----
- arch/x86/kvm/vmx/vmx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index b730d799c26e..d6e42d37bb61 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4388,7 +4388,7 @@ static void init_vmcs(struct vcpu_vmx *vmx)
- 	if (cpu_has_secondary_exec_ctrls())
- 		secondary_exec_controls_set(vmx, vmx_secondary_exec_control(vmx));
+Yep, I  have a patch for this ( which I hope to be accepted really soon
+(KVM: x86: SVM: allow AVIC to co-exist with a nested guest running)
  
--	if (kvm_vcpu_apicv_active(&vmx->vcpu)) {
-+	if (enable_apicv && lapic_in_kernel(&vmx->vcpu)) {
- 		vmcs_write64(EOI_EXIT_BITMAP0, 0);
- 		vmcs_write64(EOI_EXIT_BITMAP1, 0);
- 		vmcs_write64(EOI_EXIT_BITMAP2, 0);
--- 
-2.27.0
+I also implemented working support for nested AVIC, which includes support for IPI without vm exits
+between L2's vCPUs. I had sent an RFC for that.
+ 
+With all patches applied both L1 and L2 switch hands on AVIC, L1's avic is inhibited
+(only locally) on the vCPU which runs nested, and while it runs nested, L2 uses AVIC
+to target other vCPUs which also run nested.
+ 
+I and Paolo talked about this, and we reached a very promising conclusion.
+
+I will add new KVM cap, say KVM_CAP_READ_ONLY_APIC, which userspace will set
+prior to creating a vCPU, and which will make APIC ID fully readonly when set.
+ 
+As a bonus, if you don't object, I will also make this cap, make APIC base read-only,
+since this feature is also broken in kvm, optional in x86 spec, and not really
+used by guests just like writable apic id.
+
+I hope to have patches in day or two for this.
+ 
+When this cap is not set, it is fair to disable both IPIv, my nested AVIC,
+or even better inhibit AVIC completely, including any nested support.
+ 
+Best regards,
+	Maxim Levitsky
+
+> 
+> svm_vcpu_after_set_cpuid:
+>                 /*
+>                  * Currently, AVIC does not work with nested virtualization.
+>                  * So, we disable AVIC when cpuid for SVM is set in the L1 guest.
+>                  */
+>                 if (nested && guest_cpuid_has(vcpu, X86_FEATURE_SVM))
+>                         kvm_request_apicv_update(vcpu->kvm, false,
+>                                                  APICV_INHIBIT_REASON_NESTED);
+> 
+
 
