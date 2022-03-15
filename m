@@ -2,131 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D651C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9444C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 11:09:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347878AbiCOLIz (ORCPT
+        id S1347521AbiCOLKl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 07:08:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
+        Tue, 15 Mar 2022 07:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347521AbiCOLIf (ORCPT
+        with ESMTP id S239086AbiCOLKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 07:08:35 -0400
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B964C43E
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:07:21 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:1dc0:e57f:6975:ecb9])
-        by laurent.telenet-ops.be with bizsmtp
-        id 6b7H2700K3jtd4z01b7H5E; Tue, 15 Mar 2022 12:07:19 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nU51I-004XNu-Us; Tue, 15 Mar 2022 12:07:16 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nU51I-002dRD-BO; Tue, 15 Mar 2022 12:07:16 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 3/5] drm: ssd130x: Fix rectangle updates
-Date:   Tue, 15 Mar 2022 12:07:05 +0100
-Message-Id: <20220315110707.628166-4-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220315110707.628166-1-geert@linux-m68k.org>
-References: <20220315110707.628166-1-geert@linux-m68k.org>
+        Tue, 15 Mar 2022 07:10:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63A4F434B7
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:09:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647342567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HTOrlBxUc3YGJVn5Ljs85Co05t+OCsyiEfp7PBlz6N4=;
+        b=OB3ZNgy0mSYi4+cDvkdLNUVobCgaJ3fCYu6ZPbZNL58CtRcQ1z8RwtaarqfB4hshwE3/FT
+        rBlfV/RlAu6BDJxSL5UGQ6pT5NHfL2dOom9z16n+Ug4N/AZdIWMfvAKW1BqXzVrXlPyGiD
+        KQgwnr6lYfuPFU8nVEee1SquQNsWn7c=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-619-H8YVrxBVNHyswWI__smmKQ-1; Tue, 15 Mar 2022 07:09:25 -0400
+X-MC-Unique: H8YVrxBVNHyswWI__smmKQ-1
+Received: by mail-oo1-f71.google.com with SMTP id r63-20020a4a3742000000b00320d9025595so15277491oor.5
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 04:09:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HTOrlBxUc3YGJVn5Ljs85Co05t+OCsyiEfp7PBlz6N4=;
+        b=TLoqK9VT555DmBYpqCaG6s3Kdc3uhWiKJB328YVS8Sa08LUdJvwCOyXBCec1WMrO4c
+         O5AWHHWW01gvv2aKWuvI7D1u0UIipXuN3c6DHKuBz++ErVok9afo1+9WRlsJ1hUUFsah
+         1EVTkX+YJwwzZ69QczcdEAZa+X4/E6tWv6489PayuYCQYBXJ2GB1P99Oajiz+xzWHZHy
+         omDliPXgNSR4/RrE/nn4BytkYzXTTzudw7tfJN4l8+ZKd0TVB2EXQFoKdgIprOdQqOKZ
+         xFGqbvaWE21cYtneyyQ87VOeXl/hgZYfVs9gVr2ezxua/aXPkNzk/m7WLV+aiPb99WOH
+         xDsA==
+X-Gm-Message-State: AOAM531ReYIYPbawt537n/KDApKDNN/Gzm/P/rpY7zk3Nufqdx2e0quy
+        Rvm3Zy2sGwpeG4NhJuB1mjX4tMTAVYCmONYdVp2TTTEyR+0vzh7tnNuQDqw3oWmTieErpFX6IsO
+        KA+V5LhtKSMuaakZxgJtFVJ9b
+X-Received: by 2002:a05:6830:3193:b0:5b2:2c08:e3a3 with SMTP id p19-20020a056830319300b005b22c08e3a3mr12384915ots.88.1647342565043;
+        Tue, 15 Mar 2022 04:09:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzDFl+lhHVzIiwQlpvdXQz2MzYXPAVXVyT3EMo54gHkYKTq4HtG7cVgd+r2WdsWc/7swgUCTg==
+X-Received: by 2002:a05:6830:3193:b0:5b2:2c08:e3a3 with SMTP id p19-20020a056830319300b005b22c08e3a3mr12384910ots.88.1647342564812;
+        Tue, 15 Mar 2022 04:09:24 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id e4-20020a056808148400b002d9be41b179sm9615711oiw.50.2022.03.15.04.09.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 04:09:24 -0700 (PDT)
+Subject: Re: [PATCH 1/2] MAINTAINERS: add a git repo for the Stratix10 Service
+ driver
+To:     Dinh Nguyen <dinguyen@kernel.org>, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org
+References: <20220223144908.399522-1-dinguyen@kernel.org>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <4d443650-1db3-fced-3167-e3476b6e20aa@redhat.com>
+Date:   Tue, 15 Mar 2022 04:09:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220223144908.399522-1-dinguyen@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The rectangle update functions ssd130x_fb_blit_rect() and
-ssd130x_update_rect() do not behave correctly when x1 != 0 or y1 !=
-0, or when y1 or y2 are not aligned to display page boundaries.
-E.g. when used as a text console, only the first line of text is shown
-on the display.
 
-  1. The buffer passed by ssd130x_fb_blit_rect() points to the first
-     byte of monochrome bitmap data, and thus has its origin at (x1,
-     y1), while ssd130x_update_rect() assumes it is at (0, 0).
-     Fix ssd130x_update_rect() by changing the vertical and horizontal
-     loop ranges, and adding the offsets only when needed.
+On 2/23/22 6:49 AM, Dinh Nguyen wrote:
+> Add a git repo entry for the Stratix10 Service driver.
+>
+> Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+> ---
+>   MAINTAINERS | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index ea3e6c914384..5752236bea80 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -9890,6 +9890,7 @@ F:	drivers/firmware/stratix10-rsu.c
+>   F:	drivers/firmware/stratix10-svc.c
+>   F:	include/linux/firmware/intel/stratix10-smc.h
+>   F:	include/linux/firmware/intel/stratix10-svc-client.h
+> +T:	git git://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git
 
-  2. In ssd130x_fb_blit_rect(), align y1 and y2 to the display page
-     boundaries before doing the color conversion, so the full page
-     is converted and updated.
-     Remove the correction for an unaligned y1 from
-     ssd130x_update_rect(), and add a check to make sure y1 is aligned.
+Can you check if your tree is ok ?
 
-Fixes: a61732e808672cfa ("drm: Add driver for Solomon SSD130x OLED displays")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-Note that instead of calling drm_fb_xrgb8888_to_mono() and transposing
-the bitmap, the image data could be converted to the transposed format
-directly.  However, that would preclude exposing a monochrome format to
-userspace when a fourcc for such a monochrome format is introduced.
----
- drivers/gpu/drm/solomon/ssd130x.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+Tom
 
-diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-index caee851efd5726e7..7c99af4ce9dd4e5c 100644
---- a/drivers/gpu/drm/solomon/ssd130x.c
-+++ b/drivers/gpu/drm/solomon/ssd130x.c
-@@ -355,11 +355,14 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	unsigned int width = drm_rect_width(rect);
- 	unsigned int height = drm_rect_height(rect);
- 	unsigned int line_length = DIV_ROUND_UP(width, 8);
--	unsigned int pages = DIV_ROUND_UP(y % 8 + height, 8);
-+	unsigned int pages = DIV_ROUND_UP(height, 8);
-+	struct drm_device *drm = &ssd130x->drm;
- 	u32 array_idx = 0;
- 	int ret, i, j, k;
- 	u8 *data_array = NULL;
- 
-+	drm_WARN_ONCE(drm, y % 8 != 0, "y must be aligned to screen page\n");
-+
- 	data_array = kcalloc(width, pages, GFP_KERNEL);
- 	if (!data_array)
- 		return -ENOMEM;
-@@ -401,13 +404,13 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	if (ret < 0)
- 		goto out_free;
- 
--	for (i = y / 8; i < y / 8 + pages; i++) {
-+	for (i = 0; i < pages; i++) {
- 		int m = 8;
- 
- 		/* Last page may be partial */
--		if (8 * (i + 1) > ssd130x->height)
-+		if (8 * (y / 8 + i + 1) > ssd130x->height)
- 			m = ssd130x->height % 8;
--		for (j = x; j < x + width; j++) {
-+		for (j = 0; j < width; j++) {
- 			u8 data = 0;
- 
- 			for (k = 0; k < m; k++) {
-@@ -454,6 +457,10 @@ static int ssd130x_fb_blit_rect(struct drm_framebuffer *fb, const struct iosys_m
- 	int ret = 0;
- 	u8 *buf = NULL;
- 
-+	/* Align y to display page boundaries */
-+	rect->y1 = round_down(rect->y1, 8);
-+	rect->y2 = min_t(unsigned int, round_up(rect->y2, 8), ssd130x->height);
-+
- 	buf = kcalloc(fb->width, fb->height, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
--- 
-2.25.1
+
+ > git clone 
+git://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git
+
+Cloning into 'linux'...
+remote: Enumerating objects: 185, done.
+remote: Counting objects: 100% (185/185), done.
+remote: Compressing objects: 100% (4/4), done.
+remote: Total 8723742 (delta 182), reused 181 (delta 181), pack-reused 
+8723557
+Receiving objects: 100% (8723742/8723742), 2.41 GiB | 2.78 MiB/s, done.
+Resolving deltas: 100% (7135708/7135708), done.
+warning: remote HEAD refers to nonexistent ref, unable to checkout.
+
+>   
+>   INTEL TELEMETRY DRIVER
+>   M:	Rajneesh Bhardwaj <irenic.rajneesh@gmail.com>
 
