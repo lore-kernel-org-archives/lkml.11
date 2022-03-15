@@ -2,241 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60309C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350249AbiCOQwJ (ORCPT
+        id S1350232AbiCOQxS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        Tue, 15 Mar 2022 12:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350232AbiCOQwE (ORCPT
+        with ESMTP id S1350301AbiCOQw4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:52:04 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC48C57B01;
-        Tue, 15 Mar 2022 09:50:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647363051; x=1678899051;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XXGgXF6pP41ECoDy55xbWxdrjJohWNzgAweyr9Pk7XA=;
-  b=DhBZAayiRaLFUPU1yXDT9lXszXsSVQrDy632mVs00kgJShHFWS/BKh5Y
-   s95EsOWrMzyuAKTLpgr995q8YF/mzZqMm4yhe1ypK3qyZZDPVIvLZH4jc
-   Dt8klpecVenpOk4zDBZTACbz+BlvUBL9KlrIS6Xrs96EkzjIbbH6fG+2D
-   B09MPSKoyFm5PdgL5P+j2Ftqp9kBZYkH/w6FXJgjRi4DipqwnO/tCSRCC
-   jC5oTlSnGNsA0bn9Hw0gnXI2Dc4q9kcl5DlG21V2pj9U8EffwgoLi+b8D
-   4y00fbtB3V9ivAgqkxaAO85UYRBiBVAZnW5T5vUhimDkuN34TVfvMDvPx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256548470"
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="256548470"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:49:27 -0700
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="690261831"
-Received: from lepple-mobl1.ger.corp.intel.com (HELO [10.252.56.30]) ([10.252.56.30])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:49:23 -0700
-Message-ID: <e1acd50f-fe67-14a8-846f-66b52e77abc0@linux.intel.com>
-Date:   Tue, 15 Mar 2022 18:49:20 +0200
+        Tue, 15 Mar 2022 12:52:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC260574BA;
+        Tue, 15 Mar 2022 09:51:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C5BD6140F;
+        Tue, 15 Mar 2022 16:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91BADC340EE;
+        Tue, 15 Mar 2022 16:51:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647363103;
+        bh=0OCWPWNP51yJ7yrh0jSupXw6ERwIlBLi3oJqb8npluQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=td/qq3j3gUe+aRGgXEAGi10/wEBrsIMUARKl43nGKBoLmtlGGy6eUSLeZ9Vyvxupo
+         iS5B57ImG0q6S4wCQ53bzLn3Vb+7x5KlUwwF7WL/88sucdks51ktHdWS5ReADTPJSn
+         z/sDHPS9e+mlGEGsCFPV7cAI8KUqu68E+Bk9dVwA9H9ZgxZQj82LkqUflQ04poCOoV
+         2H7OGu9ZLmiQD3GaIERcn4eZCDSFlMOWDw34NmJe95eeESWYjsbXj+yaavE4/tsabV
+         8FelYsanBjIdHbfbABx/7ju3rfl53zFfjV5uO2Sp2yz7EQBCHkZ/xIC6SqKYyA8NaH
+         Y4osaLRhIaxkA==
+Date:   Tue, 15 Mar 2022 09:51:43 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Ritesh Harjani <riteshh@linux.ibm.com>
+Cc:     fstests <fstests@vger.kernel.org>, linux-ext4@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 1/4] generic/468: Add another falloc test entry
+Message-ID: <20220315165143.GB8200@magnolia>
+References: <cover.1647342932.git.riteshh@linux.ibm.com>
+ <08bd90fa8c291a4ccba2e5d6182a8595b7e6d7ab.1647342932.git.riteshh@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH bpf-next v2 14/28] selftests/bpf: add tests for
- hid_{get|set}_data helpers
-Content-Language: en-US
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>
-Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <20220304172852.274126-15-benjamin.tissoires@redhat.com>
-From:   Tero Kristo <tero.kristo@linux.intel.com>
-In-Reply-To: <20220304172852.274126-15-benjamin.tissoires@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <08bd90fa8c291a4ccba2e5d6182a8595b7e6d7ab.1647342932.git.riteshh@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Benjamin,
-
-On 04/03/2022 19:28, Benjamin Tissoires wrote:
-> Simple test added here, with one use of each helper.
->
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
+On Tue, Mar 15, 2022 at 07:58:56PM +0530, Ritesh Harjani wrote:
+> Add another falloc test entry which could hit a kernel bug
+> with ext4 fast_commit feature w/o below kernel commit [1].
+> 
+> <log>
+> [  410.888496][ T2743] BUG: KASAN: use-after-free in ext4_mb_mark_bb+0x26a/0x6c0
+> [  410.890432][ T2743] Read of size 8 at addr ffff888171886000 by task mount/2743
+> 
+> This happens when falloc -k size is huge which spans across more than
+> 1 flex block group in ext4. This causes a bug in fast_commit replay
+> code which is fixed by kernel commit at [1].
+> 
+> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git/commit/?h=dev&id=bfdc502a4a4c058bf4cbb1df0c297761d528f54d
+> 
+> Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
 > ---
->
-> changes in v2:
-> - split the patch with libbpf left outside.
-> ---
->   tools/testing/selftests/bpf/prog_tests/hid.c | 65 ++++++++++++++++++++
->   tools/testing/selftests/bpf/progs/hid.c      | 45 ++++++++++++++
->   2 files changed, 110 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
-> index 91543b8078ca..74426523dd6f 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/hid.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/hid.c
-> @@ -297,6 +297,68 @@ static int test_hid_raw_event(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
->   	return ret;
->   }
->   
-> +/*
-> + * Attach hid_set_get_data to the given uhid device,
-> + * retrieve and open the matching hidraw node,
-> + * inject one event in the uhid device,
-> + * check that the program makes correct use of bpf_hid_{set|get}_data.
-> + */
-> +static int test_hid_set_get_data(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
-> +{
-> +	int err, hidraw_ino, hidraw_fd = -1;
-> +	char hidraw_path[64] = {0};
-> +	u8 buf[10] = {0};
-> +	int ret = -1;
-> +
-> +	/* attach hid_set_get_data program */
-> +	hid_skel->links.hid_set_get_data =
-> +		bpf_program__attach_hid(hid_skel->progs.hid_set_get_data, sysfs_fd);
-> +	if (!ASSERT_OK_PTR(hid_skel->links.hid_set_get_data,
-> +			   "attach_hid(hid_set_get_data)"))
-> +		return PTR_ERR(hid_skel->links.hid_set_get_data);
-> +
-> +	hidraw_ino = get_hidraw(hid_skel->links.hid_set_get_data);
-> +	if (!ASSERT_GE(hidraw_ino, 0, "get_hidraw"))
-> +		goto cleanup;
-> +
-> +	/* open hidraw node to check the other side of the pipe */
-> +	sprintf(hidraw_path, "/dev/hidraw%d", hidraw_ino);
-> +	hidraw_fd = open(hidraw_path, O_RDWR | O_NONBLOCK);
-> +
-> +	if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
-> +		goto cleanup;
-> +
-> +	/* inject one event */
-> +	buf[0] = 1;
-> +	buf[1] = 42;
-> +	send_event(uhid_fd, buf, 6);
-> +
-> +	/* read the data from hidraw */
-> +	memset(buf, 0, sizeof(buf));
-> +	err = read(hidraw_fd, buf, sizeof(buf));
-> +	if (!ASSERT_EQ(err, 6, "read_hidraw"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_EQ(buf[2], (42 >> 2), "hid_set_get_data"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_EQ(buf[3], 1, "hid_set_get_data"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_EQ(buf[4], 42, "hid_set_get_data"))
-> +		goto cleanup;
-> +
-> +	ret = 0;
-> +
-> +cleanup:
-> +	if (hidraw_fd >= 0)
-> +		close(hidraw_fd);
-> +
-> +	hid__detach(hid_skel);
-> +
-> +	return ret;
-> +}
-> +
->   /*
->    * Attach hid_rdesc_fixup to the given uhid device,
->    * retrieve and open the matching hidraw node,
-> @@ -395,6 +457,9 @@ void serial_test_hid_bpf(void)
->   	err = test_hid_raw_event(hid_skel, uhid_fd, sysfs_fd);
->   	ASSERT_OK(err, "hid");
->   
-> +	err = test_hid_set_get_data(hid_skel, uhid_fd, sysfs_fd);
-> +	ASSERT_OK(err, "hid_set_get_data");
-> +
->   	err = test_rdesc_fixup(hid_skel, uhid_fd, sysfs_fd);
->   	ASSERT_OK(err, "hid_rdesc_fixup");
->   
-> diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
-> index 2270448d0d3f..de6668471940 100644
-> --- a/tools/testing/selftests/bpf/progs/hid.c
-> +++ b/tools/testing/selftests/bpf/progs/hid.c
-> @@ -66,3 +66,48 @@ int hid_rdesc_fixup(struct hid_bpf_ctx *ctx)
->   
->   	return 0;
->   }
-> +
-> +SEC("hid/device_event")
-> +int hid_set_get_data(struct hid_bpf_ctx *ctx)
-> +{
-> +	int ret;
-> +	__u8 *buf;
-> +
-> +	buf = bpf_ringbuf_reserve(&ringbuf, 8, 0);
+>  tests/generic/468     | 4 ++++
+>  tests/generic/468.out | 2 ++
+>  2 files changed, 6 insertions(+)
+> 
+> diff --git a/tests/generic/468 b/tests/generic/468
+> index 95752d3b..cbef9746 100755
+> --- a/tests/generic/468
+> +++ b/tests/generic/468
+> @@ -34,6 +34,9 @@ _scratch_mkfs >/dev/null 2>&1
+>  _require_metadata_journaling $SCRATCH_DEV
+>  _scratch_mount
+> 
+> +blocksize=4096
 
-Ordering of patches is probably wrong, it seems the ringbuf is defined 
-in patch #21 but used here.
+What happens if the file blocksize isn't 4k?  Does fastcommit only
+support one block size?  I didn't think it has any such restriction?
 
-Also, this usage of ringbuf leads into running out of available memory 
-in the buffer if used for long time, it is not evident from the test 
-case written here but I spent a couple of hours debugging my own BPF 
-program that used ringbuf in similar way as what is done here. Basically 
-the producer idx is increased with the bpf_ringbuf_reserve / discard, 
-but the consumer index is not if you don't have a consumer in place.
+> +fact=18
 
-I ended up using a global statically allocated buffer for the purpose 
-for now.
+This needs a bit more explanation -- why 18?  I think the reason is that
+you need the fallocate to cross into another flexbg, and flexbgs (by
+default) are 16bg long, right?
 
--Tero
+If that's the case, then don't you need to detect the flexbg size so
+that this is still an effective test if someone runs fstests with
+MKFS_OPTIONS='-G 32' or something?
 
+--D
 
-> +	if (!buf)
-> +		return -12; /* -ENOMEM */
 > +
-> +	/* first try read/write with n > 32 */
-> +	ret = bpf_hid_get_data(ctx, 0, 64, buf, 8);
-> +	if (ret < 0)
-> +		goto discard;
-> +
-> +	/* reinject it */
-> +	ret = bpf_hid_set_data(ctx, 24, 64, buf, 8);
-> +	if (ret < 0)
-> +		goto discard;
-> +
-> +	/* extract data at bit offset 10 of size 4 (half a byte) */
-> +	ret = bpf_hid_get_data(ctx, 10, 4, buf, 8);  /* expected to fail */
-> +	if (ret > 0) {
-> +		ret = -1;
-> +		goto discard;
-> +	}
-> +
-> +	ret = bpf_hid_get_data(ctx, 10, 4, buf, 4);
-> +	if (ret < 0)
-> +		goto discard;
-> +
-> +	/* reinject it */
-> +	ret = bpf_hid_set_data(ctx, 16, 4, buf, 4);
-> +	if (ret < 0)
-> +		goto discard;
-> +
-> +	ret = 0;
-> +
-> + discard:
-> +
-> +	bpf_ringbuf_discard(buf, 0);
-> +
-> +	return ret;
-> +}
+>  testfile=$SCRATCH_MNT/testfile
+> 
+>  # check inode metadata after shutdown
+> @@ -85,6 +88,7 @@ for i in fsync fdatasync; do
+>  	test_falloc $i "-k " 1024
+>  	test_falloc $i "-k " 4096
+>  	test_falloc $i "-k " 104857600
+> +	test_falloc $i "-k " $((32768*$blocksize*$fact))
+>  done
+> 
+>  status=0
+> diff --git a/tests/generic/468.out b/tests/generic/468.out
+> index b3a28d5e..a09cedb8 100644
+> --- a/tests/generic/468.out
+> +++ b/tests/generic/468.out
+> @@ -5,9 +5,11 @@ QA output created by 468
+>  ==== falloc -k 1024 test with fsync ====
+>  ==== falloc -k 4096 test with fsync ====
+>  ==== falloc -k 104857600 test with fsync ====
+> +==== falloc -k 2415919104 test with fsync ====
+>  ==== falloc 1024 test with fdatasync ====
+>  ==== falloc 4096 test with fdatasync ====
+>  ==== falloc 104857600 test with fdatasync ====
+>  ==== falloc -k 1024 test with fdatasync ====
+>  ==== falloc -k 4096 test with fdatasync ====
+>  ==== falloc -k 104857600 test with fdatasync ====
+> +==== falloc -k 2415919104 test with fdatasync ====
+> --
+> 2.31.1
+> 
