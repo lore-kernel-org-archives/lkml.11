@@ -2,230 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B48BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 00:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2946FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 00:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343931AbiCOA3v (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 20:29:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
+        id S236899AbiCOAaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Mar 2022 20:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243681AbiCOA1r (ORCPT
+        with ESMTP id S1343990AbiCOAaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 20:27:47 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9FFA3D1D5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:26:35 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id s25so24351046lji.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=9aG6JPCK/sc9cnjNg+7v1niwfwPA6zUyJ/dRYHoXrdI=;
-        b=uy3R5jhUJzpAwGhUkjggLIi7vXRxc1+qMldaDhVjdaoBVywZZVHqGIGYV1HNy6g9qU
-         ia6Ll/TfPAttG35knFAxoaAovK3k8Ge6LdsdkhL4mJWqkLM36M9zOmxyozuW878w7Ugi
-         rt/3RHyPhvtkYbJ8r0vx9e0rIRKCQpVN9XkuiAnJCiqeFIq3BnhlbRbxBozFCXDilNU7
-         pmJIZJ+eFpc76WyrOJ8MvNW+ABgXpShpjJUC4qnXQx2qn9kSMGbV0+sRA0GHvwCLfO8e
-         LtN8WVSV8CxJDGxmIgJXnz55hFJg9V3ieujeet9Tjt90BUcOm65KZvpA5VveixBiDWkk
-         RWCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=9aG6JPCK/sc9cnjNg+7v1niwfwPA6zUyJ/dRYHoXrdI=;
-        b=STcDMCViOZm2Oy9f8/WiGmo5wFzfVYDfRxjNwjI5yR/dx3hCl5q5uC/gO5J0Z3wHAp
-         aT9r5ZRKdN2I7E/rcQofVtF1WfNjfwJqSEuMxvgZd8aIeem7BSjK+tpXq8iGyM+IFlba
-         tuI56KAL4ZROVCPPB5qKkdPe/7GRaVw2QtE8FSS0d9S4GYN0DReEhPKjoD5fpJvp+GKm
-         DQ8J87QVuPx/gfrI+PwsPH6YVdrNKIQc4v+gaS3KBYX9yGCkqdqIgTt/RC2tBPT3GrQT
-         +XSn1kfoq+6W92gdN+AYR4gDGv89O9JHkg/FkVXRzZmHMgiGi4q4BwGfhaMtzTw5ct9P
-         6/Vg==
-X-Gm-Message-State: AOAM530oqo6q+y62wTW+Ce+HaV+6S2KdeaA8C9iqfjLLipOUOXhG0YXF
-        1Ex+zBHUCmlXqJVZ4FhdH+nGnQ==
-X-Google-Smtp-Source: ABdhPJzrA+yT1+p0Raqv25lkg7wOevZs2p/W4zfvC3rBgqdoqrlcNfNnNT6p+7smZf9CElR+6R2KlQ==
-X-Received: by 2002:a2e:960e:0:b0:247:ec4c:29d6 with SMTP id v14-20020a2e960e000000b00247ec4c29d6mr15162507ljh.268.1647303994179;
-        Mon, 14 Mar 2022 17:26:34 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id y14-20020a2e544e000000b0024800f8286bsm4219923ljd.78.2022.03.14.17.26.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 17:26:33 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: [PATCH v4 net-next 14/15] net: dsa: mv88e6xxx: Export STU as devlink region
-Date:   Tue, 15 Mar 2022 01:25:42 +0100
-Message-Id: <20220315002543.190587-15-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220315002543.190587-1-tobias@waldekranz.com>
-References: <20220315002543.190587-1-tobias@waldekranz.com>
+        Mon, 14 Mar 2022 20:30:02 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857AD5F77
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 17:27:46 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 027732C066E;
+        Tue, 15 Mar 2022 00:27:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1647304065;
+        bh=TOEaJLcAy9FaXsjjvCEs6i+ujFQu+Um52CZuhm6wy3A=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=oeNxndQofXA+F8a+hxjbM7cS017ZjM0SCfMNqjb/wbU7Tx/x9rblCHHihXDXRIbeY
+         f2vA/JsPZFp+MWEeHoQo3ZwW/pvNKZXP0dq/FGMNirgqee+wH59WvS6PrxTTyHFXY1
+         zXy+bZPbjCd1XJR2L21C+IWdaDSQx3W6m7Y/7jzLphepMrShlddivLADFBuTB3uU4n
+         mM40NAKA9nfLR8E2XZ4x4JPPMt7Qmin3DeCcqJrgDbag3A+ulaOMNR75hvFBHXw+O4
+         S7+9elIRUPMMiZRgJJ8HAjHaM38/0BAi1yXHqv5bMjbGSlTjqSQjxOtgt4+NbVrBry
+         3DXLFfFrfcJXA==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B622fdd800001>; Tue, 15 Mar 2022 13:27:44 +1300
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
+ by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
+ Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 15 Mar 2022 13:27:44 +1300
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.033; Tue, 15 Mar 2022 13:27:44 +1300
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "huziji@marvell.com" <huziji@marvell.com>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "kostap@marvell.com" <kostap@marvell.com>,
+        "robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2 5/8] net: mvneta: Add support for 98DX2530 Ethernet
+ port
+Thread-Topic: [PATCH v2 5/8] net: mvneta: Add support for 98DX2530 Ethernet
+ port
+Thread-Index: AQHYN+r1Cm91Yq7jTEywLazWW4w1SKy+uQuAgAAEJ4A=
+Date:   Tue, 15 Mar 2022 00:27:44 +0000
+Message-ID: <4da378d9-d624-09a1-e261-8973c2670be4@alliedtelesis.co.nz>
+References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+ <20220314213143.2404162-6-chris.packham@alliedtelesis.co.nz>
+ <Yi/aAemqY+NBRaov@lunn.ch>
+In-Reply-To: <Yi/aAemqY+NBRaov@lunn.ch>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F90FA6F3D790F94480647AFD5677ABDD@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=IkcTkHD0fZMA:10 a=o8Y5sQTvuykA:10 a=ihEotPDQY6E8XHjQGn4A:9 a=QEXdDO2ut3YA:10
+X-SEG-SpamProfiler-Score: 0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Export the raw STU data in a devlink region so that it can be
-inspected from userspace and compared to the current bridge
-configuration.
-
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
----
- drivers/net/dsa/mv88e6xxx/chip.h    |  1 +
- drivers/net/dsa/mv88e6xxx/devlink.c | 94 +++++++++++++++++++++++++++++
- 2 files changed, 95 insertions(+)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index be654be69982..6d4daa24d3e5 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -287,6 +287,7 @@ enum mv88e6xxx_region_id {
- 	MV88E6XXX_REGION_GLOBAL2,
- 	MV88E6XXX_REGION_ATU,
- 	MV88E6XXX_REGION_VTU,
-+	MV88E6XXX_REGION_STU,
- 	MV88E6XXX_REGION_PVT,
- 
- 	_MV88E6XXX_REGION_MAX,
-diff --git a/drivers/net/dsa/mv88e6xxx/devlink.c b/drivers/net/dsa/mv88e6xxx/devlink.c
-index 381068395c63..1266eabee086 100644
---- a/drivers/net/dsa/mv88e6xxx/devlink.c
-+++ b/drivers/net/dsa/mv88e6xxx/devlink.c
-@@ -503,6 +503,85 @@ static int mv88e6xxx_region_vtu_snapshot(struct devlink *dl,
- 	return 0;
- }
- 
-+/**
-+ * struct mv88e6xxx_devlink_stu_entry - Devlink STU entry
-+ * @sid:   Global1/3:   SID, unknown filters and learning.
-+ * @vid:   Global1/6:   Valid bit.
-+ * @data:  Global1/7-9: Membership data and priority override.
-+ * @resvd: Reserved. In case we forgot something.
-+ *
-+ * The STU entry format varies between chipset generations. Peridot
-+ * and Amethyst packs the STU data into Global1/7-8. Older silicon
-+ * spreads the information across all three VTU data registers -
-+ * inheriting the layout of even older hardware that had no STU at
-+ * all. Since this is a low-level debug interface, copy all data
-+ * verbatim and defer parsing to the consumer.
-+ */
-+struct mv88e6xxx_devlink_stu_entry {
-+	u16 sid;
-+	u16 vid;
-+	u16 data[3];
-+	u16 resvd;
-+};
-+
-+static int mv88e6xxx_region_stu_snapshot(struct devlink *dl,
-+					 const struct devlink_region_ops *ops,
-+					 struct netlink_ext_ack *extack,
-+					 u8 **data)
-+{
-+	struct mv88e6xxx_devlink_stu_entry *table, *entry;
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	struct mv88e6xxx_stu_entry stu;
-+	int err;
-+
-+	table = kcalloc(mv88e6xxx_max_sid(chip) + 1,
-+			sizeof(struct mv88e6xxx_devlink_stu_entry),
-+			GFP_KERNEL);
-+	if (!table)
-+		return -ENOMEM;
-+
-+	entry = table;
-+	stu.sid = mv88e6xxx_max_sid(chip);
-+	stu.valid = false;
-+
-+	mv88e6xxx_reg_lock(chip);
-+
-+	do {
-+		err = mv88e6xxx_g1_stu_getnext(chip, &stu);
-+		if (err)
-+			break;
-+
-+		if (!stu.valid)
-+			break;
-+
-+		err = err ? : mv88e6xxx_g1_read(chip, MV88E6352_G1_VTU_SID,
-+						&entry->sid);
-+		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_VID,
-+						&entry->vid);
-+		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_DATA1,
-+						&entry->data[0]);
-+		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_DATA2,
-+						&entry->data[1]);
-+		err = err ? : mv88e6xxx_g1_read(chip, MV88E6XXX_G1_VTU_DATA3,
-+						&entry->data[2]);
-+		if (err)
-+			break;
-+
-+		entry++;
-+	} while (stu.sid < mv88e6xxx_max_sid(chip));
-+
-+	mv88e6xxx_reg_unlock(chip);
-+
-+	if (err) {
-+		kfree(table);
-+		return err;
-+	}
-+
-+	*data = (u8 *)table;
-+	return 0;
-+}
-+
- static int mv88e6xxx_region_pvt_snapshot(struct devlink *dl,
- 					 const struct devlink_region_ops *ops,
- 					 struct netlink_ext_ack *extack,
-@@ -605,6 +684,12 @@ static struct devlink_region_ops mv88e6xxx_region_vtu_ops = {
- 	.destructor = kfree,
- };
- 
-+static struct devlink_region_ops mv88e6xxx_region_stu_ops = {
-+	.name = "stu",
-+	.snapshot = mv88e6xxx_region_stu_snapshot,
-+	.destructor = kfree,
-+};
-+
- static struct devlink_region_ops mv88e6xxx_region_pvt_ops = {
- 	.name = "pvt",
- 	.snapshot = mv88e6xxx_region_pvt_snapshot,
-@@ -640,6 +725,11 @@ static struct mv88e6xxx_region mv88e6xxx_regions[] = {
- 		.ops = &mv88e6xxx_region_vtu_ops
- 	  /* calculated at runtime */
- 	},
-+	[MV88E6XXX_REGION_STU] = {
-+		.ops = &mv88e6xxx_region_stu_ops,
-+		.cond = mv88e6xxx_has_stu,
-+	  /* calculated at runtime */
-+	},
- 	[MV88E6XXX_REGION_PVT] = {
- 		.ops = &mv88e6xxx_region_pvt_ops,
- 		.size = MV88E6XXX_MAX_PVT_ENTRIES * sizeof(u16),
-@@ -706,6 +796,10 @@ int mv88e6xxx_setup_devlink_regions_global(struct dsa_switch *ds)
- 			size = (mv88e6xxx_max_vid(chip) + 1) *
- 				sizeof(struct mv88e6xxx_devlink_vtu_entry);
- 			break;
-+		case MV88E6XXX_REGION_STU:
-+			size = (mv88e6xxx_max_sid(chip) + 1) *
-+				sizeof(struct mv88e6xxx_devlink_stu_entry);
-+			break;
- 		}
- 
- 		region = dsa_devlink_region_create(ds, ops, 1, size);
--- 
-2.25.1
-
+DQpPbiAxNS8wMy8yMiAxMzoxMiwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+IE9uIFR1ZSwgTWFyIDE1
+LCAyMDIyIGF0IDEwOjMxOjQwQU0gKzEzMDAsIENocmlzIFBhY2toYW0gd3JvdGU6DQo+PiBUaGUg
+OThEWDI1MzAgU29DIGlzIHNpbWlsYXIgdG8gdGhlIEFybWFkYSAzNzAwIGV4Y2VwdCBpdCBuZWVk
+cyBhDQo+PiBkaWZmZXJlbnQgTUJVUyB3aW5kb3cgY29uZmlndXJhdGlvbi4gQWRkIGEgbmV3IGNv
+bXBhdGlibGUgc3RyaW5nIHRvDQo+PiBpZGVudGlmeSB0aGlzIGRldmljZSBhbmQgdGhlIHJlcXVp
+cmVkIE1CVVMgd2luZG93IGNvbmZpZ3VyYXRpb24uDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogQ2hy
+aXMgUGFja2hhbSA8Y2hyaXMucGFja2hhbUBhbGxpZWR0ZWxlc2lzLmNvLm56Pg0KPiBJIHN1Z2dl
+c3QgeW91IHNlcGFyYXRlIHRoZSB0d28gbXZuZXRhIHBhdGNoZXMgYW5kIHNlbmQgdGhlbSB0byB0
+aGUNCj4gbmV0ZGV2IGxpc3QuIFRoZXkgYXJlIGxpa2VseSB0byBnZXQgbWVyZ2VkIGJlZm9yZSB0
+aGUgbWVyZ2Ugd2luZG93DQo+IG9wZW5zIG5leHQgd2Vla2VuZC4gVGhlIG90aGVyIHBhdGNoZXMg
+YXJlIGxlc3MgbGlrZWx5IHRvIGJlIG1lcmdlZCBzbw0KPiBmYXN0Lg0KDQpUaGFua3MgZm9yIHRo
+ZSBzdWdnZXN0aW9uLiBJIGRpZCB3b25kZXIgYWJvdXQgZG9pbmcgdGhhdCBmb3IgdGhpcyBwYXRj
+aCANCmFuZCB0aGUgc2RoY2kgb25lLiBJdCdkIGFsc28gY3V0IGRvd24gdGhlIENjIHNwYW0uDQoN
+Cj4gUmV2aWV3ZWQtYnk6IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4NCj4NCj4gICAgICBB
+bmRyZXc=
