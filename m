@@ -2,145 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 191F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 992E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347510AbiCOKwN (ORCPT
+        id S1347638AbiCOKwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
+        Tue, 15 Mar 2022 06:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347458AbiCOKv5 (ORCPT
+        with ESMTP id S1347154AbiCOKwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:51:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B0A594F9EB
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:49:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647341353;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eY3A0k6GTwUDUpKdTvLl9zbVe/yaBt7RxMilI8lKV6g=;
-        b=E0w8XSAdQybLJ18czffSW7JkY2xXkknoGfH4U7iO4IWTqb/Kgg75DPgJZsUOsVsWL8MA/Q
-        ufXE6GqjwfgBO2DbBhq1p4sAq8dvoyjIBG8paNN271WOBHbJ/VwqAkVgTJa8KiswxMMl9v
-        5pGiDIkZSFq9mEl+tB5c9e9/c6gKF2c=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-131-y4_gIEMiPQau9hRN8VwVGA-1; Tue, 15 Mar 2022 06:49:12 -0400
-X-MC-Unique: y4_gIEMiPQau9hRN8VwVGA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 15 Mar 2022 06:52:10 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D839F52E11;
+        Tue, 15 Mar 2022 03:49:30 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C1E59833961;
-        Tue, 15 Mar 2022 10:49:10 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4DB3E9E94;
-        Tue, 15 Mar 2022 10:48:30 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v2 02/15] mm/hugetlb: take src_mm->write_protect_seq in copy_hugetlb_page_range()
-Date:   Tue, 15 Mar 2022 11:47:28 +0100
-Message-Id: <20220315104741.63071-3-david@redhat.com>
-In-Reply-To: <20220315104741.63071-1-david@redhat.com>
-References: <20220315104741.63071-1-david@redhat.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHqsd40Q1z4xw2;
+        Tue, 15 Mar 2022 21:49:25 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647341369;
+        bh=iYE9dJHDTT8H7bqrMBV1EnYaqbnrrezKk7EQTKogbcI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=qIihu0phsKEqMkqI3Hlvk0QfYokGGny6ddBoiWTwWhEaLdbQRO+CVYntOUzyteSYq
+         woZ9yB4UTeELpVDc+DZHZoiOvLbuyBX97S8qriBFjLhTAgZ5oq+UUR4/t8RU/ectWs
+         ltWTKO270IFcZnCFUxdaAzvcVfHaIupIrDapYiEvUFewLDt1ugSMDnWqibe9Qtc2c9
+         OrBzsKuRcxnVEI0kBIeMUhY8IrqopMGX0/G1f65TuaCPfJbUszQFUnfXK5TdyRp/ae
+         zGW7Gq8nrGqR2Wklhgk4iZ9hfzb9OH0o6qtUHpqeqJNuARCmDI0SDdmaZrprnBYXZK
+         Qd/L+FToHkS4w==
+Date:   Tue, 15 Mar 2022 21:49:24 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Dan Li <ashimida@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the kspp tree with Linus' tree
+Message-ID: <20220315214924.27f5e360@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: multipart/signed; boundary="Sig_/oj0r1jFpsjdfgToetMx4HKq";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's do it just like copy_page_range(), taking the seqlock and making
-sure the mmap_lock is held in write mode.
+--Sig_/oj0r1jFpsjdfgToetMx4HKq
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This allows for add a VM_BUG_ON to page_needs_cow_for_dma() and
-properly synchronizes cocnurrent fork() with GUP-fast of hugetlb pages,
-which will be relevant for further changes.
+Hi all,
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- include/linux/mm.h | 4 ++++
- mm/hugetlb.c       | 8 ++++++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+Today's linux-next merge of the kspp tree got a conflict in:
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 9530f950f156..391b950e919d 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1323,6 +1323,8 @@ static inline bool is_cow_mapping(vm_flags_t flags)
- /*
-  * This should most likely only be called during fork() to see whether we
-  * should break the cow immediately for a page on the src mm.
-+ *
-+ * The caller has to hold the PT lock and the vma->vm_mm->->write_protect_seq.
-  */
- static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
- 					  struct page *page)
-@@ -1330,6 +1332,8 @@ static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
- 	if (!is_cow_mapping(vma->vm_flags))
- 		return false;
- 
-+	VM_BUG_ON(!(raw_read_seqcount(&vma->vm_mm->write_protect_seq) & 1));
-+
- 	if (!test_bit(MMF_HAS_PINNED, &vma->vm_mm->flags))
- 		return false;
- 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index f294db835f4b..d3ce89697855 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4710,6 +4710,8 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
- 					vma->vm_start,
- 					vma->vm_end);
- 		mmu_notifier_invalidate_range_start(&range);
-+		mmap_assert_write_locked(src);
-+		raw_write_seqcount_begin(&src->write_protect_seq);
- 	} else {
- 		/*
- 		 * For shared mappings i_mmap_rwsem must be held to call
-@@ -4842,10 +4844,12 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
- 		spin_unlock(dst_ptl);
- 	}
- 
--	if (cow)
-+	if (cow) {
-+		raw_write_seqcount_end(&src->write_protect_seq);
- 		mmu_notifier_invalidate_range_end(&range);
--	else
-+	} else {
- 		i_mmap_unlock_read(mapping);
-+	}
- 
- 	return ret;
- }
--- 
-2.35.1
+  arch/arm64/Kconfig
 
+between commit:
+
+  6e2edd6371a4 ("arm64: Ensure execute-only permissions are not allowed wit=
+hout EPAN")
+
+from Linus' tree and commit:
+
+  afcf5441b9ff ("arm64: Add gcc Shadow Call Stack support")
+
+from the kspp tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc arch/arm64/Kconfig
+index 181679ffedac,de01e77f4db7..000000000000
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@@ -1259,7 -1252,10 +1260,7 @@@ config HW_PERF_EVENT
+  	def_bool y
+  	depends on ARM_PMU
+ =20
+- # Supported by clang >=3D 7.0
+ -config ARCH_HAS_FILTER_PGPROT
+ -	def_bool y
+ -
++ # Supported by clang >=3D 7.0 or GCC >=3D 12.0.0
+  config CC_HAVE_SHADOW_CALL_STACK
+  	def_bool $(cc-option, -fsanitize=3Dshadow-call-stack -ffixed-x18)
+ =20
+
+--Sig_/oj0r1jFpsjdfgToetMx4HKq
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwbzQACgkQAVBC80lX
+0Gzi6Af9HC+4RwrGbaXdZ1Xs3TcJrnFoDKWz5zoAxmXsD1NSLN3qdSUR3jxOvnkf
+U6tpofOQW1TWBmrAAScXEEYgoqUxnz/1QkwnPwja81JGmGVjLXUL0phLo9EQF7b3
+onn9qhY3vEXwO715/m2c6umTb0sarBekMZuPUCxYI6f9AyLdgxiOGzZXFaYY03wn
+T7zQq+FPRAfUwVuj6t2AKmLEAOGf4cGNUYJS68lJpqXMVOGhB9t23FkEhgEJMJrv
+C7hwZDu5EDmeoe2E+2UM8ChHzsx13YSiwydq2Mudi5ab8zI/Lvlj5nmufEDE5UbV
+Gg/+QXmRJs6NuVEAUgj2h7dyvSxklg==
+=G5DD
+-----END PGP SIGNATURE-----
+
+--Sig_/oj0r1jFpsjdfgToetMx4HKq--
