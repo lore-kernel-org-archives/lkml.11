@@ -2,97 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 961B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09DDBC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 15:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349792AbiCOPvx (ORCPT
+        id S1349797AbiCOPwG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 11:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41344 "EHLO
+        Tue, 15 Mar 2022 11:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349776AbiCOPvt (ORCPT
+        with ESMTP id S1349778AbiCOPwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 11:51:49 -0400
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04C854687
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 08:50:35 -0700 (PDT)
-Received: by mail-oo1-xc30.google.com with SMTP id h16-20020a4a6f10000000b00320507b9ccfso24840616ooc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 08:50:35 -0700 (PDT)
+        Tue, 15 Mar 2022 11:52:04 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D154ECF7;
+        Tue, 15 Mar 2022 08:50:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=I4c51xsdjxSyFom4STgtqxq6o6AKdTW8OLe7O5/jVnI=;
-        b=RdbsXMNlP8wYdG7quqOUWkNI912I8J8v2dI1CpPrFRzvPMlqWvYUjRZcc3CPAOO29S
-         Yge/Doop6f6uEsSFKCqhOIsjsvZ/KqP+eWOLjwNC9rSDGozrfKDRjbcvxa5z0pCPEIve
-         c5NtXIfspKzVJ4hupGwMTdkiQ23FjnfxTBn9w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=I4c51xsdjxSyFom4STgtqxq6o6AKdTW8OLe7O5/jVnI=;
-        b=5oAJevrWWnqSb0ajXxj+qdoDtqYnpNz2/DzrbqVeB0i7nmA5X4qxVkeNv8XfpFjH90
-         AOlqgBrBBX1FGvC0Ea012hU/J31CZqzrBfxkvaYakNbojynN9CnXkp3oGSacCgfDmxSK
-         Pn8kSTSVnWEi29262ha0PpjyNftwdWdGbil7mxYfAGnzPxjlu+HbpDLYxJwHpUjdwD69
-         j1+VboWHCc0Q/mt9lGHVQ3wSstFYmgEinKnj/u0tpPnXBP1JndtimMOcv61wim/RJkjK
-         6QWH7zfTGPYEtU+ZI70+qFFucEkHrUBjXNMB3mPZXe0okC/6K6/GlHIObK/RzXV31bi0
-         oCNQ==
-X-Gm-Message-State: AOAM53392r5+5KJcJompVR0l2uXBYkdDuh5SS1HaCSmpYZ8yphUgQNs3
-        8V/S+vXR4AAjJxk7wsDSIHFRYOGbVDqLin7Ee1oOtw==
-X-Google-Smtp-Source: ABdhPJyHK2Q+ikMVle/mFHZsw86q2VaSnh4TIjabq9UlQBoV+QZTX64BB1/3Nt6dBd6/Mt4xS0Vdwi/ekXUmIzZbJxQ=
-X-Received: by 2002:a05:6870:c0cb:b0:da:2bcc:aa09 with SMTP id
- e11-20020a056870c0cb00b000da2bccaa09mr1821164oad.63.1647359435184; Tue, 15
- Mar 2022 08:50:35 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Tue, 15 Mar 2022 10:50:34 -0500
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647359452; x=1678895452;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=PtubDY9l+FgV9r9sh9AgXfRAdFUX29rrBNfVsa/aX5M=;
+  b=Df8Stc5eAIbBab+yhZFgGV4gx27Z0Hi22UbQaW/DN8OpCROFZfXCG5bR
+   vHrYBUzGGDHaFaST9sYcgeU9i1xtr6l1kEpL7EKzN6j/LRYNFYLQEVHRc
+   uwXaYEUm47VTRDtY4IrkLF5swgb1g7guIYNWVEa/0TAaa8XDsth3RU96B
+   w=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 15 Mar 2022 08:50:51 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 08:50:51 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Tue, 15 Mar 2022 08:50:31 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 15 Mar 2022 08:50:25 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v11 0/7] Add pin control support for lpass sc7280
+Date:   Tue, 15 Mar 2022 21:20:06 +0530
+Message-ID: <1647359413-31662-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <CAHNYxRwFYBbgxUqz79jYXbDxSd-r+NdHWQPucEyuNK83U577xw@mail.gmail.com>
-References: <20220314232214.4183078-1-swboyd@chromium.org> <20220314232214.4183078-2-swboyd@chromium.org>
- <CAHNYxRwFYBbgxUqz79jYXbDxSd-r+NdHWQPucEyuNK83U577xw@mail.gmail.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Tue, 15 Mar 2022 10:50:34 -0500
-Message-ID: <CAE-0n50A2yrSbQJA8EMum3AoLf+w263ddFh6sA5d+tfMMMkarA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: mfd: Add ChromeOS fingerprint binding
-To:     Alexandru M Stan <amstan@chromium.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        chrome-platform@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, Guenter Roeck <groeck@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Craig Hesling <hesling@chromium.org>,
-        Tom Hughes <tomhughes@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Alexandru M Stan (2022-03-14 17:23:38)
-> On Mon, Mar 14, 2022 at 4:22 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> >
-> > +        compatible = "google,cros-ec-fp";
-> > +        reg = <0>;
-> > +        interrupt-parent = <&gpio_controller>;
-> > +        interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
-> > +        spi-max-frequency = <3000000>;
-> > +        google,cros-ec-spi-msg-delay = <37>;
-> > +        google,cros-ec-spi-pre-delay = <5>;
-> > +        reset-gpios = <&gpio_controller 5 GPIO_ACTIVE_LOW>;
-> > +        boot0-gpios = <&gpio_controller 10 GPIO_ACTIVE_LOW>;
-> This should say GPIO_ACTIVE_HIGH, since there's no inverting going on
-> either with a real inverter, or the convention (of 'N' being in the
-> pin name).
->
-> It might be easier to reason about if there's no invesion going for this signal.
->
-> Consider it like an enum instead of a verb (unlike active_low
-> reset-gpios which can be considered: in reset if it's set):
->
-> enum boot0 {
->         normal = 0,
->         bootloader = 1,
-> };
+This patch series is to split lpass variant common pin control
+functions and SoC specific functions and to add lpass sc7280 pincontrol support.
+It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
 
-Ok got it! I have in my notes that physically high line means normal
-boot mode and physically low is bootloader mode. I confused myself. I'll
-fix this.
+Changes Since V10:
+    -- Modify driver's custom functions with pin control framework generic functions.
+    -- Update sm8250 and sc7280 pin control depedency list in Kconfig.
+    -- Update commit description of few patches.
+Changes Since V9:
+    -- Add pinctrl groups macro to Kconfig.
+Changes Since V8:
+    -- Remove redundant headers included in v8.
+Changes Since V7:
+    -- Update optional clock voting with conditional check.
+    -- Add const to lpi_pinctrl_variant_data structure.
+    -- Update required headers and remove redundant.
+    -- Change EXPORT_SYMBOL to EXPORT_SYMBOL_GPL
+    -- Fix typo errors.
+Changes Since V6:
+    -- Update conditional clock voting to optional clock voting.
+    -- Update Kconfig depends on field with select.
+    -- Fix typo errors. 
+Changes Since V5:
+    -- Create new patch by updating macro name to lpi specific.
+    -- Create new patch by updating lpi pin group structure with core group_desc structure.
+    -- Fix typo errors.
+    -- Sort macros in the make file and configuration file.
+Changes Since V4:
+    -- Update commit message and description of the chip specific extraction patch.
+    -- Sort macros in kconfig and makefile.
+    -- Update optional clock voting to conditional clock voting.
+    -- Fix typo errors.
+    -- Move to quicinc domain email id's.
+Changes Since V3:
+    -- Update separate Kconfig fields for sm8250 and sc7280.
+    -- Update module license and description.
+    -- Move static variables to corresponding .c files from header file.
+
+Changes Since V2:
+    -- Add new dt-bindings for sc7280 lpi driver.
+    -- Make clock voting change as separate patch.
+    -- Split existing pincontrol driver and make common functions 
+       as part of separate file.
+    -- Rename lpass pincontrol lpi dt-bindings to sm8250 specific dt-bindings
+		
+Changes Since V1:
+    -- Make lpi pinctrl variant data structure as constant
+    -- Add appropriate commit message
+    -- Change signedoff by sequence.
+
+Srinivasa Rao Mandadapu (7):
+  dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
+  dt-bindings: pinctrl: qcom: Add sc7280 lpass lpi pinctrl bindings
+  pinctrl: qcom: Update macro name to LPI specific
+  pinctrl: qcom: Update lpi pin group custiom functions with framework
+    generic functions
+  pinctrl: qcom: Extract chip specific LPASS LPI code
+  pinctrl: qcom: Add SC7280 lpass pin configuration
+  pinctrl: qcom: Update clock voting as optional
+
+Tested this on SM8250 MTP with WSA and WCD codecs.
+Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+
+ .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 ---------
+ .../pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml     | 115 ++++++++
+ .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++
+ drivers/pinctrl/qcom/Kconfig                       |  19 ++
+ drivers/pinctrl/qcom/Makefile                      |   2 +
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.c           | 309 +++------------------
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.h           |  86 ++++++
+ drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c    | 168 +++++++++++
+ drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c    | 164 +++++++++++
+ 9 files changed, 731 insertions(+), 398 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
+
+-- 
+2.7.4
+
