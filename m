@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84550C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E11CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347233AbiCOKpA (ORCPT
+        id S1347240AbiCOKpE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58408 "EHLO
+        Tue, 15 Mar 2022 06:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347219AbiCOKo4 (ORCPT
+        with ESMTP id S1347210AbiCOKox (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:44:56 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2912DD73;
-        Tue, 15 Mar 2022 03:43:43 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:41 -0000
+        Tue, 15 Mar 2022 06:44:53 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028002AE1C;
+        Tue, 15 Mar 2022 03:43:40 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:43:38 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341022;
+        s=2020; t=1647341019;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qZJIZ0/UkBGyt4O8RqDXixLCGKGb/PS5ZJlf4H0/IEw=;
-        b=uFRQ7DEZnkzjZ7Axi6s/1Tipbzdron3kXS5xZ4tn9VMAHWfgSjkyfTQiIUPvGTEX+nNwlL
-        aAsM9+4RrhILJ69va1g18icPL0WFqlny4AQ59uFAW+IBK3aq+Sh3q7c8P7pW48YgrECNxk
-        /VwHzM5MsJM4fgWQ63TGIRSnbzjyuxAQpWES3+X0DuyntCjFoSrsYyhXr/ljv2U1PmInJG
-        QKDkOv6nq3qfq1SFdv5CUnzK82uCQ5aEL3M4LQ/NBPfTh41yZkv3JqszjFZhkTErPm5tp1
-        GchT9PWLFmDSa1rrg5Rryx+1ScvVkPKp8cDLfz10M9ri8gyHn6/Ba53Xx18prg==
+        bh=Om1JKH0+6RvJ+rw9H/XlBF9MD0/hqzkEno6Hv5zznAQ=;
+        b=2jNqrNwHc+P9ZO2QRroZ1uaoBLkxGrvO249uOUxHx/zEci/vwJ+e6rIgI6ENaj39jtz2O0
+        qscZM2Nkcl63dl+9wHCXloz/QIz6VXBl2IxxswoFNbxMnB1QIg6FcBEcmbKgMndJbopVUC
+        FtJnlJX2ri26NdakgpXKW49PMnMzroFLxF8eDQFHHklbblhRpy1La2A6OzhyZ9XXpKWjpz
+        7HKS2+Qui2WwTYR4WxU+vBcqiYzn3U+krwI4hDxwl+zN5+n7t4W8jxJ8J4FME5xM725Xy7
+        ouwlu1qhxi+VyMQ1XnDk5SBss5FEE57tdQx3gtCLKQiFsh7ePqNNFxFCwBThHg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341022;
+        s=2020e; t=1647341019;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qZJIZ0/UkBGyt4O8RqDXixLCGKGb/PS5ZJlf4H0/IEw=;
-        b=3hrhzjATjku13MJ2gVnaoYKuH1cmGU3JcH9eNOblReUluUd1BksavMYXS4z/4TWeTvnMt5
-        YNyYn/GW9cXRfMBw==
+        bh=Om1JKH0+6RvJ+rw9H/XlBF9MD0/hqzkEno6Hv5zznAQ=;
+        b=NQJ8AenmbWgY/xucSVWKIrprxK4fR0dfpKAJId9yvp6DWHhrbw75jRqpuVNqLi7jzxRahA
+        YwfPxJdRycJGskAg==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] objtool: Add IBT/ENDBR decoding
+Subject: [tip: x86/core] x86/alternative: Use .ibt_endbr_seal to seal indirect calls
 Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220308154319.645963517@infradead.org>
-References: <20220308154319.645963517@infradead.org>
+In-Reply-To: <20220308154319.822545231@infradead.org>
+References: <20220308154319.822545231@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734102134.16921.756884581284713458.tip-bot2@tip-bot2>
+Message-ID: <164734101837.16921.16410924193202609763.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,126 +62,349 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     7d209d13e7c3a3d60dc262f11a8ae4e6b4454d30
-Gitweb:        https://git.kernel.org/tip/7d209d13e7c3a3d60dc262f11a8ae4e6b4454d30
+Commit-ID:     ed53a0d971926e484d86cce617ec02a7ee85c3fe
+Gitweb:        https://git.kernel.org/tip/ed53a0d971926e484d86cce617ec02a7ee85c3fe
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Tue, 08 Mar 2022 16:30:53 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:56 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:46 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:47 +01:00
 
-objtool: Add IBT/ENDBR decoding
+x86/alternative: Use .ibt_endbr_seal to seal indirect calls
 
-Intel IBT requires the target of any indirect CALL or JMP instruction
-to be the ENDBR instruction; optionally it allows those two
-instructions to have a NOTRACK prefix in order to avoid this
-requirement.
+Objtool's --ibt option generates .ibt_endbr_seal which lists
+superfluous ENDBR instructions. That is those instructions for which
+the function is never indirectly called.
 
-The kernel will not enable the use of NOTRACK, as such any occurence
-of it in compiler generated code should be flagged.
-
-Teach objtool to Decode ENDBR instructions and WARN about NOTRACK
-prefixes.
+Overwrite these ENDBR instructions with a NOP4 such that these
+function can never be indirect called, reducing the number of viable
+ENDBR targets in the kernel.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20220308154319.645963517@infradead.org
+Link: https://lore.kernel.org/r/20220308154319.822545231@infradead.org
 ---
- tools/objtool/arch/x86/decode.c      | 34 +++++++++++++++++++++++----
- tools/objtool/include/objtool/arch.h |  1 +-
- 2 files changed, 30 insertions(+), 5 deletions(-)
+ arch/um/kernel/um_arch.c           |  4 ++-
+ arch/x86/Kconfig                   |  9 +++++-
+ arch/x86/include/asm/alternative.h |  1 +-
+ arch/x86/include/asm/ibt.h         | 12 +++++++-
+ arch/x86/kernel/alternative.c      | 39 ++++++++++++++++++++++++-
+ arch/x86/kernel/module.c           |  8 ++++-
+ scripts/Makefile.build             | 47 +++++++++++++++++++++++------
+ scripts/link-vmlinux.sh            | 10 ++++--
+ 8 files changed, 117 insertions(+), 13 deletions(-)
 
-diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-index 479e769..943cb41 100644
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -103,6 +103,18 @@ unsigned long arch_jump_destination(struct instruction *insn)
- #define rm_is_mem(reg)	(mod_is_mem() && !is_RIP() && rm_is(reg))
- #define rm_is_reg(reg)	(mod_is_reg() && modrm_rm == (reg))
+diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
+index abceeab..0760e24 100644
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -424,6 +424,10 @@ void __init check_bugs(void)
+ 	os_check_bugs();
+ }
  
-+static bool has_notrack_prefix(struct insn *insn)
++void apply_ibt_endbr(s32 *start, s32 *end)
 +{
-+	int i;
-+
-+	for (i = 0; i < insn->prefixes.nbytes; i++) {
-+		if (insn->prefixes.bytes[i] == 0x3e)
-+			return true;
-+	}
-+
-+	return false;
 +}
 +
- int arch_decode_instruction(struct objtool_file *file, const struct section *sec,
- 			    unsigned long offset, unsigned int maxlen,
- 			    unsigned int *len, enum insn_type *type,
-@@ -112,7 +124,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 	const struct elf *elf = file->elf;
- 	struct insn insn;
- 	int x86_64, ret;
--	unsigned char op1, op2, op3,
-+	unsigned char op1, op2, op3, prefix,
- 		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
- 		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
- 		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
-@@ -137,6 +149,8 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 	if (insn.vex_prefix.nbytes)
- 		return 0;
+ void apply_retpolines(s32 *start, s32 *end)
+ {
+ }
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 19d16c0..870e0d1 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1873,7 +1873,7 @@ config CC_HAS_IBT
+ config X86_KERNEL_IBT
+ 	prompt "Indirect Branch Tracking"
+ 	bool
+-	depends on X86_64 && CC_HAS_IBT
++	depends on X86_64 && CC_HAS_IBT && STACK_VALIDATION
+ 	help
+ 	  Build the kernel with support for Indirect Branch Tracking, a
+ 	  hardware support course-grain forward-edge Control Flow Integrity
+@@ -1881,6 +1881,13 @@ config X86_KERNEL_IBT
+ 	  an ENDBR instruction, as such, the compiler will instrument the
+ 	  code with them to make this happen.
  
-+	prefix = insn.prefixes.bytes[0];
++	  In addition to building the kernel with IBT, seal all functions that
++	  are not indirect call targets, avoiding them ever becomming one.
 +
- 	op1 = insn.opcode.bytes[0];
- 	op2 = insn.opcode.bytes[1];
- 	op3 = insn.opcode.bytes[2];
-@@ -492,6 +506,12 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 			/* nopl/nopw */
- 			*type = INSN_NOP;
- 
-+		} else if (op2 == 0x1e) {
++	  This requires LTO like objtool runs and will slow down the build. It
++	  does significantly reduce the number of ENDBR instructions in the
++	  kernel image.
 +
-+			if (prefix == 0xf3 && (modrm == 0xfa || modrm == 0xfb))
-+				*type = INSN_ENDBR;
+ config X86_INTEL_MEMORY_PROTECTION_KEYS
+ 	prompt "Memory Protection Keys"
+ 	def_bool y
+diff --git a/arch/x86/include/asm/alternative.h b/arch/x86/include/asm/alternative.h
+index 58eee64..9b10c8c 100644
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -76,6 +76,7 @@ extern int alternatives_patched;
+ extern void alternative_instructions(void);
+ extern void apply_alternatives(struct alt_instr *start, struct alt_instr *end);
+ extern void apply_retpolines(s32 *start, s32 *end);
++extern void apply_ibt_endbr(s32 *start, s32 *end);
+ 
+ struct module;
+ 
+diff --git a/arch/x86/include/asm/ibt.h b/arch/x86/include/asm/ibt.h
+index 52fb05d..689880e 100644
+--- a/arch/x86/include/asm/ibt.h
++++ b/arch/x86/include/asm/ibt.h
+@@ -46,8 +46,20 @@ static inline __attribute_const__ u32 gen_endbr(void)
+ 	return endbr;
+ }
+ 
++static inline __attribute_const__ u32 gen_endbr_poison(void)
++{
++	/*
++	 * 4 byte NOP that isn't NOP4 (in fact it is OSP NOP3), such that it
++	 * will be unique to (former) ENDBR sites.
++	 */
++	return 0x001f0f66; /* osp nopl (%rax) */
++}
 +
+ static inline bool is_endbr(u32 val)
+ {
++	if (val == gen_endbr_poison())
++		return true;
 +
- 		} else if (op2 == 0x38 && op3 == 0xf8) {
- 			if (insn.prefixes.nbytes == 1 &&
- 			    insn.prefixes.bytes[0] == 0xf2) {
-@@ -636,20 +656,24 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 		break;
+ 	val &= ~0x01000000U; /* ENDBR32 -> ENDBR64 */
+ 	return val == gen_endbr();
+ }
+diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
+index 954d39c..a79196f 100644
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -115,6 +115,7 @@ static void __init_or_module add_nops(void *insns, unsigned int len)
+ }
  
- 	case 0xff:
--		if (modrm_reg == 2 || modrm_reg == 3)
-+		if (modrm_reg == 2 || modrm_reg == 3) {
+ extern s32 __retpoline_sites[], __retpoline_sites_end[];
++extern s32 __ibt_endbr_seal[], __ibt_endbr_seal_end[];
+ extern struct alt_instr __alt_instructions[], __alt_instructions_end[];
+ extern s32 __smp_locks[], __smp_locks_end[];
+ void text_poke_early(void *addr, const void *opcode, size_t len);
+@@ -512,6 +513,42 @@ void __init_or_module noinline apply_retpolines(s32 *start, s32 *end) { }
  
- 			*type = INSN_CALL_DYNAMIC;
-+			if (has_notrack_prefix(&insn))
-+				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
+ #endif /* CONFIG_RETPOLINE && CONFIG_STACK_VALIDATION */
  
--		else if (modrm_reg == 4)
-+		} else if (modrm_reg == 4) {
++#ifdef CONFIG_X86_KERNEL_IBT
++
++/*
++ * Generated by: objtool --ibt
++ */
++void __init_or_module noinline apply_ibt_endbr(s32 *start, s32 *end)
++{
++	s32 *s;
++
++	for (s = start; s < end; s++) {
++		u32 endbr, poison = gen_endbr_poison();
++		void *addr = (void *)s + *s;
++
++		if (WARN_ON_ONCE(get_kernel_nofault(endbr, addr)))
++			continue;
++
++		if (WARN_ON_ONCE(!is_endbr(endbr)))
++			continue;
++
++		DPRINTK("ENDBR at: %pS (%px)", addr, addr);
++
++		/*
++		 * When we have IBT, the lack of ENDBR will trigger #CP
++		 */
++		DUMP_BYTES(((u8*)addr), 4, "%px: orig: ", addr);
++		DUMP_BYTES(((u8*)&poison), 4, "%px: repl: ", addr);
++		text_poke_early(addr, &poison, 4);
++	}
++}
++
++#else
++
++void __init_or_module noinline apply_ibt_endbr(s32 *start, s32 *end) { }
++
++#endif /* CONFIG_X86_KERNEL_IBT */
++
+ #ifdef CONFIG_SMP
+ static void alternatives_smp_lock(const s32 *start, const s32 *end,
+ 				  u8 *text, u8 *text_end)
+@@ -830,6 +867,8 @@ void __init alternative_instructions(void)
+ 	 */
+ 	apply_alternatives(__alt_instructions, __alt_instructions_end);
  
- 			*type = INSN_JUMP_DYNAMIC;
-+			if (has_notrack_prefix(&insn))
-+				WARN("notrack prefix found at %s:0x%lx", sec->name, offset);
++	apply_ibt_endbr(__ibt_endbr_seal, __ibt_endbr_seal_end);
++
+ #ifdef CONFIG_SMP
+ 	/* Patch to UP if other cpus not imminent. */
+ 	if (!noreplace_smp && (num_present_cpus() == 1 || setup_max_cpus <= 1)) {
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index 96d7c27..58bafbd 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -253,7 +253,7 @@ int module_finalize(const Elf_Ehdr *hdr,
+ {
+ 	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
+ 		*para = NULL, *orc = NULL, *orc_ip = NULL,
+-		*retpolines = NULL;
++		*retpolines = NULL, *ibt_endbr = NULL;
+ 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
  
--		else if (modrm_reg == 5)
-+		} else if (modrm_reg == 5) {
+ 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+@@ -271,6 +271,8 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 			orc_ip = s;
+ 		if (!strcmp(".retpoline_sites", secstrings + s->sh_name))
+ 			retpolines = s;
++		if (!strcmp(".ibt_endbr_seal", secstrings + s->sh_name))
++			ibt_endbr = s;
+ 	}
  
- 			/* jmpf */
- 			*type = INSN_CONTEXT_SWITCH;
+ 	/*
+@@ -290,6 +292,10 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		void *aseg = (void *)alt->sh_addr;
+ 		apply_alternatives(aseg, aseg + alt->sh_size);
+ 	}
++	if (ibt_endbr) {
++		void *iseg = (void *)ibt_endbr->sh_addr;
++		apply_ibt_endbr(iseg, iseg + ibt_endbr->sh_size);
++	}
+ 	if (locks && text) {
+ 		void *lseg = (void *)locks->sh_addr;
+ 		void *tseg = (void *)text->sh_addr;
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index a4b89b7..926d254 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -86,12 +86,18 @@ ifdef need-builtin
+ targets-for-builtin += $(obj)/built-in.a
+ endif
  
--		else if (modrm_reg == 6) {
-+		} else if (modrm_reg == 6) {
+-targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
++targets-for-modules :=
  
- 			/* push from mem */
- 			ADD_OP(op) {
-diff --git a/tools/objtool/include/objtool/arch.h b/tools/objtool/include/objtool/arch.h
-index 76bae30..9b19cc3 100644
---- a/tools/objtool/include/objtool/arch.h
-+++ b/tools/objtool/include/objtool/arch.h
-@@ -27,6 +27,7 @@ enum insn_type {
- 	INSN_STD,
- 	INSN_CLD,
- 	INSN_TRAP,
-+	INSN_ENDBR,
- 	INSN_OTHER,
- };
+ ifdef CONFIG_LTO_CLANG
+ targets-for-modules += $(patsubst %.o, %.lto.o, $(filter %.o, $(obj-m)))
+ endif
  
++ifdef CONFIG_X86_KERNEL_IBT
++targets-for-modules += $(patsubst %.o, %.objtool, $(filter %.o, $(obj-m)))
++endif
++
++targets-for-modules += $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
++
+ ifdef need-modorder
+ targets-for-modules += $(obj)/modules.order
+ endif
+@@ -230,6 +236,7 @@ objtool := $(objtree)/tools/objtool/objtool
+ objtool_args =								\
+ 	$(if $(CONFIG_UNWINDER_ORC),orc generate,check)			\
+ 	$(if $(part-of-module), --module)				\
++	$(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)			\
+ 	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
+ 	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
+ 	$(if $(CONFIG_RETPOLINE), --retpoline)				\
+@@ -237,8 +244,8 @@ objtool_args =								\
+ 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
+ 	$(if $(CONFIG_SLS), --sls)
+ 
+-cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
+-cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
++cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $(@:.objtool=.o))
++cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$(@:.objtool=.o): $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
+ 
+ endif # CONFIG_STACK_VALIDATION
+ 
+@@ -247,6 +254,21 @@ ifdef CONFIG_LTO_CLANG
+ # Skip objtool for LLVM bitcode
+ $(obj)/%.o: objtool-enabled :=
+ 
++# objtool was skipped for LLVM bitcode, run it now that we have compiled
++# modules into native code
++$(obj)/%.lto.o: objtool-enabled = y
++$(obj)/%.lto.o: part-of-module := y
++
++else ifdef CONFIG_X86_KERNEL_IBT
++
++# Skip objtool on individual files
++$(obj)/%.o: objtool-enabled :=
++
++# instead run objtool on the module as a whole, right before
++# the final link pass with the linker script.
++$(obj)/%.objtool: objtool-enabled = y
++$(obj)/%.objtool: part-of-module := y
++
+ else
+ 
+ # 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
+@@ -292,18 +314,13 @@ ifdef CONFIG_LTO_CLANG
+ # Module .o files may contain LLVM bitcode, compile them into native code
+ # before ELF processing
+ quiet_cmd_cc_lto_link_modules = LTO [M] $@
+-cmd_cc_lto_link_modules =						\
++      cmd_cc_lto_link_modules =						\
+ 	$(LD) $(ld_flags) -r -o $@					\
+ 		$(shell [ -s $(@:.lto.o=.o.symversions) ] &&		\
+ 			echo -T $(@:.lto.o=.o.symversions))		\
+ 		--whole-archive $(filter-out FORCE,$^)			\
+ 		$(cmd_objtool)
+ 
+-# objtool was skipped for LLVM bitcode, run it now that we have compiled
+-# modules into native code
+-$(obj)/%.lto.o: objtool-enabled = y
+-$(obj)/%.lto.o: part-of-module := y
+-
+ $(obj)/%.lto.o: $(obj)/%.o FORCE
+ 	$(call if_changed,cc_lto_link_modules)
+ endif
+@@ -316,6 +333,18 @@ cmd_mod = { \
+ $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
+ 	$(call if_changed,mod)
+ 
++#
++# Since objtool will re-write the file it will change the timestamps, therefore
++# it is critical that the %.objtool file gets a timestamp *after* objtool runs.
++#
++# Additionally, care must be had with ordering this rule against the other rules
++# that take %.o as a dependency.
++#
++cmd_objtool_mod = true $(cmd_objtool) ; touch $@
++
++$(obj)/%.objtool: $(obj)/%$(mod-prelink-ext).o FORCE
++	$(call if_changed,objtool_mod)
++
+ quiet_cmd_cc_lst_c = MKLST   $@
+       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
+ 		     $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index 9b08dca..f704034 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -108,7 +108,9 @@ objtool_link()
+ 	local objtoolcmd;
+ 	local objtoolopt;
+ 
+-	if is_enabled CONFIG_LTO_CLANG && is_enabled CONFIG_STACK_VALIDATION; then
++	if is_enabled CONFIG_STACK_VALIDATION && \
++	   ( is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT ); then
++
+ 		# Don't perform vmlinux validation unless explicitly requested,
+ 		# but run objtool on vmlinux.o now that we have an object file.
+ 		if is_enabled CONFIG_UNWINDER_ORC; then
+@@ -117,6 +119,10 @@ objtool_link()
+ 
+ 		objtoolopt="${objtoolopt} --lto"
+ 
++		if is_enabled CONFIG_X86_KERNEL_IBT; then
++			objtoolopt="${objtoolopt} --ibt"
++		fi
++
+ 		if is_enabled CONFIG_FTRACE_MCOUNT_USE_OBJTOOL; then
+ 			objtoolopt="${objtoolopt} --mcount"
+ 		fi
+@@ -168,7 +174,7 @@ vmlinux_link()
+ 	# skip output file argument
+ 	shift
+ 
+-	if is_enabled CONFIG_LTO_CLANG; then
++	if is_enabled CONFIG_LTO_CLANG || is_enabled CONFIG_X86_KERNEL_IBT; then
+ 		# Use vmlinux.o instead of performing the slow LTO link again.
+ 		objs=vmlinux.o
+ 		libs=
