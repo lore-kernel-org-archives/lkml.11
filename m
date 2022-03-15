@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9315C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B82C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235615AbiCOIpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        id S1346170AbiCOIpp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 04:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346091AbiCOIpM (ORCPT
+        with ESMTP id S1346127AbiCOIpN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:45:12 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E591EEC5
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:43:57 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d7so757224wrb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:43:57 -0700 (PDT)
+        Tue, 15 Mar 2022 04:45:13 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2107B4D268
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:44:01 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id r6so27369252wrr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vrlnakmn5fLlGT/co3zd6+O92fe3JgVqL1zsEXzLWMY=;
-        b=ekiKDaiPvPmyaAHma2KjNi2hG70kvvZHOu0AyAI+rcQ0NFHAUd9FTfE1W1n4NKORwv
-         Ca+W+ConXG7ciFXJIbfopOHifeisT3X0U/fxljw/6xuI4RaLipQJreuQM9qfubp/pgnG
-         a4XcQ9sWQm5E3/zxBYwNUlpyHpGkEf6qagmjy3+RxbJzO8m2Qs9MBQmsshMMsTrvZ5s9
-         1XxhuW9tqW5Rp5yagzoO26dlL7Q7/WxbJjVuyfaCPRq2AewGqXDRVEvExRh8Gslpj+YH
-         45TwrpgqRll3c6QYeMEMC4mnrDyTUJSvNEOKQccGKfL1pOLP0u5WhvOia9ljKdpilQXP
-         Peog==
+        bh=Jb1wu8pDJ30xgS1p+JPjCnyezWwWH0sm2Zu2NeRcVsA=;
+        b=hiISU3x0fZ/PLJtBtmT6kraBpYArjPnEZTjKqMEXYBVi5vD1bSvfR0TaB/fakO7xaC
+         308VW9fw5gqwyPOt5aALo93mgIX2QyXIYmVlguXGPRmUtqPYdoPgIFQ3y2HdVGLTloSq
+         mTrKAnB7pyf9ve12QGtD8JzTa7Rz2+jfFaaQm+fGnqPJZDcsjGdBljgQX52NIurOofxF
+         CYE7VD6o+kAqImxYsLZushXLomhlw1q9LKAR5WEBct8qmvRa9PlqHdla5JH2IEF1rvSj
+         j8hOjMqI4sPov4P5YgjqR9KBmEi/YwYXac+uqVFkFO1Uh8fUd4C0YEw1KPBYGMaQ5awE
+         6A0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=vrlnakmn5fLlGT/co3zd6+O92fe3JgVqL1zsEXzLWMY=;
-        b=CnwEhpna9IuLfz4qJmeMtIRoHxL9QJkl7eddF2RAh5hzQSd/b+CRyuajsTZz8zk948
-         9ghXG91kWfqxZUtkR1hVb9yodihkfWu7JBMENbAJc/1j3absGqHOR74Yv8ppcqy5m34i
-         z7iu4D2yyM4lsKgECFCw7Wgd13C4GSKMUDUNvLNT4LqMXSDqDyy6lPTqUZrv/zq4N/GI
-         rE7rEhoLux01dBoN8OhYA2TGChrfUAIf67F0UHFgRNWXZR2jxuTBWBfweweHbv9rLq4i
-         imNtXtsFePzhArhqxScOo7ED/5ivbvettYgbX7QKNze2X9hSS9bVk/dMWnXRPJS6UCc4
-         be5Q==
-X-Gm-Message-State: AOAM5326MgDqFvjQgRLLhKDJW2QlYmKtP273boP31ASH6zZG4ggzPTz7
-        Y/aS2BUBReV3srjUCwH4y3sEFVXt/EY=
-X-Google-Smtp-Source: ABdhPJzQ+XVKQ/F66KPlrLtzGhy9sc21PAGcwHUkbjZgYcq5BBa2K8solVtOhiURc+kyN9CiS+7GoQ==
-X-Received: by 2002:a5d:6c67:0:b0:203:bf25:f311 with SMTP id r7-20020a5d6c67000000b00203bf25f311mr5452652wrz.108.1647333836233;
-        Tue, 15 Mar 2022 01:43:56 -0700 (PDT)
+        bh=Jb1wu8pDJ30xgS1p+JPjCnyezWwWH0sm2Zu2NeRcVsA=;
+        b=1o+dD1O8hAn1UX/sYpNcDQcJOXXQNudeVmdcvCQPTFIkvyvQxNUmStUKiQ5g6V/h7V
+         /Vjp1QCFGfBZcWKO2OBR7VB/ExsoDOYWJRwk9UL24xLQAokKdIWtGlwOmDgMloJFrOuO
+         YaaHL2PEvybW3BspH6j0lICdmkSc0i33GrqYqcXMVoBuosWUcTREgVTI1Uhix9fioMN3
+         TWevK1UZk9pBmECzel7lQAiV9MFi5JsitwGrsHu1BZZMxBumRMoTk943A63IRYIuIKSX
+         VdI/+BcVlaNvjGjB/LZmELvUmZxtPwDzJMb5Q8VxmLIGAWr+xBLT9bxA/VKpxoYz9kfY
+         pkkQ==
+X-Gm-Message-State: AOAM533zmksvC8PUSScDqIq8berkvhBJ765FeKMVPuMmIyZI2iZDgEG4
+        LTVgKV4ZsLWh6Xs7WGmz5hd5kYm31DI=
+X-Google-Smtp-Source: ABdhPJy1HhMqexQddfHuV8F1Eb/P08ZosKRgUc5SqbEdhbVmTksB7SahuD4T6EBfFmXjL6+Ok1+itA==
+X-Received: by 2002:a5d:678f:0:b0:1f0:2471:5a93 with SMTP id v15-20020a5d678f000000b001f024715a93mr19670842wru.164.1647333839676;
+        Tue, 15 Mar 2022 01:43:59 -0700 (PDT)
 Received: from kepler.. (0526F1FC.dsl.pool.telekom.hu. [5.38.241.252])
-        by smtp.gmail.com with ESMTPSA id e6-20020a5d5006000000b0020374784350sm15078503wrt.64.2022.03.15.01.43.55
+        by smtp.gmail.com with ESMTPSA id e6-20020a5d5006000000b0020374784350sm15078503wrt.64.2022.03.15.01.43.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 01:43:55 -0700 (PDT)
+        Tue, 15 Mar 2022 01:43:59 -0700 (PDT)
 Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
 From:   Ingo Molnar <mingo@kernel.org>
 To:     linux-kernel@vger.kernel.org
@@ -61,9 +62,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Borislav Petkov <bp@alien8.de>,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 07/15] sched/headers: Make the <linux/sched/deadline.h> header build standalone
-Date:   Tue, 15 Mar 2022 09:42:39 +0100
-Message-Id: <20220315084247.40783-8-mingo@kernel.org>
+Subject: [PATCH 10/15] sched/headers: Standardize kernel/sched/sched.h header dependencies
+Date:   Tue, 15 Mar 2022 09:42:42 +0100
+Message-Id: <20220315084247.40783-11-mingo@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220315084247.40783-1-mingo@kernel.org>
 References: <20220315084247.40783-1-mingo@kernel.org>
@@ -73,27 +74,157 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This header depends on various scheduler definitions.
+kernel/sched/sched.h is a weird mix of ad-hoc headers included
+in the middle of the header.
+
+Two of them rely on being included in the middle of kernel/sched/sched.h,
+due to definitions they require:
+
+ - "stat.h" needs the rq definitions.
+ - "autogroup.h" needs the task_group definition.
+
+Move the inclusion of these two files out of kernel/sched/sched.h, and
+include them in all files that require them.
+
+Move of the rest of the header dependencies to the top of the
+kernel/sched/sched.h file.
 
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 Reviewed-by: Peter Zijlstra <peterz@infradead.org>
 ---
- include/linux/sched/deadline.h | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/sched/build_policy.c  |  3 +++
+ kernel/sched/build_utility.c |  2 ++
+ kernel/sched/core.c          |  2 ++
+ kernel/sched/fair.c          |  2 ++
+ kernel/sched/sched.h         | 20 +++++++++++---------
+ kernel/sched/stats.h         |  4 ++--
+ 6 files changed, 22 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/sched/deadline.h b/include/linux/sched/deadline.h
-index 1aff00b65f3c..7c83d4d5a971 100644
---- a/include/linux/sched/deadline.h
-+++ b/include/linux/sched/deadline.h
-@@ -6,6 +6,8 @@
-  * NORMAL/BATCH tasks.
+diff --git a/kernel/sched/build_policy.c b/kernel/sched/build_policy.c
+index 6bb384ddcfab..9a169b2f97e6 100644
+--- a/kernel/sched/build_policy.c
++++ b/kernel/sched/build_policy.c
+@@ -13,6 +13,9 @@
   */
  
-+#include <linux/sched.h>
+ #include "sched.h"
 +
- #define MAX_DL_PRIO		0
++#include "autogroup.h"
++#include "stats.h"
+ #include "pelt.h"
  
- static inline int dl_prio(int prio)
+ #include "idle.c"
+diff --git a/kernel/sched/build_utility.c b/kernel/sched/build_utility.c
+index 31216ce0b4b3..8b2b199983bf 100644
+--- a/kernel/sched/build_utility.c
++++ b/kernel/sched/build_utility.c
+@@ -12,6 +12,8 @@
+ 
+ #include "sched.h"
+ #include "sched-pelt.h"
++#include "stats.h"
++#include "autogroup.h"
+ 
+ #include <linux/sched_clock.h>
+ 
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index ef946123e9af..22de53710ee9 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -11,6 +11,8 @@
+ #undef CREATE_TRACE_POINTS
+ 
+ #include "sched.h"
++#include "stats.h"
++#include "autogroup.h"
+ 
+ #include <linux/nospec.h>
+ #include <linux/blkdev.h>
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 16874e112fe6..7391c9287503 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -21,6 +21,8 @@
+  *  Copyright (C) 2007 Red Hat, Inc., Peter Zijlstra
+  */
+ #include "sched.h"
++#include "stats.h"
++#include "autogroup.h"
+ 
+ /*
+  * Targeted preemption latency for CPU-bound tasks:
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index f7d10b98e911..f255ec2afeca 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -96,11 +96,20 @@
+ # include <asm/paravirt.h>
+ #endif
+ 
++#include <trace/events/sched.h>
++
++#ifdef CONFIG_CGROUP_SCHED
++#include <linux/cgroup.h>
++#include <linux/psi.h>
++#endif
++
++#ifdef CONFIG_SCHED_DEBUG
++# include <linux/static_key.h>
++#endif
++
+ #include "cpupri.h"
+ #include "cpudeadline.h"
+ 
+-#include <trace/events/sched.h>
+-
+ #ifdef CONFIG_SCHED_DEBUG
+ # define SCHED_WARN_ON(x)	WARN_ONCE(x, #x)
+ #else
+@@ -417,9 +426,6 @@ extern bool dl_cpu_busy(unsigned int cpu);
+ 
+ #ifdef CONFIG_CGROUP_SCHED
+ 
+-#include <linux/cgroup.h>
+-#include <linux/psi.h>
+-
+ struct cfs_rq;
+ struct rt_rq;
+ 
+@@ -1919,9 +1925,6 @@ extern void flush_smp_call_function_from_idle(void);
+ static inline void flush_smp_call_function_from_idle(void) { }
+ #endif
+ 
+-#include "stats.h"
+-#include "autogroup.h"
+-
+ #if defined(CONFIG_SCHED_CORE) && defined(CONFIG_SCHEDSTATS)
+ 
+ extern void __sched_core_account_forceidle(struct rq *rq);
+@@ -2016,7 +2019,6 @@ static inline void __set_task_cpu(struct task_struct *p, unsigned int cpu)
+  * Tunables that become constants when CONFIG_SCHED_DEBUG is off:
+  */
+ #ifdef CONFIG_SCHED_DEBUG
+-# include <linux/static_key.h>
+ # define const_debug __read_mostly
+ #else
+ # define const_debug const
+diff --git a/kernel/sched/stats.h b/kernel/sched/stats.h
+index edc0d13fc61b..a0df79e6038c 100644
+--- a/kernel/sched/stats.h
++++ b/kernel/sched/stats.h
+@@ -2,10 +2,10 @@
+ #ifndef _KERNEL_STATS_H
+ #define _KERNEL_STATS_H
+ 
+-#ifdef CONFIG_SCHEDSTATS
+-
+ #include "sched.h"
+ 
++#ifdef CONFIG_SCHEDSTATS
++
+ extern struct static_key_false sched_schedstats;
+ 
+ /*
 -- 
 2.32.0
 
