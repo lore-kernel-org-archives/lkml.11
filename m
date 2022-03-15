@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61846C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E01C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347377AbiCOKtx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
+        id S244426AbiCOKuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 06:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347627AbiCOKsB (ORCPT
+        with ESMTP id S1348451AbiCOKt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:48:01 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4C652B1B;
-        Tue, 15 Mar 2022 03:45:05 -0700 (PDT)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KHqkl3YYDz681D0;
-        Tue, 15 Mar 2022 18:43:27 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 15 Mar 2022 11:44:58 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 10:44:55 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <damien.lemoal@opensource.wdc.com>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <bvanassche@acm.org>,
-        <ming.lei@redhat.com>, <hch@lst.de>, <hare@suse.de>
-CC:     <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <martin.wilck@suse.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 1/2] scsi: core: Fix sbitmap depth in scsi_realloc_sdev_budget_map()
-Date:   Tue, 15 Mar 2022 18:39:05 +0800
-Message-ID: <1647340746-17600-2-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1647340746-17600-1-git-send-email-john.garry@huawei.com>
-References: <1647340746-17600-1-git-send-email-john.garry@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+        Tue, 15 Mar 2022 06:49:27 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B50EB517EB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:09 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id a5so18993102pfv.2
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:47:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=wistron-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=L0zB6xiTLN7TUWW0GnFoc7P7DsjjNa+huYBviFNpk/k=;
+        b=kurHOyncJijHKQ/3NU/w4TnCG4BMWG7pbxNOcYWuXQ/xXSBjk8A4LBzinXx6+nXYo8
+         ddg5aBlyeH2nOKElyxrDjgcTu9bP5Uu9tFZ1sbRaIFmrLJtvQYtd9W8WJ97iLZ64r+nB
+         WxSa+5pA6UakEfS4S8StqdQNAtzBK7VQtx8gp0pBDetC/cgD5BHm0tZx9yUgrUkvCVhL
+         kr6symltjySqL7Cwfx6URza/fxWatbf50CmTo3HDDxE2a7Q6CY13J0T542TeVSThMAzF
+         3bUIpiSW5KL9MAIdFZkpjCi9fPQRtWiicn8HwyFBIoI0+wCIqngNm76PmSf2VdUhnK2W
+         1rFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=L0zB6xiTLN7TUWW0GnFoc7P7DsjjNa+huYBviFNpk/k=;
+        b=8D3IE3mJM3GpZa4Y7f7bHj0T/ZjAqP5RGuZsa5JH/D7DwCl/GCnYlNQakIUU9e4qzK
+         QvEGPfwNybgz7xPReBwtPIZCcsM9wo9RmeYw341pYq/GE2HjOUCjdPhgyPESxBN2aQPJ
+         Lp1x+7UbSrd2ujWCEg+RhViVcWRVIdIony3aD92Cxp8yvhuL8rstQP5zQO3G2zuqsPiz
+         jvtmTL16wEA8IaiSAXOat5H14ctaRJzP3nJo/5NjphlVg/JudJOqo6sQ84aJ3OxX19d5
+         TZQOYbQR4Ffbocmf4IVDEpy0RvBTlSdRpIftbweOQ0M7pS+YzbcC3SvvPThy6oqR6PJy
+         P9hg==
+X-Gm-Message-State: AOAM530qFvevQfEiIl4lYXkEmkI64a9Q/ll58I+H/A86hR/7Pr+Uyjdg
+        r1DTS5UadvIq6b5w3ohkx9mwGq78YbPrCQ==
+X-Google-Smtp-Source: ABdhPJxA2V6ApdodQ8a2vNaSyz81PLMVWnDWdh3IHXNxCSKTXOy7wpqb+nBs6S14gJeSDmqUCo2VtQ==
+X-Received: by 2002:a62:7793:0:b0:4f6:27a8:ae6d with SMTP id s141-20020a627793000000b004f627a8ae6dmr28183056pfc.65.1647341227975;
+        Tue, 15 Mar 2022 03:47:07 -0700 (PDT)
+Received: from localhost.localdomain (60-251-182-145.hinet-ip.hinet.net. [60.251.182.145])
+        by smtp.gmail.com with ESMTPSA id il7-20020a17090b164700b001bfc017a0adsm2740346pjb.37.2022.03.15.03.47.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 03:47:07 -0700 (PDT)
+From:   Mark Hsieh <mark_hsieh@wistron.corp-partner.google.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-nvme@lists.infradead.org, sagi@grimberg.me, hch@lst.de,
+        axboe@fb.com, kbusch@kernel.org, Mark_Hsieh@wistron.com,
+        Mark Hsieh <mark_hsieh@wistron.corp-partner.google.com>
+Subject: [PATCH] nvme-pci: disable write zeros support on specific SSDs
+Date:   Tue, 15 Mar 2022 18:47:02 +0800
+Message-Id: <20220315104702.20798-1-mark_hsieh@wistron.corp-partner.google.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit edb854a3680b ("scsi: core: Reallocate device's budget map on
-queue depth change"), the sbitmap for the device budget map may be
-reallocated after the slave device depth is configured.
+Like commit 5611ec2b9814 ("nvme-pci: prevent SK hynix PC400 from using
+Write Zeroes command"), Micron has the same issue:
+[ 6305.633887] blk_update_request: operation not supported error, dev
+nvme0n1, sector 340812032 op 0x9:(WRITE_ZEROES) flags 0x0 phys_seg 0 prio class 0
 
-When the sbitmap is reallocated we use the result from
-scsi_device_max_queue_depth() for the sbitmap size, but don't resize to
-match the actual device queue depth.
+So also disable Write Zeroes command on Micron.
 
-Fix by resizing the sbitmap after reallocating the budget sbitmap.
-
-Signed-off-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Mark Hsieh <mark_hsieh@wistron.corp-partner.google.com>
+Change-Id: Ic6ebfe141702d1869490bbf210627055b5b4d80f
 ---
- drivers/scsi/scsi_scan.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/nvme/host/pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
-index f4e6c68ac99e..2ef78083f1ef 100644
---- a/drivers/scsi/scsi_scan.c
-+++ b/drivers/scsi/scsi_scan.c
-@@ -223,6 +223,8 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
- 	int ret;
- 	struct sbitmap sb_backup;
- 
-+	depth = min_t(unsigned int, depth, scsi_device_max_queue_depth(sdev));
-+
- 	/*
- 	 * realloc if new shift is calculated, which is caused by setting
- 	 * up one new default queue depth after calling ->slave_configure
-@@ -245,6 +247,9 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
- 				scsi_device_max_queue_depth(sdev),
- 				new_shift, GFP_KERNEL,
- 				sdev->request_queue->node, false, true);
-+	if (!ret)
-+		sbitmap_resize(&sdev->budget_map, depth);
-+
- 	if (need_free) {
- 		if (ret)
- 			sdev->budget_map = sb_backup;
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index a7a502a5b2b5..68745e1d7b6a 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3245,6 +3245,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
+ 	{ PCI_DEVICE(0x2646, 0x500d),   /* Kingston OM3PDP3256B-AH 256G */
+ 		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
++	{ PCI_DEVICE(0x1344, 0x5411),   /* Micron 2450 MTFDKCD256TFK 256G */
++		.driver_data = NVME_QUIRK_DISABLE_WRITE_ZEROES, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ PCI_DEVICE(0x2646, 0x2263),   /* KINGSTON A2000 NVMe SSD  */
+ 		.driver_data = NVME_QUIRK_NO_DEEPEST_PS, },
 -- 
-2.26.2
+2.17.1
 
