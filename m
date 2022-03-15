@@ -2,104 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AFA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C05C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346508AbiCOJTY (ORCPT
+        id S1346505AbiCOJTj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
+        Tue, 15 Mar 2022 05:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346388AbiCOJTV (ORCPT
+        with ESMTP id S1346501AbiCOJTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:19:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85A91DFB1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:18:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647335886;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Tue, 15 Mar 2022 05:19:37 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1095C13D3F
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:18:24 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 7FFBD2190B;
+        Tue, 15 Mar 2022 09:18:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647335903; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=wBh8J9NNu5Aw3QyuGmWU4/1j/LKSodlLKfBbUhGiIe0=;
-        b=RlovcAp9zcTP+8UgZlq1s2wCX3weVIC8aco5LwvDMwJXQfB/tgeR2BkHaPMArvdSrU9eKG
-        NQBokOIJ8Kqa6PfE7mBlkXHY8A6z4tKpYP61d1eZHeoW9aGZKkmRBXmVu7LuJg9xYawCGy
-        nd/mqnVUXVwdVzpoPSb5odq6g49ay9g=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-529-GvFGFD5VOViMrEFzDWCA9w-1; Tue, 15 Mar 2022 05:18:05 -0400
-X-MC-Unique: GvFGFD5VOViMrEFzDWCA9w-1
-Received: by mail-wr1-f72.google.com with SMTP id 9-20020adf8009000000b00203d6cb4c60so215427wrk.3
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:18:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wBh8J9NNu5Aw3QyuGmWU4/1j/LKSodlLKfBbUhGiIe0=;
-        b=egnxxQgar1olhoCNYtoBd3EAAMWmmiWlLBBDHXrVU9hMihdQRpOTmqONQz3UcSxA3Q
-         xlPrqO0Lmz/gjOCcVS7HHpV+w14NnZmy/wxR6F2VSOf8dBb4ZGf8O6wd3LEzIqVVSr2b
-         OJ0ZIIVcZ2USLPQPr4mpTK2aV7SJ2VEbxVU7IY+TufUvSIfMnBrTBtr7DHh8Q2Xd6CRL
-         NUYYr6EhuoOA0usJdp08Kvk6uyfrXt5zO+9qPb8VJqL7d8ikTBAac7qljN2qk+xclDli
-         r6LESbaLQ5kFwHc6/YV1gWDOHLaysZq3yCCDTLHjsJYrwfFUTNyPM0E5lDpj2Cp0yjEA
-         HYtA==
-X-Gm-Message-State: AOAM530W19S/Z3aISLNFyYIulS84asCi93nSMnJhpd/1t2xut4m8pS5c
-        zuUOj7aWMMypD4It3zY9QjNX0byHAY91/S9G216IuaFRKc4YCmcoOKdoIoVIybn4hWdxBXOa0w2
-        LBH8Kh31I+nyevcWXQpc4JE/q
-X-Received: by 2002:adf:ee4b:0:b0:1f6:3413:282b with SMTP id w11-20020adfee4b000000b001f63413282bmr19502569wro.354.1647335883035;
-        Tue, 15 Mar 2022 02:18:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJziFUt0vjWLkTUV9oYH9rKLnYZc3d9TydrJ3H9L1hwi5ifBeuzXwpmzYV9LVn1GmGmVpcVktw==
-X-Received: by 2002:adf:ee4b:0:b0:1f6:3413:282b with SMTP id w11-20020adfee4b000000b001f63413282bmr19502525wro.354.1647335882336;
-        Tue, 15 Mar 2022 02:18:02 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m2-20020a1ca302000000b0038b6f235656sm1205577wme.19.2022.03.15.02.18.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 02:18:02 -0700 (PDT)
-Message-ID: <08e81f07-99d2-62a3-8eea-b2c0432b4d18@redhat.com>
-Date:   Tue, 15 Mar 2022 10:18:01 +0100
+        bh=1rQtbpI9yXo7d/IEWUrA6KgT48bWf5DibIth9r8UJJ4=;
+        b=LFYLxsGcYYxphngnjanBQl3HelQ95Kv0KQEKnEgQfN5p5rIEkKaC27Wzyf2pfntijdEn/a
+        bm1nYO8N2oKXnuXdwDFzdFeYGMIHUlDUHzW6Xshuq9lSLOLdw6M+noYdgbEHl0QO6PynkJ
+        y6DIS1QjTK+PISKX9LxI1WJRw0feeO4=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 15D02A3B8A;
+        Tue, 15 Mar 2022 09:18:22 +0000 (UTC)
+Date:   Tue, 15 Mar 2022 10:18:20 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Cai Huoqing <caihuoqing@baidu.com>, Tejun Heo <tj@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] linux/kthread.h: remove unused macros
+Message-ID: <YjBZ3Ir3H7IM9Pfj@alley>
+References: <20220314145343.494694-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next] drm/solomon: Make DRM_SSD130X depends on MMU
-Content-Language: en-US
-To:     YueHaibing <yuehaibing@huawei.com>, airlied@linux.ie,
-        daniel@ffwll.ch, maxime@cerno.tech
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-References: <20220312063437.19160-1-yuehaibing@huawei.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220312063437.19160-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314145343.494694-1-linux@rasmusvillemoes.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello YueHaibing,
-
-Thanks for the patch.
-
-On 3/12/22 07:34, YueHaibing wrote:
-> WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
->   Depends on [n]: HAS_IOMEM [=y] && DRM [=m] && MMU [=n]
->   Selected by [m]:
->   - DRM_SSD130X [=m] && HAS_IOMEM [=y] && DRM [=m]
+On Mon 2022-03-14 15:53:42, Rasmus Villemoes wrote:
+> Ever since these macros were introduced in commit b56c0d8937e6
+> ("kthread: implement kthread_worker"), there has been precisely one
+> user (commit 4d115420707a, "NVMe: Async IO queue deletion"), and that
+> user went away in 2016 with db3cbfff5bcc ("NVMe: IO queue deletion
+> re-write").
 > 
-> DRM_GEM_SHMEM_HELPER depends on MMU, DRM_SSD130X should also depends on MMU.
+> Apart from being unused, these macros are also awkward to use (which
+> may contribute to them not being used): Having a way to statically (or
+> on-stack) allocating the storage for the struct kthread_worker itself
+> doesn't help much, since obviously one needs to have some code for
+> actually _spawning_ the worker thread, which must have error
+> checking. And these days we have the kthread_create_worker() interface
+> which both allocates the struct kthread_worker and spawns the kthread.
 > 
-> Fixes: a61732e80867 ("drm: Add driver for Solomon SSD130x OLED displays")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
+> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-Indeed. All the DRM drivers that select DRM_GEM_SHMEM_HELPER depend on MMU.
+Makes sense.
 
-Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+Acked-by: Petr Mladek <pmladek@suse.com>
 
--- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Best Regards,
+Petr
