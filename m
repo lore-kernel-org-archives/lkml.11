@@ -2,207 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4DA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 966DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346093AbiCOIom (ORCPT
+        id S1346098AbiCOIpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48446 "EHLO
+        Tue, 15 Mar 2022 04:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346089AbiCOIoh (ORCPT
+        with ESMTP id S1346089AbiCOIo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:44:37 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 311642607;
-        Tue, 15 Mar 2022 01:43:18 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id B2C74DF955;
-        Tue, 15 Mar 2022 01:43:17 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id l4rAMarCJxh5; Tue, 15 Mar 2022 01:43:16 -0700 (PDT)
-Message-ID: <a66bd7ff8356cc0d97073ae41d128eabb74cc94d.camel@puri.sm>
-Subject: Re: [PATCH] usb: xhci: make XHCI_STOP_EP_CMD_TIMEOUT a module
- parameter
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     mathias.nyman@intel.com, kernel@puri.sm, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 15 Mar 2022 09:43:12 +0100
-In-Reply-To: <60227688-4435-516d-2525-b31fabbef273@linux.intel.com>
-References: <20220304113057.1477958-1-martin.kepplinger@puri.sm>
-         <YiIfZFPl9ZqPBKvj@kroah.com>
-         <835b3990-43a6-a985-81b4-b86bddfe951f@linux.intel.com>
-         <2d439eec0548361669bcc7b4de5b2c0e966d4d62.camel@puri.sm>
-         <efd900656e15eac9169ee597ab7c19986c15277c.camel@puri.sm>
-         <60227688-4435-516d-2525-b31fabbef273@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Tue, 15 Mar 2022 04:44:58 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8552665
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:43:43 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id p9so27767404wra.12
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 01:43:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PT6oP8Jxq/AnQKQrGym6FIRcV/x2SroiEfI6dmW78oU=;
+        b=kZTtYTq13n91G600kgSsv3nvkimRqSxLmYPmUwDwuFUzoG656P+ToP2+CdHvE0tYdL
+         oHyUFRhEkm918IAdWMgwx0D7CiN+2/Kd0j0eau7VeC3D46q7I3Xjybjvo2BU7yHKu0Kb
+         T39MrWvm9J05ll1Ma+T+UhyWORStQpFj18XMGXZoCm77EVn4e+Um6bTblcLriK4GUWkc
+         E0hHoFUYpE7ziI/e8lgBKIYKGPjYL4xEjaq86lqRmMTVAwLrewpX0V0AszmDb3ZJEpJ1
+         UI7Sc4g24kQUdbiDqCgTXp/N7K9fKxv69eovZVDKk1ekdV10UwI+bRPYqLoLsIlJcr3+
+         Tauw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=PT6oP8Jxq/AnQKQrGym6FIRcV/x2SroiEfI6dmW78oU=;
+        b=V/FP6RfbJa1kd0kWv//V6PteJmVv4jJTjguncsLRrc9C49L88qCKYo3S9NMj46yy57
+         M1K+mgCjdnjoiqfpt8T5pg/FI+TevoYToTSXGOltz++NXPtXgel/a0pUgegxfU+zmBPt
+         dclNIf9muZO3qH1TeqUXX+L47cHHJbjqZhKrGXOXutXPrSaza9/fEJwrnLWbrD5NsgoA
+         8WWKGUXGlTafjbxjAzODVKOWGIQCJ+ZXXR8exAnQh5hzPlEcbjp2l5WXh9O9BCvVc5Kp
+         faEesXoy/nte4gQwrygrb20V83t+PtKLLT130kTP71nxAzuklEPIbMtHHd/0692ShI1K
+         JB8w==
+X-Gm-Message-State: AOAM531ajdX/FpICSr09S+hZrqfeMd5Sl9lAeDJVwTV+FS0khOUtzZtw
+        AyWj5kwmxFklTSyD/Exw6VGofxYrvZw=
+X-Google-Smtp-Source: ABdhPJy69whst2eBve1qaFC7O/uiNStT6gJPWBejAclg4dgwQHBHQrv+Sis3zs6rWSg1PC/f7fCTbA==
+X-Received: by 2002:a5d:6c67:0:b0:203:bf25:f311 with SMTP id r7-20020a5d6c67000000b00203bf25f311mr5452015wrz.108.1647333822098;
+        Tue, 15 Mar 2022 01:43:42 -0700 (PDT)
+Received: from kepler.. (0526F1FC.dsl.pool.telekom.hu. [5.38.241.252])
+        by smtp.gmail.com with ESMTPSA id e6-20020a5d5006000000b0020374784350sm15078503wrt.64.2022.03.15.01.43.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 01:43:41 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+From:   Ingo Molnar <mingo@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Mel Gorman <mgorman@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 00/15] sched/headers: Optimize scheduler build time
+Date:   Tue, 15 Mar 2022 09:42:32 +0100
+Message-Id: <20220315084247.40783-1-mingo@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Mittwoch, dem 09.03.2022 um 11:29 +0200 schrieb Mathias Nyman:
-> On 9.3.2022 9.56, Martin Kepplinger wrote:
-> > Am Dienstag, dem 08.03.2022 um 17:17 +0100 schrieb Martin
-> > Kepplinger:
-> > > Am Montag, dem 07.03.2022 um 10:49 +0200 schrieb Mathias Nyman:
-> > > > On 4.3.2022 16.17, Greg KH wrote:
-> > > > > On Fri, Mar 04, 2022 at 12:30:57PM +0100, Martin Kepplinger
-> > > > > wrote:
-> > > > > > On the Librem 5 imx8mq system we've seen the stop endpoint
-> > > > > > command
-> > > > > > time out regularly which results in the hub dying.
-> > > > > > 
-> > > > > > While on the one hand we see "Port resume timed out, port
-> > > > > > 1-1:
-> > > > > > 0xfe3"
-> > > > > > before this and on the other hand driver-comments suggest
-> > > > > > that
-> > > > > > the driver
-> > > > > > might be able to recover instead of dying here, Sarah
-> > > > > > seemed to
-> > > > > > have a
-> > > > > > workaround for this particulator problem in mind already:
-> > > > > > 
-> > > > > > Make it a module parameter. So while it might not be the
-> > > > > > root
-> > > > > > cause for
-> > > > > > the problem, do this to give users a workaround.
-> > > > > 
-> > > > > This is not the 1990's, sorry, please do not add new module
-> > > > > parameters.
-> > > > > They modify code, when you want to modify an individual
-> > > > > device.
-> > > > > 
-> > > > 
-> > > > Agree, I think we really need to find the rootcause here.
-> > > > 
-> > > > There's a known problem with this stop endpoint timeout timer.
-> > > > 
-> > > > For all other commands we start the timer when the controller
-> > > > starts
-> > > > processing the
-> > > > command, but the stop endpoint timer is started immediately
-> > > > when
-> > > > command is queued.
-> > > > So it might timeout if some other commend before it failed.
-> > > > 
-> > > > I have a patchseries for this. It's still work in progress but
-> > > > should
-> > > > be testable.
-> > > > Pushed to a branch named stop_endpoint_fixes
-> > > > 
-> > > > git://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git
-> > > > stop_endpoint_fixes
-> > > > https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/log/?h=stop_endpoint_fixes
-> > > > 
-> > > > Can you try it out and see if it helps?
-> > > > 
-> > > 
-> > > thanks a lot Mathias, I'm running these now. The timeout has not
-> > > been
-> > > easy to reproduce (or I'm just lazy) but in a few days I should
-> > > be
-> > > able
-> > > to tell whether that helps.
-> > > 
-> > > So this thread has been about
-> > > 
-> > > [14145.960512] xhci-hcd xhci-hcd.4.auto: Port resume timed out,
-> > > port
-> > > 1-
-> > > 1: 0xfe3
-> > > [14156.308511] xhci-hcd xhci-hcd.4.auto: xHCI host not responding
-> > > to
-> > > stop endpoint command.
-> > > 
-> > > that I previously tried to work around by increasing
-> > > XHCI_MAX_REXIT_TIMEOUT_MS and XHCI_STOP_EP_CMD_TIMEOUT.
-> > > 
-> > > 
-> > > These patches can't help with the following, right?
-> > > readl_poll_timeout_atomic() with a fixed timeout is called in
-> > > this
-> > > case:
-> > > 
-> > > xhci-hcd xhci-hcd.4.auto: Abort failed to stop command ring: -110
-> > > 
-> > > I see that too from time to time. It results in the HC dying as
-> > > well.
-> > > 
-> > > thanks,
-> > >                               martin
-> > > 
-> > 
-> > hi Mathias,
-> > 
-> > I already saw "Port resume timed out" and the HC dying running your
-> > patches. I append the logs.
-> > 
-> > So for now I saw more success with increasing
-> > XHCI_MAX_REXIT_TIMEOUT_MS.
-> > 
-> 
-> XHCI_MAX_REXIT_TIMEOUT_MS is only 20ms, that we can probably change.
-> 
-> Is 40ms enough?
-> 
-> "Port resume timed out, port 1-1: 0xfe3" means port link state is
-> still in
-> resume even if we asked link to go to U0 20ms ago.
-> 
-> Maybe this hw combination just resumes slowly.
-> 
-> Thanks
-> Mathias
+Optimize the kernel scheduler build time by organizing the code into
+larger build units. This cuts CPU usage by 60%.
 
+These patches originate from the fast-headers tree.
 
-hi Mathias, sorry for not responding until now. I'm currently testing
-whether QUIRK_HUB_SLOW_RESET will work too to avoid the HC dying due to
-the command timeouts:
+The numbers:
 
-{ USB_DEVICE(0x0424, 0x2640), .driver_info = USB_QUIRK_HUB_SLOW_RESET
-},
+Cumulative scheduler (kernel/sched/) build time speedup on a
+Linux distribution's config, which enables all scheduler features,
+compared to the vanilla kernel:
 
-But these timeouts usually happen after a port is reset (not just
-runtime-resumed without resetting, which happens very often).
+      _____________________________________________________________________________
+     |
+     |  Vanilla kernel (v5.13-rc7):
+     |_____________________________________________________________________________
+     |
+     |  Performance counter stats for 'make -j96 kernel/sched/' (3 runs):
+     |
+     |   126,975,564,374      instructions              #    1.45  insn per cycle           ( +-  0.00% )
+     |    87,637,847,671      cycles                    #    3.959 GHz                      ( +-  0.30% )
+     |         22,136.96 msec cpu-clock                 #    7.499 CPUs utilized            ( +-  0.29% )
+     |
+     |            2.9520 +- 0.0169 seconds time elapsed  ( +-  0.57% )
+     |_____________________________________________________________________________
+     |
+     |  Patched kernel:
+     |_____________________________________________________________________________
+     |
+     | Performance counter stats for 'make -j96 kernel/sched/' (3 runs):
+     |
+     |    50,420,496,914      instructions              #    1.47  insn per cycle           ( +-  0.00% )
+     |    34,234,322,038      cycles                    #    3.946 GHz                      ( +-  0.31% )
+     |          8,675.81 msec cpu-clock                 #    3.053 CPUs utilized            ( +-  0.45% )
+     |
+     |            2.8420 +- 0.0181 seconds time elapsed  ( +-  0.64% )
+     |_____________________________________________________________________________
 
-And exactly *that* is what I now want to try to avoid now. I *never*
-want ports on the Hub in question to be reset. (it causes enough other
-hick-ups even *if* the reset would be successful and not result in the
-HC die, so all resets need to go away).
+    Summary:
 
-Normally, on successful runtime resume (without any reset), the hub
-port status is:
+      - CPU time used to build the scheduler dropped by -60.9%, a reduction
+        from 22.1 clock-seconds to 8.7 clock-seconds.
 
-Mär 15 08:24:44.748852 pureos kernel: usb 1-1-port2: status 0503 change
-0004
-Mär 15 08:24:44.747863 pureos kernel: usb 1-1-port1: status 0507 change
-0000
+      - Wall-clock time to build the scheduler dropped by -3.9%, a reduction
+        from 2.95 seconds to 2.84 seconds.
 
-But when the following happens:
+Ingo Molnar (15):
+  sched/headers: Fix header to build standalone: <linux/sched_clock.h>
+  sched/headers: Add header guard to kernel/sched/sched.h
+  sched/headers: Add header guard to kernel/sched/stats.h and kernel/sched/autogroup.h
+  sched/headers: sched/clock: Mark all functions 'notrace', remove CC_FLAGS_FTRACE build asymmetry
+  sched/headers: Add initial new headers as identity mappings
+  sched/headers: Fix comment typo in kernel/sched/cpudeadline.c
+  sched/headers: Make the <linux/sched/deadline.h> header build standalone
+  sched/headers: Introduce kernel/sched/build_utility.c and build multiple .c files there
+  sched/headers: Introduce kernel/sched/build_policy.c and build multiple .c files there
+  sched/headers: Standardize kernel/sched/sched.h header dependencies
+  sched/headers: Reorganize, clean up and optimize kernel/sched/core.c dependencies
+  sched/headers: Reorganize, clean up and optimize kernel/sched/fair.c dependencies
+  sched/headers: Reorganize, clean up and optimize kernel/sched/build_policy.c dependencies
+  sched/headers: Reorganize, clean up and optimize kernel/sched/build_utility.c dependencies
+  sched/headers: Reorganize, clean up and optimize kernel/sched/sched.h dependencies
 
-Mär 15 08:24:52.660348 pureos kernel: usb 1-1-port2: status 0101 change
-0005
-Mär 15 08:24:52.656107 pureos kernel: usb 1-1-port1: status 0507 change
-0000
+ arch/arm64/include/asm/paravirt_api_clock.h |   1 +
+ arch/x86/include/asm/paravirt_api_clock.h   |   1 +
+ include/linux/cgroup_api.h                  |   1 +
+ include/linux/cpumask_api.h                 |   1 +
+ include/linux/fs_api.h                      |   1 +
+ include/linux/gfp_api.h                     |   1 +
+ include/linux/hashtable_api.h               |   1 +
+ include/linux/hrtimer_api.h                 |   1 +
+ include/linux/kobject_api.h                 |   1 +
+ include/linux/kref_api.h                    |   1 +
+ include/linux/ktime_api.h                   |   1 +
+ include/linux/llist_api.h                   |   1 +
+ include/linux/lockdep_api.h                 |   1 +
+ include/linux/mm_api.h                      |   1 +
+ include/linux/mutex_api.h                   |   1 +
+ include/linux/perf_event_api.h              |   1 +
+ include/linux/pgtable_api.h                 |   1 +
+ include/linux/ptrace_api.h                  |   1 +
+ include/linux/rcuwait_api.h                 |   1 +
+ include/linux/refcount_api.h                |   1 +
+ include/linux/sched/affinity.h              |   1 +
+ include/linux/sched/cond_resched.h          |   1 +
+ include/linux/sched/deadline.h              |   2 +
+ include/linux/sched/posix-timers.h          |   1 +
+ include/linux/sched/rseq_api.h              |   1 +
+ include/linux/sched/task_flags.h            |   1 +
+ include/linux/sched/thread_info_api.h       |   1 +
+ include/linux/sched_clock.h                 |   2 +
+ include/linux/seqlock_api.h                 |   1 +
+ include/linux/softirq.h                     |   1 +
+ include/linux/spinlock_api.h                |   1 +
+ include/linux/swait_api.h                   |   1 +
+ include/linux/syscalls_api.h                |   1 +
+ include/linux/u64_stats_sync_api.h          |   1 +
+ include/linux/wait_api.h                    |   1 +
+ include/linux/workqueue_api.h               |   1 +
+ kernel/sched/Makefile                       |  28 +++++-------
+ kernel/sched/autogroup.c                    |   3 +-
+ kernel/sched/autogroup.h                    |   5 +++
+ kernel/sched/build_policy.c                 |  52 ++++++++++++++++++++++
+ kernel/sched/build_utility.c                | 109 +++++++++++++++++++++++++++++++++++++++++++++
+ kernel/sched/clock.c                        |  44 +++++++++----------
+ kernel/sched/completion.c                   |   2 +-
+ kernel/sched/core.c                         |  81 +++++++++++++++++++++++++++++-----
+ kernel/sched/core_sched.c                   |   3 --
+ kernel/sched/cpuacct.c                      |   3 +-
+ kernel/sched/cpudeadline.c                  |   3 +-
+ kernel/sched/cpufreq.c                      |   3 --
+ kernel/sched/cpufreq_schedutil.c            |   7 ---
+ kernel/sched/cpupri.c                       |   1 -
+ kernel/sched/cputime.c                      |   1 -
+ kernel/sched/deadline.c                     |   2 -
+ kernel/sched/debug.c                        |   1 -
+ kernel/sched/fair.c                         |  31 +++++++++++++
+ kernel/sched/idle.c                         |   3 --
+ kernel/sched/isolation.c                    |   1 -
+ kernel/sched/loadavg.c                      |   1 -
+ kernel/sched/membarrier.c                   |   1 -
+ kernel/sched/pelt.c                         |   4 --
+ kernel/sched/psi.c                          |  15 -------
+ kernel/sched/rt.c                           |   3 --
+ kernel/sched/sched.h                        | 114 ++++++++++++++++++++++++++----------------------
+ kernel/sched/stats.c                        |   1 -
+ kernel/sched/stats.h                        |   4 ++
+ kernel/sched/stop_task.c                    |   1 -
+ kernel/sched/swait.c                        |   1 -
+ kernel/sched/topology.c                     |   1 -
+ kernel/sched/wait.c                         |   1 -
+ kernel/sched/wait_bit.c                     |   2 +-
+ 69 files changed, 407 insertions(+), 163 deletions(-)
+ create mode 100644 arch/arm64/include/asm/paravirt_api_clock.h
+ create mode 100644 arch/x86/include/asm/paravirt_api_clock.h
+ create mode 100644 include/linux/cgroup_api.h
+ create mode 100644 include/linux/cpumask_api.h
+ create mode 100644 include/linux/fs_api.h
+ create mode 100644 include/linux/gfp_api.h
+ create mode 100644 include/linux/hashtable_api.h
+ create mode 100644 include/linux/hrtimer_api.h
+ create mode 100644 include/linux/kobject_api.h
+ create mode 100644 include/linux/kref_api.h
+ create mode 100644 include/linux/ktime_api.h
+ create mode 100644 include/linux/llist_api.h
+ create mode 100644 include/linux/lockdep_api.h
+ create mode 100644 include/linux/mm_api.h
+ create mode 100644 include/linux/mutex_api.h
+ create mode 100644 include/linux/perf_event_api.h
+ create mode 100644 include/linux/pgtable_api.h
+ create mode 100644 include/linux/ptrace_api.h
+ create mode 100644 include/linux/rcuwait_api.h
+ create mode 100644 include/linux/refcount_api.h
+ create mode 100644 include/linux/sched/affinity.h
+ create mode 100644 include/linux/sched/cond_resched.h
+ create mode 100644 include/linux/sched/posix-timers.h
+ create mode 100644 include/linux/sched/rseq_api.h
+ create mode 100644 include/linux/sched/task_flags.h
+ create mode 100644 include/linux/sched/thread_info_api.h
+ create mode 100644 include/linux/seqlock_api.h
+ create mode 100644 include/linux/softirq.h
+ create mode 100644 include/linux/spinlock_api.h
+ create mode 100644 include/linux/swait_api.h
+ create mode 100644 include/linux/syscalls_api.h
+ create mode 100644 include/linux/u64_stats_sync_api.h
+ create mode 100644 include/linux/wait_api.h
+ create mode 100644 include/linux/workqueue_api.h
+ create mode 100644 kernel/sched/build_policy.c
+ create mode 100644 kernel/sched/build_utility.c
 
-then hub_activate() sets "reset_resume" (persist is enabled) and it's
-too late :)
-
-Do you have an idea about what could be the cause for "status 0101"
-here? (it basically means ENABLE and HIGH_SPEED is not set, but why?)
-
-I know this is a bit of a different area now, but it's all about
-avoiding problems on that hub at runtime.
-
-thanks,
-
-                                 martin
-
+-- 
+2.32.0
 
