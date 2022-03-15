@@ -2,154 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D77EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 04:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 753CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 04:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344772AbiCOEWx (ORCPT
+        id S1344733AbiCOEYH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 00:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45082 "EHLO
+        Tue, 15 Mar 2022 00:24:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230081AbiCOEWo (ORCPT
+        with ESMTP id S238573AbiCOEYE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 00:22:44 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A80848385;
-        Mon, 14 Mar 2022 21:21:33 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22F3WUGm021992;
-        Tue, 15 Mar 2022 04:21:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=smR3UdEtYLzxtfUpHTLl7WgqCG0UxSkvC1QnOhJ5NRI=;
- b=ZP/06JhHmnIprq5wTsB4oneyAWIeQqpIXVueTRH27KxgQzxx5hy0oePq9htymIfKt1GK
- Far0sIeDYpEaP1GMfCa2F2JgCa4Ms4ElEjfJnso/+q5HDOOufL+YdkyvcJxbChSpzIkA
- C3lYl+i+6e1zcmiY6alOXaCYrBP2lUufXXnz9tScO+htp54XcdHhmEgNrEWTZB7E7+LS
- W09Fb4xfQNkOe5oE/fOws1m1p2EUTOXkjzGlF1/Y5hnLeHN15EHzubs6ATerMzlpyg6t
- Y3kv2fyuFABNNjWDry3NBnGr7A9o21qPpnr+XfuGB7N2gZuSsc8NEBHN2H1ZRGG+U7nv ow== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3et60r9wd2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 04:21:16 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22F4GvMt187839;
-        Tue, 15 Mar 2022 04:21:15 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2109.outbound.protection.outlook.com [104.47.70.109])
-        by userp3020.oracle.com with ESMTP id 3et6578bc0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 04:21:15 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XfIdyO9s5L0RFrLc/DvfKRLddDLvPrFPsxsI7yPR1bOuTSezHlPSg468DlAFowSGA8/fif9A7RRk4jz3X+BPdenpHg+0rufgEzIhKN1uNvcQfqEjxKA2DvgJBdoHu1KJTgFcjraX8oHQTjYQhIRSlGsu4Rf942FJNC5us398azJmWkqTCexZ7FFSUU3oUqbxlg/O3e029EiuWve2xO3iuvnLBnqsC+IXyr/yJAyS4uIZDvG5+IOocrDymo2zbZ8d4CGclPNAvtrYB6YWHYyJoZtfOaMdxjzGsXvyQRG7DRAjFVgAWvXDXY8lycb3BH638IVNEnhwkJfgHqQtIZ7AaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=smR3UdEtYLzxtfUpHTLl7WgqCG0UxSkvC1QnOhJ5NRI=;
- b=VFL9sRtTKajFzJARR9/gIQVtfjR1rarJDLV5TY1wQRdmVawbr3bZRNP+43FKISaeDnIOXHRcEMdddufgwQAFvtLsxrhNwgceuVArX+EZ0CV3wruiwc0csrGKS55/AJtEBcYlaGiUqUyQN232c/CdMyXrxeeLIw0JFgDos+GmtJp1vcqynfD13tsmKJ+0Wd4YIlRxwL6Xf+AASHVDo6a/w/Xs5zQaVnEMPX65hr585MXQpmcIw4T5Rbf2uFQLNG7moNoFmIIOtTJLFMLxa6drkcbjyfyiry0+GRK0L4dohjTeGjSaAVW6mMYNzkUZIlkTP56aepnhcRjuYl9f+j6uWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=smR3UdEtYLzxtfUpHTLl7WgqCG0UxSkvC1QnOhJ5NRI=;
- b=I59K1/ryK0JZYjR/ktglOVaTWvZW5la0nZ60aHvWy8cTJTqXOlP+HkzumO7Fj5Xn4Egs0A2i1mgnDkFc/WV94T0TPNXkxP7LNK68oUz3UZ6ob8pv2ahJLlwNHXMDOWhlOO+2ThJ8BAElNbklb/uHgNAU7kWYirdV/2WCHv1rJE8=
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
- by SA2PR10MB4457.namprd10.prod.outlook.com (2603:10b6:806:115::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25; Tue, 15 Mar
- 2022 04:21:13 +0000
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::48e3:d153:6df4:fbed]) by PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::48e3:d153:6df4:fbed%4]) with mapi id 15.20.5061.029; Tue, 15 Mar 2022
- 04:21:13 +0000
-To:     Wenchao Hao <haowenchao@huawei.com>
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
-        "James E . J . Bottomley" <jejb@linux.ibm.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        <open-iscsi@googlegroups.com>, <linux-scsi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Wu Bo <wubo40@huawei.com>,
-        Zhiqiang Liu <liuzhiqiang26@huawei.com>,
-        <linfeilong@huawei.com>
-Subject: Re: [PATCH v3 0/3] scsi:iscsi: handle iscsi_cls_conn device with
- sysfs correctly
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq1bky7dexf.fsf@ca-mkp.ca.oracle.com>
-References: <20220310015759.3296841-1-haowenchao@huawei.com>
-Date:   Tue, 15 Mar 2022 00:21:11 -0400
-In-Reply-To: <20220310015759.3296841-1-haowenchao@huawei.com> (Wenchao Hao's
-        message of "Wed, 9 Mar 2022 20:57:56 -0500")
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR13CA0010.namprd13.prod.outlook.com
- (2603:10b6:a03:180::23) To PH0PR10MB4759.namprd10.prod.outlook.com
- (2603:10b6:510:3d::12)
+        Tue, 15 Mar 2022 00:24:04 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4D9100C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 21:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1647318173; x=1678854173;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vHag9sKA8G63wSr1MJwoHJ5oQT8S2xx+RtVKiXA7kMA=;
+  b=p6uNHaKwLsGc8NBki7IdV4VAo0gIp7ib8tA9ElyBsVyYOIQO2+J8sKLu
+   TLFLhVFwDlFNA/BxZFWj8MLxlx0fpfmuzDAt31zjPmPAL2sUs7ZEcxKPb
+   JNHqPpIYMmHTAYc8WhGiE2ObVx2W2iMeb1xDeNsqChC6nA+Aa3tTwEe31
+   H6COfDAyQVvdBl/Rl95JLYrbajClooG96NiNHgVniduPonlfqmGg6vTiE
+   +0CEjS+ZHEj0WdV2xGAkN4KlNhfbfpAxo2e+wwTsUrjIefNuycAhPB9jU
+   o04NHe56lrgW5GGW3R373eBvGkSI0cnjHz8uCS6p1vqC+jr+Laekt4DjC
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,182,1643644800"; 
+   d="scan'208";a="200214987"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 15 Mar 2022 12:22:50 +0800
+IronPort-SDR: inUCD5hJ13G6xjmJz7thmer2URS0aoM02dFHhk9psUAWgFVxJYex/airgp7FK10cGZ1va2Doiq
+ GIt/w5FDK20MTDsIQKf8KiRUbAZgCJdW/mVdgG0moqSVb0V9G4HB+7mm5JfWvWn/SmNlm/YbMc
+ PUvI8J50KdAD0kpyb+SBxvRMsUKCmGeuKYuWyfzdqTccb76nZyaYFC6RCjG3p6tbGaiyuDGCi9
+ ZbJ7N/xERKNRam/7Tahn9giUxqnpZMnlnG9uHLIZGr1Yoc0mAPqjE2BEsi8zBubZzrZjtF1CXx
+ 3DckmEkx7ZAli4ZsVFUaPKAP
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 20:53:58 -0700
+IronPort-SDR: yDp3SbaVi6bswYYXcquB3kHMJ5f8q/+KUKcXDwgkMWFk9cSRb9rkIvvr/2j6Jm6xBD9pl+NvEk
+ gH+zBwdeX7Q9+O8p1k8pP2L7cSky+8jGaejxqN3aIntISxpxasaqNSUiP67WWisdsPxGECMvEO
+ gnMuiXC+r+AFbiLDoEVXFLCVXW6jVQVbZzkU80uEBz2Oe9batI708jyOHYdSAk8Z2R0QeyGbYo
+ MH148U90uumaarTnNv8abbReX61Ex2l39U59mJsCvgJXmTpS7hAKYnTBDGZCXpaPzBXOLPfywU
+ 4z0=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 21:22:51 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KHgHZ55QLz1SVp0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 21:22:50 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1647318170; x=1649910171; bh=vHag9sKA8G63wSr1MJwoHJ5oQT8S2xx+RtV
+        KiXA7kMA=; b=QGNUaU6TpiPdN/ZIFfccSxGqMSpe5p44JD4xrOgIfULeb9Gvvdn
+        LKwkCM5eIF7hoWBRJA89oN9eN2g7oBxu0HhYl5otr60c0Hj9Hi62YFxEOxVODe4u
+        j263aXpYNZCcFIN5fU2y43P2wVLu4tzDpWrdLLUtjgo2Y/JXvpnb7vSTkaMrswt2
+        1sM0OOjkYgDvvpdnzYPsewEW+A5PTS8+4R1yiOWWkRXvt5cg0AFgAdYZAQJ6/2iU
+        wbp4WVYJlJhHs+3uyd6FQZTkxqk6t6N/Fco51dLKXkOHQMZxOUKDPEdVDOV2EgQE
+        aoWet0KNd5hcR1BP8hEEPmuA2vWD2xXSupw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id ljFQAiOb00R2 for <linux-kernel@vger.kernel.org>;
+        Mon, 14 Mar 2022 21:22:50 -0700 (PDT)
+Received: from [10.225.163.101] (unknown [10.225.163.101])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KHgHX3czQz1Rvlx;
+        Mon, 14 Mar 2022 21:22:48 -0700 (PDT)
+Message-ID: <8f32b2ed-13d6-c357-e417-b86a57a285db@opensource.wdc.com>
+Date:   Tue, 15 Mar 2022 13:22:47 +0900
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73533df6-555c-434b-1a92-08da063b3da4
-X-MS-TrafficTypeDiagnostic: SA2PR10MB4457:EE_
-X-Microsoft-Antispam-PRVS: <SA2PR10MB4457CFEA144FD78978CA99F98E109@SA2PR10MB4457.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VLCeCeHHvnetXn3vo2mUiy2rpAKiO1h4uCNyNdyVc21BebeGKKTV0+FievSU62b+jMbpAHwlt1vUDUyxuo9y7knLAGTKyi0zr/nDoVULklWglCbwW1u/i+qexWbGZA28H7RhFmD/UZHGmrJeZpkbZsFq5oDyYtXUKlNXQvSKA6hx3gzFpTZU8vWDy8eURfsJSoEWMMeSiBtGeAdELAn4xTz8eIQlDogy/FNS9f74ftIeXYLxk3I7Dja4y8LYsPTwzST8Dg166tJDVhLcVeevFaveD1l3qk7zkIilMn+M4Q3uSVWDFXffy7FmR0OplfainhYyn0p9fAlyRPte0lnNuoVIw+da9EwNZ99Pc3nLbJeXrZYj+TIXiBjZ2g2k/CEoAToT3m14tL/Dv0LDwWnEwMvvqRUJjltzDYpa/WHCGirvQqSbL3ohrGD0mEti3cnTfDy+fVC+TOx5yvBdjpgHhe3ArLkjHqW0NOj4uAWJq8jt5jb3fXGSlCrS0dbUoeu2ZSlzYJ7NAsiivrGrtbcqnEChorDaaCst1yC3Jopfc7AhQqSaBGNVBYe9NwOTQjOP4O63jNw5WzQVmskIkKzekE4CnmoCQUbxxCn9k/q21xNW7Bqg7db9fWhSHNg/pgPDX7ZVGg0BzsbM8nigvT21lN1u8WH8uGFk+JBIA2lw/WufipmAdt9+DE9zMOc8bZloFHqebqhsRIqrRr3fjTEBtA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(7416002)(66556008)(66946007)(66476007)(8676002)(4326008)(5660300002)(6916009)(54906003)(558084003)(8936002)(186003)(26005)(508600001)(6512007)(86362001)(6486002)(36916002)(38350700002)(52116002)(2906002)(38100700002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IAuUl2osm+0ivgabXbF64mu5wWpJTzyq+d4exCIsrAjMmsHC1cWz4B4X+qIK?=
- =?us-ascii?Q?6MoL5Rp5r280lUfkHJtrJZfoJ1Me+/8fKRkPP//pwWu//wi7flNf5zVcalAp?=
- =?us-ascii?Q?SqCJRDWN64DPRI1S0beoMMtqOAWqhhJJqToIW/kQ/WKduftxc8vdKbFUGPRa?=
- =?us-ascii?Q?SCqPFhWvyKMSqiOn48O6HAKtZ8EzUeIlqYx97WhdvvYz/2V2FpRZHN75An/K?=
- =?us-ascii?Q?+eTuDjvhz5sB8nP+dkhj800UM8Yx3lF7da7fcRj3AtHm1eh+Br4cQ3rlJOtq?=
- =?us-ascii?Q?dxEDajp5mJxU8HbTqRyPjz5wRSu+AGpsROasDQn8J8TxdwOXbOC9O/d7YCHP?=
- =?us-ascii?Q?LCQWfU8whOuNZGkt6hENLq0ufJvJ0jzRzQDs9IrthjN0N1/62EZBYinoa7er?=
- =?us-ascii?Q?+Q7xEIfwcj8jOFg2FiDdWRatRBhrf76sGwCzUoEoFKcchgJhNSIo3mij4wjh?=
- =?us-ascii?Q?haDCMMOokMjIZWcWoeiybXxDpyE6ebq6Q5kD9DYW83N2h6skixlePTBYpEyI?=
- =?us-ascii?Q?P+7x8ns/T5DflwVqrc53OEF+wsaY0ZdF0HG3ENDQxJRr/CO4DaaNHRkEs0KY?=
- =?us-ascii?Q?2rhR4AHGn6RRgZR12ywZcHqXqdLGgvEen9AHeEiDX1G6vttdcMrU2Kz88pxO?=
- =?us-ascii?Q?Mz6oKkUIKOY8JMVL3pyQP0Bq9+nd6FF1CqR0y84+rUldCZ3Lw42FulejF3c3?=
- =?us-ascii?Q?sY9YF5dsirE07eEl6zijkNdCxvmg6CobYvU3AnXLl4sIJBYd1U+79+vT4wz4?=
- =?us-ascii?Q?XaOV5INEdagAL++JYu5a2ckLvqGrTs9YeRfbiqRBd2Z0Fzhe36oOO3kTCaia?=
- =?us-ascii?Q?qkcXmKEfJ0pTsrstpEvKJv8HnQHR6Uij6tcLYGbSE0Pxoroc65/NEFk6NjS5?=
- =?us-ascii?Q?g9669TY+/ujH2XSQMgSL22CpIKdVIEyHfJMlZnXgAECIwouyObcJ9P+8gk2H?=
- =?us-ascii?Q?IKXUIiuN4VYuvuM+VW+Xd/NL4mQCtDHmjMGc597WfhwRKxcCNDhn6Z5XpJN2?=
- =?us-ascii?Q?tyYYa2Zktkk5OK7Rn+b0fnoBW5bds5pdJ3vSNND5433wzljVBAUVDNLDsmWw?=
- =?us-ascii?Q?BiNVVwmyQWU4FOlfgQ1Dnj5mW9JYgo02k8ecTBPQBbkHEeNNx54UK9HNt5Fx?=
- =?us-ascii?Q?Zl7v3CyctLv0GEYJeDf9gehdZzwI/U5N6NyXoG5I9PQmaGoJKcmjWO2vy/6C?=
- =?us-ascii?Q?h2GqlIpuueMANxI1wIExMoB9cb8B/IdaeucbXOkdmXXXuY+f3bxQme0rrrOO?=
- =?us-ascii?Q?cPOBTFgh2NJevlUzd2Wpzc2/7NklxDwa8BbrYFubqKJRUQ2pGpADmNI8rpI8?=
- =?us-ascii?Q?M8QeZZDob54iDqN4gDdnkIxNC8IAKXdD4HXHoonfEbxtTC/CWmUCV6wbzSjM?=
- =?us-ascii?Q?/9dPSVc6QF/iweIIHyD4T+UjXbwyf830AQlztHOTRyEigLZRYSQUR8V5mhJ6?=
- =?us-ascii?Q?pjA3ODo+LMTSPwEkQ6kK0N8vWqS5rxJC/NcUcO+SHvUtNTJC8iJCXg=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73533df6-555c-434b-1a92-08da063b3da4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 04:21:13.4441
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NEExHLrMOXSnMcwS6DgxlUEilyEtc98FGyVNPdrXtgMjjarpSUKfQXa+kvmOFTfpIZSG6cxmfXGGWIdZzwymj/8a0g6P+ClZstcAtU3ZQtk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR10MB4457
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10286 signatures=693139
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0
- malwarescore=0 adultscore=0 bulkscore=0 mlxscore=0 mlxlogscore=604
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203150026
-X-Proofpoint-GUID: 9NezOOlrLRAO4y65L6504En3FzBFe6Sj
-X-Proofpoint-ORIG-GUID: 9NezOOlrLRAO4y65L6504En3FzBFe6Sj
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] pata_parport: add driver (PARIDE replacement)
+Content-Language: en-US
+To:     Jens Axboe <axboe@kernel.dk>, Ondrej Zary <linux@zary.sk>
+Cc:     Christoph Hellwig <hch@lst.de>, Tim Waugh <tim@cyberelk.net>,
+        linux-block@vger.kernel.org, linux-parport@lists.infradead.org,
+        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220312144415.20010-1-linux@zary.sk>
+ <202203132015.18183.linux@zary.sk>
+ <5161ed17-5f55-e851-c2e2-5340cc62fa3b@kernel.dk>
+ <202203142125.40532.linux@zary.sk>
+ <f8c176d4-74f0-3e4f-446f-2a5f8ace3b28@kernel.dk>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <f8c176d4-74f0-3e4f-446f-2a5f8ace3b28@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 3/15/22 05:29, Jens Axboe wrote:
+> On 3/14/22 2:25 PM, Ondrej Zary wrote:
+>> On Monday 14 March 2022 00:19:30 Jens Axboe wrote:
+>>> On 3/13/22 1:15 PM, Ondrej Zary wrote:
+>>>> On Saturday 12 March 2022 15:44:15 Ondrej Zary wrote:
+>>>>> The pata_parport is a libata-based replacement of the old PARIDE
+>>>>> subsystem - driver for parallel port IDE devices.
+>>>>> It uses the original paride low-level protocol drivers but does not
+>>>>> need the high-level drivers (pd, pcd, pf, pt, pg). The IDE devices
+>>>>> behind parallel port adapters are handled by the ATA layer.
+>>>>>
+>>>>> This will allow paride and its high-level drivers to be removed.
+>>>>>
+>>>>> paride and pata_parport are mutually exclusive because the compiled
+>>>>> protocol drivers are incompatible.
+>>>>>
+>>>>> Tested with Imation SuperDisk LS-120 and HP C4381A (both use EPAT
+>>>>> chip).
+>>>>>
+>>>>> Note: EPP-32 mode is buggy in EPAT - and also in all other protocol
+>>>>> drivers - they don't handle non-multiple-of-4 block transfers
+>>>>> correctly. This causes problems with LS-120 drive.
+>>>>> There is also another bug in EPAT: EPP modes don't work unless a 4-bit
+>>>>> or 8-bit mode is used first (probably some initialization missing?).
+>>>>> Once the device is initialized, EPP works until power cycle.
+>>>>>
+>>>>> So after device power on, you have to:
+>>>>> echo "parport0 epat 0" >/sys/bus/pata_parport/new_device
+>>>>> echo pata_parport.0 >/sys/bus/pata_parport/delete_device
+>>>>> echo "parport0 epat 4" >/sys/bus/pata_parport/new_device
+>>>>> (autoprobe will initialize correctly as it tries the slowest modes
+>>>>> first but you'll get the broken EPP-32 mode)
+>>>>
+>>>> Found a bug - the same device can be registered multiple times. Fix
+>>>> will be in v2. But this revealed a bigger problem: pi_connect can
+>>>> sleep (uses parport_claim_or_block) and libata does not like that. Any
+>>>> ideas how to fix this?
+>>>
+>>> I think you'd need two things here:
+>>>
+>>> - The blk-mq queue should be registered with BLK_MQ_F_BLOCKING, which
+>>>   will allow blocking off the queue_rq path.
+>>
+>> My knowledge about blk-mq is exactly zero. After grepping the code, I
+>> guess that BLK_MQ_F_BLOCKING should be used by the block device
+>> drivers - sd and sr?
+> 
+> The controller would set
+> 
+> ->needs_blocking_queue_rq = true;
+> 
+> or something, and we'd default to false. And if that is set, when the
+> blk-mq queue is created, then we'd set BLK_MQ_F_BLOCKING upon creation
+> if that flag is true.
+> 
+> That's the block layer side. Then in libata you'd need to ensure that
+> you check that same setting and invoke ata_qc_issue() appropriately.
+> 
+> Very top level stuff, there might be more things lurking below. But
+> you'll probably find them as you test this stuff...
 
-Wenchao,
+Yes, the ata_port spinlock being held when calling ata_qc_issue() is
+mandatory. But since I am assuming that all the IDE devices connected to
+this adapter are QD=1 maximum, there can only be only one command in
+flight. So it may be OK to release that lock before calling pi_connect()
+and retake it right after it. libsas actually does something similar
+(for no good reasons in that case though).
 
-> We found a NULL pointer dereference in iscsi_sw_tcp_conn_get_param(),
-> the root reason is we did sysfs addition wrong.
-
-Applied to 5.18/scsi-staging, thanks!
+Jens point remain though that since pi_connect() can sleep, marking the
+device queue with BLK_MQ_F_BLOCKING is mandatory.
 
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+Damien Le Moal
+Western Digital Research
