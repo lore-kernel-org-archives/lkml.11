@@ -2,97 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4194C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 01:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344225AbiCOBSa (ORCPT
+        id S1344235AbiCOBTC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 21:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42848 "EHLO
+        Mon, 14 Mar 2022 21:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344207AbiCOBS3 (ORCPT
+        with ESMTP id S1344227AbiCOBTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 21:18:29 -0400
-X-Greylist: delayed 1441 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 18:17:18 PDT
-Received: from gateway20.websitewelcome.com (gateway20.websitewelcome.com [192.185.53.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C1D369C3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 18:17:18 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id 25CED400D02B6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 19:53:17 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id TvR6nkVUy9AGSTvR7nsf0O; Mon, 14 Mar 2022 19:53:17 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=l4HlY2A3RyIuVlIUqMI8DA5II9OGtAKGgEJS/9G/IU8=; b=UwM7+/k4b9G+zTM9P+s4t/+waM
-        RSu9TZkFaJMsAsaT8CMjfM8VIoNHGKFNUbZwZYWCilHaOAAah8JHiqL7SFMExaNGrC/gobeJUEDyN
-        MfPE8Dy9Z8BwoDodIIPDmM1ft9VHDDq0jbD6qQxoZe2lSq6+9E6baOAM2W8B6ofILC6WrFMex34SY
-        AI+MRwzB9DYOAKvZaMiE9qCNRJrpgRC0OGFO3y2Ismv0eR4Zg7nzCFbAMR1RN+jqig3ocbYAH6VrM
-        nunNhzaLObduIvah6s5uzAdS4ZzFVpF+IDVOmTPwKjYO30aOaxY4rdeH2ZygMg9oPIzLovjkB9sHT
-        VObWTeww==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57474 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nTvR6-003rYa-6X; Tue, 15 Mar 2022 00:53:16 +0000
-Date:   Mon, 14 Mar 2022 17:53:15 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/71] 5.10.106-rc1 review
-Message-ID: <20220315005315.GE1943350@roeck-us.net>
-References: <20220314112737.929694832@linuxfoundation.org>
+        Mon, 14 Mar 2022 21:19:00 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1845626D9;
+        Mon, 14 Mar 2022 18:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647307070; x=1678843070;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=DWo909LPMfp/xcTS2ZhK17ummZUcNpAQabmYluiBYfs=;
+  b=B5lESyfSk3KSU+uK8URBBXyWxnvm91nsZImSXHR3J9cFP9w5x5QTN4EY
+   8cB/4D90GHemEU0GhK6gXQEUFmrDbKwAfvCcMkPze1BnuXarWiqxgeco3
+   xM5MIVjRL9P/gXgdO7aro/8q5zpP+zKPDQqCblWG/DVYuzLB42xNVtivF
+   40JBfX7YdYPNC14CS5tkrk3KcxOGBmRtXO+T5wtcYzA32lzH+2OWd6q16
+   l2ji/dnY+hOCpnjJhLtoZLyLTkmzVKhgUYmD5MR4RJ45mQd7lL/g6NKE8
+   mL2OvbqKyEiLfQrwF1C7BaddsIFQNMTPZKt2Kx9OQ9lIouVEnoRPeEjm7
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="280951703"
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="280951703"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 18:17:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
+   d="scan'208";a="515673019"
+Received: from aholley-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.24.246])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 18:17:44 -0700
+Message-ID: <0ffa85dbb54ddeecdbfdef3a22c077156268001b.camel@intel.com>
+Subject: Re: [RFC 0/3] Expose Confidential Computing capabilities on sysfs
+From:   Kai Huang <kai.huang@intel.com>
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
+        Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        luto@kernel.org, peterz@infradead.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, kirill.shutemov@linux.intel.com,
+        hpa@zytor.com, pbonzini@redhat.com, seanjc@google.com,
+        srutherford@google.com, ashish.kalra@amd.com,
+        darren.kenny@oracle.com, venu.busireddy@oracle.com,
+        boris.ostrovsky@oracle.com, kvm@vger.kernel.org
+Date:   Tue, 15 Mar 2022 14:17:42 +1300
+In-Reply-To: <20220314224346.GA3426703@ls.amr.corp.intel.com>
+References: <20220309220608.16844-1-alejandro.j.jimenez@oracle.com>
+         <8498cff4-3c31-f596-04fe-62013b94d7a4@intel.com>
+         <746497ff-992d-4659-aa32-a54c68ae83bf@oracle.com>
+         <20220314224346.GA3426703@ls.amr.corp.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314112737.929694832@linuxfoundation.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nTvR6-003rYa-6X
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57474
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 64
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 12:52:53PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.106 release.
-> There are 71 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+
 > 
-> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
-> Anything received after that time might be too late.
-> 
+> More concretely
+> - CPU feature (Secure Arbitration Mode: SEAM) as "seam" flag in /proc/cpuinfo
 
-Build results:
-	total: 161 pass: 161 fail: 0
-Qemu test results:
-	total: 477 pass: 477 fail: 0
+In my current patchset we don't have "seam" flag in /proc/cpuinfo.  
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+https://lore.kernel.org/kvm/cover.1647167475.git.kai.huang@intel.com/T/#m02542eb723394a81c35b9542b2763c783222d594
 
-Guenter
+TDX architecture doesn't have a CPUID to report SEAM, so we will need a
+synthetic flag if we want to add.  If userspace has requirement to use it, then
+it makes sense to add it and expose to /proc/cpuinfo.  But so far I don't know
+there's any.
+
+Thanks
+-Kai
+
+
