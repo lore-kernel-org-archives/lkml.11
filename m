@@ -2,168 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC98C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F43CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348295AbiCOM3M (ORCPT
+        id S1348159AbiCOM3l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
+        Tue, 15 Mar 2022 08:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348271AbiCOM3B (ORCPT
+        with ESMTP id S235801AbiCOM3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:29:01 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEABFEA
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:27:48 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id s29so11291341lfb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:27:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AsA+Yh6Q1RmMXptMpCMPYPdPP7vKeigdTvuyokvMeVc=;
-        b=Em9Qk7CXYoY7kJ/x5MIbAzFv/MQ57GerniOmbIZANfrMlNCKWIregHTG8SP4ZgX7IG
-         uJZ99qnwkg0DMqtfbn0Sj/l54mHyq7so0cllYsVxIXuo/SrV4EMEsPqMM+kI1TnbGrv8
-         Si8P04B8WhgV8lHflb39DGw9dML5avysP83Ooata737y5di7fB5rz7l6mL3RKTDMxp3I
-         kpqtPotVV3spCSm2WtP9oOsp3adhFKSfWApKc9oYLuo09cKLXkUt1tAZ1SpSxN6Csjo/
-         CC4vpWL6pUQ/Pt0rAsZgEnBXb4oiwRNcJRj9tHjZ9XNmOxx5slEokIG32v45dIRcNJnu
-         PIww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AsA+Yh6Q1RmMXptMpCMPYPdPP7vKeigdTvuyokvMeVc=;
-        b=W1HM58naz5RpeoaxV6VEbLuVMPTrT8L65SR+3n4Wr3rmqDFd5hQ1zDJLSO/PeE7oo/
-         HHJticOMgDj32Vn0lqNnwyyAvFRYszbO4i0rSS69wX7jQNOPLyIDotzXcBywZmHc1TNC
-         Olt/ltr6juLVRYM2iHr9j+aqNcNBdWmX7ARd6BO5gq4pik9Fsltmm96WmZ7O/NMsrJqc
-         hwdBOWwvJtprqd7v120uhx6PHUSmIDy3fe1HHBtgdyJ0cznQ3gocGPPVVvOiY6924k9V
-         p7TWRUZrx82jrFzpjwKcmGhU7t2XgCKQ3OqLfTWOHz7gtJDUG0aTA4lNCL6QwrE5YbLT
-         HlJA==
-X-Gm-Message-State: AOAM532DPIH6Ysuvccq5C4Mn1CzHp8VI9aRFhdb1F7AjsOYmyvqE1hsF
-        1lc5LSPbR3/wBsblLFoof/nEmzlhGs2wJmj5/mUdJQ==
-X-Google-Smtp-Source: ABdhPJwxVWuJkU2Vdp6g6fEM88LdXyiqS980jZq2aSertEju4rKA5wTfDZX/Ssb/jhYjtQ2num4y7Pzb1S633PkhjTk=
-X-Received: by 2002:a05:6512:308e:b0:448:3826:6d68 with SMTP id
- z14-20020a056512308e00b0044838266d68mr15642859lfd.184.1647347266932; Tue, 15
- Mar 2022 05:27:46 -0700 (PDT)
+        Tue, 15 Mar 2022 08:29:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4256410E2;
+        Tue, 15 Mar 2022 05:28:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2044B81604;
+        Tue, 15 Mar 2022 12:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BE02C340EE;
+        Tue, 15 Mar 2022 12:28:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647347305;
+        bh=Ye/ocCGoca+qFVAWeKWtxYvCf9/D8eC+LLNNN0SVF8I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dwoyEDyPlZeusu3XvRaZorYD9Ag4OSd+LxC8HFYTcS6xHRV3uXWCTtJVpMGRrnc8b
+         hLVncT+SxCzFNgGXx7MzqxhUKU8GfVxdb6UrRw1b4EyjLgio8duvlSsZa4DW0PGGrF
+         RkhmW/dO0qHS9rv0WBtCblD0NBOjCrt3XBcdbnJo=
+Date:   Tue, 15 Mar 2022 13:28:21 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     James Morse <james.morse@arm.com>
+Cc:     Jon Hunter <jonathanh@nvidia.com>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 4.19 00/30] 4.19.235-rc1 review
+Message-ID: <YjCGZVxDgtxzzswA@kroah.com>
+References: <20220314112731.785042288@linuxfoundation.org>
+ <0ac87017-362d-33e2-eace-3407e0891a94@nvidia.com>
+ <Yi9LlP+x2swdsrbE@kroah.com>
+ <ae60e4a0-3333-1ad7-1ac9-62e6ac3751de@nvidia.com>
+ <Yi9X4jqy4RT4jr5n@kroah.com>
+ <3f809462-217d-fc4d-8e1e-a3d265350fcb@arm.com>
 MIME-Version: 1.0
-References: <20220310125636.1.I484f4ee35609f78b932bd50feed639c29e64997e@changeid>
- <50d4b87c-003f-818a-c8ba-a3bac9c0f171@intel.com> <CA+ASDXO8-wmEDPxUrO6j9wBvCMzTZMpTyH7adSga8dYLNq5ehg@mail.gmail.com>
-In-Reply-To: <CA+ASDXO8-wmEDPxUrO6j9wBvCMzTZMpTyH7adSga8dYLNq5ehg@mail.gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 15 Mar 2022 13:27:10 +0100
-Message-ID: <CAPDyKFoQfr3W45vWY4SnTeBG7=z3J749=WBGNtEgujvXAqAn0Q@mail.gmail.com>
-Subject: Re: [PATCH] mmc: core: Set HS clock speed before sending HS CMD13
-To:     Brian Norris <briannorris@chromium.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Shawn Lin <shawn.lin@rock-chips.com>, linux-mmc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3f809462-217d-fc4d-8e1e-a3d265350fcb@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ Heiner
+On Tue, Mar 15, 2022 at 12:14:08PM +0000, James Morse wrote:
+> Hi Greg,
+> 
+> On 3/14/22 2:57 PM, Greg Kroah-Hartman wrote:
+> > On Mon, Mar 14, 2022 at 02:14:41PM +0000, Jon Hunter wrote:
+> > > On 14/03/2022 14:05, Greg Kroah-Hartman wrote:
+> > > > On Mon, Mar 14, 2022 at 01:58:12PM +0000, Jon Hunter wrote:
+> > > > > On 14/03/2022 11:34, Greg Kroah-Hartman wrote:
+> > > > > > This is the start of the stable review cycle for the 4.19.235 release.
+> > > > > > There are 30 patches in this series, all will be posted as a response
+> > > > > > to this one.  If anyone has any issues with these being applied, please
+> > > > > > let me know.
+> > > > > > 
+> > > > > > Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
+> > > > > > Anything received after that time might be too late.
+> 
+> 
+> > > > > > James Morse <james.morse@arm.com>
+> > > > > >        KVM: arm64: Reset PMC_EL0 to avoid a panic() on systems with no PMU
+> > > > > 
+> > > > > 
+> > > > > The above is causing the following build error for ARM64 ...
+> > > > > 
+> > > > > arch/arm64/kvm/sys_regs.c: In function ‘reset_pmcr’:
+> > > > > arch/arm64/kvm/sys_regs.c:624:3: error: implicit declaration of function ‘vcpu_sys_reg’ [-Werror=implicit-function-declaration]
+> > > > >      vcpu_sys_reg(vcpu, PMCR_EL0) = 0;
+> > > > >      ^~~~~~~~~~~~
+> > > > > arch/arm64/kvm/sys_regs.c:624:32: error: lvalue required as left operand of assignment
+> > > > >      vcpu_sys_reg(vcpu, PMCR_EL0) = 0;
+> > > > > 
+> > > > 
+> > > > Is this also broken in Linus's tree?
+> > > 
+> > > 
+> > > No, Linus' tree is not broken. However, I don't see this change in Linus'
+> > > tree (v5.17-rc8).
+> > 
+> > Ah, this is a "fix something broken in stable-only" type patch :(
+> 
+> > James, I'm dropping this from the 4.19, 4.9, and 4.14 trees right now as
+> > it looks broken :(
+> 
+> What would you prefer I do here:
+>  1 post a revert for the original problematic backport.
+>  2 post versions of this to fix each of the above 3 stable kernels. (instead of putting conditions in the stable tag).
 
-On Tue, 15 Mar 2022 at 00:11, Brian Norris <briannorris@chromium.org> wrote:
->
-> On Mon, Mar 14, 2022 at 6:13 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
-> >
-> > On 10.3.2022 22.56, Brian Norris wrote:
-> > > Way back in commit 4f25580fb84d ("mmc: core: changes frequency to
-> > > hs_max_dtr when selecting hs400es"), Rockchip engineers noticed that
-> > > some eMMC don't respond to SEND_STATUS commands very reliably if they're
-> > > still running at a low initial frequency. As mentioned in that commit,
-> > > JESD84-B51 P49 suggests a sequence in which the host:
-> > > 1. sets HS_TIMING
-> > > 2. bumps the clock ("<= 52 MHz")
-> > > 3. sends further commands
-> > >
-> > > It doesn't exactly require that we don't use a lower-than-52MHz
-> > > frequency, but in practice, these eMMC don't like it.
-> > >
-> > > Anyway, the aforementioned commit got that right for HS400ES, but the
-> > > refactoring in 53e60650f74e ("mmc: core: Allow CMD13 polling when
-> > > switching to HS mode for mmc") messed that back up again, by reordering
-> > > step 2 after step 3.
-> >
-> > That description might not be accurate.
->
-> I've been struggling to track where things were working, where things
-> were broken, and what/why Shawn's original fix was, precisely. So you
-> may be correct in many ways :) Thanks for looking.
->
-> > It looks like 4f25580fb84d did not have the intended effect because
-> > CMD13 was already being sent by mmc_select_hs(), still before increasing
-> > the frequency.  53e60650f74e just kept that behaviour.
->
-> You may be partially right, or fully right. But anyway, I think I have
-> some additional explanation, now that you've pointed that out: that
-> behavior changed a bit in this commit:
->
-> 08573eaf1a70 mmc: mmc: do not use CMD13 to get status after speed mode switch
->
-> While that patch was merged in July 2016 and Shawn submitted his v1
-> fix in September, there's a very good chance that a lot of his work
-> was actually done via backports, and even if not, he may not have been
-> testing precisely the latest -next kernel when submitting. So his fix
-> may have worked out for _some_ near-upstream kernel he was testing in
-> 2016, you may be correct that it didn't really work in the state it
-> was committed to git history.
->
-> This may also further explain why my attempts at bisection were rather
-> fruitless (notwithstanding the difficulties in getting RK3399 running
-> on that old of a kernel).
->
-> Anyway, I'll see if I can improve the messaging if/when a v2 comes around.
->
-> > > --- a/drivers/mmc/core/mmc.c
-> > > +++ b/drivers/mmc/core/mmc.c
-> ...
-> > > @@ -1487,6 +1492,12 @@ static int mmc_select_hs200(struct mmc_card *card)
-> > >               old_timing = host->ios.timing;
-> > >               mmc_set_timing(host, MMC_TIMING_MMC_HS200);
-> > >
-> > > +             /*
-> > > +              * Bump to HS frequency. Some cards don't handle SEND_STATUS
-> > > +              * reliably at the initial frequency.
-> > > +              */
-> > > +             mmc_set_clock(host, card->ext_csd.hs_max_dtr);
-> >
-> > Is card->ext_csd.hs_max_dtr better than card->ext_csd.hs200_max_dtr here?
->
-> I believe either worked in practice. I ended up choosing hs_max_dtr
-> because it's lower and presumably safer. But frankly, I don't know
-> what the Right thing to do is here, since the spec just talks about
-> "<=", and yet f_init (which is also "<=") does not work. I think it
-> might be like Ulf was guessing way back in the first place [1], and
-> the key is that there is *some* increase (i.e., not using f_init).
->
-> So assuming either works, would you prefer hs200_max_dtr here, since
-> that does seem like the appropriate final rate?
+I don't see what I did wrong with the "conditions" in the existing
+commit you sent.  How did I get it wrong?
 
-I think that makes most sense, as we are switching to that rate anyway
-just a few cycles later in mmc_select_timing(), when it calls
-mmc_set_bus_speed().
+Best case, send a patch series for each kernel tree.  That way I "know"
+I got the right thing here.
 
-That said, I have recently queued a patch that improves the
-speed-mode-selection-fallback, when switching to HS200 mode fails [2].
-We need to make sure this part still works as expected. I have looped
-in Heiner who has been in the loop around this change, hopefully he
-can help with further testing or so. Maybe $subject patch (or a new
-version of it) can even make HS200 to work on Heiner's platform!?
+thanks,
 
->
-> Brian
->
-> [1] https://lore.kernel.org/all/CAPDyKFrNp=Y3BhVE_kxtggv7Qc6m=2kef2U8Dn2Bb3ANHPYV-Q@mail.gmail.com/
-> Re: [PATCH 3/5] mmc: core: changes frequency to hs_max_dtr when
-> selecting hs400es
-
-Kind regards
-Uffe
-
-[2]
-https://patchwork.kernel.org/project/linux-mmc/patch/20220303164522.129583-1-ulf.hansson@linaro.org/
+greg k-h
