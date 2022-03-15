@@ -2,121 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6446CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76618C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:39:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347155AbiCOKkK (ORCPT
+        id S1347166AbiCOKlI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47338 "EHLO
+        Tue, 15 Mar 2022 06:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233588AbiCOKkJ (ORCPT
+        with ESMTP id S1346276AbiCOKlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:40:09 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B899040E65;
-        Tue, 15 Mar 2022 03:38:53 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: shreeya)
-        with ESMTPSA id C63431F41BCA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647340732;
-        bh=0Ayx2ck3KklerDtSR4xP/Yhxts6NZBaufUlBtW0oRvU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YFtQr2t9RxvdrDk6j5Dk4gPKK0fkc9d1H4DaHAl7U931gjBv+F/sZRPwpfJA6PTnP
-         vYb80IkieuQo7s+DsNr4a3A9V44Xf2S2Ksigkthe4geF4A2y8ncxcRuA8xvCz7CzkR
-         VKXwwAqD9tnxgE4b5pYrUlGv4adqaNQFwziH9smQ3ZEOxlrytSBEaK6y/kXk4Sww8O
-         eT1zps2TlL+lfvc3aelsG2M3464T5EWu/wkqXVueEljxq+us34muafVNVQjkN2wrLu
-         erxAAIk8URm3cTW8HVGOzP1tSpvBIlrUYuKrwiklyqlNJRtpnKHLKtF2Z5e/xYHxjt
-         IWtCkTb6lCVdg==
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl, krisman@collabora.com,
-        andy.shevchenko@gmail.com
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH v2] gpio: Restrict usage of gc irq members before initialization
-Date:   Tue, 15 Mar 2022 16:08:13 +0530
-Message-Id: <20220315103813.84407-1-shreeya.patel@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 15 Mar 2022 06:41:07 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A924F45E;
+        Tue, 15 Mar 2022 03:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=1JxXCLRRx9EmLaXlGQy1h++6/IueE36Jv1DWaZM2tjg=; b=AT/LI771Q4OcRgJCZ7lfp2BISN
+        8QrmadvMef20IywRDxwvQX95A3BEXpfuKZJ5m6VMqSvOpWH4T/E9c+fXvQwoMGZnCWJaNhP/X8l+C
+        jTrxLBdNzRLaPh0Ga79wjQrtct+LivoeKFpsWPXLginu6r6zcArvAIsToWhpxrMogrOfNs7OIc6hq
+        dzfbVzBJ1y8hAQ6heg41OVBMhIQ4r0+GtYjHbdYj3GPMmTazKH7RcUTje8i9Sc4pi+XME9026UhDO
+        Q8110wB7ry4qsMi4KhS6yzfK5cVVOi9n/33LrXOBBw38ca0ESj2XsW2Ckd9RxCaui+aKFYEd45/tS
+        uA6mOuCw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nU4aN-001Bts-Gm; Tue, 15 Mar 2022 10:39:27 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 73C5098620D; Tue, 15 Mar 2022 11:39:25 +0100 (CET)
+Date:   Tue, 15 Mar 2022 11:39:25 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        X86 ML <x86@kernel.org>, joao@overdrivepizza.com,
+        hjl.tools@gmail.com, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Mark Rutland <mark.rutland@arm.com>, alyssa.milburn@intel.com,
+        Miroslav Benes <mbenes@suse.cz>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
+Message-ID: <20220315103925.GB14330@worktop.programming.kicks-ass.net>
+References: <YinGZObp37b27LjK@hirez.programming.kicks-ass.net>
+ <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
+ <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net>
+ <YisnG9lW6kp8lBp3@hirez.programming.kicks-ass.net>
+ <CAADnVQJfffD9tH_cWThktCCwXeoRV1XLZq69rKK5vKy_y6BN8A@mail.gmail.com>
+ <20220312154407.GF28057@worktop.programming.kicks-ass.net>
+ <CAADnVQL7xrafAviUJg47LfvFSJpgZLwyP18Bm3S_KQwRyOpheQ@mail.gmail.com>
+ <20220314204402.rpd5hqzzev4ugtdt@apollo>
+ <20220315090043.GB8939@worktop.programming.kicks-ass.net>
+ <20220315100706.GA14330@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220315100706.GA14330@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-gc irq members are exposed before they could be completely
-initialized and this leads to race conditions.
+On Tue, Mar 15, 2022 at 11:07:06AM +0100, Peter Zijlstra wrote:
+> On Tue, Mar 15, 2022 at 10:00:43AM +0100, Peter Zijlstra wrote:
+> > I don't seem able to run this mod_race test, it keeps saying:
+> > 
+> >   tgl-build# ./test_progs -v -t mod_race
+> >   bpf_testmod.ko is already unloaded.
+> >   Loading bpf_testmod.ko...
+> >   Successfully loaded bpf_testmod.ko.
+> >   Summary: 0/0 PASSED, 0 SKIPPED, 0 FAILED
+> >   Successfully unloaded bpf_testmod.ko.
+> > 
+> > Which I'm taking to mean I'm doing it wrong... 
+> 
+> That.. I was building the wrong tree, mod_race comes from bpf-next and I
+> was building a tree without that merged in... let me to see what it does
+> now.
 
-One such issue was observed for the gc->irq.domain variable which
-was accessed through the I2C interface in gpiochip_to_irq() before
-it could be initialized by gpiochip_add_irqchip(). This resulted in
-Kernel NULL pointer dereference.
+I can confirm, crashes without, fixed with. Thanks!
 
-To avoid such scenarios, restrict usage of gc irq members before
-they are completely initialized.
+I've forced pushed a cleaned up tip/x86/core. Also:
 
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
----
+  git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/ibt.bpf
 
-Changes in v2 :-
-  - Make gc_irq_initialized flag a member of gpio_irq_chip structure.
-  - Make use of barrier() to avoid reordering of flag initialization before
-other gc irq members are initialized.
-
-
- drivers/gpio/gpiolib.c      | 11 ++++++++++-
- include/linux/gpio/driver.h |  9 +++++++++
- 2 files changed, 19 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index defb7c464b87..3973146736a1 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -1593,6 +1593,15 @@ static int gpiochip_add_irqchip(struct gpio_chip *gc,
- 
- 	acpi_gpiochip_request_interrupts(gc);
- 
-+	/*
-+	 * Using barrier() here to prevent compiler from reordering
-+	 * gc->irq.gc_irq_initialized before initialization of above
-+	 * gc irq members.
-+	 */
-+	barrier();
-+
-+	gc->irq.gc_irq_initialized = true;
-+
- 	return 0;
- }
- 
-@@ -3138,7 +3147,7 @@ int gpiod_to_irq(const struct gpio_desc *desc)
- 
- 	gc = desc->gdev->chip;
- 	offset = gpio_chip_hwgpio(desc);
--	if (gc->to_irq) {
-+	if (gc->to_irq && gc->irq.gc_irq_initialized) {
- 		int retirq = gc->to_irq(gc, offset);
- 
- 		/* Zero means NO_IRQ */
-diff --git a/include/linux/gpio/driver.h b/include/linux/gpio/driver.h
-index b0728c8ad90c..e93de63feece 100644
---- a/include/linux/gpio/driver.h
-+++ b/include/linux/gpio/driver.h
-@@ -203,6 +203,15 @@ struct gpio_irq_chip {
- 	 */
- 	unsigned int *map;
- 
-+	/**
-+	 * @gc_irq_initialized:
-+	 *
-+	 * Flag to track gc irq member's initialization.
-+	 * This flag will make sure gc irq members are not used before
-+	 * they are initialized.
-+	 */
-+	bool gc_irq_initialized;
-+
- 	/**
- 	 * @threaded:
- 	 *
--- 
-2.30.2
-
+is a merge of that and bpf-next
