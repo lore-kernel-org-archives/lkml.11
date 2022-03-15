@@ -2,139 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 309B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350092AbiCOQb3 (ORCPT
+        id S1350069AbiCOQfH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
+        Tue, 15 Mar 2022 12:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238240AbiCOQb0 (ORCPT
+        with ESMTP id S232897AbiCOQfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:31:26 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E28905714B;
-        Tue, 15 Mar 2022 09:30:11 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Wed, 16 Mar 2022 00:30:03
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.64.209]
-Date:   Wed, 16 Mar 2022 00:30:03 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
-To:     "Eric Dumazet" <eric.dumazet@gmail.com>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, jreuter@yaina.de
-Subject: Re: Re: [PATCH net V4 2/2] ax25: Fix NULL pointer dereferences in
- ax25 timers
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <c6052f5c-c1c4-18a0-a04f-e48f366200e4@gmail.com>
-References: <20220315015654.79941-1-duoming@zju.edu.cn>
- <c6052f5c-c1c4-18a0-a04f-e48f366200e4@gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Tue, 15 Mar 2022 12:35:05 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C267340C7;
+        Tue, 15 Mar 2022 09:33:53 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bi12so42738044ejb.3;
+        Tue, 15 Mar 2022 09:33:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AWRbE0SqFuV4wqzStVfSF+dwgpeyvmT951OzMpXt1TM=;
+        b=GOxJ4n+XZnHOfmX6RhO0J0yhAZB3qFAqYS0ZkPj3UhB7tV95b9G5aJkNP9II9UeXsc
+         TjtS9FFQ7sJTO+DjyEwOA7VCcrRExK10UaGSOmo2UcHwbmVRv8KXwN5yPauEx2B6iEaS
+         SzgtTyAP4OpMsRy11YqQHQrPGfHzJg3K3AT9/ttb+KYo6Deu7rGHSl9fY9hWxfSY1umu
+         GDRuIjVG81XQd6M54gm2aPcvAWgghVgwWake3ZxRvBm2JiNPt+AX8BjM/jgM6Ujgiuvl
+         v1PXZ5SK0nWZVRs9orxXyBqf3qiQPCO7+fqjguw548b7vDXA94yqJ/ruUVb1ZmSBcDZf
+         7piA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AWRbE0SqFuV4wqzStVfSF+dwgpeyvmT951OzMpXt1TM=;
+        b=COSPyJZebozlFstVQqCWmklma4efGb4371u+50btzhi9c/+j4XAtuOWvUTJ8WZVBl0
+         VWdD/zVUMwajg9v5G3tuywxjIN9tRPLuJYi+w/sPPPdtZBQl9l+O+xz9GXlfWTNGBqWm
+         n9qtGuRaBDwoP3M8UrTLk+gvZ/fFFN2FzHonfDhF89ixFBXfpMdyiLI8M+plvWNi5Prk
+         xMgkZhOtVWKL3fjZaxozFLCG1HLSKXAyWkpPTSycYwubB8hNswSMRSfRSYa2RhfdZ3gL
+         wnUfQN+KtoQTJDcRm6331JaWsI5riVgwC52zDTS8eTgF0maw2xkC3Tm6tTO6vm5osLAE
+         u79g==
+X-Gm-Message-State: AOAM533AmBZmBcG3kToraSTaTyAomTZ8neh/sWBH2Y1GDeubmoktj2tP
+        O/o5U/1K4W/ln7RfmqBdEY3n/q/0Utw=
+X-Google-Smtp-Source: ABdhPJyxZ5Dj5nbD1iYsZlkTxc6XF5i/Wr9GefE4CWGt955QvEBj/tXmYZleja4Sh7ujs868a2K2Zw==
+X-Received: by 2002:a17:906:c1d6:b0:6d6:e0a3:bbc7 with SMTP id bw22-20020a170906c1d600b006d6e0a3bbc7mr23293709ejb.484.1647362031906;
+        Tue, 15 Mar 2022 09:33:51 -0700 (PDT)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id y12-20020a056402358c00b00418d7f02d63sm284290edc.53.2022.03.15.09.33.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 09:33:51 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 18:33:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v4 net-next 09/15] net: dsa: Never offload FDB entries on
+ standalone ports
+Message-ID: <20220315163349.k2rmfdzrd3jvzbor@skbuf>
+References: <20220315002543.190587-1-tobias@waldekranz.com>
+ <20220315002543.190587-10-tobias@waldekranz.com>
 MIME-Version: 1.0
-Message-ID: <2533f9c8.5741.17f8e6a4593.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgBnLrALvzBiaToYAA--.3041W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0KAVZdtYsFrwABsa
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220315002543.190587-10-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBNb24sIDE0IE1hciAyMDIyIDIwOjAzOjAwIC0wNzAwLCBFcmljIER1bWF6ZXQg
-d3JvdGU6Cj4gPiBUaGVyZSBhcmUgcmFjZSBjb25kaXRpb25zIHRoYXQgbWF5IGxlYWQgdG8gbnVs
-bCBwb2ludGVyIGRlcmVmZXJlbmNlcyBpbgo+ID4gYXgyNV9oZWFydGJlYXRfZXhwaXJ5KCksIGF4
-MjVfdDF0aW1lcl9leHBpcnkoKSwgYXgyNV90MnRpbWVyX2V4cGlyeSgpLAo+ID4gYXgyNV90M3Rp
-bWVyX2V4cGlyeSgpIGFuZCBheDI1X2lkbGV0aW1lcl9leHBpcnkoKSwgd2hlbiB3ZSB1c2UKPiA+
-IGF4MjVfa2lsbF9ieV9kZXZpY2UoKSB0byBkZXRhY2ggdGhlIGF4MjUgZGV2aWNlLgo+ID4KPiA+
-IE9uZSBvZiB0aGUgcmFjZSBjb25kaXRpb25zIHRoYXQgY2F1c2UgbnVsbCBwb2ludGVyIGRlcmVm
-ZXJlbmNlcyBjYW4gYmUKPiA+IHNob3duIGFzIGJlbG93Ogo+ID4KPiA+ICAgICAgICAoVGhyZWFk
-IDEpICAgICAgICAgICAgICAgICAgICB8ICAgICAgKFRocmVhZCAyKQo+ID4gYXgyNV9jb25uZWN0
-KCkgICAgICAgICAgICAgICAgICAgICAgIHwKPiA+ICAgYXgyNV9zdGRfZXN0YWJsaXNoX2RhdGFf
-bGluaygpICAgICB8Cj4gPiAgICBheDI1X3N0YXJ0X3QxdGltZXIoKSAgICAgICAgICAgICAgfAo+
-ID4gICAgIG1vZF90aW1lcigmYXgyNS0+dDF0aW1lciwuLikgICAgIHwKPiA+ICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICB8IGF4MjVfa2lsbF9ieV9kZXZpY2UoKQo+ID4gICAg
-ICh3YWl0IGEgdGltZSkgICAgICAgICAgICAgICAgICAgIHwgIC4uLgo+ID4gICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIHwgIHMtPmF4MjVfZGV2ID0gTlVMTDsgLy8oMSkKPiA+
-ICAgICBheDI1X3QxdGltZXJfZXhwaXJ5KCkgICAgICAgICAgICB8Cj4gPiAgICAgIGF4MjUtPmF4
-MjVfZGV2LT52YWx1ZXNbLi5dIC8vKDIpfCAgLi4uCj4gPiAgICAgICAuLi4gICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgfAo+ID4KPiA+IFdlIHNldCBudWxsIHRvIGF4MjVfY2ItPmF4MjVfZGV2
-IGluIHBvc2l0aW9uICgxKSBhbmQgZGVyZWZlcmVuY2UKPiA+IHRoZSBudWxsIHBvaW50ZXIgaW4g
-cG9zaXRpb24gKDIpLgo+ID4KPiA+IFRoZSBjb3JyZXNwb25kaW5nIGZhaWwgbG9nIGlzIHNob3du
-IGJlbG93Ogo+ID4gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09Cj4gPiBCVUc6IGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVu
-Y2UsIGFkZHJlc3M6IDAwMDAwMDAwMDAwMDAwNTAKPiA+IENQVTogMSBQSUQ6IDAgQ29tbTogc3dh
-cHBlci8xIE5vdCB0YWludGVkIDUuMTcuMC1yYzYtMDA3OTQtZzQ1NjkwYjdkMAo+ID4gUklQOiAw
-MDEwOmF4MjVfdDF0aW1lcl9leHBpcnkrMHgxMi8weDQwCj4gPiAuLi4KPiA+IENhbGwgVHJhY2U6
-Cj4gPiAgIGNhbGxfdGltZXJfZm4rMHgyMS8weDEyMAo+ID4gICBfX3J1bl90aW1lcnMucGFydC4w
-KzB4MWNhLzB4MjUwCj4gPiAgIHJ1bl90aW1lcl9zb2Z0aXJxKzB4MmMvMHg2MAo+ID4gICBfX2Rv
-X3NvZnRpcnErMHhlZi8weDJmMwo+ID4gICBpcnFfZXhpdF9yY3UrMHhiNi8weDEwMAo+ID4gICBz
-eXN2ZWNfYXBpY190aW1lcl9pbnRlcnJ1cHQrMHhhMi8weGQwCj4gPiAuLi4KPiA+Cj4gPiBUaGlz
-IHBhdGNoIHVzZXMgYXgyNV9kaXNjb25uZWN0KCkgdG8gZGVsZXRlIHRpbWVycyBiZWZvcmUgd2Ug
-c2V0IG51bGwgdG8KPiA+IGF4MjVfY2ItPmF4MjVfZGV2IGluIGF4MjVfa2lsbF9ieV9kZXZpY2Uo
-KS5UaGUgZnVuY3Rpb24gYXgyNV9kaXNjb25uZWN0KCkKPiA+IHdpbGwgbm90IHJldHVybiB1bnRp
-bCBhbGwgdGltZXJzIGFyZSBzdG9wcGVkLCBiZWNhdXNlIHdlIGhhdmUgY2hhbmdlZAo+ID4gZGVs
-X3RpbWVyKCkgdG8gZGVsX3RpbWVyX3N5bmMoKS4gV2hhdGBzIG1vcmUsIHdlIGFkZCBjb25kaXRp
-b24gY2hlY2sgaW4KPiA+IGF4MjVfZGVzdHJveV9zb2NrZXQoKSwgYmVjYXVzZSBheDI1X3N0b3Bf
-aGVhcnRiZWF0KCkgd2lsbCBub3QgcmV0dXJuLAo+ID4gaWYgdGhlcmUgaXMgc3RpbGwgaGVhcnRi
-ZWF0Lgo+ID4KPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1
-LmNuPgo+IAo+IE1pc3NpbmcgRkl4ZXM6IHRhZyA/Cj4gCj4gCj4gPiAtLS0KPiA+IENoYW5nZXMg
-aW4gVjQ6Cj4gPiAgICAtIEJhc2VkIG9uIFtQQVRDSCBuZXQgVjQgMS8yXSBheDI1OiBGaXggcmVm
-Y291bnQgbGVha3MgY2F1c2VkIGJ5IGF4MjVfY2JfZGVsKCkuCj4gPgo+ID4gICBuZXQvYXgyNS9h
-Zl9heDI1LmMgICAgfCAgNyArKysrLS0tCj4gPiAgIG5ldC9heDI1L2F4MjVfdGltZXIuYyB8IDEw
-ICsrKysrLS0tLS0KPiA+ICAgMiBmaWxlcyBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyksIDggZGVs
-ZXRpb25zKC0pCj4gPgo+ID4gZGlmZiAtLWdpdCBhL25ldC9heDI1L2FmX2F4MjUuYyBiL25ldC9h
-eDI1L2FmX2F4MjUuYwo+ID4gaW5kZXggMDg4NjEwOTQyMWEuLmRjNjE2MWE3NWExIDEwMDY0NAo+
-ID4gLS0tIGEvbmV0L2F4MjUvYWZfYXgyNS5jCj4gPiArKysgYi9uZXQvYXgyNS9hZl9heDI1LmMK
-PiA+IEBAIC04OSwyMCArODksMjAgQEAgc3RhdGljIHZvaWQgYXgyNV9raWxsX2J5X2RldmljZShz
-dHJ1Y3QgbmV0X2RldmljZSAqZGV2KQo+ID4gICAJCQlzayA9IHMtPnNrOwo+ID4gICAJCQlpZiAo
-IXNrKSB7Cj4gPiAgIAkJCQlzcGluX3VubG9ja19iaCgmYXgyNV9saXN0X2xvY2spOwo+ID4gLQkJ
-CQlzLT5heDI1X2RldiA9IE5VTEw7Cj4gPiAgIAkJCQlheDI1X2Rpc2Nvbm5lY3QocywgRU5FVFVO
-UkVBQ0gpOwo+ID4gKwkJCQlzLT5heDI1X2RldiA9IE5VTEw7Cj4gPiAgIAkJCQlzcGluX2xvY2tf
-YmgoJmF4MjVfbGlzdF9sb2NrKTsKPiA+ICAgCQkJCWdvdG8gYWdhaW47Cj4gPiAgIAkJCX0KPiA+
-ICAgCQkJc29ja19ob2xkKHNrKTsKPiA+ICAgCQkJc3Bpbl91bmxvY2tfYmgoJmF4MjVfbGlzdF9s
-b2NrKTsKPiA+ICAgCQkJbG9ja19zb2NrKHNrKTsKPiA+ICsJCQlheDI1X2Rpc2Nvbm5lY3Qocywg
-RU5FVFVOUkVBQ0gpOwo+ID4gICAJCQlzLT5heDI1X2RldiA9IE5VTEw7Cj4gPiAgIAkJCWlmIChz
-ay0+c2tfd3EpIHsKPiA+ICAgCQkJCWRldl9wdXRfdHJhY2soYXgyNV9kZXYtPmRldiwgJmF4MjVf
-ZGV2LT5kZXZfdHJhY2tlcik7Cj4gPiAgIAkJCQlheDI1X2Rldl9wdXQoYXgyNV9kZXYpOwo+ID4g
-ICAJCQl9Cj4gPiAtCQkJYXgyNV9kaXNjb25uZWN0KHMsIEVORVRVTlJFQUNIKTsKPiA+ICAgCQkJ
-cmVsZWFzZV9zb2NrKHNrKTsKPiA+ICAgCQkJc3Bpbl9sb2NrX2JoKCZheDI1X2xpc3RfbG9jayk7
-Cj4gPiAgIAkJCXNvY2tfcHV0KHNrKTsKPiA+IEBAIC0zMDcsNyArMzA3LDggQEAgdm9pZCBheDI1
-X2Rlc3Ryb3lfc29ja2V0KGF4MjVfY2IgKmF4MjUpCj4gPiAgIAo+ID4gICAJYXgyNV9jYl9kZWwo
-YXgyNSk7Cj4gPiAgIAo+ID4gLQlheDI1X3N0b3BfaGVhcnRiZWF0KGF4MjUpOwo+ID4gKwlpZiAo
-IWF4MjUtPnNrIHx8ICFzb2NrX2ZsYWcoYXgyNS0+c2ssIFNPQ0tfREVTVFJPWSkpCj4gPiArCQlh
-eDI1X3N0b3BfaGVhcnRiZWF0KGF4MjUpOwo+ID4gICAJYXgyNV9zdG9wX3QxdGltZXIoYXgyNSk7
-Cj4gPiAgIAlheDI1X3N0b3BfdDJ0aW1lcihheDI1KTsKPiA+ICAgCWF4MjVfc3RvcF90M3RpbWVy
-KGF4MjUpOwo+ID4gZGlmZiAtLWdpdCBhL25ldC9heDI1L2F4MjVfdGltZXIuYyBiL25ldC9heDI1
-L2F4MjVfdGltZXIuYwo+ID4gaW5kZXggODU4NjVlYmZkZmEuLjk5YWYzZDFhZWVjIDEwMDY0NAo+
-ID4gLS0tIGEvbmV0L2F4MjUvYXgyNV90aW1lci5jCj4gPiArKysgYi9uZXQvYXgyNS9heDI1X3Rp
-bWVyLmMKPiA+IEBAIC03OCwyNyArNzgsMjcgQEAgdm9pZCBheDI1X3N0YXJ0X2lkbGV0aW1lcihh
-eDI1X2NiICpheDI1KQo+ID4gICAKPiA+ICAgdm9pZCBheDI1X3N0b3BfaGVhcnRiZWF0KGF4MjVf
-Y2IgKmF4MjUpCj4gPiAgIHsKPiA+IC0JZGVsX3RpbWVyKCZheDI1LT50aW1lcik7Cj4gPiArCWRl
-bF90aW1lcl9zeW5jKCZheDI1LT50aW1lcik7Cj4gPiAgIH0KPiA+ICAgCj4gPiAgIHZvaWQgYXgy
-NV9zdG9wX3QxdGltZXIoYXgyNV9jYiAqYXgyNSkKPiA+ICAgewo+ID4gLQlkZWxfdGltZXIoJmF4
-MjUtPnQxdGltZXIpOwo+ID4gKwlkZWxfdGltZXJfc3luYygmYXgyNS0+dDF0aW1lcik7Cj4gPiAg
-IH0KPiA+ICAgCj4gPiAgIHZvaWQgYXgyNV9zdG9wX3QydGltZXIoYXgyNV9jYiAqYXgyNSkKPiA+
-ICAgewo+ID4gLQlkZWxfdGltZXIoJmF4MjUtPnQydGltZXIpOwo+ID4gKwlkZWxfdGltZXJfc3lu
-YygmYXgyNS0+dDJ0aW1lcik7Cj4gPiAgIH0KPiA+ICAgCj4gPiAgIHZvaWQgYXgyNV9zdG9wX3Qz
-dGltZXIoYXgyNV9jYiAqYXgyNSkKPiA+ICAgewo+ID4gLQlkZWxfdGltZXIoJmF4MjUtPnQzdGlt
-ZXIpOwo+ID4gKwlkZWxfdGltZXJfc3luYygmYXgyNS0+dDN0aW1lcik7Cj4gPiAgIH0KPiA+ICAg
-Cj4gPiAgIHZvaWQgYXgyNV9zdG9wX2lkbGV0aW1lcihheDI1X2NiICpheDI1KQo+ID4gICB7Cj4g
-PiAtCWRlbF90aW1lcigmYXgyNS0+aWRsZXRpbWVyKTsKPiA+ICsJZGVsX3RpbWVyX3N5bmMoJmF4
-MjUtPmlkbGV0aW1lcik7Cj4gPiAgIH0KPiA+ICAgCj4gPiAgIGludCBheDI1X3QxdGltZXJfcnVu
-bmluZyhheDI1X2NiICpheDI1KQo+IAo+IAo+IAo+IEFyZSB5b3Ugc3VyZSBjYWxsaW5nIGRlbF90
-aW1lX3N5bmMoKSB3b250IGRlYWRsb2NrID8KPiAKPiAKPiBJZiB0aGUgdGltZXIgaGFuZGxlcnMg
-bmVlZCBhIGxvY2sgb3duZWQgYnkgdGhlIHRocmVhZCBjYWxsaW5nIAo+IGRlbF90aW1lcl9zeW5j
-KCksCj4gCj4gdGhlbiB0aGlzIHdpbGwgYmxvY2sgZm9yZXZlci4KCkkgdGhpbmsgdGhlcmUgaXMg
-bm8gZGVhZGxvY2suCgpGdW5jdGlvbiBheDI1X2tpbGxfYnlfZGV2aWNlKCkgd2lsbCBvbmx5IGhv
-bGQgbG9ja19zb2NrKHNrKSBiZWZvcmUgdXNpbmcgCmF4MjVfZGlzY29ubmVjdCgpIHRvIGNhbGwg
-ZGVsX3RpbWVyX3N5bmMoKS4KCkluIHRpbWVycywgd2UgaG9sZCBiaF9sb2NrX3NvY2soc2spIG9y
-IHNwaW5fbG9ja19iaCgmYXgyNV9saXN0X2xvY2spIHdoaWNoCmlzIGRpZmZlcmVudCBmcm9tIGxv
-Y2tfc29jayhzaykuCgpCZXN0IHdpc2hlcywKRHVvbWluZyBaaG91Cgo=
+On Tue, Mar 15, 2022 at 01:25:37AM +0100, Tobias Waldekranz wrote:
+> If a port joins a bridge that it can't offload, it will fallback to
+> standalone mode and software bridging. In this case, we never want to
+> offload any FDB entries to hardware either.
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+
+When you resend, please send this patch separately, unless something
+breaks really ugly with your MST series in place.
+
+>  net/dsa/slave.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index a61a7c54af20..647adee97f7f 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -2624,6 +2624,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+>  	if (ctx && ctx != dp)
+>  		return 0;
+>  
+> +	if (!dp->bridge)
+> +		return 0;
+> +
+>  	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
+>  		if (dsa_port_offloads_bridge_port(dp, orig_dev))
+>  			return 0;
+> -- 
+> 2.25.1
+> 
