@@ -2,160 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF5DC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349132AbiCOOUs (ORCPT
+        id S1349152AbiCOOUu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
+        Tue, 15 Mar 2022 10:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349131AbiCOOUo (ORCPT
+        with ESMTP id S1349165AbiCOOUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 10:20:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A21DF54F97
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647353965;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=33F2qgmyketZPl05kSNPAq/J3WUAdrQWXF1ACWpI9hg=;
-        b=HqRRo3RUJ1oVHhpRQIy2UapwyDFBVha71L15cwKBqwEb/83w2QiSBRq9UezFcO+07LmNQW
-        T4epdzUWpZSno8yY1cHy8/aEcHtkzgczeJacF+bv5w+v6XYOGt9xWJ+tdiTJY1IA8Q/ltC
-        uAWBlMJNyyA6+3K/U6/XD0q13VCvYl8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-457-rizRHN8TOLWEyNwbtpDe9Q-1; Tue, 15 Mar 2022 10:19:23 -0400
-X-MC-Unique: rizRHN8TOLWEyNwbtpDe9Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7AE8A38008A0;
-        Tue, 15 Mar 2022 14:19:21 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 21CBC4087D7E;
-        Tue, 15 Mar 2022 14:19:12 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, linux-mm@kvack.org,
-        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v1 4/7] arm64/pgtable: support __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-Date:   Tue, 15 Mar 2022 15:18:34 +0100
-Message-Id: <20220315141837.137118-5-david@redhat.com>
-In-Reply-To: <20220315141837.137118-1-david@redhat.com>
-References: <20220315141837.137118-1-david@redhat.com>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4235354FAD;
+        Tue, 15 Mar 2022 07:19:29 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KHwQF2QPLzcb9X;
+        Tue, 15 Mar 2022 22:14:29 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 22:19:25 +0800
+Subject: Re: [PATCH v2 1/3] mm/memory-failure.c: fix race with changing page
+ compound again
+To:     Mike Kravetz <mike.kravetz@oracle.com>, <naoya.horiguchi@nec.com>
+CC:     <shy828301@gmail.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <linux-edac@vger.kernel.org>,
+        <akpm@linux-foundation.org>, <tony.luck@intel.com>, <bp@alien8.de>
+References: <20220312074613.4798-1-linmiaohe@huawei.com>
+ <20220312074613.4798-2-linmiaohe@huawei.com>
+ <91661cd4-e9be-959f-8b6a-da257a00a879@oracle.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <9826152a-8a83-76a8-ded8-47d185aac0a8@huawei.com>
+Date:   Tue, 15 Mar 2022 22:19:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <91661cd4-e9be-959f-8b6a-da257a00a879@oracle.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's use one of the type bits: core-mm only supports 5, so there is no
-need to consume 6.
+On 2022/3/15 2:20, Mike Kravetz wrote:
+> On 3/11/22 23:46, Miaohe Lin wrote:
+>> There is a race window where we got the compound_head, the hugetlb page
+>> could be freed to buddy, or even changed to another compound page just
+>> before we try to get hwpoison page. Think about the below race window:
+>>   CPU 1					  CPU 2
+>>   memory_failure_hugetlb
+>>   struct page *head = compound_head(p);
+>> 					  hugetlb page might be freed to
+>> 					  buddy, or even changed to another
+>> 					  compound page.
+>>
+>>   get_hwpoison_page -- page is not what we want now...
+>>
+>> If this race happens, just bail out. Also MF_MSG_DIFFERENT_PAGE_SIZE is
+>> introduced to record this event.
+>>
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  include/linux/mm.h      |  1 +
+>>  include/ras/ras_event.h |  1 +
+>>  mm/memory-failure.c     | 12 ++++++++++++
+>>  3 files changed, 14 insertions(+)
+>>
+>> diff --git a/include/linux/mm.h b/include/linux/mm.h
+>> index c9bada4096ac..ef98cff2b253 100644
+>> --- a/include/linux/mm.h
+>> +++ b/include/linux/mm.h
+>> @@ -3253,6 +3253,7 @@ enum mf_action_page_type {
+>>  	MF_MSG_BUDDY,
+>>  	MF_MSG_DAX,
+>>  	MF_MSG_UNSPLIT_THP,
+>> +	MF_MSG_DIFFERENT_PAGE_SIZE,
+>>  	MF_MSG_UNKNOWN,
+>>  };
+>>  
+>> diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
+>> index d0337a41141c..1e694fd239b9 100644
+>> --- a/include/ras/ras_event.h
+>> +++ b/include/ras/ras_event.h
+>> @@ -374,6 +374,7 @@ TRACE_EVENT(aer_event,
+>>  	EM ( MF_MSG_BUDDY, "free buddy page" )				\
+>>  	EM ( MF_MSG_DAX, "dax page" )					\
+>>  	EM ( MF_MSG_UNSPLIT_THP, "unsplit thp" )			\
+>> +	EM ( MF_MSG_DIFFERENT_PAGE_SIZE, "different page size" )	\
+>>  	EMe ( MF_MSG_UNKNOWN, "unknown page" )
+>>  
+>>  /*
+>> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+>> index 5444a8ef4867..dabecd87ad3f 100644
+>> --- a/mm/memory-failure.c
+>> +++ b/mm/memory-failure.c
+>> @@ -733,6 +733,7 @@ static const char * const action_page_types[] = {
+>>  	[MF_MSG_BUDDY]			= "free buddy page",
+>>  	[MF_MSG_DAX]			= "dax page",
+>>  	[MF_MSG_UNSPLIT_THP]		= "unsplit thp",
+>> +	[MF_MSG_DIFFERENT_PAGE_SIZE]	= "different page size",
+>>  	[MF_MSG_UNKNOWN]		= "unknown page",
+>>  };
+>>  
+>> @@ -1534,6 +1535,17 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
+>>  	}
+>>  
+>>  	lock_page(head);
+>> +
+>> +	/**
+>> +	 * The page could have changed compound pages due to race window.
+>> +	 * If this happens just bail out.
+>> +	 */
+>> +	if (!PageHuge(p) || compound_head(p) != head) {
+>> +		action_result(pfn, MF_MSG_DIFFERENT_PAGE_SIZE, MF_IGNORED);
+>> +		res = -EBUSY;
+> 
+> We have discussed this race in other versions of the patch.  When we encounter
+> the race, we have likely marked poison on the wrong page.  Correct?
+> 
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- arch/arm64/include/asm/pgtable-prot.h |  1 +
- arch/arm64/include/asm/pgtable.h      | 23 ++++++++++++++++++++---
- 2 files changed, 21 insertions(+), 3 deletions(-)
+Many thanks for comment.
+I assume that Naoya's patch "mm/hwpoison: set PageHWPoison after taking page lock
+in memory_failure_hugetlb()" would set the PageHWPoison after the above check.
+So I think the below operation is not needed as PageHWPoison is not set yet.
+Does this makes sense for you?
 
-diff --git a/arch/arm64/include/asm/pgtable-prot.h b/arch/arm64/include/asm/pgtable-prot.h
-index b1e1b74d993c..62e0ebeed720 100644
---- a/arch/arm64/include/asm/pgtable-prot.h
-+++ b/arch/arm64/include/asm/pgtable-prot.h
-@@ -14,6 +14,7 @@
-  * Software defined PTE bits definition.
-  */
- #define PTE_WRITE		(PTE_DBM)		 /* same as DBM (51) */
-+#define PTE_SWP_EXCLUSIVE	(_AT(pteval_t, 1) << 2)	 /* only for swp ptes */
- #define PTE_DIRTY		(_AT(pteval_t, 1) << 55)
- #define PTE_SPECIAL		(_AT(pteval_t, 1) << 56)
- #define PTE_DEVMAP		(_AT(pteval_t, 1) << 57)
-diff --git a/arch/arm64/include/asm/pgtable.h b/arch/arm64/include/asm/pgtable.h
-index 94e147e5456c..ad9b221963d4 100644
---- a/arch/arm64/include/asm/pgtable.h
-+++ b/arch/arm64/include/asm/pgtable.h
-@@ -402,6 +402,22 @@ static inline pgprot_t mk_pmd_sect_prot(pgprot_t prot)
- 	return __pgprot((pgprot_val(prot) & ~PMD_TABLE_BIT) | PMD_TYPE_SECT);
- }
- 
-+#define __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-+static inline pte_t pte_swp_mkexclusive(pte_t pte)
-+{
-+	return set_pte_bit(pte, __pgprot(PTE_SWP_EXCLUSIVE));
-+}
-+
-+static inline int pte_swp_exclusive(pte_t pte)
-+{
-+	return pte_val(pte) & PTE_SWP_EXCLUSIVE;
-+}
-+
-+static inline pte_t pte_swp_clear_exclusive(pte_t pte)
-+{
-+	return clear_pte_bit(pte, __pgprot(PTE_SWP_EXCLUSIVE));
-+}
-+
- #ifdef CONFIG_NUMA_BALANCING
- /*
-  * See the comment in include/linux/pgtable.h
-@@ -909,12 +925,13 @@ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
- /*
-  * Encode and decode a swap entry:
-  *	bits 0-1:	present (must be zero)
-- *	bits 2-7:	swap type
-+ *	bits 2:		remember PG_anon_exclusive
-+ *	bits 3-7:	swap type
-  *	bits 8-57:	swap offset
-  *	bit  58:	PTE_PROT_NONE (must be zero)
-  */
--#define __SWP_TYPE_SHIFT	2
--#define __SWP_TYPE_BITS		6
-+#define __SWP_TYPE_SHIFT	3
-+#define __SWP_TYPE_BITS		5
- #define __SWP_OFFSET_BITS	50
- #define __SWP_TYPE_MASK		((1 << __SWP_TYPE_BITS) - 1)
- #define __SWP_OFFSET_SHIFT	(__SWP_TYPE_BITS + __SWP_TYPE_SHIFT)
--- 
-2.35.1
+Thanks.
+
+> Instead of printing a "different page size", would it be better to perhaps:
+> - Print a message that wrong page may be marked for poison?
+> - Clear the poison flag in the "head page" previously set?
+> 
 
