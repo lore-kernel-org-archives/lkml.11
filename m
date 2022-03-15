@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55176C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351851AbiCOUwa (ORCPT
+        id S1351856AbiCOUwc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 16:52:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
+        Tue, 15 Mar 2022 16:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351813AbiCOUwS (ORCPT
+        with ESMTP id S1351815AbiCOUwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 16:52:18 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6E154F9C
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 13:51:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123AC54FBC
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 13:51:06 -0700 (PDT)
 Received: from ipservice-092-217-079-029.092.217.pools.vodafone-ip.de ([92.217.79.29] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nUE8D-00084h-Lf; Tue, 15 Mar 2022 21:51:01 +0100
+        id 1nUE8B-00084h-0d; Tue, 15 Mar 2022 21:50:59 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,9 +28,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH v2 6/6] staging: r8188eu: remove local BIT macro
-Date:   Tue, 15 Mar 2022 21:50:41 +0100
-Message-Id: <20220315205041.2714168-7-martin@kaiser.cx>
+Subject: [PATCH v2 4/6] staging: r8188eu: make rtl8188e_process_phy_info static
+Date:   Tue, 15 Mar 2022 21:50:39 +0100
+Message-Id: <20220315205041.2714168-5-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220315205041.2714168-1-martin@kaiser.cx>
 References: <20220315205041.2714168-1-martin@kaiser.cx>
@@ -40,55 +40,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The r8188eu driver defines a local BIT(x) macro. Remove this local macro
-and use the one from include/linux/bits.h.
-
-The global BIT macro returns an unsigned long value. Therefore, we have to
-cast DYNAMIC_BB_DYNAMIC_TXPWR to u32 explicitly. This define is used with
-the bitwise not operator.
+rtl8188e_process_phy_info is used only in rtl8188e_rxdesc.c. Make the
+function static and remove its prototype from rtl8188e_recv.h.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
-v2:
- - cast DYNAMIC_BB_DYNAMIC_TXPWR to u32, fix build error on 64-bit systems
+ drivers/staging/r8188eu/hal/rtl8188e_rxdesc.c   | 2 +-
+ drivers/staging/r8188eu/include/rtl8188e_recv.h | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
- drivers/staging/r8188eu/include/rtw_mlme_ext.h | 2 +-
- drivers/staging/r8188eu/include/wifi.h         | 7 +------
- 2 files changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-index 0c555ea6719b..2b5089be5156 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-@@ -34,7 +34,7 @@
- /*  BB ODM section BIT 0-15 */
- #define	DYNAMIC_BB_DIG				BIT(0)
- #define	DYNAMIC_BB_RA_MASK			BIT(1)
--#define	DYNAMIC_BB_DYNAMIC_TXPWR	BIT(2)
-+#define	DYNAMIC_BB_DYNAMIC_TXPWR	((u32)BIT(2))
- #define	DYNAMIC_BB_BB_FA_CNT			BIT(3)
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_rxdesc.c b/drivers/staging/r8188eu/hal/rtl8188e_rxdesc.c
+index 387af789797d..9bf7a9248026 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_rxdesc.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_rxdesc.c
+@@ -45,7 +45,7 @@ static void process_link_qual(struct adapter *padapter, struct recv_frame *prfra
+ 	signal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;
+ }
  
- #define		DYNAMIC_BB_RSSI_MONITOR		BIT(4)
-diff --git a/drivers/staging/r8188eu/include/wifi.h b/drivers/staging/r8188eu/include/wifi.h
-index c331be19ff83..299553351246 100644
---- a/drivers/staging/r8188eu/include/wifi.h
-+++ b/drivers/staging/r8188eu/include/wifi.h
-@@ -4,14 +4,9 @@
- #ifndef _WIFI_H_
- #define _WIFI_H_
+-void rtl8188e_process_phy_info(struct adapter *padapter, void *prframe)
++static void rtl8188e_process_phy_info(struct adapter *padapter, void *prframe)
+ {
+ 	struct recv_frame *precvframe = (struct recv_frame *)prframe;
  
-+#include <linux/bits.h>
- #include <linux/ieee80211.h>
+diff --git a/drivers/staging/r8188eu/include/rtl8188e_recv.h b/drivers/staging/r8188eu/include/rtl8188e_recv.h
+index 8d06815d0374..b752c5c06309 100644
+--- a/drivers/staging/r8188eu/include/rtl8188e_recv.h
++++ b/drivers/staging/r8188eu/include/rtl8188e_recv.h
+@@ -36,7 +36,6 @@ enum rx_packet_type {
+ s32 rtl8188eu_init_recv_priv(struct adapter *padapter);
+ void rtl8188eu_free_recv_priv(struct adapter * padapter);
+ void rtl8188eu_recv_tasklet(unsigned long priv);
+-void rtl8188e_process_phy_info(struct adapter * padapter, void *prframe);
+ void update_recvframe_phyinfo_88e(struct recv_frame *fra, struct phy_stat *phy);
+ void update_recvframe_attrib_88e(struct recv_frame *fra, struct recv_stat *stat);
  
--#ifdef BIT
--/* error	"BIT define occurred earlier elsewhere!\n" */
--#undef BIT
--#endif
--#define BIT(x)	(1 << (x))
--
- #define WLAN_ETHHDR_LEN		14
- #define WLAN_HDR_A3_LEN		24
- #define WLAN_HDR_A3_QOS_LEN	26
 -- 
 2.30.2
 
