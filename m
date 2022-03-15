@@ -2,161 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F17C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346637AbiCOJd3 (ORCPT
+        id S1346651AbiCOJg3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49584 "EHLO
+        Tue, 15 Mar 2022 05:36:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346640AbiCOJdO (ORCPT
+        with ESMTP id S1346222AbiCOJgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:33:14 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FD04ECFF;
-        Tue, 15 Mar 2022 02:32:02 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 57BBF1F43621
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647336720;
-        bh=QE/YbRmb8tZucb45FCoOsfQ+iIuuTe3bEnOlGJc219M=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=PwTm2ystHVQqrE7oJkq3lebCs09xm0AIRE5RM3D3XtTSMfacCKD+Z7RYNEeGbvZTk
-         A/DPtUD7N32kEAAFoDsKy1D9dyBsyV7uVQNWkYNKH2AfR6WUnWypyRxTm8ceVPPYQZ
-         G+gfOWjmy1xSoSXxgA1F3eIQH2nkuKq+GTyeMkGAWEdiq7ig4uavwS223BnIIYH9/u
-         uFvAIB2C2QHzaXIy47HKbu5dAG3Y5NimtTbipf3E+Ku1PjHMmbO9Fs80ccMIkPi5gu
-         WnU8IV92fOPqUkZ3xnR40U2mC40cZjGdX3xPNAnilVEJ11/dyw1gihQ7lJDR99ZI2A
-         vjGHGzR3lV7PA==
-Message-ID: <b237c1fe-9ddd-0a2e-ecf2-05bfb984c5dd@collabora.com>
-Date:   Tue, 15 Mar 2022 10:31:57 +0100
+        Tue, 15 Mar 2022 05:36:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A3A39B8A;
+        Tue, 15 Mar 2022 02:35:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C57F60AF4;
+        Tue, 15 Mar 2022 09:35:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BD33C340E8;
+        Tue, 15 Mar 2022 09:35:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647336911;
+        bh=tc/AYlU5h+rIvqjL5oTMpd37Nh1Iiz2jAlGUG+y+Abg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q7bQgqkRSdMHOm+/K3QDJHpE1nyNo7Ji1VCcUgPEggRZTuigZa2fouitaaOdiUlPl
+         2e4i6K72aVpXtZjFaDGOuPsB68Aa4JU25BusLuar/XS7B741AUbovWEXrcSEoVZKj1
+         ztK4enbfxZpuW/7OwLkzPTLPMJU95Mkd9NquoysZkFt9Uh/ldbvfhZ4q2ldXsp/tRH
+         qdL/5ZTffFR49LTTg/IgkvEVWesLOVu7Za7Rm7uIdemcseM/GEg20+LP+ocLJCVx2D
+         nGLOEKN+AHB4leKMND21ADdNjwWM+pdeOpB9+sq3AJbAcguseZCfjS5ozc1t9tdh6B
+         ISqclEZpOq0uw==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nU3a8-00EbLe-Tm; Tue, 15 Mar 2022 09:35:09 +0000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH V4 4/6] spi: mediatek: add spi memory support for ipm
- design
-Content-Language: en-US
-To:     Leilk Liu <leilk.liu@mediatek.com>, Mark Brown <broonie@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-References: <20220315032411.2826-1-leilk.liu@mediatek.com>
- <20220315032411.2826-5-leilk.liu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220315032411.2826-5-leilk.liu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Date:   Tue, 15 Mar 2022 09:35:08 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, kernel-team@android.com
+Subject: Re: [PATCH 0/5] gpiolib: Handle immutable irq_chip structures
+In-Reply-To: <CACRpkdbEDoPeu=TWmsJ_t-4+NtyiiSCXoj9rymspZt0nC+yrsQ@mail.gmail.com>
+References: <20220223154405.54912-1-maz@kernel.org>
+ <CACRpkdbEDoPeu=TWmsJ_t-4+NtyiiSCXoj9rymspZt0nC+yrsQ@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <e39c68c6c8c99fec796461cde33f78df@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: linus.walleij@linaro.org, linux-kernel@vger.kernel.org, brgl@bgdev.pl, thierry.reding@gmail.com, joey.gouly@arm.com, jonathanh@nvidia.com, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, bjorn.andersson@linaro.org, agross@kernel.org, tglx@linutronix.de, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, kernel-team@android.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 15/03/22 04:24, Leilk Liu ha scritto:
-> this patch add the support of spi-mem for ipm design.
+On 2022-03-15 00:44, Linus Walleij wrote:
+> On Wed, Feb 23, 2022 at 4:44 PM Marc Zyngier <maz@kernel.org> wrote:
 > 
-> Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
-> ---
->   drivers/spi/spi-mt65xx.c | 349 ++++++++++++++++++++++++++++++++++++++-
->   1 file changed, 348 insertions(+), 1 deletion(-)
+>> I recently realised that the gpiolib play ugly tricks on the
+>> unsuspecting irq_chip structures by patching the callbacks.
 > 
-> diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
-> index 1a0b3208dfca..8958c3fa4fea 100644
-> --- a/drivers/spi/spi-mt65xx.c
-> +++ b/drivers/spi/spi-mt65xx.c
+> Sorry about that...
 
-...snip...
+No worries. It probably did seem like a good idea at the
+time, and I have the benefit of hindsight here...
 
-> +
-> +static void of_mtk_spi_parse_dt(struct spi_master *master, struct device_node *nc)
-> +{
-> +	struct mtk_spi *mdata = spi_master_get_devdata(master);
-> +	u32 value;
-> +
-> +	if (!of_property_read_u32(nc, "spi-tx-bus-width", &value)) {
+> 
+>> My current approach is to add a new irq_chip flag (IRQCHIP_IMMUTABLE)
+>> which does what it says on the tin: don't you dare writing there.
+>> Gpiolib is further updated not to install its own callbacks, and it
+>> becomes the responsibility of the driver to call into the gpiolib when
+>> required. This is similar to what we do for other subsystems such as
+>> PCI-MSI.
+> 
+> OK if there is a precedent it is usually wise to follow.
+> 
+>> I'd welcome comments on the approach. If deemed acceptable, there are
+>> another 300+ drivers to update! Not to mention the documentation. I
+>> appreciate that this is a lot of potential changes, but the current
+>> situation is messy.
+> 
+> I'm happy with this approach as long as the 300+ drivers get fixed
+> and the old way of doing it gets deleted.
 
-Hello Leilk,
+Of course. Note that it will take some time before it actually happens.
+My current plan is to stick in a pr_warn() each time a driver
+following the old scheme gets registered, as a nudge for people to
+update their driver if they care about it.
 
-thanks for considering my advice about "spi-{tx,rx}-bus-width", but there's
-something that you have misunderstood about it.
+Regarding documentation, are you OK with me simply replacing the
+current code samples with the new approach? It will at least avoid
+giving people the wrong idea. I also want to write a brief migration
+guide that people willing to bump up their patch count can follow.
 
-Simply, you don't need this function at all. Whatever you are doing here is
-already being performed in the Linux SPI framework: at the end of the probe
-function, this driver is calling the (legacy) devm_spi_register_master(),
-which calls devm_spi_register_controller().
+I'll repost something once -rc1 is out.
 
-In drivers/spi/spi.c, function spi_register_controller(), will in turn call
-of_register_spi_devices(ctlr) -> of_register_spi_device(ctlr, nc)... that
-will end up finally calling function of_spi_parse_dt(ctlr, spi, nc).
+Thanks,
 
-The last mentioned function already contains the logic and setup to check
-devicetree properties "spi-tx-bus-width" and "spi-rx-bus-width" (and some
-others, as well).
-
-This means that spi-mt65xx.c already probed these even before your IPM
-implementation, hence ***function of_mtk_spi_parse_dt() is not needed***.
-
-Simply drop it and don't check for these properties: that's already done.
-
-
-Regards,
-Angelo
-
-> +		switch (value) {
-> +		case 1:
-> +			break;
-> +		case 2:
-> +			master->mode_bits |= SPI_TX_DUAL;
-> +			break;
-> +		case 4:
-> +			master->mode_bits |= SPI_TX_QUAD;
-> +			break;
-> +		default:
-> +			dev_warn(mdata->dev,
-> +				 "spi-tx-bus-width %d not supported\n",
-> +				value);
-> +			break;
-> +		}
-> +	}
-> +
-> +	if (!of_property_read_u32(nc, "spi-rx-bus-width", &value)) {
-> +		switch (value) {
-> +		case 1:
-> +			break;
-> +		case 2:
-> +			master->mode_bits |= SPI_RX_DUAL;
-> +			break;
-> +		case 4:
-> +			master->mode_bits |= SPI_RX_QUAD;
-> +			break;
-> +		case 8:
-> +			master->mode_bits |= SPI_RX_OCTAL;
-> +			break;
-> +		default:
-> +			dev_warn(mdata->dev,
-> +				 "spi-rx-bus-width %d not supported\n",
-> +				value);
-> +			break;
-> +		}
-> +	}
-> +}
-> +
->   static int mtk_spi_probe(struct platform_device *pdev)
->   {
->   	struct spi_master *master;
-> @@ -830,6 +1170,13 @@ static int mtk_spi_probe(struct platform_device *pdev)
->   	if (mdata->dev_comp->ipm_design)
->   		master->mode_bits |= SPI_LOOP;
->   
-> +	if (mdata->dev_comp->ipm_design) {
-> +		mdata->dev = &pdev->dev;
-> +		master->mem_ops = &mtk_spi_mem_ops;
-> +		of_mtk_spi_parse_dt(master, pdev->dev.of_node);
-> +		init_completion(&mdata->spimem_done);
-> +	}
-> +
->   	if (mdata->dev_comp->need_pad_sel) {
->   		mdata->pad_num = of_property_count_u32_elems(
->   			pdev->dev.of_node,
+         M.
+-- 
+Jazz is not dead. It just smells funny...
