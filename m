@@ -2,124 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 18:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22945C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 18:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351054AbiCOS1g (ORCPT
+        id S1351072AbiCOS1s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 14:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
+        Tue, 15 Mar 2022 14:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351046AbiCOS1e (ORCPT
+        with ESMTP id S1351056AbiCOS1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 14:27:34 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017B25A0A1;
-        Tue, 15 Mar 2022 11:26:22 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id kx6-20020a17090b228600b001bf859159bfso3034430pjb.1;
-        Tue, 15 Mar 2022 11:26:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e7eH2Jb47dfLg/8oCD4UksRNTJiYDyRm80Tfb3V3Q38=;
-        b=F/SdGCo9FsvcNH1PQHYY2UBgAURRooIyCXG9jvd/tChZf/kX3S1nXSHQrgnL6mnZ6x
-         n3b6HH3bOlUhBnrClzTR0PgteoniS4GBH95oLHjAqXEQ+TUbPLaTS0LJZ5vJ8ftJq0B/
-         esZ2Y9BX6VI73n5LrEf6zXj5WrrbXumI/ZU/W8t7791wjVnG8qBqPlKbTIsj+kka8Gao
-         5+EtvqoKrNnBuP4xjLEp/nW3Dcnv0C60vKxQYp2AwDpqfLvNnk+WEiOWbtbvCsS0AMdn
-         mDx1novA7mpN59TtCysoAnasiOS9+zIAtHdz2kX0JaeT7fVc6N9OOaMiGyrJmdZxj1D/
-         QvsA==
+        Tue, 15 Mar 2022 14:27:43 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630285A0A5
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 11:26:30 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 44F303F07E
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 18:26:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647368789;
+        bh=wELfczD6aecqiQgUFZDUOzRE+BacZC1tX6h2eC851HA=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=vabl2WNtkd+K4ZM+SbQdIrms55u1O2FFqjfH+p+dzigjsh0iTKl5iV5Npr0UXA+cd
+         9U9B1BCFbTiqlkyLDvS+1sV0zF1cSYA/fz6Qc34ZHq+6iILxRROjC8NsPN+jcdaGcN
+         e2cYrCer84ka88A4c+3Owz/nF3KfqQ8821NCLQKJf4/AXb5S8yW0Nkm3LF3F8/ERvE
+         /qwf++r1bQrPKbWTx8egxOID7YvSxNzQ5CBFwPRhvv+ZlUArhBbrDLLTmcEMw23MC/
+         SLySk3G0UtqZn9jafbSmD16AqvAXw7eBUCtHT5ow7ffLS8v8/U56c9ByuoaPF/Al5k
+         gr55x9cVOr2xg==
+Received: by mail-ej1-f71.google.com with SMTP id ga31-20020a1709070c1f00b006cec400422fso10103482ejc.22
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 11:26:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e7eH2Jb47dfLg/8oCD4UksRNTJiYDyRm80Tfb3V3Q38=;
-        b=nnpLeULXYkyD4SGkNXebZNfyGXLx4LUjurofBx9GKuhFtMF5+Fehh95u1XqTmIQFuH
-         klCg1jPMotb/GGzj102muJh9ZjfXRjghSERzuKew14ykVRZpwkzgET+UMYVXRtf4tYHv
-         I6+NVoDd+1lGwMqGhyb7GAgkotvmFXrO7Omox4pWGfATSgbaMLjGXFWwLWkJSJOHBKG+
-         6V6N/SrF57kSa+TZr5di7YcSr/iYPKD46diysPvGpg4TXBqAuyJemENdDvNMZgZVdzlx
-         wAEn5uTVNUP9dyIdk5CZ0kfFvgmrlzOCpsb2XDZ5srKBwDpFxpRzgv3tVcwsNdgZRgmU
-         8yrA==
-X-Gm-Message-State: AOAM532lmcAjtTfyn7AXv/BRPle2E8hypoLNlRWXflvFOFh/YwerwPW7
-        VF7LlMdsrZR8AcmsYi8nQ6uzZM2tlDv0y9Cy67o=
-X-Google-Smtp-Source: ABdhPJzj/IPHcPc1JKJe6GcpufOS24sfagqE6GXJsF/TEAgFn5iFSIgY2nwHXu9p6YxnwrhCpbou0gF9UzVV+uE1sog=
-X-Received: by 2002:a17:902:70c6:b0:153:2444:6dcd with SMTP id
- l6-20020a17090270c600b0015324446dcdmr26131355plt.55.1647368781471; Tue, 15
- Mar 2022 11:26:21 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wELfczD6aecqiQgUFZDUOzRE+BacZC1tX6h2eC851HA=;
+        b=hEmpKTURyfQbYcoaBopwPboIxwWsfig3dlU9736k25ATn25wBtjDShZXV4+8pEYBZm
+         Tf56/9LsNt9pfotQQyNb7GyE234GDut/TrvcJRJNqIWoouYTuVpp91XiOFYBIjdF/PKe
+         3m7Sn+IiFej2lvdvZuxTo1YRFeixy2OmZSUk9P4vetfCNKNvYv3ddeCzVEhQgGgtRLNT
+         EwF0U9rF07LiRGU8qitPudB2y0XhKHlGotX6XsMGRxhQhSTzsqR9h1796FMy/WtHsPk2
+         INeHH5gfku6y1PmYYSNMNWETXjXgPAzSjCxrgPqf8j4yBonIoy3LEme/1JbBTJQw9M8w
+         gCHA==
+X-Gm-Message-State: AOAM530RnIn10x9GDysCoXSgB1gPPOWMexAzX5OKkYumj/0FwszgSJjr
+        eV0m2GFkAlqHKDmhMicuAajbW99WTyo5WDNn6Wm4rks9KDnhzrR2ARF3nrArdopPZ4K7R/jb0QL
+        go9AH1vWM44++jMPUJDMFuuP5LYDLpbpApAW/SvwL7w==
+X-Received: by 2002:a17:906:b288:b0:6da:825e:a2ee with SMTP id q8-20020a170906b28800b006da825ea2eemr23434508ejz.254.1647368789018;
+        Tue, 15 Mar 2022 11:26:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz7LxDT4MGNn2j5zGW0un4xcdJmoSwgEnvj4oTYvh7dGyCaYWm2rZ7O73KACh19pmoqcC1v1g==
+X-Received: by 2002:a17:906:b288:b0:6da:825e:a2ee with SMTP id q8-20020a170906b28800b006da825ea2eemr23434496ejz.254.1647368788821;
+        Tue, 15 Mar 2022 11:26:28 -0700 (PDT)
+Received: from [10.227.148.193] (80-254-69-65.dynamic.monzoon.net. [80.254.69.65])
+        by smtp.googlemail.com with ESMTPSA id q5-20020aa7cc05000000b004129baa5a94sm9780644edt.64.2022.03.15.11.26.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 11:26:28 -0700 (PDT)
+Message-ID: <09e8fdab-978b-fa9d-9e45-f8625ebc9c52@canonical.com>
+Date:   Tue, 15 Mar 2022 19:26:27 +0100
 MIME-Version: 1.0
-References: <YifZhUVoHLT/76fE@hirez.programming.kicks-ass.net>
- <Yif8nO2xg6QnVQfD@hirez.programming.kicks-ass.net> <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
- <YinGZObp37b27LjK@hirez.programming.kicks-ass.net> <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
- <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net> <YisnG9lW6kp8lBp3@hirez.programming.kicks-ass.net>
- <CAADnVQJfffD9tH_cWThktCCwXeoRV1XLZq69rKK5vKy_y6BN8A@mail.gmail.com>
- <20220312154407.GF28057@worktop.programming.kicks-ass.net>
- <CAADnVQL7xrafAviUJg47LfvFSJpgZLwyP18Bm3S_KQwRyOpheQ@mail.gmail.com> <20220314204402.rpd5hqzzev4ugtdt@apollo>
-In-Reply-To: <20220314204402.rpd5hqzzev4ugtdt@apollo>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 15 Mar 2022 11:26:10 -0700
-Message-ID: <CAADnVQ+TMPpwEc_S7ayijzem-SOCQzuAeJAX=3mQXqgTPBW22A@mail.gmail.com>
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        joao@overdrivepizza.com, hjl.tools@gmail.com,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mark Rutland <mark.rutland@arm.com>, alyssa.milburn@intel.com,
-        Miroslav Benes <mbenes@suse.cz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: timer: Convert rda,8810pl-timer to YAML
+Content-Language: en-US
+To:     Stanislav Jakubek <stano.jakubek@gmail.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-unisoc@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220225173734.GA7573@standask-GA-A55M-S2HP>
+ <20220315140140.GA2558@standask-GA-A55M-S2HP>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220315140140.GA2558@standask-GA-A55M-S2HP>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 1:44 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> The crash does not seem to be resurfacing the bug, AFAICT.
->
-> [ Note: I have no experience with trampoline code or IBT so what follows might
->         be incorrect. ]
->
-> In case of fexit and fmod_ret, we call original function (but skip
-> X86_PATCH_SIZE bytes), with ENDBR we must also skip those 4 bytes, but in some
-> cases like bpf_fentry_test1, for which this test has fmod_ret prog, compiler
-> (gcc 11) emits endbr64, but not for do_init_module, for which we do fexit.
->
-> This means for do_init_module module, orig_call += X86_PATCH_SIZE +
-> ENDBR_INSN_SIZE would skip more bytes than needed to emit call to original
-> function, which explains why I was seeing crash in the middle of
-> 'mov edx, 0x10' instruction.
->
-> The diff below fixes the problem for me, and allows the test to pass.
->
-> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> index b98e1c95bcc4..760c9a3c075f 100644
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -2031,11 +2031,14 @@ int arch_prepare_bpf_trampoline(struct bpf_tramp_image *im, void *image, void *i
->
->         ip_off = stack_size;
->
-> -       if (flags & BPF_TRAMP_F_SKIP_FRAME)
-> +       if (flags & BPF_TRAMP_F_SKIP_FRAME) {
->                 /* skip patched call instruction and point orig_call to actual
->                  * body of the kernel function.
->                  */
-> -               orig_call += X86_PATCH_SIZE + ENDBR_INSN_SIZE;
-> +               if (is_endbr(*(u32 *)orig_call))
-> +                       orig_call += ENDBR_INSN_SIZE;
-> +               orig_call += X86_PATCH_SIZE;
-> +       }
->
+On 15/03/2022 15:01, Stanislav Jakubek wrote:
+> Hi all,
+> 
+> anything holding this back? It's been sitting on the mailing lists
+> with 2 R-B's for ~2 weeks.
 
-Thanks Kumar!
-The bpf trampoline can attach to both indirect and non-indirect
-functions. My understanding is that only indirect targets will have
-endbr first insn. So the fix totally makes sense.
+Maybe it's too late in the cycle for Daniel to take this?
+
+Daniel,
+
+If you are waiting for Rob's ack, mine should be sufficient.
+
+
+Best regards,
+Krzysztof
