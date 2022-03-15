@@ -2,79 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05554C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344317AbiCOJsj (ORCPT
+        id S1346823AbiCOJsq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
+        Tue, 15 Mar 2022 05:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346901AbiCOJsX (ORCPT
+        with ESMTP id S1346860AbiCOJsI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:48:23 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A620E4ECD6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:47:11 -0700 (PDT)
-Received: from zn.tnic (p5de8e440.dip0.t-ipconnect.de [93.232.228.64])
+        Tue, 15 Mar 2022 05:48:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DA44EF49
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:46:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1E89C1EC0374;
-        Tue, 15 Mar 2022 10:47:06 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1647337626;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=nkcnMhMLGkZMB3rh6duTo8CW4F5wZyX3B2sIvZEMXyE=;
-        b=BGQJK5dhi6l8N5MZsrC68XE4hhmKMWxRE6TL6q+1jfW0+zCBEYbK081S4Si4J7S2Wz/70M
-        Xcvx3AifRUbKs/oCuJZTgru7gUuV3s65oGNW3PxRKYZxJEozUQwXGb6sMv6zLGF3mlKv9f
-        R+2AEkMU78qDvwlJuO1sP6L9hPGkaJU=
-Date:   Tue, 15 Mar 2022 10:44:51 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     James Jones <linux@theinnocuous.com>
-Cc:     keescook@chromium.org, x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86: Remove a.out support
-Message-ID: <YjBgE1Howd5WnQ3P@zn.tnic>
-References: <4c449fab-8135-5057-7d2c-7b948ce130cc@theinnocuous.com>
- <0b31b1d3-852d-6cab-82ae-5eecaec05679@theinnocuous.com>
- <Yi3b/GpUuhkI5lv7@zn.tnic>
- <785a6348-e1c5-7900-78bc-af8b6923cc8a@theinnocuous.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <785a6348-e1c5-7900-78bc-af8b6923cc8a@theinnocuous.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A0B2B81100
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:46:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42898C340E8;
+        Tue, 15 Mar 2022 09:46:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647337614;
+        bh=y1M717vi07aybTwxIruliIpZNcU5zWi08PSUU/8vXv4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jH/a00zqv1MYb2N08yoHEUkci5MWdhZR8E5GTPlfSBmxOAKjTpHjdoE0j7yBJPpv5
+         MLAylman6eRV+VS4ChVBzx6EMH6mUlXuf5zJqZdDm7L2Y4M4OU4xOB/ySPHiGc5zCg
+         pmBATuX9/ePhxhtpd37VnoXHv5/h13VdaSUwyy+ZZShM8NIVaquMRmGXBc12QEL40m
+         l9+PagT9bgEdk3c2pl1rpbJ71xaj/x5LyQKJpVRbYXVaMZuiYOvt7z1JNfft14qOdk
+         bFWa5gjNep15O63iyA5kxbnV2A+JMsFqUY5rVJmSBn/XZGSWaKDvglqdBzxTgQ0mCI
+         z2YUuJpXfiYbQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nU3lT-00EbZM-SZ; Tue, 15 Mar 2022 09:46:51 +0000
+Date:   Tue, 15 Mar 2022 09:46:51 +0000
+Message-ID: <87fsnjzgxg.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        David Decotigny <ddecotig@google.com>
+Subject: Re: [PATCH] genirq/msi: Shutdown managed interrupts with unsatifiable affinities
+In-Reply-To: <87mthsfjai.ffs@tglx>
+References: <20220307190625.254426-1-maz@kernel.org>
+        <87sfrkftbl.ffs@tglx>
+        <87ilsgzfpv.wl-maz@kernel.org>
+        <87mthsfjai.ffs@tglx>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: tglx@linutronix.de, linux-kernel@vger.kernel.org, john.garry@huawei.com, ddecotig@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 06:26:31PM +0000, James Jones wrote:
-> ...
-> This all probably seems absurd now, but note the newest version of these
-> tools was released in 1995, when Linux ELF support would have been brand
-> new. I don't know when the tools first shipped on Linux, but it would
-> have been a few years before that, so a.out would have been the only
-> option. It seems some Atari Jaguar developers were rather early Linux
-> adopters.
+On Mon, 14 Mar 2022 19:03:49 +0000,
+Thomas Gleixner <tglx@linutronix.de> wrote:
+> 
+> On Mon, Mar 14 2022 at 16:00, Marc Zyngier wrote:
+> > On Mon, 14 Mar 2022 15:27:10 +0000,
+> > Thomas Gleixner <tglx@linutronix.de> wrote:
+> >> 
+> >> On Mon, Mar 07 2022 at 19:06, Marc Zyngier wrote:
+> >> > When booting with maxcpus=<small number>, interrupt controllers
+> >> > such as the GICv3 ITS may not be able to satisfy the affinity of
+> >> > some managed interrupts, as some of the HW resources are simply
+> >> > not available.
+> >> 
+> >> This is also true if you have offlined lots of CPUs, right?
+> >
+> > Not quite. If you offline the CPUs, the interrupts will be placed in
+> > the shutdown state as expected, having initially transitioned via an
+> > activation state with an online CPU. The issue here is with the
+> > initial activation of the interrupt, which currently happens even if
+> > no matching CPU is present.
+> 
+> Yes. But if you load the driver _after_ offlining lots of CPUs first
+> then the same thing should happen, right?
 
-Ok, that explains it fine, thanks.
+Ah! yes, that's the exact same problem (modular drivers? that's an
+idea that will never catch on...).
 
-Please put that explanation in a text file somewhere in
-Documentation/x86/ so that we know why we're keeping a.out support.
+> 
+> >> > +		/*
+> >> > +		 * If the interrupt is managed but no CPU is available
+> >> > +		 * to service it, shut it down until better times.
+> >> > +		 */
+> >> > +		if ((vflags & VIRQ_ACTIVATE) &&
+> >> > +		    irqd_affinity_is_managed(irqd) &&
+> >> > +		    !cpumask_intersects(irq_data_get_affinity_mask(irqd),
+> >> > +					cpu_online_mask)) {
+> >> > +			    irqd_set_managed_shutdown(irqd);
+> >> 
+> >> Hrm. Why is this in the !CAN_RESERVE path and not before the actual
+> >> activation call?
+> >
+> > VIRQ_CAN_RESERVE can only happen as a consequence of
+> > GENERIC_IRQ_RESERVATION_MODE, which only exists on x86. Given that x86
+> > is already super careful not to activate an interrupt that is not
+> > immediately required, I though we could avoid putting this check on
+> > that path.
+> >
+> > But if I got the above wrong (which is, let's face it, extremely
+> > likely), I'm happy to kick it down the road next to the activation
+> > call.
+> 
+> I just rechecked. Yes, we could push it there, but actually on x86 the
+> reservation mode activation sets the entry to a spurious catch all on an
+> online CPU, which is intentional.
+> 
+> So yes, we can keep it where it is now, but that needs a comment.
 
-I'll zap the removing patch from the lineup now and you can send me your
-fixes whenever you're ready.
+Yup, I'll add that.
 
-If you're wondering on how to format them and what to do, we have it all
-documented in Documentation/process/. I'd especially suggest reading
-Documentation/process/submitting-patches.rst
+Thanks,
 
-HTH.
-
-Thx.
+	M.
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Without deviation from the norm, progress is not possible.
