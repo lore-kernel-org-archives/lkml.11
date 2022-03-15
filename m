@@ -2,139 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C99CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD4ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347532AbiCOKza (ORCPT
+        id S1347667AbiCOKzo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60556 "EHLO
+        Tue, 15 Mar 2022 06:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347736AbiCOKzL (ORCPT
+        with ESMTP id S1347690AbiCOKzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:55:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC2BC39B85
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647341599;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dv56vnJpljRcaCMIQ0NnfuW6KA/TkSLGs2Q5wx0q2yM=;
-        b=ilUK6fOsP4y4B6pLKonN+JY+T+3fqodipQcBLtlNzkMutMVs/qrpQY15FkYmRFlNM32y1J
-        T2trpyTihYhluaXEhOPFJ7K1ewr4amutT4MAZ7QW6MQld4Y4DXPWYJ1ROdubB+FnmsQE4e
-        2rf/SFGCvxnLSSOXFxGLU+yGZesTO2U=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-177-rDQ-TgvOPp-z54SJuvrWOQ-1; Tue, 15 Mar 2022 06:53:16 -0400
-X-MC-Unique: rDQ-TgvOPp-z54SJuvrWOQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 678A3185A7BA;
-        Tue, 15 Mar 2022 10:53:15 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 088CD9E94;
-        Tue, 15 Mar 2022 10:52:46 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH v2 12/15] mm/gup: disallow follow_page(FOLL_PIN)
-Date:   Tue, 15 Mar 2022 11:47:38 +0100
-Message-Id: <20220315104741.63071-13-david@redhat.com>
-In-Reply-To: <20220315104741.63071-1-david@redhat.com>
-References: <20220315104741.63071-1-david@redhat.com>
+        Tue, 15 Mar 2022 06:55:21 -0400
+X-Greylist: delayed 243 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Mar 2022 03:53:51 PDT
+Received: from esa2.mentor.iphmx.com (esa2.mentor.iphmx.com [68.232.141.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF8F52E1F
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:53:49 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
+   d="scan'208";a="73190388"
+Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
+  by esa2.mentor.iphmx.com with ESMTP; 15 Mar 2022 02:45:41 -0800
+IronPort-SDR: 1jJ2My7mhtJ2dSPnlQ+bdjsDlR6OJzFZ6SZ2XxzjFr/fMqlVbVtpK41Xn/JwiwlSFuQITOQQwz
+ U3Uc4tAEt0Lb6pzvJbOHowJvEnBN40s9VUOu2hLdNy0wBfbfzZ43OEoplv+rty/lhGnBE3vnFL
+ W+1ffFgj3rWSa9A+D2GFNGBvW25B6kFRKv+MhCpd7YKOD+KRASN/hTr0aGGi+hcm8O/EHb7DNY
+ Zra/fQCwo5RTNzbhdyAq8iNzgejh30JitjIdqJY7I5OboqXOs1SzQ12QKzN2wHtpCwHyciljGc
+ qiA=
+From:   "Surachari, Bhuvanesh" <Bhuvanesh_Surachari@mentor.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+CC:     "Gabbasov, Andrew" <Andrew_Gabbasov@mentor.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>
+Subject: RE: [PATCH v2] i2c: rcar: add SMBus block read support
+Thread-Topic: [PATCH v2] i2c: rcar: add SMBus block read support
+Thread-Index: AQHXut9FT2mP5NnGkki6tztrKBL//6yY9+mAgAEAdYCAJ0KC0A==
+Date:   Tue, 15 Mar 2022 10:45:37 +0000
+Message-ID: <b59f222400c54ffdbdd3f70aea153b1b@SVR-IES-MBX-03.mgc.mentorg.com>
+References: <20210922160649.28449-1-andrew_gabbasov@mentor.com>
+ <CAMuHMdVVDpBAQR+H1TAnpf65aVbAL0Mm0km7Z9L7+1JuF6n1gQ@mail.gmail.com>
+ <000001d7badd$a8512d30$f8f38790$@mentor.com>
+ <20211006182314.10585-1-andrew_gabbasov@mentor.com> <Yg6ls0zyTDe7LQbK@kunai>
+ <0a07902900bc4ecc84bd93a6b85a2e0c@svr-ies-mbx-02.mgc.mentorg.com>
+In-Reply-To: <0a07902900bc4ecc84bd93a6b85a2e0c@svr-ies-mbx-02.mgc.mentorg.com>
+Accept-Language: en-US, en-IE
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [137.202.0.90]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to change the way we handle R/O pins on anonymous pages that
-might be shared: if we detect a possibly shared anonymous page --
-mapped R/O and not !PageAnonExclusive() -- we want to trigger unsharing
-via a page fault, resulting in an exclusive anonymous page that can be
-pinned reliably without getting replaced via COW on the next write
-fault.
-
-However, the required page fault will be problematic for follow_page():
-in contrast to ordinary GUP, follow_page() doesn't trigger faults
-internally. So we would have to end up failing a R/O pin via
-follow_page(), although there is something mapped R/O into the page
-table, which might be rather surprising.
-
-We don't seem to have follow_page(FOLL_PIN) users, and it's a purely
-internal MM function. Let's just make our life easier and the semantics of
-follow_page() clearer by just disallowing FOLL_PIN for follow_page()
-completely.
-
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- mm/gup.c     | 3 +++
- mm/hugetlb.c | 8 +++++---
- 2 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/mm/gup.c b/mm/gup.c
-index 7bc1ba9ce440..ae1aa2e93b0f 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -875,6 +875,9 @@ struct page *follow_page(struct vm_area_struct *vma, unsigned long address,
- 	if (vma_is_secretmem(vma))
- 		return NULL;
- 
-+	if (foll_flags & FOLL_PIN)
-+		return NULL;
-+
- 	page = follow_page_mask(vma, address, foll_flags, &ctx);
- 	if (ctx.pgmap)
- 		put_dev_pagemap(ctx.pgmap);
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index c0e19ea5ebb5..640364a11336 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -6692,9 +6692,11 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
- 	spinlock_t *ptl;
- 	pte_t pte;
- 
--	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
--	if (WARN_ON_ONCE((flags & (FOLL_PIN | FOLL_GET)) ==
--			 (FOLL_PIN | FOLL_GET)))
-+	/*
-+	 * FOLL_PIN is not supported for follow_page(). Ordinary GUP goes via
-+	 * follow_hugetlb_page().
-+	 */
-+	if (WARN_ON_ONCE(flags & FOLL_PIN))
- 		return NULL;
- 
- retry:
--- 
-2.35.1
-
+SGkgV29sZnJhbSwNCg0KICAgICBDb3VsZCB5b3UgcGxlYXNlIHByb3ZpZGUgZmVlZGJhY2sgdG8g
+b3VyIHJlc3BvbnNlIGF0LA0KDQpodHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMGEwNzkwMjkw
+MGJjNGVjYzg0YmQ5M2E2Yjg1YTJlMGNAc3ZyLWllcy1tYngtMDIubWdjLm1lbnRvcmcuY29tLw0K
+DQpUaGFuayB5b3UsDQpSZWdhcmRzLA0KQmh1dmFuZXNoDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
+LS0tLQ0KRnJvbTogR2FiYmFzb3YsIEFuZHJldyA8QW5kcmV3X0dhYmJhc292QG1lbnRvci5jb20+
+IA0KU2VudDogMTggRmVicnVhcnkgMjAyMiAxNjozMw0KVG86IFdvbGZyYW0gU2FuZyA8d3NhK3Jl
+bmVzYXNAc2FuZy1lbmdpbmVlcmluZy5jb20+DQpDYzogbGludXgtcmVuZXNhcy1zb2NAdmdlci5r
+ZXJuZWwub3JnOyBsaW51eC1pMmNAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5r
+ZXJuZWwub3JnOyBHZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPjsg
+U3VyYWNoYXJpLCBCaHV2YW5lc2ggPEJodXZhbmVzaF9TdXJhY2hhcmlAbWVudG9yLmNvbT4NClN1
+YmplY3Q6IFJFOiBbUEFUQ0ggdjJdIGkyYzogcmNhcjogYWRkIFNNQnVzIGJsb2NrIHJlYWQgc3Vw
+cG9ydA0KDQpIaSBXb2xmcmFtIQ0KDQpUaGFuayB5b3UgZm9yIHlvdXIgZmVlZGJhY2shDQpTZWUg
+bXkgcmVzcG9uc2VzIGJlbG93Lg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZy
+b206IFdvbGZyYW0gU2FuZyA8d3NhK3JlbmVzYXNAc2FuZy1lbmdpbmVlcmluZy5jb20+DQo+IFNl
+bnQ6IFRodXJzZGF5LCBGZWJydWFyeSAxNywgMjAyMiAxMDo0NSBQTQ0KPiBUbzogR2FiYmFzb3Ys
+IEFuZHJldyA8QW5kcmV3X0dhYmJhc292QG1lbnRvci5jb20+DQo+IENjOiBsaW51eC1yZW5lc2Fz
+LXNvY0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWkyY0B2Z2VyLmtlcm5lbC5vcmc7IA0KPiBsaW51
+eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBHZWVydCBVeXR0ZXJob2V2ZW4gDQo+IDxnZWVydCty
+ZW5lc2FzQGdsaWRlci5iZT47IFN1cmFjaGFyaSwgQmh1dmFuZXNoIA0KPiA8Qmh1dmFuZXNoX1N1
+cmFjaGFyaUBtZW50b3IuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYyXSBpMmM6IHJjYXI6
+IGFkZCBTTUJ1cyBibG9jayByZWFkIHN1cHBvcnQNCj4gDQpbc2tpcHBlZF0NCj4gDQo+ID4gVGhp
+cyBwYXRjaCAoYWRhcHRlZCkgd2FzIHRlc3RlZCB3aXRoIHY0LjE0LCBidXQgZHVlIHRvIGxhY2sg
+b2YgcmVhbCANCj4gPiBoYXJkd2FyZSB3aXRoIFNNQnVzIGJsb2NrIHJlYWQgb3BlcmF0aW9ucyBz
+dXBwb3J0LCB1c2luZyANCj4gPiAic2ltdWxhdGlvbiIsIHRoYXQgaXMgbWFudWFsIGFuYWx5c2lz
+IG9mIGRhdGEsIHJlYWQgZnJvbSBwbGFpbiBJMkMgDQo+ID4gZGV2aWNlcyB3aXRoIFNNQnVzIGJs
+b2NrIHJlYWQgcmVxdWVzdC4NCj4gDQo+IFlvdSBjb3VsZCB3aXJlIHVwIHR3byBSLUNhciBJMkMg
+aW5zdGFuY2VzLCBzZXQgdXAgb25lIGFzIGFuIEkyQyBzbGF2ZSANCj4gaGFuZGxlZCBieSB0aGUg
+STJDIHRlc3R1bml0IGFuZCB0aGVuIHVzZSB0aGUgb3RoZXIgaW5zdGFuY2Ugd2l0aCANCj4gU01C
+VVNfQkxPQ0tfUFJPQ19DQUxMIHdoaWNoIGFsc28gbmVlZHMgUkVDVl9MRU4uIENoZWNrIA0KPiBE
+b2N1bWVudGF0aW9uL2kyYy9zbGF2ZS10ZXN0dW5pdC1iYWNrZW5kLnJzdCBmb3IgZGV0YWlscy4N
+Cg0KWW91IG1lYW4gcGh5c2ljYWwgY29ubmVjdGlvbiBvZiB0d28gUi1DYXIgYm9hcmRzIHZpYSBJ
+MkMgYnVzLCBvciBwaHlzaWNhbCBjb25uZWN0aW9uIG9mIEkyQyBidXMgd2lyZXMgb24gdGhlIHNp
+bmdsZSBib2FyZCwgcmlnaHQ/DQpJdCBsb29rcyBsaWtlIGFsbCB0aGUgYm9hcmRzLCB0aGF0IEkg
+aGF2ZSBhY2Nlc3MgdG8sIGRvIG5vdCBoYXZlIEkyQyBidXMgd2lyZXMgZXhwb3NlZCB0byBzb21l
+IGNvbm5lY3RvcnMsIHNvIGJvdGggdmFyaWFudHMgd291bGQgcmVxdWlyZSBoYXJkd2FyZSByZS13
+aXJpbmcgbW9kaWZpY2F0aW9uIG9mIHRoZSBib2FyZHMsIHdoaWNoIGlzIG5vdCBhbiBvcHRpb24g
+Zm9yIG1lLiBPciBkbyBJIHVuZGVyc3RhbmQgeW91IGluY29ycmVjdGx5IGFuZCB5b3UgbWVhbiBz
+b21ldGhpbmcgZGlmZmVyZW50Pw0KDQo+IEkgd29uZGVyIGEgYml0IGFib3V0IHRoZSBjb21wbGV4
+aXR5IG9mIHlvdXIgcGF0Y2guIEluIG15IFdJUC1icmFuY2ggDQo+IGZvciAyNTYtYnl0ZSB0cmFu
+c2ZlcnMsIEkgaGF2ZSB0aGUgZm9sbG93aW5nIHBhdGNoLiBJdCBpcyBvbmx5IG1pc3NpbmcgDQo+
+IHRoZSByYW5nZSBjaGVjayBmb3IgdGhlIHJlY2VpdmVkIGJ5dGUsIGJ1dCB0aGF0IGl0IGVhc3kg
+dG8gYWRkLiBEbyB5b3UgDQo+IHNlZSBhbnl0aGluZyBlbHNlIG1pc3Npbmc/IElmIG5vdCwgSSBw
+cmVmZXIgdGhpcyBzaW1wbGVyIHZlcnNpb24gDQo+IGJlY2F1c2UgaXQgaXMgbGVzcyBpbnRydXNp
+dmUgYW5kIHRoZSBzdGF0ZSBtYWNoaW5lIGlzIGEgYml0IGZyYWdpbGUgDQo+IChkdWUgdG8gSFcg
+aXNzdWVzIHdpdGggb2xkIEhXKS4NCg0KTW9zdCBvZiBjb21wbGV4aXR5IGluIG15IHBhdGNoIGlz
+IHJlbGF0ZWQgdG8gRE1BIHRyYW5zZmVycyBzdXBwb3J0LCB0aGF0IEknbSB0cnlpbmcgdG8gcmV0
+YWluIGZvciBTTUJ1cyBibG9jayBkYXRhIHRyYW5zZmVycyB0b28gKGZvciB0aGUgcmVzdCBvZiBi
+eXRlcyBhZnRlciB0aGUgZmlyc3QgImxlbmd0aCIgYnl0ZSkuIFlvdXIgc2ltcGxlIHBhdGNoIG1h
+a2VzIHRoZSBkcml2ZXIgcGVyZm9ybSBhbGwgTV9SRUNWX0xFTiB0cmFuc2ZlcnMgaW4gUElPIG1v
+ZGUgb25seSAod2l0aCBubyBETUEgYXQgYWxsKSwgd2hpY2ggaXMgcHJvYmFibHkgbm90IHF1aXRl
+IGdvb2QgKGl0J3MgYSBwaXR5IHRvIGxvb3NlIGV4aXN0aW5nIEhXIGNhcGFiaWxpdHksIGFscmVh
+ZHkgc3VwcG9ydGVkIGJ5IHRoZSBkcml2ZXIpLg0KDQpBbHNvLCBzZWUgYSBjb3VwbGUgb2YgY29t
+bWVudHMgYmVsb3cuDQoNCj4gRnJvbTogV29sZnJhbSBTYW5nIDx3c2ErcmVuZXNhc0BzYW5nLWVu
+Z2luZWVyaW5nLmNvbT4NCj4gRGF0ZTogU3VuLCAyIEF1ZyAyMDIwIDAwOjI0OjUyICswMjAwDQo+
+IFN1YmplY3Q6IFtQQVRDSF0gaTJjOiByY2FyOiBhZGQgc3VwcG9ydCBmb3IgSTJDX01fUkVDVl9M
+RU4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFdvbGZyYW0gU2FuZyA8d3NhK3JlbmVzYXNAc2FuZy1l
+bmdpbmVlcmluZy5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9pMmMvYnVzc2VzL2kyYy1yY2FyLmMg
+fCA3ICsrKysrLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDIgZGVsZXRp
+b25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pMmMvYnVzc2VzL2kyYy1yY2FyLmMg
+DQo+IGIvZHJpdmVycy9pMmMvYnVzc2VzL2kyYy1yY2FyLmMgaW5kZXggMjE3ZGVmMmQ3Y2I0Li5l
+NDczZjVjMGE3MDggDQo+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2kyYy9idXNzZXMvaTJjLXJj
+YXIuYw0KPiArKysgYi9kcml2ZXJzL2kyYy9idXNzZXMvaTJjLXJjYXIuYw0KPiBAQCAtNTI4LDYg
+KzUyOCw3IEBAIHN0YXRpYyB2b2lkIHJjYXJfaTJjX2lycV9zZW5kKHN0cnVjdCByY2FyX2kyY19w
+cml2IA0KPiAqcHJpdiwgdTMyIG1zcikgIHN0YXRpYyB2b2lkIHJjYXJfaTJjX2lycV9yZWN2KHN0
+cnVjdCByY2FyX2kyY19wcml2IA0KPiAqcHJpdiwgdTMyIG1zcikgIHsNCj4gIAlzdHJ1Y3QgaTJj
+X21zZyAqbXNnID0gcHJpdi0+bXNnOw0KPiArCWJvb2wgcmVjdl9sZW5faW5pdCA9IHByaXYtPnBv
+cyA9PSAwICYmIG1zZy0+ZmxhZ3MgJiBJMkNfTV9SRUNWX0xFTjsNCj4gDQo+ICAJLyogRklYTUU6
+IHNvbWV0aW1lcywgdW5rbm93biBpbnRlcnJ1cHQgaGFwcGVuZWQuIERvIG5vdGhpbmcgKi8NCj4g
+IAlpZiAoIShtc3IgJiBNRFIpKQ0KPiBAQCAtNTQyLDExICs1NDMsMTMgQEAgc3RhdGljIHZvaWQg
+cmNhcl9pMmNfaXJxX3JlY3Yoc3RydWN0IHJjYXJfaTJjX3ByaXYgKnByaXYsIHUzMiBtc3IpDQo+
+ICAJfSBlbHNlIGlmIChwcml2LT5wb3MgPCBtc2ctPmxlbikgew0KPiAgCQkvKiBnZXQgcmVjZWl2
+ZWQgZGF0YSAqLw0KPiAgCQltc2ctPmJ1Zltwcml2LT5wb3NdID0gcmNhcl9pMmNfcmVhZChwcml2
+LCBJQ1JYVFgpOw0KPiArCQlpZiAocmVjdl9sZW5faW5pdCkNCj4gKwkJCW1zZy0+bGVuICs9IG1z
+Zy0+YnVmWzBdOw0KPiAgCQlwcml2LT5wb3MrKzsNCj4gIAl9DQo+IA0KPiAgCS8qIElmIG5leHQg
+cmVjZWl2ZWQgZGF0YSBpcyB0aGUgX0xBU1RfLCBnbyB0byBuZXcgcGhhc2UuICovDQo+IC0JaWYg
+KHByaXYtPnBvcyArIDEgPT0gbXNnLT5sZW4pIHsNCj4gKwlpZiAocHJpdi0+cG9zICsgMSA9PSBt
+c2ctPmxlbiAmJiAhcmVjdl9sZW5faW5pdCkgew0KDQpJZiBhIG1lc3NhZ2UgY29udGFpbnMgYSBz
+aW5nbGUgYnl0ZSBhZnRlciB0aGUgbGVuZ3RoIGJ5dGUsIHdoZW4gd2UgY29tZSBoZXJlIGFmdGVy
+IHByb2Nlc3NpbmcgdGhlIGxlbmd0aCAoaW4gdGhlIHNhbWUgZnVuY3Rpb24gY2FsbCksICJwb3Mi
+IGlzIDEsICJsZW4iIGlzIDIsIGFuZCB3ZSBpbmRlZWQgYXJlIGdvaW5nIHRvIHByb2Nlc3MgdGhl
+IGxhc3QgYnl0ZS4NCkhvd2V2ZXIsICJyZWN2X2xlbl9pbml0IiBpcyBzdGlsbCAidHJ1ZSIsIGFu
+ZCB3ZSBza2lwIHRoZXNlIGNvcnJlc3BvbmRpbmcgcmVnaXN0ZXIgd3JpdGVzLCB3aGljaCBpcyBw
+cm9iYWJseSBpbmNvcnJlY3QuDQpUaGUgZmxhZyBpbiB0aGlzIGNhc2Ugc2hvdWxkIGJlIHJlLXNl
+dCBiYWNrIHRvICJmYWxzZSIgYWZ0ZXIgbGVuZ3RoIHByb2Nlc3NpbmcgYW5kICJwb3MiIG1vdmlu
+ZywgYnV0IEkgdGhpbmsgdGhlIHZhcmlhbnQgaW4gbXkgcGF0Y2ggKGxlYXZpbmcgdGhpcyAiaWYi
+IHVuY2hhbmdlZCwgYnV0IHNraXBwaW5nIGl0IG9uIHRoZSBmaXJzdCBwYXNzIHdpdGggImdvdG8i
+KSBtYXkgYmUgZXZlbiBzaW1wbGVyLg0KDQo+ICAJCWlmIChwcml2LT5mbGFncyAmIElEX0xBU1Rf
+TVNHKSB7DQo+ICAJCQlyY2FyX2kyY193cml0ZShwcml2LCBJQ01DUiwgUkNBUl9CVVNfUEhBU0Vf
+U1RPUCk7DQo+ICAJCX0gZWxzZSB7DQo+IEBAIC04ODksNyArODkyLDcgQEAgc3RhdGljIHUzMiBy
+Y2FyX2kyY19mdW5jKHN0cnVjdCBpMmNfYWRhcHRlciAqYWRhcCkNCj4gIAkgKiBJMkNfTV9JR05P
+UkVfTkFLIChhdXRvbWF0aWNhbGx5IHNlbmRzIFNUT1AgYWZ0ZXIgTkFLKQ0KPiAgCSAqLw0KPiAg
+CXUzMiBmdW5jID0gSTJDX0ZVTkNfSTJDIHwgSTJDX0ZVTkNfU0xBVkUgfA0KPiAtCQkgICAoSTJD
+X0ZVTkNfU01CVVNfRU1VTCAmIH5JMkNfRlVOQ19TTUJVU19RVUlDSyk7DQo+ICsJCSAgIChJMkNf
+RlVOQ19TTUJVU19FTVVMX0FMTCAmIH5JMkNfRlVOQ19TTUJVU19RVUlDSyk7DQoNClRoaXMgZmxh
+Z3Mgc2V0dGluZyBhZGRzIGFsc28gSTJDX0ZVTkNfU01CVVNfQkxPQ0tfUFJPQ19DQUxMIGZsYWcs
+IHdoaWNoIGlzIG1pc3NlZCBpbiBteSBwYXRjaC4gTXkgcGF0Y2ggc2hvdWxkIHByb2JhYmx5IGJl
+IHVwZGF0ZWQgdG8gaW5jbHVkZSBpdCB0b28gKGlmIHlvdSdsbCBhZ3JlZSB0byB0YWtlIG15IHZh
+cmlhbnQgOy0pICkuDQoNCj4gDQo+ICAJaWYgKHByaXYtPmZsYWdzICYgSURfUF9IT1NUX05PVElG
+WSkNCj4gIAkJZnVuYyB8PSBJMkNfRlVOQ19TTUJVU19IT1NUX05PVElGWTsNCj4gDQo+IEhhcHB5
+IGhhY2tpbmcsDQo+IA0KPiAgICBXb2xmcmFtDQoNClRoYW5rcyENCg0KQmVzdCByZWdhcmRzLA0K
+QW5kcmV3DQo=
