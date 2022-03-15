@@ -2,104 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C591C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6168CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348303AbiCOMbQ (ORCPT
+        id S1348311AbiCOMcF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
+        Tue, 15 Mar 2022 08:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348308AbiCOMbM (ORCPT
+        with ESMTP id S236453AbiCOMcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:31:12 -0400
-Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BB7E53724;
-        Tue, 15 Mar 2022 05:29:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=fUx1d
-        Hz8QOuYbxTSkHxz9OhPu6LyF9InCSqHJeq1ve0=; b=hR82SILuBzQIHN2h0NZYK
-        4e1SRPtxqDAvn6BW+HFFrg5j+ig+As701URoSvEyisrvkykJsyLcB32QibFJwi6F
-        HgXiwxwqiKIu+OJh0w1hq1UPWflYd60kntbPZ+ElHcQMF871wGvoKmkxCRYi4fVW
-        YwaHXx+tCilS6lj7Sva0no=
-Received: from localhost (unknown [116.30.193.133])
-        by smtp14 (Coremail) with SMTP id EsCowACX3iSchjBiVp1zAg--.65133S2;
-        Tue, 15 Mar 2022 20:29:16 +0800 (CST)
-From:   wujunwen <wudaemon@163.com>
-To:     davem@davemloft.net, kuba@kernel.org, m.grzeschik@pengutronix.de,
-        chenhao288@hisilicon.com, arnd@arndb.de, pabeni@redhat.com
-Cc:     wudaemon@163.com, shenyang39@huawei.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [net-next PATCH v4] net: ksz884x: optimize netdev_open flow and remove static variable
-Date:   Tue, 15 Mar 2022 12:28:57 +0000
-Message-Id: <20220315122857.78601-1-wudaemon@163.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 15 Mar 2022 08:32:03 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9175E532FB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:30:51 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KHt0w6pwsz1GCCL;
+        Tue, 15 Mar 2022 20:25:52 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 20:30:49 +0800
+Subject: Re: [PATCH] mm/mlock: remove unneeded start >= vma->vm_end check
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     <akpm@linux-foundation.org>, <hughd@google.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220314153223.53753-1-linmiaohe@huawei.com>
+ <Yi9qq9hVloDXcW4b@casper.infradead.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <c0ff39e2-27fc-170f-00f5-d5e9ab5a22cd@huawei.com>
+Date:   Tue, 15 Mar 2022 20:30:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowACX3iSchjBiVp1zAg--.65133S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJryktw1DtFW7Kr45uFWUCFg_yoW8Aryxpa
-        y7Aa40vrW8W3WxWayqy3y8ZF15Gw1UKFyxGFyxK34S9347Kr98tFs5KrWYyr45CrZ5XF1S
-        v39YvF9rCF93Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07U5ucNUUUUU=
-X-Originating-IP: [116.30.193.133]
-X-CM-SenderInfo: 5zxgtvxprqqiywtou0bp/1tbiUBnEbVWBt4TKGwABsX
+In-Reply-To: <Yi9qq9hVloDXcW4b@casper.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-remove the static next_jiffies variable, and reinitialize next_jiffies 
-to simplify netdev_open
+On 2022/3/15 0:17, Matthew Wilcox wrote:
+> On Mon, Mar 14, 2022 at 11:32:23PM +0800, Miaohe Lin wrote:
+>> If find_vma returns a vma, it must satisfies that start < vma->vm_end.
+>> Since vma list is sorted in the ascending order, so we will never see
+>> start >= vma->vm_end here. Remove this unneeded check.
+> 
+> faulty logic; vm_start + len might wrap.
 
-Signed-off-by: wujunwen <wudaemon@163.com>
----
- drivers/net/ethernet/micrel/ksz884x.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+Many thanks for comment. I agree with you about "vm_start + len" might wrap.
+But what I mean here is that we will never see "start" >= vma->vm_end here
+as find_vma guarantees this. And I leave the "start + len <=  vma->vm_start"
+check untouched. So my cleanup should be right. Or am I miss something?
 
-diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet/micrel/ksz884x.c
-index d024983815da..2b3eb5ed8233 100644
---- a/drivers/net/ethernet/micrel/ksz884x.c
-+++ b/drivers/net/ethernet/micrel/ksz884x.c
-@@ -5225,7 +5225,6 @@ static irqreturn_t netdev_intr(int irq, void *dev_id)
-  * Linux network device functions
-  */
- 
--static unsigned long next_jiffies;
- 
- #ifdef CONFIG_NET_POLL_CONTROLLER
- static void netdev_netpoll(struct net_device *dev)
-@@ -5411,10 +5410,12 @@ static int netdev_open(struct net_device *dev)
- 	struct dev_info *hw_priv = priv->adapter;
- 	struct ksz_hw *hw = &hw_priv->hw;
- 	struct ksz_port *port = &priv->port;
-+	unsigned long next_jiffies;
- 	int i;
- 	int p;
- 	int rc = 0;
- 
-+	next_jiffies = jiffies + HZ * 2;
- 	priv->multicast = 0;
- 	priv->promiscuous = 0;
- 
-@@ -5428,10 +5429,7 @@ static int netdev_open(struct net_device *dev)
- 		if (rc)
- 			return rc;
- 		for (i = 0; i < hw->mib_port_cnt; i++) {
--			if (next_jiffies < jiffies)
--				next_jiffies = jiffies + HZ * 2;
--			else
--				next_jiffies += HZ * 1;
-+			next_jiffies += HZ * 1;
- 			hw_priv->counter[i].time = next_jiffies;
- 			hw->port_mib[i].state = media_disconnected;
- 			port_init_cnt(hw, i);
-@@ -6563,6 +6561,7 @@ static void mib_read_work(struct work_struct *work)
- 	struct dev_info *hw_priv =
- 		container_of(work, struct dev_info, mib_read);
- 	struct ksz_hw *hw = &hw_priv->hw;
-+	unsigned long next_jiffies;
- 	struct ksz_port_mib *mib;
- 	int i;
- 
--- 
-2.25.1
+Thanks.
+
+> 
+> .
+> 
 
