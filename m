@@ -2,115 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A544C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:53:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1575C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:53:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346891AbiCOJy3 (ORCPT
+        id S1346898AbiCOJyc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
+        Tue, 15 Mar 2022 05:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346857AbiCOJyR (ORCPT
+        with ESMTP id S1346856AbiCOJyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 05:54:17 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B34EBED;
-        Tue, 15 Mar 2022 02:53:02 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHpcX0jwhz4xRB;
-        Tue, 15 Mar 2022 20:53:00 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647337981;
-        bh=oXrKZHFPKEFYK64Or/Hu81ZPN5Pi5Yx/O8XNN8iQ1us=;
-        h=Date:From:To:Cc:Subject:From;
-        b=AOd3pjFYC5QO1JCRGxvsiDdugjt3b8gCg0PQaxR4tL0xBYgn1+YImbXmLmeM9kxpx
-         RVD/eIrVesKZHEU7TeO4Ax7DXrGkLZBHNPGujjzOkdJpIyhBkF9E7xkBrkHjuS8Abk
-         OtbcttJiguhmUglb/UNCTrpLvQObHPrNHUIBtSGABSe5TFTd0oauHIyw2IJNsG/VMQ
-         9sdhWGwWmQ/8cwaoGvFaMDqXf7KSoNriYwg+1Ph0ZlRCXmIrS8hNSrUosnQqX3Ib5N
-         Rtypr2NRA/EDUurONCLcL7X2yH/Oq7Ch1IVUXQLteg/k2V9S7dRas9NEVRKqD9BRow
-         XbQb/rpB0G8xA==
-Date:   Tue, 15 Mar 2022 20:52:59 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Matthew Wilcox <willy@infradead.org>,
-        Richard Weinberger <richard@nod.at>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Zhihao Cheng <chengzhihao1@huawei.com>
-Subject: linux-next: manual merge of the folio tree with the ubifs-fixes
- tree
-Message-ID: <20220315205259.71b4238a@canb.auug.org.au>
+Received: from smtp-out.xnet.cz (smtp-out.xnet.cz [178.217.244.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414BECC0;
+        Tue, 15 Mar 2022 02:53:01 -0700 (PDT)
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 943B218B19;
+        Tue, 15 Mar 2022 10:52:59 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=true.cz; s=xnet;
+        t=1647337979; bh=lxa537pBCjy7aFFmg6cgXQt1WGC8VIKt+cw8JKVK3cI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=b50Xk3blPN5MJYEGQFQwStNXKPj8VX4PAj++bU1yzDQIhg6FffLdTuyPPoG/Cn5lu
+         FE+EjzntjKu0Xpjv32bvbYotE12Z0kVqoKnyoMcTEMgVxO+23qagJWL4hpR2R0w59A
+         zoYILpQwZMj80D2zfsF5ruvyRNb9KSMT+o4vTeKA=
+Received: by meh.true.cz (OpenSMTPD) with ESMTP id 93d67bdf;
+        Tue, 15 Mar 2022 10:52:35 +0100 (CET)
+From:   =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Cc:     =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
+        stable@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/3] dt-bindings: arm: sunxi: add A20-olinuxino-lime2 Revisions G/G1/G2
+Date:   Tue, 15 Mar 2022 10:52:44 +0100
+Message-Id: <20220315095244.29718-4-ynezz@true.cz>
+In-Reply-To: <20220315095244.29718-1-ynezz@true.cz>
+References: <20220315095244.29718-1-ynezz@true.cz>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/.wP75LYaKDQTnOQ7mCg.KJi";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/.wP75LYaKDQTnOQ7mCg.KJi
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Add DT bindings for A20-olinuxino-lime2 Revisions G/G1/G2 boards.
 
-Hi all,
+Cc: stable@vger.kernel.org
+Signed-off-by: Petr Štetiar <ynezz@true.cz>
+---
+ Documentation/devicetree/bindings/arm/sunxi.yaml | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Today's linux-next merge of the folio tree got a conflict in:
-
-  fs/ubifs/file.c
-
-between commit:
-
-  3b67db8a6ca8 ("ubifs: Fix to add refcount once page is set private")
-
-from the ubifs-fixes tree and commit:
-
-  c337f2f4f746 ("ubifs: Convert from invalidatepage to invalidate_folio")
-
-from the folio tree.
-
-I fixed it up (I hope - see below) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc fs/ubifs/file.c
-index 6b45a037a047,8a9ffc2d4167..000000000000
---- a/fs/ubifs/file.c
-+++ b/fs/ubifs/file.c
-@@@ -1304,8 -1304,8 +1304,8 @@@ static void ubifs_invalidate_folio(stru
-  		release_existing_page_budget(c);
- =20
-  	atomic_long_dec(&c->dirty_pg_cnt);
-- 	detach_page_private(page);
-- 	ClearPageChecked(page);
- -	folio_clear_private(folio);
-++	folio_detach_private(folio);
-+ 	folio_clear_checked(folio);
-  }
- =20
-  int ubifs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
-
---Sig_/.wP75LYaKDQTnOQ7mCg.KJi
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwYfsACgkQAVBC80lX
-0Gwq/wf/WHT8NhSMG7gMJw8I4Js39P21jI4SVNqZjOErX1hAIk8h3OZlt4j3wJNw
-GamvJU3tNCVkDSYNBSCOBoRDipPbBX0Wy7fCNuKHmvO5iORrAFEzd3Yfes5cJuPS
-iKkoTG4cViwaNxy9Izs8OX8IIabMCjb+xgqyzDAJYfmiU02ilsQ7pK+fcfAJTFTT
-GB1L1JtKIw0pf0O12Yzngqfe9gc9itOMmHIEOJdgZhmGyg/I0QHu3zMm+1vbsWHD
-Phpek9H3jn4/8cakWp4lnRzGNFNrGiokY/u5ZOuQ2nwd2e6nRwIPeG03EFqYbPJj
-CYY8Pm56jSdljASAxfG60VffxprY0A==
-=1t4B
------END PGP SIGNATURE-----
-
---Sig_/.wP75LYaKDQTnOQ7mCg.KJi--
+diff --git a/Documentation/devicetree/bindings/arm/sunxi.yaml b/Documentation/devicetree/bindings/arm/sunxi.yaml
+index c8a3102c0fde..d142209e76a4 100644
+--- a/Documentation/devicetree/bindings/arm/sunxi.yaml
++++ b/Documentation/devicetree/bindings/arm/sunxi.yaml
+@@ -610,11 +610,21 @@ properties:
+           - const: olimex,a20-olinuxino-lime2
+           - const: allwinner,sun7i-a20
+ 
++      - description: Olimex A20-OlinuXino LIME2 Revisions G/G1/G2
++        items:
++          - const: olimex,a20-olinuxino-lime2-revG
++          - const: allwinner,sun7i-a20
++
+       - description: Olimex A20-OlinuXino LIME2 (with eMMC)
+         items:
+           - const: olimex,a20-olinuxino-lime2-emmc
+           - const: allwinner,sun7i-a20
+ 
++      - description: Olimex A20-OlinuXino LIME2 Revisions G/G1/G2 (with eMMC)
++        items:
++          - const: olimex,a20-olinuxino-lime2-emmc-revG
++          - const: allwinner,sun7i-a20
++
+       - description: Olimex A20-OlinuXino Micro
+         items:
+           - const: olimex,a20-olinuxino-micro
