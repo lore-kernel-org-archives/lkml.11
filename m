@@ -2,85 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43FA6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345641AbiCOHue (ORCPT
+        id S1345643AbiCOHvb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 03:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
+        Tue, 15 Mar 2022 03:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345634AbiCOHua (ORCPT
+        with ESMTP id S232675AbiCOHv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 03:50:30 -0400
-Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893F512ACD
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:49:15 -0700 (PDT)
-X-QQ-mid: bizesmtp66t1647330538t2e5fnkr
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 15 Mar 2022 15:48:52 +0800 (CST)
-X-QQ-SSF: 01400000002000D0H000B00A0000000
-X-QQ-FEAT: 2/V7nd32TUNNL9VZeRdmamHW/40ftL9nCkS+SA2Cjt/VReeEKtayf5eld+pEV
-        S4ppc/UoEjWTLGfmglppM+tlrceAEQKUT8GYjsIS12xW8iba2jYmD1uiIvf192fiOtMtPEC
-        YmvtbesERPpeWv/c+7il+ErWeI48CQ29Id0af1WL2j9uc8X4IS1SNQ4eQW+LGYHNqnEdBIA
-        w04yePwuzg+XufdJPMJS7dni4c7k8ALBFJDuUZN8k8+PZvjhjbXtDvoQn6aWeSwpWL8KBVn
-        Tz8S5IFOUZo8TDYAA08sE/IXH+t65ZqrvyXWTf22Q4k8Es8qEE61J1HI+7HD7hOVez3lPJu
-        jryYjzT43Ney0ju5jnA02tpZErfIx0ha3o6OKCP
-X-QQ-GoodBg: 2
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     t.sailer@alumni.ethz.ch, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH] hamradio: Fix wrong assignment of 'bbc->cfg.loopback'
-Date:   Tue, 15 Mar 2022 15:48:51 +0800
-Message-Id: <20220315074851.6456-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Tue, 15 Mar 2022 03:51:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5A812AD8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 230DBB81115
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 07:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34440C340EE;
+        Tue, 15 Mar 2022 07:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647330614;
+        bh=SYyFnHdQnLb5UOzpXR0K5y/08yWJ9rcxPxc2nwwQ/y8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O6T6VZFe4yMs+yJ3dTApjuZKh6DuqkJqvBuYuEn7wPImC7QrC5P0XRqx/U/yUBZ90
+         UxH1vGFONm9oB7+p7hWaqh6kuwxMNAG3nY+CVvFmyQVzfvC6Jzo3F9hr3kzXArRbE7
+         tRzx79xo9+qp/BldrCp745BZHB6vc8P5TztKKDnk=
+Date:   Tue, 15 Mar 2022 08:50:10 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     butt3rflyh4ck <butterflyhuangxx@gmail.com>
+Cc:     Li Fei1 <fei1.li@intel.com>, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] virt: acrn: fix a memory leak in acrn_dev_ioctl()
+Message-ID: <YjBFMnLIgrFngBTQ@kroah.com>
+References: <20220308092047.1008409-1-butterflyhuangxx@gmail.com>
+ <YicoOC+WZhNLq+pX@kroah.com>
+ <CAFcO6XMy+rT_cnw2Q7Jzg=byKWQ8tcVU+8ZBCCfTD1-JNy7oLw@mail.gmail.com>
+ <Yics6JbQljlQXRED@kroah.com>
+ <CAFcO6XNLfOTp2M3B876YTt+atNTveuqH7Q3ePk3N-T=KkJkiTQ@mail.gmail.com>
+ <YjA24K4FVZU6fTMd@kroah.com>
+ <CAFcO6XNTSoDdQA-4U91VyZqXkjUL+zyoceN7VGwWQKn+HrbbBA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign1
-X-QQ-Bgrelay: 1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFcO6XNTSoDdQA-4U91VyZqXkjUL+zyoceN7VGwWQKn+HrbbBA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In file hamradio/baycom_epp.c, the baycom_setmode interface, there
-is a problem with improper use of strstr.
+On Tue, Mar 15, 2022 at 03:36:11PM +0800, butt3rflyh4ck wrote:
+> Ok, thanks.  By the way, I want to explain, Firstly there is just some
+> parameter that should be freed before func returns the -EINVAL error
+> in the patch.
 
-Suppose that when modestr="noloopback", both conditions which are
-'strstr(modestr,"noloopback")' and 'strstr(modestr,"loopback")'
-will be true(not NULL), this lead the bc->cfg.loopback variable
-will be first assigned to 0, and then reassigned to 1.
+What patch?  I see nothing here :(
 
-This will cause 'bc->cfg.loopback = 0' will never take effect. That
-obviously violates the logic of the code, so adjust the order of
-their execution to solve the problem.
+> I think it was correct, no need to test it. And  secondly the commitor
+> Li Fei1 also reviewed the patch code. finally I am sorry that  no arcn
+> hso hardware to test it.
 
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
----
- drivers/net/hamradio/baycom_epp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I still have no context at all.  Please properly quote your email
+threads so that we can all understand and respond properly.
 
-diff --git a/drivers/net/hamradio/baycom_epp.c b/drivers/net/hamradio/baycom_epp.c
-index a03d0b474641..36e6de42ae77 100644
---- a/drivers/net/hamradio/baycom_epp.c
-+++ b/drivers/net/hamradio/baycom_epp.c
-@@ -982,10 +982,10 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
- 		bc->cfg.extmodem = 0;
- 	if (strstr(modestr,"extmodem"))
- 		bc->cfg.extmodem = 1;
--	if (strstr(modestr,"noloopback"))
--		bc->cfg.loopback = 0;
- 	if (strstr(modestr,"loopback"))
- 		bc->cfg.loopback = 1;
-+	if (strstr(modestr, "noloopback"))
-+		bc->cfg.loopback = 0;
- 	if ((cp = strstr(modestr,"fclk="))) {
- 		bc->cfg.fclk = simple_strtoul(cp+5, NULL, 0);
- 		if (bc->cfg.fclk < 1000000)
--- 
-2.20.1
+thanks,
 
-
-
+greg k-h
