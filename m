@@ -2,58 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0132FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7839AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 14:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349254AbiCOOfP (ORCPT
+        id S1349302AbiCOOf2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 10:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
+        Tue, 15 Mar 2022 10:35:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349180AbiCOOfL (ORCPT
+        with ESMTP id S1349247AbiCOOfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 10:35:11 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65EE227FED;
-        Tue, 15 Mar 2022 07:33:57 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 15 Mar 2022 22:33:44
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.64.209]
-Date:   Tue, 15 Mar 2022 22:33:44 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
-To:     "Dan Carpenter" <dan.carpenter@oracle.com>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, jreuter@yaina.de, thomas@osterried.de
-Subject: Re: Re: Re: [PATCH net V4 1/2] ax25: Fix refcount leaks caused by
- ax25_cb_del()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220315141905.GB1841@kadam>
-References: <20220315015403.79201-1-duoming@zju.edu.cn>
- <20220315102657.GX3315@kadam>
- <15e4111b.5339.17f8deb1f24.Coremail.duoming@zju.edu.cn>
- <20220315141905.GB1841@kadam>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Tue, 15 Mar 2022 10:35:24 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA0B635DCB;
+        Tue, 15 Mar 2022 07:34:11 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id AA5741F4435D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647354850;
+        bh=oaY2smZek0FjJMLvsUD29xpTZGK6PcRh2JZv/s5EJCM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=DWGuhcpVgjKV+eWwRkOa7PCd3K5MAVPQSh30xaSEMyF66Hv2436iXeKbRlZH9vJrL
+         MuATUR3bTDS4UC7OEqonbt6r6KQpECI+XQhB5DTnJyL0FggPn3uAj3AQHWGL9ruze1
+         5KB1nNo7l2XjqMUD+1g8QpBSk5gszwhM9Rx+XcsKgDv0FQwQAlqIHcjTaMQb6CXnHu
+         /fHtUG2Lsfm8QQ0x8CVQ5xCLTYkOnYK/ivN9iWotGCbmlxkqIsyM2NwATEV++QyqXw
+         zX6oXrKSPEmZeaN/U6frw3jlNI1Rdlmpnrb/xcoeYQp8jLbnoUKM5qW8pytvdo1wkJ
+         ADYaHGVISaLog==
+Message-ID: <8aae41c4-fff5-630a-77d0-62cef43d5ad1@collabora.com>
+Date:   Tue, 15 Mar 2022 15:34:04 +0100
 MIME-Version: 1.0
-Message-ID: <3c2e97d4.5434.17f8dffc573.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgBnLrDIozBiK_UWAA--.2953W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgcKAVZdtYsBQgABs5
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v3 05/21] arm64: dts: mt8192: Add usb-phy node
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Hui Liu <hui.liu@mediatek.com>
+References: <20220304130809.12924-1-allen-kh.cheng@mediatek.com>
+ <20220304130809.12924-6-allen-kh.cheng@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220304130809.12924-6-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBUdWUsIDE1IE1hciAyMDIyIDE3OjE5OjA1ICswMzAwLCBEYW4gQ2FycGVudGVy
-IHdyb3RlOgoKPiBTbyB0aGUgdjMgcGF0Y2ggd2FzIGJ1Z2d5PwpJIHRoaW5rIHYzIGlzIG5vdCBh
-IGdvb2QgcGF0Y2ggdGhhdCBjb3VsZCBiZSBhcHBsaWVkIGluIHRoZSByZWFsIHdvcmxkLgoKPiBX
-aHkgd2FzIHRoaXMgbm90IGV4cGxhaW5lZCB1bmRlciB0aGUgLS0tIGN1dCBvZmYgbGluZT8KCkkg
-d2lsbCBhZGQgZXhwbGFuYXRpb24gdW5kZXIgdGhlIC0tLSBjdXQgb2ZmIGxpbmUgaW4gW1BBVENI
-IG5ldCBWNSAxLzJdCmFuZCBzZW5kIGl0IHRvIHlvdSBhcyBzb29uIGFzIHBvc3NpYmxlLgoKQmVz
-dCB3aXNoZXMsCkR1b21pbmcgWmhvdQ==
+Il 04/03/22 14:07, Allen-KH Cheng ha scritto:
+> Add xhci node for mt8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 22 ++++++++++++++++++++++
+>   1 file changed, 22 insertions(+)
+> 
