@@ -2,97 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5263C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0608C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 13:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238801AbiCONmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 09:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
+        id S1348742AbiCONns (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 09:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348742AbiCONmS (ORCPT
+        with ESMTP id S237033AbiCONno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 09:42:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15FF52E60;
-        Tue, 15 Mar 2022 06:41:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 777DFB81681;
-        Tue, 15 Mar 2022 13:41:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B45D3C340F4;
-        Tue, 15 Mar 2022 13:41:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647351664;
-        bh=5GoPK5Absvivj6zbGvAbFgfXegOGh3wNX8cSwc4rE2Y=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=FFPImUwRJDbCvfgkde1ZiY2E0xqIjyt/nvkBKcHsOjugP7pKiun2GTEwDpXKDjgWd
-         qUCchZh0HdRwzgcAf45YNfb5V5Rz0QQfy/z7RKj/nkiS1b1VAcpGO6n1yLM9DDdyxg
-         gufGGq0vA4UVMec8WGGNppyO/+ljNlWuD2PGTsbHoVtqcfF952wuzQkx0dcufty8ex
-         7Wt6uJThbhFpuDZhDTSeZOewBpCQGFMtSoAsYXIGxwfLEJ81Wiu4DKSsf6stTOCnFG
-         oTDFe54ar9QIoh2ii89I/+1OHRskZ3kVrM0bZr4Jqlysk4Q5F/2ICmv3ccM1EduMWK
-         0LYb/Ks7S8lqA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Leilk Liu <leilk.liu@mediatek.com>
-Cc:     devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
-In-Reply-To: <20220315032411.2826-1-leilk.liu@mediatek.com>
-References: <20220315032411.2826-1-leilk.liu@mediatek.com>
-Subject: Re: (subset) [PATCH V4 0/6] spi: mediatek: add single/quad mode support
-Message-Id: <164735166243.3687547.12763908878922774952.b4-ty@kernel.org>
-Date:   Tue, 15 Mar 2022 13:41:02 +0000
+        Tue, 15 Mar 2022 09:43:44 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692E052E5D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 06:42:32 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KHvgg1wSXzfYxQ;
+        Tue, 15 Mar 2022 21:41:03 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 21:42:30 +0800
+Subject: Re: [PATCH] mm/mempolicy: fix potential mpol_new leak in
+ shared_policy_replace
+To:     Michal Hocko <mhocko@suse.com>
+CC:     <akpm@linux-foundation.org>, <kosaki.motohiro@jp.fujitsu.com>,
+        <mgorman@suse.de>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220311093624.39546-1-linmiaohe@huawei.com>
+ <Yi9w7TCYbj+OLGXJ@dhcp22.suse.cz>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <26577566-ae1e-801c-8c64-89c2c89a487d@huawei.com>
+Date:   Tue, 15 Mar 2022 21:42:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <Yi9w7TCYbj+OLGXJ@dhcp22.suse.cz>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 11:24:05 +0800, Leilk Liu wrote:
-> This series of patches are based on spi for-next, and provide 6 patches to support MT7986.
+On 2022/3/15 0:44, Michal Hocko wrote:
+> On Fri 11-03-22 17:36:24, Miaohe Lin wrote:
+>> If mpol_new is allocated but not used in restart loop, mpol_new will be
+>> freed via mpol_put before returning to the caller. But refcnt is not
+>> initialized yet, so mpol_put could not do the right things and might
+>> leak the unused mpol_new.
 > 
-> v4:
->  1. fix Rob comment in v3;
->  2. use "mediatek,mt7986-spi-ipm","mediatek,spi-ipm"
+> The code is really hideous but is there really any bug there? AFAICS the
+> new policy is only allocated in if (n->end > end) branch and that one
+> will set the reference count on the retry. Or am I missing something?
 > 
-> v3:
->  1. add Rob Acked-by in "dt-bindings: spi: Add compatible for MT7986 with single mode";
->  2. add a fix patch "spi: mediatek: support tick_delay without enhance_timing";
->  3. fix Angelogioacchino comments;
->  4. use mt7986 instead of ipm in dt-binding.
+
+Many thanks for your comment.
+IIUC, new policy is allocated via the below code:
+
+shared_policy_replace:
+	alloc_new:
+		write_unlock(&sp->lock);
+		ret = -ENOMEM;
+		n_new = kmem_cache_alloc(sn_cache, GFP_KERNEL);
+		if (!n_new)
+			goto err_out;
+		mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+		if (!mpol_new)
+			goto err_out;
+		goto restart;
+
+And mpol_new' reference count will be set before used in n->end > end case. But
+if that is "not" the case, i.e. mpol_new is not inserted into the rb_tree, mpol_new
+will be freed via mpol_put before return:
+
+shared_policy_replace:
+	err_out:
+		if (mpol_new)
+			mpol_put(mpol_new);
+		if (n_new)
+			kmem_cache_free(sn_cache, n_new);
+
+But mpol_new' reference count is not set yet, we have trouble now.
+Does this makes sense for you? Or am I miss something?
+
+Thanks.
+
+>> Fixes: 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")
+>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>> ---
+>>  mm/mempolicy.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+>> index 34d2b29c96ad..f19f19d3558b 100644
+>> --- a/mm/mempolicy.c
+>> +++ b/mm/mempolicy.c
+>> @@ -2733,6 +2733,7 @@ static int shared_policy_replace(struct shared_policy *sp, unsigned long start,
+>>  	mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+>>  	if (!mpol_new)
+>>  		goto err_out;
+>> +	refcount_set(&mpol_new->refcnt, 1);
+>>  	goto restart;
+>>  }
+>>  
+>> -- 
+>> 2.23.0
 > 
-> [...]
 
-Applied to
-
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
-
-Thanks!
-
-[1/6] spi: mediatek: support tick_delay without enhance_timing
-      commit: 03b1be379dcee2e9c866c2a455a1a4a9581b3efd
-[2/6] dt-bindings: spi: Add compatible for MT7986
-      commit: da40a352db2bae470a3eea038cc53454c24e67f3
-[3/6] spi: mediatek: add ipm design support for MT7986
-      commit: 7e963fb2a33ce488e65258ab5be38a4855923033
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
