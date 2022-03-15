@@ -2,170 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CCAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9412DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349945AbiCOQQs (ORCPT
+        id S1349954AbiCOQRJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41100 "EHLO
+        Tue, 15 Mar 2022 12:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240489AbiCOQQq (ORCPT
+        with ESMTP id S240489AbiCOQRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:16:46 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F27449921;
-        Tue, 15 Mar 2022 09:15:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647360934; x=1678896934;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=GV0TCfK4F7z4NNGahHA1Aii1fPduEtBUYoCf8fA5z8M=;
-  b=xvcpf/v/v8MHF5vJHbrzXq/Hq4PTzSBaN7b9+JytjQuCInXc2f61AaPF
-   pmBhyi/q0vH2jkeRVF9MCC6oGc71RkQoofrNMkbh/OsSUJ0FzvH3UlN61
-   43SQalJfwLXEffyHXYUqNarpek3QCWHSxn84ubDuqkb0deIBhUHf8yMXL
-   A=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 15 Mar 2022 09:15:34 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:15:33 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Tue, 15 Mar 2022 09:15:33 -0700
-Received: from [10.216.59.204] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 15 Mar
- 2022 09:15:29 -0700
-Message-ID: <0f75ebf7-b893-a1a0-1581-6ec29e0be8c6@quicinc.com>
-Date:   Tue, 15 Mar 2022 21:45:26 +0530
+        Tue, 15 Mar 2022 12:17:07 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECA749CA9;
+        Tue, 15 Mar 2022 09:15:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647360955; x=1678896955;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2GljXTe3wNrzf4qT4Ab198zPDt4+ZO0/lR6hJ/aDYaw=;
+  b=U/Gaevzzq5Mxys1ay4tvV/Tvc3E81tRaYw0pqQbqjyeyQwTB8K3Kl12S
+   8KfpEYuJkTbp2xzf29K0lauWXGAXtSnilDFoocIInhByGCPWQ5hbyFLvu
+   2M3hhRodNOgi9sxcSSDXVmWwNg5CnD9zqxUc0T48epQolhin6rMlCQ1FW
+   XfHTLmSSk3h6WMRZS89wPwQExu4H9G8pdojxaCYQ9l/EWe/FOEZ68Yd8H
+   DJxiJucRdifRTxm6Y9ez5Oa8/7Nr+5jnI6Io6pl28Q5yv2CzHcwQVG4nW
+   GMoHUEKCt5ucwkUFIEN2/Eu2QugWKRkCWWIrrECF74V3VGFMj2p1GUkra
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256074638"
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="256074638"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:15:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="556997948"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 15 Mar 2022 09:15:53 -0700
+Date:   Wed, 16 Mar 2022 00:08:55 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Nava kishore Manne <navam@xilinx.com>
+Cc:     "mdf@kernel.org" <mdf@kernel.org>,
+        "hao.wu@intel.com" <hao.wu@intel.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        Michal Simek <michals@xilinx.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 2/6] fpga: zynqmp: Initialized variables before using it
+Message-ID: <20220315160855.GA121107@yilunxu-OptiPlex-7050>
+References: <20220308094519.1816649-1-nava.manne@xilinx.com>
+ <20220308094519.1816649-3-nava.manne@xilinx.com>
+ <20220311142814.GA97487@yilunxu-OptiPlex-7050>
+ <SN6PR02MB4576FB4490F96E593E09D4B9C2109@SN6PR02MB4576.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3 2/3] arm64: dts: qcom: sc7280: Add lpass cpu node
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <devicetree@vger.kernel.org>,
-        <dianders@chromium.org>, <judyhsiao@chromium.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <robh+dt@kernel.org>, <rohitkr@codeaurora.org>,
-        <srinivas.kandagatla@linaro.org>
-CC:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1643887981-31011-1-git-send-email-quic_srivasam@quicinc.com>
- <1643887981-31011-3-git-send-email-quic_srivasam@quicinc.com>
- <CAE-0n53X-+gaspxgdVtnr8FW6S5VhXPJaAxLd+vikCnYf9aF6w@mail.gmail.com>
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Organization: Qualcomm
-In-Reply-To: <CAE-0n53X-+gaspxgdVtnr8FW6S5VhXPJaAxLd+vikCnYf9aF6w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN6PR02MB4576FB4490F96E593E09D4B9C2109@SN6PR02MB4576.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Mar 15, 2022 at 11:48:11AM +0000, Nava kishore Manne wrote:
+> Hi Yilun,
+> 
+> 	Thanks for providing the review comments.
+> Please find my response inline.
+> 
+> > -----Original Message-----
+> > From: Xu Yilun <yilun.xu@intel.com>
+> > Sent: Friday, March 11, 2022 7:58 PM
+> > To: Nava kishore Manne <navam@xilinx.com>
+> > Cc: mdf@kernel.org; hao.wu@intel.com; trix@redhat.com; Michal Simek
+> > <michals@xilinx.com>; linux-fpga@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; linux-arm-kernel@lists.infradead.org
+> > Subject: Re: [PATCH 2/6] fpga: zynqmp: Initialized variables before using it
+> > 
+> > On Tue, Mar 08, 2022 at 03:15:15PM +0530, Nava kishore Manne wrote:
+> > > This patch initialized variables with the proper value.
+> > > Addresses-Coverity: "uninit_use: Using uninitialized value"
+> > >
+> > > Signed-off-by: Nava kishore Manne <nava.manne@xilinx.com>
+> > > ---
+> > >  drivers/fpga/zynqmp-fpga.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/fpga/zynqmp-fpga.c b/drivers/fpga/zynqmp-fpga.c
+> > > index c60f20949c47..e931d69819a7 100644
+> > > --- a/drivers/fpga/zynqmp-fpga.c
+> > > +++ b/drivers/fpga/zynqmp-fpga.c
+> > > @@ -41,7 +41,7 @@ static int zynqmp_fpga_ops_write(struct
+> > fpga_manager *mgr,
+> > >  				 const char *buf, size_t size)
+> > >  {
+> > >  	struct zynqmp_fpga_priv *priv;
+> > > -	dma_addr_t dma_addr;
+> > > +	dma_addr_t dma_addr = 0;
+> > 
+> > The first use of this variable is as an output parameter:
+> > 
+> > 	kbuf = dma_alloc_coherent(priv->dev, size, &dma_addr,
+> > GFP_KERNEL);
+> > 
+> > So I don't think it needs to be initialized as 0.
+> > 
+> 
+> This issue is found by Coverity Scan, Whether this param is input/output this fix will not impact the actual functionality.
+> In order to fix the issues reported by the Coverity tool, this fix is needed.
 
-On 3/1/2022 3:01 AM, Stephen Boyd wrote:
-Thanks for your time Stephen!!!
-> Quoting Srinivasa Rao Mandadapu (2022-02-03 03:33:00)
->> Add lpass cpu node for audio on sc7280 based platforms.
->>
->> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->> ---
->>   arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 28 +++++++++++++++
->>   arch/arm64/boot/dts/qcom/sc7280.dtsi     | 59 ++++++++++++++++++++++++++++++++
->>   2 files changed, 87 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> index 2806888..a76b2d1 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
->> @@ -691,3 +691,31 @@
->>   &vamacro {
->>          vdd-micb-supply = <&vreg_bob>;
->>   };
->> +
->> +&lpass_cpu {
->> +       status = "okay";
->> +
->> +       pinctrl-names = "default";
->> +       pinctrl-0 = <&sec_mi2s_active>;
-> Is it a reset gpio? If so, make it a reset-gpios property. I couldn't
-> find the definition.
+I didn't see issues about this piece of code, so I don't think we need
+the fix just to make the tool happy. Maybe the tool could be improved to
+help us better.
 
-It's not reset gpio. it's for I2S clk, data and ws. It is there in 
-previous patch set, which is not applied yet.
+Thanks,
+Yilun
 
-We did splitting this node as per functionality. will change here 
-accordingly.
-
->
->> +
->> +       mi2s-secondary@1 {
->> +               reg = <MI2S_SECONDARY>;
->> +               qcom,playback-sd-lines = <0>;
->> +       };
->> +
->> +       hdmi-primary@5 {
->> +               reg = <LPASS_DP_RX>;
->> +       };
->> +
->> +       wcd-rx@6 {
->> +               reg = <LPASS_CDC_DMA_RX0>;
->> +       };
->> +
->> +       wcd-tx@19 {
->> +               reg = <LPASS_CDC_DMA_TX3>;
->> +       };
->> +
->> +       va-tx@25 {
->> +               reg = <LPASS_CDC_DMA_VA_TX0>;
->> +       };
->> +};
->> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> index 946eb01..c2da5ce 100644
->> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
->> @@ -17,6 +17,7 @@
->>   #include <dt-bindings/reset/qcom,sdm845-aoss.h>
->>   #include <dt-bindings/reset/qcom,sdm845-pdc.h>
->>   #include <dt-bindings/soc/qcom,rpmh-rsc.h>
->> +#include <dt-bindings/sound/qcom,lpass.h>
->>   #include <dt-bindings/thermal/thermal.h>
->>
->>   / {
->> @@ -1847,6 +1848,64 @@
->>                          #size-cells = <0>;
->>                  };
->>
->> +               lpass_cpu: audio-subsystem@3260000 {
->> +                       compatible = "qcom,sc7280-lpass-cpu";
->> +                       reg = <0 0x3260000 0 0xC000>,
->> +                             <0 0x3280000 0 0x29000>,
->> +                             <0 0x3340000 0 0x29000>,
->> +                             <0 0x336C000 0 0x3000>,
->> +                             <0 0x3987000 0 0x68000>,
->> +                             <0 0x3B00000 0 0x29000>;
-> Lowercase hex. Pad out reg to 8 digits.
-Okay.
->
->> +                       reg-names = "lpass-rxtx-cdc-dma-lpm",
->> +                                   "lpass-rxtx-lpaif",
->> +                                   "lpass-va-lpaif",
->> +                                   "lpass-va-cdc-dma-lpm",
->> +                                   "lpass-hdmiif",
->> +                                   "lpass-lpaif";
-> That 'lpass' prefix looks very redundant.
-Okay. Currently driver and documentation has mentioned similarly. Will 
-take care from next time.
->
->> +
->> +                       iommus = <&apps_smmu 0x1820 0>,
->> +                                <&apps_smmu 0x1821 0>,
->> +                                <&apps_smmu 0x1832 0>;
+> 
+> Regards,
+> Navakishore.
