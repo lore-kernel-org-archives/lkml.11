@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4911DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350180AbiCOQqK (ORCPT
+        id S1350185AbiCOQqO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        Tue, 15 Mar 2022 12:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350156AbiCOQqD (ORCPT
+        with ESMTP id S1350157AbiCOQqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 12:46:03 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E4E5717A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D3057175;
         Tue, 15 Mar 2022 09:44:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647362690; x=1678898690;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=g8Bmok9TU2BixmwZBvkUyF3g21CNVOQYbFMkghV/9hU=;
-  b=ZFCkRvPrNx8FfAuDED5T941/GgRhmiT2IwpQf6G1q38L/1c4owCa5sMJ
-   MA1A+wggtXLYoApGbbKJhf4pcV0an48r5Zl1Q9MvI47ZiKzQa5Bs7VJCy
-   kKbD+fcrYVbYbipJ80FdW+s8Op06cMu/7Bvw/IVTXXzW8VGS7SM66v5dD
-   w/Ht/Zw0OrNf0wV6fADRpxjZHSy62W7UzjYU0H+jUCjNGgw7V3tIyEJU5
-   Q05t2lQdquCSe3Xc9aquyzTa3E4iBDDO5qreEwHwXfuR46Rk05yqRb0XL
-   eQcTwMXyGvhy1TQCwn92Rpel5qBFsp50o0AQpvTRmgnb857aX3Rw9MXGH
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="342782291"
+  bh=MiECI56S/9YDiazX0GEdDxu5MUFGAQDPH4TCVnzWb8k=;
+  b=DhFX2fW9LVqS3GM3qqdOG5dSu+u1YVGeRGUM3jUijbLkXr1toCdyFEUP
+   38+0g8jsvDMchDLBCi2YFGmFQ4oUkd7j482vNeBTAF7K688jPR2lynyXN
+   +HWlC+gi+Wdm8e1+IVbnMHvYw4l2XFG9zxJSfdVm2owpzs6aQMygGSpEA
+   FVUTqotQrSdLiddM5u88vCswqnTiRQcqxjhLrhIGbgoa/A14DIc7vHXuC
+   Zf6UntdkZwIAqzEWYRBPc6r1Jk4EZm4v47T7mcL3yRYy5xlOiyzNnhdA3
+   vWIjfIXfPJ39B9DBE8f0lUqKszm+wZE/klWF5jefJOghCQ1CDFbTeLDpX
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="342782290"
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="342782291"
+   d="scan'208";a="342782290"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:44:48 -0700
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="714236355"
+   d="scan'208";a="714236353"
 Received: from rchatre-ws.ostc.intel.com ([10.54.69.144])
   by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:44:47 -0700
 From:   Reinette Chatre <reinette.chatre@intel.com>
@@ -46,9 +46,9 @@ Cc:     linux-kernel@vger.kernel.org, dave.hansen@linux.intel.com,
         bauerman@linux.ibm.com, mpe@ellerman.id.au, msuchanek@suse.de,
         linux-mm@kvack.org, chang.seok.bae@intel.com, bp@suse.de,
         tglx@linutronix.de, hpa@zytor.com, x86@kernel.org, luto@kernel.org
-Subject: [PATCH V2 3/4] selftests/x86/amx: Use provided __cpuid_count() macro
-Date:   Tue, 15 Mar 2022 09:44:27 -0700
-Message-Id: <1eb321d7cbded690f22b6cb91b29b82234cb4be0.1647360971.git.reinette.chatre@intel.com>
+Subject: [PATCH V2 2/4] selftests/vm/pkeys: Use provided __cpuid_count() macro
+Date:   Tue, 15 Mar 2022 09:44:26 -0700
+Message-Id: <66785246406c40e173fe7ce1470dd6d5292d1499.1647360971.git.reinette.chatre@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1647360971.git.reinette.chatre@intel.com>
 References: <cover.1647360971.git.reinette.chatre@intel.com>
@@ -62,93 +62,79 @@ kselftest.h makes the __cpuid_count() macro available
 to conveniently call the CPUID instruction.
 
 Remove the local CPUID wrapper and use __cpuid_count()
-from kselftest.h instead.
+from already included kselftest.h instead.
 
 __cpuid_count() from kselftest.h is used instead of the
 macro provided by the compiler since gcc v4.4 (via cpuid.h)
-because the selftest needs to be supported with gcc v3.2,
+because the selftest needs to be compiled with gcc v3.2,
 the minimal required version for stable kernels.
 
-Cc: Chang S. Bae <chang.seok.bae@intel.com>
 Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: x86@kernel.org
+Cc: Sandipan Das <sandipan@linux.ibm.com>
+Cc: Florian Weimer <fweimer@redhat.com>
+Cc: "Desnes A. Nunes do Rosario" <desnesn@linux.vnet.ibm.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Michal Suchanek <msuchanek@suse.de>
+Cc: linux-mm@kvack.org
 Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
 ---
 Changes since V1:
 - Update changelog
+- Remove Ram Pai from cc list (email address no longer valid)
 - No longer include cpuid.h but obtain __cpuid_count() from
   kselftest.h.
 
- tools/testing/selftests/x86/amx.c | 24 +++++++-----------------
- 1 file changed, 7 insertions(+), 17 deletions(-)
+ tools/testing/selftests/vm/pkey-x86.h | 21 ++-------------------
+ 1 file changed, 2 insertions(+), 19 deletions(-)
 
-diff --git a/tools/testing/selftests/x86/amx.c b/tools/testing/selftests/x86/amx.c
-index 3615ef4a48bb..d463ea30d90f 100644
---- a/tools/testing/selftests/x86/amx.c
-+++ b/tools/testing/selftests/x86/amx.c
-@@ -17,6 +17,8 @@
- #include <sys/syscall.h>
- #include <sys/wait.h>
- 
-+#include "../kselftest.h" /* For __cpuid_count() */
-+
- #ifndef __x86_64__
- # error This test is 64-bit only
- #endif
-@@ -45,13 +47,6 @@ static inline uint64_t xgetbv(uint32_t index)
- 	return eax + ((uint64_t)edx << 32);
+diff --git a/tools/testing/selftests/vm/pkey-x86.h b/tools/testing/selftests/vm/pkey-x86.h
+index e4a4ce2b826d..b078ce9c6d2a 100644
+--- a/tools/testing/selftests/vm/pkey-x86.h
++++ b/tools/testing/selftests/vm/pkey-x86.h
+@@ -80,19 +80,6 @@ static inline void __write_pkey_reg(u64 pkey_reg)
+ 	assert(pkey_reg == __read_pkey_reg());
  }
  
--static inline void cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx)
+-static inline void __cpuid(unsigned int *eax, unsigned int *ebx,
+-		unsigned int *ecx, unsigned int *edx)
 -{
--	asm volatile("cpuid;"
--		     : "=a" (*eax), "=b" (*ebx), "=c" (*ecx), "=d" (*edx)
--		     : "0" (*eax), "2" (*ecx));
+-	/* ecx is often an input as well as an output. */
+-	asm volatile(
+-		"cpuid;"
+-		: "=a" (*eax),
+-		  "=b" (*ebx),
+-		  "=c" (*ecx),
+-		  "=d" (*edx)
+-		: "0" (*eax), "2" (*ecx));
 -}
 -
- static inline void xsave(struct xsave_buffer *xbuf, uint64_t rfbm)
- {
- 	uint32_t rfbm_lo = rfbm;
-@@ -115,9 +110,7 @@ static inline void check_cpuid_xsave(void)
- 	 * support for the XSAVE feature set, including
- 	 * XGETBV.
- 	 */
--	eax = 1;
--	ecx = 0;
--	cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(1, 0, eax, ebx, ecx, edx);
- 	if (!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK))
- 		fatal_error("cpuid: no CPU xsave support");
- 	if (!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK))
-@@ -140,9 +133,8 @@ static void check_cpuid_xtiledata(void)
- {
- 	uint32_t eax, ebx, ecx, edx;
+ /* Intel-defined CPU features, CPUID level 0x00000007:0 (ecx) */
+ #define X86_FEATURE_PKU        (1<<3) /* Protection Keys for Userspace */
+ #define X86_FEATURE_OSPKE      (1<<4) /* OS Protection Keys Enable */
+@@ -104,9 +91,7 @@ static inline int cpu_has_pkeys(void)
+ 	unsigned int ecx;
+ 	unsigned int edx;
  
--	eax = CPUID_LEAF_XSTATE;
--	ecx = CPUID_SUBLEAF_XSTATE_USER;
--	cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(CPUID_LEAF_XSTATE, CPUID_SUBLEAF_XSTATE_USER,
-+		      eax, ebx, ecx, edx);
+-	eax = 0x7;
+-	ecx = 0x0;
+-	__cpuid(&eax, &ebx, &ecx, &edx);
++	__cpuid_count(0x7, 0x0, eax, ebx, ecx, edx);
  
- 	/*
- 	 * EBX enumerates the size (in bytes) required by the XSAVE
-@@ -153,10 +145,8 @@ static void check_cpuid_xtiledata(void)
- 	 */
- 	xbuf_size = ebx;
+ 	if (!(ecx & X86_FEATURE_PKU)) {
+ 		dprintf2("cpu does not have PKU\n");
+@@ -142,9 +127,7 @@ int pkey_reg_xstate_offset(void)
+ 	/* assume that XSTATE_PKEY is set in XCR0 */
+ 	leaf = XSTATE_PKEY_BIT;
+ 	{
+-		eax = XSTATE_CPUID;
+-		ecx = leaf;
+-		__cpuid(&eax, &ebx, &ecx, &edx);
++		__cpuid_count(XSTATE_CPUID, leaf, eax, ebx, ecx, edx);
  
--	eax = CPUID_LEAF_XSTATE;
--	ecx = XFEATURE_XTILEDATA;
--
--	cpuid(&eax, &ebx, &ecx, &edx);
-+	__cpuid_count(CPUID_LEAF_XSTATE, XFEATURE_XTILEDATA,
-+		      eax, ebx, ecx, edx);
- 	/*
- 	 * eax: XTILEDATA state component size
- 	 * ebx: XTILEDATA state component offset in user buffer
+ 		if (leaf == XSTATE_PKEY_BIT) {
+ 			xstate_offset = ebx;
 -- 
 2.25.1
 
