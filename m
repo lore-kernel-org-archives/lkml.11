@@ -2,100 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6656C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:06:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94707C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:09:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349808AbiCOQHQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
+        id S240647AbiCOQKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 12:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239056AbiCOQHO (ORCPT
+        with ESMTP id S238095AbiCOQKT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:07:14 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01AC56414
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:06:02 -0700 (PDT)
+        Tue, 15 Mar 2022 12:10:19 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF14C25EAB
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:09:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647360362; x=1678896362;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=BFrRqs9qFVnUa13ULOspS26Ceq0rJNvWyPQRN3j1Kl8=;
-  b=JJRPS342IslocYGw07wvZxLN24bstElEsy+fmkCcF3RWQHGAVjYavGLh
-   uUJHl1Eylf5VPnRSvQptoLlBHWKRnhoTH/bMkqoU5FYStouBxfGQNiJNR
-   QpocmJY9kIHyQQXd25Do6QFdF9/JN1sKtZCVQlRK4l5/G3poedEunrVGD
-   XqM7KpZsTSmSkOx7JuLnvY4j0/gXaW8EE4lfWDYVN1MB+1OLfSap5QxCH
-   8FQaiC7Hem83sKhT2zu68gdj1UW6wM080lW7l124mDwuXTCGanYKY0au3
-   hAp5Ht2iiOzWkI7agD5mVrUuF9WQ9LxAjbF6M2mBU78Ywx9TpsCckdAzE
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317066720"
+  t=1647360546; x=1678896546;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=mYoawQt8/mjlKy6DboqveGnemw0SfDUDHd8XG2dieWM=;
+  b=U/yckrpt22PL+Scw6Ddqw7opklMIoXvQRu0h5NbVKI5NuxlUXLAlATK3
+   HbRmeYGZD7CjRIrbRwTp0axhNsTdYXyODKfkcqK8OacGvpdV3RtEVVSI8
+   XU/UFME3guWNVtRRXJhhw59aQqIYkDh+DdhY0qf6itvMlmFxr+nKu+EmK
+   MtdyY88KPh5RV4mN+J+usd9aURptxb6G1MFKcgGJis2vzBI6Q62y5gAJz
+   BObQboddztEEZwGAstZ2obmcYZbBnMc9p6k7TiScNVIGpDcWMsAvzyovl
+   3oP/CZ/DFWgjB1K5ypwe35CoK16d8TEC1TjcvMS0mhf+K/izmZt/aOuwW
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="281119503"
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="317066720"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:03:34 -0700
+   d="scan'208";a="281119503"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:08:01 -0700
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="549645392"
-Received: from rgatlin-mobl.amr.corp.intel.com (HELO [10.251.10.152]) ([10.251.10.152])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:03:33 -0700
-Message-ID: <5b5ae505-84c7-1a46-832a-68bdfd8fd61c@intel.com>
-Date:   Tue, 15 Mar 2022 09:03:26 -0700
+   d="scan'208";a="540497258"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:08:00 -0700
+Date:   Tue, 15 Mar 2022 09:11:16 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        "Jason Gunthorpe" <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
+Message-ID: <20220315091116.26e10b1b@jacob-builder>
+In-Reply-To: <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+        <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
+        <YjB4AyrgsnbUrlLe@myrica>
+        <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-References: <20220311005742.1060992-1-ira.weiny@intel.com>
- <20220311005742.1060992-6-ira.weiny@intel.com>
- <42e0aa73-04c8-a4c2-2d64-80812634b627@intel.com>
- <YjC2jcn7kJKdHrf3@iweiny-desk3>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH 5/5] x86/pkeys: Standardize on u8 for pkey type
-In-Reply-To: <YjC2jcn7kJKdHrf3@iweiny-desk3>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/15/22 08:53, Ira Weiny wrote:
-> On Mon, Mar 14, 2022 at 04:49:12PM -0700, Dave Hansen wrote:
->> On 3/10/22 16:57, ira.weiny@intel.com wrote:
->>> From: Ira Weiny <ira.weiny@intel.com>
->>>
->>> The number of pkeys supported on x86 and powerpc are much smaller than a
->>> u16 value can hold.  It is desirable to standardize on the type for
->>> pkeys.  powerpc currently supports the most pkeys at 32.  u8 is plenty
->>> large for that.
->>>
->>> Standardize on the pkey types by changing u16 to u8.
->>
->> How widely was this intended to "standardize" things?  Looks like it may
->> have missed a few spots.
-> 
-> Sorry I think the commit message is misleading you.  The justification of u8 as
-> the proper type is that no arch has a need for more than 255 pkeys.
-> 
-> This specific patch was intended to only change x86.  Per that goal I don't see
-> any other places in x86 which uses u16 after this patch.
-> 
-> $ git grep u16 arch/x86 | grep key
-> arch/x86/events/intel/uncore_discovery.c:	const u16 *type_id = key;
-> arch/x86/include/asm/intel_pconfig.h:	u16 keyid;
-> arch/x86/include/asm/mmu.h:	u16 pkey_allocation_map;
-> arch/x86/include/asm/pkeys.h:	u16 all_pkeys_mask = ((1U << arch_max_pkey()) - 1);
+Hi Kevin,
 
-I was also looking at the generic mm code.
+On Tue, 15 Mar 2022 11:49:57 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
->> Also if we're worried about the type needing to changY or with the wrong
->> type being used, I guess we could just to a pkey_t typedef.
+> > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Sent: Tuesday, March 15, 2022 7:27 PM
+> > 
+> > On Mon, Mar 14, 2022 at 10:07:06PM -0700, Jacob Pan wrote:  
+> > > From: Lu Baolu <baolu.lu@linux.intel.com>
+> > >
+> > > An IOMMU domain represents an address space which can be attached by
+> > > devices that perform DMA within a domain. However, for platforms with
+> > > PASID capability the domain attachment needs be handled at
+> > > device+PASID level. There can be multiple PASIDs within a device and
+> > > multiple devices attached to a given domain.
+> > > This patch introduces a new IOMMU op which support device, PASID, and
+> > > IOMMU domain attachment. The immediate use case is for PASID capable
+> > > devices to perform DMA under DMA APIs.
+> > >
+> > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > ---
+> > >  include/linux/iommu.h | 6 ++++++
+> > >  1 file changed, 6 insertions(+)
+> > >
+> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > > index 369f05c2a4e2..fde5b933dbe3 100644
+> > > --- a/include/linux/iommu.h
+> > > +++ b/include/linux/iommu.h
+> > > @@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
+> > >   * @aux_get_pasid: get the pasid given an aux-domain
+> > >   * @sva_bind: Bind process address space to device
+> > >   * @sva_unbind: Unbind process address space from device
+> > > + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+> > > + * @detach_dev_pasid: detach an iommu domain from a pasid of device  
+> > 
+> > Isn't that operation "assign a PASID to a domain" instead?  In patch 5,
+> > the domain is already attached to the device, so set_domain_pasid()
+> > might be clearer and to the point. If the IOMMU driver did the
+> > allocation we could also avoid patch 1.
+I agree, we could let vendor driver do the allocation inside this op. On
+the other side, we could also keep the flexibility such that this op can be
+used for guest PASID bind, with a SVA domain.
 > 
-> I'm not 'worried' about it.  But I do think it makes the code cleaner and more
-> self documenting.
+> iiuc this API can also work for future SIOV usage where each mdev attached
+> to the domain has its own pasid. "assigning a PASID to a domain" sounds
+> like going back to the previous aux domain approach which has one PASID
+> per domain and that PASID is used on all devices attached to the aux
+> domain...
+> 
+yes, that is the intention. I plan to lift the requirement in patch 5 such
+that device attachment will not be a prerequisite. That would be after mdev
+adoption.
 
-Yeah, consistency is good.  Do you mind taking a look at how a pkey_t
-would look, and also seeing how much core mm code should use it?
+> > 
+> > If I understand correctly this series is not about a generic PASID API
+> > that allows drivers to manage multiple DMA address spaces, because there
+> > still doesn't seem to be any interest in that. It's about the specific
+> > IDXD use-case, so let's focus on that. We can introduce a specialized
+> > call such as (iommu|dma)_set_device_pasid(), which will be easy to
+> > consolidate later into a more generic "dma_enable_pasid()" API if that
+> > ever seems useful.
+> > 
+Right, at the moment it is still a single address space. i.e. the current
+domain of the device/group.
+
+But this limitation is at the driver facing API layer not limited in the
+IOMMU ops.
+
+> > Thanks,
+> > Jean
+> >   
+> > >   * @sva_get_pasid: Get PASID associated to a SVA handle
+> > >   * @page_response: handle page request response
+> > >   * @cache_invalidate: invalidate translation caches
+> > > @@ -296,6 +298,10 @@ struct iommu_ops {
+> > >  	struct iommu_sva *(*sva_bind)(struct device *dev, struct
+> > > mm_struct  
+> > *mm,  
+> > >  				      void *drvdata);
+> > >  	void (*sva_unbind)(struct iommu_sva *handle);
+> > > +	int (*attach_dev_pasid)(struct iommu_domain *domain,
+> > > +				struct device *dev, ioasid_t id);
+> > > +	void (*detach_dev_pasid)(struct iommu_domain *domain,
+> > > +				 struct device *dev, ioasid_t id);
+> > >  	u32 (*sva_get_pasid)(struct iommu_sva *handle);
+> > >
+> > >  	int (*page_response)(struct device *dev,
+> > > --
+> > > 2.25.1
+> > >  
+
+
+Thanks,
+
+Jacob
