@@ -2,142 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBFDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E97C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348428AbiCOMpz (ORCPT
+        id S1348430AbiCOMqz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
+        Tue, 15 Mar 2022 08:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348408AbiCOMpu (ORCPT
+        with ESMTP id S233130AbiCOMqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:45:50 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393E440931
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:44:33 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b24so23984567edu.10
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:44:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rfq986Ngid7vqyFyvLMRUqbrd21pr/MIsn9OsbU3BVY=;
-        b=BQBqXj/R4v3UTpbm4iKkbLClg8I2FnpJHbtUjcL2lpt98dawcMO3hEx1UsQiTwZ01t
-         CErIuNFN4HUchNhZ6jVC8mAUaiGqyxkiCSvScNgnWUIOI53ggrCUnBv5z+b1dAsRUMDw
-         9oJDsQRtvJRgrvZlZqE7S7p6xC58mhllZ/yITHLGygpAT8rd8la7gAcoIvBWgGOStRv+
-         QMmIdjfBdYUJmepNsnKU66MPk5R2RyQt9dWF5tzQXrLkWpleTlULvb3lvJruh1bUWMIj
-         adDX5tNYky9uhRzkpVbGT947rIeEIZYaEE/d4j1KPWe4pixLmNNteBKaI7ksp+lAXnAh
-         9Vgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rfq986Ngid7vqyFyvLMRUqbrd21pr/MIsn9OsbU3BVY=;
-        b=idF8+nN/xHbNfZvIeP6SedvaX4DWXHXfgEYSHhmcf0Xe8KrovHv+RB1aDcm7uClrJl
-         hTu2dbJPa6z0t9qiJApr6LIuc8/CzaLCr7ElDPtP8aLBJlbrshe2VezFq4FKP91yi/wr
-         YdseLKHXb6wdONCOL4yV2lGFL4BeQIAYOedbOoEODMADVfmSXTskMyY/NnPhPfXy7UVx
-         1y+1JV1ZKzyqb539I8mK6+AnRWkMRGsPSaLeCPnJ2jOkft2yHQuHmcrtGz9pgUtF3eJL
-         KZA3CNJxRj1xoiboS/2YJiduZevRSa6u0qF0athAByLe4OBSH9Ogprv0i9R14aREs1Y+
-         fkbg==
-X-Gm-Message-State: AOAM533XFgSXRp6FxtJHgH4xvgM7uHGOnKXx+dFeaqN+UBppzCfWfz17
-        mzQkE8+xYX6wC+U1gbgazQCkCN7i3xDsV2Nx4wM=
-X-Google-Smtp-Source: ABdhPJyNoXfe2mx/IZX4LuxqBOHPWULEAUWiyJKBy7+WD0cGObLgTjyqXIcrehNhAw5Um1afnYkXW1WLHdXqKmw5bt0=
-X-Received: by 2002:a05:6402:50c9:b0:418:7fbc:14ee with SMTP id
- h9-20020a05640250c900b004187fbc14eemr10098729edb.53.1647348271321; Tue, 15
- Mar 2022 05:44:31 -0700 (PDT)
+        Tue, 15 Mar 2022 08:46:53 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5605A46164
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:45:41 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KHtMN0Gnzz9sp2;
+        Tue, 15 Mar 2022 20:41:52 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 20:45:39 +0800
+Subject: Re: [PATCH] mm/mlock: Use vma_lookup() instead of find_vma()
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     <akpm@linux-foundation.org>, <hughd@google.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220314151728.20800-1-linmiaohe@huawei.com>
+ <Yi9qdrJ9AXOJszmu@casper.infradead.org>
+ <b2dc4e8a-be8f-88e4-040a-91a6d033ab6d@huawei.com>
+ <YjCJG2m84NSFrsHr@casper.infradead.org>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <a1709d16-6404-fca3-27ed-28e40ee7daed@huawei.com>
+Date:   Tue, 15 Mar 2022 20:45:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-References: <20220315075152.63789-1-dzm91@hust.edu.cn> <bca8f865-bc3e-44d7-7298-c2c7e8973580@gmail.com>
- <YjBwtqsEOZ5JbqvS@B-P7TQMD6M-0146.local> <8d832e7a-c8da-d2fa-571a-ea150b8deb1b@gmail.com>
- <CAD-N9QX2cajf0LXKcOji_Em26-0bw9wfhx7KDV_TLDWhgQ90hQ@mail.gmail.com> <YjCFz1dxVJZnF3M/@B-P7TQMD6M-0146.local>
-In-Reply-To: <YjCFz1dxVJZnF3M/@B-P7TQMD6M-0146.local>
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-Date:   Tue, 15 Mar 2022 20:44:04 +0800
-Message-ID: <CAD-N9QXp4sCKUY2zwJduOG22B0NaMGRLevn3FVMO0qOQFxO3Bg@mail.gmail.com>
-Subject: Re: [PATCH] fs: erofs: remember if kobject_init_and_add was done
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc:     Huang Jianan <jnhuang95@gmail.com>,
-        Dongliang Mu <dzm91@hust.edu.cn>, Gao Xiang <xiang@kernel.org>,
-        Chao Yu <chao@kernel.org>,
-        syzkaller <syzkaller@googlegroups.com>,
-        linux-erofs@lists.ozlabs.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YjCJG2m84NSFrsHr@casper.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 8:26 PM Gao Xiang <hsiangkao@linux.alibaba.com> wro=
-te:
->
-> Hi Dongliang,
->
-> On Tue, Mar 15, 2022 at 07:59:26PM +0800, Dongliang Mu wrote:
-> > On Tue, Mar 15, 2022 at 7:05 PM Huang Jianan <jnhuang95@gmail.com> wrot=
-e:
-> > >
-> > > =E5=9C=A8 2022/3/15 18:55, Gao Xiang =E5=86=99=E9=81=93:
-> > > > On Tue, Mar 15, 2022 at 06:43:01PM +0800, Huang Jianan wrote:
-> > > >> =E5=9C=A8 2022/3/15 15:51, Dongliang Mu =E5=86=99=E9=81=93:
-> > > >>> From: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > >>>
-> > > >>> Syzkaller hit 'WARNING: kobject bug in erofs_unregister_sysfs'. T=
-his bug
-> > > >>> is triggered by injecting fault in kobject_init_and_add of
-> > > >>> erofs_unregister_sysfs.
-> > > >>>
-> > > >>> Fix this by remembering if kobject_init_and_add is successful.
-> > > >>>
-> > > >>> Note that I've tested the patch and the crash does not occur any =
-more.
-> > > >>>
-> > > >>> Reported-by: syzkaller <syzkaller@googlegroups.com>
-> > > >>> Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > > >>> ---
-> > > >>>    fs/erofs/internal.h | 1 +
-> > > >>>    fs/erofs/sysfs.c    | 9 ++++++---
-> > > >>>    2 files changed, 7 insertions(+), 3 deletions(-)
-> > > >>>
-> > > >>> diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-> > > >>> index 5aa2cf2c2f80..9e20665e3f68 100644
-> > > >>> --- a/fs/erofs/internal.h
-> > > >>> +++ b/fs/erofs/internal.h
-> > > >>> @@ -144,6 +144,7 @@ struct erofs_sb_info {
-> > > >>>     u32 feature_incompat;
-> > > >>>     /* sysfs support */
-> > > >>> +   bool s_sysfs_inited;
-> > > >> Hi Dongliang,
-> > > >>
-> > > >> How about using sbi->s_kobj.state_in_sysfs to avoid adding a extra=
- member in
-> > > >> sbi ?
-> > > > Ok, I have no tendency of these (I'm fine with either ways).
-> > > > I've seen some usage like:
-> > > >
-> > > > static inline int device_is_registered(struct device *dev)
-> > > > {
-> > > >          return dev->kobj.state_in_sysfs;
-> > > > }
-> > > >
-> > > > But I'm still not sure if we need to rely on such internal
-> > > > interface.. More thoughts?
-> > >
-> > > Yeah... It seems that it is better to use some of the interfaces
-> > > provided by kobject,
-> > > otherwise we should still maintain this state in sbi.
-> > >
-> >
-> > I am fine with either way. Let me know if you reach to an agreement.
->
-> If you have time, would you mind sending another patch by using
-> state_in_sysfs? I'd like to know Chao's perference later, and
-> apply one of them...
+On 2022/3/15 20:39, Matthew Wilcox wrote:
+> On Tue, Mar 15, 2022 at 08:24:04PM +0800, Miaohe Lin wrote:
+>> On 2022/3/15 0:16, Matthew Wilcox wrote:
+>>> On Mon, Mar 14, 2022 at 11:17:28PM +0800, Miaohe Lin wrote:
+>>>> Using vma_lookup() verifies the start is contained in the found vma. This
+>>>> results in easier to read the code.
+>>>
+>>> This conflicts with the maple tree.
+>>
+>> IIUC, maple tree is the implementation detail of the vma and this patch
+>> should not be conflict with it. But there might be some trival conflict.
+>> Am I supposed to delay this patch until the maple tree's work is done?
+> 
+> This function is rewritten as part of the maple tree patchset.
+> There's no point in merging it now, or later.
+> 
 
-OK, let me test this patch in my local workspace. If it works, I will
-send it later.
+I see. Thanks for explanation.
 
->
-> Thanks,
-> Gao Xiang
->
+> .
+> 
+
