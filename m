@@ -2,73 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9686AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 09:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346615AbiCOJbM (ORCPT
+        id S1346624AbiCOJcd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 05:31:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        Tue, 15 Mar 2022 05:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346496AbiCOJbI (ORCPT
+        with ESMTP id S244353AbiCOJcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 05:31:08 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DF44ECCD
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 02:29:56 -0700 (PDT)
-Received: from localhost.localdomain (ip5f5ae8f9.dynamic.kabel-deutschland.de [95.90.232.249])
+        Tue, 15 Mar 2022 05:32:31 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1128D4ECCC;
+        Tue, 15 Mar 2022 02:31:18 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 24C7D61EA1927;
-        Tue, 15 Mar 2022 10:29:53 +0100 (CET)
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/amdgpu: Use ternary operator in `vcn_v1_0_start()`
-Date:   Tue, 15 Mar 2022 10:29:36 +0100
-Message-Id: <20220315092937.141380-1-pmenzel@molgen.mpg.de>
-X-Mailer: git-send-email 2.35.1
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHp7P58N5z4xNm;
+        Tue, 15 Mar 2022 20:31:13 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647336676;
+        bh=nMU9jrGSvbigdoyqQvgfktQ0ZN+1Bv9BixnK+MzkewY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=abq96raPbem8Sql29ZOP5HdVjLIguzoQQLdi/psLuLK828JPhygHn0On62KKWbrvg
+         HbEiTtb0W8znkrf8jVXqxjpcmjjC6FKftj/bns5FX4TAiane2cPfrmLtztkyBR/95h
+         fjnxbwdzB3P4saF/WCF00fWV0bQyXoYaVIFtLAEINPOsTtlT4XDjtMKUifQ+QKuSfY
+         bM4OXw0B0MUtqqDIhfzXg74a+nKDVTOjUz9sDmR3wROxwFqHCUEhyh+5L7D1lajJtA
+         eqAob2N/3DinFiA0VlimmEjZ5V02gjsM1yMrxY7LNMUPlatVqDqU2VV3s83BNjisZL
+         pDmCZ39Juuaqg==
+Date:   Tue, 15 Mar 2022 20:31:12 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Matthew Wilcox <willy@infradead.org>, Gao Xiang <xiang@kernel.org>
+Cc:     Gao Xiang <hsiangkao@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the folio tree with the erofs tree
+Message-ID: <20220315203112.03f6120c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/8TvW=Ep3q0FYicWp5oUaKff";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the boilerplate of declaring a variable and using an if else
-statement by using the ternary operator.
+--Sig_/8TvW=Ep3q0FYicWp5oUaKff
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
----
- drivers/gpu/drm/amd/amdgpu/vcn_v1_0.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+Hi all,
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v1_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v1_0.c
-index 3799226defc0..78ad85fdc769 100644
---- a/drivers/gpu/drm/amd/amdgpu/vcn_v1_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vcn_v1_0.c
-@@ -1095,13 +1095,8 @@ static int vcn_v1_0_start_dpg_mode(struct amdgpu_device *adev)
- 
- static int vcn_v1_0_start(struct amdgpu_device *adev)
- {
--	int r;
--
--	if (adev->pg_flags & AMD_PG_SUPPORT_VCN_DPG)
--		r = vcn_v1_0_start_dpg_mode(adev);
--	else
--		r = vcn_v1_0_start_spg_mode(adev);
--	return r;
-+	return (adev->pg_flags & AMD_PG_SUPPORT_VCN_DPG) ?
-+		vcn_v1_0_start_dpg_mode(adev) : vcn_v1_0_start_spg_mode(adev);
- }
- 
- /**
--- 
-2.35.1
+Today's linux-next merge of the folio tree got a conflict in:
 
+  fs/erofs/super.c
+
+between commit:
+
+  ab6bfa6e1e22 ("erofs: refine managed inode stuffs")
+
+from the erofs tree and commit:
+
+  8c5b1ba024af ("erofs: Convert from invalidatepage to invalidate_folio")
+
+from the folio tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc fs/erofs/super.c
+index e178100c162a,a64c422f6763..000000000000
+--- a/fs/erofs/super.c
++++ b/fs/erofs/super.c
+@@@ -532,24 -535,18 +532,23 @@@ static int erofs_managed_cache_releasep
+  	return ret;
+  }
+ =20
+ +/*
+ + * It will be called only on inode eviction. In case that there are still=
+ some
+ + * decompression requests in progress, wait with rescheduling for a bit h=
+ere.
+ + * We could introduce an extra locking instead but it seems unnecessary.
+ + */
+- static void erofs_managed_cache_invalidatepage(struct page *page,
+- 					       unsigned int offset,
+- 					       unsigned int length)
++ static void erofs_managed_cache_invalidate_folio(struct folio *folio,
++ 					       size_t offset, size_t length)
+  {
+- 	const unsigned int stop =3D length + offset;
++ 	const size_t stop =3D length + offset;
+ =20
+- 	DBG_BUGON(!PageLocked(page));
++ 	DBG_BUGON(!folio_test_locked(folio));
+ =20
+  	/* Check for potential overflow in debug mode */
+- 	DBG_BUGON(stop > PAGE_SIZE || stop < length);
++ 	DBG_BUGON(stop > folio_size(folio) || stop < length);
+ =20
+- 	if (offset =3D=3D 0 && stop =3D=3D PAGE_SIZE)
+- 		while (!erofs_managed_cache_releasepage(page, GFP_NOFS))
++ 	if (offset =3D=3D 0 && stop =3D=3D folio_size(folio))
++ 		while (!erofs_managed_cache_releasepage(&folio->page, GFP_NOFS))
+  			cond_resched();
+  }
+ =20
+
+--Sig_/8TvW=Ep3q0FYicWp5oUaKff
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwXOAACgkQAVBC80lX
+0GyavQgApdlRqmDQPKHTmYvvnVpaeBZEDQfjZXDJFVtnieJr1vws9bf/O6EGzMWC
+DZxRQcrQk4K7ymcIoWJQL3fHqrL0cRaCbyrh17VljPt/HgkbiAJ3jZTK/HpbQAVC
+03vH33lvFWEpfFYpaP8ZW5fbttFzamOJFS8IdwKZUbFCJA45P0zTtKhdaJsOF1uh
++xZFORYHzd81Uy49OM6IgPxwhpcAeyArvJ18mSx/eTb1bZ/90YC/79d4XqxSTTiJ
+2g3PKPBFNvxX2njqnsDya7yghnueZX4+3D874L5CjvLce/opvzYoiqb3klfyyLMl
+EVsJow0f2ePc0DZmi9q3SJkQG/h8zg==
+=O6m0
+-----END PGP SIGNATURE-----
+
+--Sig_/8TvW=Ep3q0FYicWp5oUaKff--
