@@ -2,118 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C6A0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D3F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 12:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348283AbiCOM3u (ORCPT
+        id S1348293AbiCOMa3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 08:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
+        Tue, 15 Mar 2022 08:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348222AbiCOM3o (ORCPT
+        with ESMTP id S237425AbiCOMa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 08:29:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 915CB13F92
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:28:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647347311;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rCUHLPHxtaZMWaxTPw6z/f+D0oxFiu0iBaxXSexErqs=;
-        b=Lp+isdudoJMVhXXHiVqTL53v4U7TRCKEVu/Dt3mIqIM5w0taaZXKg2sYJsFqekqYVS0SI7
-        r39aPfcg5NGwIaWMPP9rGaAuuLZ5Sqn37IGms182wvT+3axWJfduLU7Utz8bYa2x8mxWZt
-        NB71n2BWoEjm/Cik3tA+GAUEanrCkk4=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-599-gNntNjEWPG-QuJn-92GAjg-1; Tue, 15 Mar 2022 08:28:30 -0400
-X-MC-Unique: gNntNjEWPG-QuJn-92GAjg-1
-Received: by mail-wm1-f69.google.com with SMTP id l10-20020a05600c27ca00b0038b85cf8a20so864201wmb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 05:28:30 -0700 (PDT)
+        Tue, 15 Mar 2022 08:30:27 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51326522CF;
+        Tue, 15 Mar 2022 05:29:15 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id j26so28755181wrb.1;
+        Tue, 15 Mar 2022 05:29:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Qt8Zi6N5CRpqtRb8Q70WvpWjF1xQqsL2VLBHLQjfewk=;
+        b=Gzn0UDPLSgpftfbkJ7185XS8OEWz57i05Ai2HcNoDo9fR5YowSwMWtRZaO4DFzuRg3
+         IcmNYcKW8lcRrsY2dTW5/Yfv+KYLRYbmkfk/8CksYwGDCSwxbBIdeWw2EKT7aZwmCDcg
+         VCef7+Bo0/Lv+H1mt9uYnILTswRbi+KmVXFEn8cWU0D9h3B2EEfQ8H/JTFrglkDkKNtr
+         qAbY6xa2IfgXdMeM7t5KuXHd5szn0JRscW8TYxJtdi+BUPAdxWI56ipVROOSuvq2Vlmk
+         cahxLCmVsj0RcASgm3ig+Pc8g1wlNt+cszq5sTT+DtPH+U0hsVsoqleqNaZ1HItbRJ5l
+         nZ+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rCUHLPHxtaZMWaxTPw6z/f+D0oxFiu0iBaxXSexErqs=;
-        b=zpGRzLNfjQ/QTqCXmABhflLo3AxShYorQzdw8RjEKnWNx4t1OyBbolIjPmO1rcTlge
-         K0bmwnKFSvNFVivwT8Q8KjNK3v9lcaqESdvSPlZT2x1L8AktJ2a8S9+o/GnwAeZFd9t1
-         7UABHRF1ittDOUzuTKuA1cLx9+v7h5TymiJPrkeXYkfdjbnzJbuT8mL+N+d3hNCJHnd0
-         TGYfv7IlRJlReX9AD3OAOP1LUpk61rI3j8A+/I9y0EjH0KPPdZgCZIUMatgMTEqz3FoK
-         8u+qyM+CJ3g091AOsiZChkC7YFXavLWO9Z+JKkMvlD08kG7LHNwuoQHrZn531Nhylm/V
-         pzHA==
-X-Gm-Message-State: AOAM531R5OtM8dhstvMibJjdZg2bPAjHGmWnaVr9XFPBptXDhxBwnr6T
-        WcE7o6sHYF99NW6lwUy4lwi0+EMSufA7mmUI+Gy/TBBhnwtG1E8oNlSMNRek4AZLLA92s6zOxCN
-        IJzXljKykQgWCDCyGEZ7T1pBQ
-X-Received: by 2002:adf:f6d0:0:b0:1f0:7ab4:f905 with SMTP id y16-20020adff6d0000000b001f07ab4f905mr20351578wrp.54.1647347309439;
-        Tue, 15 Mar 2022 05:28:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwbsddZ89uZLO7jWyVAF+5O7Ev+loDx2qrY1pk1jcg4dS2xrgd+LAlcmE3FuBvM05QobW9sOQ==
-X-Received: by 2002:adf:f6d0:0:b0:1f0:7ab4:f905 with SMTP id y16-20020adff6d0000000b001f07ab4f905mr20351558wrp.54.1647347309175;
-        Tue, 15 Mar 2022 05:28:29 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id g11-20020a5d554b000000b001f0326a23ddsm15815149wrw.70.2022.03.15.05.28.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 05:28:28 -0700 (PDT)
-Message-ID: <2b735f7b-68df-4a35-466e-e5d8cd2ad36a@redhat.com>
-Date:   Tue, 15 Mar 2022 13:28:27 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Qt8Zi6N5CRpqtRb8Q70WvpWjF1xQqsL2VLBHLQjfewk=;
+        b=wWnez7xlkzPb1T90an0KOMTqbjiJp/jEgrQurLXIuIXNAT8wQ+bufTYNYGdaWevftq
+         YYckO1kjGtxGsD9xOsysUCrH1X4TGVYepffAVyWF6PBiyUVbCDSxbCm+n3/ynGCHW4AX
+         Ah1cKBfDlfyjPtTmL6Mr/IOZAInMjwl3a+QRPW9OtxyzTbb2SJDETLvxY9dEfCnq8Io9
+         0vmkd8l/bdOxpNvuf7OUtCOp2qG4DCIEAgpgUEPhp9MxwFmzduKHnNnNFGMhCkuQeHKN
+         HdyyAf2/1fKPrw6hQjHW+gK85eHxUFethYwavE7s8pzMaq1IvE6wl6S7G15GTVOHlFuC
+         yZKQ==
+X-Gm-Message-State: AOAM531diuhynjblEkouMgYwaRE+yygkzKrOR1hYHwhYa50BihkBogUs
+        iFvq8440QIpWfh6cpxCbkcY=
+X-Google-Smtp-Source: ABdhPJwDkIOy1jz9GLuhiJaqEfKeEbM4arr8+YvQ86nf//j4wIRRuoduy9FNIQYyG5Vq/R554BMcwg==
+X-Received: by 2002:a05:6000:2c1:b0:203:7395:8668 with SMTP id o1-20020a05600002c100b0020373958668mr20399671wry.409.1647347353810;
+        Tue, 15 Mar 2022 05:29:13 -0700 (PDT)
+Received: from debian (host-78-145-97-89.as13285.net. [78.145.97.89])
+        by smtp.gmail.com with ESMTPSA id k13-20020a7bc40d000000b00381890032dfsm2154788wmi.1.2022.03.15.05.29.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 05:29:13 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 12:29:11 +0000
+From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.4 00/43] 5.4.185-rc1 review
+Message-ID: <YjCGl7OYvBLkXH24@debian>
+References: <20220314112734.415677317@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 3/5] drm: ssd130x: Fix rectangle updates
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20220315110707.628166-1-geert@linux-m68k.org>
- <20220315110707.628166-4-geert@linux-m68k.org>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220315110707.628166-4-geert@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314112734.415677317@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/15/22 12:07, Geert Uytterhoeven wrote:
-> The rectangle update functions ssd130x_fb_blit_rect() and
-> ssd130x_update_rect() do not behave correctly when x1 != 0 or y1 !=
-> 0, or when y1 or y2 are not aligned to display page boundaries.
-> E.g. when used as a text console, only the first line of text is shown
-> on the display.
+Hi Greg,
+
+On Mon, Mar 14, 2022 at 12:53:11PM +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.185 release.
+> There are 43 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
->   1. The buffer passed by ssd130x_fb_blit_rect() points to the first
->      byte of monochrome bitmap data, and thus has its origin at (x1,
->      y1), while ssd130x_update_rect() assumes it is at (0, 0).
->      Fix ssd130x_update_rect() by changing the vertical and horizontal
->      loop ranges, and adding the offsets only when needed.
-> 
->   2. In ssd130x_fb_blit_rect(), align y1 and y2 to the display page
->      boundaries before doing the color conversion, so the full page
->      is converted and updated.
->      Remove the correction for an unaligned y1 from
->      ssd130x_update_rect(), and add a check to make sure y1 is aligned.
-> 
-> Fixes: a61732e808672cfa ("drm: Add driver for Solomon SSD130x OLED displays")
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
+> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
+> Anything received after that time might be too late.
 
-Thanks for fixing this too.
+Build test:
+mips (gcc version 11.2.1 20220301): 65 configs -> no new failure
+arm (gcc version 11.2.1 20220301): 107 configs -> no new failure
+arm64 (gcc version 11.2.1 20220301): 2 configs -> no failure
+x86_64 (gcc version 11.2.1 20220301): 4 configs -> no failure
 
-Acked-by: Javier Martinez Canillas <javierm@redhat.com>
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
 
--- 
-Best regards,
+[1]. https://openqa.qa.codethink.co.uk/tests/881
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
 
