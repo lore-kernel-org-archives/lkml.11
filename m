@@ -2,110 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F8CC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EF9C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 18:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350803AbiCOR6x (ORCPT
+        id S1350826AbiCOSB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:58:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
+        Tue, 15 Mar 2022 14:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237133AbiCOR6v (ORCPT
+        with ESMTP id S237133AbiCOSBZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 13:58:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8510058E76
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647367058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fMedA9WfDLM5Ii8pfrj6jSSL52RCVYUyNjTGE84uBgM=;
-        b=fD0wGxnzALVJENVAk+tvxD+OaD/Fv25/TdIN/LpwHGUTV816dxcBXUqblnF59KrhB9qUqK
-        WcwLF6SbA2PxNOX8a0zNBFke5yFTGYjic+e4/dHpejaAOzNY34z/TK0zv41lun00rAJjr4
-        U6PsOzkh8ZD+4WoK0K7Z5TPpao5CPn8=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-663-ajtI6GhIPs2tWNC9cpEA8g-1; Tue, 15 Mar 2022 13:57:37 -0400
-X-MC-Unique: ajtI6GhIPs2tWNC9cpEA8g-1
-Received: by mail-ot1-f72.google.com with SMTP id v7-20020a05683018c700b005af147b47beso14449492ote.22
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 10:57:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=fMedA9WfDLM5Ii8pfrj6jSSL52RCVYUyNjTGE84uBgM=;
-        b=ye6XJDyLYXgb+5guw5Cr2RQ3vmnApD9Rqcsiyawk0ToW+3nt5TWOpW0bKKCfjL0E/R
-         PFY23hc+1X9Qg4i5bhiKBYFGJCuuz7rO8/xSGH3d6vFwuIMifDVhLTnNrTmC6YrLeD5P
-         F29w8VT3GBu1tt91CFT4+p8651YgbLrPFNV/Mo3YOXdkXP/CmU7q12kTb9ByHb6m3k9G
-         0gxPKe6mga5C6mnrfpDLL9LjUeCI2iv/MZSqBbteGZEwRwblRXS0QcJAPeNW/Ur0gmS5
-         RA26YK1LkfpgX8b+B2Y+kzUEVPtFpt9NEsC0ugIwWh65EhJ++K7JTzaqsWLDOANxAkp3
-         meGg==
-X-Gm-Message-State: AOAM530XFg9E/tztlP0kHHxcv/DCW4hzhSdVzhZzTvDeggBMv7Wqz16t
-        I3GYH236gYHuxzuir1zsA7rrEkfpmLmZA4ALqk9Qobp+Kk9oj+JfhV/KI1NCZOU/Q/R2Ut7pAHF
-        AGHugx6Kh/tih/NCxiW5GPz83
-X-Received: by 2002:a05:6870:f21a:b0:dd:9bec:caf8 with SMTP id t26-20020a056870f21a00b000dd9beccaf8mr873945oao.78.1647367056640;
-        Tue, 15 Mar 2022 10:57:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzE0G+Iyi868FpnRpeqpjvFcGN9EznuWhCxB2z8lLfYG22OepTHiVkPgi+Sek7WhuBRDRt2Cw==
-X-Received: by 2002:a05:6870:f21a:b0:dd:9bec:caf8 with SMTP id t26-20020a056870f21a00b000dd9beccaf8mr873941oao.78.1647367056433;
-        Tue, 15 Mar 2022 10:57:36 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id q39-20020a4a88ea000000b0032165eb3af8sm7321527ooh.42.2022.03.15.10.57.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 10:57:36 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 11:57:34 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
-        yishaih@nvidia.com, linux-doc@vger.kernel.org, corbet@lwn.net,
-        hch@infradead.org
-Subject: Re: [PATCH v4] vfio-pci: Provide reviewers and acceptance criteria
- for variant drivers
-Message-ID: <20220315115734.71facb10.alex.williamson@redhat.com>
-In-Reply-To: <20220315175039.GL11336@nvidia.com>
-References: <164736509088.181560.2887686123582116702.stgit@omen>
-        <20220315175039.GL11336@nvidia.com>
-Organization: Red Hat
+        Tue, 15 Mar 2022 14:01:25 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60664522C5;
+        Tue, 15 Mar 2022 11:00:12 -0700 (PDT)
+X-UUID: c38af39dd86a419dbe497f03a9be6ee9-20220316
+X-UUID: c38af39dd86a419dbe497f03a9be6ee9-20220316
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 475824538; Wed, 16 Mar 2022 02:00:07 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Mar 2022 02:00:06 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
+ 2022 02:00:06 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Mar 2022 02:00:05 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
+CC:     <sean.wang@mediatek.com>, <Soul.Huang@mediatek.com>,
+        <YN.Chen@mediatek.com>, <Leon.Yen@mediatek.com>,
+        <Eric-SY.Chang@mediatek.com>, <Deren.Wu@mediatek.com>,
+        <km.lin@mediatek.com>, <robin.chiu@mediatek.com>,
+        <Eddie.Chen@mediatek.com>, <ch.yeh@mediatek.com>,
+        <posh.sun@mediatek.com>, <ted.huang@mediatek.com>,
+        <Eric.Liang@mediatek.com>, <Stella.Chang@mediatek.com>,
+        <Tom.Chou@mediatek.com>, <steve.lee@mediatek.com>,
+        <jsiuda@google.com>, <frankgor@google.com>,
+        <abhishekpandit@google.com>, <michaelfsun@google.com>,
+        <mcchou@chromium.org>, <shawnku@google.com>,
+        <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Yake Yang" <yake.yang@mediatek.com>
+Subject: [PATCH RESEND 1/5] Bluetooth: btmtksdio: Fix kernel oops in btmtksdio_interrupt
+Date:   Wed, 16 Mar 2022 02:00:00 +0800
+Message-ID: <7b4627d5017be2c26ded9daf7fd297bed6614852.1647367024.git.objelf@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 14:50:39 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+From: Yake Yang <yake.yang@mediatek.com>
 
-> On Tue, Mar 15, 2022 at 11:29:57AM -0600, Alex Williamson wrote:
-> > Device specific extensions for devices exposed to userspace through
-> > the vfio-pci-core library open both new functionality and new risks.
-> > Here we attempt to provided formalized requirements and expectations
-> > to ensure that future drivers both collaborate in their interaction
-> > with existing host drivers, as well as receive additional reviews
-> > from community members with experience in this area.
-> > 
-> > Cc: Jason Gunthorpe <jgg@nvidia.com>
-> > Acked-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> > Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
-> > Acked-by: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> > 
-> > v4:
-> > 
-> > Banish the word "vendor", replace with "device specific"
-> > Minor wording changes in docs file
-> > Add sign-offs from Kevin and Yishai
-> > 
-> > I'll drop Jason from reviewers if there's no positive approval
-> > after this round.  
-> 
-> Sorry, you are looking for this?
-> 
-> Acked-by: Jason Gunthorpe <jgg@nvidia.com>
+Fix the following kernel oops in btmtksdio_interrrupt
 
-Yup, thanks for volunteering!
+[   14.339134]  btmtksdio_interrupt+0x28/0x54
+[   14.339139]  process_sdio_pending_irqs+0x68/0x1a0
+[   14.339144]  sdio_irq_work+0x40/0x70
+[   14.339154]  process_one_work+0x184/0x39c
+[   14.339160]  worker_thread+0x228/0x3e8
+[   14.339168]  kthread+0x148/0x3ac
+[   14.339176]  ret_from_fork+0x10/0x30
+
+That happened because hdev->power_on is already called before
+sdio_set_drvdata which btmtksdio_interrupt handler relies on is not
+properly set up.
+
+The details are shown as the below: hci_register_dev would run
+queue_work(hdev->req_workqueue, &hdev->power_on) as WQ_HIGHPRI
+workqueue_struct to complete the power-on sequeunce and thus hci_power_on
+may run before sdio_set_drvdata is done in btmtksdio_probe.
+
+The hci_dev_do_open in hci_power_on would initialize the device and enable
+the interrupt and thus it is possible that btmtksdio_interrupt is being
+called right before sdio_set_drvdata is filled out.
+
+When btmtksdio_interrupt is being called and sdio_set_drvdata is not filled
+, the kernel oops is going to happen because btmtksdio_interrupt access an
+uninitialized pointer.
+
+Fixes: 9aebfd4a2200 ("Bluetooth: mediatek: add support for MediaTek MT7663S and MT7668S SDIO devices")
+Reviewed-by: Mark Chen <markyawenchen@gmail.com>
+Co-developed-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+---
+ drivers/bluetooth/btmtksdio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index df3f9d090529..9644069cecbb 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -1281,6 +1281,8 @@ static int btmtksdio_probe(struct sdio_func *func,
+ 	hdev->manufacturer = 70;
+ 	set_bit(HCI_QUIRK_NON_PERSISTENT_SETUP, &hdev->quirks);
+ 
++	sdio_set_drvdata(func, bdev);
++
+ 	err = hci_register_dev(hdev);
+ 	if (err < 0) {
+ 		dev_err(&func->dev, "Can't register HCI device\n");
+@@ -1288,8 +1290,6 @@ static int btmtksdio_probe(struct sdio_func *func,
+ 		return err;
+ 	}
+ 
+-	sdio_set_drvdata(func, bdev);
+-
+ 	/* pm_runtime_enable would be done after the firmware is being
+ 	 * downloaded because the core layer probably already enables
+ 	 * runtime PM for this func such as the case host->caps &
+-- 
+2.25.1
 
