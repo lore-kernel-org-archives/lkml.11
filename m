@@ -2,55 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A948C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347289AbiCOKp3 (ORCPT
+        id S1347297AbiCOKpc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
+        Tue, 15 Mar 2022 06:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347224AbiCOKo5 (ORCPT
+        with ESMTP id S1347242AbiCOKpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:44:57 -0400
+        Tue, 15 Mar 2022 06:45:04 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D678C2F028;
-        Tue, 15 Mar 2022 03:43:45 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:43:43 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85F631DC3;
+        Tue, 15 Mar 2022 03:43:47 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 10:43:45 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647341024;
+        s=2020; t=1647341026;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=syG+zqh4Q+3vlw+qKBz98+af1fOexGGxDC8UCaFHYcQ=;
-        b=lAeH6VWQyN6PLvVfZVc89hm/mb3ZGQYHrJ1HfOB6R7OeS2az93Bs+eIQQHoXME7EF0FhRI
-        HSY8t051FPLmEiLkk8l9TuuzOyaZ5a3hpSSE7zY+T4MWu4ocTeSrXiVtcJOjx5pUKeGjVq
-        0052mr9/82FyjLwtDUa1xrCkYEEdYaBjGXE6pAe3Mf0LGG9THaYQyFDVnmD+5ITSgm/48m
-        dXRXrv54Oe/NZKxXyOSkvs5RTU4nyrpRbtsnmzjLcTG+2g3j++QZHJvWlgO5hlyPnlUJg6
-        hBnxmGwT5VMREOMyg2ua/X1GTNBt04XNqL1pdlUjGEIzFiBG2jFcQTKvox9JgQ==
+        bh=L/uE7zHtGF9SP+uZXK94K1rTk6/h7IpJJiiUrAN80hM=;
+        b=P++hSYvKBNuAVxsCUiF5aMVkrDu2uKFKNnkp9GQbbg7BprcrIY3Ez4X5/A7OKoMZ9b6GnU
+        7NxRn/siicVxl/ydBS1wwWr5uB+fH80/L+etBlQiv+sGC2dgv2vziDS5XgPoxwliR8W6OW
+        UKoNyS+IxadjxVkxzXF70PcxE+TejSknTbKDmKfsyji7CAFyDpseQ4aiNRMZ5EB7O8wQci
+        XS3qHxfTFxtXfv9VR++oSobh1WfkQoDWvJtpWEWfbeb8X6+aM1dN7u8OMQlo+hvL4TNRrJ
+        xN2HDMDtQ04dMWgifaCb+vjJjyEGMak+bi9N/viIsY28546Ux24av6ek04NfSA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647341024;
+        s=2020e; t=1647341026;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=syG+zqh4Q+3vlw+qKBz98+af1fOexGGxDC8UCaFHYcQ=;
-        b=275fFMT8+OFPgj54EOXLaHV+AyRzUOAcIzeg/wGKvk4v8jaQnVj+xDXtaXn/C2SSoAdxWl
-        aNM5SHlMIq3nywCw==
+        bh=L/uE7zHtGF9SP+uZXK94K1rTk6/h7IpJJiiUrAN80hM=;
+        b=y1xQ57Sno+w0QhQKhY5eiCti73IRalKkXqTlkdNwleQajNvz7JgHL682/iHP/V4rDypWdF
+        HIxsPpnxVa23T5Ag==
 From:   "tip-bot2 for Peter Zijlstra" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/core] x86: Annotate idtentry_df()
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+Subject: [tip: x86/core] x86: Annotate call_on_stack()
+Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <Yi9gOW9f1GGwwUD6@hirez.programming.kicks-ass.net>
-References: <Yi9gOW9f1GGwwUD6@hirez.programming.kicks-ass.net>
+In-Reply-To: <20220308154319.468805622@infradead.org>
+References: <20220308154319.468805622@infradead.org>
 MIME-Version: 1.0
-Message-ID: <164734102342.16921.2650710011277528758.tip-bot2@tip-bot2>
+Message-ID: <164734102547.16921.14808462223133394899.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,49 +62,62 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/core branch of tip:
 
-Commit-ID:     3515899bef545fc5b5f6b865e080bfe4c9a92a41
-Gitweb:        https://git.kernel.org/tip/3515899bef545fc5b5f6b865e080bfe4c9a92a41
+Commit-ID:     be0075951fde739f14ee2b659e2fd6e2499c46c0
+Gitweb:        https://git.kernel.org/tip/be0075951fde739f14ee2b659e2fd6e2499c46c0
 Author:        Peter Zijlstra <peterz@infradead.org>
-AuthorDate:    Mon, 14 Mar 2022 18:07:30 +01:00
+AuthorDate:    Tue, 08 Mar 2022 16:30:50 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 15 Mar 2022 10:32:45 +01:00
+CommitterDate: Tue, 15 Mar 2022 10:32:44 +01:00
 
-x86: Annotate idtentry_df()
+x86: Annotate call_on_stack()
 
-Without CONFIG_X86_ESPFIX64 exc_double_fault() is noreturn and objtool
-is clever enough to figure that out.
+vmlinux.o: warning: objtool: page_fault_oops()+0x13c: unreachable instruction
 
-vmlinux.o: warning: objtool: asm_exc_double_fault()+0x22: unreachable instruction
+0000 000000000005b460 <page_fault_oops>:
+...
+0128    5b588:  49 89 23                mov    %rsp,(%r11)
+012b    5b58b:  4c 89 dc                mov    %r11,%rsp
+012e    5b58e:  4c 89 f2                mov    %r14,%rdx
+0131    5b591:  48 89 ee                mov    %rbp,%rsi
+0134    5b594:  4c 89 e7                mov    %r12,%rdi
+0137    5b597:  e8 00 00 00 00          call   5b59c <page_fault_oops+0x13c>    5b598: R_X86_64_PLT32   handle_stack_overflow-0x4
+013c    5b59c:  5c                      pop    %rsp
 
-0000000000001260 <asm_exc_double_fault>:
-1260:       f3 0f 1e fa             endbr64
-1264:       90                      nop
-1265:       90                      nop
-1266:       90                      nop
-1267:       e8 84 03 00 00          call   15f0 <paranoid_entry>
-126c:       48 89 e7                mov    %rsp,%rdi
-126f:       48 8b 74 24 78          mov    0x78(%rsp),%rsi
-1274:       48 c7 44 24 78 ff ff ff ff      movq   $0xffffffffffffffff,0x78(%rsp)
-127d:       e8 00 00 00 00          call   1282 <asm_exc_double_fault+0x22> 127e: R_X86_64_PLT32    exc_double_fault-0x4
-1282:       e9 09 04 00 00          jmp    1690 <paranoid_exit>
+vmlinux.o: warning: objtool: sysvec_reboot()+0x6d: unreachable instruction
+
+0000 00000000000033f0 <sysvec_reboot>:
+...
+005d     344d:  4c 89 dc                mov    %r11,%rsp
+0060     3450:  e8 00 00 00 00          call   3455 <sysvec_reboot+0x65>        3451: R_X86_64_PLT32    irq_enter_rcu-0x4
+0065     3455:  48 89 ef                mov    %rbp,%rdi
+0068     3458:  e8 00 00 00 00          call   345d <sysvec_reboot+0x6d>        3459: R_X86_64_PC32     .text+0x47d0c
+006d     345d:  e8 00 00 00 00          call   3462 <sysvec_reboot+0x72>        345e: R_X86_64_PLT32    irq_exit_rcu-0x4
+0072     3462:  5c                      pop    %rsp
+
+Both cases are due to a call_on_stack() calling a __noreturn function.
+Since that's an inline asm, GCC can't do anything about the
+instructions after the CALL. Therefore put in an explicit
+ASM_REACHABLE annotation to make sure objtool and gcc are consistently
+confused about control flow.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/Yi9gOW9f1GGwwUD6@hirez.programming.kicks-ass.net
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/20220308154319.468805622@infradead.org
 ---
- arch/x86/entry/entry_64.S | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/include/asm/irq_stack.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 6e53991..4faac48 100644
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -551,6 +551,9 @@ SYM_CODE_START(\asmsym)
- 	movq	$-1, ORIG_RAX(%rsp)	/* no syscall to restart */
- 	call	\cfunc
+diff --git a/arch/x86/include/asm/irq_stack.h b/arch/x86/include/asm/irq_stack.h
+index ae9d40f..05af249 100644
+--- a/arch/x86/include/asm/irq_stack.h
++++ b/arch/x86/include/asm/irq_stack.h
+@@ -99,7 +99,8 @@
+ }
  
-+	/* For some configurations \cfunc ends up being a noreturn. */
-+	REACHABLE
-+
- 	jmp	paranoid_exit
+ #define ASM_CALL_ARG0							\
+-	"call %P[__func]				\n"
++	"call %P[__func]				\n"		\
++	ASM_REACHABLE
  
- _ASM_NOKPROBE(\asmsym)
+ #define ASM_CALL_ARG1							\
+ 	"movq	%[arg1], %%rdi				\n"		\
