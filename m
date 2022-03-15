@@ -2,66 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F2FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 02:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 822D2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 02:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344428AbiCOC37 (ORCPT
+        id S1344445AbiCOCbj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Mar 2022 22:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
+        Mon, 14 Mar 2022 22:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236325AbiCOC35 (ORCPT
+        with ESMTP id S236325AbiCOCbg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Mar 2022 22:29:57 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FED2B1BB
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 19:28:45 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 15 Mar
- 2022 10:28:43 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 15 Mar
- 2022 10:28:42 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     <freude@linux.ibm.com>, <hca@linux.ibm.com>, <gor@linux.ibm.com>,
-        <agordeev@linux.ibm.com>
-CC:     <linux-s390@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Haowen Bai <baihaowen@meizu.com>
-Subject: [PATCH] s390: crypto: Use min() instead of doing it manually
-Date:   Tue, 15 Mar 2022 10:28:41 +0800
-Message-ID: <1647311321-26303-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 14 Mar 2022 22:31:36 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D52C47069;
+        Mon, 14 Mar 2022 19:30:25 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id t5so17271648pfg.4;
+        Mon, 14 Mar 2022 19:30:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k+lctjcega/lm2ZBvU+hlydPBj6Kg73fOYu885xUIbE=;
+        b=pC4U+npabExy0OfY3xW0E7JlFzB/g2cZWGdMMfnk0EJSZjsN2LJOAS+TrXMY9LmT6I
+         vXxkza6O6Q+rSRElhtdkBdfzufltMIao65ASYhLiEZA1H7g6CYkS0ovZ7dc8l5X01VIM
+         LLbkCIwJcgB8/dgSv2lfR8c8EH2z9DqrZ0/xs6oEoqvV8wYVGyx1y79HqhzEMryMXbNv
+         aM7PbXOtuhJlfM7c7XSTy5lYR085AVqb1mPKn2HJj7GlTn0Rqpn1T77i0A/Ox07vnHBt
+         wTPFaKENpBIZ3Dh/ZcU4ckySd6Pje9mjV/CERRJzsqibKOP1Zygv4uK2PNvzLKRHB/c4
+         HU6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k+lctjcega/lm2ZBvU+hlydPBj6Kg73fOYu885xUIbE=;
+        b=1dknxW+IJoLB1iGq8CQ3vGQ/mR5uXAQ3GkLDXC7PYb/szU9pWvMqH1eqgjVdY9G4EA
+         M41MZJM5GOh7hpBzGiDCqz3NmEy8UlOmepr/LOyBvN++e5ez3mY2gXCgFhvbZ8E8rx/H
+         0sfER5PUFYh4RbNdaYmQUaLZxIO+a3yzZDNoA7DX4/rLZrghKUG73wkjSivISgpvHuma
+         +f7BvSaTTnELIIU8WuysQs83m40gGhkcz6Tm6hxuDIUizbg6Wyk8B9HkfvqPW8OYAckJ
+         wOSA+lV7vbiij81S/QsqwIJqiLgsqC3u4bewhb37Q2v1qIlKUyWbL8QYPHGVBzmI2tne
+         e+oQ==
+X-Gm-Message-State: AOAM5338R9xm4yv3yV8p9mh0xwHQq7xmCGX+3gUdAXVgQaD47aUyX2+u
+        c84Vycuyo2oKmfRo37UzVsE=
+X-Google-Smtp-Source: ABdhPJwdZeDdQ7fYy48kPOH8Q6YXIxHPx00qmpQ9lcG8ijkcaY84HYa2qFr89qNdn3muORIIfJDNxg==
+X-Received: by 2002:a63:8bc8:0:b0:380:b539:bea5 with SMTP id j191-20020a638bc8000000b00380b539bea5mr21719707pge.486.1647311424892;
+        Mon, 14 Mar 2022 19:30:24 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id k14-20020a056a00134e00b004f83f05608esm2741807pfu.31.2022.03.14.19.30.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 19:30:24 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     kuba@kernel.org
+Cc:     sebastian.hesselbarth@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] net: mv643xx_eth: undo some opreations in mv643xx_eth_probe
+Date:   Tue, 15 Mar 2022 02:30:19 +0000
+Message-Id: <20220315023019.2118163-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix following coccicheck warning:
-drivers/s390/crypto/zcrypt_ep11misc.c:1112:25-26: WARNING opportunity for min()
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Cannot directly return platform_get_irq return irq, there
+are operations that need to be undone.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/s390/crypto/zcrypt_ep11misc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mv643xx_eth.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/s390/crypto/zcrypt_ep11misc.c b/drivers/s390/crypto/zcrypt_ep11misc.c
-index 9ce5a71..bb2a527 100644
---- a/drivers/s390/crypto/zcrypt_ep11misc.c
-+++ b/drivers/s390/crypto/zcrypt_ep11misc.c
-@@ -1109,7 +1109,7 @@ static int ep11_wrapkey(u16 card, u16 domain,
- 	if (kb->head.type == TOKTYPE_NON_CCA &&
- 	    kb->head.version == TOKVER_EP11_AES) {
- 		has_header = true;
--		keysize = kb->head.len < keysize ? kb->head.len : keysize;
-+		keysize = min(kb->head.len, keysize);
- 	}
+diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+index e6cd4e214d79..6cd81737786e 100644
+--- a/drivers/net/ethernet/marvell/mv643xx_eth.c
++++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+@@ -3189,8 +3189,11 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
  
- 	/* request cprb and payload */
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (WARN_ON(irq < 0))
++	if (WARN_ON(irq < 0)) {
++		clk_disable_unprepare(mp->clk);
++		free_netdev(dev);
+ 		return irq;
++	}
+ 	dev->irq = irq;
+ 
+ 	dev->netdev_ops = &mv643xx_eth_netdev_ops;
 -- 
-2.7.4
+2.25.1
 
