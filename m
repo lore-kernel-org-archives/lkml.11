@@ -2,170 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94707C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F67FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 16:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240647AbiCOQKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 12:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
+        id S1349912AbiCOQKp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 12:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238095AbiCOQKT (ORCPT
+        with ESMTP id S238095AbiCOQKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 12:10:19 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF14C25EAB
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:09:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647360546; x=1678896546;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mYoawQt8/mjlKy6DboqveGnemw0SfDUDHd8XG2dieWM=;
-  b=U/yckrpt22PL+Scw6Ddqw7opklMIoXvQRu0h5NbVKI5NuxlUXLAlATK3
-   HbRmeYGZD7CjRIrbRwTp0axhNsTdYXyODKfkcqK8OacGvpdV3RtEVVSI8
-   XU/UFME3guWNVtRRXJhhw59aQqIYkDh+DdhY0qf6itvMlmFxr+nKu+EmK
-   MtdyY88KPh5RV4mN+J+usd9aURptxb6G1MFKcgGJis2vzBI6Q62y5gAJz
-   BObQboddztEEZwGAstZ2obmcYZbBnMc9p6k7TiScNVIGpDcWMsAvzyovl
-   3oP/CZ/DFWgjB1K5ypwe35CoK16d8TEC1TjcvMS0mhf+K/izmZt/aOuwW
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="281119503"
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="281119503"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:08:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="540497258"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:08:00 -0700
-Date:   Tue, 15 Mar 2022 09:11:16 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Jason Gunthorpe" <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        "Zanussi, Tom" <tom.zanussi@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
-Message-ID: <20220315091116.26e10b1b@jacob-builder>
-In-Reply-To: <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
-        <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
-        <YjB4AyrgsnbUrlLe@myrica>
-        <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Tue, 15 Mar 2022 12:10:42 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84ECD42A3A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:09:29 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id p8so20448449pfh.8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 09:09:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L/3evLoiUxyduQgTRbFtXBiM1S258zVm+UJtnMloKak=;
+        b=0YcD70QC0MgG+ea9Hyfe1KDOhrj7ONcEkvDRV6M9sMdA6lBfa3vlxGaB1+hzovZQOs
+         nurK8WNaWNkB/vGSQtA4Lq31WE9AExhGngDlI+yUnN8qWySuU6IBhWONrdiHFdV6PG6B
+         sbLG2d10zU9EuEgpQQ637mwVNaUrgXnqa/6yF3t6jaDhmTRw/xdLrWfPkJvFyDNuy3Xk
+         WomPnsVYKvLH1B+xPE4kDOTzN85NvKrs+YT5dfMGxH9GSbsYL7HmtJwNrMD/6pGis5Js
+         F89yrxdEhLffsaTI1cft4JLc1BxFIVR1hgR2KurWjoapaPEJuPPbvYpjO/lpEfCcpLue
+         sU7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L/3evLoiUxyduQgTRbFtXBiM1S258zVm+UJtnMloKak=;
+        b=pp7sz5dQ4LKPOnN1HqxvTHebZNBqXqSmUMeamvmMYVzB1TCDJvywiya21pIVseXtrk
+         dHcTukfAro3EcaoyZMGWqII96fbclOiAgMidP0Gcw/4e0QqEVsMWOimFONRxWF2cFwpo
+         UYIr21cznUv0xw/Xgfmxpc560pIAeGFhXdmiWkoBlF9E+UIH1G6ZSobos3gZqhzIsybk
+         dpDY9niKstQweGlUzNPCPDeBqDpfdhkvFGgt+bUgcV0srDl91ANPEBlILMzIy8lXqsn/
+         s8WZP1znFqN2nqZvqEJiwnQ9tjUg2WuMU1gQPR2AZS9qM+XM2d55xT3Qh52bvMKqFOba
+         30Xw==
+X-Gm-Message-State: AOAM530La2Vb4tQFbkKZI7Ip2uPDMsrbStQ/QVRSCepqd+G6lAwEWaXU
+        7UnEy+xyv8l+MF/OnvchP4J/QPdnJ8XCN3eu92c72g==
+X-Google-Smtp-Source: ABdhPJyMgwt0K1/knvdgQkdrvVvr4QZNZtkwOk/zi74i6418fAFiBNttZxLgdpHinFyQTs23rFNvPhfWer6YMjV+1IM=
+X-Received: by 2002:a05:6a00:8ca:b0:4e0:2ed3:5630 with SMTP id
+ s10-20020a056a0008ca00b004e02ed35630mr29577774pfu.3.1647360568827; Tue, 15
+ Mar 2022 09:09:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <Yh59rOIH24X+6GyI@kroah.com> <Yh5+om/Nr06V0+Qj@kroah.com> <Yi/Lb5laEki0JHft@agluck-desk3.sc.intel.com>
+ <YjBBmEjbIaqTbVt+@kroah.com> <c4af81bd788e43dda915a1052af0be55@intel.com>
+ <YjCwI4N00reBuIqA@kroah.com> <CAPcyv4iU5mXAjkUe-c_-Ba4Ejse90gqd=db+00jybnkV1-K6=g@mail.gmail.com>
+In-Reply-To: <CAPcyv4iU5mXAjkUe-c_-Ba4Ejse90gqd=db+00jybnkV1-K6=g@mail.gmail.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Tue, 15 Mar 2022 09:09:18 -0700
+Message-ID: <CAPcyv4gdbjHem9zwoCjj+6a2KJ5dyYro3OwPvNLSPTKpjeF0hg@mail.gmail.com>
+Subject: Re: [RFC 00/10] Introduce In Field Scan driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "Luck, Tony" <tony.luck@intel.com>,
+        "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kevin,
-
-On Tue, 15 Mar 2022 11:49:57 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
-
-> > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > Sent: Tuesday, March 15, 2022 7:27 PM
-> > 
-> > On Mon, Mar 14, 2022 at 10:07:06PM -0700, Jacob Pan wrote:  
-> > > From: Lu Baolu <baolu.lu@linux.intel.com>
+On Tue, Mar 15, 2022 at 9:04 AM Dan Williams <dan.j.williams@intel.com> wrote:
+>
+> On Tue, Mar 15, 2022 at 8:27 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Tue, Mar 15, 2022 at 02:59:03PM +0000, Luck, Tony wrote:
+> > > >> This seems a novel use of uevent ... is it OK, or is is abuse?
+> > > >
+> > > > Don't create "novel" uses of uevents.  They are there to express a
+> > > > change in state of a device so that userspace can then go and do
+> > > > something with that information.  If that pattern fits here, wonderful.
 > > >
-> > > An IOMMU domain represents an address space which can be attached by
-> > > devices that perform DMA within a domain. However, for platforms with
-> > > PASID capability the domain attachment needs be handled at
-> > > device+PASID level. There can be multiple PASIDs within a device and
-> > > multiple devices attached to a given domain.
-> > > This patch introduces a new IOMMU op which support device, PASID, and
-> > > IOMMU domain attachment. The immediate use case is for PASID capable
-> > > devices to perform DMA under DMA APIs.
-> > >
-> > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > ---
-> > >  include/linux/iommu.h | 6 ++++++
-> > >  1 file changed, 6 insertions(+)
-> > >
-> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > > index 369f05c2a4e2..fde5b933dbe3 100644
-> > > --- a/include/linux/iommu.h
-> > > +++ b/include/linux/iommu.h
-> > > @@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
-> > >   * @aux_get_pasid: get the pasid given an aux-domain
-> > >   * @sva_bind: Bind process address space to device
-> > >   * @sva_unbind: Unbind process address space from device
-> > > + * @attach_dev_pasid: attach an iommu domain to a pasid of device
-> > > + * @detach_dev_pasid: detach an iommu domain from a pasid of device  
-> > 
-> > Isn't that operation "assign a PASID to a domain" instead?  In patch 5,
-> > the domain is already attached to the device, so set_domain_pasid()
-> > might be clearer and to the point. If the IOMMU driver did the
-> > allocation we could also avoid patch 1.
-I agree, we could let vendor driver do the allocation inside this op. On
-the other side, we could also keep the flexibility such that this op can be
-used for guest PASID bind, with a SVA domain.
-> 
-> iiuc this API can also work for future SIOV usage where each mdev attached
-> to the domain has its own pasid. "assigning a PASID to a domain" sounds
-> like going back to the previous aux domain approach which has one PASID
-> per domain and that PASID is used on all devices attached to the aux
-> domain...
-> 
-yes, that is the intention. I plan to lift the requirement in patch 5 such
-that device attachment will not be a prerequisite. That would be after mdev
-adoption.
+> > > Maybe Dan will chime in here to better explain his idea. I think for
+> > > the case where the core test fails, there is a good match with uevent.
+> > > The device (one CPU core) has changed state from "working" to
+> > > "untrustworthy". Userspace can do things like: take the logical CPUs
+> > > on that core offline, initiate a service call, or in a VMM cluster environment
+> > > migrate work to a different node.
+> >
+> > Again, I have no idea what you are doing at all with this driver, nor
+> > what you want to do with it.
+> >
+> > Start over please.
+> >
+> > What is the hardware you have to support?
+> >
+> > What is the expectation from userspace with regards to using the
+> > hardware?
+>
+> Here is what I have learned about this driver since engaging on this
+> patch set. Cores go bad at run time. Datacenters can detect them at
+> scale.
 
-> > 
-> > If I understand correctly this series is not about a generic PASID API
-> > that allows drivers to manage multiple DMA address spaces, because there
-> > still doesn't seem to be any interest in that. It's about the specific
-> > IDXD use-case, so let's focus on that. We can introduce a specialized
-> > call such as (iommu|dma)_set_device_pasid(), which will be easy to
-> > consolidate later into a more generic "dma_enable_pasid()" API if that
-> > ever seems useful.
-> > 
-Right, at the moment it is still a single address space. i.e. the current
-domain of the device/group.
+Tony pointed me to this video if you have not seen it:
 
-But this limitation is at the driver facing API layer not limited in the
-IOMMU ops.
-
-> > Thanks,
-> > Jean
-> >   
-> > >   * @sva_get_pasid: Get PASID associated to a SVA handle
-> > >   * @page_response: handle page request response
-> > >   * @cache_invalidate: invalidate translation caches
-> > > @@ -296,6 +298,10 @@ struct iommu_ops {
-> > >  	struct iommu_sva *(*sva_bind)(struct device *dev, struct
-> > > mm_struct  
-> > *mm,  
-> > >  				      void *drvdata);
-> > >  	void (*sva_unbind)(struct iommu_sva *handle);
-> > > +	int (*attach_dev_pasid)(struct iommu_domain *domain,
-> > > +				struct device *dev, ioasid_t id);
-> > > +	void (*detach_dev_pasid)(struct iommu_domain *domain,
-> > > +				 struct device *dev, ioasid_t id);
-> > >  	u32 (*sva_get_pasid)(struct iommu_sva *handle);
-> > >
-> > >  	int (*page_response)(struct device *dev,
-> > > --
-> > > 2.25.1
-> > >  
-
-
-Thanks,
-
-Jacob
+https://www.youtube.com/watch?v=QMF3rqhjYuM
