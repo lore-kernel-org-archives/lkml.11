@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 133D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 19:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A546C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 19:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351295AbiCOTE2 (ORCPT
+        id S1351304AbiCOTEd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 15:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
+        Tue, 15 Mar 2022 15:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351231AbiCOTEC (ORCPT
+        with ESMTP id S1351238AbiCOTEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 15:04:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EFB522D8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:02:45 -0700 (PDT)
+        Tue, 15 Mar 2022 15:04:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DE0522CA
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 12:02:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81144616F1
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:02:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B87DC340FA;
-        Tue, 15 Mar 2022 19:02:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3B4A2CE1C85
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:02:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80D46C340F9;
+        Tue, 15 Mar 2022 19:02:44 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nUCRQ-003jkU-F6;
-        Tue, 15 Mar 2022 15:02:44 -0400
-Message-ID: <20220315190244.299169345@goodmis.org>
+        id 1nUCRP-003jhg-H2;
+        Tue, 15 Mar 2022 15:02:43 -0400
+Message-ID: <20220315190243.362257459@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Tue, 15 Mar 2022 15:02:23 -0400
+Date:   Tue, 15 Mar 2022 15:02:18 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
@@ -38,7 +38,7 @@ Cc:     Ingo Molnar <mingo@kernel.org>,
         Clark Williams <williams@redhat.com>,
         Juri Lelli <juri.lelli@redhat.com>,
         Jonathan Corbet <corbet@lwn.net>
-Subject: [for-next][PATCH 09/15] rtla/trace: Add trace event filter helpers
+Subject: [for-next][PATCH 04/15] rtla/timerlat: Add the automatic trace option
 References: <20220315190214.613102181@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,10 +48,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-Add a set of helper functions to allow rtla tools to filter events
-in the trace instance.
+Add the -a/--auto <arg in us> option. This option sets some commonly
+used options while debugging the system. It aims to help users produce
+reports in the field, reducing the number of arguments passed to the
+tool in the first approach to a problem.
 
-Link: https://lkml.kernel.org/r/12623b1684684549d53b90f4bf66fae44584fd14.1646247211.git.bristot@kernel.org
+It is equivalent to setting osnoise/stop_tracing_total_us and print_stack
+with the argument, and saving the trace to timerlat_trace.txt file if the
+trace is stopped automatically.
+
+Link: https://lkml.kernel.org/r/92438f7ef132c731f538cebdf77850300afe04a5.1646247211.git.bristot@kernel.org
 
 Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
 Cc: Clark Williams <williams@redhat.com>
@@ -60,159 +66,153 @@ Cc: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- tools/tracing/rtla/src/trace.c | 83 ++++++++++++++++++++++++++++++++++
- tools/tracing/rtla/src/trace.h |  3 ++
- 2 files changed, 86 insertions(+)
+ .../tools/rtla/common_timerlat_options.rst    |  7 ++++++
+ tools/tracing/rtla/src/timerlat_hist.c        | 24 +++++++++++++++----
+ tools/tracing/rtla/src/timerlat_top.c         | 22 ++++++++++++++---
+ 3 files changed, 46 insertions(+), 7 deletions(-)
 
-diff --git a/tools/tracing/rtla/src/trace.c b/tools/tracing/rtla/src/trace.c
-index 7f8661b2724d..ef44bab0c404 100644
---- a/tools/tracing/rtla/src/trace.c
-+++ b/tools/tracing/rtla/src/trace.c
-@@ -204,6 +204,8 @@ static void trace_events_free(struct trace_events *events)
+diff --git a/Documentation/tools/rtla/common_timerlat_options.rst b/Documentation/tools/rtla/common_timerlat_options.rst
+index e9c1bfd55d48..14a24a121f5d 100644
+--- a/Documentation/tools/rtla/common_timerlat_options.rst
++++ b/Documentation/tools/rtla/common_timerlat_options.rst
+@@ -1,3 +1,10 @@
++**-a**, **--auto** *us*
++
++        Set the automatic trace mode. This mode sets some commonly used options
++        while debugging the system. It is equivalent to use **-T** *us* **-s** *us*
++        **-t**. By default, *timerlat* tracer uses FIFO:95 for *timerlat* threads,
++        thus equilavent to **-P** *f:95*.
++
+ **-p**, **--period** *us*
  
- 		tevent = tevent->next;
+         Set the *timerlat* tracer period in microseconds.
+diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
+index 237e1735afa7..9cd97095b04a 100644
+--- a/tools/tracing/rtla/src/timerlat_hist.c
++++ b/tools/tracing/rtla/src/timerlat_hist.c
+@@ -428,11 +428,12 @@ static void timerlat_hist_usage(char *usage)
  
-+		if (free_event->filter)
-+			free(free_event->filter);
- 		if (free_event->trigger)
- 			free(free_event->trigger);
- 		free(free_event->system);
-@@ -237,6 +239,21 @@ struct trace_events *trace_event_alloc(const char *event_string)
- 	return tevent;
- }
+ 	char *msg[] = {
+ 		"",
+-		"  usage: [rtla] timerlat hist [-h] [-q] [-d s] [-D] [-n] [-p us] [-i us] [-T us] [-s us] [-t[=file]] \\",
+-		"         [-c cpu-list] [-P priority] [-E N] [-b N]  [--no-irq] [--no-thread] [--no-header] [--no-summary] \\",
+-		"         [--no-index] [--with-zeros]",
++		"  usage: [rtla] timerlat hist [-h] [-q] [-d s] [-D] [-n] [-a us] [-p us] [-i us] [-T us] [-s us] \\",
++		"         [-t[=file]] [-c cpu-list] [-P priority] [-E N] [-b N]  [--no-irq] [--no-thread] [--no-header] \\",
++		"         [--no-summary] [--no-index] [--with-zeros]",
+ 		"",
+ 		"	  -h/--help: print this menu",
++		"	  -a/--auto: set automatic trace mode, stopping the session if argument in us latency is hit",
+ 		"	  -p/--period us: timerlat period in us",
+ 		"	  -i/--irq us: stop trace if the irq latency is higher than the argument in us",
+ 		"	  -T/--thread us: stop trace if the thread latency is higher than the argument in us",
+@@ -477,6 +478,7 @@ static struct timerlat_hist_params
+ *timerlat_hist_parse_args(int argc, char *argv[])
+ {
+ 	struct timerlat_hist_params *params;
++	int auto_thresh;
+ 	int retval;
+ 	int c;
  
-+/*
-+ * trace_event_add_filter - record an event filter
-+ */
-+int trace_event_add_filter(struct trace_events *event, char *filter)
-+{
-+	if (event->filter)
-+		free(event->filter);
-+
-+	event->filter = strdup(filter);
-+	if (!event->filter)
-+		return 1;
-+
-+	return 0;
-+}
-+
- /*
-  * trace_event_add_trigger - record an event trigger action
-  */
-@@ -252,6 +269,33 @@ int trace_event_add_trigger(struct trace_events *event, char *trigger)
- 	return 0;
- }
+@@ -491,6 +493,7 @@ static struct timerlat_hist_params
  
-+/*
-+ * trace_event_disable_filter - disable an event filter
-+ */
-+static void trace_event_disable_filter(struct trace_instance *instance,
-+				       struct trace_events *tevent)
-+{
-+	char filter[1024];
-+	int retval;
-+
-+	if (!tevent->filter)
-+		return;
-+
-+	if (!tevent->filter_enabled)
-+		return;
-+
-+	debug_msg("Disabling %s:%s filter %s\n", tevent->system,
-+		  tevent->event ? : "*", tevent->filter);
-+
-+	snprintf(filter, 1024, "!%s\n", tevent->filter);
-+
-+	retval = tracefs_event_file_write(instance->inst, tevent->system,
-+					  tevent->event, "filter", filter);
-+	if (retval < 0)
-+		err_msg("Error disabling %s:%s filter %s\n", tevent->system,
-+			tevent->event ? : "*", tevent->filter);
-+}
-+
- /*
-  * trace_event_disable_trigger - disable an event trigger
-  */
-@@ -293,6 +337,7 @@ void trace_events_disable(struct trace_instance *instance,
- 	while (tevent) {
- 		debug_msg("Disabling event %s:%s\n", tevent->system, tevent->event ? : "*");
- 		if (tevent->enabled) {
-+			trace_event_disable_filter(instance, tevent);
- 			trace_event_disable_trigger(instance, tevent);
- 			tracefs_event_disable(instance->inst, tevent->system, tevent->event);
- 		}
-@@ -302,6 +347,41 @@ void trace_events_disable(struct trace_instance *instance,
- 	}
- }
+ 	while (1) {
+ 		static struct option long_options[] = {
++			{"auto",		required_argument,	0, 'a'},
+ 			{"cpus",		required_argument,	0, 'c'},
+ 			{"bucket-size",		required_argument,	0, 'b'},
+ 			{"debug",		no_argument,		0, 'D'},
+@@ -516,7 +519,7 @@ static struct timerlat_hist_params
+ 		/* getopt_long stores the option index here. */
+ 		int option_index = 0;
  
-+/*
-+ * trace_event_enable_filter - enable an event filter associated with an event
-+ */
-+static int trace_event_enable_filter(struct trace_instance *instance,
-+				     struct trace_events *tevent)
-+{
-+	char filter[1024];
-+	int retval;
-+
-+	if (!tevent->filter)
-+		return 0;
-+
-+	if (!tevent->event) {
-+		err_msg("Filter %s applies only for single events, not for all %s:* events\n",
-+			tevent->filter, tevent->system);
-+		return 1;
-+	}
-+
-+	snprintf(filter, 1024, "%s\n", tevent->filter);
-+
-+	debug_msg("Enabling %s:%s filter %s\n", tevent->system,
-+		  tevent->event ? : "*", tevent->filter);
-+
-+	retval = tracefs_event_file_write(instance->inst, tevent->system,
-+					  tevent->event, "filter", filter);
-+	if (retval < 0) {
-+		err_msg("Error enabling %s:%s filter %s\n", tevent->system,
-+			tevent->event ? : "*", tevent->filter);
-+		return 1;
-+	}
-+
-+	tevent->filter_enabled = 1;
-+	return 0;
-+}
-+
- /*
-  * trace_event_enable_trigger - enable an event trigger associated with an event
-  */
-@@ -356,6 +436,9 @@ int trace_events_enable(struct trace_instance *instance,
- 			return 1;
- 		}
+-		c = getopt_long(argc, argv, "c:b:d:E:Dhi:np:P:s:t::T:012345",
++		c = getopt_long(argc, argv, "a:c:b:d:E:Dhi:np:P:s:t::T:012345",
+ 				 long_options, &option_index);
  
-+		retval = trace_event_enable_filter(instance, tevent);
-+		if (retval)
-+			return 1;
+ 		/* detect the end of the options. */
+@@ -524,6 +527,19 @@ static struct timerlat_hist_params
+ 			break;
  
- 		retval = trace_event_enable_trigger(instance, tevent);
- 		if (retval)
-diff --git a/tools/tracing/rtla/src/trace.h b/tools/tracing/rtla/src/trace.h
-index 856b26d93064..51ad344c600b 100644
---- a/tools/tracing/rtla/src/trace.h
-+++ b/tools/tracing/rtla/src/trace.h
-@@ -6,8 +6,10 @@ struct trace_events {
- 	struct trace_events *next;
- 	char *system;
- 	char *event;
-+	char *filter;
- 	char *trigger;
- 	char enabled;
-+	char filter_enabled;
- 	char trigger_enabled;
- };
+ 		switch (c) {
++		case 'a':
++			auto_thresh = get_llong_from_str(optarg);
++
++			/* set thread stop to auto_thresh */
++			params->stop_total_us = auto_thresh;
++
++			/* get stack trace */
++			params->print_stack = auto_thresh;
++
++			/* set trace */
++			params->trace_output = "timerlat_trace.txt";
++
++			break;
+ 		case 'c':
+ 			retval = parse_cpu_list(optarg, &params->monitored_cpus);
+ 			if (retval)
+diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
+index d4187f6534ed..aef044832964 100644
+--- a/tools/tracing/rtla/src/timerlat_top.c
++++ b/tools/tracing/rtla/src/timerlat_top.c
+@@ -266,10 +266,11 @@ static void timerlat_top_usage(char *usage)
  
-@@ -43,4 +45,5 @@ void trace_events_destroy(struct trace_instance *instance,
- int trace_events_enable(struct trace_instance *instance,
- 			  struct trace_events *events);
+ 	static const char *const msg[] = {
+ 		"",
+-		"  usage: rtla timerlat [top] [-h] [-q] [-d s] [-D] [-n] [-p us] [-i us] [-T us] [-s us] [-t[=file]] \\",
+-		"	  [-c cpu-list] [-P priority]",
++		"  usage: rtla timerlat [top] [-h] [-q] [-a us] [-d s] [-D] [-n] [-p us] [-i us] [-T us] [-s us] \\",
++		"	  [[-t[=file]] -c cpu-list] [-P priority]",
+ 		"",
+ 		"	  -h/--help: print this menu",
++		"	  -a/--auto: set automatic trace mode, stopping the session if argument in us latency is hit",
+ 		"	  -p/--period us: timerlat period in us",
+ 		"	  -i/--irq us: stop trace if the irq latency is higher than the argument in us",
+ 		"	  -T/--thread us: stop trace if the thread latency is higher than the argument in us",
+@@ -307,6 +308,7 @@ static struct timerlat_top_params
+ *timerlat_top_parse_args(int argc, char **argv)
+ {
+ 	struct timerlat_top_params *params;
++	long long auto_thresh;
+ 	int retval;
+ 	int c;
  
-+int trace_event_add_filter(struct trace_events *event, char *filter);
- int trace_event_add_trigger(struct trace_events *event, char *trigger);
+@@ -319,6 +321,7 @@ static struct timerlat_top_params
+ 
+ 	while (1) {
+ 		static struct option long_options[] = {
++			{"auto",		required_argument,	0, 'a'},
+ 			{"cpus",		required_argument,	0, 'c'},
+ 			{"debug",		no_argument,		0, 'D'},
+ 			{"duration",		required_argument,	0, 'd'},
+@@ -337,7 +340,7 @@ static struct timerlat_top_params
+ 		/* getopt_long stores the option index here. */
+ 		int option_index = 0;
+ 
+-		c = getopt_long(argc, argv, "c:d:Dhi:np:P:qs:t::T:",
++		c = getopt_long(argc, argv, "a:c:d:Dhi:np:P:qs:t::T:",
+ 				 long_options, &option_index);
+ 
+ 		/* detect the end of the options. */
+@@ -345,6 +348,19 @@ static struct timerlat_top_params
+ 			break;
+ 
+ 		switch (c) {
++		case 'a':
++			auto_thresh = get_llong_from_str(optarg);
++
++			/* set thread stop to auto_thresh */
++			params->stop_total_us = auto_thresh;
++
++			/* get stack trace */
++			params->print_stack = auto_thresh;
++
++			/* set trace */
++			params->trace_output = "timerlat_trace.txt";
++
++			break;
+ 		case 'c':
+ 			retval = parse_cpu_list(optarg, &params->monitored_cpus);
+ 			if (retval)
 -- 
 2.35.1
