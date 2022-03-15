@@ -2,88 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43C1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 851A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 20:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351633AbiCOURk (ORCPT
+        id S1351637AbiCOUTK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 16:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        Tue, 15 Mar 2022 16:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234688AbiCOURi (ORCPT
+        with ESMTP id S234688AbiCOUTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 16:17:38 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751CB5AA7C;
-        Tue, 15 Mar 2022 13:16:26 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id r10so180466wrp.3;
-        Tue, 15 Mar 2022 13:16:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IbbjVN0Q8IlfsZ85oniZzYVvKEoAu/4r4JrF1woWNgk=;
-        b=WA364z6v6yFOrho2KuxyZFk72Bcx89l5vi22pwWXWvkxr2NQGEHOzFSIMnE89MyMz2
-         PuG1jahMn97C6QDBCjmxOgUWfR4LR2XH75IU3YS05N8ae+GMYaMAi7DEYmo/V8eV02/d
-         ztHgGSQEjur7eAk5HNusQt+dygxJrKSq4Jsfya28gV37tAUIsd+07HQni3eSFf1xSMu/
-         qqHfGaTabYM4LQ8TCdSyudSAG9z15SvU+ghEYHR9UcYdRXDCdkP05TZRgPv7Zk4MEAVQ
-         +wtefAkkrFstYy7FqpY95JH681HmltLkUDuOShnZLqyU57EDZ+OP1HUsw6BJSjR/U+sf
-         AJgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IbbjVN0Q8IlfsZ85oniZzYVvKEoAu/4r4JrF1woWNgk=;
-        b=AVAC40IuM9C9VTnxv2a2lKu5xuLl58LGUQ2RMSOwFGsI9kHDOjXb4k8MaqwbJlKCiT
-         Sh2Wuo/jtD8WAkH06AZtB74Nr8uEqmemIOArpvFDERYMGeC6ad2I4cJj8DK1u2e50dCt
-         sip4i95nKstpf9NWQ9+UI7HkltmoT//q/9RgsVYVP7/aNBZ26OI6h62Zdyg/XKgspSn/
-         dLExgFwiLEujKZ6RJLN4xYwT0hn6RY2lPxVOTSu7eJN+loGPCBAUNCsH6rme91l6cZML
-         yMs8N2sVRRZtLOG8a3Wk7MzAoMPtVcbyFkmA5Fr3/s5xZXtYHbpwZ/kkAy2NO3naP3ZX
-         qb9w==
-X-Gm-Message-State: AOAM5315WsDPSWakd7/0pwsau5FPpX8VGQO4zPlp81daAK4A5JumPaVu
-        8dhKW5DIORO2WcrWah98p5o=
-X-Google-Smtp-Source: ABdhPJz6x+l/GjODhBBJl0FbUTTh0W8inuyeGHQI1mYX3UpiPbl9wbJZKGDo2fANf0JNfxvVFJlOlg==
-X-Received: by 2002:a5d:525b:0:b0:203:8f00:1a56 with SMTP id k27-20020a5d525b000000b002038f001a56mr19697216wrc.202.1647375384932;
-        Tue, 15 Mar 2022 13:16:24 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id i11-20020a05600c354b00b00389f440512esm3359836wmq.32.2022.03.15.13.16.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 13:16:24 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        sparclinux@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] sparc: Fix spelling mistake "wont" -> "won't"
-Date:   Tue, 15 Mar 2022 20:16:23 +0000
-Message-Id: <20220315201623.2951748-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 15 Mar 2022 16:19:08 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F516DFEB;
+        Tue, 15 Mar 2022 13:17:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
+        bh=JnUa+YRu6mZZPEMLjHBkJ1cwcALvqIyW++Bmuo2cvXs=; b=2fXsfiQkV73mUutJWA7sFKeBeW
+        E3OL9EMestEQlmiD0Fzsx52rTPC01+dtQ2InsC1u8f4GFk7Nh4SKqb8n1OvKqZRRcT6fKkfQOQS2q
+        FrHfUXZ2B9DhV2tZCJ5u2GBm3IDu/OCCEDyr7BdsFKLY92/OUIbNvUSY1SR/HH37y6vjqX/2Fz5xV
+        M3xbO870Xd3AKnJximmfkX9+kJR07Ubt8Hmn2PTJOn5rJl1e43ASEwl2f5io684WV2rqz8s83NyGF
+        8FHdP0PgDIZLxc3G/qszTIzdhHDTMjTgq1BxnXe4ehVHjhz8c4mN+Wo2edllrS/PtAyM/5oZXWN7c
+        rCb3xLLQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUDbz-00AYjf-7H; Tue, 15 Mar 2022 20:17:43 +0000
+Date:   Tue, 15 Mar 2022 13:17:43 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Zhen Ni <nizhen@uniontech.com>
+Subject: Re: linux-next: manual merge of the sysctl tree with the tip tree
+Message-ID: <YjD0Z7UQ0psJT7b0@bombadil.infradead.org>
+References: <20220315201840.6146f234@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220315201840.6146f234@canb.auug.org.au>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a missing contraction hyphen a prom_printf message. Fix it.
+On Tue, Mar 15, 2022 at 08:18:40PM +1100, Stephen Rothwell wrote:
+> Hi all,
+>=20
+> Today's linux-next merge of the sysctl tree got a conflict in:
+>=20
+>   kernel/sched/deadline.c
+>=20
+> between commit:
+>=20
+>   eb77cf1c151c ("sched/deadline: Remove unused def_dl_bandwidth")
+>=20
+> from the tip tree and commit:
+>=20
+>   ebb891f03580 ("sched: Move deadline_period sysctls to deadline.c")
+>=20
+> from the sysctl tree.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- arch/sparc/kernel/leon_smp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Peter,
 
-diff --git a/arch/sparc/kernel/leon_smp.c b/arch/sparc/kernel/leon_smp.c
-index 1eed26d423fb..cf3bddda8bb0 100644
---- a/arch/sparc/kernel/leon_smp.c
-+++ b/arch/sparc/kernel/leon_smp.c
-@@ -135,7 +135,7 @@ static void leon_smp_setbroadcast(unsigned int mask)
- 	    ((LEON3_BYPASS_LOAD_PA(&(leon3_irqctrl_regs->mpstatus)) >>
- 	      LEON3_IRQMPSTATUS_BROADCAST) & 1);
- 	if (!broadcast) {
--		prom_printf("######## !!!! The irqmp-ctrl must have broadcast enabled, smp wont work !!!!! ####### nr cpus: %d\n",
-+		prom_printf("######## !!!! The irqmp-ctrl must have broadcast enabled, smp won't work !!!!! ####### nr cpus: %d\n",
- 		     leon_smp_nrcpus());
- 		if (leon_smp_nrcpus() > 1) {
- 			BUG();
--- 
-2.35.1
+to help avoid conflicts I spinned up a sysctl-next tree to collect
+different cleanups going on kernel/sysctl.c. I can drop=20
+ebb891f03580 ("sched: Move deadline_period sysctls to deadline.c")
+but I think we'd still run into conflicts as other sysctls are
+trimmed out. Would you be OK in me taking in eb77cf1c151c
+("sched/deadline: Remove unused def_dl_bandwidth") to avoid this
+conflict?
 
+  Luis
