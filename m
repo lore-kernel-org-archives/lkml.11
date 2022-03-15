@@ -2,89 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4EFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 23:59:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352675AbiCOX6M (ORCPT
+        id S1352692AbiCPAA6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 19:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42748 "EHLO
+        Tue, 15 Mar 2022 20:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344372AbiCOX6K (ORCPT
+        with ESMTP id S1344372AbiCPAA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 19:58:10 -0400
-X-Greylist: delayed 1419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Mar 2022 16:56:57 PDT
-Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.49.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D38DEA7
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 16:56:57 -0700 (PDT)
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 0100EE1A8
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 18:33:18 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id UGdJn7ENFRnrrUGdJndKgz; Tue, 15 Mar 2022 18:31:17 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=In-Reply-To:Content-Type:MIME-Version:References
-        :Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding
-        :Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=HEFY99UDZaIUfCtZ9L2p6iCk1UNtORB38v8eSsiexn8=; b=Cx6QonKW/5HmkNIbG3vLPCw84t
-        48QEUx3V7Sjmfd34Jr8iorwai7194VBnbzG8pwnbzaj1ceaiEyO+G3YwQdX/SeiuJs3Cz9Z0nnGu+
-        4e/2hHtqJkPlqScJwxpTzb7tP2EzKHjgv9me0esD0rb1H+2uhIfngKh/t5z2HA4zkdXPuVA/Qs7dr
-        lU+6BZzlN0eSdmfPvG0q8phAJ2s/U8/f749Nz57ergPM6r9IVXolwXLhioZFluKDiON8+T/w35d/Y
-        g7FtWEgAJLClfGw6+6GJPeFd/MLMM+LJDdvSX09PPgN0dSYw5rJ+5uXSnX8KkyA2dj8x8mXx7W590
-        GqO2voCw==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:57494 helo=localhost)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nUGdJ-002Y1Q-ER; Tue, 15 Mar 2022 23:31:17 +0000
-Date:   Tue, 15 Mar 2022 16:31:16 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     cgel.zte@gmail.com
-Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] hwmon: (scpi-hwmon): Use of_device_get_match_data()
-Message-ID: <20220315233116.GA4152815@roeck-us.net>
-References: <20220315023412.2118415-1-chi.minghao@zte.com.cn>
+        Tue, 15 Mar 2022 20:00:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C6655750;
+        Tue, 15 Mar 2022 16:59:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F313361537;
+        Tue, 15 Mar 2022 23:59:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FCC8C340E8;
+        Tue, 15 Mar 2022 23:59:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647388783;
+        bh=9b4hTTeP0bR6aPn4lwbDneU/xQj2l5nU58aIBNZnOSY=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=hw5xvUyuMU09/78n9pIJpYJYkgzXnqi279u8niki5jTOGhhNFGXaIaG7MvawTgj7/
+         XdwFQT0HMYISTpkUvALPzJxtcHB1NRvJULZYPq6WCFWS9DTSjJZsogT+B27HN0/y98
+         MRFooug6KIHow/XqbcVyonJyB4oOj3UPdUQ0iYC93dhTj+BG+PNRJCqhGAG+Iod2JJ
+         I5AUrgVHJP4vEmHFfSjLbIAls02GHDCQr7KE8GnBZmqsJoQnB82RFWs+fQsHLsqQTy
+         jbVNT5nIB7g7TyygYi89ov29KlfaNbaL1Ym28m0bsf4nQMUKF9FMn71wHvoaEay1Z8
+         8sSI8kfH5YEOQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315023412.2118415-1-chi.minghao@zte.com.cn>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nUGdJ-002Y1Q-ER
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net (localhost) [108.223.40.66]:57494
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 36
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <8cfd57f01cfb59adb716eb13ca0c8250c246dcb2.1646388139.git.zong.li@sifive.com>
+References: <cover.1646388139.git.zong.li@sifive.com> <8cfd57f01cfb59adb716eb13ca0c8250c246dcb2.1646388139.git.zong.li@sifive.com>
+Subject: Re: [PATCH v2 1/5] clk: sifive: duplicate the macro definitions for the time being
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Zong Li <zong.li@sifive.com>
+To:     Zong Li <zong.li@sifive.com>, devicetree@vger.kernel.org,
+        lee.jones@linaro.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        mturquette@baylibre.com, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, robh+dt@kernel.org
+Date:   Tue, 15 Mar 2022 16:59:40 -0700
+User-Agent: alot/0.10
+Message-Id: <20220315235943.4FCC8C340E8@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 02:34:12AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> Use of_device_get_match_data() to simplify the code.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Quoting Zong Li (2022-03-04 02:03:17)
+> This is a temporary patch in whole patch set. We are going to change the
+> macro name in dt-binding, in order to avoid breaking the driver build
+> and git bisect, add these macro definitions for the time being, and we
+> will remove them later.
+>=20
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> ---
 
-Applied to hwmon-next.
-
-Thanks,
-Guenter
+Applied to clk-next
