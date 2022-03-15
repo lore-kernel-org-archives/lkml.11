@@ -2,74 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D21FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A99C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 17:45:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234528AbiCORqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
+        id S1350707AbiCORqr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 13:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238809AbiCORqF (ORCPT
+        with ESMTP id S238809AbiCORqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 13:46:05 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BB94ECD5;
-        Tue, 15 Mar 2022 10:44:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=+TV4u+fka6NmbVTg8AiuGEnj8KksGrxh2QycKle+auE=; b=mU8BsnmCdFVS0xbV8+QIe5FBhG
-        xnk/PFuUpA6SmByVnVwctQI5JM+09DS6kRPtaE64zXhePkamEy07A5wY/dDDddTUDaZAwsmf0xqrA
-        HLoQt9pzKNHLcNZy3RQ23DY3z1QLlSb1T8bXsXw5BISSL9e5Er0qlCDeILYFfMjqqNZbPiOnsD+TU
-        AdEai8gGPXocgfYC4z7MgsMkJMPQ/EthBZ6Ny9NUmDswqWkP1se19PjnZ/n8kBDd0MGntpVhICZ5W
-        n4A7D8RGbs3vGpkepFccxf0NNDSww8RMVYpl+QLxxrzFS7z/BIyVhdtLWzEKLnts7iqI/Veo4GHMq
-        ZqcBdv/Q==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUBDz-005FDw-Ut; Tue, 15 Mar 2022 17:44:47 +0000
-Date:   Tue, 15 Mar 2022 17:44:47 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Brian Geffon <bgeffon@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Minchan Kim <minchan@kernel.org>,
-        Nitin Gupta <ngupta@vflare.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-doc@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH] zram: Add a huge_idle writeback mode
-Message-ID: <YjDQj9dr34Jpw3cU@casper.infradead.org>
-References: <20220315172221.9522-1-bgeffon@google.com>
- <YjDMo35Q/cvPLkxu@casper.infradead.org>
- <CADyq12yK+qODV2ut1acjwkyXKDbh_YS3MHpRoJaq_g9G1HAyEw@mail.gmail.com>
+        Tue, 15 Mar 2022 13:46:44 -0400
+Received: from mail1.bemta31.messagelabs.com (mail1.bemta31.messagelabs.com [67.219.246.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C72E4F9DF;
+        Tue, 15 Mar 2022 10:45:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=motorola.com;
+        s=Selector; t=1647366330; i=@motorola.com;
+        bh=5E5zxINeV0hdwni5VHVJAAVrPJoXGXxiqslzNvn1vRQ=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:
+         Content-Transfer-Encoding;
+        b=S/7dLSZKO7q9C3Drqhco+gKO2kfp9BF+Svlq8G0SdZgsZJHJc1GVToJRqEI1bZCRY
+         YlXH9bzphBxkPhNhwTDg/m6nGOOjoRwTWPNLsGrEtb0oF1QHVIn4QY0teNXI7ON8+G
+         pOTy/kP1gij4k4TCAVbGLB7r13CnOy+wWBloO05N7sqIgJ2SHUcoTgRJvNQ0yJgJFN
+         HvwntMXi6NjggcENRzR/Mil/u7X8/iAyxZGbV7HNOi9BHMm1dNovMJ8KHpxJLnibmU
+         eoPeE17kes2hYWZqCy9SVOz/6iYt0rfHsZAOYwXfByFqoLZoXUdduA77l66UsrhdJp
+         0Ve/mYzI7zaig==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrIIsWRWlGSWpSXmKPExsUyYU+Ds+6uCwZ
+  JBuuULI61PWG3aF68ns2ic+ISdovLu+awWSxa1spssWDjI0YHNo/ZHTNZPTat6mTz2D93DbvH
+  501yASxRrJl5SfkVCawZixcXF3zjr5i/4SdbA+Mn3i5GLg4hgWlMEjcP9LBCOEuYJO62r2XvY
+  uTkYBNQk1jwehUziC0iICtx+MpvMJtZ4DmjxO9+ZRBbWMBfYseJmYwgNouAqkT77FUsIDavgI
+  XEvG9PwOISAvISp5YdZIKIC0qcnPmEBWKOvETz1tnMExi5ZyFJzUKSWsDItIrRIqkoMz2jJDc
+  xM0fX0MBA19DQRNdE11wvsUo3Ua+0WDc1sbhE11AvsbxYL7W4WK+4Mjc5J0UvL7VkEyMw9FKK
+  WNh3MK7t+al3iFGSg0lJlLew3CBJiC8pP6UyI7E4I76oNCe1+BCjDAeHkgTv7rNAOcGi1PTUi
+  rTMHGAcwKQlOHiURHhXHgNK8xYXJOYWZ6ZDpE4x6nI8vXplL7MQS15+XqqUOG/PeaAiAZCijN
+  I8uBGwmLzEKCslzMvIwMAgxFOQWpSbWYIq/4pRnINRSZj3EsgUnsy8ErhNr4COYAI6Yp60Hsg
+  RJYkIKakGprXfGR7mGBgIzH9fvaX6u6PWlnB/2wkpH1yXhxR8/i2hMeEVq/ZOsUcSh+53JJ0s
+  trbk/yTyTEZHbIszT+DfcNOtnewRVaVi775Mrf417f7Tg+l9ikuizes+SDUdr/078/GM2G3zS
+  tN7S8I371wwjy3svcRSsaoNnzfbuplI27WZvfn44Iee8aQpMkLmjAvail762ovl+YSszxUt5z
+  /vdfvjNj1jfraNQXsf8bpmWpXJs/vtWbXmsqlUFqfX5durYp81ewW5pkrsLVmwZf30yQpJc24
+  e9/p9OFPQ/EdBAKvGKaanfUt22cz0UrAOfHamNFrYlL8hWTtNNWaNata7St3XOrIqjCtrwyZd
+  K21XYinOSDTUYi4qTgQAkRt2mUQDAAA=
+X-Env-Sender: w36195@motorola.com
+X-Msg-Ref: server-5.tower-706.messagelabs.com!1647366329!9570!1
+X-Originating-IP: [144.188.128.67]
+X-SYMC-ESS-Client-Auth: outbound-route-from=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.81.9; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 9506 invoked from network); 15 Mar 2022 17:45:29 -0000
+Received: from unknown (HELO ilclpfpp01.lenovo.com) (144.188.128.67)
+  by server-5.tower-706.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP; 15 Mar 2022 17:45:29 -0000
+Received: from va32lmmrp02.lenovo.com (va32lmmrp02.mot.com [10.62.176.191])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by ilclpfpp01.lenovo.com (Postfix) with ESMTPS id 4KJ15j41nvzfBZq;
+        Tue, 15 Mar 2022 17:45:29 +0000 (UTC)
+Received: from p1g3.. (unknown [10.45.4.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: w36195)
+        by va32lmmrp02.lenovo.com (Postfix) with ESMTPSA id 4KJ15j0VzSzf6Wf;
+        Tue, 15 Mar 2022 17:45:29 +0000 (UTC)
+From:   Dan Vacura <w36195@motorola.com>
+To:     linux-usb@vger.kernel.org
+Cc:     stable@vger.kernel.org, Dan Vacura <w36195@motorola.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] usb: gadget: uvc: Fix crash when encoding data for usb request
+Date:   Tue, 15 Mar 2022 12:41:46 -0500
+Message-Id: <20220315174146.27155-1-w36195@motorola.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADyq12yK+qODV2ut1acjwkyXKDbh_YS3MHpRoJaq_g9G1HAyEw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 01:34:21PM -0400, Brian Geffon wrote:
-> On Tue, Mar 15, 2022 at 1:28 PM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Tue, Mar 15, 2022 at 10:22:21AM -0700, Brian Geffon wrote:
-> > > Today it's only possible to write back as a page, idle, or huge.
-> > > A user might want to writeback pages which are huge and idle first
-> > > as these idle pages do not require decompression and make a good
-> > > first pass for writeback.
-> >
-> > We're moving towards having many different sizes of page in play,
-> > not just PMD and PTE sizes.  Is this patch actually a good idea in
-> > a case where we have, eg, a 32kB anonymous page on a system with 4kB
-> > pages?  How should zram handle this case?  What's our cut-off for
-> > declaring a page to be "huge"?
-> >
-> 
-> Huge isn't a great term IMO, but it is what it is. ZRAM_HUGE is used
-> to identify pages which are incompressible. Since zram is a block
-> device which presents PAGE_SIZED blocks, do these new changes which
-> involve many different page sizes matter as that seems orthogonal to
-> the block subsystem. Correct me if I'm misunderstanding.
+During the uvcg_video_pump() process, if an error occurs and
+uvcg_queue_cancel() is called, the buffer queue will be cleared out, but
+the current marker (queue->buf_used) of the active buffer (no longer
+active) is not reset. On the next iteration of uvcg_video_pump() the
+stale buf_used count will be used and the logic of min((unsigned
+int)len, buf->bytesused - queue->buf_used) may incorrectly calculate a
+nbytes size, causing an invalid memory access.
 
-Oh, so ZRAM's concept of huge is not the same as the "huge" in
-"hugetlbfs" or "THP"?  That's not at all confusing ...
+[80802.185460][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+[80802.185519][  T315] configfs-gadget gadget: uvc: VS request completed
+with status -18.
+...
+uvcg_queue_cancel() is called and the queue is cleared out, but the
+marker queue->buf_used is not reset.
+...
+[80802.262328][ T8682] Unable to handle kernel paging request at virtual
+address ffffffc03af9f000
+...
+...
+[80802.263138][ T8682] Call trace:
+[80802.263146][ T8682]  __memcpy+0x12c/0x180
+[80802.263155][ T8682]  uvcg_video_pump+0xcc/0x1e0
+[80802.263165][ T8682]  process_one_work+0x2cc/0x568
+[80802.263173][ T8682]  worker_thread+0x28c/0x518
+[80802.263181][ T8682]  kthread+0x160/0x170
+[80802.263188][ T8682]  ret_from_fork+0x10/0x18
+[80802.263198][ T8682] Code: a8c12829 a88130cb a8c130
+
+Signed-off-by: Dan Vacura <w36195@motorola.com>
+---
+ drivers/usb/gadget/function/uvc_queue.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
+index d852ac9e47e7..2cda982f3765 100644
+--- a/drivers/usb/gadget/function/uvc_queue.c
++++ b/drivers/usb/gadget/function/uvc_queue.c
+@@ -264,6 +264,8 @@ void uvcg_queue_cancel(struct uvc_video_queue *queue, int disconnect)
+ 		buf->state = UVC_BUF_STATE_ERROR;
+ 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
+ 	}
++	queue->buf_used = 0;
++
+ 	/* This must be protected by the irqlock spinlock to avoid race
+ 	 * conditions between uvc_queue_buffer and the disconnection event that
+ 	 * could result in an interruptible wait in uvc_dequeue_buffer. Do not
+-- 
+2.32.0
+
