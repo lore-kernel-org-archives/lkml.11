@@ -2,97 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3DCC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 07:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345687AbiCOHxu (ORCPT
+        id S1345697AbiCOHyf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 03:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
+        Tue, 15 Mar 2022 03:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345685AbiCOHxq (ORCPT
+        with ESMTP id S245033AbiCOHyd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 03:53:46 -0400
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6714BB9F;
-        Tue, 15 Mar 2022 00:52:35 -0700 (PDT)
-Received: by mail-qv1-f53.google.com with SMTP id im7so14425392qvb.4;
-        Tue, 15 Mar 2022 00:52:35 -0700 (PDT)
+        Tue, 15 Mar 2022 03:54:33 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C2BE0C9
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:53:21 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id y142so1396161ybe.11
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 00:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9fx9f/dGI0jG5qMZR80BsY4AEIW3adegKwssDhY/VxU=;
+        b=X3kXd8IgVsb6phSuLDtCPMN6ZSj5LyxjrsIZNHgQ1y74uWx+8ke/pSvk5/wrAfN+AV
+         lwpxSb95g8tsy1IKUKROLcWljPhTXP8G8CdfQvYCYBCD4WKDaNM1W7gd26JURACTcKTK
+         U3+872+E2nf2ZnX6YFLLKzHo1LqglmwIRHhnzsh/9xpK3F76XwIov/1a/2/lc3AjvK3y
+         WJ3CsWyLfDSnxyYDTEkXFcjTEtAy0l249WxSCqLrNslHL2R5ohpXwQGVELyaSdGfbjGW
+         r8S2HA/zPdzeDW0xO6HOu5NqHdJUdjPlrWCCjkMuxlduawfSy2iACKrnAHZi4WI2RqB9
+         NLBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dLrWH/HTunHeNVedUT22wD7fuCnOVdEr3MibPq0EL+Y=;
-        b=bWDLP7LVucTaZ+It9568Zs7W5OTWxw7DW+8xLKUZEKGn0R1EAroa5aFzxG3cyA7a1G
-         BwwHES9sGgP/YCvi/AeygU0mADEdt5D8t3dQEHan42mZEfOsNMmnLUeYuH5cuRlJhw+C
-         5400yDWKDBMnAh2M4kjaZwMQtL1hxTviAkse1E9GeTHum18CVZetkfYQ4o0CN5OE09tc
-         8/ctSX2WfPrM8D2XNWMeLrmZp0EstKP4IDOa2TaFaljJ3mjei5LnZh4EB025ohQEs4GH
-         IV5Fi/KpLHiavcQZz7PrF48uB4UYT2gtsfkjjhCTODZTIKNh2k1YXzIxKBsoycxibWjq
-         uCig==
-X-Gm-Message-State: AOAM533lGPKVvQMJjNJK+mQNgYmus+VWuClic/3GtmziNcYFmiA/pZik
-        uz/j9J6QYVaAeHE7AOwXy+RA2MRoHR+mSw==
-X-Google-Smtp-Source: ABdhPJwnGOcVjQQdgTn6iyrfVUcGkW82/pSUkvILuxFkyhghLPZibE7XkFBL83fx/k8/SBfUFiokzQ==
-X-Received: by 2002:ad4:5b81:0:b0:440:a6f5:1fc3 with SMTP id 1-20020ad45b81000000b00440a6f51fc3mr7820809qvp.57.1647330754021;
-        Tue, 15 Mar 2022 00:52:34 -0700 (PDT)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id n8-20020ac85a08000000b002e06aa02021sm12770033qta.49.2022.03.15.00.52.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 00:52:33 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id t11so3941506ybi.6;
-        Tue, 15 Mar 2022 00:52:33 -0700 (PDT)
-X-Received: by 2002:a25:bc8f:0:b0:628:8649:5c4b with SMTP id
- e15-20020a25bc8f000000b0062886495c4bmr21295331ybk.207.1647330753044; Tue, 15
- Mar 2022 00:52:33 -0700 (PDT)
+        bh=9fx9f/dGI0jG5qMZR80BsY4AEIW3adegKwssDhY/VxU=;
+        b=2xIKuvJ6N0rcRjGCxNPG4BKnOlfLGV91f6S2r7+JBCgGVClLPDI81YAERw8WbagWfY
+         Y3VcTr37ZupbSWmtiKNf4SmF6OC6hKvrjt0EmyJC2EglU3P5oBAmKoEhNTnD+9qRR7ao
+         HLyGRWgB6rcfumYZ6mxpPIISexl1X8hPtWWv8ttV/zw9JKz+uVzksoH6BfCVx34SSfvV
+         lkU0vpU21kEQYmkbTCQGihjUUWNubJToKHZheRCQZfWpxO3PnaV6gXrnAvtj/hiRhIwD
+         y4fxXVXIlUMYn4bsf7dJg0hCq3z2QK/thdPNVle9OymC6K14NO1N3NNpWNhJf4tx+agB
+         i8oQ==
+X-Gm-Message-State: AOAM530mfYOaJv5Mkv9256z33qKcwJCrqg8yCvj1TXz4EPFGSXhjXdvK
+        Uwwaz6k1yx6zJeZiYEreG1diGbOKzKCtisK3YtqBgXZZQNVWhnDM
+X-Google-Smtp-Source: ABdhPJxOY+Gd7fbyVQ1ZM8TF+hRcSWHjS8y0g3Rs/rRlJp/i6LSmbPejo0CMOLJoPxKwDrAWMN6zwhZl7EOhjTmKxxw=
+X-Received: by 2002:a25:dc4:0:b0:629:2337:f9ea with SMTP id
+ 187-20020a250dc4000000b006292337f9eamr21531864ybn.6.1647330800437; Tue, 15
+ Mar 2022 00:53:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1646683502.git.geert@linux-m68k.org> <8d3c0cc370b0214244b01a64c588e5e506531716.1646683502.git.geert@linux-m68k.org>
- <CAMuHMdVq19wpA_7nKKTm-G2EmK3cMxxP6nbR_u=vkazqCZ=KhQ@mail.gmail.com>
- <20220314170539.17400f93@eldfell> <CAMuHMdVj8wxAVbcov1wFsgt_knMkcySBH8nMoKjyr=G+mLQmjQ@mail.gmail.com>
- <1f915fcc-1d95-99d1-c7b7-dc4e3b49e09f@linux-m68k.org> <20220315093250.71352a56@eldfell>
- <CAMuHMdVU=JKwEn-=Wf3CYObtaLt2T7NmWrXUwdPHdvNsbgge=g@mail.gmail.com>
-In-Reply-To: <CAMuHMdVU=JKwEn-=Wf3CYObtaLt2T7NmWrXUwdPHdvNsbgge=g@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 15 Mar 2022 08:52:21 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUOwVLBLmxaVUO4yADVCf1k7CyhBZiesHx2Fr4LW3QWMQ@mail.gmail.com>
-Message-ID: <CAMuHMdUOwVLBLmxaVUO4yADVCf1k7CyhBZiesHx2Fr4LW3QWMQ@mail.gmail.com>
-Subject: Re: [PATCH v2 05/10] drm/fourcc: Add DRM_FORMAT_C[124]
-To:     Pekka Paalanen <ppaalanen@gmail.com>
-Cc:     Finn Thain <fthain@linux-m68k.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Helge Deller <deller@gmx.de>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        "Linux/m68k" <linux-m68k@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220302082718.32268-1-songmuchun@bytedance.com>
+ <20220302082718.32268-6-songmuchun@bytedance.com> <CAPcyv4hsMWe1AreVVhGJD-St3FGtGBMeA-BX7XbA_kVX97tw4Q@mail.gmail.com>
+ <CAMZfGtUmhcryboPdRC7ZhWVuV3TX0rLcKUxhvamAGbHUoATaow@mail.gmail.com> <CAPcyv4gdP+FSsQW2+W3+NKNGnM3fAfF3d=ZxuCDc+r_AnRBCUg@mail.gmail.com>
+In-Reply-To: <CAPcyv4gdP+FSsQW2+W3+NKNGnM3fAfF3d=ZxuCDc+r_AnRBCUg@mail.gmail.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Tue, 15 Mar 2022 15:51:31 +0800
+Message-ID: <CAMZfGtX1tgMQX3iCMO_x=HG1y2c21038YQUWuSzhaO2miUTLcA@mail.gmail.com>
+Subject: Re: [PATCH v4 5/6] dax: fix missing writeprotect the pte entry
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alistair Popple <apopple@nvidia.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Hugh Dickins <hughd@google.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Ross Zwisler <zwisler@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 8:51 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > Also, when drm_fourcc.h is describing pixel formats, it needs to
-> > consider only how a little-endian CPU accesses them. That's how pixel
-> > data in memory is described. Display hardware plays no part in that.
-> > It is the driver's job to expose the pixel formats that match display
-> > hardware behaviour.
+On Tue, Mar 15, 2022 at 4:50 AM Dan Williams <dan.j.williams@intel.com> wrote:
 >
-> But if the "CPU format" does not match the "display support",
+> On Fri, Mar 11, 2022 at 1:06 AM Muchun Song <songmuchun@bytedance.com> wrote:
+> >
+> > On Thu, Mar 10, 2022 at 8:59 AM Dan Williams <dan.j.williams@intel.com> wrote:
+> > >
+> > > On Wed, Mar 2, 2022 at 12:30 AM Muchun Song <songmuchun@bytedance.com> wrote:
+> > > >
+> > > > Currently dax_mapping_entry_mkclean() fails to clean and write protect
+> > > > the pte entry within a DAX PMD entry during an *sync operation. This
+> > > > can result in data loss in the following sequence:
+> > > >
+> > > >   1) process A mmap write to DAX PMD, dirtying PMD radix tree entry and
+> > > >      making the pmd entry dirty and writeable.
+> > > >   2) process B mmap with the @offset (e.g. 4K) and @length (e.g. 4K)
+> > > >      write to the same file, dirtying PMD radix tree entry (already
+> > > >      done in 1)) and making the pte entry dirty and writeable.
+> > > >   3) fsync, flushing out PMD data and cleaning the radix tree entry. We
+> > > >      currently fail to mark the pte entry as clean and write protected
+> > > >      since the vma of process B is not covered in dax_entry_mkclean().
+> > > >   4) process B writes to the pte. These don't cause any page faults since
+> > > >      the pte entry is dirty and writeable. The radix tree entry remains
+> > > >      clean.
+> > > >   5) fsync, which fails to flush the dirty PMD data because the radix tree
+> > > >      entry was clean.
+> > > >   6) crash - dirty data that should have been fsync'd as part of 5) could
+> > > >      still have been in the processor cache, and is lost.
+> > >
+> > > Excellent description.
+> > >
+> > > >
+> > > > Just to use pfn_mkclean_range() to clean the pfns to fix this issue.
+> > >
+> > > So the original motivation for CONFIG_FS_DAX_LIMITED was for archs
+> > > that do not have spare PTE bits to indicate pmd_devmap(). So this fix
+> > > can only work in the CONFIG_FS_DAX_LIMITED=n case and in that case it
+> > > seems you can use the current page_mkclean_one(), right?
+> >
+> > I don't know the history of CONFIG_FS_DAX_LIMITED.
+> > page_mkclean_one() need a struct page associated with
+> > the pfn,  do the struct pages exist when CONFIG_FS_DAX_LIMITED
+> > and ! FS_DAX_PMD?
+>
+> CONFIG_FS_DAX_LIMITED was created to preserve some DAX use for S390
+> which does not have CONFIG_ARCH_HAS_PTE_DEVMAP. Without PTE_DEVMAP
+> then get_user_pages() for DAX mappings fails.
+>
+> To your question, no, there are no pages at all in the
+> CONFIG_FS_DAX_LIMITED=y case. So page_mkclean_one() could only be
+> deployed for PMD mappings, but I think it is reasonable to just
+> disable PMD mappings for the CONFIG_FS_DAX_LIMITED=y case.
+>
+> Going forward the hope is to remove the ARCH_HAS_PTE_DEVMAP
+> requirement for DAX, and use PTE_SPECIAL for the S390 case. However,
+> that still wants to have 'struct page' availability as an across the
+> board requirement.
 
-s/support/format/
+Got it. Thanks for your patient explanation.
 
-> all pixel data must be converted?
+>
+> > If yes, I think you are right. But I don't
+> > see this guarantee. I am not familiar with DAX code, so what am
+> > I missing here?
+>
+> Perhaps I missed a 'struct page' dependency? I thought the bug you are
+> fixing only triggers in the presence of PMDs. The
 
-Gr{oetje,eeting}s,
+Right.
 
-                        Geert
+> CONFIG_FS_DAX_LIMITED=y case can still use the current "page-less"
+> mkclean path for PTEs.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+But I think introducing pfn_mkclean_range() could make the code
+simple and easy to maintain here since it could handle both PTE
+and PMD mappings.  And page_vma_mapped_walk() could work
+on PFNs since commit [1], which is the case here, we do not need
+extra code to handle the page-less case here.  What do you
+think?
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=b786e44a4dbfe64476e7120ec7990b89a37be37d
