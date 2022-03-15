@@ -2,195 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9667DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F1BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 05:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344907AbiCOFNS (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 01:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        id S239536AbiCOFPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 01:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344851AbiCOFMV (ORCPT
+        with ESMTP id S235603AbiCOFPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 01:12:21 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350304924A
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:11:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647321070; x=1678857070;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6uSpqGl1pbsEqnfIlo3vVDu6SwoYiBP9Hzf6kLLgWR8=;
-  b=d9CYuwcTPTkqpN8Munh15JCMAam9CC9OQHu+6q9cM9/yQiUNvjQInBeq
-   BpPhFDZvLJ99s0jsXx8atZwYoraF/IrqROn3+Ixd71q/GygZElT6+XzsJ
-   KagRk0viMHoC+LDq4/z26xwyIoWsk6LMJKibFplDUEnbzUhMvo9CZGG3v
-   Q1vwWuvRHrl+OvX5Mxxo2EkLkzB0WRDGvskOceC2FdjFxY3yt9JnVpGhC
-   5I6EJJOhk/KY7+kC9jFiBX3yxOdgf83fd0np42N1rJkfRqxoYsrCaYbPo
-   qIc92tXKU5jXDFQeRI+CNoaHKH8STIO+tCIxi8bA0A05XQvu2kYRYoEG1
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236159110"
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="236159110"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 22:04:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,182,1643702400"; 
-   d="scan'208";a="580383598"
-Received: from otc-wp-03.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.79])
-  by orsmga001.jf.intel.com with ESMTP; 14 Mar 2022 22:04:00 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     iommu@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "Christoph Hellwig" <hch@infradead.org>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>
-Cc:     Jacob Pan <jacob.jun.pan@intel.com>,
-        Raj Ashok <ashok.raj@intel.com>,
-        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Zanussi, Tom" <tom.zanussi@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
-Subject: [PATCH v2 9/9] dmaengine: idxd: separate user and kernel pasid enabling
-Date:   Mon, 14 Mar 2022 22:07:13 -0700
-Message-Id: <20220315050713.2000518-10-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
-References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+        Tue, 15 Mar 2022 01:15:08 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F48D19C2C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:13:57 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id j2so35259868ybu.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Mar 2022 22:13:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Lc1nf94W/TLnN7k8lllOm1GaracYb8kbi0+aQJW5wnI=;
+        b=z3RoeVw7Bp5VB2AoMwf4OP/c8IrVaH+TXzQHAmXJxEN1PxY3S22zbE8+23GJalGxdi
+         BW+5s+s98pEROs36nBMRZGnsoJGPsqsh+SEgHHM5I1+1u5EbIZB482K0lNR8DALayuSu
+         qdNFnPdzPc6IXP2WOZ4MIIMs0IPxxiUrS3R4XW45IZgZvUuTnV2tnz3yGeZjNbsLpAxV
+         M2JK437McA89Y1wGaTl+ZbTRlvszaGFAvr6w4ZPcTWveRbSe3cEco1iSEpH0qIY+S2jv
+         qniUhXuXUJzLknlFf/OhjDqezE2sW2ulAB2nlDluGvdaY0SOz4/vV+sWcDRQUkEkdAxb
+         lG4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Lc1nf94W/TLnN7k8lllOm1GaracYb8kbi0+aQJW5wnI=;
+        b=mSueaQ7CCY728Eq6B6s3rZR1U8aMdcAkt8r+3d9sEuT+fcGyjgHOPeZ1VPPdc/7/j7
+         r2z0XoafO4PhZK3r60o9ZkY9/0dyPWDTzjz2GezPGTW+xRWRK/y1lroIPx2a8NFCxSvP
+         RxUwQ/Zx9IezXINiR0z/ho4DpYCkOIhCmFHIWelh0xroHhcAjPx2Q/40iA17azY7c2Z8
+         FwVKO79gU9Ed877w8Z48Phgqn92TQovUjfhiu+HT+l9IAMdJVEgCOqNoG1ckCyYgXlfX
+         6DEgYX/i/g0KsNbQrWaeqWkUlvq7OxOI0e/VGLU7J0jzGr7aiHRw2hPm5wxNJ8unJgR+
+         KrAA==
+X-Gm-Message-State: AOAM531UUfBdPUoUpZO9k6nDgdPDWKIekM5A6rXZKhsOhHXCbrKVNqP+
+        xdMHitY38dUvLf36rGg8t8ZQrqUiDWSabEdqchbGhKhivPgB2nej
+X-Google-Smtp-Source: ABdhPJyuVoU/6qj8X+qwLmQatTi35YRBySZ8AMB/W0s8Igi4DVjVWbkxFIgId8BrAmWcqWtv6/dsEoMyNyX0wKTO/0s=
+X-Received: by 2002:a25:338b:0:b0:610:a221:af23 with SMTP id
+ z133-20020a25338b000000b00610a221af23mr22249848ybz.474.1647321236157; Mon, 14
+ Mar 2022 22:13:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220314112743.029192918@linuxfoundation.org>
+In-Reply-To: <20220314112743.029192918@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 15 Mar 2022 10:43:44 +0530
+Message-ID: <CA+G9fYvEFbGsrz-tXo_sqxC6E5MjKPYjxU6BpiGdfA+hKnzBag@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/110] 5.15.29-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+On Mon, 14 Mar 2022 at 17:36, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.29 release.
+> There are 110 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 16 Mar 2022 11:27:22 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.29-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-The idxd driver always gated the pasid enabling under a single knob and
-this assumption is incorrect. The pasid used for kernel operation can be
-independently toggled and has no dependency on the user pasid (and vice
-versa). Split the two so they are independent "enabled" flags.
 
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/dma/idxd/cdev.c |  4 ++--
- drivers/dma/idxd/idxd.h |  6 ++++++
- drivers/dma/idxd/init.c | 30 ++++++++++++++++++------------
- 3 files changed, 26 insertions(+), 14 deletions(-)
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
-index 312ec37ebf91..addaebca7683 100644
---- a/drivers/dma/idxd/cdev.c
-+++ b/drivers/dma/idxd/cdev.c
-@@ -99,7 +99,7 @@ static int idxd_cdev_open(struct inode *inode, struct file *filp)
- 	ctx->wq = wq;
- 	filp->private_data = ctx;
- 
--	if (device_pasid_enabled(idxd)) {
-+	if (device_user_pasid_enabled(idxd)) {
- 		sva = iommu_sva_bind_device(dev, current->mm);
- 		if (IS_ERR(sva)) {
- 			rc = PTR_ERR(sva);
-@@ -152,7 +152,7 @@ static int idxd_cdev_release(struct inode *node, struct file *filep)
- 	if (wq_shared(wq)) {
- 		idxd_device_drain_pasid(idxd, ctx->pasid);
- 	} else {
--		if (device_pasid_enabled(idxd)) {
-+		if (device_user_pasid_enabled(idxd)) {
- 			/* The wq disable in the disable pasid function will drain the wq */
- 			rc = idxd_wq_disable_pasid(wq);
- 			if (rc < 0)
-diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
-index a09ab4a6e1c1..190b08bd7c08 100644
---- a/drivers/dma/idxd/idxd.h
-+++ b/drivers/dma/idxd/idxd.h
-@@ -239,6 +239,7 @@ enum idxd_device_flag {
- 	IDXD_FLAG_CONFIGURABLE = 0,
- 	IDXD_FLAG_CMD_RUNNING,
- 	IDXD_FLAG_PASID_ENABLED,
-+	IDXD_FLAG_USER_PASID_ENABLED,
- };
- 
- struct idxd_dma_dev {
-@@ -468,6 +469,11 @@ static inline bool device_pasid_enabled(struct idxd_device *idxd)
- 	return test_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
- }
- 
-+static inline bool device_user_pasid_enabled(struct idxd_device *idxd)
-+{
-+	return test_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
-+}
-+
- static inline bool device_swq_supported(struct idxd_device *idxd)
- {
- 	return (support_enqcmd && device_pasid_enabled(idxd));
-diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
-index 5d1f8dd4abf6..981150b7d09b 100644
---- a/drivers/dma/idxd/init.c
-+++ b/drivers/dma/idxd/init.c
-@@ -500,16 +500,19 @@ static int idxd_probe(struct idxd_device *idxd)
- 
- 	if (IS_ENABLED(CONFIG_INTEL_IDXD_SVM) && sva) {
- 		rc = iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA);
--		if (rc == 0) {
--			rc = idxd_enable_system_pasid(idxd);
--			if (rc < 0) {
--				iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
--				dev_warn(dev, "Failed to enable PASID. No SVA support: %d\n", rc);
--			} else {
--				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
--			}
--		} else {
-+		if (rc) {
-+			/*
-+			 * Do not bail here since legacy DMA is still
-+			 * supported, both user and in-kernel DMA with
-+			 * PASID rely on SVA feature.
-+			 */
- 			dev_warn(dev, "Unable to turn on SVA feature.\n");
-+		} else {
-+			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
-+			if (idxd_enable_system_pasid(idxd))
-+				dev_warn(dev, "No in-kernel DMA with PASID.\n");
-+			else
-+				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
- 		}
- 	}
- 	idxd_read_caps(idxd);
-@@ -545,7 +548,8 @@ static int idxd_probe(struct idxd_device *idxd)
-  err:
- 	if (device_pasid_enabled(idxd))
- 		idxd_disable_system_pasid(idxd);
--	iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
-+	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
-+		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
- 	return rc;
- }
- 
-@@ -558,7 +562,8 @@ static void idxd_cleanup(struct idxd_device *idxd)
- 	idxd_cleanup_internals(idxd);
- 	if (device_pasid_enabled(idxd))
- 		idxd_disable_system_pasid(idxd);
--	iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
-+	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
-+		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
- }
- 
- static int idxd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-@@ -677,7 +682,8 @@ static void idxd_remove(struct pci_dev *pdev)
- 	free_irq(irq_entry->vector, irq_entry);
- 	pci_free_irq_vectors(pdev);
- 	pci_iounmap(pdev, idxd->reg_base);
--	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
-+	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
-+		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
- 	pci_disable_device(pdev);
- 	destroy_workqueue(idxd->wq);
- 	perfmon_pmu_remove(idxd);
--- 
-2.25.1
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+## Build
+* kernel: 5.15.29-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-5.15.y
+* git commit: b411815a8fd9cedbb6922e7601165c67d7abfa43
+* git describe: v5.15.28-111-gb411815a8fd9
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.28-111-gb411815a8fd9
+
+## Test Regressions (compared to v5.15.28)
+No test regressions found.
+
+## Metric Regressions (compared to v5.15.28)
+No metric regressions found.
+
+## Test Fixes (compared to v5.15.28)
+No test fixes found.
+
+## Metric Fixes (compared to v5.15.28)
+No metric fixes found.
+
+## Test result summary
+total: 101285, pass: 86989, fail: 747, skip: 12609, xfail: 940
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 296 total, 293 passed, 3 failed
+* arm64: 47 total, 47 passed, 0 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 45 total, 41 passed, 4 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 41 total, 38 passed, 3 failed
+* parisc: 14 total, 14 passed, 0 failed
+* powerpc: 65 total, 50 passed, 15 failed
+* riscv: 32 total, 27 passed, 5 failed
+* s390: 26 total, 23 passed, 3 failed
+* sh: 26 total, 24 passed, 2 failed
+* sparc: 14 total, 14 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 47 total, 47 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselft[
+* kselftest-
+* kselftest-android
+* kselftest-arm64
+* kselftest-bpf
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-lkdtm
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
