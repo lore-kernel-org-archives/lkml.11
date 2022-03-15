@@ -2,64 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9876BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19740C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347562AbiCOKud (ORCPT
+        id S1347623AbiCOKuh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 06:50:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35138 "EHLO
+        Tue, 15 Mar 2022 06:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348707AbiCOKtt (ORCPT
+        with ESMTP id S1347604AbiCOKsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 06:49:49 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FF6275DC
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 03:48:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bzjITRLip76YCCbU9LHjuc8S4NeB67qbdOXzTfdXcto=; b=Cxx6XNEYTxhqe4+MqJsYyCeMk0
-        FroCDWr4W7byDJSLf+2svEmBPf/wTYIWBX+aOQgdiY4dOm0Kbe/Yjn54vj3/3wpA1KoECbZB7sUkl
-        RVSlVrSaH/FdDQ5ZRcGlXuxTuCnC1IZ6qQyofWa3q6rkHMXiryqzJGer8W9Zwl+GZYGmHdpc+2fDT
-        PSZJMFvHeDBWshJ3kcb3CK1nqetYp+2bCyPhKGsgqXdQBKR3JiytaRppRSYdzhzdij/v5h3HXlTzd
-        74uDZaER6Wlymb3bgZ/X/VRtF3rfT8ixfIu83jzrjy1UsFhjStz/bEWmZ5BuSd+wznOL1uCsuypTQ
-        EOGc0WvA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nU4ix-004x0x-Q0; Tue, 15 Mar 2022 10:48:19 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C38C298620D; Tue, 15 Mar 2022 11:48:17 +0100 (CET)
-Date:   Tue, 15 Mar 2022 11:48:17 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Marco Elver <elver@google.com>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Uladzislau Rezki <uladzislau.rezki@sony.com>,
-        Joel Fernandes <joel@joelfernandes.org>
-Subject: Re: [PATCH 2/3] preempt/dynamic: Introduce preempt mode accessors
-Message-ID: <20220315104817.GE8939@worktop.programming.kicks-ass.net>
-References: <20220314133738.269522-1-frederic@kernel.org>
- <20220314133738.269522-3-frederic@kernel.org>
- <CANpmjNPqY65ZYLFukgp779pHbiRH05yns+G7Z36QdWwrQp1WOQ@mail.gmail.com>
+        Tue, 15 Mar 2022 06:48:00 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3240522D6;
+        Tue, 15 Mar 2022 03:45:02 -0700 (PDT)
+Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KHqlb4ryTz6809b;
+        Tue, 15 Mar 2022 18:44:11 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 15 Mar 2022 11:44:56 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 10:44:53 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <damien.lemoal@opensource.wdc.com>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <bvanassche@acm.org>,
+        <ming.lei@redhat.com>, <hch@lst.de>, <hare@suse.de>
+CC:     <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <martin.wilck@suse.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH 0/2] scsi/libata: A potential tagging fix and improvement
+Date:   Tue, 15 Mar 2022 18:39:04 +0800
+Message-ID: <1647340746-17600-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANpmjNPqY65ZYLFukgp779pHbiRH05yns+G7Z36QdWwrQp1WOQ@mail.gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 03:44:39PM +0100, Marco Elver wrote:
-> https://lore.kernel.org/lkml/20211112185203.280040-3-valentin.schneider@arm.com/
-> 
-> Is it also possible to take all the rest of that series (all 4
-> patches) from Valentin?
+Two loosely related patches are included:
 
-I'll go stick the remaining 3 patches from Valentin in sched/core, they
-seem to still apply without issue.
+- Fix for scsi_realloc_sdev_budget_map(). I noticed that the budget token
+  for scsi commands was way in excess of the device queue depth, so I
+  think we need to fix the sbitmap depth. I need to test this more.
+
+- libata change to use scsi command budget token for qc tag for SAS host.
+  I marked this as RFC as for SAS hosts I don't see anything which
+  guarantees that the budget size is <= 32 always.
+  For libsas hosts we resize the device depth to 32 in the slave configure
+  callback, but this seems an unreliable approach since not all hosts may
+  call this.
+  In addition, I am worried that even if we resize the device depth
+  properly in the slave config callback, we may still try to alloc qc tag
+  prior to this - in lun scan, for example.
+  So we need a way to guarantee that the device queue depth is <= 32
+  always, which I would be open to suggestions for.
+
+John Garry (2):
+  scsi: core: Fix sbitmap depth in scsi_realloc_sdev_budget_map()
+  libata: Use scsi cmnd budget token for qc tag for SAS host
+
+ drivers/ata/libata-core.c |  5 +++--
+ drivers/ata/libata-sata.c | 21 ++++-----------------
+ drivers/ata/libata-scsi.c |  2 +-
+ drivers/ata/libata.h      |  4 ++--
+ drivers/scsi/scsi_scan.c  |  5 +++++
+ include/linux/libata.h    |  1 -
+ 6 files changed, 15 insertions(+), 23 deletions(-)
+
+-- 
+2.26.2
+
