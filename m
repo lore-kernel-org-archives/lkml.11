@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE32C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Mar 2022 08:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346012AbiCOIce (ORCPT
+        id S1346018AbiCOIck (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 04:32:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
+        Tue, 15 Mar 2022 04:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345954AbiCOIcL (ORCPT
+        with ESMTP id S1345982AbiCOIcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 04:32:11 -0400
+        Tue, 15 Mar 2022 04:32:20 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27D64C40F;
-        Tue, 15 Mar 2022 01:30:58 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 08:30:56 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220324C79D;
+        Tue, 15 Mar 2022 01:31:04 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 08:31:01 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647333057;
+        s=2020; t=1647333062;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=9aTs/P1+obr23x07/kcEyux4yGJ7VgnSTxRlcS8hX9Q=;
-        b=A9UGIW+ApAy1QcmZhZm40EDkx568H5c6Nf8it0/z0Eb4XpfoRf0TZiHw5n95aPNnaVqyxB
-        3FJSLSixjZwhkrgeTma1Wmy4PM7mX0sfBGKuGpP3mm2j4f7jTIosNdwf4mVPPzXwaoZ6y4
-        F0xeZ0xngiVwG56/RLz66bSAXpnGCI36DepC7afToqJm3hKHcs7Rj3vmC43Uk85CxQ3Mpo
-        H9wdDQ7FqdJjDJajzdwjT7rpgW/WSbl7PQvpSuoa6KABbSUBn8b/QnMzGaeuI/P/PEJRbE
-        6/5tRw5y/7uLozRYqvZdnNsEqM9YabZbXrNqXHNmmTnmLwLQjic82rMf2vE2hg==
+        bh=naWissguvNUtri6tsWrBs+WCRjQB+bjj9V6hqX3z/E4=;
+        b=B/eYFrzXIUvuYe9ldGUhQQmXug3lw5cYocOBySRgafXGjdoc5xeKGqHl9R/pKNViy4pnMv
+        6s7H+z2qADPlS4JioVFJzqiniYgi1pal/Hz9tl0XbFLWB3WtuePsuwlHoWkbvDEMrvvPkk
+        3IOKqdloBOasjcjrRpZSSGjyKCsMePXwhsqxS2YRx5lzt4ZntqD7jXpC0il7DhSmq7VwIC
+        azyJOByvj5qWdJ+YWjZ88Vwl6YU3U+udNg9ujrF+NZHx3UfkWZfJzV2htpPpNDuk/sWZse
+        FgLf10/ntXbWErwoTitiUoA1Y+pTcfyADvwMClbknfWDd7msBskw4HgAh85XxQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647333057;
+        s=2020e; t=1647333062;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:  content-transfer-encoding:content-transfer-encoding;
-        bh=9aTs/P1+obr23x07/kcEyux4yGJ7VgnSTxRlcS8hX9Q=;
-        b=a3nqu/M0fNK2YQmIZt1aEx91Kzh+qMEeaf7uYGQMNsyhKezwOPirJ+6DfoZVkANlRFT6XT
-        GmOt1mPfT/TudVBQ==
+        bh=naWissguvNUtri6tsWrBs+WCRjQB+bjj9V6hqX3z/E4=;
+        b=6IjR+nPTDryBxrpA8PQV+uXtzN5deqOQTPH6v0D1vcQQIYdZHhHtjo27OsXISp7vOnUdGZ
+        y8r5r9vXAls29KDA==
 From:   "tip-bot2 for Ingo Molnar" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/headers: Reorganize, clean up and optimize
- kernel/sched/core.c dependencies
+Subject: [tip: sched/core] sched/headers: Fix comment typo in
+ kernel/sched/cpudeadline.c
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Message-ID: <164733305635.16921.864659737535928482.tip-bot2@tip-bot2>
+Message-ID: <164733306179.16921.558522391078367688.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -57,128 +57,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     e66f6481a8c748ce2d4b37a3d5e10c4dd0d65e80
-Gitweb:        https://git.kernel.org/tip/e66f6481a8c748ce2d4b37a3d5e10c4dd0d65e80
+Commit-ID:     81de6572fe980a98a1c6c5eacdfd2a9137894f32
+Gitweb:        https://git.kernel.org/tip/81de6572fe980a98a1c6c5eacdfd2a9137894f32
 Author:        Ingo Molnar <mingo@kernel.org>
-AuthorDate:    Wed, 23 Feb 2022 08:17:15 +01:00
+AuthorDate:    Mon, 21 Jun 2021 08:50:48 +02:00
 Committer:     Ingo Molnar <mingo@kernel.org>
 CommitterDate: Wed, 23 Feb 2022 10:58:33 +01:00
 
-sched/headers: Reorganize, clean up and optimize kernel/sched/core.c dependencies
+sched/headers: Fix comment typo in kernel/sched/cpudeadline.c
 
-Use all generic headers from kernel/sched/sched.h that are required
-for it to build.
-
-Sort the sections alphabetically.
+File name changed.
 
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 Reviewed-by: Peter Zijlstra <peterz@infradead.org>
 ---
- kernel/sched/core.c | 81 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 70 insertions(+), 11 deletions(-)
+ kernel/sched/cpudeadline.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 22de537..5eaa421 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -6,7 +6,73 @@
-  *
-  *  Copyright (C) 1991-2002  Linus Torvalds
-  */
-+#include <linux/highmem.h>
-+#include <linux/hrtimer_api.h>
-+#include <linux/ktime_api.h>
-+#include <linux/sched/signal.h>
-+#include <linux/syscalls_api.h>
-+#include <linux/debug_locks.h>
-+#include <linux/prefetch.h>
-+#include <linux/capability.h>
-+#include <linux/pgtable_api.h>
-+#include <linux/wait_bit.h>
-+#include <linux/jiffies.h>
-+#include <linux/spinlock_api.h>
-+#include <linux/cpumask_api.h>
-+#include <linux/lockdep_api.h>
-+#include <linux/hardirq.h>
-+#include <linux/softirq.h>
-+#include <linux/refcount_api.h>
-+#include <linux/topology.h>
-+#include <linux/sched/clock.h>
-+#include <linux/sched/cond_resched.h>
-+#include <linux/sched/debug.h>
-+#include <linux/sched/isolation.h>
-+#include <linux/sched/loadavg.h>
-+#include <linux/sched/mm.h>
-+#include <linux/sched/nohz.h>
-+#include <linux/sched/rseq_api.h>
-+#include <linux/sched/rt.h>
-+
-+#include <linux/blkdev.h>
-+#include <linux/context_tracking.h>
-+#include <linux/cpuset.h>
-+#include <linux/delayacct.h>
-+#include <linux/init_task.h>
-+#include <linux/interrupt.h>
-+#include <linux/ioprio.h>
-+#include <linux/kallsyms.h>
-+#include <linux/kcov.h>
-+#include <linux/kprobes.h>
-+#include <linux/llist_api.h>
-+#include <linux/mmu_context.h>
-+#include <linux/mmzone.h>
-+#include <linux/mutex_api.h>
-+#include <linux/nmi.h>
-+#include <linux/nospec.h>
-+#include <linux/perf_event_api.h>
-+#include <linux/profile.h>
-+#include <linux/psi.h>
-+#include <linux/rcuwait_api.h>
-+#include <linux/sched/wake_q.h>
-+#include <linux/scs.h>
-+#include <linux/slab.h>
-+#include <linux/syscalls.h>
-+#include <linux/vtime.h>
-+#include <linux/wait_api.h>
-+#include <linux/workqueue_api.h>
-+
-+#ifdef CONFIG_PREEMPT_DYNAMIC
-+# include <linux/entry-common.h>
-+#endif
-+
-+#include <uapi/linux/sched/types.h>
-+
-+#include <asm/switch_to.h>
-+#include <asm/tlb.h>
-+
- #define CREATE_TRACE_POINTS
-+#include <linux/sched/rseq_api.h>
- #include <trace/events/sched.h>
- #undef CREATE_TRACE_POINTS
- 
-@@ -14,22 +80,15 @@
- #include "stats.h"
- #include "autogroup.h"
- 
--#include <linux/nospec.h>
--#include <linux/blkdev.h>
--#include <linux/jump_label.h>
--#include <linux/kcov.h>
--#include <linux/scs.h>
--
--#include <asm/switch_to.h>
--#include <asm/tlb.h>
-+#include "autogroup.h"
-+#include "pelt.h"
-+#include "smp.h"
-+#include "stats.h"
- 
- #include "../workqueue_internal.h"
- #include "../../fs/io-wq.h"
- #include "../smpboot.h"
- 
--#include "pelt.h"
--#include "smp.h"
--
+diff --git a/kernel/sched/cpudeadline.c b/kernel/sched/cpudeadline.c
+index ceb03d7..0e196f0 100644
+--- a/kernel/sched/cpudeadline.c
++++ b/kernel/sched/cpudeadline.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
  /*
-  * Export tracepoints that act as a bare tracehook (ie: have no trace event
-  * associated with them) to allow external modules to probe them.
+- *  kernel/sched/cpudl.c
++ *  kernel/sched/cpudeadline.c
+  *
+  *  Global CPU deadline management
+  *
