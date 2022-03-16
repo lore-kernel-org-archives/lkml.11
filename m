@@ -2,115 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FB9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB23EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348543AbiCPUrp (ORCPT
+        id S1358049AbiCPUsS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 16:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
+        Wed, 16 Mar 2022 16:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241060AbiCPUrn (ORCPT
+        with ESMTP id S1358107AbiCPUsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 16:47:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74B125A589
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:46:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647463587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FfhhJ7yUS0yyFlZxS6rDyNHEgGv69Jd6+/vC86VElHk=;
-        b=ZKXfXm+Z4+CyqoG8BgjWkB0MPtbRbiEo8UAHXABX+ygWJhvq9U3p+PNpIpqfQ4H2tbj585
-        PqTT82/rxXqgSzG3c7ZLMH6mSVfTeOZ3h3C4mKP4qBWEvxGJEm/pOmb8/5+o8gYyuWHj2x
-        bilugcd52fcZS6hsOd3W6s7O5goBw5o=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-643-2b-jEkJ2Oiu5dXs8iXX-uw-1; Wed, 16 Mar 2022 16:46:26 -0400
-X-MC-Unique: 2b-jEkJ2Oiu5dXs8iXX-uw-1
-Received: by mail-qt1-f197.google.com with SMTP id q24-20020ac87358000000b002e063c3d15aso2242946qtp.2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:46:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:organization:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=FfhhJ7yUS0yyFlZxS6rDyNHEgGv69Jd6+/vC86VElHk=;
-        b=FoyJY1YyrJ2zJ+l1yAhtl+mTfqQrqr/zU14Jlvbni3zxHmXqg++K/sWhi8yEWPvRh9
-         zkdWl3LLPOPOZ2ENrrSJmNNQNp79aS72G+6u+rke9j3t1BE3HdOV1KMymJMxzI4hDfZX
-         y6mc1C4+NbySs4gci4jv9dCcXeM7FHfSMllB0JelvYtnxbHrkbsV9i+SxbwiSJea83xl
-         G+64Kyz6G1iehfCg00OPW9hw3c5/h9JCyRkGhu03n51pyqVqObmxjjyamBdiUleSfNT8
-         CpLZ0iGXPxoDzW/aC4cxuypkHx99nuKyIvD8UaugnW7WDQgAzHcPH+CfFUqSPUxSooiH
-         smMA==
-X-Gm-Message-State: AOAM531wRa1rqvkm6gSXNMcaFEbn0lcjiNGhhzi5JCUU4hoKOhd3ieTp
-        1kpSapY+lPboP2n2RV66ZH4kSRkVXVMLEgPvsFBRyZyxeWAxJT5Av7RDKzsjffuq+7xvGcA7Q3l
-        KzTg9mQ6GKM43tq+gt40jFd9p
-X-Received: by 2002:a05:6214:2aa8:b0:440:e21a:481e with SMTP id js8-20020a0562142aa800b00440e21a481emr920498qvb.124.1647463585471;
-        Wed, 16 Mar 2022 13:46:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwhGOJ38oQnyB4tkZz/yMIApAMry1UbUhBbTBbzmqYsaCSF25WehrTI7qOdDymlw16Z2KFyKg==
-X-Received: by 2002:a05:6214:2aa8:b0:440:e21a:481e with SMTP id js8-20020a0562142aa800b00440e21a481emr920483qvb.124.1647463585243;
-        Wed, 16 Mar 2022 13:46:25 -0700 (PDT)
-Received: from [192.168.8.138] (pool-96-230-100-15.bstnma.fios.verizon.net. [96.230.100.15])
-        by smtp.gmail.com with ESMTPSA id f185-20020a37d2c2000000b0067e342d5e4dsm416449qkj.105.2022.03.16.13.46.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 13:46:24 -0700 (PDT)
-Message-ID: <473115e2ed01b0d47ae74d29d6f8f66286a78ccb.camel@redhat.com>
-Subject: Re: [PATCH] drm/nouveau: Fix spelling mistake "endianess" ->
- "endianness"
-From:   Lyude Paul <lyude@redhat.com>
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 16 Mar 2022 16:46:23 -0400
-In-Reply-To: <20220315221929.2959700-1-colin.i.king@gmail.com>
-References: <20220315221929.2959700-1-colin.i.king@gmail.com>
-Organization: Red Hat Inc.
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Wed, 16 Mar 2022 16:48:04 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE7F5A598
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:46:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647463609; x=1678999609;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=amVRG1zmPs9HJDAJXGSv/XhAzDgNn5MXqtThTcMFz2o=;
+  b=Yfce87SXPIuEZQ570NZmQ9G6yN7D9rXMKjjo/MVuaBvQkV1QiV0N9Sm8
+   qZojUtiAf4FLqlnG98JSH2cYxyhzQyaxtCZi95O3AnPJ43jf01fbL6oQj
+   apgeoXpFlNvUOrAeIJYcq/9OpuKqLWcbybbOhbHBKG3cW/vSZV2KdLI4W
+   y9dxxOqV1t0RIYRIDdQTVKQLZ0Vb9woS/JQykYzFvUxIPqwH1RqpUoiWY
+   4Wn2mBfifwSrt2wjeaXYcKL74wrpyUbIhdNBYvnWcMsVPh6IllTsqBBsW
+   uT0nn8NtWQ7xA2fvcJD6UL31JjXpNXQPgRNXwo/08tYaiL65hO9vXzjMr
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="237315565"
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="237315565"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 13:46:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="513175592"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 13:46:48 -0700
+Date:   Wed, 16 Mar 2022 13:50:04 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 3/8] iommu/vt-d: Implement device_pasid domain attach
+ ops
+Message-ID: <20220316135004.61ae1611@jacob-builder>
+In-Reply-To: <20220315230457.GO11336@nvidia.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+        <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
+        <20220315143322.GW11336@nvidia.com>
+        <20220315153620.710a30fa@jacob-builder>
+        <20220315230457.GO11336@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Lyude Paul <lyude@redhat.com>
+Hi Jason,
 
-Will push to drm-misc-next in just a moment
+On Tue, 15 Mar 2022 20:04:57 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On Tue, 2022-03-15 at 22:19 +0000, Colin Ian King wrote:
-> There is a spelling mistake in a nvdev_error error message. Fix it.
+> On Tue, Mar 15, 2022 at 03:36:20PM -0700, Jacob Pan wrote:
+> > Hi Jason,
+> > 
+> > On Tue, 15 Mar 2022 11:33:22 -0300, Jason Gunthorpe <jgg@nvidia.com>
+> > wrote: 
+> > > On Mon, Mar 14, 2022 at 10:07:07PM -0700, Jacob Pan wrote:  
+> > > > +	/*
+> > > > +	 * Each domain could have multiple devices attached with
+> > > > shared or per
+> > > > +	 * device PASIDs. At the domain level, we keep track of
+> > > > unique PASIDs and
+> > > > +	 * device user count.
+> > > > +	 * E.g. If a domain has two devices attached, device A has
+> > > > PASID 0, 1;
+> > > > +	 * device B has PASID 0, 2. Then the domain would have
+> > > > PASID 0, 1, 2.
+> > > > +	 */    
+> > > 
+> > > A 2d array of xarray's seems like a poor data structure for this task.
+> > > 
+> > > AFACIT this wants to store a list of (device, pasid) tuples, so a
+> > > simple linked list, 1d xarray vector or a red black tree seems more
+> > > appropriate..
+> > >   
+> > Agreed.
+> > It might need some surgery for dmar_domain and device_domain_info, which
+> > already has a simple device list. I am trying to leverage the existing
+> > data struct, let me take a closer look.  
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  drivers/gpu/drm/nouveau/nvkm/engine/device/base.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Maybe the core code should provide this data structure in the
+> iommu_domain.
 > 
-> diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
-> b/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
-> index 88d262ba648c..62efbd0f3846 100644
-> --- a/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
-> +++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/base.c
-> @@ -2935,7 +2935,7 @@ nvkm_device_ctor(const struct nvkm_device_func *func,
->                 /* switch mmio to cpu's native endianness */
->                 if (!nvkm_device_endianness(device)) {
->                         nvdev_error(device,
-> -                                   "Couldn't switch GPU to CPUs
-> endianess\n");
-> +                                   "Couldn't switch GPU to CPUs
-> endianness\n");
->                         ret = -ENOSYS;
->                         goto done;
->                 }
+> Figuring out what stuff is attached is something every driver has to
+> do right?
+yeah, seems we already have some duplicated device list in vendor domain
+struct, e.g. VT-d's dmar_domain, AMD's protection_domain. Similarly for 
+device_domain_info equivalent.
 
--- 
-Cheers,
- Lyude Paul (she/her)
- Software Engineer at Red Hat
+If core code provides domain-device-pasid tracking, we could do device-pasid
+tracking in ioasid.c, when we support per device PASID allocation, each
+phy device could be an IOASID set, thus its own namespace.
 
+Perhaps, we could do the following: add a device list to struct
+iommu_domain, this will replace vender's domain lists. The data would be
+something like:
+struct iommu_dev_pasid_data {
+	struct list_head list;	  /* For iommu_domain->dev_list */
+	struct ioasid_set *pasids;  /* For the PASIDs used by the device */
+	struct device *dev;
+};
+
+I guess a list of (device, pasid) tuples as you suggested could work but it
+will have duplicated device entries since each device could have multiple
+PASIDs. right?
+
+Have to code this up to see.
+
+Thanks for the pointers,
+
+Jacob
