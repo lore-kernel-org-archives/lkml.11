@@ -2,167 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37374C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39FABC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353644AbiCPFbe (ORCPT
+        id S1350628AbiCPFhY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 01:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43940 "EHLO
+        Wed, 16 Mar 2022 01:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232644AbiCPFb2 (ORCPT
+        with ESMTP id S236651AbiCPFhV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 01:31:28 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A0615DA6F;
-        Tue, 15 Mar 2022 22:30:13 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgC3jqTZdTFiHbsNAA--.45082S2;
-        Wed, 16 Mar 2022 13:30:05 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, ralf@linux-mips.org,
-        jreuter@yaina.de, eric.dumazet@gmail.com,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net V5 2/2] ax25: Fix NULL pointer dereferences in ax25 timers
-Date:   Wed, 16 Mar 2022 13:30:00 +0800
-Message-Id: <20220316053000.130053-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgC3jqTZdTFiHbsNAA--.45082S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAF4rZF48trW3Zw1UCw1Dtrb_yoWrJw4fpF
-        ZFgFWfJr4vqrW5Ar48Grs7JF1Uuw1qq3y5Ar18uF4Sk3Z7Jrn8JFyUtFyUXFWakFZ8AF9r
-        Aw18WasxZF18uaDanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvq1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7km07C267AKxVWUXVWUAw
-        C20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAF
-        wI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjx
-        v20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2
-        jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0x
-        ZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgULAVZdtYslngADsA
+        Wed, 16 Mar 2022 01:37:21 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754C25AA6A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:36:02 -0700 (PDT)
+X-UUID: 545e376079ec40dcaa18c79c1e4a54a3-20220316
+X-UUID: 545e376079ec40dcaa18c79c1e4a54a3-20220316
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <xinlei.lee@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 199440079; Wed, 16 Mar 2022 13:35:43 +0800
+Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 16 Mar 2022 13:35:42 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
+ (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
+ 2022 13:35:41 +0800
+Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
+ MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Wed, 16 Mar 2022 13:35:40 +0800
+From:   <xinlei.lee@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
+        <angelogioacchino.delregno@collabora.com>
+CC:     <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <jitao.shi@mediatek.com>, <rex-bc.chen@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, Xinlei Lee <xinlei.lee@mediatek.com>
+Subject: [PATCH v3,1/3] dt-bindings: display: mediatek: dsi: Convert dsi_dtbinding to .yaml
+Date:   Wed, 16 Mar 2022 13:35:32 +0800
+Message-ID: <1647408934-15775-2-git-send-email-xinlei.lee@mediatek.com>
+X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1647408934-15775-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1647408934-15775-1-git-send-email-xinlei.lee@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are race conditions that may lead to null pointer dereferences in
-ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
-ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we use
-ax25_kill_by_device() to detach the ax25 device.
+From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-One of the race conditions that cause null pointer dereferences can be
-shown as below:
+Convert mediatek,dsi.txt to mediatek,dsi.yaml format
 
-      (Thread 1)                    |      (Thread 2)
-ax25_connect()                      |
- ax25_std_establish_data_link()     |
-  ax25_start_t1timer()              |
-   mod_timer(&ax25->t1timer,..)     |
-                                    | ax25_kill_by_device()
-   (wait a time)                    |  ...
-                                    |  s->ax25_dev = NULL; //(1)
-   ax25_t1timer_expiry()            |
-    ax25->ax25_dev->values[..] //(2)|  ...
-     ...                            |
-
-We set null to ax25_cb->ax25_dev in position (1) and dereference
-the null pointer in position (2).
-
-The corresponding fail log is shown below:
-===============================================================
-BUG: kernel NULL pointer dereference, address: 0000000000000050
-CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.17.0-rc6-00794-g45690b7d0
-RIP: 0010:ax25_t1timer_expiry+0x12/0x40
-...
-Call Trace:
- call_timer_fn+0x21/0x120
- __run_timers.part.0+0x1ca/0x250
- run_timer_softirq+0x2c/0x60
- __do_softirq+0xef/0x2f3
- irq_exit_rcu+0xb6/0x100
- sysvec_apic_timer_interrupt+0xa2/0xd0
-...
-
-If ax25_disconnect() is called by ax25_kill_by_device() or ax25->ax25_dev
-is NULL, the reason in ax25_disconnect() will be equal to ENETUNREACH.
-This patch adds check and uses del_timer_sync() to delete timers in
-ax25_disconnect(), it will wait all timers to stop before we set null
-to ax25_cb->ax25_dev in ax25_kill_by_device().
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
 ---
-Changes in V5:
-  - Add a check and use del_timer_sync() to delete timers in ax25_disconnect().
-  - Based on [PATCH net V5 1/2] ax25: Fix refcount leaks caused by ax25_cb_del().
+ .../display/mediatek/mediatek,dsi.txt         | 62 ------------
+ .../display/mediatek/mediatek,dsi.yaml        | 96 +++++++++++++++++++
+ 2 files changed, 96 insertions(+), 62 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
+ create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
 
- net/ax25/af_ax25.c   |  4 ++--
- net/ax25/ax25_subr.c | 20 ++++++++++++++------
- 2 files changed, 16 insertions(+), 8 deletions(-)
-
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index cf8847cfc66..992b6e5d85d 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -89,20 +89,20 @@ static void ax25_kill_by_device(struct net_device *dev)
- 			sk = s->sk;
- 			if (!sk) {
- 				spin_unlock_bh(&ax25_list_lock);
--				s->ax25_dev = NULL;
- 				ax25_disconnect(s, ENETUNREACH);
-+				s->ax25_dev = NULL;
- 				spin_lock_bh(&ax25_list_lock);
- 				goto again;
- 			}
- 			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
-+			ax25_disconnect(s, ENETUNREACH);
- 			s->ax25_dev = NULL;
- 			if (sk->sk_socket) {
- 				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
- 				ax25_dev_put(ax25_dev);
- 			}
--			ax25_disconnect(s, ENETUNREACH);
- 			release_sock(sk);
- 			spin_lock_bh(&ax25_list_lock);
- 			sock_put(sk);
-diff --git a/net/ax25/ax25_subr.c b/net/ax25/ax25_subr.c
-index 15ab812c4fe..3a476e4f6cd 100644
---- a/net/ax25/ax25_subr.c
-+++ b/net/ax25/ax25_subr.c
-@@ -261,12 +261,20 @@ void ax25_disconnect(ax25_cb *ax25, int reason)
- {
- 	ax25_clear_queues(ax25);
- 
--	if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
--		ax25_stop_heartbeat(ax25);
--	ax25_stop_t1timer(ax25);
--	ax25_stop_t2timer(ax25);
--	ax25_stop_t3timer(ax25);
--	ax25_stop_idletimer(ax25);
-+	if (reason == ENETUNREACH) {
-+		del_timer_sync(&ax25->timer);
-+		del_timer_sync(&ax25->t1timer);
-+		del_timer_sync(&ax25->t2timer);
-+		del_timer_sync(&ax25->t3timer);
-+		del_timer_sync(&ax25->idletimer);
-+	} else {
-+		if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
-+			ax25_stop_heartbeat(ax25);
-+		ax25_stop_t1timer(ax25);
-+		ax25_stop_t2timer(ax25);
-+		ax25_stop_t3timer(ax25);
-+		ax25_stop_idletimer(ax25);
-+	}
- 
- 	ax25->state = AX25_STATE_0;
- 
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
+deleted file mode 100644
+index 36b01458f45c..000000000000
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
++++ /dev/null
+@@ -1,62 +0,0 @@
+-Mediatek DSI Device
+-===================
+-
+-The Mediatek DSI function block is a sink of the display subsystem and can
+-drive up to 4-lane MIPI DSI output. Two DSIs can be synchronized for dual-
+-channel output.
+-
+-Required properties:
+-- compatible: "mediatek,<chip>-dsi"
+-- the supported chips are mt2701, mt7623, mt8167, mt8173 and mt8183.
+-- reg: Physical base address and length of the controller's registers
+-- interrupts: The interrupt signal from the function block.
+-- clocks: device clocks
+-  See Documentation/devicetree/bindings/clock/clock-bindings.txt for details.
+-- clock-names: must contain "engine", "digital", and "hs"
+-- phys: phandle link to the MIPI D-PHY controller.
+-- phy-names: must contain "dphy"
+-- port: Output port node with endpoint definitions as described in
+-  Documentation/devicetree/bindings/graph.txt. This port should be connected
+-  to the input port of an attached DSI panel or DSI-to-eDP encoder chip.
+-
+-Optional properties:
+-- resets: list of phandle + reset specifier pair, as described in [1].
+-
+-[1] Documentation/devicetree/bindings/reset/reset.txt
+-
+-MIPI TX Configuration Module
+-============================
+-
+-See phy/mediatek,dsi-phy.yaml
+-
+-Example:
+-
+-mipi_tx0: mipi-dphy@10215000 {
+-	compatible = "mediatek,mt8173-mipi-tx";
+-	reg = <0 0x10215000 0 0x1000>;
+-	clocks = <&clk26m>;
+-	clock-output-names = "mipi_tx0_pll";
+-	#clock-cells = <0>;
+-	#phy-cells = <0>;
+-	drive-strength-microamp = <4600>;
+-	nvmem-cells= <&mipi_tx_calibration>;
+-	nvmem-cell-names = "calibration-data";
+-};
+-
+-dsi0: dsi@1401b000 {
+-	compatible = "mediatek,mt8173-dsi";
+-	reg = <0 0x1401b000 0 0x1000>;
+-	interrupts = <GIC_SPI 192 IRQ_TYPE_LEVEL_LOW>;
+-	clocks = <&mmsys MM_DSI0_ENGINE>, <&mmsys MM_DSI0_DIGITAL>,
+-		 <&mipi_tx0>;
+-	clock-names = "engine", "digital", "hs";
+-	resets = <&mmsys MT8173_MMSYS_SW0_RST_B_DISP_DSI0>;
+-	phys = <&mipi_tx0>;
+-	phy-names = "dphy";
+-
+-	port {
+-		dsi0_out: endpoint {
+-			remote-endpoint = <&panel_in>;
+-		};
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
+new file mode 100644
+index 000000000000..eb49a7bb6a74
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
+@@ -0,0 +1,96 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/mediatek/mediatek,dsi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek DSI Controller Device Tree Bindings
++
++maintainers:
++  - CK Hu <ck.hu@mediatek.com>
++  - Jitao Shi <jitao.shi@mediatek.com>
++  - Xinlei Lee <xinlei.lee@mediatek.com>
++
++properties:
++  compatible:
++    enum:
++      - mediatek,mt2701-dsi
++      - mediatek,mt8173-dsi
++      - mediatek,mt8183-dsi
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Engine Clock
++      - description: Digital Clock
++      - description: HS Clock
++
++  clock-names:
++    items:
++      - const: engine
++      - const: digital
++      - const: hs
++
++  resets:
++    maxItems: 1
++
++  phys:
++    maxItems: 1
++
++  phy-names:
++    items:
++      - const: dphy
++
++  "#address-cells":
++    const: 2
++
++  "#size-cells":
++    const: 2
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - power-domains
++  - clocks
++  - clock-names
++  - phys
++  - phy-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/phy/phy.h>
++    #include <dt-bindings/reset/mt8183-resets.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        dsi0: dsi@14014000 {
++            compatible = "mediatek,mt8183-dsi";
++            reg = <0 0x14014000 0 0x1000>;
++            interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_LOW>;
++            power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++            clocks = <&mmsys CLK_MM_DSI0_MM>,
++                <&mmsys CLK_MM_DSI0_IF>,
++                <&mipi_tx0>;
++            clock-names = "engine", "digital", "hs";
++            resets = <&mmsys MT8183_MMSYS_SW0_RST_B_DISP_DSI0>;
++            phys = <&mipi_tx0>;
++            phy-names = "dphy";
++        };
++    };
 -- 
-2.17.1
+2.18.0
 
