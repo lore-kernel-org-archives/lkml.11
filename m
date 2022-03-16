@@ -2,71 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72393C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:10:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE673C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358135AbiCPVLv (ORCPT
+        id S1358122AbiCPVLx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 17:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        Wed, 16 Mar 2022 17:11:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355934AbiCPVLn (ORCPT
+        with ESMTP id S1358098AbiCPVLo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 17:11:43 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D5042A16;
-        Wed, 16 Mar 2022 14:10:28 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:35::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id C53FE2CD;
-        Wed, 16 Mar 2022 21:10:27 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net C53FE2CD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1647465027; bh=6PY+oP187Km4X4DENxa30QTAKestJk5QoK9x4lPxiXw=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=kc1Km2RbeQki+bPzH8xgB8YhtJLFbkat9ffYIcuRayQbjxnhYXQoj2ank61Srmfoj
-         DsbzBoPZBH9m8b1R9mD791Xs4GSMHN5UdEybAdtEGhMp/xaeCH7+z0BQ4CMrQLWiYC
-         ZuKdUol8/ew8nNw02U6lzDSIzxpTEcXPc/2Jq4VJNO/my6bdlw/aNcKVI1Y9qwUe6O
-         a1FBuIwBY60lCoi55q4i5tWsmywdd3ky4qaeH4ARiMLfYgmZ7dIh1ScDLiPMzSaApv
-         hYazpkfTdxN2HXQUl35MGEMeflZdpi9Rv0E+7a+gFqJFql/7MNUwtNspJxwnYq8V0k
-         sR9+gcu8DkjDA==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        alex.williamson@redhat.com, kvm@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, jgg@nvidia.com,
-        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
-        yishaih@nvidia.com, linux-doc@vger.kernel.org, hch@infradead.org
-Subject: Re: [PATCH v4] vfio-pci: Provide reviewers and acceptance criteria
- for variant drivers
-In-Reply-To: <164736509088.181560.2887686123582116702.stgit@omen>
-References: <164736509088.181560.2887686123582116702.stgit@omen>
-Date:   Wed, 16 Mar 2022 15:10:27 -0600
-Message-ID: <87wngtsiws.fsf@meer.lwn.net>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Wed, 16 Mar 2022 17:11:44 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557A843394
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:10:28 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so3654189pjl.4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=squareup.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=YuBwkb6Bm2dJygmGjKNMzcQ7V38KULA7oyW33icX/Xs=;
+        b=f2Pkm0+UTgAdPrRxaAeSDHe2Wp9gfhaR7VrH65WjuMJTB8JJEn4ensEPYp3kvebZ/1
+         Iuzewo74EBgaO5auuBP4euHPDcWXtXahB0WhOJ2A6uDo/KeSm6EuFGApxjRLPpwtxYvH
+         k1x1C2KOtBGn46T71xGS0u+hwDMvUxQXmv1XI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=YuBwkb6Bm2dJygmGjKNMzcQ7V38KULA7oyW33icX/Xs=;
+        b=w0t6iFZzwp6IHmA/2RUuSu7hrqb1FSX5mub7nHldd/FuVfWT+y+p+yEyUtMWHquurc
+         6DppeWzI9JkK0OhaN+ZzCZ7geq3OX5fnimOHJGHTTJRRd+w/3tl6T7jiRHjLR2Xev4RM
+         DBnbaIkB3ApEvAVzHkaOicRzqopas6HQ+Q2WWCm/bLZb7+jgvfVg/lJYgaVBbuHsCru5
+         FQv4AOxOrzUOMrDU19+C2xIdoiAkGImFdhZAksnW3+u7CtdZqB1PNfAXNpnARcnX7wla
+         e8sHhjOVgbjzW9pzYdlOqPWcpjUZXsUZs3mhAWYqMgUeDatcO2EdHGmlABkYeINfejfP
+         slsw==
+X-Gm-Message-State: AOAM530c8/k8KdgF2LJ6I7YaayizDHxJFb2JstTfb0IRpzlPyoxhlc+H
+        ECvvXhA4bCWLwt8AQVX2dY6D3Q==
+X-Google-Smtp-Source: ABdhPJxh5UhmNk4YCcGt0E/+WtCoAz7hr3beaRxtARhLtP83XT+fe8dwt5IvhPsE65sdrXs7b6QV8g==
+X-Received: by 2002:a17:902:e848:b0:151:e3a5:b609 with SMTP id t8-20020a170902e84800b00151e3a5b609mr1440981plg.137.1647465027663;
+        Wed, 16 Mar 2022 14:10:27 -0700 (PDT)
+Received: from localhost ([135.84.132.250])
+        by smtp.gmail.com with ESMTPSA id q9-20020a056a00088900b004e03b051040sm4476450pfj.112.2022.03.16.14.10.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 16 Mar 2022 14:10:27 -0700 (PDT)
+From:   Benjamin Li <benl@squareup.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Zac Crosby <zac@squareup.com>, Benjamin Li <benl@squareup.com>,
+        Andy Gross <agross@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, linux-pm@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] thermal: thermal_of: add pass-through change_mode to ops struct
+Date:   Wed, 16 Mar 2022 14:09:44 -0700
+Message-Id: <20220316210946.6935-2-benl@squareup.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220316210946.6935-1-benl@squareup.com>
+References: <20220316210946.6935-1-benl@squareup.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alex Williamson <alex.williamson@redhat.com> writes:
+Add an optional change_mode method to the ops struct, allowing thermal_of-
+based drivers to properly implement disabling of sensors/IRQs. Previously
+thermal_core would just disable the polling timer when a zone is disabled,
+as thermal_of drivers could not provide a change_mode implementation.
 
-> Device specific extensions for devices exposed to userspace through
-> the vfio-pci-core library open both new functionality and new risks.
-> Here we attempt to provided formalized requirements and expectations
-> to ensure that future drivers both collaborate in their interaction
-> with existing host drivers, as well as receive additional reviews
-> from community members with experience in this area.
->
-> Cc: Jason Gunthorpe <jgg@nvidia.com>
-> Acked-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
-> Acked-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+This meant thermal_of drivers supporting interrupt-based updates had to
+keep sensors/IRQs enabled at all times, and needed to resort to reading
+tzd->mode in their IRQ handler or get_temp implementation to actually stop
+updating. This is a waste of resources in IRQ handlers to ignore updates,
+and for sensors that can power down it's a waste of power.
 
-So this seems fine to me.  Did you want it to go through the docs tree,
-or did you have another path in mind for it?
+Signed-off-by: Benjamin Li <benl@squareup.com>
+---
+ drivers/thermal/thermal_of.c | 14 ++++++++++++++
+ include/linux/thermal.h      |  2 ++
+ 2 files changed, 16 insertions(+)
 
-Thanks,
+diff --git a/drivers/thermal/thermal_of.c b/drivers/thermal/thermal_of.c
+index 9233f7e74454..a69ec39780a7 100644
+--- a/drivers/thermal/thermal_of.c
++++ b/drivers/thermal/thermal_of.c
+@@ -106,6 +106,17 @@ static int of_thermal_set_trips(struct thermal_zone_device *tz,
+ 	return data->ops->set_trips(data->sensor_data, low, high);
+ }
+ 
++static int of_thermal_change_mode(struct thermal_zone_device *tz,
++				enum thermal_device_mode mode)
++{
++	struct __thermal_zone *data = tz->devdata;
++
++	if (!data->ops || !data->ops->change_mode)
++		return -EINVAL;
++
++	return data->ops->change_mode(data->sensor_data, mode);
++}
++
+ /**
+  * of_thermal_get_ntrips - function to export number of available trip
+  *			   points.
+@@ -405,6 +416,9 @@ thermal_zone_of_add_sensor(struct device_node *zone,
+ 	if (ops->set_trips)
+ 		tzd->ops->set_trips = of_thermal_set_trips;
+ 
++	if (ops->change_mode)
++		tzd->ops->change_mode = of_thermal_change_mode;
++
+ 	if (ops->set_emul_temp)
+ 		tzd->ops->set_emul_temp = of_thermal_set_emul_temp;
+ 
+diff --git a/include/linux/thermal.h b/include/linux/thermal.h
+index c314893970b3..469a1664f1ed 100644
+--- a/include/linux/thermal.h
++++ b/include/linux/thermal.h
+@@ -295,6 +295,7 @@ struct thermal_zone_params {
+  * @set_trips: a pointer to a function that sets a temperature window. When
+  *	       this window is left the driver must inform the thermal core via
+  *	       thermal_zone_device_update.
++ * @change_mode: a pointer to a function that enables/disables reporting.
+  * @set_emul_temp: a pointer to a function that sets sensor emulated
+  *		   temperature.
+  * @set_trip_temp: a pointer to a function that sets the trip temperature on
+@@ -304,6 +305,7 @@ struct thermal_zone_of_device_ops {
+ 	int (*get_temp)(void *, int *);
+ 	int (*get_trend)(void *, int, enum thermal_trend *);
+ 	int (*set_trips)(void *, int, int);
++	int (*change_mode)(void *, enum thermal_device_mode);
+ 	int (*set_emul_temp)(void *, int);
+ 	int (*set_trip_temp)(void *, int, int);
+ };
+-- 
+2.17.1
 
-jon
