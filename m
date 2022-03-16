@@ -2,106 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 486CAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353980AbiCPH0p (ORCPT
+        id S1354018AbiCPH1a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 03:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
+        Wed, 16 Mar 2022 03:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354042AbiCPH0m (ORCPT
+        with ESMTP id S245150AbiCPH1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 03:26:42 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9796B5FF3B;
-        Wed, 16 Mar 2022 00:25:26 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id t1so1610929edc.3;
-        Wed, 16 Mar 2022 00:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=k2XDkxW4pcLGrgBabuAmAWd2wJ7suNpD4bXx0nDuw4w=;
-        b=e87GAQob7VcIIZSaxRDrpHGZbYz0ZLqpbpsbExBi7EtftlKzsTJpNifAKitn4+JP7O
-         0bcmBf8LEgJP/UMjC0df3Brsms6H4l2DLgnzJq1LLbpKrAfpXXsZQQV043DiOmOAT6D2
-         eoxkM2OQPP3m6nYcsOUM8ZNdroy0XKNotNJsX7jOhw5lgVbSMY/HTS4ucOA9FWbabWSI
-         2rLUDsW/81XtrV7kaSxTGL86iPvWnvvOF2olzaA0RsjETSgkSOETvBD60d7FbRBCVBi1
-         YXj+ZdgJVi6KknqY7nXvfgbKM8pBAwJ7QG9AWhzX4Xwg9evIKsUaoKs1hC7hp9fnODwc
-         hQJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=k2XDkxW4pcLGrgBabuAmAWd2wJ7suNpD4bXx0nDuw4w=;
-        b=IdsMZX2O0qGaTG+a3v37hNMLqZZEDInvI2Qjc/0r6AgU9x1WISGHv1DM2PoYeWrhdy
-         CfNsWaCHCD9OGFBP8DmrmOCsAH9rlzhqXhXMKVvbtuZ9ZMI95sWJAE3TrPRmXstZh570
-         egE1OEX+FPq32WCBfJHOPUPAMpNfodZlz7h+qXzza0plE7+mjffHMXw1WnDLfuESF76C
-         BAXTxpB+L0l4RQloOkn32wfDPbmL89WQK2ldCdFmZXJu27eqJ287w5JA/6CgY4yTEFEL
-         qLJsk4L9jlcQ2FbgUafD3OA9L3Y6PE0/buZCRAiPCEHv1Ut4TNMu893AqPSvR6IRm9Jc
-         HYXA==
-X-Gm-Message-State: AOAM531gzjMyN8R6mlwLrHO7fBL+1qrsA+KXV4wpLwS5hS9yMPDJwIvv
-        r4bhIh4MVenlsbxt0u1LCKdP2yUJxf0=
-X-Google-Smtp-Source: ABdhPJxyekmY0haMxC8PoH31GMrAN1hP/z/MhOAc/9HVXy5Z5yU61UaHNqQ45lG2uvlq/M7CCL85BA==
-X-Received: by 2002:a05:6402:40d1:b0:418:e73c:a1a8 with SMTP id z17-20020a05640240d100b00418e73ca1a8mr1850794edb.321.1647415524913;
-        Wed, 16 Mar 2022 00:25:24 -0700 (PDT)
-Received: from felia.fritz.box (200116b826783100351493f9f729970f.dip.versatel-1u1.de. [2001:16b8:2678:3100:3514:93f9:f729:970f])
-        by smtp.gmail.com with ESMTPSA id y19-20020a1709064b1300b006dabe44a6edsm515502eju.141.2022.03.16.00.25.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 00:25:24 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: adjust entries to nxp driver movement in media platform
-Date:   Wed, 16 Mar 2022 08:25:17 +0100
-Message-Id: <20220316072517.3607-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 16 Mar 2022 03:27:25 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164FA5F8E0;
+        Wed, 16 Mar 2022 00:26:04 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id E4D445FD04;
+        Wed, 16 Mar 2022 10:26:00 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1647415560;
+        bh=8Iauk+HjSwn8BjH9AFq0dUmuDvbHkJMAnyi2ZBNSZkw=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=MzYuD7UsCKmkMrolmjzLlC35yd5lCiedPVNA8ecq6Kmzp3j6qbJp85W0dnjn0QYOQ
+         QtAU7jd968KOOOdPySodGGqn65ZYgTKSo3ajCcmcABWbZFZw4Z4p29LmN2RDIEcVKx
+         atTDskYLUeq7Ou2saJxo+LkCH+30vFQC0K6nlKC19OW7jc0Nv1zmY9PNNpdflIVLkx
+         2je4ZxnZEHKo/AXDDFRcSfYTqxkF+e7xRpvubMlCh6PXg/dFhVYFtwXnSuus8wXatm
+         k+QC06uyg+8AjyooYBGaaVgp1JcbsD/WTScRlBFmu622IyCtlYjp6sdGj/3HV+zg/W
+         Zu6UDALHRf8eg==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed, 16 Mar 2022 10:25:58 +0300 (MSK)
+From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
+        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
+Subject: [RFC PATCH v2 0/2] af_vsock: add two new tests for SOCK_SEQPACKET
+Thread-Topic: [RFC PATCH v2 0/2] af_vsock: add two new tests for
+ SOCK_SEQPACKET
+Thread-Index: AQHYOQbyso2e/I/ekky/gZ0IvB2spg==
+Date:   Wed, 16 Mar 2022 07:25:07 +0000
+Message-ID: <1474b149-7d4c-27b2-7e5c-ef00a718db76@sberdevices.ru>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <85BC6D4351292846A2D936EEF0EA0315@sberdevices.ru>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/16 03:19:00 #18979713
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 46fb99951fe2 ("media: platform: place NXP drivers on a separate dir")
-moves various files in media/platform into a nxp subdirectory. It adjusts
-the section MEDIA DRIVER FOR FREESCALE IMX PXP in MAINTAINERS, but misses
-some references in NXP i.MX 8QXP/8QM JPEG V4L2 DRIVER and MEDIA DRIVERS
-FOR FREESCALE IMX7.
-
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
-
-Adjust the file references in the NXP i.MX 8QXP/8QM JPEG V4L2 DRIVER and
-MEDIA DRIVERS FOR FREESCALE IMX7 sections.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Mauro, please pick this minor clean-up on your -next tree on top of the
-commit above.
-
- MAINTAINERS | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5eacf125e052..c4f54cf46ae8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12130,7 +12130,7 @@ T:	git git://linuxtv.org/media_tree.git
- F:	Documentation/admin-guide/media/imx7.rst
- F:	Documentation/devicetree/bindings/media/nxp,imx-mipi-csi2.yaml
- F:	Documentation/devicetree/bindings/media/nxp,imx7-csi.yaml
--F:	drivers/media/platform/imx/imx-mipi-csis.c
-+F:	drivers/media/platform/nxp/imx-mipi-csis.c
- F:	drivers/staging/media/imx/imx7-media-csi.c
- 
- MEDIA DRIVERS FOR HELENE
-@@ -14166,7 +14166,7 @@ R:	NXP Linux Team <linux-imx@nxp.com>
- L:	linux-media@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/media/nxp,imx8-jpeg.yaml
--F:	drivers/media/platform/imx-jpeg
-+F:	drivers/media/platform/nxp/imx-jpeg
- 
- NZXT-KRAKEN2 HARDWARE MONITORING DRIVER
- M:	Jonas Malaco <jonas@protocubo.io>
--- 
-2.17.1
-
+VGhpcyBhZGRzIHR3byB0ZXN0czogZm9yIHJlY2VpdmUgdGltZW91dCBhbmQgcmVhZGluZyB0byBp
+bnZhbGlkDQpidWZmZXIgcHJvdmlkZWQgYnkgdXNlci4gSSBmb3Jnb3QgdG8gcHV0IGJvdGggcGF0
+Y2hlcyB0byBtYWluDQpwYXRjaHNldC4NCg0KQXJzZW5peSBLcmFzbm92KDIpOg0KDQphZl92c29j
+azogU09DS19TRVFQQUNLRVQgcmVjZWl2ZSB0aW1lb3V0IHRlc3QNCmFmX3Zzb2NrOiBTT0NLX1NF
+UVBBQ0tFVCBicm9rZW4gYnVmZmVyIHRlc3QNCg0KdG9vbHMvdGVzdGluZy92c29jay92c29ja190
+ZXN0LmMgfCAyMTEgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQoxIGZp
+bGUgY2hhbmdlZCwgMjExIGluc2VydGlvbnMoKykNCg0KdjEgLT4gdjI6DQogc2VlIGV2ZXJ5IHBh
+dGNoIGFmdGVyICctLS0nIGxpbmUuDQoNCi0tIA0KMi4yNS4xDQo=
