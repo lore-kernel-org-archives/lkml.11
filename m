@@ -2,353 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61AA7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B51C43219
 	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355736AbiCPM1m (ORCPT
+        id S1355778AbiCPM1r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54774 "EHLO
+        Wed, 16 Mar 2022 08:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355726AbiCPM1a (ORCPT
+        with ESMTP id S1355751AbiCPM1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:27:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F3C66209;
-        Wed, 16 Mar 2022 05:26:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EC10B81AE4;
-        Wed, 16 Mar 2022 12:26:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B03ABC340E9;
-        Wed, 16 Mar 2022 12:26:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647433573;
-        bh=28H8vEvBCKD8KJe6uDw+X4he4Z2/cTVbxXH/1j9pOxk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LJ5wfu4GGGe5SHTOKgHLtW7oVosx1La68zqTwNXVVermaRiQZUPKoIrThHhDaCAyK
-         5MkIA504BF/Pvjby0HjwHsYrUzwLlJmbQZs/aCUVCbddFJC+O5BtOapYUquOWbr1Tz
-         dGKrLdI0iRfCbrXVFzadE2RxSeGgo+fMnwKmvbn5+S2t+476av+/bxbGHDNANHG7l4
-         p1XzU2nVHEjnYAhriGDTht4/OcDs3K2AO2xRTYs3q3x2BygXfM3WakNoHgZ9IV/6Rv
-         VoZIdhyppZkmU3LaOzPXLODjogmT+vU8AokQFCKmYuPgqWrto9vhNvS9W2aQt3I89w
-         voxSyFUH7zF6w==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCHv3 bpf-next 09/13] libbpf: Add bpf_program__attach_kprobe_multi_opts function
-Date:   Wed, 16 Mar 2022 13:24:15 +0100
-Message-Id: <20220316122419.933957-10-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220316122419.933957-1-jolsa@kernel.org>
-References: <20220316122419.933957-1-jolsa@kernel.org>
+        Wed, 16 Mar 2022 08:27:38 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50053.outbound.protection.outlook.com [40.107.5.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8D16661B;
+        Wed, 16 Mar 2022 05:26:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eyI+310yWaFcU5Jd746lgJddB9tenR8tt9HtNr2qeK7xT5n2uYbUltFgDmah2J8WZp4QlqlsoJCmW9Wyjxqnp/XPYVHOS60TDfCWn0e680nBrF11FOhS8LDwau/hdDqzgV5vG5l3JfMUkJXEs+yeYp24VaUPlTm0tw3WrJ1weFKuJRAT5PSTMdVRgsT/cJkZW1MYnS84Mfc7VDzB1S48MfyGmIeQ9sFNGA5tT7fzUJ0+h8X89CA9zXxIk3nvjjbUN8YPdKUGpAwiaH+briYW5w/SgMd+lgS91GGWLEBn6BFVW/rtxU/WC20nKT6ZvMdNeWM4Pojq9Qm825KSWnrC0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vjGP0jfZZUGys5c7n5R8ExBHWwo0N9aT+qdxOs/yhb4=;
+ b=TVnqILnNpJPFZjudtfSso6HFoITI4X6KzpUDtSgWCiPmCF0IgKnIaQMj2vsSEezfXVDr2ZLMZUD48zG0qeIAww0Fg1U7SMLUpvzH3DLAyB0CLprS/tDl+SI+tzdPz9uy22weLEwhSdxb0BzZ3ANO12+9ZLikwe1tWrgm/xFKwhvdb0ym77o7eMkIBcJxDH7QXQIEmDpuSr+mDmeTtDojl1YVDV+cGtu0sYtcNutIrU4uhqU2t55mqoy00weKFBztkx5d+NNehXt3n3Pu1syP55ni+WcEgcaPN/UGHe9nOwCrnm8+MmVEU8/fpL9OCWvuK+K9TCE7zHdNOSLcIcgsLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vjGP0jfZZUGys5c7n5R8ExBHWwo0N9aT+qdxOs/yhb4=;
+ b=BnjsQH9huwsJwKbRQCsamTXZRvwvI09/xWLMGgQgsKHqn07MRWGnkrPKaHFsrPEr9270O4vTg61typ16rDtpt4yUCSNv1pLQIF4Ckj/Ro8u/GhNImeXfeqf1skiCSgKPCOpX9JRkILx2Qgs+8kb28dODXgnfvc9ZKb2csNiCmqM=
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by VI1PR04MB4622.eurprd04.prod.outlook.com (2603:10a6:803:76::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.28; Wed, 16 Mar
+ 2022 12:26:20 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::5538:7e34:6843:2bc7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::5538:7e34:6843:2bc7%6]) with mapi id 15.20.5061.028; Wed, 16 Mar 2022
+ 12:26:20 +0000
+From:   Peng Fan <peng.fan@nxp.com>
+To:     Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "heiko.thiery@gmail.com" <heiko.thiery@gmail.com>,
+        Anson Huang <Anson.Huang@nxp.com>
+Subject: RE: [PATCH v2] dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
+Thread-Topic: [PATCH v2] dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
+Thread-Index: AQHYOSJY50JmnziszU+ilfW0jLgn56zB77Vg
+Date:   Wed, 16 Mar 2022 12:26:20 +0000
+Message-ID: <DU0PR04MB94174894AA93F42CCD3BC89E88119@DU0PR04MB9417.eurprd04.prod.outlook.com>
+References: <20220316104100.783068-1-michael@walle.cc>
+In-Reply-To: <20220316104100.783068-1-michael@walle.cc>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1dab3118-db2a-48cc-2537-08da07482d2d
+x-ms-traffictypediagnostic: VI1PR04MB4622:EE_
+x-microsoft-antispam-prvs: <VI1PR04MB4622E674BD43D83C3C91339288119@VI1PR04MB4622.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XcTNG0YWBHw4J5OQOfmc8SeGVnycOptuq+xrJMlDj0CbuKksDlA0Dwnu15RHuCDOutSBGPtiM/IjPzIvzfrQ40mRFi+s+U0osgVKWZ4YRRFtu+78gMSRuWl9QKdjvErBBRKPxb2YnY9mgl4/Wx5N+JhHk7lWJQErz0Ezj0Rv4pAHhMrq9j/E/sleH12eHhz41OgtulXE8g6BGQ6P9JyeqW/3HPYbbsgUSDtTdeAAoDdQqA6+AXHlz+Jp7C+U4K+gcXv0/xLAV3sCWepAF+HweOxjtxKIMlLoXQzguwoOVvCCuCPc2PcX4S1XvMtSTu/3lsZoMU889Itl+LRqW2cFjWTfUg40XpHoLA5CVbSOHMFzhiKeRTfiIH0eoj7DYr3arzGU+ngk5W9UFAfLMgTgEGLEHErvqrtv13Kp0ps8v6lQnABTLuvMAqMsT4Wmn7vy5M9uyNn1CmIapdq1qjMemjGikSioQGRnBxyVtf8w6lKCGor88R/v+IqdwsdVeE7l6z0MBJVr602eRPGilFMKdfC6GGIOBOet/kdJAILgTs78olzvBRoyHpuLD6xjOOp25bMrt374thW//5YulMbZQMGqGA6PfWvwjvT8+xQD2frbHgZots0dtN4WJbEBEFXoRZY04PgIzmhvU39Z1qaw7Q+LePLewRg3nJFAQt3f6p3b6iT8LXnjBJ8zCMkUhFDjZtyRvBU6ocMTyMeNbbgH3cbkWWZ5CRbQNBKqNtrx/iE=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(5660300002)(38100700002)(122000001)(76116006)(66946007)(66556008)(66476007)(66446008)(64756008)(508600001)(8676002)(33656002)(55016003)(83380400001)(2906002)(316002)(54906003)(71200400001)(38070700005)(8936002)(186003)(110136005)(6506007)(44832011)(52536014)(86362001)(26005)(7696005)(9686003)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?L+0oLHsmGb3MNLA4XEFMiCgr01HGfw4KVMGnoiWc8wQzFYiqPpm2JSCbuQt4?=
+ =?us-ascii?Q?uahQcFyyA/MsEH3jaT2f2mBSyrbO6uBUW6lTUoHbVCwwah9zSTREvb/0IvMW?=
+ =?us-ascii?Q?zTAIQ6AJAU6bfu++lHnUbuS6nol3n/n9QPOMGEO53T9u+kmhXJzyTGFSzjFw?=
+ =?us-ascii?Q?QcJDWGDXz/nFBBFcQW13CLhkMSzERNxqxg2m9D5OZF6sia8sFVPJBs7ILnoo?=
+ =?us-ascii?Q?BnOxrbUet10AustKtus5NY5dqgne89jSW0WcgmFNGalfltwgUFJEOFVpCCzn?=
+ =?us-ascii?Q?VdeYkvtJ/9LRef3FveFV/SykpKKVL4jIkwUL9PevmyOZZ4A/2Ql0ODevWs94?=
+ =?us-ascii?Q?DwTmoY8KthuTFT7oh8EWiAFJyZs7kX9jG3jwDkFqJ+yup5/V0b/k3DX+js16?=
+ =?us-ascii?Q?RUVdl6pg8xIdW1z7HSrPx5lMOyFtV3t3w4TVnsrPg2izQ0Lb1AYTN3LrlXAH?=
+ =?us-ascii?Q?kh+wSV234Y64BJRDEXPGEkis1pqUNXvBgCYIDplcOL14NSZaHT5gIX/v0l2a?=
+ =?us-ascii?Q?18lXELA7d5GFj9A5njUtLBJicCiw5qKRqD8Jl7+w8SISYOUOZLWbONKY8HGw?=
+ =?us-ascii?Q?aFVejyDtLgyKwe6efD1kOPDpU2paEGbUf4gH4MBnIgjJRFjzrXrKOjW8BJSM?=
+ =?us-ascii?Q?WfK4EuakUpU8pKqijDuiVEJN3HMKqV2jeOvvxUbi4Nyc6H5LbSb1IpIKJD6s?=
+ =?us-ascii?Q?wkKGQ9IxQHqTIRhtxgzLWTdA+GMtY/dVo+J2SXi7b1lG01lYjVE9Q+5XFIgV?=
+ =?us-ascii?Q?tgdU3zxW7EmNOA2UzQrwmRMlzJtqS8rN1CXa4rUQnAmSyFnDnIMvvRlHG8+I?=
+ =?us-ascii?Q?QM2/DH2MJwrV3aVhynEyS3poT8iJPcULNNRJ9bR1J+5U7j+rL2w9lDcKhZZX?=
+ =?us-ascii?Q?rkOWoVqr7IywPC79boIfCy/xOeJ2/iI+bUFNuZH4IwIQ0nR45fBoIqRmp9g1?=
+ =?us-ascii?Q?CmN86BYgKtRNWhcuCvKCCoN1x2C4ckv6U6hvZq+GaAGFh1yW9Num7H8IXTHv?=
+ =?us-ascii?Q?qQQLgst9LazlHuljSWos4N+NuHrArSOrEeHs332bWmcam4b8nW7X1MI57ZcK?=
+ =?us-ascii?Q?fKBaiM15Ti3bRNGqvHZ1xDsx8vpBMLvFSsHWrDeaBDJH4CQZnzyvpltZ677C?=
+ =?us-ascii?Q?9GTLapKhy9/xVdt9USGfKQl5GSAKzz8Kg9eZyDIuluJvis9IzahMK+oR0esy?=
+ =?us-ascii?Q?5KEitMVwLPxeFzV88RfIup0C2T/UMmWXLH+CWr0NgHDjDAEujM+ABY81Ckxi?=
+ =?us-ascii?Q?7HP9x0K6nBSDcDwxeRx7k+b+vzjBuHLgmNMtPLJyAJNqTC8vYWjgdaRZiWe9?=
+ =?us-ascii?Q?nSkmsCAT8AnpqdIPfc+RaETldK6cUBY+qB1bEzK6ONDPIjKVp0h63uZQ6gY+?=
+ =?us-ascii?Q?hOju+7pauf1OVGPxhaFyFoG8o6UxxmK7kLgx8tmYoNrkVFPiaokX8tBjwLy+?=
+ =?us-ascii?Q?EBATf2JX4fo=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1dab3118-db2a-48cc-2537-08da07482d2d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2022 12:26:20.2850
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 37H9lYNI5AW4Umu/o187VOReIyfCWNkHR7muQiiEZDvByzcce9cmi3Cl6cZw9yyXFZHnX2bHH5KuqM40opvdpA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4622
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding bpf_program__attach_kprobe_multi_opts function for attaching
-kprobe program to multiple functions.
+> Subject: [PATCH v2] dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
+>=20
+> This eval board features an IMX8MN UltraLite and has DDR3L RAM. The
+> product part number is 8MNANOD3L-EVK.
+>=20
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> Reviewed-by: Heiko Thiery <heiko.thiery@gmail.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-  struct bpf_link *
-  bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
-                                        const char *pattern,
-                                        const struct bpf_kprobe_multi_opts *opts);
+Acked-by: Peng Fan <peng.fan@nxp.com>
 
-User can specify functions to attach with 'pattern' argument that
-allows wildcards (*?' supported) or provide symbols or addresses
-directly through opts argument. These 3 options are mutually
-exclusive.
-
-When using symbols or addresses, user can also provide cookie value
-for each symbol/address that can be retrieved later in bpf program
-with bpf_get_attach_cookie helper.
-
-  struct bpf_kprobe_multi_opts {
-          size_t sz;
-          const char **syms;
-          const unsigned long *addrs;
-          const __u64 *cookies;
-          size_t cnt;
-          bool retprobe;
-          size_t :0;
-  };
-
-Symbols, addresses and cookies are provided through opts object
-(syms/addrs/cookies) as array pointers with specified count (cnt).
-
-Each cookie value is paired with provided function address or symbol
-with the same array index.
-
-The program can be also attached as return probe if 'retprobe' is set.
-
-For quick usage with NULL opts argument, like:
-
-  bpf_program__attach_kprobe_multi_opts(prog, "ksys_*", NULL)
-
-the 'prog' will be attached as kprobe to 'ksys_*' functions.
-
-Also adding new program sections for automatic attachment:
-
-  kprobe.multi/<symbol_pattern>
-  kretprobe.multi/<symbol_pattern>
-
-The symbol_pattern is used as 'pattern' argument in
-bpf_program__attach_kprobe_multi_opts function.
-
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/lib/bpf/libbpf.c   | 160 +++++++++++++++++++++++++++++++++++++++
- tools/lib/bpf/libbpf.h   |  23 ++++++
- tools/lib/bpf/libbpf.map |   1 +
- 3 files changed, 184 insertions(+)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 1ca520a29fdb..f3a31478e23b 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8610,6 +8610,7 @@ static int attach_kprobe(const struct bpf_program *prog, long cookie, struct bpf
- static int attach_tp(const struct bpf_program *prog, long cookie, struct bpf_link **link);
- static int attach_raw_tp(const struct bpf_program *prog, long cookie, struct bpf_link **link);
- static int attach_trace(const struct bpf_program *prog, long cookie, struct bpf_link **link);
-+static int attach_kprobe_multi(const struct bpf_program *prog, long cookie, struct bpf_link **link);
- static int attach_lsm(const struct bpf_program *prog, long cookie, struct bpf_link **link);
- static int attach_iter(const struct bpf_program *prog, long cookie, struct bpf_link **link);
- 
-@@ -8621,6 +8622,8 @@ static const struct bpf_sec_def section_defs[] = {
- 	SEC_DEF("uprobe/",		KPROBE,	0, SEC_NONE),
- 	SEC_DEF("kretprobe/",		KPROBE, 0, SEC_NONE, attach_kprobe),
- 	SEC_DEF("uretprobe/",		KPROBE, 0, SEC_NONE),
-+	SEC_DEF("kprobe.multi/",	KPROBE,	BPF_TRACE_KPROBE_MULTI, SEC_NONE, attach_kprobe_multi),
-+	SEC_DEF("kretprobe.multi/",	KPROBE,	BPF_TRACE_KPROBE_MULTI, SEC_NONE, attach_kprobe_multi),
- 	SEC_DEF("tc",			SCHED_CLS, 0, SEC_NONE),
- 	SEC_DEF("classifier",		SCHED_CLS, 0, SEC_NONE | SEC_SLOPPY_PFX | SEC_DEPRECATED),
- 	SEC_DEF("action",		SCHED_ACT, 0, SEC_NONE | SEC_SLOPPY_PFX),
-@@ -10224,6 +10227,139 @@ struct bpf_link *bpf_program__attach_kprobe(const struct bpf_program *prog,
- 	return bpf_program__attach_kprobe_opts(prog, func_name, &opts);
- }
- 
-+/* Adapted from perf/util/string.c */
-+static bool glob_match(const char *str, const char *pat)
-+{
-+	while (*str && *pat && *pat != '*') {
-+		if (*pat == '?') {      /* Matches any single character */
-+			str++;
-+			pat++;
-+			continue;
-+		}
-+		if (*str != *pat)
-+			return false;
-+		str++;
-+		pat++;
-+	}
-+	/* Check wild card */
-+	if (*pat == '*') {
-+		while (*pat == '*')
-+			pat++;
-+		if (!*pat) /* Tail wild card matches all */
-+			return true;
-+		while (*str)
-+			if (glob_match(str++, pat))
-+				return true;
-+	}
-+	return !*str && !*pat;
-+}
-+
-+struct kprobe_multi_resolve {
-+	const char *pattern;
-+	unsigned long *addrs;
-+	size_t cap;
-+	size_t cnt;
-+};
-+
-+static int
-+resolve_kprobe_multi_cb(unsigned long long sym_addr, char sym_type,
-+			const char *sym_name, void *ctx)
-+{
-+	struct kprobe_multi_resolve *res = ctx;
-+	int err;
-+
-+	if (!glob_match(sym_name, res->pattern))
-+		return 0;
-+
-+	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(unsigned long),
-+				res->cnt + 1);
-+	if (err)
-+		return err;
-+
-+	res->addrs[res->cnt++] = (unsigned long) sym_addr;
-+	return 0;
-+}
-+
-+struct bpf_link *
-+bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
-+				      const char *pattern,
-+				      const struct bpf_kprobe_multi_opts *opts)
-+{
-+	LIBBPF_OPTS(bpf_link_create_opts, lopts);
-+	struct kprobe_multi_resolve res = {
-+		.pattern = pattern,
-+	};
-+	struct bpf_link *link = NULL;
-+	char errmsg[STRERR_BUFSIZE];
-+	const unsigned long *addrs;
-+	int err, link_fd, prog_fd;
-+	const __u64 *cookies;
-+	const char **syms;
-+	bool retprobe;
-+	size_t cnt;
-+
-+	if (!OPTS_VALID(opts, bpf_kprobe_multi_opts))
-+		return libbpf_err_ptr(-EINVAL);
-+
-+	syms    = OPTS_GET(opts, syms, false);
-+	addrs   = OPTS_GET(opts, addrs, false);
-+	cnt     = OPTS_GET(opts, cnt, false);
-+	cookies = OPTS_GET(opts, cookies, false);
-+
-+	if (!pattern && !addrs && !syms)
-+		return libbpf_err_ptr(-EINVAL);
-+	if (pattern && (addrs || syms || cookies || cnt))
-+		return libbpf_err_ptr(-EINVAL);
-+	if (!pattern && !cnt)
-+		return libbpf_err_ptr(-EINVAL);
-+	if (addrs && syms)
-+		return libbpf_err_ptr(-EINVAL);
-+
-+	if (pattern) {
-+		err = libbpf_kallsyms_parse(resolve_kprobe_multi_cb, &res);
-+		if (err)
-+			goto error;
-+		if (!res.cnt) {
-+			err = -ENOENT;
-+			goto error;
-+		}
-+		addrs = res.addrs;
-+		cnt = res.cnt;
-+	}
-+
-+	retprobe = OPTS_GET(opts, retprobe, false);
-+
-+	lopts.kprobe_multi.syms = syms;
-+	lopts.kprobe_multi.addrs = addrs;
-+	lopts.kprobe_multi.cookies = cookies;
-+	lopts.kprobe_multi.cnt = cnt;
-+	lopts.kprobe_multi.flags = retprobe ? BPF_F_KPROBE_MULTI_RETURN : 0;
-+
-+	link = calloc(1, sizeof(*link));
-+	if (!link) {
-+		err = -ENOMEM;
-+		goto error;
-+	}
-+	link->detach = &bpf_link__detach_fd;
-+
-+	prog_fd = bpf_program__fd(prog);
-+	link_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, &lopts);
-+	if (link_fd < 0) {
-+		err = -errno;
-+		pr_warn("prog '%s': failed to attach: %s\n",
-+			prog->name, libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-+		goto error;
-+	}
-+	link->fd = link_fd;
-+	free(res.addrs);
-+	return link;
-+
-+error:
-+	free(link);
-+	free(res.addrs);
-+	return libbpf_err_ptr(err);
-+}
-+
- static int attach_kprobe(const struct bpf_program *prog, long cookie, struct bpf_link **link)
- {
- 	DECLARE_LIBBPF_OPTS(bpf_kprobe_opts, opts);
-@@ -10255,6 +10391,30 @@ static int attach_kprobe(const struct bpf_program *prog, long cookie, struct bpf
- 	return libbpf_get_error(*link);
- }
- 
-+static int attach_kprobe_multi(const struct bpf_program *prog, long cookie, struct bpf_link **link)
-+{
-+	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
-+	const char *spec;
-+	char *pattern;
-+	int n;
-+
-+	opts.retprobe = str_has_pfx(prog->sec_name, "kretprobe.multi/");
-+	if (opts.retprobe)
-+		spec = prog->sec_name + sizeof("kretprobe.multi/") - 1;
-+	else
-+		spec = prog->sec_name + sizeof("kprobe.multi/") - 1;
-+
-+	n = sscanf(spec, "%m[a-zA-Z0-9_.*?]", &pattern);
-+	if (n < 1) {
-+		pr_warn("kprobe multi pattern is invalid: %s\n", pattern);
-+		return -EINVAL;
-+	}
-+
-+	*link = bpf_program__attach_kprobe_multi_opts(prog, pattern, &opts);
-+	free(pattern);
-+	return libbpf_get_error(*link);
-+}
-+
- static void gen_uprobe_legacy_event_name(char *buf, size_t buf_sz,
- 					 const char *binary_path, uint64_t offset)
- {
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index c1b0c2ef14d8..d5239fb4abdc 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -425,6 +425,29 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
-                                 const char *func_name,
-                                 const struct bpf_kprobe_opts *opts);
- 
-+struct bpf_kprobe_multi_opts {
-+	/* size of this struct, for forward/backward compatibility */
-+	size_t sz;
-+	/* array of function symbols to attach */
-+	const char **syms;
-+	/* array of function addresses to attach */
-+	const unsigned long *addrs;
-+	/* array of user-provided values fetchable through bpf_get_attach_cookie */
-+	const __u64 *cookies;
-+	/* number of elements in syms/addrs/cookies arrays */
-+	size_t cnt;
-+	/* create return kprobes */
-+	bool retprobe;
-+	size_t :0;
-+};
-+
-+#define bpf_kprobe_multi_opts__last_field retprobe
-+
-+LIBBPF_API struct bpf_link *
-+bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
-+				      const char *pattern,
-+				      const struct bpf_kprobe_multi_opts *opts);
-+
- struct bpf_uprobe_opts {
- 	/* size of this struct, for forward/backward compatiblity */
- 	size_t sz;
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index df1b947792c8..554c56e6e5d3 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -444,4 +444,5 @@ LIBBPF_0.8.0 {
- 	global:
- 		libbpf_register_prog_handler;
- 		libbpf_unregister_prog_handler;
-+		bpf_program__attach_kprobe_multi_opts;
- } LIBBPF_0.7.0;
--- 
-2.35.1
+> ---
+> changes since v1:
+>  - order entries alphabetically
+>=20
+>  Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml
+> b/Documentation/devicetree/bindings/arm/fsl.yaml
+> index 08bdd30e511c..37da3a267c94 100644
+> --- a/Documentation/devicetree/bindings/arm/fsl.yaml
+> +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
+> @@ -834,6 +834,7 @@ properties:
+>                - beacon,imx8mn-beacon-kit  # i.MX8MN Beacon
+> Development Kit
+>                - bsh,imx8mn-bsh-smm-s2     # i.MX8MN BSH
+> SystemMaster S2
+>                - bsh,imx8mn-bsh-smm-s2pro  # i.MX8MN BSH
+> SystemMaster S2 PRO
+> +              - fsl,imx8mn-ddr3l-evk      # i.MX8MN DDR3L EVK
+> Board
+>                - fsl,imx8mn-ddr4-evk       # i.MX8MN DDR4 EVK
+> Board
+>                - fsl,imx8mn-evk            # i.MX8MN LPDDR4 EVK
+> Board
+>                - gw,imx8mn-gw7902          # i.MX8MM Gateworks
+> Board
+> --
+> 2.30.2
 
