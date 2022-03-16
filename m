@@ -2,115 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3863C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1ACCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350089AbiCPXnN (ORCPT
+        id S1350227AbiCPXn3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 19:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        Wed, 16 Mar 2022 19:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351880AbiCPXnD (ORCPT
+        with ESMTP id S1352178AbiCPXnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 19:43:03 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B603C1A82C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:41:46 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 0F4DA2C0C1E;
-        Wed, 16 Mar 2022 23:41:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1647474104;
-        bh=nVcp3cB00aWvtsu3vJBxU+P4/JWMysUbwbvfhFJcak4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdGmLkb5X2uMoGAv163MveTWgjZ3PlY160oswvBI1jLqnmNnVurmmyQYrY7YfxXVE
-         EyXA15/svaomRHT88e6H/lyEfsYkEYJMo8ZMrU62pR+DJBwkZJUlq+LNWigqzt6ugM
-         hXEuPVVN7yUoBF2PnudJXiKdyD4LIb7C+XiyULm2kfTx1WJnySrhrMuW/ImyveoKi+
-         99OPKSKzB9CEFnsltn/ayyvfpQ0WQz2Qp4SmgZxYfoLXWWvwQEWKV13szez/wZLMZG
-         8d1muaJYjUMv1m4MXXwXO2NTQWFfZ6Kvt6DG6pZ8erWwyLYcQd3Kzqwh97M9ce2E0t
-         5UxcsAo8lTV6A==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B623275b70001>; Thu, 17 Mar 2022 12:41:43 +1300
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id BB0EF13EE3F;
-        Thu, 17 Mar 2022 12:41:43 +1300 (NZDT)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 46EE62A004D; Thu, 17 Mar 2022 12:41:41 +1300 (NZDT)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     jdelvare@suse.com, linux@roeck-us.net, robh+dt@kernel.org
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH 1/2] dt-bindings: hwmon: Document adt7475 pin-function properties
-Date:   Thu, 17 Mar 2022 12:41:33 +1300
-Message-Id: <20220316234134.290492-2-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220316234134.290492-1-chris.packham@alliedtelesis.co.nz>
-References: <20220316234134.290492-1-chris.packham@alliedtelesis.co.nz>
+        Wed, 16 Mar 2022 19:43:25 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7EF1B7B7
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:42:06 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id f38so7318718ybi.3
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:42:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IE2Ea1Cz8v1eLhlB/b4Le+DL8OUHmAt2PXNs7TNdYyo=;
+        b=ER72S7HFC008I9si0CLcY2Yjgn92FTTnxYAWgV/xZsbR8TntqsInYe5JWzjOPXFo8S
+         m1FjJ/EF+HY952bZaCaPh6p/vag21pmK9zMwEM+jBa2CTu6G52PYVMMj+od2uod0M+R/
+         YhABNZVBsE/YqUzLiwiEGMl7x0R/msYx+IuMQAK2a7JVXcH0cVN/5jt4WdOATvY/YFme
+         /6Cx+6b5tQtNjvt4453yzJ4MNSqqs2iUY/x5gOyWApD4VJWZRBKMmIt+c8T4IqMriJMB
+         R5awjV8maBUntFQxzaA/QoQ3vdaT4wX8TFpaLk2oGE6PZo2KBxFwVArNra11iAajEAvp
+         jylw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IE2Ea1Cz8v1eLhlB/b4Le+DL8OUHmAt2PXNs7TNdYyo=;
+        b=ovS4T6+/ZO0qogBj8Mrnj7OJaI0H3vzkALH8fWsrS8wKGDdDQ0TdwzV5F+SlXqEp3a
+         Krv6m+T0YIi1HTDjsULq0UiK7uUk0luynxurtS5ba6UkPwNCenE2MUwfaCEapMwquLqo
+         Mb9WHrj8qQOGvV69AyIR3P0tn8dDzsxfWh41iz2Fy+66OsgHbGGizZJqCKH6OTtNGY69
+         lP0AIka3ds1PZ5bCSCa6CyKaR+zGyAfunnZAg0xa9lCz/pKuz3z/YAxSFomJWpiBe9K7
+         0dFQK5stMVFqbo2C5y/g8Xlb5wLbLSFvDCc2LHB/zEGdL/1QYuk3uqwiqN3JFlbxkDtD
+         QemA==
+X-Gm-Message-State: AOAM532BAmuXAk86ySXUX1wl2Mj4fMNzsVMqZiaXqFfnuLMV34fiAJNj
+        rrYGkyBvgjVMCiBv5zLvNeWUVQHKFNQi+OrLVWRql/x5unkGRA==
+X-Google-Smtp-Source: ABdhPJzqz46JGmqxBDLRnCpVdoH9nYY9SgLKyI8nxa65ZhXp3xjQz+PNbeXq6UT9EcgDZkdJ6rRORP/8KhCR/rDTue8=
+X-Received: by 2002:a25:2308:0:b0:628:9a66:7327 with SMTP id
+ j8-20020a252308000000b006289a667327mr2490701ybj.626.1647474125953; Wed, 16
+ Mar 2022 16:42:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=XrEdriJqPTbsqx2b3kgA:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+References: <20220316141636.248324-1-sashal@kernel.org> <20220316141636.248324-10-sashal@kernel.org>
+ <CACRpkdZU_wv74MeRiO_bMV03Gwp=8LamsPOGMEpY8Rm-X2Aq8w@mail.gmail.com> <YjIS9KENmMgXQejZ@sashalap>
+In-Reply-To: <YjIS9KENmMgXQejZ@sashalap>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 17 Mar 2022 00:41:54 +0100
+Message-ID: <CACRpkdbQtP8G975s46t9-94BsvtLO3Vys99ap2=9ZR1ykLyhKw@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.10 10/12] gpio: Revert regression in sysfs-gpio (gpiolib.c)
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The adt7473, adt7475, adt7476 and adt7490 have pins that can be used for
-different functions. Add bindings so that it is possible to describe
-what pin functions are intended by the hardware design.
+On Wed, Mar 16, 2022 at 5:40 PM Sasha Levin <sashal@kernel.org> wrote:
+> On Wed, Mar 16, 2022 at 05:06:47PM +0100, Linus Walleij wrote:
+> >On Wed, Mar 16, 2022 at 3:17 PM Sasha Levin <sashal@kernel.org> wrote:
+> >
+> >> From: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
+> >>
+> >> [ Upstream commit fc328a7d1fcce263db0b046917a66f3aa6e68719 ]
+> >>
+> >> Some GPIO lines have stopped working after the patch
+> >> commit 2ab73c6d8323f ("gpio: Support GPIO controllers without pin-ranges")
+> >>
+> >> And this has supposedly been fixed in the following patches
+> >> commit 89ad556b7f96a ("gpio: Avoid using pin ranges with !PINCTRL")
+> >> commit 6dbbf84603961 ("gpiolib: Don't free if pin ranges are not defined")
+> >>
+> >> But an erratic behavior where some GPIO lines work while others do not work
+> >> has been introduced.
+> >>
+> >> This patch reverts those changes so that the sysfs-gpio interface works
+> >> properly again.
+> >>
+> >> Signed-off-by: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
+> >> Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> >> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> >
+> >
+> >I think you should not apply this for stable, because we will revert the revert.
+>
+> Okay, I'll give it a week to soak and if the revert is in by then I can
+> just pick it too for the sake of completeness.
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
----
- .../devicetree/bindings/hwmon/adt7475.yaml    | 22 +++++++++++++++++++
- 1 file changed, 22 insertions(+)
+The revert of the revert is already in Linus' tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=56e337f2cf1326323844927a04e9dbce9a244835
 
-diff --git a/Documentation/devicetree/bindings/hwmon/adt7475.yaml b/Docum=
-entation/devicetree/bindings/hwmon/adt7475.yaml
-index 7d9c083632b9..22beb37f1bf1 100644
---- a/Documentation/devicetree/bindings/hwmon/adt7475.yaml
-+++ b/Documentation/devicetree/bindings/hwmon/adt7475.yaml
-@@ -61,6 +61,26 @@ patternProperties:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     enum: [0, 1]
-=20
-+  "adi,pin(5|10)-function":
-+    description: |
-+      Configures the function for pin 5 on the adi,adt7473 and adi,adt74=
-75. Or
-+      pin 10 on the adi,adt7476 and adi,adt7490.
-+    $ref: /schemas/types.yaml#/definitions/string
-+    enum:
-+      - pwm2
-+      - smbalert#
-+
-+  "adi,pin(9|14)-function":
-+    description: |
-+      Configures the function for pin 9 on the adi,adt7473 and adi,adt74=
-75. Or
-+      pin 14 on the adi,adt7476 and adi,adt7490
-+    $ref: /schemas/types.yaml#/definitions/string
-+    enum:
-+      - tach4
-+      - therm#
-+      - smbalert#
-+      - gpio
-+
- required:
-   - compatible
-   - reg
-@@ -79,6 +99,8 @@ examples:
-         adi,bypass-attenuator-in0 =3D <1>;
-         adi,bypass-attenuator-in1 =3D <0>;
-         adi,pwm-active-state =3D <1 0 1>;
-+        adi,pin10-function =3D "smbalert#";
-+        adi,pin14-function =3D "tach4";
-       };
-     };
-=20
---=20
-2.35.1
-
+Yours,
+Linus Walleij
