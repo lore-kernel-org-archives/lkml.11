@@ -2,151 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16063C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9549FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354230AbiCPHbi (ORCPT
+        id S1354017AbiCPHdv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 03:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        Wed, 16 Mar 2022 03:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235256AbiCPHbg (ORCPT
+        with ESMTP id S235615AbiCPHds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 03:31:36 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3662C33EBC;
-        Wed, 16 Mar 2022 00:30:22 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id CA8C75FD06;
-        Wed, 16 Mar 2022 10:30:19 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1647415819;
-        bh=G7IFLtrcWjFV4L5ioI5uaKBhVq+8Tp4JEmzJtfNcbiw=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=Eq0Ud9/rOxauW+WpqRtLdSP9lislPCO/QFcQuZuRfAjBlrqgnY10cxlgzNQv1oCwp
-         I3CxMlAL0EyqWxfIWiFzv7H3ZcUbvFtwW9pJ4FFhAEfbFwQcoM5EHNChiGkRy2WfBj
-         xl2+NG7HIEgLeeCWK4RUVAjyFp4Slth0c9HI7BC4oK3VbAkJVu/mSUBkXEnDa3VH0Z
-         rZ1tb6vruNOwjOxcCyk7CmUoDU8P5vq+RYpGyQbCfsja1/MdTAWlyYeS9HIBvxzHT/
-         WPVViyF0khV7Gb7Op29yj/TjpQt6EfInEix7rEqq+uxqkOdv19UUqccNhvFf3R46BE
-         EArDcniZ/2Cjw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 16 Mar 2022 10:30:19 +0300 (MSK)
-From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v2 2/2] af_vsock: SOCK_SEQPACKET broken buffer test
-Thread-Topic: [RFC PATCH v2 2/2] af_vsock: SOCK_SEQPACKET broken buffer test
-Thread-Index: AQHYOQeRPBC2SmOdIke73RmK57AUvg==
-Date:   Wed, 16 Mar 2022 07:29:28 +0000
-Message-ID: <415368cd-81b3-e2fd-fbed-65cacfc43850@sberdevices.ru>
-In-Reply-To: <1474b149-7d4c-27b2-7e5c-ef00a718db76@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9BC0C9FC87BFF94CB3FAAA3F9A1C14FF@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Wed, 16 Mar 2022 03:33:48 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C66133EBC;
+        Wed, 16 Mar 2022 00:32:33 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KJMRw1pmgz4xc2;
+        Wed, 16 Mar 2022 18:32:28 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647415949;
+        bh=2bX5m0dsEEShAIhhM2xgXf0DVIPBckL0DuRea6ZzCqA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=XTrp/N0YyvAa9f1NUK7e8ZOsh7UkQxDa8esQfRRfM3YjfVu5sskhaKo6oBM6wGN5w
+         LiWo7OIx52lUteflz4D718IAq0+kGVfKdm3z+UGB6xUjdU/uRZ92/aaN0k2Jzi4di0
+         h4LdNCE4YhLhIZlKteP4TAU+xOfrlTI4XEXsupM2w/5t9WCbyFYGiPPJZ59omjFyRS
+         fUtUu/qasaJU5TIIT9a8jdCQ3jKOawOzx+ULQ5/S2MZS9QJcesgZxOlCT6qDCiSSEP
+         ZWTyvVVBdYMmeDy/Q58+MfJeuMNSkzpy/7WfhWlejwY2mpKRtHnzKUuFCvC/5EUtzS
+         bgVsCw7jw3LGQ==
+Date:   Wed, 16 Mar 2022 18:32:27 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Jonathan =?UTF-8?B?TmV1c2Now6RmZXI=?= <j.neuschaefer@gmx.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the kspp tree
+Message-ID: <20220316183227.725bfd37@canb.auug.org.au>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/16 03:19:00 #18979713
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: multipart/signed; boundary="Sig_/CeQoGL5Gyf7NaVBeLj14Qq.";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-QWRkIHRlc3Qgd2hlcmUgc2VuZGVyIHNlbmRzIHR3byBtZXNzYWdlLCBlYWNoIHdpdGggb3duDQpk
-YXRhIHBhdHRlcm4uIFJlYWRlciB0cmllcyB0byByZWFkIGZpcnN0IHRvIGJyb2tlbiBidWZmZXI6
-DQppdCBoYXMgdGhyZWUgcGFnZXMgc2l6ZSwgYnV0IG1pZGRsZSBwYWdlIGlzIHVubWFwcGVkLiBU
-aGVuLA0KcmVhZGVyIHRyaWVzIHRvIHJlYWQgc2Vjb25kIG1lc3NhZ2UgdG8gdmFsaWQgYnVmZmVy
-LiBUZXN0DQpjaGVja3MsIHRoYXQgdW5jb3BpZWQgcGFydCBvZiBmaXJzdCBtZXNzYWdlIHdhcyBk
-cm9wcGVkDQphbmQgdGh1cyBub3QgY29waWVkIGFzIHBhcnQgb2Ygc2Vjb25kIG1lc3NhZ2UuDQoN
-ClNpZ25lZC1vZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1
-Pg0KLS0tDQogdjEgLT4gdjI6DQogMSkgVXNlICdmcHJpbnRmKCknIGluc3RlYWQgb2YgJ3BlcnJv
-cigpJyB3aGVyZSAnZXJybm8nIHZhcmlhYmxlDQogICAgaXMgbm90IGFmZmVjdGVkLg0KIDIpIFJl
-cGxhY2Ugd29yZCAiaW52YWxpZCIgLT4gInVuZXhwZWN0ZWQiLg0KICAgIA0KIHRvb2xzL3Rlc3Rp
-bmcvdnNvY2svdnNvY2tfdGVzdC5jIHwgMTMyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysNCiAxIGZpbGUgY2hhbmdlZCwgMTMyIGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL3Rv
-b2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIGIvdG9vbHMvdGVzdGluZy92c29jay92c29j
-a190ZXN0LmMNCmluZGV4IDZkNzY0OGNjZTVhYS4uMTEzMmJjZDhkZGI3IDEwMDY0NA0KLS0tIGEv
-dG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCisrKyBiL3Rvb2xzL3Rlc3RpbmcvdnNv
-Y2svdnNvY2tfdGVzdC5jDQpAQCAtMTcsNiArMTcsNyBAQA0KICNpbmNsdWRlIDxzeXMvdHlwZXMu
-aD4NCiAjaW5jbHVkZSA8c3lzL3NvY2tldC5oPg0KICNpbmNsdWRlIDx0aW1lLmg+DQorI2luY2x1
-ZGUgPHN5cy9tbWFuLmg+DQogDQogI2luY2x1ZGUgInRpbWVvdXQuaCINCiAjaW5jbHVkZSAiY29u
-dHJvbC5oIg0KQEAgLTQ2NSw2ICs0NjYsMTMyIEBAIHN0YXRpYyB2b2lkIHRlc3Rfc2VxcGFja2V0
-X3RpbWVvdXRfc2VydmVyKGNvbnN0IHN0cnVjdCB0ZXN0X29wdHMgKm9wdHMpDQogCWNsb3NlKGZk
-KTsNCiB9DQogDQorI2RlZmluZSBCVUZfUEFUVEVSTl8xICdhJw0KKyNkZWZpbmUgQlVGX1BBVFRF
-Uk5fMiAnYicNCisNCitzdGF0aWMgdm9pZCB0ZXN0X3NlcXBhY2tldF9pbnZhbGlkX3JlY19idWZm
-ZXJfY2xpZW50KGNvbnN0IHN0cnVjdCB0ZXN0X29wdHMgKm9wdHMpDQorew0KKwlpbnQgZmQ7DQor
-CXVuc2lnbmVkIGNoYXIgKmJ1ZjE7DQorCXVuc2lnbmVkIGNoYXIgKmJ1ZjI7DQorCWludCBidWZf
-c2l6ZSA9IGdldHBhZ2VzaXplKCkgKiAzOw0KKw0KKwlmZCA9IHZzb2NrX3NlcXBhY2tldF9jb25u
-ZWN0KG9wdHMtPnBlZXJfY2lkLCAxMjM0KTsNCisJaWYgKGZkIDwgMCkgew0KKwkJcGVycm9yKCJj
-b25uZWN0Iik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJYnVmMSA9IG1hbGxv
-YyhidWZfc2l6ZSk7DQorCWlmIChidWYxID09IE5VTEwpIHsNCisJCXBlcnJvcigiJ21hbGxvYygp
-JyBmb3IgJ2J1ZjEnIik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJYnVmMiA9
-IG1hbGxvYyhidWZfc2l6ZSk7DQorCWlmIChidWYyID09IE5VTEwpIHsNCisJCXBlcnJvcigiJ21h
-bGxvYygpJyBmb3IgJ2J1ZjInIik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJ
-bWVtc2V0KGJ1ZjEsIEJVRl9QQVRURVJOXzEsIGJ1Zl9zaXplKTsNCisJbWVtc2V0KGJ1ZjIsIEJV
-Rl9QQVRURVJOXzIsIGJ1Zl9zaXplKTsNCisNCisJaWYgKHNlbmQoZmQsIGJ1ZjEsIGJ1Zl9zaXpl
-LCAwKSAhPSBidWZfc2l6ZSkgew0KKwkJcGVycm9yKCJzZW5kIGZhaWxlZCIpOw0KKwkJZXhpdChF
-WElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWlmIChzZW5kKGZkLCBidWYyLCBidWZfc2l6ZSwgMCkg
-IT0gYnVmX3NpemUpIHsNCisJCXBlcnJvcigic2VuZCBmYWlsZWQiKTsNCisJCWV4aXQoRVhJVF9G
-QUlMVVJFKTsNCisJfQ0KKw0KKwljbG9zZShmZCk7DQorfQ0KKw0KK3N0YXRpYyB2b2lkIHRlc3Rf
-c2VxcGFja2V0X2ludmFsaWRfcmVjX2J1ZmZlcl9zZXJ2ZXIoY29uc3Qgc3RydWN0IHRlc3Rfb3B0
-cyAqb3B0cykNCit7DQorCWludCBmZDsNCisJdW5zaWduZWQgY2hhciAqYnJva2VuX2J1ZjsNCisJ
-dW5zaWduZWQgY2hhciAqdmFsaWRfYnVmOw0KKwlpbnQgcGFnZV9zaXplID0gZ2V0cGFnZXNpemUo
-KTsNCisJaW50IGJ1Zl9zaXplID0gcGFnZV9zaXplICogMzsNCisJc3NpemVfdCByZXM7DQorCWlu
-dCBwcm90ID0gUFJPVF9SRUFEIHwgUFJPVF9XUklURTsNCisJaW50IGZsYWdzID0gTUFQX1BSSVZB
-VEUgfCBNQVBfQU5PTllNT1VTOw0KKwlpbnQgaTsNCisNCisJZmQgPSB2c29ja19zZXFwYWNrZXRf
-YWNjZXB0KFZNQUREUl9DSURfQU5ZLCAxMjM0LCBOVUxMKTsNCisJaWYgKGZkIDwgMCkgew0KKwkJ
-cGVycm9yKCJhY2NlcHQiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwkvKiBT
-ZXR1cCBmaXJzdCBidWZmZXIuICovDQorCWJyb2tlbl9idWYgPSBtbWFwKE5VTEwsIGJ1Zl9zaXpl
-LCBwcm90LCBmbGFncywgLTEsIDApOw0KKwlpZiAoYnJva2VuX2J1ZiA9PSBNQVBfRkFJTEVEKSB7
-DQorCQlwZXJyb3IoIm1tYXAgZm9yICdicm9rZW5fYnVmJyIpOw0KKwkJZXhpdChFWElUX0ZBSUxV
-UkUpOw0KKwl9DQorDQorCS8qIFVubWFwICJob2xlIiBpbiBidWZmZXIuICovDQorCWlmIChtdW5t
-YXAoYnJva2VuX2J1ZiArIHBhZ2Vfc2l6ZSwgcGFnZV9zaXplKSkgew0KKwkJcGVycm9yKCInYnJv
-a2VuX2J1Zicgc2V0dXAiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwl2YWxp
-ZF9idWYgPSBtbWFwKE5VTEwsIGJ1Zl9zaXplLCBwcm90LCBmbGFncywgLTEsIDApOw0KKwlpZiAo
-dmFsaWRfYnVmID09IE1BUF9GQUlMRUQpIHsNCisJCXBlcnJvcigibW1hcCBmb3IgJ3ZhbGlkX2J1
-ZiciKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwkvKiBUcnkgdG8gZmlsbCBi
-dWZmZXIgd2l0aCB1bm1hcHBlZCBtaWRkbGUuICovDQorCXJlcyA9IHJlYWQoZmQsIGJyb2tlbl9i
-dWYsIGJ1Zl9zaXplKTsNCisJaWYgKHJlcyAhPSAtMSkgew0KKwkJZnByaW50ZihzdGRlcnIsDQor
-CQkJImV4cGVjdGVkICdicm9rZW5fYnVmJyByZWFkKDIpIGZhaWx1cmUsIGdvdCAlemlcbiIsDQor
-CQkJcmVzKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlpZiAoZXJybm8gIT0g
-RU5PTUVNKSB7DQorCQlwZXJyb3IoInVuZXhwZWN0ZWQgZXJybm8gb2YgJ2Jyb2tlbl9idWYnIik7
-DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJLyogVHJ5IHRvIGZpbGwgdmFsaWQg
-YnVmZmVyLiAqLw0KKwlyZXMgPSByZWFkKGZkLCB2YWxpZF9idWYsIGJ1Zl9zaXplKTsNCisJaWYg
-KHJlcyA8IDApIHsNCisJCXBlcnJvcigidW5leHBlY3RlZCAndmFsaWRfYnVmJyByZWFkKDIpIGZh
-aWx1cmUiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlpZiAocmVzICE9IGJ1
-Zl9zaXplKSB7DQorCQlmcHJpbnRmKHN0ZGVyciwNCisJCQkiaW52YWxpZCAndmFsaWRfYnVmJyBy
-ZWFkKDIpLCBnb3QgJXppLCBleHBlY3RlZCAlaVxuIiwNCisJCQlyZXMsIGJ1Zl9zaXplKTsNCisJ
-CWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlmb3IgKGkgPSAwOyBpIDwgYnVmX3NpemU7
-IGkrKykgew0KKwkJaWYgKHZhbGlkX2J1ZltpXSAhPSBCVUZfUEFUVEVSTl8yKSB7DQorCQkJZnBy
-aW50ZihzdGRlcnIsDQorCQkJCSJpbnZhbGlkIHBhdHRlcm4gZm9yICd2YWxpZF9idWYnIGF0ICVp
-LCBleHBlY3RlZCAlaGhYLCBnb3QgJWhoWFxuIiwNCisJCQkJaSwgQlVGX1BBVFRFUk5fMiwgdmFs
-aWRfYnVmW2ldKTsNCisJCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCQl9DQorCX0NCisNCisNCisJ
-LyogVW5tYXAgYnVmZmVycy4gKi8NCisJbXVubWFwKGJyb2tlbl9idWYsIHBhZ2Vfc2l6ZSk7DQor
-CW11bm1hcChicm9rZW5fYnVmICsgcGFnZV9zaXplICogMiwgcGFnZV9zaXplKTsNCisJbXVubWFw
-KHZhbGlkX2J1ZiwgYnVmX3NpemUpOw0KKwljbG9zZShmZCk7DQorfQ0KKw0KIHN0YXRpYyBzdHJ1
-Y3QgdGVzdF9jYXNlIHRlc3RfY2FzZXNbXSA9IHsNCiAJew0KIAkJLm5hbWUgPSAiU09DS19TVFJF
-QU0gY29ubmVjdGlvbiByZXNldCIsDQpAQCAtNTEwLDYgKzYzNywxMSBAQCBzdGF0aWMgc3RydWN0
-IHRlc3RfY2FzZSB0ZXN0X2Nhc2VzW10gPSB7DQogCQkucnVuX2NsaWVudCA9IHRlc3Rfc2VxcGFj
-a2V0X3RpbWVvdXRfY2xpZW50LA0KIAkJLnJ1bl9zZXJ2ZXIgPSB0ZXN0X3NlcXBhY2tldF90aW1l
-b3V0X3NlcnZlciwNCiAJfSwNCisJew0KKwkJLm5hbWUgPSAiU09DS19TRVFQQUNLRVQgaW52YWxp
-ZCByZWNlaXZlIGJ1ZmZlciIsDQorCQkucnVuX2NsaWVudCA9IHRlc3Rfc2VxcGFja2V0X2ludmFs
-aWRfcmVjX2J1ZmZlcl9jbGllbnQsDQorCQkucnVuX3NlcnZlciA9IHRlc3Rfc2VxcGFja2V0X2lu
-dmFsaWRfcmVjX2J1ZmZlcl9zZXJ2ZXIsDQorCX0sDQogCXt9LA0KIH07DQogDQotLSANCjIuMjUu
-MQ0K
+--Sig_/CeQoGL5Gyf7NaVBeLj14Qq.
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi all,
+
+After merging the kspp tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
+
+In file included from include/linux/bitmap.h:9,
+                 from include/linux/cpumask.h:12,
+                 from arch/x86/include/asm/paravirt.h:17,
+                 from arch/x86/include/asm/irqflags.h:63,
+                 from include/linux/irqflags.h:16,
+                 from include/linux/rcupdate.h:26,
+                 from include/linux/rculist.h:11,
+                 from include/linux/pid.h:5,
+                 from include/linux/sched.h:14,
+                 from include/linux/ratelimit.h:6,
+                 from include/linux/dev_printk.h:16,
+                 from include/linux/device.h:15,
+                 from drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:5:
+drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c: In function 'npcmgpio_irq_handle=
+r':
+include/linux/find.h:40:23: error: array subscript 'long unsigned int[0]' i=
+s partly outside array bounds of 'u32[1]' {aka 'unsigned int[1]'} [-Werror=
+=3Darray-bounds]
+   40 |                 val =3D *addr & GENMASK(size - 1, offset);
+      |                       ^~~~~
+drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:219:13: note: while referencing '=
+sts'
+  219 |         u32 sts, en, bit;
+      |             ^~~
+
+Caused by commit
+
+  3b588e43ee5c ("pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO driver")
+
+probably exposed by commit
+
+  a1d1e0e3d80a ("pinctrl: nuvoton: Add driver for WPCM450")
+
+from the pinctrl tree and enabling -Werror=3Darray-bounds.
+
+I have applied the following hack patch for today.
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Wed, 16 Mar 2022 18:12:14 +1100
+Subject: [PATCH] fixup for "pinctrl: nuvoton: add NPCM7xx pinctrl and GPIO =
+driver"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c b/drivers/pinctrl/nu=
+voton/pinctrl-npcm7xx.c
+index 41136f63014a..fddcb7d6bdf4 100644
+--- a/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
++++ b/drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
+@@ -216,7 +216,8 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
+ 	struct gpio_chip *gc;
+ 	struct irq_chip *chip;
+ 	struct npcm7xx_gpio *bank;
+-	u32 sts, en, bit;
++	unsigned long sts, bit;
++	u32 en;
+=20
+ 	gc =3D irq_desc_get_handler_data(desc);
+ 	bank =3D gpiochip_get_data(gc);
+@@ -225,7 +226,7 @@ static void npcmgpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_enter(chip, desc);
+ 	sts =3D ioread32(bank->base + NPCM7XX_GP_N_EVST);
+ 	en  =3D ioread32(bank->base + NPCM7XX_GP_N_EVEN);
+-	dev_dbg(bank->gc.parent, "=3D=3D> got irq sts %.8x %.8x\n", sts,
++	dev_dbg(bank->gc.parent, "=3D=3D> got irq sts %.8lx %.8x\n", sts,
+ 		en);
+=20
+ 	sts &=3D en;
+--=20
+2.34.1
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/CeQoGL5Gyf7NaVBeLj14Qq.
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIxkosACgkQAVBC80lX
+0GyAVAf9EDaiyTpOPnikRZDOntfvtXbmoOSoeMyqXgCcdNkaJscEvWLS1UEP0vfB
+Jb4P4NONmB3ICz5U+Y2UL1UXWnBBwrIN+es3YCVKthFhY59npcSRx2noB+bloDj1
+/BTL+MRHbDu4l5uFAWxecdTnWYvX5Y/W+ZklyxElnCDg/0pYOFt0HBVogywpniEQ
+8cfVvyKHsEJQTaTyzno4xA4cIvCSd6e5zSzjda12AbvHGw0CPc2j1mdb5x3ypSH/
+/yiayAE0+/OcEnehgaoErP4oWAOrfnFCBsxLoQHF5VVE3u5H9nJsPNtLK3xc/MXW
+zjHd9twjBO9zJwUf4aXHilWCSibWwg==
+=Z0sR
+-----END PGP SIGNATURE-----
+
+--Sig_/CeQoGL5Gyf7NaVBeLj14Qq.--
