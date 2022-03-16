@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25013C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D22EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356385AbiCPNUK (ORCPT
+        id S1356391AbiCPNUN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
+        Wed, 16 Mar 2022 09:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356323AbiCPNTn (ORCPT
+        with ESMTP id S1356314AbiCPNTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:19:43 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E22465E8;
-        Wed, 16 Mar 2022 06:17:55 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7MlTCQ_1647436671;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7MlTCQ_1647436671)
+        Wed, 16 Mar 2022 09:19:42 -0400
+Received: from out199-13.us.a.mail.aliyun.com (out199-13.us.a.mail.aliyun.com [47.90.199.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246DA7653;
+        Wed, 16 Mar 2022 06:17:52 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NEPrI_1647436667;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NEPrI_1647436667)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Mar 2022 21:17:52 +0800
+          Wed, 16 Mar 2022 21:17:48 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com
-Subject: [PATCH v5 19/22] erofs: register cookie context for data blobs
-Date:   Wed, 16 Mar 2022 21:17:20 +0800
-Message-Id: <20220316131723.111553-20-jefflexu@linux.alibaba.com>
+Subject: [PATCH v5 16/22] erofs: implement fscache-based metadata read
+Date:   Wed, 16 Mar 2022 21:17:17 +0800
+Message-Id: <20220316131723.111553-17-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
 References: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
@@ -41,85 +41,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the multi device mode, erofs could be mounted from multiple
-blob files (one bootstrap blob file and optional multiple data blob
-files). In this case, each device slot contains the path of
-corresponding data blob file.
+This patch implements the data plane of reading metadata from bootstrap
+blob file over fscache.
 
-This patch registers corresponding cookie context for each data blob
-file.
+Be noted that currently it only supports the scenario where the backing
+file has no hole. Once it hits a hole of the backing file, erofs will
+fail the IO with -EOPNOTSUPP for now. The following patch will fix this
+issue, i.e. implementing the demand reading mode.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/internal.h |  1 +
- fs/erofs/super.c    | 27 +++++++++++++++++++--------
- 2 files changed, 20 insertions(+), 8 deletions(-)
+ fs/erofs/data.c     | 11 +++++++++--
+ fs/erofs/fscache.c  | 24 ++++++++++++++++++++++++
+ fs/erofs/internal.h |  3 +++
+ 3 files changed, 36 insertions(+), 2 deletions(-)
 
+diff --git a/fs/erofs/data.c b/fs/erofs/data.c
+index 6e2a28242453..1bff99576883 100644
+--- a/fs/erofs/data.c
++++ b/fs/erofs/data.c
+@@ -31,15 +31,22 @@ void erofs_put_metabuf(struct erofs_buf *buf)
+ void *erofs_read_metabuf(struct erofs_buf *buf, struct super_block *sb,
+ 			erofs_blk_t blkaddr, enum erofs_kmap_type type)
+ {
+-	struct address_space *const mapping = sb->s_bdev->bd_inode->i_mapping;
++	struct address_space *mapping;
++	struct erofs_sb_info *sbi = EROFS_SB(sb);
+ 	erofs_off_t offset = blknr_to_addr(blkaddr);
+ 	pgoff_t index = offset >> PAGE_SHIFT;
+ 	struct page *page = buf->page;
+ 
+ 	if (!page || page->index != index) {
+ 		erofs_put_metabuf(buf);
+-		page = read_cache_page_gfp(mapping, index,
++		if (erofs_bdev_mode(sb)) {
++			mapping = sb->s_bdev->bd_inode->i_mapping;
++			page = read_cache_page_gfp(mapping, index,
+ 				mapping_gfp_constraint(mapping, ~__GFP_FS));
++		} else {
++			page = erofs_fscache_read_cache_page(sbi->bootstrap,
++				index);
++		}
+ 		if (IS_ERR(page))
+ 			return page;
+ 		/* should already be PageUptodate, no need to lock page */
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index 38b5a9380092..654414aa87ad 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -44,9 +44,33 @@ static inline int erofs_fscache_read_page(struct fscache_cookie *cookie,
+ 					page_offset(page), PAGE_SIZE, pstart);
+ }
+ 
++static int erofs_fscache_readpage_blob(struct file *data, struct page *page)
++{
++	int ret;
++	struct erofs_fscache_context *ctx =
++		(struct erofs_fscache_context *)data;
++
++	ret = erofs_fscache_read_page(ctx->cookie, page, page_offset(page));
++	if (!ret)
++		SetPageUptodate(page);
++	else
++		SetPageError(page);
++
++	unlock_page(page);
++	return ret;
++}
++
+ static const struct address_space_operations erofs_fscache_blob_aops = {
++	.readpage = erofs_fscache_readpage_blob,
+ };
+ 
++struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
++					   pgoff_t index)
++{
++	DBG_BUGON(!ctx->inode);
++	return read_mapping_page(ctx->inode->i_mapping, index, ctx);
++}
++
+ static int erofs_fscache_init_cookie(struct erofs_fscache_context *ctx,
+ 				     char *path)
+ {
 diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index f94a921eff98..d93de8b6ff44 100644
+index cce39339c08e..35e7c330e59e 100644
 --- a/fs/erofs/internal.h
 +++ b/fs/erofs/internal.h
-@@ -53,6 +53,7 @@ struct erofs_device_info {
- 	struct block_device *bdev;
- 	struct dax_device *dax_dev;
- 	u64 dax_part_off;
-+	struct erofs_fscache_context *ctx;
+@@ -633,6 +633,9 @@ struct erofs_fscache_context *erofs_fscache_get_ctx(struct super_block *sb,
+ 						char *path, bool need_inode);
+ void erofs_fscache_put_ctx(struct erofs_fscache_context *ctx);
  
- 	u32 blocks;
- 	u32 mapped_blkaddr;
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 8c5783c6f71f..f058a04a00c7 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -250,6 +250,7 @@ static int erofs_init_devices(struct super_block *sb,
- 	down_read(&sbi->devs->rwsem);
- 	idr_for_each_entry(&sbi->devs->tree, dif, id) {
- 		struct block_device *bdev;
-+		struct erofs_fscache_context *ctx;
++struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
++					   pgoff_t index);
++
+ #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
  
- 		ptr = erofs_read_metabuf(&buf, sb, erofs_blknr(pos),
- 					 EROFS_KMAP);
-@@ -259,15 +260,24 @@ static int erofs_init_devices(struct super_block *sb,
- 		}
- 		dis = ptr + erofs_blkoff(pos);
- 
--		bdev = blkdev_get_by_path(dif->path,
--					  FMODE_READ | FMODE_EXCL,
--					  sb->s_type);
--		if (IS_ERR(bdev)) {
--			err = PTR_ERR(bdev);
--			break;
-+		if (erofs_bdev_mode(sb)) {
-+			bdev = blkdev_get_by_path(dif->path,
-+						  FMODE_READ | FMODE_EXCL,
-+						  sb->s_type);
-+			if (IS_ERR(bdev)) {
-+				err = PTR_ERR(bdev);
-+				break;
-+			}
-+			dif->bdev = bdev;
-+			dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
-+		} else {
-+			ctx = erofs_fscache_get_ctx(sb, dif->path, false);
-+			if (IS_ERR(ctx)) {
-+				err = PTR_ERR(ctx);
-+				break;
-+			}
-+			dif->ctx = ctx;
- 		}
--		dif->bdev = bdev;
--		dif->dax_dev = fs_dax_get_by_bdev(bdev, &dif->dax_part_off);
- 		dif->blocks = le32_to_cpu(dis->blocks);
- 		dif->mapped_blkaddr = le32_to_cpu(dis->mapped_blkaddr);
- 		sbi->total_blocks += dif->blocks;
-@@ -694,6 +704,7 @@ static int erofs_release_device_info(int id, void *ptr, void *data)
- {
- 	struct erofs_device_info *dif = ptr;
- 
-+	erofs_fscache_put_ctx(dif->ctx);
- 	fs_put_dax(dif->dax_dev);
- 	if (dif->bdev)
- 		blkdev_put(dif->bdev, FMODE_READ | FMODE_EXCL);
+ #endif	/* __EROFS_INTERNAL_H */
 -- 
 2.27.0
 
