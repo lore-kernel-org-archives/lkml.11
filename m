@@ -2,176 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE01CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:19:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356351AbiCPNU5 (ORCPT
+        id S1356259AbiCPNVj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56036 "EHLO
+        Wed, 16 Mar 2022 09:21:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356324AbiCPNTr (ORCPT
+        with ESMTP id S1356332AbiCPNVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:19:47 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CC94617E;
-        Wed, 16 Mar 2022 06:18:02 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NEPse_1647436676;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NEPse_1647436676)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Mar 2022 21:17:57 +0800
-From:   Jeffle Xu <jefflexu@linux.alibaba.com>
-To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org
-Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        luodaowen.backend@bytedance.com
-Subject: [PATCH v5 22/22] erofs: add 'uuid' mount option
-Date:   Wed, 16 Mar 2022 21:17:23 +0800
-Message-Id: <20220316131723.111553-23-jefflexu@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
-References: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
+        Wed, 16 Mar 2022 09:21:31 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7855692B8;
+        Wed, 16 Mar 2022 06:19:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647436747; x=1678972747;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=3gydTSfJJ0kj7X+pEx3OA6sK9bKnh0Gb6dYO4OHWtjw=;
+  b=NPYLy9lK9jY8hOqyrqfYiffIpKlW9C57obYh/zuTqUXUJwiPllHUDbXQ
+   TOKzIDMdqNlag2JaN6SBEdUxBtke4iLeJ1mBhte4PrW+BwaVvatiMekzb
+   v0WTBum0j4QvDdjio25oiizpbmxk1BJIhQB2eut5h2m2Ff2uFKrtXy5DL
+   FBjqPxZvmps3cPmF3nB9HzHT0ssU4hQGvyOVBwGtWRmdZei5p8gM2GsfV
+   WXfMcn5n5orKEKAYWrzxg6ofSATCoyKBoDuDk1bQbKPSjCILAPjjk1LRT
+   pJ2z0j9g3YBs/avUaiw5jBq+JMqIMq3zgSo1AvowAkky5GfHkbf3K7S/c
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="343013016"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="343013016"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 06:19:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="646642824"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga004.jf.intel.com with ESMTP; 16 Mar 2022 06:18:58 -0700
+To:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>,
+        mathias.nyman@intel.com, gregkh@linuxfoundation.org,
+        stern@rowland.harvard.edu, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     CobeChen@zhaoxin.com, TimGuo@zhaoxin.com, tonywwang@zhaoxin.com,
+        weitaowang@zhaoxin.com
+References: <3c576edf-89c3-ccf3-a43f-4ce2c1ced18d@zhaoxin.com>
+ <261420fb-28b4-0def-a9e1-9c011bab7912@linux.intel.com>
+ <1882dfc1-0f46-a594-d75b-b73d30f6d6db@zhaoxin.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH] USB: Fix xhci ERDP update issue
+Message-ID: <6c11dc4f-4984-e7aa-9fc5-7026100b38e1@linux.intel.com>
+Date:   Wed, 16 Mar 2022 15:20:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <1882dfc1-0f46-a594-d75b-b73d30f6d6db@zhaoxin.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce 'uuid' mount option to enable on-demand read sementics. In
-this case, erofs could be mounted from blob files instead of blkdev.
-By then users could specify the path of bootstrap blob file containing
-the complete erofs image.
+On 15.3.2022 14.44, WeitaoWang-oc@zhaoxin.com wrote:
+> On 2022/3/15 下午4:08, Mathias Nyman wrote:
+>> On 14.3.2022 9.25, WeitaoWang-oc@zhaoxin.com wrote:
+>>> On some situations, software handles TRB events slower than adding TRBs,
+>>> xhci_irq will not exit until all events are handled. If xhci_irq just
+>>> handles 256 TRBs and exit, the temp variable(event_ring_deq) driver records in xhci irq is equal to driver current dequeue pointer. It will cause driver not update ERDP and software dequeue pointer lost sync with ERDP. On the next xhci_irq, the event ring is full but driver will not update ERDP as software dequeue pointer is equal to ERDP.
+>>>
+>>> [  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
+>>> [  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7 inflight: CMD OUT
+>>> [  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00 00 08 00
+>>> [  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not responding to stop endpoint command.
+>>> [  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
+>>> [  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding, assume dead
+>>> [  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6 inflight: CMD
+>>> [  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00 00 08 00
+>>> [  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5 inflight: CMD
+>>>
+>>> Fixed this issue by update software record temp variable when handles 128 TRB events.>
+>>> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+>>
+>> Thanks
+>>
+>> Solution itself looks good but patch has some minor format issue:
+>>
+>>
+>> It would also be interesting to know if the full event ring was triggered in a real
+>> life usecase?
+>> If that is the case I might need to look more into it.
+>>
+>> Bigger event ring, more rings, faster handler, avoid irqoff time...
+>>
+>> Thanks
+>> Mathias
+>> .
+> Some performance test tools such as fio or iometer can be used to reproduce
+>  this case, If tested with 4KB read or write. xHCI will generate a lost TRB
+>  events fast than software consume on a certain period of time. Once the interrupt is entered, software may handle more than 128 TRBs at a time.
+> While the software is processing, xHCI is still generating events. This may
+> has problems caused by the ERDP update mechanism. If update software
+>  record temp variable when handles 128 TRB events, event ring full will not
+>  happen any more even though fio test with 4KB read or write.
+> 
+> Thanks
+> Weitao Wang
+>>
 
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
----
- fs/erofs/super.c | 44 +++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 37 insertions(+), 7 deletions(-)
+Thanks for the clarification.
 
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 2942029a7049..8bc4b782f9a9 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -400,6 +400,7 @@ enum {
- 	Opt_dax,
- 	Opt_dax_enum,
- 	Opt_device,
-+	Opt_uuid,
- 	Opt_err
- };
- 
-@@ -424,6 +425,7 @@ static const struct fs_parameter_spec erofs_fs_parameters[] = {
- 	fsparam_flag("dax",             Opt_dax),
- 	fsparam_enum("dax",		Opt_dax_enum, erofs_dax_param_enums),
- 	fsparam_string("device",	Opt_device),
-+	fsparam_string("uuid",		Opt_uuid),
- 	{}
- };
- 
-@@ -519,6 +521,12 @@ static int erofs_fc_parse_param(struct fs_context *fc,
- 		}
- 		++ctx->devs->extra_devices;
- 		break;
-+	case Opt_uuid:
-+		kfree(ctx->opt.uuid);
-+		ctx->opt.uuid = kstrdup(param->string, GFP_KERNEL);
-+		if (!ctx->opt.uuid)
-+			return -ENOMEM;
-+		break;
- 	default:
- 		return -ENOPARAM;
- 	}
-@@ -593,9 +601,14 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- 	sb->s_magic = EROFS_SUPER_MAGIC;
- 
--	if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
--		erofs_err(sb, "failed to set erofs blksize");
--		return -EINVAL;
-+	if (erofs_bdev_mode(sb)) {
-+		if (!sb_set_blocksize(sb, EROFS_BLKSIZ)) {
-+			erofs_err(sb, "failed to set erofs blksize");
-+			return -EINVAL;
-+		}
-+	} else {
-+		sb->s_blocksize = EROFS_BLKSIZ;
-+		sb->s_blocksize_bits = LOG_BLOCK_SIZE;
- 	}
- 
- 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
-@@ -604,11 +617,12 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- 	sb->s_fs_info = sbi;
- 	sbi->opt = ctx->opt;
--	sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->dax_part_off);
- 	sbi->devs = ctx->devs;
- 	ctx->devs = NULL;
- 
--	if (!erofs_bdev_mode(sb)) {
-+	if (erofs_bdev_mode(sb)) {
-+		sbi->dax_dev = fs_dax_get_by_bdev(sb->s_bdev, &sbi->dax_part_off);
-+	} else {
- 		struct erofs_fscache_context *bootstrap;
- 
- 		bootstrap = erofs_fscache_get_ctx(sb, ctx->opt.uuid, true);
-@@ -620,6 +634,8 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 		err = super_setup_bdi(sb);
- 		if (err)
- 			return err;
-+
-+		sbi->dax_dev = NULL;
- 	}
- 
- 	err = erofs_read_superblock(sb);
-@@ -682,6 +698,11 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 
- static int erofs_fc_get_tree(struct fs_context *fc)
- {
-+	struct erofs_fs_context *ctx = fc->fs_private;
-+
-+	if (ctx->opt.uuid)
-+		return get_tree_nodev(fc, erofs_fc_fill_super);
-+
- 	return get_tree_bdev(fc, erofs_fc_fill_super);
- }
- 
-@@ -731,6 +752,7 @@ static void erofs_fc_free(struct fs_context *fc)
- 	struct erofs_fs_context *ctx = fc->fs_private;
- 
- 	erofs_free_dev_context(ctx->devs);
-+	kfree(ctx->opt.uuid);
- 	kfree(ctx);
- }
- 
-@@ -771,7 +793,10 @@ static void erofs_kill_sb(struct super_block *sb)
- 
- 	WARN_ON(sb->s_magic != EROFS_SUPER_MAGIC);
- 
--	kill_block_super(sb);
-+	if (erofs_bdev_mode(sb))
-+		kill_block_super(sb);
-+	else
-+		generic_shutdown_super(sb);
- 
- 	sbi = EROFS_SB(sb);
- 	if (!sbi)
-@@ -889,7 +914,12 @@ static int erofs_statfs(struct dentry *dentry, struct kstatfs *buf)
- {
- 	struct super_block *sb = dentry->d_sb;
- 	struct erofs_sb_info *sbi = EROFS_SB(sb);
--	u64 id = huge_encode_dev(sb->s_bdev->bd_dev);
-+	u64 id;
-+
-+	if (erofs_bdev_mode(sb))
-+		id = huge_encode_dev(sb->s_bdev->bd_dev);
-+	else
-+		id = 0; /* TODO */
- 
- 	buf->f_type = sb->s_magic;
- 	buf->f_bsize = EROFS_BLKSIZ;
--- 
-2.27.0
+Could you resubmit this after fixing the minor patch format issue?
+Also make sure patch passes checkpatch test
 
+Thanks
+-Mathias
