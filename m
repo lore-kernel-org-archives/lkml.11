@@ -2,90 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A06C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6727C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 10:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355091AbiCPKAx (ORCPT
+        id S1355079AbiCPKHB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 06:00:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
+        Wed, 16 Mar 2022 06:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350398AbiCPKAw (ORCPT
+        with ESMTP id S235316AbiCPKG5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 06:00:52 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D3B64BEA;
-        Wed, 16 Mar 2022 02:59:39 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        Wed, 16 Mar 2022 06:06:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096DB5C37C;
+        Wed, 16 Mar 2022 03:05:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BD53B1EC0559;
-        Wed, 16 Mar 2022 10:59:33 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1647424773;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=VUu4K7ChRXMrGrQNt35Wg5IFslzzJNsQ6i3cXSvywX0=;
-        b=cTP4t0cmk01+BLf6UFg+bpwxcO66DyZMVbQyk5uCYG+L3u6I7B2553sBMA/GzxEmD97VvS
-        CsUlGiw9HbEF/ZNKEnGPPMyod2cXod+pHS/mwhH/1ups1kVKeOWeZFIIwzFnM0MRVyzA+G
-        NUC/jmIJtg6fSUnGDMi+FkFNT62Ayts=
-Date:   Wed, 16 Mar 2022 10:59:29 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     niravkumar.l.rabara@intel.com
-Cc:     dinguyen@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
-        james.morse@arm.com, rric@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] EDAC: altera: Add SDRAM ECC check for U-Boot
-Message-ID: <YjG1AbShZZrJdTbE@zn.tnic>
-References: <20220305014118.4794-1-niravkumar.l.rabara@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220305014118.4794-1-niravkumar.l.rabara@intel.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A06E4615F8;
+        Wed, 16 Mar 2022 10:05:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BFCFC340EE;
+        Wed, 16 Mar 2022 10:05:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647425143;
+        bh=zKJPHjun5nBqwzTTmq/N/LMPB2nzyAWegrAXc+qVF0M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kN8cpNPT4vs5VXkZskRi0mmjeIwCS4+dZkTfn37TtvY3RqRwfXE9aZpkhk0wBUM0x
+         BllXvB9QzEHL5MxmRuJQOowJqIy0v+4E+jVPhMtuFaihYY97SuNqSpUplytlkGmcrY
+         pvoUJqI3D3/ReYCHKdxK/sE+FdkI2nDld0QJGQWYhjsapAX/p9/ciRWCwHWw9iVgAZ
+         67FvBo7WbcH3QDN7p4Hkr/n6iVUIvzLtm/CSjXi2tZojgn3CyD2I3MDFg57niUhakS
+         IOVCBUFgYxUoFF89liwbmYVgQ2I1hcF5h26oI50LSC9e1wMfCbn4nMG1zmLbZ1tpy4
+         grCCptcdUOvyw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUQXE-00EspX-HG; Wed, 16 Mar 2022 10:05:40 +0000
+Date:   Wed, 16 Mar 2022 10:05:40 +0000
+Message-ID: <87a6dqyzyj.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Cc:     Marc Zyngier <marc.zyngier@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 3/3] clocksource: arch_timer: Add arm,cortex-a7/15-timer in of_match list
+In-Reply-To: <20220316095433.20225-4-singh.kuldeep87k@gmail.com>
+References: <20220316095433.20225-1-singh.kuldeep87k@gmail.com>
+        <20220316095433.20225-4-singh.kuldeep87k@gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: singh.kuldeep87k@gmail.com, marc.zyngier@arm.com, mark.rutland@arm.com, daniel.lezcano@linaro.org, tglx@linutronix.de, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Mar 05, 2022 at 09:41:18AM +0800, niravkumar.l.rabara@intel.com wrote:
-> From: Rabara Niravkumar L <niravkumar.l.rabara@intel.com>
+Hi Kuldeep,
+
+On Wed, 16 Mar 2022 09:54:32 +0000,
+Kuldeep Singh <singh.kuldeep87k@gmail.com> wrote:
 > 
-> A bug in legacy U-Boot causes a crash during SDRAM boot if ECC
-> is not enabled in the bitstream but enabled in the Linux config.
-> 
-> Memory mapped read of the ECC Enabled bit was only enabled
-> if U-Boot determined ECC was enabled in the bitstream.
-> 
-> The Linux driver checks the ECC enable bit using a memory map
-> read. In the ECC disabled bitstream case, U-Boot didn't
-> enable ECC register memory map reads and since they are not
-> allowed this results in a crash.
-> 
-> This patch always reads the ECC Enable register through a
+> Few platforms such as Renesas RZ/N1D, Calxeda, Alpine etc. are using
+> arm,cortex-a15-timer and arm,cortex-a7-timer entries in conjugation with
+> arm,armv7-timer which are not currently defined in driver file. Add
+> these entries in arch_timer_of_match list to bring them in use.
 
-Avoid having "This patch" or "This commit" in the commit message. It is
-tautologically useless.
+"arm,armv7-timer" already acts as a catch all (and is mandatory
+anyway), and there is no difference in handling as a result of this.
 
-Also, do
+So what is this fixing?
 
-$ git grep 'This patch' Documentation/process
+Thanks,
 
-for more details.
-
-I've removed it now but pls pay attention for the future.
-
-> SMC call which is always allowed and it works with legacy
-> and current U-Boot.
-> 
-> Signed-off-by: Rabara Niravkumar L <niravkumar.l.rabara@intel.com>
-> ---
->  drivers/edac/altera_edac.c | 40 +++++++++++++++++++++++++++++++++++++-
->  1 file changed, 39 insertions(+), 1 deletion(-)
-
-Applied, thanks.
+	M.
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Without deviation from the norm, progress is not possible.
