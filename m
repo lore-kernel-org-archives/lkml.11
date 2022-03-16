@@ -2,177 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D583FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353356AbiCPCaf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56642 "EHLO
+        id S244156AbiCPCfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 22:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353295AbiCPC3q (ORCPT
+        with ESMTP id S1353403AbiCPCfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:29:46 -0400
-Received: from lgeamrelo11.lge.com (lgeamrelo13.lge.com [156.147.23.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 083EA5F260
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:27:17 -0700 (PDT)
-Received: from unknown (HELO lgemrelse7q.lge.com) (156.147.1.151)
-        by 156.147.23.53 with ESMTP; 16 Mar 2022 11:27:09 +0900
-X-Original-SENDERIP: 156.147.1.151
-X-Original-MAILFROM: byungchul.park@lge.com
-Received: from unknown (HELO localhost.localdomain) (10.177.244.38)
-        by 156.147.1.151 with ESMTP; 16 Mar 2022 11:27:09 +0900
-X-Original-SENDERIP: 10.177.244.38
-X-Original-MAILFROM: byungchul.park@lge.com
-From:   Byungchul Park <byungchul.park@lge.com>
-To:     torvalds@linux-foundation.org
-Cc:     damien.lemoal@opensource.wdc.com, linux-ide@vger.kernel.org,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org,
-        peterz@infradead.org, will@kernel.org, tglx@linutronix.de,
-        rostedt@goodmis.org, joel@joelfernandes.org, sashal@kernel.org,
-        daniel.vetter@ffwll.ch, chris@chris-wilson.co.uk,
-        duyuyang@gmail.com, johannes.berg@intel.com, tj@kernel.org,
-        tytso@mit.edu, willy@infradead.org, david@fromorbit.com,
-        amir73il@gmail.com, bfields@fieldses.org,
-        gregkh@linuxfoundation.org, kernel-team@lge.com,
-        linux-mm@kvack.org, akpm@linux-foundation.org, mhocko@kernel.org,
-        minchan@kernel.org, hannes@cmpxchg.org, vdavydov.dev@gmail.com,
-        sj@kernel.org, jglisse@redhat.com, dennis@kernel.org, cl@linux.com,
-        penberg@kernel.org, rientjes@google.com, vbabka@suse.cz,
-        ngupta@vflare.org, linux-block@vger.kernel.org,
-        paolo.valente@linaro.org, josef@toxicpanda.com,
-        linux-fsdevel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        jack@suse.cz, jack@suse.com, jlayton@kernel.org,
-        dan.j.williams@intel.com, hch@infradead.org, djwong@kernel.org,
-        dri-devel@lists.freedesktop.org, airlied@linux.ie,
-        rodrigosiqueiramelo@gmail.com, melissa.srw@gmail.com,
-        hamohammed.sa@gmail.com
-Subject: [PATCH RFC v5 04/21] dept: Apply Dept to spinlock
-Date:   Wed, 16 Mar 2022 11:26:16 +0900
-Message-Id: <1647397593-16747-5-git-send-email-byungchul.park@lge.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1647397593-16747-1-git-send-email-byungchul.park@lge.com>
-References: <1647397593-16747-1-git-send-email-byungchul.park@lge.com>
+        Tue, 15 Mar 2022 22:35:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB6065BE
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:32:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46FAF6149A
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:32:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3CBC340E8;
+        Wed, 16 Mar 2022 02:32:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647397940;
+        bh=JlWuwsVAf8tixVVfAj7k3At1hsOc2H52eSxmDWkWpNE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qi4zpYKrUUrbZLKM+Xl0nS5aG1eZ4vTX/qCHb5xZQd4h2K4CZaJPT1O3J8f4cuQmO
+         ikj643PaI0do9JOx4U2u20nixZmCCxYuFzyRXN69OlhnqPurTuTfA9dQQW1ARw+Aol
+         KrNmCKUUJhcFAdjc+xxLaBYPXIsPsze9agB9ApcFHB3/35FGDi8F3WHpVM3l1sIbw5
+         RijlwULauuXFxRWs85GucfaVVoAI8vfxYmrlpklI3lk3kptoCMXwPZhbtiBcFUrXB9
+         ykvLNpzHC1kX8zWNLMV3btNhs/7fH8zY80RnvNRhH9j6CWIaJi55cHaRMGGDpeUXRU
+         7BCfWIauqWRBg==
+Date:   Wed, 16 Mar 2022 10:32:16 +0800
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Jiaxin Yu <jiaxin.yu@mediatek.com>,
+        Shunli Wang <shunli.wang@mediatek.com>,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] ASoC: mediatek: Fix error handling in
+ mt8183_da7219_max98357_dev_probe
+Message-ID: <YjFMMEniUVlb1QsX@google.com>
+References: <Yia5XgkGyLbIRc1f@google.com>
+ <20220316014059.19292-1-linmq006@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220316014059.19292-1-linmq006@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Makes Dept able to track dependencies by spinlock.
+On Wed, Mar 16, 2022 at 01:40:57AM +0000, Miaoqian Lin wrote:
+> The device_node pointer is returned by of_parse_phandle()  with refcount
+> incremented. We should use of_node_put() on it when done.
+> 
+> This function only calls of_node_put() in the regular path.
+> And it will cause refcount leak in error paths.
+> Fix this by calling of_node_put() in error handling too.
+> 
+> Fixes: 5bdbe9771177 ("ASoC: mediatek: mt8183-da7219: use hdmi-codec")
+> Fixes: ebbddc75bbe8 ("ASoC: Mediatek: MT8183: Add machine driver with DA7219")
 
-Signed-off-by: Byungchul Park <byungchul.park@lge.com>
----
- include/linux/lockdep.h            | 18 +++++++++++++++---
- include/linux/spinlock.h           | 25 +++++++++++++++++++++++++
- include/linux/spinlock_types_raw.h | 13 +++++++++++++
- 3 files changed, 53 insertions(+), 3 deletions(-)
+Again, I am not sure if the Fixes tag makes sense.  Although the issue was
+there when the driver birth, there are some more commits after then.
 
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index 2aab445..01e7427 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -583,9 +583,21 @@ static inline void print_irqtrace_events(struct task_struct *curr)
- #define lock_acquire_shared(l, s, t, n, i)		lock_acquire(l, s, t, 1, 1, n, i)
- #define lock_acquire_shared_recursive(l, s, t, n, i)	lock_acquire(l, s, t, 2, 1, n, i)
- 
--#define spin_acquire(l, s, t, i)		lock_acquire_exclusive(l, s, t, NULL, i)
--#define spin_acquire_nest(l, s, t, n, i)	lock_acquire_exclusive(l, s, t, n, i)
--#define spin_release(l, i)			lock_release(l, i)
-+#define spin_acquire(l, s, t, i)					\
-+do {									\
-+	lock_acquire_exclusive(l, s, t, NULL, i);			\
-+	dept_spin_lock(&(l)->dmap, s, t, NULL, "spin_unlock", i);	\
-+} while (0)
-+#define spin_acquire_nest(l, s, t, n, i)				\
-+do {									\
-+	lock_acquire_exclusive(l, s, t, n, i);				\
-+	dept_spin_lock(&(l)->dmap, s, t, (n) ? &(n)->dmap : NULL, "spin_unlock", i); \
-+} while (0)
-+#define spin_release(l, i)						\
-+do {									\
-+	lock_release(l, i);						\
-+	dept_spin_unlock(&(l)->dmap, i);				\
-+} while (0)
- 
- #define rwlock_acquire(l, s, t, i)		lock_acquire_exclusive(l, s, t, NULL, i)
- #define rwlock_acquire_read(l, s, t, i)					\
-diff --git a/include/linux/spinlock.h b/include/linux/spinlock.h
-index 5c0c517..0e2c28d 100644
---- a/include/linux/spinlock.h
-+++ b/include/linux/spinlock.h
-@@ -95,6 +95,31 @@
- # include <linux/spinlock_up.h>
- #endif
- 
-+#ifdef CONFIG_DEPT
-+#define dept_spin_lock(m, ne, t, n, e_fn, ip)				\
-+do {									\
-+	if (t) {							\
-+		dept_ecxt_enter(m, 1UL, ip, __func__, e_fn, ne);	\
-+		dept_ask_event(m);					\
-+	} else if (n) {							\
-+		dept_ecxt_enter_nokeep(m);				\
-+		dept_ask_event(m);					\
-+	} else {							\
-+		dept_wait(m, 1UL, ip, __func__, ne);			\
-+		dept_ecxt_enter(m, 1UL, ip, __func__, e_fn, ne);	\
-+		dept_ask_event(m);					\
-+	}								\
-+} while (0)
-+#define dept_spin_unlock(m, ip)						\
-+do {									\
-+	dept_event(m, 1UL, ip, __func__);				\
-+	dept_ecxt_exit(m, 1UL, ip);					\
-+} while (0)
-+#else
-+#define dept_spin_lock(m, ne, t, n, e_fn, ip)	do { } while (0)
-+#define dept_spin_unlock(m, ip)			do { } while (0)
-+#endif
-+
- #ifdef CONFIG_DEBUG_SPINLOCK
-   extern void __raw_spin_lock_init(raw_spinlock_t *lock, const char *name,
- 				   struct lock_class_key *key, short inner);
-diff --git a/include/linux/spinlock_types_raw.h b/include/linux/spinlock_types_raw.h
-index 91cb36b..5a9b25d 100644
---- a/include/linux/spinlock_types_raw.h
-+++ b/include/linux/spinlock_types_raw.h
-@@ -26,16 +26,28 @@
- 
- #define SPINLOCK_OWNER_INIT	((void *)-1L)
- 
-+#ifdef CONFIG_DEPT
-+# define RAW_SPIN_DMAP_INIT(lockname)	.dmap = { .name = #lockname },
-+# define SPIN_DMAP_INIT(lockname)	.dmap = { .name = #lockname },
-+# define LOCAL_SPIN_DMAP_INIT(lockname)	.dmap = { .name = #lockname },
-+#else
-+# define RAW_SPIN_DMAP_INIT(lockname)
-+# define SPIN_DMAP_INIT(lockname)
-+# define LOCAL_SPIN_DMAP_INIT(lockname)
-+#endif
-+
- #ifdef CONFIG_DEBUG_LOCK_ALLOC
- # define RAW_SPIN_DEP_MAP_INIT(lockname)		\
- 	.dep_map = {					\
- 		.name = #lockname,			\
- 		.wait_type_inner = LD_WAIT_SPIN,	\
-+		RAW_SPIN_DMAP_INIT(lockname)		\
- 	}
- # define SPIN_DEP_MAP_INIT(lockname)			\
- 	.dep_map = {					\
- 		.name = #lockname,			\
- 		.wait_type_inner = LD_WAIT_CONFIG,	\
-+		SPIN_DMAP_INIT(lockname)		\
- 	}
- 
- # define LOCAL_SPIN_DEP_MAP_INIT(lockname)		\
-@@ -43,6 +55,7 @@
- 		.name = #lockname,			\
- 		.wait_type_inner = LD_WAIT_CONFIG,	\
- 		.lock_type = LD_LOCK_PERCPU,		\
-+		LOCAL_SPIN_DMAP_INIT(lockname)		\
- 	}
- #else
- # define RAW_SPIN_DEP_MAP_INIT(lockname)
--- 
-1.9.1
+Given that:
+- The patch is a minor fix (see [1][2]).
+- There is no specific commit the patch aims to fix.
+I prefer to drop the Fixes tags.  In any case, I don't think the tags would be
+helpful.
 
+I would defer to Mark.
+
+[1]: https://elixir.bootlin.com/linux/v5.17-rc8/source/include/linux/of.h#L129
+[2]: https://elixir.bootlin.com/linux/v5.17-rc8/source/drivers/of/Kconfig#L55
+
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+
+Reviewed-by: Tzung-Bi Shih <tzungbi@kernel.org>
