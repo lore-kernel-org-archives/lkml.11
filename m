@@ -2,101 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63327C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 815A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355854AbiCPMny (ORCPT
+        id S1355861AbiCPMpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
+        Wed, 16 Mar 2022 08:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355827AbiCPMnw (ORCPT
+        with ESMTP id S1346786AbiCPMo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:43:52 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA9266233;
-        Wed, 16 Mar 2022 05:42:38 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id r13so3899640ejd.5;
-        Wed, 16 Mar 2022 05:42:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=9IInFWrLxCVqPix8X21YygHN86QpSMY0BdaJzSVmBoc=;
-        b=LDbSMsXV8Ov5U+KaAZBIfn3hKYyhKypsC3fWznpL7UpqseP5Ua6h/w2tMR44iqQti5
-         QemZ8IxrxCLE77kqxTCw1fgpxUV/l3sHc3ODOXRxIjRUvVWkcXfZxvg8YQOboMZ9OzIz
-         8tXvEt1qUp/ReRB6aVnSK8rukyTcpSgwgxoyNTcw9gTd1wcKXo3Hc1/I4FsciXYMsC5A
-         Gu4fVuHX39pymWOYyRBetJOHc/2XJuj6Bx+Bbm35ldz9+VT6nnQTL/+93SVeUWDlI5yr
-         SJlVjlAXYS54I71RDpnkSZwbo9IM61mop1gRNOf2Gte7TJhOtwjYufxncW6OiZIw2SE7
-         RLDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9IInFWrLxCVqPix8X21YygHN86QpSMY0BdaJzSVmBoc=;
-        b=l/y89eA+HO92TH10vn/rDFDNwadsQrssBbKc+CX9WfjiR/XaegXijA23xdaqBe39+b
-         TCCmLSbUPsg7RhdPzDf+YiVvpmZ+QkNAtWHiHpLI18hWt3GoPHARAuQHGj1q3t0y+x+C
-         aNbLIe8UoZj5l/cC0e9tHAq4c7aUim3VUCJzzrhD0syH5aXlazWlXTDOcXNR/VUF0kxJ
-         Z9fgUzFWh++rxOwqXG/amGxbmREKnJCdoWVEOLRtvdhd7G4mbsRQSivJJE6uMWX5acBd
-         nddE3ybu61iDQDWCOtxboNP/FKNku4y4tkvkEbq3J2C0hzYyxIJscXyRsqVKbQOIGFz0
-         AEvg==
-X-Gm-Message-State: AOAM531qAln5egxCAyzWY760JbfxTFVg+pMRRvzCOqyyQeylK81quT6b
-        ySO/60hL33Dg1v+WMhEngb0=
-X-Google-Smtp-Source: ABdhPJxzYN1LhU3YiE/4BtEOd+7p1K6N+tDvf5hL4uhYLhywE2nS+2o556lATWec5chd0V0Ja9Uheg==
-X-Received: by 2002:a17:906:58b:b0:6cf:65f5:de28 with SMTP id 11-20020a170906058b00b006cf65f5de28mr25879917ejn.614.1647434556867;
-        Wed, 16 Mar 2022 05:42:36 -0700 (PDT)
-Received: from felia.fritz.box (200116b826783100351493f9f729970f.dip.versatel-1u1.de. [2001:16b8:2678:3100:3514:93f9:f729:970f])
-        by smtp.gmail.com with ESMTPSA id ji15-20020a170907980f00b006df87edf6ebsm129620ejc.154.2022.03.16.05.42.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 05:42:36 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Cc:     Zhou Wang <wangzhou1@hisilicon.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: adjust entry for header movement in hisilicon qm driver
-Date:   Wed, 16 Mar 2022 13:42:24 +0100
-Message-Id: <20220316124224.29091-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 16 Mar 2022 08:44:59 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEE32D1CA;
+        Wed, 16 Mar 2022 05:43:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647434625; x=1678970625;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=jhBBYw4CP4Lcvzt3g4Q7+TNz8lbElcc2WGmCX6PEuRY=;
+  b=MAGNOD2Eo8I88gUe/k1QPTTVciWPIijxPUT6+XgHRmNFGv5KSGaP5+7X
+   vrorsK14CZFaDNQBoUmzHGCB2c9FuVdEGO4xg1l0ejTZnYx0I0JuOwsj4
+   1t9n03USWHw+p1lmhWAMHh+M8VG/ZSXu7MfFiQCEoeJxTmEIUHvNcWclm
+   VK04pSYTub1F6tL8nZuGy8qQDA0gxjLfE2mBL02tsOdqizoX2kajCCjvY
+   lcQ84mIyxMmrqfQWCJnOIBLOy9QKqLNtKSQQFt7fR6RRysIeoAiusMSid
+   /XG6Q1G1o7ddIYhwLpqQm6d44Avf9vq24xFHTUuH1IQQKV3TTaGBNTvQQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256298221"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="256298221"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 05:43:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="646631800"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga004.jf.intel.com with ESMTP; 16 Mar 2022 05:43:41 -0700
+To:     Peter Chen <hzpeterchen@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>,
+        mathias.nyman@intel.com, Alan Stern <stern@rowland.harvard.edu>,
+        USB list <linux-usb@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, CobeChen@zhaoxin.com,
+        TimGuo@zhaoxin.com, tonywwang@zhaoxin.com, weitaowang@zhaoxin.com
+References: <3c576edf-89c3-ccf3-a43f-4ce2c1ced18d@zhaoxin.com>
+ <Yi7xJy70XZCA8RyN@kroah.com>
+ <CAL411-o_2PSndEVXfa+ciLukSr5u5w8G9T63d2MpSm2Fpn5QTQ@mail.gmail.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH] USB: Fix xhci ERDP update issue
+Message-ID: <d95ca5f6-221b-1a22-abbe-10621e2fb219@linux.intel.com>
+Date:   Wed, 16 Mar 2022 14:45:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <CAL411-o_2PSndEVXfa+ciLukSr5u5w8G9T63d2MpSm2Fpn5QTQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit ff5812e00d5e ("crypto: hisilicon/qm: Move the QM header to
-include/linux") moves drivers/crypto/hisilicon/qm.h to
-include/linux/hisi_acc_qm.h, but misses to adjust MAINTAINERS.
+On 16.3.2022 13.57, Peter Chen wrote:
+> On Mon, Mar 14, 2022 at 10:34 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>>
+>> On Mon, Mar 14, 2022 at 03:25:23PM +0800, WeitaoWang-oc@zhaoxin.com wrote:
+>>> On some situations, software handles TRB events slower than adding TRBs,
+>>> xhci_irq will not exit until all events are handled. If xhci_irq just
+>>> handles 256 TRBs and exit, the temp variable(event_ring_deq) driver records
+>>> in xhci irq is equal to driver current dequeue pointer. It will cause driver
+>>> not update ERDP and software dequeue pointer lost sync with ERDP. On the
+>>> next xhci_irq, the event ring is full but driver will not update ERDP as
+>>> software dequeue pointer is equal to ERDP.
+> 
+> At the current driver, the ERDP is updated at most 128 TRBs, how is
+> the above condition
+> triggered?
+> 
+> Peter
+> 
 
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
+Before, and during _one_ interrupt handling xHC hardware writes exactly 256 events
+to event ring. ring buffer size is 256 so buffer position 0 and 256 point
+to the same place.
 
-Adjust the file entry in the HISILICON QM AND ZIP Controller DRIVER
-following this file movement.
+Interrupt handler stores software dequeue in a local variable "event_ring_deq".
+Handler start handling events, it updates software dequeue, but not local variable.
+After 128 events handler updates hardware ERDP.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Alex, please pick this minor clean-up on your -next tree on top of the
-commit above.
+So at event 128 we got:
+Hardware ERDP = 128
+software dequeue = 128
+event_ring_deq = 0
 
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Handler continue handling events, at event 256 try to update HW ERDP again, but fail due
+to this condition in update_erst_dequeue():
+      if (event_ring_deq != xhci->event_ring->dequeue)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 845b36c0f0f5..963d7001f2ce 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8852,9 +8852,9 @@ L:	linux-crypto@vger.kernel.org
- S:	Maintained
- F:	Documentation/ABI/testing/debugfs-hisi-zip
- F:	drivers/crypto/hisilicon/qm.c
--F:	drivers/crypto/hisilicon/qm.h
- F:	drivers/crypto/hisilicon/sgl.c
- F:	drivers/crypto/hisilicon/zip/
-+F:	include/linux/hisi_acc_qm.h
- 
- HISILICON ROCE DRIVER
- M:	Wenpeng Liang <liangwenpeng@huawei.com>
--- 
-2.17.1
+This fails because event_ring_deq is still 0, and software deq is 256,
+pointing to the same place in the event ring.
 
+So at the end of the interrupt handler we have:
+HW ERDP = 128
+software dequeue = 256 (same as 0)
+
+So in this specific case we fail to update ERDP correctly
+
+-Mathias
