@@ -2,231 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B107C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 779E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352911AbiCPCNP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
+        id S241430AbiCPCPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 15 Mar 2022 22:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353082AbiCPCL5 (ORCPT
+        with ESMTP id S232659AbiCPCPg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:11:57 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7C35E77F
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647396623; x=1678932623;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7vy8Es+waSYbbTPTYGpEvEtFa6NrMN5IUtBBXlV1bbA=;
-  b=g4pS+/ShFeUoERyB25lE2MvX5POU2IWSRD3VQ8cGRAobbooktc19tESm
-   VovltISK71vyea3ZaQC/xE+3zABEnNkfpCu/SQiE2u5XnU4cbYuF2z93V
-   tRUV5xMA1ipFxXvdRU1oKwCd5c9jzWIphyXIXVlQLfRRLE32mV1uM0hB4
-   AxiZ7kzOi4QQRnx5XkGkRxb29Pg6OfKlZWV0H5iqLFkkRzMXLGj3QwIgc
-   7EivnIDOJPZRV8aVMiQs5grzKKD4OiZOCE155LIVXEW/nDuIJQjxPU+sA
-   9Eiaw+DjfDYUVCc524paTKSB3XTVzykFsWJapYmVK4/fy/bOGE9HGQY1s
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="319688295"
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="319688295"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="613475528"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 15 Mar 2022 19:10:04 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 62E6A8DF; Wed, 16 Mar 2022 04:10:10 +0200 (EET)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv6 17/30] x86/tdx: Port I/O: add runtime hypercalls
-Date:   Wed, 16 Mar 2022 05:08:43 +0300
-Message-Id: <20220316020856.24435-18-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+        Tue, 15 Mar 2022 22:15:36 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8008DD8
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:14:23 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d18so663181plr.6
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZNODnXI0GG8OUMC7M4+T77BVFbBOatlGPAjnKZlPl/Q=;
+        b=ZOQrJMqceyEbrmy847BDz8rO1Y7ZnIUAR1UKmO8JWim/2yHYSkd0RGOQNgl3lS7djl
+         VXHzgd56aZvg0VcALGspo50mU6DS8jZQiAtNJPKTPDs65isMzIvlr3oDB8MxOf6yLhY1
+         GJEL2259m0OyEvh6jmyZRfa1sXptyo5neRJ6scuQlMLsqa1Libv1mQDlWXM3vBDwAsk7
+         ufH8IRXZ5oN1ZxNloqIZRP67SE5vj0LU+Fwjg1CqAnhM9+gvCa1l2MWwETlQwdyUl6UN
+         60eAmzY0BVbUfuHrkG7eC5SUsjUivvuHAHZXms2N+gFV2Xm9RdoSk3MH2Tpmk+ycRZfh
+         7sFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZNODnXI0GG8OUMC7M4+T77BVFbBOatlGPAjnKZlPl/Q=;
+        b=danuvobqH8OqF5y194+a2x6h0MorzRwv4zqaPqQEJdAdC3Wu4oeo7guzefE+h/3vxp
+         nPDEAIOTrIhX6OXNhkc6g6BlZkDNCVf9PcdcoEJPjsNpHvTbqmdbiT9jAujzpylP/r3c
+         v58brqajkXzcpllnaDuubTWt8PkA+/4fWuIVmA+p0YzpIDvmhZfiVGLNfZTA/RQaYJ2L
+         WIuMmAg8CibIX4VSPOW/ph9mTzz+TLvS42pYI5A+rR8rAV2tZkhe/5Z++VUQYGHRJh+r
+         64RK7NZFb104hSCViL6Mbad0l+mUpgRGW9wfScN2R969lt3UdNyHk59VD4T7aO3hBc7L
+         LCGg==
+X-Gm-Message-State: AOAM530AuifSJNfluiCrmGPG4D9tGoKUchsq+WhF8dSWrunJ87eDHdS5
+        LknQY7S9w8Z0Cwg0vbm3CdEX1Q==
+X-Google-Smtp-Source: ABdhPJyp4p2lLzdYUmpSbbIR7b7dCtVcRFuSn1KqZTrxASo7IhjJOMmDJruJHndLmJZMjfu9ufcvxg==
+X-Received: by 2002:a17:90a:4749:b0:1be:ea64:4348 with SMTP id y9-20020a17090a474900b001beea644348mr7674697pjg.231.1647396862810;
+        Tue, 15 Mar 2022 19:14:22 -0700 (PDT)
+Received: from [192.168.254.17] ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id a23-20020aa794b7000000b004f7d633a87asm467073pfl.57.2022.03.15.19.14.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 19:14:22 -0700 (PDT)
+Message-ID: <7c235bfa-d0c3-dd41-e8b2-746ce69fee1f@linaro.org>
+Date:   Tue, 15 Mar 2022 19:14:21 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH] ext4: check if offset+length is within a valid range in
+ fallocate
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, Theodore Ts'o <tytso@mit.edu>
+Cc:     kbuild-all@lists.01.org, Andreas Dilger <adilger.kernel@dilger.ca>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        linux-ext4@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+7a806094edd5d07ba029@syzkaller.appspotmail.com
+References: <20220315191545.187366-1-tadeusz.struk@linaro.org>
+ <202203160919.MtfBk5N0-lkp@intel.com>
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+In-Reply-To: <202203160919.MtfBk5N0-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+On 3/15/22 18:22, kernel test robot wrote:
+> Hi Tadeusz,
+> 
+> Thank you for the patch! Yet something to improve:
+> 
+> [auto build test ERROR on tytso-ext4/dev]
+> [also build test ERROR on linus/master v5.17-rc8 next-20220315]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch]
+> 
+> url:https://github.com/0day-ci/linux/commits/Tadeusz-Struk/ext4-check-if-offset-length-is-within-a-valid-range-in-fallocate/20220316-031841
+> base:https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git  dev
+> config: arc-randconfig-r043-20220313 (https://download.01.org/0day-ci/archive/20220316/202203160919.MtfBk5N0-lkp@intel.com/config)
+> compiler: arc-elf-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>          wgethttps://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross  -O ~/bin/make.cross
+>          chmod +x ~/bin/make.cross
+>          #https://github.com/0day-ci/linux/commit/bc1fdc20f07523e970c9dea4f0fbabbc437fb0d5
+>          git remote add linux-reviewhttps://github.com/0day-ci/linux
+>          git fetch --no-tags linux-review Tadeusz-Struk/ext4-check-if-offset-length-is-within-a-valid-range-in-fallocate/20220316-031841
+>          git checkout bc1fdc20f07523e970c9dea4f0fbabbc437fb0d5
+>          # save the config file to linux build tree
+>          mkdir build_dir
+>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash fs/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot<lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>     fs/ext4/inode.c: In function 'ext4_punch_hole':
+>>> fs/ext4/inode.c:4002:50: error: 'struct ext4_sb_info' has no member named 's_blocksize'
+>      4002 |         max_length = sbi->s_bitmap_maxbytes - sbi->s_blocksize;
+>           |                                                  ^~
 
-TDX hypervisors cannot emulate instructions directly. This includes
-port I/O which is normally emulated in the hypervisor. All port I/O
-instructions inside TDX trigger the #VE exception in the guest and
-would be normally emulated there.
+Thanks for report, but I've already sent v2:
+https://lore.kernel.org/linux-ext4/20220315215439.269122-1-tadeusz.struk@linaro.org
 
-Use a hypercall to emulate port I/O. Extend the
-tdx_handle_virt_exception() and add support to handle the #VE due to
-port I/O instructions.
-
-String I/O operations are not supported in TDX. Unroll them by declaring
-CC_ATTR_GUEST_UNROLL_STRING_IO confidential computing attribute.
-
-== Userspace Implications ==
-
-The ioperm() facility allows userspace access to I/O instructions like
-inb/outb.  Among other things, this allows writing userspace device
-drivers.
-
-This series has no special handling for ioperm(). Users will be able to
-successfully request I/O permissions but will induce a #VE on their
-first I/O instruction which leads SIGSEGV. If this is undesirable users
-can enable kernel lockdown feature with 'lockdown=integrity' kernel
-command line option. It makes ioperm() fail.
-
-More robust handling of this situation (denying ioperm() in all TDX
-guests) will be addressed in follow-on work.
-
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
----
- arch/x86/coco/core.c    |  7 +++-
- arch/x86/coco/tdx/tdx.c | 79 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 85 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-index 3f3008783e05..df08edc94f9b 100644
---- a/arch/x86/coco/core.c
-+++ b/arch/x86/coco/core.c
-@@ -18,7 +18,12 @@ static u64 cc_mask __ro_after_init;
- 
- static bool intel_cc_platform_has(enum cc_attr attr)
- {
--	return false;
-+	switch (attr) {
-+	case CC_ATTR_GUEST_UNROLL_STRING_IO:
-+		return true;
-+	default:
-+		return false;
-+	}
- }
- 
- /*
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index 68da658f563f..3caa5f551d90 100644
---- a/arch/x86/coco/tdx/tdx.c
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -19,6 +19,16 @@
- #define EPT_READ	0
- #define EPT_WRITE	1
- 
-+/* Port I/O direction */
-+#define PORT_READ	0
-+#define PORT_WRITE	1
-+
-+/* See Exit Qualification for I/O Instructions in VMX documentation */
-+#define VE_IS_IO_IN(e)		((e) & BIT(3))
-+#define VE_GET_IO_SIZE(e)	(((e) & GENMASK(2, 0)) + 1)
-+#define VE_GET_PORT_NUM(e)	((e) >> 16)
-+#define VE_IS_IO_STRING(e)	((e) & BIT(4))
-+
- /*
-  * Wrapper for standard use of __tdx_hypercall with no output aside from
-  * return code.
-@@ -334,6 +344,73 @@ static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
- 	return true;
- }
- 
-+static bool handle_in(struct pt_regs *regs, int size, int port)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_IO_INSTRUCTION),
-+		.r12 = size,
-+		.r13 = PORT_READ,
-+		.r14 = port,
-+	};
-+	bool success;
-+	u64 mask = GENMASK(BITS_PER_BYTE * size, 0);
-+
-+	/*
-+	 * Emulate the I/O read via hypercall. More info about ABI can be found
-+	 * in TDX Guest-Host-Communication Interface (GHCI) section titled
-+	 * "TDG.VP.VMCALL<Instruction.IO>".
-+	 */
-+	success = !__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT);
-+
-+	/* Update part of the register affected by the emulated instruction */
-+	regs->ax &= ~mask;
-+	if (success)
-+		regs->ax |= args.r11 & mask;
-+
-+	return success;
-+}
-+
-+static bool handle_out(struct pt_regs *regs, int size, int port)
-+{
-+	u64 mask = GENMASK(BITS_PER_BYTE * size, 0);
-+
-+	/*
-+	 * Emulate the I/O write via hypercall. More info about ABI can be found
-+	 * in TDX Guest-Host-Communication Interface (GHCI) section titled
-+	 * "TDG.VP.VMCALL<Instruction.IO>".
-+	 */
-+	return !_tdx_hypercall(hcall_func(EXIT_REASON_IO_INSTRUCTION), size,
-+			       PORT_WRITE, port, regs->ax & mask);
-+}
-+
-+/*
-+ * Emulate I/O using hypercall.
-+ *
-+ * Assumes the IO instruction was using ax, which is enforced
-+ * by the standard io.h macros.
-+ *
-+ * Return True on success or False on failure.
-+ */
-+static bool handle_io(struct pt_regs *regs, u32 exit_qual)
-+{
-+	bool in;
-+	int size, port;
-+
-+	if (VE_IS_IO_STRING(exit_qual))
-+		return false;
-+
-+	in   = VE_IS_IO_IN(exit_qual);
-+	size = VE_GET_IO_SIZE(exit_qual);
-+	port = VE_GET_PORT_NUM(exit_qual);
-+
-+
-+	if (in)
-+		return handle_in(regs, size, port);
-+	else
-+		return handle_out(regs, size, port);
-+}
-+
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-@@ -383,6 +460,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 		return handle_cpuid(regs);
- 	case EXIT_REASON_EPT_VIOLATION:
- 		return handle_mmio(regs, ve);
-+	case EXIT_REASON_IO_INSTRUCTION:
-+		return handle_io(regs, ve->exit_qual);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
 -- 
-2.34.1
-
+Thanks,
+Tadeusz
