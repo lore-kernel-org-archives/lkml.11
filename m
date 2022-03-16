@@ -2,149 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C11AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 077BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349482AbiCPQKI (ORCPT
+        id S1350028AbiCPQL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
+        Wed, 16 Mar 2022 12:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349953AbiCPQKG (ORCPT
+        with ESMTP id S244162AbiCPQLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:10:06 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FA965808;
-        Wed, 16 Mar 2022 09:08:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647446932; x=1678982932;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/8QegcIk90/shkE5eRxvinZRzrjv5RZeBgcX0bqDxMs=;
-  b=JPHctJxqcZaF9KzJG60IKf3UPapZqEPCo8HO4QK+8lBseg3f6NeSgWGo
-   dPlTqJSACY7xSWvdPvztVVzfomKiQZAY8pJdzkh20LR+Dn4vkSvgYXP24
-   v6MKadxNvzbiAOJ5gUqC8V/qnxLROhHkJVRSyr5xj2hV2y7ndUsPNVb49
-   P5oJAA+1rTk3HsfL0Q0KnwCVcihv1M3Ux+EsAVJozEWGC57pQ8b/xyGjv
-   uIogcp3kxnz4b+UgYWnKBzKsJiX7yjSgImqMfDfnFX9dvdJpLksy2rIkA
-   2dHOWLQ7pgbwVxyb6eePBg6X0Ahmrm8sxYvNIhjowFmDZvHm5J0jocUn/
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="238809817"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="238809817"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:06:02 -0700
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="540987379"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.35.28])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:05:59 -0700
-Message-ID: <a1230f11-a2dd-1959-5444-28c57d3babf6@intel.com>
-Date:   Wed, 16 Mar 2022 18:05:52 +0200
+        Wed, 16 Mar 2022 12:11:55 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCFB62125
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:10:40 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id l8so4416463pfu.1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OZK9uutJfo42bFp7MFXbl2mQl2FDOmFpqXMqzYnq/NI=;
+        b=g35DWi8sGB1G87635f+Qy/XBR3EjLwq750c1JTAtGhNM9QgsEJqfSne5G2/4+9U81C
+         5NNBcH2ELL7u2+ZduchNKPqnwh9SDvSJPnreKC6u8M20gn2Njk24Squ0DTIiefvQlfoi
+         72uRMBkys28E5r6lUM8/qDBzEuhr2GoR8vaUk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OZK9uutJfo42bFp7MFXbl2mQl2FDOmFpqXMqzYnq/NI=;
+        b=eW1MiJKe//p80V1BgC1nxXwXHLVFPe+PnlhdJ9URzraOCuwoXqOc9lcik2qnGGOTU3
+         JX7Fy7hobQma/+E3Qf0asCWvMFgjv829fTLuGEmhjIKn8Kjo73VFD1jgZWBx/68kNZbO
+         TN9CpewIySOwru06/hibB1kmgmLWYchEw+oDSvNA0rjdYohrgCDSDM5ijRN2PoICRYwq
+         GH1jz5mUMzY7hQfEWoFkQcLBroVUfOMJO2rBjhr7cfqCXThPBHYpAuNMeLV6QTfHGnit
+         w0qY20SyNRcTW9ADL7hvukOdolGpTLqg7Wky0q9QVUVxe+4KzAlOAvtweRYnG+rxk/ey
+         sGZA==
+X-Gm-Message-State: AOAM533/BDPRyqxA58j7B8fL0StC0XLw6E5a/eTCWuEI8ASPkmeHo10Z
+        eB5KBVRHY7Wj74jy33Pw9d2/1Q==
+X-Google-Smtp-Source: ABdhPJw3qQsorrI2cuT/YjC71UlT+F557BgFwyW6/liffKsmrlRcD/sK4D2Ul6d+pSSdP4vzIA9qlg==
+X-Received: by 2002:a63:8749:0:b0:37f:f8e1:1877 with SMTP id i70-20020a638749000000b0037ff8e11877mr218310pge.529.1647447040172;
+        Wed, 16 Mar 2022 09:10:40 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm4115135pfu.202.2022.03.16.09.10.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 09:10:39 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 09:10:39 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     James Jones <linux@theinnocuous.com>
+Cc:     bp@alien8.de, x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] x86: Remove a.out support
+Message-ID: <202203160909.B1A022B@keescook>
+References: <4c449fab-8135-5057-7d2c-7b948ce130cc@theinnocuous.com>
+ <0b31b1d3-852d-6cab-82ae-5eecaec05679@theinnocuous.com>
+ <202203151150.1CDB1D8DA@keescook>
+ <bfbd9394-161b-0e70-00c5-79d0dd722e08@theinnocuous.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH] mmc: block: enable cache-flushing when mmc cache is on
-Content-Language: en-US
-To:     =?UTF-8?Q?Christian_L=c3=b6hle?= <CLoehle@hyperstone.com>,
-        Avri Altman <Avri.Altman@wdc.com>,
-        Michael Wu <michael@allwinnertech.com>,
-        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "porzio@gmail.com" <porzio@gmail.com>
-Cc:     "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        allwinner-opensource-support 
-        <allwinner-opensource-support@allwinnertech.com>
-References: <20220312044315.7994-1-michael@allwinnertech.com>
- <83edf9a1-1712-5388-a3fa-d685f1f581df@intel.com>
- <88e53cb9-791f-ee58-9be8-76ae9986e0e2@allwinnertech.com>
- <DM6PR04MB6575C3B87DFA920EDCD994CCFC0F9@DM6PR04MB6575.namprd04.prod.outlook.com>
- <32b29790-eb5c-dac0-1f91-aede38220914@allwinnertech.com>
- <DM6PR04MB6575A4A2A687A876EA5C04B7FC119@DM6PR04MB6575.namprd04.prod.outlook.com>
- <312d724c-e43f-d766-49fb-9c5b10fe8b07@intel.com>
- <7ec0cf3e316a4ed9987962b4cbf01604@hyperstone.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <7ec0cf3e316a4ed9987962b4cbf01604@hyperstone.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bfbd9394-161b-0e70-00c5-79d0dd722e08@theinnocuous.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16.3.2022 16.46, Christian Löhle wrote:
->> So we are not going to let the block layer know about SD cache?
->> Or is it a separate change?
+On Wed, Mar 16, 2022 at 05:06:10AM +0000, James Jones wrote:
+> I dug the scripts up in the state they were in when I gave up (September
+> 2020 according to mtime), and put them on github in case anyone wants to
+> have a go at it:
 > 
-> I have some code for this laying around, but as it requires reading, parsing and writing Function Registers,
-> in particular PEH, it's a lot of boilerplate code to get the functionality, but I'll clean it up and send a patch in the coming weeks.
+> https://github.com/cubanismo/aout-to-elf/
 > 
+> It was an interesting problem in its own right, and I'd be curious to
+> know what I missed.
 
-We have the sd cache flush.  We would presumably just need to call blk_queue_write_cache()
-for the !mmc_card_mmc(card) case e.g.
+Yeah, this is a good start. I think the main problem is with how program
+entry works, specifically that %esp is pointing to argc (with all the
+args in memory above there), which isn't the way ELF sets %esp.
 
-	if (mmc_has_reliable_write(card)) {
-		md->flags |= MMC_BLK_REL_WR;
-		enable_fua = true;
-	}
+It might be possible to make a userspace loader, though. Hmm.
 
-	if (mmc_cache_enabled(card->host))
-		enable_cache = true;
-
-	blk_queue_write_cache(md->queue.queue, enable_cache, enable_fua);
-
-Avri, were you objecting to that?
-
-> 
-> 
-> 
-> 
-> From: Adrian Hunter <adrian.hunter@intel.com>
-> Sent: Wednesday, March 16, 2022 12:28 PM
-> To: Avri Altman; Michael Wu; ulf.hansson@linaro.org; beanhuo@micron.com; porzio@gmail.com
-> Cc: linux-mmc@vger.kernel.org; linux-kernel@vger.kernel.org; allwinner-opensource-support
-> Subject: Re: [PATCH] mmc: block: enable cache-flushing when mmc cache is on
->     
-> On 16.3.2022 13.09, Avri Altman wrote:
->>> Hi Avril & Adrian,
->>> Thanks for your efforts. Could we have an agreement now --
->>>
->>> 1. enabling-cache and cmd23/reliable-write should be independent;
->>>
->>> Here's what I found in the spec JESD84-B51:
->>>   > 6.6.31 Cache
->>>   > Caching of data shall apply only for the single block
->>>   > read/write(CMD17/24), pre-defined multiple block
->>>   > read/write(CMD23+CMD18/25) and open ended multiple block
->>>   > read/write(CMD18/25+CMD12) commands and excludes any other access
->>>   > e.g., to the register space(e.g., CMD6).
->>> Which means with CMD18/25+CMD12 (without using CMD23), the cache can
->>> also be enabled. Maybe this could be an evidence of the independence
->>> between enabling-cache and cmd23/reliable-write?
->> Acked-by: Avri Altman <avri.altman@wdc.com>
->>
->> Thanks,
->> Avri
->>
->>>
->>> 2. We don't consider supporting SD in this change.
->>>
->>>   > On 14/03/2022 19:10, Avri Altman wrote:
->>>   >> Here is what our SD system guys wrote:
->>>   >> " In SD we don’t support reliable write and this eMMC driver may not
->>>   >>    be utilizing the cache feature we added in SD5.0.
->>>   >>   The method of cache flush is different between SD and eMMC."
->>>   >>
->>>   >> So adding SD seems to be out of scope of this change.
->>>
->>> Is there anything else I can do about this patch? Thanks again.
-> 
-> So we are not going to let the block layer know about SD cache?
-> Or is it a separate change?
->     =
-> Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
-> Managing Director: Dr. Jan Peter Berns.
-> Commercial register of local courts: Freiburg HRB381782
-> 
-
+-- 
+Kees Cook
