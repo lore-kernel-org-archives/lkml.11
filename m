@@ -2,506 +2,532 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C72AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7797FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355662AbiCPM0Q (ORCPT
+        id S1355677AbiCPM0U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53122 "EHLO
+        Wed, 16 Mar 2022 08:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355660AbiCPM0O (ORCPT
+        with ESMTP id S1355649AbiCPM0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:26:14 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BCD65D35;
-        Wed, 16 Mar 2022 05:24:58 -0700 (PDT)
-X-UUID: 51adec1f902845c687dfb24930d7580b-20220316
-X-UUID: 51adec1f902845c687dfb24930d7580b-20220316
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 363595006; Wed, 16 Mar 2022 20:24:54 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 16 Mar 2022 20:24:52 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
- 2022 20:24:52 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Mar 2022 20:24:52 +0800
-Message-ID: <3f0003c3095fd0d61e69278e7ef98520a298d160.camel@mediatek.com>
-Subject: Re: [PATCH 2/2] dt-bindings: gce: add gce header file for mt8186
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <jassisinghbrar@gmail.com>, <robh+dt@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <yongqiang.niu@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Wed, 16 Mar 2022 20:24:52 +0800
-In-Reply-To: <20220223030138.13939-3-rex-bc.chen@mediatek.com>
-References: <20220223030138.13939-1-rex-bc.chen@mediatek.com>
-         <20220223030138.13939-3-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 16 Mar 2022 08:26:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257A24EA08;
+        Wed, 16 Mar 2022 05:25:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7285E61735;
+        Wed, 16 Mar 2022 12:25:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EF32C340F8;
+        Wed, 16 Mar 2022 12:24:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647433500;
+        bh=mOeD/oOG5sZ6FKYaF27d4IwtMmYNkrxYnVizFqV8Y5I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oD4K0anTvRaiGkIBw+HLhvsRmSbrT2Yr9pYU69sJFeB0E/nqLvSIkDqqj9DDZkIe7
+         OFP1kZgGUXsBo3ojkamvf1eI5YuwK4XCBl2euMVmIrMlSeIHMnF2ryGA++xuHWwHR7
+         dHgkrXAOfBtoY0XsC51sYDAQxh88vcEnkQjhoUWTLyoMC24+yoCdm9G6VeLpM70Ros
+         3azx7IyRgf98y0b0aKabFGzNb+UZ53GDuTLokzfbKmprWulgOqJ2QWAE7ds52gDlAf
+         nbovBVS8vVFyhz39JSPClwV798InleMSyam7wRsYIx4cZmc6w932ENIyeyOfujjCql
+         0heDmxT98hMWQ==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCHv3 bpf-next 03/13] bpf: Add multi kprobe link
+Date:   Wed, 16 Mar 2022 13:24:09 +0100
+Message-Id: <20220316122419.933957-4-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220316122419.933957-1-jolsa@kernel.org>
+References: <20220316122419.933957-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-23 at 11:01 +0800, Rex-BC Chen wrote:
-> From: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> 
-> Add gce header file to define the gce subsys id, hardware event id
-> and
-> constant for mt8186.
-> 
-> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
+Adding new link type BPF_LINK_TYPE_KPROBE_MULTI that attaches kprobe
+program through fprobe API.
 
-Hello Jassi,
+The fprobe API allows to attach probe on multiple functions at once
+very fast, because it works on top of ftrace. On the other hand this
+limits the probe point to the function entry or return.
 
-I notice you have accepted my first patch.
-Thanks for accepting it.
-Do you have any suggetion for this patch?
+The kprobe program gets the same pt_regs input ctx as when it's attached
+through the perf API.
 
-BRs,
-Rex
->  include/dt-bindings/gce/mt8186-gce.h | 421
-> +++++++++++++++++++++++++++
->  1 file changed, 421 insertions(+)
->  create mode 100644 include/dt-bindings/gce/mt8186-gce.h
-> 
-> diff --git a/include/dt-bindings/gce/mt8186-gce.h b/include/dt-
-> bindings/gce/mt8186-gce.h
-> new file mode 100644
-> index 000000000000..f12e3cb586ce
-> --- /dev/null
-> +++ b/include/dt-bindings/gce/mt8186-gce.h
-> @@ -0,0 +1,421 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +/*
-> + * Copyright (C) 2022 MediaTek Inc.
-> + * Author: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> + */
-> +
-> +#ifndef _DT_BINDINGS_GCE_MT8186_H
-> +#define _DT_BINDINGS_GCE_MT8186_H
-> +
-> +/* assign timeout 0 also means default */
-> +#define CMDQ_NO_TIMEOUT		0xffffffff
-> +#define CMDQ_TIMEOUT_DEFAULT	1000
-> +
-> +/* GCE thread priority */
-> +#define CMDQ_THR_PRIO_LOWEST	0
-> +#define CMDQ_THR_PRIO_1		1
-> +#define CMDQ_THR_PRIO_2		2
-> +#define CMDQ_THR_PRIO_3		3
-> +#define CMDQ_THR_PRIO_4		4
-> +#define CMDQ_THR_PRIO_5		5
-> +#define CMDQ_THR_PRIO_6		6
-> +#define CMDQ_THR_PRIO_HIGHEST	7
-> +
-> +/* CPR count in 32bit register */
-> +#define GCE_CPR_COUNT		1312
-> +
-> +/* GCE subsys table */
-> +#define SUBSYS_1300XXXX		0
-> +#define SUBSYS_1400XXXX		1
-> +#define SUBSYS_1401XXXX		2
-> +#define SUBSYS_1402XXXX		3
-> +#define SUBSYS_1502XXXX		4
-> +#define SUBSYS_1582XXXX		5
-> +#define SUBSYS_1B00XXXX		6
-> +#define SUBSYS_1C00XXXX		7
-> +#define SUBSYS_1C10XXXX		8
-> +#define SUBSYS_1000XXXX		9
-> +#define SUBSYS_1001XXXX		10
-> +#define SUBSYS_1020XXXX		11
-> +#define SUBSYS_1021XXXX		12
-> +#define SUBSYS_1022XXXX		13
-> +#define SUBSYS_1023XXXX		14
-> +#define SUBSYS_1060XXXX		15
-> +#define SUBSYS_1602XXXX		16
-> +#define SUBSYS_1608XXXX		17
-> +#define SUBSYS_1700XXXX		18
-> +#define SUBSYS_1701XXXX		19
-> +#define SUBSYS_1702XXXX		20
-> +#define SUBSYS_1703XXXX		21
-> +#define SUBSYS_1706XXXX		22
-> +#define SUBSYS_1A00XXXX		23
-> +#define SUBSYS_1A01XXXX		24
-> +#define SUBSYS_1A02XXXX		25
-> +#define SUBSYS_1A03XXXX		26
-> +#define SUBSYS_1A04XXXX		27
-> +#define SUBSYS_1A05XXXX		28
-> +#define SUBSYS_1A06XXXX		29
-> +#define SUBSYS_NO_SUPPORT	99
-> +
-> +/* GCE General Purpose Register (GPR) support
-> + * Leave note for scenario usage here
-> + */
-> +/* GCE: write mask */
-> +#define GCE_GPR_R00		0x00
-> +#define GCE_GPR_R01		0x01
-> +/* MDP: P1: JPEG dest */
-> +#define GCE_GPR_R02		0x02
-> +#define GCE_GPR_R03		0x03
-> +/* MDP: PQ color */
-> +#define GCE_GPR_R04		0x04
-> +/* MDP: 2D sharpness */
-> +#define GCE_GPR_R05		0x05
-> +/* DISP: poll esd */
-> +#define GCE_GPR_R06		0x06
-> +#define GCE_GPR_R07		0x07
-> +/* MDP: P4: 2D sharpness dst */
-> +#define GCE_GPR_R08		0x08
-> +#define GCE_GPR_R09		0x09
-> +/* VCU: poll with timeout for GPR timer */
-> +#define GCE_GPR_R10		0x0A
-> +#define GCE_GPR_R11		0x0B
-> +/* CMDQ: debug */
-> +#define GCE_GPR_R12		0x0C
-> +#define GCE_GPR_R13		0x0D
-> +/* CMDQ: P7: debug */
-> +#define GCE_GPR_R14		0x0E
-> +#define GCE_GPR_R15		0x0F
-> +
-> +/* GCE hardware events */
-> +/* VDEC */
-> +#define CMDQ_EVENT_LINE_COUNT_THRESHOLD_INTERRUPT	0
-> +#define CMDQ_EVENT_VDEC_INT				1
-> +#define CMDQ_EVENT_VDEC_PAUSE				2
-> +#define CMDQ_EVENT_VDEC_DEC_ERROR			3
-> +#define CMDQ_EVENT_MDEC_TIMEOUT				4
-> +#define CMDQ_EVENT_DRAM_ACCESS_DONE			5
-> +#define CMDQ_EVENT_INI_FETCH_RDY			6
-> +#define CMDQ_EVENT_PROCESS_FLAG				7
-> +#define CMDQ_EVENT_SEARCH_START_CODE_DONE		8
-> +#define CMDQ_EVENT_REF_REORDER_DONE			9
-> +#define CMDQ_EVENT_WP_TBLE_DONE				10
-> +#define CMDQ_EVENT_COUNT_SRAM_CLR_DONE			11
-> +#define CMDQ_EVENT_GCE_CNT_OP_THRESHOLD			15
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_0		16
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_1		17
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_2		18
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_3		19
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_4		20
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_5		21
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_6		22
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_7		23
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_8		24
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_9		25
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_10		26
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_11		27
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_12		28
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_13		29
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_14		30
-> +#define CMDQ_EVENT_VDEC_MINI_MDP_EVENT_15		31
-> +#define CMDQ_EVENT_WPE_GCE_FRAME_DONE			32
-> +
-> +/* CAM */
-> +#define CMDQ_EVENT_ISP_FRAME_DONE_A			65
-> +#define CMDQ_EVENT_ISP_FRAME_DONE_B			66
-> +#define CMDQ_EVENT_CAMSV1_PASS1_DONE			70
-> +#define CMDQ_EVENT_CAMSV2_PASS1_DONE			71
-> +#define CMDQ_EVENT_CAMSV3_PASS1_DONE			72
-> +#define CMDQ_EVENT_MRAW_0_PASS1_DONE			73
-> +#define CMDQ_EVENT_SENINF_CAM0_FIFO_FULL		75
-> +#define CMDQ_EVENT_SENINF_CAM1_FIFO_FULL		76
-> +#define CMDQ_EVENT_SENINF_CAM2_FIFO_FULL		77
-> +#define CMDQ_EVENT_SENINF_CAM3_FIFO_FULL		78
-> +#define CMDQ_EVENT_SENINF_CAM4_FIFO_FULL		79
-> +#define CMDQ_EVENT_SENINF_CAM5_FIFO_FULL		80
-> +#define CMDQ_EVENT_SENINF_CAM6_FIFO_FULL		81
-> +#define CMDQ_EVENT_SENINF_CAM7_FIFO_FULL		82
-> +#define CMDQ_EVENT_SENINF_CAM8_FIFO_FULL		83
-> +#define CMDQ_EVENT_SENINF_CAM9_FIFO_FULL		84
-> +#define CMDQ_EVENT_SENINF_CAM10_FIFO_FULL		85
-> +#define CMDQ_EVENT_SENINF_CAM11_FIFO_FULL		86
-> +#define CMDQ_EVENT_SENINF_CAM12_FIFO_FULL		87
-> +#define CMDQ_EVENT_TG_OVRUN_A_INT			88
-> +#define CMDQ_EVENT_DMA_R1_ERROR_A_INT			89
-> +#define CMDQ_EVENT_TG_OVRUN_B_INT			90
-> +#define CMDQ_EVENT_DMA_R1_ERROR_B_INT			91
-> +#define CMDQ_EVENT_TG_OVRUN_M0_INT			94
-> +#define CMDQ_EVENT_R1_ERROR_M0_INT			95
-> +#define CMDQ_EVENT_TG_GRABERR_M0_INT			96
-> +#define CMDQ_EVENT_TG_GRABERR_A_INT			98
-> +#define CMDQ_EVENT_CQ_VR_SNAP_A_INT			99
-> +#define CMDQ_EVENT_TG_GRABERR_B_INT			100
-> +#define CMDQ_EVENT_CQ_VR_SNAP_B_INT			101
-> +/* VENC */
-> +#define CMDQ_EVENT_VENC_CMDQ_FRAME_DONE			129
-> +#define CMDQ_EVENT_VENC_CMDQ_PAUSE_DONE			130
-> +#define CMDQ_EVENT_JPGENC_CMDQ_DONE			131
-> +#define CMDQ_EVENT_VENC_CMDQ_MB_DONE			132
-> +#define CMDQ_EVENT_VENC_CMDQ_128BYTE_CNT_DONE		133
-> +#define CMDQ_EVENT_VENC_CMDQ_PPS_DONE			136
-> +#define CMDQ_EVENT_VENC_CMDQ_SPS_DONE			137
-> +#define CMDQ_EVENT_VENC_CMDQ_VPS_DONE			138
-> +/* IPE */
-> +#define CMDQ_EVENT_FDVT_DONE				161
-> +#define CMDQ_EVENT_FE_DONE				162
-> +#define CMDQ_EVENT_RSC_DONE				163
-> +#define CMDQ_EVENT_DVS_DONE_ASYNC_SHOT			164
-> +#define CMDQ_EVENT_DVP_DONE_ASYNC_SHOT			165
-> +/* IMG2 */
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT0			193
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT1			194
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT2			195
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT3			196
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT4			197
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT5			198
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT6			199
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT7			200
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT8			201
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT9			202
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT10			203
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT11			204
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT12			205
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT13			206
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT14			207
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT15			208
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT16			209
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT17			210
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT18			211
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT19			212
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT20			213
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT21			214
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT22			215
-> +#define CMDQ_EVENT_GCE_IMG2_EVENT23			216
-> +/* IMG1 */
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT0			225
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT1			226
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT2			227
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT3			228
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT4			229
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT5			230
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT6			231
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT7			232
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT8			233
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT9			234
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT10			235
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT11			236
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT12			237
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT13			238
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT14			239
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT15			240
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT16			241
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT17			242
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT18			243
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT19			244
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT20			245
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT21			246
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT22			247
-> +#define CMDQ_EVENT_GCE_IMG1_EVENT23			248
-> +/* MDP */
-> +#define CMDQ_EVENT_MDP_RDMA0_SOF			256
-> +#define CMDQ_EVENT_MDP_RDMA1_SOF			257
-> +#define CMDQ_EVENT_MDP_AAL0_SOF				258
-> +#define CMDQ_EVENT_MDP_AAL1_SOF				259
-> +#define CMDQ_EVENT_MDP_HDR0_SOF				260
-> +#define CMDQ_EVENT_MDP_RSZ0_SOF				261
-> +#define CMDQ_EVENT_MDP_RSZ1_SOF				262
-> +#define CMDQ_EVENT_MDP_WROT0_SOF			263
-> +#define CMDQ_EVENT_MDP_WROT1_SOF			264
-> +#define CMDQ_EVENT_MDP_TDSHP0_SOF			265
-> +#define CMDQ_EVENT_MDP_TDSHP1_SOF			266
-> +#define CMDQ_EVENT_IMG_DL_RELAY0_SOF			267
-> +#define CMDQ_EVENT_IMG_DL_RELAY1_SOF			268
-> +#define CMDQ_EVENT_MDP_COLOR0_SOF			269
-> +#define CMDQ_EVENT_MDP_WROT3_FRAME_DONE			288
-> +#define CMDQ_EVENT_MDP_WROT2_FRAME_DONE			289
-> +#define CMDQ_EVENT_MDP_WROT1_FRAME_DONE			290
-> +#define CMDQ_EVENT_MDP_WROT0_FRAME_DONE			291
-> +#define CMDQ_EVENT_MDP_TDSHP3_FRAME_DONE		292
-> +#define CMDQ_EVENT_MDP_TDSHP2_FRAME_DONE		293
-> +#define CMDQ_EVENT_MDP_TDSHP1_FRAME_DONE		294
-> +#define CMDQ_EVENT_MDP_TDSHP0_FRAME_DONE		295
-> +#define CMDQ_EVENT_MDP_RSZ3_FRAME_DONE			296
-> +#define CMDQ_EVENT_MDP_RSZ2_FRAME_DONE			297
-> +#define CMDQ_EVENT_MDP_RSZ1_FRAME_DONE			298
-> +#define CMDQ_EVENT_MDP_RSZ0_FRAME_DONE			299
-> +#define CMDQ_EVENT_MDP_RDMA3_FRAME_DONE			300
-> +#define CMDQ_EVENT_MDP_RDMA2_FRAME_DONE			301
-> +#define CMDQ_EVENT_MDP_RDMA1_FRAME_DONE			302
-> +#define CMDQ_EVENT_MDP_RDMA0_FRAME_DONE			303
-> +#define CMDQ_EVENT_MDP_HDR1_FRAME_DONE			304
-> +#define CMDQ_EVENT_MDP_HDR0_FRAME_DONE			305
-> +#define CMDQ_EVENT_MDP_COLOR0_FRAME_DONE		306
-> +#define CMDQ_EVENT_MDP_AAL3_FRAME_DONE			307
-> +#define CMDQ_EVENT_MDP_AAL2_FRAME_DONE			308
-> +#define CMDQ_EVENT_MDP_AAL1_FRAME_DONE			309
-> +#define CMDQ_EVENT_MDP_AAL0_FRAME_DONE			310
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_0		320
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_1		321
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_2		322
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_3		323
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_4		324
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_5		325
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_6		326
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_7		327
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_8		328
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_9		329
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_10		330
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_11		331
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_12		332
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_13		333
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_14		334
-> +#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_15		335
-> +#define CMDQ_EVENT_MDP_WROT3_SW_RST_DONE_ENG_EVENT	336
-> +#define CMDQ_EVENT_MDP_WROT2_SW_RST_DONE_ENG_EVENT	337
-> +#define CMDQ_EVENT_MDP_WROT1_SW_RST_DONE_ENG_EVENT	338
-> +#define CMDQ_EVENT_MDP_WROT0_SW_RST_DONE_ENG_EVENT	339
-> +#define CMDQ_EVENT_MDP_RDMA3_SW_RST_DONE_ENG_EVENT	340
-> +#define CMDQ_EVENT_MDP_RDMA2_SW_RST_DONE_ENG_EVENT	341
-> +#define CMDQ_EVENT_MDP_RDMA1_SW_RST_DONE_ENG_EVENT	342
-> +#define CMDQ_EVENT_MDP_RDMA0_SW_RST_DONE_ENG_EVENT	343
-> +/* DISP */
-> +#define CMDQ_EVENT_DISP_OVL0_SOF			384
-> +#define CMDQ_EVENT_DISP_OVL0_2L_SOF			385
-> +#define CMDQ_EVENT_DISP_RDMA0_SOF			386
-> +#define CMDQ_EVENT_DISP_RSZ0_SOF			387
-> +#define CMDQ_EVENT_DISP_COLOR0_SOF			388
-> +#define CMDQ_EVENT_DISP_CCORR0_SOF			389
-> +#define CMDQ_EVENT_DISP_CCORR1_SOF			390
-> +#define CMDQ_EVENT_DISP_AAL0_SOF			391
-> +#define CMDQ_EVENT_DISP_GAMMA0_SOF			392
-> +#define CMDQ_EVENT_DISP_POSTMASK0_SOF			393
-> +#define CMDQ_EVENT_DISP_DITHER0_SOF			394
-> +#define CMDQ_EVENT_DISP_CM0_SOF				395
-> +#define CMDQ_EVENT_DISP_SPR0_SOF			396
-> +#define CMDQ_EVENT_DISP_DSC_WRAP0_SOF			397
-> +#define CMDQ_EVENT_DSI0_SOF				398
-> +#define CMDQ_EVENT_DISP_WDMA0_SOF			399
-> +#define CMDQ_EVENT_DISP_PWM0_SOF			400
-> +#define CMDQ_EVENT_DSI0_FRAME_DONE			410
-> +#define CMDQ_EVENT_DISP_WDMA0_FRAME_DONE		411
-> +#define CMDQ_EVENT_DISP_SPR0_FRAME_DONE			412
-> +#define CMDQ_EVENT_DISP_RSZ0_FRAME_DONE			413
-> +#define CMDQ_EVENT_DISP_RDMA0_FRAME_DONE		414
-> +#define CMDQ_EVENT_DISP_POSTMASK0_FRAME_DONE		415
-> +#define CMDQ_EVENT_DISP_OVL0_FRAME_DONE			416
-> +#define CMDQ_EVENT_DISP_OVL0_2L_FRAME_DONE		417
-> +#define CMDQ_EVENT_DISP_GAMMA0_FRAME_DONE		418
-> +#define CMDQ_EVENT_DISP_DSC_WRAP0_CORE0_FRAME_DONE	420
-> +#define CMDQ_EVENT_DISP_DITHER0_FRAME_DONE		421
-> +#define CMDQ_EVENT_DISP_COLOR0_FRAME_DONE		422
-> +#define CMDQ_EVENT_DISP_CM0_FRAME_DONE			423
-> +#define CMDQ_EVENT_DISP_CCORR1_FRAME_DONE		424
-> +#define CMDQ_EVENT_DISP_CCORR0_FRAME_DONE		425
-> +#define CMDQ_EVENT_DISP_AAL0_FRAME_DONE			426
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_0		434
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_1		435
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_2		436
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_3		437
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_4		438
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_5		439
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_6		440
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_7		441
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_8		442
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_9		443
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_10	444
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_11	445
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_12	446
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_13	447
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_14	448
-> +#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_15	449
-> +#define CMDQ_EVENT_DSI0_TE_ENG_EVENT			450
-> +#define CMDQ_EVENT_DSI0_IRQ_ENG_EVENT			451
-> +#define CMDQ_EVENT_DSI0_DONE_ENG_EVENT			452
-> +#define CMDQ_EVENT_DISP_WDMA0_SW_RST_DONE_ENG_EVENT	453
-> +#define CMDQ_EVENT_DISP_SMIASSERT_ENG_EVENT		454
-> +#define CMDQ_EVENT_DISP_POSTMASK0_RST_DONE_ENG_EVENT	455
-> +#define CMDQ_EVENT_DISP_OVL0_RST_DONE_ENG_EVENT		456
-> +#define CMDQ_EVENT_DISP_OVL0_2L_RST_DONE_ENG_EVENT	457
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_0		458
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_1		459
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_2		460
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_3		461
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_4		462
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_5		463
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_6		464
-> +#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_7		465
-> +#define CMDQ_EVENT_OUT_EVENT_0				898
-> +
-> +/* CMDQ sw tokens
-> + * Following definitions are gce sw token which may use by clients
-> + * event operation API.
-> + * Note that token 512 to 639 may set secure
-> + */
-> +
-> +/* end of hw event and begin of sw token */
-> +#define CMDQ_MAX_HW_EVENT				512
-> +
-> +/* Config thread notify trigger thread */
-> +#define CMDQ_SYNC_TOKEN_CONFIG_DIRTY			640
-> +/* Trigger thread notify config thread */
-> +#define CMDQ_SYNC_TOKEN_STREAM_EOF			641
-> +/* Block Trigger thread until the ESD check finishes. */
-> +#define CMDQ_SYNC_TOKEN_ESD_EOF				642
-> +#define CMDQ_SYNC_TOKEN_STREAM_BLOCK			643
-> +/* check CABC setup finish */
-> +#define CMDQ_SYNC_TOKEN_CABC_EOF			644
-> +
-> +/* Notify normal CMDQ there are some secure task done
-> + * MUST NOT CHANGE, this token sync with secure world
-> + */
-> +#define CMDQ_SYNC_SECURE_THR_EOF			647
-> +
-> +/* CMDQ use sw token */
-> +#define CMDQ_SYNC_TOKEN_USER_0				649
-> +#define CMDQ_SYNC_TOKEN_USER_1				650
-> +#define CMDQ_SYNC_TOKEN_POLL_MONITOR			651
-> +#define CMDQ_SYNC_TOKEN_TPR_LOCK			652
-> +
-> +/* ISP sw token */
-> +#define CMDQ_SYNC_TOKEN_MSS				665
-> +#define CMDQ_SYNC_TOKEN_MSF				666
-> +
-> +/* DISP sw token */
-> +#define CMDQ_SYNC_TOKEN_SODI				671
-> +
-> +/* GPR access tokens (for register backup)
-> + * There are 15 32-bit GPR, 3 GPR form a set
-> + * (64-bit for address, 32-bit for value)
-> + * MUST NOT CHANGE, these tokens sync with MDP
-> + */
-> +#define CMDQ_SYNC_TOKEN_GPR_SET_0			700
-> +#define CMDQ_SYNC_TOKEN_GPR_SET_1			701
-> +#define CMDQ_SYNC_TOKEN_GPR_SET_2			702
-> +#define CMDQ_SYNC_TOKEN_GPR_SET_3			703
-> +#define CMDQ_SYNC_TOKEN_GPR_SET_4			704
-> +
-> +/* Resource lock event to control resource in GCE thread */
-> +#define CMDQ_SYNC_RESOURCE_WROT0			710
-> +#define CMDQ_SYNC_RESOURCE_WROT1			711
-> +
-> +/* event for gpr timer, used in sleep and poll with timeout */
-> +#define CMDQ_TOKEN_GPR_TIMER_R0				994
-> +#define CMDQ_TOKEN_GPR_TIMER_R1				995
-> +#define CMDQ_TOKEN_GPR_TIMER_R2				996
-> +#define CMDQ_TOKEN_GPR_TIMER_R3				997
-> +#define CMDQ_TOKEN_GPR_TIMER_R4				998
-> +#define CMDQ_TOKEN_GPR_TIMER_R5				999
-> +#define CMDQ_TOKEN_GPR_TIMER_R6				1000
-> +#define CMDQ_TOKEN_GPR_TIMER_R7				1001
-> +#define CMDQ_TOKEN_GPR_TIMER_R8				1002
-> +#define CMDQ_TOKEN_GPR_TIMER_R9				1003
-> +#define CMDQ_TOKEN_GPR_TIMER_R10			1004
-> +#define CMDQ_TOKEN_GPR_TIMER_R11			1005
-> +#define CMDQ_TOKEN_GPR_TIMER_R12			1006
-> +#define CMDQ_TOKEN_GPR_TIMER_R13			1007
-> +#define CMDQ_TOKEN_GPR_TIMER_R14			1008
-> +#define CMDQ_TOKEN_GPR_TIMER_R15			1009
-> +
-> +#define CMDQ_EVENT_MAX					0x3FF
-> +/* CMDQ sw tokens END */
-> +
-> +#endif
+Adding new attach type BPF_TRACE_KPROBE_MULTI that allows attachment
+kprobe to multiple function with new link.
+
+User provides array of addresses or symbols with count to attach the
+kprobe program to. The new link_create uapi interface looks like:
+
+  struct {
+          __u32           flags;
+          __u32           cnt;
+          __aligned_u64   syms;
+          __aligned_u64   addrs;
+  } kprobe_multi;
+
+The flags field allows single BPF_TRACE_KPROBE_MULTI bit to create
+return multi kprobe.
+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ include/linux/bpf_types.h      |   1 +
+ include/linux/trace_events.h   |   7 ++
+ include/uapi/linux/bpf.h       |  13 ++
+ kernel/bpf/syscall.c           |  26 +++-
+ kernel/trace/bpf_trace.c       | 211 +++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h |  13 ++
+ 6 files changed, 266 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+index 48a91c51c015..3e24ad0c4b3c 100644
+--- a/include/linux/bpf_types.h
++++ b/include/linux/bpf_types.h
+@@ -140,3 +140,4 @@ BPF_LINK_TYPE(BPF_LINK_TYPE_XDP, xdp)
+ #ifdef CONFIG_PERF_EVENTS
+ BPF_LINK_TYPE(BPF_LINK_TYPE_PERF_EVENT, perf)
+ #endif
++BPF_LINK_TYPE(BPF_LINK_TYPE_KPROBE_MULTI, kprobe_multi)
+diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+index dcea51fb60e2..8f0e9e7cb493 100644
+--- a/include/linux/trace_events.h
++++ b/include/linux/trace_events.h
+@@ -15,6 +15,7 @@ struct array_buffer;
+ struct tracer;
+ struct dentry;
+ struct bpf_prog;
++union bpf_attr;
+ 
+ const char *trace_print_flags_seq(struct trace_seq *p, const char *delim,
+ 				  unsigned long flags,
+@@ -738,6 +739,7 @@ void bpf_put_raw_tracepoint(struct bpf_raw_event_map *btp);
+ int bpf_get_perf_event_info(const struct perf_event *event, u32 *prog_id,
+ 			    u32 *fd_type, const char **buf,
+ 			    u64 *probe_offset, u64 *probe_addr);
++int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog);
+ #else
+ static inline unsigned int trace_call_bpf(struct trace_event_call *call, void *ctx)
+ {
+@@ -779,6 +781,11 @@ static inline int bpf_get_perf_event_info(const struct perf_event *event,
+ {
+ 	return -EOPNOTSUPP;
+ }
++static inline int
++bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
++{
++	return -EOPNOTSUPP;
++}
+ #endif
+ 
+ enum {
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 99fab54ae9c0..d77f47af7752 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -997,6 +997,7 @@ enum bpf_attach_type {
+ 	BPF_SK_REUSEPORT_SELECT,
+ 	BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
+ 	BPF_PERF_EVENT,
++	BPF_TRACE_KPROBE_MULTI,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
+ 
+@@ -1011,6 +1012,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_NETNS = 5,
+ 	BPF_LINK_TYPE_XDP = 6,
+ 	BPF_LINK_TYPE_PERF_EVENT = 7,
++	BPF_LINK_TYPE_KPROBE_MULTI = 8,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -1118,6 +1120,11 @@ enum bpf_link_type {
+  */
+ #define BPF_F_XDP_HAS_FRAGS	(1U << 5)
+ 
++/* link_create.kprobe_multi.flags used in LINK_CREATE command for
++ * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
++ */
++#define BPF_F_KPROBE_MULTI_RETURN	(1U << 0)
++
+ /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+  * the following extensions:
+  *
+@@ -1475,6 +1482,12 @@ union bpf_attr {
+ 				 */
+ 				__u64		bpf_cookie;
+ 			} perf_event;
++			struct {
++				__u32		flags;
++				__u32		cnt;
++				__aligned_u64	syms;
++				__aligned_u64	addrs;
++			} kprobe_multi;
+ 		};
+ 	} link_create;
+ 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 9beb585be5a6..b8bb67ee6c57 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -32,6 +32,7 @@
+ #include <linux/bpf-netns.h>
+ #include <linux/rcupdate_trace.h>
+ #include <linux/memcontrol.h>
++#include <linux/trace_events.h>
+ 
+ #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+ 			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
+@@ -3022,6 +3023,11 @@ static int bpf_perf_link_attach(const union bpf_attr *attr, struct bpf_prog *pro
+ 	fput(perf_file);
+ 	return err;
+ }
++#else
++static int bpf_perf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
++{
++	return -EOPNOTSUPP;
++}
+ #endif /* CONFIG_PERF_EVENTS */
+ 
+ #define BPF_RAW_TRACEPOINT_OPEN_LAST_FIELD raw_tracepoint.prog_fd
+@@ -4255,7 +4261,7 @@ static int tracing_bpf_link_attach(const union bpf_attr *attr, bpfptr_t uattr,
+ 	return -EINVAL;
+ }
+ 
+-#define BPF_LINK_CREATE_LAST_FIELD link_create.iter_info_len
++#define BPF_LINK_CREATE_LAST_FIELD link_create.kprobe_multi.addrs
+ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+ {
+ 	enum bpf_prog_type ptype;
+@@ -4279,7 +4285,6 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+ 		ret = tracing_bpf_link_attach(attr, uattr, prog);
+ 		goto out;
+ 	case BPF_PROG_TYPE_PERF_EVENT:
+-	case BPF_PROG_TYPE_KPROBE:
+ 	case BPF_PROG_TYPE_TRACEPOINT:
+ 		if (attr->link_create.attach_type != BPF_PERF_EVENT) {
+ 			ret = -EINVAL;
+@@ -4287,6 +4292,14 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+ 		}
+ 		ptype = prog->type;
+ 		break;
++	case BPF_PROG_TYPE_KPROBE:
++		if (attr->link_create.attach_type != BPF_PERF_EVENT &&
++		    attr->link_create.attach_type != BPF_TRACE_KPROBE_MULTI) {
++			ret = -EINVAL;
++			goto out;
++		}
++		ptype = prog->type;
++		break;
+ 	default:
+ 		ptype = attach_type_to_prog_type(attr->link_create.attach_type);
+ 		if (ptype == BPF_PROG_TYPE_UNSPEC || ptype != prog->type) {
+@@ -4318,13 +4331,16 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+ 		ret = bpf_xdp_link_attach(attr, prog);
+ 		break;
+ #endif
+-#ifdef CONFIG_PERF_EVENTS
+ 	case BPF_PROG_TYPE_PERF_EVENT:
+ 	case BPF_PROG_TYPE_TRACEPOINT:
+-	case BPF_PROG_TYPE_KPROBE:
+ 		ret = bpf_perf_link_attach(attr, prog);
+ 		break;
+-#endif
++	case BPF_PROG_TYPE_KPROBE:
++		if (attr->link_create.attach_type == BPF_PERF_EVENT)
++			ret = bpf_perf_link_attach(attr, prog);
++		else
++			ret = bpf_kprobe_multi_link_attach(attr, prog);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index a2024ba32a20..fffa2171fae4 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -17,6 +17,7 @@
+ #include <linux/error-injection.h>
+ #include <linux/btf_ids.h>
+ #include <linux/bpf_lsm.h>
++#include <linux/fprobe.h>
+ 
+ #include <net/bpf_sk_storage.h>
+ 
+@@ -2181,3 +2182,213 @@ static int __init bpf_event_init(void)
+ 
+ fs_initcall(bpf_event_init);
+ #endif /* CONFIG_MODULES */
++
++#ifdef CONFIG_FPROBE
++struct bpf_kprobe_multi_link {
++	struct bpf_link link;
++	struct fprobe fp;
++	unsigned long *addrs;
++};
++
++static void bpf_kprobe_multi_link_release(struct bpf_link *link)
++{
++	struct bpf_kprobe_multi_link *kmulti_link;
++
++	kmulti_link = container_of(link, struct bpf_kprobe_multi_link, link);
++	unregister_fprobe(&kmulti_link->fp);
++}
++
++static void bpf_kprobe_multi_link_dealloc(struct bpf_link *link)
++{
++	struct bpf_kprobe_multi_link *kmulti_link;
++
++	kmulti_link = container_of(link, struct bpf_kprobe_multi_link, link);
++	kvfree(kmulti_link->addrs);
++	kfree(kmulti_link);
++}
++
++static const struct bpf_link_ops bpf_kprobe_multi_link_lops = {
++	.release = bpf_kprobe_multi_link_release,
++	.dealloc = bpf_kprobe_multi_link_dealloc,
++};
++
++static int
++kprobe_multi_link_prog_run(struct bpf_kprobe_multi_link *link,
++			   struct pt_regs *regs)
++{
++	int err;
++
++	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
++		err = 0;
++		goto out;
++	}
++
++	migrate_disable();
++	rcu_read_lock();
++	err = bpf_prog_run(link->link.prog, regs);
++	rcu_read_unlock();
++	migrate_enable();
++
++ out:
++	__this_cpu_dec(bpf_prog_active);
++	return err;
++}
++
++static void
++kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
++			  struct pt_regs *regs)
++{
++	unsigned long saved_ip = instruction_pointer(regs);
++	struct bpf_kprobe_multi_link *link;
++
++	/*
++	 * Because fprobe's regs->ip is set to the next instruction of
++	 * dynamic-ftrace instruction, correct entry ip must be set, so
++	 * that the bpf program can access entry address via regs as same
++	 * as kprobes.
++	 *
++	 * Both kprobe and kretprobe see the entry ip of traced function
++	 * as instruction pointer.
++	 */
++	instruction_pointer_set(regs, entry_ip);
++
++	link = container_of(fp, struct bpf_kprobe_multi_link, fp);
++	kprobe_multi_link_prog_run(link, regs);
++
++	instruction_pointer_set(regs, saved_ip);
++}
++
++static int
++kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
++			  unsigned long *addrs)
++{
++	unsigned long addr, size;
++	const char **syms;
++	int err = -ENOMEM;
++	unsigned int i;
++	char *func;
++
++	size = cnt * sizeof(*syms);
++	syms = kvzalloc(size, GFP_KERNEL);
++	if (!syms)
++		return -ENOMEM;
++
++	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
++	if (!func)
++		goto error;
++
++	if (copy_from_user(syms, usyms, size)) {
++		err = -EFAULT;
++		goto error;
++	}
++
++	for (i = 0; i < cnt; i++) {
++		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
++		if (err == KSYM_NAME_LEN)
++			err = -E2BIG;
++		if (err < 0)
++			goto error;
++		err = -EINVAL;
++		addr = kallsyms_lookup_name(func);
++		if (!addr)
++			goto error;
++		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
++			goto error;
++		addr = ftrace_location_range(addr, addr + size - 1);
++		if (!addr)
++			goto error;
++		addrs[i] = addr;
++	}
++
++	err = 0;
++error:
++	kvfree(syms);
++	kfree(func);
++	return err;
++}
++
++int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
++{
++	struct bpf_kprobe_multi_link *link = NULL;
++	struct bpf_link_primer link_primer;
++	unsigned long *addrs;
++	u32 flags, cnt, size;
++	void __user *uaddrs;
++	void __user *usyms;
++	int err;
++
++	/* no support for 32bit archs yet */
++	if (sizeof(u64) != sizeof(void *))
++		return -EOPNOTSUPP;
++
++	if (prog->expected_attach_type != BPF_TRACE_KPROBE_MULTI)
++		return -EINVAL;
++
++	flags = attr->link_create.kprobe_multi.flags;
++	if (flags & ~BPF_F_KPROBE_MULTI_RETURN)
++		return -EINVAL;
++
++	uaddrs = u64_to_user_ptr(attr->link_create.kprobe_multi.addrs);
++	usyms = u64_to_user_ptr(attr->link_create.kprobe_multi.syms);
++	if (!!uaddrs == !!usyms)
++		return -EINVAL;
++
++	cnt = attr->link_create.kprobe_multi.cnt;
++	if (!cnt)
++		return -EINVAL;
++
++	size = cnt * sizeof(*addrs);
++	addrs = kvmalloc(size, GFP_KERNEL);
++	if (!addrs)
++		return -ENOMEM;
++
++	if (uaddrs) {
++		if (copy_from_user(addrs, uaddrs, size)) {
++			err = -EFAULT;
++			goto error;
++		}
++	} else {
++		err = kprobe_multi_resolve_syms(usyms, cnt, addrs);
++		if (err)
++			goto error;
++	}
++
++	link = kzalloc(sizeof(*link), GFP_KERNEL);
++	if (!link) {
++		err = -ENOMEM;
++		goto error;
++	}
++
++	bpf_link_init(&link->link, BPF_LINK_TYPE_KPROBE_MULTI,
++		      &bpf_kprobe_multi_link_lops, prog);
++
++	err = bpf_link_prime(&link->link, &link_primer);
++	if (err)
++		goto error;
++
++	if (flags & BPF_F_KPROBE_MULTI_RETURN)
++		link->fp.exit_handler = kprobe_multi_link_handler;
++	else
++		link->fp.entry_handler = kprobe_multi_link_handler;
++
++	link->addrs = addrs;
++
++	err = register_fprobe_ips(&link->fp, addrs, cnt);
++	if (err) {
++		bpf_link_cleanup(&link_primer);
++		return err;
++	}
++
++	return bpf_link_settle(&link_primer);
++
++error:
++	kfree(link);
++	kvfree(addrs);
++	return err;
++}
++#else /* !CONFIG_FPROBE */
++int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
++{
++	return -EOPNOTSUPP;
++}
++#endif
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 99fab54ae9c0..d77f47af7752 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -997,6 +997,7 @@ enum bpf_attach_type {
+ 	BPF_SK_REUSEPORT_SELECT,
+ 	BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
+ 	BPF_PERF_EVENT,
++	BPF_TRACE_KPROBE_MULTI,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
+ 
+@@ -1011,6 +1012,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_NETNS = 5,
+ 	BPF_LINK_TYPE_XDP = 6,
+ 	BPF_LINK_TYPE_PERF_EVENT = 7,
++	BPF_LINK_TYPE_KPROBE_MULTI = 8,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -1118,6 +1120,11 @@ enum bpf_link_type {
+  */
+ #define BPF_F_XDP_HAS_FRAGS	(1U << 5)
+ 
++/* link_create.kprobe_multi.flags used in LINK_CREATE command for
++ * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
++ */
++#define BPF_F_KPROBE_MULTI_RETURN	(1U << 0)
++
+ /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
+  * the following extensions:
+  *
+@@ -1475,6 +1482,12 @@ union bpf_attr {
+ 				 */
+ 				__u64		bpf_cookie;
+ 			} perf_event;
++			struct {
++				__u32		flags;
++				__u32		cnt;
++				__aligned_u64	syms;
++				__aligned_u64	addrs;
++			} kprobe_multi;
+ 		};
+ 	} link_create;
+ 
+-- 
+2.35.1
 
