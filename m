@@ -2,112 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 358DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241426AbiCPPCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57582 "EHLO
+        id S243682AbiCPPFJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231613AbiCPPCW (ORCPT
+        with ESMTP id S235051AbiCPPFG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:02:22 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E23422BE3;
-        Wed, 16 Mar 2022 08:01:04 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id ECF4E21123;
-        Wed, 16 Mar 2022 15:01:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1647442862; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XaTng22aYFlv7NgcIe0v1KHMxXuvJ+qQDDO9xj7QADM=;
-        b=UbQZbfx+JBsqITI8XSIZo49f/OYrzBsHhdFBiKt+N4P1igy2NUGhIofHT4pxJ0rWzB4ctP
-        5Dv/rTBX+71DSJO1UNXbbLgrMu1y9ctA6fIhDKl7lsloZrGRH+T2YivKSvivFAcQvPKPPY
-        wUb87PZ21wUAa95jeKIcpwWSMzncygk=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 9683FA3B89;
-        Wed, 16 Mar 2022 15:01:02 +0000 (UTC)
-Date:   Wed, 16 Mar 2022 16:01:02 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Miroslav Benes <mbenes@suse.cz>
-Cc:     Chengming Zhou <zhouchengming@bytedance.com>, jpoimboe@redhat.com,
-        jikos@kernel.org, joe.lawrence@redhat.com,
-        live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com, qirui.001@bytedance.com
-Subject: Re: [PATCH v3] livepatch: Don't block removal of patches that are
- safe to unload
-Message-ID: <YjH7rniD4rBO6JIP@alley>
-References: <20220312152220.88127-1-zhouchengming@bytedance.com>
- <alpine.LSU.2.21.2203161536330.6444@pobox.suse.cz>
+        Wed, 16 Mar 2022 11:05:06 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E343E0F7
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:03:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647443032; x=1678979032;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=72ryhfEZk3onftW2RR713oe1Qef1DtYB9K7FvQu9Wzc=;
+  b=fiHmiWivQGN78596AauwvRLS79jjA19fJ1iSNET7ovv6OOk0R4ULO8KM
+   BzzjnRe+g70xg08EVNaVMbBQ+1UVoBatcUMbGR2eNosB+e8aO8WdDIe/d
+   aRW/5KEItyQ3QW5E2lo0xMDP3QNPpYBJWVSQA5/KK78gsGsywVSEmry15
+   tGtYnuI57FzmoRzekIhuzgt8znkw8gMbY2MaK41cEsACJFTqr4JLv0o81
+   n2dO0NlEizY8/tX3cTM5ZJ8AH6hKv1LdhBbjFUZShNv3iMPOU6dp10pnD
+   1DFtC+6O2UrjQy5i4SFe4Vq3fO9Wc/urWXlb/z1tI4h3J4383hnUqFJTo
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317344196"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="317344196"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:01:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="598746218"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Mar 2022 08:01:05 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUV96-000CWm-Sn; Wed, 16 Mar 2022 15:01:04 +0000
+Date:   Wed, 16 Mar 2022 23:00:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Becle Lee <becle.lee@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Hersen Wu <hersenxs.wu@amd.com>, Aric Cyr <Aric.Cyr@amd.com>
+Subject: [agd5f:drm-next 48/65]
+ drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_hubp.c:1319:6: warning:
+ no previous prototype for 'hubp1_wait_pipe_read_start'
+Message-ID: <202203162243.lsr37uYW-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LSU.2.21.2203161536330.6444@pobox.suse.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-03-16 15:48:25, Miroslav Benes wrote:
-> On Sat, 12 Mar 2022, Chengming Zhou wrote:
-> 
-> > module_put() is not called for a patch with "forced" flag. It should
-> > block the removal of the livepatch module when the code might still
-> > be in use after forced transition.
-> > 
-> > klp_force_transition() currently sets "forced" flag for all patches on
-> > the list.
-> > 
-> > In fact, any patch can be safely unloaded when it passed through
-> > the consistency model in KLP_UNPATCHED transition.
-> > 
-> > By other words, the "forced" flag must be set only for livepatches
-> 
-> s/By/In/
-> 
-> > that are being removed. In particular, set the "forced" flag:
-> > 
-> >   + only for klp_transition_patch when the transition to KLP_UNPATCHED
-> >     state was forced.
-> > 
-> >   + all replaced patches when the transition to KLP_PATCHED state was
-> >     forced and the patch was replacing the existing patches.
-> > 
-> > index 5683ac0d2566..7f25a5ae89f6 100644
-> > --- a/kernel/livepatch/transition.c
-> > +++ b/kernel/livepatch/transition.c
-> > @@ -641,6 +641,18 @@ void klp_force_transition(void)
-> >  	for_each_possible_cpu(cpu)
-> >  		klp_update_patch_state(idle_task(cpu));
-> >  
-> > -	klp_for_each_patch(patch)
-> > -		patch->forced = true;
-> > +	/*
-> > +	 * Only need to set forced flag for the transition patch
-> > +	 * when force transition to KLP_UNPATCHED state, but
-> > +	 * have to set forced flag for all replaced patches
-> > +	 * when force atomic replace transition.
-> > +	 */
-> 
-> How about something like
-> 
-> /*
->  * Set forced flag for patches being removed, which is the transition
->  * patch in KLP_UNPATCHED state or all replaced patches when forcing
->  * the atomic replace transition.
->  */
+tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
+head:   426c89aa203bcec9d9cf6eea36735eafa1b1f099
+commit: dd15640bcee5a5fa74fc52557dd6220f48b01116 [48/65] drm/amd/display: Wait for hubp read line for Pollock
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220316/202203162243.lsr37uYW-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
+        git fetch --no-tags agd5f drm-next
+        git checkout dd15640bcee5a5fa74fc52557dd6220f48b01116
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/gpu/drm/
 
-Or just the first sentence:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	/* Set forced flag for patches being removed */
+All warnings (new ones prefixed by >>):
 
-The rest is visible from the code.
+>> drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_hubp.c:1319:6: warning: no previous prototype for 'hubp1_wait_pipe_read_start' [-Wmissing-prototypes]
+    1319 | void hubp1_wait_pipe_read_start(struct hubp *hubp)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Either version works for me. If we agree on it then I update
-the text when pushing the patch.
 
-Best Regards,
-Petr
+vim +/hubp1_wait_pipe_read_start +1319 drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_hubp.c
+
+  1313	
+  1314	/**
+  1315	 * hubp1_wait_pipe_read_start - wait for hubp ret path starting read.
+  1316	 *
+  1317	 * @hubp: hubp struct reference.
+  1318	 */
+> 1319	void hubp1_wait_pipe_read_start(struct hubp *hubp)
+  1320	{
+  1321		struct dcn10_hubp *hubp1 = TO_DCN10_HUBP(hubp);
+  1322	
+  1323		REG_WAIT(HUBPRET_READ_LINE_STATUS,
+  1324			PIPE_READ_VBLANK, 0,
+  1325			 1, 1000);
+  1326	}
+  1327	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
