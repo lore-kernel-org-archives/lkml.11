@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A20C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353202AbiCPCM7 (ORCPT
+        id S1352615AbiCPCND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:12:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47440 "EHLO
+        Tue, 15 Mar 2022 22:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352482AbiCPCLa (ORCPT
+        with ESMTP id S1352964AbiCPCLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:11:30 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1675E75A
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:14 -0700 (PDT)
+        Tue, 15 Mar 2022 22:11:43 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA6B5E761
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647396614; x=1678932614;
+  t=1647396615; x=1678932615;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=piyvgIvcVOBe83P9ahK/zUHRvKZIbLrME/ZzGKzUuwo=;
-  b=NgGMMp/rZoMd/TOjsengmF+9YA7bOdt4vDJPiQh/cRwRtzSv1tpAZCC6
-   kGOq+M0a3Tq2et3n2zju3JzoUYh7E3l+FiP4dSxzAq0x2dth1pb8cHvPm
-   3YLJ6Bn2GgHsF2+e2WW4E5Ruah52IpocDUza96/IiqywV84Pk5kJJ5UiW
-   hzFBJtzfTMyiCCevNIpDPHch4UrjAke9LItyh+tO6juW8z7+bPEWDgegg
-   0V1B9XEHkZoanCzdctE/B3DHHqBTlENfqUTblwoEpFLX4RojVVzinhIBT
-   Bz8kFUb/RtIrX5ito/6PN2KlqqNu+JAkBbZgafRLwjK5NDWEcMHdK6NPC
+  bh=+WawZY27NEELHhgB1fXDvGDjjtTQQYODbL1EDFsWuKs=;
+  b=fPEfiPe47SlFBgXwxxKbA/qckFM3Xt8vF8Ag3EtqLwSSQUYL/DeEcsOA
+   ZMUskgUYwdqcUjwV9sZgBprcpbnXIJ1lwug4RAsoPeJIQ+44NZlTI977/
+   dwO/ScCcv7sykv5EGeT5aVYiDRA/PB9Xv/KY7E8eiDM6JrnvWV9rPvJFM
+   O4X3lobQXVQTd3MS83tr9FGRMplDjjnBnUeOBHzIHiQMJTjBeQ7aDXkXl
+   BzIC61/49tGJgVCSB53FX6k9RgXRqIHxehD85IXE7+O4AvUy3knEdBNWO
+   qllYbqxqKlricdjmq5keLJv93Iy1swtVf6qEslcvTeL540GBAffygZNca
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236415691"
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="342898594"
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="236415691"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:12 -0700
+   d="scan'208";a="342898594"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:12 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="714416793"
+   d="scan'208";a="646462122"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 15 Mar 2022 19:10:05 -0700
+  by orsmga004.jf.intel.com with ESMTP; 15 Mar 2022 19:10:05 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id A620BA9D; Wed, 16 Mar 2022 04:10:10 +0200 (EET)
+        id E95B9D3B; Wed, 16 Mar 2022 04:10:10 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,106 +52,110 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv6 22/30] x86/boot: Set CR0.NE early and keep it set during the boot
-Date:   Wed, 16 Mar 2022 05:08:48 +0300
-Message-Id: <20220316020856.24435-23-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 27/30] x86/kvm: Make SWIOTLB buffer shared for TD guest
+Date:   Wed, 16 Mar 2022 05:08:53 +0300
+Message-Id: <20220316020856.24435-28-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX guest requires CR0.NE to be set. Clearing the bit triggers #GP(0).
+Intel TDX doesn't allow VMM to directly access guest private memory.
+Any memory that is required for communication with the VMM must be
+shared explicitly. The same rule applies for any DMA to and from the
+TDX guest. All DMA pages have to be marked as shared pages. A generic way
+to achieve this without any changes to device drivers is to use the
+SWIOTLB framework.
 
-If CR0.NE is 0, the MS-DOS compatibility mode for handling floating-point
-exceptions is selected. In this mode, the software exception handler for
-floating-point exceptions is invoked externally using the processor’s
-FERR#, INTR, and IGNNE# pins.
+Make SWIOTLB buffer shared by generalizing mem_encrypt_init() to cover
+TDX.
 
-Using FERR# and IGNNE# to handle floating-point exception is deprecated.
-CR0.NE=0 also limits newer processors to operate with one logical
-processor active.
-
-Kernel uses CR0_STATE constant to initialize CR0. It has NE bit set.
-But during early boot kernel has more ad-hoc approach to setting bit
-in the register. During some of this ad-hoc manipulation, CR0.NE is
-cleared. This causes a #GP in TDX guests and makes it die in early boot.
-
-Make CR0 initialization consistent, deriving the initial value of CR0
-from CR0_STATE. Since CR0_STATE always has CR0.NE=1, this ensures that
-CR0.NE is never 0 and avoids the #GP.
-
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
- arch/x86/boot/compressed/head_64.S   | 7 ++++---
- arch/x86/realmode/rm/trampoline_64.S | 8 ++++----
- 2 files changed, 8 insertions(+), 7 deletions(-)
+ arch/x86/Kconfig                   | 2 +-
+ arch/x86/coco/core.c               | 1 +
+ arch/x86/include/asm/mem_encrypt.h | 6 +++---
+ arch/x86/mm/mem_encrypt.c          | 9 ++++++++-
+ 4 files changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
-index fd9441f40457..d0c3d33f3542 100644
---- a/arch/x86/boot/compressed/head_64.S
-+++ b/arch/x86/boot/compressed/head_64.S
-@@ -289,7 +289,7 @@ SYM_FUNC_START(startup_32)
- 	pushl	%eax
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 98efb35ed7b1..1312cefb927d 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -885,7 +885,7 @@ config INTEL_TDX_GUEST
+ 	depends on X86_64 && CPU_SUP_INTEL
+ 	depends on X86_X2APIC
+ 	select ARCH_HAS_CC_PLATFORM
+-	select DYNAMIC_PHYSICAL_MASK
++	select X86_MEM_ENCRYPT
+ 	select X86_MCE
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 9f74125c582d..4320fadae716 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -22,6 +22,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+ 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
+ 	case CC_ATTR_HOTPLUG_DISABLED:
+ 	case CC_ATTR_GUEST_MEM_ENCRYPT:
++	case CC_ATTR_MEM_ENCRYPT:
+ 		return true;
+ 	default:
+ 		return false;
+diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+index e2c6f433ed10..88ceaf3648b3 100644
+--- a/arch/x86/include/asm/mem_encrypt.h
++++ b/arch/x86/include/asm/mem_encrypt.h
+@@ -49,9 +49,6 @@ void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages,
  
- 	/* Enter paged protected Mode, activating Long Mode */
--	movl	$(X86_CR0_PG | X86_CR0_PE), %eax /* Enable Paging and Protected mode */
-+	movl	$CR0_STATE, %eax
- 	movl	%eax, %cr0
+ void __init mem_encrypt_free_decrypted_mem(void);
  
- 	/* Jump from 32bit compatibility mode into 64bit mode. */
-@@ -662,8 +662,9 @@ SYM_CODE_START(trampoline_32bit_src)
- 	pushl	$__KERNEL_CS
- 	pushl	%eax
+-/* Architecture __weak replacement functions */
+-void __init mem_encrypt_init(void);
+-
+ void __init sev_es_init_vc_handling(void);
  
--	/* Enable paging again */
--	movl	$(X86_CR0_PG | X86_CR0_PE), %eax
-+	/* Enable paging again. */
-+	movl	%cr0, %eax
-+	btsl	$X86_CR0_PG_BIT, %eax
- 	movl	%eax, %cr0
+ #define __bss_decrypted __section(".bss..decrypted")
+@@ -89,6 +86,9 @@ static inline void mem_encrypt_free_decrypted_mem(void) { }
  
- 	lret
-diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
-index ae112a91592f..d380f2d1fd23 100644
---- a/arch/x86/realmode/rm/trampoline_64.S
-+++ b/arch/x86/realmode/rm/trampoline_64.S
-@@ -70,7 +70,7 @@ SYM_CODE_START(trampoline_start)
- 	movw	$__KERNEL_DS, %dx	# Data segment descriptor
+ #endif	/* CONFIG_AMD_MEM_ENCRYPT */
  
- 	# Enable protected mode
--	movl	$X86_CR0_PE, %eax	# protected mode (PE) bit
-+	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
- 	movl	%eax, %cr0		# into protected mode
++/* Architecture __weak replacement functions */
++void __init mem_encrypt_init(void);
++
+ /*
+  * The __sme_pa() and __sme_pa_nodebug() macros are meant for use when
+  * writing to or comparing values from the cr3 register.  Having the
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 50d209939c66..10ee40b5204b 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -42,7 +42,14 @@ bool force_dma_unencrypted(struct device *dev)
  
- 	# flush prefetch and jump to startup_32
-@@ -148,8 +148,8 @@ SYM_CODE_START(startup_32)
- 	movl	$MSR_EFER, %ecx
- 	wrmsr
+ static void print_mem_encrypt_feature_info(void)
+ {
+-	pr_info("AMD Memory Encryption Features active:");
++	pr_info("Memory Encryption Features active:");
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
++		pr_cont(" Intel TDX\n");
++		return;
++	}
++
++	pr_cont("AMD ");
  
--	# Enable paging and in turn activate Long Mode
--	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_PE), %eax
-+	# Enable paging and in turn activate Long Mode.
-+	movl	$CR0_STATE, %eax
- 	movl	%eax, %cr0
- 
- 	/*
-@@ -169,7 +169,7 @@ SYM_CODE_START(pa_trampoline_compat)
- 	movl	$rm_stack_end, %esp
- 	movw	$__KERNEL_DS, %dx
- 
--	movl	$X86_CR0_PE, %eax
-+	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
- 	movl	%eax, %cr0
- 	ljmpl   $__KERNEL32_CS, $pa_startup_32
- SYM_CODE_END(pa_trampoline_compat)
+ 	/* Secure Memory Encryption */
+ 	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
 -- 
 2.34.1
 
