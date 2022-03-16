@@ -2,77 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E46C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:15:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354797AbiCPJOx (ORCPT
+        id S1354821AbiCPJQi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 05:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
+        Wed, 16 Mar 2022 05:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243385AbiCPJOw (ORCPT
+        with ESMTP id S243385AbiCPJQg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 05:14:52 -0400
-Received: from smtpbgjp3.qq.com (smtpbgjp3.qq.com [54.92.39.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2395DE73
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:13:34 -0700 (PDT)
-X-QQ-mid: bizesmtp91t1647421990t37qmosd
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 16 Mar 2022 17:13:04 +0800 (CST)
-X-QQ-SSF: 01400000002000D0H000000A0000000
-X-QQ-FEAT: TskX/GkkryCtF3MMUU7WGeLJerz6JGDXThH7VyNE/T3DPVypoS4JBKwYguSjL
-        +o/qFTpdpmvQ3QQU3Gz/AceDwgtpxI+JZtqgzzOtVSmIxSSJrqn6tmzQqom790x5nUVNb7M
-        ZcSHX6rwVMb+ihYHEpvAulQr2lQLyiPPsL0c9UjaxqDYDLE6nQLLJy2gxife7F3/zTaBIxG
-        QAeP+/gFa9KsRCvJMAZj+K8qJcPuRLwnjKRhq2erjDI/x+51xCTLgDDn6UEc4AOwrxAyfov
-        gnfnZ2maK3fRBEb1R0zdy2bI4w/aUbKy+J3lGQVtp7IARXgO1stlJ2Huqp8qZB8lRb7olhF
-        fkBx8mARx+DLFcYbmfcgG+RoDvTZtHbyENf86t2
-X-QQ-GoodBg: 1
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     perex@perex.cz, tiwai@suse.com, broonie@kernel.org,
-        lgirdwood@gmail.com, Vijendar.Mukunda@amd.com
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH] ASoC: amd: Fix reference to PCM buffer address
-Date:   Wed, 16 Mar 2022 17:13:03 +0800
-Message-Id: <20220316091303.9745-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 16 Mar 2022 05:16:36 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBB725DE7B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:15:21 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id r22so2257551ljd.4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:15:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=Y0ggJ9V38cE1b6AbUVeGyXnI9Fgl1hR/3Vx8sEEmZeo=;
+        b=kCnKg4MIsOoya9TXhoPOk1grh79P74LsBE9ARzsWX9dqD6Xc4MwHcG/q+gXUdM5q8c
+         lu4ocMfkObZK/AaB08efYQuvWYSm4f1Hpe+y+HI15FrLQV6qRBuK3daxp6giD9z74GQz
+         fTm7w3TV+MehDK8HZwZziLrrgkqPd0Tic8iC+9cAy9It5hvPlIdY28Zu8UUvETekYoEu
+         6Q8fbtrAwGWTMpV+MHDSUPHzPeM3rR1lNhG8qnn1toEzvxO8w+rb0PiKbYxlA8AB6ZxZ
+         pBK3+4rthtEjx2XQmQnCFY1F4HAVLMjADxKIa2p1TLoqdBtqpUUMoqJ9BGonXYaw/Pmq
+         BIiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Y0ggJ9V38cE1b6AbUVeGyXnI9Fgl1hR/3Vx8sEEmZeo=;
+        b=tYZO3mK8xbRkMPUr8+bodWXUBrlLcIui7Y1RH3eN7hO8I6iNHK85lvopMkawi+2BDE
+         BbTaVwh4E6SC9Cxrp0qS38D2dNdpS42fNzgL6Snfv00gRVw+IeLYOebsaeA/n286XsfQ
+         GWKVRs7uJUMnUkpZPLKtoCb6JmXUCxLGI2ZRFXoZUXDjq4tS8CFyd9PAw3dgr4JjSmj6
+         DrqbwCJNyGTPPZoEZTVEQaJRYxv97lsLJdx1dJPIFhIHRiBYSNag7HvzG0jUb+LU+ECQ
+         +qDdRdjFCFuIyWDIiznz891ufAmLTWGamUMeqsk9QcVyPzT37AkKaK/n5Y8crNNOWlCW
+         HK8w==
+X-Gm-Message-State: AOAM5331ARQAac2Na3ZU5RFSvfVqVph2AQS3AZCSUQYx96RIXlCn69Ii
+        C07WWuyB4TNKudtrDpDghc2G7Q==
+X-Google-Smtp-Source: ABdhPJw/j+Y/gmbpqw53HNbc2McDPUaBydnhTgSl5g+M78LmqUd3Ub4GwLiNCc7rZkHT+IFp2mnEvQ==
+X-Received: by 2002:a2e:aa10:0:b0:248:33d:3569 with SMTP id bf16-20020a2eaa10000000b00248033d3569mr19694635ljb.107.1647422119907;
+        Wed, 16 Mar 2022 02:15:19 -0700 (PDT)
+Received: from wkz-x280 (a124.broadband3.quicknet.se. [46.17.184.124])
+        by smtp.gmail.com with ESMTPSA id j15-20020a196e0f000000b0044827945789sm128014lfc.155.2022.03.16.02.15.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 02:15:19 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v4 net-next 10/15] net: dsa: Validate hardware support
+ for MST
+In-Reply-To: <20220315171108.ameddbqv2sehq3pp@skbuf>
+References: <20220315002543.190587-1-tobias@waldekranz.com>
+ <20220315002543.190587-11-tobias@waldekranz.com>
+ <20220315171108.ameddbqv2sehq3pp@skbuf>
+Date:   Wed, 16 Mar 2022 10:15:18 +0100
+Message-ID: <8735jil0m1.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign8
-X-QQ-Bgrelay: 1
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PCM buffers might be allocated dynamically when the buffer
-preallocation failed or a larger buffer is requested, and it's not
-guaranteed that substream->dma_buffer points to the actually used
-buffer.  The driver needs to refer to substream->runtime->dma_addr
-instead for the buffer address.
+On Tue, Mar 15, 2022 at 19:11, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Mar 15, 2022 at 01:25:38AM +0100, Tobias Waldekranz wrote:
+>> When joining a bridge where MST is enabled, we validate that the
+>> proper offloading support is in place, otherwise we fallback to
+>> software bridging.
+>> 
+>> When then mode is changed on a bridge in which we are members, we
+>> refuse the change if offloading is not supported.
+>> 
+>> At the moment we only check for configurable learning, but this will
+>> be further restricted as we support more MST related switchdev events.
+>> 
+>> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> ---
+>>  net/dsa/dsa_priv.h |  2 ++
+>>  net/dsa/port.c     | 22 ++++++++++++++++++++++
+>>  net/dsa/slave.c    |  6 ++++++
+>>  3 files changed, 30 insertions(+)
+>> 
+>> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+>> index f20bdd8ea0a8..2aba420696ef 100644
+>> --- a/net/dsa/dsa_priv.h
+>> +++ b/net/dsa/dsa_priv.h
+>> @@ -234,6 +234,8 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+>>  			    struct netlink_ext_ack *extack);
+>>  bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+>>  int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
+>> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
+>> +			struct netlink_ext_ack *extack);
+>>  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
+>>  			bool targeted_match);
+>>  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+>> diff --git a/net/dsa/port.c b/net/dsa/port.c
+>> index 58291df14cdb..02214033cec0 100644
+>> --- a/net/dsa/port.c
+>> +++ b/net/dsa/port.c
+>> @@ -321,6 +321,11 @@ static void dsa_port_bridge_destroy(struct dsa_port *dp,
+>>  	kfree(bridge);
+>>  }
+>>  
+>> +static bool dsa_port_supports_mst(struct dsa_port *dp)
+>> +{
+>> +	return dsa_port_can_configure_learning(dp);
+>> +}
+>> +
+>>  int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+>>  			 struct netlink_ext_ack *extack)
+>>  {
+>> @@ -334,6 +339,9 @@ int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br,
+>>  	struct net_device *brport_dev;
+>>  	int err;
+>>  
+>> +	if (br_mst_enabled(br) && !dsa_port_supports_mst(dp))
+>> +		return -EOPNOTSUPP;
+>> +
+>>  	/* Here the interface is already bridged. Reflect the current
+>>  	 * configuration so that drivers can program their chips accordingly.
+>>  	 */
+>> @@ -735,6 +743,20 @@ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
+>>  	return 0;
+>>  }
+>>  
+>> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
+>> +			struct netlink_ext_ack *extack)
+>> +{
+>> +	if (!on)
+>> +		return 0;
+>> +
+>> +	if (!dsa_port_supports_mst(dp)) {
+>> +		NL_SET_ERR_MSG_MOD(extack, "Hardware does not support MST");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>
+> Experimenting a bit... maybe this looks tidier? We make the "if" condition
+> have the same basic structure as the previous "if (br_mst_enabled(br) &&
+> !dsa_port_supports_mst(dp))", albeit transformed using De Morgan's rules.
+>
+> {
+> 	if (!on || dsa_port_supports_mst(dp))
+> 		return 0;
+>
+> 	NL_SET_ERR_MSG_MOD(extack, "Hardware does not support MST");
+> 	return -EINVAL;
+> }
 
-Fixes: cab396d8b22c1 ("ASoC: amd: add ACP5x pcm dma driver ops")
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
----
- sound/soc/amd/vangogh/acp5x-pcm-dma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I initially had it like this. It looks tidier, yes - but to me the
+intent is less obvious when reading it. How about:
 
-diff --git a/sound/soc/amd/vangogh/acp5x-pcm-dma.c b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-index 31fa166df98a..d36bb718370f 100644
---- a/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-+++ b/sound/soc/amd/vangogh/acp5x-pcm-dma.c
-@@ -281,7 +281,7 @@ static int acp5x_dma_hw_params(struct snd_soc_component *component,
- 		return -EINVAL;
- 	}
- 	size = params_buffer_bytes(params);
--	rtd->dma_addr = substream->dma_buffer.addr;
-+	rtd->dma_addr = substream->runtime->dma_addr;
- 	rtd->num_pages = (PAGE_ALIGN(size) >> PAGE_SHIFT);
- 	config_acp5x_dma(rtd, substream->stream);
- 	return 0;
--- 
-2.20.1
+{
+	if (on && !dsa_port_supports_mst(dp)) {
+		NL_SET_ERR_MSG_MOD(extack, "Hardware does not support MST");
+		return -EINVAL;
+	}
 
+	return 0;
+}
 
-
+>> +
+>>  int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
+>>  			      struct switchdev_brport_flags flags,
+>>  			      struct netlink_ext_ack *extack)
+>> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+>> index 647adee97f7f..879d18cc99cb 100644
+>> --- a/net/dsa/slave.c
+>> +++ b/net/dsa/slave.c
+>> @@ -463,6 +463,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
+>>  
+>>  		ret = dsa_port_ageing_time(dp, attr->u.ageing_time);
+>>  		break;
+>> +	case SWITCHDEV_ATTR_ID_BRIDGE_MST:
+>> +		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
+>> +			return -EOPNOTSUPP;
+>> +
+>> +		ret = dsa_port_mst_enable(dp, attr->u.mst, extack);
+>> +		break;
+>>  	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
+>>  		if (!dsa_port_offloads_bridge_port(dp, attr->orig_dev))
+>>  			return -EOPNOTSUPP;
+>> -- 
+>> 2.25.1
+>> 
