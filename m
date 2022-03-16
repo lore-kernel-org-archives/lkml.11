@@ -2,141 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E99C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356029AbiCPQog (ORCPT
+        id S1357504AbiCPQp1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
+        Wed, 16 Mar 2022 12:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356287AbiCPQob (ORCPT
+        with ESMTP id S1357462AbiCPQpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:44:31 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B739715A06
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:43:15 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2db2add4516so30300737b3.1
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iT8WAzTqJQWZlBRHChD4jFljyqWvTcdhx0dN/jklVW8=;
-        b=OnPazNty4PyG9SDSEhr/YW++Z5+dYLpi7ck+zzRi4Jh1Gcdndd//ofztLag68Hq4ZS
-         r/Ue+iGeqw8Tb2agkoqSd7Z5qSZFbETzaw0K3S04ozbFK1r+zCAyWm0DGJVrf2QBWAtz
-         U6GnLkg2vNrHCjq7AvgiN0/SMG9sCqIUArrXtW9CULW8ZI5b40ch7PQiVQlDZOqBDFs0
-         qT4LnaaLW7VJZvd/SpJLSrDTKJ0ZENx7NKaYliIOOSL2KUyHFnU4o9RYCbnSf/KZvnRa
-         ezHnbrIEDI7k7QaRjPptjHL5y/e4rfufkuL/hcUjH7b43TRkbGcaPYerwTLdAX0RrHCO
-         LyWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iT8WAzTqJQWZlBRHChD4jFljyqWvTcdhx0dN/jklVW8=;
-        b=mhwZ0MrBMOuscvmX90kaU/f8d3zThvL9BwbM5zU2JDs/eXeX3AfeMIxVatGdc9kknP
-         6cCAQ+iSUuejBWkyAtp9ULf05BmaOxVRGujguBkehzk6CqYJIRybUmWN2sjh6FYOueuD
-         litm4FLnLp+/Lu7oeRY/1PvoglAsKxqMvwsxdAS4RfErPJS3p3Owtaxn2Q/jrd1SZDyd
-         nLpU1vXUqHSWrHACvysYYYKiUOsaluX9LGiP/3tP34dEz/MNXUMZwyFh4ObioUloZ4RZ
-         /JBcfeyYPanICwDmXthYzhmkRhWZxX6EZJf7u19EyhWMvYzg7+VBgyDm30AnBdto1tGX
-         GvTw==
-X-Gm-Message-State: AOAM532lrvkx6ZdO8gRcvNhR4FTX/DSKJj1vIdBh7EpEmuh4JhLFB6SM
-        Pxe7hMZjfRGeAkVIGva8o1EA+e1oV4Ytd6h/CvM=
-X-Google-Smtp-Source: ABdhPJx/HsFa8UTBF2cr5iaVHj9rk7NdFCy2A5o9Wr6S1nEdSG/6FCCrVtvbO9ODvBRDioBlllmpeKIut+g5gm72Jmc=
-X-Received: by 2002:a0d:eb02:0:b0:2e5:9d37:58ba with SMTP id
- u2-20020a0deb02000000b002e59d3758bamr1059698ywe.231.1647448993655; Wed, 16
- Mar 2022 09:43:13 -0700 (PDT)
+        Wed, 16 Mar 2022 12:45:18 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E4F28999
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:44:03 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <afa@pengutronix.de>)
+        id 1nUWkM-0003gT-6s; Wed, 16 Mar 2022 17:43:38 +0100
+Received: from afa by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <afa@pengutronix.de>)
+        id 1nUWkJ-007DX5-Tf; Wed, 16 Mar 2022 17:43:35 +0100
+From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        David Howells <dhowells@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     kernel@pengutronix.de, Andreas Rammhold <andreas@rammhold.de>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        David Gstir <david@sigma-star.at>,
+        Richard Weinberger <richard@nod.at>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org
+Subject: [PATCH v6 1/4] KEYS: trusted: allow use of TEE as backend without TCG_TPM support
+Date:   Wed, 16 Mar 2022 17:43:32 +0100
+Message-Id: <20220316164335.1720255-2-a.fatoum@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220316164335.1720255-1-a.fatoum@pengutronix.de>
+References: <20220316164335.1720255-1-a.fatoum@pengutronix.de>
 MIME-Version: 1.0
-References: <20220315073949.7541-1-jiangshanlai@gmail.com> <20220315073949.7541-4-jiangshanlai@gmail.com>
- <YjH8xJ3MKosyUl7M@hirez.programming.kicks-ass.net>
-In-Reply-To: <YjH8xJ3MKosyUl7M@hirez.programming.kicks-ass.net>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Thu, 17 Mar 2022 00:43:02 +0800
-Message-ID: <CAJhGHyBKC4Xe=FTtv=+QRG1b5o=6G+vdMDP+oH83cz+29VXHBg@mail.gmail.com>
-Subject: Re: [PATCH V3 3/7] x86/entry: Switch the stack after error_entry() returns
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: afa@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:05 PM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> >  SYM_CODE_END(error_entry)
->
-> So the new Changelog doesn't seem to help me much. But looking at both
-> fixup_bad_iret() and sync_regs(), they both have:
->
->   __this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1
+With recent rework, trusted keys are no longer limited to TPM as trust
+source. The Kconfig symbol is unchanged however leading to a few issues:
 
+  - TCG_TPM is required, even if only TEE is to be used
+  - Enabling TCG_TPM, but excluding it from available trusted sources
+    is not possible
+  - TEE=m && TRUSTED_KEYS=y will lead to TEE support being silently
+    dropped, which is not the best user experience
 
-For a long time in old days (before KPTI), tss.sp0 does be the kernel
-thread stack, but now is not the kernel thread stack, rather it is the
-trampoline stack (or entry stack) in the cpu entry area.
+Remedy these issues by introducing two new boolean Kconfig symbols:
+TRUSTED_KEYS_TPM and TRUSTED_KEYS_TEE with the appropriate
+dependencies.
 
-And bad IRET can happen when doing IRET to return to userspace and it
-is also the trampoline stack. So fixup_bad_iret() is really just moving
-the lower partial pt_regs up to concat with user IRET frame head
-in the entry stack.
+Any new code depending on the TPM trusted key backend in particular
+or symbols exported by it will now need to explicitly state that it
 
-So fixup_bad_iret() will NOT have setup pt_regs on the thread stack.
-And sync_regs() is needed after fixup_bad_iret()
+  depends on TRUSTED_KEYS && TRUSTED_KEYS_TPM
 
-The patch
-https://lore.kernel.org/lkml/20200817062355.2884-3-jiangshanlai@gmail.com/
-tried changing fixup_bad_iret() to copy the pt_regs directly to
-the kernel stack.
+The latter to ensure the dependency is built and the former to ensure
+it's reachable for module builds. There are no such users yet.
 
-And in the V1 of the patchset that converting ASM to code also
-tried it:
-https://lore.kernel.org/lkml/20210831175025.27570-13-jiangshanlai@gmail.com/
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Tested-By: Andreas Rammhold <andreas@rammhold.de>
+Tested-By: Tim Harvey <tharvey@gateworks.com>
+Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+---
+v5 -> v6:
+  - Rebased on asym_tpm removal
+v4 -> v5:
+  - collected Jarkko's Reviewed-by
+v3 -> v4:
+  - rebased on top of Andreas' regression fix and pulled it back
+    into series
+v2 -> v3:
+  - factored this patch out as a fix for backporting
+v1 -> v2:
+  - Move rest of TPM-related selects from TRUSTED_KEYS to
+    TRUSTED_KEYS_TPM (Sumit)
+  - Remove left-over line in Makefile (Sumit)
+  - added Fixes: tag
+  - adjust commit message to reference the regression reported
+    by Andreas
+  - have ASYMMETRIC_TPM_KEY_SUBTYPE depend on TRUSTED_KEYS_TPM,
+    because it references global symbols that are exported
+    by the trusted key TPM backend.
 
-And in the current patchset, it focuses on ASM code only. I don't think
-we need to change it.  It would be much simpler to change the behavior
-of fixup_bad_iret() when error_entry() is converted to C.
+[1]: https://lore.kernel.org/linux-integrity/f8285eb0135ba30c9d846cf9dd395d1f5f8b1efc.1624364386.git-series.a.fatoum@pengutronix.de/
+[2]: https://lore.kernel.org/linux-integrity/20210719091335.vwfebcpkf4pag3wm@wrt/T/#t
 
->
-> as hard-coded destination. Now, fixup_bad_iret() sets up a complete
-> ptregs there and then returns a pointer to this stack.
->
-> sync_regs otoh, does a straight up pt_regs sized copy from arg0 to this
-> new stack.
->
-> Therefore it appears to me that doing sync_regs() after fixup_bad_iret()
-> is a complete NO-OP and only confuses things further.
->
-> Would not something like the below clarify things?
->
-> --- a/arch/x86/entry/entry_64.S
-> +++ b/arch/x86/entry/entry_64.S
-> @@ -1004,6 +1004,7 @@ SYM_CODE_START_LOCAL(error_entry)
->  .Lerror_entry_from_usermode_after_swapgs:
->         /* Put us onto the real thread stack. */
->         call    sync_regs
-> +.Lerror_entry_from_usermode_after_sync_regs:
->         RET
->
->         /*
-> @@ -1058,8 +1059,12 @@ SYM_CODE_START_LOCAL(error_entry)
->          */
->         leaq    8(%rsp), %rdi                   /* arg0 = pt_regs pointer */
->         call    fixup_bad_iret
-> -       mov     %rax, %rdi
-> -       jmp     .Lerror_entry_from_usermode_after_swapgs
-> +       /*
-> +        * fixup_bad_iret() will have setup pt_regs on the thread stack, and
-> +        * returns a pointer to that stack exactly like sync_regs() would've
-> +        * done. As such, calling sync_regs again makes no sense.
-> +        */
-> +       jmp     .Lerror_entry_from_usermode_after_sync_regs
->  SYM_CODE_END(error_entry)
->
->  SYM_CODE_START_LOCAL(error_return)
+To: Jarkko Sakkinen <jarkko@kernel.org>
+To: James Morris <jmorris@namei.org>
+To: "Serge E. Hallyn" <serge@hallyn.com>
+To: James Bottomley <jejb@linux.ibm.com>
+To: Mimi Zohar <zohar@linux.ibm.com>
+To: Sumit Garg <sumit.garg@linaro.org>
+To: David Howells <dhowells@redhat.com>
+To: Herbert Xu <herbert@gondor.apana.org.au>
+To: "David S. Miller" <davem@davemloft.net>
+Cc: David Gstir <david@sigma-star.at>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Cc: keyrings@vger.kernel.org
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-security-module@vger.kernel.org
+Cc: linux-integrity@vger.kernel.org
+---
+ security/keys/Kconfig                     | 18 ++++++--------
+ security/keys/trusted-keys/Kconfig        | 29 +++++++++++++++++++++++
+ security/keys/trusted-keys/Makefile       |  8 +++----
+ security/keys/trusted-keys/trusted_core.c |  4 ++--
+ 4 files changed, 42 insertions(+), 17 deletions(-)
+ create mode 100644 security/keys/trusted-keys/Kconfig
+
+diff --git a/security/keys/Kconfig b/security/keys/Kconfig
+index 969122c7b92f..826cd0904f9a 100644
+--- a/security/keys/Kconfig
++++ b/security/keys/Kconfig
+@@ -70,23 +70,19 @@ config BIG_KEYS
+ 
+ config TRUSTED_KEYS
+ 	tristate "TRUSTED KEYS"
+-	depends on KEYS && TCG_TPM
+-	select CRYPTO
+-	select CRYPTO_HMAC
+-	select CRYPTO_SHA1
+-	select CRYPTO_HASH_INFO
+-	select ASN1_ENCODER
+-	select OID_REGISTRY
+-	select ASN1
++	depends on KEYS
+ 	help
+ 	  This option provides support for creating, sealing, and unsealing
+ 	  keys in the kernel. Trusted keys are random number symmetric keys,
+-	  generated and RSA-sealed by the TPM. The TPM only unseals the keys,
+-	  if the boot PCRs and other criteria match.  Userspace will only ever
+-	  see encrypted blobs.
++	  generated and sealed by a trust source selected at kernel boot-time.
++	  Userspace will only ever see encrypted blobs.
+ 
+ 	  If you are unsure as to whether this is required, answer N.
+ 
++if TRUSTED_KEYS
++source "security/keys/trusted-keys/Kconfig"
++endif
++
+ config ENCRYPTED_KEYS
+ 	tristate "ENCRYPTED KEYS"
+ 	depends on KEYS
+diff --git a/security/keys/trusted-keys/Kconfig b/security/keys/trusted-keys/Kconfig
+new file mode 100644
+index 000000000000..fc4abd581abb
+--- /dev/null
++++ b/security/keys/trusted-keys/Kconfig
+@@ -0,0 +1,29 @@
++config TRUSTED_KEYS_TPM
++	bool "TPM-based trusted keys"
++	depends on TCG_TPM >= TRUSTED_KEYS
++	default y
++	select CRYPTO
++	select CRYPTO_HMAC
++	select CRYPTO_SHA1
++	select CRYPTO_HASH_INFO
++	select ASN1_ENCODER
++	select OID_REGISTRY
++	select ASN1
++	help
++	  Enable use of the Trusted Platform Module (TPM) as trusted key
++	  backend. Trusted keys are random number symmetric keys,
++	  which will be generated and RSA-sealed by the TPM.
++	  The TPM only unseals the keys, if the boot PCRs and other
++	  criteria match.
++
++config TRUSTED_KEYS_TEE
++	bool "TEE-based trusted keys"
++	depends on TEE >= TRUSTED_KEYS
++	default y
++	help
++	  Enable use of the Trusted Execution Environment (TEE) as trusted
++	  key backend.
++
++if !TRUSTED_KEYS_TPM && !TRUSTED_KEYS_TEE
++comment "No trust source selected!"
++endif
+diff --git a/security/keys/trusted-keys/Makefile b/security/keys/trusted-keys/Makefile
+index feb8b6c3cc79..2e2371eae4d5 100644
+--- a/security/keys/trusted-keys/Makefile
++++ b/security/keys/trusted-keys/Makefile
+@@ -5,10 +5,10 @@
+ 
+ obj-$(CONFIG_TRUSTED_KEYS) += trusted.o
+ trusted-y += trusted_core.o
+-trusted-y += trusted_tpm1.o
++trusted-$(CONFIG_TRUSTED_KEYS_TPM) += trusted_tpm1.o
+ 
+ $(obj)/trusted_tpm2.o: $(obj)/tpm2key.asn1.h
+-trusted-y += trusted_tpm2.o
+-trusted-y += tpm2key.asn1.o
++trusted-$(CONFIG_TRUSTED_KEYS_TPM) += trusted_tpm2.o
++trusted-$(CONFIG_TRUSTED_KEYS_TPM) += tpm2key.asn1.o
+ 
+-trusted-$(CONFIG_TEE) += trusted_tee.o
++trusted-$(CONFIG_TRUSTED_KEYS_TEE) += trusted_tee.o
+diff --git a/security/keys/trusted-keys/trusted_core.c b/security/keys/trusted-keys/trusted_core.c
+index 9b9d3ef79cbe..7cdbd16aed30 100644
+--- a/security/keys/trusted-keys/trusted_core.c
++++ b/security/keys/trusted-keys/trusted_core.c
+@@ -27,10 +27,10 @@ module_param_named(source, trusted_key_source, charp, 0);
+ MODULE_PARM_DESC(source, "Select trusted keys source (tpm or tee)");
+ 
+ static const struct trusted_key_source trusted_key_sources[] = {
+-#if IS_REACHABLE(CONFIG_TCG_TPM)
++#if defined(CONFIG_TRUSTED_KEYS_TPM)
+ 	{ "tpm", &trusted_key_tpm_ops },
+ #endif
+-#if IS_REACHABLE(CONFIG_TEE)
++#if defined(CONFIG_TRUSTED_KEYS_TEE)
+ 	{ "tee", &trusted_key_tee_ops },
+ #endif
+ };
+-- 
+2.30.2
+
