@@ -2,328 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76721C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE97C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354365AbiCPH4J (ORCPT
+        id S1354372AbiCPH4Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 03:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
+        Wed, 16 Mar 2022 03:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352661AbiCPH4H (ORCPT
+        with ESMTP id S1352251AbiCPH4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 03:56:07 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0FC60CFB
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:54:53 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id v62so1388206vsv.1
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b5gTRuko97eI/fthkcfnm9gayEQtvFpZFqZB8tduF7c=;
-        b=WEe9+Bxpxgg10owxznjLHnSwYsxADD5OwT5rKXFFA++k6khG8td0tx9nt5rmyU+hKE
-         gyqj+Vj4rThPsgWeQqN/nUwF+EhGps1cOTqW8y8kn3HflTz0/RlrfHsoJrXexBqRxRSv
-         4w2LSS6KYHffsXK+CNuyGjSqRUiaCtYTHvkfNn7VhTOzljys9we1ZgXrh83Z+WEQgPtp
-         LzKIRHetzS+NyotLb5RgaeAJJd1KTkWIX3t2A5f5I0PHf4RVEj9ccb7uyFEPm30pJN7t
-         uQqAlWqe7whNwPfU2GEq5GzeaTP6oh3fHKjQRM3PBFASqZ1d5W0d8KeWPlIzlthazodb
-         otgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b5gTRuko97eI/fthkcfnm9gayEQtvFpZFqZB8tduF7c=;
-        b=cIDE66ZtfHH4uyaX7ks4gJV/hJ+ouRrIrGdnvUh7kGJM3S+KtKOJRWoymO+1OPfm4+
-         4OHwai9tQY4LoPJpc1x3ZXQGA45HR9AjSIcTkZxUJIZ6lb5doIeYo+Od5Ehlnq4RiKtp
-         Et3UcHjEnNpt1YeZBZhTdk8o5tXt+pJrsbe0hsZ+SJMqxu3t7qNnSj2fqwgApSgm6h0L
-         7tF5ijPS3a0T2e0MsxWOeg4CSxf10IhJkfiCLWfAzQpMApIclfOd8ZaV2kJ9j0mlU+0Z
-         6uOZl9hRq6pY2FgAcDJbmkKovPdNTT+0wkvVWd0BAxeBjJFxZhRqNZEAId7/VcRSIHEH
-         ax4g==
-X-Gm-Message-State: AOAM533a6w40u2wAdWnkGQBh+BA30/xtdgpsFmlb62mW1yuWkB2ToNee
-        L1SH3mwPmQnWMpZBzGI4UkL+FCgAe7palYAGtYVd7g==
-X-Google-Smtp-Source: ABdhPJwGuAArwozEUZv8gKaGEUnT0xpDpZgIxvxFfayV12kU/WqsaR4Ko1uznCEbu2B6kiUcO73yy/9VP99wOuSBNVI=
-X-Received: by 2002:a05:6102:f0c:b0:320:9156:732f with SMTP id
- v12-20020a0561020f0c00b003209156732fmr13355818vss.6.1647417291993; Wed, 16
- Mar 2022 00:54:51 -0700 (PDT)
+        Wed, 16 Mar 2022 03:56:22 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1718A60CEB
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:55:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647417309; x=1678953309;
+  h=from:to:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=aGPC/AzOgIBprJzGoTgLxNHWhOi4GhuR7UIFn/FijQI=;
+  b=eWiFS3a4wMkTPoJ+7jW+4FXu8C47IkdJgNzpMZEuCtL5NJfmNuCtblLP
+   IH1ItTzGBPCmAveOucDFroozO0M4brkW5a4H6QuPJSKMat5fUTqNGhAIp
+   sZegpe9F/j304kCiIWqJY8LtyhJ0RmlbPLGUizJAXY4JkZNAKZVb54ELi
+   eh08qYpYnVHYE/h69ODT9ulfKTS7JB5a7mT4VWbLlRWsEMW+q179BYqWr
+   qqOWQD+rBIvDqx5mCLQ/DXMr+N1+TAH84dMmlFmtL8B/EkoKmli1nkLNz
+   YFAAgjSjnRWWUC5kWlRouTVdpd8w6gdQ33qFLgXTRvumBPoiHj1zWLXG7
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="243970786"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="243970786"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 00:55:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="644563045"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by fmsmga002.fm.intel.com with ESMTP; 16 Mar 2022 00:55:07 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 00:55:06 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 00:55:06 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Wed, 16 Mar 2022 00:55:06 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.172)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Wed, 16 Mar 2022 00:55:06 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lMaMPiJx1C+VVFbiDfdjvnsBiqjCnlhOlU6+qf0bDZ+B9ZWbdn4rGfW1XueWcmUFReH6fnh7dVkVPqbAyhQaF9fXvSr05Yy8CSEmeDOuSYSvh/PQYqraEpV6kBOL1/yOTYpGr926UA5K+JxfTLmdFHGKwDnkXxecHUWjmX9VAILSi6T29eo3+I84fTQgFhhD1llkytSxMXfF7KwfSxmFlSW6qjGpx095pCPq4tNjtm4kG1S0F9Wy+ZpJvA22n71R47kHRNNjFGUbuNAX/WnyC2gQEto9otwTPFAQuFtbpQZDcgUnjD+HtoeprlI0c3AVLZLPrQI6iT54SN7IBhLXCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9iwmWrNImWAgwZmofl0cDNohud5FvxDmDnFu367AOrI=;
+ b=evEeGmVFytS19MrEIxBaBfC4DDnGPgNulM6sN2zupDoIhwxAO7MQF7A2kc4z/aDN6K1AK726xBiIrosQggkpOc5XwNJHz2QCQQmXaOjr6Dsfadmdz+8kWxQdIYC1IYfA4o8kKHSIPvAm9f8Vux06hO6p8b3VdlMSsGh2lrH2HNMUD3t327JGd6ihTtDn+TkCn+8flNM/x1RylEhgVdwgjL+32VW8ZYewtkD5iyxa9AF9klLwz5dtkSRfAtwImq99qoFuDTUPrbuYu8/DRvnTk7OZFveNJh2vrHGc/UZDmWe2UhkAZ5X/1W4DKALfdcKPoyMJ4tdnBoyxtLCJRWqFSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SA2PR11MB5115.namprd11.prod.outlook.com (2603:10b6:806:118::22)
+ by BN6PR11MB1620.namprd11.prod.outlook.com (2603:10b6:405:e::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Wed, 16 Mar
+ 2022 07:55:04 +0000
+Received: from SA2PR11MB5115.namprd11.prod.outlook.com
+ ([fe80::e12a:51c3:128b:4cc1]) by SA2PR11MB5115.namprd11.prod.outlook.com
+ ([fe80::e12a:51c3:128b:4cc1%7]) with mapi id 15.20.5081.015; Wed, 16 Mar 2022
+ 07:55:04 +0000
+From:   "R, Monish Kumar" <monish.kumar.r@intel.com>
+To:     "kbusch@kernel.org" <kbusch@kernel.org>,
+        "axboe@fb.com" <axboe@fb.com>, "hch@lst.de" <hch@lst.de>,
+        "sagi@grimberg.me" <sagi@grimberg.me>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: IGNORE  THIS EMAIL [PATCH] Revert "Adding quirk changes for
+ Samsung X5 device"
+Thread-Topic: IGNORE  THIS EMAIL [PATCH] Revert "Adding quirk changes for
+ Samsung X5 device"
+Thread-Index: Adg5Cu+7hRd2iR8qQ3a2VcYKdofwQg==
+Date:   Wed, 16 Mar 2022 07:55:04 +0000
+Message-ID: <SA2PR11MB5115A5586E4D0538D8EC2394C3119@SA2PR11MB5115.namprd11.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.6.401.20
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 506be9f6-3921-4976-58fb-08da07224842
+x-ms-traffictypediagnostic: BN6PR11MB1620:EE_
+x-microsoft-antispam-prvs: <BN6PR11MB1620FDBF09E9F0BEE2014490C3119@BN6PR11MB1620.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OSjDZcombvARVJeWYM/ICVmctIT4g5I66zAq2lnCK4PvS5LbAp6mxSUwl1pCpz6BB2UUxvDpqT2N1C6SegRt6jqYZ1OTDv1goevfWDVTlY+4wkQP/KW/B1Kn3QxnDf3j1f4PozlAgCu7OkHBHFbG+oKP3f7mciKa2ZtL0X5yDDm+yZkne6qMsw99e4a2y9rhks51WQueJ7jQna8yd+KrFQz6P80GeET2J4KNBc2oy26UNhkRdDSUsxGw4dX8t1oncarBB7uiJOEYg6WlaUpQWk3GKBuHLDNp5uIrqXHjRm7nQBzeF/YbmzCMkwAgHi53lPjF9BOgm+UQLzJKGWgd+j+NpxzYho2jVKjUgP3yBmm2/Qhdt8xgo+pD9V9GZMlhIoPxtdbTI5DGsd6Ei4ypLZktUVtInA4Vmb7sXmvasS7eovr/NFCR8PJ2hWuHCCoZ64GHSivEDysbFXJvpGyBrlm+q+c4zX8G8zMCo8jUBAQvBh+LSNi+61Z6uG6cTq2PRAihECqAaIKshiWnVrYTAeiYYjpM5Ui26Hebe5r4N2Du0wIL3QQ6fYBhRM3tbg+/h5SYuz0d6Od4wEqfO9rBlK2i5sxPhHDqCn9ytk3MGgez3flgmyV+yGF/cI1c+qho+ldFPvBRPwbOmPp7yt9/t9/T6O/OQLUOkZzUBQOu6wE78pwzI4yQc87IU+gOycoLx8JUk3z2/sgaT62TSgs+tA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB5115.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(5660300002)(83380400001)(76116006)(66556008)(66476007)(66446008)(66946007)(38100700002)(64756008)(508600001)(53546011)(7696005)(6506007)(33656002)(9686003)(38070700005)(52536014)(26005)(186003)(8936002)(55016003)(110136005)(2906002)(122000001)(82960400001)(86362001)(316002)(71200400001)(8676002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?oipCWAxoIuXGDwzQyDovMUqnditPBojE3ygGNlyx4e+OKK0dlLu1+z0Jcj+h?=
+ =?us-ascii?Q?ATtsiPGwnXKOxSJDQTwZcehyMWSuM4bwQisMkuIiVh+BIQPU4Z6o2duI+Vb/?=
+ =?us-ascii?Q?WAQ501BkRYKPc/+OxakoX5jj0f4RDJlHcmELkda+9k8oROzN3G8z+UME03gU?=
+ =?us-ascii?Q?8ErEGMkFn3QGBJStWztg8g5JsbkAQRtDi335FHO4Hu9p4yAhdPRdrGbXV+bg?=
+ =?us-ascii?Q?tSKfJ7T4vGStCsGhmv2jIow3UWC3F1weHdW60JWMwD/6Bm9wTwSvf742l8XL?=
+ =?us-ascii?Q?JgEvNi3sm4dseItWX+SDeI5vi97qZ3kdq3tFXq/5HxajlelBD6vhflfb+seI?=
+ =?us-ascii?Q?d+n7EfuNGhHqZgGSrg9yr3Kehiq9Zv6Vinv5xQVXozsOHPA5EwNunp+zQRDH?=
+ =?us-ascii?Q?Z66EVkPowkIJX64sOP3QI1jl3+dIHgXf/jjqmOUk3IznOwPhl5Z/7UpFzm2K?=
+ =?us-ascii?Q?ILIWbBe1aB6qnMZZdbHWkOXRjF+LaGGx7eorTeSYDmNw64OOVWUGsH8VHcXl?=
+ =?us-ascii?Q?YXxzMjm5bSC+2wD0UIefja5nCmnVKBLTjIc9oA9AkLCe45wRdP2PIzlR/Aix?=
+ =?us-ascii?Q?hpIitNR5EV62ows+KSft11Mv1IVskNCYXuZrlGbozRZ3KiSThqUriCMoQEud?=
+ =?us-ascii?Q?Zj7khwSAiZsO8e8g+zj8g6cRSkW9Wp+SIQK2HTFAFwk70bLxI8s+hRzOarqc?=
+ =?us-ascii?Q?I7ggUYkJ9AcS0oCfgHu4p97EjijCrrnSQ66lSXd5cXm7EZyRLTeu2JGL0KDw?=
+ =?us-ascii?Q?gs8lHH/VFlebUZYDwkt+kHLe+w5roy2A8IuT0NndCxIXIgAfcCdv5ojM9HvW?=
+ =?us-ascii?Q?XnoFvEjfYFcArUTCg+m7LamDSXrbU8OjDBVulMCPmzM5FDS/41x1cBeTt1Wm?=
+ =?us-ascii?Q?LSZ4eXolfi4yUvWXYufW+puV15UMY9Bzx8uYd97aeSehhvaUcaJ9V4bzzRX8?=
+ =?us-ascii?Q?8em1r3qoe0C3mH80l8g2/1x5CsSnZ3lye4L+23z91m5nxCBrzFFcJ1Pcq1mi?=
+ =?us-ascii?Q?+Y18ZfCc9J9i9OL6w/TTvIUjCQp3QlN2p9wG4DWExTYVLCdPKOyuK0/+pFkj?=
+ =?us-ascii?Q?hOFxW1y5foIegSEdP0fBCnvaFSHa2J51kQMaspVOCeQsQszTb7ISCePDZ7WW?=
+ =?us-ascii?Q?riswRV+f6oV7tzgf8gT3co2/W1WtaDFpeZuDW/fnsn+RUzU4dmbm6YYa9Ufx?=
+ =?us-ascii?Q?t5w3Frk4Mgnlobmx/DI81+4dpYGDDrlmLsxS9JpqR6/+KaktVmUhRig47WkW?=
+ =?us-ascii?Q?MPeZBfdcbeMPRUgdu5d1t6kA6SML16NMIL4Ni3+DnF5b/Qj/3S6v+/ij6eV0?=
+ =?us-ascii?Q?/OeqnRMIXYs4CvMNzEzpoTrtTDo00LpvULqI1ynQ/NUDCqXYVYs1v+LWr+RM?=
+ =?us-ascii?Q?FrGO/iy3LSNCm7DKrD8fjV32jbA6D9zPRwk3S4Cio/cZr90IGcFOSfpf8s0G?=
+ =?us-ascii?Q?qKhKslzl6ltFUHWpMpAD4TU9AkttHQe+wRqBd5J8Ifk3sOFzlyJcMA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220309021230.721028-1-yuzhao@google.com> <20220309021230.721028-7-yuzhao@google.com>
- <87wnguwif3.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <87wnguwif3.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Wed, 16 Mar 2022 01:54:41 -0600
-Message-ID: <CAOUHufYBPSx8W5oP=Rf2Sa9QoMhUbEyiF-heR9SuQhcVp+42Rw@mail.gmail.com>
-Subject: Re: [PATCH v9 06/14] mm: multi-gen LRU: minimal implementation
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Kernel Page Reclaim v2 <page-reclaim@google.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Donald Carr <d@chaos-reins.com>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB5115.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 506be9f6-3921-4976-58fb-08da07224842
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2022 07:55:04.7999
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SdRGWlel46W3wfeCq1/1DjX4VKfUIyUlJwK1Em+dRD8J/SE9qlMe50QVZC9GR2WmSpJYaJ1VOUM5gNzMWzDw3Xzj7l7faYqv5mmUcg8x34c=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1620
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 11:55 PM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Hi, Yu,
->
-> Yu Zhao <yuzhao@google.com> writes:
->
-> [snip]
->
-> >
-> > +static int get_swappiness(struct lruvec *lruvec, struct scan_control *sc)
-> > +{
-> > +     struct mem_cgroup *memcg = lruvec_memcg(lruvec);
-> > +     struct pglist_data *pgdat = lruvec_pgdat(lruvec);
-> > +
-> > +     if (!can_demote(pgdat->node_id, sc) &&
-> > +         mem_cgroup_get_nr_swap_pages(memcg) < MIN_LRU_BATCH)
-> > +             return 0;
-> > +
-> > +     return mem_cgroup_swappiness(memcg);
-> > +}
-> > +
->
-> We have tested v9 for memory tiering system, the demotion works now even
-> without swap devices configured.  Thanks!
+Hi All,=20
 
-Admittedly I didn't test it :) So thanks for testing -- I'm glad to
-hear it didn't fall apart.
+Please ignore this email.
+I will send another email with patch having subject nvme-pci: Add quirk cha=
+nges for Samsung X5 device.
 
-> And we found that the demotion (page reclaiming on DRAM nodes) speed is
-> lower than the original implementation.
-
-This sounds like an improvement to me, assuming the initial hot/cold
-memory placements were similar for both the baseline and MGLRU.
-
-Correct me if I'm wrong: since demotion is driven by promotion, lower
-demotion speed means hot and cold pages were sorted out to DRAM and
-AEP at a faster speed, hence an improvement.
-
-# promotion path:
-numa_hint_faults    498301236
-numa_pages_migrated 152650705
-
-numa_hint_faults    494583387
-numa_pages_migrated 34165992
-
-# demotion path:
-pgsteal_anon 153798203
-pgsteal_file 33
-
-pgsteal_anon 32701576
-pgsteal_file 33
-
-The hint faults are similar but MGLRU has much fewer migrated -- my
-guess is it demoted much fewer hot/warm pages and therefore led to
-less work on the promotion path.
-
->  The workload itself is just a
-> memory accessing micro-benchmark with Gauss distribution.  It is run on
-> a system with DRAM and PMEM.  Initially, quite some hot pages are placed
-> in PMEM and quite some cold pages are placed in DRAM.  Then the page
-> placement optimizing mechanism based on NUMA balancing will try to
-> promote some hot pages from PMEM node to DRAM node.
-
-My understanding seems to be correct?
-
->  If the DRAM node
-> near full (reach high watermark), kswapd of the DRAM node will be woke
-> up to demote (reclaim) some cold DRAM pages to PMEM.  Because quite some
-> pages on DRAM is very cold (not accessed for at least several seconds),
-> the benchmark performance will be better if demotion speed is faster.
-
-I'm confused. It seems to me demotion speed is irrelevant. The time to
-reach the equilibrium is what we want to measure.
-
-> Some data comes from /proc/vmstat and perf-profile is as follows.
->
-> From /proc/vmstat, it seems that the page scanned and page demoted is
-> much less with MGLRU enabled.  The pgdemote_kswapd / pgscan_kswapd is
-> 5.22 times higher with MGLRU enabled than that with MGLRU disabled.  I
-> think this shows the value of direct page table scanning.
-
-Can't disagree :)
-
-> From perf-profile, the CPU cycles for kswapd is same.  But less pages
-> are demoted (reclaimed) with MGLRU.  And it appears that the total page
-> table scanning time of MGLRU is longer if we compare walk_page_range
-> (1.97%, MGLRU enabled) and page_referenced (0.54%, MGLRU disabled)?
-
-It's possible if the address space is very large and sparse. But once
-MGLRU warms up, it should detect it and fall back to
-page_referenced().
-
-> Because we only demote (reclaim) from DRAM nodes, but not demote
-> (reclaim) from PMEM nodes and bloom filter doesn't work well enough?
-
-The bloom filters are per lruvec. So this should affect them.
-
-> One thing that may be not friendly for bloom filter is that some virtual
-> pages may change their resident nodes because of demotion/promotion.
-
-Yes, it's possible.
-
-> Can you teach me to how interpret these data for MGLRU?  Or can you
-> point me to the other/better data for MGLRU?
-
-You are the expert :)
-
-My current understanding is that this is an improvement. IOW, with
-MGLRU, DRAM (hot) <-> AEP (cold) reached equilibrium a lot faster.
+Regards,
+Monish Kumar R
 
 
-> MGLRU disabled via: echo -n 0 > /sys/kernel/mm/lru_gen/enabled
-> --------------------------------------------------------------
->
-> /proc/vmstat:
->
-> pgactivate 1767172340
-> pgdeactivate 1740111896
-> pglazyfree 0
-> pgfault 583875828
-> pgmajfault 0
-> pglazyfreed 0
-> pgrefill 1740111896
-> pgreuse 22626572
-> pgsteal_kswapd 153796237
-> pgsteal_direct 1999
-> pgdemote_kswapd 153796237
-> pgdemote_direct 1999
-> pgscan_kswapd 2055504891
-> pgscan_direct 1999
-> pgscan_direct_throttle 0
-> pgscan_anon 2055356614
-> pgscan_file 150276
-> pgsteal_anon 153798203
-> pgsteal_file 33
-> zone_reclaim_failed 0
-> pginodesteal 0
-> slabs_scanned 82761
-> kswapd_inodesteal 0
-> kswapd_low_wmark_hit_quickly 2960
-> kswapd_high_wmark_hit_quickly 17732
-> pageoutrun 21583
-> pgrotated 0
-> drop_pagecache 0
-> drop_slab 0
-> oom_kill 0
-> numa_pte_updates 515994024
-> numa_huge_pte_updates 154
-> numa_hint_faults 498301236
-> numa_hint_faults_local 121109067
-> numa_pages_migrated 152650705
-> pgmigrate_success 307213704
-> pgmigrate_fail 39
-> thp_migration_success 93
-> thp_migration_fail 0
-> thp_migration_split 0
->
-> perf-profile:
->
-> kswapd.kthread.ret_from_fork: 2.86
-> balance_pgdat.kswapd.kthread.ret_from_fork: 2.86
-> shrink_node.balance_pgdat.kswapd.kthread.ret_from_fork: 2.85
-> shrink_lruvec.shrink_node.balance_pgdat.kswapd.kthread: 2.76
-> shrink_inactive_list.shrink_lruvec.shrink_node.balance_pgdat.kswapd: 1.9
-> shrink_page_list.shrink_inactive_list.shrink_lruvec.shrink_node.balance_pgdat: 1.52
-> shrink_active_list.shrink_lruvec.shrink_node.balance_pgdat.kswapd: 0.85
-> migrate_pages.shrink_page_list.shrink_inactive_list.shrink_lruvec.shrink_node: 0.79
-> page_referenced.shrink_page_list.shrink_inactive_list.shrink_lruvec.shrink_node: 0.54
->
->
-> MGLRU enabled via: echo -n 7 > /sys/kernel/mm/lru_gen/enabled
-> -------------------------------------------------------------
->
-> /proc/vmstat:
->
-> pgactivate 47212585
-> pgdeactivate 0
-> pglazyfree 0
-> pgfault 580056521
-> pgmajfault 0
-> pglazyfreed 0
-> pgrefill 6911868880
-> pgreuse 25108929
-> pgsteal_kswapd 32701609
-> pgsteal_direct 0
-> pgdemote_kswapd 32701609
-> pgdemote_direct 0
-> pgscan_kswapd 83582770
-> pgscan_direct 0
-> pgscan_direct_throttle 0
-> pgscan_anon 83549777
-> pgscan_file 32993
-> pgsteal_anon 32701576
-> pgsteal_file 33
-> zone_reclaim_failed 0
-> pginodesteal 0
-> slabs_scanned 84829
-> kswapd_inodesteal 0
-> kswapd_low_wmark_hit_quickly 313
-> kswapd_high_wmark_hit_quickly 5262
-> pageoutrun 5895
-> pgrotated 0
-> drop_pagecache 0
-> drop_slab 0
-> oom_kill 0
-> numa_pte_updates 512084786
-> numa_huge_pte_updates 198
-> numa_hint_faults 494583387
-> numa_hint_faults_local 129411334
-> numa_pages_migrated 34165992
-> pgmigrate_success 67833977
-> pgmigrate_fail 7
-> thp_migration_success 135
-> thp_migration_fail 0
-> thp_migration_split 0
->
-> perf-profile:
->
-> kswapd.kthread.ret_from_fork: 2.86
-> balance_pgdat.kswapd.kthread.ret_from_fork: 2.86
-> lru_gen_age_node.balance_pgdat.kswapd.kthread.ret_from_fork: 1.97
-> walk_page_range.try_to_inc_max_seq.lru_gen_age_node.balance_pgdat.kswapd: 1.97
-> shrink_node.balance_pgdat.kswapd.kthread.ret_from_fork: 0.89
-> evict_folios.lru_gen_shrink_lruvec.shrink_lruvec.shrink_node.balance_pgdat: 0.89
-> scan_folios.evict_folios.lru_gen_shrink_lruvec.shrink_lruvec.shrink_node: 0.66
->
-> Best Regards,
-> Huang, Ying
->
-> [snip]
->
+-----Original Message-----
+From: R, Monish Kumar <monish.kumar.r@intel.com>=20
+Sent: 16 March 2022 13:23
+To: kbusch@kernel.org; axboe@fb.com; hch@lst.de; sagi@grimberg.me; linux-nv=
+me@lists.infradead.org; linux-kernel@vger.kernel.org
+Cc: Rao, Abhijeet <abhijeet.rao@intel.com>; R, Monish Kumar <monish.kumar.r=
+@intel.com>
+Subject: [PATCH] Revert "Adding quirk changes for Samsung X5 device"
+
+From: Monish Kumar R <monish.kumar.r@intel.com>
+
+This reverts commit 1c1b18c97b441cb1a4eb9c6e95d9c357b687cdd0.
+---
+ drivers/nvme/host/pci.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c index c01cb3=
+81c3ff..8bb184a7479c 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3463,10 +3463,14 @@ static const struct pci_device_id nvme_id_table[] =
+=3D {
+ 				NVME_QUIRK_128_BYTES_SQES |
+ 				NVME_QUIRK_SHARED_TAGS |
+ 				NVME_QUIRK_SKIP_CID_GEN },
++<<<<<<< HEAD
+ 	{ PCI_DEVICE(0x144d, 0xa808), /* Samsung X5 */
+ 		.driver_data =3D  NVME_QUIRK_DELAY_BEFORE_CHK_RDY|
+ 				NVME_QUIRK_NO_DEEPEST_PS |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++=3D=3D=3D=3D=3D=3D=3D
++
++>>>>>>> parent of 1c1b18c97b44... Adding quirk changes for Samsung X5=20
++>>>>>>> device
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ 0, }
+ };
+--
+2.17.1
+
