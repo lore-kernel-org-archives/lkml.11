@@ -2,249 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 646EEC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71540C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:29:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238141AbiCPNaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
+        id S242003AbiCPNaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 09:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiCPN35 (ORCPT
+        with ESMTP id S229602AbiCPNaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:29:57 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0D043EE6;
-        Wed, 16 Mar 2022 06:28:43 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22GDBiZf003132;
-        Wed, 16 Mar 2022 13:27:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=3rjzOcS1KNQ0WQGuYXLMr8wnWFn3tRHlbboa9Lr+mro=;
- b=NQwLqnl/xYtq8Q59UTs1RLS6pgSSGoIf9dLb4KR/eL5kQ81PoUdemV9d6MAL7FTNrw6U
- 7qYJ9bkjQKj4nbQnoT8U94qu4LZZCHCLH5IBaDkgiRiLiHh2staxB/SWME25q11jKYCC
- enxXFHXsWSYKfs33Gwkc6Iyk1U9SPwJZOpC1muB/Lz1jQwPiGWgpUisKmULmZnhRz78m
- uY0DD5NIWwaDBn3uM0ujCL046zY4zUpkV/kWglcha0ao4LmBNH7xH9LG1Zg3zTusNLts
- EjGOWzNDxD9k2toI4l6XPrGlz1BQDvwsTfmiRPMuEdiV2uYT2XvAkZGQndcOm9+dKvNK Ng== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eugjf8cg4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 13:27:33 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22GDD72S006208;
-        Wed, 16 Mar 2022 13:27:32 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eugjf8cey-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 13:27:32 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22GDFDb9022903;
-        Wed, 16 Mar 2022 13:27:29 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3erk58qr0q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 13:27:29 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22GDRQWd27066852
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Mar 2022 13:27:26 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 11C4811C052;
-        Wed, 16 Mar 2022 13:27:26 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 41C2011C04C;
-        Wed, 16 Mar 2022 13:27:24 +0000 (GMT)
-Received: from thinkpad (unknown [9.171.18.20])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Wed, 16 Mar 2022 13:27:24 +0000 (GMT)
-Date:   Wed, 16 Mar 2022 14:27:22 +0100
-From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>
-Cc:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, linux-mm@kvack.org,
-        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v1 5/7] s390/pgtable: support
- __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-Message-ID: <20220316142722.76c691d2@thinkpad>
-In-Reply-To: <6f7b208b-ec38-571d-cd24-b9bfa79d1f40@linux.ibm.com>
-References: <20220315141837.137118-1-david@redhat.com>
-        <20220315141837.137118-6-david@redhat.com>
-        <20220315172102.771bd2cf@thinkpad>
-        <c8229082-e8f1-e605-25c2-0ec9d23efd9e@redhat.com>
-        <8b13b6c0-78d4-48e3-06f0-ec0680d013a9@redhat.com>
-        <55b6b582-51ca-b869-2055-674fe4c563e6@redhat.com>
-        <20220316115654.12823b78@thinkpad>
-        <6f7b208b-ec38-571d-cd24-b9bfa79d1f40@linux.ibm.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Wed, 16 Mar 2022 09:30:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9BE527E8;
+        Wed, 16 Mar 2022 06:29:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C776EB81A7A;
+        Wed, 16 Mar 2022 13:28:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF15C340EC;
+        Wed, 16 Mar 2022 13:28:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647437338;
+        bh=po9w0srExdqxBbA5Y1GuLMoSzHmbiTZqW8Nx4369bGc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BAaTUiggp7hg19mVJSoejDR0l1MjKoB6c3LlQyGu5G31B9ickEMhr1YrfEKW91tbN
+         1q1IUGyg8kgPY/hnzt26WZrfX3FZKJzMr91C64gwOH+Aw/2TjYJ+9kZBiR2OhVLkMp
+         iAxVUMytQMIp+M4QtMZ8E/7Xm713K25FwALTykwlEbgWOwL2cyIdcvH76oubsmF0yP
+         qQxuOLGxxRpA29g5P8G0S4zsW1GIwpcv6Paon/iSRm+iRIOHYRAom/wDxUN9pK8GNT
+         X4B0COuovvmOyF8YkW37iylFjgxqg8Ec1C6lzCvsDgJ5XvzVYXD0sk7L73DMuIiMSy
+         rSvS5safB70PQ==
+Date:   Wed, 16 Mar 2022 14:28:50 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Hugues FRUCHET - FOSS <hugues.fruchet@foss.st.com>
+Cc:     Alain Volmat <alain.volmat@foss.st.com>,
+        Niklas =?UTF-8?B?U8O2ZGVybHVu?= =?UTF-8?B?ZA==?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        Dillon Min <dillon.minfei@gmail.com>,
+        Dmitriy Ulitin <ulitin@ispras.ru>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Ming Qian <ming.qian@nxp.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: Re: [PATCH 17/24] media: platform: rename stm32/ to sti/stm32/
+Message-ID: <20220316142850.6005b09c@coco.lan>
+In-Reply-To: <8a4782f3-53d0-7af7-2034-e31879efbc45@foss.st.com>
+References: <cover.1647167750.git.mchehab@kernel.org>
+        <dc5be62a56ac19c6f49f4c8432558fd7b0efe7e6.1647167750.git.mchehab@kernel.org>
+        <20220314083942.GA526468@gnbcxd0016.gnb.st.com>
+        <20220314121454.7432e231@coco.lan>
+        <1122a956-0650-f948-512b-d3447e34df30@foss.st.com>
+        <20220314141008.13e32acd@coco.lan>
+        <8a4782f3-53d0-7af7-2034-e31879efbc45@foss.st.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: hZuX7LHbuKGXS_vr1oE-eGLpJqcCnt13
-X-Proofpoint-ORIG-GUID: BGBpVWONuhBO0BL4LkkrUgpj0A9UNXmd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-16_04,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- mlxscore=0 phishscore=0 priorityscore=1501 mlxlogscore=999 adultscore=0
- impostorscore=0 suspectscore=0 malwarescore=0 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203160082
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Mar 2022 14:01:07 +0100
-Christian Borntraeger <borntraeger@linux.ibm.com> wrote:
+Em Tue, 15 Mar 2022 10:02:53 +0100
+Hugues FRUCHET - FOSS <hugues.fruchet@foss.st.com> escreveu:
 
+> Hi Mauro,
 > 
+> sti and stm32 architectures don't have the same maintainers nor same 
+> mailing list as you can see below:
 > 
-> Am 16.03.22 um 11:56 schrieb Gerald Schaefer:
-> > On Tue, 15 Mar 2022 18:12:16 +0100
-> > David Hildenbrand <david@redhat.com> wrote:
-> > 
-> >> On 15.03.22 17:58, David Hildenbrand wrote:
-> >>>
-> >>>>> This would mean that it is not OK to have bit 52 not zero for swap PTEs.
-> >>>>> But if I read the POP correctly, all bits except for the DAT-protection
-> >>>>> would be ignored for invalid PTEs, so maybe this comment needs some update
-> >>>>> (for both bits 52 and also 55).
-> >>>>>
-> >>>>> Heiko might also have some more insight.
-> >>>>
-> >>>> Indeed, I wonder why we should get a specification exception when the
-> >>>> PTE is invalid. I'll dig a bit into the PoP.
-> >>>
-> >>> SA22-7832-12 6-46 ("Translation-Specification Exception") is clearer
-> >>>
-> >>> "The page-table entry used for the translation is
-> >>> valid, and bit position 52 does not contain zero."
-> >>>
-> >>> "The page-table entry used for the translation is
-> >>> valid, EDAT-1 does not apply, the instruction-exe-
-> >>> cution-protection facility is not installed, and bit
-> >>> position 55 does not contain zero. It is model
-> >>> dependent whether this condition is recognized."
-> >>>
-> >>
-> >> I wonder if the following matches reality:
-> >>
-> >> diff --git a/arch/s390/include/asm/pgtable.h b/arch/s390/include/asm/pgtable.h
-> >> index 008a6c856fa4..6a227a8c3712 100644
-> >> --- a/arch/s390/include/asm/pgtable.h
-> >> +++ b/arch/s390/include/asm/pgtable.h
-> >> @@ -1669,18 +1669,16 @@ static inline int has_transparent_hugepage(void)
-> >>   /*
-> >>    * 64 bit swap entry format:
-> >>    * A page-table entry has some bits we have to treat in a special way.
-> >> - * Bits 52 and bit 55 have to be zero, otherwise a specification
-> >> - * exception will occur instead of a page translation exception. The
-> >> - * specification exception has the bad habit not to store necessary
-> >> - * information in the lowcore.
-> >>    * Bits 54 and 63 are used to indicate the page type.
-> >>    * A swap pte is indicated by bit pattern (pte & 0x201) == 0x200
-> >> - * This leaves the bits 0-51 and bits 56-62 to store type and offset.
-> >> - * We use the 5 bits from 57-61 for the type and the 52 bits from 0-51
-> >> - * for the offset.
-> >> - * |                     offset                        |01100|type |00|
-> >> + * |                     offset                        |XX1XX|type |S0|
-> >>    * |0000000000111111111122222222223333333333444444444455|55555|55566|66|
-> >>    * |0123456789012345678901234567890123456789012345678901|23456|78901|23|
-> >> + *
-> >> + * Bits 0-51 store the offset.
-> >> + * Bits 57-62 store the type.
-> >> + * Bit 62 (S) is used for softdirty tracking.
-> >> + * Bits 52, 53, 55 and 56 (X) are unused.
-> >>    */
-> >>   
-> >>   #define __SWP_OFFSET_MASK      ((1UL << 52) - 1)
-> >>
-> >>
-> >> I'm not sure why bit 53 was indicated as "1" and bit 55 was indicated as
-> >> "0". At least for 52 and 55 there was a clear description.
-> > 
-> > Bit 53 is the invalid bit, and that is always 1 for swap ptes, in addition
-> > to protection bit 54. Bit 55, along with bit 52, has to be zero according
-> > to the (potentially deprecated) comment.
-> > 
-> > It is interesting that bit 56 seems to be unused, at least according
-> > to the comment, but that would also mention bit 62 as unused, so that
-> > clearly needs some update.
-> > 
-> > If bit 56 could be used for _PAGE_SWP_EXCLUSIVE, that would be better
-> > than stealing a bit from the offset, or using potentially dangerous
-> > bit 52. It is defined as _PAGE_UNUSED and only used for kvm, not sure
-> > if this is also relevant for swap ptes, similar to bit 62.
-> > 
-> > Adding Christian on cc, maybe he has some insight on _PAGE_UNUSED
-> > bit 56 and swap ptes.
+> ARM/STM32 ARCHITECTURE
+> M:    Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> M:    Alexandre Torgue <alexandre.torgue@foss.st.com>
+> L:    linux-stm32@st-md-mailman.stormreply.com (moderated for 
+> non-subscribers)
+> L:    linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> S:    Maintained
+> T:    git 
+> git://git.kernel.org/pub/scm/linux/kernel/git/atorgue/stm32.git stm32-next
+> F:    arch/arm/boot/dts/stm32*
+> F:    arch/arm/mach-stm32/
+> F:    drivers/clocksource/armv7m_systick.c
+> N:    stm32
+> N:    stm
 > 
-> I think _PAGE_UNUSED is not used for swap ptes. It is used _before_ swapping
-> to decide whether we swap or discard the page.
-> 
-> Regarding bit 52, the POP says in chapter 3 for the page table entry
-> 
-> [..]
-> Page-Invalid Bit (I): Bit 53 controls whether the
-> page associated with the page-table entry is avail-
-> able. When the bit is zero, address translation pro-
-> ceeds by using the page-table entry. When the bit is
-> one, the page-table entry cannot be used for transla-
-> tion.
-> 
-> 
-> -->When the page-invalid bit is one, all other bits in the
-> -->page-table entry are available for use by program-
-> -->ming.
-> 
-> this was added with the z14 POP, but I guess it was just a clarification
-> and should be valid for older machines as well.
-> So 52 and 56 should be ok, with 52 probably the better choice.
+> ARM/STI ARCHITECTURE
+> M:    Patrice Chotard <patrice.chotard@foss.st.com>
+> L:    linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> S:    Maintained
+> W:    http://www.stlinux.com
+> F:    Documentation/devicetree/bindings/i2c/i2c-st.txt
+> F:    arch/arm/boot/dts/sti*
+> F:    arch/arm/mach-sti/
+> F:    drivers/ata/ahci_st.c
+> F:    drivers/char/hw_random/st-rng.c
+> F:    drivers/clocksource/arm_global_timer.c
+> F:    drivers/clocksource/clksrc_st_lpc.c
+> F:    drivers/cpufreq/sti-cpufreq.c
+> F:    drivers/dma/st_fdma*
+> F:    drivers/i2c/busses/i2c-st.c
+> F:    drivers/media/platform/sti/c8sectpfe/
+> F:    drivers/media/rc/st_rc.c
+> F:    drivers/mmc/host/sdhci-st.c
+> F:    drivers/phy/st/phy-miphy28lp.c
+> F:    drivers/phy/st/phy-stih407-usb.c
+> F:    drivers/pinctrl/pinctrl-st.c
+> F:    drivers/remoteproc/st_remoteproc.c
+> F:    drivers/remoteproc/st_slim_rproc.c
+> F:    drivers/reset/sti/
+> F:    drivers/rtc/rtc-st-lpc.c
+> F:    drivers/tty/serial/st-asc.c
+> F:    drivers/usb/dwc3/dwc3-st.c
+> F:    drivers/usb/host/ehci-st.c
+> F:    drivers/usb/host/ohci-st.c
+> F:    drivers/watchdog/st_lpc_wdt.c
+> F:    include/linux/remoteproc/st_slim_rproc.h
 
-Ok, bit 55 would then also be an option IIUC, since execution protection
-should not be relevant for swap ptes. And Davids clean-up removing the
-restriction for bit 52 and 55 in the comment would make sense.
+Ok.
+	
+> but anyway, if this is really important for you to have a top folder to 
+> group all ST stuff, we prefer to have "st" prefix than "stm":
+>  > 	./drivers/media/platform/st/sti/
+>  > 	./drivers/media/platform/st/stm32/
 
-I would also favor bit 52 though (PAGE_LARGE), as in Davids initial patch
-version, since this is never used for any real ptes. The PAGE_LARGE flag
-is only set in the "virtual" large ptes that the hugetlb code is seeing
-from huge_ptep_get(). But it will (and must) never be written as a valid
-pte, or else it will generate an exception. IIRC, we only set it to detect
-such possible bugs, e.g. hugetlb code writing a pte (which really is a
-pmd/pud) directly, instead of using set_huge_pte_at().
+Works for me. Yeah, it is important to have them at the same dir. 
+After this series, there's a comment on each platform subdir that
+tells what vendor is there. That is meant to help selecting the right
+drivers with make menuconfig/gconfig/xconfig, and it is reflected at
+the .config file. I'm considering to actually add a submenu per vendor. 
+Ether way, if there's more than one directory per vendor, the "comment"
+and/or "menuconfig/if/endif" entries would needed to be moved back to the
+drivers/media/platform, making in messier again.
+
+Thanks,
+Mauro
