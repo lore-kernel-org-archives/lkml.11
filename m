@@ -2,155 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84602C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355789AbiCPM2m (ORCPT
+        id S1350463AbiCPMaq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56290 "EHLO
+        Wed, 16 Mar 2022 08:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355798AbiCPM22 (ORCPT
+        with ESMTP id S237563AbiCPMao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:28:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CC866617;
-        Wed, 16 Mar 2022 05:27:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 16 Mar 2022 08:30:44 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC5F443DA;
+        Wed, 16 Mar 2022 05:29:29 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id 94082274703aed3f; Wed, 16 Mar 2022 13:29:26 +0100
+Received: from kreacher.localnet (unknown [213.134.162.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50971B81ADD;
-        Wed, 16 Mar 2022 12:26:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FB49C340E9;
-        Wed, 16 Mar 2022 12:26:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647433618;
-        bh=tiIpHON3TQ0N7FkXLFvqTVEpozXpr6gg7cYwBCMcnwQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W49kjns6ZV+4IlUsja53J9jz5T0t72tMevw2vwdhQgDzsHyrRUAmr0f4kYcUow6qK
-         2hbeKSXDicCnbor6EmLm9OqzBm7fKXsXQx7Fc1VUb4rkAB+heV264dyf7J+ElB2wrw
-         VVve1hzCms6SMvnfeYYY5HS6/mWo6PkK7jXUPK/t3p+7XaD5tpauRB7Yu/clFJG6oU
-         MFMjx8WNum9ysyIITJj2/Rgodc+Q1BhuNk7fCXEBxKYLhN2fzEsVs8mjBjMEH2Zt/o
-         rQzVYJLCJ3yfhxgj43i5owCdHApHLGYG89vQIlp05bgSFrXzAlaqgV1eN3FfvK7omk
-         IZJRdk8Ora6sQ==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCHv3 bpf-next 13/13] selftests/bpf: Add cookie test for bpf_program__attach_kprobe_multi_opts
-Date:   Wed, 16 Mar 2022 13:24:19 +0100
-Message-Id: <20220316122419.933957-14-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220316122419.933957-1-jolsa@kernel.org>
-References: <20220316122419.933957-1-jolsa@kernel.org>
+        by v370.home.net.pl (Postfix) with ESMTPSA id 3C7D266B8A7;
+        Wed, 16 Mar 2022 13:29:26 +0100 (CET)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/2] cpuidle: intel_idle: Drop redundant backslash at line end
+Date:   Wed, 16 Mar 2022 13:29:25 +0100
+Message-ID: <2633372.mvXUDI8C0e@kreacher>
+In-Reply-To: <67576f38c4bb5975568a863069c334d102552901.camel@linux.intel.com>
+References: <2630560.mvXUDI8C0e@kreacher> <4731792.31r3eYUQgx@kreacher> <67576f38c4bb5975568a863069c334d102552901.camel@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.162.1
+X-CLIENT-HOSTNAME: 213.134.162.1
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrudefvddgfeekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkjghfggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpedvjeelgffhiedukedtleekkedvudfggefhgfegjefgueekjeelvefggfdvledutdenucfkphepvddufedrudefgedrudeivddrudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrdduiedvrddupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeefpdhrtghpthhtoheprghrthgvmhdrsghithihuhhtshhkihihsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-DCC--Metrics: v370.home.net.pl 1024; Body=3 Fuz1=3 Fuz2=3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding bpf_cookie test for programs attached by
-bpf_program__attach_kprobe_multi_opts API.
+On Wednesday, March 16, 2022 9:56:42 AM CET Artem Bityutskiy wrote:
+> On Tue, 2022-03-15 at 20:36 +0100, Rafael J. Wysocki wrote:
+> > From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > 
+> > Drop a redundant backslash character at the end of a line in the
+> > spr_cstates[] definition.
+> > 
+> > Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> 
+> Rafael, thanks for cleaning this up. Sorry for this.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../selftests/bpf/prog_tests/bpf_cookie.c     | 68 +++++++++++++++++++
- 1 file changed, 68 insertions(+)
+No big deal.  I'm taking this as an ACK. :-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-index 6671d4dc0b5d..923a6139b2d8 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-@@ -170,6 +170,72 @@ static void kprobe_multi_link_api_subtest(void)
- 	kprobe_multi__destroy(skel);
- }
- 
-+static void kprobe_multi_attach_api_subtest(void)
-+{
-+	struct bpf_link *link1 = NULL, *link2 = NULL;
-+	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
-+	LIBBPF_OPTS(bpf_test_run_opts, topts);
-+	struct kprobe_multi *skel = NULL;
-+	const char *syms[8] = {
-+		"bpf_fentry_test1",
-+		"bpf_fentry_test2",
-+		"bpf_fentry_test3",
-+		"bpf_fentry_test4",
-+		"bpf_fentry_test5",
-+		"bpf_fentry_test6",
-+		"bpf_fentry_test7",
-+		"bpf_fentry_test8",
-+	};
-+	__u64 cookies[8];
-+
-+	skel = kprobe_multi__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
-+		goto cleanup;
-+
-+	skel->bss->pid = getpid();
-+	skel->bss->test_cookie = true;
-+
-+	cookies[0] = 1;
-+	cookies[1] = 2;
-+	cookies[2] = 3;
-+	cookies[3] = 4;
-+	cookies[4] = 5;
-+	cookies[5] = 6;
-+	cookies[6] = 7;
-+	cookies[7] = 8;
-+
-+	opts.syms = syms;
-+	opts.cnt = ARRAY_SIZE(syms);
-+	opts.cookies = cookies;
-+
-+	link1 = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe,
-+						      NULL, &opts);
-+	if (!ASSERT_OK_PTR(link1, "bpf_program__attach_kprobe_multi_opts"))
-+		goto cleanup;
-+
-+	cookies[0] = 8;
-+	cookies[1] = 7;
-+	cookies[2] = 6;
-+	cookies[3] = 5;
-+	cookies[4] = 4;
-+	cookies[5] = 3;
-+	cookies[6] = 2;
-+	cookies[7] = 1;
-+
-+	opts.retprobe = true;
-+
-+	link2 = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kretprobe,
-+						      NULL, &opts);
-+	if (!ASSERT_OK_PTR(link2, "bpf_program__attach_kprobe_multi_opts"))
-+		goto cleanup;
-+
-+	kprobe_multi_test_run(skel);
-+
-+cleanup:
-+	bpf_link__destroy(link2);
-+	bpf_link__destroy(link1);
-+	kprobe_multi__destroy(skel);
-+}
- static void uprobe_subtest(struct test_bpf_cookie *skel)
- {
- 	DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, opts);
-@@ -358,6 +424,8 @@ void test_bpf_cookie(void)
- 		kprobe_subtest(skel);
- 	if (test__start_subtest("multi_kprobe_link_api"))
- 		kprobe_multi_link_api_subtest();
-+	if (test__start_subtest("multi_kprobe_attach_api"))
-+		kprobe_multi_attach_api_subtest();
- 	if (test__start_subtest("uprobe"))
- 		uprobe_subtest(skel);
- 	if (test__start_subtest("tracepoint"))
--- 
-2.35.1
+
 
