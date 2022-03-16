@@ -2,112 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09A7FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 17:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2151C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 17:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356281AbiCPRdw (ORCPT
+        id S1357612AbiCPRhl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 13:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
+        Wed, 16 Mar 2022 13:37:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239152AbiCPRdu (ORCPT
+        with ESMTP id S239152AbiCPRhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 13:33:50 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9675B3E2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 10:32:35 -0700 (PDT)
-Received: from localhost.localdomain (unknown [88.235.220.59])
-        by gnuweeb.org (Postfix) with ESMTPSA id 42F877E2EA;
-        Wed, 16 Mar 2022 17:32:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1647451954;
-        bh=jZr9li0mpvtx2O5cZVJBJWHmGZZCMOh/qEKForCKN60=;
-        h=From:To:Cc:Subject:Date:From;
-        b=M8fqXZXMgSzI5Ea5Pg8zhmawPPo6EoWrnZF/g00vKMDOqcNLaIyQbEej3roTTuGq/
-         A/vib4VRHmRFLmbksfBEMyW4AkzSt2d6XJ4zfmi/tgEIbb6lFFXqBlo68OW5Xc4d/d
-         xmqza1s5sYKrXHXIwlCdaXWbqsXN/4fRfj9+wf5UdBkVH8+A4uXSx6ADOu60RKKmC6
-         7qFczwDOApTkxdeg9qVsWANJbbxIXSqOTKgPBfzr/8Cic9+qRCTHNLRAMlQQHVnmFr
-         XmOwr0uh79dB6k25vPMkq0IGCwvf0IeezwjlmSd1TDeUI3j8dC/5zI5Jmarls1WPZB
-         DyRMOYvU+6niA==
-From:   Beru Shinsetsu <windowz414@gnuweeb.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        Beru Shinsetsu <windowz414@gnuweeb.org>,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Subject: [PATCH] boot install: Partially refactor the logic for detecting bootloader
-Date:   Wed, 16 Mar 2022 20:32:21 +0300
-Message-Id: <20220316173221.5937-1-windowz414@gnuweeb.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 16 Mar 2022 13:37:38 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B00B674C1;
+        Wed, 16 Mar 2022 10:36:23 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id 6F9591F430DD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647452182;
+        bh=CcIxudwQJMgXuoIKm9oLlx5LdLPJZ9BlYBuhMcMRnmI=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=IiPUZ/OADUJlHDKAwqADefd9ggOCIa5NXfKPYcqxdq3Yct/2qNnmWRZVMH7luFZqn
+         eDH5p2h4TqROCiRChNrgvdohvrtM8zi28Ey5fRWLI31Xuno4xG7PjzMhlhY+lwzb2+
+         1CSF1x4PjOzYtdRngZazwoqOJElurTS2yXIUQB0qvU/lEqG9aOFWjewZ1TQHRkuASS
+         k+/31ZXA/T3/a6/UO+fJjk2vbdg3TEpkU6hbdAdURZH7J8uEDcMVJ65lEDT2XALCJd
+         1zjhYbO1TDQ24HqSfc67QKoMRtMKk2PxB7T6YL1vMVw1zVgI6AgS7R8ZRmk/7cBh0s
+         layUMKAVVehpQ==
+Message-ID: <468db472-3298-0f3d-e000-29aed1abcd91@collabora.com>
+Date:   Wed, 16 Mar 2022 22:36:14 +0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Cc:     usama.anjum@collabora.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, kernel@collabora.com,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V4 2/2] selftests: vm: Add test for Soft-Dirty PTE bit
+Content-Language: en-US
+To:     Gabriel Krisman Bertazi <krisman@collabora.com>
+References: <20220315085014.1047291-1-usama.anjum@collabora.com>
+ <20220315085014.1047291-2-usama.anjum@collabora.com>
+ <871qz3ndji.fsf@collabora.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <871qz3ndji.fsf@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While running `make install` after building the kernel and installing
-modules on several distros like EndeavourOS, there would be a pretty
-little output (To be exact, "Cannot find LILO") due to lack of LILO
-bootloader, which is really uncommon for a user to have it while
-GRUB is there. So, if LILO doesn't exist, instead of skipping other
-bootloaders, check for `grub-mkconfig` using exit status of `which
-grub-mkconfig` to see if we have it present in PATH and run it. All
-GRUB installs must have it in PATH for other external scripts and
-GRUB itself to handle it fine as well.
+On 3/16/22 1:53 AM, Gabriel Krisman Bertazi wrote:
+> Muhammad Usama Anjum <usama.anjum@collabora.com> writes:
+> 
+>> From: Gabriel Krisman Bertazi <krisman@collabora.com>
+> 
+> Hi Usama,
+> 
+> Please, cc me on the whole thread.  I didn't get the patch 1/2 or the
+> cover letter.
+> 
 
-I have no idea why did the maintainer not consider this, even after
-several posts done on several forums without an actual patch. See
-appended link for more details on why is this required without
-requiring user to run it themselves.
+Sorry, I'll correct it.
 
-Link: https://serverfault.com/questions/383286/compiling-linux-kernel-make-install-asks-for-lilo-now-what
+>> This introduces three tests:
+>> 1) Sanity check soft dirty basic semantics: allocate area, clean, dirty,
+>> check if the SD bit is flipped.
+>> 2) Check VMA reuse: validate the VM_SOFTDIRTY usage
+>> 3) Check soft-dirty on huge pages
+>>
+>> This was motivated by Will Deacon's fix commit 912efa17e512 ("mm: proc:
+>> Invalidate TLB after clearing soft-dirty page state"). I was tracking the
+>> same issue that he fixed, and this test would have caught it.
+>>
+>> CC: Will Deacon <will@kernel.org>
+>> Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
+>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>> ---
+>> V3 of this patch is in Andrew's tree. Please drop that.
+> 
+> v3 is still in linux-next and this note is quite hidden in the middle of
+> the commit message.
 
-Also, put the `sync` command to the end of all commands, make sure
-all copied files are properly written to disk for all cases, not only
-when LILO is not found.
+I've tried to put this message at the top of the changelog. I can add
+"Note" in the start of it. What can be some other way to highlight this
+kind of important message?
 
-Suggested-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Signed-off-by: Beru Shinsetsu <windowz414@gnuweeb.org>
----
+>>
+>> Changes in V4:
+>> Cosmetic changes
+>> Removed global variables
+>> Replaced ksft_print_msg with ksft_exit_fail_msg to exit the program at
+>> once
+>> Some other minor changes
+>> Correct the authorship of the patch
+>>
+>> Tests of soft dirty bit in this patch and in madv_populate.c are
+>> non-overlapping. madv_populate.c has only one soft-dirty bit test in the
+>> context of different advise (MADV_POPULATE_READ and
+>> MADV_POPULATE_WRITE). This new test adds more tests.
+>>
+>> Tab width of 8 has been used to align the macros. This alignment may look
+>> odd in shell or email. But it looks alright in editors.
+> 
+> I'm curious if you tested reverting 912efa17e512. Did the new versions
+> of this patch still catch the original issue?
 
-  v2 -> v3
-  - Properly make use of GRUB config check and execute `echo` for
-    when LILO and GRUB are not found only when *both* are missing.
-  - Make the exit status check compatible with POSIX shell as
-    well.
-  - Upon Alviro's suggestion, put `sync` command to the very end,
-    to make sure all copied files are properly written to disk
-    unconditionally.
+Yeah, it did after I reverted the patch and fixed build errors because
+of some function's signature change and one test failed and hence issue
+is caught:
 
-  (Link v2: https://t.me/GNUWeeb/552772)
-  v1 -> v2
-  - Remove use of absolute path for grub-mkconfig check and use
-    `which` instead and check its exit status.
-  - Change commit message accordingly.
----
- arch/x86/boot/install.sh | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+TAP version 13
+1..5
+# dirty bit was 0, but should be 1 (i=1)
+not ok 1 Test test_simple
+ok 2 Test test_vma_reuse reused memory location
+ok 3 Test test_vma_reuse dirty bit of previous page
+ok 4 # SKIP Test test_hugepage huge page allocation
+ok 5 # SKIP Test test_hugepage huge page dirty bit
+# Totals: pass:2 fail:1 xfail:0 xpass:0 skip:2 error:0
 
-diff --git a/arch/x86/boot/install.sh b/arch/x86/boot/install.sh
-index d13ec1c38640..2007c06dbbdd 100644
---- a/arch/x86/boot/install.sh
-+++ b/arch/x86/boot/install.sh
-@@ -54,6 +54,11 @@ if [ -x /sbin/lilo ]; then
- elif [ -x /etc/lilo/install ]; then
-        /etc/lilo/install
- else
--       sync
--       echo "Cannot find LILO."
-+       which grub-mkconfig > /dev/null 2>&1
-+       if [ "$?" -eq "0" ]; then
-+              grub-mkconfig -o /etc/grub/grub.cfg
-+       else
-+              echo "Cannot find LILO or GRUB."
-+       fi
- fi
-+sync
+
+>> Test output:
+>> TAP version 13
+>> 1..5
+>> ok 1 Test test_simple
+>> ok 2 Test test_vma_reuse reused memory location
+>> ok 3 Test test_vma_reuse dirty bit of previous page
+>> ok 4 Test test_hugepage huge page allocation
+>> ok 5 Test test_hugepage huge page dirty bit
+>>  # Totals: pass:5 fail:0 xfail:0 xpass:0 skip:0 error:0
+>>
+>> Or
+>>
+>> TAP version 13
+>> 1..5
+>> ok 1 Test test_simple
+>> ok 2 Test test_vma_reuse reused memory location
+>> ok 3 Test test_vma_reuse dirty bit of previous page
+>> ok 4 # SKIP Test test_hugepage huge page allocation
+>> ok 5 # SKIP Test test_hugepage huge page dirty bit
+>>  # Totals: pass:3 fail:0 xfail:0 xpass:0 skip:2 error:0
+[..]
+>> +
+>> +#define PAGEMAP			"/proc/self/pagemap"
+>> +#define CLEAR_REFS		"/proc/self/clear_refs"
+>> +#define MAX_LINE_LENGTH		512
+> 
+> MAX_LINE_LENGTH is no longer used after check_for_pattern was dropped.
+> 
+> Can't the previous defines and file handling functions also go the
+> vm_util.h?
+> 
+
+I don't want to make changes in other two tests. I just want to move
+some functions which we need for this test into vm_util.h while keeping
+changes less.
+
+>> +#define TEST_ITERATIONS		10000
+>> +
+>> +static void test_simple(int pagemap_fd, int pagesize)
+>> +{
+>> +	int i;
+>> +	char *map;
+>> +
+>> +	map = aligned_alloc(pagesize, pagesize);
+>> +	if (!map)
+>> +		ksft_exit_fail_msg("mmap failed\n");
+>> +
+>> +	clear_softdirty();
+>> +
+>> +	for (i = 0 ; i < TEST_ITERATIONS; i++) {
+>> +		if (pagemap_is_softdirty(pagemap_fd, map) == 1) {
+>> +			ksft_print_msg("dirty bit was 1, but should be 0 (i=%d)\n", i);
+>> +			break;
+>> +		}
+>> +
+>> +		clear_softdirty();
+>> +		map[0]++;
+> 
+> 
+> This will overflow several times during TEST_ITERATIONS.  While it is
+> not broken, since we care about causing the page fault, it is not
+> obvious.  Can you add a comment or do something like this instead?
+> 
+>   map[0] = !map[0];
+
+Yeah, it is less obvious. I'll add a comment
+
 -- 
-2.35.1
-
+Muhammad Usama Anjum
