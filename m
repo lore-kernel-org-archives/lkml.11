@@ -2,94 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72598C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FADC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237562AbiCPPKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
+        id S238967AbiCPPKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357021AbiCPPKW (ORCPT
+        with ESMTP id S1356985AbiCPPKX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:10:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72CE2673E1
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647443346;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q3DnrzNIWK5lpwiizhurtr0FleyyyipHQEpXQTzwkW4=;
-        b=OrZIWuS7OrW5YXzYwGe7r897ZHBIZIrokAXDEffnHcAhPhO1zNCXvaJsXQ3sBFQ52VA67Y
-        +dAd5EUCUc8qUIKJ69mHC2EYvQ8yJajUctSkh6KtHouRByAhYXlF47I8QRbkah4MR87gtg
-        4snVMTYjxjxj7/HxrSkhVyCOuksybR0=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-10-BYDh9V_BPV-cnrEAKuledg-1; Wed, 16 Mar 2022 11:09:05 -0400
-X-MC-Unique: BYDh9V_BPV-cnrEAKuledg-1
-Received: by mail-wr1-f70.google.com with SMTP id p18-20020adfba92000000b001e8f7697cc7so655096wrg.20
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:04 -0700 (PDT)
+        Wed, 16 Mar 2022 11:10:23 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7EC8D52
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:08 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id w27so4258469lfa.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=/1W+dnnlhMQP+e4IRANnXf+TdpO08fnlprvN//t7dF4=;
+        b=dq+eeU6WXHkoakUsvtYdLf2nYOhVWitfLRIbs3Cq4jH7z7eyNfnU+WWS/AUGQsXkV6
+         gnKgM2rLAW5bVC0zUxTeKLR1k7pFRAJfqGEvH5HXSgWVkBrCfy9/1LrYvqaeKDKH1P3H
+         RxlfQxBnttoORFTzRLOJyiKpiI2iiaqAHFgcv++LRMEvV4q9QldcUJwlBjj8mQZwuGeo
+         45iVPSKCu6NUCiKjRXU2jaXYW2tbvN+Ken5fTfCe7CifH58wUW7zXNvsDl0ykdURgVUG
+         +v1tmCMnwa7YFS8JVvMOBqEdPLaQ/EL7telcJ3BjGnQfnqV/DT5FgqEy+mEL0n3O51Tl
+         hMJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=q3DnrzNIWK5lpwiizhurtr0FleyyyipHQEpXQTzwkW4=;
-        b=SdCZMobSV/lbWIEuIC2ZeYgSLMX8A4d3mpCPw3zO3GSVY7Cn4G0nPfnShY4dC1wtc0
-         exmVHMjXdQ6YCGs48E3VHr/5CYpCg+jeHQr8bMorhzRxRDyYT1C4jBuAOCYQw2rkew3g
-         opyp+H1Lqzwqi+TRhOOZAHif/DhOaImqzdMcpwa/iM43VrFGHhLjUR7NQECPeUCg7veo
-         PajObFmyoLtsLWMGgKv1KqgwY01OXNFLpZ3h3Go4mvLlIz6cWZhdpz9MRVLgr9y/6bbB
-         CTZ2EdbnMilwKQoH0Ue9VEdXTlIvK+SE6H8YeVRf5/7ayYuHVM1IzCuAqHB1nQkk0PVq
-         IyQQ==
-X-Gm-Message-State: AOAM532qzuXk79iQVL+Js1mKZvgOPgw8VvPlk3UoNBb0H0phI/wHuVXg
-        fNM17OuPSWgqvPMG00ek7JDpojgWkFCS5J122yG42n3s7lxP4OPfBA+oxQ858QoiQBcrruIW2Fu
-        hM1Xjqy2uT8IPAi8xntP1uNDh
-X-Received: by 2002:a5d:4487:0:b0:1f1:232b:794f with SMTP id j7-20020a5d4487000000b001f1232b794fmr282045wrq.715.1647443343781;
-        Wed, 16 Mar 2022 08:09:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwdGMAOtiEgH+F8EM8SK3ODiymGuIa/tjM0Wd/84EkJ4ZNTP9/YNOOhdV9pi6WwJFJAXQUx6g==
-X-Received: by 2002:a5d:4487:0:b0:1f1:232b:794f with SMTP id j7-20020a5d4487000000b001f1232b794fmr282025wrq.715.1647443343525;
-        Wed, 16 Mar 2022 08:09:03 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c706:f900:aa79:cd25:e0:32d1? (p200300cbc706f900aa79cd2500e032d1.dip0.t-ipconnect.de. [2003:cb:c706:f900:aa79:cd25:e0:32d1])
-        by smtp.gmail.com with ESMTPSA id z2-20020a056000110200b001e7140ddb44sm1849465wrw.49.2022.03.16.08.09.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 08:09:03 -0700 (PDT)
-Message-ID: <a1e0a9e9-07ef-8d1c-a409-2b4fb12ed553@redhat.com>
-Date:   Wed, 16 Mar 2022 16:09:02 +0100
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=/1W+dnnlhMQP+e4IRANnXf+TdpO08fnlprvN//t7dF4=;
+        b=NNwXuKbGasSscPrN67t/ZGkSQbc0raUJ9R6y6mXck5GqdYGMJcmUIy2t04x96FidVq
+         ldxZvZOCWIVRpAFjci6UwYYRZAADUqKrNMy/eLTev6c70lj9Hjz/h/9P77yNiIkZuKIv
+         7sO7g08c2vzawlp8M1yaI0VhBVggcEe2N3ZklgTJ4fbtWsbI35zIoO50AMD5SHEwlH9i
+         p/ILBaCrSGFZ+V182PylWUK8WIOHPqZ+Jh6v3iJQ1MQshEsG5P6a+2BvjianCx9xsHLR
+         sB82OcIZIPof9LB6AvrrctWuacWVic/rJJQIbjanS175BWTj/hrNIQbNBF2lmqCYku5c
+         X8yQ==
+X-Gm-Message-State: AOAM531Beeex44jYNRyYh5GlRBoDFn8E7IFqM/RfTSDhCtg1mN6A5mAl
+        LdrslkchG/OwvXhkf3bD2Q/ZOA==
+X-Google-Smtp-Source: ABdhPJzKzVSfDws68XyH5Y5SbVgfWQK2aXlZrJmE9cx7FfWNoHKul5PxriLRfcNpuyZzvwsbkQTYSw==
+X-Received: by 2002:a05:6512:39ce:b0:448:b4fd:f389 with SMTP id k14-20020a05651239ce00b00448b4fdf389mr59430lfu.219.1647443346499;
+        Wed, 16 Mar 2022 08:09:06 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id d2-20020a194f02000000b00448b915e2d3sm176048lfb.99.2022.03.16.08.09.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 08:09:05 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: [PATCH v5 net-next 00/15] net: bridge: Multiple Spanning Trees
+Date:   Wed, 16 Mar 2022 16:08:42 +0100
+Message-Id: <20220316150857.2442916-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [RFC PATCH V1 0/3] mm/damon: Add CMA minotor support
-Content-Language: en-US
-To:     Xin Hao <xhao@linux.alibaba.com>, sj@kernel.org
-Cc:     rongwei.wang@linux.alibaba.com, akpm@linux-foundation.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <cover.1647378112.git.xhao@linux.alibaba.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <cover.1647378112.git.xhao@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15.03.22 17:37, Xin Hao wrote:
+The bridge has had per-VLAN STP support for a while now, since:
 
-s/minotor/monitor/
+https://lore.kernel.org/netdev/20200124114022.10883-1-nikolay@cumulusnetworks.com/
 
-> The purpose of these patches is to add CMA memory monitoring function.
-> In some memory tight scenarios, it will be a good choice to release more
-> memory by monitoring the CMA memory.
+The current implementation has some problems:
 
-I'm sorry, but it's hard to figure out what the target use case should
-be. Who will release CMA memory and how? Who will monitor that? What are
-the "some memory tight scenarios"? What's the overall design goal?
+- The mapping from VLAN to STP state is fixed as 1:1, i.e. each VLAN
+  is managed independently. This is awkward from an MSTP (802.1Q-2018,
+  Clause 13.5) point of view, where the model is that multiple VLANs
+  are grouped into MST instances.
+
+  Because of the way that the standard is written, presumably, this is
+  also reflected in hardware implementations. It is not uncommon for a
+  switch to support the full 4k range of VIDs, but that the pool of
+  MST instances is much smaller. Some examples:
+
+  Marvell LinkStreet (mv88e6xxx): 4k VLANs, but only 64 MSTIs
+  Marvell Prestera: 4k VLANs, but only 128 MSTIs
+  Microchip SparX-5i: 4k VLANs, but only 128 MSTIs
+
+- By default, the feature is enabled, and there is no way to disable
+  it. This makes it hard to add offloading in a backwards compatible
+  way, since any underlying switchdevs have no way to refuse the
+  function if the hardware does not support it
+
+- The port-global STP state has precedence over per-VLAN states. In
+  MSTP, as far as I understand it, all VLANs will use the common
+  spanning tree (CST) by default - through traffic engineering you can
+  then optimize your network to group subsets of VLANs to use
+  different trees (MSTI). To my understanding, the way this is
+  typically managed in silicon is roughly:
+
+  Incoming packet:
+  .----.----.--------------.----.-------------
+  | DA | SA | 802.1Q VID=X | ET | Payload ...
+  '----'----'--------------'----'-------------
+                        |
+                        '->|\     .----------------------------.
+                           | +--> | VID | Members | ... | MSTI |
+                   PVID -->|/     |-----|---------|-----|------|
+                                  |   1 | 0001001 | ... |    0 |
+                                  |   2 | 0001010 | ... |   10 |
+                                  |   3 | 0001100 | ... |   10 |
+                                  '----------------------------'
+                                                             |
+                               .-----------------------------'
+                               |  .------------------------.
+                               '->| MSTI | Fwding | Lrning |
+                                  |------|--------|--------|
+                                  |    0 | 111110 | 111110 |
+                                  |   10 | 110111 | 110111 |
+                                  '------------------------'
+
+  What this is trying to show is that the STP state (whether MSTP is
+  used, or ye olde STP) is always accessed via the VLAN table. If STP
+  is running, all MSTI pointers in that table will reference the same
+  index in the STP stable - if MSTP is running, some VLANs may point
+  to other trees (like in this example).
+
+  The fact that in the Linux bridge, the global state (think: index 0
+  in most hardware implementations) is supposed to override the
+  per-VLAN state, is very awkward to offload. In effect, this means
+  that when the global state changes to blocking, drivers will have to
+  iterate over all MSTIs in use, and alter them all to match. This
+  also means that you have to cache whether the hardware state is
+  currently tracking the global state or the per-VLAN state. In the
+  first case, you also have to cache the per-VLAN state so that you
+  can restore it if the global state transitions back to forwarding.
+
+This series adds a new mst_enable bridge setting (as suggested by Nik)
+that can only be changed when no VLANs are configured on the
+bridge. Enabling this mode has the following effect:
+
+- The port-global STP state is used to represent the CST (Common
+  Spanning Tree) (1/15)
+
+- Ingress STP filtering is deferred until the frame's VLAN has been
+  resolved (1/15)
+
+- The preexisting per-VLAN states can no longer be controlled directly
+  (1/15). They are instead placed under the MST module's control,
+  which is managed using a new netlink interface (described in 3/15)
+
+- VLANs can br mapped to MSTIs in an arbitrary M:N fashion, using a
+  new global VLAN option (2/15)
+
+Switchdev notifications are added so that a driver can track:
+- MST enabled state
+- VID to MSTI mappings
+- MST port states
+
+An offloading implementation is this provided for mv88e6xxx.
+
+A proposal for the corresponding iproute2 interface is available here:
+
+https://github.com/wkz/iproute2/tree/mst
+
+v4 -> v5:
+  Bridge:
+  - Fix build error in intermediate commit (Jakub)
+  - Use rcu safe list iterator in br_mst_info_size (Nik)
+  - Propagate any errors back to the caller when changing an MST state
+    (Vladimir)
+  DSA:
+  - Boolean algebra workshop (Vladimir, feat. De Morgan)
+  - Only flush FDBs on ports when transitioning from
+    forwarding/learning to listening/blocking/disabled (Vladimir)
+
+v3 -> v4:
+  Bridge:
+  - Constify arguments where possible (Nik)
+  - Use non-atomic bitmap operators (Nik)
+  - Rename br_mst_parse -> br_mst_process (Nik)
+  - Account for the dynamic size of generated MST netlink data (Nik)
+  - Provide proper error reporting on invalid input (Nik)
+  - Export bridge helpers under GPL (Nik)
+  - Fix build when bridge VLAN filtering is compiled out (Intel bot)
+  - Allocate VLAN bitmaps on the stack (Vladimir)
+  DSA:
+  - Propagate MST state change errors back to the bridge layer
+    (Vladimir)
+  - Fix issue with software fallback (Vladimir)
+  - Ignore FDB events on software bridged ports
+  mv88e6xxx:
+  - Use non-atomic bitmap operators (Vladimir)
+  - Restore refcount in error path (Vladimir)
+
+v2 -> v3:
+  Bridge:
+  - Use new boolopt API to enable/disable the MST mode (Nik)
+  - Mark br_mst_vlan_set_state as static (Vladimir)
+  - Avoid updates/notifications on repeated VLAN to MSTI mapping
+    configurations (Vladimir)
+  - Configure MSTI states via the existing RTM_GET/SETLINK interface
+    (Roopa)
+  - Refactor switchdev replay logic (Vladimir)
+  - Send switchdev notifications when enabling/disabling MST
+    (Vladimir)
+  DSA:
+  - Align VLAN MSTI callback with existing APIs (Vladimir)
+  - Only flush entries in the affected VLANs when changing an MST
+    state (Vladimir)
+  - Refuse offloading, unless all required ops are implemented
+    (Vladimir)
+  mv88e6xxx:
+  - Always keep the driver's MST state in sync with hardware
+    (Vladimir)
+  - Fix SID leaks (Vladimir)
+  - Only flush entries in the affected VLANs when changing an MST
+    state (Vladimir)
+
+v1 (RFC) -> v2:
+  - Add a separate MST mode that is distinct from the exiting per-VLAN
+    state functionality
+  - Control MSTI states explicitly, rather than via an associated VLAN
+
+Tobias Waldekranz (15):
+  net: bridge: mst: Multiple Spanning Tree (MST) mode
+  net: bridge: mst: Allow changing a VLAN's MSTI
+  net: bridge: mst: Support setting and reporting MST port states
+  net: bridge: mst: Notify switchdev drivers of MST mode changes
+  net: bridge: mst: Notify switchdev drivers of VLAN MSTI migrations
+  net: bridge: mst: Notify switchdev drivers of MST state changes
+  net: bridge: mst: Add helper to map an MSTI to a VID set
+  net: bridge: mst: Add helper to check if MST is enabled
+  net: bridge: mst: Add helper to query a port's MST state
+  net: dsa: Validate hardware support for MST
+  net: dsa: Pass VLAN MSTI migration notifications to driver
+  net: dsa: Handle MST state changes
+  net: dsa: mv88e6xxx: Disentangle STU from VTU
+  net: dsa: mv88e6xxx: Export STU as devlink region
+  net: dsa: mv88e6xxx: MST Offloading
+
+ drivers/net/dsa/mv88e6xxx/chip.c        | 304 +++++++++++++++++++-
+ drivers/net/dsa/mv88e6xxx/chip.h        |  38 +++
+ drivers/net/dsa/mv88e6xxx/devlink.c     |  94 +++++++
+ drivers/net/dsa/mv88e6xxx/global1.h     |  10 +
+ drivers/net/dsa/mv88e6xxx/global1_vtu.c | 311 ++++++++++++---------
+ include/linux/if_bridge.h               |  19 ++
+ include/net/dsa.h                       |   6 +
+ include/net/switchdev.h                 |  16 ++
+ include/uapi/linux/if_bridge.h          |  18 ++
+ include/uapi/linux/rtnetlink.h          |   1 +
+ net/bridge/Makefile                     |   2 +-
+ net/bridge/br.c                         |   5 +
+ net/bridge/br_input.c                   |  17 +-
+ net/bridge/br_mst.c                     | 357 ++++++++++++++++++++++++
+ net/bridge/br_netlink.c                 |  44 ++-
+ net/bridge/br_private.h                 |  61 ++++
+ net/bridge/br_stp.c                     |   6 +
+ net/bridge/br_switchdev.c               |  46 +++
+ net/bridge/br_vlan.c                    |  20 +-
+ net/bridge/br_vlan_options.c            |  20 ++
+ net/dsa/dsa_priv.h                      |   7 +
+ net/dsa/port.c                          | 113 +++++++-
+ net/dsa/slave.c                         |  18 ++
+ 23 files changed, 1381 insertions(+), 152 deletions(-)
+ create mode 100644 net/bridge/br_mst.c
 
 -- 
-Thanks,
-
-David / dhildenb
+2.25.1
 
