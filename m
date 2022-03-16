@@ -2,171 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357006AbiCPPI2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
+        id S229696AbiCPPJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356953AbiCPPIJ (ORCPT
+        with ESMTP id S1356167AbiCPPIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:08:09 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D305F27F
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:06:47 -0700 (PDT)
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9A86C3F607
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:06:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647443204;
-        bh=QAEyo1xXNWnC/wTobDlvVW3kuxucr7Y+nryukeY/7zA=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=jG0pbWhNnsvCLavoQQbQgKLfJAHOfNO1INVivJWaFWfXo/d4EOmRwljZ3Wl5zK25R
-         lLPH7nZdXg9bD3dmM4b4g7QCPaXghLdIg76+/rdsBgf4Rpju/YDOJP9ijhtkybSo5R
-         ODUoe2S8QY0Da082HZZQpCVEU2Fxlx5FYHufMA0nnA7AQ47TO7x9bgxbs+xXtTtSwf
-         swfgMo5OsazM/e6A8Bmh6JdaIkTYANf5ix15yS1/1xosMUJPS5q6NLLOriSWypARGW
-         M7dwaHfMoEI1qgB+9YDdbHJgcavZHSAP2BzxhbH1vtAnjQBGIwDCXKEKrdGw6msTqr
-         WjEDXdbkBz8ow==
-Received: by mail-wr1-f69.google.com with SMTP id h11-20020a5d430b000000b001f01a35a86fso669929wrq.4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:06:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QAEyo1xXNWnC/wTobDlvVW3kuxucr7Y+nryukeY/7zA=;
-        b=qINsRZwqkX2h21AcS6FKiio92Iz97QmOftnxG2wAnPwUCPuTLyZyjh32R8fKovSNbz
-         yCwNrUDx+cxd/33Uj0c4IoIFoKJbKm08D+H5D0jiomx+fntPZcPuUAMeyll7kpP1Jy3Y
-         cOIdoYHwydPAszKtjIMGqmbpCBk/YrAb/fnPE6PjZz9MG4TIIzVwUxmxm8lP6hiNpUH0
-         vosQqLIuj0zF90FsCoNf6i/UWFsku774IlJByCPHcOWBHHesgIwedOob3R8SQioqPnT+
-         rLjgaN+hqwASmtszzMhE/473TIWBuKF7F5M9bAiO2KV/BfgOR2c0W39gHfZxD+TDnPPW
-         YcwA==
-X-Gm-Message-State: AOAM531PqwhEDF84vzThLNNfn1urZ7trYphuqfuZW4wvz3Xb3PYPBOXu
-        9TVZOdMyNnYL4Saqso7JgnopTzvzqMnzgfewk81s6uI8yBXoY1XXU8Wu95x7iHbxXIlfBogp2Q4
-        LU+cKP8htFKBgdA2oBiL0RVLeL5aS6LdAOGHhcD6ekw==
-X-Received: by 2002:a5d:55c5:0:b0:1f0:7672:637d with SMTP id i5-20020a5d55c5000000b001f07672637dmr349065wrw.170.1647443202244;
-        Wed, 16 Mar 2022 08:06:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxweeXNXzqSiK6jLHKTzxTuSJXVd/nxHPvdpHWEAERfetg3Sykd8n3TukHieLMV78+GWu3x+Q==
-X-Received: by 2002:a5d:55c5:0:b0:1f0:7672:637d with SMTP id i5-20020a5d55c5000000b001f07672637dmr349028wrw.170.1647443202062;
-        Wed, 16 Mar 2022 08:06:42 -0700 (PDT)
-Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id p14-20020a5d59ae000000b00203dcc87d39sm3130155wrr.54.2022.03.16.08.06.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 08:06:41 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Stuart Yoder <stuyoder@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH v5 06/11] s390/cio: Use driver_set_override() instead of open-coding
-Date:   Wed, 16 Mar 2022 16:05:28 +0100
-Message-Id: <20220316150533.421349-7-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
-References: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
+        Wed, 16 Mar 2022 11:08:53 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542CF3A72D
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:07:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647443258; x=1678979258;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1G1Qa2YuwOj9sRe1KimdamuLexuSMptHANTErh9OC80=;
+  b=T6nOfl+YUYTxl30yPN8U2f/MWlmzmmspnp7WMTRz4sZ4BTHMFTCylN2l
+   vzfDk+scOv5OVhCTJrdUqmML6V56b6CQSBYuMM04dI2dSGp7noK8a9CFz
+   IJNavCpXIfjgCiQIUWzK+fKHBUGXW4ZsJ2MNk7tjEQC7CbWF1hDq6OZDk
+   Gaz4NCMUTneFUStSNCCeUm7Vv3svrycvevFuC4tIDq0cDj8H5QWNMfi/s
+   yfiqqMTMX+Po3Uox7oRYdv9c8rg9CXxLAir9/+wA3oLj5/S15pIn+lVrJ
+   mz4wdq/+igsLR0l1QDjumi/Wfp/UfMuH940px1yLEN+POAiOWqMW5MShW
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="343057057"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="343057057"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:01:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="690611035"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 16 Mar 2022 08:01:05 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUV96-000CWr-Tf; Wed, 16 Mar 2022 15:01:04 +0000
+Date:   Wed, 16 Mar 2022 23:00:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Min Li <min.li.xe@renesas.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>
+Subject: powerpc64le-linux-ld: warning: orphan section `.stubs' from
+ `drivers/mfd/rsmu_core.o' being placed in section `.stubs'
+Message-ID: <202203162206.gSuxBqLN-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a helper to set driver_override to the reduce amount of duplicated
-code.  Make the driver_override field const char, because it is not
-modified by the core and it matches other subsystems.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   56e337f2cf1326323844927a04e9dbce9a244835
+commit: a1867f85e06edacd82956d3422caa2b9074f4321 mfd: Add Renesas Synchronization Management Unit (SMU) support
+date:   8 months ago
+config: powerpc64-randconfig-r036-20220316 (https://download.01.org/0day-ci/archive/20220316/202203162206.gSuxBqLN-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a1867f85e06edacd82956d3422caa2b9074f4321
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a1867f85e06edacd82956d3422caa2b9074f4321
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Acked-by: Vineeth Vijayan <vneethv@linux.ibm.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> powerpc64le-linux-ld: warning: orphan section `.stubs' from `drivers/mfd/rsmu_core.o' being placed in section `.stubs'
+>> powerpc64le-linux-ld: warning: orphan section `.ftrace.tramp' from `drivers/mfd/rsmu_core.o' being placed in section `.ftrace.tramp'
+>> powerpc64le-linux-ld: warning: orphan section `.stubs' from `drivers/mfd/rsmu_core.o' being placed in section `.stubs'
+>> powerpc64le-linux-ld: warning: orphan section `.ftrace.tramp' from `drivers/mfd/rsmu_core.o' being placed in section `.ftrace.tramp'
+>> powerpc64le-linux-ld: warning: orphan section `.stubs' from `drivers/mfd/rsmu_core.o' being placed in section `.stubs'
+>> powerpc64le-linux-ld: warning: orphan section `.ftrace.tramp' from `drivers/mfd/rsmu_core.o' being placed in section `.ftrace.tramp'
+
 ---
- drivers/s390/cio/cio.h |  6 +++++-
- drivers/s390/cio/css.c | 28 ++++------------------------
- 2 files changed, 9 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/s390/cio/cio.h b/drivers/s390/cio/cio.h
-index 1cb9daf9c645..fa8df50bb49e 100644
---- a/drivers/s390/cio/cio.h
-+++ b/drivers/s390/cio/cio.h
-@@ -103,7 +103,11 @@ struct subchannel {
- 	struct work_struct todo_work;
- 	struct schib_config config;
- 	u64 dma_mask;
--	char *driver_override; /* Driver name to force a match */
-+	/*
-+	 * Driver name to force a match.  Do not set directly, because core
-+	 * frees it.  Use driver_set_override() to set or clear it.
-+	 */
-+	const char *driver_override;
- } __attribute__ ((aligned(8)));
- 
- DECLARE_PER_CPU_ALIGNED(struct irb, cio_irb);
-diff --git a/drivers/s390/cio/css.c b/drivers/s390/cio/css.c
-index fa8293335077..913b6ddd040b 100644
---- a/drivers/s390/cio/css.c
-+++ b/drivers/s390/cio/css.c
-@@ -338,31 +338,11 @@ static ssize_t driver_override_store(struct device *dev,
- 				     const char *buf, size_t count)
- {
- 	struct subchannel *sch = to_subchannel(dev);
--	char *driver_override, *old, *cp;
--
--	/* We need to keep extra room for a newline */
--	if (count >= (PAGE_SIZE - 1))
--		return -EINVAL;
--
--	driver_override = kstrndup(buf, count, GFP_KERNEL);
--	if (!driver_override)
--		return -ENOMEM;
--
--	cp = strchr(driver_override, '\n');
--	if (cp)
--		*cp = '\0';
--
--	device_lock(dev);
--	old = sch->driver_override;
--	if (strlen(driver_override)) {
--		sch->driver_override = driver_override;
--	} else {
--		kfree(driver_override);
--		sch->driver_override = NULL;
--	}
--	device_unlock(dev);
-+	int ret;
- 
--	kfree(old);
-+	ret = driver_set_override(dev, &sch->driver_override, buf, count);
-+	if (ret)
-+		return ret;
- 
- 	return count;
- }
--- 
-2.32.0
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
