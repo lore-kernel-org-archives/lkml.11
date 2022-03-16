@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52EEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8555CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356704AbiCPOTk (ORCPT
+        id S1356580AbiCPORu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:19:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44334 "EHLO
+        Wed, 16 Mar 2022 10:17:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356731AbiCPOTX (ORCPT
+        with ESMTP id S1356513AbiCPORX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:19:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AE269CF6;
-        Wed, 16 Mar 2022 07:17:34 -0700 (PDT)
+        Wed, 16 Mar 2022 10:17:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BB668FA7;
+        Wed, 16 Mar 2022 07:16:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C540B81B7A;
-        Wed, 16 Mar 2022 14:17:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA6E6C340F1;
-        Wed, 16 Mar 2022 14:17:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82628B81B40;
+        Wed, 16 Mar 2022 14:16:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1B15C340E9;
+        Wed, 16 Mar 2022 14:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647440252;
-        bh=lQb4Mu6T8MYtQv868Z1oDD5YOQPMit2xWh8TfuuwmA4=;
+        s=k20201202; t=1647440165;
+        bh=/GX5gvBpjGqRM7edOPSnX8uF6IzUyP5E9lPPX789yKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W/tHLeqGePagQXP0kmGoYMTr1AILJzZS+rVpT0N2f9RL8ASURVJoEJ+WQX6SDiWLE
-         Funmb1rn6WHBEF8oo3XKjw0yqUAOzkesmI/68eenv04v4SiF+pBI/vj/zIQ2fhhzEn
-         pyJCIbdcrIBkBHInNhrqSh8cGqIzz/vf776z9wjJUC9livOHp68Mh19F8yhtS1zVny
-         mG3fSAYhNV8XbRpTHR/rtdckyR1bw8+KAITjxjx43kYFRXjUL0F1zzE40dzKLb8vRc
-         narnIbe01bUPUe+1q0ULNTfwhVyknzLKxjmtEKQ9zXHNV8A2zsB2wXStZJcBajDAkx
-         z8Fs6nu7wv27w==
+        b=YLckyylUSZY77XAoRb3vAJOp1l3M8gDa46qMEoCEfrEot1Al3/4DOo+WO541Gfnmm
+         iOtUBWmneazGCECF68M1V8zRZ4+wgmAQsqZoF7I8MxuZPW/5EsT872fHxhkykuarSC
+         okk2+1/FnMEbDdqs49J0zVwMpUphNwXrg+/E/DiDxpjXu9bnlt6hT5AmwPdNkSgVU7
+         f6+UUAM5l1Jj3mfU2+0CxwG5oHF4APIPcw8syOylCTcXMntK0Rg4YIM7sWaj6hqHJk
+         giKnM0Xm/OeW31G9I+Yl8pNK8VpbFssuXGwY2Xs1QVgOEbUJMlsA63+a1PiJYQcRu9
+         a4+Gg0UZ+Ewiw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/12] spi: Fix invalid sgs value
-Date:   Wed, 16 Mar 2022 10:16:35 -0400
-Message-Id: <20220316141636.248324-11-sashal@kernel.org>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Eli Cohen <elic@nvidia.com>, Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, parav@nvidia.com,
+        xieyongji@bytedance.com, virtualization@lists.linux-foundation.org
+Subject: [PATCH AUTOSEL 5.15 07/13] vdpa/mlx5: should verify CTRL_VQ feature exists for MQ
+Date:   Wed, 16 Mar 2022 10:15:07 -0400
+Message-Id: <20220316141513.247965-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220316141636.248324-1-sashal@kernel.org>
-References: <20220316141636.248324-1-sashal@kernel.org>
+In-Reply-To: <20220316141513.247965-1-sashal@kernel.org>
+References: <20220316141513.247965-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,45 +54,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Si-Wei Liu <si-wei.liu@oracle.com>
 
-[ Upstream commit 1a4e53d2fc4f68aa654ad96d13ad042e1a8e8a7d ]
+[ Upstream commit 30c22f3816ffef8aa21a000e93c4ee1402a6ea65 ]
 
-max_seg_size is unsigned int and it can have a value up to 2^32
-(for eg:-RZ_DMAC driver sets dma_set_max_seg_size as U32_MAX)
-When this value is used in min_t() as an integer type, it becomes
--1 and the value of sgs becomes 0.
+Per VIRTIO v1.1 specification, section 5.1.3.1 Feature bit requirements:
+"VIRTIO_NET_F_MQ Requires VIRTIO_NET_F_CTRL_VQ".
 
-Fix this issue by replacing the 'int' data type with 'unsigned int'
-in min_t().
+There's assumption in the mlx5_vdpa multiqueue code that MQ must come
+together with CTRL_VQ. However, there's nowhere in the upper layer to
+guarantee this assumption would hold. Were there an untrusted driver
+sending down MQ without CTRL_VQ, it would compromise various spots for
+e.g. is_index_valid() and is_ctrl_vq_idx(). Although this doesn't end
+up with immediate panic or security loophole as of today's code, the
+chance for this to be taken advantage of due to future code change is
+not zero.
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220307184843.9994-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Harden the crispy assumption by failing the set_driver_features() call
+when seeing (MQ && !CTRL_VQ). For that end, verify_min_features() is
+renamed to verify_driver_features() to reflect the fact that it now does
+more than just validate the minimum features. verify_driver_features()
+is now used to accommodate various checks against the driver features
+for set_driver_features().
+
+Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Link: https://lore.kernel.org/r/1642206481-30721-3-git-send-email-si-wei.liu@oracle.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Eli Cohen <elic@nvidia.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 8c261eac2cee..2396565fc91b 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -881,10 +881,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
- 	int i, ret;
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 1afbda216df5..6abbf1a4b06c 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1857,11 +1857,25 @@ static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+ 	return ndev->mvdev.mlx_features;
+ }
  
- 	if (vmalloced_buf || kmap_buf) {
--		desc_len = min_t(int, max_seg_size, PAGE_SIZE);
-+		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
- 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
- 	} else if (virt_addr_valid(buf)) {
--		desc_len = min_t(int, max_seg_size, ctlr->max_dma_len);
-+		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
- 		sgs = DIV_ROUND_UP(len, desc_len);
- 	} else {
- 		return -EINVAL;
+-static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
++static int verify_driver_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+ {
++	/* Minimum features to expect */
+ 	if (!(features & BIT_ULL(VIRTIO_F_ACCESS_PLATFORM)))
+ 		return -EOPNOTSUPP;
+ 
++	/* Double check features combination sent down by the driver.
++	 * Fail invalid features due to absence of the depended feature.
++	 *
++	 * Per VIRTIO v1.1 specification, section 5.1.3.1 Feature bit
++	 * requirements: "VIRTIO_NET_F_MQ Requires VIRTIO_NET_F_CTRL_VQ".
++	 * By failing the invalid features sent down by untrusted drivers,
++	 * we're assured the assumption made upon is_index_valid() and
++	 * is_ctrl_vq_idx() will not be compromised.
++	 */
++	if ((features & (BIT_ULL(VIRTIO_NET_F_MQ) | BIT_ULL(VIRTIO_NET_F_CTRL_VQ))) ==
++            BIT_ULL(VIRTIO_NET_F_MQ))
++		return -EINVAL;
++
+ 	return 0;
+ }
+ 
+@@ -1937,7 +1951,7 @@ static int mlx5_vdpa_set_features(struct vdpa_device *vdev, u64 features)
+ 
+ 	print_features(mvdev, features, true);
+ 
+-	err = verify_min_features(mvdev, features);
++	err = verify_driver_features(mvdev, features);
+ 	if (err)
+ 		return err;
+ 
 -- 
 2.34.1
 
