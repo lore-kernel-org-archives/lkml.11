@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63124C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91DC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356842AbiCPOoa (ORCPT
+        id S1356848AbiCPOod (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
+        Wed, 16 Mar 2022 10:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356572AbiCPOoU (ORCPT
+        with ESMTP id S1349287AbiCPOoY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:44:20 -0400
+        Wed, 16 Mar 2022 10:44:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCE85FF9
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 07:43:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E056423BD9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 07:43:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D3D561583
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:43:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49447C340F1;
-        Wed, 16 Mar 2022 14:43:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C8876157E
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5841BC340E9;
+        Wed, 16 Mar 2022 14:43:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647441784;
-        bh=lHeihKp98S9nAlrutKy8Jq1rETYQC/dxIy6QH3t9vAA=;
+        s=k20201202; t=1647441788;
+        bh=vCDDcFPUQSzH6TzPOyC9N+1Fa+Z5jBQqQSiXx5AHDfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j2szZO8x3DJqWy2wda/Vbq6jPT3EaU6raecAs28R0PCkU6cFabavYkx1Xpw9fxc1v
-         Q4M7qJDzdIwZUP94V8HzUdYENuyZZoOcYo6c8jejCV7QNgYvcw1SMAbbGf5zbxon0+
-         ydPeRkiMXOaQ0VjjwDAHYS3WdO3VGE9gUzuMX2ucPJ607JnaMHSDNnKyxiFC3QIS1J
-         bNXRxZeMo9s6VbffV+GtjjBJmMUf87yWbR1wJZHpV/FAeyhq5MWeCEUZtyziw1vmAG
-         +tN85AFFV2GXYPYu/I2OMex4k4k33ycpbaNo76kMvB7kq3BXqtJcvTH6hqrp/1pcxf
-         KCzpv/Qfo2yrw==
+        b=hTnEfioT1MiaIJDcbMDSF2ozD5jg1PGrdv+V5vQabLfC44BrAsVisMVOxAfF5qGLX
+         WU4wQ/uVk92KAamwdJYA0oSlYTDXEZwUbpQgft6ptEPapS96wIa+xpsxtdT8FMhHZ0
+         XgCJf7UD27qhqlCpLf1XeKcTPXqEq8tQ4NKaTLgEU99g1mnZBA+KAyekKUp986HQA9
+         jAHrtssaz/DzHlR0S2w+aKK/7vhHGgCq268y1f+xHgQAb1mF6imcfQ52Fkpj7VGR0E
+         FRnSshQyf04fqbdd25nYZZUc2+Vwc/Q0jpYvne8b1sNAGHTjcI8td01xcEwTMKgJJe
+         oDYKtGQ3JX7EA==
 From:   Frederic Weisbecker <frederic@kernel.org>
 To:     "Paul E . McKenney" <paulmck@kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
@@ -41,9 +41,9 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Boqun Feng <boqun.feng@gmail.com>,
         Neeraj Upadhyay <quic_neeraju@quicinc.com>,
         Joel Fernandes <joel@joelfernandes.org>
-Subject: [PATCH 2/4] rcu: No need to reset the poll request flag before completion
-Date:   Wed, 16 Mar 2022 15:42:53 +0100
-Message-Id: <20220316144255.336021-3-frederic@kernel.org>
+Subject: [PATCH 4/4] rcu: Name internal polling flag
+Date:   Wed, 16 Mar 2022 15:42:55 +0100
+Message-Id: <20220316144255.336021-5-frederic@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220316144255.336021-1-frederic@kernel.org>
 References: <20220316144255.336021-1-frederic@kernel.org>
@@ -53,10 +53,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The flag allowing to requeue the polling work is reset before the
-polling even starts. However there is no point in having two competing
-polling on the same grace period. Just reset the flag once we have
-completed the grace period only.
+Give a proper self-explanatory name to the expedited grace period
+internal polling flag.
 
 Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
 Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
@@ -64,21 +62,72 @@ Cc: Boqun Feng <boqun.feng@gmail.com>
 Cc: Uladzislau Rezki <uladzislau.rezki@sony.com>
 Cc: Joel Fernandes <joel@joelfernandes.org>
 ---
- kernel/rcu/tree_exp.h | 1 -
- 1 file changed, 1 deletion(-)
+ kernel/rcu/rcu.h      | 5 +++++
+ kernel/rcu/tree.c     | 2 +-
+ kernel/rcu/tree_exp.h | 9 +++++----
+ 3 files changed, 11 insertions(+), 5 deletions(-)
 
+diff --git a/kernel/rcu/rcu.h b/kernel/rcu/rcu.h
+index eccbdbdaa02e..8a62bb416ba4 100644
+--- a/kernel/rcu/rcu.h
++++ b/kernel/rcu/rcu.h
+@@ -30,6 +30,11 @@
+ #define RCU_GET_STATE_USE_NORMAL	0x2
+ #define RCU_GET_STATE_BAD_FOR_NORMAL	(RCU_GET_STATE_FROM_EXPEDITED | RCU_GET_STATE_USE_NORMAL)
+ 
++/*
++ * Low-order bit definitions for polled grace-period internals.
++ */
++#define RCU_EXP_SEQ_POLL_DONE 0x1
++
+ /*
+  * Return the counter portion of a sequence number previously returned
+  * by rcu_seq_snap() or rcu_seq_current().
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index 5da381a3cbe5..b3223b365f9f 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -4679,7 +4679,7 @@ static void __init rcu_init_one(void)
+ 			spin_lock_init(&rnp->exp_lock);
+ 			mutex_init(&rnp->boost_kthread_mutex);
+ 			raw_spin_lock_init(&rnp->exp_poll_lock);
+-			rnp->exp_seq_poll_rq = 0x1;
++			rnp->exp_seq_poll_rq = RCU_EXP_SEQ_POLL_DONE;
+ 			INIT_WORK(&rnp->exp_poll_wq, sync_rcu_do_polled_gp);
+ 		}
+ 	}
 diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index b6fd857f34ba..763ec35546ed 100644
+index c4a19c6a83cf..7ccb909d6355 100644
 --- a/kernel/rcu/tree_exp.h
 +++ b/kernel/rcu/tree_exp.h
-@@ -911,7 +911,6 @@ static void sync_rcu_do_polled_gp(struct work_struct *wp)
+@@ -910,14 +910,14 @@ static void sync_rcu_do_polled_gp(struct work_struct *wp)
+ 	unsigned long s;
  
+ 	s = READ_ONCE(rnp->exp_seq_poll_rq);
+-	if (s & 0x1)
++	if (s & RCU_EXP_SEQ_POLL_DONE)
+ 		return;
+ 	while (!sync_exp_work_done(s))
+ 		__synchronize_rcu_expedited(true);
  	raw_spin_lock_irqsave(&rnp->exp_poll_lock, flags);
  	s = rnp->exp_seq_poll_rq;
--	rnp->exp_seq_poll_rq |= 0x1;
+-	if (!(s & 0x1) && sync_exp_work_done(s))
+-		WRITE_ONCE(rnp->exp_seq_poll_rq, s | 0x1);
++	if (!(s & RCU_EXP_SEQ_POLL_DONE) && sync_exp_work_done(s))
++		WRITE_ONCE(rnp->exp_seq_poll_rq, s | RCU_EXP_SEQ_POLL_DONE);
  	raw_spin_unlock_irqrestore(&rnp->exp_poll_lock, flags);
- 	if (s & 0x1)
- 		return;
+ }
+ 
+@@ -946,7 +946,8 @@ unsigned long start_poll_synchronize_rcu_expedited(void)
+ 	rnp = rdp->mynode;
+ 	if (rcu_init_invoked())
+ 		raw_spin_lock_irqsave(&rnp->exp_poll_lock, flags);
+-	if ((rnp->exp_seq_poll_rq & 0x1) || ULONG_CMP_LT(rnp->exp_seq_poll_rq, s)) {
++	if ((rnp->exp_seq_poll_rq & RCU_EXP_SEQ_POLL_DONE) ||
++	    ULONG_CMP_LT(rnp->exp_seq_poll_rq, s)) {
+ 		WRITE_ONCE(rnp->exp_seq_poll_rq, s);
+ 		if (rcu_init_invoked())
+ 			queue_work(rcu_gp_wq, &rnp->exp_poll_wq);
 -- 
 2.25.1
 
