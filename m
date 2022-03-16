@@ -2,54 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A912C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87389C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355073AbiCPJ5L (ORCPT
+        id S1355080AbiCPJ5d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 05:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        Wed, 16 Mar 2022 05:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350863AbiCPJ5I (ORCPT
+        with ESMTP id S1350863AbiCPJ5c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 05:57:08 -0400
-X-Greylist: delayed 2292 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Mar 2022 02:55:53 PDT
-Received: from bitmer.com (49-237-179-185.static.tentacle.fi [185.179.237.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852C955771;
-        Wed, 16 Mar 2022 02:55:53 -0700 (PDT)
-Received: from jarkko by bitmer.com with local (Exim 4.89)
-        (envelope-from <jarkko.nikula@bitmer.com>)
-        id 1nUPmO-0007RG-Tx; Wed, 16 Mar 2022 11:17:16 +0200
-Date:   Wed, 16 Mar 2022 11:17:16 +0200
-From:   Jarkko Nikula <jarkko.nikula@bitmer.com>
-To:     =?iso-8859-1?Q?P=E9ter?= Ujfalusi <peter.ujfalusi@gmail.com>
-Cc:     Colin Ian King <colin.i.king@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-omap@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: ti: Fix spelling mistake "cant" -> "can't"
-Message-ID: <20220316091716.wk25xjliy4zzvzb3@bitmer.com>
-References: <20220315230816.2964577-1-colin.i.king@gmail.com>
- <4d3c65c0-1bc3-bc8f-393a-22c964f18120@gmail.com>
+        Wed, 16 Mar 2022 05:57:32 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0107055771
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:56:17 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A073421125;
+        Wed, 16 Mar 2022 09:56:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647424576; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Dd5vdp3Qi8IT4o7kjNbpz9TrWOznkW6WDVyec0y1JZ4=;
+        b=QySUcHD0bhNZjxz2GTyKnYnGVe64FKvnBSTmONm+Q42Uii5EL8zO9dHCKf5+pvBq5tvjcK
+        Aopt5JEJeVMeO9ta0p7FczU+qeNjAYMo7m9YJcXdsRCV6td4NC4ISQx3SOa+wS6/KBV8IO
+        4aAWVqSGzIqNy+marQwyT0hohQ0/F00=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 6CEF4A3B9E;
+        Wed, 16 Mar 2022 09:56:16 +0000 (UTC)
+Date:   Wed, 16 Mar 2022 10:56:14 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, kosaki.motohiro@jp.fujitsu.com,
+        mgorman@suse.de, linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/mempolicy: fix potential mpol_new leak in
+ shared_policy_replace
+Message-ID: <YjG0PsF25wpAEOY3@dhcp22.suse.cz>
+References: <20220311093624.39546-1-linmiaohe@huawei.com>
+ <Yi9w7TCYbj+OLGXJ@dhcp22.suse.cz>
+ <26577566-ae1e-801c-8c64-89c2c89a487d@huawei.com>
+ <YjCwYpTbGzAj9kmg@dhcp22.suse.cz>
+ <24b2a9ef-eea0-09bd-6842-121d8436e56a@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4d3c65c0-1bc3-bc8f-393a-22c964f18120@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <24b2a9ef-eea0-09bd-6842-121d8436e56a@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 08:34:12AM +0200, Péter Ujfalusi wrote:
+On Wed 16-03-22 14:39:37, Miaohe Lin wrote:
+> On 2022/3/15 23:27, Michal Hocko wrote:
+> > On Tue 15-03-22 21:42:29, Miaohe Lin wrote:
+> >> On 2022/3/15 0:44, Michal Hocko wrote:
+> >>> On Fri 11-03-22 17:36:24, Miaohe Lin wrote:
+> >>>> If mpol_new is allocated but not used in restart loop, mpol_new will be
+> >>>> freed via mpol_put before returning to the caller. But refcnt is not
+> >>>> initialized yet, so mpol_put could not do the right things and might
+> >>>> leak the unused mpol_new.
+> >>>
+> >>> The code is really hideous but is there really any bug there? AFAICS the
+> >>> new policy is only allocated in if (n->end > end) branch and that one
+> >>> will set the reference count on the retry. Or am I missing something?
+> >>>
+> >>
+> >> Many thanks for your comment.
+> >> IIUC, new policy is allocated via the below code:
+> >>
+> >> shared_policy_replace:
+> >> 	alloc_new:
+> >> 		write_unlock(&sp->lock);
+> >> 		ret = -ENOMEM;
+> >> 		n_new = kmem_cache_alloc(sn_cache, GFP_KERNEL);
+> >> 		if (!n_new)
+> >> 			goto err_out;
+> >> 		mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+> >> 		if (!mpol_new)
+> >> 			goto err_out;
+> >> 		goto restart;
+> >>
+> >> And mpol_new' reference count will be set before used in n->end > end case. But
+> >> if that is "not" the case, i.e. mpol_new is not inserted into the rb_tree, mpol_new
+> >> will be freed via mpol_put before return:
+> > 
+> > One thing I have missed previously is that the lock is dropped during
+> > the allocation so I guess the memory policy could have been changed
+> > during that time. Is this possible? Have you explored this possibility?
+> > Is this a theoretical problem or it can be triggered intentionally.
+> > 
 > 
+> This is found via code investigation. I think this could be triggered if there
+> are many concurrent mpol_set_shared_policy in place. But the user-visible effect
+> might be obscure as only sizeof(struct mempolicy) bytes leaks possiblely every time.
 > 
-> On 16/03/2022 01:08, Colin Ian King wrote:
-> > There is a spelling mistake in a dev_err message. Fix it.
+> > These details would be really interesting for the changelog so that we
+> > can judge how important this would be.
 > 
-> Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
->
-Acked-by: Jarkko Nikula <jarkko.nikula@bitmer.com>
+> This might not be that important as this issue should have been well-concealed for
+> almost ten years (since commit 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")).
+
+I think it is really worth to drill down to the bottom of the issue.
+While theoretically possible can be a good enough to justify the change
+it is usually preferred to describe the underlying problem for future
+maintainability. 
+-- 
+Michal Hocko
+SUSE Labs
