@@ -2,197 +2,378 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 241B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:00:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95075C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353041AbiCPUBv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 16:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
+        id S240547AbiCPUEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 16:04:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244611AbiCPUBr (ORCPT
+        with ESMTP id S244611AbiCPUEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 16:01:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D91812AB2;
-        Wed, 16 Mar 2022 13:00:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2365DB81CF8;
-        Wed, 16 Mar 2022 20:00:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4BF9C340EC;
-        Wed, 16 Mar 2022 20:00:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647460828;
-        bh=HhqBenJxYr/4Wy47SESC09+Vvl0pC8fujmV7WG4lVko=;
-        h=Date:From:To:Cc:Subject:Reply-To:From;
-        b=fSdl19bSq+XFzLCi9XpBHUc2MeE7u+lKiV8DcwBf3TxJrOmlZJS3p7jFibsaVHsOJ
-         osck/rAHqAH8keOOkQLk6VyBG2RnRLcbT6hUQjAaiZUlaWxQFob+5JcIPPP6K/08aQ
-         sYZzQQ/3WfSbPFlDEKuY17fNsH35lOldnDvhoGMsXP97/aZZ/FqzMh45h6x0vFUFzx
-         c7/kj+IrZhUq+5KiOnDO/Zp14wrzrjBgjSrxFouyytKHdDDOkAWTrDL2ubOSrBUQvC
-         gMXygcbjvFrJPKcXvBsJcAzgvpqQwr66CSe+YCiHopYYj6EL2MoHs3viEtmHQSVUeE
-         bUtPV8Tvbg2sA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 76D535C0387; Wed, 16 Mar 2022 13:00:28 -0700 (PDT)
-Date:   Wed, 16 Mar 2022 13:00:28 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     mingo@kernel.org, linux-kernel@vger.kernel.org, tglx@linutronix.de,
-        rcu@vger.kernel.org, kernel-team@fb.com
-Subject: [GIT PULL] RCU changes for v5.18 (take two)
-Message-ID: <20220316200028.GA1938922@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
+        Wed, 16 Mar 2022 16:04:09 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6669315
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:02:51 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id z3so2676814plg.8
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uTb/eDpTR8x3dKYpTipbgrv/A4RYKtuyfr7w8c85gc4=;
+        b=B3rUJPhaMv97hfBK3NREN2d9gtQY1sVTrORdG30qBFS3wQv3QajOqawzrcPZCB5skC
+         X5phhjsxHIUThaOTtCK6hVd3ChNKjB+KvXYbKifwSsJADJNmRsljdHTbFuxW0e3lcUv0
+         Z1KtthUYU4WNKJYqXWHubpRNgyRjoZ9RXQ5P59qNI2K+9wgtz2T3HrO56oW7wW6FYKsR
+         VVJKBUcvH69utzRHlyMbN1oGlJ0Qsm8jQYr7/QqPwDfOVgUjIC3vB4mjg2J0JbGBsaN1
+         cPzQ2d7JsdKy9gP+eQ9+XFMvgixVeOIaHN7TIeT5q5nIhx9T68IwJympFXuoWxNCk5cb
+         b0DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uTb/eDpTR8x3dKYpTipbgrv/A4RYKtuyfr7w8c85gc4=;
+        b=w+ERMKdwxOH8CaRXo70esPvRxu0WR3K4PVVaCMl6Gm9Vv4flnQl82SQZ2B0iiagBHi
+         4OM+BO4wu//yfYj8pxZluHshFRkjxlgTCb4DxM/rHK7siwKfBjdUF1nQpxwH98zIjmVX
+         BKEetPMRyAC3LT5dquzzt3zLgBEytenhzBwylBU7OYbJgLLFVHxtIosCVDs3R1LJb7Ls
+         RuuIvrtnR2l0ZnJmn5uO4t0Mk05p/LLxtHa8d/v0Ng1WNCXgYisk0NNbVP7N8KcQZ4ra
+         CPFQxEzA/kwmVE/UsEHecR005pOzp9HJeRIPeh4sSfhcxmcIZfttVSiKdAph4Fxk+wim
+         Dpnw==
+X-Gm-Message-State: AOAM5326wRU1PzEu1LoBet5uprryeznM8w1XgP+G1Z8l9aoqH7616Wmu
+        ovE/tOy2HryeDu8bwu1ttviGaQUgedVmP0U8jnU=
+X-Google-Smtp-Source: ABdhPJwyjFRLAYNLl6/8MLneSORPj/tBt1JesG1HQf0NsQYJ+5facnxgPLTdMH5LUnIL0traGw65SFB3qCaoDR/9i5w=
+X-Received: by 2002:a17:903:1c5:b0:151:cd10:5a5 with SMTP id
+ e5-20020a17090301c500b00151cd1005a5mr1363986plh.26.1647460971276; Wed, 16 Mar
+ 2022 13:02:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220315104741.63071-1-david@redhat.com> <20220315104741.63071-5-david@redhat.com>
+In-Reply-To: <20220315104741.63071-5-david@redhat.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 16 Mar 2022 13:02:39 -0700
+Message-ID: <CAHbLzkqs04Y+2oNP1Tvhk7wOK4LQnD5vuCMVU9o6+-=UAUDwXA@mail.gmail.com>
+Subject: Re: [PATCH v2 04/15] mm/rmap: split page_dup_rmap() into
+ page_dup_file_rmap() and page_try_dup_anon_rmap()
+To:     David Hildenbrand <david@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, Linus,
+On Tue, Mar 15, 2022 at 3:50 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> ... and move the special check for pinned pages into
+> page_try_dup_anon_rmap() to prepare for tracking exclusive anonymous
+> pages via a new pageflag, clearing it only after making sure that there
+> are no GUP pins on the anonymous page.
+>
+> We really only care about pins on anonymous pages, because they are
+> prone to getting replaced in the COW handler once mapped R/O. For !anon
+> pages in cow-mappings (!VM_SHARED && VM_MAYWRITE) we shouldn't really
+> care about that, at least not that I could come up with an example.
+>
+> Let's drop the is_cow_mapping() check from page_needs_cow_for_dma(), as we
+> know we're dealing with anonymous pages. Also, drop the handling of
+> pinned pages from copy_huge_pud() and add a comment if ever supporting
+> anonymous pages on the PUD level.
+>
+> This is a preparation for tracking exclusivity of anonymous pages in
+> the rmap code, and disallowing marking a page shared (-> failing to
+> duplicate) if there are GUP pins on a page.
+>
+> RFC notes: if I'm missing something important for !anon pages, we could
+>            similarly handle it via page_try_dup_file_rmap().
+>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
+> ---
+>  include/linux/mm.h   |  5 +----
+>  include/linux/rmap.h | 48 +++++++++++++++++++++++++++++++++++++++++++-
+>  mm/huge_memory.c     | 27 ++++++++-----------------
+>  mm/hugetlb.c         | 16 ++++++++-------
+>  mm/memory.c          | 17 +++++++++++-----
+>  mm/migrate.c         |  2 +-
+>  6 files changed, 78 insertions(+), 37 deletions(-)
+>
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 391b950e919d..63ee06001189 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -1322,16 +1322,13 @@ static inline bool is_cow_mapping(vm_flags_t flags)
+>
+>  /*
+>   * This should most likely only be called during fork() to see whether we
+> - * should break the cow immediately for a page on the src mm.
+> + * should break the cow immediately for an anon page on the src mm.
+>   *
+>   * The caller has to hold the PT lock and the vma->vm_mm->->write_protect_seq.
+>   */
+>  static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+>                                           struct page *page)
+>  {
+> -       if (!is_cow_mapping(vma->vm_flags))
+> -               return false;
+> -
+>         VM_BUG_ON(!(raw_read_seqcount(&vma->vm_mm->write_protect_seq) & 1));
+>
+>         if (!test_bit(MMF_HAS_PINNED, &vma->vm_mm->flags))
+> diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+> index e704b1a4c06c..92c3585b8c6a 100644
+> --- a/include/linux/rmap.h
+> +++ b/include/linux/rmap.h
+> @@ -180,11 +180,57 @@ void hugepage_add_anon_rmap(struct page *, struct vm_area_struct *,
+>  void hugepage_add_new_anon_rmap(struct page *, struct vm_area_struct *,
+>                                 unsigned long);
+>
+> -static inline void page_dup_rmap(struct page *page, bool compound)
+> +static inline void __page_dup_rmap(struct page *page, bool compound)
+>  {
+>         atomic_inc(compound ? compound_mapcount_ptr(page) : &page->_mapcount);
+>  }
+>
+> +static inline void page_dup_file_rmap(struct page *page, bool compound)
+> +{
+> +       __page_dup_rmap(page, compound);
+> +}
+> +
+> +/**
+> + * page_try_dup_anon_rmap - try duplicating a mapping of an already mapped
+> + *                         anonymous page
+> + * @page: the page to duplicate the mapping for
+> + * @compound: the page is mapped as compound or as a small page
+> + * @vma: the source vma
+> + *
+> + * The caller needs to hold the PT lock and the vma->vma_mm->write_protect_seq.
+> + *
+> + * Duplicating the mapping can only fail if the page may be pinned; device
+> + * private pages cannot get pinned and consequently this function cannot fail.
+> + *
+> + * If duplicating the mapping succeeds, the page has to be mapped R/O into
+> + * the parent and the child. It must *not* get mapped writable after this call.
+> + *
+> + * Returns 0 if duplicating the mapping succeeded. Returns -EBUSY otherwise.
+> + */
+> +static inline int page_try_dup_anon_rmap(struct page *page, bool compound,
+> +                                        struct vm_area_struct *vma)
+> +{
+> +       VM_BUG_ON_PAGE(!PageAnon(page), page);
+> +
+> +       /*
+> +        * If this page may have been pinned by the parent process,
+> +        * don't allow to duplicate the mapping but instead require to e.g.,
+> +        * copy the page immediately for the child so that we'll always
+> +        * guarantee the pinned page won't be randomly replaced in the
+> +        * future on write faults.
+> +        */
+> +       if (likely(!is_device_private_page(page) &&
+> +           unlikely(page_needs_cow_for_dma(vma, page))))
+> +               return -EBUSY;
+> +
+> +       /*
+> +        * It's okay to share the anon page between both processes, mapping
+> +        * the page R/O into both processes.
+> +        */
+> +       __page_dup_rmap(page, compound);
+> +       return 0;
+> +}
+> +
+>  /*
+>   * Called from mm/vmscan.c to handle paging out
+>   */
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index cda88d8ac1bd..c126d728b8de 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -1097,23 +1097,16 @@ int copy_huge_pmd(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+>         src_page = pmd_page(pmd);
+>         VM_BUG_ON_PAGE(!PageHead(src_page), src_page);
+>
+> -       /*
+> -        * If this page is a potentially pinned page, split and retry the fault
+> -        * with smaller page size.  Normally this should not happen because the
+> -        * userspace should use MADV_DONTFORK upon pinned regions.  This is a
+> -        * best effort that the pinned pages won't be replaced by another
+> -        * random page during the coming copy-on-write.
+> -        */
+> -       if (unlikely(page_needs_cow_for_dma(src_vma, src_page))) {
+> +       get_page(src_page);
+> +       if (unlikely(page_try_dup_anon_rmap(src_page, true, src_vma))) {
+> +               /* Page maybe pinned: split and retry the fault on PTEs. */
+> +               put_page(src_page);
 
-My level of resentment [1] towards these branches rose more quickly than
-anticipated, so once the merge window opens please pull the latest RCU
-git tree from:
+Do we have to do the get_page()/put_page() sequence? It seems we don't
+have to get the page before calling page_try_dup_anon_rmap(), right?
+We just need to bump page refcount when dupping rmap successfully. So
+we could do:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/rcu.2022.03.13a
-  # HEAD: d5578190bed3d110203e3b6b29c5a7a39d51c6c0 Merge branches 'exp.2022.02.24a', 'fixes.2022.02.14a', 'rcu_barrier.2022.02.08a', 'rcu-tasks.2022.02.08a', 'rt.2022.02.01b', 'torture.2022.02.01b' and 'torturescript.2022.02.08a' into HEAD (2022-02-24 09:38:46 -0800)
+if (unlikely(page_try_dup_anon_rmap(src_page, true, src_vma))) {
+    /* do something */
+}
 
-RCU changes for this cycle were:
+get_page(src_page)
 
-exp.2022.02.24a: Contains a fix for idle detection from Neeraj Upadhyay
-	and missing access marking detected by KCSAN.
-
-fixes.2022.02.14a: Miscellaneous fixes.
-
-rcu_barrier.2022.02.08a: Reduces coupling between rcu_barrier() and
-	CPU-hotplug operations, so that rcu_barrier() no longer needs
-	to do cpus_read_lock().  This may also someday allow system
-	boot to bring CPUs online concurrently.
-
-rcu-tasks.2022.02.08a: Enable more aggressive movement to per-CPU
-	queueing when reacting to excessive lock contention due
-	to workloads placing heavy update-side stress on RCU tasks.
-
-rt.2022.02.01b: Improvements to RCU priority boosting, including
-	changes from Neeraj Upadhyay, Zqiang, and Alison Chaiken.
-
-torture.2022.02.01b: Various fixes improving test robustness and
-	debug information.
-
-torturescript.2022.02.08a: Add tests for SRCU size transitions, further
-	compress torture.sh build products, and improve debug output.
-
-There is a merge conflict between the following commits that was located
-by -next testing:
-
-6a2c1d450a6a3 ("rcu: Replace cpumask_weight with cpumask_empty where appropriate")
-04d4e665a6090 ("sched/isolation: Use single feature type while referring to housekeeping cpumask")
-
-Mark Brown (filling in for Stephen Rothwell) proposed a resolution [2]
-that passes rcutorture testing.  That resolution is also available in
-the -rcu tree at branch merge.2022.03.15a.
-
-[1] https://lore.kernel.org/all/CAHk-=wjEVLfoypyZHwdLjh3vX_BSJO1JJBjha2XgcghSX=sdgw@mail.gmail.com/
-[2] https://lore.kernel.org/lkml/20220221181718.453295-1-broonie@kernel.org/
-
-----------------------------------------------------------------
-Alison Chaiken (4):
-      rcu: Move kthread_prio bounds-check to a separate function
-      rcu: Make priority of grace-period thread consistent
-      rcu: Elevate priority of offloaded callback threads
-      rcu: Update documentation regarding kthread_prio cmdline parameter
-
-David Woodhouse (2):
-      rcu: Kill rnp->ofl_seq and use only rcu_state.ofl_lock for exclusion
-      rcu: Add mutex for rcu boost kthread spawning and affinity setting
-
-Ingo Molnar (2):
-      rcu: Uninline multi-use function: finish_rcuwait()
-      rcu: Remove __read_mostly annotations from rcu_scheduler_active externs
-
-Neeraj Upadhyay (3):
-      rcu/exp: Fix check for idle context in rcu_exp_handler
-      rcu/nocb: Handle concurrent nocb kthreads creation
-      rcu: Remove unused rcu_state.boost
-
-Paul E. McKenney (34):
-      rcu: Mark ->expmask access in synchronize_rcu_expedited_wait()
-      rcu: Mark accesses to boost_starttime
-      rcu: Don't deboost before reporting expedited quiescent state
-      rcutorture: Print message before invoking ->cb_barrier()
-      torture: Distinguish kthread stopping and being asked to stop
-      rcutorture: Increase visibility of forward-progress hangs
-      rcutorture: Make rcu_fwd_cb_nodelay be a counter
-      rcutorture: Add end-of-test check to rcu_torture_fwd_prog() loop
-      rcutorture: Fix rcu_fwd_mutex deadlock
-      torture: Wake up kthreads after storing task_struct pointer
-      rcutorture: Enable limited callback-flooding tests of SRCU
-      torture: Drop trailing ^M from console output
-      torture: Allow four-digit repetition numbers for --configs parameter
-      torture: Output per-failed-run summary lines from torture.sh
-      torture: Make kvm.sh summaries note runs having only KCSAN reports
-      torture: Indicate which torture.sh runs' bugs are all KCSAN reports
-      torture: Compress KCSAN as well as KASAN vmlinux files
-      torture: Make kvm-remote.sh try multiple times to download tarball
-      torture: Print only one summary line per run
-      torture: Make kvm-find-errors.sh notice missing vmlinux file
-      torture: Change KVM environment variable to RCUTORTURE
-      rcu: Refactor rcu_barrier() empty-list handling
-      rcu: Rework rcu_barrier() and callback-migration logic
-      rcu: Make rcu_barrier() no longer block CPU-hotplug operations
-      rcu: Create and use an rcu_rdp_cpu_online()
-      rcu-tasks: Use order_base_2() instead of ilog2()
-      rcu-tasks: Set ->percpu_enqueue_shift to zero upon contention
-      torture: Make torture.sh help message match reality
-      rcutorture: Test SRCU size transitions
-      rcutorture: Provide non-power-of-two Tasks RCU scenarios
-      MAINTAINERS:  Add Frederic and Neeraj to their RCU files
-      rcu: Inline __call_rcu() into call_rcu()
-      rcu: Mark writes to the rcu_segcblist structure's ->flags field
-      Merge branches 'exp.2022.02.24a', 'fixes.2022.02.14a', 'rcu_barrier.2022.02.08a', 'rcu-tasks.2022.02.08a', 'rt.2022.02.01b', 'torture.2022.02.01b' and 'torturescript.2022.02.08a' into HEAD
-
-Uladzislau Rezki (Sony) (1):
-      rcu: Fix description of kvfree_rcu()
-
-Yury Norov (1):
-      rcu: Replace cpumask_weight with cpumask_empty where appropriate
-
-Zqiang (3):
-      rcu: Create per-cpu rcuc kthreads only when rcutree.use_softirq=0
-      rcu: Add per-CPU rcuc task dumps to RCU CPU stall warnings
-      kasan: Record work creation stack trace with interrupts enabled
-
- Documentation/admin-guide/kernel-parameters.txt    |   2 +
- MAINTAINERS                                        |   2 +
- include/linux/rcupdate.h                           |   4 +-
- include/linux/rcutree.h                            |   2 +-
- include/linux/rcuwait.h                            |   6 +-
- include/trace/events/rcu.h                         |   9 +-
- kernel/rcu/rcu_segcblist.h                         |   4 +-
- kernel/rcu/rcutorture.c                            |  41 ++-
- kernel/rcu/tasks.h                                 |   6 +-
- kernel/rcu/tree.c                                  | 328 ++++++++++++---------
- kernel/rcu/tree.h                                  |  18 +-
- kernel/rcu/tree_exp.h                              |   5 +-
- kernel/rcu/tree_nocb.h                             |  18 +-
- kernel/rcu/tree_plugin.h                           |  31 +-
- kernel/rcu/tree_stall.h                            |  35 +++
- kernel/rcu/update.c                                |   7 +
- kernel/torture.c                                   |   6 +-
- .../selftests/rcutorture/bin/console-badness.sh    |   2 +-
- .../testing/selftests/rcutorture/bin/kvm-again.sh  |   4 +-
- .../selftests/rcutorture/bin/kvm-check-branches.sh |   4 +-
- .../selftests/rcutorture/bin/kvm-end-run-stats.sh  |   4 +-
- .../selftests/rcutorture/bin/kvm-find-errors.sh    |   6 +
- .../selftests/rcutorture/bin/kvm-recheck-rcu.sh    |   2 +-
- .../testing/selftests/rcutorture/bin/kvm-remote.sh |  25 +-
- tools/testing/selftests/rcutorture/bin/kvm.sh      |  16 +-
- .../selftests/rcutorture/bin/parse-console.sh      |  10 +
- tools/testing/selftests/rcutorture/bin/torture.sh  |  38 ++-
- .../selftests/rcutorture/configs/rcu/RUDE01        |   2 +-
- .../selftests/rcutorture/configs/rcu/SRCU-N.boot   |   1 +
- .../selftests/rcutorture/configs/rcu/SRCU-P.boot   |   2 +
- .../selftests/rcutorture/configs/rcu/TRACE01       |   2 +-
- 31 files changed, 400 insertions(+), 242 deletions(-)
+>                 pte_free(dst_mm, pgtable);
+>                 spin_unlock(src_ptl);
+>                 spin_unlock(dst_ptl);
+>                 __split_huge_pmd(src_vma, src_pmd, addr, false, NULL);
+>                 return -EAGAIN;
+>         }
+> -
+> -       get_page(src_page);
+> -       page_dup_rmap(src_page, true);
+>         add_mm_counter(dst_mm, MM_ANONPAGES, HPAGE_PMD_NR);
+>  out_zero_page:
+>         mm_inc_nr_ptes(dst_mm);
+> @@ -1217,14 +1210,10 @@ int copy_huge_pud(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+>                 /* No huge zero pud yet */
+>         }
+>
+> -       /* Please refer to comments in copy_huge_pmd() */
+> -       if (unlikely(page_needs_cow_for_dma(vma, pud_page(pud)))) {
+> -               spin_unlock(src_ptl);
+> -               spin_unlock(dst_ptl);
+> -               __split_huge_pud(vma, src_pud, addr);
+> -               return -EAGAIN;
+> -       }
+> -
+> +       /*
+> +        * TODO: once we support anonymous pages, use page_try_dup_anon_rmap()
+> +        * and split if duplicating fails.
+> +        */
+>         pudp_set_wrprotect(src_mm, addr, src_pud);
+>         pud = pud_mkold(pud_wrprotect(pud));
+>         set_pud_at(dst_mm, addr, dst_pud, pud);
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index d3ce89697855..9fb990d95dab 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -4781,15 +4781,18 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+>                         get_page(ptepage);
+>
+>                         /*
+> -                        * This is a rare case where we see pinned hugetlb
+> -                        * pages while they're prone to COW.  We need to do the
+> -                        * COW earlier during fork.
+> +                        * Failing to duplicate the anon rmap is a rare case
+> +                        * where we see pinned hugetlb pages while they're
+> +                        * prone to COW. We need to do the COW earlier during
+> +                        * fork.
+>                          *
+>                          * When pre-allocating the page or copying data, we
+>                          * need to be without the pgtable locks since we could
+>                          * sleep during the process.
+>                          */
+> -                       if (unlikely(page_needs_cow_for_dma(vma, ptepage))) {
+> +                       if (!PageAnon(ptepage)) {
+> +                               page_dup_file_rmap(ptepage, true);
+> +                       } else if (page_try_dup_anon_rmap(ptepage, true, vma)) {
+>                                 pte_t src_pte_old = entry;
+>                                 struct page *new;
+>
+> @@ -4836,7 +4839,6 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+>                                 entry = huge_pte_wrprotect(entry);
+>                         }
+>
+> -                       page_dup_rmap(ptepage, true);
+>                         set_huge_pte_at(dst, addr, dst_pte, entry);
+>                         hugetlb_count_add(npages, dst);
+>                 }
+> @@ -5514,7 +5516,7 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
+>                 ClearHPageRestoreReserve(page);
+>                 hugepage_add_new_anon_rmap(page, vma, haddr);
+>         } else
+> -               page_dup_rmap(page, true);
+> +               page_dup_file_rmap(page, true);
+>         new_pte = make_huge_pte(vma, page, ((vma->vm_flags & VM_WRITE)
+>                                 && (vma->vm_flags & VM_SHARED)));
+>         set_huge_pte_at(mm, haddr, ptep, new_pte);
+> @@ -5874,7 +5876,7 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
+>                 goto out_release_unlock;
+>
+>         if (vm_shared) {
+> -               page_dup_rmap(page, true);
+> +               page_dup_file_rmap(page, true);
+>         } else {
+>                 ClearHPageRestoreReserve(page);
+>                 hugepage_add_new_anon_rmap(page, dst_vma, dst_addr);
+> diff --git a/mm/memory.c b/mm/memory.c
+> index accb72a3343d..b9602d41d907 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -828,7 +828,8 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+>                  */
+>                 get_page(page);
+>                 rss[mm_counter(page)]++;
+> -               page_dup_rmap(page, false);
+> +               /* Cannot fail as these pages cannot get pinned. */
+> +               BUG_ON(page_try_dup_anon_rmap(page, false, src_vma));
+>
+>                 /*
+>                  * We do not preserve soft-dirty information, because so
+> @@ -924,18 +925,24 @@ copy_present_pte(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
+>         struct page *page;
+>
+>         page = vm_normal_page(src_vma, addr, pte);
+> -       if (page && unlikely(page_needs_cow_for_dma(src_vma, page))) {
+> +       if (page && PageAnon(page)) {
+>                 /*
+>                  * If this page may have been pinned by the parent process,
+>                  * copy the page immediately for the child so that we'll always
+>                  * guarantee the pinned page won't be randomly replaced in the
+>                  * future.
+>                  */
+> -               return copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
+> -                                        addr, rss, prealloc, page);
+> +               get_page(page);
+> +               if (unlikely(page_try_dup_anon_rmap(page, false, src_vma))) {
+> +                       /* Page maybe pinned, we have to copy. */
+> +                       put_page(page);
+> +                       return copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
+> +                                                addr, rss, prealloc, page);
+> +               }
+> +               rss[mm_counter(page)]++;
+>         } else if (page) {
+>                 get_page(page);
+> -               page_dup_rmap(page, false);
+> +               page_dup_file_rmap(page, false);
+>                 rss[mm_counter(page)]++;
+>         }
+>
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index c7da064b4781..524c2648ab36 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -240,7 +240,7 @@ static bool remove_migration_pte(struct page *page, struct vm_area_struct *vma,
+>                         if (PageAnon(new))
+>                                 hugepage_add_anon_rmap(new, vma, pvmw.address);
+>                         else
+> -                               page_dup_rmap(new, true);
+> +                               page_dup_file_rmap(new, true);
+>                         set_huge_pte_at(vma->vm_mm, pvmw.address, pvmw.pte, pte);
+>                 } else
+>  #endif
+> --
+> 2.35.1
+>
