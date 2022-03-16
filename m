@@ -2,162 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21280C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353297AbiCPCsX (ORCPT
+        id S1353313AbiCPCs0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
+        Tue, 15 Mar 2022 22:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353254AbiCPCsU (ORCPT
+        with ESMTP id S1353275AbiCPCsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:48:20 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975715BE6C;
-        Tue, 15 Mar 2022 19:47:07 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id i11so18632plr.1;
-        Tue, 15 Mar 2022 19:47:07 -0700 (PDT)
+        Tue, 15 Mar 2022 22:48:21 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A1B5BE7A
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:47:08 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id t124so873978vsb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:47:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CN5EY4Vzj9f4po+lekz1OdhgYMqzS6JV0EYIQHmfVaw=;
-        b=M5VDF5eafVrERr7ldHhtlGaAlRj5D8lDhUXmumJnICPux9q/WFOTkX+KQSsX4LRozK
-         iN5Jsw2JaU2IiLN2N/dlIoXPT/f1xA655wD00zilERD4JB2H8evVCoofo5k3y79Zq7iG
-         orsjEPDAvo1bk3fOTTKcykwO7BvZweU1RmMf8SnqzUVcIoIPTFS8zuLcRUBrUI/4R4s6
-         vx/LlD75GXVw72SGA58fuTWgZ1kryzd8aknHyCmlA5/3IahGmCsA/Q6bIR1exFVal5R5
-         S2PRyqePEZIrPWYCWMhCsRIgjrIuJ55VcQXDNQMVZRVRfkgXzoOHju3Yf/jK0jhOctHt
-         C2NQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9s2wPJ81mMPRQ9gKjGVbTISXtogTfVpq/gtC9cJuzqI=;
+        b=GjkKu3nm+a6Q4p6a37fbkiR/KmEel3iC3NfKdwJvpoM0FWLw5mMxfyyFyvjpqO3WV+
+         qe15nqGFGZhMZTwwbTT1xCDFt8DstI9/dekJ2MVxB8IHTMFfvK/hTs4nqp6tWgnJk+Ec
+         Pg3Xr6a27snSa2syPd+B+1d64GVUdLakJT9rMVKmVGW68UBv5n0+CbGH5iek84HNakT7
+         HUiHJBLKDcymtGuKFLlQfLVuQhI1ETC0WyHnV1fbwaMXWAIypfL67nXAg3GTBq70BxY8
+         5jQy6itjw8wfGFkY7dxK/+qhaUCp9UG56Dw+NgWHQ17ZNtUEZ1jU0kS5k4chSaLJlkeI
+         /Oxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CN5EY4Vzj9f4po+lekz1OdhgYMqzS6JV0EYIQHmfVaw=;
-        b=pu/DOayPfJhTwvx/sbkdiQA4r/RMFPk64kBFkXlAxjn9tkuadsLr9KHj5RzES9JFUV
-         cuojqZ/pFWF0sMEGUwoUWcZfsXoGXWdwOTLKVoJhugMEVkp5l3qXR59KXWFbXE+Ksvj/
-         opTI8zLhX44G/voCS9zGwx+RI/C2g6ve4v1r5IFQ4k9mlr26oz9r47uv4BUjmPVIqcJr
-         aRENMRohgkUgRkV4Ud0bYfNqNAluaUmETVd7clwIpzD9lRjpXarvg8txLMFHaSsAjoMP
-         +dOa86QHFFV6PEUUab5HS+skPwQpYNNj0AvAPhiAKcj8Na7vK13IEPhsW43zx1jN588l
-         N52g==
-X-Gm-Message-State: AOAM531bgbo8jqEI4ATG9ix8ZZD6zsjc1SAboo6PBgLSxZsvqAxJ0slU
-        OBnqhHN9PIP3J2j0U2BVCy8=
-X-Google-Smtp-Source: ABdhPJwhs8da4Sf8sfsUW2yjdud4JnToRSwWlWbB88ZCeIZCXYWWRz6TpGq5YasTcnGrjkt5KgPxLg==
-X-Received: by 2002:a17:90b:180b:b0:1bf:27c5:2c51 with SMTP id lw11-20020a17090b180b00b001bf27c52c51mr8056251pjb.142.1647398827137;
-        Tue, 15 Mar 2022 19:47:07 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id s3-20020a056a00194300b004f6664d26eesm514630pfk.88.2022.03.15.19.46.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 19:47:06 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
-Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, benbjiang@tencent.com
-Subject: [PATCH net-next v2 1/3] net: sock: introduce sock_queue_rcv_skb_reason()
-Date:   Wed, 16 Mar 2022 10:46:04 +0800
-Message-Id: <20220316024606.689731-2-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220316024606.689731-1-imagedong@tencent.com>
-References: <20220316024606.689731-1-imagedong@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9s2wPJ81mMPRQ9gKjGVbTISXtogTfVpq/gtC9cJuzqI=;
+        b=3WPDUvXkZVMhGqqAwV5pgY0esk0x2TEZGpIM0mcf7/CCqFES3yNLhQnZjlp9MqMHcm
+         qewimtCtaf3Pu3c85UnNYPQwKdGTC8YZFQtD3Pl6hBHNIbvWRBBvT7ukdZ4mKn7ZWK7h
+         0wLWFTAtBSLcx+GQIC5xzJJAJkfrVFhyBTGQff1ec/haoSyJ/08rpGBaU5fkSWeHfJFs
+         9cKy+YE4JUMLRvI7vHNa4uJZo1zv2jF/NDpwSVUFnmXJFz2xx4U1yYujEfpjiC5R9V5N
+         oh2CIbmc0RplUb3J2o7+oHmocA3WhWo4HkhJ5XtTOgMuelUEq14L5i7qj8LMFCIf/mWd
+         pzlw==
+X-Gm-Message-State: AOAM530P7ZJNjFaC1cLo75kp46hwgrqgc6cm850yVEaB7y39UjVHxyLz
+        XzEf19kyrg8pmRJWJPdF7xZIcimQ7UTW7NgFve66Ag==
+X-Google-Smtp-Source: ABdhPJxsBdO38pIg06nwM5qh96kvoFzpdmkXbs4CTFj0A3FjWJFFn+vBFc6AUWZyc0ubmVIFSY2lyV30JRMUBjpkIhQ=
+X-Received: by 2002:a05:6102:f0c:b0:320:9156:732f with SMTP id
+ v12-20020a0561020f0c00b003209156732fmr13091866vss.6.1647398827504; Tue, 15
+ Mar 2022 19:47:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAOUHufbN_56UJBkgA2LjAfbTt9nzPOCHaSeS4P3GHcYst+Y+eg@mail.gmail.com>
+ <20220314233812.9011-1-21cnbao@gmail.com> <CAOUHufa9eY44QadfGTzsxa2=hEvqwahXd7Canck5Gt-N6c4UKA@mail.gmail.com>
+ <CAGsJ_4zvj5rmz7DkW-kJx+jmUT9G8muLJ9De--NZma9ey0Oavw@mail.gmail.com> <CAGsJ_4zZc0oFSmBKAN77vm7VstQH=ieaQ0cfyvcMi3OQRrEpSg@mail.gmail.com>
+In-Reply-To: <CAGsJ_4zZc0oFSmBKAN77vm7VstQH=ieaQ0cfyvcMi3OQRrEpSg@mail.gmail.com>
+From:   Yu Zhao <yuzhao@google.com>
+Date:   Tue, 15 Mar 2022 20:46:56 -0600
+Message-ID: <CAOUHufau34de-FmdBxNHpWWUUuN4DxT1fci9aX8Uc+RAfVXwXw@mail.gmail.com>
+Subject: Re: [PATCH v7 04/12] mm: multigenerational LRU: groundwork
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Brian Geffon <bgeffon@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Donald Carr <d@chaos-reins.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Hillf Danton <hdanton@sina.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Mel Gorman <mgorman@suse.de>,
+        Michal Hocko <mhocko@kernel.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        Rik van Riel <riel@surriel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Huang Ying <ying.huang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Tue, Mar 15, 2022 at 4:29 AM Barry Song <21cnbao@gmail.com> wrote:
 
-In order to report the reasons of skb drops in 'sock_queue_rcv_skb()',
-introduce the function 'sock_queue_rcv_skb_reason()'.
+<snipped>
 
-As the return value of 'sock_queue_rcv_skb()' is used as the error code,
-we can't make it as drop reason and have to pass extra output argument.
-'sock_queue_rcv_skb()' is used in many places, so we can't change it
-directly.
+> > I guess the main cause of the regression for the previous sequence
+> > with 16 entries is that the ebizzy has a new allocated copy in
+> > search_mem(), which is mapped and used only once in each loop.
+> > and the temp copy can push out those hot chunks.
+> >
+> > Anyway, I understand it is a trade-off between warmly embracing new
+> > pages and holding old pages tightly. Real user cases from phone, server,
+> > desktop will be judging this better.
 
-Introduce the new function 'sock_queue_rcv_skb_reason()' and make
-'sock_queue_rcv_skb()' an inline call to it.
+Thanks for all the details. I looked into them today and found no
+regressions when running with your original program.
 
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Reviewed-by: Biao Jiang <benbjiang@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/net/sock.h |  9 ++++++++-
- net/core/sock.c    | 30 ++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 7 deletions(-)
+After I explain why, I hope you'd be convinced that using programs
+like this one is not a good way to measure things :)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index c4b91fc19b9c..1a988e605f09 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2392,7 +2392,14 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
- 			void (*destructor)(struct sock *sk,
- 					   struct sk_buff *skb));
- int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
--int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
-+
-+int sock_queue_rcv_skb_reason(struct sock *sk, struct sk_buff *skb,
-+			      enum skb_drop_reason *reason);
-+
-+static inline int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-+{
-+	return sock_queue_rcv_skb_reason(sk, skb, NULL);
-+}
- 
- int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb);
- struct sk_buff *sock_dequeue_err_skb(struct sock *sk);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 1180a0cb0110..2cae991f817e 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -503,17 +503,35 @@ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- }
- EXPORT_SYMBOL(__sock_queue_rcv_skb);
- 
--int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-+int sock_queue_rcv_skb_reason(struct sock *sk, struct sk_buff *skb,
-+			      enum skb_drop_reason *reason)
- {
-+	enum skb_drop_reason drop_reason;
- 	int err;
- 
- 	err = sk_filter(sk, skb);
--	if (err)
--		return err;
--
--	return __sock_queue_rcv_skb(sk, skb);
-+	if (err) {
-+		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
-+		goto out;
-+	}
-+	err = __sock_queue_rcv_skb(sk, skb);
-+	switch (err) {
-+	case -ENOMEM:
-+		drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
-+		break;
-+	case -ENOBUFS:
-+		drop_reason = SKB_DROP_REASON_PROTO_MEM;
-+		break;
-+	default:
-+		drop_reason = SKB_NOT_DROPPED_YET;
-+		break;
-+	}
-+out:
-+	if (reason)
-+		*reason = drop_reason;
-+	return err;
- }
--EXPORT_SYMBOL(sock_queue_rcv_skb);
-+EXPORT_SYMBOL(sock_queue_rcv_skb_reason);
- 
- int __sk_receive_skb(struct sock *sk, struct sk_buff *skb,
- 		     const int nested, unsigned int trim_cap, bool refcounted)
--- 
-2.35.1
+Problems:
+1) Given the 2.5GB configuration and a sequence of cold/hot chunks, I
+assume your program tries to simulate a handful of apps running on a
+phone.  A short repeating sequence is closer to sequential access than
+to real user behaviors, as I suggested last time. You could check out
+how something similar is done here [1].
+2) Under the same assumption (phone), C programs are very different
+from Android apps in terms of runtime memory behaviors, e.g., JVM GC
+[2].
+3) Assuming you are interested in the runtime memory behavior of C/C++
+programs, your program is still not very representative. All C/C++
+programs I'm familiar with choose to link against TCmalloc, jemalloc
+or implement their own allocators. GNU libc, IMO, has a small market
+share nowadays.
+4) TCmalloc/jemalloc are not only optimized for multithreading, they
+are also THP aware. THP is very important when benchmarking page
+reclaim, e.g., two similarly warm THPs can comprise 511+1 or 1+511 of
+warm+cold 4K pages. The LRU algorithm that chooses more of the former
+is at the disadvantage. Unless it's recommended by the applications
+you are trying to benchmark, THP should be disabled. (Android
+generally doesn't use THP.)
+5) Swap devices are also important. Zram should NOT be used unless you
+know your benchmark doesn't generate incompressible data. The LRU
+algorithm that chooses more incompressible pages is at disadvantage.
 
+Here is my result: on the same Snapdragon 7c + 2.5GB RAM + 1.5GB
+ramdisk swap, with your original program compiled against libc malloc
+and TCMalloc, to 32-bit and 64-bit binaries:
+
+# cat /sys/kernel/mm/lru_gen/enabled
+0x0003
+# cat /sys/kernel/mm/transparent_hugepage/enabled
+always madvise [never]
+
+# modprobe brd rd_nr=1 rd_size=1572864
+# if=/dev/zero of=/dev/ram0 bs=1M
+# mkswap /dev/ram0
+# swapoff -a
+# swapon /dev/ram0
+
+# ldd test_absl_32
+        linux-vdso.so.1 (0xf6e7f000)
+        libabsl_malloc.so.2103.0.1 =>
+/usr/lib/libabsl_malloc.so.2103.0.1 (0xf6e23000)
+        libpthread.so.0 => /lib/libpthread.so.0 (0xf6dff000)
+        libc.so.6 => /lib/libc.so.6 (0xf6d07000)
+        /lib/ld-linux-armhf.so.3 (0x09df0000)
+        libabsl_base.so.2103.0.1 => /usr/lib/libabsl_base.so.2103.0.1
+(0xf6ce5000)
+        libabsl_raw_logging.so.2103.0.1 =>
+/usr/lib/libabsl_raw_logging.so.2103.0.1 (0xf6cc4000)
+        libabsl_spinlock_wait.so.2103.0.1 =>
+/usr/lib/libabsl_spinlock_wait.so.2103.0.1 (0xf6ca3000)
+        libc++.so.1 => /usr/lib/libc++.so.1 (0xf6c04000)
+        libc++abi.so.1 => /usr/lib/libc++abi.so.1 (0xf6bcd000)
+# file test_absl_64
+test_absl_64: ELF 64-bit LSB executable, ARM aarch64, version 1
+(SYSV), statically linked
+# ldd test_gnu_32
+        linux-vdso.so.1 (0xeabef000)
+        libpthread.so.0 => /lib/libpthread.so.0 (0xeab92000)
+        libc.so.6 => /lib/libc.so.6 (0xeaa9a000)
+        /lib/ld-linux-armhf.so.3 (0x05690000)
+# file test_gnu_64
+test_gnu_64: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV),
+statically linked
+
+### baseline 5.17-rc8
+
+# perf record ./test_gnu_64 -t 4 -s $((200*1024*1024)) -S 6000000
+10 records/s
+real 59.00 s
+user 39.83 s
+sys  174.18 s
+
+    18.51%  [.] memcpy
+    15.98%  [k] __pi_clear_page
+     5.59%  [k] rmqueue_pcplist
+     5.19%  [k] do_raw_spin_lock
+     5.09%  [k] memmove
+     4.60%  [k] _raw_spin_unlock_irq
+     3.62%  [k] _raw_spin_unlock_irqrestore
+     3.61%  [k] free_unref_page_list
+     3.29%  [k] zap_pte_range
+     2.53%  [k] local_daif_restore
+     2.50%  [k] down_read_trylock
+     1.41%  [k] handle_mm_fault
+     1.32%  [k] do_anonymous_page
+     1.31%  [k] up_read
+     1.03%  [k] free_swap_cache
+
+### MGLRU v9
+
+# perf record ./test_gnu_64 -t 4 -s $((200*1024*1024)) -S 6000000
+11 records/s
+real 57.00 s
+user 39.39 s
+
+    19.36%  [.] memcpy
+    16.50%  [k] __pi_clear_page
+     6.21%  [k] memmove
+     5.57%  [k] rmqueue_pcplist
+     5.07%  [k] do_raw_spin_lock
+     4.96%  [k] _raw_spin_unlock_irqrestore
+     4.25%  [k] free_unref_page_list
+     3.80%  [k] zap_pte_range
+     3.69%  [k] _raw_spin_unlock_irq
+     2.71%  [k] local_daif_restore
+     2.10%  [k] down_read_trylock
+     1.50%  [k] handle_mm_fault
+     1.29%  [k] do_anonymous_page
+     1.17%  [k] free_swap_cache
+     1.08%  [k] up_read
+
+[1] https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/memory/mempressure/mempressure.go
+[2] https://developer.android.com/topic/performance/memory-overview
