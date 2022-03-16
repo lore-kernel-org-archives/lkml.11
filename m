@@ -2,117 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56353C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:20:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356259AbiCPNVj (ORCPT
+        id S1356225AbiCPNV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60834 "EHLO
+        Wed, 16 Mar 2022 09:21:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356332AbiCPNVb (ORCPT
+        with ESMTP id S1356435AbiCPNVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:21:31 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7855692B8;
-        Wed, 16 Mar 2022 06:19:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647436747; x=1678972747;
-  h=to:cc:references:from:subject:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=3gydTSfJJ0kj7X+pEx3OA6sK9bKnh0Gb6dYO4OHWtjw=;
-  b=NPYLy9lK9jY8hOqyrqfYiffIpKlW9C57obYh/zuTqUXUJwiPllHUDbXQ
-   TOKzIDMdqNlag2JaN6SBEdUxBtke4iLeJ1mBhte4PrW+BwaVvatiMekzb
-   v0WTBum0j4QvDdjio25oiizpbmxk1BJIhQB2eut5h2m2Ff2uFKrtXy5DL
-   FBjqPxZvmps3cPmF3nB9HzHT0ssU4hQGvyOVBwGtWRmdZei5p8gM2GsfV
-   WXfMcn5n5orKEKAYWrzxg6ofSATCoyKBoDuDk1bQbKPSjCILAPjjk1LRT
-   pJ2z0j9g3YBs/avUaiw5jBq+JMqIMq3zgSo1AvowAkky5GfHkbf3K7S/c
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="343013016"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="343013016"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 06:19:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="646642824"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga004.jf.intel.com with ESMTP; 16 Mar 2022 06:18:58 -0700
-To:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>,
-        mathias.nyman@intel.com, gregkh@linuxfoundation.org,
-        stern@rowland.harvard.edu, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     CobeChen@zhaoxin.com, TimGuo@zhaoxin.com, tonywwang@zhaoxin.com,
-        weitaowang@zhaoxin.com
-References: <3c576edf-89c3-ccf3-a43f-4ce2c1ced18d@zhaoxin.com>
- <261420fb-28b4-0def-a9e1-9c011bab7912@linux.intel.com>
- <1882dfc1-0f46-a594-d75b-b73d30f6d6db@zhaoxin.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: Re: [PATCH] USB: Fix xhci ERDP update issue
-Message-ID: <6c11dc4f-4984-e7aa-9fc5-7026100b38e1@linux.intel.com>
-Date:   Wed, 16 Mar 2022 15:20:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Wed, 16 Mar 2022 09:21:40 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2483266AD1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 06:19:36 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id A53301F44846
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647436774;
+        bh=KlpubNGA6jnqdOcoZkfYGoeHVn6Iss9ryIjC0eGTdmA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=RWvZRt4Ig4J2VCzgPFSTDLCZAtrjGk1beFTZ339Yz5BXql21elMmTptUePF4HxO66
+         y96Hxrz3VPZnRChbrS2ybn0Ftd0J/HYye8L8KiMOVxp2J/prOA18acNY7ouKB+Yt6K
+         d20u/Vm1fkSyO6oDO6qByKsWACR845Vd5RfJgqlntAz+EOj1F/yaiCI5id6FeDCciP
+         4cn+sm7NBu13LJICIpxDJYpOUrrt7WQ1Ja4nHuTd/wqufbFUhtbWqlWnxvbFCvvqwZ
+         CFCgmr26YsfMaf8l/9pcYrfKkwvEExr0oXHK52c7NOuFmtgFje4nkd+G+2uWf8kmuA
+         QCnjT6BY1H+sg==
+Message-ID: <1eef3b71-ef7c-24d1-b0d7-695fc1d2d353@collabora.com>
+Date:   Wed, 16 Mar 2022 13:19:32 +0000
 MIME-Version: 1.0
-In-Reply-To: <1882dfc1-0f46-a594-d75b-b73d30f6d6db@zhaoxin.com>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH 5/7] drm/ttm: add range busy check for range manager
 Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        intel-gfx@lists.freedesktop.org, Huang Rui <ray.huang@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+References: <20220315180444.3327283-1-bob.beckett@collabora.com>
+ <20220315180444.3327283-6-bob.beckett@collabora.com>
+ <2918e4a2-3bb8-23e0-3b8c-90c620b82328@amd.com>
+From:   Robert Beckett <bob.beckett@collabora.com>
+In-Reply-To: <2918e4a2-3bb8-23e0-3b8c-90c620b82328@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15.3.2022 14.44, WeitaoWang-oc@zhaoxin.com wrote:
-> On 2022/3/15 下午4:08, Mathias Nyman wrote:
->> On 14.3.2022 9.25, WeitaoWang-oc@zhaoxin.com wrote:
->>> On some situations, software handles TRB events slower than adding TRBs,
->>> xhci_irq will not exit until all events are handled. If xhci_irq just
->>> handles 256 TRBs and exit, the temp variable(event_ring_deq) driver records in xhci irq is equal to driver current dequeue pointer. It will cause driver not update ERDP and software dequeue pointer lost sync with ERDP. On the next xhci_irq, the event ring is full but driver will not update ERDP as software dequeue pointer is equal to ERDP.
->>>
->>> [  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
->>> [  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7 inflight: CMD OUT
->>> [  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78 00 00 08 00
->>> [  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host not responding to stop endpoint command.
->>> [  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
->>> [  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not responding, assume dead
->>> [  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6 inflight: CMD
->>> [  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8 00 00 08 00
->>> [  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5 inflight: CMD
->>>
->>> Fixed this issue by update software record temp variable when handles 128 TRB events.>
->>> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+
+
+On 16/03/2022 09:54, Christian König wrote:
+> Am 15.03.22 um 19:04 schrieb Robert Beckett:
+>> RFC: do we want this to become a generic interface in
+>> ttm_resource_manager_func?
 >>
->> Thanks
->>
->> Solution itself looks good but patch has some minor format issue:
->>
->>
->> It would also be interesting to know if the full event ring was triggered in a real
->> life usecase?
->> If that is the case I might need to look more into it.
->>
->> Bigger event ring, more rings, faster handler, avoid irqoff time...
->>
->> Thanks
->> Mathias
->> .
-> Some performance test tools such as fio or iometer can be used to reproduce
->  this case, If tested with 4KB read or write. xHCI will generate a lost TRB
->  events fast than software consume on a certain period of time. Once the interrupt is entered, software may handle more than 128 TRBs at a time.
-> While the software is processing, xHCI is still generating events. This may
-> has problems caused by the ERDP update mechanism. If update software
->  record temp variable when handles 128 TRB events, event ring full will not
->  happen any more even though fio test with 4KB read or write.
+>> RFC: would we prefer a different interface? e.g.
+>> for_each_resource_in_range or for_each_bo_in_range
 > 
-> Thanks
-> Weitao Wang
+> Well completely NAK to that. Why do you need that?
+> 
+> The long term goal is to completely remove the range checks from TTM 
+> instead.
+
+ah, I did not know that.
+I wanted it just to enable parity with a selftest that checks whether a 
+range is allocated before initializing a given range with test data 
+behind the allocator's back. It needs to check the range so that it 
+doesn't destroy in use data.
+
+I suppose we could add another drm_mm range tracker just for testing and 
+shadow track each allocation in the range, but that seemed like a lot of 
+extra infrastructure for no general runtime use.
+
+would you mind explaining the rationale for removing range checks? It 
+seems to me like a natural fit for a memory manager
+
+> 
+> Regards,
+> Christian.
+> 
 >>
-
-Thanks for the clarification.
-
-Could you resubmit this after fixing the minor patch format issue?
-Also make sure patch passes checkpatch test
-
-Thanks
--Mathias
+>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+>> ---
+>>   drivers/gpu/drm/ttm/ttm_range_manager.c | 21 +++++++++++++++++++++
+>>   include/drm/ttm/ttm_range_manager.h     |  3 +++
+>>   2 files changed, 24 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/ttm/ttm_range_manager.c 
+>> b/drivers/gpu/drm/ttm/ttm_range_manager.c
+>> index 8cd4f3fb9f79..5662627bb933 100644
+>> --- a/drivers/gpu/drm/ttm/ttm_range_manager.c
+>> +++ b/drivers/gpu/drm/ttm/ttm_range_manager.c
+>> @@ -206,3 +206,24 @@ int ttm_range_man_fini_nocheck(struct ttm_device 
+>> *bdev,
+>>       return 0;
+>>   }
+>>   EXPORT_SYMBOL(ttm_range_man_fini_nocheck);
+>> +
+>> +/**
+>> + * ttm_range_man_range_busy - Check whether anything is allocated 
+>> with a range
+>> + *
+>> + * @man: memory manager to check
+>> + * @fpfn: first page number to check
+>> + * @lpfn: last page number to check
+>> + *
+>> + * Return: true if anything allocated within the range, false otherwise.
+>> + */
+>> +bool ttm_range_man_range_busy(struct ttm_resource_manager *man,
+>> +                  unsigned fpfn, unsigned lpfn)
+>> +{
+>> +    struct ttm_range_manager *rman = to_range_manager(man);
+>> +    struct drm_mm *mm = &rman->mm;
+>> +
+>> +    if (__drm_mm_interval_first(mm, PFN_PHYS(fpfn), PFN_PHYS(lpfn + 
+>> 1) - 1))
+>> +        return true;
+>> +    return false;
+>> +}
+>> +EXPORT_SYMBOL(ttm_range_man_range_busy);
+>> diff --git a/include/drm/ttm/ttm_range_manager.h 
+>> b/include/drm/ttm/ttm_range_manager.h
+>> index 7963b957e9ef..86794a3f9101 100644
+>> --- a/include/drm/ttm/ttm_range_manager.h
+>> +++ b/include/drm/ttm/ttm_range_manager.h
+>> @@ -53,4 +53,7 @@ static __always_inline int ttm_range_man_fini(struct 
+>> ttm_device *bdev,
+>>       BUILD_BUG_ON(__builtin_constant_p(type) && type >= 
+>> TTM_NUM_MEM_TYPES);
+>>       return ttm_range_man_fini_nocheck(bdev, type);
+>>   }
+>> +
+>> +bool ttm_range_man_range_busy(struct ttm_resource_manager *man,
+>> +                  unsigned fpfn, unsigned lpfn);
+>>   #endif
+> 
