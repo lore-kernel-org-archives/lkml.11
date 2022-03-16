@@ -2,96 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEFABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC8EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345055AbiCPJL5 (ORCPT
+        id S1346698AbiCPJOe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 05:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59484 "EHLO
+        Wed, 16 Mar 2022 05:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232911AbiCPJLz (ORCPT
+        with ESMTP id S243385AbiCPJOc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 05:11:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086ED5BD2D
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:10:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647421842; x=1678957842;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GYVmQOhcdFAbfwKEexCd/VecqMoIgeWrILdw6jh/jwk=;
-  b=XavaRW41d9dirvc7jz3DBDme/m35wcdKpotUNBtH/zIC06pp11xeRShR
-   DjcMou6EpOpqzjv9Jow1ojp2WQT686aTYDPmxWbo3Gl+eIWtwmDNnTEl0
-   2H6Ip/4DTYstJvzW4kIyJeFn+1N/SsE6wxCaBW+9j7fiu4n1wfWEeW0Jt
-   hyVYkCU3Jkac5/0tFayQjG7rmo16QXsXyb+Jww5kbSN4cxoSmAD6Mjdkz
-   rPy926fOTBa80HUXEoulqMtBOqvuE9H5pYFxMW8QrgkZKAAeaKtpK+GT9
-   LG/jLMLIxWZeUNrz18nJIma5A4vNq30czr/xdmdrLTe1Ahgl8+IcgqYzK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256482956"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="256482956"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 02:10:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="714519679"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 16 Mar 2022 02:10:40 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUPfz-000CCQ-NF; Wed, 16 Mar 2022 09:10:39 +0000
-Date:   Wed, 16 Mar 2022 17:09:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Quentin Perret <qperret@google.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.10-2022-02
- 1555/9999] kernel/tracepoint.c:720:5: warning: no previous prototype for
- 'android_rvh_probe_register'
-Message-ID: <202203161700.WbV8553N-lkp@intel.com>
+        Wed, 16 Mar 2022 05:14:32 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2135C865;
+        Wed, 16 Mar 2022 02:13:18 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id g19so3162141pfc.9;
+        Wed, 16 Mar 2022 02:13:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XCXMhctspS14CSj3bDVJKa2fECrychRdoSVtouYxm4M=;
+        b=gvCiEX8yBD3meY306RCIl71Jm7P82zrMmlnCtQJjT6DEdTuYtXTEldQsFLVWKqE+Mu
+         ZtCa5nI04kKPT7cX+pT8ScPknFLQvA8Rc3j3Yj1SMCz/NwSQzpt0GxTqrWPry83YzDlR
+         3UZTthKjfD1PTlvxHwxBxHqKSw04cqYgFrAVvFS+yN0bw502gRKUESXAvtz70OlORqyx
+         XSAzIkCEZzwJqmDbRRf7Jj8TuHru2IZIV4V5Vv5YGhaMuo7DMvd8LPWEfqr2eXKjx+l1
+         MSWtAV7UxtEMq40F8uaHeFHxvETuojm86zA9jDrfAuTO9RiihvCa0w+RvsJIBrtYSMDc
+         p+oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XCXMhctspS14CSj3bDVJKa2fECrychRdoSVtouYxm4M=;
+        b=w8RwC2QoPihAIn46qgtnNcNp6avRypkjDsuuFAg8N2D81bQIYD7HUHliG+S60I6qdV
+         TL5SgOhxjhf16unRobog/PQfrDc1Cf85pcrjLuZufuWx4ytv40Zny19JYTlBZm7R/zOO
+         8GQiD60Mj8PkNwXWV4dGwfI6MgNo5hg9Dm6QWJIE4biAT6tTqGOIHuXLgn5Pgt3VqAb4
+         D8ZLIJ2a49kcT6MGvKHARc4LnYIUP1gj9z1aHcOy9MJnrTSQzkoOk1AZvlk733z/uiUU
+         8Y8KS1xumWNdtlSRmuAe3zIBaX+a0YMkZ7CH0ZASWSXWSOPDx1LKcTprYacOHjHB1g0M
+         Bfsg==
+X-Gm-Message-State: AOAM531th/4ncruhiHUfvc/xaHjtxgs1bIKa8/0+BCYBdn2tfJY/f6RK
+        YNOgIQrUdu0be74BAETh1iM=
+X-Google-Smtp-Source: ABdhPJy2rBH9fqFCc4mpGmWysIGVhExMhDm1IgbDRfIas26SVekO3FGKhUHMFvnRIjufgIUXaL2gLg==
+X-Received: by 2002:a63:235b:0:b0:380:5d91:6cc with SMTP id u27-20020a63235b000000b003805d9106ccmr27530271pgm.183.1647421998215;
+        Wed, 16 Mar 2022 02:13:18 -0700 (PDT)
+Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:6282:e9e2:394e:c94e])
+        by smtp.gmail.com with ESMTPSA id t7-20020a056a0021c700b004f7916d44bcsm2219510pfj.220.2022.03.16.02.13.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 02:13:17 -0700 (PDT)
+From:   Max Filippov <jcmvbkbc@gmail.com>
+To:     linux-xtensa@linux-xtensa.org
+Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
+        Max Filippov <jcmvbkbc@gmail.com>, stable@vger.kernel.org
+Subject: [PATCH] xtensa: fix stop_machine_cpuslocked call in patch_text
+Date:   Wed, 16 Mar 2022 02:13:11 -0700
+Message-Id: <20220316091311.2173309-1-jcmvbkbc@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Quentin,
+patch_text must invoke patch_text_stop_machine on all online CPUs, but
+it calls stop_machine_cpuslocked with NULL cpumask. As a result only one
+CPU runs patch_text_stop_machine potentially leaving stale icache
+entries on other CPUs. Fix that by calling stop_machine_cpuslocked with
+cpu_online_mask as the last argument.
 
-FYI, the error/warning still remains.
-
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10-2022-02
-head:   32c0a362f1a90ddf603ecd83a47a5b8e2b7a12fb
-commit: cc6eed90a467a413b9c62fdd76e8f06347266a88 [1555/9999] ANDROID: vendor_hooks: Allow multiple attachments to restricted hooks
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220316/202203161700.WbV8553N-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://github.com/ammarfaizi2/linux-block/commit/cc6eed90a467a413b9c62fdd76e8f06347266a88
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10-2022-02
-        git checkout cc6eed90a467a413b9c62fdd76e8f06347266a88
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> kernel/tracepoint.c:720:5: warning: no previous prototype for 'android_rvh_probe_register' [-Wmissing-prototypes]
-     720 | int android_rvh_probe_register(struct tracepoint *tp, void *probe, void *data)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/android_rvh_probe_register +720 kernel/tracepoint.c
-
-   719	
- > 720	int android_rvh_probe_register(struct tracepoint *tp, void *probe, void *data)
-
+Cc: stable@vger.kernel.org
+Fixes: 64711f9a47d4 ("xtensa: implement jump_label support")
+Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/xtensa/kernel/jump_label.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/xtensa/kernel/jump_label.c b/arch/xtensa/kernel/jump_label.c
+index 61cf6497a646..0dde21e0d3de 100644
+--- a/arch/xtensa/kernel/jump_label.c
++++ b/arch/xtensa/kernel/jump_label.c
+@@ -61,7 +61,7 @@ static void patch_text(unsigned long addr, const void *data, size_t sz)
+ 			.data = data,
+ 		};
+ 		stop_machine_cpuslocked(patch_text_stop_machine,
+-					&patch, NULL);
++					&patch, cpu_online_mask);
+ 	} else {
+ 		unsigned long flags;
+ 
+-- 
+2.30.2
+
