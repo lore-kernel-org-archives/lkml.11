@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 283D0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39204C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358079AbiCPUhe (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 16:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52210 "EHLO
+        id S243418AbiCPUhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 16:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357957AbiCPUhP (ORCPT
+        with ESMTP id S1358051AbiCPUh3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 16:37:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68EF6E4CE
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:35:57 -0700 (PDT)
+        Wed, 16 Mar 2022 16:37:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB3769CC8;
+        Wed, 16 Mar 2022 13:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 462476142A
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 20:35:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC8EC340EC;
-        Wed, 16 Mar 2022 20:35:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC440B81D42;
+        Wed, 16 Mar 2022 20:36:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9DC2C340E9;
+        Wed, 16 Mar 2022 20:36:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647462956;
-        bh=3SuWnJIZVPzyeK9wzgNrICuvhgZfN6hXaxO3JUmohj8=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=sM9QtBrt8BDz1o/Ci7oXFIztEdY6bcnrIpfOuzIqBhn5mfWQeSTx7qWfJ3oDxQe/Z
-         ulA03Vao09TzKQJf4R+scnqomTFXr5FqhFEIRxJ6Ho6FQIzgV0YKKwZOp4BjC+TAI2
-         tsGbXp6nmZkDmZtWhfa8otvDq07RceJcV5IxmJ/3teDxWN5LQWnQnwFM8RtRCMrq5G
-         9ZL7pDAow1eU7vSDAAxc8byw1cYsq339rTP5GcqjOF74bhV5+qZYqSlO4FrdS7YqdH
-         rrDJTiNKF5WjvDUhtsbVK81yMdH2R1meY4WyPDfnhNDDOR98BNvlXSBI7K/Fc1LAEy
-         4MQjLlMhGYUYA==
+        s=k20201202; t=1647462971;
+        bh=hPywN4Hc+VWnx8HZ9pRvRyevbb+miQ7224hVJAhUwEY=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=q8KJtzSLaYTDnj4b6Z96x655UGVx8qCbRjp8AveB2+kJ3G++9OjVeMuJvYRWVLet2
+         ve9k1OfO2ICO8m70pSilaF1yFsTBK0/Al7LC61drC1NgC4yxd9rhvWirl4pndSbRrZ
+         y53pDJkz+qp7oLwxNtbrzk//sJ3rVdUWdr9/iVcoVwuHMu0W/Zb7q30dYfR9bAkchG
+         AiM4Og29jwnUDsrVTxBMp5LcVdAYm/OGTnGcBvgNXKRxmq4zONkTG6NCK+dim5cDcZ
+         pSZU0MyAWqAJxbEQRdRYYVKXH5GdIIoV7EWkiy/uzWamaa09QL5tMygwIk69mojpX/
+         NwBGaCUHZBtUQ==
 From:   Mark Brown <broonie@kernel.org>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        alsa-devel@alsa-project.org, Jaroslav Kysela <perex@perex.cz>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Takashi Iwai <tiwai@suse.com>
-In-Reply-To: <20220316111530.4551-1-linmq006@gmail.com>
-References: <20220316111530.4551-1-linmq006@gmail.com>
-Subject: Re: [PATCH] ASoC: atmel: Fix error handling in sam9x5_wm8731_driver_probe
-Message-Id: <164746295410.1220201.13095126032756372624.b4-ty@kernel.org>
-Date:   Wed, 16 Mar 2022 20:35:54 +0000
+To:     devicetree@vger.kernel.org, tiwai@suse.com, judyhsiao@chromium.org,
+        perex@perex.cz, alsa-devel@alsa-project.org, agross@kernel.org,
+        swboyd@chromium.org, robh+dt@kernel.org,
+        srinivas.kandagatla@linaro.org, lgirdwood@gmail.com,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, bgoswami@codeaurora.org,
+        linux-kernel@vger.kernel.org, quic_plai@quicinc.com,
+        rohitkr@codeaurora.org, bjorn.andersson@linaro.org
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+In-Reply-To: <1647355531-4150-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1647355531-4150-1-git-send-email-quic_srivasam@quicinc.com>
+Subject: Re: [PATCH] ASoC: codecs: Fix misplaced lpass_macro_pds_exit call
+Message-Id: <164746296665.1220201.1306280283439888806.b4-ty@kernel.org>
+Date:   Wed, 16 Mar 2022 20:36:06 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -56,15 +54,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Mar 2022 11:15:30 +0000, Miaoqian Lin wrote:
-> The device_node pointer is returned by of_parse_phandle()  with refcount
-> incremented. We should use of_node_put() on it when done.
-> 
-> This function only calls of_node_put() in the regular path.
-> And it will cause refcount leak in error path.
+On Tue, 15 Mar 2022 20:15:31 +0530, Srinivasa Rao Mandadapu wrote:
+> Update power domains exit function calling from runtime resume
+> to remove function which was wrongly placed and causing crash in
+> device suspend and resume.
 > 
 > 
-> [...]
 
 Applied to
 
@@ -72,8 +67,8 @@ Applied to
 
 Thanks!
 
-[1/1] ASoC: atmel: Fix error handling in sam9x5_wm8731_driver_probe
-      commit: 740dc3e846537c3743da98bf106f376023fd085c
+[1/1] ASoC: codecs: Fix misplaced lpass_macro_pds_exit call
+      commit: 1c19601ddceda1517511e4bad3d24619e765c78c
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
