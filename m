@@ -2,36 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 387D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECEFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353630AbiCPFh0 (ORCPT
+        id S1352024AbiCPFhe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 01:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51918 "EHLO
+        Wed, 16 Mar 2022 01:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240584AbiCPFhV (ORCPT
+        with ESMTP id S1353647AbiCPFhc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 01:37:21 -0400
+        Wed, 16 Mar 2022 01:37:32 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92D45DE40
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:36:02 -0700 (PDT)
-X-UUID: 33ea8af6e48649f3bae59bc1cfcc7359-20220316
-X-UUID: 33ea8af6e48649f3bae59bc1cfcc7359-20220316
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6DB36004F
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:36:18 -0700 (PDT)
+X-UUID: ccf289353cb84186a586b449c5200e88-20220316
+X-UUID: ccf289353cb84186a586b449c5200e88-20220316
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
         (envelope-from <xinlei.lee@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1833142543; Wed, 16 Mar 2022 13:35:40 +0800
+        with ESMTP id 407159702; Wed, 16 Mar 2022 13:35:48 +0800
 Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 16 Mar 2022 13:35:40 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 16 Mar 2022 13:35:46 +0800
 Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
  (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
- 2022 13:35:38 +0800
+ 2022 13:35:46 +0800
 Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
  MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 16 Mar 2022 13:35:37 +0800
+ 15.0.1497.2 via Frontend Transport; Wed, 16 Mar 2022 13:35:44 +0800
 From:   <xinlei.lee@mediatek.com>
 To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
         <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
@@ -43,10 +42,12 @@ CC:     <dri-devel@lists.freedesktop.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         <jitao.shi@mediatek.com>, <rex-bc.chen@mediatek.com>,
         <allen-kh.cheng@mediatek.com>, Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v3,0/3] Add mt8186 dsi compatoble & Convert  dsi_dtbinding to .yaml
-Date:   Wed, 16 Mar 2022 13:35:31 +0800
-Message-ID: <1647408934-15775-1-git-send-email-xinlei.lee@mediatek.com>
+Subject: [PATCH v3,3/3] drm/mediatek: Add mt8186 dsi compatible to mtk_dsi.c
+Date:   Wed, 16 Mar 2022 13:35:34 +0800
+Message-ID: <1647408934-15775-4-git-send-email-xinlei.lee@mediatek.com>
 X-Mailer: git-send-email 2.6.4
+In-Reply-To: <1647408934-15775-1-git-send-email-xinlei.lee@mediatek.com>
+References: <1647408934-15775-1-git-send-email-xinlei.lee@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
@@ -56,27 +57,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xinlei Lee <xinlei.lee@mediatek.com>
 
-Changes since v2:
-1. Added #address-cells, #size-cells two properties.
-2. Fix some formatting issues.
+Add the compatible because use different cmdq addresses in mt8186.
 
-Changes since v1:
-1. Delete the mediatek,dsi.txt & Add the mediatek,dsi.yaml.
-2. Ignore the Move the getting bridge node function patch for V1.
+Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Xinlei Lee (3):
-  dt-bindings: display: mediatek: dsi: Convert dsi_dtbinding to .yaml
-  dt-bindings: display: mediatek: dsi: Add compatible for MediaTek
-    MT8186
-  drm/mediatek: Add mt8186 dsi compatible to mtk_dsi.c
-
- .../display/mediatek/mediatek,dsi.txt         | 62 ------------
- .../display/mediatek/mediatek,dsi.yaml        | 97 +++++++++++++++++++
- drivers/gpu/drm/mediatek/mtk_dsi.c            |  8 ++
- 3 files changed, 105 insertions(+), 62 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index bced4c7d668e..8c61c4f412bc 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -1140,6 +1140,12 @@ static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
+ 	.has_size_ctl = true,
+ };
+ 
++static const struct mtk_dsi_driver_data mt8186_dsi_driver_data = {
++	.reg_cmdq_off = 0xd00,
++	.has_shadow_ctl = true,
++	.has_size_ctl = true,
++};
++
+ static const struct of_device_id mtk_dsi_of_match[] = {
+ 	{ .compatible = "mediatek,mt2701-dsi",
+ 	  .data = &mt2701_dsi_driver_data },
+@@ -1147,6 +1153,8 @@ static const struct of_device_id mtk_dsi_of_match[] = {
+ 	  .data = &mt8173_dsi_driver_data },
+ 	{ .compatible = "mediatek,mt8183-dsi",
+ 	  .data = &mt8183_dsi_driver_data },
++	{ .compatible = "mediatek,mt8186-dsi",
++	  .data = &mt8186_dsi_driver_data },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, mtk_dsi_of_match);
 -- 
 2.18.0
 
