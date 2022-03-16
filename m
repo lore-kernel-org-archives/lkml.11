@@ -2,167 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B289C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C26FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355839AbiCPMne (ORCPT
+        id S1355863AbiCPMno (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        Wed, 16 Mar 2022 08:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355824AbiCPMnc (ORCPT
+        with ESMTP id S1355826AbiCPMnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:43:32 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054F666623
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 05:42:14 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id v35so4119172ybi.10
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 05:42:14 -0700 (PDT)
+        Wed, 16 Mar 2022 08:43:35 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFAC966613
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 05:42:17 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id a8so3879658ejc.8
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 05:42:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=8ZUl50izl5XTdOzAJcdDsecVVhU46smQU8A68ZRWLG4=;
-        b=lFzwR/Jub1Yg/lKMmW0U/1yHjyPFf/NbxtGfEEWBka6CeEOX/OG61lVmQfkv6KOuK/
-         H99HlyKx9Cb5StArZJGjU5ZnmGpuwpAnD/+og1HE6kwZQrmZkpCY4/IvcOa84kJV0bMF
-         Cssd0jZ/4kwFJq6El7csZUvwTqi/DtKGH6XkCJiCuIKY7Hj7eJGkDxec1FH5xZcm34KV
-         45IVjPw3Zixdaleh6fzL/yL1FxF2L5FLvf7HQdb61InYYkHhsyLGHmcaKRN0MzsRFKkO
-         TO0+axbfIHLHFVIpyig8KVZurRFMsj960thlPtgUmL58NUWxw1kgoSmbEkEPK25r+/LB
-         HAfA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YrCeMG8+8SJcl5IZrnVgtr+ceay0Mers6Na6OnHdZTw=;
+        b=TQRVGhRWirfiJIhyx1moflTGQ2SHv5VR189C5W4KZyH7DlZ2rW9FEsvGD9FWt9I729
+         6r6oqrS6HdE2ipMubO90ffqAZyb2sIM6NbeEP/2TZ0aLFd6E1eBlGPL5OLz3dqo+tm1N
+         Ou8pFbDCnvi6bRVKAB3+kwxfQbZ+QtMBtnCbCyWzvkEzyhrJqZ5Sh/NKh9f6iaurn9cu
+         0JVtE9A4aoU0LSvn41hPlpWVSMOSRqPrVmXD9su5dheW/lhIxpoWLbsZY+R/NgEkfSqs
+         Jli8rq+I5RMhg7WEUMeEWoLXboU+MU6+7waPqhl5i+MhiJLcgkKo2tz0O6HeRFYohwNK
+         ph7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=8ZUl50izl5XTdOzAJcdDsecVVhU46smQU8A68ZRWLG4=;
-        b=jRpm/o8jg0wOwlzmUmAnRud6+viMeHd9o+kPDVu64L4h2kDGSsVDy8a+dcdadREU19
-         aOGIUbAN4bXp/OsvVAcrx0Ybwbogx77Id8JBVy485kfnbpmlR3UEfV7Gzg4J3Vmx9KXQ
-         mG1IbEr11x8tLk+idrVqLFor8USIxdo4VHmSkUhFhercS85aWbtS74ALe89Syzt3gOib
-         NqlXgkDby08gzU8d6roP8VM23PMZyskmz2f8dTo+2LdpZ4X8yjrwbqCD8PsZ5od8Lzw5
-         p0UgCGH9NkzV8O8596O1lvsaNk2UYUi2mq10VGZxJd+X5xn1gOcvUKesmLne7z4Atj7w
-         i0jg==
-X-Gm-Message-State: AOAM530bHo55AsRcGE7an2tK0Hr/cF2xSxwX59JR5YoTad3ttsPYOqhX
-        ZwE2GNablhRHoB8LeifOvwJPncJG9UTnOa4VratD5g==
-X-Google-Smtp-Source: ABdhPJxB80wG+ojKETJv7yBdRo6Azrs2Hkadc5V+b2cDQonRXQdBy6DQdPwetodn7KtaURM4mic8pcZjwQZ0Qk5aCXE=
-X-Received: by 2002:a25:3c41:0:b0:62c:2929:84b1 with SMTP id
- j62-20020a253c41000000b0062c292984b1mr27842661yba.338.1647434533874; Wed, 16
- Mar 2022 05:42:13 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YrCeMG8+8SJcl5IZrnVgtr+ceay0Mers6Na6OnHdZTw=;
+        b=ivWYN+XZJhgmzqemoAAf6n0Lndjm+9T0PdXGLhyrK/coQPcJ8Y5XcBwdMVLXDbmg0b
+         FGtcQHPMOioB8eTh4r7AP/imda+3DzPr7HAi4Q1OLJKZNU/DZOiP8+t/H/b0XnLzb4KH
+         jBl+7vu26KB9S6UX2pBFB0QcuRC74V9zQQ0we+qSXMp2HbkYjUqYQW8FfoeuWmTywis8
+         symhWFCod1cnNj56nKNOiZ9JqsgCvz8sS460pPcA5XfE2NjJ00CZvNuHCxlA7Drhksxl
+         qaJ1EUkFHwAtJh5ie5mSlL50xawgXxcib11zLM8cjCm6hu8MeLO086NNo/HRcwrF/ATu
+         VhcA==
+X-Gm-Message-State: AOAM533ypCz3L386MUwKyjB8SktOYz1KHT1HR49cCRjQnt2r3a54eQiD
+        8kVfdYz+cDgK80lOjqNqBKRc1w==
+X-Google-Smtp-Source: ABdhPJznn6FFCYH1rXZ8XxK4RoArSWMYjykUAYamaJ2woslaFFp5HwYgTC7qyrPkecYF6b5PzCCjNA==
+X-Received: by 2002:a17:906:9c81:b0:6df:78a0:fb37 with SMTP id fj1-20020a1709069c8100b006df78a0fb37mr2989398ejc.703.1647434536233;
+        Wed, 16 Mar 2022 05:42:16 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.96.34])
+        by smtp.gmail.com with ESMTPSA id y14-20020a056402440e00b00416046b623csm980513eda.2.2022.03.16.05.42.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 05:42:15 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 20:42:08 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     German Gomez <german.gomez@arm.com>
+Cc:     Ali Saidi <alisaidi@amazon.com>, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        benh@kernel.crashing.org, james.clark@arm.com,
+        john.garry@huawei.com, jolsa@kernel.org, kjain@linux.ibm.com,
+        lihuafei1@huawei.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        mark.rutland@arm.com, mathieu.poirier@linaro.org, mingo@redhat.com,
+        namhyung@kernel.org, peterz@infradead.org, will@kernel.org,
+        yao.jin@linux.intel.com, Nick.Forrington@arm.com
+Subject: Re: [PATCH v2 2/2] perf mem: Support HITM for when mem_lvl_num is
+ used
+Message-ID: <20220316124208.GA310478@leoy-ThinkPad-X240s>
+References: <df73fb93-3892-6713-8ebe-bc57a861ec5d@arm.com>
+ <20220314183721.3198-1-alisaidi@amazon.com>
+ <172ce478-b539-2aa4-0470-1b96c6b8169b@arm.com>
+ <7b3aaa4d-5194-a729-f8ad-d55ada7fa58f@arm.com>
 MIME-Version: 1.0
-References: <20220314145920.247358804@linuxfoundation.org> <CAG=yYwktdQ1Ep0r=VKitta=1gWrNN1Wi0Ft9t0+sXdy1bsX81Q@mail.gmail.com>
-In-Reply-To: <CAG=yYwktdQ1Ep0r=VKitta=1gWrNN1Wi0Ft9t0+sXdy1bsX81Q@mail.gmail.com>
-From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date:   Wed, 16 Mar 2022 18:11:37 +0530
-Message-ID: <CAG=yYw=SrONeQb3mn6C+9RievV-8zbW7h7j+CGZP2gK1JesoOw@mail.gmail.com>
-Subject: previous mail relted
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="0000000000002f557005da553e19"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7b3aaa4d-5194-a729-f8ad-d55ada7fa58f@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000002f557005da553e19
-Content-Type: text/plain; charset="UTF-8"
+On Wed, Mar 16, 2022 at 11:43:52AM +0000, German Gomez wrote:
 
-hello,
-did you get my previous email?
+[...]
 
-i am forwarding it .
+> >>> I had a look at the TRMs for the N1[1], V1[2] and N2[3] Neoverse cores
+> >>> (specifically the LL_CACHE_RD pmu events). If we were to assign a number
+> >>> to the system cache (assuming all caches are implemented):
+> >>>
+> >>> *For N1*, if L2 and L3 are implemented, system cache would follow at *L4*
+> >> To date no one has built 4 level though. Everyone has only built three.
+> > The N1SDP board advertises 4 levels (we use it regularly for testing perf patches)
+> 
+> That said, it's probably the odd one out.
+> 
+> I'm not against assuming 3 levels. Later if there's is a strong need for L4, indeed we can go back and change it.
 
+Thanks for the info.
 
+For exploring cache hierarchy via sysFS is a good idea, the only one
+concern for me is: can we simply take the system cache as the same
+thing as the highest level cache?  If so, I think another option is to
+define a cache level as "PERF_MEM_LVLNUM_SYSTEM_CACHE" and extend the
+decoding code for support it.
 
----------- Forwarded message ---------
-From: Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date: Tue, Mar 15, 2022 at 11:04 PM
-Subject: Re: [PATCH 4.19 00/29] 4.19.235-rc2 review
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: lkml <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org>, <stable@vger.kernel.org>,
-<torvalds@linux-foundation.org>, Andrew Morton
-<akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, Shuah
-Khan <shuah@kernel.org>, <patches@kernelci.org>,
-<lkft-triage@lists.linaro.org>, Pavel Machek <pavel@denx.de>,
-<jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-<sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
+With PERF_MEM_LVLNUM_SYSTEM_CACHE, it can tell users clearly the data
+source from system cache, and users can easily map this info with the
+cache media on the working platform.
 
+In practice, I don't object to use cache level 3 at first step.  At
+least this can meet the requirement at current stage.
 
-On Mon, Mar 14, 2022 at 11:00 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 4.19.235 release.
-> There are 29 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 16 Mar 2022 14:59:12 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.235-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
->
-hello,
-
-Compiled and  booted 4.19.235-rc2+ on ...
-
-Processor Information
-    Socket Designation: FM2
-    Type: Central Processor
-    Family: A-Series
-    Manufacturer: AuthenticAMD
-    ID: 31 0F 61 00 FF FB 8B 17
-    Signature: Family 21, Model 19, Stepping 1
-
-
-I think No major new  regression or regressions  from dmesg.
-Some error related stuff has happened.
-Please see the  attachment for build issues related.
-
-Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
-Reported-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
-
-
---
-software engineer
-rajagiri school of engineering and technology  -  autonomous
-
-
--- 
-software engineer
-rajagiri school of engineering and technology
-
---0000000000002f557005da553e19
-Content-Type: text/plain; charset="US-ASCII"; name="error-4.19.235-rc2.txt"
-Content-Disposition: attachment; filename="error-4.19.235-rc2.txt"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l0seymyd0>
-X-Attachment-Id: f_l0seymyd0
-
-Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTxlcnJvciByZWxhdGVkIGNsaXBwaW5nIDE+LS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0KSW4gZnVuY3Rpb24gJ21lbWNweScsCiAgaW5saW5lZCBmcm9t
-IG1lbWNweV9mcm9taW8gYXQgLi9pbmNsdWRlL2FzbS1nZW5lcmljL2lvLmg6MTExNzoyLAogICAg
-aW5saW5lZCBmcm9tIGdoZXNfY29weV90b2Zyb21fcGh5cyBhdCBkcml2ZXJzL2FjcGkvYXBlaS9n
-aGVzLmM6MzExOjQ6Ci4vaW5jbHVkZS9saW51eC9zdHJpbmcuaDoyNjE6MzM6IHdhcm5pbmc6IF9f
-YnVpbHRpbl9tZW1jcHkgcmVhZGluZyBiZXR3ZWVuIDEgYW5kIDQwOTYgYnl0ZXMgZnJvbSBhIHJl
-Z2lvbiBvZiBzaXplIDAgWy1Xc3RyaW5nb3Atb3ZlcnJlYWRdCiAgMjYxIHwgI2RlZmluZSBfX3Vu
-ZGVybHlpbmdfbWVtY3B5ICAgICBfX2J1aWx0aW5fbWVtY3B5CiAgICAgIHwgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBeCi4vaW5jbHVkZS9saW51eC9zdHJpbmcuaDozNzc6MTY6IG5v
-dGU6IGluIGV4cGFuc2lvbiBvZiBtYWNybyBfX3VuZGVybHlpbmdfbWVtY3B5CiAgMzc3IHwgICAg
-ICAgICByZXR1cm4gX191bmRlcmx5aW5nX21lbWNweShwLCBxLCBzaXplKTsKCi0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLTxlcnJvciByZWxhdGVkIGNsaXBwaW5nID4tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLQoKCgoKCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTxlcnJvciByZWxhdGVkIGNsaXBw
-aW5nIDI+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCmRyaXZlcnMvY3J5cHRvL2NjcC9zcC1w
-bGF0Zm9ybS5jOjM3OjM0OiB3YXJuaW5nOiBhcnJheSBzcF9vZl9tYXRjaCBhc3N1bWVkIHRvIGhh
-dmUgb25lIGVsZW1lbnQKICAgMzcgfCBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBz
-cF9vZl9tYXRjaFtdOwotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS08ZXJyb3IgcmVsYXRlZCBjbGlw
-cGluZz4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKCgoKCgotLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS08ZXJyb3IgcmVsYXRlZCBjbGlwcGluZyAzPi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-CmxkOiBhcmNoL3g4Ni9ib290L2NvbXByZXNzZWQvaGVhZF82NC5vOiB3YXJuaW5nOiByZWxvY2F0
-aW9uIGluIHJlYWQtb25seSBzZWN0aW9uIGAuaGVhZC50ZXh0JwpsZDogd2FybmluZzogY3JlYXRp
-bmcgRFRfVEVYVFJFTCBpbiBhIFBJRQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS08ZXJyb3IgcmVs
-YXRlZCBjbGlwcGluZz4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ==
---0000000000002f557005da553e19--
+Thanks,
+Leo
