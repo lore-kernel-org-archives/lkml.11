@@ -2,87 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FAD4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354971AbiCPJtn (ORCPT
+        id S1354977AbiCPJvf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 05:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50354 "EHLO
+        Wed, 16 Mar 2022 05:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349355AbiCPJti (ORCPT
+        with ESMTP id S241720AbiCPJve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 05:49:38 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B5B275E6;
-        Wed, 16 Mar 2022 02:48:24 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 33999EE;
-        Wed, 16 Mar 2022 10:48:23 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1647424103;
-        bh=G47j0zdGssROUWfMmmzcjl+YW0aiSILgH3U9eUXsIC0=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=H55xmHVBvLP5OodSJ3W5IXZEfKr10xUjWrGBpvQjF0Mj5iGhb1Ckt9rHijPsY3WUv
-         W+GRzqstQ+ORDI+0Udjrxe5GWf/skWAj15JqgC2uph4bmRpxjDTiZDAChaup07mycq
-         Bt37u7ECp/SlsUNADvrwOhd9TnuPtkwc287R0hYg=
-Content-Type: text/plain; charset="utf-8"
+        Wed, 16 Mar 2022 05:51:34 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE701606D5;
+        Wed, 16 Mar 2022 02:50:19 -0700 (PDT)
+Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KJQT84XtZz67MtS;
+        Wed, 16 Mar 2022 17:48:44 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Wed, 16 Mar 2022 10:50:17 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 09:50:14 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
+CC:     <damien.lemoal@opensource.wdc.com>, <linux-kernel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <bvanassche@acm.org>,
+        <martin.wilck@suse.com>, <ming.lei@redhat.com>, <hch@lst.de>,
+        <hare@suse.de>, John Garry <john.garry@huawei.com>
+Subject: [PATCH v2] scsi: core: Fix sbitmap depth in scsi_realloc_sdev_budget_map()
+Date:   Wed, 16 Mar 2022 17:44:30 +0800
+Message-ID: <1647423870-143867-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220315222146.1051303-1-j.neuschaefer@gmx.net>
-References: <20220315222146.1051303-1-j.neuschaefer@gmx.net>
-Subject: Re: [PATCH] media: uvcvideo: Send users to linux-media mailing list instead of linux-uvc-devel
-From:   Kieran Bingham <kieran.bingham@ideasonboard.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Jonathan =?utf-8?q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        linux-media@vger.kernel.org
-Date:   Wed, 16 Mar 2022 09:48:20 +0000
-Message-ID: <164742410075.11309.15188538230455635539@Monstersaurus>
-User-Agent: alot/0.10
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Jonathan Neusch=C3=A4fer (2022-03-15 22:21:46)
-> The linux-uvc-devel mailing list has been deprecated in documentation
-> and MAINTAINERS. Update this message printed by the driver, as well.
->=20
-> Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+In commit edb854a3680b ("scsi: core: Reallocate device's budget map on
+queue depth change"), the sbitmap for the device budget map may be
+reallocated after the slave device depth is configured.
 
+When the sbitmap is reallocated we use the result from
+scsi_device_max_queue_depth() for the sbitmap size, but don't resize to
+match the actual device queue depth.
 
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Fix by resizing the sbitmap after reallocating the budget sbitmap. We do
+this instead of init'ing the sbitmap to the device queue depth as the user
+may want to change the queue depth later via sysfs or other.
 
-But I believe this will be squashed into the other patch, so it holds
-for there too.
+Fixes: edb854a3680b ("scsi: core: Reallocate device's budget map on queue depth change")
+Signed-off-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+---
+Changes since v1 (apart from sending as a separate patch):
+- Add fixes and RB tag (thanks)
+- mention in commit message why we don't init sbitmap at queue depth
 
---
-Kieran
+diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
+index f4e6c68ac99e..2ef78083f1ef 100644
+--- a/drivers/scsi/scsi_scan.c
++++ b/drivers/scsi/scsi_scan.c
+@@ -223,6 +223,8 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
+ 	int ret;
+ 	struct sbitmap sb_backup;
+ 
++	depth = min_t(unsigned int, depth, scsi_device_max_queue_depth(sdev));
++
+ 	/*
+ 	 * realloc if new shift is calculated, which is caused by setting
+ 	 * up one new default queue depth after calling ->slave_configure
+@@ -245,6 +247,9 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
+ 				scsi_device_max_queue_depth(sdev),
+ 				new_shift, GFP_KERNEL,
+ 				sdev->request_queue->node, false, true);
++	if (!ret)
++		sbitmap_resize(&sdev->budget_map, depth);
++
+ 	if (need_free) {
+ 		if (ret)
+ 			sdev->budget_map = sb_backup;
+-- 
+2.26.2
 
-
-> ---
->  drivers/media/usb/uvc/uvc_driver.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/u=
-vc_driver.c
-> index 5f394d4efc21c..6c6a82af07cee 100644
-> --- a/drivers/media/usb/uvc/uvc_driver.c
-> +++ b/drivers/media/usb/uvc/uvc_driver.c
-> @@ -2443,7 +2443,7 @@ static int uvc_probe(struct usb_interface *intf,
->                          "Forcing device quirks to 0x%x by module paramet=
-er for testing purpose.\n",
->                          dev->quirks);
->                 dev_info(&dev->udev->dev,
-> -                        "Please report required quirks to the linux-uvc-=
-devel mailing list.\n");
-> +                        "Please report required quirks to the linux-medi=
-a mailing list.\n");
->         }
->=20
->         if (dev->info->uvc_version) {
-> --
-> 2.35.1
->
