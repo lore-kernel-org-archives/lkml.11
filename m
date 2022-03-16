@@ -2,89 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED79EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A06C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355077AbiCPKAN (ORCPT
+        id S1355091AbiCPKAx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 06:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48028 "EHLO
+        Wed, 16 Mar 2022 06:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350398AbiCPKAL (ORCPT
+        with ESMTP id S1350398AbiCPKAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 06:00:11 -0400
-X-Greylist: delayed 441 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Mar 2022 02:58:57 PDT
-Received: from audible.transient.net (audible.transient.net [24.143.126.66])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id CE38764BE7
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:58:57 -0700 (PDT)
-Received: (qmail 5861 invoked from network); 16 Mar 2022 09:51:35 -0000
-Received: from cucamonga.audible.transient.net (192.168.2.5)
-  by canarsie.audible.transient.net with QMQP; 16 Mar 2022 09:51:35 -0000
-Received: (nullmailer pid 4066 invoked by uid 1000);
-        Wed, 16 Mar 2022 09:51:35 -0000
-Date:   Wed, 16 Mar 2022 09:51:35 +0000
-From:   Jamie Heilman <jamie@audible.transient.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: system locks up with CONFIG_SLS=Y; 5.17.0-rc
-Message-ID: <YjGzJwjrvxg5YZ0Z@audible.transient.net>
-Mail-Followup-To: linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
+        Wed, 16 Mar 2022 06:00:52 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D3B64BEA;
+        Wed, 16 Mar 2022 02:59:39 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id BD53B1EC0559;
+        Wed, 16 Mar 2022 10:59:33 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1647424773;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=VUu4K7ChRXMrGrQNt35Wg5IFslzzJNsQ6i3cXSvywX0=;
+        b=cTP4t0cmk01+BLf6UFg+bpwxcO66DyZMVbQyk5uCYG+L3u6I7B2553sBMA/GzxEmD97VvS
+        CsUlGiw9HbEF/ZNKEnGPPMyod2cXod+pHS/mwhH/1ups1kVKeOWeZFIIwzFnM0MRVyzA+G
+        NUC/jmIJtg6fSUnGDMi+FkFNT62Ayts=
+Date:   Wed, 16 Mar 2022 10:59:29 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     niravkumar.l.rabara@intel.com
+Cc:     dinguyen@kernel.org, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, rric@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] EDAC: altera: Add SDRAM ECC check for U-Boot
+Message-ID: <YjG1AbShZZrJdTbE@zn.tnic>
+References: <20220305014118.4794-1-niravkumar.l.rabara@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <20220305014118.4794-1-niravkumar.l.rabara@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I've been (somewhat unsuccessfully) trying to bisect a hard lock-up
-of my workstation that occurs when I'm running 5.17 rc kernels a few
-seconds after I start a kvm guest instance.  There is no output to
-any log, everything locks up completely, sysrq doesn't even work
-anymore.  As bisection progressed closer and closer to the branch
-where straight-line-speculation mitigation was enabled, and as bisect
-landing me between 9cdbeec40968 ("x86/entry_32: Fix segment exceptions")
-and 3411506550b1 ("x86/csum: Rewrite/optimize csum_partial()") wasn't
-resulting in clear results (my system definately starts Oopsing and
-gets so hosed up that I'm forced to reboot, but it isn't quite as dire
-as sysrq continues to function) I decided to just try a build with
-CONFIG_SLS disabled, and it turns out that works just fine.  Sooo...
+On Sat, Mar 05, 2022 at 09:41:18AM +0800, niravkumar.l.rabara@intel.com wrote:
+> From: Rabara Niravkumar L <niravkumar.l.rabara@intel.com>
+> 
+> A bug in legacy U-Boot causes a crash during SDRAM boot if ECC
+> is not enabled in the bitstream but enabled in the Linux config.
+> 
+> Memory mapped read of the ECC Enabled bit was only enabled
+> if U-Boot determined ECC was enabled in the bitstream.
+> 
+> The Linux driver checks the ECC enable bit using a memory map
+> read. In the ECC disabled bitstream case, U-Boot didn't
+> enable ECC register memory map reads and since they are not
+> allowed this results in a crash.
+> 
+> This patch always reads the ECC Enable register through a
 
-This system uses a Intel Core2 Duo E8400 processor.
-working config (CONFIG_SLS=N) and dmesg at:
-http://audible.transient.net/~jamie/k/sls.config-5.17.0-rc8
-http://audible.transient.net/~jamie/k/sls.dmesg
+Avoid having "This patch" or "This commit" in the commit message. It is
+tautologically useless.
 
-(I don't think the dmesg of CONFIG_SLS=Y is really any different.)
+Also, do
 
-As far as I know the guest kernel I hand to qemu doesn't really
-matter, but the gist of my qemu command line is:
+$ git grep 'This patch' Documentation/process
 
-qemu-system-x86_64 -m 2048 -name "$NAME" -machine pc,accel=kvm \
-    -nographic -no-user-config -nodefaults -boot strict=on \
-    -rtc base=utc -smp 1,sockets=1,cores=1,threads=1 \
-    -chardev pipe,id=char0,path="$DIR/monitor" \
-    -chardev pty,id=char1 \
-    -device isa-serial,chardev=char1 \
-    -device virtio-blk-pci,drive=blk0,bootindex=1 \
-    -device virtio-net-pci,netdev=net0,"mac=$IF_MAC" \
-    -device virtio-rng-pci,rng=rng0,max-bytes=1024,period=3000 \
-    -drive "id=blk0,file=/dev/S/$NAME,if=none,format=raw,cache=none" \
-    -mon chardev=char0,id=monitor,mode=control \
-    -netdev "tap,id=net0,ifname=$NAME,script=no,downscript=no" \
-    -object rng-random,id=rng0,filename=/dev/random
+for more details.
 
+I've removed it now but pls pay attention for the future.
 
-No clue what additional debugging would help to enable here, if
-anything.  As you can see from the dmesg, I'm using gcc 11.2.0 from
-Debian unstable, 4:11.2.0-2 to be exact.  Let me know what other
-information would be useful.
+> SMC call which is always allowed and it works with legacy
+> and current U-Boot.
+> 
+> Signed-off-by: Rabara Niravkumar L <niravkumar.l.rabara@intel.com>
+> ---
+>  drivers/edac/altera_edac.c | 40 +++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 39 insertions(+), 1 deletion(-)
+
+Applied, thanks.
 
 -- 
-Jamie Heilman                     http://audible.transient.net/~jamie/
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
