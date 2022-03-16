@@ -2,255 +2,344 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02307C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357553AbiCPQsp (ORCPT
+        id S1357568AbiCPQtz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
+        Wed, 16 Mar 2022 12:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238933AbiCPQso (ORCPT
+        with ESMTP id S1353981AbiCPQtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:48:44 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5AE2DD74;
-        Wed, 16 Mar 2022 09:47:27 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id ABA771F444BE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647449245;
-        bh=Vt70eCSvc2zqki9hfDzcz6upXnG7HHuoQp1wXP5ezc4=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=eTxFJlVOq7IEc/chB3Uc0RmKZ2SkSN0enFVgAdUsuPiFiB+9Ch094CE0i/7g6Pj9f
-         mNSJ2JnthPnQqfJ+gKzNvn/zWwHHebMylOedAtQ7lPWawtW9kWfPtHx4B4wyT/ZovU
-         0C8pv91Wrwg3YZm5KrLeD7pZBzvqgZ7iaTFkF4cPo+KMQWIwsqLLRXjTLRIV9bc4ps
-         LuJM4AqH+O4KU7DMMlfhFLBs8mOqcyHBcuKa+W03GlDVRr9qUVBrwU4iqXcAgy3AeJ
-         2uoyW80iKa4J7bLD6ehys30u5vjYtomA+i9HOQYmvIjwEFPLUz6jZQWCkZaJsqLTFB
-         VU06/6q7RiUgQ==
-Message-ID: <453bf08c-0110-03d9-7346-76a7c2118987@collabora.com>
-Date:   Wed, 16 Mar 2022 21:47:19 +0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Cc:     usama.anjum@collabora.com, kernel@collabora.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org,
+        Wed, 16 Mar 2022 12:49:49 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5B036E0F
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:48:34 -0700 (PDT)
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 29F713F5F4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:48:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647449312;
+        bh=+2ufOnIvbUGAFd00lEMV3SW3ZhH4lv4M/Vj/vxcKBHk=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version:Content-Type;
+        b=cST9crebXwS4jnJvxxHptYxPTz9bveWLQxzPJe61P4959Qf+S7wh1FL0HuEs9A1Ic
+         mBIvv2dSsq20nmYR36Du2oU9ZOx+6ScajfBUFAsfv8lNztYAMKCMWhm2HKADTY8Akp
+         S9SWEckqOL+L+qjbsidvR25IstSA1GXXV9IZA9FWuCWVn5VCzhQybf2lQY4SNR+6XX
+         o4HWqSWFf4EvLRKfbSg//FzDVdknyPgvwSGlzsahitXW+6JFu7k9Z3cyOvMpfMHfI+
+         iWLBd8h/khMh5cC9RAk8548PQ7b73+GX8fcAQmUyv93nvAf7Rk0QgwLE5L+xA8AAru
+         Fi2tlKLh0Sz0w==
+Received: by mail-il1-f199.google.com with SMTP id x4-20020a056e021bc400b002c7c7c72447so1567923ilv.15
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:48:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+2ufOnIvbUGAFd00lEMV3SW3ZhH4lv4M/Vj/vxcKBHk=;
+        b=nS74XMrAdsBjiPL4QQ1NZb/1qS0x14em+O+n5qbdR6W9/lLVq69nW/8bcePKmQv1NP
+         sRLNERwfIxp0riPM+q5+Ov/KsH7q4+Fzz4hC6zDAbJWNBB1z7xITJFbVBmYloF2uKST+
+         a4xbq14N7KBt/m8gRjLZnbkfGzf561elaZ5K1w4g8MQuO3gL49z26so5qTFEIwzfBiau
+         tU82fhhclJZCDT0CmykvREW1RMUbKKN93qJf+V35Q5fPWMRzpjySvKcCqAGkN6G48O1C
+         EU4SeoOEnoazEwiHvO/YcbQ3afoKaZWd4ehtIrcMzPAEBQz4+ZqPwnQwUxeC1HLqxu/I
+         n7IA==
+X-Gm-Message-State: AOAM532DvCJTMzhPB7UZC33TTWs6BJ/v1CZA07nZ7HTEsj1DGph11rFw
+        tuvk4yVIkxF9NRk5MVyHbjcuIjcDSl5cnBA3fMl9Ne6DBuKaPuRCVeneeWlUoF3YCZO/2GwsG4I
+        3LiKWRPCpN+t03dWMc1uEt67SAvH46dtPlqma9LEjpw==
+X-Received: by 2002:a5e:a80a:0:b0:645:b477:bc23 with SMTP id c10-20020a5ea80a000000b00645b477bc23mr406918ioa.191.1647449310615;
+        Wed, 16 Mar 2022 09:48:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzuIeYKpLflByC+6b5qzBMuuBfVep5KYtm/L98ZxA4cskEn1UWFZENrGIfIpu9Zj+QX+SFgRQ==
+X-Received: by 2002:a5e:a80a:0:b0:645:b477:bc23 with SMTP id c10-20020a5ea80a000000b00645b477bc23mr406908ioa.191.1647449310297;
+        Wed, 16 Mar 2022 09:48:30 -0700 (PDT)
+Received: from localhost (c-71-196-238-11.hsd1.co.comcast.net. [71.196.238.11])
+        by smtp.gmail.com with ESMTPSA id 66-20020a6b1545000000b00645c8667726sm1197468iov.19.2022.03.16.09.48.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 09:48:29 -0700 (PDT)
+From:   dann frazier <dann.frazier@canonical.com>
+To:     stable@vger.kernel.org
+Cc:     Valentin Schneider <valentin.schneider@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Sergei Trofimovich <slyfox@gentoo.org>,
+        Anatoly Pugachev <matorola@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        Shuah Khan <shuah@kernel.org>
-Subject: Re: [PATCH V4 1/2] selftests: vm: bring common functions to a new
- file
-Content-Language: en-US
-To:     David Hildenbrand <david@redhat.com>
-References: <20220315085014.1047291-1-usama.anjum@collabora.com>
- <b47a93fe-da50-d0d4-be8f-87071bf181f9@redhat.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <b47a93fe-da50-d0d4-be8f-87071bf181f9@redhat.com>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 4.19 1/3] sched/topology: Make sched_init_numa() use a set for the deduplicating sort
+Date:   Wed, 16 Mar 2022 10:48:06 -0600
+Message-Id: <20220316164808.569272-2-dann.frazier@canonical.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220316164808.569272-1-dann.frazier@canonical.com>
+References: <20220316164808.569272-1-dann.frazier@canonical.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+From: Valentin Schneider <valentin.schneider@arm.com>
 
-Thank you for the review. I'll correct everything mentioned here in the
-next iteration.
+commit 620a6dc40754dc218f5b6389b5d335e9a107fd29 upstream.
 
-+[Gabriel]
+The deduplicating sort in sched_init_numa() assumes that the first line in
+the distance table contains all unique values in the entire table. I've
+been trying to pen what this exactly means for the topology, but it's not
+straightforward. For instance, topology.c uses this example:
 
-On 3/16/22 1:55 PM, David Hildenbrand wrote:
-> On 15.03.22 09:50, Muhammad Usama Anjum wrote:
->> Bring common functions to a new file. These functions can be used in the
->> new tests. This helps in code duplication.
->>
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->>  tools/testing/selftests/vm/Makefile           |   7 +-
->>  tools/testing/selftests/vm/madv_populate.c    |  34 +-----
->>  .../selftests/vm/split_huge_page_test.c       |  77 +------------
->>  tools/testing/selftests/vm/vm_util.c          | 103 ++++++++++++++++++
->>  tools/testing/selftests/vm/vm_util.h          |  15 +++
->>  5 files changed, 125 insertions(+), 111 deletions(-)
->>  create mode 100644 tools/testing/selftests/vm/vm_util.c
->>  create mode 100644 tools/testing/selftests/vm/vm_util.h
->>
->> diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
->> index 5e43f072f5b76..4e68edb26d6b6 100644
->> --- a/tools/testing/selftests/vm/Makefile
->> +++ b/tools/testing/selftests/vm/Makefile
->> @@ -34,7 +34,7 @@ TEST_GEN_FILES += hugepage-mremap
->>  TEST_GEN_FILES += hugepage-shm
->>  TEST_GEN_FILES += hugepage-vmemmap
->>  TEST_GEN_FILES += khugepaged
->> -TEST_GEN_FILES += madv_populate
->> +TEST_GEN_PROGS = madv_populate
->>  TEST_GEN_FILES += map_fixed_noreplace
->>  TEST_GEN_FILES += map_hugetlb
->>  TEST_GEN_FILES += map_populate
->> @@ -47,7 +47,7 @@ TEST_GEN_FILES += on-fault-limit
->>  TEST_GEN_FILES += thuge-gen
->>  TEST_GEN_FILES += transhuge-stress
->>  TEST_GEN_FILES += userfaultfd
->> -TEST_GEN_FILES += split_huge_page_test
->> +TEST_GEN_PROGS += split_huge_page_test
->>  TEST_GEN_FILES += ksm_tests
->>  
->>  ifeq ($(MACHINE),x86_64)
->> @@ -91,6 +91,9 @@ TEST_FILES := test_vmalloc.sh
->>  KSFT_KHDR_INSTALL := 1
->>  include ../lib.mk
->>  
->> +$(OUTPUT)/madv_populate: vm_util.c
->> +$(OUTPUT)/split_huge_page_test: vm_util.c
->> +
-> 
-> 
-> [...]
-> 
->> +// SPDX-License-Identifier: GPL-2.0
->> +#include <stdbool.h>
->> +#include <string.h>
->> +#include "vm_util.h"
->> +
->> +uint64_t pagemap_get_entry(int fd, char *start)
->> +{
->> +	const unsigned long pfn = (unsigned long)start / getpagesize();
->> +	uint64_t entry;
->> +	int ret;
->> +
->> +	ret = pread(fd, &entry, sizeof(entry), pfn * sizeof(entry));
->> +	if (ret != sizeof(entry))
->> +		ksft_exit_fail_msg("reading pagemap failed\n");
->> +	return entry;
->> +}
->> +
->> +bool pagemap_is_softdirty(int fd, char *start)
->> +{
->> +	uint64_t entry = pagemap_get_entry(fd, start);
->> +
->> +	return ((entry >> DIRTY_BIT_LOCATION) & 1);
->> +}
-> 
-> Please leave code you're moving around as untouched as possible to avoid
-> unrelated bugs that happen by mistake and are hard to review.
-> 
->> +
->> +void clear_softdirty(void)
->> +{
->> +	int ret;
->> +	const char *ctrl = "4";
->> +	int fd = open("/proc/self/clear_refs", O_WRONLY);
->> +
->> +	if (fd < 0)
->> +		ksft_exit_fail_msg("opening clear_refs failed\n");
->> +	ret = write(fd, ctrl, strlen(ctrl));
->> +	close(fd);
->> +	if (ret != strlen(ctrl))
->> +		ksft_exit_fail_msg("writing clear_refs failed\n");
->> +}
->> +
->> +
->> +static bool check_for_pattern(FILE *fp, const char *pattern, char *buf)
->> +{
->> +	while (fgets(buf, MAX_LINE_LENGTH, fp) != NULL) {
->> +		if (!strncmp(buf, pattern, strlen(pattern)))
->> +			return true;
->> +	}
->> +	return false;
->> +}
->> +
->> +uint64_t read_pmd_pagesize(void)
->> +{
->> +	int fd;
->> +	char buf[20];
->> +	ssize_t num_read;
->> +
->> +	fd = open(PMD_SIZE, O_RDONLY);
->> +	if (fd == -1)
->> +		ksft_exit_fail_msg("Open hpage_pmd_size failed\n");
->> +
->> +	num_read = read(fd, buf, 19);
->> +	if (num_read < 1) {
->> +		close(fd);
->> +		ksft_exit_fail_msg("Read hpage_pmd_size failed\n");
->> +	}
->> +	buf[num_read] = '\0';
->> +	close(fd);
->> +
->> +	return strtoul(buf, NULL, 10);
->> +}
->> +
->> +uint64_t check_huge(void *addr)
->> +{
->> +	uint64_t thp = 0;
->> +	int ret;
->> +	FILE *fp;
->> +	char buffer[MAX_LINE_LENGTH];
->> +	char addr_pattern[MAX_LINE_LENGTH];
->> +
->> +	ret = snprintf(addr_pattern, MAX_LINE_LENGTH, "%08lx-",
->> +		       (unsigned long) addr);
->> +	if (ret >= MAX_LINE_LENGTH)
->> +		ksft_exit_fail_msg("%s: Pattern is too long\n", __func__);
->> +
->> +	fp = fopen(SMAP, "r");
->> +	if (!fp)
->> +		ksft_exit_fail_msg("%s: Failed to open file %s\n", __func__, SMAP);
->> +
->> +	if (!check_for_pattern(fp, addr_pattern, buffer))
->> +		goto err_out;
->> +
->> +	/*
->> +	 * Fetch the AnonHugePages: in the same block and check the number of
->> +	 * hugepages.
->> +	 */
->> +	if (!check_for_pattern(fp, "AnonHugePages:", buffer))
->> +		goto err_out;
->> +
->> +	if (sscanf(buffer, "AnonHugePages:%10ld kB", &thp) != 1)
->> +		ksft_exit_fail_msg("Reading smap error\n");
->> +
->> +err_out:
->> +	fclose(fp);
->> +	return thp;
->> +}
->> diff --git a/tools/testing/selftests/vm/vm_util.h b/tools/testing/selftests/vm/vm_util.h
->> new file mode 100644
->> index 0000000000000..7522dbb859f0f
->> --- /dev/null
->> +++ b/tools/testing/selftests/vm/vm_util.h
->> @@ -0,0 +1,15 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +#include <stdint.h>
->> +#include <fcntl.h>
->> +#include "../kselftest.h"
->> +
->> +#define	PMD_SIZE		"/sys/kernel/mm/transparent_hugepage/hpage_pmd_size"
-> 
-> Ehm no. PMD_SIZE_PATH at best -- just as it used to.
-> 
->> +#define	SMAP			"/proc/self/smaps"
-> 
-> SMAPS_PATH
-> 
->> +#define	DIRTY_BIT_LOCATION	55
-> 
-> Please inline that just as it used to. There is no value in a magic
-> define without any proper namespace.
-> 
->> +#define	MAX_LINE_LENGTH		512
-> 
-> This used to be 500. Why the change?
-> 
-> 
-> Also: weird indentation and these all look like the should go into
-> vm_util.c. They are not used outside that file.
-> 
-> 
-> 
+  node   0   1   2   3
+    0:  10  20  20  30
+    1:  20  10  20  20
+    2:  20  20  10  20
+    3:  30  20  20  10
 
+  0 ----- 1
+  |     / |
+  |   /   |
+  | /     |
+  2 ----- 3
+
+Which works out just fine. However, if we swap nodes 0 and 1:
+
+  1 ----- 0
+  |     / |
+  |   /   |
+  | /     |
+  2 ----- 3
+
+we get this distance table:
+
+  node   0  1  2  3
+    0:  10 20 20 20
+    1:  20 10 20 30
+    2:  20 20 10 20
+    3:  20 30 20 10
+
+Which breaks the deduplicating sort (non-representative first line). In
+this case this would just be a renumbering exercise, but it so happens that
+we can have a deduplicating sort that goes through the whole table in O(n²)
+at the extra cost of a temporary memory allocation (i.e. any form of set).
+
+The ACPI spec (SLIT) mentions distances are encoded on 8 bits. Following
+this, implement the set as a 256-bits bitmap. Should this not be
+satisfactory (i.e. we want to support 32-bit values), then we'll have to go
+for some other sparse set implementation.
+
+This has the added benefit of letting us allocate just the right amount of
+memory for sched_domains_numa_distance[], rather than an arbitrary
+(nr_node_ids + 1).
+
+Note: DT binding equivalent (distance-map) decodes distances as 32-bit
+values.
+
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20210122123943.1217-2-valentin.schneider@arm.com
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
+---
+ include/linux/topology.h |  1 +
+ kernel/sched/topology.c  | 99 +++++++++++++++++++---------------------
+ 2 files changed, 49 insertions(+), 51 deletions(-)
+
+diff --git a/include/linux/topology.h b/include/linux/topology.h
+index cb0775e1ee4b..707364c90aa6 100644
+--- a/include/linux/topology.h
++++ b/include/linux/topology.h
+@@ -47,6 +47,7 @@ int arch_update_cpu_topology(void);
+ /* Conform to ACPI 2.0 SLIT distance definitions */
+ #define LOCAL_DISTANCE		10
+ #define REMOTE_DISTANCE		20
++#define DISTANCE_BITS           8
+ #ifndef node_distance
+ #define node_distance(from,to)	((from) == (to) ? LOCAL_DISTANCE : REMOTE_DISTANCE)
+ #endif
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index f58efa5cc647..0826f3f4920a 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1322,66 +1322,58 @@ static void init_numa_topology_type(void)
+ 	}
+ }
+ 
++
++#define NR_DISTANCE_VALUES (1 << DISTANCE_BITS)
++
+ void sched_init_numa(void)
+ {
+-	int next_distance, curr_distance = node_distance(0, 0);
+ 	struct sched_domain_topology_level *tl;
+-	int level = 0;
+-	int i, j, k;
+-
+-	sched_domains_numa_distance = kzalloc(sizeof(int) * (nr_node_ids + 1), GFP_KERNEL);
+-	if (!sched_domains_numa_distance)
+-		return;
+-
+-	/* Includes NUMA identity node at level 0. */
+-	sched_domains_numa_distance[level++] = curr_distance;
+-	sched_domains_numa_levels = level;
++	unsigned long *distance_map;
++	int nr_levels = 0;
++	int i, j;
+ 
+ 	/*
+ 	 * O(nr_nodes^2) deduplicating selection sort -- in order to find the
+ 	 * unique distances in the node_distance() table.
+-	 *
+-	 * Assumes node_distance(0,j) includes all distances in
+-	 * node_distance(i,j) in order to avoid cubic time.
+ 	 */
+-	next_distance = curr_distance;
++	distance_map = bitmap_alloc(NR_DISTANCE_VALUES, GFP_KERNEL);
++	if (!distance_map)
++		return;
++
++	bitmap_zero(distance_map, NR_DISTANCE_VALUES);
+ 	for (i = 0; i < nr_node_ids; i++) {
+ 		for (j = 0; j < nr_node_ids; j++) {
+-			for (k = 0; k < nr_node_ids; k++) {
+-				int distance = node_distance(i, k);
+-
+-				if (distance > curr_distance &&
+-				    (distance < next_distance ||
+-				     next_distance == curr_distance))
+-					next_distance = distance;
+-
+-				/*
+-				 * While not a strong assumption it would be nice to know
+-				 * about cases where if node A is connected to B, B is not
+-				 * equally connected to A.
+-				 */
+-				if (sched_debug() && node_distance(k, i) != distance)
+-					sched_numa_warn("Node-distance not symmetric");
++			int distance = node_distance(i, j);
+ 
+-				if (sched_debug() && i && !find_numa_distance(distance))
+-					sched_numa_warn("Node-0 not representative");
++			if (distance < LOCAL_DISTANCE || distance >= NR_DISTANCE_VALUES) {
++				sched_numa_warn("Invalid distance value range");
++				return;
+ 			}
+-			if (next_distance != curr_distance) {
+-				sched_domains_numa_distance[level++] = next_distance;
+-				sched_domains_numa_levels = level;
+-				curr_distance = next_distance;
+-			} else break;
++
++			bitmap_set(distance_map, distance, 1);
+ 		}
++	}
++	/*
++	 * We can now figure out how many unique distance values there are and
++	 * allocate memory accordingly.
++	 */
++	nr_levels = bitmap_weight(distance_map, NR_DISTANCE_VALUES);
+ 
+-		/*
+-		 * In case of sched_debug() we verify the above assumption.
+-		 */
+-		if (!sched_debug())
+-			break;
++	sched_domains_numa_distance = kcalloc(nr_levels, sizeof(int), GFP_KERNEL);
++	if (!sched_domains_numa_distance) {
++		bitmap_free(distance_map);
++		return;
+ 	}
+ 
++	for (i = 0, j = 0; i < nr_levels; i++, j++) {
++		j = find_next_bit(distance_map, NR_DISTANCE_VALUES, j);
++		sched_domains_numa_distance[i] = j;
++	}
++
++	bitmap_free(distance_map);
++
+ 	/*
+-	 * 'level' contains the number of unique distances
++	 * 'nr_levels' contains the number of unique distances
+ 	 *
+ 	 * The sched_domains_numa_distance[] array includes the actual distance
+ 	 * numbers.
+@@ -1390,15 +1382,15 @@ void sched_init_numa(void)
+ 	/*
+ 	 * Here, we should temporarily reset sched_domains_numa_levels to 0.
+ 	 * If it fails to allocate memory for array sched_domains_numa_masks[][],
+-	 * the array will contain less then 'level' members. This could be
++	 * the array will contain less then 'nr_levels' members. This could be
+ 	 * dangerous when we use it to iterate array sched_domains_numa_masks[][]
+ 	 * in other functions.
+ 	 *
+-	 * We reset it to 'level' at the end of this function.
++	 * We reset it to 'nr_levels' at the end of this function.
+ 	 */
+ 	sched_domains_numa_levels = 0;
+ 
+-	sched_domains_numa_masks = kzalloc(sizeof(void *) * level, GFP_KERNEL);
++	sched_domains_numa_masks = kzalloc(sizeof(void *) * nr_levels, GFP_KERNEL);
+ 	if (!sched_domains_numa_masks)
+ 		return;
+ 
+@@ -1406,7 +1398,7 @@ void sched_init_numa(void)
+ 	 * Now for each level, construct a mask per node which contains all
+ 	 * CPUs of nodes that are that many hops away from us.
+ 	 */
+-	for (i = 0; i < level; i++) {
++	for (i = 0; i < nr_levels; i++) {
+ 		sched_domains_numa_masks[i] =
+ 			kzalloc(nr_node_ids * sizeof(void *), GFP_KERNEL);
+ 		if (!sched_domains_numa_masks[i])
+@@ -1414,12 +1406,17 @@ void sched_init_numa(void)
+ 
+ 		for (j = 0; j < nr_node_ids; j++) {
+ 			struct cpumask *mask = kzalloc(cpumask_size(), GFP_KERNEL);
++			int k;
++
+ 			if (!mask)
+ 				return;
+ 
+ 			sched_domains_numa_masks[i][j] = mask;
+ 
+ 			for_each_node(k) {
++				if (sched_debug() && (node_distance(j, k) != node_distance(k, j)))
++					sched_numa_warn("Node-distance not symmetric");
++
+ 				if (node_distance(j, k) > sched_domains_numa_distance[i])
+ 					continue;
+ 
+@@ -1431,7 +1428,7 @@ void sched_init_numa(void)
+ 	/* Compute default topology size */
+ 	for (i = 0; sched_domain_topology[i].mask; i++);
+ 
+-	tl = kzalloc((i + level + 1) *
++	tl = kzalloc((i + nr_levels) *
+ 			sizeof(struct sched_domain_topology_level), GFP_KERNEL);
+ 	if (!tl)
+ 		return;
+@@ -1454,7 +1451,7 @@ void sched_init_numa(void)
+ 	/*
+ 	 * .. and append 'j' levels of NUMA goodness.
+ 	 */
+-	for (j = 1; j < level; i++, j++) {
++	for (j = 1; j < nr_levels; i++, j++) {
+ 		tl[i] = (struct sched_domain_topology_level){
+ 			.mask = sd_numa_mask,
+ 			.sd_flags = cpu_numa_flags,
+@@ -1466,8 +1463,8 @@ void sched_init_numa(void)
+ 
+ 	sched_domain_topology = tl;
+ 
+-	sched_domains_numa_levels = level;
+-	sched_max_numa_distance = sched_domains_numa_distance[level - 1];
++	sched_domains_numa_levels = nr_levels;
++	sched_max_numa_distance = sched_domains_numa_distance[nr_levels - 1];
+ 
+ 	init_numa_topology_type();
+ }
 -- 
-Muhammad Usama Anjum
+2.35.1
+
