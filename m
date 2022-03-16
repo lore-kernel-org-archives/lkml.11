@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55321C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 858B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:10:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347074AbiCPCLr (ORCPT
+        id S1353005AbiCPCLw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:11:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        Tue, 15 Mar 2022 22:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352588AbiCPCLY (ORCPT
+        with ESMTP id S1352600AbiCPCLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 22:11:24 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3B15E74D
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9225E74B
         for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647396605; x=1678932605;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=F3sH3qGefcY6/K1q3Yvgqtx5gyGOjiXQKjziseriI9U=;
-  b=fmeIGVZ251ZOPqNqVfHbwVJZZITJBRSYuR2AmMsFxv8BXpu3mbgjjuf6
-   OrsWLWkm2FAezWGjgS+2HftAGlR2ux4av9p+xOOIeHw9ARkSMSveJL0pP
-   6O/WHYkYB4x70WX/mgYxRqH6BZe8CDY13agztpRa1px6urVXYLt/oWTuP
-   ZnlLk3JKt4pfak0L5YGMjD96ErLhZyzV5wFPg42XJtLp4W2NHuaMozNLn
-   vIgIfQ7frMkl9Dtu4g1UzTKTUevfsTJLTDP4O67XOAQG4MWhVCCSuM0Fh
-   r5TRjCuTzvv/pCXUmM6DgPUt005mSYTPYeJ/DQ6q5DTBuewc3HvBqfKcs
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256422501"
+  bh=SVpAPIrGb/8chIW0NBOaVararP1+qakkIrUTFbzndGQ=;
+  b=mHBzuf2LCmitdUr25x6KM3Ixi6myKakqofcfWsL+bSfuiC/gHpw+N9pN
+   bOhE4CWB4BgClyftevQmaQgZbUKBRcpug+CGiDRCnXD+MCNJZhDme3yYZ
+   8loaVYLR+rPaIAygkhCFP+zccie9ByQuFOeAjejW5HmoKoSGc77WQs4jS
+   n049buhURNGO3Bq0Ooh90l0SjsjiQ3qzHElKYMij0aU99AKgRvzvn8S9v
+   3hLYoA3aa6JgJ+MSyUoGjCXjQ0ejxXRLctiHrJWEthW160soR93yWMBEZ
+   3IB25gnOjMhBsT1vOPBFYXQJ4H1gtFCu8Y9vCbQEAGifhCRNFEEmKJiJu
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255299993"
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="256422501"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:04 -0700
+   d="scan'208";a="255299993"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:05 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="516126480"
+   d="scan'208";a="714416716"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 15 Mar 2022 19:09:57 -0700
+  by orsmga005.jf.intel.com with ESMTP; 15 Mar 2022 19:09:57 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id DCEEF739; Wed, 16 Mar 2022 04:10:09 +0200 (EET)
+        id B5DDB5A2; Wed, 16 Mar 2022 04:10:09 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,11 +52,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv6 08/30] x86/tdx: Add HLT support for TDX guests
-Date:   Wed, 16 Mar 2022 05:08:34 +0300
-Message-Id: <20220316020856.24435-9-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 05/30] x86/tdx: Exclude shared bit from __PHYSICAL_MASK
+Date:   Wed, 16 Mar 2022 05:08:31 +0300
+Message-Id: <20220316020856.24435-6-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
@@ -66,244 +65,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The HLT instruction is a privileged instruction, executing it stops
-instruction execution and places the processor in a HALT state. It
-is used in kernel for cases like reboot, idle loop and exception fixup
-handlers. For the idle case, interrupts will be enabled (using STI)
-before the HLT instruction (this is also called safe_halt()).
+In TDX guests, by default memory is protected from host access. If a
+guest needs to communicate with the VMM (like the I/O use case), it uses
+a single bit in the physical address to communicate the protected/shared
+attribute of the given page.
 
-To support the HLT instruction in TDX guests, it needs to be emulated
-using TDVMCALL (hypercall to VMM). More details about it can be found
-in Intel Trust Domain Extensions (Intel TDX) Guest-Host-Communication
-Interface (GHCI) specification, section TDVMCALL[Instruction.HLT].
+In the x86 ARCH code, __PHYSICAL_MASK macro represents the width of the
+physical address in the given architecture. It is used in creating
+physical PAGE_MASK for address bits in the kernel. Since in TDX guest,
+a single bit is used as metadata, it needs to be excluded from valid
+physical address bits to avoid using incorrect addresses bits in the
+kernel.
 
-In TDX guests, executing HLT instruction will generate a #VE, which is
-used to emulate the HLT instruction. But #VE based emulation will not
-work for the safe_halt() flavor, because it requires STI instruction to
-be executed just before the TDCALL. Since idle loop is the only user of
-safe_halt() variant, handle it as a special case.
-
-To avoid *safe_halt() call in the idle function, define the
-tdx_guest_idle() and use it to override the "x86_idle" function pointer
-for a valid TDX guest.
-
-Alternative choices like PV ops have been considered for adding
-safe_halt() support. But it was rejected because HLT paravirt calls
-only exist under PARAVIRT_XXL, and enabling it in TDX guest just for
-safe_halt() use case is not worth the cost.
+Enable DYNAMIC_PHYSICAL_MASK to support updating the __PHYSICAL_MASK.
 
 Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/coco/tdx/tdcall.S | 13 ++++++
- arch/x86/coco/tdx/tdx.c    | 93 +++++++++++++++++++++++++++++++++++++-
- arch/x86/include/asm/tdx.h |  4 ++
- arch/x86/kernel/process.c  |  4 ++
- 4 files changed, 112 insertions(+), 2 deletions(-)
+ arch/x86/Kconfig        | 1 +
+ arch/x86/coco/tdx/tdx.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/arch/x86/coco/tdx/tdcall.S b/arch/x86/coco/tdx/tdcall.S
-index 662479ccf630..245888290bb6 100644
---- a/arch/x86/coco/tdx/tdcall.S
-+++ b/arch/x86/coco/tdx/tdcall.S
-@@ -139,6 +139,19 @@ SYM_FUNC_START(__tdx_hypercall)
- 
- 	movl $TDVMCALL_EXPOSE_REGS_MASK, %ecx
- 
-+	/*
-+	 * For the idle loop STI needs to be called directly before the TDCALL
-+	 * that enters idle (EXIT_REASON_HLT case). STI instruction enables
-+	 * interrupts only one instruction later. If there is a window between
-+	 * STI and the instruction that emulates the HALT state, there is a
-+	 * chance for interrupts to happen in this window, which can delay the
-+	 * HLT operation indefinitely. Since this is the not the desired
-+	 * result, conditionally call STI before TDCALL.
-+	 */
-+	testq $TDX_HCALL_ISSUE_STI, %rsi
-+	jz .Lskip_sti
-+	sti
-+.Lskip_sti:
- 	tdcall
- 
- 	/*
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 93e67842e369..d2f45e58e846 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -885,6 +885,7 @@ config INTEL_TDX_GUEST
+ 	depends on X86_64 && CPU_SUP_INTEL
+ 	depends on X86_X2APIC
+ 	select ARCH_HAS_CC_PLATFORM
++	select DYNAMIC_PHYSICAL_MASK
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+ 	  the guest kernel can not boot or run under TDX.
 diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index c886a9e022f1..3795a70463aa 100644
+index 9ac066fb3912..069a93d2d331 100644
 --- a/arch/x86/coco/tdx/tdx.c
 +++ b/arch/x86/coco/tdx/tdx.c
-@@ -7,6 +7,7 @@
- #include <linux/cpufeature.h>
- #include <asm/coco.h>
- #include <asm/tdx.h>
-+#include <asm/vmx.h>
+@@ -82,6 +82,14 @@ void __init tdx_early_init(void)
  
- /* TDX module Call Leaf IDs */
- #define TDX_GET_INFO			1
-@@ -36,6 +37,17 @@ void __tdx_hypercall_failed(void)
- 	panic("TDVMCALL failed. TDX module bug?");
- }
+ 	cc_set_vendor(CC_VENDOR_INTEL);
  
-+/*
-+ * The TDG.VP.VMCALL-Instruction-execution sub-functions are defined
-+ * independently from but are currently matched 1:1 with VMX EXIT_REASONs.
-+ * Reusing the KVM EXIT_REASON macros makes it easier to connect the host and
-+ * guest sides of these calls.
-+ */
-+static u64 hcall_func(u64 exit_reason)
-+{
-+	return exit_reason;
-+}
-+
- /*
-  * Used for TDX guests to make calls directly to the TD module.  This
-  * should only be used for calls that have no legitimate reason to fail
-@@ -67,6 +79,62 @@ static void get_info(unsigned int *gpa_width)
- 	*gpa_width = out.rcx & GENMASK(5, 0);
- }
- 
-+static u64 __cpuidle __halt(const bool irq_disabled, const bool do_sti)
-+{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_HLT),
-+		.r12 = irq_disabled,
-+	};
-+
 +	/*
-+	 * Emulate HLT operation via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI), section 3.8 TDG.VP.VMCALL<Instruction.HLT>.
++	 * All bits above GPA width are reserved and kernel treats shared bit
++	 * as flag, not as part of physical address.
 +	 *
-+	 * The VMM uses the "IRQ disabled" param to understand IRQ
-+	 * enabled status (RFLAGS.IF) of the TD guest and to determine
-+	 * whether or not it should schedule the halted vCPU if an
-+	 * IRQ becomes pending. E.g. if IRQs are disabled, the VMM
-+	 * can keep the vCPU in virtual HLT, even if an IRQ is
-+	 * pending, without hanging/breaking the guest.
++	 * Adjust physical mask to only cover valid GPA bits.
 +	 */
-+	return __tdx_hypercall(&args, do_sti ? TDX_HCALL_ISSUE_STI : 0);
-+}
++	physical_mask &= GENMASK_ULL(gpa_width - 2, 0);
 +
-+static bool handle_halt(void)
-+{
-+	/*
-+	 * Since non safe halt is mainly used in CPU offlining
-+	 * and the guest will always stay in the halt state, don't
-+	 * call the STI instruction (set do_sti as false).
-+	 */
-+	const bool irq_disabled = irqs_disabled();
-+	const bool do_sti = false;
-+
-+	if (__halt(irq_disabled, do_sti))
-+		return false;
-+
-+	return true;
-+}
-+
-+void __cpuidle tdx_safe_halt(void)
-+{
-+	 /*
-+	  * For do_sti=true case, __tdx_hypercall() function enables
-+	  * interrupts using the STI instruction before the TDCALL. So
-+	  * set irq_disabled as false.
-+	  */
-+	const bool irq_disabled = false;
-+	const bool do_sti = true;
-+
-+	/*
-+	 * Use WARN_ONCE() to report the failure.
-+	 */
-+	if (__halt(irq_disabled, do_sti))
-+		WARN_ONCE(1, "HLT instruction emulation failed\n");
-+}
-+
- void tdx_get_ve_info(struct ve_info *ve)
- {
- 	struct tdx_module_output out;
-@@ -90,11 +158,32 @@ void tdx_get_ve_info(struct ve_info *ve)
- 	ve->instr_info  = upper_32_bits(out.r10);
- }
- 
-+/* Handle the kernel #VE */
-+static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
-+{
-+	switch (ve->exit_reason) {
-+	case EXIT_REASON_HLT:
-+		return handle_halt();
-+	default:
-+		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
-+		return false;
-+	}
-+}
-+
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
- {
--	pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
-+	bool ret;
-+
-+	if (user_mode(regs))
-+		ret = false;
-+	else
-+		ret = virt_exception_kernel(regs, ve);
-+
-+	/* After successful #VE handling, move the IP */
-+	if (ret)
-+		regs->ip += ve->instr_len;
- 
--	return false;
-+	return ret;
- }
- 
- void __init tdx_early_init(void)
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index f4f5da1febbe..8f84ffce7f38 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -13,6 +13,7 @@
- #define TDX_HYPERCALL_STANDARD  0
- 
- #define TDX_HCALL_HAS_OUTPUT	BIT(0)
-+#define TDX_HCALL_ISSUE_STI	BIT(1)
- 
- /*
-  * SW-defined error codes.
-@@ -87,9 +88,12 @@ void tdx_get_ve_info(struct ve_info *ve);
- 
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
- 
-+void tdx_safe_halt(void);
-+
- #else
- 
- static inline void tdx_early_init(void) { };
-+static inline void tdx_safe_halt(void) { };
- 
- #endif /* CONFIG_INTEL_TDX_GUEST */
- 
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index e131d71b3cae..2e90d57cf86e 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -46,6 +46,7 @@
- #include <asm/proto.h>
- #include <asm/frame.h>
- #include <asm/unwind.h>
-+#include <asm/tdx.h>
- 
- #include "process.h"
- 
-@@ -873,6 +874,9 @@ void select_idle_routine(const struct cpuinfo_x86 *c)
- 	} else if (prefer_mwait_c1_over_halt(c)) {
- 		pr_info("using mwait in idle threads\n");
- 		x86_idle = mwait_idle;
-+	} else if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
-+		pr_info("using TDX aware idle routine\n");
-+		x86_idle = tdx_safe_halt;
- 	} else
- 		x86_idle = default_idle;
- }
+ 	/*
+ 	 * The highest bit of a guest physical address is the "sharing" bit.
+ 	 * Set it for shared pages and clear it for private pages.
 -- 
 2.34.1
 
