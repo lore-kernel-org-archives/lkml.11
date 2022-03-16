@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81BFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A8DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:18:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356085AbiCPNTd (ORCPT
+        id S1356305AbiCPNTi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
+        Wed, 16 Mar 2022 09:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356232AbiCPNS6 (ORCPT
+        with ESMTP id S1356235AbiCPNTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:18:58 -0400
+        Wed, 16 Mar 2022 09:19:01 -0400
 Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E4C66AEE;
-        Wed, 16 Mar 2022 06:17:43 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NEPq3_1647436658;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NEPq3_1647436658)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5A2184;
+        Wed, 16 Mar 2022 06:17:46 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NEPqi_1647436663;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NEPqi_1647436663)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Mar 2022 21:17:39 +0800
+          Wed, 16 Mar 2022 21:17:43 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com
-Subject: [PATCH v5 10/22] erofs: add mode checking helper
-Date:   Wed, 16 Mar 2022 21:17:11 +0800
-Message-Id: <20220316131723.111553-11-jefflexu@linux.alibaba.com>
+Subject: [PATCH v5 13/22] erofs: add anonymous inode managing page cache of blob file
+Date:   Wed, 16 Mar 2022 21:17:14 +0800
+Message-Id: <20220316131723.111553-14-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
 References: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
@@ -41,36 +41,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Until then erofs is exactly blockdev based filesystem. In other using
-scenarios (e.g. container image), erofs needs to run upon files.
-
-This patch set is going to introduces a new nodev mode, in which erofs
-could be mounted from a bootstrap blob file containing complete erofs
-image.
-
-Add a helper checking which mode erofs works in.
+Introduce one anonymous inode for managing page cache of corresponding
+blob file. Then erofs could read directly from the address space of the
+anonymous inode when cache hit.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/internal.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ fs/erofs/fscache.c  | 45 ++++++++++++++++++++++++++++++++++++++++++---
+ fs/erofs/internal.h |  3 ++-
+ 2 files changed, 44 insertions(+), 4 deletions(-)
 
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index e424293f47a2..f66af9ebda43 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -161,6 +161,11 @@ struct erofs_sb_info {
- #define set_opt(opt, option)	((opt)->mount_opt |= EROFS_MOUNT_##option)
- #define test_opt(opt, option)	((opt)->mount_opt & EROFS_MOUNT_##option)
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index 28ec7c69744a..684ac6f940bc 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -6,6 +6,9 @@
  
-+static inline bool erofs_bdev_mode(struct super_block *sb)
+ static struct fscache_volume *volume;
+ 
++static const struct address_space_operations erofs_fscache_blob_aops = {
++};
++
+ static int erofs_fscache_init_cookie(struct erofs_fscache_context *ctx,
+ 				     char *path)
+ {
+@@ -32,8 +35,34 @@ void erofs_fscache_cleanup_cookie(struct erofs_fscache_context *ctx)
+ 	ctx->cookie = NULL;
+ }
+ 
++static int erofs_fscache_get_inode(struct erofs_fscache_context *ctx,
++				   struct super_block *sb)
 +{
-+	return sb->s_bdev;
++	struct inode *const inode = new_inode(sb);
++
++	if (!inode)
++		return -ENOMEM;
++
++	set_nlink(inode, 1);
++	inode->i_size = OFFSET_MAX;
++
++	inode->i_mapping->a_ops = &erofs_fscache_blob_aops;
++	mapping_set_gfp_mask(inode->i_mapping,
++			GFP_NOFS | __GFP_HIGHMEM | __GFP_MOVABLE);
++	ctx->inode = inode;
++	return 0;
 +}
 +
- enum {
- 	EROFS_ZIP_CACHE_DISABLED,
- 	EROFS_ZIP_CACHE_READAHEAD,
++static inline
++void erofs_fscache_put_inode(struct erofs_fscache_context *ctx)
++{
++	iput(ctx->inode);
++	ctx->inode = NULL;
++}
++
+ static int erofs_fscache_init_ctx(struct erofs_fscache_context *ctx,
+-				  struct super_block *sb, char *path)
++				  struct super_block *sb, char *path,
++				  bool need_inode)
+ {
+ 	int ret;
+ 
+@@ -43,6 +72,15 @@ static int erofs_fscache_init_ctx(struct erofs_fscache_context *ctx,
+ 		return ret;
+ 	}
+ 
++	if (need_inode) {
++		ret = erofs_fscache_get_inode(ctx, sb);
++		if (ret) {
++			erofs_err(sb, "failed to get anonymous inode");
++			erofs_fscache_cleanup_cookie(ctx);
++			return ret;
++		}
++	}
++
+ 	return 0;
+ }
+ 
+@@ -50,10 +88,11 @@ static inline
+ void erofs_fscache_cleanup_ctx(struct erofs_fscache_context *ctx)
+ {
+ 	erofs_fscache_cleanup_cookie(ctx);
++	erofs_fscache_put_inode(ctx);
+ }
+ 
+ struct erofs_fscache_context *erofs_fscache_get_ctx(struct super_block *sb,
+-						char *path)
++						char *path, bool need_inode)
+ {
+ 	struct erofs_fscache_context *ctx;
+ 	int ret;
+@@ -62,7 +101,7 @@ struct erofs_fscache_context *erofs_fscache_get_ctx(struct super_block *sb,
+ 	if (!ctx)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	ret = erofs_fscache_init_ctx(ctx, sb, path);
++	ret = erofs_fscache_init_ctx(ctx, sb, path, need_inode);
+ 	if (ret) {
+ 		kfree(ctx);
+ 		return ERR_PTR(ret);
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index 123a8dfc179b..32aaa5ee5e14 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -99,6 +99,7 @@ struct erofs_sb_lz4_info {
+ 
+ struct erofs_fscache_context {
+ 	struct fscache_cookie *cookie;
++	struct inode *inode;
+ };
+ 
+ struct erofs_sb_info {
+@@ -626,7 +627,7 @@ int erofs_init_fscache(void);
+ void erofs_exit_fscache(void);
+ 
+ struct erofs_fscache_context *erofs_fscache_get_ctx(struct super_block *sb,
+-						char *path);
++						char *path, bool need_inode);
+ void erofs_fscache_put_ctx(struct erofs_fscache_context *ctx);
+ 
+ #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
 -- 
 2.27.0
 
