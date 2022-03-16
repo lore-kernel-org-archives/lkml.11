@@ -2,129 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6192C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C212CC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351256AbiCPU7p (ORCPT
+        id S1354316AbiCPVBQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 16:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60900 "EHLO
+        Wed, 16 Mar 2022 17:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238785AbiCPU7k (ORCPT
+        with ESMTP id S238785AbiCPVBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 16:59:40 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDE55A5BB
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:58:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647464305; x=1679000305;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KYoTv7ruHgzjw0zYcgRtx7NngXpRKYqbmIlSecMOMPg=;
-  b=DIZOfSbl8y38pugcJ6fFWUWz6gNQuXhXpc4YjCJfR/VjvBWKk2Rw5HiU
-   CsuVYPCFXWYbLCsSfWL+/zK7Ellcn+Tx7jIKztggs0uYMaZr5uBduwfYo
-   8xNItpXKWVMmvKyA0y4vrQiqegPzNQYOQW/9ahz6dqeZEChrfxG7QXyEw
-   PCMejZGNbYQ/4bWrMNIVCYin6a8rc3NSwrd7p/c5LzCeq7UchBTk6dHZv
-   UvWBMImPDq2AL8g+BqWDGURIF14SaOG223sqsT48pIXTRXwV7DrKsPxxE
-   qS1uQGGjO15CJL4SHHyzKX7nIkZjZgP1hJody0r7oIauIkxZeIMLX2Vjw
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="238873754"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="238873754"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 13:58:25 -0700
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="690722576"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 13:58:24 -0700
-Date:   Wed, 16 Mar 2022 14:01:40 -0700
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>,
-        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        "Zanussi, Tom" <tom.zanussi@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 3/8] iommu/vt-d: Implement device_pasid domain attach
- ops
-Message-ID: <20220316140140.76bb24c6@jacob-builder>
-In-Reply-To: <BN9PR11MB5276E98AE37EA912B01EB0B68C119@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
-        <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
-        <20220315143322.GW11336@nvidia.com>
-        <BN9PR11MB5276E98AE37EA912B01EB0B68C119@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Wed, 16 Mar 2022 17:01:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBADB5A5B1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:59:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A635EB81B9C
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 20:59:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 723EBC340EC
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 20:59:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647464396;
+        bh=JpfLakr1z8Vt7o6wmqB1JGT5eV2Ar+cCLzJvfd/g/PQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=nndkUGsbCK3cJYxyqrSHutL4DwjGr63DpJvIaCAzDVk+GrVyYTALkFHt2Uv+zJI+7
+         WnA+3SvRQrf4TbcPsCSLh2nwcpUHPo5YYtDsFjqe7CQfXJQfUez/MUQ8uOUdC+Rp8G
+         hD2PLmsfF1tmfCRsVXH1cCUvXvEUdIwboL4r7BM6uf48QMxV7StACRykbvt60pRzrW
+         gH6SqVk7BOFwCi3MyOYhtFYr250/Fx26+/sM7uwJkwzYeMHvzS0vzkwKM5+2+xuW6a
+         6UQJdPfwM6ofyrCio2UlcWnT7Dx9+toUDnPHQ8yE4ttFMbw75ntm41hbbs6G748fzQ
+         l0N5FSWj4p/2w==
+Received: by mail-wr1-f46.google.com with SMTP id a1so3287979wrh.10
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:59:56 -0700 (PDT)
+X-Gm-Message-State: AOAM533zqvTti1OkLEjaOfEN7Bk3VRsJ3rtgxTP7ZoA0okU3E7n675SQ
+        caOu1i1IUA/mOhPMGVl6rPiMqBSxMOxR7db87ZU=
+X-Google-Smtp-Source: ABdhPJw3zEl4mldDqPFN++8SGgehHvZfPJqVmJRw/310rMeQtEL61PG4qGCc240hwWfuYczOaC0H6pBT6jxChmgF0+k=
+X-Received: by 2002:adf:f606:0:b0:203:8dff:f4ac with SMTP id
+ t6-20020adff606000000b002038dfff4acmr1376275wrp.12.1647464394497; Wed, 16 Mar
+ 2022 13:59:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220316183708.1505846-1-arnd@kernel.org> <aaf204b2-e876-d271-3d4e-51cbcc70d690@suse.de>
+ <1f6c4559-ee48-ca67-8ff1-f7f9d330bc12@suse.de>
+In-Reply-To: <1f6c4559-ee48-ca67-8ff1-f7f9d330bc12@suse.de>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 16 Mar 2022 21:59:38 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3ogV8sJshQJrzHe7hc2k1Opq-2hvXf6DU+HfhREk-DhQ@mail.gmail.com>
+Message-ID: <CAK8P3a3ogV8sJshQJrzHe7hc2k1Opq-2hvXf6DU+HfhREk-DhQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/panel: add CONFIG_DRM_KMS_HELPER dependencies
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Deepak Rawat <drawat.floss@gmail.com>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Dillon Min <dillon.minfei@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kevin,
+On Wed, Mar 16, 2022 at 8:31 PM Thomas Zimmermann <tzimmermann@suse.de> wrote:
+> Am 16.03.22 um 20:12 schrieb Thomas Zimmermann:
+> >>
+> >> Adding a dependency in all drivers that select DRM_MIPI_DBI avoids
+> >> the problem for now, adding the dependency in DRM_MIPI_DBI as well
+> >> should help make it easier to figure out why it breaks if someone
+> >> forgets the dependency the next time.
+> >>
+> >>       tristate
+> >> -    depends on DRM
+> >> +    depends on DRM_KMS_HELPER
+> >
+> > This symbol cannot be selected by users, so it's maybe not a good idea
+> > to depend on it. In fact, I've had to remove such a statement because it
+> > created a cyclic dependency. [1]
 
-On Wed, 16 Mar 2022 07:41:34 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+I tried to explain above what I was thinking here: the added dependency
+is both a correct statement (DRM_MIPI_DBI depends on DRM_KMS_HELPER
+because it cannot be built without DRM_KMS_HELPER) and helpful as
+an indication what went wrong if we run into the same problem with a new
+driver, instead of the cryptic link failure you get something like
 
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, March 15, 2022 10:33 PM
-> >=20
-> > On Mon, Mar 14, 2022 at 10:07:07PM -0700, Jacob Pan wrote: =20
-> > > +	/*
-> > > +	 * Each domain could have multiple devices attached with
-> > > shared or =20
-> > per =20
-> > > +	 * device PASIDs. At the domain level, we keep track of
-> > > unique PASIDs =20
-> > and =20
-> > > +	 * device user count.
-> > > +	 * E.g. If a domain has two devices attached, device A has
-> > > PASID 0, 1;
-> > > +	 * device B has PASID 0, 2. Then the domain would have PASID
-> > > 0, 1, 2.
-> > > +	 */ =20
-> >=20
-> > A 2d array of xarray's seems like a poor data structure for this task. =
-=20
->=20
-Perhaps i mis-presented here, I am not using 2D array. It is an 1D xarray
-for domain PASIDs only. Then I use the existing device list in each domain,
-adding another xa to track per-device-domain PASIDs.
-> besides that it also doesn't work when we support per-device PASID
-> allocation in the future. In that case merging device PASIDs together is
-> conceptually wrong.
->=20
-Sorry, could you elaborate? If we do per-dev PASID allocation, we could use
-the ioasid_set for each pdev, right?
+WARNING: unmet direct dependencies detected for DRM_MIPI_DBI
+  Depends on [m]: HAS_IOMEM [=y] && DRM_KMS_HELPER [=m]
+  Selected by [y]:
+  - DRM_PANEL_WIDECHIPS_WS2401 [=y] && HAS_IOMEM [=y] && DRM [=y] &&
+DRM_PANEL [=y] && SPI [=y] && GPIOLIB [=y] && BACKLIGHT_CLASS_DEVICE
+[=y]
+  Selected by [m]:
+  - TINYDRM_ILI9225 [=m] && HAS_IOMEM [=y] && DRM [=y] && SPI [=y]
 
-> >=20
-> > AFACIT this wants to store a list of (device, pasid) tuples, so a
-> > simple linked list, 1d xarray vector or a red black tree seems more
-> > appropriate..
-> >  =20
->=20
-> this tuple can well serve per-device PASID. =F0=9F=98=8A
->=20
-I commented on the other email, but a simple list of tuples could have
-duplicated devices since each dev could attach multiple PASIDs, right?
-Should we still do two level then?
+> [1]
+> https://lore.kernel.org/dri-devel/20220315084559.23510-1-tzimmermann@suse.de/
 
-> Thanks
-> Kevin
+I was going for 'depends on' in the panel drivers because I saw the same being
+done for other panel drivers, and mixing the two methods causes dependency
+loops. I looked again now, and find that 'select DRM_KMS_HELPER' is more
+common for other drivers, and makes sense here because it is generally
+not user-selectable.
 
+The easiest replacement for my patch would then be to just use 'select
+DRM_KMS_HELPER' from CONFIG_DRM_MIPI_DBI, which makes it
+safer and more consistent with your change. If you like, I'll send an updated
+version.
 
-Thanks,
+One thing I'm not sure about is whether there is still use for ever having
+CONFIG_DRM without CONFIG_DRM_KMS_HELPER if it gets selected
+by almost every driver anyway. Is this actually a configuration that
+users rely on, or should we just remove the symbol completely and
+build the KMS helpers unconditionally?
 
-Jacob
+       Arnd
