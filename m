@@ -2,303 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7CACC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8825CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353734AbiCPGCB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 02:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42528 "EHLO
+        id S242831AbiCPGDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 02:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353715AbiCPGBt (ORCPT
+        with ESMTP id S1353746AbiCPGDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 02:01:49 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F0060064;
-        Tue, 15 Mar 2022 23:00:34 -0700 (PDT)
-X-UUID: 1a4f80253f744e09b2b271ebdd8c3688-20220316
-X-UUID: 1a4f80253f744e09b2b271ebdd8c3688-20220316
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <axe.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1694223216; Wed, 16 Mar 2022 14:00:25 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 16 Mar 2022 14:00:25 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
- 2022 14:00:24 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Mar 2022 14:00:22 +0800
-From:   Axe Yang <axe.yang@mediatek.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>
-CC:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Axe Yang <axe.yang@mediatek.com>, Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Yong Mao <yong.mao@mediatek.com>
-Subject: [PATCH v6 3/3] mmc: mediatek: add support for SDIO eint wakup IRQ
-Date:   Wed, 16 Mar 2022 14:00:14 +0800
-Message-ID: <20220316060014.12732-4-axe.yang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220316060014.12732-1-axe.yang@mediatek.com>
-References: <20220316060014.12732-1-axe.yang@mediatek.com>
+        Wed, 16 Mar 2022 02:03:00 -0400
+Received: from esa11.hc1455-7.c3s2.iphmx.com (esa11.hc1455-7.c3s2.iphmx.com [207.54.90.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884D960064;
+        Tue, 15 Mar 2022 23:01:45 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="45955051"
+X-IronPort-AV: E=Sophos;i="5.90,185,1643641200"; 
+   d="scan'208";a="45955051"
+Received: from unknown (HELO oym-r1.gw.nic.fujitsu.com) ([210.162.30.89])
+  by esa11.hc1455-7.c3s2.iphmx.com with ESMTP; 16 Mar 2022 15:01:42 +0900
+Received: from oym-m4.gw.nic.fujitsu.com (oym-nat-oym-m4.gw.nic.fujitsu.com [192.168.87.61])
+        by oym-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id AC5F1E9029;
+        Wed, 16 Mar 2022 15:01:41 +0900 (JST)
+Received: from oym-om3.fujitsu.com (oym-om3.o.css.fujitsu.com [10.85.58.163])
+        by oym-m4.gw.nic.fujitsu.com (Postfix) with ESMTP id 85B3211097C;
+        Wed, 16 Mar 2022 15:01:40 +0900 (JST)
+Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
+        by oym-om3.fujitsu.com (Postfix) with ESMTP id 6F221403FA055;
+        Wed, 16 Mar 2022 15:01:40 +0900 (JST)
+From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+To:     Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        tan.shaopeng@jp.fujitsu.com
+Subject: [PATCH v4 1/2] selftest/resctrl: Extend cpu vendor detection
+Date:   Wed, 16 Mar 2022 14:59:39 +0900
+Message-Id: <20220316055940.292550-2-tan.shaopeng@jp.fujitsu.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220316055940.292550-1-tan.shaopeng@jp.fujitsu.com>
+References: <20220316055940.292550-1-tan.shaopeng@jp.fujitsu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for eint IRQ when MSDC is used as an SDIO host. This
-feature requires SDIO device support async IRQ function. With this
-feature, SDIO host can be awakened by SDIO card in suspend state,
-without additional pin.
+Currently, the resctrl_tests only has a function to detect amd vendor.
+Since when the Intel Sub-NUMA Clustering feature is enabled,
+Intel CMT and MBM counters may not be accurate,
+the resctrl_tests also need a function to detect intel vendor.
+And in the future, resctrl_tests will need a function to detect different
+vendors, such as arm.
 
-MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
-turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
-resume, switch GPIO function back to DAT1 mode then turn on clock.
+Extend the function to detect intel vendor as well. Also,
+this function can be easily extended to detect other venders.
 
-Some device tree property should be added or modified in MSDC node
-to support SDIO eint IRQ. Pinctrls named "state_dat1" and "state_eint"
-are mandatory. Since this feature depends on asynchronous interrupts,
-"wakeup-source", "keep-power-in-suspend" and "cap-sdio-irq" flags are
-necessary, and the interrupts list should be extended:
-        &mmcX {
-		...
-		interrupts-extended = <...>,
-                              	      <&pio xxx IRQ_TYPE_LEVEL_LOW>;
-                ...
-                pinctrl-names = "default", "state_uhs", "state_eint",
-                                "state_dat1";
-                ...
-                pinctrl-2 = <&mmc2_pins_eint>;
-                pinctrl-3 = <&mmc2_pins_dat1>;
-                ...
-                cap-sdio-irq;
-		keep-power-in-suspend;
-		wakeup-source;
-                ...
-        };
-
-Co-developed-by: Yong Mao <yong.mao@mediatek.com>
-Signed-off-by: Yong Mao <yong.mao@mediatek.com>
-Signed-off-by: Axe Yang <axe.yang@mediatek.com>
+Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
 ---
- drivers/mmc/host/mtk-sd.c | 99 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 91 insertions(+), 8 deletions(-)
+ tools/testing/selftests/resctrl/cat_test.c    |  2 +-
+ tools/testing/selftests/resctrl/resctrl.h     |  5 ++-
+ .../testing/selftests/resctrl/resctrl_tests.c | 41 ++++++++++++-------
+ tools/testing/selftests/resctrl/resctrlfs.c   |  2 +-
+ 4 files changed, 33 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index 65037e1d7723..5ff95f32bd45 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Copyright (c) 2014-2015 MediaTek Inc.
-+ * Copyright (c) 2014-2015, 2022 MediaTek Inc.
-  * Author: Chaotian.Jing <chaotian.jing@mediatek.com>
-  */
+diff --git a/tools/testing/selftests/resctrl/cat_test.c b/tools/testing/selftests/resctrl/cat_test.c
+index cd4f68388e0f..2daa63991628 100644
+--- a/tools/testing/selftests/resctrl/cat_test.c
++++ b/tools/testing/selftests/resctrl/cat_test.c
+@@ -89,7 +89,7 @@ static int check_results(struct resctrl_val_param *param)
  
-@@ -20,6 +20,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
-+#include <linux/pm_wakeirq.h>
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
-@@ -440,8 +441,12 @@ struct msdc_host {
- 	struct pinctrl *pinctrl;
- 	struct pinctrl_state *pins_default;
- 	struct pinctrl_state *pins_uhs;
-+	struct pinctrl_state *pins_eint;
-+	struct pinctrl_state *pins_dat1;
- 	struct delayed_work req_timeout;
- 	int irq;		/* host interrupt */
-+	int eint_irq;		/* interrupt from sdio device for waking up system */
-+	int sdio_wake_irq_depth;
- 	struct reset_control *reset;
- 
- 	struct clk *src_clk;	/* msdc source clock */
-@@ -465,6 +470,7 @@ struct msdc_host {
- 	bool hs400_tuning;	/* hs400 mode online tuning */
- 	bool internal_cd;	/* Use internal card-detect logic */
- 	bool cqhci;		/* support eMMC hw cmdq */
-+	bool sdio_eint_ready;	/* Ready to support SDIO eint interrupt */
- 	struct msdc_save_para save_para; /* used when gate HCLK */
- 	struct msdc_tune_para def_tune_para; /* default tune setting */
- 	struct msdc_tune_para saved_tune_para; /* tune result of CMD21/CMD19 */
-@@ -1527,10 +1533,12 @@ static void msdc_enable_sdio_irq(struct mmc_host *mmc, int enb)
- 	__msdc_enable_sdio_irq(host, enb);
- 	spin_unlock_irqrestore(&host->lock, flags);
- 
--	if (enb)
--		pm_runtime_get_noresume(host->dev);
--	else
--		pm_runtime_put_noidle(host->dev);
-+	if (mmc->card && !mmc_card_enable_async_irq(mmc->card)) {
-+		if (enb)
-+			pm_runtime_get_noresume(host->dev);
-+		else
-+			pm_runtime_put_noidle(host->dev);
-+	}
+ 	return show_cache_info(sum_llc_perf_miss, no_of_bits, param->span / 64,
+ 			       MAX_DIFF, MAX_DIFF_PERCENT, NUM_OF_RUNS,
+-			       !is_amd, false);
++			       (get_vendor() != ARCH_AMD), false);
  }
  
- static irqreturn_t msdc_cmdq_irq(struct msdc_host *host, u32 intsts)
-@@ -2631,6 +2639,23 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 		goto host_free;
- 	}
+ void cat_test_cleanup(void)
+diff --git a/tools/testing/selftests/resctrl/resctrl.h b/tools/testing/selftests/resctrl/resctrl.h
+index 1ad10c47e31d..f0ded31fb3c7 100644
+--- a/tools/testing/selftests/resctrl/resctrl.h
++++ b/tools/testing/selftests/resctrl/resctrl.h
+@@ -34,6 +34,9 @@
+ #define L3_MON_PATH		"/sys/fs/resctrl/info/L3_MON"
+ #define L3_MON_FEATURES_PATH	"/sys/fs/resctrl/info/L3_MON/mon_features"
  
-+	/* Support for SDIO eint irq ? */
-+	if (mmc->pm_caps & MMC_PM_WAKE_SDIO_IRQ) {
-+		host->pins_eint = pinctrl_lookup_state(host->pinctrl, "state_eint");
-+		if (IS_ERR(host->pins_eint)) {
-+			dev_dbg(&pdev->dev, "Cannot find pinctrl eint!\n");
-+		} else {
-+			host->pins_dat1 = pinctrl_lookup_state(host->pinctrl, "state_dat1");
-+			if (IS_ERR(host->pins_dat1)) {
-+				ret = dev_err_probe(&pdev->dev, PTR_ERR(host->pins_dat1),
-+						    "Cannot find pinctrl dat1!\n");
-+				goto host_free;
-+			}
++#define ARCH_INTEL     1
++#define ARCH_AMD       2
 +
-+			host->sdio_eint_ready = true;
-+		}
-+	}
-+
- 	msdc_of_property_parse(pdev, host);
+ #define PARENT_EXIT(err_msg)			\
+ 	do {					\
+ 		perror(err_msg);		\
+@@ -75,8 +78,8 @@ struct resctrl_val_param {
+ extern pid_t bm_pid, ppid;
  
- 	host->dev = &pdev->dev;
-@@ -2722,6 +2747,20 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto release;
+ extern char llc_occup_path[1024];
+-extern bool is_amd;
  
-+	if (host->sdio_eint_ready) {
-+		host->eint_irq = irq_of_parse_and_map(host->dev->of_node, 1);
-+		ret = host->eint_irq ? dev_pm_set_dedicated_wake_irq(host->dev, host->eint_irq) :
-+		      -ENODEV;
-+
-+		if (ret) {
-+			dev_err(host->dev, "Failed to register data1 eint irq!\n");
-+			goto release;
-+		}
-+
-+		dev_pm_disable_wake_irq(host->dev);
-+		pinctrl_select_state(host->pinctrl, host->pins_dat1);
-+	}
-+
- 	pm_runtime_set_active(host->dev);
- 	pm_runtime_set_autosuspend_delay(host->dev, MTK_MMC_AUTOSUSPEND_DELAY);
- 	pm_runtime_use_autosuspend(host->dev);
-@@ -2734,6 +2773,7 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 	return 0;
- end:
- 	pm_runtime_disable(host->dev);
-+	dev_pm_clear_wake_irq(host->dev);
- release:
- 	platform_set_drvdata(pdev, NULL);
- 	msdc_deinit_hw(host);
-@@ -2845,6 +2885,16 @@ static int __maybe_unused msdc_runtime_suspend(struct device *dev)
- 	struct msdc_host *host = mmc_priv(mmc);
++int get_vendor(void);
+ bool check_resctrlfs_support(void);
+ int filter_dmesg(void);
+ int remount_resctrlfs(bool mum_resctrlfs);
+diff --git a/tools/testing/selftests/resctrl/resctrl_tests.c b/tools/testing/selftests/resctrl/resctrl_tests.c
+index 973f09a66e1e..dc548d3e2454 100644
+--- a/tools/testing/selftests/resctrl/resctrl_tests.c
++++ b/tools/testing/selftests/resctrl/resctrl_tests.c
+@@ -13,25 +13,41 @@
+ #define BENCHMARK_ARGS		64
+ #define BENCHMARK_ARG_SIZE	64
  
- 	msdc_save_reg(host);
-+
-+	if (host->sdio_eint_ready) {
-+		disable_irq(host->irq);
-+		pinctrl_select_state(host->pinctrl, host->pins_eint);
-+		if (host->sdio_wake_irq_depth == 0) {
-+			dev_pm_enable_wake_irq(dev);
-+			host->sdio_wake_irq_depth++;
-+		}
-+		sdr_clr_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
-+	}
- 	msdc_gate_clock(host);
- 	return 0;
- }
-@@ -2860,12 +2910,25 @@ static int __maybe_unused msdc_runtime_resume(struct device *dev)
- 		return ret;
- 
- 	msdc_restore_reg(host);
-+
-+	if (host->sdio_eint_ready) {
-+		if (host->sdio_wake_irq_depth > 0) {
-+			dev_pm_disable_wake_irq(dev);
-+			host->sdio_wake_irq_depth--;
-+			sdr_set_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
-+		} else {
-+			sdr_clr_bits(host->base + MSDC_INTEN, MSDC_INTEN_SDIOIRQ);
-+		}
-+		pinctrl_select_state(host->pinctrl, host->pins_uhs);
-+		enable_irq(host->irq);
-+	}
- 	return 0;
- }
- 
--static int __maybe_unused msdc_suspend(struct device *dev)
-+static int __maybe_unused msdc_suspend_noirq(struct device *dev)
+-bool is_amd;
+-
+-void detect_amd(void)
++static int detect_vendor(void)
  {
- 	struct mmc_host *mmc = dev_get_drvdata(dev);
-+	struct msdc_host *host = mmc_priv(mmc);
- 	int ret;
+ 	FILE *inf = fopen("/proc/cpuinfo", "r");
+ 	char *res;
++	char *s = NULL;
++	int vendor_id = 0;
  
- 	if (mmc->caps2 & MMC_CAP2_CQE) {
-@@ -2874,16 +2937,36 @@ static int __maybe_unused msdc_suspend(struct device *dev)
- 			return ret;
- 	}
+ 	if (!inf)
+-		return;
++		return vendor_id;
  
-+	if (host->sdio_eint_ready)
-+		enable_irq_wake(host->eint_irq);
+ 	res = fgrep(inf, "vendor_id");
+ 
+-	if (res) {
+-		char *s = strchr(res, ':');
++	if (res)
++		s = strchr(res, ':');
 +
- 	return pm_runtime_force_suspend(dev);
++	if (s && !strcmp(s, ": GenuineIntel\n"))
++		vendor_id = ARCH_INTEL;
++	else if (s && !strcmp(s, ": AuthenticAMD\n"))
++		vendor_id =  ARCH_AMD;
+ 
+-		is_amd = s && !strcmp(s, ": AuthenticAMD\n");
+-		free(res);
+-	}
+ 	fclose(inf);
++	free(res);
++	return vendor_id;
++}
++
++int get_vendor(void)
++{
++	static int vendor = -1;
++
++	if (vendor == -1)
++		vendor = detect_vendor();
++	if (vendor == 0)
++		ksft_print_msg("Can not get vendor info...\n");
++
++	return vendor;
  }
  
--static int __maybe_unused msdc_resume(struct device *dev)
-+static int __maybe_unused msdc_resume_noirq(struct device *dev)
- {
-+	struct mmc_host *mmc = dev_get_drvdata(dev);
-+	struct msdc_host *host = mmc_priv(mmc);
-+
-+	if (host->sdio_eint_ready) {
-+		disable_irq_wake(host->eint_irq);
-+
-+		/*
-+		 * In noirq resume stage, msdc_runtime_resume()
-+		 * won't be called, so disalbe wake irq here
-+		 * to block dedicated wake irq handler callback.
-+		 */
-+		if (likely(host->sdio_wake_irq_depth > 0)) {
-+			dev_pm_disable_wake_irq(dev);
-+			host->sdio_wake_irq_depth--;
-+		}
-+	}
-+
- 	return pm_runtime_force_resume(dev);
- }
+ static void cmd_help(void)
+@@ -207,9 +223,6 @@ int main(int argc, char **argv)
+ 	if (geteuid() != 0)
+ 		return ksft_exit_fail_msg("Not running as root, abort testing.\n");
  
- static const struct dev_pm_ops msdc_dev_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(msdc_suspend, msdc_resume)
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(msdc_suspend_noirq, msdc_resume_noirq)
- 	SET_RUNTIME_PM_OPS(msdc_runtime_suspend, msdc_runtime_resume, NULL)
- };
+-	/* Detect AMD vendor */
+-	detect_amd();
+-
+ 	if (has_ben) {
+ 		/* Extract benchmark command from command line. */
+ 		for (i = ben_ind; i < argc; i++) {
+@@ -241,10 +254,10 @@ int main(int argc, char **argv)
  
+ 	ksft_set_plan(tests ? : 4);
+ 
+-	if (!is_amd && mbm_test)
++	if ((get_vendor() != ARCH_AMD) && mbm_test)
+ 		run_mbm_test(has_ben, benchmark_cmd, span, cpu_no, bw_report);
+ 
+-	if (!is_amd && mba_test)
++	if ((get_vendor() != ARCH_AMD) && mba_test)
+ 		run_mba_test(has_ben, benchmark_cmd, span, cpu_no, bw_report);
+ 
+ 	if (cmt_test)
+diff --git a/tools/testing/selftests/resctrl/resctrlfs.c b/tools/testing/selftests/resctrl/resctrlfs.c
+index 5f5a166ade60..6f543e470ad4 100644
+--- a/tools/testing/selftests/resctrl/resctrlfs.c
++++ b/tools/testing/selftests/resctrl/resctrlfs.c
+@@ -106,7 +106,7 @@ int get_resource_id(int cpu_no, int *resource_id)
+ 	char phys_pkg_path[1024];
+ 	FILE *fp;
+ 
+-	if (is_amd)
++	if (get_vendor() == ARCH_AMD)
+ 		sprintf(phys_pkg_path, "%s%d/cache/index3/id",
+ 			PHYS_ID_PATH, cpu_no);
+ 	else
 -- 
-2.25.1
+2.27.0
 
