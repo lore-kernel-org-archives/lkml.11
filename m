@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24660C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 11:51:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E8A0C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 11:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355480AbiCPLwZ (ORCPT
+        id S1355495AbiCPLx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 07:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36904 "EHLO
+        Wed, 16 Mar 2022 07:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355413AbiCPLwV (ORCPT
+        with ESMTP id S234296AbiCPLxY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 07:52:21 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F76963515;
-        Wed, 16 Mar 2022 04:51:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647431468; x=1678967468;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=i/v3E4RJIm6gecB7pSj0ZbHHvH0XR3ySxeRDA6z9eYg=;
-  b=ZAs8cRTG1ogBx1lqDOR5SXrsAWzkJObuD2vAhUYgmDM4Dr8RMPUt3YKp
-   UkNd94+QQBz2Cd5L+MUJR0d5Gf7iavKvYXKGRGRpR3kQM4TMt9ZjDQrGD
-   JTizY6OFCxnv0FKjTsWB1nLZVNme9FlMNvfmXjPDS8YVS9J7ot1YKCzaD
-   MJE6Au912DrZqmoEEfMiykU2JKk02qhvwl2Z741wI5V9RtOmaPVSp0pI5
-   a5UjqT2y7fvJwPzB+IshH96cKb7hcl2Mo9SnySt46AM2mFjLsvrSTLFQU
-   ar0j02qSqF96y3iWg8pn/icbao+VmJZFhNV0482YrBufMyz28iGRSC1kU
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255388249"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="255388249"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 04:51:07 -0700
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="557401762"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.23])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 04:51:02 -0700
-Date:   Wed, 16 Mar 2022 19:50:59 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Zeng Guang <guang.zeng@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>
-Subject: Re: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID
- unconditionally
-Message-ID: <20220316115057.GA22309@gao-cwp>
-References: <YihCtvDps/qJ2TOW@google.com>
- <6dc7cff15812864ed14b5c014769488d80ce7f49.camel@redhat.com>
- <YirPkr5efyylrD0x@google.com>
- <29c76393-4884-94a8-f224-08d313b73f71@intel.com>
- <01586c518de0c72ff3997d32654b8fa6e7df257d.camel@redhat.com>
- <2900660d947a878e583ebedf60e7332e74a1af5f.camel@redhat.com>
- <20220313135335.GA18405@gao-cwp>
- <fbf929e0793a6b4df59ec9d95a018d1f6737db35.camel@redhat.com>
- <20220315151033.GA6038@gao-cwp>
- <c903e82ed2a1e98f66910c35b5aabdcf56e08e72.camel@redhat.com>
+        Wed, 16 Mar 2022 07:53:24 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E637A65781;
+        Wed, 16 Mar 2022 04:52:05 -0700 (PDT)
+X-UUID: 7b2379534a114c7f8b0d0c85a65fe143-20220316
+X-UUID: 7b2379534a114c7f8b0d0c85a65fe143-20220316
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1062367531; Wed, 16 Mar 2022 19:51:58 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 16 Mar 2022 19:51:57 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Mar 2022 19:51:57 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <jassisinghbrar@gmail.com>,
+        <fparent@baylibre.com>, <yongqiang.niu@mediatek.com>,
+        <hsinyi@chromium.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH V8 3/5] dt-bindings: display: mediatek: change to use enum for mutex
+Date:   Wed, 16 Mar 2022 19:51:53 +0800
+Message-ID: <20220316115155.17834-4-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220316115155.17834-1-rex-bc.chen@mediatek.com>
+References: <20220316115155.17834-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c903e82ed2a1e98f66910c35b5aabdcf56e08e72.camel@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 05:30:32PM +0200, Maxim Levitsky wrote:
->Yep, I  have a patch for this ( which I hope to be accepted really soon
->(KVM: x86: SVM: allow AVIC to co-exist with a nested guest running)
-> 
->I also implemented working support for nested AVIC, which includes support for IPI without vm exits
->between L2's vCPUs. I had sent an RFC for that.
-> 
->With all patches applied both L1 and L2 switch hands on AVIC, L1's avic is inhibited
->(only locally) on the vCPU which runs nested, and while it runs nested, L2 uses AVIC
->to target other vCPUs which also run nested.
-> 
->I and Paolo talked about this, and we reached a very promising conclusion.
->
->I will add new KVM cap, say KVM_CAP_READ_ONLY_APIC, which userspace will set
->prior to creating a vCPU, and which will make APIC ID fully readonly when set.
+All single entry cases in mutex can be merged as a single enum.
 
-Will KVM report violations to QEMU? then, QEMU can know the VM attempted
-to change APIC ID and report an error to admin. Then admin can relaunch
-the VM without setting this new cap.  
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../display/mediatek/mediatek,mutex.yaml      | 24 +++++++------------
+ 1 file changed, 9 insertions(+), 15 deletions(-)
 
-> 
->As a bonus, if you don't object, I will also make this cap, make APIC base read-only,
->since this feature is also broken in kvm, optional in x86 spec, and not really
->used by guests just like writable apic id.
->
->I hope to have patches in day or two for this.
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
+index 00e6a1041a9b..b470fbb1b40a 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
+@@ -23,21 +23,15 @@ description: |
+ 
+ properties:
+   compatible:
+-    oneOf:
+-      - items:
+-          - const: mediatek,mt2701-disp-mutex
+-      - items:
+-          - const: mediatek,mt2712-disp-mutex
+-      - items:
+-          - const: mediatek,mt8167-disp-mutex
+-      - items:
+-          - const: mediatek,mt8173-disp-mutex
+-      - items:
+-          - const: mediatek,mt8183-disp-mutex
+-      - items:
+-          - const: mediatek,mt8192-disp-mutex
+-      - items:
+-          - const: mediatek,mt8195-disp-mutex
++    enum:
++      - mediatek,mt2701-disp-mutex
++      - mediatek,mt2712-disp-mutex
++      - mediatek,mt8167-disp-mutex
++      - mediatek,mt8173-disp-mutex
++      - mediatek,mt8183-disp-mutex
++      - mediatek,mt8192-disp-mutex
++      - mediatek,mt8195-disp-mutex
++
+   reg:
+     maxItems: 1
+ 
+-- 
+2.18.0
 
-Great. And no objection to making APIC base read-only.
