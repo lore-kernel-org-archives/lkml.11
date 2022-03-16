@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74253C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1487C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356367AbiCPNT6 (ORCPT
+        id S1356373AbiCPNUC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        Wed, 16 Mar 2022 09:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356266AbiCPNTH (ORCPT
+        with ESMTP id S1356258AbiCPNTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:19:07 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A65192B5;
-        Wed, 16 Mar 2022 06:17:49 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NEPqz_1647436665;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NEPqz_1647436665)
+        Wed, 16 Mar 2022 09:19:42 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3386271;
+        Wed, 16 Mar 2022 06:17:52 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R671e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NEPrX_1647436668;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NEPrX_1647436668)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Mar 2022 21:17:46 +0800
+          Wed, 16 Mar 2022 21:17:49 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com
-Subject: [PATCH v5 15/22] erofs: register cookie context for bootstrap blob
-Date:   Wed, 16 Mar 2022 21:17:16 +0800
-Message-Id: <20220316131723.111553-16-jefflexu@linux.alibaba.com>
+Subject: [PATCH v5 17/22] erofs: implement fscache-based data read for non-inline layout
+Date:   Wed, 16 Mar 2022 21:17:18 +0800
+Message-Id: <20220316131723.111553-18-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
 References: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
@@ -41,85 +41,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Registers fscache_cookie for the bootstrap blob file. The bootstrap blob
-file can be specified by a new mount option, which is going to be
-introduced by a following patch.
+This patch implements the data plane of reading data from bootstrap blob
+file over fscache for non-inline layout.
 
-Something worth mentioning about the cleanup routine.
-
-1. The init routine is prior to when the root inode gets initialized,
-and thus the corresponding cleanup routine shall be placed under
-.kill_sb() callback.
-
-2. The init routine will instantiate anonymous inodes under the
-super_block, and thus .put_super() callback shall also contain the
-cleanup routine. Or we'll get "VFS: Busy inodes after unmount." warning.
+Be noted that compressed layout is not supported yet.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/internal.h |  3 +++
- fs/erofs/super.c    | 13 +++++++++++++
- 2 files changed, 16 insertions(+)
+ fs/erofs/fscache.c  | 94 +++++++++++++++++++++++++++++++++++++++++++++
+ fs/erofs/inode.c    |  6 ++-
+ fs/erofs/internal.h |  1 +
+ 3 files changed, 100 insertions(+), 1 deletion(-)
 
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 32aaa5ee5e14..cce39339c08e 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -75,6 +75,7 @@ struct erofs_mount_opts {
- 	unsigned int max_sync_decompress_pages;
- #endif
- 	unsigned int mount_opt;
-+	char *uuid;
- };
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index 654414aa87ad..df56562f33c4 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -4,6 +4,12 @@
+  */
+ #include "internal.h"
  
- struct erofs_dev_context {
-@@ -152,6 +153,8 @@ struct erofs_sb_info {
- 	/* sysfs support */
- 	struct kobject s_kobj;		/* /sys/fs/erofs/<devname> */
- 	struct completion s_kobj_unregister;
++struct erofs_fscache_map {
++	struct erofs_fscache_context *m_ctx;
++	erofs_off_t m_pa, m_la, o_la;
++	u64 m_llen;
++};
 +
-+	struct erofs_fscache_context *bootstrap;
- };
+ static struct fscache_volume *volume;
  
- #define EROFS_SB(sb) ((struct erofs_sb_info *)(sb)->s_fs_info)
-diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 798f0c379e35..8c5783c6f71f 100644
---- a/fs/erofs/super.c
-+++ b/fs/erofs/super.c
-@@ -598,6 +598,16 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
- 	sbi->devs = ctx->devs;
- 	ctx->devs = NULL;
- 
-+	if (!erofs_bdev_mode(sb)) {
-+		struct erofs_fscache_context *bootstrap;
-+
-+		bootstrap = erofs_fscache_get_ctx(sb, ctx->opt.uuid, true);
-+		if (IS_ERR(bootstrap))
-+			return PTR_ERR(bootstrap);
-+
-+		sbi->bootstrap = bootstrap;
-+	}
-+
- 	err = erofs_read_superblock(sb);
- 	if (err)
- 		return err;
-@@ -753,6 +763,7 @@ static void erofs_kill_sb(struct super_block *sb)
- 		return;
- 
- 	erofs_free_dev_context(sbi->devs);
-+	erofs_fscache_put_ctx(sbi->bootstrap);
- 	fs_put_dax(sbi->dax_dev);
- 	kfree(sbi);
- 	sb->s_fs_info = NULL;
-@@ -771,6 +782,8 @@ static void erofs_put_super(struct super_block *sb)
- 	iput(sbi->managed_cache);
- 	sbi->managed_cache = NULL;
- #endif
-+	erofs_fscache_put_ctx(sbi->bootstrap);
-+	sbi->bootstrap = NULL;
+ /*
+@@ -60,10 +66,98 @@ static int erofs_fscache_readpage_blob(struct file *data, struct page *page)
+ 	return ret;
  }
  
- static struct file_system_type erofs_fs_type = {
++static inline int erofs_fscache_get_map(struct erofs_fscache_map *fsmap,
++					struct erofs_map_blocks *map,
++					struct super_block *sb)
++{
++	struct erofs_sb_info *sbi = EROFS_SB(sb);
++
++	fsmap->m_ctx  = sbi->bootstrap;
++	fsmap->m_la   = map->m_la;
++	fsmap->m_pa   = map->m_pa;
++	fsmap->m_llen = map->m_llen;
++
++	return 0;
++}
++
++static int erofs_fscache_readpage_noinline(struct page *page,
++					   struct erofs_fscache_map *fsmap)
++{
++	struct fscache_cookie *cookie = fsmap->m_ctx->cookie;
++	/*
++	 * 1) For FLAT_PLAIN layout, the output map.m_la shall be equal to o_la,
++	 * and the output map.m_pa is exactly the physical address of o_la.
++	 * 2) For CHUNK_BASED layout, the output map.m_la is rounded down to the
++	 * nearest chunk boundary, and the output map.m_pa is actually the
++	 * physical address of this chunk boundary. So we need to recalculate
++	 * the actual physical address of o_la.
++	 */
++	loff_t start = fsmap->m_pa + (fsmap->o_la - fsmap->m_la);
++
++	return erofs_fscache_read_page(cookie, page, start);
++}
++
++static int erofs_fscache_do_readpage(struct page *page)
++{
++	struct inode *inode = page->mapping->host;
++	struct erofs_inode *vi = EROFS_I(inode);
++	struct super_block *sb = inode->i_sb;
++	struct erofs_map_blocks map;
++	struct erofs_fscache_map fsmap;
++	int ret;
++
++	if (erofs_inode_is_data_compressed(vi->datalayout)) {
++		erofs_info(sb, "compressed layout not supported yet");
++		return -EOPNOTSUPP;
++	}
++
++	map.m_la = fsmap.o_la = page_offset(page);
++
++	ret = erofs_map_blocks(inode, &map, EROFS_GET_BLOCKS_RAW);
++	if (ret)
++		return ret;
++
++	if (!(map.m_flags & EROFS_MAP_MAPPED)) {
++		zero_user(page, 0, PAGE_SIZE);
++		return 0;
++	}
++
++	ret = erofs_fscache_get_map(&fsmap, &map, sb);
++	if (ret)
++		return ret;
++
++	switch (vi->datalayout) {
++	case EROFS_INODE_FLAT_PLAIN:
++	case EROFS_INODE_CHUNK_BASED:
++		return erofs_fscache_readpage_noinline(page, &fsmap);
++	default:
++		DBG_BUGON(1);
++		return -EOPNOTSUPP;
++	}
++}
++
++static int erofs_fscache_readpage(struct file *file, struct page *page)
++{
++	int ret;
++
++	ret = erofs_fscache_do_readpage(page);
++	if (!ret)
++		SetPageUptodate(page);
++	else
++		SetPageError(page);
++
++	unlock_page(page);
++	return ret;
++}
++
+ static const struct address_space_operations erofs_fscache_blob_aops = {
+ 	.readpage = erofs_fscache_readpage_blob,
+ };
+ 
++const struct address_space_operations erofs_fscache_access_aops = {
++	.readpage = erofs_fscache_readpage,
++};
++
+ struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
+ 					   pgoff_t index)
+ {
+diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
+index ff62f84f47d3..2f450cb3a7b9 100644
+--- a/fs/erofs/inode.c
++++ b/fs/erofs/inode.c
+@@ -296,7 +296,11 @@ static int erofs_fill_inode(struct inode *inode, int isdir)
+ 		err = z_erofs_fill_inode(inode);
+ 		goto out_unlock;
+ 	}
+-	inode->i_mapping->a_ops = &erofs_raw_access_aops;
++
++	if (erofs_bdev_mode(inode->i_sb))
++		inode->i_mapping->a_ops = &erofs_raw_access_aops;
++	else
++		inode->i_mapping->a_ops = &erofs_fscache_access_aops;
+ 
+ out_unlock:
+ 	erofs_put_metabuf(&buf);
+diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
+index 35e7c330e59e..f94a921eff98 100644
+--- a/fs/erofs/internal.h
++++ b/fs/erofs/internal.h
+@@ -393,6 +393,7 @@ struct page *erofs_grab_cache_page_nowait(struct address_space *mapping,
+ extern const struct super_operations erofs_sops;
+ 
+ extern const struct address_space_operations erofs_raw_access_aops;
++extern const struct address_space_operations erofs_fscache_access_aops;
+ extern const struct address_space_operations z_erofs_aops;
+ 
+ /*
 -- 
 2.27.0
 
