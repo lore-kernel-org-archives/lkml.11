@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354255AbiCPHNa (ORCPT
+        id S1354175AbiCPHNY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 03:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44802 "EHLO
+        Wed, 16 Mar 2022 03:13:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354274AbiCPHNE (ORCPT
+        with ESMTP id S1354231AbiCPHMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 03:13:04 -0400
+        Wed, 16 Mar 2022 03:12:55 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B045DE54;
-        Wed, 16 Mar 2022 00:11:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C09A5DE54;
+        Wed, 16 Mar 2022 00:11:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647414711; x=1678950711;
+  t=1647414702; x=1678950702;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RWgY9AC+lYBXFFxLtUrfMxojVXpyTuSrrkNnLAQetlM=;
-  b=YXUhN6Um8u8khJcmILJdE39pl8/qK5QGGBq9fm3k43vO1gPWRCUd/QLk
-   1wf1TYeRkevM8opmQSSeWzR1lxNgHIMWnzzR4zn8p/utf5JpfGHsa15sk
-   I3uasEsGyo3ICyshdOhQk1dF4lwYk1NM3/HmJR4p8IRxDyQUVU/qPhY8s
-   txXQ7SOUD1PMV2OveAoHgPOd3HYXMhDkGzBBHsitjt4czXG6G8/e6vGzp
-   X06M/VV5MYqJC7oKOfMdyV59hmviSi+mqTBBy5WBysGlghIIxXLndh13p
-   8CnD+lFMtGG9PhjZqHph8xT6D6pqRHlzVj0+Brkp8w1qCEmL5b+byJD+1
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="281289060"
+  bh=BbcJfJHFs7h3DBzP//dTgYkN4sqD2gOtwRAt4y/7sbQ=;
+  b=ISA3UHjm0e4IDet9v7Q7ALfvOPkAdmXpCWfFQBxCUngtvv7m3QTT0qy1
+   +6w/qWQ/7xtroFC8PPIIABNhJ/xXrrc/NSAsQDdsc7+8mLaOHyy67W5tT
+   P8luulIQRAJ4kzlhzy2Z1dyWF0EIKVg05mUjO3UdxVGBZw0WBAmUfuA66
+   gILqDZ8vFgunbsDTsE4vGt065XU7sB1oPGW767Vpib9/QvSPRxMOPfNIN
+   obEfxbgf3UUvA9dr9E9ryNecTVpM4Z3M2Rr9FyAzZY+91V5ssDgla6jU4
+   JB4HZ6miSxQKa1DAAOFZnsH1Fza2BUJNPHFoke8d36U703TRcd2XMqjOL
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="281289028"
 X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="281289060"
+   d="scan'208";a="281289028"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 00:11:51 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 00:11:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="646538396"
+   d="scan'208";a="646538338"
 Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by orsmga004.jf.intel.com with ESMTP; 16 Mar 2022 00:11:48 -0700
+  by orsmga004.jf.intel.com with ESMTP; 16 Mar 2022 00:11:38 -0700
 From:   Tianfei Zhang <tianfei.zhang@intel.com>
 To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
         yilun.xu@intel.com, linux-fpga@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         rdunlap@infradead.org
-Cc:     corbet@lwn.net, Matthew Gerlach <matthew.gerlach@linux.intel.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v6 5/6] fpga: dfl: support PF/VF starting with DFH
-Date:   Wed, 16 Mar 2022 03:08:13 -0400
-Message-Id: <20220316070814.1916017-6-tianfei.zhang@intel.com>
+Cc:     corbet@lwn.net, Tianfei zhang <tianfei.zhang@intel.com>,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH v6 2/6] fpga: dfl: tracking port conntected with AFU
+Date:   Wed, 16 Mar 2022 03:08:10 -0400
+Message-Id: <20220316070814.1916017-3-tianfei.zhang@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20220316070814.1916017-1-tianfei.zhang@intel.com>
 References: <20220316070814.1916017-1-tianfei.zhang@intel.com>
@@ -58,92 +58,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+From: Tianfei zhang <tianfei.zhang@intel.com>
 
-In OFS, it allows several PFs and VFs in static region or PR region.
-Those PFs and VFs managed by DFL or a specific device, like virtio-net
-device. Those PFs and VFs which managed by DFL can start with DFH, and
-leverage VFIO to expose to an application or assign to a VM.
+Introducing flags in dfl_fpga_cdev to track extensions
+or new features discovered during DFL enumeration. It uses
+some lowest bits of flags to track the port status which
+the AFU was connected to port device or not. In legacy
+model, the AFU was connected to Port device, but in "multiple
+VFs per PR slot" model, the AFU or PR slot without connected
+to Port device directly.
 
 Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+Signed-off-by: Tianfei zhang <tianfei.zhang@intel.com>
 ---
- drivers/fpga/dfl-pci.c |  2 ++
- drivers/fpga/dfl.c     | 22 +++++++++++++---------
- drivers/fpga/dfl.h     |  7 +++++++
- 3 files changed, 22 insertions(+), 9 deletions(-)
+ drivers/fpga/dfl.c | 11 ++++++++++-
+ drivers/fpga/dfl.h | 12 ++++++++++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
-index 2e9abeca3625..7d8b53330152 100644
---- a/drivers/fpga/dfl-pci.c
-+++ b/drivers/fpga/dfl-pci.c
-@@ -275,6 +275,8 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
- 		len = pci_resource_len(pcidev, 0);
- 
- 		dfl_fpga_enum_info_add_dfl(info, start, len);
-+	} else if (dfl_feature_is_afu(base)) {
-+		dev_info(&pcidev->dev, "find AFU\n");
- 	} else {
- 		ret = -ENODEV;
- 	}
 diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index 71e0725b6be0..db676f7482ec 100644
+index 599bb21d86af..712c53363fda 100644
 --- a/drivers/fpga/dfl.c
 +++ b/drivers/fpga/dfl.c
-@@ -900,9 +900,11 @@ static void build_info_free(struct build_feature_devs_info *binfo)
- 		dfl_id_free(feature_dev_id_type(binfo->feature_dev),
- 			    binfo->feature_dev->id);
+@@ -1124,8 +1124,10 @@ static void build_info_complete(struct build_feature_devs_info *binfo)
+ static int parse_feature_fiu(struct build_feature_devs_info *binfo,
+ 			     resource_size_t ofst)
+ {
++	struct dfl_fpga_cdev *cdev = binfo->cdev;
+ 	int ret = 0;
+ 	u32 offset;
++	u32 port;
+ 	u16 id;
+ 	u64 v;
  
--		list_for_each_entry_safe(finfo, p, &binfo->sub_features, node) {
--			list_del(&finfo->node);
--			kfree(finfo);
-+		if (!list_empty(&binfo->sub_features)) {
-+			list_for_each_entry_safe(finfo, p, &binfo->sub_features, node) {
-+				list_del(&finfo->node);
-+				kfree(finfo);
-+			}
- 		}
- 	}
+@@ -1160,8 +1162,15 @@ static int parse_feature_fiu(struct build_feature_devs_info *binfo,
+ 	v = readq(binfo->ioaddr + NEXT_AFU);
  
-@@ -1444,12 +1446,14 @@ dfl_fpga_feature_devs_enumerate(struct dfl_fpga_enum_info *info)
- 	 * start enumeration for all feature devices based on Device Feature
- 	 * Lists.
- 	 */
--	list_for_each_entry(dfl, &info->dfls, node) {
--		ret = parse_feature_list(binfo, dfl->start, dfl->len);
--		if (ret) {
--			remove_feature_devs(cdev);
--			build_info_free(binfo);
--			goto unregister_region_exit;
-+	if (!list_empty(&info->dfls)) {
-+		list_for_each_entry(dfl, &info->dfls, node) {
-+			ret = parse_feature_list(binfo, dfl->start, dfl->len);
-+			if (ret) {
-+				remove_feature_devs(cdev);
-+				build_info_free(binfo);
-+				goto unregister_region_exit;
-+			}
- 		}
- 	}
+ 	offset = FIELD_GET(NEXT_AFU_NEXT_DFH_OFST, v);
+-	if (offset)
++	if (offset) {
++		if (dfh_id_to_type(id) == PORT_ID) {
++			port = FIELD_GET(PORT_CAP_PORT_NUM,
++					 readq(binfo->ioaddr + PORT_HDR_CAP));
++			cdev->flags |= dfl_feat_port_connect_afu(port);
++		}
++
+ 		return parse_feature_afu(binfo, offset);
++	}
+ 
+ 	dev_dbg(binfo->dev, "No AFUs detected on FIU %d\n", id);
  
 diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
-index 83c2c50975e5..08edaeeb7f80 100644
+index 1fd493e82dd8..bc56b7e8c01b 100644
 --- a/drivers/fpga/dfl.h
 +++ b/drivers/fpga/dfl.h
-@@ -421,6 +421,13 @@ static inline bool dfl_feature_is_port(void __iomem *base)
- 		(FIELD_GET(DFH_ID, v) == DFH_ID_FIU_PORT);
- }
+@@ -461,6 +461,16 @@ int dfl_fpga_enum_info_add_irq(struct dfl_fpga_enum_info *info,
+ 			       unsigned int nr_irqs, int *irq_table);
+ void dfl_fpga_enum_info_free(struct dfl_fpga_enum_info *info);
  
-+static inline bool dfl_feature_is_afu(void __iomem *base)
-+{
-+	u64 v = readq(base + DFH);
++/*
++ * Bitfields in flags of dfl_fpga_cdev.
++ *
++ * 0 - (DFL_PORT_CONNECT_BITS -1): AFU was connected with Port device.
++ * DFL_PORT_CONNECT_BITS - 63: reserved.
++ */
++#define dfl_feat_port_connect_afu(port) (BIT_ULL(port))
++#define DFL_PORT_CONNECT_BITS  MAX_DFL_FPGA_PORT_NUM
++#define DFL_FEAT_PORT_CONNECT_MASK ((1UL << (DFL_PORT_CONNECT_BITS)) - 1)
 +
-+	return (FIELD_GET(DFH_TYPE, v) == DFH_TYPE_AFU);
-+}
-+
- static inline u8 dfl_feature_revision(void __iomem *base)
- {
- 	return (u8)FIELD_GET(DFH_REVISION, readq(base + DFH));
+ /**
+  * struct dfl_fpga_cdev - container device of DFL based FPGA
+  *
+@@ -470,6 +480,7 @@ void dfl_fpga_enum_info_free(struct dfl_fpga_enum_info *info);
+  * @lock: mutex lock to protect the port device list.
+  * @port_dev_list: list of all port feature devices under this container device.
+  * @released_port_num: released port number under this container device.
++ * @flags: extensions discovered during DFL enumeration.
+  */
+ struct dfl_fpga_cdev {
+ 	struct device *parent;
+@@ -478,6 +489,7 @@ struct dfl_fpga_cdev {
+ 	struct mutex lock;
+ 	struct list_head port_dev_list;
+ 	int released_port_num;
++	u64 flags;
+ };
+ 
+ struct dfl_fpga_cdev *
 -- 
 2.26.2
 
