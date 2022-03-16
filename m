@@ -2,103 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B99BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:34:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9566EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353942AbiCPGfa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 02:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58086 "EHLO
+        id S244317AbiCPGk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 02:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349781AbiCPGf1 (ORCPT
+        with ESMTP id S231577AbiCPGky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 02:35:27 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25523CA4B;
-        Tue, 15 Mar 2022 23:34:13 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id q5so1779697ljb.11;
-        Tue, 15 Mar 2022 23:34:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=++sa46MhpxjLZvQiBNBROIYgnEoEgMiydkA3vO85G7U=;
-        b=SNUuaqm75EI0XWtB8fHZf6wvFEokjwp2fTUs+dK+S/Zm1Ow/VfJ3qlTL3AcuVao/C+
-         tWWS4RCRZ/w9FQC58sXFjAM904UYhyMAbGwnnp74AIAZqojBGXDNccIrFBvVj12CuJ+c
-         cBzbfOE1OBeCqj4x625ts2yQaXf0aXVP0zA9NuJxA25NWFOB4LHd7jfccKuRWjCn90x9
-         /AGL+3XN++s61neGYD5kt9FV/xghZ8v/iDJ2KJCqSbIAxGo8IsTuJkpK7o4tMFC46mG3
-         cmAIPx7OyXQrZWpGtjWs5vMwCz9wh28jxJrs0C/wghLM1jQs9OCzT3itsXvuNgHwc/sV
-         Nlyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=++sa46MhpxjLZvQiBNBROIYgnEoEgMiydkA3vO85G7U=;
-        b=BmxJTI/RLXXY1mFkL9kOA4svkKKvZgO8QTCV2pH7QCSOL0h+Q2ef6d9Q4up6Xn9sqo
-         lbk3OTkCkli0rODvrqnZb77AJ+1FTdttBIqX0ZAvbyli5e1IechwLPcWUb8N9HyBq5Yw
-         khz/VPdy65vkQrrNWPskeZZ1PTwBayE8/y7ptKL9XrWHWp4d4RP5+dpTFxI6ToGd0QUy
-         Wsh8Vioa9tnkLwCbaoYSlJg2erSyZ4jHaprXwxVHjs2ey+f06/ahE/TeZtVrv5ge7n0X
-         ST5xFvJI1rE/dsdP2gv34pHNOzVlFpCmA5dQbO7BWm+TocSPlb9gz/9LH9NVj8TiR3a1
-         Pssw==
-X-Gm-Message-State: AOAM530kE4rgaFbt62kbbR/FY3Tnj4sPdgNHabevGXLd1W0aJZxOjJYs
-        0R1to8OMK4GkmuV3NfGGbuc=
-X-Google-Smtp-Source: ABdhPJw9Ww1GDbf/aCnm1Gvac/Z8tRDtL6lbAgGCsIzAKktioAvkLknuASghcm3WBucuxEXIZ8MTOA==
-X-Received: by 2002:a2e:b004:0:b0:247:e29f:fbd4 with SMTP id y4-20020a2eb004000000b00247e29ffbd4mr19034842ljk.315.1647412452039;
-        Tue, 15 Mar 2022 23:34:12 -0700 (PDT)
-Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
-        by smtp.gmail.com with ESMTPSA id l9-20020a2ea309000000b00246299de080sm102223lje.48.2022.03.15.23.34.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 23:34:11 -0700 (PDT)
-Message-ID: <4d3c65c0-1bc3-bc8f-393a-22c964f18120@gmail.com>
-Date:   Wed, 16 Mar 2022 08:34:12 +0200
+        Wed, 16 Mar 2022 02:40:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE99B57B10
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 23:39:39 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KJLFF60v9zfYqd;
+        Wed, 16 Mar 2022 14:38:09 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 14:39:37 +0800
+Subject: Re: [PATCH] mm/mempolicy: fix potential mpol_new leak in
+ shared_policy_replace
+To:     Michal Hocko <mhocko@suse.com>
+CC:     <akpm@linux-foundation.org>, <kosaki.motohiro@jp.fujitsu.com>,
+        <mgorman@suse.de>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220311093624.39546-1-linmiaohe@huawei.com>
+ <Yi9w7TCYbj+OLGXJ@dhcp22.suse.cz>
+ <26577566-ae1e-801c-8c64-89c2c89a487d@huawei.com>
+ <YjCwYpTbGzAj9kmg@dhcp22.suse.cz>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <24b2a9ef-eea0-09bd-6842-121d8436e56a@huawei.com>
+Date:   Wed, 16 Mar 2022 14:39:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] ASoC: ti: Fix spelling mistake "cant" -> "can't"
+In-Reply-To: <YjCwYpTbGzAj9kmg@dhcp22.suse.cz>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Jarkko Nikula <jarkko.nikula@bitmer.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-omap@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220315230816.2964577-1-colin.i.king@gmail.com>
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-In-Reply-To: <20220315230816.2964577-1-colin.i.king@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 16/03/2022 01:08, Colin Ian King wrote:
-> There is a spelling mistake in a dev_err message. Fix it.
-
-Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  sound/soc/ti/omap-dmic.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On 2022/3/15 23:27, Michal Hocko wrote:
+> On Tue 15-03-22 21:42:29, Miaohe Lin wrote:
+>> On 2022/3/15 0:44, Michal Hocko wrote:
+>>> On Fri 11-03-22 17:36:24, Miaohe Lin wrote:
+>>>> If mpol_new is allocated but not used in restart loop, mpol_new will be
+>>>> freed via mpol_put before returning to the caller. But refcnt is not
+>>>> initialized yet, so mpol_put could not do the right things and might
+>>>> leak the unused mpol_new.
+>>>
+>>> The code is really hideous but is there really any bug there? AFAICS the
+>>> new policy is only allocated in if (n->end > end) branch and that one
+>>> will set the reference count on the retry. Or am I missing something?
+>>>
+>>
+>> Many thanks for your comment.
+>> IIUC, new policy is allocated via the below code:
+>>
+>> shared_policy_replace:
+>> 	alloc_new:
+>> 		write_unlock(&sp->lock);
+>> 		ret = -ENOMEM;
+>> 		n_new = kmem_cache_alloc(sn_cache, GFP_KERNEL);
+>> 		if (!n_new)
+>> 			goto err_out;
+>> 		mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
+>> 		if (!mpol_new)
+>> 			goto err_out;
+>> 		goto restart;
+>>
+>> And mpol_new' reference count will be set before used in n->end > end case. But
+>> if that is "not" the case, i.e. mpol_new is not inserted into the rb_tree, mpol_new
+>> will be freed via mpol_put before return:
 > 
-> diff --git a/sound/soc/ti/omap-dmic.c b/sound/soc/ti/omap-dmic.c
-> index a26588e9c3bc..f3eed20611a3 100644
-> --- a/sound/soc/ti/omap-dmic.c
-> +++ b/sound/soc/ti/omap-dmic.c
-> @@ -474,7 +474,7 @@ static int asoc_dmic_probe(struct platform_device *pdev)
->  
->  	dmic->fclk = devm_clk_get(dmic->dev, "fck");
->  	if (IS_ERR(dmic->fclk)) {
-> -		dev_err(dmic->dev, "cant get fck\n");
-> +		dev_err(dmic->dev, "can't get fck\n");
->  		return -ENODEV;
->  	}
->  
+> One thing I have missed previously is that the lock is dropped during
+> the allocation so I guess the memory policy could have been changed
+> during that time. Is this possible? Have you explored this possibility?
+> Is this a theoretical problem or it can be triggered intentionally.
+> 
 
--- 
-Péter
+This is found via code investigation. I think this could be triggered if there
+are many concurrent mpol_set_shared_policy in place. But the user-visible effect
+might be obscure as only sizeof(struct mempolicy) bytes leaks possiblely every time.
+
+> These details would be really interesting for the changelog so that we
+> can judge how important this would be.
+
+This might not be that important as this issue should have been well-concealed for
+almost ten years (since commit 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")).
+
+> 
+
+Thanks.
