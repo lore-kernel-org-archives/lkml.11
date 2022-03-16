@@ -2,141 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B94C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9228AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244999AbiCPNpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
+        id S1353826AbiCPNrF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 09:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241784AbiCPNpI (ORCPT
+        with ESMTP id S241647AbiCPNrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:45:08 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 568B35AA58
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 06:43:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647438234; x=1678974234;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ia464ki27ge9N+7v/cZ9X6DfqHOtFnitVi0AdRUCp78=;
-  b=Tf2SvcFZ9lnoZWdS54XWHD84B7Pi71a4/UlI6Qa6mZk2IrpV0ks/5wQZ
-   xQw1xsp73BIe3kKb48EagMIjvY1S/geZfNXyKvFERph6q1QMHG5LR5jnT
-   I4IgG8sZvH+F41Ngaa3LcBy6qzBvihykdOPV1R67kiFNrhlFbH5/RtWEX
-   nq7Wme6aj0UokYkaZHBdQpKeEFkDFo9ExkzF+56Gkea8t3MHyyXSholEx
-   JX0dVCfiPb0N9okXZzG1bq1LlXfX5j32huxyLJkrr5ycECcb/UM6P3GYl
-   0cf6TKPUUnD7EB/Fk4970thETlZUgrm1qIGVYi92dEp1gSgFk524aFr8F
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256779817"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="256779817"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 06:43:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="513021924"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 16 Mar 2022 06:43:52 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUTwN-000CTJ-GC; Wed, 16 Mar 2022 13:43:51 +0000
-Date:   Wed, 16 Mar 2022 21:42:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guo Ren <guoren@linux.alibaba.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: [csky-linux:riscv_compat_v8 20/20]
- arch/riscv/kernel/compat_signal.c:199:5: warning: no previous prototype for
- function 'compat_setup_rt_frame'
-Message-ID: <202203162123.Ksr0CtpZ-lkp@intel.com>
+        Wed, 16 Mar 2022 09:47:04 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE935D65B;
+        Wed, 16 Mar 2022 06:45:50 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id F188E1F38A;
+        Wed, 16 Mar 2022 13:45:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647438347; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+41MFpKRhqNaQrWRi+ngw6IHebcbmsk9SqhRzEgY4gI=;
+        b=FULCV+NTmRSfcme8M/VF5SzcGZFFOrp6lLSpW6Lm1mgbulqHj1ZGzumfmBGna2rwEuMXaa
+        XABD0kT/EhICC05Zk6tYEnlslRUGeUQLJ3Omi5TS+1eycx2f/fwl+Y6joalnb9Us/oLbU7
+        HPeWGYw5c325OnHcmGnPfUQxO0UDkh0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647438347;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+41MFpKRhqNaQrWRi+ngw6IHebcbmsk9SqhRzEgY4gI=;
+        b=1wcK8B/1rxo/P1AU6eROXdFEIeR/cSE9y09MmLZ5N4YM9w7CxDj61D0RC4Hgm6xmfELABl
+        FzJvXUHHbxPUvGCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BDB6F13322;
+        Wed, 16 Mar 2022 13:45:47 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id nZIBLQvqMWK6dgAAMHmgww
+        (envelope-from <ddiss@suse.de>); Wed, 16 Mar 2022 13:45:47 +0000
+Date:   Wed, 16 Mar 2022 14:45:46 +0100
+From:   David Disseldorp <ddiss@suse.de>
+To:     "Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp\" <Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp>"@imap2.suse-dmz.suse.de
+Cc:     'Vasant Karasulli' <vkarasulli@suse.de>,
+        'Sungjong Seo' <sj1557.seo@samsung.com>,
+        "'linux-fsdevel@vger.kernel.org'" <linux-fsdevel@vger.kernel.org>,
+        "'linux-kernel@vger.kernel.org'" <linux-kernel@vger.kernel.org>,
+        'Takashi Iwai' <tiwai@suse.de>,
+        'Namjae Jeon' <linkinjeon@kernel.org>
+Subject: Re: [PATCH v2 2/2] exfat currently unconditionally strips trailing
+ periods '.' when performing path lookup, but allows them in the filenames
+ during file creation. This is done intentionally, loosely following Windows
+ behaviour and specifications which ...
+Message-ID: <20220316144546.2da266c3@suse.de>
+In-Reply-To: <TYAPR01MB535314A6E1FB0CB1BAD621C2900F9@TYAPR01MB5353.jpnprd01.prod.outlook.com>
+References: <20220310142455.23127-1-vkarasulli@suse.de>
+        <20220310142455.23127-3-vkarasulli@suse.de>
+        <20220310210633.095f0245@suse.de>
+        <CAKYAXd_ij3WqJHQZvH458XRwLBtboiJnr-fK0hVPDi_j_8XDZQ@mail.gmail.com>
+        <YisU2FA7EBeguwN5@vasant-suse>
+        <TYAPR01MB535314A6E1FB0CB1BAD621C2900F9@TYAPR01MB5353.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/c-sky/csky-linux riscv_compat_v8
-head:   5e16532e9a75c08518ff196285fe079ee12188ae
-commit: 5e16532e9a75c08518ff196285fe079ee12188ae [20/20] riscv: compat: Add COMPAT Kbuild skeletal support
-config: riscv-randconfig-r033-20220313 (https://download.01.org/0day-ci/archive/20220316/202203162123.Ksr0CtpZ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/c-sky/csky-linux/commit/5e16532e9a75c08518ff196285fe079ee12188ae
-        git remote add csky-linux https://github.com/c-sky/csky-linux
-        git fetch --no-tags csky-linux riscv_compat_v8
-        git checkout 5e16532e9a75c08518ff196285fe079ee12188ae
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+Hi T.Kohada,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On Mon, 14 Mar 2022 03:52:08 +0000, Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp wrote:
 
-All warnings (new ones prefixed by >>):
+> Hi, Vasant Karasulli.
+> 
+> > > > I think it makes sense to mention your findings from the Windows
+> > > > tests here. E.g. "Windows 10 also retains leading and trailing space
+> > > > characters".  
+> > > Windows 10 do also strip them. So you can make another patch to strip
+> > > it as well as trailing periods.  
+> > Actually I found contradicting behavior between Window 10 File Explorer and Commandline. Commandline seems to strip
+> > trailing spaces, but File Explorer doesn't.  
+> 
+> The exfat specification specifies an invalid character set, but there are no restrictions on the use of leading or trailing white-space or dots.
+> Even if the filename has trailing-dot as shown below, it conforms to the exfat specification and can be created on Windows.
+> "a"
+> "a."
+> "a.."
+> These are treated as "a" in the current implementation of linix-exfat, so the intended file cannot be accessed.
+> The specified filename should not be modified to comply with the exfat specification.
+> Therefore, exfat_striptail_len() should not be used.
+> 
+> Note:
+> Windows explorer removes trailing white-space and dots, but not the behavior of the filesystem.
+> Also, you can create a trailing-dot filename by quoting it on the command line.
 
->> arch/riscv/kernel/compat_signal.c:199:5: warning: no previous prototype for function 'compat_setup_rt_frame' [-Wmissing-prototypes]
-   int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
-       ^
-   arch/riscv/kernel/compat_signal.c:199:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
-   ^
-   static 
-   1 warning generated.
+Please explain how you came to that conclusion.
+I did some further tests using the win32 CopyFile() API directly[1] on
+Windows10 and observe that both trailing periods and trailing spaces are
+trimmed for an exfat destination path.
 
+Cheers, David
 
-vim +/compat_setup_rt_frame +199 arch/riscv/kernel/compat_signal.c
-
-45847575ba9c88 Guo Ren 2021-12-13  198  
-45847575ba9c88 Guo Ren 2021-12-13 @199  int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
-45847575ba9c88 Guo Ren 2021-12-13  200  	struct pt_regs *regs)
-45847575ba9c88 Guo Ren 2021-12-13  201  {
-45847575ba9c88 Guo Ren 2021-12-13  202  	struct compat_rt_sigframe __user *frame;
-45847575ba9c88 Guo Ren 2021-12-13  203  	long err = 0;
-45847575ba9c88 Guo Ren 2021-12-13  204  
-45847575ba9c88 Guo Ren 2021-12-13  205  	frame = compat_get_sigframe(ksig, regs, sizeof(*frame));
-45847575ba9c88 Guo Ren 2021-12-13  206  	if (!access_ok(frame, sizeof(*frame)))
-45847575ba9c88 Guo Ren 2021-12-13  207  		return -EFAULT;
-45847575ba9c88 Guo Ren 2021-12-13  208  
-45847575ba9c88 Guo Ren 2021-12-13  209  	err |= copy_siginfo_to_user32(&frame->info, &ksig->info);
-45847575ba9c88 Guo Ren 2021-12-13  210  
-45847575ba9c88 Guo Ren 2021-12-13  211  	/* Create the ucontext. */
-45847575ba9c88 Guo Ren 2021-12-13  212  	err |= __put_user(0, &frame->uc.uc_flags);
-45847575ba9c88 Guo Ren 2021-12-13  213  	err |= __put_user(NULL, &frame->uc.uc_link);
-45847575ba9c88 Guo Ren 2021-12-13  214  	err |= __compat_save_altstack(&frame->uc.uc_stack, regs->sp);
-45847575ba9c88 Guo Ren 2021-12-13  215  	err |= compat_setup_sigcontext(frame, regs);
-45847575ba9c88 Guo Ren 2021-12-13  216  	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
-45847575ba9c88 Guo Ren 2021-12-13  217  	if (err)
-45847575ba9c88 Guo Ren 2021-12-13  218  		return -EFAULT;
-45847575ba9c88 Guo Ren 2021-12-13  219  
-45847575ba9c88 Guo Ren 2021-12-13  220  	regs->ra = (unsigned long)COMPAT_VDSO_SYMBOL(
-45847575ba9c88 Guo Ren 2021-12-13  221  			current->mm->context.vdso, rt_sigreturn);
-45847575ba9c88 Guo Ren 2021-12-13  222  
-45847575ba9c88 Guo Ren 2021-12-13  223  	/*
-45847575ba9c88 Guo Ren 2021-12-13  224  	 * Set up registers for signal handler.
-45847575ba9c88 Guo Ren 2021-12-13  225  	 * Registers that we don't modify keep the value they had from
-45847575ba9c88 Guo Ren 2021-12-13  226  	 * user-space at the time we took the signal.
-45847575ba9c88 Guo Ren 2021-12-13  227  	 * We always pass siginfo and mcontext, regardless of SA_SIGINFO,
-45847575ba9c88 Guo Ren 2021-12-13  228  	 * since some things rely on this (e.g. glibc's debug/segfault.c).
-45847575ba9c88 Guo Ren 2021-12-13  229  	 */
-45847575ba9c88 Guo Ren 2021-12-13  230  	regs->epc = (unsigned long)ksig->ka.sa.sa_handler;
-45847575ba9c88 Guo Ren 2021-12-13  231  	regs->sp = (unsigned long)frame;
-45847575ba9c88 Guo Ren 2021-12-13  232  	regs->a0 = ksig->sig;                     /* a0: signal number */
-45847575ba9c88 Guo Ren 2021-12-13  233  	regs->a1 = (unsigned long)(&frame->info); /* a1: siginfo pointer */
-45847575ba9c88 Guo Ren 2021-12-13  234  	regs->a2 = (unsigned long)(&frame->uc);   /* a2: ucontext pointer */
-45847575ba9c88 Guo Ren 2021-12-13  235  
-
-:::::: The code at line 199 was first introduced by commit
-:::::: 45847575ba9c8837017d2a6af498aaeee0477b3c riscv: compat: signal: Add rt_frame implementation
-
-:::::: TO: Guo Ren <guoren@linux.alibaba.com>
-:::::: CC: Guo Ren <guoren@linux.alibaba.com>
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+1: calling win32 CopyFile() from powershell
+https://devblogs.microsoft.com/scripting/use-powershell-to-interact-with-the-windows-api-part-1/
