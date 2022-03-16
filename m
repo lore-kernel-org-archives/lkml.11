@@ -2,109 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C98C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 559F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348588AbiCPPT0 (ORCPT
+        id S1353533AbiCPPUO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:19:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
+        Wed, 16 Mar 2022 11:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343798AbiCPPTU (ORCPT
+        with ESMTP id S1344425AbiCPPUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:19:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 50ED73B3D2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:18:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647443885;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=w/uVU27MUQYVU+wgJKpbBvrcqEJY7UjfllrQP2RhSbk=;
-        b=dTQBUtzX3h0/frdZ2FQ+nBlTGHIcpqRC/ZDhktfHVHf3ZCuN89yPUi0fKQIwERvU80/1ES
-        lcJGt5ntkeaPqM+Voo2Y2XguOAPgCMCQV21m3VbzlxUs7+xGtXWJQsDXhCO/eotC+OUqyB
-        23b7kde0pRlbp+aBkDO9dmZi+1OX1rk=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-586-AxUZb6LhM8aDZrXzeKvAwg-1; Wed, 16 Mar 2022 11:18:04 -0400
-X-MC-Unique: AxUZb6LhM8aDZrXzeKvAwg-1
-Received: by mail-wm1-f70.google.com with SMTP id c19-20020a05600c0ad300b00385bb3db625so2905028wmr.4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:18:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=w/uVU27MUQYVU+wgJKpbBvrcqEJY7UjfllrQP2RhSbk=;
-        b=cVHwvKVBH/F2UNbH/Iw/dZCRnq+syp26SXjG3pcQ2dEnJfhgaN7D7aX4hQ/PIJCC5w
-         ovVrDjeERpi/zLv/7eHoRrHVEzmrOiflVtJETf2FstGWxZVuPDTMbLIs2SlY7h89tLGf
-         ndkJOlZju2HKQUs5/0dl6Y3U2oX5ywPm2suBr5Qys1TI+Z1IthBjkqz0w6sCtuHgNrn9
-         F83fRI34KhinZ7g3F7fXAN4AySVVjtBd8h4RGdsouIPKynjHVto9M9RfphVxqs01H1xf
-         PmNOjbf2Vc22CkNWePj1W/BzK/94XbYc6EzwlKb5zQO3dKxMxyotqxmyx5GObtoTErma
-         uf9w==
-X-Gm-Message-State: AOAM532yLJlkfMmaYtS2YuMKQhsR+wdc130yxgosiY0dvPsqNAc5wJsr
-        bIWyBCliH+W8zQg5yL4sf8oMpCMkYBUR3QyvpodJ7CUFsG4gxMPLEZ0J8WULfpRthT+JZWLc579
-        b0cdMgVFsjVxZmrWPJK+ehz+d
-X-Received: by 2002:a5d:6610:0:b0:1f1:e606:f097 with SMTP id n16-20020a5d6610000000b001f1e606f097mr384064wru.134.1647443882865;
-        Wed, 16 Mar 2022 08:18:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxgX7M3pSLfvswnCZinlxjE/UiPfGgG3EjL14bFT0DvEZXH3YwTrW3SFlGgJ6FkbccoaVZgJQ==
-X-Received: by 2002:a5d:6610:0:b0:1f1:e606:f097 with SMTP id n16-20020a5d6610000000b001f1e606f097mr384044wru.134.1647443882590;
-        Wed, 16 Mar 2022 08:18:02 -0700 (PDT)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id bk19-20020a0560001d9300b001a65e479d20sm1847666wrb.83.2022.03.16.08.18.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 08:18:02 -0700 (PDT)
-Message-ID: <0fa87883-829d-93d0-f0f3-7d3faa8d060c@redhat.com>
-Date:   Wed, 16 Mar 2022 16:18:01 +0100
+        Wed, 16 Mar 2022 11:20:09 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE1D574B2;
+        Wed, 16 Mar 2022 08:18:55 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 2CEA91F38D;
+        Wed, 16 Mar 2022 15:18:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647443934; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=lQv0ivjFWgAI35IuOFxdI6CYhXCE61Bved2LYBYnPpw=;
+        b=vE5yNvYI3OAAXCSx7pPzZualBrfU91t+Wv96E5seQhCUGdRR31l6giCTgk9OFc9tB+ESLn
+        aB3nUIhMRP1mH1DYed/LFho3KoLw+M9Ndnt19zsM3X7gfmxiGNXtRBKYepJZZ5dq0iDrXp
+        Q1FvwHVXrCMvEqdU/WtK9dG72gaaRX0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647443934;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=lQv0ivjFWgAI35IuOFxdI6CYhXCE61Bved2LYBYnPpw=;
+        b=dbsi4Wp25uLFjqpRbwf3FQ6yRO0H+wrWM0lxjy+joCJ60xm3u4fD9G1UFYO+2LWalf9RJj
+        X3hUpquTDmuUbmAA==
+Received: from vasant-suse.fritz.box (unknown [10.163.24.178])
+        by relay2.suse.de (Postfix) with ESMTP id 3E42EA3B8A;
+        Wed, 16 Mar 2022 15:18:53 +0000 (UTC)
+From:   Vasant Karasulli <vkarasulli@suse.de>
+To:     David Disseldorp <ddiss@suse.de>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Takashi Iwai <tiwai@suse.de>
+Cc:     Vasant Karasulli <vkarasulli@suse.de>
+Subject: [PATCH v4 0/1] exfat: allow access to paths with trailing dots
+Date:   Wed, 16 Mar 2022 16:18:45 +0100
+Message-Id: <20220316151846.12685-1-vkarasulli@suse.de>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next] drm/solomon: Make DRM_SSD130X depends on MMU
-Content-Language: en-US
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     YueHaibing <yuehaibing@huawei.com>, airlied@linux.ie,
-        daniel@ffwll.ch, maxime@cerno.tech
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-References: <20220312063437.19160-1-yuehaibing@huawei.com>
- <08e81f07-99d2-62a3-8eea-b2c0432b4d18@redhat.com>
-In-Reply-To: <08e81f07-99d2-62a3-8eea-b2c0432b4d18@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/15/22 10:18, Javier Martinez Canillas wrote:
-> Hello YueHaibing,
-> 
-> Thanks for the patch.
-> 
-> On 3/12/22 07:34, YueHaibing wrote:
->> WARNING: unmet direct dependencies detected for DRM_GEM_SHMEM_HELPER
->>   Depends on [n]: HAS_IOMEM [=y] && DRM [=m] && MMU [=n]
->>   Selected by [m]:
->>   - DRM_SSD130X [=m] && HAS_IOMEM [=y] && DRM [=m]
->>
->> DRM_GEM_SHMEM_HELPER depends on MMU, DRM_SSD130X should also depends on MMU.
->>
->> Fixes: a61732e80867 ("drm: Add driver for Solomon SSD130x OLED displays")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->> ---
-> 
-> Indeed. All the DRM drivers that select DRM_GEM_SHMEM_HELPER depend on MMU.
-> 
-> Acked-by: Javier Martinez Canillas <javierm@redhat.com>
-> 
+This is the version 4 of the patch that introduces
+a new exfat mount option 'keep_last_dots'. In this
+version all the patches in version 3 are combined
+into one patch for simplicity.
 
-Pushed to drm-misc (drm-misc-next). Thanks!
+Patch version 3:
+https://lore.kernel.org/linux-fsdevel/20220311114746.7643-1-vkarasulli@suse.de/T
 
--- 
-Best regards,
 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+Vasant Karasulli (1):
+  exfat currently unconditionally strips trailing periods '.' when
+    performing path lookup, but allows them in the filenames during file
+    creation. This is done intentionally, loosely following Windows
+    behaviour and specifications which state:
+
+ fs/exfat/exfat_fs.h |  3 ++-
+ fs/exfat/namei.c    | 50 ++++++++++++++++++++++++++++++++-------------
+ fs/exfat/super.c    |  7 +++++++
+ 3 files changed, 45 insertions(+), 15 deletions(-)
+
+
+base-commit: ffb217a13a2eaf6d5bd974fc83036a53ca69f1e2
+prerequisite-patch-id: aa89fed0f25e0593bd930cb1925a61318970af3b
+prerequisite-patch-id: b82d57cf11a808fd91ebce196ad90742f266ae39
+prerequisite-patch-id: 8fb922007d8da42e7d8915ad4192c3a881384720
+prerequisite-patch-id: 80a740f0cc838892abca091667fa5b407611ea39
+prerequisite-patch-id: 70a6044affdfcfba97c7651fb2150fa42cf01805
+prerequisite-patch-id: a017bdbdcc66df4dd3a66ba03a37714b8e68d253
+prerequisite-patch-id: 52771ab4aa8cbdafed3594d7d9a0c75b8a53f6e4
+prerequisite-patch-id: fe388ead9e78b2e67bfb1ddfd5cd60a496c12d1c
+prerequisite-patch-id: fb7ef4d34a652d20b3c6edefaf72ca6298d1e8f4
+prerequisite-patch-id: 4194bee4bb9ee6eaeb6ee1ddd82cb84cdcab8d38
+prerequisite-patch-id: e178f0c524a65e855ffb7861f1b9a9b2d56a2428
+prerequisite-patch-id: e35925ec691c2fa8c167c19844cb40ef090845aa
+prerequisite-patch-id: 6f54f7183bb0c519f9f76d8645da5a881ca71458
+prerequisite-patch-id: b2d2dc9c206fbfc0c80f1be3d9ab031ba2dfd279
+prerequisite-patch-id: 47a6c9093808e07f6ff561d011566a4ee4e7465a
+prerequisite-patch-id: 70b5f29b3208d4e0b8bd27900618aeaba901d19a
+prerequisite-patch-id: 56b6ad48cc9999893d34e7378ad1bbad293ca52b
+prerequisite-patch-id: 3318f5c0bb1dac4c932e892329c52c1a118633b4
+prerequisite-patch-id: e6aa617911d8647d1b7764c6916e3a01ffed1371
+prerequisite-patch-id: 60f8292acf6a200ce4b8f0080a4e7e6429f0f78f
+prerequisite-patch-id: e2f2b35b6e7c1aaa6a9b22e563c0f753df5fbe88
+prerequisite-patch-id: 70880c12ac3be19b196165cf4a06baf3b6074072
+prerequisite-patch-id: 55d302be95eccc06e20360e5b392f72e7249ea76
+prerequisite-patch-id: 0fc645d44f0354b6217c3a713d1ac144de7c786f
+prerequisite-patch-id: ebf526d3226975950e8997ed5f83f9b11d631aa5
+prerequisite-patch-id: ddb73fe6ea6d1e72b379f480b47ec60162352eb7
+prerequisite-patch-id: 091d1b77db64fcd1832dbe1db820fd4685f5651b
+prerequisite-patch-id: 30006d3af6ae601664ddee4c468520dc800b27bf
+prerequisite-patch-id: fcfb1b6ee7b1c7ab5cdd02d71113551c710a21ca
+prerequisite-patch-id: 8f225e2d574ffabb6ed842e92543fd0aab52fa19
+prerequisite-patch-id: cf3c7778997c4ca97ab08b195cfe861c565f504c
+prerequisite-patch-id: 0757c9df4b98726a778f260c4c8ac12f764a2a66
+prerequisite-patch-id: 60d1cbbfad4650cce75ffea3253629e8bd9a512c
+prerequisite-patch-id: 6657313f73334d9d56215ce286cb0d96674a9c9d
+prerequisite-patch-id: 352c99d07523c55e000b9df37a938da22bfedb9f
+prerequisite-patch-id: 27176966d0b2d1b98804f3de159a39fcbff0dc9a
+prerequisite-patch-id: 6d0311021d93c54e5a306af2d40f43b482a7ee66
+prerequisite-patch-id: b5d02eeea8fd63acf76bf7ad5235c20e68858d16
+prerequisite-patch-id: f169a13a30c2b09839055a91dd8853c476e8c3f7
+prerequisite-patch-id: 14df2ff4090dc2b7518be5a48feec7711628e0d4
+prerequisite-patch-id: f4d3503460646e4accd4c54f44f9593816fc62a0
+prerequisite-patch-id: 9205bc688a48d7ab778b6bd8454890e1fb7cc039
+prerequisite-patch-id: 48513af66ec62d400de1d559f7e75327610b5686
+prerequisite-patch-id: 2169938ae51c00399f010f88027bf70b05a1d90f
+prerequisite-patch-id: 2b9450e957e69b30414bbf0e1cc3caebd334f654
+prerequisite-patch-id: 0c7d6e599af288ca298bbc59a08246715982a7ab
+prerequisite-patch-id: a2c1416d88c502ef5b7d621325e2f6712e56a3f4
+prerequisite-patch-id: bb6d17d263aa6dab21e87887c98b535595e25c1f
+prerequisite-patch-id: f7fa011b9e279104d8c8e2bf09fb5d3ab3f34b67
+prerequisite-patch-id: 8358ac66a9d65695fb2bc02637cfddf4695ddeaa
+prerequisite-patch-id: 665d9352bf8e6ffc4b7c0ff25659468b5262d4e7
+prerequisite-patch-id: 307e544949317538681dc124fdf2b33df538d897
+prerequisite-patch-id: 31616804feb9f7b6d5e010d5306b0304005d5efe
+prerequisite-patch-id: f8065fb1765262737c2222ad80d2f3d60454e955
+prerequisite-patch-id: d99c3d909e24f1ca3269c1e08034f7936f3a5622
+prerequisite-patch-id: 0e1efe816412e68314ec226f80b2ded7d2fb33a0
+prerequisite-patch-id: 1cf9b69fe0847e9961756cbd69858aecbdab9d1e
+--
+2.32.0
 
