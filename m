@@ -2,117 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5F3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 01:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D235C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 01:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352956AbiCPBet (ORCPT
+        id S1352973AbiCPBgp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 21:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34912 "EHLO
+        Tue, 15 Mar 2022 21:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235181AbiCPBer (ORCPT
+        with ESMTP id S243988AbiCPBgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 21:34:47 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F9C32ECC;
-        Tue, 15 Mar 2022 18:33:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647394414; x=1678930414;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xAHtXDDav9BrhYDuigVnMmC1A+VvTM+jKpTIjJx+T54=;
-  b=FuC3LziPKETAcu0IK6Hp96O3mtF6HD+mzhK1VVunudy9ZM6+jJ0RNkyg
-   sxCeYsgXGGsLqPoXS5+pmKM4e4gQ40a95esK/ys0k7zB3sPBs02u6jLKL
-   j4V6hs+url69lnx7oG0DWyqHIsELOl9RWofhDqjfGdFPSaw5mkREcknay
-   la0dIYQZxvPCg2bp7tWYjCgVf2b4st+1Pp7wMcsT8oQA6uetJPyySGa7R
-   RIk4RtSAScck2w6+Jc5cVmVsKbwkg1xk9NOtiLSQXLCMiwmjFZ5zeCwGi
-   AQ3upHxh5sze3C6/f+mDT0yCYYA2Oz49WIxlfQc5X7ZYabh6M048BpRiH
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256414460"
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="256414460"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 18:33:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="646451611"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 15 Mar 2022 18:33:31 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUIXa-000BlM-8n; Wed, 16 Mar 2022 01:33:30 +0000
-Date:   Wed, 16 Mar 2022 09:32:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Will Deacon <will@kernel.org>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: Re: [PATCH 2/2] thunderbolt: Use pre-boot DMA protection on AMD
- systems
-Message-ID: <202203160904.VB4alCdg-lkp@intel.com>
-References: <20220315162455.5190-2-mario.limonciello@amd.com>
+        Tue, 15 Mar 2022 21:36:43 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6BD4037015;
+        Tue, 15 Mar 2022 18:35:29 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.43:58204.1505761779
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-123.150.8.42 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id 3B5FB10023D;
+        Wed, 16 Mar 2022 09:35:27 +0800 (CST)
+Received: from  ([123.150.8.42])
+        by gateway-153622-dep-749df8664c-nmrf6 with ESMTP id 4a35a6f78a8e472e8eb0b786b74f24f8 for gregkh@linuxfoundation.org;
+        Wed, 16 Mar 2022 09:35:28 CST
+X-Transaction-ID: 4a35a6f78a8e472e8eb0b786b74f24f8
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 123.150.8.42
+X-MEDUSA-Status: 0
+Sender: chensong_2000@189.cn
+Message-ID: <e3567bf5-242d-ecdc-2a51-22c4d7d6f356@189.cn>
+Date:   Wed, 16 Mar 2022 09:35:26 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315162455.5190-2-mario.limonciello@amd.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4] staging: greybus: introduce pwm_ops::apply
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     johan@kernel.org, elder@kernel.org, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        elder@ieee.org
+References: <1646791174-30557-1-git-send-email-chensong_2000@189.cn>
+ <Yi9ZTdcZsdDjecC3@kroah.com>
+From:   Song Chen <chensong_2000@189.cn>
+In-Reply-To: <Yi9ZTdcZsdDjecC3@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mario,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on joro-iommu/next]
-[also build test ERROR on arm-perf/for-next/perf linus/master v5.17-rc8 next-20220315]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Mario-Limonciello/iommu-amd-Add-support-to-indicate-whether-DMA-remap-support-is-enabled/20220316-002821
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220316/202203160904.VB4alCdg-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6b2f50fb47da3baeee10b1906da6e30ac5d26ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/9b0b7079d348c607cba7af4c87eaae1a79e52d91
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Mario-Limonciello/iommu-amd-Add-support-to-indicate-whether-DMA-remap-support-is-enabled/20220316-002821
-        git checkout 9b0b7079d348c607cba7af4c87eaae1a79e52d91
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/thunderbolt/domain.c:9:
->> include/linux/amd-iommu.h:159:52: error: use of undeclared identifier 'ENODEV'
-   static inline int amd_iommu_detect(void) { return -ENODEV; }
-                                                      ^
-   1 error generated.
 
 
-vim +/ENODEV +159 include/linux/amd-iommu.h
+在 2022/3/14 23:03, Greg KH 写道:
+> On Wed, Mar 09, 2022 at 09:59:34AM +0800, Song Chen wrote:
+>> Introduce newer .apply function in pwm_ops to
+>> replace legacy operations,like enable, disable,
+>> config and set_polarity.
+> 
+> You can use the full 72 columns please.
 
-6a9401a7ac13e6 arch/x86/include/asm/amd_iommu.h Joerg Roedel          2009-11-20  158  
-480125ba49ba62 arch/x86/include/asm/amd_iommu.h Konrad Rzeszutek Wilk 2010-08-26 @159  static inline int amd_iommu_detect(void) { return -ENODEV; }
-6a9401a7ac13e6 arch/x86/include/asm/amd_iommu.h Joerg Roedel          2009-11-20  160  
+will do.
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+>> This guarantees atomic changes of the pwm
+>> controller configuration and also reduces the
+>> size of the driver.
+> 
+> The driver is bigger (more lines) with this change, so why do you say it
+> is smaller?
+
+ohh, yes, you are right. I copied from another commit with similar 
+function and didn't count lines carefully.
+
+i will amend the commit message and submit a new one, many thanks.
+
+> 
+> thanks,
+> 
+> greg k-h
+> 
+
+BR
+
+Song
