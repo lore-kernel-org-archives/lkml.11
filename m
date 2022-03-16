@@ -2,91 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 545ADC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 18:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 18:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357789AbiCPSyz (ORCPT
+        id S1357815AbiCPSzz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 14:54:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
+        Wed, 16 Mar 2022 14:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357795AbiCPSyw (ORCPT
+        with ESMTP id S233270AbiCPSzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 14:54:52 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB276192B7;
-        Wed, 16 Mar 2022 11:53:37 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id d18so2546492plr.6;
-        Wed, 16 Mar 2022 11:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=A7w55O8G0c2nEPrllsuJvvxVEkxf0Le9RP1UeeVl+XQ=;
-        b=D+3g3q5fR8JNApiFIYnoruG58vvF4dE2pCXQfNIUgc3xfr15jDxIegFk+NBgiYsd/L
-         kpDv0kEVebU3uyMU7NWYdsYWxAYBionfZWCk4hORaLdzXv4N/1rpEtv5SVLrFtL/w04l
-         un2CmPSTeJ9N17eJjvMI9/6YlX+4eBvHFn4a9blavqKpNbdAxZU/4u5YSa/yPEtx7u0o
-         kiuXsSht7g3cc5adinW3TAiAQ0uLE3EUzscVAcO8vF02iO/3lcacv26EN+VrTl7NjDEm
-         H6LQB3Gj9U/S5LI0y7f0Ifa6sLATU2lJTzRb4ko606WbAIJcr5u8CuygZpZIY4DvTOyX
-         LPHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=A7w55O8G0c2nEPrllsuJvvxVEkxf0Le9RP1UeeVl+XQ=;
-        b=qGJkpG/K85KnC/uMmcBix4LfVvJ8tVm8lptvwsZsWfnnQr9cnF44Kn+WcWV79BUBnH
-         8EtjPNrw35HIzCrmh2nQNEkdUTnK/jgBpkprBKXjNhprKNKtS/YSuDA2XUn2bCQmiDj3
-         UcmjZmJQ+T/hTzfI2c7cr0FPfT9Bzn3RkMJSFQ+kaLpOFATDhE2XEBuneAlD4b/ko7i5
-         sgyfbiqpX/0hkwyO5S+ZyQw67n8JFMahgDWY0w2m9BsQj66kfQcKU5u+p4QWPN4i1A3v
-         HWQaV+o8Fg2ToouzxCjgXL9Q2gBrSTicAePwZXuqmQgX4u2ldGn1NDvDp1iajzJGIw/d
-         BXIA==
-X-Gm-Message-State: AOAM5330a3NxXDFYdYCRyGR8pOzA1a8lQqV3b+kFQFDX7eoJ/R7RxIqw
-        2aYo6T4EdXpgLKJx0S6Fttw=
-X-Google-Smtp-Source: ABdhPJwyQFdsPgh2Od8lbRneNddogCSAAv8JbVJ2fXf0Z4QusEW9fUmZpa/Gn+19PaksjDkUJlDmWA==
-X-Received: by 2002:a17:902:e791:b0:151:dbbd:aeae with SMTP id cp17-20020a170902e79100b00151dbbdaeaemr1262586plb.171.1647456816980;
-        Wed, 16 Mar 2022 11:53:36 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:500::1:57b3])
-        by smtp.gmail.com with ESMTPSA id u126-20020a637984000000b0038147b4f53esm3052558pgc.93.2022.03.16.11.53.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 11:53:36 -0700 (PDT)
-Date:   Wed, 16 Mar 2022 11:53:33 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCHv3 bpf-next 03/13] bpf: Add multi kprobe link
-Message-ID: <20220316185333.ytyh5irdftjcklk6@ast-mbp.dhcp.thefacebook.com>
-References: <20220316122419.933957-1-jolsa@kernel.org>
- <20220316122419.933957-4-jolsa@kernel.org>
+        Wed, 16 Mar 2022 14:55:54 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479C52DD52;
+        Wed, 16 Mar 2022 11:54:40 -0700 (PDT)
+Received: from zn.tnic (p200300ea971561ec329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9715:61ec:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id E72D31EC0347;
+        Wed, 16 Mar 2022 19:54:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1647456875;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=ZKVlRog0zyufiQq5gPxgOQ4dGbYbOvrHBN0ziGtsvuQ=;
+        b=IvZEzbaVFgWZ3CEWQ1NHiW3Vt4+ToGyidLb3XbNHKubqDwStpVJgVqkJk52YGxpgTXXtUb
+        80HLHNc8pc/rlx0AwSxY/ClEEK0sOy0u4Tn8axeoC3PSaJGU8D+eE3jb5E7+lDAe8uqnpQ
+        581a9UeMO73IVmZWkkwKRU6rhvOemFo=
+Date:   Wed, 16 Mar 2022 19:54:31 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Chin En Lin <shiyn.lin@gmail.com>
+Cc:     corbet@lwn.net, tglx@linutronix.de, mingo@redhat.com,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH] Documentation: x86: Fix obsolete name of page fault
+ handler
+Message-ID: <YjIyZyDfg6+Hsq9a@zn.tnic>
+References: <20220314155901.227257-1-shiyn.lin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220316122419.933957-4-jolsa@kernel.org>
+In-Reply-To: <20220314155901.227257-1-shiyn.lin@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 01:24:09PM +0100, Jiri Olsa wrote:
-> +static int
-> +kprobe_multi_link_prog_run(struct bpf_kprobe_multi_link *link,
-> +			   struct pt_regs *regs)
-> +{
-> +	int err;
-> +
-> +	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
-> +		err = 0;
-> +		goto out;
-> +	}
+On Mon, Mar 14, 2022 at 11:59:01PM +0800, Chin En Lin wrote:
+> Since commit 91eeafea1e4b ("x86/entry: Switch page fault
+> exception to IDTENTRY_RAW"), the function name of page
+> fault handler is out of date. This patch change
+> do_page_fault() to exc_page_fault().
 
-That's a heavy hammer.
-It's ok-ish for now, but would be good to switch to
-__this_cpu_inc_return(*(prog->active)) at some point.
-The way fentry/fexit progs do.
+Avoid having "This patch" or "This commit" in the commit message. It is
+tautologically useless.
+
+Also, do
+
+$ git grep 'This patch' Documentation/process
+
+for more details.
+
+Also, do not talk about what your patch does - that should hopefully be
+visible in the diff itself. Rather, talk about *why* you're doing what
+you're doing.
+
+> Signed-off-by: Chin En Lin <shiyn.lin@gmail.com>
+> ---
+>  Documentation/x86/exception-tables.rst | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/x86/exception-tables.rst b/Documentation/x86/exception-tables.rst
+> index de58110c5ffd..0140a06b2705 100644
+> --- a/Documentation/x86/exception-tables.rst
+> +++ b/Documentation/x86/exception-tables.rst
+> @@ -32,14 +32,14 @@ Whenever the kernel tries to access an address that is currently not
+>  accessible, the CPU generates a page fault exception and calls the
+>  page fault handler::
+>  
+> -  void do_page_fault(struct pt_regs *regs, unsigned long error_code)
+> +  void exc_page_fault(struct pt_regs *regs, unsigned long error_code)
+>  
+>  in arch/x86/mm/fault.c. The parameters on the stack are set up by
+>  the low level assembly glue in arch/x86/entry/entry_32.S. The parameter
+>  regs is a pointer to the saved registers on the stack, error_code
+>  contains a reason code for the exception.
+>  
+> -do_page_fault first obtains the unaccessible address from the CPU
+> +exc_page_fault first obtains the unaccessible address from the CPU
+
+Unknown word [unaccessible] in Documentation.
+Suggestions: ['inaccessible', 'accessible', 'accessibly']
+
+Also, put "()" after the function name:
+
+"exc_page_fault() first obtains..."
+
+>  control register CR2. If the address is within the virtual address
+>  space of the process, the fault probably occurred, because the page
+>  was not swapped in, write protected or something similar. However,
+> @@ -281,12 +281,12 @@ vma occurs?
+>  
+>      > c017e7a5 <do_con_write+e1> movb   (%ebx),%dl
+>  #. MMU generates exception
+> -#. CPU calls do_page_fault
+> +#. CPU calls exc_page_fault
+>  #. do page fault calls search_exception_table (regs->eip == c017e7a5);
+
+That is not really true anymore - look at the code and see which
+function calls fixup_exception() now and try to fix that too pls.
+
+>  #. search_exception_table looks up the address c017e7a5 in the
+>     exception table (i.e. the contents of the ELF section __ex_table)
+>     and returns the address of the associated fault handle code c0199ff5.
+> -#. do_page_fault modifies its own return address to point to the fault
+> +#. exc_page_fault modifies its own return address to point to the fault
+>     handle code and returns.
+
+Ditto.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
