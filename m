@@ -2,305 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 853E1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16172C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344042AbiCPQUN (ORCPT
+        id S1346770AbiCPQUs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
+        Wed, 16 Mar 2022 12:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236520AbiCPQUG (ORCPT
+        with ESMTP id S244432AbiCPQUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:20:06 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F23F6D4D5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:18:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647447523; x=1678983523;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zGzQBMOw0Qa4mcBngmsvjT7talS1qvHPfaUEu4hYxNU=;
-  b=j1iOk4UM0GEjWb2NEsFOq+DhG094FS963imDKckOOsZPJXZDAFVhaxo1
-   IiCfBOIRv+LrmalFx8jBR6o5An7HfHW071fSCm1+YXxAdD2mB6Hfx2Glv
-   FVfZE+H0OuvVRpXfNab6R9U+38GoFVsavIu7/alsKZPtVm/ffkKJ3fqDX
-   8L+GupGfnUC/hRYwm0McASubwstWRhMOSUBF8uo8+YaSe7qFXpK6A9MgB
-   oV/RBwZHR8vYT7xXnwHRqMoJpcKT2zks4QtdTMFYlEL4EhUUfVcXkTBNx
-   xqS5w7eNJz4Nh85rWJhpGBPwruRfRdbbrUnkEXQpa1JQbUNrqQFeZ85cs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="244102227"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="244102227"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:14:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="646721998"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 16 Mar 2022 09:14:03 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUWHi-000CbO-Ak; Wed, 16 Mar 2022 16:14:02 +0000
-Date:   Thu, 17 Mar 2022 00:13:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chanho Park <chanho61.park@samsung.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
- 1318/9999] undefined reference to `rtnl_is_locked'
-Message-ID: <202203170015.WBOInNU6-lkp@intel.com>
+        Wed, 16 Mar 2022 12:20:41 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C286D4D9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:19:16 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id d10so5242288eje.10
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:19:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9R+r1ohG1xCnpzC1qrsRmiSwShPkfg0ZOVxajhsdBXQ=;
+        b=qi9FqeLpLieqgQ59FaHOoa+yZmTX88lHcN3nvMY9vttgnNQqJJFXReFu54ETu5sZhG
+         ol+10DgD84IYFTcb6bqne0P4eM47tjCOXAFSakQRAMKrLnZ0JcLIVD9d6JTKAUlOqQxC
+         i4H4ax9AxxtyaSAgVGLgmqLDVbV0d2ZgeFqYeYX4BsqoQtbbE7wZtXvcKEZO1gJletKa
+         BUEsCy8Y10vn5Y21uOm4eV2GcQCMoMGAuT84ujf6vEq5pWjBlUobUwBaROrHHwWt/iIt
+         GlDlteycpbqQSDQL31WqLIHl5cqYeZnoVPDjwp3ZXGvwFrFEs9kEQ9sWL3jxykiYAPsx
+         7wnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9R+r1ohG1xCnpzC1qrsRmiSwShPkfg0ZOVxajhsdBXQ=;
+        b=e05jicfz5w6pjmbQ/Q62EAMgv6us73BT/DtJERD0bOLGKQ/IwAn4tsmEicFzuJOWtm
+         1n0lRI4tAUR0u8u04UFjHzJxNSVejAExAxeFDInL+GV82P/a/kbFJpUaKVk9CO4byt3g
+         BT9Dx6B+FjHTzjJSYk+9F7tc7SmXnW93SuVh+DetVe2+BAN9UjMgnrH1x7KzBu7xpcSK
+         PIqNBpuwOr2sZS0isRL/1PKyVN95QJgXuZOxTvbj9VgayApRC/LorRXOwR2j57tBcJ8U
+         zyDND8dySHpCGWFRX8Ch3xqFKDPU5LG2ErN0r4odmievDSKPXerUsiUIyijIfjzUvHM6
+         SlkA==
+X-Gm-Message-State: AOAM533ksoGq3RzxmUlQUtXjd09370weBNjFE+N5obDJHHI6SiNRMcDj
+        x3wtEHQ7t+0Q3G2AsgcurVo+Cp6fRk/CoCLtWjl4MUFI+S7oBw==
+X-Google-Smtp-Source: ABdhPJzkyHYoHaQHM8GNWqhExHqyYScznfMyfLqJcNZrFrej94rfPlOBntdNphvEe68f7Vztb+3Wp8jOrmKfnkef6sU=
+X-Received: by 2002:a17:907:1609:b0:6db:b385:d13b with SMTP id
+ hb9-20020a170907160900b006dbb385d13bmr608694ejc.542.1647447554142; Wed, 16
+ Mar 2022 09:19:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220316024432.1454366-1-dlatypov@google.com> <CABVgOSkvmuiHfG11VRsQhigOLw_-5HYWjJrQrA4Vy18MvUpW9w@mail.gmail.com>
+In-Reply-To: <CABVgOSkvmuiHfG11VRsQhigOLw_-5HYWjJrQrA4Vy18MvUpW9w@mail.gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Wed, 16 Mar 2022 11:19:02 -0500
+Message-ID: <CAGS_qxpCoyr0_xpRVpjMwAALn49iShGAs-MuBrYHwrEJhKcZUA@mail.gmail.com>
+Subject: Re: [PATCH] kunit: split resource API from test.h into new resource.h
+To:     David Gow <davidgow@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
-head:   1acd05fd846bd82c1394cdcc20b7786d0f309a2c
-commit: 36ab8cea47b0d4a3c5067577430c147a903b5261 [1318/9999] ANDROID: GKI: Kconfig.gki: Add GKI_HIDDEN_ETHERNET_CONFIGS
-config: arm-buildonly-randconfig-r002-20220316 (https://download.01.org/0day-ci/archive/20220317/202203170015.WBOInNU6-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/36ab8cea47b0d4a3c5067577430c147a903b5261
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.10
-        git checkout 36ab8cea47b0d4a3c5067577430c147a903b5261
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
+On Wed, Mar 16, 2022 at 12:41 AM David Gow <davidgow@google.com> wrote:
+>
+> On Wed, Mar 16, 2022 at 10:44 AM Daniel Latypov <dlatypov@google.com> wrote:
+> >
+> > Background:
+> > Currently, a reader looking at kunit/test.h will find the file is quite
+> > long, and the first meaty comment is a doc comment about struct
+> > kunit_resource.
+> >
+> > Most users will not ever use the KUnit resource API directly.
+> > They'll use kunit_kmalloc() and friends, or decide it's simpler to do
+> > cleanups via labels (it often can be) instead of figuring out how to use
+> > the API.
+> >
+>
+> A depressing (but probably not untrue) thought. I think that, even if
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I'm not sure it's that depressing.
+Without some compiler support (e.g. GCC's `cleanup`), I can see there
+being a number of one-off things that don't warrant formalizing into a
+resource.
 
-All errors (new ones prefixed by >>):
+More detail:
+It works OK when there's one pointer parameter, e.g. [1], but I feel
+like you'd normally need to capture at least one more local variable.
+So then you need to define a new struct to hold all the values, which
+is where I'd draw the line personally.
 
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_cleanup':
-   hvc_console.c:(.text+0x25c): undefined reference to `tty_port_put'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_set_winsz':
-   hvc_console.c:(.text+0x2f8): undefined reference to `tty_port_tty_get'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0x330): undefined reference to `tty_do_resize'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_hangup':
-   hvc_console.c:(.text+0x434): undefined reference to `tty_port_tty_set'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_remove':
-   (.text+0x588): undefined reference to `tty_port_tty_get'
-   arm-linux-gnueabi-ld: (.text+0x5dc): undefined reference to `tty_port_put'
-   arm-linux-gnueabi-ld: (.text+0x5e8): undefined reference to `tty_vhangup'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `__hvc_poll':
-   hvc_console.c:(.text+0x6a8): undefined reference to `tty_port_tty_get'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0x6dc): undefined reference to `tty_buffer_request_room'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0x75c): undefined reference to `tty_hangup'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0x784): undefined reference to `tty_wakeup'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0x7ac): undefined reference to `tty_flip_buffer_push'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0x8c4): undefined reference to `__tty_insert_flip_char'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_alloc':
-   (.text+0xacc): undefined reference to `__tty_alloc_driver'
-   arm-linux-gnueabi-ld: (.text+0xb38): undefined reference to `tty_set_operations'
-   arm-linux-gnueabi-ld: (.text+0xb70): undefined reference to `tty_register_driver'
-   arm-linux-gnueabi-ld: (.text+0xb90): undefined reference to `put_tty_driver'
-   arm-linux-gnueabi-ld: (.text+0xbe0): undefined reference to `tty_port_init'
-   arm-linux-gnueabi-ld: (.text+0xd20): undefined reference to `tty_std_termios'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_open':
-   hvc_console.c:(.text+0xdf8): undefined reference to `tty_port_tty_set'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_close':
-   hvc_console.c:(.text+0xe94): undefined reference to `tty_hung_up_p'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0xed4): undefined reference to `tty_port_tty_set'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0xf38): undefined reference to `tty_wait_until_sent'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_instantiate':
-   (.text+0x1088): undefined reference to `tty_port_put'
-   arm-linux-gnueabi-ld: drivers/tty/hvc/hvc_console.o: in function `hvc_install':
-   hvc_console.c:(.text+0x10f0): undefined reference to `tty_port_install'
-   arm-linux-gnueabi-ld: hvc_console.c:(.text+0x10fc): undefined reference to `tty_port_put'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_get_fixed_state':
-   phylink.c:(.text+0x29c): undefined reference to `linkmode_resolve_pause'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_decode_c37_word':
-   phylink.c:(.text+0x3dc): undefined reference to `linkmode_resolve_pause'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_get_pauseparam':
->> (.text+0x4fc): undefined reference to `rtnl_is_locked'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_disconnect_phy':
-   (.text+0x570): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x5c8): undefined reference to `phy_disconnect'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_get_wol':
-   (.text+0x5e4): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x604): undefined reference to `phy_ethtool_get_wol'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_set_wol':
-   (.text+0x620): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x634): undefined reference to `phy_ethtool_set_wol'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_get_eee_err':
-   (.text+0x654): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x664): undefined reference to `phy_get_eee_err'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_init_eee':
->> (.text+0x688): undefined reference to `phy_init_eee'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_get_eee':
-   (.text+0x6ac): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x6c0): undefined reference to `phy_ethtool_get_eee'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_set_eee':
-   (.text+0x6e4): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x6f8): undefined reference to `phy_ethtool_set_eee'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_mii_c22_pcs_get_state':
->> (.text+0x72c): undefined reference to `mdiobus_read'
->> arm-linux-gnueabi-ld: (.text+0x740): undefined reference to `mdiobus_read'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_mii_c22_pcs_an_restart':
-   (.text+0x844): undefined reference to `mdiobus_read'
->> arm-linux-gnueabi-ld: (.text+0x868): undefined reference to `mdiobus_write'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_mii_emul_read':
-   phylink.c:(.text+0x8d8): undefined reference to `swphy_read_reg'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_major_config':
-   phylink.c:(.text+0x9d4): undefined reference to `netdev_printk'
->> arm-linux-gnueabi-ld: phylink.c:(.text+0xa44): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_nway_reset':
-   (.text+0xac4): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0xad0): undefined reference to `phy_restart_aneg'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_phy_change':
-   phylink.c:(.text+0xcb4): undefined reference to `phy_get_pause'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_set_pauseparam':
-   (.text+0xd54): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0xdec): undefined reference to `linkmode_set_pause'
->> arm-linux-gnueabi-ld: (.text+0xe54): undefined reference to `phy_set_asym_pause'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_link_down':
-   phylink.c:(.text+0xe9c): undefined reference to `netif_carrier_off'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0xed8): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_mii_c45_pcs_get_state':
-   (.text+0xfa4): undefined reference to `mdiobus_read'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_speed_down':
-   (.text+0x1010): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x1030): undefined reference to `phy_speed_down'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_speed_up':
-   (.text+0x1050): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x106c): undefined reference to `phy_speed_up'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_stop':
-   (.text+0x108c): undefined reference to `rtnl_is_locked'
->> arm-linux-gnueabi-ld: (.text+0x1098): undefined reference to `phy_stop'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_bringup_phy':
-   phylink.c:(.text+0x1174): undefined reference to `phy_support_asym_pause'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x1218): undefined reference to `netdev_printk'
->> arm-linux-gnueabi-ld: phylink.c:(.text+0x1248): undefined reference to `phy_attached_info_irq'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x1288): undefined reference to `netdev_printk'
->> arm-linux-gnueabi-ld: phylink.c:(.text+0x1328): undefined reference to `phy_request_interrupt'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_connect_phy':
-   (.text+0x13b8): undefined reference to `phy_attach_direct'
-   arm-linux-gnueabi-ld: (.text+0x13dc): undefined reference to `phy_detach'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_resolve':
-   phylink.c:(.text+0x1788): undefined reference to `netif_carrier_on'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x17a4): undefined reference to `phy_speed_to_str'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x17b0): undefined reference to `phy_duplex_to_str'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x17e4): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x17f8): undefined reference to `phy_speed_to_str'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x1800): undefined reference to `phy_duplex_to_str'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_mii_ioctl':
-   (.text+0x1854): undefined reference to `rtnl_is_locked'
-   arm-linux-gnueabi-ld: (.text+0x18c4): undefined reference to `mdiobus_read'
-   arm-linux-gnueabi-ld: (.text+0x19c4): undefined reference to `mdiobus_write'
-   arm-linux-gnueabi-ld: (.text+0x1a68): undefined reference to `phy_mii_ioctl'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_parse_mode':
-   phylink.c:(.text+0x1c0c): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x1ea8): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_parse_fixedlink':
-   phylink.c:(.text+0x2050): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x20e8): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x2128): undefined reference to `phy_lookup_setting'
-   arm-linux-gnueabi-ld: phylink.c:(.text+0x21d8): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_ksettings_get':
-   (.text+0x24e0): undefined reference to `rtnl_is_locked'
-   arm-linux-gnueabi-ld: (.text+0x24f8): undefined reference to `phy_ethtool_ksettings_get'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_mii_c22_pcs_set_advertisement':
-   (.text+0x25d4): undefined reference to `mdiobus_read'
-   arm-linux-gnueabi-ld: (.text+0x2600): undefined reference to `mdiobus_read'
-   arm-linux-gnueabi-ld: (.text+0x2624): undefined reference to `mdiobus_write'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_mii_c22_pcs_config':
-   (.text+0x2684): undefined reference to `mdiobus_modify'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_start':
-   (.text+0x26cc): undefined reference to `rtnl_is_locked'
-   arm-linux-gnueabi-ld: (.text+0x2714): undefined reference to `netdev_printk'
-   arm-linux-gnueabi-ld: (.text+0x2720): undefined reference to `netif_carrier_off'
-   arm-linux-gnueabi-ld: (.text+0x2818): undefined reference to `phy_start'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_ksettings_set.part.0':
-   phylink.c:(.text+0x29bc): undefined reference to `phy_lookup_setting'
-   arm-linux-gnueabi-ld: drivers/net/phy/phylink.o: in function `phylink_ethtool_ksettings_set':
-   (.text+0x2b7c): undefined reference to `rtnl_is_locked'
-   arm-linux-gnueabi-ld: (.text+0x2b90): undefined reference to `phy_ethtool_ksettings_set'
-   arm-linux-gnueabi-ld: drivers/android/debug_symbols.o:(.rodata+0x14): undefined reference to `__per_cpu_start'
-   arm-linux-gnueabi-ld: drivers/android/debug_symbols.o:(.rodata+0x1c): undefined reference to `__per_cpu_end'
+[1] https://elixir.bootlin.com/linux/v5.17-rc8/source/lib/kunit/executor_test.c#L182
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for USB_PHY
-   Depends on USB_SUPPORT
-   Selected by
-   - GKI_HIDDEN_USB_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_JACK
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_JACK_INPUT_DEV
-   Depends on SOUND && !UML && SND && SND_JACK
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_PCM_ELD
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for HVC_DRIVER
-   Depends on TTY
-   Selected by
-   - GKI_HIDDEN_VIRTUAL_CONFIGS
-   WARNING: unmet direct dependencies detected for DRM_GEM_CMA_HELPER
-   Depends on HAS_IOMEM && DRM
-   Selected by
-   - GKI_HIDDEN_DRM_CONFIGS
-   WARNING: unmet direct dependencies detected for WEXT_PROC
-   Depends on NET && WIRELESS && PROC_FS && WEXT_CORE
-   Selected by
-   - GKI_LEGACY_WEXT_ALLCONFIG
-   WARNING: unmet direct dependencies detected for WEXT_PRIV
-   Depends on NET && WIRELESS
-   Selected by
-   - GKI_LEGACY_WEXT_ALLCONFIG
-   WARNING: unmet direct dependencies detected for PAGE_POOL
-   Depends on NET
-   Selected by
-   - GKI_HIDDEN_NET_CONFIGS
-   WARNING: unmet direct dependencies detected for WEXT_SPY
-   Depends on NET && WIRELESS
-   Selected by
-   - GKI_LEGACY_WEXT_ALLCONFIG
-   WARNING: unmet direct dependencies detected for PHYLINK
-   Depends on NETDEVICES
-   Selected by
-   - GKI_HIDDEN_ETHERNET_CONFIGS
-   WARNING: unmet direct dependencies detected for DRM_MIPI_DSI
-   Depends on HAS_IOMEM && DRM
-   Selected by
-   - GKI_HIDDEN_DRM_CONFIGS
-   WARNING: unmet direct dependencies detected for WIRELESS_EXT
-   Depends on NET && WIRELESS
-   Selected by
-   - GKI_LEGACY_WEXT_ALLCONFIG
-   WARNING: unmet direct dependencies detected for WEXT_CORE
-   Depends on NET && WIRELESS && (CFG80211_WEXT || WIRELESS_EXT
-   Selected by
-   - GKI_LEGACY_WEXT_ALLCONFIG
-   WARNING: unmet direct dependencies detected for NET_PTP_CLASSIFY
-   Depends on NET
-   Selected by
-   - GKI_HIDDEN_NET_CONFIGS
-   WARNING: unmet direct dependencies detected for DRM_KMS_CMA_HELPER
-   Depends on HAS_IOMEM && DRM
-   Selected by
-   - GKI_HIDDEN_DRM_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_VMASTER
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_PCM_IEC958
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_SOC_CONFIGS
+> most people were to use the resource API, having it in test.h makes it
+> harder, as having the resource functions separate makes it easier to
+> understand as well.
+>
+> > It's also logically separate from everything else in test.h.
+> > Removing it from the file doesn't cause any compilation errors (since
+> > struct kunit has `struct list_head resources` to store them).
+> >
+> > This commit:
+> > Let's move it into a kunit/resource.h file and give it a separate page
+> > in the docs, kunit/api/resource.rst.
+>
+> Yay! This makes a lot of sense to me, as I've wasted a lot of time
+> scrolling through test.h.
+>
+> >
+> > We include resource.h at the bottom of test.h since
+> > * don't want to force existing users to add a new include if they use the API
+> > * it accesses `lock` inside `struct kunit` in a inline func
+> >   * so we can't just forward declare, and the alternatives require
+> >     uninlining the func, adding hepers to lock/unlock, or other more
+> >     invasive changes.
+>
+> I don't like this, but still think it's an improvement on what we have
+> now. Ultimately, I think adding helpers to lock/unlock or similar and
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Yes, I can see us maybe needing this in the future.
+Right now, outside of test.c, there's only one callsite for each (in
+resource.h).
+
+> making users include this separately is probably the right thing to
+> do, as nesting the headers like this is a bit ugly, but I won't lose
+> sleep over leaving it till later.
+
+Ack, I can add a TODO to indicate we want to clean this up?
+It's a bit annoying right now, but it'll only get more annoying in the future.
+
+>
+> >
+> > Now the first big comment in test.h is about kunit_case, which is a lot
+> > more relevant to what a new user wants to know.
+> >
+> > A side effect of this is git blame won't properly track history by
+> > default, users need to run
+> > $ git blame -L ,1 -C17 include/kunit/resource.h
+>
+> This is a pain, but is probably worth it. Thanks for including the
+> command in the commit message, which should mitigate it slightly.
+>
+> >
+> > Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> > ---
+>
+> This was starting to annoy me, too, as it was a pain to read through
+> everything in test.h. It'll be a bit of short-term pain,
+> merge-conflict wise if we have other changes to the resource system
+> (which I fear is likely), but is worth it.
+>
+> Reviewed-by: David Gow <davidgow@google.com>
+>
+> -- David
+>
+> >
+> > NOTE: this file doesn't split out code from test.c to a new resource.c
+> > file.
+> > I'm primarily concerned with users trying to read the headers, so I
+> > didn't think messing up git blame (w/ default settings) was worth it.
+> > But I can make that change if it feels appropriate (it might also be
+> > messier).
+>
+> Personally, I think it's probably worth splitting this out as well.
+> And the sooner we do it, the less history we'll obscure. :-)
+
+Yeah, that was my thought.
+But if you think this would help users, then I think we have a case to
+make this change.
+
+Should I send a v2 with resource.c split out?
+Brendan (and any others who have an opinion), what's your preference?
+>
+> But I agree, it's less of an issue as it only directly affects people
+> working on KUnit itself. Though making it easier for users to find and
+> read the implementation of these functions could help them understand
+> API "gotchas", so I think it's worthwhile.
+>
+> >
+> > ---
+> >  Documentation/dev-tools/kunit/api/index.rst   |   5 +
+> >  .../dev-tools/kunit/api/resource.rst          |  13 +
+> >  include/kunit/resource.h                      | 319 ++++++++++++++++++
+> >  include/kunit/test.h                          | 301 +----------------
+> >  4 files changed, 339 insertions(+), 299 deletions(-)
+> >  create mode 100644 Documentation/dev-tools/kunit/api/resource.rst
+> >  create mode 100644 include/kunit/resource.h
+> >
+> <...snip...>
