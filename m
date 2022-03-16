@@ -2,79 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B9CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD503C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354641AbiCPIv5 (ORCPT
+        id S1354648AbiCPIwK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 04:51:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
+        Wed, 16 Mar 2022 04:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235424AbiCPIvz (ORCPT
+        with ESMTP id S1354643AbiCPIwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 04:51:55 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF9064BD2
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 01:50:41 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id u3so3155613ybh.5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 01:50:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bg/byEWlTWIwifYckEgQwSgSeHn+FEnQHWnGn7POTSs=;
-        b=KfoJ64Qqg382BsKMbnA/sTahOKPrspF5pI84AyTYRRs+Defudw6y1KfA+aloBCFx3Q
-         aLYxCaA64PlAMKcVvhL0vAi38YRho9oahm15F31M51Kbug6TRYtp/mTueY8xertFLrHY
-         IzRWzhVbvhosIv0oaayfcrbYhzmo0VCvURHtNXvdbzWyEuKre4yCsF4FxKe2hFNwDr88
-         bMADaAjIKaQ6Ge4zfHuNf4KdgDeSRD5+2P644B+W95jWl5R3OPGkGXqAkfs4KS1KOlX9
-         eOE80pZBJpa82+6AG1pJoFktg4wZiEzyxZ1b4D528N3ZaXEc2lU3ZQqj8hVyRgmQVoRj
-         JqnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bg/byEWlTWIwifYckEgQwSgSeHn+FEnQHWnGn7POTSs=;
-        b=7Up7j+ez3lTWLGhPgtQkopte3VTbhNT68iB+7/2hs9carDlK29r3rB8+0tq7TR6vba
-         9aYtywhoQxkKF3aN98jEROiJzxHQe4+ALB/sAjYSQd3i4o31Stq6T6TKxRfgdKRV+qnX
-         UzvnAkZvTP/37htVLod0zNfIR3Lh9/jUbVOwNmKcSllyGe38HL/1LeiRpeDDSfPSNkls
-         6aLGdmlT4DYZtXTs8W0AfKiumYlype2NSxFj8U6dkiwINRNuC6UF33dH7dmwU2qXXlv5
-         2o5CAOQNCMKUE6yqh54KHQmACgHebxDV8smdi+CdF7oQPY5QITt9Vp7G5E987i+clqLU
-         9pqw==
-X-Gm-Message-State: AOAM53148u7c2FseZ3cpO8uzjvFFXvLgbS8uvOobR18zeccRK0aeCbkR
-        zW3FjgfNshq65fp6FNfnQvyt71ByiCzz1siCsy2/cg==
-X-Google-Smtp-Source: ABdhPJzQXBkBdb0q5ntMDsNA/5LETFJLW66NOMZ828aO4vfYyl/rSAPR7nDThocO00eKUQ5R8NI3oXwVIOf7j4K6dl0=
-X-Received: by 2002:a25:dc4:0:b0:629:2337:f9ea with SMTP id
- 187-20020a250dc4000000b006292337f9eamr27008652ybn.6.1647420641261; Wed, 16
- Mar 2022 01:50:41 -0700 (PDT)
+        Wed, 16 Mar 2022 04:52:07 -0400
+Received: from mxout02.lancloud.ru (mxout02.lancloud.ru [45.84.86.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB7264BED;
+        Wed, 16 Mar 2022 01:50:48 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru BD0CE22EF33C
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH] pata_parport: add driver (PARIDE replacement)
+To:     Ondrej Zary <linux@zary.sk>
+CC:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        Tim Waugh <tim@cyberelk.net>, <linux-block@vger.kernel.org>,
+        <linux-parport@lists.infradead.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220312144415.20010-1-linux@zary.sk>
+ <a8189d8e-03e2-1b6f-3251-8e44e4e5e423@omp.ru>
+ <202203132219.59100.linux@zary.sk>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <68e572f6-e1b6-8d04-900d-8621f607f3bc@omp.ru>
+Date:   Wed, 16 Mar 2022 11:50:44 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20220316031602.377452-1-luofei@unicloud.com>
-In-Reply-To: <20220316031602.377452-1-luofei@unicloud.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Wed, 16 Mar 2022 16:48:51 +0800
-Message-ID: <CAMZfGtVi7zOM7pdj1rv1OY2VyOpKQU45YFjM4KqMEQn=KGHq3w@mail.gmail.com>
-Subject: Re: [PATCH v2] hugetlb: Fix comments about avoiding atomic allocation
- of vmemmap pages
-To:     luofei <luofei@unicloud.com>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <202203132219.59100.linux@zary.sk>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:16 AM luofei <luofei@unicloud.com> wrote:
->
-> Since there is no longer an atomic allocation of vmemmap pages,
-> but a fixed flag(GFP_KERNEL | __GFP_NORETRY | __GFP_THISNODE) is
-> used. The description of atomicity here is some what inappropriate.
->
-> And the atomic parameter naming of update_and_free_page() may
-> be misleading, add a comment here.
->
-> Signed-off-by: luofei <luofei@unicloud.com>
+Hello!
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+On 3/14/22 12:19 AM, Ondrej Zary wrote:
 
-Thanks.
+[...]
+>>> The pata_parport is a libata-based replacement of the old PARIDE
+>>> subsystem - driver for parallel port IDE devices.
+>>> It uses the original paride low-level protocol drivers but does not
+>>> need the high-level drivers (pd, pcd, pf, pt, pg). The IDE devices
+>>> behind parallel port adapters are handled by the ATA layer.
+>>>
+>>> This will allow paride and its high-level drivers to be removed.
+>>>
+>>> paride and pata_parport are mutually exclusive because the compiled
+>>> protocol drivers are incompatible.
+>>>
+>>> Tested with Imation SuperDisk LS-120 and HP C4381A (both use EPAT
+>>> chip).
+>>>
+>>> Note: EPP-32 mode is buggy in EPAT - and also in all other protocol
+>>> drivers - they don't handle non-multiple-of-4 block transfers
+>>> correctly. This causes problems with LS-120 drive.
+>>> There is also another bug in EPAT: EPP modes don't work unless a 4-bit
+>>> or 8-bit mode is used first (probably some initialization missing?).
+>>> Once the device is initialized, EPP works until power cycle.
+>>>
+>>> So after device power on, you have to:
+>>> echo "parport0 epat 0" >/sys/bus/pata_parport/new_device
+>>> echo pata_parport.0 >/sys/bus/pata_parport/delete_device
+>>> echo "parport0 epat 4" >/sys/bus/pata_parport/new_device
+>>> (autoprobe will initialize correctly as it tries the slowest modes
+>>> first but you'll get the broken EPP-32 mode)
+>>>
+>>> Signed-off-by: Ondrej Zary <linux@zary.sk>
+>> [...]
+>>> diff --git a/Documentation/admin-guide/blockdev/paride.rst b/Documentation/admin-guide/blockdev/paride.rst
+>>> index e1ce90af602a..e431a1ef41eb 100644
+>>> --- a/Documentation/admin-guide/blockdev/paride.rst
+>>> +++ b/Documentation/admin-guide/blockdev/paride.rst
+>> [...]
+>>> diff --git a/drivers/ata/pata_parport.c b/drivers/ata/pata_parport.c
+>>> new file mode 100644
+>>> index 000000000000..783764626a27
+>>> --- /dev/null
+>>> +++ b/drivers/ata/pata_parport.c
+>>> @@ -0,0 +1,819 @@
+>> [...]
+>>> +static void pata_parport_lost_interrupt(struct ata_port *ap)
+>>> +{
+>>> +	u8 status;
+>>> +	struct ata_queued_cmd *qc;
+>>> +
+>>> +	/* Only one outstanding command per SFF channel */
+>>> +	qc = ata_qc_from_tag(ap, ap->link.active_tag);
+>>> +	/* We cannot lose an interrupt on a non-existent or polled command */
+>>> +	if (!qc || qc->tf.flags & ATA_TFLAG_POLLING)
+>>> +		return;
+>>> +	/*
+>>> +	 * See if the controller thinks it is still busy - if so the command
+>>> +	 * isn't a lost IRQ but is still in progress
+>>> +	 */
+>>> +	status = pata_parport_check_altstatus(ap);
+>>> +	if (status & ATA_BUSY)
+>>> +		return;
+>>> +
+>>> +	/*
+>>> +	 * There was a command running, we are no longer busy and we have
+>>> +	 * no interrupt.
+>>> +	 */
+>>> +	ata_port_warn(ap, "lost interrupt (Status 0x%x)\n", status);
+>>> +	/* Run the host interrupt logic as if the interrupt had not been lost */
+>>> +	ata_sff_port_intr(ap, qc);
+>>> +}
+>>
+>>    As I said, ata_sff_lost_interrupt() could be used instead...
+> 
+> It couldn't be used because it calls ata_sff_altstatus().
+
+   And? That one used to call the sff_check_altstatus() method (which you define)
+even before my patch:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/dlemoal/libata.git/commit/?h=for-next&id=03c0e84f9c1e166d57d06b04497e11205f48e9a8
+
+[...]
+>>> diff --git a/include/linux/pata_parport.h b/include/linux/pata_parport.h
+>>> new file mode 100644
+>>> index 000000000000..f1ba57bb319c
+>>> --- /dev/null
+>>> +++ b/include/linux/pata_parport.h
+>>> @@ -0,0 +1,108 @@
+[...]
+>>> +static inline u16 pi_swab16(char *b, int k)
+>>> +{
+>>> +	union { u16 u; char t[2]; } r;
+>>> +
+>>> +	r.t[0] = b[2 * k + 1]; r.t[1] = b[2 * k];
+>>> +	return r.u;
+>>> +}
+>>> +
+>>> +static inline u32 pi_swab32(char *b, int k)
+>>> +{
+>>> +	union { u32 u; char f[4]; } r;
+>>> +
+>>> +	r.f[0] = b[4 * k + 1]; r.f[1] = b[4 * k];
+>>> +	r.f[2] = b[4 * k + 3]; r.f[3] = b[4 * k + 2];
+>>> +	return r.u;
+>>
+>>    Hey, I was serious about swab{16|32}p()! Please don't use home grown byte
+>> swapping...
+> 
+> This crap comes from old paride.h and we can't get rid of it without touching the protocol drivers
+
+   I don't argue about the *inline*s themselves, just about the ineffective code inside them.
+
+> (comm.c and kbic.c). Maybe use something like:
+> 
+> #define pi_swab16(char *b, int k) 	swab16p((u16 *)&b[2 * k])
+
+> but I'm not sure it's equivalent on a big-endian machine.
+
+   These functions are endian-agnostic -- they swap always.
+   If you only need to swab the bytes on big-endian machines, you should use cpu_to_le*() and/or
+le*_to_cpu()...
+
+[...]
+
+MBR, Sergey
