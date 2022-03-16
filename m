@@ -2,85 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0971AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E33DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353645AbiCPFiw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 01:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
+        id S237296AbiCPFjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 01:39:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237378AbiCPFiw (ORCPT
+        with ESMTP id S237378AbiCPFji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 01:38:52 -0400
-X-Greylist: delayed 165 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Mar 2022 22:37:32 PDT
-Received: from p3plwbeout22-03.prod.phx3.secureserver.net (p3plsmtp22-03-2.prod.phx3.secureserver.net [68.178.252.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EAB5AA6C
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:37:32 -0700 (PDT)
-Received: from mailex.mailcore.me ([94.136.40.145])
-        by :WBEOUT: with ESMTP
-        id UMJ4nqLNFQy6SUMJ5nkJX5; Tue, 15 Mar 2022 22:34:47 -0700
-X-CMAE-Analysis: v=2.4 cv=FaryeLy6 c=1 sm=1 tr=0 ts=623176f7
- a=7e6w4QD8YWtpVJ/7+iiidw==:117 a=84ok6UeoqCVsigPHarzEiQ==:17
- a=ggZhUymU-5wA:10 a=o8Y5sQTvuykA:10 a=vqTx_GAQ2IFItUb59xIA:9
-X-SECURESERVER-ACCT: phillip@squashfs.org.uk  
-X-SID:  UMJ4nqLNFQy6S
-Received: from 82-69-79-175.dsl.in-addr.zen.co.uk ([82.69.79.175] helo=linux.fritz.box)
-        by smtp05.mailcore.me with esmtpa (Exim 4.94.2)
-        (envelope-from <phillip@squashfs.org.uk>)
-        id 1nUMJ3-0006eR-KR; Wed, 16 Mar 2022 05:34:45 +0000
-From:   Phillip Lougher <phillip@squashfs.org.uk>
-To:     a.fatoum@pengutronix.de
-Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        squashfs-devel@lists.sourceforge.net, phillip.lougher@gmail.com
-Subject: Re: Possible performance regression with CONFIG_SQUASHFS_DECOMP_SINGLE
-Date:   Wed, 16 Mar 2022 05:34:28 +0000
-Message-Id: <20220316053428.5758-1-phillip@squashfs.org.uk>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <c22a0f1c-883d-5122-ef88-0d7c57ab4e66@pengutronix.de>
-References: <c22a0f1c-883d-5122-ef88-0d7c57ab4e66@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mailcore-Auth: 439999529
-X-Mailcore-Domain: 1394945
-X-123-reg-Authenticated:  phillip@squashfs.org.uk  
-X-Originating-IP: 82.69.79.175
-X-CMAE-Envelope: MS4xfCPa6kHz3QF4r1daMeurJ0E5vtl8V/SGuxB3hbNd8D4SknkTLfXkUIGtv9OMibeon9SSx9xYtp/yMhfkeiS6jzqexenC6CxqGc2x71fEUroplIES+D4T
- FWiihfwDS7ZtRcwcc1z8lbIUzWimpkcbn0DNJyVIjYmQB0f4SOnIm7jPQb/8r/Tmt6iPNWh1t6yg2D4/bw/kDHoJb2dl0hH1O3Q=
+        Wed, 16 Mar 2022 01:39:38 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB065FF3D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:38:24 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 7B3E02004A6;
+        Wed, 16 Mar 2022 06:38:23 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 16A202003D3;
+        Wed, 16 Mar 2022 06:38:23 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 9338E183AD0B;
+        Wed, 16 Mar 2022 13:38:21 +0800 (+08)
+From:   Shengjiu Wang <shengjiu.wang@nxp.com>
+To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: fsl_spdif: Add new registers included on i.MX8ULP
+Date:   Wed, 16 Mar 2022 13:28:58 +0800
+Message-Id: <1647408538-2982-1-git-send-email-shengjiu.wang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
+There are some new registers added on i.MX8ULP, they are
+the SPDIF transmit Professional C channel registers,
+192bit SPDIF receive C channel registers, and 192bit SPDIF
+transmit C channel registers.
 
-> Hello,
-> 
-> This an issue we had with v5.15 that we have since successfully worked around.
-> I am reporting it here as a pointer in case someone else runs into this and as
-> a heads up that there seems to be an underlying performance regression, so
-> here it goes:
-> 
+There are two output lines, SPDIF_OUT1 and SPDIF_OUT2, the
+original REG_SPDIF_STCSCH and REG_SPDIF_STCSCL are used for
+SPDIF_OUT1, the new REG_SPDIF_STCSPH and REG_SPDIF_STCSPL
+are used for SPDIF_OUT2, the 192bit SPDIF C channel registers
+are used for both.
 
-[snip]
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+---
+ sound/soc/fsl/fsl_spdif.c | 52 ++++++++++++++++++++++++++++++++++++++-
+ sound/soc/fsl/fsl_spdif.h | 14 +++++++++++
+ 2 files changed, 65 insertions(+), 1 deletion(-)
 
-> 
-> Looking through the original kernel configuration we found that it has
->  CONFIG_SQUASHFS_DECOMP_SINGLE=y and CONFIG_SQUASHFS_FILE_CACHE=y.
-> 
-> Once changed to CONFIG_SQUASHFS_FILE_DIRECT=y and
-> CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y, we were below 40s as we want.
+diff --git a/sound/soc/fsl/fsl_spdif.c b/sound/soc/fsl/fsl_spdif.c
+index b502e7c3c04d..42d11aca38a1 100644
+--- a/sound/soc/fsl/fsl_spdif.c
++++ b/sound/soc/fsl/fsl_spdif.c
+@@ -50,6 +50,7 @@ static u8 srpc_dpll_locked[] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0xa, 0xb };
+  * @shared_root_clock: flag of sharing a clock source with others;
+  *                     so the driver shouldn't set root clock rate
+  * @raw_capture_mode: if raw capture mode support
++ * @cchannel_192b: if there are registers for 192bits C channel data
+  * @interrupts: interrupt number
+  * @tx_burst: tx maxburst size
+  * @rx_burst: rx maxburst size
+@@ -59,6 +60,7 @@ struct fsl_spdif_soc_data {
+ 	bool imx;
+ 	bool shared_root_clock;
+ 	bool raw_capture_mode;
++	bool cchannel_192b;
+ 	u32 interrupts;
+ 	u32 tx_burst;
+ 	u32 rx_burst;
+@@ -196,6 +198,7 @@ static struct fsl_spdif_soc_data fsl_spdif_imx8ulp = {
+ 	.tx_burst = 2,		/* Applied for EDMA */
+ 	.rx_burst = 2,		/* Applied for EDMA */
+ 	.tx_formats = SNDRV_PCM_FMTBIT_S24_LE,	/* Applied for EDMA */
++	.cchannel_192b = true,
+ };
+ 
+ /* Check if clk is a root clock that does not share clock source with others */
+@@ -441,6 +444,23 @@ static void spdif_write_channel_status(struct fsl_spdif_priv *spdif_priv)
+ 	regmap_write(regmap, REG_SPDIF_STCSCL, ch_status);
+ 
+ 	dev_dbg(&pdev->dev, "STCSCL: 0x%06x\n", ch_status);
++
++	if (spdif_priv->soc->cchannel_192b) {
++		ch_status = (bitrev8(ctrl->ch_status[0]) << 24) |
++			    (bitrev8(ctrl->ch_status[1]) << 16) |
++			    (bitrev8(ctrl->ch_status[2]) << 8) |
++			    bitrev8(ctrl->ch_status[3]);
++
++		regmap_update_bits(regmap, REG_SPDIF_SCR, 0x1000000, 0x1000000);
++
++		/*
++		 * The first 32bit should be in REG_SPDIF_STCCA_31_0 register,
++		 * but here we need to set REG_SPDIF_STCCA_191_160 on 8ULP
++		 * then can get correct result with HDMI analyzer capture.
++		 * There is a hardware bug here.
++		 */
++		regmap_write(regmap, REG_SPDIF_STCCA_191_160, ch_status);
++	}
+ }
+ 
+ /* Set SPDIF PhaseConfig register for rx clock */
+@@ -1229,6 +1249,8 @@ static const struct reg_default fsl_spdif_reg_defaults[] = {
+ 	{REG_SPDIF_STR,	   0x00000000},
+ 	{REG_SPDIF_STCSCH, 0x00000000},
+ 	{REG_SPDIF_STCSCL, 0x00000000},
++	{REG_SPDIF_STCSPH, 0x00000000},
++	{REG_SPDIF_STCSPL, 0x00000000},
+ 	{REG_SPDIF_STC,	   0x00020f00},
+ };
+ 
+@@ -1248,8 +1270,22 @@ static bool fsl_spdif_readable_reg(struct device *dev, unsigned int reg)
+ 	case REG_SPDIF_SRQ:
+ 	case REG_SPDIF_STCSCH:
+ 	case REG_SPDIF_STCSCL:
++	case REG_SPDIF_STCSPH:
++	case REG_SPDIF_STCSPL:
+ 	case REG_SPDIF_SRFM:
+ 	case REG_SPDIF_STC:
++	case REG_SPDIF_SRCCA_31_0:
++	case REG_SPDIF_SRCCA_63_32:
++	case REG_SPDIF_SRCCA_95_64:
++	case REG_SPDIF_SRCCA_127_96:
++	case REG_SPDIF_SRCCA_159_128:
++	case REG_SPDIF_SRCCA_191_160:
++	case REG_SPDIF_STCCA_31_0:
++	case REG_SPDIF_STCCA_63_32:
++	case REG_SPDIF_STCCA_95_64:
++	case REG_SPDIF_STCCA_127_96:
++	case REG_SPDIF_STCCA_159_128:
++	case REG_SPDIF_STCCA_191_160:
+ 		return true;
+ 	default:
+ 		return false;
+@@ -1268,6 +1304,12 @@ static bool fsl_spdif_volatile_reg(struct device *dev, unsigned int reg)
+ 	case REG_SPDIF_SRU:
+ 	case REG_SPDIF_SRQ:
+ 	case REG_SPDIF_SRFM:
++	case REG_SPDIF_SRCCA_31_0:
++	case REG_SPDIF_SRCCA_63_32:
++	case REG_SPDIF_SRCCA_95_64:
++	case REG_SPDIF_SRCCA_127_96:
++	case REG_SPDIF_SRCCA_159_128:
++	case REG_SPDIF_SRCCA_191_160:
+ 		return true;
+ 	default:
+ 		return false;
+@@ -1286,7 +1328,15 @@ static bool fsl_spdif_writeable_reg(struct device *dev, unsigned int reg)
+ 	case REG_SPDIF_STR:
+ 	case REG_SPDIF_STCSCH:
+ 	case REG_SPDIF_STCSCL:
++	case REG_SPDIF_STCSPH:
++	case REG_SPDIF_STCSPL:
+ 	case REG_SPDIF_STC:
++	case REG_SPDIF_STCCA_31_0:
++	case REG_SPDIF_STCCA_63_32:
++	case REG_SPDIF_STCCA_95_64:
++	case REG_SPDIF_STCCA_127_96:
++	case REG_SPDIF_STCCA_159_128:
++	case REG_SPDIF_STCCA_191_160:
+ 		return true;
+ 	default:
+ 		return false;
+@@ -1298,7 +1348,7 @@ static const struct regmap_config fsl_spdif_regmap_config = {
+ 	.reg_stride = 4,
+ 	.val_bits = 32,
+ 
+-	.max_register = REG_SPDIF_STC,
++	.max_register = REG_SPDIF_STCCA_191_160,
+ 	.reg_defaults = fsl_spdif_reg_defaults,
+ 	.num_reg_defaults = ARRAY_SIZE(fsl_spdif_reg_defaults),
+ 	.readable_reg = fsl_spdif_readable_reg,
+diff --git a/sound/soc/fsl/fsl_spdif.h b/sound/soc/fsl/fsl_spdif.h
+index bff8290e71f2..75b42a692c90 100644
+--- a/sound/soc/fsl/fsl_spdif.h
++++ b/sound/soc/fsl/fsl_spdif.h
+@@ -31,9 +31,23 @@
+ #define REG_SPDIF_STR			0x30	/* SPDIFTxRight Register */
+ #define REG_SPDIF_STCSCH		0x34	/* SPDIFTxCChannelCons_h Register */
+ #define REG_SPDIF_STCSCL		0x38	/* SPDIFTxCChannelCons_l Register */
++#define REG_SPDIF_STCSPH		0x3C	/* SPDIFTxCChannel_Prof_h Register */
++#define REG_SPDIF_STCSPL		0x40	/* SPDIFTxCChannel_Prof_l Register */
+ #define REG_SPDIF_SRFM			0x44	/* FreqMeas Register */
+ #define REG_SPDIF_STC			0x50	/* SPDIFTxClk Register */
+ 
++#define REG_SPDIF_SRCCA_31_0		0x60	/* SPDIF receive C channel register, bits 31-0 */
++#define REG_SPDIF_SRCCA_63_32		0x64	/* SPDIF receive C channel register, bits 63-32 */
++#define REG_SPDIF_SRCCA_95_64		0x68	/* SPDIF receive C channel register, bits 95-64 */
++#define REG_SPDIF_SRCCA_127_96		0x6C	/* SPDIF receive C channel register, bits 127-96 */
++#define REG_SPDIF_SRCCA_159_128		0x70	/* SPDIF receive C channel register, bits 159-128 */
++#define REG_SPDIF_SRCCA_191_160		0x74	/* SPDIF receive C channel register, bits 191-160 */
++#define REG_SPDIF_STCCA_31_0		0x78	/* SPDIF transmit C channel register, bits 31-0 */
++#define REG_SPDIF_STCCA_63_32		0x7C	/* SPDIF transmit C channel register, bits 63-32 */
++#define REG_SPDIF_STCCA_95_64		0x80	/* SPDIF transmit C channel register, bits 95-64 */
++#define REG_SPDIF_STCCA_127_96		0x84	/* SPDIF transmit C channel register, bits 127-96 */
++#define REG_SPDIF_STCCA_159_128		0x88	/* SPDIF transmit C channel register, bits 159-128 */
++#define REG_SPDIF_STCCA_191_160		0x8C	/* SPDIF transmit C channel register, bits 191-160 */
+ 
+ /* SPDIF Configuration register */
+ #define SCR_RXFIFO_CTL_OFFSET		23
+-- 
+2.17.1
 
-This sounds like the slow-down that was introduced by commit c1f6925e1091
-"mm: put readahead pages in cache earlier" (Linux V5.8)
-
-This commit prevents Squashfs from doing it's own readahead, which
-causes a slow-down in performance.  The slow-down is noticable when
-using a single decompressor (CONFIG_SQUASHFS_DECOMP_SINGLE=y), and
-can be solved by moving to a multi-decompressor configuration, because
-it removes contention on a single buffer in the single decompressor case.
-
-This has been already been fixed by commit 9eec1d897139
-"squashfs: provide backing_dev_info in order to disable read-ahead"
-which is in Linux 5.17-rc1.
-
-Phillip
