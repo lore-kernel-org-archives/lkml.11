@@ -2,103 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7587FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1272AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239906AbiCPPM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        id S1357100AbiCPPOp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:14:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357210AbiCPPMB (ORCPT
+        with ESMTP id S1358124AbiCPPOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:12:01 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB406B095
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:40 -0700 (PDT)
+        Wed, 16 Mar 2022 11:14:23 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD61D10FC2
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:13:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=qQRAN0Xs3YAUDhKSU3+6HRqdE/8JI++H7hjPd3Bn0b0=; b=GK7N5ubPpSETgVgfFaVT2BNjCz
-        FZJlChfMvWHBRQJghNPw/nKDs2pOHwffSE4P+sFc8KAT7XXKtBk2X4IY5QdF0WBhuBIvgRs02bkhb
-        dC91EBUzv/BctuMOqzNz7d1/1Zn9x1TG6SgzkWGbK+BzqbvrzDdUBuLbnOCofgUpXcM3rfdTIocnH
-        nl0HuuVp9IcMyGi4lunmJ/tOLjN67VLisNmDxnUwYP3LWs1Ls33k+xqjxRIN9nOHWwaMmtwkwslEU
-        J4Jjr47Ls3Nc0Yrm2okAYe2G23C8IuXM8GtVr9lFHr6dabyL8WjVxy0+jnEixMerMoEVn9/5DSRDw
-        BmrV39SA==;
+        bh=4K5R+UfTKpVmh7UUCsHxGMmZro1+3YPGLK6keFmVP14=; b=TDx4HFP9PrQw1jlnpndtpf5frp
+        iwil/n7t0o164xeIsotgbG7Fl+FyEwNLS/b4LYaXqq0y/P1rscYncYw5N3Bm1BVVyHiNh1eCKWLtI
+        z0Vy0qRWzsR0zRRPb+LabGFC+e3Mb4Gk/lf1eLAS95+BTEYOq8zyGIz4GWLHkNzgmzzLlVHMhWFHs
+        hoTU/ZpM+6q5rhqmeSuM3GOiB1mSojmhK7xfl+FBIZf2xFHwBZQkf5l0NWEpo7CEPwAPkqQUADvIW
+        lhth3wrudKygesyRMPURgmRGtJjHEthSloyh5JwIZBlXNfBjcUnGNLBI/7yjEUdrYjKWwUsF2FGY0
+        NwmC4FIg==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUVHF-0065Ds-Am; Wed, 16 Mar 2022 15:09:29 +0000
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUVKe-001Zjn-O0; Wed, 16 Mar 2022 15:13:00 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EB2F930021B;
-        Wed, 16 Mar 2022 16:09:28 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 64F2930021B;
+        Wed, 16 Mar 2022 16:13:00 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D2DF92C47F84E; Wed, 16 Mar 2022 16:09:28 +0100 (CET)
-Date:   Wed, 16 Mar 2022 16:09:28 +0100
+        id 533A93040066C; Wed, 16 Mar 2022 16:13:00 +0100 (CET)
+Date:   Wed, 16 Mar 2022 16:13:00 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Lai Jiangshan <jiangshanlai@gmail.com>
 Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
         Borislav Petkov <bp@alien8.de>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH V3 6/7] x86/entry: Don't call error_entry for XENPV
-Message-ID: <YjH9qCkeCXZ4XjLx@hirez.programming.kicks-ass.net>
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: Re: [PATCH V3 0/7] x86/entry: Clean up entry code
+Message-ID: <YjH+fAaH5yHGrxRu@hirez.programming.kicks-ass.net>
 References: <20220315073949.7541-1-jiangshanlai@gmail.com>
- <20220315073949.7541-7-jiangshanlai@gmail.com>
+ <YjH+VdHIiHZM3maD@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220315073949.7541-7-jiangshanlai@gmail.com>
+In-Reply-To: <YjH+VdHIiHZM3maD@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 03:39:48PM +0800, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+On Wed, Mar 16, 2022 at 04:12:21PM +0100, Peter Zijlstra wrote:
+> On Tue, Mar 15, 2022 at 03:39:42PM +0800, Lai Jiangshan wrote:
 > 
-> When in XENPV, it is already in the task stack, and it can't fault
-> for native_iret() nor native_load_gs_index() since XENPV uses its own
-> pvops for iret and load_gs_index().  And it doesn't need to switch CR3.
-> So there is no reason to call error_entry() in XENPV.
+> > Lai Jiangshan (7):
+> >   x86/entry: Use idtentry macro for entry_INT80_compat
+> >   x86/traps: Move pt_regs only in fixup_bad_iret()
+> >   x86/entry: Switch the stack after error_entry() returns
+> >   x86/entry: move PUSH_AND_CLEAR_REGS out of error_entry
+> >   x86/entry: Move cld to the start of idtentry
+> >   x86/entry: Don't call error_entry for XENPV
+> >   x86/entry: Convert SWAPGS to swapgs and remove the definition of
+> >     SWAPGS
 > 
-> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> ---
->  arch/x86/entry/entry_64.S | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
+> So AFAICT these patches are indeed correct.
 > 
-> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-> index e4a07276fd1c..ec885c2107de 100644
-> --- a/arch/x86/entry/entry_64.S
-> +++ b/arch/x86/entry/entry_64.S
-> @@ -328,8 +328,17 @@ SYM_CODE_END(ret_from_fork)
->  	PUSH_AND_CLEAR_REGS
->  	ENCODE_FRAME_POINTER
->  
-> -	call	error_entry
-> -	movq	%rax, %rsp			/* switch stack settled by sync_regs() */
-> +	/*
-> +	 * Call error_entry and switch stack settled by sync_regs().
-> +	 *
-> +	 * When in XENPV, it is already in the task stack, and it can't fault
-> +	 * for native_iret() nor native_load_gs_index() since XENPV uses its
-> +	 * own pvops for iret and load_gs_index().  And it doesn't need to
-> +	 * switch CR3.  So it can skip invoking error_entry().
-> +	 */
-> +	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
-> +		"", X86_FEATURE_XENPV
-> +
->  	ENCODE_FRAME_POINTER
->  	UNWIND_HINT_REGS
->  
+> I do however worry a little bit about the I$ impact of patch 4, and
+> there's a few niggles, but otherwise looks good.
+> 
+> I'd love for some of the other x86 people to also look at this, but a
+> tentative ACK on this.
+> 
 
-Oooh, here we go, this is the answer to my question for patch #1, a note
-in the changelog might be nice. Something like:
-
-"This looses a Xen PV optimization, which will be restored in a later
-patch. The superfluous stack switch is just that."
+Also, I forgot to mention; they no longer apply cleanly because I
+sprinked ENDBR all over the place. Mostly trivial to fixup though.
