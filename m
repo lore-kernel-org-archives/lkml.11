@@ -2,79 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C44D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 01:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 01:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352024AbiCPBN2 (ORCPT
+        id S1352913AbiCPBPI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 21:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48894 "EHLO
+        Tue, 15 Mar 2022 21:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345769AbiCPBNZ (ORCPT
+        with ESMTP id S242484AbiCPBPD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 21:13:25 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226C95DA59;
-        Tue, 15 Mar 2022 18:12:12 -0700 (PDT)
-Received: from kwepemi100024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KJByn3nKTzCql8;
-        Wed, 16 Mar 2022 09:10:09 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100024.china.huawei.com (7.221.188.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 16 Mar 2022 09:12:10 +0800
-Received: from [10.174.178.46] (10.174.178.46) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Mar 2022 09:12:09 +0800
-Subject: Re: linux-next: manual merge of the folio tree with the ubifs-fixes
- tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Matthew Wilcox <willy@infradead.org>,
-        Richard Weinberger <richard@nod.at>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Linux Next Mailing List" <linux-next@vger.kernel.org>
-References: <20220315205259.71b4238a@canb.auug.org.au>
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-Message-ID: <18f05eed-c113-a1b4-e227-0c24e6dec6f5@huawei.com>
-Date:   Wed, 16 Mar 2022 09:12:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        Tue, 15 Mar 2022 21:15:03 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8AC11174;
+        Tue, 15 Mar 2022 18:13:50 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nUIES-0004jT-TI; Wed, 16 Mar 2022 12:13:46 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Wed, 16 Mar 2022 13:13:45 +1200
+Date:   Wed, 16 Mar 2022 13:13:45 +1200
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: [GIT PULL] Crypto Fixes for 5.17
+Message-ID: <YjE5yThYIzih2kM6@gondor.apana.org.au>
+References: <20201026011159.GA2428@gondor.apana.org.au>
+ <20201227113221.GA28744@gondor.apana.org.au>
+ <20210108035450.GA6191@gondor.apana.org.au>
+ <20210708030913.GA32097@gondor.apana.org.au>
+ <20210817013601.GA14148@gondor.apana.org.au>
+ <20210929023843.GA28594@gondor.apana.org.au>
+ <20211029041408.GA3192@gondor.apana.org.au>
+ <20211112104815.GA14105@gondor.apana.org.au>
+ <YcKz4wHYTe3qlW7L@gondor.apana.org.au>
+ <YgMn+1qQPQId50hO@gondor.apana.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220315205259.71b4238a@canb.auug.org.au>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.178.46]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgMn+1qQPQId50hO@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/3/15 17:52, Stephen Rothwell 写道:
-> Hi all,
-> 
-> Today's linux-next merge of the folio tree got a conflict in:
-> 
->    fs/ubifs/file.c
-> 
-> between commit:
-> 
->    3b67db8a6ca8 ("ubifs: Fix to add refcount once page is set private")
-> 
-> from the ubifs-fixes tree and commit:
-> 
->    c337f2f4f746 ("ubifs: Convert from invalidatepage to invalidate_folio")
-> 
-> from the folio tree.
-> 
-> I fixed it up (I hope - see below) and can carry the fix as
-> necessary. This is now fixed as far as linux-next is concerned, but any
-> non trivial conflicts should be mentioned to your upstream maintainer
-> when your tree is submitted for merging.  You may also want to consider
-> cooperating with the maintainer of the conflicting tree to minimise any
-> particularly complex conflicts.
-> 
-This conflict is handled right.
-Acked-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Hi Linus:
+
+This push fixes a bug where qcom-rng can return a buffer that is
+not completely filled with random data.
+
+The following changes since commit c6ce9c5831cae515d375a01b97ae1778689acf19:
+
+  crypto: api - Move cryptomgr soft dependency into algapi (2022-02-05 15:10:07 +1100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/herbert/crypto-2.6.git linus 
+
+for you to fetch changes up to a680b1832ced3b5fa7c93484248fd221ea0d614b:
+
+  crypto: qcom-rng - ensure buffer for generate is completely filled (2022-03-14 14:41:04 +1200)
+
+----------------------------------------------------------------
+Brian Masney (1):
+      crypto: qcom-rng - ensure buffer for generate is completely filled
+
+ drivers/crypto/qcom-rng.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+Thanks,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
