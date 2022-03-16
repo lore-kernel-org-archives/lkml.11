@@ -2,116 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4B4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A88C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356870AbiCPOtz (ORCPT
+        id S1356872AbiCPOuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34274 "EHLO
+        Wed, 16 Mar 2022 10:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349582AbiCPOtx (ORCPT
+        with ESMTP id S245291AbiCPOuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:49:53 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8332422BFD;
-        Wed, 16 Mar 2022 07:48:39 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bg10so4719049ejb.4;
-        Wed, 16 Mar 2022 07:48:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MU28qsctK5PVccJ1WrLZfX9pzKHKxkT7Hh1LuKa2sg8=;
-        b=oYGLiy/hunXG2D75J7dgg6ccgKAlxDTBHJWc2w9thvePgZOCpSFQ02J/Z1DDvze70U
-         M07qtMz9jgPckpvV4kCgxu1Pgr2Kr/pKLQX/dI9OxNjCHQmJjEEz8BId3TdNe9i1TtvJ
-         9vdt0fo77rejZd5la9VGlaGen7BKHyICYk7UbfRUtNySFXp6a+JHq6vpLVrt1wu4svIr
-         xVFwCuXCQrn/Kl2CRVAIPpZwa3MouPH1SnRl4Mzshrlk6BiHaGsjWnucQEy9Qixhtsm9
-         LDWrJjLvbZ6+OVIi+pU1xIvnO7zi+oAppY1jdkKBRx6Ytt06OM/1O0EF1534lZuc1Le2
-         XHuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MU28qsctK5PVccJ1WrLZfX9pzKHKxkT7Hh1LuKa2sg8=;
-        b=iA+7kS2ysN8+Z128SEVT8UP8sQO682AOIIHHGoC6xTvoRL7x6njIZwc6jOMWG6+zIZ
-         24Y8QUBIULuitgQ1wlvWIbhArCbarc+Q1mgl0grJy9lniZi/SyVMIkiWzVaGM+4uptN9
-         RkcZZvOUFseS33YTEg7HSQHpCP9yo0NstfXgeIVi0h1LY1kli0Ro6ng5gGNx+w2hhQkv
-         XkNixgm+Wmr0inG0J8CkfIbx1z7FqBC4SbkDP5zMlDYPvJ3vHLkyqVO8nMa4mdNstSY0
-         s269gE3BzF/SJKhOUB0zudoUALe7YUCDxskEowR8sEWFAI+t6IYcaUlUC2lhLslmxxRV
-         yoJQ==
-X-Gm-Message-State: AOAM5322pDj1aF/bWo4rMXNDHGxXWQ5iIQQAqUIf0J/16WSagoSE/VKP
-        UhBtkqMvl7UgqgpiqWwFy+mgYAt4RWfFkiXUFoc=
-X-Google-Smtp-Source: ABdhPJy/Ny8UY3V3+yIJkaQJt94C4ScuZfBq3+cneD49OBa3A7yawWEZCrCxtlo7/0BYgVPT/lQC8V9e77lniQQqEw4=
-X-Received: by 2002:a17:907:9703:b0:6da:6412:508a with SMTP id
- jg3-20020a170907970300b006da6412508amr275705ejc.77.1647442117741; Wed, 16 Mar
- 2022 07:48:37 -0700 (PDT)
+        Wed, 16 Mar 2022 10:50:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3537344E3;
+        Wed, 16 Mar 2022 07:49:01 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 708A71476;
+        Wed, 16 Mar 2022 07:49:01 -0700 (PDT)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A55DF3F766;
+        Wed, 16 Mar 2022 07:48:58 -0700 (PDT)
+Message-ID: <eb33745a-9d63-89b1-1245-9d1e0e04a169@arm.com>
+Date:   Wed, 16 Mar 2022 15:48:50 +0100
 MIME-Version: 1.0
-References: <20220315173922.153389-1-paul@crapouillou.net>
-In-Reply-To: <20220315173922.153389-1-paul@crapouillou.net>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 16 Mar 2022 16:47:24 +0200
-Message-ID: <CAHp75Vfas=H7Vb+mJor-LWckUpE8QUdD8Yauq4mdG4OY+7dfMg@mail.gmail.com>
-Subject: Re: [PATCH] pinctrl: ingenic: Garbage-collect code paths for SoCs
- disabled by config
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>, od@opendingux.net,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] topology: make core_mask include at least
+ cluster_siblings
+Content-Language: en-US
+To:     Darren Hart <darren@os.amperecomputing.com>
+Cc:     Vincent Guittot <vincent.guittot@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Arm <linux-arm-kernel@lists.infradead.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Catalin Marinas <Catalin.Marinas@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Valentin Schneider <Valentin.Schneider@arm.com>,
+        "D . Scott Phillips" <scott@os.amperecomputing.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        stable@vger.kernel.org, Barry Song <21cnbao@gmail.com>
+References: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
+ <20220308103012.GA31267@willie-the-truck>
+ <CAKfTPtDe+i0fwV10m2sX2xkJGBrO8B+RQogDDij8ioJAT5+wAw@mail.gmail.com>
+ <e91bcc83-37c8-dcca-e088-8b3fcd737b2c@arm.com> <YieXQD7uG0+R5QBq@fedora>
+ <7ac47c67-0b5e-5caa-20bb-a0100a0cb78f@arm.com> <YijxUAuufpBKLtwy@fedora>
+ <9398d7ad-30e7-890a-3e18-c3011c383585@arm.com> <Yi9zUuroS1vHWexY@fedora>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+In-Reply-To: <Yi9zUuroS1vHWexY@fedora>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 4:11 AM Paul Cercueil <paul@crapouillou.net> wrote:
->
-> By being a bit smarter about how the SoC version checks are performed,
-> it is possible to have all the code paths that correspond to SoCs
-> disabled in the kernel config automatically marked as dead code by the
-> compiler, and therefore garbage-collected.
->
-> With this patch, when compiling a kernel that only targets the JZ4760
-> for instance, the driver is now about 4.5 KiB smaller.
+- Barry Song <song.bao.hua@hisilicon.com> (always get undelivered mail
+  returned to sender)
++ Barry Song <21cnbao@gmail.com>
 
-...
+On 14/03/2022 17:54, Darren Hart wrote:
+> On Mon, Mar 14, 2022 at 05:35:05PM +0100, Dietmar Eggemann wrote:
+>> On 09/03/2022 19:26, Darren Hart wrote:
+>>> On Wed, Mar 09, 2022 at 01:50:07PM +0100, Dietmar Eggemann wrote:
+>>>> On 08/03/2022 18:49, Darren Hart wrote:
+>>>>> On Tue, Mar 08, 2022 at 05:03:07PM +0100, Dietmar Eggemann wrote:
+>>>>>> On 08/03/2022 12:04, Vincent Guittot wrote:
+>>>>>>> On Tue, 8 Mar 2022 at 11:30, Will Deacon <will@kernel.org> wrote:
 
-> +static const u32 enabled_socs =
+[...]
 
-If you make it unsigned long, it would be easier to switch to bitmap
-APIs if needed in the future.
+> Ultimately, this delivers the same result. I do think it imposes more complexity
+> for everyone to address what as far as I'm aware only affect the one system.
+> 
+> I don't think the term "Cluster" has a clear and universally understood
+> definition, so I don't think it's a given that "CLS should be sub-SD of MC". I
 
-> +       IS_ENABLED(CONFIG_MACH_JZ4730) << ID_JZ4730 |
-> +       IS_ENABLED(CONFIG_MACH_JZ4740) << ID_JZ4740 |
-> +       IS_ENABLED(CONFIG_MACH_JZ4725B) << ID_JZ4725B |
-> +       IS_ENABLED(CONFIG_MACH_JZ4750) << ID_JZ4750 |
-> +       IS_ENABLED(CONFIG_MACH_JZ4755) << ID_JZ4755 |
-> +       IS_ENABLED(CONFIG_MACH_JZ4760) << ID_JZ4760 |
-> +       IS_ENABLED(CONFIG_MACH_JZ4770) << ID_JZ4770 |
-> +       IS_ENABLED(CONFIG_MACH_JZ4775) << ID_JZ4775 |
-> +       IS_ENABLED(CONFIG_MACH_JZ4780) << ID_JZ4780 |
-> +       IS_ENABLED(CONFIG_MACH_X1000) << ID_X1000 |
-> +       IS_ENABLED(CONFIG_MACH_X1500) << ID_X1500 |
-> +       IS_ENABLED(CONFIG_MACH_X1830) << ID_X1830 |
-> +       IS_ENABLED(CONFIG_MACH_X2000) << ID_X2000 |
-> +       IS_ENABLED(CONFIG_MACH_X2100) << ID_X2100;
+I agree, the term 'cluster' is overloaded but default_topology[] clearly
+says (with direction up means smaller SD spans).
 
-...
+  #ifdef CONFIG_SCHED_CLUSTER
+        { cpu_clustergroup_mask, cpu_cluster_flags, SD_INIT_NAME(CLS) },
+  #endif
 
-> +is_soc_or_above(const struct ingenic_pinctrl *jzpc, enum jz_version version)
-> +{
-> +       return (enabled_socs >> version) &&
-> +               (!(enabled_socs & GENMASK((unsigned int)version - 1, 0))
+  #ifdef CONFIG_SCHED_MC
+        { cpu_coregroup_mask, cpu_core_flags, SD_INIT_NAME(MC) },
+  #endif
 
-Why casting? Why not use BIT()?
+In ACPI code we have `cluster_node = fetch_pptt_node(... ,
+cpu_node->parent) but then the cache information (via
+llc_id/llc_sibling) can change things which make this less easy to grasp.
 
-But these two lines seem like a very interesting way to reinvent the test_bit().
+> think this has been assumed, and that assumption has mostly held up, but this is
+> an abstraction, and the abstraction should follow the physical topologies rather
+> than the other way around in my opinion. If that's the primary motivation for
+> this approach, I don't think it justifies the additional complexity.
+> 
+> All told, I prefer the 2 line change contained within cpu_coregroup_mask() which
+> handles the one known exception with minimal impact. It's easy enough to come
+> back to this to address more cases with a more complex solution if needed in the
+> future - but I prefer to introduce the least amount of complexity as possible to
+> address the known issues, especially if the end result is the same and the cost
+> is paid by the affected systems.
+> 
+> Thanks,
 
-If I'm mistaken, this all version code needs a good comment.
+Yeah, I can see your point. It's the smaller hack. My solution just
+prevents us to manipulate the coregroup mask only to get the MC layer
+degenerated by the core topology code. But people might say that's a
+clever thing to do here. So I'm fine with your original solution as well.
 
-> +                || jzpc->info->version >= version);
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
+[...]
