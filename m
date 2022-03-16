@@ -2,65 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A98AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242228AbiCPQDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:03:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
+        id S245075AbiCPQEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 12:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357481AbiCPQDL (ORCPT
+        with ESMTP id S234859AbiCPQEf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:03:11 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9ED3DDFD
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:01:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647446517; x=1678982517;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=fA5HguUpbzGH5dmq8G/+lEaDgPCt6fNMrRQguFHsKFw=;
-  b=d7jQ3Rwbl8qRf83s7F7PBmxmRfdT8XLpYM4BNM3wLPvp39h8y2kwlac7
-   ZfYg29UxiWTF+i3gzPk+5wPZjFkrrjWQ7U0sQzFnhVtzQpzplIKe0c/PB
-   tf/Jfam2i3jJIFe6aiI/NwL8LwHep0NsPCYAeyzwng2AiUytc7egVN90w
-   PsyGv0osYtspIgaHQie1jcBvf2jz5c78zTGLO0Tl4ddLldhvMC4v3OEmg
-   JTJws8UVYyKybl/TS4oIWjbQXtkklGp7y3XutyvWFDuMPhNUrEdxS6xkB
-   kpoK+buwwXrO2doGxa6z47wYjLvkyAWKz6PtitBSGduEO5ClbFzko4tTU
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="343075775"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="343075775"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:58:11 -0700
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="613691627"
-Received: from jdwaldem-mobl.amr.corp.intel.com (HELO [10.255.228.230]) ([10.255.228.230])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:58:10 -0700
-Message-ID: <f1c36202-9794-31f4-eab8-e886728002da@intel.com>
-Date:   Wed, 16 Mar 2022 08:58:02 -0700
+        Wed, 16 Mar 2022 12:04:35 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FBE4EA2D
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:03:16 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 17:03:12 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647446594;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hQRxvCGWz5JjZ5mxKrBGw2/uRU2quWW8b9gTuwsLi08=;
+        b=zUJ/PTUFN88JQUjr3/q4NVB3+mFVpG94J5I6ycNIA6tKPg9nBZU/6cmeURuXEBErmMWUn9
+        7HI1j6HhpRySNlEWGVqTnnr4eOR/Ongjo7fp1As/aFz4BkNcskVNP3ZHzWnYPrkGZbkbpR
+        83Rfywiflvfns7lZAwmuc1AYzG8MQ/s41W912TH5nniE7f7rTsXnYGCJ3xhqcGr0UCb4Qk
+        6MD7SgedyJQ+0Qeq1LElF5SRTmfrEH2aI+EPEMrrGpIuDNVa0AU7PP7lwAPrFr9w8Z2js6
+        jMq1jSsZLcoPy26nEG8r3nAym+4u6lF1VknXxn9SBxltjv63ZotBAMQN8qFD/A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647446594;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hQRxvCGWz5JjZ5mxKrBGw2/uRU2quWW8b9gTuwsLi08=;
+        b=NWoxNFiv9Oc5+egiMdKxzZhIjMZZhmDoCwajc6mvhC2fgIuvYmJEL3BjPaudKIF1tLO9m4
+        mhTED40dYRHizDBg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: sched_core_balance() releasing interrupts with pi_lock held
+Message-ID: <YjIKQBIbJR/kRR+N@linutronix.de>
+References: <20220308161455.036e9933@gandalf.local.home>
+ <20220315174606.02959816@gandalf.local.home>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     =?UTF-8?Q?Borys_Pop=c5=82awski?= <poplawski.borys@gmail.com>,
-        luto@kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <9b82908f-eed1-b6b7-62aa-ecbba7bf048b@gmail.com>
- <f671c80f-f97d-b3a2-0253-2eec21e2c748@gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: VDSO is randomized even when ASLR is disabled
-In-Reply-To: <f671c80f-f97d-b3a2-0253-2eec21e2c748@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220315174606.02959816@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/9/22 04:42, Borys Popławski wrote:
-> I would like to get some feedback on this issue. Would such fix be
-> accepted? Should I send a patch?
+On 2022-03-15 17:46:06 [-0400], Steven Rostedt wrote:
+> On Tue, 8 Mar 2022 16:14:55 -0500
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+> > Hi Peter,
+> 
+> Have you had time to look into this?
 
-The best way to get feedback is to submit a real patch following all the
-rules in our documentation.  Cc'ing all the maintainers of the code and
-testing your fix would be two great places to start.
+yes, I can confirm that it is a problem ;) So I did this:
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 33ce5cd113d8..56c286aaa01f 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -5950,7 +5950,6 @@ static bool try_steal_cookie(int this, int that)
+ 	unsigned long cookie;
+ 	bool success = false;
+ 
+-	local_irq_disable();
+ 	double_rq_lock(dst, src);
+ 
+ 	cookie = dst->core->core_cookie;
+@@ -5989,7 +5988,6 @@ static bool try_steal_cookie(int this, int that)
+ 
+ unlock:
+ 	double_rq_unlock(dst, src);
+-	local_irq_enable();
+ 
+ 	return success;
+ }
+@@ -6019,7 +6017,7 @@ static void sched_core_balance(struct rq *rq)
+ 
+ 	preempt_disable();
+ 	rcu_read_lock();
+-	raw_spin_rq_unlock_irq(rq);
++	raw_spin_rq_unlock(rq);
+ 	for_each_domain(cpu, sd) {
+ 		if (need_resched())
+ 			break;
+@@ -6027,7 +6025,7 @@ static void sched_core_balance(struct rq *rq)
+ 		if (steal_cookie_task(cpu, sd))
+ 			break;
+ 	}
+-	raw_spin_rq_lock_irq(rq);
++	raw_spin_rq_lock(rq);
+ 	rcu_read_unlock();
+ 	preempt_enable();
+ }
+
+
+which looked right but RT still fall apart:
+
+| =====================================
+| WARNING: bad unlock balance detected!
+| 5.17.0-rc8-rt14+ #10 Not tainted
+| -------------------------------------
+| gcc/2608 is trying to release lock ((lock)) at:
+| [<ffffffff8135a150>] folio_add_lru+0x60/0x90
+| but there are no more locks to release!
+| 
+| other info that might help us debug this:
+| 4 locks held by gcc/2608:
+|  #0: ffff88826ea6efe0 (&sb->s_type->i_mutex_key#12){++++}-{3:3}, at: xfs_ilock+0x90/0xd0
+|  #1: ffff88826ea6f1a0 (mapping.invalidate_lock#2){++++}-{3:3}, at: page_cache_ra_unbounded+0x8e/0x1f0
+|  #2: ffff88852aba8d18 ((lock)#3){+.+.}-{2:2}, at: folio_add_lru+0x2a/0x90
+|  #3: ffffffff829a5140 (rcu_read_lock){....}-{1:2}, at: rt_spin_lock+0x5/0xe0
+| 
+| stack backtrace:
+| CPU: 18 PID: 2608 Comm: gcc Not tainted 5.17.0-rc8-rt14+ #10
+| Hardware name: Intel Corporation S2600CP/S2600CP, BIOS SE5C600.86B.02.03.0003.041920141333 04/19/2014
+| Call Trace:
+|  <TASK>
+|  dump_stack_lvl+0x4a/0x62
+|  lock_release.cold+0x32/0x37
+|  rt_spin_unlock+0x17/0x80
+|  folio_add_lru+0x60/0x90
+|  filemap_add_folio+0x53/0xa0
+|  page_cache_ra_unbounded+0x1c3/0x1f0
+|  filemap_get_pages+0xe3/0x5b0
+|  filemap_read+0xc5/0x2f0
+|  xfs_file_buffered_read+0x6b/0x1a0
+|  xfs_file_read_iter+0x6a/0xd0
+|  new_sync_read+0x11b/0x1a0
+|  vfs_read+0x134/0x1d0
+|  ksys_read+0x68/0xf0
+|  do_syscall_64+0x59/0x80
+|  entry_SYSCALL_64_after_hwframe+0x44/0xae
+| RIP: 0033:0x7f3feab7310e
+
+It is always the local-lock that is breaks apart. Based on "locks held"
+and the lock it tries to release it looks like the lock was acquired on
+CPU-A and released on CPU-B.
+
+> Thanks,
+> 
+> -- Steve
+
+Sebastian
