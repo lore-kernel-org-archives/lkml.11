@@ -2,189 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354377AbiCPVC1 (ORCPT
+        id S1355356AbiCPVFK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 17:02:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
+        Wed, 16 Mar 2022 17:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238785AbiCPVCZ (ORCPT
+        with ESMTP id S1353443AbiCPVFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 17:02:25 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AED8D87
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647464469; x=1679000469;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UcKTF09zWMtVPXzfB442+VXNOwnoIP9p0oq0fG5aprc=;
-  b=NmpIaDjshDBBK2Rklyrdqv9mueg4O/8RjX2gzAn/hrkJXchqm0DmGyQ9
-   djvM7obE6PcJfl4CGW/RXe+2XBOW+RpyPNQjs7vxgBq9gxP+TP/j6AzW2
-   UahpkS3YfoCyBazOQgEuBRKKTURnuID9BmNGo5x0C7U2yU4niRY6faDLA
-   11aA0UOuV90hWMZPMnguxo7dP6XF1HBvRfYxyEOkjMdbtKYqB1iyX6EN/
-   Bl3lB8UMtfxIlS9ck8r8UN2OlcsXWEzRFEDTjl6Pw2474Auer/iLWU4tl
-   K27FxJPPHnxWA5va2bWFYsRZgc7B68hVe6lBpN/lAS+Ab9PcD/V6vwM2y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="244163436"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="244163436"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 14:00:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="541093203"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 16 Mar 2022 14:00:44 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUal9-000CvY-MJ; Wed, 16 Mar 2022 21:00:43 +0000
-Date:   Thu, 17 Mar 2022 05:00:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Benoit Parrot <bparrot@ti.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Nikhil Devshatwar <nikhil.nd@ti.com>
-Subject: [pinchartl-media:am572x/vip 3/129]
- drivers/media/platform/ti-vpe/vip.c:892:22: warning: variable 'list_length'
- set but not used
-Message-ID: <202203170449.Gb8UPhN9-lkp@intel.com>
+        Wed, 16 Mar 2022 17:05:07 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B3D12AB3
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:03:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=SuzzZw+cpd3GugZtgpP2SZIBUKR/Ka78UzH1KQJyyk0=; b=T8sgMhlSn1VorkI2uszJ6lB6Mp
+        ZnC34XVAloLBzdfvFkJsJTCdeUFbr1VomS4ZyLYRDf0YdsEwMJIstXa7cgoEC8EpkBxStcVALKN9e
+        VrpFiXMKtTKxf5QJLjVJuVElc4y2+voAex1V3HMbtdK/dpae5wryTMvn6IFH/pSYOxHAthGIG10o9
+        cBoXRSJM98/ghM4QdAD+ErbD+/U0OQNXihn0P+tqITHoGaMYRP4VzbBSSGCK8yfQ65VVQ2f3ffbrL
+        bUkPnWPkL+LzBado5SKUzEsfvwrX5FJ7AwAN/BQqCGnnjn7ixmpPT+DNwGngVDDFOVoE3rRnzbR9k
+        FuUA1WeQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUao3-001esg-1C; Wed, 16 Mar 2022 21:03:46 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 752229882AA; Wed, 16 Mar 2022 22:03:41 +0100 (CET)
+Date:   Wed, 16 Mar 2022 22:03:41 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        joel@joelfernandes.org
+Subject: Re: sched_core_balance() releasing interrupts with pi_lock held
+Message-ID: <20220316210341.GD14330@worktop.programming.kicks-ass.net>
+References: <20220308161455.036e9933@gandalf.local.home>
+ <20220315174606.02959816@gandalf.local.home>
+ <20220316202734.GJ8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220316202734.GJ8939@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://linuxtv.org/pinchartl/media.git am572x/vip
-head:   2a2995588382c94f9346c69248af9c716e532b9b
-commit: e2cd6cd91c127527f1c3a04d236a968740d99a45 [3/129] media: ti-vpe: Add the VIP driver
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220317/202203170449.Gb8UPhN9-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add pinchartl-media git://linuxtv.org/pinchartl/media.git
-        git fetch --no-tags pinchartl-media am572x/vip
-        git checkout e2cd6cd91c127527f1c3a04d236a968740d99a45
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/
+On Wed, Mar 16, 2022 at 09:27:34PM +0100, Peter Zijlstra wrote:
+> On Tue, Mar 15, 2022 at 05:46:06PM -0400, Steven Rostedt wrote:
+> > On Tue, 8 Mar 2022 16:14:55 -0500
+> > Steven Rostedt <rostedt@goodmis.org> wrote:
+> > 
+> > > Hi Peter,
+> > 
+> > Have you had time to look into this?
+> 
+> Not since I talk to you on IRC about it last week.
+> 
+> Like I wrote, the balance_callback should be ran under whichever
+> rq->lock instance it gets queued under. As per:
+> 
+>   565790d28b1e ("sched: Fix balance_callback()")
+> 
+> Now, we only do queue_core_balance() from set_next_task_idle(), which
+> *should* only happen from pick_next_task(), and as such the callback
+> should only ever get called from finish_lock_switch() or the 'prev ==
+> next' case in __schedule().
+> 
+> Neither of these two sites holds pi_lock.
+> 
+> 
+> This is about as far as I got explaining things, and it being late, it's
+> about as far as I got looking at things.
+> 
+> Now that also makes conceptual sense, we only want to pull a core-cookie
+> task when we're scheduling an idle task.
+> 
+> Now, clearly this gets triggered from the PI path, but that's not making
+> immediate sense to me, it would mean we're boosting the idle task, which
+> is wrong too.
+> 
+> So it would be useful for someone that can reproduce this to provide a
+> trace of where queue_core_balance() gets called, because that *should*
+> only be in __schedule().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/media/platform/ti-vpe/vip.c: In function 'populate_desc_list':
->> drivers/media/platform/ti-vpe/vip.c:892:22: warning: variable 'list_length' set but not used [-Wunused-but-set-variable]
-     892 |         unsigned int list_length;
-         |                      ^~~~~~~~~~~
-   drivers/media/platform/ti-vpe/vip.c: In function 'vip_try_fmt_vid_cap':
-   drivers/media/platform/ti-vpe/vip.c:1635:35: error: implicit declaration of function 'v4l2_subdev_alloc_pad_config'; did you mean 'v4l2_subdev_alloc_state'? [-Werror=implicit-function-declaration]
-    1635 |                         pad_cfg = v4l2_subdev_alloc_pad_config(port->subdev);
-         |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                   v4l2_subdev_alloc_state
-   drivers/media/platform/ti-vpe/vip.c:1635:33: warning: assignment to 'struct v4l2_subdev_pad_config *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-    1635 |                         pad_cfg = v4l2_subdev_alloc_pad_config(port->subdev);
-         |                                 ^
-   In file included from include/media/v4l2-device.h:13,
-                    from drivers/media/platform/ti-vpe/vip.h:17,
-                    from drivers/media/platform/ti-vpe/vip.c:28:
-   drivers/media/platform/ti-vpe/vip.c:1642:48: error: passing argument 2 of '((const struct v4l2_subdev_pad_ops *)v4l2_subdev_call_wrappers.pad)->set_fmt' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    1642 |                                                pad_cfg, &format);
-         |                                                ^~~~~~~
-         |                                                |
-         |                                                struct v4l2_subdev_pad_config *
-   include/media/v4l2-subdev.h:1190:65: note: in definition of macro 'v4l2_subdev_call'
-    1190 |                                                         __sd, ##args);  \
-         |                                                                 ^~~~
-   drivers/media/platform/ti-vpe/vip.c:1642:48: note: expected 'struct v4l2_subdev_state *' but argument is of type 'struct v4l2_subdev_pad_config *'
-    1642 |                                                pad_cfg, &format);
-         |                                                ^~~~~~~
-   include/media/v4l2-subdev.h:1190:65: note: in definition of macro 'v4l2_subdev_call'
-    1190 |                                                         __sd, ##args);  \
-         |                                                                 ^~~~
-   drivers/media/platform/ti-vpe/vip.c:1642:48: error: passing argument 2 of '((const struct v4l2_subdev_pad_ops *)__sd->ops->pad)->set_fmt' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    1642 |                                                pad_cfg, &format);
-         |                                                ^~~~~~~
-         |                                                |
-         |                                                struct v4l2_subdev_pad_config *
-   include/media/v4l2-subdev.h:1192:60: note: in definition of macro 'v4l2_subdev_call'
-    1192 |                         __result = __sd->ops->o->f(__sd, ##args);       \
-         |                                                            ^~~~
-   drivers/media/platform/ti-vpe/vip.c:1642:48: note: expected 'struct v4l2_subdev_state *' but argument is of type 'struct v4l2_subdev_pad_config *'
-    1642 |                                                pad_cfg, &format);
-         |                                                ^~~~~~~
-   include/media/v4l2-subdev.h:1192:60: note: in definition of macro 'v4l2_subdev_call'
-    1192 |                         __result = __sd->ops->o->f(__sd, ##args);       \
-         |                                                            ^~~~
-   drivers/media/platform/ti-vpe/vip.c:1659:25: error: implicit declaration of function 'v4l2_subdev_free_pad_config' [-Werror=implicit-function-declaration]
-    1659 |                         v4l2_subdev_free_pad_config(pad_cfg);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/media/platform/ti-vpe/vip.c: In function 'free_port':
-   drivers/media/platform/ti-vpe/vip.c:3614:9: error: implicit declaration of function 'v4l2_async_notifier_unregister'; did you mean 'v4l2_async_nf_unregister'? [-Werror=implicit-function-declaration]
-    3614 |         v4l2_async_notifier_unregister(&port->notifier);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |         v4l2_async_nf_unregister
-   drivers/media/platform/ti-vpe/vip.c:3615:9: error: implicit declaration of function 'v4l2_async_notifier_cleanup'; did you mean 'v4l2_async_nf_cleanup'? [-Werror=implicit-function-declaration]
-    3615 |         v4l2_async_notifier_cleanup(&port->notifier);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |         v4l2_async_nf_cleanup
-   drivers/media/platform/ti-vpe/vip.c: In function 'vip_create_streams':
->> drivers/media/platform/ti-vpe/vip.c:3636:42: warning: variable 'bus' set but not used [-Wunused-but-set-variable]
-    3636 |         struct v4l2_fwnode_bus_parallel *bus;
-         |                                          ^~~
-   drivers/media/platform/ti-vpe/vip.c: In function 'vip_register_subdev_notif':
-   drivers/media/platform/ti-vpe/vip.c:3784:9: error: implicit declaration of function 'v4l2_async_notifier_init'; did you mean 'v4l2_async_nf_init'? [-Werror=implicit-function-declaration]
-    3784 |         v4l2_async_notifier_init(notifier);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~
-         |         v4l2_async_nf_init
-   drivers/media/platform/ti-vpe/vip.c:3786:15: error: implicit declaration of function 'v4l2_async_notifier_add_fwnode_subdev'; did you mean 'v4l2_async_nf_add_fwnode_remote'? [-Werror=implicit-function-declaration]
-    3786 |         asd = v4l2_async_notifier_add_fwnode_subdev(notifier, subdev,
-         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |               v4l2_async_nf_add_fwnode_remote
-   drivers/media/platform/ti-vpe/vip.c:3786:13: warning: assignment to 'struct v4l2_async_subdev *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-    3786 |         asd = v4l2_async_notifier_add_fwnode_subdev(notifier, subdev,
-         |             ^
-   drivers/media/platform/ti-vpe/vip.c:3796:15: error: implicit declaration of function 'v4l2_async_notifier_register'; did you mean 'v4l2_async_nf_register'? [-Werror=implicit-function-declaration]
-    3796 |         ret = v4l2_async_notifier_register(dev->v4l2_dev, notifier);
-         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |               v4l2_async_nf_register
-   drivers/media/platform/ti-vpe/vip.c: In function 'vip_probe':
->> drivers/media/platform/ti-vpe/vip.c:4016:25: warning: variable 'pinctrl' set but not used [-Wunused-but-set-variable]
-    4016 |         struct pinctrl *pinctrl;
-         |                         ^~~~~~~
-   drivers/media/platform/ti-vpe/vip.c: In function 'add_out_dtd':
-   drivers/media/platform/ti-vpe/vip.c:722:23: warning: this statement may fall through [-Wimplicit-fallthrough=]
-     722 |                 plane = 1;
-         |                 ~~~~~~^~~
-   drivers/media/platform/ti-vpe/vip.c:724:9: note: here
-     724 |         case VIP_SRCE_LUMA:
-         |         ^~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/list_length +892 drivers/media/platform/ti-vpe/vip.c
-
-   887	
-   888	static void populate_desc_list(struct vip_stream *stream)
-   889	{
-   890		struct vip_port *port = stream->port;
-   891		struct vip_dev *dev = port->dev;
- > 892		unsigned int list_length;
-   893	
-   894		stream->desc_next = stream->desc_list.buf.addr;
-   895		add_stream_dtds(stream);
-   896	
-   897		list_length = stream->desc_next - stream->desc_list.buf.addr;
-   898		vpdma_map_desc_buf(dev->shared->vpdma, &stream->desc_list.buf);
-   899	}
-   900	
+Does something like the below (untested in the extreme) help?
 
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 83872f95a1ea..18163454bb47 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -5665,6 +5665,8 @@ static inline struct task_struct *pick_task(struct rq *rq)
+ 
+ extern void task_vruntime_update(struct rq *rq, struct task_struct *p, bool in_fi);
+ 
++static void queue_core_balance(struct rq *rq);
++
+ static struct task_struct *
+ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+ {
+@@ -5714,7 +5716,7 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+ 		}
+ 
+ 		rq->core_pick = NULL;
+-		return next;
++		goto out;
+ 	}
+ 
+ 	put_prev_task_balance(rq, prev, rf);
+@@ -5764,7 +5766,7 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+ 			 */
+ 			WARN_ON_ONCE(fi_before);
+ 			task_vruntime_update(rq, next, false);
+-			goto done;
++			goto out_set_next;
+ 		}
+ 	}
+ 
+@@ -5884,8 +5886,12 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+ 		resched_curr(rq_i);
+ 	}
+ 
+-done:
++out_set_next:
+ 	set_next_task(rq, next);
++out:
++	if (rq->core->core_forceidle_count && next == rq->idle)
++		queue_core_balance(rq);
++
+ 	return next;
+ }
+ 
+@@ -5914,7 +5920,7 @@ static bool try_steal_cookie(int this, int that)
+ 		if (p == src->core_pick || p == src->curr)
+ 			goto next;
+ 
+-		if (!cpumask_test_cpu(this, &p->cpus_mask))
++		if (!is_cpu_allowed(p, this))
+ 			goto next;
+ 
+ 		if (p->core_occupation > dst->idle->core_occupation)
+@@ -5980,7 +5986,7 @@ static void sched_core_balance(struct rq *rq)
+ 
+ static DEFINE_PER_CPU(struct callback_head, core_balance_head);
+ 
+-void queue_core_balance(struct rq *rq)
++static void queue_core_balance(struct rq *rq)
+ {
+ 	if (!sched_core_enabled(rq))
+ 		return;
+diff --git a/kernel/sched/idle.c b/kernel/sched/idle.c
+index d17b0a5ce6ac..314c36fc9c42 100644
+--- a/kernel/sched/idle.c
++++ b/kernel/sched/idle.c
+@@ -437,7 +437,6 @@ static void set_next_task_idle(struct rq *rq, struct task_struct *next, bool fir
+ {
+ 	update_idle_core(rq);
+ 	schedstat_inc(rq->sched_goidle);
+-	queue_core_balance(rq);
+ }
+ 
+ #ifdef CONFIG_SMP
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index de53be905739..b85c9344779a 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1247,8 +1247,6 @@ static inline bool sched_group_cookie_match(struct rq *rq,
+ 	return false;
+ }
+ 
+-extern void queue_core_balance(struct rq *rq);
+-
+ static inline bool sched_core_enqueued(struct task_struct *p)
+ {
+ 	return !RB_EMPTY_NODE(&p->core_node);
+@@ -1282,10 +1280,6 @@ static inline raw_spinlock_t *__rq_lockp(struct rq *rq)
+ 	return &rq->__lock;
+ }
+ 
+-static inline void queue_core_balance(struct rq *rq)
+-{
+-}
+-
+ static inline bool sched_cpu_cookie_match(struct rq *rq, struct task_struct *p)
+ {
+ 	return true;
