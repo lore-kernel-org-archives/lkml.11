@@ -2,233 +2,336 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE666C4167B
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356090AbiCPNMK (ORCPT
+        id S1356103AbiCPNMq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38802 "EHLO
+        Wed, 16 Mar 2022 09:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356044AbiCPNMJ (ORCPT
+        with ESMTP id S1355998AbiCPNMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:12:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4325D66211;
-        Wed, 16 Mar 2022 06:10:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65FBDB81B10;
-        Wed, 16 Mar 2022 13:10:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C654CC340E9;
-        Wed, 16 Mar 2022 13:10:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647436244;
-        bh=ESbbcLu/1iy4VCTs0pWTJ94umpC1+FygKacL+9W4w10=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DcPUYzV1Aku3NcbcTL9mdkMh1LWnKoJ2XTkIoBo8wtuneK7AqFc5LHQ4+RsZN47Ro
-         TUy+Ll7nYCAG/HLI4ecmBAy3F8pMq2hKFdrktfkGgYIUyQIqhi6BpKNY4NNZlrwBdc
-         bDycPpgG8QFWVaCQyI7Z7R9RUmhpU3ikfyMX+RiOvQJFuCwXkoOHOdgqt3f3mh2/4A
-         FLjpYtyz+8GJAufTG1ItDJyYjVNYgohQjdE6hRq2Z3M53jAH1DdJ8nEs29BzSHqjX1
-         WgXwGnUKBXVbeoSSLJNdFH0PUjhcoFnbgVtX/co3lCeBFRoQLvayqkwO2Xcs8DRi1M
-         UUGpV/32fmXNg==
-Date:   Wed, 16 Mar 2022 14:10:36 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>,
-        Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Mikhail Rudenko <mike.rudenko@gmail.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Ondrej Jirman <megous@megous.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
-        Yong Deng <yong.deng@magewell.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH v2 47/67] media: platform: rename sunxi/ to allwinner/
-Message-ID: <20220316141036.1c9ad0c6@coco.lan>
-In-Reply-To: <YjBPuafv1B5dbu/r@pendragon.ideasonboard.com>
-References: <cover.1647274406.git.mchehab@kernel.org>
-        <85266b480902079391d4206b8aa276ff131a730f.1647274407.git.mchehab@kernel.org>
-        <2816975.e9J7NaK4W3@kista>
-        <20220315064005.10ecdab2@coco.lan>
-        <YjA4IRD//lb8SKgs@pendragon.ideasonboard.com>
-        <20220315092736.7e805c81@coco.lan>
-        <YjBPuafv1B5dbu/r@pendragon.ideasonboard.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+        Wed, 16 Mar 2022 09:12:43 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7755F8D7;
+        Wed, 16 Mar 2022 06:11:24 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22GAFxGH001886;
+        Wed, 16 Mar 2022 14:11:12 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=5JdwOYbAWhiElIir3yc1zTehwjupY28JyCqayddrPog=;
+ b=HuTp9q972IDYxcxpQl+pLtv2kf8EJiwO61oC7pM6fnz6FS3wiN9MfWxOac/nzy/GlNez
+ 06MmE+KMSdYR2GXhvkATtGw9V+YodcYAh45Lw4vSe2914RXpFiQPjbNOMTfsv5T2JJXs
+ zgHU4dJNUJ9xY4nsWtsL2ATCLEo/QuLKj/ErXWU//EbBMlJuSjCfhogFiBBpPeZdggfw
+ T8FxLnR7WVZA85kP6+cTjkqN3xzVoYt8y8ECYDlrEvzfLIu8acErNnk0w0DU6+2OO2Pz
+ VN0cQspMCx3C+l0lZdK/FaJAF5DkzGHT9AeBDpNjKwfT3rsmH/FX1lXl5s9QmErua+Qk Ng== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ethxu2heh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Mar 2022 14:11:12 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AB959100034;
+        Wed, 16 Mar 2022 14:11:11 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A3D462278A6;
+        Wed, 16 Mar 2022 14:11:11 +0100 (CET)
+Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 16 Mar 2022 14:11:11
+ +0100
+From:   <gabriel.fernandez@foss.st.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+CC:     <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH RESEND v3 05/13] clk: stm32mp13: add stm32 divider clock
+Date:   Wed, 16 Mar 2022 14:09:52 +0100
+Message-ID: <20220316131000.9874-6-gabriel.fernandez@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220316131000.9874-1-gabriel.fernandez@foss.st.com>
+References: <20220316131000.9874-1-gabriel.fernandez@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-16_05,2022-03-15_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, 15 Mar 2022 10:35:05 +0200
-Laurent Pinchart <laurent.pinchart@ideasonboard.com> escreveu:
+From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 
-> On Tue, Mar 15, 2022 at 09:27:36AM +0100, Mauro Carvalho Chehab wrote:
-> > Em Tue, 15 Mar 2022 08:54:25 +0200
-> > Laurent Pinchart <laurent.pinchart@ideasonboard.com> escreveu:
-> >  =20
-> > > Hi Mauro,
-> > >=20
-> > > On Tue, Mar 15, 2022 at 06:40:05AM +0100, Mauro Carvalho Chehab wrote=
-: =20
-> > > > Em Mon, 14 Mar 2022 18:22:20 +0100 Jernej =C5=A0krabec escreveu:
-> > > >    =20
-> > > > > Dne ponedeljek, 14. marec 2022 ob 17:34:42 CET je Mauro Carvalho =
-Chehab=20
-> > > > > napisal(a):   =20
-> > > > > > As the end goal is to have platform drivers split by vendor,
-> > > > > > rename sunxi/ to allwinner/.
-> > > > > >=20
-> > > > > > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>     =
-=20
-> > > > >=20
-> > > > > I would rather not do that. Everything related to Allwinner is ca=
-lled sunxi,=20
-> > > > > albeit there are a few outliers. This is similar to Amlogic/meson=
- situation.   =20
-> > > >=20
-> > > > The rationale of having one directory per manufacturer is that, if =
-drivers
-> > > > for newer platforms with different names from the same manufacturer=
-s are=20
-> > > > added, those will still fit under allwinner/ and amlogic/.
-> > > >=20
-> > > > The Kconfig names for sunxi and meson didn't change, nor the driver=
-'s name.=20
-> > > > Also, the directories under allwinner preserve sun<x>i name on them:
-> > > >=20
-> > > > 	drivers/media/platform/allwinner/
-> > > > 	=E2=94=9C=E2=94=80=E2=94=80 sun4i-csi
-> > > > 	=E2=94=9C=E2=94=80=E2=94=80 sun6i-csi
-> > > > 	=E2=94=9C=E2=94=80=E2=94=80 sun8i-di
-> > > > 	=E2=94=94=E2=94=80=E2=94=80 sun8i-rotate
-> > > >=20
-> > > > and so the directory under amlogic/:
-> > > >=20
-> > > > 	drivers/media/platform/amlogic/
-> > > > 	=E2=94=94=E2=94=80=E2=94=80 meson-ge2d
-> > > >=20
-> > > > Now, if Allinner decides to release a new platforms named after ano=
-ther star,
-> > > > let's say, "Vega" and "Rigel", it would be just a matter of adding=
-=20
-> > > > "vega/" and "rigel/" directories under allwinner. No need to touch
-> > > > media/platform/Kconfig and media/platform/Makefile. Everything will=
- happen
-> > > > on much more smaller vendor-specific Kconfig/Makefile.   =20
-> > >=20
-> > > But the day Allwinner changes its name to Noloser, we'll have a simil=
-ar
-> > > problem.  =20
-> >=20
-> > Not really. It will still be a single directory per vendor (whatever
-> > name it is).
-> >  =20
-> > > Thnk about Freescale vs. NXP, or Altera bought by Intel. =20
-> >=20
-> > Yeah, when some drivers move from one vendor to another one that
-> > already exists there, we should probably move the directories, in
-> > order to keep things well organized. =20
->=20
-> I'm not sure we should. We still have arch/arm64/boot/dts/freescale/ for
-> instance. We can answer that question later though, when confronted with
-> the situation.
+Just to introduce management of a stm32 divider clock
 
-It would be messy if some drivers under a
+Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+---
+ drivers/clk/stm32/clk-stm32-core.c | 159 +++++++++++++++++++++++++++++
+ drivers/clk/stm32/clk-stm32-core.h |  21 ++++
+ drivers/clk/stm32/clk-stm32mp13.c  |   7 ++
+ 3 files changed, 187 insertions(+)
 
-	media/platform/vendor_a/
+diff --git a/drivers/clk/stm32/clk-stm32-core.c b/drivers/clk/stm32/clk-stm32-core.c
+index ca2605da873d..da38eca2b8c5 100644
+--- a/drivers/clk/stm32/clk-stm32-core.c
++++ b/drivers/clk/stm32/clk-stm32-core.c
+@@ -175,6 +175,80 @@ static int stm32_gate_is_enabled(void __iomem *base,
+ 	return (readl(base + gate->offset) & BIT(gate->bit_idx)) != 0;
+ }
+ 
++static unsigned int _get_table_div(const struct clk_div_table *table,
++				   unsigned int val)
++{
++	const struct clk_div_table *clkt;
++
++	for (clkt = table; clkt->div; clkt++)
++		if (clkt->val == val)
++			return clkt->div;
++	return 0;
++}
++
++static unsigned int _get_div(const struct clk_div_table *table,
++			     unsigned int val, unsigned long flags, u8 width)
++{
++	if (flags & CLK_DIVIDER_ONE_BASED)
++		return val;
++	if (flags & CLK_DIVIDER_POWER_OF_TWO)
++		return 1 << val;
++	if (table)
++		return _get_table_div(table, val);
++	return val + 1;
++}
++
++static unsigned long stm32_divider_get_rate(void __iomem *base,
++					    struct clk_stm32_clock_data *data,
++					    u16 div_id,
++					    unsigned long parent_rate)
++{
++	const struct stm32_div_cfg *divider = &data->dividers[div_id];
++	unsigned int val;
++	unsigned int div;
++
++	val =  readl(base + divider->offset) >> divider->shift;
++	val &= clk_div_mask(divider->width);
++	div = _get_div(divider->table, val, divider->flags, divider->width);
++
++	if (!div) {
++		WARN(!(divider->flags & CLK_DIVIDER_ALLOW_ZERO),
++		     "%d: Zero divisor and CLK_DIVIDER_ALLOW_ZERO not set\n",
++		     div_id);
++		return parent_rate;
++	}
++
++	return DIV_ROUND_UP_ULL((u64)parent_rate, div);
++}
++
++static int stm32_divider_set_rate(void __iomem *base,
++				  struct clk_stm32_clock_data *data,
++				  u16 div_id, unsigned long rate,
++				  unsigned long parent_rate)
++{
++	const struct stm32_div_cfg *divider = &data->dividers[div_id];
++	int value;
++	u32 val;
++
++	value = divider_get_val(rate, parent_rate, divider->table,
++				divider->width, divider->flags);
++	if (value < 0)
++		return value;
++
++	if (divider->flags & CLK_DIVIDER_HIWORD_MASK) {
++		val = clk_div_mask(divider->width) << (divider->shift + 16);
++	} else {
++		val = readl(base + divider->offset);
++		val &= ~(clk_div_mask(divider->width) << divider->shift);
++	}
++
++	val |= (u32)value << divider->shift;
++
++	writel(val, base + divider->offset);
++
++	return 0;
++}
++
+ static u8 clk_stm32_mux_get_parent(struct clk_hw *hw)
+ {
+ 	struct clk_stm32_mux *mux = to_clk_stm32_mux(hw);
+@@ -251,6 +325,70 @@ const struct clk_ops clk_stm32_gate_ops = {
+ 	.disable_unused	= clk_stm32_gate_disable_unused,
+ };
+ 
++static int clk_stm32_divider_set_rate(struct clk_hw *hw, unsigned long rate,
++				      unsigned long parent_rate)
++{
++	struct clk_stm32_div *div = to_clk_stm32_divider(hw);
++	unsigned long flags = 0;
++	int ret;
++
++	if (div->div_id == NO_STM32_DIV)
++		return rate;
++
++	spin_lock_irqsave(div->lock, flags);
++
++	ret = stm32_divider_set_rate(div->base, div->clock_data, div->div_id, rate, parent_rate);
++
++	spin_unlock_irqrestore(div->lock, flags);
++
++	return ret;
++}
++
++static long clk_stm32_divider_round_rate(struct clk_hw *hw, unsigned long rate,
++					 unsigned long *prate)
++{
++	struct clk_stm32_div *div = to_clk_stm32_divider(hw);
++	const struct stm32_div_cfg *divider;
++
++	if (div->div_id == NO_STM32_DIV)
++		return rate;
++
++	divider = &div->clock_data->dividers[div->div_id];
++
++	/* if read only, just return current value */
++	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
++		u32 val;
++
++		val =  readl(div->base + divider->offset) >> divider->shift;
++		val &= clk_div_mask(divider->width);
++
++		return divider_ro_round_rate(hw, rate, prate, divider->table,
++				divider->width, divider->flags,
++				val);
++	}
++
++	return divider_round_rate_parent(hw, clk_hw_get_parent(hw),
++					 rate, prate, divider->table,
++					 divider->width, divider->flags);
++}
++
++static unsigned long clk_stm32_divider_recalc_rate(struct clk_hw *hw,
++						   unsigned long parent_rate)
++{
++	struct clk_stm32_div *div = to_clk_stm32_divider(hw);
++
++	if (div->div_id == NO_STM32_DIV)
++		return parent_rate;
++
++	return stm32_divider_get_rate(div->base, div->clock_data, div->div_id, parent_rate);
++}
++
++const struct clk_ops clk_stm32_divider_ops = {
++	.recalc_rate	= clk_stm32_divider_recalc_rate,
++	.round_rate	= clk_stm32_divider_round_rate,
++	.set_rate	= clk_stm32_divider_set_rate,
++};
++
+ struct clk_hw *clk_stm32_mux_register(struct device *dev,
+ 				      const struct stm32_rcc_match_data *data,
+ 				      void __iomem *base,
+@@ -292,3 +430,24 @@ struct clk_hw *clk_stm32_gate_register(struct device *dev,
+ 
+ 	return hw;
+ }
++
++struct clk_hw *clk_stm32_div_register(struct device *dev,
++				      const struct stm32_rcc_match_data *data,
++				      void __iomem *base,
++				      spinlock_t *lock,
++				      const struct clock_config *cfg)
++{
++	struct clk_stm32_div *div = cfg->clock_cfg;
++	struct clk_hw *hw = &div->hw;
++	int err;
++
++	div->base = base;
++	div->lock = lock;
++	div->clock_data = data->clock_data;
++
++	err = clk_hw_register(dev, hw);
++	if (err)
++		return ERR_PTR(err);
++
++	return hw;
++}
+diff --git a/drivers/clk/stm32/clk-stm32-core.h b/drivers/clk/stm32/clk-stm32-core.h
+index f958ef610f72..c2de58a22aa8 100644
+--- a/drivers/clk/stm32/clk-stm32-core.h
++++ b/drivers/clk/stm32/clk-stm32-core.h
+@@ -104,9 +104,20 @@ struct clk_stm32_gate {
+ 
+ #define to_clk_stm32_gate(_hw) container_of(_hw, struct clk_stm32_gate, hw)
+ 
++struct clk_stm32_div {
++	u16 div_id;
++	struct clk_hw hw;
++	void __iomem *base;
++	struct clk_stm32_clock_data *clock_data;
++	spinlock_t *lock; /* spin lock */
++};
++
++#define to_clk_stm32_divider(_hw) container_of(_hw, struct clk_stm32_div, hw)
++
+ /* Clock operators */
+ extern const struct clk_ops clk_stm32_mux_ops;
+ extern const struct clk_ops clk_stm32_gate_ops;
++extern const struct clk_ops clk_stm32_divider_ops;
+ 
+ /* Clock registering */
+ struct clk_hw *clk_stm32_mux_register(struct device *dev,
+@@ -121,6 +132,12 @@ struct clk_hw *clk_stm32_gate_register(struct device *dev,
+ 				       spinlock_t *lock,
+ 				       const struct clock_config *cfg);
+ 
++struct clk_hw *clk_stm32_div_register(struct device *dev,
++				      const struct stm32_rcc_match_data *data,
++				      void __iomem *base,
++				      spinlock_t *lock,
++				      const struct clock_config *cfg);
++
+ #define STM32_CLOCK_CFG(_binding, _clk, _struct, _register)\
+ {\
+ 	.id		= (_binding),\
+@@ -135,3 +152,7 @@ struct clk_hw *clk_stm32_gate_register(struct device *dev,
+ #define STM32_GATE_CFG(_binding, _clk)\
+ 	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_gate *,\
+ 			&clk_stm32_gate_register)
++
++#define STM32_DIV_CFG(_binding, _clk)\
++	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_div *,\
++			&clk_stm32_div_register)
+diff --git a/drivers/clk/stm32/clk-stm32mp13.c b/drivers/clk/stm32/clk-stm32mp13.c
+index 55326d4d34dd..d93d92b5fe82 100644
+--- a/drivers/clk/stm32/clk-stm32mp13.c
++++ b/drivers/clk/stm32/clk-stm32mp13.c
+@@ -415,9 +415,16 @@ static struct clk_stm32_gate eth1ck_k = {
+ 	.hw.init = CLK_HW_INIT_HW("eth1ck_k", &ck_ker_eth1.hw, &clk_stm32_gate_ops, 0),
+ };
+ 
++static struct clk_stm32_div eth1ptp_k = {
++	.div_id = DIV_ETH1PTP,
++	.hw.init = CLK_HW_INIT_HW("eth1ptp_k", &ck_ker_eth1.hw, &clk_stm32_divider_ops,
++				  CLK_SET_RATE_NO_REPARENT),
++};
++
+ static const struct clock_config stm32mp13_clock_cfg[] = {
+ 	STM32_MUX_CFG(NO_ID, ck_ker_eth1),
+ 	STM32_GATE_CFG(ETH1CK_K, eth1ck_k),
++	STM32_DIV_CFG(ETH1PTP_K, eth1ptp_k),
+ };
+ 
+ static u16 stm32mp13_cpt_gate[GATE_NB];
+-- 
+2.25.1
 
-directory would actually belong to vendor_b, which also has its own
-media/platform/vendor_b/ directory.
-
-On such case, I do think we should move stuff. Now, if everything
-under a "media/platform/vendor_a/" directory are now property of
-a vendor_c which doesn't have yet any directory there, I don't see
-and problems on not renaming - and even adding new drivers there
-that would belong to vendor_c.
-
->=20
-> > The worse case scenario is really if, let's say, TI decides to sell the=
-ir
-> > omap architecture to NXP, keeping the rest. On such case, the best would
-> > be to move platform/ti/omap* to the directory of its newer owner.
-> >=20
-> > That's said, when things like that happen, there are usually a change
-> > at MAINTAINERS, as e-mails, mailing lists and contact people will
-> > likely change. So, this will very likely generate patches anyway.
-> >  =20
-> > > No
-> > > naming scheme is totally future-proof. If the accepted standard throu=
-gh
-> > > the kernel is to use sunxi to refer to Allwinner SoCs, I don't think
-> > > it's a bit idea to go with that. =20
-> >=20
-> > I'm not too concerned about the name here, but rather about the
-> > process. Needing to do reorg like this is painful, as it causes=20
-> > all pending work to fail merging against upstream, requiring rebases.
-> > So, we should avoid needing to re-do it by trying our best to avoid
-> > the need of another global change like that in the future. =20
->=20
-> Most of the pain we'll go through in the immediate future comes from the
-> fact that we never really cared about this.=20
-
-Nah, we had other reorgs in the past, also trying to better organize
-stuff, like splitting M2M from V4L and DVB platform drivers.
-
-The thing is that the number of entries at platform/ increased
-a lot, and that justifies a major change.
-
-> I think renames (of vendors
-> or product lines) will be infrequent enough that picking sunxi for
-> Allwinner drivers wouldn't be an issue.
-
-Agreed.
-
-> There's a similar think with Renesas, which had an SH product line and
-> then moved to ARM, creating R-Mobile and R-Car (among other product
-> liens). That's why we still have drivers/dma/sh/ for Renesas DMA
-> drivers.
->=20
-> > By organizing entries per vendor, while we may need to do puntual
-> > per-vendor adjustments when they rename and change IP with other
-> > vendors, the global platform Kconfig/Make will contain a single entry
-> > per vendor. I can't foresee any need to change this in the future,
-> > if we take care of keeping the entries there properly sorted.
-> >=20
-> > With regards to naming the per-vendor directory, while I do prefer to h=
-ave
-> > the  directories named after the vendor, and not after a vendor's nick=
-=20
-> > name, It should also be ok to use a vendor's nick name, provided that=20
-> > such name is meant to be used by all their current and future IP.
-> >=20
-> > Not sure if "sunxi" is actually a vendor's nick name. It sounds
-> > much likely that it is, instead, a brand name that covers their=20
-> > current media-related SoC.=20
-> >=20
-> > Can someone from the vendor shed a light on it? =20
->=20
-> Maybe we can let the Allwinner upstream community tell us what name to
-> pick ? I'm sure they know better than us :-)
-
-Works for me.
-
-Thanks,
-Mauro
