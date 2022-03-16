@@ -2,145 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B165AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355934AbiCPM5H (ORCPT
+        id S1355937AbiCPM5u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
+        Wed, 16 Mar 2022 08:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240134AbiCPM5C (ORCPT
+        with ESMTP id S240134AbiCPM5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:57:02 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C4A62A22
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 05:55:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647435348; x=1678971348;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=IfLCu0+b/SnRJTq5BwyBxBEMk3VYEQrk8xnbNH5h/GI=;
-  b=hIHU4DBiILPqqJT39yLdlOg0QhGyhygqbm+qDf7I/sSQRCFIrCxw4Aoj
-   zwYGY5aMHaZ3AdKfQUcIht3u5MR2sEENmJBB12/co777Vg8drOVKT1EzG
-   8CAxYARfj+Nj13EbZA2fzsewcd7U7yE71vcCy5SvkiInwajBjV8LW6HlC
-   i5fA4PdbFiBSR8ewtpvYHjvatG7TIi6PwkoWMqEswyfJ556RNwocSD7AK
-   Y0i/l4Wuxg38kMc5kwsrrjKXiXjYjVAErEUu0Hx75SkOD+/N4zAi+OohD
-   jL/yQEQvRhcEW82i/MNWphBh/VkXf8XmXoL1jQfJ5SfLtNOlYJT/jwQtq
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236520309"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="236520309"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 05:55:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="646635384"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 16 Mar 2022 05:55:45 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUTBp-000CQl-7b; Wed, 16 Mar 2022 12:55:45 +0000
-Date:   Wed, 16 Mar 2022 20:55:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guo Ren <guoren@linux.alibaba.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>
-Subject: [csky-linux:riscv_compat_v8 6/20]
- arch/arm64/include/asm/compat.h:69:8: error: redefinition of 'struct
- compat_statfs'
-Message-ID: <202203162054.pQFA2Y1M-lkp@intel.com>
+        Wed, 16 Mar 2022 08:57:45 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC4F62A12;
+        Wed, 16 Mar 2022 05:56:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LmmB2Erj1jpfGkRLnpwe7cf7WboJOCv0J54etJDojOY=; b=Td4FigwoT7Iu2FICJhxFKA1fQU
+        gfzRAkQ2wpTv4eW9I6v1ohLxY3+zdr8TUZW3evkk81VG7F2ATov8ON8y1ZcPBO5d0rjJgAX7OplXU
+        ZuHXJ9cyBXv2kzDIOXIWNq7DuuE2IgGb1Y/fm3hmcFNbLFBKhst3ltpf5Nwkoka6+4d4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nUTCR-00BEEh-FP; Wed, 16 Mar 2022 13:56:23 +0100
+Date:   Wed, 16 Mar 2022 13:56:23 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     cgel.zte@gmail.com
+Cc:     kuba@kernel.org, sebastian.hesselbarth@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH V2] net: mv643xx_eth: undo some opreations in
+ mv643xx_eth_probe
+Message-ID: <YjHed0u9X0bVd6fL@lunn.ch>
+References: <20220316012444.2126070-1-chi.minghao@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220316012444.2126070-1-chi.minghao@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/c-sky/csky-linux riscv_compat_v8
-head:   5e16532e9a75c08518ff196285fe079ee12188ae
-commit: 257ecf6f5f6391f6a88aa6fa19e33d09d686e704 [6/20] asm-generic: compat: Cleanup duplicate definitions
-config: arm64-defconfig (https://download.01.org/0day-ci/archive/20220316/202203162054.pQFA2Y1M-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/c-sky/csky-linux/commit/257ecf6f5f6391f6a88aa6fa19e33d09d686e704
-        git remote add csky-linux https://github.com/c-sky/csky-linux
-        git fetch --no-tags csky-linux riscv_compat_v8
-        git checkout 257ecf6f5f6391f6a88aa6fa19e33d09d686e704
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 prepare
+On Wed, Mar 16, 2022 at 01:24:44AM +0000, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Cannot directly return platform_get_irq return irq, there
+> are operations that need to be undone.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-All errors (new ones prefixed by >>):
-
-   In file included from arch/arm64/include/asm/stat.h:13,
-                    from include/linux/stat.h:6,
-                    from include/linux/sysfs.h:22,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/acpi/apei.h:9,
-                    from include/acpi/ghes.h:5,
-                    from include/linux/arm_sdei.h:8,
-                    from arch/arm64/kernel/asm-offsets.c:10:
->> arch/arm64/include/asm/compat.h:69:8: error: redefinition of 'struct compat_statfs'
-      69 | struct compat_statfs {
-         |        ^~~~~~~~~~~~~
-   In file included from arch/arm64/include/asm/compat.h:18,
-                    from arch/arm64/include/asm/stat.h:13,
-                    from include/linux/stat.h:6,
-                    from include/linux/sysfs.h:22,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/acpi/apei.h:9,
-                    from include/acpi/ghes.h:5,
-                    from include/linux/arm_sdei.h:8,
-                    from arch/arm64/kernel/asm-offsets.c:10:
-   include/asm-generic/compat.h:80:8: note: originally defined here
-      80 | struct compat_statfs {
-         |        ^~~~~~~~~~~~~
-   make[2]: *** [scripts/Makefile.build:121: arch/arm64/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1191: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
-
-
-vim +69 arch/arm64/include/asm/compat.h
-
-3dd681d944f6d8 Will Deacon 2012-03-05  68  
-3dd681d944f6d8 Will Deacon 2012-03-05 @69  struct compat_statfs {
-3dd681d944f6d8 Will Deacon 2012-03-05  70  	int		f_type;
-3dd681d944f6d8 Will Deacon 2012-03-05  71  	int		f_bsize;
-3dd681d944f6d8 Will Deacon 2012-03-05  72  	int		f_blocks;
-3dd681d944f6d8 Will Deacon 2012-03-05  73  	int		f_bfree;
-3dd681d944f6d8 Will Deacon 2012-03-05  74  	int		f_bavail;
-3dd681d944f6d8 Will Deacon 2012-03-05  75  	int		f_files;
-3dd681d944f6d8 Will Deacon 2012-03-05  76  	int		f_ffree;
-3dd681d944f6d8 Will Deacon 2012-03-05  77  	compat_fsid_t	f_fsid;
-3dd681d944f6d8 Will Deacon 2012-03-05  78  	int		f_namelen;	/* SunOS ignores this field. */
-3dd681d944f6d8 Will Deacon 2012-03-05  79  	int		f_frsize;
-3dd681d944f6d8 Will Deacon 2012-03-05  80  	int		f_flags;
-3dd681d944f6d8 Will Deacon 2012-03-05  81  	int		f_spare[4];
-3dd681d944f6d8 Will Deacon 2012-03-05  82  };
-3dd681d944f6d8 Will Deacon 2012-03-05  83  
-
-:::::: The code at line 69 was first introduced by commit
-:::::: 3dd681d944f6d861f12ee03aff17a14342963330 arm64: 32-bit (compat) applications support
-
-:::::: TO: Will Deacon <will.deacon@arm.com>
-:::::: CC: Catalin Marinas <catalin.marinas@arm.com>
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+    Andrew
