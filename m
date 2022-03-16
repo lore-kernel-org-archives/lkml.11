@@ -2,96 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60654C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 17:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3811C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 17:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357741AbiCPRjQ (ORCPT
+        id S1351307AbiCPRkF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 13:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        Wed, 16 Mar 2022 13:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357711AbiCPRjJ (ORCPT
+        with ESMTP id S242842AbiCPRkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 13:39:09 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08551BF59;
-        Wed, 16 Mar 2022 10:37:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647452267; x=1678988267;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=7W8kooW+UTmGyvszE1jPzSwZsl1xQ+fW8wQHJr2tNSs=;
-  b=WYKo+Z6mE774B19/AA+QXd+XvVwjJRcbrAmt/VzBX5QEYIm6JvJQQfB3
-   w7EYjlgkD299aZ3x7sYSlVmaZHOKxDfmbkw/3BocDoXhDWy5CVkfYmJbc
-   Pcscrxvi/peAewu/oBtCqSxvYPFkIbr8nSXqny8Y6eg20scusav8X0ebG
-   c=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 16 Mar 2022 10:37:46 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 10:37:46 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 16 Mar 2022 10:37:45 -0700
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 16 Mar 2022 10:37:38 -0700
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <quic_kalyant@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <dianders@chromium.org>,
-        <quic_khsieh@quicinc.com>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
-        <krzk+dt@kernel.org>, <sean@poorly.run>, <airlied@linux.ie>,
-        <daniel@ffwll.ch>, <thierry.reding@gmail.com>, <sam@ravnborg.org>,
-        <dmitry.baryshkov@linaro.org>, <quic_vproddut@quicinc.com>
-Subject: [PATCH v5 9/9] drm/msm/dp: Support edp/dp without hpd
-Date:   Wed, 16 Mar 2022 23:05:54 +0530
-Message-ID: <1647452154-16361-10-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647452154-16361-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1647452154-16361-1-git-send-email-quic_sbillaka@quicinc.com>
+        Wed, 16 Mar 2022 13:40:03 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0D2BF59
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 10:38:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=QsLzpovWL3qpyj8PodkSfoW+Ylj76HOoManReo80w4c=; b=acgk7Ks9sbb3gy7n5YIa/AYSez
+        FxaOYOdkfHJ7kNHTcld3iUzmJPWG22BfbcFQpbDAlNuZOL8YkOguyRFswUXQo6XCQwNkcE3yAvrtk
+        Mq5hOj/evSGVCaQmqOxnjNFSB07VqPytT7ULWfIrUm5T85BDI3pHCcDxBWWoyC+RDODKCB279rdLt
+        9Dw65/wnV5bCUWjS1AkxbYFOYuznmcbXWnIcXCxqYsmCZCjK91dQCApOmwSsRG+BSTa/d8xyCQRk8
+        BYthB/buYvQ/Ea/w4wkU9re/zNYI1jVEJkb+jDfGeyEj2WjowzP9uKS3BYlE7hLPEYa0BhH1nBQV5
+        LAbvlBng==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUXba-006DEi-Vu; Wed, 16 Mar 2022 17:38:39 +0000
+Date:   Wed, 16 Mar 2022 17:38:38 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kbuild@lists.01.org, lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [willy-pagecache:for-next 174/179] fs/nilfs2/inode.c:232
+ nilfs_dirty_folio() error: uninitialized symbol 'nr_dirty'.
+Message-ID: <YjIgnsi4+GLFduA8@casper.infradead.org>
+References: <202203162210.u0O3mmI4-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202203162210.u0O3mmI4-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some eDP sinks or platform boards will not support hpd.
-This patch adds support for those cases.
+On Wed, Mar 16, 2022 at 06:08:09PM +0300, Dan Carpenter wrote:
+> New smatch warnings:
+> fs/nilfs2/inode.c:232 nilfs_dirty_folio() error: uninitialized symbol 'nr_dirty'.
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_catalog.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
-index f15316b..f8ddc73 100644
---- a/drivers/gpu/drm/msm/dp/dp_catalog.c
-+++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
-@@ -596,8 +596,10 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
- 	reftimer |= DP_DP_HPD_REFTIMER_ENABLE;
- 	dp_write_aux(catalog, REG_DP_DP_HPD_REFTIMER, reftimer);
- 
--	/* Enable HPD */
--	dp_write_aux(catalog, REG_DP_DP_HPD_CTRL, DP_DP_HPD_CTRL_HPD_EN);
-+	/* Enable HPD if supported*/
-+	if (!of_property_read_bool(catalog->dev->of_node, "no-hpd"))
-+		dp_write_aux(catalog, REG_DP_DP_HPD_CTRL,
-+				DP_DP_HPD_CTRL_HPD_EN);
- }
- 
- u32 dp_catalog_link_is_connected(struct dp_catalog *dp_catalog)
--- 
-2.7.4
-
+Thanks, pushed out a fix.
