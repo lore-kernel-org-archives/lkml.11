@@ -2,76 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 359C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354665AbiCPIxs (ORCPT
+        id S1352148AbiCPIyo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 04:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
+        Wed, 16 Mar 2022 04:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354689AbiCPIwt (ORCPT
+        with ESMTP id S1346087AbiCPIyj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 04:52:49 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA61865143;
-        Wed, 16 Mar 2022 01:51:35 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:37546.597671551
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 200712800AA;
-        Wed, 16 Mar 2022 16:51:30 +0800 (CST)
-X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 533a108290c24b9994bd632c8c2afdcf for j.vosburgh@gmail.com;
-        Wed, 16 Mar 2022 16:51:34 CST
-X-Transaction-ID: 533a108290c24b9994bd632c8c2afdcf
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, oliver@neukum.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
-Subject: [PATCH v3 0/4] net:bonding:Add support for IPV6 RLB to balance-alb mode
-Date:   Wed, 16 Mar 2022 04:49:54 -0400
-Message-Id: <20220316084958.21169-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 16 Mar 2022 04:54:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D3C27FE9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 01:53:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51F5461560
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:53:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 394A4C340E9;
+        Wed, 16 Mar 2022 08:53:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647420804;
+        bh=ekLZb1lbsVmd4fFmXwiqzIWmyw2ad5ve/nwLpaF/zPQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:From;
+        b=WKqSf2pUUMqXLJTkULj7fj1QQVTwBXv7eUcNotlQpZexaIEytHZ0X+SSewVT+razl
+         UKeiir/DNztl1Kh7SK+llTzjK7sW5TK64rjqjU8kYhsNqJqdg7Qx3J7yNHs/Jrs7r/
+         dPUZspJqIUdow6AZX6DIEHvcw47rW+x4KrO02Ca6na6EVTVQevcMRctfrEVg/kc7sf
+         3+cnisHSa4xsVu3Z65QNMWotf4nQZsh24Z9J+JnNPRJ1k0wrxWYpgAWN1Qioxh977f
+         XQiXdbx2UDHkbQMo53Id24mTIbfiUfr1c8YFr22/ng1JZsH3zN9pmy2jN9tt9OzFZr
+         6qMGHeGWw3UOQ==
+From:   sj@kernel.org
+To:     Miaohe Lin <linmiaohe@huawei.com>
+Cc:     akpm@linux-foundation.org, sj@kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/damon: minor cleanup for damon_pa_young
+Date:   Wed, 16 Mar 2022 08:53:15 +0000
+Message-Id: <20220316085315.21054-1-sj@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220316081528.6034-1-linmiaohe@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch is implementing IPV6 RLB for balance-alb mode.
-
-Sun Shouxin (4):
-  net:ipv6:Refactor ndisc_send_na to support sending na by slave
-    directly
-  net:ipv6:Export inet6_ifa_finish_destroy and ipv6_get_ifaddr
-  net:bonding:Add support for IPV6 RLB to balance-alb mode
-  net: usb:Refactor ndisc_send_na
-
- drivers/net/bonding/bond_3ad.c     |   2 +-
- drivers/net/bonding/bond_alb.c     | 592 ++++++++++++++++++++++++++++-
- drivers/net/bonding/bond_debugfs.c |  14 +
- drivers/net/bonding/bond_main.c    |   6 +-
- drivers/net/usb/cdc_mbim.c         |   2 +-
- include/net/bond_3ad.h             |   2 +-
- include/net/bond_alb.h             |   7 +
- include/net/bonding.h              |   6 +-
- include/net/ipv6_stubs.h           |   3 +-
- include/net/ndisc.h                |   9 +-
- net/ipv6/addrconf.c                |   4 +-
- net/ipv6/ndisc.c                   |  64 +++-
- 12 files changed, 675 insertions(+), 36 deletions(-)
+Hi Miaohe,
 
 
-base-commit: c84d86a0295c24487db5b7db1a61d9c0eddfbb66
--- 
-2.27.0
+Thank you for this patch!
 
+On Wed, 16 Mar 2022 16:15:28 +0800 Miaohe Lin <linmiaohe@huawei.com> wrote:
+
+> if need_lock is true but folio_trylock fails, we should return false
+> instead of NULL to match the return value type exactly. No functional
+> change intended.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+
+Reviewed-by: SeongJae Park <sj@kernel.org>
+
+
+Thanks,
+SJ
+
+> ---
+>  mm/damon/paddr.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/damon/paddr.c b/mm/damon/paddr.c
+> index a01495cebdad..21474ae63bc7 100644
+> --- a/mm/damon/paddr.c
+> +++ b/mm/damon/paddr.c
+> @@ -152,7 +152,7 @@ static bool damon_pa_young(unsigned long paddr, unsigned long *page_sz)
+>  	need_lock = !folio_test_anon(folio) || folio_test_ksm(folio);
+>  	if (need_lock && !folio_trylock(folio)) {
+>  		folio_put(folio);
+> -		return NULL;
+> +		return false;
+>  	}
+>  
+>  	rmap_walk(folio, &rwc);
+> 
+> -- 
+> 2.23.0
+> 
+> 
+> 
