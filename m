@@ -2,103 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17013C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72393C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349465AbiCPVLm (ORCPT
+        id S1358135AbiCPVLv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 17:11:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
+        Wed, 16 Mar 2022 17:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244926AbiCPVLk (ORCPT
+        with ESMTP id S1355934AbiCPVLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 17:11:40 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9EC2BEF
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:10:25 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id 15-20020a17090a098f00b001bef0376d5cso3647544pjo.5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:10:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=A6cOxdUaG1A86kAtWaCIf07+aXGBjHiOUH8wcQkHkjE=;
-        b=TjOnIiyszh7cP5J8N0RqNG9sx+4l3KYhzHYTAvRuldydNoM5hA7bqJDoN0u8cG8lPS
-         xmPxH2lwD4DW466GeuWuezsrVQjQnMuCdy1P3dATg2yFshWYKPLFNwjWH2C0T2z/pO4L
-         +F7zv//JFDverjj7xHns6RBHNrf5JIsvbkMMo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=A6cOxdUaG1A86kAtWaCIf07+aXGBjHiOUH8wcQkHkjE=;
-        b=VCJPH4i1Zhd65iS97b21qYOJ+EqW80/plyyex34xAQWW/zNxRc2D6/YYtaZiAJTtis
-         GiT1bvdL1XQSVZbuXkiVeZrs58QGyaXEqF07T7KpG1qTgzXgZNzh0gMem61uILH31juE
-         R1UVEvltvIi515x5t8AXtHfg7JzdtuWHTE7XsCdhWJlz/AYBY+712M41UPx3pZh7oXhw
-         jPgg0zEXClh7n2dLcz4/CTTjh+PWy2QN3WNbiXkCkHZRHR11Hr2vgNQC3etyy8zEok5S
-         gqYubxcRPgvhqdKe7+Wct+Hvb2Xh4nSZRg97ChRipVlcjqDUAl2fY+qku3bCX9eOPut0
-         rPrg==
-X-Gm-Message-State: AOAM532wg2SeFg4anuOBU0TeQ2/OT+Sjgf9Q7HJx9EPuj4Ph+RAZyx/z
-        y4CKf0tEdja4KudQa5oIxMZx0w==
-X-Google-Smtp-Source: ABdhPJzb5vzfkKFyarFdtMtfUhu+EIlpoWuPTm+nXYoeixxrBzfHa8F64Rja2IagUyaJIoRZgNy+TQ==
-X-Received: by 2002:a17:902:bd89:b0:14d:93b4:71a9 with SMTP id q9-20020a170902bd8900b0014d93b471a9mr1505304pls.98.1647465024771;
-        Wed, 16 Mar 2022 14:10:24 -0700 (PDT)
-Received: from localhost ([135.84.132.250])
-        by smtp.gmail.com with ESMTPSA id u10-20020a63b54a000000b00380ea901cd2sm3341246pgo.6.2022.03.16.14.10.22
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 16 Mar 2022 14:10:23 -0700 (PDT)
-From:   Benjamin Li <benl@squareup.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Zac Crosby <zac@squareup.com>, Benjamin Li <benl@squareup.com>,
-        Andy Gross <agross@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, linux-arm-msm@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] thermal: thermal_of: pass-through change_mode & implement for tsens
-Date:   Wed, 16 Mar 2022 14:09:43 -0700
-Message-Id: <20220316210946.6935-1-benl@squareup.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 16 Mar 2022 17:11:43 -0400
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D5042A16;
+        Wed, 16 Mar 2022 14:10:28 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:35::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id C53FE2CD;
+        Wed, 16 Mar 2022 21:10:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net C53FE2CD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1647465027; bh=6PY+oP187Km4X4DENxa30QTAKestJk5QoK9x4lPxiXw=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=kc1Km2RbeQki+bPzH8xgB8YhtJLFbkat9ffYIcuRayQbjxnhYXQoj2ank61Srmfoj
+         DsbzBoPZBH9m8b1R9mD791Xs4GSMHN5UdEybAdtEGhMp/xaeCH7+z0BQ4CMrQLWiYC
+         ZuKdUol8/ew8nNw02U6lzDSIzxpTEcXPc/2Jq4VJNO/my6bdlw/aNcKVI1Y9qwUe6O
+         a1FBuIwBY60lCoi55q4i5tWsmywdd3ky4qaeH4ARiMLfYgmZ7dIh1ScDLiPMzSaApv
+         hYazpkfTdxN2HXQUl35MGEMeflZdpi9Rv0E+7a+gFqJFql/7MNUwtNspJxwnYq8V0k
+         sR9+gcu8DkjDA==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Alex Williamson <alex.williamson@redhat.com>,
+        alex.williamson@redhat.com, kvm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, jgg@nvidia.com,
+        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
+        yishaih@nvidia.com, linux-doc@vger.kernel.org, hch@infradead.org
+Subject: Re: [PATCH v4] vfio-pci: Provide reviewers and acceptance criteria
+ for variant drivers
+In-Reply-To: <164736509088.181560.2887686123582116702.stgit@omen>
+References: <164736509088.181560.2887686123582116702.stgit@omen>
+Date:   Wed, 16 Mar 2022 15:10:27 -0600
+Message-ID: <87wngtsiws.fsf@meer.lwn.net>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Plumb through the change_mode callback from thermal core into thermal_of,
-and implement change_mode for the Qualcomm tsens driver.
+Alex Williamson <alex.williamson@redhat.com> writes:
 
-Supersedes "[PATCH v3] drivers: thermal: tsens: respect thermal_device_mode
-in threshold irq reporting". Changelog for that patchset:
+> Device specific extensions for devices exposed to userspace through
+> the vfio-pci-core library open both new functionality and new risks.
+> Here we attempt to provided formalized requirements and expectations
+> to ensure that future drivers both collaborate in their interaction
+> with existing host drivers, as well as receive additional reviews
+> from community members with experience in this area.
+>
+> Cc: Jason Gunthorpe <jgg@nvidia.com>
+> Acked-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
+> Acked-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 
-Changes in v3:
-- Upgraded logging to dev_info_ratelimited and revised log message.
-- Remove unrelated hunk.
+So this seems fine to me.  Did you want it to go through the docs tree,
+or did you have another path in mind for it?
 
-Some drivers that support thermal zone disabling implement a set_mode
-operation and simply disable the sensor or the relevant IRQ(s), so they
-actually don't log anything when zones are disabled. These drivers are
-imx_thermal.c, intel_quark_dts_thermal.c, and int3400_thermal.c.
+Thanks,
 
-For tsens.c, implementing a change_mode would require migrating the driver
-from devm_thermal_zone_of_sensor_register to thermal_zone_device_register
-(or updating thermal_of.c to add a change_mode operation in thermal_zone_
-of_device_ops).
-
-stm_thermal.c seems to use this patch's model of not disabling IRQs when
-the zone is disabled (they still perform the thermal_zone_device_update
-upon IRQ, but return -EAGAIN from their get_temp).
-
-Changes in v2:
-- Reordered sentences in first part of commit message to make sense.
-
-Benjamin Li (2):
-  thermal: thermal_of: add pass-through change_mode to ops struct
-  drivers: thermal: tsens: implement change_mode to disable sensor IRQs
-
- drivers/thermal/qcom/tsens.c | 43 ++++++++++++++++++++++++++++++++++--
- drivers/thermal/qcom/tsens.h |  4 ++++
- drivers/thermal/thermal_of.c | 14 ++++++++++++
- include/linux/thermal.h      |  2 ++
- 4 files changed, 61 insertions(+), 2 deletions(-)
-
--- 
-2.17.1
-
+jon
