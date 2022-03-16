@@ -2,85 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B9D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4150DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 21:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358123AbiCPVNK (ORCPT
+        id S1358126AbiCPVNg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 17:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38142 "EHLO
+        Wed, 16 Mar 2022 17:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358128AbiCPVMx (ORCPT
+        with ESMTP id S242647AbiCPVNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 17:12:53 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09883113E
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:11:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647465098; x=1679001098;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=33tgrV5JYKLeAOwA4Nu2CwWba5e0y4cmLUG0e9EdJRs=;
-  b=nR+LhQM2MeZOwGpOablF6GXWDl0oFI/rdA/JGQTHmjbVs1oUjfW5OgFl
-   8WVfO+WMninTdgcia71ryCr8IzRY1d87zjrr4sotrEJIUxOjvdHjLaCZk
-   0gJzF1z63/G+nvzUucyNh5GEd4wO+khrj0KSIRTOpyBGl2LtGCDkWgktp
-   oIEWG2+p9wUKD5uq3x+I/R1eHLZpNLdLEBBN3wtqmZ/ub7wMPHwEHDn8O
-   HOALUFjPfOMufL6hd1xfKmvoH3Qyf8vzVAKKMp0r0+qIoG0T9V9mqZVTw
-   kkQx6eSZmzIyEhS/QDmantVd+dDePPA8Xr2HcaVhdzKKMTqmqhkG4ju+2
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="317431872"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="317431872"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 14:11:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="581067076"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 16 Mar 2022 14:11:36 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUavf-000Cwl-O4; Wed, 16 Mar 2022 21:11:35 +0000
-Date:   Thu, 17 Mar 2022 05:10:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 1561/2335] ./usr/include/linux/if_bonding.h:47:10:
- fatal error: uapi/linux/sockios.h: No such file or directory
-Message-ID: <202203170538.YucL98mt-lkp@intel.com>
+        Wed, 16 Mar 2022 17:13:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 941EF3B3E9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:12:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647465137;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=i7/+xJxJo5EtPXTa2Igw+/A1HJm8dgW21+h/vVG4wM4=;
+        b=fuyEJ4u10kvX4M+xNSQbYtg7tVC3kILhdUQ/hX1DGCDmYv7NjsU51gImDAI1kXr7QluRjo
+        HVRPLZV3Z5DW4lfrtqUYEn5iZI9zx3gZBZij5R6RfXPLpwpujRP/ZLPWBOzstwEM+kFSn2
+        G9WyBulpVzbYfy5zjRQJhNEgViRz/bM=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-596-9xC4YkXUM_W5KTKUyrWbMw-1; Wed, 16 Mar 2022 17:12:16 -0400
+X-MC-Unique: 9xC4YkXUM_W5KTKUyrWbMw-1
+Received: by mail-io1-f72.google.com with SMTP id u17-20020a6be311000000b00648f92b7b8cso2000278ioc.23
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 14:12:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=i7/+xJxJo5EtPXTa2Igw+/A1HJm8dgW21+h/vVG4wM4=;
+        b=H2XLdo6bpd4NA5WyBByyPZSKhw6n1yoCQ3D2p7xaNgPyDM2qBJPDvX0Gh+IIDQUI7g
+         9nMUm/j2uMqeDslbAt3LGevzFMjWVs/OzOhG5BhzuseWHAK/EaZzhBdAhnGEwNAmANf5
+         BFnumsa2LwHiuFxxFdM/I5TdyuZVMc0A5UETuY9/S35RNlPkyc++IGNTlzPsD9hzkytJ
+         ytTHnyg/0STBG+3zB/7HWZ+zGqChEZSnYsYncGB5D7OQJ81sC959XKFF3bDUZTkk3soC
+         X/dwUUMxfHvZKBJLo5+ENpVwwd95oAB9Sc9iOFJl9BbXrjoOjq4jBZB0JWMsf19MEXr1
+         pHvQ==
+X-Gm-Message-State: AOAM532jDPiDdYI6qqAdaF0AFdVOlzjYMXUzg2T8Q4k1JGCCPTsOZdpH
+        Il+DuqubYdwtXnsGyaimchSXTOF8uhAu7jzo8kBeysqZ2bdZx3PfEQogT8LLJholt/1P8HQei0R
+        a6YfGA73aiCEdgj3RR7AGv3OG
+X-Received: by 2002:a5d:89d8:0:b0:645:d853:66f0 with SMTP id a24-20020a5d89d8000000b00645d85366f0mr843237iot.30.1647465135581;
+        Wed, 16 Mar 2022 14:12:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJympsKSmFw7oQCxHWBDz7yJ2qwkRpX+Zxgw7rY0YM2XSCu1AysybpyZqRKvCwZ/gOtVUbVdUQ==
+X-Received: by 2002:a5d:89d8:0:b0:645:d853:66f0 with SMTP id a24-20020a5d89d8000000b00645d85366f0mr843226iot.30.1647465135380;
+        Wed, 16 Mar 2022 14:12:15 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id t17-20020a92ca91000000b002c7e2664bf7sm126377ilo.36.2022.03.16.14.12.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 14:12:15 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 15:12:14 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org, jgg@nvidia.com,
+        shameerali.kolothum.thodi@huawei.com, kevin.tian@intel.com,
+        yishaih@nvidia.com, linux-doc@vger.kernel.org, hch@infradead.org
+Subject: Re: [PATCH v4] vfio-pci: Provide reviewers and acceptance criteria
+ for variant drivers
+Message-ID: <20220316151214.552a16b3.alex.williamson@redhat.com>
+In-Reply-To: <87wngtsiws.fsf@meer.lwn.net>
+References: <164736509088.181560.2887686123582116702.stgit@omen>
+        <87wngtsiws.fsf@meer.lwn.net>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: 8277ec1f350dcb24941cddc0df58fa978de30f91 [1561/2335] headers/deps: net: Optimize the header dependencies of <uapi/linux/if_bonding.h>
-config: i386-randconfig-a006-20220314 (https://download.01.org/0day-ci/archive/20220317/202203170538.YucL98mt-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=8277ec1f350dcb24941cddc0df58fa978de30f91
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 8277ec1f350dcb24941cddc0df58fa978de30f91
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Wed, 16 Mar 2022 15:10:27 -0600
+Jonathan Corbet <corbet@lwn.net> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Alex Williamson <alex.williamson@redhat.com> writes:
+> 
+> > Device specific extensions for devices exposed to userspace through
+> > the vfio-pci-core library open both new functionality and new risks.
+> > Here we attempt to provided formalized requirements and expectations
+> > to ensure that future drivers both collaborate in their interaction
+> > with existing host drivers, as well as receive additional reviews
+> > from community members with experience in this area.
+> >
+> > Cc: Jason Gunthorpe <jgg@nvidia.com>
+> > Acked-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> > Reviewed-by: Yishai Hadas <yishaih@nvidia.com>
+> > Acked-by: Kevin Tian <kevin.tian@intel.com>
+> > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>  
+> 
+> So this seems fine to me.  Did you want it to go through the docs tree,
+> or did you have another path in mind for it?
 
-All errors (new ones prefixed by >>):
+Thanks, Jon.  I can bring it in through the vfio tree if that works for
+you.  Thanks,
 
-   In file included from <command-line>:32:
->> ./usr/include/linux/if_bonding.h:47:10: fatal error: uapi/linux/sockios.h: No such file or directory
-      47 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
+Alex
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
