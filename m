@@ -2,86 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447D2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9053C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353085AbiCPCkA (ORCPT
+        id S1351252AbiCPCmk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
+        Tue, 15 Mar 2022 22:42:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236042AbiCPCj5 (ORCPT
+        with ESMTP id S241382AbiCPCmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:39:57 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E8A20F48;
-        Tue, 15 Mar 2022 19:38:44 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id o5so2069281ybe.2;
-        Tue, 15 Mar 2022 19:38:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=beHpj5JAWlaoc++bFsSH0fXaGFVr/upMyISOw0UCyLE=;
-        b=j28XZqTaTBbGV5ZoEnmcxjfICuXvlgvy9t0Z9p3cZrd35JfDonkD/L4ovmaILPRC/E
-         xy3uZhyj/Ptyq3/H90dFCkIL48qcft9F2tHiKi9G7MgoMbRbMI9WNjtgt21GejkTaXNq
-         wq2zwyDhSkhD/n9aDKICgBGOzI8Xq/U5NNDbicPw4HQAaMvli/tHT+DQzJYI1aXtOWQo
-         c7n/EnXMc37SpnhIO3nK1nTMlF0o0Oq+W0qAd6VgdzcjsmREBhjldsVaAm9m+VH+OnVU
-         QBhdvQ4ZWrZSaVdgkVm6CramkaIn+BBiS3t5KCeHNaHz8axUdD/P+B4+4jXBPPQErUgr
-         +C1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=beHpj5JAWlaoc++bFsSH0fXaGFVr/upMyISOw0UCyLE=;
-        b=BXjvJnkmZ5KO1Ws+v0leChEK+U5fU9ldms5iRTVBw2VSvUXcKgeQGRzYzotS4EqxnD
-         QK61H9U+hjM/uHVu4slKDjYU9wP5UtVkSi90VMCmQ1wXJqLbLDd9fbLO3h82ihEfrU7m
-         Xdj6hDL8Q6fmkvojEQYh5nnrPzvYej7tdArsxV8HEuMlEseL9aRfS5gOLYsIVebRerYj
-         3DLQ2gs5JIA3Qk+STfHKjeSBYDXK6TbnzSIgcYgqq78ws6s+U/VwCfKaqfYrLnN5O4Nb
-         l/HtXigt7Sps+bgYqJE6CDGijcrhOS6wp+GgrSCSHaELZXC3gwYit8uU4nKYqKTEh/KS
-         F1/A==
-X-Gm-Message-State: AOAM533bfmzqH/GPIKomUFEAnAIdcH6fGfQgiX40a97df5zU4OPmS3Hc
-        RHwK5LnBwYu9qEsHeoizIWqxdgJvGikpQTC8n1kkdm+XozldSTpk
-X-Google-Smtp-Source: ABdhPJy+2XkqzeK5gibMOPsaLhpDuQdWag/l1vmj1R15mdj+QM//7ImHAJJUiSmtqZX9c654QPlfCDWFXw8EvDA2g1A=
-X-Received: by 2002:a25:8f8b:0:b0:629:33e8:9c6a with SMTP id
- u11-20020a258f8b000000b0062933e89c6amr26432029ybl.552.1647398323590; Tue, 15
- Mar 2022 19:38:43 -0700 (PDT)
+        Tue, 15 Mar 2022 22:42:38 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3724532E5
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:41:24 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJDyM1rrNzfYqj;
+        Wed, 16 Mar 2022 10:39:55 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 10:41:22 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 16 Mar
+ 2022 10:41:22 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <maz@kernel.org>, <shawn.guo@linaro.org>
+Subject: [PATCH -next] irqchip/irq-qcom-mpm: fix return value check in qcom_mpm_init()
+Date:   Wed, 16 Mar 2022 10:51:00 +0800
+Message-ID: <20220316025100.1758413-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220311070346.45023-1-jiangshanlai@gmail.com> <5cc80cc7-8088-3bb7-4bbe-40c527465658@redhat.com>
-In-Reply-To: <5cc80cc7-8088-3bb7-4bbe-40c527465658@redhat.com>
-From:   Lai Jiangshan <jiangshanlai@gmail.com>
-Date:   Wed, 16 Mar 2022 10:38:32 +0800
-Message-ID: <CAJhGHyD9Vvjj6ZpnBgRsuon+Ts2Qbn20oo-+Xi2_9cWF4QdGvg@mail.gmail.com>
-Subject: Re: [PATCH V2 0/5] KVM: X86: permission_fault() for SMAP
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 5:06 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 3/11/22 08:03, Lai Jiangshan wrote:
-> > From: Lai Jiangshan<jiangshan.ljs@antgroup.com>
-> >
-> > Some change in permission_fault() for SMAP.  It also reduces
-> > calls two callbacks to get CPL and RFLAGS in come cases, but it
-> > has not any measurable performance change in tests (kernel build
-> > in guest).
->
-> I am going to queue patches 1-4.  The last one shouldn't really have any
-> performance impact with static calls.
->
+If devm_platform_ioremap_resource() fails, it never returns
+NULL, replace NULL check with IS_ERR().
 
-It is not about performance, it is about "less surprise".
+Fixes: a6199bb514d8 ("irqchip: Add Qualcomm MPM controller driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/irqchip/irq-qcom-mpm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The patchset was made due to it surprised me that "what the hell
-is it when L0 is using L2's rflags when building shadow EPT/NPT for L1".
+diff --git a/drivers/irqchip/irq-qcom-mpm.c b/drivers/irqchip/irq-qcom-mpm.c
+index eea5a753618c..d30614661eea 100644
+--- a/drivers/irqchip/irq-qcom-mpm.c
++++ b/drivers/irqchip/irq-qcom-mpm.c
+@@ -375,7 +375,7 @@ static int qcom_mpm_init(struct device_node *np, struct device_node *parent)
+ 	raw_spin_lock_init(&priv->lock);
+ 
+ 	priv->base = devm_platform_ioremap_resource(pdev, 0);
+-	if (!priv->base)
++	if (IS_ERR(priv->base))
+ 		return PTR_ERR(priv->base);
+ 
+ 	for (i = 0; i < priv->reg_stride; i++) {
+-- 
+2.25.1
 
-After some investigation, I knew the L2's rflags is "ignored" in a very
-hidden and complicated way which relies on code in several other places.
-
-I think some additional comment is necessary if that patch is not applied.
