@@ -2,103 +2,371 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF63C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A09E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354414AbiCPILd (ORCPT
+        id S1354421AbiCPINQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 04:11:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45606 "EHLO
+        Wed, 16 Mar 2022 04:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346256AbiCPILc (ORCPT
+        with ESMTP id S1346256AbiCPINP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 04:11:32 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC69C5EBC4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 01:10:18 -0700 (PDT)
+        Wed, 16 Mar 2022 04:13:15 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CDF5EBC7
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 01:12:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647418218; x=1678954218;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=oE3dUSyW9sAQB9KtEIorBKepPZxifgH61/xuFVQ26aI=;
-  b=YTjIFQp0lKcn/Q08GsGHQN7D4rA6HRytQNkvIzvsGwR2qH3iDqytESFf
-   Q8dTVWaxGGNns3l2rniBptWvvQWu7Vwc6NtZMNX+PPialXfeTspHwaRGa
-   lzvz/mJFaa3iE4NE6ZMJ87iZAZYrA2LT3NfLG9EIIp6UrbOpwcBLi3vjT
-   XQRX0+7pcZrJrqTYFh7KHEwMlz25NN9Cin7uAmYHuQ/sZZ9B9IlOXeiUJ
-   hqk3BdAgOnQU/OaWHev426e/XvDBi5gkMfI6tIsefLqr+8a3uOfYbm8yO
-   UQ2o8yfkIDQZxzqus13C5wPvADr8VhglpCWjwaXiGAGvtxGbXH7CnX0Nh
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="243973692"
+  t=1647418321; x=1678954321;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=zlp+LSssFAT2El9wGxaqoWjTlSWP91rOOyJp9gjyDOo=;
+  b=S1kMigWXjTwnCubEzvH61tdjl1LXhUCQ6oq0GjyofKjF1F0DIUSZcydi
+   u56lhQJh6RvREOg2Son9HkIDhcA+NOdqs4xxPuXeNUZfgSqJ7P870oten
+   /pqRyOU3AwVLc4YFoUr93WVebkGX/2JtU5QHY1FtUP9qbUpveuCenXxk7
+   qFQnDiWOuTDzpp3Rh3hXoFDDZl0GkKs+jNKfw51Wm4l/HW3lJtnuRl4Y4
+   /pURu/CRTR5GiPCj3djJ7EDHyDieGfJ+kWtUYMpetV35KxIRnpjKDqhNY
+   RzqwbLKbXOhJD94WYBhoU3OYT1Q4NC5k1nA76OJVeeYkfbCEwH31JkH2L
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256245199"
 X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="243973692"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 01:09:54 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="256245199"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 01:11:36 -0700
 X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="714502451"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 16 Mar 2022 01:09:53 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUOjA-000C9F-HO; Wed, 16 Mar 2022 08:09:52 +0000
-Date:   Wed, 16 Mar 2022 16:09:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 915/2335] ./usr/include/linux/rds.h:38:10: fatal
- error: uapi/linux/sockios.h: No such file or directory
-Message-ID: <202203161619.Vy1cAw02-lkp@intel.com>
+   d="scan'208";a="540808088"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.249.175.79]) ([10.249.175.79])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 01:11:33 -0700
+Subject: Re: [kbuild-all] Re: [cel:nfsd-courteous-server 29/39]
+ do_mounts.c:(.text+0x66): multiple definition of `locks_owner_has_blockers';
+ init/main.o:main.c:(.text+0x0): first defined here
+To:     dai.ngo@oracle.com, kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Chuck Lever <chuck.lever@oracle.com>
+References: <202203130709.dYmfXVEC-lkp@intel.com>
+ <3d22ac50-f13c-c2db-f5b7-dc229c3709f1@oracle.com>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <373bcbd9-6139-e9fa-cd86-124b706d16da@intel.com>
+Date:   Wed, 16 Mar 2022 16:11:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <3d22ac50-f13c-c2db-f5b7-dc229c3709f1@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: b8d36bc5384ae56de169ae667aec58547181384f [915/2335] headers/deps: Add header dependencies to .h files: <uapi/linux/sockios.h>
-config: i386-randconfig-a006-20220314 (https://download.01.org/0day-ci/archive/20220316/202203161619.Vy1cAw02-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=b8d36bc5384ae56de169ae667aec58547181384f
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout b8d36bc5384ae56de169ae667aec58547181384f
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+On 3/15/2022 1:02 AM, dai.ngo@oracle.com wrote:
+> Hi,
+> 
+> On 3/12/22 3:38 PM, kernel test robot wrote:
+>> tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux 
+>> nfsd-courteous-server
+>> head:   ca4d8c00bb753707519f438e5286b2349af53054
+>> commit: 3a59c0f1c4d6cb882410bfc086ad81458d4cbcaa [29/39] fs/lock: add 
+>> helper locks_owner_has_blockers to check for blockers
+>> config: m68k-randconfig-r031-20220313 
+>> (https://download.01.org/0day-ci/archive/20220313/202203130709.dYmfXVEC-lkp@intel.com/config) 
+>>
+>> compiler: m68k-linux-gcc (GCC) 11.2.0
+>> reproduce (this is a W=1 build):
+>>          wget 
+>> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross 
+>> -O ~/bin/make.cross
+>>          chmod +x ~/bin/make.cross
+>>          # 
+>> https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=3a59c0f1c4d6cb882410bfc086ad81458d4cbcaa 
+>>
+>>          git remote add cel 
+>> git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
+>>          git fetch --no-tags cel nfsd-courteous-server
+>>          git checkout 3a59c0f1c4d6cb882410bfc086ad81458d4cbcaa
+>>          # save the config file to linux build tree
+>>          mkdir build_dir
+>>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 
+>> make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
+>>
+>> If you fix the issue, kindly add following tag as appropriate
+>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> All errors (new ones prefixed by >>):
+>>
+>>     m68k-linux-ld: init/do_mounts.o: in function 
+>> `locks_owner_has_blockers':
+>>>> do_mounts.c:(.text+0x66): multiple definition of 
+>>>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>>>> defined here
+> 
+> I looked through all the functions listed as having multiple
+> definition of `locks_owner_has_blockers' such as init/main.o:main.c,
+> arch/x86/kernel/head32.c, init/do_mounts_rd.c and many others.
+> None of these functions has 'locks_owner_has_blockers' defined.
+> I think there is a problem with the tools that detects this
+> error, can you help to verify?
 
-   In file included from <command-line>:32:
->> ./usr/include/linux/rds.h:38:10: fatal error: uapi/linux/sockios.h: No such file or directory
-      38 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
---
-   In file included from <command-line>:32:
->> ./usr/include/linux/x25.h:15:10: fatal error: uapi/linux/sockios.h: No such file or directory
-      15 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
---
-   In file included from <command-line>:32:
->> ./usr/include/linux/if_tunnel.h:5:10: fatal error: uapi/linux/sockios.h: No such file or directory
-       5 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
---
-   In file included from <command-line>:32:
->> ./usr/include/linux/kcm.h:18:10: fatal error: uapi/linux/sockios.h: No such file or directory
-      18 | #include <uapi/linux/sockios.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
+Hi Dai,
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks for the response, please ignore the report, the warning is not 
+first introduced by the commit as you can see the other warnings in 
+below lines:
+
+Best Regards,
+Rong Chen
+
+> 
+>>     m68k-linux-ld: init/do_mounts_rd.o: in function 
+>> `locks_owner_has_blockers':
+>>     do_mounts_rd.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: init/do_mounts_initrd.o: in function 
+>> `locks_owner_has_blockers':
+>>     do_mounts_initrd.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: init/initramfs.o: in function 
+>> `locks_owner_has_blockers':
+>>     initramfs.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: init/init_task.o: in function 
+>> `locks_owner_has_blockers':
+>>     init_task.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/irq.o: in function 
+>> `locks_owner_has_blockers':
+>>     irq.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/module.o: in function 
+>> `locks_owner_has_blockers':
+>>     module.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/process.o: in function 
+>> `locks_owner_has_blockers':
+>>     process.c:(.text+0xe): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/ptrace.o: in function 
+>> `locks_owner_has_blockers':
+>>     ptrace.c:(.text+0x182): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/setup.o: in function 
+>> `locks_owner_has_blockers':
+>>     setup.c:(.text+0x102): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/signal.o: in function 
+>> `locks_owner_has_blockers':
+>>     signal.c:(.text+0x3a0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/sys_m68k.o: in function 
+>> `locks_owner_has_blockers':
+>>     sys_m68k.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/time.o: in function 
+>> `locks_owner_has_blockers':
+>>     time.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/traps.o: in function 
+>> `locks_owner_has_blockers':
+>>     traps.c:(.text+0x12): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/kernel/dma.o: in function 
+>> `locks_owner_has_blockers':
+>>     dma.c:(.text+0x62): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/mm/init.o: in function 
+>> `locks_owner_has_blockers':
+>>     init.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/coldfire/device.o: in function 
+>> `locks_owner_has_blockers':
+>>     device.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/coldfire/vectors.o: in function 
+>> `locks_owner_has_blockers':
+>>     vectors.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/coldfire/m5206.o: in function 
+>> `locks_owner_has_blockers':
+>>     m5206.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/coldfire/reset.o: in function 
+>> `locks_owner_has_blockers':
+>>     reset.c:(.text+0x14): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/coldfire/timers.o: in function 
+>> `locks_owner_has_blockers':
+>>     timers.c:(.text+0x56): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: arch/m68k/coldfire/gpio.o: in function 
+>> `locks_owner_has_blockers':
+>>     gpio.c:(.text+0x26): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/fork.o: in function `locks_owner_has_blockers':
+>>     fork.c:(.text+0x6b4): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/exec_domain.o: in function 
+>> `locks_owner_has_blockers':
+>>     exec_domain.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/panic.o: in function 
+>> `locks_owner_has_blockers':
+>>     panic.c:(.text+0x1d6): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/cpu.o: in function `locks_owner_has_blockers':
+>>     cpu.c:(.text+0x296): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/exit.o: in function `locks_owner_has_blockers':
+>>     exit.c:(.text+0x948): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/softirq.o: in function 
+>> `locks_owner_has_blockers':
+>>     softirq.c:(.text+0x12e): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/resource.o: in function 
+>> `locks_owner_has_blockers':
+>>     resource.c:(.text+0x6de): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/sysctl.o: in function 
+>> `locks_owner_has_blockers':
+>>     sysctl.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/capability.o: in function 
+>> `locks_owner_has_blockers':
+>>     capability.c:(.text+0x288): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/ptrace.o: in function 
+>> `locks_owner_has_blockers':
+>>     ptrace.c:(.text+0x474): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/signal.o: in function 
+>> `locks_owner_has_blockers':
+>>     signal.c:(.text+0x9cc): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/sys.o: in function `locks_owner_has_blockers':
+>>     sys.c:(.text+0xdd4): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/umh.o: in function `locks_owner_has_blockers':
+>>     umh.c:(.text+0x47a): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/workqueue.o: in function 
+>> `locks_owner_has_blockers':
+>>     workqueue.c:(.text+0x1e40): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/pid.o: in function `locks_owner_has_blockers':
+>>     pid.c:(.text+0xc6): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/task_work.o: in function 
+>> `locks_owner_has_blockers':
+>>     task_work.c:(.text+0x24): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/extable.o: in function 
+>> `locks_owner_has_blockers':
+>>     extable.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/params.o: in function 
+>> `locks_owner_has_blockers':
+>>     params.c:(.text+0x998): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/kthread.o: in function 
+>> `locks_owner_has_blockers':
+>>     kthread.c:(.text+0x6c0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/nsproxy.o: in function 
+>> `locks_owner_has_blockers':
+>>     nsproxy.c:(.text+0x1fc): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/notifier.o: in function 
+>> `locks_owner_has_blockers':
+>>     notifier.c:(.text+0x12c): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/ksysfs.o: in function 
+>> `locks_owner_has_blockers':
+>>     ksysfs.c:(.text+0x180): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/cred.o: in function `locks_owner_has_blockers':
+>>     cred.c:(.text+0x11a): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/reboot.o: in function 
+>> `locks_owner_has_blockers':
+>>     reboot.c:(.text+0x1d2): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/groups.o: in function 
+>> `locks_owner_has_blockers':
+>>     groups.c:(.text+0x32): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/sched/core.o: in function 
+>> `locks_owner_has_blockers':
+>>     core.c:(.text+0x918): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/sched/loadavg.o: in function 
+>> `locks_owner_has_blockers':
+>>     loadavg.c:(.text+0x38): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/sched/clock.o: in function 
+>> `locks_owner_has_blockers':
+>>     clock.c:(.text+0x0): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>     m68k-linux-ld: kernel/sched/cputime.o: in function 
+>> `locks_owner_has_blockers':
+>>     cputime.c:(.text+0x76): multiple definition of 
+>> `locks_owner_has_blockers'; init/main.o:main.c:(.text+0x0): first 
+>> defined here
+>>
+>> ---
+>> 0-DAY CI Kernel Test Service
+>> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
