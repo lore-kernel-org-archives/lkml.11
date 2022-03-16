@@ -2,83 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 077BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350028AbiCPQL6 (ORCPT
+        id S1350045AbiCPQPZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
+        Wed, 16 Mar 2022 12:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244162AbiCPQLz (ORCPT
+        with ESMTP id S239089AbiCPQPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:11:55 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCFB62125
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:10:40 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id l8so4416463pfu.1
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:10:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OZK9uutJfo42bFp7MFXbl2mQl2FDOmFpqXMqzYnq/NI=;
-        b=g35DWi8sGB1G87635f+Qy/XBR3EjLwq750c1JTAtGhNM9QgsEJqfSne5G2/4+9U81C
-         5NNBcH2ELL7u2+ZduchNKPqnwh9SDvSJPnreKC6u8M20gn2Njk24Squ0DTIiefvQlfoi
-         72uRMBkys28E5r6lUM8/qDBzEuhr2GoR8vaUk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OZK9uutJfo42bFp7MFXbl2mQl2FDOmFpqXMqzYnq/NI=;
-        b=eW1MiJKe//p80V1BgC1nxXwXHLVFPe+PnlhdJ9URzraOCuwoXqOc9lcik2qnGGOTU3
-         JX7Fy7hobQma/+E3Qf0asCWvMFgjv829fTLuGEmhjIKn8Kjo73VFD1jgZWBx/68kNZbO
-         TN9CpewIySOwru06/hibB1kmgmLWYchEw+oDSvNA0rjdYohrgCDSDM5ijRN2PoICRYwq
-         GH1jz5mUMzY7hQfEWoFkQcLBroVUfOMJO2rBjhr7cfqCXThPBHYpAuNMeLV6QTfHGnit
-         w0qY20SyNRcTW9ADL7hvukOdolGpTLqg7Wky0q9QVUVxe+4KzAlOAvtweRYnG+rxk/ey
-         sGZA==
-X-Gm-Message-State: AOAM533/BDPRyqxA58j7B8fL0StC0XLw6E5a/eTCWuEI8ASPkmeHo10Z
-        eB5KBVRHY7Wj74jy33Pw9d2/1Q==
-X-Google-Smtp-Source: ABdhPJw3qQsorrI2cuT/YjC71UlT+F557BgFwyW6/liffKsmrlRcD/sK4D2Ul6d+pSSdP4vzIA9qlg==
-X-Received: by 2002:a63:8749:0:b0:37f:f8e1:1877 with SMTP id i70-20020a638749000000b0037ff8e11877mr218310pge.529.1647447040172;
-        Wed, 16 Mar 2022 09:10:40 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm4115135pfu.202.2022.03.16.09.10.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 09:10:39 -0700 (PDT)
-Date:   Wed, 16 Mar 2022 09:10:39 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     James Jones <linux@theinnocuous.com>
-Cc:     bp@alien8.de, x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86: Remove a.out support
-Message-ID: <202203160909.B1A022B@keescook>
-References: <4c449fab-8135-5057-7d2c-7b948ce130cc@theinnocuous.com>
- <0b31b1d3-852d-6cab-82ae-5eecaec05679@theinnocuous.com>
- <202203151150.1CDB1D8DA@keescook>
- <bfbd9394-161b-0e70-00c5-79d0dd722e08@theinnocuous.com>
+        Wed, 16 Mar 2022 12:15:20 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CBBAE78;
+        Wed, 16 Mar 2022 09:14:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647447245; x=1678983245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eG1MKTEp/lLTZCxtFRGNr8K7zuChwr5qYDUwdyFj178=;
+  b=NVvwDPX/w+Yuf/3xVxKI0arLuZiq6EXoB9OTxkecZU56FKgogHlfoLfQ
+   xueY2Qzaf0jtNLVnStXB8lpKu7ygpbMZVlUyLfBLUfUEX49FnBzPxt5ry
+   ERReH/crHzisFNxSDXAEo7tvSaawC+ennP+4P0pFu8OGz1VyuMAZkBmGc
+   QErmOV4UTpbF8t5aSXjShPI63BHe8EWkJz1Fjwcz1MFtEy5hPgAUb7Z0P
+   62i6eS0yN9X38zxh/SGqV+zzNAWFYCyP64Tg3Y2Ek/sZIycGL0xg7cNM0
+   kQ1+1dz6y4/IXblRMgZGU4uXEzhsl0dCi63GnpL8AD6NU1cSdHVtHF2cH
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="317368787"
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="317368787"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:14:04 -0700
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="598774648"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:14:00 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nUWH1-000zRv-S8;
+        Wed, 16 Mar 2022 18:13:19 +0200
+Date:   Wed, 16 Mar 2022 18:13:19 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Wander Lairson Costa <wander@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Lukas Wunner <lukas@wunner.de>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, rostedt@goodmis.org,
+        senozhatsky@chromium.org, andre.goddard@gmail.com,
+        sudipm.mukherjee@gmail.com, David.Laight@aculab.com,
+        jonathanh@nvidia.com, phil@raspberrypi.com
+Subject: Re: [PATCH v4 0/5] tty/8250: Use fifo in 8250 console driver
+Message-ID: <YjIMn/cBf7STIxBU@smile.fi.intel.com>
+References: <20220316143646.13301-1-wander@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bfbd9394-161b-0e70-00c5-79d0dd722e08@theinnocuous.com>
+In-Reply-To: <20220316143646.13301-1-wander@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 05:06:10AM +0000, James Jones wrote:
-> I dug the scripts up in the state they were in when I gave up (September
-> 2020 according to mtime), and put them on github in case anyone wants to
-> have a go at it:
+On Wed, Mar 16, 2022 at 11:36:39AM -0300, Wander Lairson Costa wrote:
+> This version fixes the bugs reported in version v3. The first patch
+> is the same patch of v3 as is. The following commits fix the issues in the
+> original patch. For details, please check the commit log of each patch.
 > 
-> https://github.com/cubanismo/aout-to-elf/
+> I tested these patches in the following systems:
 > 
-> It was an interesting problem in its own right, and I'd be curious to
-> know what I missed.
+> * IBM X3550 M3
+> * HP ProLiant DL380 Gen9
+> * HP ProLiant BL480c G1
+> * Dell PowerEdge R910
+> * Cisco UCSC-C220-M3S
+> 
+> I cc everybody that reported problems with the previous version of this
+> patch so they can retest and confirm their systems work flawlessly.
 
-Yeah, this is a good start. I think the main problem is with how program
-entry works, specifically that %esp is pointing to argc (with all the
-args in memory above there), which isn't the way ELF sets %esp.
+I have got this only message and I don't see any good changelog what has
+been done between v3 and v4.
 
-It might be possible to make a userspace loader, though. Hmm.
+> Wander Lairson Costa (5):
+>   serial/8250: Use fifo in 8250 console driver
+>   serial/8250: Use the cache value of the FCR register
+>   serial/8250: Use tx_loadsz as the transmitter fifo size
+>   serial/8250: exclude BCM283x from console_fifo_write
+>   serial/8250: Only use fifo after the port is initialized in
+>     console_write
 
 -- 
-Kees Cook
+With Best Regards,
+Andy Shevchenko
+
+
