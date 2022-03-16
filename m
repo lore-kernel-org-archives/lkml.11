@@ -2,111 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C600C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 264B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:09:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354402AbiCPIHK (ORCPT
+        id S1354408AbiCPIKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 04:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
+        Wed, 16 Mar 2022 04:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240102AbiCPIHH (ORCPT
+        with ESMTP id S1346256AbiCPIKk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 04:07:07 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D3D5E773;
-        Wed, 16 Mar 2022 01:05:54 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJN8B3WltzfZ6l;
-        Wed, 16 Mar 2022 16:03:54 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Mar 2022 16:05:22 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Mar 2022 16:05:21 +0800
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-To:     <ming.qian@nxp.com>, <shijie.qin@nxp.com>, <eagle.zhou@nxp.com>,
-        <mchehab@kernel.org>
-CC:     <linux-media@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangxiongfeng2@huawei.com>
-Subject: [PATCH -next] media: amphion: Add missing of_node_put() in vpu_core_parse_dt()
-Date:   Wed, 16 Mar 2022 16:19:38 +0800
-Message-ID: <20220316081938.80819-1-wangxiongfeng2@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 16 Mar 2022 04:10:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FDAC5E779;
+        Wed, 16 Mar 2022 01:09:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7ED88B81A1F;
+        Wed, 16 Mar 2022 08:09:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8213CC340E9;
+        Wed, 16 Mar 2022 08:09:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647418163;
+        bh=9MeOuZ7Yb5TifZzFGIEaV3LSES97K18572IADr0rgLw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ds4oKayjlDznyeIMcJbkfh4rTkv1b4It02XA8am1nY113Xy4U/FEyNmAreeBKRikd
+         0YzEDewn6u91E4uZxR3Gj4Kcl2amkC0qh4XGWeEWrU+d7UpanofIwKmelRTgMWBcgu
+         m0hpfVhCYrZpDtSU52Y4BbaI7lrs8Bl6n+ko7J9k=
+Date:   Wed, 16 Mar 2022 09:09:19 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     "Joseph, Jithu" <jithu.joseph@intel.com>,
+        "hdegoede@redhat.com" <hdegoede@redhat.com>,
+        "markgross@kernel.org" <markgross@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "platform-driver-x86@vger.kernel.org" 
+        <platform-driver-x86@vger.kernel.org>,
+        "patches@lists.linux.dev" <patches@lists.linux.dev>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>
+Subject: Re: [RFC 00/10] Introduce In Field Scan driver
+Message-ID: <YjGbL2HzksucTn0h@kroah.com>
+References: <20220301195457.21152-1-jithu.joseph@intel.com>
+ <Yh59rOIH24X+6GyI@kroah.com>
+ <Yh5+om/Nr06V0+Qj@kroah.com>
+ <Yi/Lb5laEki0JHft@agluck-desk3.sc.intel.com>
+ <YjBBmEjbIaqTbVt+@kroah.com>
+ <c4af81bd788e43dda915a1052af0be55@intel.com>
+ <YjCwI4N00reBuIqA@kroah.com>
+ <de895b9617aa412e95fdd14fcad285fa@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <de895b9617aa412e95fdd14fcad285fa@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_parse_phandle() will increment the refcount of the returned
-device_node. Calling of_node_put() to avoid the refcount leak.
+On Tue, Mar 15, 2022 at 04:10:59PM +0000, Luck, Tony wrote:
+> > Again, I have no idea what you are doing at all with this driver, nor
+> > what you want to do with it.
+> >
+> > Start over please.
+> 
+> TL;DR is that silicon ages and some things break that don't have parity/ECC checks.
+> So systems start behaving erratically. If you are lucky they crash. If you are less lucky
+> they give incorrect results.
+> 
+> There's a paper (and even a movie 11 minutes) that describe the research by
+> Google on this.
+> https://sigops.org/s/conferences/hotos/2021/papers/hotos21-s01-hochschild.pdf  
+> (https://www.youtube.com/watch?v=QMF3rqhjYuM)    
 
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
----
- drivers/media/platform/amphion/vpu_core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Both you and Dan are assuming that I actually care about this hardware
+and driver enough to read a presentation or watch a video about it.
+Sorry, but that's not happening :)
 
-diff --git a/drivers/media/platform/amphion/vpu_core.c b/drivers/media/platform/amphion/vpu_core.c
-index 016554387f3f..1da20335bc45 100644
---- a/drivers/media/platform/amphion/vpu_core.c
-+++ b/drivers/media/platform/amphion/vpu_core.c
-@@ -529,11 +529,14 @@ static int vpu_core_parse_dt(struct vpu_core *core, struct device_node *np)
- 	}
- 	if (of_address_to_resource(node, 0, &res)) {
- 		dev_err(core->dev, "boot-region of_address_to_resource error\n");
-+		of_node_put(node);
- 		return -EINVAL;
- 	}
- 	core->fw.phys = res.start;
- 	core->fw.length = resource_size(&res);
- 
-+	of_node_put(node);
-+
- 	node = of_parse_phandle(np, "memory-region", 1);
- 	if (!node) {
- 		dev_err(core->dev, "rpc-region of_parse_phandle error\n");
-@@ -541,6 +544,7 @@ static int vpu_core_parse_dt(struct vpu_core *core, struct device_node *np)
- 	}
- 	if (of_address_to_resource(node, 0, &res)) {
- 		dev_err(core->dev, "rpc-region of_address_to_resource error\n");
-+		of_node_put(node);
- 		return -EINVAL;
- 	}
- 	core->rpc.phys = res.start;
-@@ -549,6 +553,7 @@ static int vpu_core_parse_dt(struct vpu_core *core, struct device_node *np)
- 	if (core->rpc.length < core->res->rpc_size + core->res->fwlog_size) {
- 		dev_err(core->dev, "the rpc-region <%pad, 0x%x> is not enough\n",
- 			&core->rpc.phys, core->rpc.length);
-+		of_node_put(node);
- 		return -EINVAL;
- 	}
- 
-@@ -560,6 +565,7 @@ static int vpu_core_parse_dt(struct vpu_core *core, struct device_node *np)
- 	if (ret != VPU_CORE_MEMORY_UNCACHED) {
- 		dev_err(core->dev, "rpc region<%pad, 0x%x> isn't uncached\n",
- 			&core->rpc.phys, core->rpc.length);
-+		of_node_put(node);
- 		return -EINVAL;
- 	}
- 
-@@ -571,6 +577,8 @@ static int vpu_core_parse_dt(struct vpu_core *core, struct device_node *np)
- 	core->act.length = core->rpc.length - core->res->rpc_size - core->log.length;
- 	core->rpc.length = core->res->rpc_size;
- 
-+	of_node_put(node);
-+
- 	return 0;
- }
- 
--- 
-2.20.1
+I'm saying these questions as you all need to be asking yourself that,
+and figuring out what the proper api is.  That's not my job here.  I was
+just pointing out the problems in your original submission that you all
+should have caught before sending it out...
 
+good luck!
+
+greg k-h
