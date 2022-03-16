@@ -2,51 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A8E1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240991AbiCPONW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        id S245627AbiCPOPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 10:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356380AbiCPOND (ORCPT
+        with ESMTP id S238912AbiCPOP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:13:03 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479C266F99
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 07:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=tJ8jKnnq2oXOf2skIlAI6sEObeCdDa1t+RvJj1Qq/nw=; b=kuzTZXSYLrAgnvQEbI3bH3jaMA
-        4wqExcDMLUCVCJJ5tcjy3/aQqnOwSveFurPpT9bJo7r21iISrci7K+Xehr4MVhwBo0ginPmQCGhGw
-        LwCrwV28DYES1833szbLoSP76NO53WBamM4MZMP8QG+gJLHqm2iZDLyJ8/EsQbwK68l2/8hxhhtVj
-        +7kBLHTkRrJfi5Ig7OHqNfG7zEvGkFKDegjebQKguyAveOXgHXv/RlsBu1Jn4sAcB41J2WqXQSu+s
-        jxk1Ictqbgyswq9g9iKeQgd/YRoO9jwfYTlx9BykcRdZAwvsxjbxJ/FsP3xdALL8KxVFvgSDgsAwB
-        sN7nSXJg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUUND-0062Mi-Rj; Wed, 16 Mar 2022 14:11:35 +0000
-Date:   Wed, 16 Mar 2022 14:11:35 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, sj@kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/damon: minor cleanup for damon_pa_young
-Message-ID: <YjHwFyc5WfCQAgVh@casper.infradead.org>
-References: <20220316081528.6034-1-linmiaohe@huawei.com>
+        Wed, 16 Mar 2022 10:15:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52FD19C00;
+        Wed, 16 Mar 2022 07:14:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 577E1B81B40;
+        Wed, 16 Mar 2022 14:14:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1392C340E9;
+        Wed, 16 Mar 2022 14:14:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647440048;
+        bh=VDVyKH1kxpjqwg/VGuL2gRVcIXwsPBUb18mgtD+WT2M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mNCJq4ihY1eiuG4zfwSEtYlnYffsBn9Nvf9n137I4JtOZZDE2UuDnHoQ7CQ7j3hZR
+         RQbsPS+R0E2/xP9i8sI6G2dsqLY5FoDswpmAg2zGQ4Wrd7O8geq9kFdFHFON7rDazP
+         7cM1g68+KtnB/GziTJRYzlhmsDJgA+YkP7ZdAgjRPlM4RBJrpN6QUjqV03+/g1Sg1h
+         KHX859idFoukEGIHjOJ00WEfsKkzw0tve5t+tddSHbpMlYSMYqvLtL0PMI7h6jTmmi
+         Z59VJJ9S0qK3GnoYE0HS6tjntzQQ2bGVttktyPgHBONehVQr9Up8TpNaBE435yVW7d
+         Pl3o8isnH8MSA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Steev Klimaszewski <steev@kali.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 01/13] arm64: dts: qcom: c630: disable crypto due to serror
+Date:   Wed, 16 Mar 2022 10:13:42 -0400
+Message-Id: <20220316141354.247750-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316081528.6034-1-linmiaohe@huawei.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 04:15:28PM +0800, Miaohe Lin wrote:
-> if need_lock is true but folio_trylock fails, we should return false
-> instead of NULL to match the return value type exactly. No functional
-> change intended.
+From: Steev Klimaszewski <steev@kali.org>
 
-Thanks.  Given the extensive changes I've made to this function for
-this merge window, I've added it to my for-next tree.
+[ Upstream commit 382e3e0eb6a83f1cf73d4dfa3448ade1ed721f22 ]
+
+Disable the crypto block due to it causing an SError in qce_start() on
+the C630, which happens upon every boot when cryptomanager tests are
+enabled.
+
+Signed-off-by: Steev Klimaszewski <steev@kali.org>
+[bjorn: Reworked commit message]
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211105035235.2392-1-steev@kali.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+index 2e882a977e2c..89c11c147846 100644
+--- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
++++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+@@ -804,3 +804,8 @@ &wifi {
+ 
+ 	qcom,snoc-host-cap-8bit-quirk;
+ };
++
++&crypto {
++	/* FIXME: qce_start triggers an SError */
++	status= "disable";
++};
+-- 
+2.34.1
+
