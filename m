@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C04C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 620F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:11:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353099AbiCPCMM (ORCPT
+        id S1353105AbiCPCMQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:12:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
+        Tue, 15 Mar 2022 22:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352711AbiCPCL1 (ORCPT
+        with ESMTP id S1352732AbiCPCL1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 22:11:27 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FD45C870
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C5A5EBC2
         for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647396612; x=1678932612;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EvrY+fLFyt0AjjIeJc3eqvET5iI6uNtGs7idg2+y+vU=;
-  b=CmA9fiFEbcNWc09dJfsBFYA4zJLuExb4nnZkcB9OKdUctUvgIiG2/Oko
-   EcT4AmOucUhv3QzSSR3lS5gzfV3Lg9LUVIXfHSYrSD3EGhsxAVL+9DsH4
-   lJakgszvs4+U/geeDImEkizgq5rTfESpQe43q9ajBpEtrfoLcfAs4rk6W
-   aactXxHVSLP5KRgWZ4dHk0uL7mPkjRu4Kgjhqhljos9Sk8uxmq/Meo0Hr
-   Lp4NC0vw4yavISZZXfJgF3LH/17USbIN8DTwlb75eRohJ0cqi4bPdBqoU
-   ZC+b+2LV3/UjF7mbml62dnwS/LKgRPgdOLDnXTWmnf/we3KEokmeLGlAj
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256194565"
+  bh=x+QXDp+OXriIpSV2b2jhYee+2CxuOOJtxGD6uXs0WHM=;
+  b=brBbmG0Zc5PKFFxMVmJXC7RavWlho6FX0v9SvuickOYXls7r/Fl6B+BZ
+   j4kEYMOgTsC/3vRsvG3GaiYFMAI4hHvFJryvmvZc8WWCBjdcZNjHowJf6
+   n9or+ULhloZ2wU9MKZMe8AXwX+UQZylTNhJAr60p/a/3r19g7ixTteEDp
+   dULIAP0Y/6mb/wPKsecZW24A5KhNfWjZBjZcA2TSWjCehqaRTQsD0Ak6+
+   HVPvQK8KbRpVvAJrDR8c38LMDKLIkmM+9W+iU1y5zP2744uK6b+GD2tao
+   +V2nt9zHVbQeK2SEXtk+CrbUG4HcfSc7LUzvdR3KPREXBAim+NcnIviQR
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="342898588"
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="256194565"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:12 -0700
+   d="scan'208";a="342898588"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:12 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="516126522"
+   d="scan'208";a="783294017"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 15 Mar 2022 19:10:05 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 15 Mar 2022 19:10:05 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 98E57A87; Wed, 16 Mar 2022 04:10:10 +0200 (EET)
+        id DDF0FCFC; Wed, 16 Mar 2022 04:10:10 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,12 +52,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv6 21/30] x86/acpi, x86/boot: Add multiprocessor wake-up support
-Date:   Wed, 16 Mar 2022 05:08:47 +0300
-Message-Id: <20220316020856.24435-22-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 26/30] x86/mm/cpa: Add support for TDX shared memory
+Date:   Wed, 16 Mar 2022 05:08:52 +0300
+Message-Id: <20220316020856.24435-27-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
@@ -67,221 +65,231 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Intel TDX protects guest memory from VMM access. Any memory that is
+required for communication with the VMM must be explicitly shared.
 
-TDX cannot use INIT/SIPI protocol to bring up secondary CPUs because it
-requires assistance from untrusted VMM.
+It is a two-step process: the guest sets the shared bit in the page
+table entry and notifies VMM about the change. The notification happens
+using MapGPA hypercall.
 
-For platforms that do not support SIPI/INIT, ACPI defines a wakeup
-model (using mailbox) via MADT multiprocessor wakeup structure. More
-details about it can be found in ACPI specification v6.4, the section
-titled "Multiprocessor Wakeup Structure". If a platform firmware
-produces the multiprocessor wakeup structure, then OS may use this
-new mailbox-based mechanism to wake up the APs.
+Conversion back to private memory requires clearing the shared bit,
+notifying VMM with MapGPA hypercall following with accepting the memory
+with AcceptPage hypercall.
 
-Add ACPI MADT wake structure parsing support for x86 platform and if
-MADT wake table is present, update apic->wakeup_secondary_cpu_64 with
-new API which uses MADT wake mailbox to wake-up CPU.
+Provide a TDX version of x86_platform.guest.* callbacks. It makes
+__set_memory_enc_pgtable() work right in TDX guest.
 
-Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/include/asm/apic.h |   5 ++
- arch/x86/kernel/acpi/boot.c | 118 ++++++++++++++++++++++++++++++++++++
- arch/x86/kernel/apic/apic.c |  10 +++
- 3 files changed, 133 insertions(+)
+ arch/x86/coco/core.c    |   1 +
+ arch/x86/coco/tdx/tdx.c | 151 ++++++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/traps.c |   2 +-
+ 3 files changed, 153 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 35006e151774..bd8ae0a7010a 100644
---- a/arch/x86/include/asm/apic.h
-+++ b/arch/x86/include/asm/apic.h
-@@ -490,6 +490,11 @@ static inline unsigned int read_apic_id(void)
- 	return apic->get_apic_id(reg);
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 70956f9d7c7e..9f74125c582d 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -21,6 +21,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+ 	switch (attr) {
+ 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
+ 	case CC_ATTR_HOTPLUG_DISABLED:
++	case CC_ATTR_GUEST_MEM_ENCRYPT:
+ 		return true;
+ 	default:
+ 		return false;
+diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+index 09e121619d35..4e404e701170 100644
+--- a/arch/x86/coco/tdx/tdx.c
++++ b/arch/x86/coco/tdx/tdx.c
+@@ -10,10 +10,15 @@
+ #include <asm/vmx.h>
+ #include <asm/insn.h>
+ #include <asm/insn-eval.h>
++#include <asm/x86_init.h>
+ 
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+ #define TDX_GET_VEINFO			3
++#define TDX_ACCEPT_PAGE			6
++
++/* TDX hypercall Leaf IDs */
++#define TDVMCALL_MAP_GPA		0x10001
+ 
+ /* MMIO direction */
+ #define EPT_READ	0
+@@ -517,6 +522,148 @@ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
+ 	return ret;
  }
  
-+#ifdef CONFIG_X86_64
-+typedef int (*wakeup_cpu_handler)(int apicid, unsigned long start_eip);
-+extern void acpi_wake_cpu_handler_update(wakeup_cpu_handler handler);
-+#endif
-+
- extern int default_apic_id_valid(u32 apicid);
- extern int default_acpi_madt_oem_check(char *, char *);
- extern void default_setup_apic_routing(void);
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 5b6d1a95776f..99518eac2bbc 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -65,6 +65,15 @@ static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
- static bool acpi_support_online_capable;
- #endif
- 
-+#ifdef CONFIG_X86_64
-+/* Physical address of the Multiprocessor Wakeup Structure mailbox */
-+static u64 acpi_mp_wake_mailbox_paddr;
-+/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
-+static struct acpi_madt_multiproc_wakeup_mailbox *acpi_mp_wake_mailbox;
-+/* Lock to protect mailbox (acpi_mp_wake_mailbox) from parallel access */
-+static DEFINE_SPINLOCK(mailbox_lock);
-+#endif
-+
- #ifdef CONFIG_X86_IO_APIC
- /*
-  * Locks related to IOAPIC hotplug
-@@ -336,6 +345,84 @@ acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long e
- 	return 0;
- }
- 
-+#ifdef CONFIG_X86_64
-+/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
-+static int acpi_wakeup_cpu(int apicid, unsigned long start_ip)
++static bool tdx_tlb_flush_required(bool private)
 +{
-+	static physid_mask_t apic_id_wakemap = PHYSID_MASK_NONE;
-+	u8 timeout;
++	/*
++	 * TDX guest is responsible for flushing TLB on private->shared
++	 * transition. VMM is responsible for flushing on shared->private.
++	 *
++	 * The VMM _can't_ flush private addresses as it can't generate PAs
++	 * with the guest's HKID.  Shared memory isn't subject to integrity
++	 * checking, i.e. the VMM doesn't need to flush for its own protection.
++	 *
++	 * There's no need to flush when converting from shared to private,
++	 * as flushing is the VMM's responsibility in this case, e.g. it must
++	 * flush to avoid integrity failures in the face of a buggy or
++	 * malicious guest.
++	 */
++	return !private;
++}
 +
-+	/* Remap mailbox memory only for the first call to acpi_wakeup_cpu() */
-+	if (physids_empty(apic_id_wakemap)) {
-+		acpi_mp_wake_mailbox = memremap(acpi_mp_wake_mailbox_paddr,
-+						sizeof(*acpi_mp_wake_mailbox),
-+						MEMREMAP_WB);
++static bool tdx_cache_flush_required(void)
++{
++	/*
++	 * AMD SME/SEV can avoid cache flushing if HW enforces cache coherence.
++	 * TDX doesn't have such capability.
++	 *
++	 * Flush cache unconditionally.
++	 */
++	return true;
++}
++
++static bool accept_page(phys_addr_t gpa, enum pg_level pg_level)
++{
++	u8 page_size;
++	u64 tdcall_rcx;
++
++	/*
++	 * Pass the page physical address to the TDX module to accept the
++	 * pending, private page.
++	 *
++	 * Bits 2:0 of RCX encode page size: 0 - 4K, 1 - 2M, 2 - 1G.
++	 */
++	switch (pg_level) {
++	case PG_LEVEL_4K:
++		page_size = 0;
++		break;
++	case PG_LEVEL_2M:
++		page_size = 1;
++		break;
++	case PG_LEVEL_1G:
++		page_size = 2;
++		break;
++	default:
++		return false;
++	}
++
++	tdcall_rcx = gpa | page_size;
++	return !__tdx_module_call(TDX_ACCEPT_PAGE, tdcall_rcx, 0, 0, 0, NULL);
++}
++
++static inline enum pg_level size_to_level(unsigned long size)
++{
++	switch (size) {
++	case PUD_SIZE:
++		return PG_LEVEL_1G;
++	case PMD_SIZE:
++		return PG_LEVEL_2M;
++	case PAGE_SIZE:
++		return PG_LEVEL_4K;
++	default:
++		BUILD_BUG();
++	}
++}
++
++static bool try_accept_one(phys_addr_t *start, unsigned long len,
++			  unsigned long accept_size)
++{
++	if (!IS_ALIGNED(*start, accept_size))
++		return false;
++
++	if (len < accept_size)
++		return false;
++
++	if (!accept_page(*start, size_to_level(accept_size)))
++		return false;
++
++	*start += accept_size;
++	return true;
++}
++
++/*
++ * Inform the VMM of the guest's intent for this physical page: shared with
++ * the VMM or private to the guest.  The VMM is expected to change its mapping
++ * of the page in response.
++ */
++static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
++{
++	phys_addr_t start = __pa(vaddr);
++	phys_addr_t end   = __pa(vaddr + numpages * PAGE_SIZE);
++
++	if (!enc) {
++		/* Set the shared (decrypted) bits: */
++		start |= cc_mkdec(0);
++		end   |= cc_mkdec(0);
 +	}
 +
 +	/*
-+	 * According to the ACPI specification r6.4, section titled
-+	 * "Multiprocessor Wakeup Structure" the mailbox-based wakeup
-+	 * mechanism cannot be used more than once for the same CPU.
-+	 * Skip wakeups if they are attempted more than once.
++	 * Notify the VMM about page mapping conversion. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface (GHCI),
++	 * section "TDG.VP.VMCALL<MapGPA>"
 +	 */
-+	if (physid_isset(apicid, apic_id_wakemap)) {
-+		pr_err("CPU already awake (APIC ID %x), skipping wakeup\n",
-+		       apicid);
-+		return -EINVAL;
-+	}
++	if (_tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0))
++		return false;
 +
-+	spin_lock(&mailbox_lock);
++	/* private->shared conversion  requires only MapGPA call */
++	if (!enc)
++		return true;
 +
 +	/*
-+	 * Mailbox memory is shared between firmware and OS. Firmware will
-+	 * listen on mailbox command address, and once it receives the wakeup
-+	 * command, CPU associated with the given apicid will be booted.
-+	 *
-+	 * The value of apic_id and wakeup_vector has to be set before updating
-+	 * the wakeup command. To let compiler preserve order of writes, use
-+	 * smp_store_release.
++	 * For shared->private conversion, accept the page using
++	 * TDX_ACCEPT_PAGE TDX module call.
 +	 */
-+	smp_store_release(&acpi_mp_wake_mailbox->apic_id, apicid);
-+	smp_store_release(&acpi_mp_wake_mailbox->wakeup_vector, start_ip);
-+	smp_store_release(&acpi_mp_wake_mailbox->command,
-+			  ACPI_MP_WAKE_COMMAND_WAKEUP);
++	while (start < end) {
++		unsigned long len = end - start;
 +
-+	/*
-+	 * After writing the wakeup command, wait for maximum timeout of 0xFF
-+	 * for firmware to reset the command address back zero to indicate
-+	 * the successful reception of command.
-+	 * NOTE: 0xFF as timeout value is decided based on our experiments.
-+	 *
-+	 * XXX: Change the timeout once ACPI specification comes up with
-+	 *      standard maximum timeout value.
-+	 */
-+	timeout = 0xFF;
-+	while (READ_ONCE(acpi_mp_wake_mailbox->command) && --timeout)
-+		cpu_relax();
-+
-+	/* If timed out (timeout == 0), return error */
-+	if (!timeout) {
 +		/*
-+		 * XXX: Is there a recovery path after timeout is hit?
-+		 * Spec is unclear. Reset command to 0 if timeout is hit.
++		 * Try larger accepts first. It gives chance to VMM to keep
++		 * 1G/2M SEPT entries where possible and speeds up process by
++		 * cutting number of hypercalls (if successful).
 +		 */
-+		acpi_mp_wake_mailbox->command = 0;
-+		spin_unlock(&mailbox_lock);
-+		return -EIO;
++
++		if (try_accept_one(&start, len, PUD_SIZE))
++			continue;
++
++		if (try_accept_one(&start, len, PMD_SIZE))
++			continue;
++
++		if (!try_accept_one(&start, len, PAGE_SIZE))
++			return false;
 +	}
 +
-+	/*
-+	 * If the CPU wakeup process is successful, store the
-+	 * status in apic_id_wakemap to prevent re-wakeup
-+	 * requests.
-+	 */
-+	physid_set(apicid, apic_id_wakemap);
-+
-+	spin_unlock(&mailbox_lock);
-+
-+	return 0;
++	return true;
 +}
-+#endif
- #endif				/*CONFIG_X86_LOCAL_APIC */
++
+ void __init tdx_early_init(void)
+ {
+ 	unsigned int gpa_width;
+@@ -547,5 +694,9 @@ void __init tdx_early_init(void)
+ 	 */
+ 	cc_set_mask(BIT_ULL(gpa_width - 1));
  
- #ifdef CONFIG_X86_IO_APIC
-@@ -1083,6 +1170,29 @@ static int __init acpi_parse_madt_lapic_entries(void)
- 	}
- 	return 0;
++	x86_platform.guest.enc_cache_flush_required = tdx_cache_flush_required;
++	x86_platform.guest.enc_tlb_flush_required   = tdx_tlb_flush_required;
++	x86_platform.guest.enc_status_change_finish = tdx_enc_status_changed;
++
+ 	pr_info("Guest detected\n");
  }
-+
-+#ifdef CONFIG_X86_64
-+static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
-+				     const unsigned long end)
-+{
-+	struct acpi_madt_multiproc_wakeup *mp_wake;
-+
-+	if (!IS_ENABLED(CONFIG_SMP))
-+		return -ENODEV;
-+
-+	mp_wake = (struct acpi_madt_multiproc_wakeup *)header;
-+	if (BAD_MADT_ENTRY(mp_wake, end))
-+		return -EINVAL;
-+
-+	acpi_table_print_madt_entry(&header->common);
-+
-+	acpi_mp_wake_mailbox_paddr = mp_wake->base_address;
-+
-+	acpi_wake_cpu_handler_update(acpi_wakeup_cpu);
-+
-+	return 0;
-+}
-+#endif				/* CONFIG_X86_64 */
- #endif				/* CONFIG_X86_LOCAL_APIC */
- 
- #ifdef	CONFIG_X86_IO_APIC
-@@ -1278,6 +1388,14 @@ static void __init acpi_process_madt(void)
- 
- 				smp_found_config = 1;
- 			}
-+
-+#ifdef CONFIG_X86_64
-+			/*
-+			 * Parse MADT MP Wake entry.
-+			 */
-+			acpi_table_parse_madt(ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
-+					      acpi_parse_mp_wake, 1);
-+#endif
- 		}
- 		if (error == -EINVAL) {
- 			/*
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index b70344bf6600..3c8f2c797a98 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -2551,6 +2551,16 @@ u32 x86_msi_msg_get_destid(struct msi_msg *msg, bool extid)
- }
- EXPORT_SYMBOL_GPL(x86_msi_msg_get_destid);
- 
-+#ifdef CONFIG_X86_64
-+void __init acpi_wake_cpu_handler_update(wakeup_cpu_handler handler)
-+{
-+	struct apic **drv;
-+
-+	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++)
-+		(*drv)->wakeup_secondary_cpu_64 = handler;
-+}
-+#endif
-+
- /*
-  * Override the generic EOI implementation with an optimized version.
-  * Only called during early boot when only one CPU is active and with
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 9ab8570c48f5..cabda9d47b06 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -1305,7 +1305,7 @@ static void ve_raise_fault(struct pt_regs *regs, long error_code)
+  *
+  * In the settings that Linux will run in, virtualization exceptions are
+  * never generated on accesses to normal, TD-private memory that has been
+- * accepted.
++ * accepted (by BIOS or with tdx_enc_status_changed()).
+  *
+  * Syscall entry code has a critical window where the kernel stack is not
+  * yet set up. Any exception in this window leads to hard to debug issues
 -- 
 2.34.1
 
