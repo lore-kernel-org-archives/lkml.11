@@ -2,150 +2,434 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBABC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:09:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 714A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356997AbiCPPKt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:10:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44148 "EHLO
+        id S239853AbiCPPKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357008AbiCPPKW (ORCPT
+        with ESMTP id S1356993AbiCPPK1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:10:22 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0BB673CF
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:06 -0700 (PDT)
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com [209.85.221.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 5B6A63F7DE
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:09:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647443344;
-        bh=T7JLnH9mqiYxWSJ2Xi+hqpmFTONALX95DZP9Prs/CTQ=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=i2Xb9MhzTdE+lE9OaTOdm5lssR7LIHkhHZcQk+GxGLVjMfzP4q1EpOl3OmDLCn2Hs
-         xU9kPLuL9sHGb7idnp2OtNcmSuB4xVMRzL3HzTHZdNW1ymEgq4viYGLlH0hz/iM2kF
-         OUHlYcrpm53zPfWgiyUoaW6Zazou2yZE2B49ntkQLPLldE016K5wwGugtm6h2iFTWP
-         IuRj79EG5Tb2kM6rxrh0JB9pk8XmeNKc7VUJQpofWCNT6Q3E+wN7lypAPutcjtoM2C
-         vPsjUybK5SbgBJvpheJtVoNPys+5w99huk6JJGlK7Q5kLoDEsM/xD372DKnYJDkptG
-         cyKm6ONJJSLhw==
-Received: by mail-wr1-f71.google.com with SMTP id f14-20020adfc98e000000b001e8593b40b0so657152wrh.14
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:04 -0700 (PDT)
+        Wed, 16 Mar 2022 11:10:27 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF16A56C0B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:11 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id e6so4288561lfc.1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=t40PWFqgAo5RS94mEN7WbYWPCe/kxbSlHoXRNDvVz+I=;
+        b=UFnJRqo/xyujO1wbOYo3Svuv/X/jWaVIa7AuoM8Cz6zfl7C00i4q1UgIn3UHoUSRgH
+         LdMJFXMah/4L+f1VFSnuOl58zKxX0+hcAo52xjYkXp4Wm6XI0Y8pcHUflwO9+mKFxHq6
+         NaqsrE66QK3x9gFwka80nwKgIwHcqWxMIDvlkydYSWYVVcwc/Hf2wAUC9I1ovIT46VhK
+         RNNOMvh5uwFLyKgDes8sQ93zuk3fjgT2Q1+XzmGKwIAa1yig+sjkkgFnMhIzQ5hAmjXq
+         rmcdtxvz4unf3URe3UWRG9ovfWOkKmDLec5njnJG24GUpRj8w7zRMU4GHfMc5/K9ykSR
+         56Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T7JLnH9mqiYxWSJ2Xi+hqpmFTONALX95DZP9Prs/CTQ=;
-        b=0tu4W5evQnJp/OFzTW89kJbJGhf5EE9F3Fxnbc86Rgp4QnAznI/mHcFK8dtgfrCgPQ
-         /FQUY37xch/DvMhlPJbM0eeFWS+4iRxp5TmJh4a8eQ8fR2hrnCJ4fwhH2Z+x/Uyb7qx+
-         tmEdHs8MZx2ysi8Mwt51nEi30KSZ/9GSlFIkR5hAeBzYCH9j63Shi1HsgNvyZuxqg0kE
-         eJ4KRhL19jm+aCehtX88HupKxNPfEJKX3c2jG5feE6pJH4YfnaptBl7gNsqARaFG9U9i
-         PY07iaQM3j+0EWAXMVQPiOJJnnZwvOsfvkaus47Q8HReBLrbLMxiNZR/DkDePSL5dJcH
-         aRoQ==
-X-Gm-Message-State: AOAM530ClWA50EvrMJEkkXoMFpimpaGgFdQhv0Vg1hSzOyhNWKpTduuR
-        ZqLQGL1c3b/tL9WJQ3NwaIkzkat+xE8yt8DmVjqP16TEt7tPtqpA1sCO2S/tMLdVCGwP4zdoTI6
-        0JBZYbqxCYiRaAwu0Z5ZrZQGqi6Ceb4h99sO6qXwdHw==
-X-Received: by 2002:adf:816b:0:b0:203:7fae:a245 with SMTP id 98-20020adf816b000000b002037faea245mr273620wrm.619.1647443343714;
-        Wed, 16 Mar 2022 08:09:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyiZS5X9++Ir6ARAdY07waJfT3FXmo4jW7vzpJuptfIiZFzTOsJAweK7fuoToT0HCAq1Xxe+Q==
-X-Received: by 2002:adf:816b:0:b0:203:7fae:a245 with SMTP id 98-20020adf816b000000b002037faea245mr273589wrm.619.1647443343503;
-        Wed, 16 Mar 2022 08:09:03 -0700 (PDT)
-Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id u18-20020adfdd52000000b001f04e9f215fsm1895105wrm.53.2022.03.16.08.09.00
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=t40PWFqgAo5RS94mEN7WbYWPCe/kxbSlHoXRNDvVz+I=;
+        b=HMBmURBc/w40T8sLY5W/NOvkiKL6GkfW5m4NfYDHvVeg8gr9zkQhJYGiyKwhavoZmw
+         axiS0lAXjQ1xgQwImaCeBT6TlaeAiIkUspFGyusFVv/BX1ABXgd7lvRkoM5JGZ6YL5nq
+         O457KAzfgCn4/4E6kP6lVRRTemEVVMRfRBaG8BUWTjjEUEZt1G/E0KmDGP0u5vrW0Ys+
+         oP82fzF6TLE/xoOaVtmMRp66CO9r9N3p19CDhJCaTBYvgy6/EBuUbFbWLKGasQ3EHCZn
+         pN3OpeSWADN4E/Tt3/z78ufeDuvqfvXks2mzBR1IbCGhXCVXupbf+YweNsfjf3ofHTE7
+         CLHg==
+X-Gm-Message-State: AOAM533UPSYyekKHgfRjalFlNJtTFtLL420/LKJqeVc8lbn9KiiZPTu+
+        2egPqCZR0ORyddi3omdwcr08sQ==
+X-Google-Smtp-Source: ABdhPJxX08RUarSGHOAi8lHi6cOj4jpK7p++yP0RGj39eIhChWIW+Ofk89Gxn+8V3qUNUsVkBg3TUw==
+X-Received: by 2002:a05:6512:1084:b0:448:4fb8:e59a with SMTP id j4-20020a056512108400b004484fb8e59amr89617lfg.408.1647443349912;
+        Wed, 16 Mar 2022 08:09:09 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id d2-20020a194f02000000b00448b915e2d3sm176048lfb.99.2022.03.16.08.09.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 08:09:01 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Stuart Yoder <stuyoder@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v5 10/11] slimbus: qcom-ngd: Fix kfree() of static memory on setting driver_override
-Date:   Wed, 16 Mar 2022 16:08:02 +0100
-Message-Id: <20220316150803.421897-4-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
-References: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
+        Wed, 16 Mar 2022 08:09:09 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: [PATCH v5 net-next 03/15] net: bridge: mst: Support setting and reporting MST port states
+Date:   Wed, 16 Mar 2022 16:08:45 +0100
+Message-Id: <20220316150857.2442916-4-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220316150857.2442916-1-tobias@waldekranz.com>
+References: <20220316150857.2442916-1-tobias@waldekranz.com>
 MIME-Version: 1.0
+Organization: Westermo
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver_override field from platform driver should not be initialized
-from static memory (string literal) because the core later kfree() it,
-for example when driver_override is set via sysfs.
+Make it possible to change the port state in a given MSTI by extending
+the bridge port netlink interface (RTM_SETLINK on PF_BRIDGE).The
+proposed iproute2 interface would be:
 
-Use dedicated helper to set driver_override properly.
+    bridge mst set dev <PORT> msti <MSTI> state <STATE>
 
-Fixes: 917809e2280b ("slimbus: ngd: Add qcom SLIMBus NGD driver")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Current states in all applicable MSTIs can also be dumped via a
+corresponding RTM_GETLINK. The proposed iproute interface looks like
+this:
+
+$ bridge mst
+port              msti
+vb1               0
+		    state forwarding
+		  100
+		    state disabled
+vb2               0
+		    state forwarding
+		  100
+		    state forwarding
+
+The preexisting per-VLAN states are still valid in the MST
+mode (although they are read-only), and can be queried as usual if one
+is interested in knowing a particular VLAN's state without having to
+care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
+bound to MSTI 100):
+
+$ bridge -d vlan
+port              vlan-id
+vb1               10
+		    state forwarding mcast_router 1
+		  20
+		    state disabled mcast_router 1
+		  30
+		    state disabled mcast_router 1
+		  40
+		    state forwarding mcast_router 1
+vb2               10
+		    state forwarding mcast_router 1
+		  20
+		    state forwarding mcast_router 1
+		  30
+		    state forwarding mcast_router 1
+		  40
+		    state forwarding mcast_router 1
+
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/slimbus/qcom-ngd-ctrl.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ include/uapi/linux/if_bridge.h |  16 +++++
+ include/uapi/linux/rtnetlink.h |   1 +
+ net/bridge/br_mst.c            | 126 +++++++++++++++++++++++++++++++++
+ net/bridge/br_netlink.c        |  44 +++++++++++-
+ net/bridge/br_private.h        |  23 ++++++
+ 5 files changed, 209 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/slimbus/qcom-ngd-ctrl.c b/drivers/slimbus/qcom-ngd-ctrl.c
-index 0f29a08b4c09..0aa8408464ad 100644
---- a/drivers/slimbus/qcom-ngd-ctrl.c
-+++ b/drivers/slimbus/qcom-ngd-ctrl.c
-@@ -1434,6 +1434,7 @@ static int of_qcom_slim_ngd_register(struct device *parent,
- 	const struct of_device_id *match;
- 	struct device_node *node;
- 	u32 id;
-+	int ret;
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index f60244b747ae..a86a7e7b811f 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -122,6 +122,7 @@ enum {
+ 	IFLA_BRIDGE_VLAN_TUNNEL_INFO,
+ 	IFLA_BRIDGE_MRP,
+ 	IFLA_BRIDGE_CFM,
++	IFLA_BRIDGE_MST,
+ 	__IFLA_BRIDGE_MAX,
+ };
+ #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
+@@ -453,6 +454,21 @@ enum {
  
- 	match = of_match_node(qcom_slim_ngd_dt_match, parent->of_node);
- 	data = match->data;
-@@ -1455,7 +1456,17 @@ static int of_qcom_slim_ngd_register(struct device *parent,
- 		}
- 		ngd->id = id;
- 		ngd->pdev->dev.parent = parent;
--		ngd->pdev->driver_override = QCOM_SLIM_NGD_DRV_NAME;
+ #define IFLA_BRIDGE_CFM_CC_PEER_STATUS_MAX (__IFLA_BRIDGE_CFM_CC_PEER_STATUS_MAX - 1)
+ 
++enum {
++	IFLA_BRIDGE_MST_UNSPEC,
++	IFLA_BRIDGE_MST_ENTRY,
++	__IFLA_BRIDGE_MST_MAX,
++};
++#define IFLA_BRIDGE_MST_MAX (__IFLA_BRIDGE_MST_MAX - 1)
 +
-+		ret = driver_set_override(&ngd->pdev->dev,
-+					  &ngd->pdev->driver_override,
-+					  QCOM_SLIM_NGD_DRV_NAME,
-+					  strlen(QCOM_SLIM_NGD_DRV_NAME));
-+		if (ret) {
-+			platform_device_put(ngd->pdev);
-+			kfree(ngd);
-+			of_node_put(node);
-+			return ret;
-+		}
- 		ngd->pdev->dev.of_node = node;
- 		ctrl->ngd = ngd;
++enum {
++	IFLA_BRIDGE_MST_ENTRY_UNSPEC,
++	IFLA_BRIDGE_MST_ENTRY_MSTI,
++	IFLA_BRIDGE_MST_ENTRY_STATE,
++	__IFLA_BRIDGE_MST_ENTRY_MAX,
++};
++#define IFLA_BRIDGE_MST_ENTRY_MAX (__IFLA_BRIDGE_MST_ENTRY_MAX - 1)
++
+ struct bridge_stp_xstats {
+ 	__u64 transition_blk;
+ 	__u64 transition_fwd;
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 51530aade46e..83849a37db5b 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -817,6 +817,7 @@ enum {
+ #define RTEXT_FILTER_MRP	(1 << 4)
+ #define RTEXT_FILTER_CFM_CONFIG	(1 << 5)
+ #define RTEXT_FILTER_CFM_STATUS	(1 << 6)
++#define RTEXT_FILTER_MST	(1 << 7)
  
+ /* End of information exported to user level */
+ 
+diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
+index d7a7b5d7ddb3..5c1831c73fc2 100644
+--- a/net/bridge/br_mst.c
++++ b/net/bridge/br_mst.c
+@@ -127,3 +127,129 @@ int br_mst_set_enabled(struct net_bridge *br, bool on,
+ 	br_opt_toggle(br, BROPT_MST_ENABLED, on);
+ 	return 0;
+ }
++
++size_t br_mst_info_size(const struct net_bridge_vlan_group *vg)
++{
++	DECLARE_BITMAP(seen, VLAN_N_VID) = { 0 };
++	const struct net_bridge_vlan *v;
++	size_t sz;
++
++	/* IFLA_BRIDGE_MST */
++	sz = nla_total_size(0);
++
++	list_for_each_entry_rcu(v, &vg->vlan_list, vlist) {
++		if (test_bit(v->brvlan->msti, seen))
++			continue;
++
++		/* IFLA_BRIDGE_MST_ENTRY */
++		sz += nla_total_size(0) +
++			/* IFLA_BRIDGE_MST_ENTRY_MSTI */
++			nla_total_size(sizeof(u16)) +
++			/* IFLA_BRIDGE_MST_ENTRY_STATE */
++			nla_total_size(sizeof(u8));
++
++		__set_bit(v->brvlan->msti, seen);
++	}
++
++	return sz;
++}
++
++int br_mst_fill_info(struct sk_buff *skb,
++		     const struct net_bridge_vlan_group *vg)
++{
++	DECLARE_BITMAP(seen, VLAN_N_VID) = { 0 };
++	const struct net_bridge_vlan *v;
++	struct nlattr *nest;
++	int err = 0;
++
++	list_for_each_entry(v, &vg->vlan_list, vlist) {
++		if (test_bit(v->brvlan->msti, seen))
++			continue;
++
++		nest = nla_nest_start_noflag(skb, IFLA_BRIDGE_MST_ENTRY);
++		if (!nest ||
++		    nla_put_u16(skb, IFLA_BRIDGE_MST_ENTRY_MSTI, v->brvlan->msti) ||
++		    nla_put_u8(skb, IFLA_BRIDGE_MST_ENTRY_STATE, v->state)) {
++			err = -EMSGSIZE;
++			break;
++		}
++		nla_nest_end(skb, nest);
++
++		__set_bit(v->brvlan->msti, seen);
++	}
++
++	return err;
++}
++
++static const struct nla_policy br_mst_nl_policy[IFLA_BRIDGE_MST_ENTRY_MAX + 1] = {
++	[IFLA_BRIDGE_MST_ENTRY_MSTI] = NLA_POLICY_RANGE(NLA_U16,
++						   1, /* 0 reserved for CST */
++						   VLAN_N_VID - 1),
++	[IFLA_BRIDGE_MST_ENTRY_STATE] = NLA_POLICY_RANGE(NLA_U8,
++						    BR_STATE_DISABLED,
++						    BR_STATE_BLOCKING),
++};
++
++static int br_mst_process_one(struct net_bridge_port *p,
++			      const struct nlattr *attr,
++			      struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[IFLA_BRIDGE_MST_ENTRY_MAX + 1];
++	u16 msti;
++	u8 state;
++	int err;
++
++	err = nla_parse_nested(tb, IFLA_BRIDGE_MST_ENTRY_MAX, attr,
++			       br_mst_nl_policy, extack);
++	if (err)
++		return err;
++
++	if (!tb[IFLA_BRIDGE_MST_ENTRY_MSTI]) {
++		NL_SET_ERR_MSG_MOD(extack, "MSTI not specified");
++		return -EINVAL;
++	}
++
++	if (!tb[IFLA_BRIDGE_MST_ENTRY_STATE]) {
++		NL_SET_ERR_MSG_MOD(extack, "State not specified");
++		return -EINVAL;
++	}
++
++	msti = nla_get_u16(tb[IFLA_BRIDGE_MST_ENTRY_MSTI]);
++	state = nla_get_u8(tb[IFLA_BRIDGE_MST_ENTRY_STATE]);
++
++	return br_mst_set_state(p, msti, state, extack);
++}
++
++int br_mst_process(struct net_bridge_port *p, const struct nlattr *mst_attr,
++		   struct netlink_ext_ack *extack)
++{
++	struct nlattr *attr;
++	int err, msts = 0;
++	int rem;
++
++	if (!br_opt_get(p->br, BROPT_MST_ENABLED)) {
++		NL_SET_ERR_MSG_MOD(extack, "Can't modify MST state when MST is disabled");
++		return -EBUSY;
++	}
++
++	nla_for_each_nested(attr, mst_attr, rem) {
++		switch (nla_type(attr)) {
++		case IFLA_BRIDGE_MST_ENTRY:
++			err = br_mst_process_one(p, attr, extack);
++			break;
++		default:
++			continue;
++		}
++
++		msts++;
++		if (err)
++			break;
++	}
++
++	if (!msts) {
++		NL_SET_ERR_MSG_MOD(extack, "Found no MST entries to process");
++		err = -EINVAL;
++	}
++
++	return err;
++}
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 7d4432ca9a20..a8d90fa8621e 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -119,6 +119,9 @@ static size_t br_get_link_af_size_filtered(const struct net_device *dev,
+ 	/* Each VLAN is returned in bridge_vlan_info along with flags */
+ 	vinfo_sz += num_vlan_infos * nla_total_size(sizeof(struct bridge_vlan_info));
+ 
++	if (filter_mask & RTEXT_FILTER_MST)
++		vinfo_sz += br_mst_info_size(vg);
++
+ 	if (!(filter_mask & RTEXT_FILTER_CFM_STATUS))
+ 		return vinfo_sz;
+ 
+@@ -485,7 +488,8 @@ static int br_fill_ifinfo(struct sk_buff *skb,
+ 			   RTEXT_FILTER_BRVLAN_COMPRESSED |
+ 			   RTEXT_FILTER_MRP |
+ 			   RTEXT_FILTER_CFM_CONFIG |
+-			   RTEXT_FILTER_CFM_STATUS)) {
++			   RTEXT_FILTER_CFM_STATUS |
++			   RTEXT_FILTER_MST)) {
+ 		af = nla_nest_start_noflag(skb, IFLA_AF_SPEC);
+ 		if (!af)
+ 			goto nla_put_failure;
+@@ -564,7 +568,28 @@ static int br_fill_ifinfo(struct sk_buff *skb,
+ 		nla_nest_end(skb, cfm_nest);
+ 	}
+ 
++	if ((filter_mask & RTEXT_FILTER_MST) &&
++	    br_opt_get(br, BROPT_MST_ENABLED) && port) {
++		const struct net_bridge_vlan_group *vg = nbp_vlan_group(port);
++		struct nlattr *mst_nest;
++		int err;
++
++		if (!vg || !vg->num_vlans)
++			goto done;
++
++		mst_nest = nla_nest_start(skb, IFLA_BRIDGE_MST);
++		if (!mst_nest)
++			goto nla_put_failure;
++
++		err = br_mst_fill_info(skb, vg);
++		if (err)
++			goto nla_put_failure;
++
++		nla_nest_end(skb, mst_nest);
++	}
++
+ done:
++
+ 	if (af)
+ 		nla_nest_end(skb, af);
+ 	nlmsg_end(skb, nlh);
+@@ -803,6 +828,23 @@ static int br_afspec(struct net_bridge *br,
+ 			if (err)
+ 				return err;
+ 			break;
++		case IFLA_BRIDGE_MST:
++			if (!p) {
++				NL_SET_ERR_MSG(extack,
++					       "MST states can only be set on bridge ports");
++				return -EINVAL;
++			}
++
++			if (cmd != RTM_SETLINK) {
++				NL_SET_ERR_MSG(extack,
++					       "MST states can only be set through RTM_SETLINK");
++				return -EINVAL;
++			}
++
++			err = br_mst_process(p, attr, extack);
++			if (err)
++				return err;
++			break;
+ 		}
+ 	}
+ 
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 3978e1d9ffb5..18ccc3d5d296 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1784,6 +1784,11 @@ int br_mst_vlan_set_msti(struct net_bridge_vlan *v, u16 msti);
+ void br_mst_vlan_init_state(struct net_bridge_vlan *v);
+ int br_mst_set_enabled(struct net_bridge *br, bool on,
+ 		       struct netlink_ext_ack *extack);
++size_t br_mst_info_size(const struct net_bridge_vlan_group *vg);
++int br_mst_fill_info(struct sk_buff *skb,
++		     const struct net_bridge_vlan_group *vg);
++int br_mst_process(struct net_bridge_port *p, const struct nlattr *mst_attr,
++		   struct netlink_ext_ack *extack);
+ #else
+ static inline bool br_mst_is_enabled(struct net_bridge *br)
+ {
+@@ -1801,6 +1806,24 @@ static inline int br_mst_set_enabled(struct net_bridge *br, bool on,
+ {
+ 	return -EOPNOTSUPP;
+ }
++
++static inline size_t br_mst_info_size(const struct net_bridge_vlan_group *vg)
++{
++	return 0;
++}
++
++static inline int br_mst_fill_info(struct sk_buff *skb,
++				   const struct net_bridge_vlan_group *vg)
++{
++	return -EOPNOTSUPP;
++}
++
++static inline int br_mst_process(struct net_bridge_port *p,
++				 const struct nlattr *mst_attr,
++				 struct netlink_ext_ack *extack)
++{
++	return -EOPNOTSUPP;
++}
+ #endif
+ 
+ struct nf_br_ops {
 -- 
-2.32.0
+2.25.1
 
