@@ -2,96 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83728C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:19:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC844C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357242AbiCPPUd (ORCPT
+        id S1357234AbiCPPUn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47286 "EHLO
+        Wed, 16 Mar 2022 11:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357166AbiCPPU0 (ORCPT
+        with ESMTP id S1357256AbiCPPUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:20:26 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B6762A2B
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:19:12 -0700 (PDT)
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 16 Mar 2022 11:20:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5E566F96;
+        Wed, 16 Mar 2022 08:19:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9212D3F07E
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647443951;
-        bh=l6KBwGM0uiIwlc1rKLa9ZFBDgTPatr0zsqNmkU7zEfs=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=hnBMVm5NuJPHWUriNwJEAOlygXoDV5wbnmaQGBeNGuOR2ufAhiBRhADZ5jGjxW/jN
-         5AadvsvS3O5L9v3mhL0W7zT/03qdMNrR9nubb7I/Jnk6gxQEBVH81vvgjTYrhxMD5k
-         Yf672IqY3tzqVH8QZqAdY/9H4IswTQUNZ/ZK4ucawyxfyJEYyellQdPdklM7BTEPrn
-         SfYY/WVrSYopzf2S96gnPaU//uWNVxHm6QdBCDwdveD5046ANkOu/SiQeQ2/lFPzfR
-         qrgAGstoNxy+CkqxX7F3jPh6xaQv6SjA8ljmGNhXTEps1X7qGtiSzKVqqL38Myac3q
-         ZFMLp+AuaQ8oQ==
-Received: by mail-ej1-f71.google.com with SMTP id my14-20020a1709065a4e00b006df7cbf896cso1194670ejc.5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=l6KBwGM0uiIwlc1rKLa9ZFBDgTPatr0zsqNmkU7zEfs=;
-        b=H3yhh7DDt4sSmlxLeaQ0ywLXqZs+YWcnbzncUMz8/t0NQaAaIMh0NxUvK35+8Yy1C6
-         wgVbLyvqKcAS+HNxe59Yvjsca6eYxnrl7Wrt0jJagjCpSLXgN9+kHnm4dkHccHIuqg+X
-         e1QCjqdBf1NNXjuGMjODJpvUoainDUFK5GNAhoAk+bO8lL17h80M9sCTifndfX866AFJ
-         OYioe4h+n9PhMSTnQBHicYAnSw01Phm46g+cU9q1oqaWHeEHT/xNe8x2HAkpBrzFbI1W
-         uc+14NKzioLlsgg9Sdjt+QSGmf+Dl/YMgn/5t0Z4uatOrFFomLDKp+HonxzHzWdaewm/
-         VQyA==
-X-Gm-Message-State: AOAM530L5Myq6WQDYnVJshRipyOQ0HBoru02GaDeCIS04TMyfHYvlMrj
-        RvDldq+RkG036mYoKLVRAHlN1U5VrvFYd310o5oVKoGqyrBD+wGAz3h2HV3lIbT+ZI5EynGB6YV
-        d+SqdSFyRSV7u2FgcwOj0QxnboC5XiVNZtq77uXuMtQ==
-X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id e18-20020a17090658d200b006dab635fbf3mr432682ejs.40.1647443951296;
-        Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxoPSUJMHOAL6T3mNLew5/+8ilp8MWnQTCLDeDxeKP/9TPhEl9ftEH1knZ3RViNX+M9VfXG4g==
-X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id e18-20020a17090658d200b006dab635fbf3mr432665ejs.40.1647443951025;
-        Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
-Received: from localhost.localdomain ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id d8-20020a170906640800b006d5853081b7sm1016788ejm.70.2022.03.16.08.19.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 08:19:10 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux@armlinux.org.uk
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA1D6616C0;
+        Wed, 16 Mar 2022 15:19:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BADDC340E9;
+        Wed, 16 Mar 2022 15:19:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647443958;
+        bh=ISuf0vVn55K3r5StJVz3ehSnX1bkQQCwdAX7lQMDBYY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Vbfqj8vx5tMfPaH3ewD1sb9vlEQOXF5FvW1DnVGI6+FraARhksFIzlCT02vkTDp+k
+         Qwr3FSIVtU+uAiZ1Oxoyy5cjd6EhxOWIiER/Q6R1rPjzbqyS1ap2HcEfQoRQw042D0
+         fqL6xG+MFIVipBfvezL22Wyz6pr3H19GJzcd/CKyu+TfTqP9KsI+ILxLv/BNUDI+UI
+         w/FGfyJSXxL8ggRMPagf1mjVfYPZMcTNk/VdSotd0t7UK0cPvlVwva/BRRncN40xkM
+         f0704t4nv0C8ABAQ4C/7cCcY2oAJB2PVgO0AvXs2YObkpXNVc6WrNECr1f+2VAbncX
+         VGzn7drjH5vxQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUVQh-00ExEp-Vz; Wed, 16 Mar 2022 15:19:16 +0000
+Date:   Wed, 16 Mar 2022 15:19:15 +0000
+Message-ID: <874k3yylfw.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Andre Przywara <andre.przywara@arm.com>
 Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] net: phy: mscc: Add MODULE_FIRMWARE macros
-Date:   Wed, 16 Mar 2022 16:18:35 +0100
-Message-Id: <20220316151835.88765-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eric Auger <eric.auger@redhat.com>, stable@vger.kernel.org
+Subject: Re: [PATCH 1/3] irqchip/gic-v3: Fix GICR_CTLR.RWP polling
+In-Reply-To: <20220316145102.28ad0a74@slackpad.lan>
+References: <20220315165034.794482-1-maz@kernel.org>
+        <20220315165034.794482-2-maz@kernel.org>
+        <20220316145102.28ad0a74@slackpad.lan>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: andre.przywara@arm.com, linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, tglx@linutronix.de, eric.auger@redhat.com, stable@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver requires firmware so define MODULE_FIRMWARE so that modinfo
-provides the details.
+On Wed, 16 Mar 2022 14:51:02 +0000,
+Andre Przywara <andre.przywara@arm.com> wrote:
+> 
+> On Tue, 15 Mar 2022 16:50:32 +0000
+> Marc Zyngier <maz@kernel.org> wrote:
+> 
+> > It turns out that our polling of RWP is totally wrong when checking
+> > for it in the redistributors, as we test the *distributor* bit index,
+> > whereas it is a different bit number in the RDs... Oopsie boo.
+> > 
+> > This is embarassing. Not only because it is wrong, but also because
+> > it took *8 years* to notice the blunder...
+> 
+> Indeed, I wonder why we didn't see issues before. I guess it's either
+> the UWP bit at position GICR_CTLR[31] having a similar implementation,
+> or the MMIO access alone providing enough delay for the writes to
+> finish.
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
----
- drivers/net/phy/mscc/mscc_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+Because we don't strictly need to wait. Most of the time, the
+write will have taken place long before we can observe any effect of
+it. And how often do we disable a SGI or a PPI? Almost never (the PMU
+is the only one that I can think of).
 
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index ebfeeb3c67c1..7e3017e7a1c0 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -2685,3 +2685,6 @@ MODULE_DEVICE_TABLE(mdio, vsc85xx_tbl);
- MODULE_DESCRIPTION("Microsemi VSC85xx PHY driver");
- MODULE_AUTHOR("Nagaraju Lakkaraju");
- MODULE_LICENSE("Dual MIT/GPL");
-+
-+MODULE_FIRMWARE(MSCC_VSC8584_REVB_INT8051_FW);
-+MODULE_FIRMWARE(MSCC_VSC8574_REVB_INT8051_FW);
+> Anyway:
+> 
+> > Just fix the damn thing.
+> > 
+> > Fixes: 021f653791ad ("irqchip: gic-v3: Initial support for GICv3")
+> > Signed-off-by: Marc Zyngier <maz@kernel.org>
+> > Cc: stable@vger.kernel.org
+> 
+> Reviewed-by: Andre Przywara <andre.przywara@arm.com>
+
+Thanks,
+
+	M.
+
 -- 
-2.32.0
-
+Without deviation from the norm, progress is not possible.
