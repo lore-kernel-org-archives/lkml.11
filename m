@@ -2,74 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86152C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:48:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356860AbiCPOqs (ORCPT
+        id S1349162AbiCPOto (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
+        Wed, 16 Mar 2022 10:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243640AbiCPOqp (ORCPT
+        with ESMTP id S231273AbiCPOtm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:46:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA7F6006F;
-        Wed, 16 Mar 2022 07:45:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 16 Mar 2022 10:49:42 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A425B1A800;
+        Wed, 16 Mar 2022 07:48:27 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 61F3C210E4;
+        Wed, 16 Mar 2022 14:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647442106; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sNgiXVZBv6F6wyCvndqNofHIp7IwWtdhnCB8N/Uhyx4=;
+        b=hothijYJO1hxPRBPTWSio0H1fgSSzQ8O7tk8VGs/WEuIfRvgvnwDzVWziL+njJmzW6wyFn
+        VATT3K4e72LwlXcRj3rW+0WbHF7s9L+fpVx64QmLSbyMLwtHUQdxspy7+5OnijG2U+hrJS
+        i9OUAEdd5u4u2QvpIpuWOodg7TL2S18=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647442106;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sNgiXVZBv6F6wyCvndqNofHIp7IwWtdhnCB8N/Uhyx4=;
+        b=PKQl+BpgTe2MRagJZ4oRxzm6SS30ZxbcbTnqEeM2XrTInCRsMggLFOJzqWHHMc41bUhnSs
+        yIjn9NvRSPch9PCA==
+Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 369EBB81B76;
-        Wed, 16 Mar 2022 14:45:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 577DEC340EC;
-        Wed, 16 Mar 2022 14:45:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647441927;
-        bh=tJToEPSfN0c7o7+u0m33QWvqfmZGCF5OVG9pt0H5KYI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GmFcu7t1lvUZDN3STtQnofQiFDNiDI/uPR/wiWcfpwh7OdQSRvDkXLu3bQ/DTmKnx
-         fLdlmFIqdDILDKi8gkikX4insVG0NVNyj3EiHe148bHsZIcMqt+wMAnJI0hhUhxpOd
-         SgHtSnWdjN1Z9lA9Um32DVtx+uHcsgUrrb6PYWQfA5zgmAvUSLWtaciDFtlxDHprc/
-         BZYLhTgglPreQvktOWXP9IIIAg0kAb82MeOQM3ntmgwk6JW/dEY5TVETdxc9xsL0NN
-         3f9wpleuDLzZBcs04oqZWyCukW/7MD8G+AZuUDCA2BV/F1pHq9PCPDJaxk9JAxJvhZ
-         JsSEfvfLD4w9g==
-Date:   Wed, 16 Mar 2022 10:45:24 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Casper Andersson <casper.casan@gmail.com>,
-        Joacim Zetterling <joacim.zetterling@westermo.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
-        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH AUTOSEL 5.16 16/27] net: sparx5: Add #include to remove
- warning
-Message-ID: <YjH4BCEAArhrQMJ7@sashalap>
-References: <20220309161711.135679-1-sashal@kernel.org>
- <20220309161711.135679-16-sashal@kernel.org>
- <20220309084911.2e75d67d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        by relay2.suse.de (Postfix) with ESMTPS id 31C92A3B87;
+        Wed, 16 Mar 2022 14:48:25 +0000 (UTC)
+Date:   Wed, 16 Mar 2022 15:48:25 +0100 (CET)
+From:   Miroslav Benes <mbenes@suse.cz>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+cc:     jpoimboe@redhat.com, jikos@kernel.org, pmladek@suse.com,
+        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com
+Subject: Re: [PATCH v3] livepatch: Don't block removal of patches that are
+ safe to unload
+In-Reply-To: <20220312152220.88127-1-zhouchengming@bytedance.com>
+Message-ID: <alpine.LSU.2.21.2203161536330.6444@pobox.suse.cz>
+References: <20220312152220.88127-1-zhouchengming@bytedance.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220309084911.2e75d67d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 09, 2022 at 08:49:11AM -0800, Jakub Kicinski wrote:
->On Wed,  9 Mar 2022 11:16:53 -0500 Sasha Levin wrote:
->> main.h uses NUM_TARGETS from main_regs.h, but
->> the missing include never causes any errors
->> because everywhere main.h is (currently)
->> included, main_regs.h is included before.
->> But since it is dependent on main_regs.h
->> it should always be included.
->
->This is not fixing anything in the current trees.
+On Sat, 12 Mar 2022, Chengming Zhou wrote:
 
-I'll drop it, thanks!
+> module_put() is not called for a patch with "forced" flag. It should
+> block the removal of the livepatch module when the code might still
+> be in use after forced transition.
+> 
+> klp_force_transition() currently sets "forced" flag for all patches on
+> the list.
+> 
+> In fact, any patch can be safely unloaded when it passed through
+> the consistency model in KLP_UNPATCHED transition.
+> 
+> By other words, the "forced" flag must be set only for livepatches
 
--- 
-Thanks,
-Sasha
+s/By/In/
+
+> that are being removed. In particular, set the "forced" flag:
+> 
+>   + only for klp_transition_patch when the transition to KLP_UNPATCHED
+>     state was forced.
+> 
+>   + all replaced patches when the transition to KLP_PATCHED state was
+>     forced and the patch was replacing the existing patches.
+> 
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> ---
+> Changes in v3:
+>  - rewrite more clear commit message by Petr.
+> 
+> Changes in v2:
+>  - interact nicely with the atomic replace feature noted by Miroslav.
+> ---
+>  kernel/livepatch/transition.c | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+> index 5683ac0d2566..7f25a5ae89f6 100644
+> --- a/kernel/livepatch/transition.c
+> +++ b/kernel/livepatch/transition.c
+> @@ -641,6 +641,18 @@ void klp_force_transition(void)
+>  	for_each_possible_cpu(cpu)
+>  		klp_update_patch_state(idle_task(cpu));
+>  
+> -	klp_for_each_patch(patch)
+> -		patch->forced = true;
+> +	/*
+> +	 * Only need to set forced flag for the transition patch
+> +	 * when force transition to KLP_UNPATCHED state, but
+> +	 * have to set forced flag for all replaced patches
+> +	 * when force atomic replace transition.
+> +	 */
+
+How about something like
+
+/*
+ * Set forced flag for patches being removed, which is the transition
+ * patch in KLP_UNPATCHED state or all replaced patches when forcing
+ * the atomic replace transition.
+ */
+
+?
+
+> +	if (klp_target_state == KLP_UNPATCHED)
+> +		klp_transition_patch->forced = true;
+> +	else if (klp_transition_patch->replace) {
+> +		klp_for_each_patch(patch) {
+> +			if (patch != klp_transition_patch)
+> +				patch->forced = true;
+> +		}
+> +	}
+
+Looks good to me.
+
+Miroslav
