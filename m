@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D82EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55321C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352927AbiCPCLl (ORCPT
+        id S1347074AbiCPCLr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
+        Tue, 15 Mar 2022 22:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352559AbiCPCLS (ORCPT
+        with ESMTP id S1352588AbiCPCLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:11:18 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4A05E746
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:04 -0700 (PDT)
+        Tue, 15 Mar 2022 22:11:24 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF3B15E74D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647396604; x=1678932604;
+  t=1647396605; x=1678932605;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=3OlJCsIfgAhwi4eEttuOeOEeosPZcbqj4G6JorbTQFM=;
-  b=LywgFRj3gPQX4o4z/VU3px/RSKHE6uiExn8OtUchFdNyVcOJRcfCpmeI
-   GHTpuJIad/2WiDoxaLMroqhzg3kOXcfhLOlgf49yrIUhhg2X9MFlFixg7
-   KqN4ujYpWR1JgGeUUYaZF/DeCy3/9r5USuYY9ooyI0r0c/hklAIV721iP
-   Ew/0zoeA46Yq/ifRPYYcyeyLyJGvMdxW5xcdWrV7ksjo0poilcT3Lbbv3
-   KEYmnoQ8SP1j1QkLy7w/Pq0uTs3e7DBBiQkafChaVADsY8pLbkjUmO0JR
-   u08XTjtDG94IMb6mh3PA0W/3Xd7XnWPkIUGwTO5LQ0u4c/O70jOAumYC9
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317190979"
+  bh=F3sH3qGefcY6/K1q3Yvgqtx5gyGOjiXQKjziseriI9U=;
+  b=fmeIGVZ251ZOPqNqVfHbwVJZZITJBRSYuR2AmMsFxv8BXpu3mbgjjuf6
+   OrsWLWkm2FAezWGjgS+2HftAGlR2ux4av9p+xOOIeHw9ARkSMSveJL0pP
+   6O/WHYkYB4x70WX/mgYxRqH6BZe8CDY13agztpRa1px6urVXYLt/oWTuP
+   ZnlLk3JKt4pfak0L5YGMjD96ErLhZyzV5wFPg42XJtLp4W2NHuaMozNLn
+   vIgIfQ7frMkl9Dtu4g1UzTKTUevfsTJLTDP4O67XOAQG4MWhVCCSuM0Fh
+   r5TRjCuTzvv/pCXUmM6DgPUt005mSYTPYeJ/DQ6q5DTBuewc3HvBqfKcs
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256422501"
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="317190979"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:04 -0700
+   d="scan'208";a="256422501"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:04 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="512845180"
+   d="scan'208";a="516126480"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 15 Mar 2022 19:09:57 -0700
+  by orsmga006.jf.intel.com with ESMTP; 15 Mar 2022 19:09:57 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 123EC807; Wed, 16 Mar 2022 04:10:10 +0200 (EET)
+        id DCEEF739; Wed, 16 Mar 2022 04:10:09 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,10 +52,11 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv6 11/30] x86/tdx: Handle in-kernel MMIO
-Date:   Wed, 16 Mar 2022 05:08:37 +0300
-Message-Id: <20220316020856.24435-12-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: [PATCHv6 08/30] x86/tdx: Add HLT support for TDX guests
+Date:   Wed, 16 Mar 2022 05:08:34 +0300
+Message-Id: <20220316020856.24435-9-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
@@ -65,265 +66,244 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In non-TDX VMs, MMIO is implemented by providing the guest a mapping
-which will cause a VMEXIT on access and then the VMM emulating the
-instruction that caused the VMEXIT. That's not possible for TDX VM.
+The HLT instruction is a privileged instruction, executing it stops
+instruction execution and places the processor in a HALT state. It
+is used in kernel for cases like reboot, idle loop and exception fixup
+handlers. For the idle case, interrupts will be enabled (using STI)
+before the HLT instruction (this is also called safe_halt()).
 
-To emulate an instruction an emulator needs two things:
+To support the HLT instruction in TDX guests, it needs to be emulated
+using TDVMCALL (hypercall to VMM). More details about it can be found
+in Intel Trust Domain Extensions (Intel TDX) Guest-Host-Communication
+Interface (GHCI) specification, section TDVMCALL[Instruction.HLT].
 
-  - R/W access to the register file to read/modify instruction arguments
-    and see RIP of the faulted instruction.
+In TDX guests, executing HLT instruction will generate a #VE, which is
+used to emulate the HLT instruction. But #VE based emulation will not
+work for the safe_halt() flavor, because it requires STI instruction to
+be executed just before the TDCALL. Since idle loop is the only user of
+safe_halt() variant, handle it as a special case.
 
-  - Read access to memory where instruction is placed to see what to
-    emulate. In this case it is guest kernel text.
+To avoid *safe_halt() call in the idle function, define the
+tdx_guest_idle() and use it to override the "x86_idle" function pointer
+for a valid TDX guest.
 
-Both of them are not available to VMM in TDX environment:
-
-  - Register file is never exposed to VMM. When a TD exits to the module,
-    it saves registers into the state-save area allocated for that TD.
-    The module then scrubs these registers before returning execution
-    control to the VMM, to help prevent leakage of TD state.
-
-  - TDX does not allow guests to execute from shared memory. All executed
-    instructions are in TD-private memory. Being private to the TD, VMMs
-    have no way to access TD-private memory and no way to read the
-    instruction to decode and emulate it.
-
-In TDX the MMIO regions are instead configured by VMM to trigger a #VE
-exception in the guest.
-
-Add #VE handling that emulates the MMIO instruction inside the guest and
-converts it into a controlled hypercall to the host.
-
-This approach is bad for performance. But, it has (virtually) no impact
-on the size of the kernel image and will work for a wide variety of
-drivers. This allows TDX deployments to use arbitrary devices and device
-drivers, including virtio. TDX customers have asked for the capability
-to use random devices in their deployments.
-
-In other words, even if all of the work was done to paravirtualize all
-x86 MMIO users and virtio, this approach would still be needed. There
-is essentially no way to get rid of this code.
-
-This approach is functional for all in-kernel MMIO users current and
-future and does so with a minimal amount of code and kernel image bloat.
-
-MMIO addresses can be used with any CPU instruction that accesses
-memory. Address only MMIO accesses done via io.h helpers, such as
-'readl()' or 'writeq()'.
-
-Any CPU instruction that accesses memory can also be used to access
-MMIO.  However, by convention, MMIO access are typically performed via
-io.h helpers such as 'readl()' or 'writeq()'.
-
-The io.h helpers intentionally use a limited set of instructions when
-accessing MMIO.  This known, limited set of instructions makes MMIO
-instruction decoding and emulation feasible in KVM hosts and SEV guests
-today.
-
-MMIO accesses performed without the io.h helpers are at the mercy of the
-compiler.  Compilers can and will generate a much more broad set of
-instructions which can not practically be decoded and emulated.  TDX
-guests will oops if they encounter one of these decoding failures.
-
-This means that TDX guests *must* use the io.h helpers to access MMIO.
-
-This requirement is not new.  Both KVM hosts and AMD SEV guests have the
-same limitations on MMIO access.
-
-=== Potential alternative approaches ===
-
-== Paravirtualizing all MMIO ==
-
-An alternative to letting MMIO induce a #VE exception is to avoid
-the #VE in the first place. Similar to the port I/O case, it is
-theoretically possible to paravirtualize MMIO accesses.
-
-Like the exception-based approach offered here, a fully paravirtualized
-approach would be limited to MMIO users that leverage common
-infrastructure like the io.h macros.
-
-However, any paravirtual approach would be patching approximately 120k
-call sites. Any paravirtual approach would need to replace a bare memory
-access instruction with (at least) a function call. With a conservative
-overhead estimation of 5 bytes per call site (CALL instruction),
-it leads to bloating code by 600k.
-
-Many drivers will never be used in the TDX environment and the bloat
-cannot be justified.
-
-== Patching TDX drivers ==
-
-Rather than touching the entire kernel, it might also be possible to
-just go after drivers that use MMIO in TDX guests *and* are performance
-critical to justify the effrort. Right now, that's limited only to virtio.
-
-All virtio MMIO appears to be done through a single function, which
-makes virtio eminently easy to patch.
-
-This approach will be adopted in the future, removing the bulk of
-MMIO #VEs. The #VE-based MMIO will remain serving non-virtio use cases.
+Alternative choices like PV ops have been considered for adding
+safe_halt() support. But it was rejected because HLT paravirt calls
+only exist under PARAVIRT_XXL, and enabling it in TDX guest just for
+safe_halt() use case is not worth the cost.
 
 Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
- arch/x86/coco/tdx/tdx.c | 121 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 121 insertions(+)
+ arch/x86/coco/tdx/tdcall.S | 13 ++++++
+ arch/x86/coco/tdx/tdx.c    | 93 +++++++++++++++++++++++++++++++++++++-
+ arch/x86/include/asm/tdx.h |  4 ++
+ arch/x86/kernel/process.c  |  4 ++
+ 4 files changed, 112 insertions(+), 2 deletions(-)
 
+diff --git a/arch/x86/coco/tdx/tdcall.S b/arch/x86/coco/tdx/tdcall.S
+index 662479ccf630..245888290bb6 100644
+--- a/arch/x86/coco/tdx/tdcall.S
++++ b/arch/x86/coco/tdx/tdcall.S
+@@ -139,6 +139,19 @@ SYM_FUNC_START(__tdx_hypercall)
+ 
+ 	movl $TDVMCALL_EXPOSE_REGS_MASK, %ecx
+ 
++	/*
++	 * For the idle loop STI needs to be called directly before the TDCALL
++	 * that enters idle (EXIT_REASON_HLT case). STI instruction enables
++	 * interrupts only one instruction later. If there is a window between
++	 * STI and the instruction that emulates the HALT state, there is a
++	 * chance for interrupts to happen in this window, which can delay the
++	 * HLT operation indefinitely. Since this is the not the desired
++	 * result, conditionally call STI before TDCALL.
++	 */
++	testq $TDX_HCALL_ISSUE_STI, %rsi
++	jz .Lskip_sti
++	sti
++.Lskip_sti:
+ 	tdcall
+ 
+ 	/*
 diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index 7c89860552d7..68da658f563f 100644
+index c886a9e022f1..3795a70463aa 100644
 --- a/arch/x86/coco/tdx/tdx.c
 +++ b/arch/x86/coco/tdx/tdx.c
-@@ -8,11 +8,17 @@
+@@ -7,6 +7,7 @@
+ #include <linux/cpufeature.h>
  #include <asm/coco.h>
  #include <asm/tdx.h>
- #include <asm/vmx.h>
-+#include <asm/insn.h>
-+#include <asm/insn-eval.h>
++#include <asm/vmx.h>
  
  /* TDX module Call Leaf IDs */
  #define TDX_GET_INFO			1
- #define TDX_GET_VEINFO			3
- 
-+/* MMIO direction */
-+#define EPT_READ	0
-+#define EPT_WRITE	1
-+
- /*
-  * Wrapper for standard use of __tdx_hypercall with no output aside from
-  * return code.
-@@ -215,6 +221,119 @@ static bool handle_cpuid(struct pt_regs *regs)
- 	return true;
+@@ -36,6 +37,17 @@ void __tdx_hypercall_failed(void)
+ 	panic("TDVMCALL failed. TDX module bug?");
  }
  
-+static bool mmio_read(int size, unsigned long addr, unsigned long *val)
++/*
++ * The TDG.VP.VMCALL-Instruction-execution sub-functions are defined
++ * independently from but are currently matched 1:1 with VMX EXIT_REASONs.
++ * Reusing the KVM EXIT_REASON macros makes it easier to connect the host and
++ * guest sides of these calls.
++ */
++static u64 hcall_func(u64 exit_reason)
++{
++	return exit_reason;
++}
++
+ /*
+  * Used for TDX guests to make calls directly to the TD module.  This
+  * should only be used for calls that have no legitimate reason to fail
+@@ -67,6 +79,62 @@ static void get_info(unsigned int *gpa_width)
+ 	*gpa_width = out.rcx & GENMASK(5, 0);
+ }
+ 
++static u64 __cpuidle __halt(const bool irq_disabled, const bool do_sti)
 +{
 +	struct tdx_hypercall_args args = {
 +		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_EPT_VIOLATION),
-+		.r12 = size,
-+		.r13 = EPT_READ,
-+		.r14 = addr,
-+		.r15 = *val,
++		.r11 = hcall_func(EXIT_REASON_HLT),
++		.r12 = irq_disabled,
 +	};
 +
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
++	/*
++	 * Emulate HLT operation via hypercall. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface
++	 * (GHCI), section 3.8 TDG.VP.VMCALL<Instruction.HLT>.
++	 *
++	 * The VMM uses the "IRQ disabled" param to understand IRQ
++	 * enabled status (RFLAGS.IF) of the TD guest and to determine
++	 * whether or not it should schedule the halted vCPU if an
++	 * IRQ becomes pending. E.g. if IRQs are disabled, the VMM
++	 * can keep the vCPU in virtual HLT, even if an IRQ is
++	 * pending, without hanging/breaking the guest.
++	 */
++	return __tdx_hypercall(&args, do_sti ? TDX_HCALL_ISSUE_STI : 0);
++}
++
++static bool handle_halt(void)
++{
++	/*
++	 * Since non safe halt is mainly used in CPU offlining
++	 * and the guest will always stay in the halt state, don't
++	 * call the STI instruction (set do_sti as false).
++	 */
++	const bool irq_disabled = irqs_disabled();
++	const bool do_sti = false;
++
++	if (__halt(irq_disabled, do_sti))
 +		return false;
-+	*val = args.r11;
++
 +	return true;
 +}
 +
-+static bool mmio_write(int size, unsigned long addr, unsigned long val)
++void __cpuidle tdx_safe_halt(void)
 +{
-+	return !_tdx_hypercall(hcall_func(EXIT_REASON_EPT_VIOLATION), size,
-+			       EPT_WRITE, addr, val);
-+}
++	 /*
++	  * For do_sti=true case, __tdx_hypercall() function enables
++	  * interrupts using the STI instruction before the TDCALL. So
++	  * set irq_disabled as false.
++	  */
++	const bool irq_disabled = false;
++	const bool do_sti = true;
 +
-+static bool handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-+{
-+	char buffer[MAX_INSN_SIZE];
-+	unsigned long *reg, val;
-+	struct insn insn = {};
-+	enum mmio_type mmio;
-+	int size, extend_size;
-+	u8 extend_val = 0;
-+
-+	/* Only in-kernel MMIO is supported */
-+	if (WARN_ON_ONCE(user_mode(regs)))
-+		return false;
-+
-+	if (copy_from_kernel_nofault(buffer, (void *)regs->ip, MAX_INSN_SIZE))
-+		return false;
-+
-+	if (insn_decode(&insn, buffer, MAX_INSN_SIZE, INSN_MODE_64))
-+		return false;
-+
-+	mmio = insn_decode_mmio(&insn, &size);
-+	if (WARN_ON_ONCE(mmio == MMIO_DECODE_FAILED))
-+		return false;
-+
-+	if (mmio != MMIO_WRITE_IMM && mmio != MMIO_MOVS) {
-+		reg = insn_get_modrm_reg_ptr(&insn, regs);
-+		if (!reg)
-+			return false;
-+	}
-+
-+	ve->instr_len = insn.length;
-+
-+	/* Handle writes first */
-+	switch (mmio) {
-+	case MMIO_WRITE:
-+		memcpy(&val, reg, size);
-+		return mmio_write(size, ve->gpa, val);
-+	case MMIO_WRITE_IMM:
-+		val = insn.immediate.value;
-+		return mmio_write(size, ve->gpa, val);
-+	case MMIO_READ:
-+	case MMIO_READ_ZERO_EXTEND:
-+	case MMIO_READ_SIGN_EXTEND:
-+		/* Reads are handled below */
-+		break;
-+	case MMIO_MOVS:
-+	case MMIO_DECODE_FAILED:
-+		/*
-+		 * MMIO was accessed with an instruction that could not be
-+		 * decoded or handled properly. It was likely not using io.h
-+		 * helpers or accessed MMIO accidentally.
-+		 */
-+		return false;
-+	default:
-+		WARN_ONCE(1, "Unknown insn_decode_mmio() decode value?");
-+		return false;
-+	}
-+
-+	/* Handle reads */
-+	if (!mmio_read(size, ve->gpa, &val))
-+		return false;
-+
-+	switch (mmio) {
-+	case MMIO_READ:
-+		/* Zero-extend for 32-bit operation */
-+		extend_size = size == 4 ? sizeof(*reg) : 0;
-+		break;
-+	case MMIO_READ_ZERO_EXTEND:
-+		/* Zero extend based on operand size */
-+		extend_size = insn.opnd_bytes;
-+		break;
-+	case MMIO_READ_SIGN_EXTEND:
-+		/* Sign extend based on operand size */
-+		extend_size = insn.opnd_bytes;
-+		if (size == 1 && val & BIT(7))
-+			extend_val = 0xFF;
-+		else if (size > 1 && val & BIT(15))
-+			extend_val = 0xFF;
-+		break;
-+	default:
-+		/* All other cases has to be covered with the first switch() */
-+		WARN_ON_ONCE(1);
-+		return false;
-+	}
-+
-+	if (extend_size)
-+		memset(reg, extend_val, extend_size);
-+	memcpy(reg, &val, size);
-+	return true;
++	/*
++	 * Use WARN_ONCE() to report the failure.
++	 */
++	if (__halt(irq_disabled, do_sti))
++		WARN_ONCE(1, "HLT instruction emulation failed\n");
 +}
 +
  void tdx_get_ve_info(struct ve_info *ve)
  {
  	struct tdx_module_output out;
-@@ -262,6 +381,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 		return write_msr(regs);
- 	case EXIT_REASON_CPUID:
- 		return handle_cpuid(regs);
-+	case EXIT_REASON_EPT_VIOLATION:
-+		return handle_mmio(regs, ve);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
+@@ -90,11 +158,32 @@ void tdx_get_ve_info(struct ve_info *ve)
+ 	ve->instr_info  = upper_32_bits(out.r10);
+ }
+ 
++/* Handle the kernel #VE */
++static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
++{
++	switch (ve->exit_reason) {
++	case EXIT_REASON_HLT:
++		return handle_halt();
++	default:
++		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
++		return false;
++	}
++}
++
+ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
+ {
+-	pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
++	bool ret;
++
++	if (user_mode(regs))
++		ret = false;
++	else
++		ret = virt_exception_kernel(regs, ve);
++
++	/* After successful #VE handling, move the IP */
++	if (ret)
++		regs->ip += ve->instr_len;
+ 
+-	return false;
++	return ret;
+ }
+ 
+ void __init tdx_early_init(void)
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index f4f5da1febbe..8f84ffce7f38 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -13,6 +13,7 @@
+ #define TDX_HYPERCALL_STANDARD  0
+ 
+ #define TDX_HCALL_HAS_OUTPUT	BIT(0)
++#define TDX_HCALL_ISSUE_STI	BIT(1)
+ 
+ /*
+  * SW-defined error codes.
+@@ -87,9 +88,12 @@ void tdx_get_ve_info(struct ve_info *ve);
+ 
+ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
+ 
++void tdx_safe_halt(void);
++
+ #else
+ 
+ static inline void tdx_early_init(void) { };
++static inline void tdx_safe_halt(void) { };
+ 
+ #endif /* CONFIG_INTEL_TDX_GUEST */
+ 
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index e131d71b3cae..2e90d57cf86e 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -46,6 +46,7 @@
+ #include <asm/proto.h>
+ #include <asm/frame.h>
+ #include <asm/unwind.h>
++#include <asm/tdx.h>
+ 
+ #include "process.h"
+ 
+@@ -873,6 +874,9 @@ void select_idle_routine(const struct cpuinfo_x86 *c)
+ 	} else if (prefer_mwait_c1_over_halt(c)) {
+ 		pr_info("using mwait in idle threads\n");
+ 		x86_idle = mwait_idle;
++	} else if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
++		pr_info("using TDX aware idle routine\n");
++		x86_idle = tdx_safe_halt;
+ 	} else
+ 		x86_idle = default_idle;
+ }
 -- 
 2.34.1
 
