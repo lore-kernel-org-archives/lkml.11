@@ -2,221 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E326CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347616AbiCPXaF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 19:30:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36238 "EHLO
+        id S242348AbiCPXfT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 19:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347074AbiCPX3t (ORCPT
+        with ESMTP id S232408AbiCPXfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 19:29:49 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC0B167EC
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:28:31 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id e3so3443987pjm.5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:28:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding:cc:from:to;
-        bh=llt+unTQxxB47mMK9cTVf/sVk7YwdP8ahVPZ8vUzo+E=;
-        b=P13QgI0zd+4RAOt3pbwZknViRr2CVhiVAFIRqM5bOGjAu9nzvjSnZusFhYRC5h9qSQ
-         9JCxra+cscVH+cq1tVm8CjiuMJlxW877K2j6AlCHNuh0DRBNi9EE4AcotfiNoC3XOOLK
-         dhnYjAvGq4qBYfG/ws5BM4JI/1zMJoKWHl+gPx8IkFDWC/CuJ+vSOxvmg3M8IpV/BOKi
-         Oz6nK2qVkXNZ02AyIkvsE3D3PHdimNMIXmdl8ruKlmv4JHoGQeGhFIjnxn/Mq7G4QX+y
-         2JDewQpoUe01b9wf6IjFRTdrHwJVTBH6ES8hoo446YGPwdfpUHyka6ajuquwNdtxfM3P
-         F7kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding:cc:from:to;
-        bh=llt+unTQxxB47mMK9cTVf/sVk7YwdP8ahVPZ8vUzo+E=;
-        b=6Bq+TyJWQqDevq4YeeVQngyKLFR1vym7WE8s78CkDSorK0Xetj4wC0MWuQanm8OD2z
-         E4W46WAOvTEqK5zZE/IMYcworSJp9Mfgztw7717COb+j/+Tgm1GV5Eizv8b1Hq0iNwPb
-         EJ3DrbhvZhKO2qlnD+UV5fpu2pXXvroy2AMBJjrETQtNK+k4sX4DN6v2zU5MYr1WdNHd
-         oYyDYNmbxJ2KD6i4Aht9kexDQnXxEuHdPeGdQH8oV571xAWNp8xlZa9cQCRXpgEZX759
-         5BnejUHErvGalY0TeFf9XAP7cYtbDufDvB9mA9OyfBaXIsmWT90AGZCfi3y8EZiCN4lR
-         T+1Q==
-X-Gm-Message-State: AOAM532IQZbJqoSqelUV9bXG55Oy9jZFxmgxbomVsWOPQhrD3wlmt0dI
-        zwdZHSf4pXT/qhALN02pVHa3Dg==
-X-Google-Smtp-Source: ABdhPJzyPV7prsqRJmPgkY9DrfVu2bdBaNJER6RIDfsjbbPdF+/QlL1mJF+2to5VA22BRA7tJfuvxA==
-X-Received: by 2002:a17:903:11c9:b0:151:9521:d5c7 with SMTP id q9-20020a17090311c900b001519521d5c7mr1923340plh.73.1647473310711;
-        Wed, 16 Mar 2022 16:28:30 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id o5-20020a056a0015c500b004f7988f16c3sm4696034pfu.30.2022.03.16.16.28.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 16:28:30 -0700 (PDT)
-Subject: [PATCH 5/5] RISC-V: Move to queued RW locks
-Date:   Wed, 16 Mar 2022 16:26:00 -0700
-Message-Id: <20220316232600.20419-6-palmer@rivosinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220316232600.20419-1-palmer@rivosinc.com>
-References: <20220316232600.20419-1-palmer@rivosinc.com>
+        Wed, 16 Mar 2022 19:35:16 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB189AE63
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:34:01 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647473639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2GryFkB1dgZgZSqpGGOfeLWHK3kOlc0ZY6tliFW5tjY=;
+        b=i9UXGI5zY+83qU3gwG/iOxk8bfzzANkyE4w3tEYZ6ICEEFBdQK/qrMzWmYuzSn9UHsFqEW
+        qqaiPCWbHfUX8gmTR0271NXFdmV2y3EWxFC/l2l/Jka2xfqB/VRtPM1BcAl7SB1DfNf2pI
+        Zftqi+qnEMSGqukOkG/c2YGMw2/8V1cyT/tDtOz+t85HrUripQTQldJBF45X9bEofw8uV0
+        Jy+zRuLHtqd3eJhKKqpTbGW91BY66xT4g/RvZXLc7C57MiMLxxAjQkZvaLFRfomqgS4Yyc
+        7lXqKZuUh8/RspguVQuA9nsnNj5LJT360Rl7BjUrbRtl9XouVUd8KhNKW6YFvQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647473639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2GryFkB1dgZgZSqpGGOfeLWHK3kOlc0ZY6tliFW5tjY=;
+        b=mI4a7x9aOuphAbMwIQSw6y/Ay0HsSNJoqqrzWxxF2vO8hN/D5pw24Qev1PfP7HcHp4gEWM
+        8B/N2R3q+i9kdlAg==
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: Re: [PATCHv6 02/30] x86/tdx: Provide common base for SEAMCALL and
+ TDCALL C wrappers
+In-Reply-To: <20220316020856.24435-3-kirill.shutemov@linux.intel.com>
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+ <20220316020856.24435-3-kirill.shutemov@linux.intel.com>
+Date:   Thu, 17 Mar 2022 00:33:58 +0100
+Message-ID: <87lex9321l.ffs@tglx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Cc:     jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
-        shorne@gmail.com, mingo@redhat.com, Will Deacon <will@kernel.org>,
-        longman@redhat.com, boqun.feng@gmail.com,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        Arnd Bergmann <arnd@arndb.de>, jszhang@kernel.org,
-        wangkefeng.wang@huawei.com, openrisc@lists.librecores.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-arch@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:         linux-riscv@lists.infradead.org, peterz@infradead.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@rivosinc.com>
+Kirrill,
 
-With the move to fair spinlocks, we might as well move to fair rwlocks.
+On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
+> Define an assembly macro that can be used to implement C wrapper for
+> both TDCALL and SEAMCALL.
+>
 
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
----
- arch/riscv/Kconfig                      |  1 +
- arch/riscv/include/asm/Kbuild           |  2 +
- arch/riscv/include/asm/spinlock.h       | 82 +------------------------
- arch/riscv/include/asm/spinlock_types.h |  7 +--
- 4 files changed, 5 insertions(+), 87 deletions(-)
+> TDCALL wrapper will be implemented using the macro later in the series.
+> SEAMCALL wrapper is out-of-scope for the series and will be implemented
+> as part of TDX host enabling.
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 5adcbd9b5e88..feb7030cfb6d 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -38,6 +38,7 @@ config RISCV
- 	select ARCH_SUPPORTS_DEBUG_PAGEALLOC if MMU
- 	select ARCH_SUPPORTS_HUGETLBFS if MMU
- 	select ARCH_USE_MEMTEST
-+	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT if MMU
- 	select ARCH_WANT_FRAME_POINTERS
- 	select ARCH_WANT_HUGE_PMD_SHARE if 64BIT
-diff --git a/arch/riscv/include/asm/Kbuild b/arch/riscv/include/asm/Kbuild
-index 42b1961af1a6..e8714070cbb9 100644
---- a/arch/riscv/include/asm/Kbuild
-+++ b/arch/riscv/include/asm/Kbuild
-@@ -4,5 +4,7 @@ generic-y += flat.h
- generic-y += kvm_para.h
- generic-y += ticket-lock.h
- generic-y += ticket-lock-types.h
-+generic-y += qrwlock.h
-+generic-y += qrwlock_types.h
- generic-y += user.h
- generic-y += vmlinux.lds.h
-diff --git a/arch/riscv/include/asm/spinlock.h b/arch/riscv/include/asm/spinlock.h
-index 38089cbdea92..97dfb150d18c 100644
---- a/arch/riscv/include/asm/spinlock.h
-+++ b/arch/riscv/include/asm/spinlock.h
-@@ -11,86 +11,6 @@
- #include <asm/current.h>
- #include <asm/fence.h>
- #include <asm-generic/ticket-lock.h>
--
--static inline void arch_read_lock(arch_rwlock_t *lock)
--{
--	int tmp;
--
--	__asm__ __volatile__(
--		"1:	lr.w	%1, %0\n"
--		"	bltz	%1, 1b\n"
--		"	addi	%1, %1, 1\n"
--		"	sc.w	%1, %1, %0\n"
--		"	bnez	%1, 1b\n"
--		RISCV_ACQUIRE_BARRIER
--		: "+A" (lock->lock), "=&r" (tmp)
--		:: "memory");
--}
--
--static inline void arch_write_lock(arch_rwlock_t *lock)
--{
--	int tmp;
--
--	__asm__ __volatile__(
--		"1:	lr.w	%1, %0\n"
--		"	bnez	%1, 1b\n"
--		"	li	%1, -1\n"
--		"	sc.w	%1, %1, %0\n"
--		"	bnez	%1, 1b\n"
--		RISCV_ACQUIRE_BARRIER
--		: "+A" (lock->lock), "=&r" (tmp)
--		:: "memory");
--}
--
--static inline int arch_read_trylock(arch_rwlock_t *lock)
--{
--	int busy;
--
--	__asm__ __volatile__(
--		"1:	lr.w	%1, %0\n"
--		"	bltz	%1, 1f\n"
--		"	addi	%1, %1, 1\n"
--		"	sc.w	%1, %1, %0\n"
--		"	bnez	%1, 1b\n"
--		RISCV_ACQUIRE_BARRIER
--		"1:\n"
--		: "+A" (lock->lock), "=&r" (busy)
--		:: "memory");
--
--	return !busy;
--}
--
--static inline int arch_write_trylock(arch_rwlock_t *lock)
--{
--	int busy;
--
--	__asm__ __volatile__(
--		"1:	lr.w	%1, %0\n"
--		"	bnez	%1, 1f\n"
--		"	li	%1, -1\n"
--		"	sc.w	%1, %1, %0\n"
--		"	bnez	%1, 1b\n"
--		RISCV_ACQUIRE_BARRIER
--		"1:\n"
--		: "+A" (lock->lock), "=&r" (busy)
--		:: "memory");
--
--	return !busy;
--}
--
--static inline void arch_read_unlock(arch_rwlock_t *lock)
--{
--	__asm__ __volatile__(
--		RISCV_RELEASE_BARRIER
--		"	amoadd.w x0, %1, %0\n"
--		: "+A" (lock->lock)
--		: "r" (-1)
--		: "memory");
--}
--
--static inline void arch_write_unlock(arch_rwlock_t *lock)
--{
--	smp_store_release(&lock->lock, 0);
--}
-+#include <asm/qrwlock.h>
- 
- #endif /* _ASM_RISCV_SPINLOCK_H */
-diff --git a/arch/riscv/include/asm/spinlock_types.h b/arch/riscv/include/asm/spinlock_types.h
-index 431ee08e26c4..3779f13706fa 100644
---- a/arch/riscv/include/asm/spinlock_types.h
-+++ b/arch/riscv/include/asm/spinlock_types.h
-@@ -11,11 +11,6 @@
- #endif
- 
- #include <asm-generic/ticket-lock-types.h>
--
--typedef struct {
--	volatile unsigned int lock;
--} arch_rwlock_t;
--
--#define __ARCH_RW_LOCK_UNLOCKED		{ 0 }
-+#include <asm/qrwlock_types.h>
- 
- #endif /* _ASM_RISCV_SPINLOCK_TYPES_H */
--- 
-2.34.1
+This paragraph makes no sense in the changelog once it's merged. That's
+a reviewer/maintainer info which wants to be below the ---
 
+> +/*
+> + * TDX_MODULE_CALL - common helper macro for both
+> + *                 TDCALL and SEAMCALL instructions.
+> + *
+> + * TDCALL   - used by TDX guests to make requests to the
+> + *            TDX module and hypercalls to the VMM.
+> + * SEAMCALL - used by TDX hosts to make requests to the
+> + *            TDX module.
+> + *
+> + * Both instruction are supported in Binutils >= 2.36.
+> + */
+> +#define tdcall		.byte 0x66,0x0f,0x01,0xcc
+> +#define seamcall	.byte 0x66,0x0f,0x01,0xcf
+
+Bah. I really hate this #define glue. The comment documents
+TDX_MODULE_CALL. The defines for the instructions are a seperate
+problem. So please move them above the whole thing with their own
+comment.
+
+> +.macro TDX_MODULE_CALL host:req
+> +	/*
+> +	 * R12 will be used as temporary storage for struct tdx_module_output
+> +	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
+> +	 * services supported by this function, it can be reused.
+> +	 */
+> +
+> +	/* Callee saved, so preserve it */
+> +	push %r12
+> +
+> +	/*
+> +	 * Push output pointer to stack.
+> +	 * After the operation, it will be fetched into R12 register.
+> +	 */
+> +	push %r9
+> +
+> +	/* Mangle function call ABI into TDCALL/SEAMCALL ABI: */
+> +	/* Move Leaf ID to RAX */
+> +	mov %rdi, %rax
+> +	/* Move input 4 to R9 */
+> +	mov %r8,  %r9
+> +	/* Move input 3 to R8 */
+> +	mov %rcx, %r8
+> +	/* Move input 1 to RCX */
+> +	mov %rsi, %rcx
+> +	/* Leave input param 2 in RDX */
+> +
+> +	.if \host
+> +	seamcall
+> +	/*
+> +	 * SEAMCALL instruction is essentially a VMExit from VMX root
+> +	 * mode to SEAM VMX root mode.  VMfailInvalid (CF=1) indicates
+> +	 * that the targeted SEAM firmware is not loaded or disabled,
+> +	 * or P-SEAMLDR is busy with another SEAMCALL.  %rax is not
+> +	 * changed in this case.
+> +	 *
+> +	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
+> +	 * This value will never be used as actual SEAMCALL error code as
+> +	 * it is from the Reserved status code class.
+> +	 */
+> +	jnc .Lno_vmfailinvalid
+> +	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
+> +.Lno_vmfailinvalid:
+
+Please add a new line between the label and the .else for readability sake.
+
+> +	.else
+> +	tdcall
+> +	.endif
+> +
+> +	/*
+> +	 * Fetch output pointer from stack to R12 (It is used
+> +	 * as temporary storage)
+> +	 */
+> +	pop %r12
+> +
+> +	/*
+> +	 * Since this function can be initiated without an output pointer,
+> +	 * check if caller provided an output struct before storing output
+> +	 * registers.
+
+The function is a macro. It's not initiated, it's invoked. It always has
+an output pointer in R12, but that can be NULL.
+
+With those nitpicks addressed:
+
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
