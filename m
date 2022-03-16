@@ -2,97 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E79C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:34:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63639C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344197AbiCPPfa (ORCPT
+        id S1346508AbiCPPiO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
+        Wed, 16 Mar 2022 11:38:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240167AbiCPPf1 (ORCPT
+        with ESMTP id S242953AbiCPPiN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:35:27 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAA028E3C
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:34:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647444853; x=1678980853;
-  h=message-id:date:mime-version:to:references:from:subject:
-   in-reply-to:content-transfer-encoding;
-  bh=boYCnh6qWuwCAj1Sjfgi0rW0Z9re8P6EPX8iN50WXOw=;
-  b=ihESAcpMJIFO5STBtHDfzvXBuOo1mwgMSmJv6/BbUJzTpVi7YsRR5duV
-   HpAuACApYDYRc31sLYDRP9fgGUrh4XUwcAM7b/n7a+ie8Kg/OY/bDibFa
-   q/H7wo0/a0mfidXqGLUyMI7ss9kQyw3BjwRx5PYCKP/zybv5wdLkHnqXs
-   pbv4Y9rXOvNUmDHtBGzdv448PfsOTNF9RebtivVXEZF6CDycmoZnhFwrV
-   OIILpSczrAJzvPiUYCKlC8mGRyUeZlZbR5BHjFpBzqZocWA9TlvyCaAmF
-   KTKy+6heFcvnWfDi2KZI96sCWJdFcVYj0lttA0ziRk4wNBznwpTrAU4wE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256822706"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="256822706"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:34:13 -0700
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="557502057"
-Received: from jdwaldem-mobl.amr.corp.intel.com (HELO [10.255.228.230]) ([10.255.228.230])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:34:12 -0700
-Message-ID: <aa3ffe77-8066-adab-80f0-27568ad8f2f6@intel.com>
-Date:   Wed, 16 Mar 2022 08:34:04 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-References: <YjGzJwjrvxg5YZ0Z@audible.transient.net>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: system locks up with CONFIG_SLS=Y; 5.17.0-rc
-In-Reply-To: <YjGzJwjrvxg5YZ0Z@audible.transient.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Wed, 16 Mar 2022 11:38:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A05606D1B0
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:36:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ECCA6160B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F51C340E9;
+        Wed, 16 Mar 2022 15:36:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647445017;
+        bh=yB9AJOgY4sOTPrFxr8a/h8XcUZfs27iFeh3/dqiV4dM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lj1avmWrVAztkAfvUGT6/CZexumbiWZpWi2zCuvkfNXdKT2oEPetW4kkHGC9xii+0
+         BeWilsa7XdW+T6QR8SStRavIVerkxUMxccJtWl3i1GaV7vDTfbtdLKYAgS4b9FuHZ0
+         fh8Uk5+Jb3g46gpS63DjmbMpEmuWJDIdvekeFFnGEuAn6+XtXkeST9gU9L5ZNI9hR9
+         IzsStFDT0Of3kGUC5Ea2Qkeh27JO/FXsmVGSo6tJQl01ZqBWvDH6e2uHjALcTWfXIM
+         zdBBdd6VsayLZlV93+x5zcQvB2mqSFBgU1XeAIglL3kdickUBXfE1e/gdsNX/3kq6O
+         lPI/YG0Ugs+cQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUVhn-00ExZY-32; Wed, 16 Mar 2022 15:36:55 +0000
+Date:   Wed, 16 Mar 2022 15:36:54 +0000
+Message-ID: <8735jhzz6x.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Andre Przywara <andre.przywara@arm.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Eric Auger <eric.auger@redhat.com>,
+        Oliver Upton <oupton@google.com>
+Subject: Re: [PATCH 2/3] irqchip/gic-v3: Detect LPI invalidation MMIO registers
+In-Reply-To: <20220316145141.44d20486@slackpad.lan>
+References: <20220315165034.794482-1-maz@kernel.org>
+        <20220315165034.794482-3-maz@kernel.org>
+        <20220316145141.44d20486@slackpad.lan>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: andre.przywara@arm.com, linux-kernel@vger.kernel.org, lorenzo.pieralisi@arm.com, tglx@linutronix.de, eric.auger@redhat.com, oupton@google.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/16/22 02:51, Jamie Heilman wrote:
-> I've been (somewhat unsuccessfully) trying to bisect a hard lock-up
-> of my workstation that occurs when I'm running 5.17 rc kernels a few
-> seconds after I start a kvm guest instance.  There is no output to
-> any log, everything locks up completely, sysrq doesn't even work
-> anymore.  As bisection progressed closer and closer to the branch
-> where straight-line-speculation mitigation was enabled, and as bisect
-> landing me between 9cdbeec40968 ("x86/entry_32: Fix segment exceptions")
-> and 3411506550b1 ("x86/csum: Rewrite/optimize csum_partial()") wasn't
-> resulting in clear results (my system definately starts Oopsing and
-> gets so hosed up that I'm forced to reboot, but it isn't quite as dire
-> as sysrq continues to function) I decided to just try a build with
-> CONFIG_SLS disabled, and it turns out that works just fine.  Sooo...
+On Wed, 16 Mar 2022 14:51:58 +0000,
+Andre Przywara <andre.przywara@arm.com> wrote:
 > 
-> This system uses a Intel Core2 Duo E8400 processor.
-> working config (CONFIG_SLS=N) and dmesg at:
-> http://audible.transient.net/~jamie/k/sls.config-5.17.0-rc8
-> http://audible.transient.net/~jamie/k/sls.dmesg
+> On Tue, 15 Mar 2022 16:50:33 +0000
+> Marc Zyngier <maz@kernel.org> wrote:
 > 
-> (I don't think the dmesg of CONFIG_SLS=Y is really any different.)
+> Hi,
+> 
+> > Since GICv4.1, an implementation can offer the same MMIO-based
+> > implementation as DirectLPI, only with an ITS. Given that this
+> > can be hugely beneficial for workloads that are very LPI masking
+> > heavy (although these workloads are admitedly a bit odd).
+> > 
+> > Interestingly, this is independent of RVPEI, which only *implies*
+> > the functionnality.
+> > 
+> > So let's detect whether the implementation has GICR_CTLR.IR set,
+> > and propagate this as DirectLPI to the ITS driver.
+> > 
+> > Signed-off-by: Marc Zyngier <maz@kernel.org>
+> > ---
+> >  drivers/irqchip/irq-gic-v3.c       | 15 +++++++++++----
+> >  include/linux/irqchip/arm-gic-v3.h |  2 ++
+> >  2 files changed, 13 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+> > index 736163d36b13..363bfe172033 100644
+> > --- a/drivers/irqchip/irq-gic-v3.c
+> > +++ b/drivers/irqchip/irq-gic-v3.c
+> > @@ -918,7 +918,11 @@ static int gic_populate_rdist(void)
+> >  static int __gic_update_rdist_properties(struct redist_region *region,
+> >  					 void __iomem *ptr)
+> >  {
+> > -	u64 typer = gic_read_typer(ptr + GICR_TYPER);
+> > +	u64 typer;
+> > +	u32 ctlr;
+> > +
+> > +	typer = gic_read_typer(ptr + GICR_TYPER);
+> > +	ctlr = readl_relaxed(ptr + GICR_CTLR);
+> 
+> Is there any reason you didn't keep this together? I thought this was
+> recommended, in general?
 
-If you get really ambitious, you could try to see if any of the
-individual things that change based on the CONFIG_SLS #ifdef trigger
-this.  Basically, turn off the config option and then go manually
-enabling each of the sites.
+Sorry, keep what together with what?
 
-The odd thing is that it isn't touching anything really KVM-specific.
-It probably influences some KVM-specific assembly, but it's hard to see
-how that might break anything.
+> 
+> >  
+> >  	/* Boot-time cleanip */
+> >  	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
+> > @@ -941,6 +945,7 @@ static int __gic_update_rdist_properties(struct redist_region *region,
+> >  	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
+> >  	gic_data.rdists.has_rvpeid &= !!(typer & GICR_TYPER_RVPEID);
+> >  	gic_data.rdists.has_direct_lpi &= (!!(typer & GICR_TYPER_DirectLPIS) |
+> > +					   !!(ctlr & GICR_CTLR_IR) |
+> 
+> So this means that has_direct_lpi is not really correct anymore, as the
+> IR bit only covers the INVL and SYNCR registers, not the GICR_SETLPIR
+> and GICR_CLRLPIR registers, if I understand the spec correctly?
+> 
+> But I guess this is nitpicking, as we don't use direct LPIs at all in
+> Linux? And I guess the target is lpi_update_config(), which now doesn't
+> need the command queue anymore?
 
-The worrying part is:
+Exactly. The history of this crap is convoluted:
 
-ifdef CONFIG_SLS
-  KBUILD_CFLAGS += -mharden-sls=all
-endif
+The canonical goal of DirectLPI was to support LPIs without an
+ITS. Thankfully, this was never implemented. What was implemented by
+our HiSi friends was DirectLPI *with* an ITS, which was illegal at the
+time, but also the only way to make GICv4.0 work at a reasonable
+speed. That's where the direct_lpi boolean comes from.
 
-That's presumably a shiny, new compiler option, also known as a
-relatively lightly tested compiler option.
+RVPEI added some more confusion by offering a subset of DirectLPI for
+invalidation of vlpis. And then IR was introduced because there is
+really no reason not to offer the same service on GICv3.
+
+> 
+> Maybe this could be clarified in the commit message?
+
+Sure, can do.
+
+> 
+> >  					   gic_data.rdists.has_rvpeid);
+> >  	gic_data.rdists.has_vpend_valid_dirty &= !!(typer & GICR_TYPER_DIRTY);
+> >  
+> > @@ -962,7 +967,11 @@ static void gic_update_rdist_properties(void)
+> >  	gic_iterate_rdists(__gic_update_rdist_properties);
+> >  	if (WARN_ON(gic_data.ppi_nr == UINT_MAX))
+> >  		gic_data.ppi_nr = 0;
+> > -	pr_info("%d PPIs implemented\n", gic_data.ppi_nr);
+> > +	pr_info("GICv3 features: %d PPIs, %s%s\n",
+> 
+> I like having that on one line, but it looks a bit odd with the
+> trailing comma when we have neither RSS nor DirectLPI.
+> What about:
+> 	pr_info("GICv3 features: %d PPIs%s%s\n",
+> 	gic_data.ppi_nr,
+> 	gic_data.has_rss ? ", RSS" : "",
+> 	gic_data.rdists.has_direct_lpi ? ", DirectLPI" : "");
+
+Yeah, looks better.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
