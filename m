@@ -2,112 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2677BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 19:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33793C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 19:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357810AbiCPTIf (ORCPT
+        id S1357822AbiCPTJH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 15:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
+        Wed, 16 Mar 2022 15:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233238AbiCPTId (ORCPT
+        with ESMTP id S233238AbiCPTJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 15:08:33 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15A76E4DD
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 12:07:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647457638; x=1678993638;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=PNCuHPKbDUrwTpGcS6LTcplnq9YGjqBNouIT3gSyC/o=;
-  b=EjuFWolI8YZWimqibL8/RQLfLiISZaBU8d0YHtnHtPf10mbkn7A286mT
-   zRDBxnN+J0/rMtzViXFITm/VbRhw4StieoFpcpLfaXPpeFFvTC6GH2Q8L
-   iCTtTAsC9Im8G1t2gBGt5ht/MnB+IQ9qP43BUI9rqhldDWeISAFilb5GY
-   Ixqw899wKuO3/LN3YN6gjwT2det7Ae6Tm6aE1BvV83Azqi02Smu8n79Um
-   5tPybudfsvKMugh97/Nv+qnJ4WIt4z+VvXcgLlA2Cu4pLkQiF1JSVkw8F
-   5BbaA6Sp8ThM0iw4QOW2DPT7ldbJuwMKbJeC80JYJMUVh7EGl2VccmZuD
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="256880128"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="256880128"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 12:07:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="541057836"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 16 Mar 2022 12:07:17 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUYzM-000CmK-DO; Wed, 16 Mar 2022 19:07:16 +0000
-Date:   Thu, 17 Mar 2022 03:06:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 387/2335] net/sched/sch_generic.c:410:6: warning:
- no previous prototype for '__qdisc_run'
-Message-ID: <202203170235.orakWDQu-lkp@intel.com>
+        Wed, 16 Mar 2022 15:09:05 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3DC6E4DD
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 12:07:48 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22GJ7aGd092762;
+        Wed, 16 Mar 2022 14:07:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1647457656;
+        bh=N5ylJZ1K6pH9Ewh0ti3NqYFgD8V839oLAeuagKadsz0=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=tOLYc0HrapKS2LqxUYFvFPZxuhZMSXLeiTl4X04fbvFvU+PYH0+yuhlFcZH+bImF6
+         yU1IjkFy4/rqTLmdohg8lxxk2k4P0LFqfDWr21mGoFH9d3p/WbTEKBK+pRiH1dtyB7
+         urPpUSLuldowfha+2A3EUeJqzJeOdZ97ggWCniOE=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22GJ7ak6050129
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 16 Mar 2022 14:07:36 -0500
+Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 16
+ Mar 2022 14:07:36 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 16 Mar 2022 14:07:36 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22GJ7Y5o027198;
+        Wed, 16 Mar 2022 14:07:35 -0500
+Date:   Thu, 17 Mar 2022 00:37:34 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     <Tudor.Ambarus@microchip.com>
+CC:     <michael@walle.cc>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
+        <vigneshr@ti.com>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <heiko.thiery@gmail.com>
+Subject: Re: [PATCH v1] mtd: spi-nor: unset quad_enable if SFDP doesn't
+ specify it
+Message-ID: <20220316190734.ft2fnesptnyk2cdg@ti.com>
+References: <20220304185137.3376011-1-michael@walle.cc>
+ <7f339d0c-5ca9-261c-a545-d4ebf3bda140@microchip.com>
+ <92cde38c-d398-44f4-26f8-ef4919f5944e@microchip.com>
+ <7f947928e7189f98eb950828990b3920@walle.cc>
+ <91393780-1521-09b7-8dea-14c65e18b37e@microchip.com>
+ <0cf8dbbf4ad005abd3db825fb257dedd@walle.cc>
+ <33464af7-b445-6229-a02d-703a5ce6b5ef@microchip.com>
+ <77c2c64f362b08cbbdab517bbaa49101@walle.cc>
+ <683b7df7-cd34-c87b-9918-fd63d09df2f3@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <683b7df7-cd34-c87b-9918-fd63d09df2f3@microchip.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: 1f7534c4ddd683aee3bb596dcaa839359aa7813d [387/2335] headers/uninline: Uninline single-use function: qdisc_run()
-config: i386-randconfig-a001-20220314 (https://download.01.org/0day-ci/archive/20220317/202203170235.orakWDQu-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=1f7534c4ddd683aee3bb596dcaa839359aa7813d
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 1f7534c4ddd683aee3bb596dcaa839359aa7813d
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/entry/vdso/ arch/x86/pci/ kernel/ lib/ net/sched/
+On 15/03/22 07:47AM, Tudor.Ambarus@microchip.com wrote:
+> On 3/15/22 09:24, Michael Walle wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > Am 2022-03-15 06:55, schrieb Tudor.Ambarus@microchip.com:
+> >> On 3/14/22 22:42, Michael Walle wrote:
+> >>> EXTERNAL EMAIL: Do not click links or open attachments unless you know
+> >>> the content is safe
+> >>>
+> >>> Am 2022-03-09 05:49, schrieb Tudor.Ambarus@microchip.com:
+> >>>> On 3/7/22 20:56, Michael Walle wrote:
+> >>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> >>>>> know
+> >>>>> the content is safe
+> >>>>>
+> >>>>> Am 2022-03-07 10:23, schrieb Tudor.Ambarus@microchip.com:
+> >>>>>> On 3/7/22 09:12, Tudor.Ambarus@microchip.com wrote:
+> >>>>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> >>>>>>> know
+> >>>>>>> the content is safe
+> >>>>>>>
+> >>>>>>> On 3/4/22 20:51, Michael Walle wrote:
+> >>>>>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> >>>>>>>> know the content is safe
+> >>>>>>>>
+> >>>>>>>> While the first version of JESD216 specify the opcode for 4 bit
+> >>>>>>>> I/O
+> >>>>>>>> accesses, it lacks information on how to actually enable this
+> >>>>>>>> mode.
+> >>>>>>>>
+> >>>>>>>> For now, the one set in spi_nor_init_default_params() will be
+> >>>>>>>> used.
+> >>>>>>>> But this one is likely wrong for some flashes, in particular the
+> >>>>>>>> Macronix MX25L12835F. Thus we need to clear the enable method
+> >>>>>>>> when
+> >>>>>>>> parsing the SFDP. Flashes with such an SFDP revision will have to
+> >>>>>>>> use
+> >>>>>>>> a
+> >>>>>>>> flash (and SFDP revision) specific fixup.
+> >>>>>>>>
+> >>>>>>>> This might break quad I/O for some flashes which relied on the
+> >>>>>>>> spi_nor_sr2_bit1_quad_enable() that was formerly set. If your
+> >>>>>>>> bisect
+> >>>>>>>> turns up this commit, you'll probably have to set the proper
+> >>>>>>>> quad_enable method in a post_bfpt() fixup for your flash.
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> Right, I meant adding a paragraph such as the one from above.
+> >>>>>>>
+> >>>>>>>> Signed-off-by: Michael Walle <michael@walle.cc>
+> >>>>>>>> Tested-by: Heiko Thiery <heiko.thiery@gmail.com>
+> >>>>>>>> ---
+> >>>>>>>> changes since RFC:
+> >>>>>>>>  - reworded commit message
+> >>>>>>>>  - added comment about post_bfpt hook
+> >>>>>>>>
+> >>>>>>>> Tudor, I'm not sure what you meant with
+> >>>>>>>>   Maybe you can update the commit message and explain why would
+> >>>>>>>> some
+> >>>>>>>>   flashes fail to enable quad mode, similar to what I did.
+> >>>>>>>>
+> >>>>>>>> It doesn't work because the wrong method is chosen? ;)
+> >>>>>>>>
+> >>>>>>>>  drivers/mtd/spi-nor/sfdp.c | 11 ++++++++++-
+> >>>>>>>>  1 file changed, 10 insertions(+), 1 deletion(-)
+> >>>>>>>>
+> >>>>>>>> diff --git a/drivers/mtd/spi-nor/sfdp.c
+> >>>>>>>> b/drivers/mtd/spi-nor/sfdp.c
+> >>>>>>>> index a5211543d30d..6bba9b601846 100644
+> >>>>>>>> --- a/drivers/mtd/spi-nor/sfdp.c
+> >>>>>>>> +++ b/drivers/mtd/spi-nor/sfdp.c
+> >>>>>>>> @@ -549,6 +549,16 @@ static int spi_nor_parse_bfpt(struct spi_nor
+> >>>>>>>> *nor,
+> >>>>>>>>         map->uniform_erase_type = map->uniform_region.offset &
+> >>>>>>>>                                   SNOR_ERASE_TYPE_MASK;
+> >>>>>>>>
+> >>>>>>>> +       /*
+> >>>>>>>> +        * The first JESD216 revision doesn't specify a method to
+> >>>>>>>> enable
+> >>>>>>>> +        * quad mode. spi_nor_init_default_params() will set a
+> >>>>>>>> legacy
+> >>>>>>>> +        * default method to enable quad mode. We have to disable
+> >>>>>>>> it
+> >>>>>>>> +        * again.
+> >>>>>>>> +        * Flashes with this JESD216 revision need to set the
+> >>>>>>>> quad_enable
+> >>>>>>>> +        * method in their post_bfpt() fixup if they want to use
+> >>>>>>>> quad
+> >>>>>>>> I/O.
+> >>>>>>>> +        */
+> >>>>>>>
+> >>>>>>> Great. Looks good to me. I'll change the subject to "mtd: spi-nor:
+> >>>>>>> sfdp:"
+> >>>>>>> when applying.
+> >>>>>>
+> >>>>>> As we talked on the meeting, we can instead move the default quad
+> >>>>>> mode
+> >>>>>> init
+> >>>>>> to the deprecated way of initializing the params, or/and to where
+> >>>>>> SKIP_SFDP
+> >>>>>> is used. This way you'll no longer need to clear it here.
+> >>>>>
+> >>>>> Mh, I just had a look and I'm not sure it will work there,
+> >>>>> because in the deprecated way, the SFDP is still parsed and
+> >>>>> thus we might still have the wrong enable method for flashes
+> >>>>> which don't have PARSE_SFDP set.
+> >>>>
+> >>>> Moving the default quad_enable method to
+> >>>> spi_nor_no_sfdp_init_params(),
+> >>>> thus also for spi_nor_init_params_deprecated() because it calls
+> >>>> spi_nor_no_sfdp_init_params(), will not change the behavior for the
+> >>>> deprecated way of initializing the params, isn't it?
+> >>>
+> >>> What do you mean? The behavior is not changed and the bug is not
+> >>> fixed for the flashes which use the deprecated way. It will get
+> >>> overwritten by the spi_nor_parse_sfdp call in
+> >>> spi_nor_sfdp_init_params_deprecated().
+> >>
+> >> right, it will not change the logic for the deprecated way of
+> >> initializing
+> >> the params.
+> >>
+> >>>
+> >>>> A more reason
+> >>>> to use PARSE_SFDP/SKIP_SFDP, we'll get rid of the deprecated params
+> >>>> init at some point.
+> >>>>
+> >>>> No new fixes for spi_nor_init_params_deprecated().
+> >>>
+> >>> Hm, so we deliberately won't fix known bugs there? I'm not sure
+> >>> I'd agree here. Esp. because it is hard to debug and might even
+> >>> depend on non-volatile state of the flash.
+> >>>
+> >>
+> >> even more a reason to switch to the recommended way of initializing
+> >> the flash. We'll get rid of the deprecated code anyway, no?
+> > 
+> > I get your point. But I disagree with you on that point :) Features?
+> > sure we can say this shouldn't go to any deprectated code flow and
+> > might poke users to post a patch. But bug fixes? I don't think
+> > we should hold these back.
+> 
+> Why to fix something that never worked in a deprecated code path? It's
+> equivalent to adding new support, no?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I have not followed this discussion very closely but this argument makes 
+sense to me. If something never worked in the deprecated path then we 
+have don't have to fix it.
 
-All warnings (new ones prefixed by >>):
+> 
+> > Correct me if I'm wrong, but we can get rid of the deprecated way
+> > only if all the flashes are converted to PARSE_SFDP or SKIP_SFDP,
+> > right? And I don't see this happening anytime soon.
+> 
+> Right. I vote to don't queue any new patches for deprecated code paths,
+> new support or fixes. But I'm not completely against it, I don't see
+> the point, that's all. Let's sync with Pratyush and Vignesh too.
 
->> net/sched/sch_generic.c:410:6: warning: no previous prototype for '__qdisc_run' [-Wmissing-prototypes]
-     410 | void __qdisc_run(struct Qdisc *q)
-         |      ^~~~~~~~~~~
+I agree with no new features for deprecated path. But I think we should 
+still take in bug fixes.
 
-
-vim +/__qdisc_run +410 net/sched/sch_generic.c
-
-bbd8a0d3a3b65d Krishna Kumar          2009-08-06  409  
-37437bb2e1ae8a David S. Miller        2008-07-16 @410  void __qdisc_run(struct Qdisc *q)
-48d83325b61043 Herbert Xu             2006-06-19  411  {
-3d48b53fb2ae37 Matthias Tafelmeier    2016-12-29  412  	int quota = dev_tx_weight;
-b8358d70ce1066 Jesper Dangaard Brouer 2014-10-09  413  	int packets;
-2ba2506ca7ca62 Herbert Xu             2008-03-28  414  
-b8358d70ce1066 Jesper Dangaard Brouer 2014-10-09  415  	while (qdisc_restart(q, &packets)) {
-b8358d70ce1066 Jesper Dangaard Brouer 2014-10-09  416  		quota -= packets;
-b60fa1c5d01a10 Eric Dumazet           2019-10-01  417  		if (quota <= 0) {
-c4fef01ba4793a Yunsheng Lin           2021-06-22  418  			if (q->flags & TCQ_F_NOLOCK)
-c4fef01ba4793a Yunsheng Lin           2021-06-22  419  				set_bit(__QDISC_STATE_MISSED, &q->state);
-c4fef01ba4793a Yunsheng Lin           2021-06-22  420  			else
-37437bb2e1ae8a David S. Miller        2008-07-16  421  				__netif_schedule(q);
-c4fef01ba4793a Yunsheng Lin           2021-06-22  422  
-d90df3ad07a20c Herbert Xu             2007-05-10  423  			break;
-2ba2506ca7ca62 Herbert Xu             2008-03-28  424  		}
-2ba2506ca7ca62 Herbert Xu             2008-03-28  425  	}
-48d83325b61043 Herbert Xu             2006-06-19  426  }
-48d83325b61043 Herbert Xu             2006-06-19  427  
-
-:::::: The code at line 410 was first introduced by commit
-:::::: 37437bb2e1ae8af470dfcd5b4ff454110894ccaf pkt_sched: Schedule qdiscs instead of netdev_queue.
-
-:::::: TO: David S. Miller <davem@davemloft.net>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
