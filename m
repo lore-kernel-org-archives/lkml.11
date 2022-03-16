@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47831C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68487C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356529AbiCPOUx (ORCPT
+        id S1356709AbiCPOU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:20:53 -0400
+        Wed, 16 Mar 2022 10:20:56 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356686AbiCPOUP (ORCPT
+        with ESMTP id S1356769AbiCPOUU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:20:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228D81B7B9;
-        Wed, 16 Mar 2022 07:18:01 -0700 (PDT)
+        Wed, 16 Mar 2022 10:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582AA23BF5;
+        Wed, 16 Mar 2022 07:18:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC7BFB81B82;
-        Wed, 16 Mar 2022 14:17:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B828BC340EC;
-        Wed, 16 Mar 2022 14:17:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C0696142D;
+        Wed, 16 Mar 2022 14:18:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F2DCC340EC;
+        Wed, 16 Mar 2022 14:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647440278;
-        bh=u00hVaVVZV0tS90J075DOc/i7FLNseHgpTH7RXYLCPM=;
+        s=k20201202; t=1647440296;
+        bh=U1RN+qcuU9O2LCspDevbAQrWN3ktOW7z/Tg19+h8DqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n8+sypCXrnBfq8lQ/TudLvV+saf1+fnolY2QQdAlt5RE1Y00fXZMlbLFx5qCx4sXr
-         u1MlyxS0exLiaWoBFkn+hlt05RA+nOP9D4sE21ef5au628ATXJi7/kY2ECt4zI5HQv
-         e1HtbrlETtgIzcbLIbxdaWXVqE95k3Rb8Fpm4hh/uDL8nyGP/D1Ru+TOYFDSSv/gqz
-         lqIa/xYRL9mqJ1ipuoMvaHX1xM7Go/0oug18dkJwFG0VDOWKgjhaWSo/cNH9gavZoF
-         9Z6LiLb0l9+7HrGJ6VGR8rPfzPVWKgh1leofD6r/XV75/l3aLvodC84BFABkLHMGPZ
-         x9cKfap1egNaA==
+        b=CKIc+dk8A303nvuTvxIiXUeozor8oC/MzGRJ7tISLBegLZ6+lbM8XwBYpGil9Jleg
+         eEVGGtX6+yZim0nG+nFM4k3VpFQKyNT3tXB19y7/2z1viiycgCfrfy5UMhrFqDzMNE
+         S77tfZeH2mpB6e8KYrNekCsIG5F8uGVI7GolkMqEPq0CiqvKMu67IUbFWmb+HnxKuV
+         +nmBowpK1kJrZdHaNkOZzTMDgvjvrYAd1ko5HT84EOBsYmLW/MOx+AEf6I7fmc2QLk
+         Vk1seP/cpQtpwTvviz6vx3DeG0naYEjIiYRAULe8AKvDAPwhpexxZA9AI2B9bKsT4O
+         HBDmZ0rfUzkgA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, amit@kernel.org,
-        gregkh@linuxfoundation.org,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.4 3/7] virtio_console: break out of buf poll on remove
-Date:   Wed, 16 Mar 2022 10:17:34 -0400
-Message-Id: <20220316141738.248513-3-sashal@kernel.org>
+Cc:     "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 7/7] net:mcf8390: Use platform_get_irq() to get the interrupt
+Date:   Wed, 16 Mar 2022 10:17:38 -0400
+Message-Id: <20220316141738.248513-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220316141738.248513-1-sashal@kernel.org>
 References: <20220316141738.248513-1-sashal@kernel.org>
@@ -53,53 +54,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Michael S. Tsirkin" <mst@redhat.com>
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-[ Upstream commit 0e7174b9d5877130fec41fb4a16e0c2ee4958d44 ]
+[ Upstream commit 2a760554dcba450d3ad61b32375b50ed6d59a87c ]
 
-A common pattern for device reset is currently:
-vdev->config->reset(vdev);
-.. cleanup ..
+It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+for requesting IRQ's resources any more, as they can be not ready yet in
+case of DT-booting.
 
-reset prevents new interrupts from arriving and waits for interrupt
-handlers to finish.
+platform_get_irq() instead is a recommended way for getting IRQ even if
+it was not retrieved earlier.
 
-However if - as is common - the handler queues a work request which is
-flushed during the cleanup stage, we have code adding buffers / trying
-to get buffers while device is reset. Not good.
+It also makes code simpler because we're getting "int" value right away
+and no conversion from resource to int is required.
 
-This was reproduced by running
-	modprobe virtio_console
-	modprobe -r virtio_console
-in a loop.
-
-Fix this up by calling virtio_break_device + flush before reset.
-
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/virtio_console.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/8390/mcf8390.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index b453029487a1..2660a0c5483a 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -1961,6 +1961,13 @@ static void virtcons_remove(struct virtio_device *vdev)
- 	list_del(&portdev->list);
- 	spin_unlock_irq(&pdrvdata_lock);
+diff --git a/drivers/net/ethernet/8390/mcf8390.c b/drivers/net/ethernet/8390/mcf8390.c
+index 4ad8031ab669..065fdbe66c42 100644
+--- a/drivers/net/ethernet/8390/mcf8390.c
++++ b/drivers/net/ethernet/8390/mcf8390.c
+@@ -406,12 +406,12 @@ static int mcf8390_init(struct net_device *dev)
+ static int mcf8390_probe(struct platform_device *pdev)
+ {
+ 	struct net_device *dev;
+-	struct resource *mem, *irq;
++	struct resource *mem;
+ 	resource_size_t msize;
+-	int ret;
++	int ret, irq;
  
-+	/* Device is going away, exit any polling for buffers */
-+	virtio_break_device(vdev);
-+	if (use_multiport(portdev))
-+		flush_work(&portdev->control_work);
-+	else
-+		flush_work(&portdev->config_work);
-+
- 	/* Disable interrupts for vqs */
- 	vdev->config->reset(vdev);
- 	/* Finish up work that's lined up */
+-	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (irq == NULL) {
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
+ 		dev_err(&pdev->dev, "no IRQ specified?\n");
+ 		return -ENXIO;
+ 	}
+@@ -434,7 +434,7 @@ static int mcf8390_probe(struct platform_device *pdev)
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+ 	platform_set_drvdata(pdev, dev);
+ 
+-	dev->irq = irq->start;
++	dev->irq = irq;
+ 	dev->base_addr = mem->start;
+ 
+ 	ret = mcf8390_init(dev);
 -- 
 2.34.1
 
