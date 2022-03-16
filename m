@@ -2,107 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D193C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E34DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356334AbiCPNWN (ORCPT
+        id S1356081AbiCPNWi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56022 "EHLO
+        Wed, 16 Mar 2022 09:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356335AbiCPNWC (ORCPT
+        with ESMTP id S238918AbiCPNWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:22:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB8C674CF;
-        Wed, 16 Mar 2022 06:20:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECE3EB81B35;
-        Wed, 16 Mar 2022 13:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84EA1C340F0;
-        Wed, 16 Mar 2022 13:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647436812;
-        bh=tbcOFjyGFmBEwOjIh+3jseYE1fvFZySauTJiPWeHSxQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Gum5FAn1JMTLcenLuYd4xxPKwYN/TcLuars1ooFUTgakM/hpQeodftoHNBLqYRDP/
-         r4x9h0/sJC5MHmJInTBtUpjs0iMHG/moQHxyv4RbEYnucVidanSQVkSn++BT611/Bu
-         okPYd0KVL3soFDhwrHGgC6kaojRznvmTqVssOsdSqV6UTMBShUJYpUpVQqbGrQtGZb
-         UHfpJQmYMkjp3P4Yt7XCoB/ts5RbLgVRXn5tKFeAmfY/H386ao84G/HtZ3/+NOzNJK
-         luKf7p7YOdtAIjhjvnvWzJ2/KDDhciOQeJobgB8IOcyaRWR+eJMzR8EuyjnwChMFI8
-         g46+zgsaItBUQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 60947EAC09C;
-        Wed, 16 Mar 2022 13:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 16 Mar 2022 09:22:36 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2F010AE;
+        Wed, 16 Mar 2022 06:21:22 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id BA62F32020D9;
+        Wed, 16 Mar 2022 09:16:33 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 16 Mar 2022 09:16:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kkourt.io; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=mesmtp; bh=90OeKVGOPpYqWEU3AOG66DxVVcdCRb3E77c
+        fePRVBC0=; b=MWxdSfT861B2tYyIRaJ+WUyoikI+ZX/ZKtjkPE6nZIRXtxOouzg
+        8KpXZIl0AFP52HDmWrSw3IThNZdBcNQeNZqqouoJ0M0TdEzHitIeMsMHuXj40r3q
+        9FzEWSTIz6VLRRTVjtBsxUMWl0sT/bCPBJ6N9w0Gz1AQMloLWfyZibeg=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=90OeKVGOPpYqWEU3A
+        OG66DxVVcdCRb3E77cfePRVBC0=; b=kUn8kfdsDssEkJs9xDkx0+uLsI0LxzGkx
+        gmOOHI+8wxUYDm9PjdeqRaFlHji7DyvaB45cpFbSbRw+NAZbjuDuSCml0Mku+XRS
+        NJiJxial2dyxjCfm3S2d3/gMFLxqrv3hmMuFy5oArrTAXJbpk+EH5jpqT84Gc5SA
+        UMfCeG/YvpvzAwZOUoD0Y9Vco0/f18xT8OcbAxvvtnqRV3d1MeFqBOoZOY3Di8UD
+        QFigDpk/2iNUT+rvF6uEsLnU/TP88ze8LlLVZGJoJfN7geUFyo9ik0CS+SMmJX4O
+        +BX7QOvL+Sm8QbVSqysA3FC+Ak07ZlqotQAuRe8jMRy40t+D5eq0Q==
+X-ME-Sender: <xms:MeMxYoiRlM_UjO5ZBpk0v9vxfvogvrc_l7-E9RAImB5ZsmqR5WhhmQ>
+    <xme:MeMxYhBDWD7_otaXemqKxHCWZ-hz1eqIL1fBkQ6mS7E_HqMIiBhMlLisORYed7xn1
+    271C-gmfXBQ3pH0sw>
+X-ME-Received: <xmr:MeMxYgFG9YGFHpyM87QpB2z82FrKucTUwI0VZfhHL1c3fvobYIftb6_CJf6WCrL4r-Gr01rpKgp9DVZoT4NLbYPKeUqX>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefvddggeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepmfhorhhnihhlihhoshcumfhouhhrthhishcuoehkkhhouhhr
+    theskhhkohhurhhtrdhioheqnecuggftrfgrthhtvghrnhepvefhtdelhefhhfekueefge
+    fftdeufeehgeevffeltdeugeetvdeiueettdeuuefgnecuvehluhhsthgvrhfuihiivgep
+    tdenucfrrghrrghmpehmrghilhhfrhhomhepkhhkohhurhhtsehkkhhouhhrthdrihho
+X-ME-Proxy: <xmx:MeMxYpQgI15Wrrp0PV1AtdRZyTNuzKqYTikTQjAW_MFDeTTWC1n8PQ>
+    <xmx:MeMxYlyb7UBs9fVKPP2E6Ws9aqLHr5NXgm1HsxJygI-vMCExsA-5rg>
+    <xmx:MeMxYn5qdqDPk1KwHonMDelOISi5zUUpVjLS0UizJcG5cVOnOWFO2Q>
+    <xmx:MeMxYt9hRsdVX6ce1HQiRmZho2KGcNmBPMpm8dBOCE5GrDJqAv6oiA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 16 Mar 2022 09:16:32 -0400 (EDT)
+Received: by kkourt.io (Postfix, from userid 1000)
+        id 371C82541AD8; Wed, 16 Mar 2022 14:16:30 +0100 (CET)
+Date:   Wed, 16 Mar 2022 14:16:30 +0100
+From:   Kornilios Kourtis <kkourt@kkourt.io>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     dwarves@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kornilios Kourtis <kornilios@isovalent.com>
+Subject: Re: [PATCH] pahole: avoid segfault when parsing a problematic file
+Message-ID: <YjHjLkYBk/XfXSK0@tinh>
+References: <20220304113821.2366328-1-kkourt@kkourt.io>
+ <YiOw06rlBwdw2uYx@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v13 0/7] MediaTek Ethernet Patches on MT8195
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164743681238.18574.8037993673780755676.git-patchwork-notify@kernel.org>
-Date:   Wed, 16 Mar 2022 13:20:12 +0000
-References: <20220314075713.29140-1-biao.huang@mediatek.com>
-In-Reply-To: <20220314075713.29140-1-biao.huang@mediatek.com>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        angelogioacchino.delregno@collabora.com, matthias.bgg@gmail.com,
-        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
-        dkirjanov@suse.de
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YiOw06rlBwdw2uYx@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Arnaldo,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Apologies for the delayed reply.
 
-On Mon, 14 Mar 2022 15:57:06 +0800 you wrote:
-> Changes in v13:
-> 1. add reviewed-by in "net: dt-bindings: dwmac: add support for mt8195"
->    as Rob's comments.
-> 2. drop num_clks defined in mediatek_dwmac_plat_data struct in "stmmac:
->    dwmac-mediatek: Reuse more common features" as Angelo's comments.
+On Sat, Mar 05, 2022 at 03:49:55PM -0300, Arnaldo Carvalho de Melo wrote:
+> Can you break this into two patches, one for checking dwfl_getmodules()
+> failure and the second setting errno?
 > 
-> Changes in v12:
-> 1. add a new patch "stmmac: dwmac-mediatek: re-arrange clock setting" to
->    this series, to simplify clock handling in driver, which benefits to
->    binding file mediatek-dwmac.yaml.
-> 2. modify dt-binding description in patch "net: dt-bindings: dwmac: add
->    support for mt8195" as Rob's comments in v10 series, put mac_cg to the
->    end of clock list.
-> 3. there are small changes in patch "stmmac: dwmac-mediatek: add support
->    for mt8195", @AngeloGioacchino, please review it kindly.
-> 
-> [...]
+> We should try to avoid these patches that do multiple fixes, as
+> sometimes one of the fixes isn't really correct and we end up not being
+> able to use 'git revert' which should be the case when we figure out
+> that some previous fix wasn't correct.
 
-Here is the summary with links:
-  - [net-next,v13,1/7] stmmac: dwmac-mediatek: add platform level clocks management
-    https://git.kernel.org/netdev/net-next/c/3186bdad97d5
-  - [net-next,v13,2/7] stmmac: dwmac-mediatek: Reuse more common features
-    https://git.kernel.org/netdev/net-next/c/a71e67b21081
-  - [net-next,v13,3/7] stmmac: dwmac-mediatek: re-arrange clock setting
-    https://git.kernel.org/netdev/net-next/c/4fe3075fa699
-  - [net-next,v13,4/7] arm64: dts: mt2712: update ethernet device node
-    https://git.kernel.org/netdev/net-next/c/79e1177809f2
-  - [net-next,v13,5/7] net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
-    https://git.kernel.org/netdev/net-next/c/150b6adda6b1
-  - [net-next,v13,6/7] stmmac: dwmac-mediatek: add support for mt8195
-    https://git.kernel.org/netdev/net-next/c/f2d356a6ab71
-  - [net-next,v13,7/7] net: dt-bindings: dwmac: add support for mt8195
-    https://git.kernel.org/netdev/net-next/c/ee410d510032
+Yap, makes perfect sense. I will reply to this email with the two patches
+momentarily.
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Kornilios Kourtis.
