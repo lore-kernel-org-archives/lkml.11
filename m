@@ -2,103 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355610AbiCPQJD (ORCPT
+        id S1348918AbiCPQJw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
+        Wed, 16 Mar 2022 12:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344655AbiCPQI6 (ORCPT
+        with ESMTP id S1349988AbiCPQHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:08:58 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014705FF07
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:07:43 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id qt6so5161971ejb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:07:43 -0700 (PDT)
+        Wed, 16 Mar 2022 12:07:52 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95D25FF28
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:06:38 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id l2so5253113ybe.8
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:06:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sfyn51iMEtZOW1VvGz9/zKro/mJL/U+AGtoyS/q05lk=;
-        b=IxJzMGVBQ3dqOjwnT0kNvGBM1q4ToNrQ8MnPmSDiP9yfNiOStXUVcBRVnxaULD6+qQ
-         iDehTRiYAMHSCxlwKAHGVWuwY43EtSG7VmF2E+DrfhETaC+kwkg1Zw7nn0Mt77iaYVPS
-         eI5jjYFFkS7OLX94NFKpBzVwOSR3Cj742b3BY=
+        bh=jvZpoB6cFnERxO+/0O9vNqVvN/e5HvQCpLV+GN+m+EM=;
+        b=ZuKHunVlvCPr8n2rnJnCcZRXc06pbvoWlzf/76uaTkBUikRhgluNU2Rk6KE9kLEYD3
+         wOyIlHRF4cb7imwQ4n8Vxt/ySZ3od+Xiyd2GwhCFZ/BXYgEJ7twn+HRCha6VoFy2d+8R
+         fL3zdftRyIt6bLxAlZ/35cDjfHD2q4LBTERaZEEXYCIqVpQjkSj3ceoR/e7K/3/DWyjT
+         lcOvq2yRFqw79F4vPgHDnOZv4yiaeoZFglzouFQUQxuBCLVBvoRS+JoQ4Z7FjT6SoHaO
+         yZ5Wp1wuAR8FkBaCF/x2xGA4BcxjY7QqUORHLh4XA2+NGdtPJz8zi3qImMdleZFIGGyn
+         +EyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sfyn51iMEtZOW1VvGz9/zKro/mJL/U+AGtoyS/q05lk=;
-        b=AHBxPXIRZFN93kFMtw0wtL37Ujzguv8aTe3otnxx0L5dboWxE7g5M4r8k6XnRcckWW
-         GWFkcIeQXPEhiH1MeGPrvCYOzx6m5DDOyLT7yZY5pa38Nk/6NOpDgAks5XBCkB0/rzh7
-         oxiEUV6VI1rl8ENfsSPW5Z3CNhaJ0EtTuPe1nCqhZI0+hOv9cL/er6+oNeY7gA9A3jlX
-         +blBBu23PqspU+PtnkkQ4hZRl10jL6g1bHNziYV0xV2lA9g3cox61sKGk7zCdqucsiWA
-         3aEYzqgwBNFaaNEGHL1Yrjdf+s9uWpzeTKdGp4WxFZAfln6k5Qdafv+E5Pc4KvhSJuX0
-         sTng==
-X-Gm-Message-State: AOAM533CZ0/Nn4fxQovh9EfBiDUtJup7YaF9cwyA4Mbf+fsxZhoq9i/O
-        x3Qh7WgtL+LPDj6TuZDJ44j3dr5WegMJsxOLIYw=
-X-Google-Smtp-Source: ABdhPJx8UhA0vDw6KSYRlO1VUJ+Qn3FuTeeNGV0wc/atfNqjoqnF7OHic9hdJAj6ZMfvEawmLH679g==
-X-Received: by 2002:a17:906:7948:b0:6da:64ed:178e with SMTP id l8-20020a170906794800b006da64ed178emr562072ejo.523.1647446858301;
-        Wed, 16 Mar 2022 09:07:38 -0700 (PDT)
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com. [209.85.218.50])
-        by smtp.gmail.com with ESMTPSA id l2-20020a1709060cc200b006d3d91e88c7sm1053754ejh.214.2022.03.16.09.07.35
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 09:07:36 -0700 (PDT)
-Received: by mail-ej1-f50.google.com with SMTP id qa43so5145185ejc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:07:35 -0700 (PDT)
-X-Received: by 2002:ac2:4f92:0:b0:448:7eab:c004 with SMTP id
- z18-20020ac24f92000000b004487eabc004mr184326lfs.27.1647446495212; Wed, 16 Mar
- 2022 09:01:35 -0700 (PDT)
+        bh=jvZpoB6cFnERxO+/0O9vNqVvN/e5HvQCpLV+GN+m+EM=;
+        b=snDnSrsakc9oJgxfhrkTAttYhzjuDSVzHmOvohkEwnq1LfkLXZq1TvOkvrq9aTSk60
+         MpiAh3LBMj4dLaQOTswJK1+ZNpkJj/jc5vjfpvk8M3lPE17L43Y2GJVjWdi6m7BA8gTW
+         UMOtqUrvAG4vQcjGMYeNyzFQY4MJ49gjlHxmF4/u7bNPDN6Aqa3GDQkSp5PhCRAMT1Yy
+         G1FYt4N48WSJcQvbViuBVnq1d18tvX5o9lJ1aTzrw9x/bz6PU6ZYIIlJGXuCt/5/VhiT
+         3yxG4Heuu85reZ9wV5T8MYNiRagm7al9vCPZgVB76zdnUEzTuoUMuTUbOll0ZLWDHCwz
+         cfbQ==
+X-Gm-Message-State: AOAM5333irzAowGi2mRyjPgiFvn7AhF8kxUR39n5mjYXGXK/BxdnYz81
+        +TkLysften9SNWRx3cMzt2I9jh2zTblem4WmMo12Nw==
+X-Google-Smtp-Source: ABdhPJzGDIZoeZOns79O6LnbEyJRCLUOZhKQ3e2pXeAnDxeDpIDNA4ynQo9sjR4TbIXAa981O39StZryshfMjFwRLFA=
+X-Received: by 2002:a25:f406:0:b0:628:c29b:5c39 with SMTP id
+ q6-20020a25f406000000b00628c29b5c39mr591420ybd.369.1647446797921; Wed, 16 Mar
+ 2022 09:06:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000009e7a1905b8295829@google.com> <00000000000003887a05da3e872c@google.com>
- <CAHk-=wj4HBk7o8_dbpk=YiTOFxvE9LTiH8Gk=1kgVxOq1jaH7g@mail.gmail.com> <CACT4Y+atgbwmYmiYqhFQT9_oHw5cD5oyp5bNyCJNz34wSaMgmg@mail.gmail.com>
-In-Reply-To: <CACT4Y+atgbwmYmiYqhFQT9_oHw5cD5oyp5bNyCJNz34wSaMgmg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 16 Mar 2022 09:01:18 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj270g1sHyvvMz99d5x5A_2BXJExzKGNhF1Ch8Y2Mi0pA@mail.gmail.com>
-Message-ID: <CAHk-=wj270g1sHyvvMz99d5x5A_2BXJExzKGNhF1Ch8Y2Mi0pA@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: out-of-bounds Read in ath9k_hif_usb_rx_cb (3)
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+3f1ca6a6fec34d601788@syzkaller.appspotmail.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        ath9k-devel@qca.qualcomm.com, chouhan.shreyansh630@gmail.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:USB GADGET/PERIPHERAL SUBSYSTEM" 
-        <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Zekun Shen <bruceshenzk@gmail.com>
+References: <20220316141513.247965-1-sashal@kernel.org> <20220316141513.247965-11-sashal@kernel.org>
+In-Reply-To: <20220316141513.247965-11-sashal@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 16 Mar 2022 17:06:27 +0100
+Message-ID: <CACRpkdYnDDX2Q-ucyPm2N+yh+Fx-X36HbZ49JvS6QNqw0=9cag@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.15 11/13] gpio: Revert regression in sysfs-gpio (gpiolib.c)
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 12:45 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+On Wed, Mar 16, 2022 at 3:16 PM Sasha Levin <sashal@kernel.org> wrote:
+
+> From: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
 >
-> But the bug looks to be fixed by something anyway. git log on the file
-> pretty clearly points to:
+> [ Upstream commit fc328a7d1fcce263db0b046917a66f3aa6e68719 ]
 >
-> #syz fix: ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
+> Some GPIO lines have stopped working after the patch
+> commit 2ab73c6d8323f ("gpio: Support GPIO controllers without pin-ranges")
+>
+> And this has supposedly been fixed in the following patches
+> commit 89ad556b7f96a ("gpio: Avoid using pin ranges with !PINCTRL")
+> commit 6dbbf84603961 ("gpiolib: Don't free if pin ranges are not defined")
+>
+> But an erratic behavior where some GPIO lines work while others do not work
+> has been introduced.
+>
+> This patch reverts those changes so that the sysfs-gpio interface works
+> properly again.
+>
+> Signed-off-by: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
+> Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 
-Yeah, that commit 6ce708f54cc8 looks a lot more likely to have any
-effect on this than my version bump that the syzbot bisection pointed
-to.
 
-But kernels containing that commit still have that
+I think you should not apply this for stable, because we will revert the revert.
 
-  run #0: crashed: KASAN: use-after-free Read in ath9k_hif_usb_rx_cb
-
-so apparently it isn't actually fully fixed. ;(
-
-                 Linus
+Yours,
+Linus Walleij
