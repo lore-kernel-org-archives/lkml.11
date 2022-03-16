@@ -2,69 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A46C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346010AbiCPX0z (ORCPT
+        id S1345259AbiCPX2W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 19:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34006 "EHLO
+        Wed, 16 Mar 2022 19:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345175AbiCPX0s (ORCPT
+        with ESMTP id S238816AbiCPX2U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 19:26:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CA4BC1A;
-        Wed, 16 Mar 2022 16:25:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F21E61559;
-        Wed, 16 Mar 2022 23:25:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D105C340EC;
-        Wed, 16 Mar 2022 23:25:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647473132;
-        bh=9S9n5W4BUCXrhfkoeret8wNFTGcAtJSuqNJJXyYDFh0=;
+        Wed, 16 Mar 2022 19:28:20 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76D064C9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:27:04 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id 178F148F; Wed, 16 Mar 2022 19:27:04 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 178F148F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1647473224;
+        bh=oRYsFvRyGnJC9jPCSEJDJXYHIXXhCY6to725MbmUgcw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UCscvEHF5ZTfH4kctmXafnLXkuK9nLupUKMANZpudUof4kxqmHl84MCSZbo2LZWF/
-         VruUdT2QYyD4aXLc5XQvTRiKWPX0Agj8VD8K1tbo55aNGnPg3GUndZbJY/MMsyKl2v
-         tscLuPlVjaT3+jCbMzsHQQbuxnXa95dofucHlKha6KXwbW6UEol2MORjMso7ABGxl4
-         pygS1UVyWyDj6fblBAqMjVOoBKuPbCLC31jWDEIVLK6ujEMyb30i/ycS6voqw6k8Gy
-         r4oa1pzUUFWQGIdmu1cd6MKi5baS9WzowO2N5rB4WSgIBhGKszWfNaqbwPtAWJXD3a
-         s65OkRtucMXwQ==
-Date:   Wed, 16 Mar 2022 16:25:25 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Trilok Soni <quic_tsoni@quicinc.com>
-Cc:     Bill Wendling <morbo@google.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH] soc: qcom: smem: use correct format characters
-Message-ID: <YjJx5Q0OUDRzIowG@thelio-3990X>
-References: <20220316213118.2352683-1-morbo@google.com>
- <15ebcddf-a84d-7293-f672-0e8ec47537e8@quicinc.com>
+        b=c/dnTlCDgHcQLb45RiI7tGWzeG/aLYl7l5F6vMHl9LneBnVLLw5B1R9pluHIyW7Kl
+         AYcTtNDv/fFDSyVu+OGXskiHqBGnzXo7gl83PbnzoSdvqP3Gmf+1Fjc6BI2a5EunGD
+         qYGFderD8x4GKOeOQnqq1Jjs+gawz3GxkuaXPKR8=
+Date:   Wed, 16 Mar 2022 19:27:04 -0400
+From:   "J. Bruce Fields" <bfields@fieldses.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Chengming Zhou <zhouchengming@bytedance.com>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: failure to boot after dc6e0818bc9a "sched/cpuacct: Optimize away
+ RCU read lock"
+Message-ID: <20220316232704.GE16511@fieldses.org>
+References: <20220316174324.GA16511@fieldses.org>
+ <20220316204806.GL8939@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <15ebcddf-a84d-7293-f672-0e8ec47537e8@quicinc.com>
+In-Reply-To: <20220316204806.GL8939@worktop.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 04:17:06PM -0700, Trilok Soni wrote:
-> On 3/16/2022 2:31 PM, Bill Wendling wrote:
-> > When compiling with -Wformat, clang emits the following warnings:
+On Wed, Mar 16, 2022 at 09:48:06PM +0100, Peter Zijlstra wrote:
+> On Wed, Mar 16, 2022 at 01:43:24PM -0400, J. Bruce Fields wrote:
+> > One of my test VMs has been failing to boot linux-next recently.  I
+> > finally got around to a bisect this morning, and it landed on the below.
 > > 
+> > What other information would be useful to debug this?
 > 
-> I thought we have -Wno-format by default enabled for arm64, isn't it?
+> A more recent -next should have this commit in it:
 
-Yes, -Wformat is turned off for clang in the default kernel build on all
-architectures (see scripts/Makefile.extrawarn). However, it can easily
-be enabled with W=1 and we should eventually get this turned on for
-clang like gcc so that developers who only use clang can catch instances
-of it.
+Ah, yep, it's booting again with today's -next.  Thanks.--b.
 
-Cheers,
-Nathan
+> 
+> 
+> commit f2aa197e4794bf4c2c0c9570684f86e6fa103e8b
+> Author: Chengming Zhou <zhouchengming@bytedance.com>
+> Date:   Sat Mar 5 11:41:03 2022 +0800
+> 
+>     cgroup: Fix suspicious rcu_dereference_check() usage warning
+>     
+>     task_css_set_check() will use rcu_dereference_check() to check for
+>     rcu_read_lock_held() on the read-side, which is not true after commit
+>     dc6e0818bc9a ("sched/cpuacct: Optimize away RCU read lock"). This
+>     commit drop explicit rcu_read_lock(), change to RCU-sched read-side
+>     critical section. So fix the RCU warning by adding check for
+>     rcu_read_lock_sched_held().
+>     
+>     Fixes: dc6e0818bc9a ("sched/cpuacct: Optimize away RCU read lock")
+>     Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>     Reported-by: syzbot+16e3f2c77e7c5a0113f9@syzkaller.appspotmail.com
+>     Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+>     Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+>     Acked-by: Tejun Heo <tj@kernel.org>
+>     Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+>     Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>     Link: https://lore.kernel.org/r/20220305034103.57123-1-zhouchengming@bytedance.com
+> 
+> diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+> index 1e356c222756..0d1ada8968d7 100644
+> --- a/include/linux/cgroup.h
+> +++ b/include/linux/cgroup.h
+> @@ -450,6 +450,7 @@ extern struct mutex cgroup_mutex;
+>  extern spinlock_t css_set_lock;
+>  #define task_css_set_check(task, __c)					\
+>  	rcu_dereference_check((task)->cgroups,				\
+> +		rcu_read_lock_sched_held() ||				\
+>  		lockdep_is_held(&cgroup_mutex) ||			\
+>  		lockdep_is_held(&css_set_lock) ||			\
+>  		((task)->flags & PF_EXITING) || (__c))
