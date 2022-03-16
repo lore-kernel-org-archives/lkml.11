@@ -2,209 +2,467 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E5E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 10:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 11:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355212AbiCPK70 (ORCPT
+        id S1355225AbiCPLBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 06:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        Wed, 16 Mar 2022 07:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347406AbiCPK7W (ORCPT
+        with ESMTP id S1343563AbiCPLBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 06:59:22 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6BEDE81;
-        Wed, 16 Mar 2022 03:58:09 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22GAkNhe029949;
-        Wed, 16 Mar 2022 10:57:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=pqEtRRluTdcqyicuZ3uViocrXZh7WOAHX11wx61Vhzs=;
- b=qyq/3FcT7lW08wy86AfF5YcyJ4M2Xfa8xUImtiANcjURw+I5Kli3Vy30gDfzTvslBbnY
- xRG9tc6FV2PFw9acgFVZqCXmWejAgM0pN33TYrJhxDf7H5hJS6v9+qkMJB9dlUCJg1na
- CaxdnWteUBEUWmCFeObXJQV/KgLRbH+NQ5Ysu2w3tEadW75kJt+7AbFi98npqwi2VqIg
- Di68f/hoJ62wecZiNlKTatqsuW90kjmz2OhBCrBS5b3e6bq/CAOP4mOYVvALDIWUFmTJ
- RQtgwdTPl+Cng7e3BzSmbUg20zE/eBhNNUYJwATKzu+/S4YYEnYcthpc9azC75ErC3FB ZA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eueef8656-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 10:57:04 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22GAqaOw021546;
-        Wed, 16 Mar 2022 10:57:04 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eueef864b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 10:57:03 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22GAqwHQ004747;
-        Wed, 16 Mar 2022 10:57:01 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3et95wv4d8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 10:57:01 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22GAuwnT23789856
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 16 Mar 2022 10:56:58 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 071CDA404D;
-        Wed, 16 Mar 2022 10:56:58 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2C6D9A4053;
-        Wed, 16 Mar 2022 10:56:56 +0000 (GMT)
-Received: from thinkpad (unknown [9.171.18.20])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Wed, 16 Mar 2022 10:56:56 +0000 (GMT)
-Date:   Wed, 16 Mar 2022 11:56:54 +0100
-From:   Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, linux-mm@kvack.org,
-        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: Re: [PATCH v1 5/7] s390/pgtable: support
- __HAVE_ARCH_PTE_SWP_EXCLUSIVE
-Message-ID: <20220316115654.12823b78@thinkpad>
-In-Reply-To: <55b6b582-51ca-b869-2055-674fe4c563e6@redhat.com>
-References: <20220315141837.137118-1-david@redhat.com>
-        <20220315141837.137118-6-david@redhat.com>
-        <20220315172102.771bd2cf@thinkpad>
-        <c8229082-e8f1-e605-25c2-0ec9d23efd9e@redhat.com>
-        <8b13b6c0-78d4-48e3-06f0-ec0680d013a9@redhat.com>
-        <55b6b582-51ca-b869-2055-674fe4c563e6@redhat.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Wed, 16 Mar 2022 07:01:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEBC60077;
+        Wed, 16 Mar 2022 04:00:26 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 7C1961F390;
+        Wed, 16 Mar 2022 11:00:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1647428425; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sM70Iz/zzL8rdDARgecMacKzOr4IAgxW59+OOfyajuQ=;
+        b=uU0cZRVlBKXUf/R+jLICWslqJDd9nE4DVFsBsr85qy8VMNx8Y3oGHNSslldU0n6fDRb389
+        +Hoc6bOUghHybUFl3OHytyDkNj2ulIGCObYx1y2wmsyGRwj0oJpoaChl9GzAo61zNwUNhV
+        aXL7WpVovZFQBeGQAW8nrGJujmi4FiY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1647428425;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sM70Iz/zzL8rdDARgecMacKzOr4IAgxW59+OOfyajuQ=;
+        b=Ik1zk3N8Zy8woyUX6ule6XPSOFHo8qUlysfb/Q/VRWocIJpxc7Sy1VW8P3tw8Xfgcx/Fw1
+        +dy1sQ8LP+X8X3Bw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1C125139FE;
+        Wed, 16 Mar 2022 11:00:25 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 75vxA0nDMWLCKwAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Wed, 16 Mar 2022 11:00:25 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id 0a1379f3;
+        Wed, 16 Mar 2022 11:00:42 +0000 (UTC)
+From:   =?utf-8?Q?Lu=C3=ADs_Henriques?= <lhenriques@suse.de>
+To:     Xiubo Li <xiubli@redhat.com>
+Cc:     Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>, ceph-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 2/3] ceph: add support for handling encrypted
+ snapshot names
+References: <20220315161959.19453-1-lhenriques@suse.de>
+        <20220315161959.19453-3-lhenriques@suse.de>
+        <972eafc3-93a3-b523-4ad2-e234b3664635@redhat.com>
+Date:   Wed, 16 Mar 2022 11:00:42 +0000
+In-Reply-To: <972eafc3-93a3-b523-4ad2-e234b3664635@redhat.com> (Xiubo Li's
+        message of "Wed, 16 Mar 2022 08:47:43 +0800")
+Message-ID: <87r172i2lh.fsf@brahms.olymp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: LNrEZRUbiCjvuMs3vypCO_bwoZe7D75W
-X-Proofpoint-ORIG-GUID: L41oykoEMXECEBvnbt61pfruSn_s2QSZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-16_03,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
- bulkscore=0 lowpriorityscore=0 clxscore=1015 suspectscore=0 spamscore=0
- mlxscore=0 impostorscore=0 priorityscore=1501 phishscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203160064
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 18:12:16 +0100
-David Hildenbrand <david@redhat.com> wrote:
+Xiubo Li <xiubli@redhat.com> writes:
 
-> On 15.03.22 17:58, David Hildenbrand wrote:
-> > 
-> >>> This would mean that it is not OK to have bit 52 not zero for swap PTEs.
-> >>> But if I read the POP correctly, all bits except for the DAT-protection
-> >>> would be ignored for invalid PTEs, so maybe this comment needs some update
-> >>> (for both bits 52 and also 55).
-> >>>
-> >>> Heiko might also have some more insight.
-> >>
-> >> Indeed, I wonder why we should get a specification exception when the
-> >> PTE is invalid. I'll dig a bit into the PoP.
-> > 
-> > SA22-7832-12 6-46 ("Translation-Specification Exception") is clearer
-> > 
-> > "The page-table entry used for the translation is
-> > valid, and bit position 52 does not contain zero."
-> > 
-> > "The page-table entry used for the translation is
-> > valid, EDAT-1 does not apply, the instruction-exe-
-> > cution-protection facility is not installed, and bit
-> > position 55 does not contain zero. It is model
-> > dependent whether this condition is recognized."
-> > 
-> 
-> I wonder if the following matches reality:
-> 
-> diff --git a/arch/s390/include/asm/pgtable.h b/arch/s390/include/asm/pgtable.h
-> index 008a6c856fa4..6a227a8c3712 100644
-> --- a/arch/s390/include/asm/pgtable.h
-> +++ b/arch/s390/include/asm/pgtable.h
-> @@ -1669,18 +1669,16 @@ static inline int has_transparent_hugepage(void)
->  /*
->   * 64 bit swap entry format:
->   * A page-table entry has some bits we have to treat in a special way.
-> - * Bits 52 and bit 55 have to be zero, otherwise a specification
-> - * exception will occur instead of a page translation exception. The
-> - * specification exception has the bad habit not to store necessary
-> - * information in the lowcore.
->   * Bits 54 and 63 are used to indicate the page type.
->   * A swap pte is indicated by bit pattern (pte & 0x201) == 0x200
-> - * This leaves the bits 0-51 and bits 56-62 to store type and offset.
-> - * We use the 5 bits from 57-61 for the type and the 52 bits from 0-51
-> - * for the offset.
-> - * |                     offset                        |01100|type |00|
-> + * |                     offset                        |XX1XX|type |S0|
->   * |0000000000111111111122222222223333333333444444444455|55555|55566|66|
->   * |0123456789012345678901234567890123456789012345678901|23456|78901|23|
-> + *
-> + * Bits 0-51 store the offset.
-> + * Bits 57-62 store the type.
-> + * Bit 62 (S) is used for softdirty tracking.
-> + * Bits 52, 53, 55 and 56 (X) are unused.
->   */
->  
->  #define __SWP_OFFSET_MASK      ((1UL << 52) - 1)
-> 
-> 
-> I'm not sure why bit 53 was indicated as "1" and bit 55 was indicated as
-> "0". At least for 52 and 55 there was a clear description.
+> On 3/16/22 12:19 AM, Lu=C3=ADs Henriques wrote:
+>> When creating a snapshot, the .snap directories for every subdirectory w=
+ill
+>> show the snapshot name in the "long format":
+>>
+>>    # mkdir .snap/my-snap
+>>    # ls my-dir/.snap/
+>>    _my-snap_1099511627782
+>>
+>> Encrypted snapshots will need to be able to handle these snapshot names =
+by
+>> encrypting/decrypting only the snapshot part of the string ('my-snap').
+>>
+>> Also, since the MDS prevents snapshot names to be bigger than 240 charac=
+ters
+>> it is necessary to adapt CEPH_NOHASH_NAME_MAX to accommodate this extra
+>> limitation.
+>>
+>> Signed-off-by: Lu=C3=ADs Henriques <lhenriques@suse.de>
+>> ---
+>>   fs/ceph/crypto.c | 158 +++++++++++++++++++++++++++++++++++++++++------
+>>   fs/ceph/crypto.h |  11 ++--
+>>   2 files changed, 145 insertions(+), 24 deletions(-)
+>>
+>> diff --git a/fs/ceph/crypto.c b/fs/ceph/crypto.c
+>> index c125a79019b3..06a4b918201c 100644
+>> --- a/fs/ceph/crypto.c
+>> +++ b/fs/ceph/crypto.c
+>> @@ -128,18 +128,95 @@ void ceph_fscrypt_as_ctx_to_req(struct ceph_mds_re=
+quest *req, struct ceph_acl_se
+>>   	swap(req->r_fscrypt_auth, as->fscrypt_auth);
+>>   }
+>>   -int ceph_encode_encrypted_dname(const struct inode *parent, struct qs=
+tr
+>> *d_name, char *buf)
+>> +/*
+>> + * User-created snapshots can't start with '_'.  Snapshots that start w=
+ith this
+>> + * character are special (hint: there aren't real snapshots) and use the
+>> + * following format:
+>> + *
+>> + *   _<SNAPSHOT-NAME>_<INODE-NUMBER>
+>> + *
+>> + * where:
+>> + *  - <SNAPSHOT-NAME> - the real snapshot name that may need to be decr=
+ypted,
+>> + *  - <INODE-NUMBER> - the inode number for the actual snapshot
+>> + *
+>> + * This function parses these snapshot names and returns the inode
+>> + * <INODE-NUMBER>.  'name_len' will also bet set with the <SNAPSHOT-NAM=
+E>
+>> + * length.
+>> + */
+>> +static struct inode *parse_longname(const struct inode *parent, const c=
+har *name,
+>> +				    int *name_len)
+>>   {
+>> +	struct inode *dir =3D NULL;
+>> +	struct ceph_vino vino =3D { .snap =3D CEPH_NOSNAP };
+>> +	char *inode_number;
+>> +	char *name_end;
+>> +	int orig_len =3D *name_len;
+>> +	int ret =3D -EIO;
+>> +
+>> +	/* Skip initial '_' */
+>> +	name++;
+>> +	name_end =3D strrchr(name, '_');
+>> +	if (!name_end) {
+>> +		dout("Failed to parse long snapshot name: %s\n", name);
+>> +		return ERR_PTR(-EIO);
+>> +	}
+>> +	*name_len =3D (name_end - name);
+>> +	if (*name_len <=3D 0) {
+>> +		pr_err("Failed to parse long snapshot name\n");
+>> +		return ERR_PTR(-EIO);
+>> +	}
+>> +
+>> +	/* Get the inode number */
+>> +	inode_number =3D kmemdup_nul(name_end + 1,
+>> +				   orig_len - *name_len - 2,
+>> +				   GFP_KERNEL);
+>> +	if (!inode_number)
+>> +		return ERR_PTR(-ENOMEM);
+>> +	ret =3D kstrtou64(inode_number, 0, &vino.ino);
+>> +	if (ret) {
+>> +		dout("Failed to parse inode number: %s\n", name);
+>> +		dir =3D ERR_PTR(ret);
+>> +		goto out;
+>> +	}
+>> +
+>> +	/* And finally the inode */
+>> +	dir =3D ceph_get_inode(parent->i_sb, vino, NULL);
+>
+> Maybe you should use ceph_find_inode() here ? We shouldn't insert a new o=
+ne
+> here. And IMO the parent dir inode must be in the cache...
 
-Bit 53 is the invalid bit, and that is always 1 for swap ptes, in addition
-to protection bit 54. Bit 55, along with bit 52, has to be zero according
-to the (potentially deprecated) comment.
+Right, that makes sense.  I'll swap it for the ceph_find_inode().
 
-It is interesting that bit 56 seems to be unused, at least according
-to the comment, but that would also mention bit 62 as unused, so that
-clearly needs some update.
+>> +	if (IS_ERR(dir))
+>> +		dout("Can't find inode %s (%s)\n", inode_number, name);
+>> +
+>> +out:
+>> +	kfree(inode_number);
+>> +	return dir;
+>> +}
+>
+> Here I think you have missed one case, not all the long snap names are ne=
+eded to
+> be dencrypted if they are from the parent snap realms, who are not encryp=
+ted,
+> for example:
+>
+> mkdir dir1
+>
+> fscrypt encrypt dir1
+>
+> mkdir dir1/dir2
+>
+> mkdir .snap/root_snap
+>
+> mkdir dir1/.snap/dir1_snap
+>
+> ls dir1/dir2/.snap/
+>
+> _root_snap_1=C2=A0 _dir1_snap_1099511628283
+>
+> You shouldn't encrypt the "_root_snap_1" long name.
 
-If bit 56 could be used for _PAGE_SWP_EXCLUSIVE, that would be better
-than stealing a bit from the offset, or using potentially dangerous
-bit 52. It is defined as _PAGE_UNUSED and only used for kvm, not sure
-if this is also relevant for swap ptes, similar to bit 62.
+Ah!  Good catch!  Yes, this case isn't being covered.  I'll fix it with by
+following your suggestion bellow.
 
-Adding Christian on cc, maybe he has some insight on _PAGE_UNUSED
-bit 56 and swap ptes.
+>> +
+>> +int ceph_encode_encrypted_dname(struct inode *parent, struct qstr *d_na=
+me, char *buf)
+>> +{
+>> +	struct inode *dir =3D parent;
+>> +	struct qstr iname;
+>>   	u32 len;
+>> +	int name_len;
+>>   	int elen;
+>>   	int ret;
+>> -	u8 *cryptbuf;
+>> +	u8 *cryptbuf =3D NULL;
+>>     	if (!fscrypt_has_encryption_key(parent)) {
+>>   		memcpy(buf, d_name->name, d_name->len);
+>>   		return d_name->len;
+>>   	}
+>>   +	iname.name =3D d_name->name;
+>> +	name_len =3D d_name->len;
+>> +
+>> +	/* Handle the special case of snapshot names that start with '_' */
+>> +	if ((ceph_snap(dir) =3D=3D CEPH_SNAPDIR) && (name_len > 0) &&
+>> +	    (iname.name[0] =3D=3D '_')) {
+>> +		dir =3D parse_longname(parent, iname.name, &name_len);
+>> +		if (IS_ERR(dir))
+>> +			return PTR_ERR(dir);
+>> +		iname.name++; /* skip initial '_' */
+>> +	}
+>> +	iname.len =3D name_len;
+>> +
+>
+> Maybe you can do this just before checking the fscrypt_has_encryption_key=
+() to
+> fix the issue mentioned above ?
+>
+>
+>>   	/*
+>>   	 * convert cleartext d_name to ciphertext
+>>   	 * if result is longer than CEPH_NOKEY_NAME_MAX,
+>> @@ -147,18 +224,22 @@ int ceph_encode_encrypted_dname(const struct inode=
+ *parent, struct qstr *d_name,
+>>   	 *
+>>   	 * See: fscrypt_setup_filename
+>>   	 */
+>> -	if (!fscrypt_fname_encrypted_size(parent, d_name->len, NAME_MAX, &len))
+>> -		return -ENAMETOOLONG;
+>> +	if (!fscrypt_fname_encrypted_size(dir, iname.len, NAME_MAX, &len)) {
+>> +		elen =3D -ENAMETOOLONG;
+>> +		goto out;
+>> +	}
+>>     	/* Allocate a buffer appropriate to hold the result */
+>>   	cryptbuf =3D kmalloc(len > CEPH_NOHASH_NAME_MAX ? NAME_MAX : len, GFP=
+_KERNEL);
+>> -	if (!cryptbuf)
+>> -		return -ENOMEM;
+>> +	if (!cryptbuf) {
+>> +		elen =3D -ENOMEM;
+>> +		goto out;
+>> +	}
+>>   -	ret =3D fscrypt_fname_encrypt(parent, d_name, cryptbuf, len);
+>> +	ret =3D fscrypt_fname_encrypt(dir, &iname, cryptbuf, len);
+>>   	if (ret) {
+>> -		kfree(cryptbuf);
+>> -		return ret;
+>> +		elen =3D ret;
+>> +		goto out;
+>>   	}
+>>     	/* hash the end if the name is long enough */
+>> @@ -174,12 +255,24 @@ int ceph_encode_encrypted_dname(const struct inode=
+ *parent, struct qstr *d_name,
+>>     	/* base64 encode the encrypted name */
+>>   	elen =3D fscrypt_base64url_encode(cryptbuf, len, buf);
+>> -	kfree(cryptbuf);
+>>   	dout("base64-encoded ciphertext name =3D %.*s\n", elen, buf);
+>> +
+>> +	if ((elen > 0) && (dir !=3D parent)) {
+>> +		char tmp_buf[FSCRYPT_BASE64URL_CHARS(NAME_MAX)];
+>> +
+>
+> Do we really need FSCRYPT_BASE64URL_CHARS(NAME_MAX) ? Since you have fix =
+the
+> 189->180 code, then the encrypted long snap name shouldn't exceed 255.
+>
+> I think the NAME_MAX is enough.
+
+Yes, correct.  I'll change that too.
+
+> And also you should check the elen here it shouldn't exceed 240 after enc=
+rypted,
+> or should we fail it here directly with a warning log ?
+
+Right, that should probably be logged.  I'll had that check.
+
+Thanks a lot for your review, Xiubo.
+
+Cheers,
+--=20
+Lu=C3=ADs
+
+>> +		elen =3D snprintf(tmp_buf, sizeof(tmp_buf), "_%.*s_%ld",
+>> +				elen, buf, dir->i_ino);
+>> +		memcpy(buf, tmp_buf, elen);
+>> +	}
+>> +
+>> +out:
+>> +	kfree(cryptbuf);
+>> +	if (dir !=3D parent)
+>> +		iput(dir);
+>>   	return elen;
+>>   }
+>>   -int ceph_encode_encrypted_fname(const struct inode *parent, struct de=
+ntry
+>> *dentry, char *buf)
+>> +int ceph_encode_encrypted_fname(struct inode *parent, struct dentry *de=
+ntry, char *buf)
+>>   {
+>>   	WARN_ON_ONCE(!fscrypt_has_encryption_key(parent));
+>>   @@ -204,11 +297,14 @@ int ceph_encode_encrypted_fname(const struct ino=
+de
+>> *parent, struct dentry *dentr
+>>   int ceph_fname_to_usr(const struct ceph_fname *fname, struct fscrypt_s=
+tr *tname,
+>>   		      struct fscrypt_str *oname, bool *is_nokey)
+>>   {
+>> -	int ret;
+>> +	struct inode *dir =3D fname->dir;
+>>   	struct fscrypt_str _tname =3D FSTR_INIT(NULL, 0);
+>>   	struct fscrypt_str iname;
+>> +	char *name =3D fname->name;
+>> +	int name_len =3D fname->name_len;
+>> +	int ret;
+>>   -	if (!IS_ENCRYPTED(fname->dir)) {
+>> +	if (!IS_ENCRYPTED(dir)) {
+>>   		oname->name =3D fname->name;
+>>   		oname->len =3D fname->name_len;
+>>   		return 0;
+>> @@ -218,15 +314,24 @@ int ceph_fname_to_usr(const struct ceph_fname *fna=
+me, struct fscrypt_str *tname,
+>>   	if (fname->name_len > NAME_MAX || fname->ctext_len > NAME_MAX)
+>>   		return -EIO;
+>>   -	ret =3D __fscrypt_prepare_readdir(fname->dir);
+>> +	/* Handle the special case of snapshot names that start with '_' */
+>> +	if ((ceph_snap(dir) =3D=3D CEPH_SNAPDIR) && (name_len > 0) &&
+>> +	    (name[0] =3D=3D '_')) {
+>> +		dir =3D parse_longname(dir, name, &name_len);
+>> +		if (IS_ERR(dir))
+>> +			return PTR_ERR(dir);
+>> +		name++; /* skip initial '_' */
+>> +	}
+>> +
+>> +	ret =3D __fscrypt_prepare_readdir(dir);
+>>   	if (ret)
+>> -		return ret;
+>> +		goto out_inode;
+>>     	/*
+>>   	 * Use the raw dentry name as sent by the MDS instead of
+>>   	 * generating a nokey name via fscrypt.
+>>   	 */
+>> -	if (!fscrypt_has_encryption_key(fname->dir)) {
+>> +	if (!fscrypt_has_encryption_key(dir)) {
+>>   		if (fname->no_copy)
+>>   			oname->name =3D fname->name;
+>>   		else
+>> @@ -234,7 +339,8 @@ int ceph_fname_to_usr(const struct ceph_fname *fname=
+, struct fscrypt_str *tname,
+>>   		oname->len =3D fname->name_len;
+>>   		if (is_nokey)
+>>   			*is_nokey =3D true;
+>> -		return 0;
+>> +		ret =3D 0;
+>> +		goto out_inode;
+>>   	}
+>>     	if (fname->ctext_len =3D=3D 0) {
+>> @@ -243,11 +349,11 @@ int ceph_fname_to_usr(const struct ceph_fname *fna=
+me, struct fscrypt_str *tname,
+>>   		if (!tname) {
+>>   			ret =3D fscrypt_fname_alloc_buffer(NAME_MAX, &_tname);
+>>   			if (ret)
+>> -				return ret;
+>> +				goto out_inode;
+>>   			tname =3D &_tname;
+>>   		}
+>>   -		declen =3D fscrypt_base64url_decode(fname->name, fname->name_len,
+>> tname->name);
+>> +		declen =3D fscrypt_base64url_decode(name, name_len, tname->name);
+>>   		if (declen <=3D 0) {
+>>   			ret =3D -EIO;
+>>   			goto out;
+>> @@ -259,9 +365,21 @@ int ceph_fname_to_usr(const struct ceph_fname *fnam=
+e, struct fscrypt_str *tname,
+>>   		iname.len =3D fname->ctext_len;
+>>   	}
+>>   -	ret =3D fscrypt_fname_disk_to_usr(fname->dir, 0, 0, &iname, oname);
+>> +	ret =3D fscrypt_fname_disk_to_usr(dir, 0, 0, &iname, oname);
+>> +	if (!ret && (dir !=3D fname->dir)) {
+>> +		char tmp_buf[FSCRYPT_BASE64URL_CHARS(NAME_MAX)];
+>> +
+>> +		name_len =3D snprintf(tmp_buf, sizeof(tmp_buf), "_%.*s_%ld",
+>> +				    oname->len, oname->name, dir->i_ino);
+>> +		memcpy(oname->name, tmp_buf, name_len);
+>> +		oname->len =3D name_len;
+>> +	}
+>> +
+>>   out:
+>>   	fscrypt_fname_free_buffer(&_tname);
+>> +out_inode:
+>> +	if ((dir !=3D fname->dir) && !IS_ERR(dir))
+>> +		iput(dir);
+>>   	return ret;
+>>   }
+>>   diff --git a/fs/ceph/crypto.h b/fs/ceph/crypto.h
+>> index 185fb4799a6d..e38a842e02a6 100644
+>> --- a/fs/ceph/crypto.h
+>> +++ b/fs/ceph/crypto.h
+>> @@ -76,13 +76,16 @@ static inline u32 ceph_fscrypt_auth_len(struct ceph_=
+fscrypt_auth *fa)
+>>    * smaller size. If the ciphertext name is longer than the value below=
+, then
+>>    * sha256 hash the remaining bytes.
+>>    *
+>> - * 189 bytes =3D> 252 bytes base64-encoded, which is <=3D NAME_MAX (255)
+>> + * 180 bytes =3D> 240 bytes base64-encoded, which is <=3D NAME_MAX (255)
+>> + *
+>> + * (Note: 240 bytes is the maximum size allowed for snapshot names to t=
+ake into
+>> + *  account the format: '_<SNAPSHOT-NAME>_<INODE-NUMBER>')
+>>    *
+>>    * Note that for long names that end up having their tail portion hash=
+ed, we
+>>    * must also store the full encrypted name (in the dentry's alternate_=
+name
+>>    * field).
+>>    */
+>> -#define CEPH_NOHASH_NAME_MAX (189 - SHA256_DIGEST_SIZE)
+>> +#define CEPH_NOHASH_NAME_MAX (180 - SHA256_DIGEST_SIZE)
+>>     void ceph_fscrypt_set_ops(struct super_block *sb);
+>>   @@ -91,8 +94,8 @@ void ceph_fscrypt_free_dummy_policy(struct ceph_fs_c=
+lient
+>> *fsc);
+>>   int ceph_fscrypt_prepare_context(struct inode *dir, struct inode *inod=
+e,
+>>   				 struct ceph_acl_sec_ctx *as);
+>>   void ceph_fscrypt_as_ctx_to_req(struct ceph_mds_request *req, struct c=
+eph_acl_sec_ctx *as);
+>> -int ceph_encode_encrypted_dname(const struct inode *parent, struct qstr=
+ *d_name, char *buf);
+>> -int ceph_encode_encrypted_fname(const struct inode *parent, struct dent=
+ry *dentry, char *buf);
+>> +int ceph_encode_encrypted_dname(struct inode *parent, struct qstr *d_na=
+me, char *buf);
+>> +int ceph_encode_encrypted_fname(struct inode *parent, struct dentry *de=
+ntry, char *buf);
+>>     static inline int ceph_fname_alloc_buffer(struct inode *parent, stru=
+ct
+>> fscrypt_str *fname)
+>>   {
+>>
+>
+
