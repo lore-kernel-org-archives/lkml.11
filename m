@@ -2,89 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39204C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6244AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243418AbiCPUhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 16:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52742 "EHLO
+        id S1353995AbiCPUiT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 16:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358051AbiCPUh3 (ORCPT
+        with ESMTP id S1358310AbiCPUiQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 16:37:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB3769CC8;
-        Wed, 16 Mar 2022 13:36:14 -0700 (PDT)
+        Wed, 16 Mar 2022 16:38:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BBBF65817
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:37:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC440B81D42;
-        Wed, 16 Mar 2022 20:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9DC2C340E9;
-        Wed, 16 Mar 2022 20:36:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABC956141B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 20:37:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B61C340E9;
+        Wed, 16 Mar 2022 20:37:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647462971;
-        bh=hPywN4Hc+VWnx8HZ9pRvRyevbb+miQ7224hVJAhUwEY=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=q8KJtzSLaYTDnj4b6Z96x655UGVx8qCbRjp8AveB2+kJ3G++9OjVeMuJvYRWVLet2
-         ve9k1OfO2ICO8m70pSilaF1yFsTBK0/Al7LC61drC1NgC4yxd9rhvWirl4pndSbRrZ
-         y53pDJkz+qp7oLwxNtbrzk//sJ3rVdUWdr9/iVcoVwuHMu0W/Zb7q30dYfR9bAkchG
-         AiM4Og29jwnUDsrVTxBMp5LcVdAYm/OGTnGcBvgNXKRxmq4zONkTG6NCK+dim5cDcZ
-         pSZU0MyAWqAJxbEQRdRYYVKXH5GdIIoV7EWkiy/uzWamaa09QL5tMygwIk69mojpX/
-         NwBGaCUHZBtUQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     devicetree@vger.kernel.org, tiwai@suse.com, judyhsiao@chromium.org,
-        perex@perex.cz, alsa-devel@alsa-project.org, agross@kernel.org,
-        swboyd@chromium.org, robh+dt@kernel.org,
-        srinivas.kandagatla@linaro.org, lgirdwood@gmail.com,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, bgoswami@codeaurora.org,
-        linux-kernel@vger.kernel.org, quic_plai@quicinc.com,
-        rohitkr@codeaurora.org, bjorn.andersson@linaro.org
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-In-Reply-To: <1647355531-4150-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1647355531-4150-1-git-send-email-quic_srivasam@quicinc.com>
-Subject: Re: [PATCH] ASoC: codecs: Fix misplaced lpass_macro_pds_exit call
-Message-Id: <164746296665.1220201.1306280283439888806.b4-ty@kernel.org>
-Date:   Wed, 16 Mar 2022 20:36:06 +0000
+        s=k20201202; t=1647463021;
+        bh=TT5aj2bS0CfHdcNhyjXK54D7ZtehWAt5yO7XurUnSfs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hY5Lo9rqrd03oiydupg7X2xccQyXWiDOE/UGjqL6xvdziwaFpfViFUWpsltAO3kHy
+         DwDE+T/8FnyodlGo7a2H33X5mtGnxtCEprkTbnYn71W5WSDf0ity58lAU9MuN6hJNW
+         0851jotxe9ODCxZo7CXlqjqBXptnjfrySAyDmHkfbtFZvebPXYH2KXkuRrbjD9wwR0
+         Zx5tiOwk9KOQw09HcXPXjD4nuYMKY08dViUERENMXn54NrzGWqTLakpDzvYurJhR5f
+         GMCdgYD7n3whSX0/PpNCCtyk3RIInVBixM+oi1JmV3IwsZG1GYCxQtbkIhuwIHLOU8
+         wzQkYa57YTEHg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 730F940407; Wed, 16 Mar 2022 17:36:57 -0300 (-03)
+Date:   Wed, 16 Mar 2022 17:36:57 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Cc:     cclaudio@linux.ibm.com, Jiri Olsa <jolsa@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: Re: [PATCH] perf trace: Fix SIGSEGV when processing augmented args
+Message-ID: <YjJKaSanKI7LQdEk@kernel.org>
+References: <20220310104741.209834-1-naveen.n.rao@linux.vnet.ibm.com>
+ <Yi+9G1nK1shEIXVN@kernel.org>
+ <1647364864.3xrhklc7kl.naveen@linux.ibm.com>
+ <YjDSRb1wwswKpJNJ@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjDSRb1wwswKpJNJ@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022 20:15:31 +0530, Srinivasa Rao Mandadapu wrote:
-> Update power domains exit function calling from runtime resume
-> to remove function which was wrongly placed and causing crash in
-> device suspend and resume.
+Em Tue, Mar 15, 2022 at 02:52:05PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Tue, Mar 15, 2022 at 10:57:57PM +0530, Naveen N. Rao escreveu:
+> > Yes, it looks like the current check in 'perf' isn't working. The below
+> > patch also resolves the crash we are seeing:
+>  
+> > diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+> > index 2f1d20553a0aa3..86b459f4ebdd61 100644
+> > --- a/tools/perf/builtin-trace.c
+> > +++ b/tools/perf/builtin-trace.c
+> > @@ -2326,7 +2326,7 @@ static int trace__sys_enter(struct trace *trace, struct evsel *evsel,
+> >         * thinking that the extra 2 u64 args are the augmented filename, so just check
+> >         * here and avoid using augmented syscalls when the evsel is the raw_syscalls one.
+> >         */
+> > -       if (evsel != trace->syscalls.events.sys_enter)
+> > +       if (strcmp(evsel__name(evsel), "raw_syscalls:sys_enter"))
+> >                augmented_args = syscall__augmented_args(sc, sample, &augmented_args_size, trace->raw_augmented_syscalls_args_size);
+> >        ttrace->entry_time = sample->time;
+> >        msg = ttrace->entry_str;
 > 
+> Interesting, that should be equivalent :-\ humm, not really, understood,
+> when processing perf.data files we don't setup
+> trace->syscalls.events.sys_enter...
 > 
+> switching from strcmp() to something cheaper but equivalent should be
+> the fix for now.
 
-Applied to
+I'll add a trace->use_augmented_args boolean that will do this test
+once, and then use it in this case and will audit to check if this
+should be used in other places.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-
-Thanks!
-
-[1/1] ASoC: codecs: Fix misplaced lpass_macro_pds_exit call
-      commit: 1c19601ddceda1517511e4bad3d24619e765c78c
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+- Arnaldo
