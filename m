@@ -2,122 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9205BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:07:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353527AbiCPQJA (ORCPT
+        id S1355610AbiCPQJD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:09:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
+        Wed, 16 Mar 2022 12:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343865AbiCPQI6 (ORCPT
+        with ESMTP id S1344655AbiCPQI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 16 Mar 2022 12:08:58 -0400
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C68E6006F;
-        Wed, 16 Mar 2022 09:07:43 -0700 (PDT)
-Received: by mail-qk1-f175.google.com with SMTP id g8so2253476qke.2;
-        Wed, 16 Mar 2022 09:07:43 -0700 (PDT)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014705FF07
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:07:43 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id qt6so5161971ejb.11
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:07:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sfyn51iMEtZOW1VvGz9/zKro/mJL/U+AGtoyS/q05lk=;
+        b=IxJzMGVBQ3dqOjwnT0kNvGBM1q4ToNrQ8MnPmSDiP9yfNiOStXUVcBRVnxaULD6+qQ
+         iDehTRiYAMHSCxlwKAHGVWuwY43EtSG7VmF2E+DrfhETaC+kwkg1Zw7nn0Mt77iaYVPS
+         eI5jjYFFkS7OLX94NFKpBzVwOSR3Cj742b3BY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3kQi/ATz8vXUZ8yEbTxILdWl+W/EazBouregaIRmudw=;
-        b=zH6HSMbLokaaI4W5CrJVgrJsrUGiuwlM/WIS1wLB2JFZUCc337J+nApRrsMmGRXnMh
-         s57C4FO+9dAyP3WA0vYUt0DOwvU5wBgWLDPcM/EElEgYzAQnFl7jYOm3XuJR0HIJBuvS
-         AgSZTLmHqNtWvdqCbT8N1tQ9JE66ftpl/WvqjbRGkoqHUeMBnxj0lgXCmJo8aSfBrwed
-         9Bnumu3AdKQc2wV91rHL1NJoVzGNJlIC78g82Mg7hAVNPftewaixOeyWyYdrgwkrvVtz
-         mCrg8/6SYJ/Wo99/f6E4paNOF6PeOYrkNKnXwyZ8h1VVPt4rqQ3wT1xfeZp14MZPAcV3
-         x4cA==
-X-Gm-Message-State: AOAM530xfhnh4U5Lwg6dOJO+V2Nbqx3lbAXJfWTAlxklb+DIm4X1dyW1
-        etMJL8+8hoHbaa8LJe+AU+N7QUtflwqfrw==
-X-Google-Smtp-Source: ABdhPJxzJ5J1YB0KYzMUusjiJwklstERWjnbu4Y+blpzMppdSnLNkCUp1Hf3QxbYf4OA7bUL080HRg==
-X-Received: by 2002:a37:68d0:0:b0:67b:3c3c:eeaa with SMTP id d199-20020a3768d0000000b0067b3c3ceeaamr389583qkc.616.1647446862155;
-        Wed, 16 Mar 2022 09:07:42 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id s64-20020a375e43000000b0067b0e68092csm1106455qkb.91.2022.03.16.09.07.40
+        bh=sfyn51iMEtZOW1VvGz9/zKro/mJL/U+AGtoyS/q05lk=;
+        b=AHBxPXIRZFN93kFMtw0wtL37Ujzguv8aTe3otnxx0L5dboWxE7g5M4r8k6XnRcckWW
+         GWFkcIeQXPEhiH1MeGPrvCYOzx6m5DDOyLT7yZY5pa38Nk/6NOpDgAks5XBCkB0/rzh7
+         oxiEUV6VI1rl8ENfsSPW5Z3CNhaJ0EtTuPe1nCqhZI0+hOv9cL/er6+oNeY7gA9A3jlX
+         +blBBu23PqspU+PtnkkQ4hZRl10jL6g1bHNziYV0xV2lA9g3cox61sKGk7zCdqucsiWA
+         3aEYzqgwBNFaaNEGHL1Yrjdf+s9uWpzeTKdGp4WxFZAfln6k5Qdafv+E5Pc4KvhSJuX0
+         sTng==
+X-Gm-Message-State: AOAM533CZ0/Nn4fxQovh9EfBiDUtJup7YaF9cwyA4Mbf+fsxZhoq9i/O
+        x3Qh7WgtL+LPDj6TuZDJ44j3dr5WegMJsxOLIYw=
+X-Google-Smtp-Source: ABdhPJx8UhA0vDw6KSYRlO1VUJ+Qn3FuTeeNGV0wc/atfNqjoqnF7OHic9hdJAj6ZMfvEawmLH679g==
+X-Received: by 2002:a17:906:7948:b0:6da:64ed:178e with SMTP id l8-20020a170906794800b006da64ed178emr562072ejo.523.1647446858301;
+        Wed, 16 Mar 2022 09:07:38 -0700 (PDT)
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com. [209.85.218.50])
+        by smtp.gmail.com with ESMTPSA id l2-20020a1709060cc200b006d3d91e88c7sm1053754ejh.214.2022.03.16.09.07.35
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 09:07:42 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2db2add4516so29105987b3.1;
-        Wed, 16 Mar 2022 09:07:40 -0700 (PDT)
-X-Received: by 2002:a81:618b:0:b0:2db:d952:8a39 with SMTP id
- v133-20020a81618b000000b002dbd9528a39mr936600ywb.132.1647446859767; Wed, 16
- Mar 2022 09:07:39 -0700 (PDT)
+        Wed, 16 Mar 2022 09:07:36 -0700 (PDT)
+Received: by mail-ej1-f50.google.com with SMTP id qa43so5145185ejc.12
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:07:35 -0700 (PDT)
+X-Received: by 2002:ac2:4f92:0:b0:448:7eab:c004 with SMTP id
+ z18-20020ac24f92000000b004487eabc004mr184326lfs.27.1647446495212; Wed, 16 Mar
+ 2022 09:01:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220316141354.247750-1-sashal@kernel.org> <20220316141354.247750-12-sashal@kernel.org>
-In-Reply-To: <20220316141354.247750-12-sashal@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 16 Mar 2022 17:07:28 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVtGb6LCTbDKo9vn=1MmP+RZJTe2=VNTtrNsPa-=1Q6zA@mail.gmail.com>
-Message-ID: <CAMuHMdVtGb6LCTbDKo9vn=1MmP+RZJTe2=VNTtrNsPa-=1Q6zA@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 5.16 12/13] spi: Fix invalid sgs value
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>
+References: <0000000000009e7a1905b8295829@google.com> <00000000000003887a05da3e872c@google.com>
+ <CAHk-=wj4HBk7o8_dbpk=YiTOFxvE9LTiH8Gk=1kgVxOq1jaH7g@mail.gmail.com> <CACT4Y+atgbwmYmiYqhFQT9_oHw5cD5oyp5bNyCJNz34wSaMgmg@mail.gmail.com>
+In-Reply-To: <CACT4Y+atgbwmYmiYqhFQT9_oHw5cD5oyp5bNyCJNz34wSaMgmg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 16 Mar 2022 09:01:18 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj270g1sHyvvMz99d5x5A_2BXJExzKGNhF1Ch8Y2Mi0pA@mail.gmail.com>
+Message-ID: <CAHk-=wj270g1sHyvvMz99d5x5A_2BXJExzKGNhF1Ch8Y2Mi0pA@mail.gmail.com>
+Subject: Re: [syzbot] KASAN: out-of-bounds Read in ath9k_hif_usb_rx_cb (3)
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+3f1ca6a6fec34d601788@syzkaller.appspotmail.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        ath9k-devel@qca.qualcomm.com, chouhan.shreyansh630@gmail.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:USB GADGET/PERIPHERAL SUBSYSTEM" 
+        <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Zekun Shen <bruceshenzk@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sasha,
-
-On Wed, Mar 16, 2022 at 3:15 PM Sasha Levin <sashal@kernel.org> wrote:
-> From: Biju Das <biju.das.jz@bp.renesas.com>
+On Wed, Mar 16, 2022 at 12:45 AM Dmitry Vyukov <dvyukov@google.com> wrote:
 >
-> [ Upstream commit 1a4e53d2fc4f68aa654ad96d13ad042e1a8e8a7d ]
-
-This commit is not 100% correct, cfr.
-https://lore.kernel.org/lkml/CAHk-=wiZnS6n1ROQg3FHd=bcVTHi-sKutKT+toiViQEH47ZACg@mail.gmail.com
-Please postpone backporting until the issue has been resolved.
-
+> But the bug looks to be fixed by something anyway. git log on the file
+> pretty clearly points to:
 >
-> max_seg_size is unsigned int and it can have a value up to 2^32
-> (for eg:-RZ_DMAC driver sets dma_set_max_seg_size as U32_MAX)
-> When this value is used in min_t() as an integer type, it becomes
-> -1 and the value of sgs becomes 0.
->
-> Fix this issue by replacing the 'int' data type with 'unsigned int'
-> in min_t().
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Link: https://lore.kernel.org/r/20220307184843.9994-1-biju.das.jz@bp.renesas.com
-> Signed-off-by: Mark Brown <broonie@kernel.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  drivers/spi/spi.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> index 8ba87b7f8f1a..ed4e6983eda0 100644
-> --- a/drivers/spi/spi.c
-> +++ b/drivers/spi/spi.c
-> @@ -1021,10 +1021,10 @@ int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
->         int i, ret;
->
->         if (vmalloced_buf || kmap_buf) {
-> -               desc_len = min_t(int, max_seg_size, PAGE_SIZE);
-> +               desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
->                 sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
->         } else if (virt_addr_valid(buf)) {
-> -               desc_len = min_t(int, max_seg_size, ctlr->max_dma_len);
-> +               desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
->                 sgs = DIV_ROUND_UP(len, desc_len);
->         } else {
->                 return -EINVAL;
+> #syz fix: ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
 
-Gr{oetje,eeting}s,
+Yeah, that commit 6ce708f54cc8 looks a lot more likely to have any
+effect on this than my version bump that the syzbot bisection pointed
+to.
 
-                        Geert
+But kernels containing that commit still have that
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+  run #0: crashed: KASAN: use-after-free Read in ath9k_hif_usb_rx_cb
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+so apparently it isn't actually fully fixed. ;(
+
+                 Linus
