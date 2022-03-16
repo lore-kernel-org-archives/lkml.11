@@ -2,86 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C35C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F30C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353975AbiCPXyF (ORCPT
+        id S1353622AbiCPXyJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 19:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
+        Wed, 16 Mar 2022 19:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353119AbiCPXx6 (ORCPT
+        with ESMTP id S1353063AbiCPXyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 19:53:58 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA8D61B7B0;
-        Wed, 16 Mar 2022 16:52:42 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 74E051476;
-        Wed, 16 Mar 2022 16:52:42 -0700 (PDT)
-Received: from e123648.arm.com (unknown [10.57.19.225])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 9591C3F766;
-        Wed, 16 Mar 2022 16:52:39 -0700 (PDT)
-From:   Lukasz Luba <lukasz.luba@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     lukasz.luba@arm.com, dietmar.eggemann@arm.com,
-        Pierre.Gondois@arm.com, ionela.voinescu@arm.com,
-        viresh.kumar@linaro.org, rafael@kernel.org,
-        daniel.lezcano@linaro.org, linux-pm@vger.kernel.org,
-        mka@chromium.org, nm@ti.com, sboyd@kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, cristian.marussi@arm.com,
-        sudeep.holla@arm.com, matthias.bgg@gmail.com
-Subject: [[PATCH 6/8] Documentation: EM: Add artificial EM registration description
-Date:   Wed, 16 Mar 2022 23:52:09 +0000
-Message-Id: <20220316235211.29370-7-lukasz.luba@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220316235211.29370-1-lukasz.luba@arm.com>
-References: <20220316235211.29370-1-lukasz.luba@arm.com>
+        Wed, 16 Mar 2022 19:54:03 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDD71BE86;
+        Wed, 16 Mar 2022 16:52:45 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id p9so5077016wra.12;
+        Wed, 16 Mar 2022 16:52:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zKYyk16OQXNqPDT/mUJOjq8mRTj4QHt2PWKklBsV4+Q=;
+        b=Joc8R2f8jiNuENQ5gKMjNwDJ8HBnaKtUrlFOMs6FJH2hLEgJoJTH5PdYKzLQ4ixZwg
+         pl+ep7l24HdaEzUEECjQLOYm4R3vjAujf58FvVyX+Zjoh4fJSz4SWM2uhIBBxdfcGJKe
+         3B3xwvwadt4nZuBdoes8qwlxD7ki9xxq8AgjhXuqL9ZELJ/CIqzusMhM3a9YBhHFyHjp
+         15kkaUdDlZ2y6pvZx1l5gcffLhmDtdu0Ew8k1LYlFACCO+HnzeGClnuZIyuBIJaSAfH8
+         dJ9BA6CAGWW73HshqTzP2lHfvowEjVFicCKmb2tj4qPufYv1GtIwJQSjNPggi0ptt4cY
+         aDwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zKYyk16OQXNqPDT/mUJOjq8mRTj4QHt2PWKklBsV4+Q=;
+        b=RVvGM/7KIXkuRe8lP620eO9c1Cd9LAY81OcJSF7QdkpcJzHLTtvvG1qyORG+0BXB9F
+         malEOKeJkHQ20fT+rYA3d4OeD7XSPU15C88Gbegspywb0MqTD3zSvKQhXv1H4QJDAgeE
+         yzeRf2tkJo5XtL4kr/7UeuGJuICnk8fnz8QeAEUR526JXQ3tjZScGAQ0m8gxNefmc9fX
+         5Dpph+Yl/HFkGBTrvH5CYUtq8p9n2O+Lus4HLVngJdQZeiLPMQdEhKSH0NmmqFagAULL
+         7juhSZViF+Ssxk45O3VoBvGqr0GZpeyjLjT4JZH5wDkerAKwZ6HLdjTqJDuv7R+w+6/n
+         eshg==
+X-Gm-Message-State: AOAM531vueoO2WE01eJzADrMVt+AF2EuVyKTLuTSV0wct1KnyKhkeG9m
+        ZvL5DLsajPYOOjcfipJTKRUiPcYjgfiGFw==
+X-Google-Smtp-Source: ABdhPJzxOptlpMedYnGOKD3rYyxwTC4gVB9c93ji9zMQQ/lGZbyiKsAbJS9WDh4FE85/mw3hbDnThA==
+X-Received: by 2002:a5d:6d81:0:b0:203:e187:1faa with SMTP id l1-20020a5d6d81000000b00203e1871faamr1773716wrs.381.1647474764098;
+        Wed, 16 Mar 2022 16:52:44 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id f7-20020a0560001a8700b00203c23e55e0sm2832308wry.78.2022.03.16.16.52.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 16:52:43 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iwlwifi: Fix spelling mistake "upto" -> "up to"
+Date:   Wed, 16 Mar 2022 23:52:42 +0000
+Message-Id: <20220316235242.56375-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add description about new artificial EM registration and use cases.
-Update also the documentation with the new .get_cost() callback
-description and usage.
+There is a spelling mistake in a IWL_ERR error message. Fix it.
 
-Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- Documentation/power/energy-model.rst | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/power/energy-model.rst b/Documentation/power/energy-model.rst
-index fd29ed2506c0..feb257b7f350 100644
---- a/Documentation/power/energy-model.rst
-+++ b/Documentation/power/energy-model.rst
-@@ -123,6 +123,26 @@ allows a platform to register EM power values which are reflecting total power
- (static + dynamic). These power values might be coming directly from
- experiments and measurements.
- 
-+Registration of 'artificial' EM
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+There is an option to provide a custom callback for drivers missing detailed
-+knowledge about power value for each performance state. The callback
-+.get_cost() is optional and provides the 'cost' values used by the EAS.
-+This is useful for platforms that only provide information on relative
-+efficiency between CPU types, where one could use the information to
-+create an abstract power model. But even an abstract power model can
-+sometimes be hard to fit in, given the input power value size restrictions.
-+The .get_cost() allows to provide the 'cost' values which reflect the
-+efficiency of the CPUs. This would allow to provide EAS information which
-+has different relation than what would be forced by the EM internal
-+formulas calculating 'cost' values. To register an EM for such platform, the
-+driver must set the flag 'milliwatts' to 0, provide .get_power() callback
-+and provide .get_cost() callback. The EM framework would handle such platform
-+properly during registration. A flag EM_PERF_DOMAIN_ARTIFICIAL is set for such
-+platform. Special care should be taken by other frameworks which are using EM
-+to test and treat this flag properly.
-+
- Registration of 'simple' EM
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+index a2203f661321..ecbc5a3f3d18 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -898,7 +898,7 @@ static int iwl_parse_tlv_firmware(struct iwl_drv *drv,
+ 				drv->fw.img[IWL_UCODE_WOWLAN].is_dual_cpus =
+ 					true;
+ 			} else if ((num_of_cpus > 2) || (num_of_cpus < 1)) {
+-				IWL_ERR(drv, "Driver support upto 2 CPUs\n");
++				IWL_ERR(drv, "Driver support up to 2 CPUs\n");
+ 				return -EINVAL;
+ 			}
+ 			break;
 -- 
-2.17.1
+2.35.1
 
