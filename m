@@ -2,119 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26ECBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 11:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED760C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 11:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353893AbiCPLqL (ORCPT
+        id S1355385AbiCPLvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 07:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51256 "EHLO
+        Wed, 16 Mar 2022 07:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234182AbiCPLqJ (ORCPT
+        with ESMTP id S239920AbiCPLvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 07:46:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8EFCE631B;
-        Wed, 16 Mar 2022 04:44:55 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3B7101515;
-        Wed, 16 Mar 2022 04:44:55 -0700 (PDT)
-Received: from [10.57.6.128] (unknown [10.57.6.128])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1DF3E3F85F;
-        Wed, 16 Mar 2022 04:44:50 -0700 (PDT)
-Subject: Re: [PATCH v2 2/2] perf mem: Support HITM for when mem_lvl_num is
- used
-From:   German Gomez <german.gomez@arm.com>
-To:     Ali Saidi <alisaidi@amazon.com>, leo.yan@linaro.org
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        andrew.kilroy@arm.com, benh@kernel.crashing.org,
-        james.clark@arm.com, john.garry@huawei.com, jolsa@kernel.org,
-        kjain@linux.ibm.com, lihuafei1@huawei.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
-        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
-        peterz@infradead.org, will@kernel.org, yao.jin@linux.intel.com,
-        Nick.Forrington@arm.com
-References: <df73fb93-3892-6713-8ebe-bc57a861ec5d@arm.com>
- <20220314183721.3198-1-alisaidi@amazon.com>
- <172ce478-b539-2aa4-0470-1b96c6b8169b@arm.com>
-Message-ID: <7b3aaa4d-5194-a729-f8ad-d55ada7fa58f@arm.com>
-Date:   Wed, 16 Mar 2022 11:43:52 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <172ce478-b539-2aa4-0470-1b96c6b8169b@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+        Wed, 16 Mar 2022 07:51:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC7C5C356;
+        Wed, 16 Mar 2022 04:50:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 685ADB81AB2;
+        Wed, 16 Mar 2022 11:49:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF20EC340E9;
+        Wed, 16 Mar 2022 11:49:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647431398;
+        bh=Dy7fTBaxbV+Qx8X5DFZPL2kucR4BKaU/vcqCGalKej0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=azas4dOY1rvH2almcoYuEGlAsHKA4/zY9MfE8nf7nU0u9IXM4FO3yXLzmc1e+Bbcv
+         KfwRucbt30KeYxPGJiNRJqdIPwxTpk2OzZbaY2rOkvvQmLl5/krxOwwetqr4BzGTVO
+         8rsr0/0mxQ32mP6WRjw/KUk+ga+wCFn+Xsty4DHss8a7obYkndg92aX4kgOV5N9Tmf
+         PmIzk7Rp7UBe9vtidTXeA/f6LqtB8AmgW4jaqZSNpaJzDfd3DtmAidMjA0GVsgue5m
+         hsoNcRn3PcD+mGAvEy4POCGXJ5+GtWpq4mMGasl21FePnxOTtwBawNJsS8WBpE7Os5
+         2WjlziMgt8fiA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUSA7-00Ety2-LA; Wed, 16 Mar 2022 11:49:55 +0000
+Date:   Wed, 16 Mar 2022 11:49:55 +0000
+Message-ID: <878rtayv4s.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
+        kostap@marvell.com, robert.marko@sartura.hr,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 7/8] arm64: dts: marvell: Add Armada 98DX2530 SoC and RD-AC5X board
+In-Reply-To: <20220314213143.2404162-8-chris.packham@alliedtelesis.co.nz>
+References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+        <20220314213143.2404162-8-chris.packham@alliedtelesis.co.nz>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: chris.packham@alliedtelesis.co.nz, huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org, davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org, catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch, gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com, adrian.hunter@intel.com, thomas.petazzoni@bootlin.com, kostap@marvell.com, robert.marko@sartura.hr, linux-mmc@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 14 Mar 2022 21:31:42 +0000,
+Chris Packham <chris.packham@alliedtelesis.co.nz> wrote:
+> 
+> The 98DX2530 SoC is the Control and Management CPU integrated into
+> the Marvell 98DX25xx and 98DX35xx series of switch chip (internally
+> referred to as AlleyCat5 and AlleyCat5X).
+> 
+> These files have been taken from the Marvell SDK and lightly cleaned
+> up with the License and copyright retained.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> ---
+> 
+> Notes:
+>     The Marvell SDK has a number of new compatible strings. I've brought
+>     through some of the drivers or where possible used an in-tree
+>     alternative (e.g. there is SDK code for a ac5-gpio but the existing
+>     marvell,armada-8k-gpio seems to cover what is needed if you use an
+>     appropriate binding). I expect that there will a new series of patches
+>     when I get some different hardware (or additions to this series
+>     depending on if/when it lands).
+>     
+>     Changes in v2:
+>     - Make pinctrl a child node of a syscon node
+>     - Use marvell,armada-8k-gpio instead of orion-gpio
+>     - Remove nand peripheral. The Marvell SDK does have some changes for the
+>       ac5-nand-controller but I currently lack hardware with NAND fitted so
+>       I can't test it right now. I've therefore chosen to omit the node and
+>       not attempted to bring in the driver or binding.
+>     - Remove pcie peripheral. Again there are changes in the SDK and I have
+>       no way of testing them.
+>     - Remove prestera node.
+>     - Remove "marvell,ac5-ehci" compatible from USB node as
+>       "marvell,orion-ehci" is sufficient
+>     - Remove watchdog node. There is a buggy driver for the ac5 watchdog in
+>       the SDK but it needs some work so I've dropped the node for now.
+> 
+>  arch/arm64/boot/dts/marvell/Makefile          |   1 +
+>  .../boot/dts/marvell/armada-98dx2530.dtsi     | 343 ++++++++++++++++++
+>  arch/arm64/boot/dts/marvell/rd-ac5x.dts       |  62 ++++
+>  3 files changed, 406 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
+>  create mode 100644 arch/arm64/boot/dts/marvell/rd-ac5x.dts
+> 
+> diff --git a/arch/arm64/boot/dts/marvell/Makefile b/arch/arm64/boot/dts/marvell/Makefile
+> index 1c794cdcb8e6..3905dee558b4 100644
+> --- a/arch/arm64/boot/dts/marvell/Makefile
+> +++ b/arch/arm64/boot/dts/marvell/Makefile
+> @@ -24,3 +24,4 @@ dtb-$(CONFIG_ARCH_MVEBU) += cn9132-db.dtb
+>  dtb-$(CONFIG_ARCH_MVEBU) += cn9132-db-B.dtb
+>  dtb-$(CONFIG_ARCH_MVEBU) += cn9130-crb-A.dtb
+>  dtb-$(CONFIG_ARCH_MVEBU) += cn9130-crb-B.dtb
+> +dtb-$(CONFIG_ARCH_MVEBU) += rd-ac5x.dtb
+> diff --git a/arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi b/arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
+> new file mode 100644
+> index 000000000000..ebe464b9ebd2
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
+> @@ -0,0 +1,343 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Device Tree For AC5.
+> + *
+> + * Copyright (C) 2021 Marvell
+> + *
+> + */
+> +
+> +/dts-v1/;
+> +
+> +#include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +/ {
+> +	model = "Marvell AC5 SoC";
+> +	compatible = "marvell,ac5", "marvell,armada3700";
 
-On 15/03/2022 18:44, German Gomez wrote:
-> On 14/03/2022 18:37, Ali Saidi wrote:
->> Hi German and Leo,
->>
->> On   Mon, 14 Mar 2022 18:00:13 +0000, German Gomez wrote:
->>> Hi Leo, Ali
->>>
->>> On 14/03/2022 06:33, Leo Yan wrote:
->>>> On Sun, Mar 13, 2022 at 07:19:33PM +0000, Ali Saidi wrote:
->>>>
->>>> [...]
->>>>
->>>>>>>> +			if (lvl & P(LVL, L3) || lnum == P(LVLNUM, L4)) {
->>>>>>> According to a comment in the previous patch, using L4 is specific to Neoverse, right?
->>>>>>>
->>>>>>> Maybe we need to distinguish the Neoverse case from the generic one here as well
->>>>>>>
->>>>>>> if (is_neoverse)
->>>>>>> // treat L4 as llc
->>>>>>> else
->>>>>>> // treat L3 as llc
->>>>>> I personally think it's not good idea to distinguish platforms in the decoding code.
->>>>> I agree here. The more we talk about this, the more I'm wondering if we're
->>>>> spending too much code solving a problem that doesn't exist. I know of no
->>>>> Neoverse systems that actually have 4 cache levels, they all actually have three
->>>>> even though it's technically possible to have four.  I have some doubts anyone
->>>>> will actually build four levels of cache and perhaps the most prudent path here
->>>>> is to assume only three levels (and adjust the previous patch) until someone 
->>>>> actually produces a system with four levels instead of a lot of code that is
->>>>> never actually exercised?
->>>> I am not right person to say L4 cache is not implemented in Neoverse
->>>> platforms; my guess for a "System cache" data source might be L3 or
->>>> L4 and it is a implementation dependent.  Maybe German or Arm mates
->>>> could confirm for this.
->>> I had a look at the TRMs for the N1[1], V1[2] and N2[3] Neoverse cores
->>> (specifically the LL_CACHE_RD pmu events). If we were to assign a number
->>> to the system cache (assuming all caches are implemented):
->>>
->>> *For N1*, if L2 and L3 are implemented, system cache would follow at *L4*
->> To date no one has built 4 level though. Everyone has only built three.
-> The N1SDP board advertises 4 levels (we use it regularly for testing perf patches)
+Are you sure about this compatibility with 3700? If so, why not reuse
+the existing file? But the rest of the file tends to show that the SoC
+is somehow different (the PPIs are all over the place -- someone got
+pointlessly creative here...). I'd really drop this string.
 
-That said, it's probably the odd one out.
+> +	interrupt-parent = <&gic>;
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +
+> +	aliases {
+> +		serial0 = &uart0;
+> +		spiflash0 = &spiflash0;
+> +		gpio0 = &gpio0;
+> +		gpio1 = &gpio1;
+> +		ethernet0 = &eth0;
+> +		ethernet1 = &eth1;
+> +	};
+> +
+> +	psci {
+> +		compatible = "arm,psci-0.2";
+> +		method = "smc";
+> +	};
+> +
+> +	timer {
+> +		compatible = "arm,armv8-timer";
+> +		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>,
+> +				 <GIC_PPI 8 IRQ_TYPE_LEVEL_HIGH>,
+> +				 <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>,
+> +				 <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
 
-I'm not against assuming 3 levels. Later if there's is a strong need for L4, indeed we can go back and change it.
+If you have an A55, you're missing an interrupt for the EL2 virtual
+timer.
+
+> +		clock-frequency = <25000000>;
+
+Please drop this. The firmware should do the right thing, and if not,
+that's an opportunity to fix it.
+
+> +	};
+> +
+
+[...]
+
+> +	gic: interrupt-controller@80600000 {
+> +		compatible = "arm,gic-v3";
+> +		#interrupt-cells = <3>;
+> +		interrupt-controller;
+> +		/*#redistributor-regions = <1>;*/
+> +		redistributor-stride = <0x0 0x20000>;	// 128kB stride
+
+Please drop these two lines. They are totally pointless as they are
+only expressing the default values.
+
+> +		reg = <0x0 0x80600000 0x0 0x10000>, /* GICD */
+> +			  <0x0 0x80660000 0x0 0x40000>; /* GICR */
+> +		interrupts = <GIC_PPI 6 IRQ_TYPE_LEVEL_HIGH>;
+> +	};
 
 Thanks,
-German
 
->
-> | $ cat /sys/devices/system/cpu/cpu0/cache/index4/{level,shared_cpu_list}
-> | 4
-> | 0-3
->
-> Would it be a good idea to obtain the system cache level# from sysfs?
->
->>> *For V1 and N2*, if L2 is implemented, system cache would follow at *L3*
->>> (these don't seem to have the same/similar per-cluster L3 cache from the N1)
->> And in the future they're not able to build >3. German and Leo if there aren't
->> strong objections I think the best path forward is for me to respin these
->> assuming only 3 levels and if someone builds 4 in a far-off-future we can always
->> change the implementation then. Agreed?
->>
->> Thanks,
->> Ali
->>
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
