@@ -2,85 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD00C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353589AbiCPFL3 (ORCPT
+        id S1353590AbiCPFSk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 01:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
+        Wed, 16 Mar 2022 01:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbiCPFL1 (ORCPT
+        with ESMTP id S244521AbiCPFSj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 01:11:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3430A41FAB;
-        Tue, 15 Mar 2022 22:10:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 16 Mar 2022 01:18:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB7665BE7D
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:17:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647407844;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8lb7YiG6jmX9H862cki7378pfEtBHK+urmW4PjB20D0=;
+        b=aMmjBAe4fH+8FZwAwAhbhrKdhYUeVw+l02oG4WoN4kZ1o5RzpGXxwvCLnFSeB1UYu0IwGH
+        AS9ysjBa0j70Li+IA6yxin6AgN2X9MF8OwGpEB+xTug2oaXItjg0mswfFVJNoyHChKx2FP
+        CQN17qmvtEMthbjuoFFldyYU8F0WQZM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-640-c6b1-FWcMZuXSH2DwAglVw-1; Wed, 16 Mar 2022 01:17:21 -0400
+X-MC-Unique: c6b1-FWcMZuXSH2DwAglVw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF965B81A42;
-        Wed, 16 Mar 2022 05:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 898B7C340F0;
-        Wed, 16 Mar 2022 05:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647407410;
-        bh=5+kAqeu0Cft15Amj5f6mU/4PCjSG7a4rbxYBTDwIVEM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=UFCZN1Lc6MKr5JaBVxC2vu/BJq2nGG5cq3vxqIIi4UuBQWEbZqi/Q406wQKsr2knF
-         nIGgSuvQQjc6Z+pnBrh3hUpnN1OCOA3CyAuYx5m3HzddJZwE9uECTKJH2g7yN1Tx57
-         TmIllj5yQ+p8wUlAe+KWg97gQnpzaRrQjOEI1/jm+Wppe3hrh4M4dMor4HO5XyE19b
-         P58VLNdyrx2UIlpXdkl1n3KlllfXG3nBKWjJ83GAuAMKtk2k65f8ofykMtMAyrU0nK
-         MdfrxqzwXhZwfeNIvuLZlt83XQSGqHp+INlL77gOOUCFu3MchFDzrlgDCqLU2nypxc
-         vxbFpOoFVVPog==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6D583E6D3DD;
-        Wed, 16 Mar 2022 05:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6652A101AA52;
+        Wed, 16 Mar 2022 05:17:20 +0000 (UTC)
+Received: from localhost (ovpn-13-134.pek2.redhat.com [10.72.13.134])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 608A0440EE1;
+        Wed, 16 Mar 2022 05:17:19 +0000 (UTC)
+Date:   Wed, 16 Mar 2022 13:17:16 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        kexec@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        John Donnelly <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: Re: [PATCH v21 1/5] kdump: return -ENOENT if required cmdline option
+ does not exist
+Message-ID: <YjFy3JU2p5pCmgL+@MiWiFi-R3L-srv>
+References: <20220227030717.1464-1-thunder.leizhen@huawei.com>
+ <20220227030717.1464-2-thunder.leizhen@huawei.com>
+ <YjB/QILintgvo1AL@MiWiFi-R3L-srv>
+ <YjCE0Scp2YiEJXBM@MiWiFi-R3L-srv>
+ <d237a2ae-300c-2c51-d97c-417bdfaa5fda@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] hv_netvsc: Add check for kvmalloc_array
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164740741044.14141.8438133497735845995.git-patchwork-notify@kernel.org>
-Date:   Wed, 16 Mar 2022 05:10:10 +0000
-References: <20220314020125.2365084-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20220314020125.2365084-1-jiasheng@iscas.ac.cn>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     stephen@networkplumber.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d237a2ae-300c-2c51-d97c-417bdfaa5fda@huawei.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 14 Mar 2022 10:01:25 +0800 you wrote:
-> As the potential failure of the kvmalloc_array(),
-> it should be better to check and restore the 'data'
-> if fails in order to avoid the dereference of the
-> NULL pointer.
+On 03/15/22 at 09:32pm, Leizhen (ThunderTown) wrote:
 > 
-> Fixes: 6ae746711263 ("hv_netvsc: Add per-cpu ethtool stats for netvsc")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 > 
-> [...]
+> On 2022/3/15 20:21, Baoquan He wrote:
+> > On 03/15/22 at 07:57pm, Baoquan He wrote:
+> >> On 02/27/22 at 11:07am, Zhen Lei wrote:
+> >>> The crashkernel=Y,low is an optional command-line option. When it doesn't
+> >>> exist, kernel will try to allocate minimum required memory below 4G
+> >>> automatically. Give it a unique error code to distinguish it from other
+> >>> error scenarios.
+> >>>
+> >>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> >>> ---
+> >>>  kernel/crash_core.c | 3 +--
+> >>>  1 file changed, 1 insertion(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+> >>> index 256cf6db573cd09..4d57c03714f4e13 100644
+> >>> --- a/kernel/crash_core.c
+> >>> +++ b/kernel/crash_core.c
+> >>> @@ -243,9 +243,8 @@ static int __init __parse_crashkernel(char *cmdline,
+> >>>  	*crash_base = 0;
+> >>>  
+> >>>  	ck_cmdline = get_last_crashkernel(cmdline, name, suffix);
+> >>> -
+> >>>  	if (!ck_cmdline)
+> >>> -		return -EINVAL;
+> >>> +		return -ENOENT;
+> >>
+> >> Firstly, I am not sure if '-ENOENT' is a right value to return. From the
+> >> code comment of ENOENT, it's used for file or dir?
+> >> #define ENOENT           2      /* No such file or directory */
+> 
+> This error code does not return to user mode, so there is no problem.
+> There are a lot of places in the kernel that are used this way. For example:
+> 
+> int stop_one_cpu(unsigned int cpu, cpu_stop_fn_t fn, void *arg)
+> {
+> 	if (!cpu_stop_queue_work(cpu, &work))
+> 		return -ENOENT;
 
-Here is the summary with links:
-  - [v2] hv_netvsc: Add check for kvmalloc_array
-    https://git.kernel.org/netdev/net/c/886e44c9298a
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+OK, it's fine to me. Thanks for the investigation.
 
