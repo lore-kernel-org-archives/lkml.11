@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65846C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A60BC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356648AbiCPOTH (ORCPT
+        id S1356734AbiCPOTd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
+        Wed, 16 Mar 2022 10:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356614AbiCPOSg (ORCPT
+        with ESMTP id S1356698AbiCPOTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:18:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4744469298;
-        Wed, 16 Mar 2022 07:17:17 -0700 (PDT)
+        Wed, 16 Mar 2022 10:19:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DAA69CD4;
+        Wed, 16 Mar 2022 07:17:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D68276113D;
-        Wed, 16 Mar 2022 14:17:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16C6CC340F0;
-        Wed, 16 Mar 2022 14:17:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E554B81B7C;
+        Wed, 16 Mar 2022 14:17:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAE81C340E9;
+        Wed, 16 Mar 2022 14:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647440236;
-        bh=M9qg1+MP8/boX48RlfUxEw5j6AKp+bmFAwZvpIQBwdA=;
+        s=k20201202; t=1647440247;
+        bh=92c5oGKIW9mRLJNxR3M1moq+pdxQQ9rEzZE5veFZPLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bYhc0aIrTZZlKN8cvii5fr3fmIbOlMtGT15g7UTeKw486yMzJK+FrOLyxfQ45nnUd
-         SzncjWtuomEO8jFDCD5wic9mph+UBMxr6evCkz4ZoFvnXdWRbgZ7VGOtEoi2aC8z1y
-         YqkM/r4KTh1nu7LrLDgFzhmgD5UmZDfvmpG5ZP7ydtPsrB1XQvbnBb2aWmlKJY3OP3
-         yi/SLhSCRDB7n4Va4iTJMJLiVGU2wnvAkVGYfENTZmGoQwgaT0A00NQMuZMEvWrlRr
-         /eKcflnNCdvWf50vNgnXEc/AjV+E/gxSOBaLiEXirbK3gNxJjRrmizKeVy7/g9i2pY
-         +MMcAptrz3aTQ==
+        b=NxDvU5yutwV6gA3tr7XAb5htuB71k6wS3W4JldB2ugH5FZB9/pVU/DUv0Kh+os3K9
+         tmidzCHkhN7PyK0HoNCoWjtUbLKljrG9WEF+7t5fje/FoTUBSC/rCkzzR9yc4iYb4c
+         I3iDFozi1hovZKq5kuO97urU6bzCRaEjeiePBUwg7qoOAdOqXYnKqcIe1pkUWwNRU7
+         za1pHMvL8ewrISo5AY+yGxSpkVDsZYshwj0Pk4E49+WOfa6euuAiVVrV1aEGVLPynZ
+         kxoqidb8VE7zcKKZSDz1czFIw5mBW9HSp3vY4EM8nBI2QotIatdM+1115tqQtuXKMy
+         k9GYPBkwwAJ7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.10 08/12] tools/virtio: fix virtio_test execution
-Date:   Wed, 16 Mar 2022 10:16:32 -0400
-Message-Id: <20220316141636.248324-8-sashal@kernel.org>
+Cc:     Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 10/12] gpio: Revert regression in sysfs-gpio (gpiolib.c)
+Date:   Wed, 16 Mar 2022 10:16:34 -0400
+Message-Id: <20220316141636.248324-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220316141636.248324-1-sashal@kernel.org>
 References: <20220316141636.248324-1-sashal@kernel.org>
@@ -54,36 +53,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
 
-[ Upstream commit 32f1b53fe8f03d962423ba81f8e92af5839814da ]
+[ Upstream commit fc328a7d1fcce263db0b046917a66f3aa6e68719 ]
 
-virtio_test hangs on __vring_new_virtqueue() because `vqs_list_lock`
-is not initialized.
+Some GPIO lines have stopped working after the patch
+commit 2ab73c6d8323f ("gpio: Support GPIO controllers without pin-ranges")
 
-Let's initialize it in vdev_info_init().
+And this has supposedly been fixed in the following patches
+commit 89ad556b7f96a ("gpio: Avoid using pin ranges with !PINCTRL")
+commit 6dbbf84603961 ("gpiolib: Don't free if pin ranges are not defined")
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Link: https://lore.kernel.org/r/20220118150631.167015-1-sgarzare@redhat.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+But an erratic behavior where some GPIO lines work while others do not work
+has been introduced.
+
+This patch reverts those changes so that the sysfs-gpio interface works
+properly again.
+
+Signed-off-by: Marcelo Roberto Jimenez <marcelo.jimenez@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/virtio/virtio_test.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpio/gpiolib.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/tools/virtio/virtio_test.c b/tools/virtio/virtio_test.c
-index cb3f29c09aff..23f142af544a 100644
---- a/tools/virtio/virtio_test.c
-+++ b/tools/virtio/virtio_test.c
-@@ -130,6 +130,7 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
- 	memset(dev, 0, sizeof *dev);
- 	dev->vdev.features = features;
- 	INIT_LIST_HEAD(&dev->vdev.vqs);
-+	spin_lock_init(&dev->vdev.vqs_list_lock);
- 	dev->buf_size = 1024;
- 	dev->buf = malloc(dev->buf_size);
- 	assert(dev->buf);
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index af5bb8fedfea..ac69ec8fb37a 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -1804,11 +1804,6 @@ static inline void gpiochip_irqchip_free_valid_mask(struct gpio_chip *gc)
+  */
+ int gpiochip_generic_request(struct gpio_chip *gc, unsigned offset)
+ {
+-#ifdef CONFIG_PINCTRL
+-	if (list_empty(&gc->gpiodev->pin_ranges))
+-		return 0;
+-#endif
+-
+ 	return pinctrl_gpio_request(gc->gpiodev->base + offset);
+ }
+ EXPORT_SYMBOL_GPL(gpiochip_generic_request);
+@@ -1820,11 +1815,6 @@ EXPORT_SYMBOL_GPL(gpiochip_generic_request);
+  */
+ void gpiochip_generic_free(struct gpio_chip *gc, unsigned offset)
+ {
+-#ifdef CONFIG_PINCTRL
+-	if (list_empty(&gc->gpiodev->pin_ranges))
+-		return;
+-#endif
+-
+ 	pinctrl_gpio_free(gc->gpiodev->base + offset);
+ }
+ EXPORT_SYMBOL_GPL(gpiochip_generic_free);
 -- 
 2.34.1
 
