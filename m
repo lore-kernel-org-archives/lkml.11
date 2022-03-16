@@ -2,125 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C98FCC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFF92C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356980AbiCPQSo (ORCPT
+        id S1357404AbiCPQS5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
+        Wed, 16 Mar 2022 12:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356229AbiCPQSm (ORCPT
+        with ESMTP id S1356229AbiCPQSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:18:42 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC91136302;
-        Wed, 16 Mar 2022 09:17:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647447447; x=1678983447;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hunw0Nfvtf3Ds3vVfeFfVP3FYH5Tn5uXoCg/qsncEpw=;
-  b=YwYBsjCQ0mefQp5SvSOjRbmMh3S3u5f8wkX6VyIEKoLPmEkvme4ImiSC
-   M791ZTBhV9r44YKxxrXSqrNOiKAyB4zczZTGEtbbPVDONQeh/654sQJn1
-   oZiedzROXf33ejgBGqlByZw/7GHWoGyYpxxctPXCyy0g2sjsI3JM0iVfH
-   kBfw7n3Bf4bsNlNCxJSDzxpKYcQ3OHxAi7dE1OpzKN6DS1Qz6K7w+yU9x
-   IHJbivR1pZ/001VH6mfKQMgplIODBrte6Rcy2QKxwSkk4SEM5tmvXdx7y
-   xkdViQSyYWikXdr9TcCrcbAOcRSbYDWFwiLWH52HC6g7JvIyGKzW5BqUm
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="254207215"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="254207215"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:13:02 -0700
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="646721436"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:13:00 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nUWG3-000zQ0-K0;
-        Wed, 16 Mar 2022 18:12:19 +0200
-Date:   Wed, 16 Mar 2022 18:12:19 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, micklorain@protonmail.com
-Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
-Message-ID: <YjIMY1/r15xj65pZ@smile.fi.intel.com>
-References: <YjG7rZ11PP3vWz89@smile.fi.intel.com>
- <20220316115209.GA666450@bhelgaas>
+        Wed, 16 Mar 2022 12:18:55 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E589911A17;
+        Wed, 16 Mar 2022 09:17:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647447460; x=1678983460;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=AVFaJFntyexxQhyOsQBteV8HyEDV0UX5Izwh1Qofwv4=;
+  b=s6h+KJ/aXp9aAgAR6GDK77MWYnfOwmJ9vK37q/dfslVyi2bSQQoXsf8w
+   J0USc2R8uxzEmI1Knei0t45FH9C12aTdm0lM6gj0tLKclqUcRQIQdY5K1
+   PuSqVBglNAn7mVwLOkh+Ld+teQgk/+2UXjsEpno0j81NgLdRlHuybTGwX
+   M=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Mar 2022 09:17:40 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:17:39 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 16 Mar 2022 09:17:39 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 16 Mar 2022 09:17:33 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v12 0/7] Add pin control support for lpass sc7280
+Date:   Wed, 16 Mar 2022 21:46:59 +0530
+Message-ID: <1647447426-23425-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316115209.GA666450@bhelgaas>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 06:52:09AM -0500, Bjorn Helgaas wrote:
-> On Wed, Mar 16, 2022 at 12:27:57PM +0200, Andy Shevchenko wrote:
-> > On Tue, Mar 15, 2022 at 03:22:31PM -0500, Bjorn Helgaas wrote:
-> > > On Tue, Mar 15, 2022 at 12:09:08PM +0200, Andy Shevchenko wrote:
-> > > > On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
-> > > > > On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
-> > > > > > ATI PCIe-USB adapter advertises MSI, but it doesn't work if INTx is disabled.
-> > > > > > Enable the respective quirk as it's done for other ATI devices on this chipset,
-> > > > > > 
-> > > > > > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on PCI devices")
-> > > > > 
-> > > > > This is interesting because there must be a TON of these AMD/ATI SB600
-> > > > > USB devices in the field, and 306c54d0edb6 was merged in July 2020 and
-> > > > > appeared in v5.9.
-> > > > > 
-> > > > > So why would we only get a report now, in February 2022?  Is there
-> > > > > some change more recent than 306c54d0edb6 that exposed this problem?
-> > > > 
-> > > > I think it's a rhetorical question. To me it's as simple as the latency
-> > > > between getting the change into the kernel.
-> > > > 
-> > > > However, I'm a bit worried that in case of ATI there are not so many
-> > > > platforms that are kept up-to-dated.
-> > > 
-> > > This would be a rhetorical question if I were not interested in the
-> > > answer but asking only to make a point.  That's not the case at all.
-> > > 
-> > > If these SB600 USB devices stopped working in v5.9 (October 2020),
-> > > that would affect lots of keyboards and mice, and I would be surprised
-> > > if we didn't hear about it until February, 2022.
-> > > 
-> > > I looked through https://github.com/linuxhw/Dmesg, and there are at
-> > > least 40 dmesg logs from v5.9 or later with SB600 USB, so I'm
-> > > still a little skeptical that 306c54d0edb6 by itself is enough to
-> > > explain this.
-> > > 
-> > > Anyway, I applied this to pci/msi for v5.18 with the following commit
-> > > log:
-> > > 
-> > >     PCI: Disable broken MSI on ATI SB600 USB adapters
-> > > 
-> > >     Some ATI SB600 USB adapters advertise MSI, but MSI doesn't work if INTx is
-> > >     disabled.  Disable MSI on these adapters.
-> > 
-> > But IIUC MSI is _not_ disabled. That's why I have issued this version of the
-> > patch with different commit message. Did I misunderstand something?
-> 
-> Oh, right, of course.  Sorry, I was asleep at the wheel.
+This patch series is to split lpass variant common pin control
+functions and SoC specific functions and to add lpass sc7280 pincontrol support.
+It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
 
-Are you going to fix that?
+Changes Since V11:
+    -- Add pinctrl_generic_remove_group in lpass lpi driver.
+    -- Make proper error handling in lpass lpi driver.
+Changes Since V10:
+    -- Modify driver's custom functions with pin control framework generic functions.
+    -- Update sm8250 and sc7280 pin control depedency list in Kconfig.
+    -- Update commit description of few patches.
+Changes Since V9:
+    -- Add pinctrl groups macro to Kconfig.
+Changes Since V8:
+    -- Remove redundant headers included in v8.
+Changes Since V7:
+    -- Update optional clock voting with conditional check.
+    -- Add const to lpi_pinctrl_variant_data structure.
+    -- Update required headers and remove redundant.
+    -- Change EXPORT_SYMBOL to EXPORT_SYMBOL_GPL
+    -- Fix typo errors.
+Changes Since V6:
+    -- Update conditional clock voting to optional clock voting.
+    -- Update Kconfig depends on field with select.
+    -- Fix typo errors. 
+Changes Since V5:
+    -- Create new patch by updating macro name to lpi specific.
+    -- Create new patch by updating lpi pin group structure with core group_desc structure.
+    -- Fix typo errors.
+    -- Sort macros in the make file and configuration file.
+Changes Since V4:
+    -- Update commit message and description of the chip specific extraction patch.
+    -- Sort macros in kconfig and makefile.
+    -- Update optional clock voting to conditional clock voting.
+    -- Fix typo errors.
+    -- Move to quicinc domain email id's.
+Changes Since V3:
+    -- Update separate Kconfig fields for sm8250 and sc7280.
+    -- Update module license and description.
+    -- Move static variables to corresponding .c files from header file.
 
-> I guess it's just that for these devices, we don't disable INTx when
-> enabling MSI.  I can't remember why we disable INTx when enabling MSI,
-> but it raises the question of whether it's better to leave INTx
-> enabled or to just disable use of MSI completely.
+Changes Since V2:
+    -- Add new dt-bindings for sc7280 lpi driver.
+    -- Make clock voting change as separate patch.
+    -- Split existing pincontrol driver and make common functions 
+       as part of separate file.
+    -- Rename lpass pincontrol lpi dt-bindings to sm8250 specific dt-bindings
+		
+Changes Since V1:
+    -- Make lpi pinctrl variant data structure as constant
+    -- Add appropriate commit message
+    -- Change signedoff by sequence.
 
-It's required by specification to disable INTx if I read 6.1.4.3
-Enabling Operation correctly.
+Srinivasa Rao Mandadapu (7):
+  dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
+  dt-bindings: pinctrl: qcom: Add sc7280 lpass lpi pinctrl bindings
+  pinctrl: qcom: Update macro name to LPI specific
+  pinctrl: qcom: Update lpi pin group custiom functions with framework
+    generic functions
+  pinctrl: qcom: Extract chip specific LPASS LPI code
+  pinctrl: qcom: Add SC7280 lpass pin configuration
+  pinctrl: qcom: Update clock voting as optional
+
+Tested this on SM8250 MTP with WSA and WCD codecs.
+Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+
+ .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 ---------
+ .../pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml     | 115 ++++++++
+ .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++
+ drivers/pinctrl/qcom/Kconfig                       |  19 ++
+ drivers/pinctrl/qcom/Makefile                      |   2 +
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.c           | 309 +++------------------
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.h           |  86 ++++++
+ drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c    | 168 +++++++++++
+ drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c    | 164 +++++++++++
+ 9 files changed, 732 insertions(+), 397 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
+ create mode 100644 drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.7.4
 
