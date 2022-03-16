@@ -2,201 +2,284 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A786C46467
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243047AbiCPPHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:07:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
+        id S1356923AbiCPPH6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346101AbiCPPHO (ORCPT
+        with ESMTP id S1348377AbiCPPHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:07:14 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9798413F89
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:05:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=b52YCWijBdgiWy8YQpKsFW1QFuz5Nt4kd+/HK/JJDiU=; b=AfZCLpaS5g1OYbincZmji6Ix6A
-        KwU9XjqdqImYGx7u6Vdaze6I0xADHlQsuxlQV+Y7rnHZjNcA5MeQXsHEvAExKn9EHhORn0h3Z639T
-        h1I1n6IMhoRMaJH+GiztLvvZdK2XYYt+V3NSut5qaAy1KPdH29MLXGfHAUY5yEbOLzUqxCd0aaVqs
-        qerb2LS/EhJ93FE4t2jhkHudI8DsVrqP83NsBouyJPxEF+5v8Zgy4DYJUFIJshGTYUag02n7EbrDQ
-        vmGMgJmo7gcfTQ9ZXL1bTkhX/fvXH+MgSSAAGI5NMqABmi3f6f+iuz4+b+VIEYl6X2Z65rMcwlhG8
-        15dulC/Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUVDY-0064u2-SB; Wed, 16 Mar 2022 15:05:40 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        Wed, 16 Mar 2022 11:07:43 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF28275DA
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:06:28 -0700 (PDT)
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com [209.85.221.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5D44830021B;
-        Wed, 16 Mar 2022 16:05:40 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 47F442C47F84B; Wed, 16 Mar 2022 16:05:40 +0100 (CET)
-Date:   Wed, 16 Mar 2022 16:05:40 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH V3 3/7] x86/entry: Switch the stack after error_entry()
- returns
-Message-ID: <YjH8xJ3MKosyUl7M@hirez.programming.kicks-ass.net>
-References: <20220315073949.7541-1-jiangshanlai@gmail.com>
- <20220315073949.7541-4-jiangshanlai@gmail.com>
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id A736B3F5F4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:06:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647443187;
+        bh=eRg49AH+ykBZGh1gNDRB4og+6vVHHfVxX3XDNDivrRU=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=rZnFmUC5oEwtwI5O/y3C54D71Ir6ZIfFPOIC95SGnC7a/hkWGdmp/PQyOaZSFFxMt
+         ZvpbTCnYsy5N+sva9ibmVUDuuVlotlKhacX36fcohSSlXuaNp7VI1tH4TIlqjT8sAu
+         lt1wToYdwXlP4+V8URIwYADi8j7uO14YCcQLLA6dLJRoO0jTNENfYjOjHM5qwajtZg
+         bSqfZIsnb1fBGh43Xp2wOOO/MGAn+BQA4uEZcd/Ae92s0vzXzfjhihllnso0RX2E3K
+         TP8ESc7fOkFYoI8KWx7xQ3qSGw02FZMemaBNPL5fHNb80sc/dxd6HJA5RM8dPaYuM9
+         WhttU0kDhBS+g==
+Received: by mail-wr1-f71.google.com with SMTP id 8-20020adf8108000000b00203d97ba415so669904wrm.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:06:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=eRg49AH+ykBZGh1gNDRB4og+6vVHHfVxX3XDNDivrRU=;
+        b=p/Ifqu206heqARv7HjGue4eEEbLa13Yt+ojXWTOMWvED6mD29EvE9LSi9ZRU3qYEn1
+         j06vc+UQfFhEJh2c+coCmOnxX+AuZEuGksJWcMRhmEAHlzGHRTl8EsPW5T1FE8jstz6X
+         QxDX1qB0EZkXHWGCh3tWBInUX9pvWC+amu30jBIEo5T/dktl+gwxtgDHzHitXlXuifDE
+         KNeRD5/L5HlVohHeAgVHz9ErXoO8NAoS4Me1bRHbWqeNHUogH37Qs8ppHUQq8jY4L2Bg
+         QDNMPkJS1qXzPqX5CP8d270XtbKCgjJV2YKnK0VKEA2Q2t8fiJf8shkUGccfY014rF8x
+         WU6A==
+X-Gm-Message-State: AOAM530wyI2Aex/R9N24VqVcCierv0y8yJ2Z/If5E60Y9Sp2z7/+dlzI
+        A+I8Vrq0dksk3+FvNHEInKHYhXXwVwVIwZkyiB/PyNs4YvypzEYs/Fn6I5VQNd+wBIfX+EJszHZ
+        Q0J5vapyqZ6fG7EW5UjNaFwdmj5nl4jcJ/3/qB8VN7A==
+X-Received: by 2002:adf:d081:0:b0:1ef:9378:b7cc with SMTP id y1-20020adfd081000000b001ef9378b7ccmr291116wrh.407.1647443186733;
+        Wed, 16 Mar 2022 08:06:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyDNmFS8Lm1qpNhyLNM0PQQ6xJZzdkhX7csz79UNfI868MUEUVc3OffUE9Xg2b3eJcN4JLGWg==
+X-Received: by 2002:adf:d081:0:b0:1ef:9378:b7cc with SMTP id y1-20020adfd081000000b001ef9378b7ccmr291084wrh.407.1647443186498;
+        Wed, 16 Mar 2022 08:06:26 -0700 (PDT)
+Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id p14-20020a5d59ae000000b00203dcc87d39sm3130155wrr.54.2022.03.16.08.06.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 08:06:25 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Stuart Yoder <stuyoder@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v5 01/11] driver: platform: Add helper for safer setting of driver_override
+Date:   Wed, 16 Mar 2022 16:05:23 +0100
+Message-Id: <20220316150533.421349-2-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
+References: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315073949.7541-4-jiangshanlai@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 03:39:45PM +0800, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> 
-> error_entry() calls sync_regs() to settle/copy the pt_regs and switches
-> the stack directly after sync_regs().  But error_entry() itself is also
-> a function call, the switching has to handle the return address of it
-> together, which causes the work complicated and tangly.
-> 
-> Switching to the stack after error_entry() makes the code simpler and
-> intuitive.
-> 
-> The behavior/logic is unchanged:
->   1) (opt) feed fixup_bad_iret() with the pt_regs pushed by ASM code
->   2) (opt) fixup_bad_iret() moves the partial pt_regs up
->   3) feed sync_regs() with the pt_regs pushed by ASM code or returned
->      by fixup_bad_iret()
->   4) sync_regs() copies the whole pt_regs to kernel stack if needed
->   5) after error_entry() and switching %rsp, it is in kernel stack with
->      the pt_regs
-> 
-> Changes only in calling:
->   Old code switches to copied pt_regs immediately twice in
->   error_entry() while new code switches to the copied pt_regs only
->   once after error_entry() returns.
->   It is correct since sync_regs() doesn't need to be called close
->   to the pt_regs it handles.
-> 
->   Old code stashes the return-address of error_entry() in a scratch
->   register and new code doesn't stash it.
->   It relies on the fact that fixup_bad_iret() and sync_regs() don't
->   corrupt the return-address of error_entry() on the stack.  But even
->   the old code also relies on the fact that fixup_bad_iret() and
->   sync_regs() don't corrupt the return-address of themselves.
->   They are the same reliances and are assured.
-> 
-> After this change, error_entry() will not do fancy things with the stack
-> except when in the prolog which will be fixed in the next patch ("move
-> PUSH_AND_CLEAR_REGS out of error_entry").  This patch and the next patch
-> can't be swapped because the next patch relies on this patch's stopping
-> fiddling with the return-address of error_entry(), otherwise the objtool
-> would complain.
-> 
-> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> ---
->  arch/x86/entry/entry_64.S | 16 ++++++----------
->  1 file changed, 6 insertions(+), 10 deletions(-)
-> 
-> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-> index 37505331b7f1..7768cdd0c7ed 100644
-> --- a/arch/x86/entry/entry_64.S
-> +++ b/arch/x86/entry/entry_64.S
-> @@ -326,6 +326,8 @@ SYM_CODE_END(ret_from_fork)
->  .macro idtentry_body cfunc has_error_code:req
->  
->  	call	error_entry
-> +	movq	%rax, %rsp			/* switch stack settled by sync_regs() */
-> +	ENCODE_FRAME_POINTER
->  	UNWIND_HINT_REGS
->  
->  	movq	%rsp, %rdi			/* pt_regs pointer into 1st argument*/
-> @@ -1014,14 +1016,10 @@ SYM_CODE_START_LOCAL(error_entry)
->  	/* We have user CR3.  Change to kernel CR3. */
->  	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
->  
-> +	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
->  .Lerror_entry_from_usermode_after_swapgs:
->  	/* Put us onto the real thread stack. */
-> -	popq	%r12				/* save return addr in %12 */
-> -	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
->  	call	sync_regs
-> -	movq	%rax, %rsp			/* switch stack */
-> -	ENCODE_FRAME_POINTER
-> -	pushq	%r12
->  	RET
->  
->  	/*
-> @@ -1053,6 +1051,7 @@ SYM_CODE_START_LOCAL(error_entry)
->  	 */
->  .Lerror_entry_done_lfence:
->  	FENCE_SWAPGS_KERNEL_ENTRY
-> +	leaq	8(%rsp), %rax			/* return pt_regs pointer */
->  	RET
->  
->  .Lbstep_iret:
-> @@ -1073,12 +1072,9 @@ SYM_CODE_START_LOCAL(error_entry)
->  	 * Pretend that the exception came from user mode: set up pt_regs
->  	 * as if we faulted immediately after IRET.
->  	 */
-> -	popq	%r12				/* save return addr in %12 */
-> -	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
-> +	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
->  	call	fixup_bad_iret
-> -	mov	%rax, %rsp
-> -	ENCODE_FRAME_POINTER
-> -	pushq	%r12
-> +	mov	%rax, %rdi
->  	jmp	.Lerror_entry_from_usermode_after_swapgs
->  SYM_CODE_END(error_entry)
+Several core drivers and buses expect that driver_override is a
+dynamically allocated memory thus later they can kfree() it.
 
-So the new Changelog doesn't seem to help me much. But looking at both
-fixup_bad_iret() and sync_regs(), they both have:
+However such assumption is not documented, there were in the past and
+there are already users setting it to a string literal. This leads to
+kfree() of static memory during device release (e.g. in error paths or
+during unbind):
 
-  __this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1
+    kernel BUG at ../mm/slub.c:3960!
+    Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+    ...
+    (kfree) from [<c058da50>] (platform_device_release+0x88/0xb4)
+    (platform_device_release) from [<c0585be0>] (device_release+0x2c/0x90)
+    (device_release) from [<c0a69050>] (kobject_put+0xec/0x20c)
+    (kobject_put) from [<c0f2f120>] (exynos5_clk_probe+0x154/0x18c)
+    (exynos5_clk_probe) from [<c058de70>] (platform_drv_probe+0x6c/0xa4)
+    (platform_drv_probe) from [<c058b7ac>] (really_probe+0x280/0x414)
+    (really_probe) from [<c058baf4>] (driver_probe_device+0x78/0x1c4)
+    (driver_probe_device) from [<c0589854>] (bus_for_each_drv+0x74/0xb8)
+    (bus_for_each_drv) from [<c058b48c>] (__device_attach+0xd4/0x16c)
+    (__device_attach) from [<c058a638>] (bus_probe_device+0x88/0x90)
+    (bus_probe_device) from [<c05871fc>] (device_add+0x3dc/0x62c)
+    (device_add) from [<c075ff10>] (of_platform_device_create_pdata+0x94/0xbc)
+    (of_platform_device_create_pdata) from [<c07600ec>] (of_platform_bus_create+0x1a8/0x4fc)
+    (of_platform_bus_create) from [<c0760150>] (of_platform_bus_create+0x20c/0x4fc)
+    (of_platform_bus_create) from [<c07605f0>] (of_platform_populate+0x84/0x118)
+    (of_platform_populate) from [<c0f3c964>] (of_platform_default_populate_init+0xa0/0xb8)
+    (of_platform_default_populate_init) from [<c01031f8>] (do_one_initcall+0x8c/0x404)
 
-as hard-coded destination. Now, fixup_bad_iret() sets up a complete
-ptregs there and then returns a pointer to this stack.
+Provide a helper which clearly documents the usage of driver_override.
+This will allow later to reuse the helper and reduce the amount of
+duplicated code.
 
-sync_regs otoh, does a straight up pt_regs sized copy from arg0 to this
-new stack.
+Convert the platform driver to use a new helper and make the
+driver_override field const char (it is not modified by the core).
 
-Therefore it appears to me that doing sync_regs() after fixup_bad_iret()
-is a complete NO-OP and only confuses things further.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+---
+ drivers/base/driver.c           | 56 +++++++++++++++++++++++++++++++++
+ drivers/base/platform.c         | 28 +++--------------
+ include/linux/device/driver.h   |  2 ++
+ include/linux/platform_device.h |  6 +++-
+ 4 files changed, 67 insertions(+), 25 deletions(-)
 
-Would not something like the below clarify things?
-
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -1004,6 +1004,7 @@ SYM_CODE_START_LOCAL(error_entry)
- .Lerror_entry_from_usermode_after_swapgs:
- 	/* Put us onto the real thread stack. */
- 	call	sync_regs
-+.Lerror_entry_from_usermode_after_sync_regs:
- 	RET
+diff --git a/drivers/base/driver.c b/drivers/base/driver.c
+index 8c0d33e182fd..d51df6d80829 100644
+--- a/drivers/base/driver.c
++++ b/drivers/base/driver.c
+@@ -30,6 +30,62 @@ static struct device *next_device(struct klist_iter *i)
+ 	return dev;
+ }
  
- 	/*
-@@ -1058,8 +1059,12 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 */
- 	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- 	call	fixup_bad_iret
--	mov	%rax, %rdi
--	jmp	.Lerror_entry_from_usermode_after_swapgs
++/**
++ * driver_set_override() - Helper to set or clear driver override.
++ * @dev: Device to change
++ * @override: Address of string to change (e.g. &device->driver_override);
++ *            The contents will be freed and hold newly allocated override.
++ * @s: NUL-terminated string, new driver name to force a match, pass empty
++ *     string to clear it
++ * @len: length of @s
++ *
++ * Helper to set or clear driver override in a device, intended for the cases
++ * when the driver_override field is allocated by driver/bus code.
++ *
++ * Returns: 0 on success or a negative error code on failure.
++ */
++int driver_set_override(struct device *dev, const char **override,
++			const char *s, size_t len)
++{
++	const char *new, *old;
++	char *cp;
++
++	if (!dev || !override || !s)
++		return -EINVAL;
++
 +	/*
-+	 * fixup_bad_iret() will have setup pt_regs on the thread stack, and
-+	 * returns a pointer to that stack exactly like sync_regs() would've
-+	 * done. As such, calling sync_regs again makes no sense.
++	 * The stored value will be used in sysfs show callback (sysfs_emit()),
++	 * which has a length limit of PAGE_SIZE and adds a trailing newline.
++	 * Thus we can store one character less to avoid truncation during sysfs
++	 * show.
 +	 */
-+	jmp	.Lerror_entry_from_usermode_after_sync_regs
- SYM_CODE_END(error_entry)
++	if (len >= (PAGE_SIZE - 1))
++		return -EINVAL;
++
++	cp = strnchr(s, len, '\n');
++	if (cp)
++		len = cp - s;
++
++	new = kstrndup(s, len, GFP_KERNEL);
++	if (!new)
++		return -ENOMEM;
++
++	device_lock(dev);
++	old = *override;
++	if (cp != s) {
++		*override = new;
++	} else {
++		kfree(new);
++		*override = NULL;
++	}
++	device_unlock(dev);
++
++	kfree(old);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(driver_set_override);
++
+ /**
+  * driver_for_each_device - Iterator for devices bound to a driver.
+  * @drv: Driver we're iterating.
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 8cc272fd5c99..b684157b7f2f 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1275,31 +1275,11 @@ static ssize_t driver_override_store(struct device *dev,
+ 				     const char *buf, size_t count)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+-	char *driver_override, *old, *cp;
+-
+-	/* We need to keep extra room for a newline */
+-	if (count >= (PAGE_SIZE - 1))
+-		return -EINVAL;
+-
+-	driver_override = kstrndup(buf, count, GFP_KERNEL);
+-	if (!driver_override)
+-		return -ENOMEM;
+-
+-	cp = strchr(driver_override, '\n');
+-	if (cp)
+-		*cp = '\0';
+-
+-	device_lock(dev);
+-	old = pdev->driver_override;
+-	if (strlen(driver_override)) {
+-		pdev->driver_override = driver_override;
+-	} else {
+-		kfree(driver_override);
+-		pdev->driver_override = NULL;
+-	}
+-	device_unlock(dev);
++	int ret;
  
- SYM_CODE_START_LOCAL(error_return)
+-	kfree(old);
++	ret = driver_set_override(dev, &pdev->driver_override, buf, count);
++	if (ret)
++		return ret;
+ 
+ 	return count;
+ }
+diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
+index 15e7c5e15d62..700453017e1c 100644
+--- a/include/linux/device/driver.h
++++ b/include/linux/device/driver.h
+@@ -151,6 +151,8 @@ extern int __must_check driver_create_file(struct device_driver *driver,
+ extern void driver_remove_file(struct device_driver *driver,
+ 			       const struct driver_attribute *attr);
+ 
++int driver_set_override(struct device *dev, const char **override,
++			const char *s, size_t len);
+ extern int __must_check driver_for_each_device(struct device_driver *drv,
+ 					       struct device *start,
+ 					       void *data,
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index 7c96f169d274..582d83ed9a91 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -31,7 +31,11 @@ struct platform_device {
+ 	struct resource	*resource;
+ 
+ 	const struct platform_device_id	*id_entry;
+-	char *driver_override; /* Driver name to force a match */
++	/*
++	 * Driver name to force a match.  Do not set directly, because core
++	 * frees it.  Use driver_set_override() to set or clear it.
++	 */
++	const char *driver_override;
+ 
+ 	/* MFD cell pointer */
+ 	struct mfd_cell *mfd_cell;
+-- 
+2.32.0
+
