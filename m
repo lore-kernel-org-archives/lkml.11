@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B48AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234562AbiCPPoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:44:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42688 "EHLO
+        id S1357297AbiCPPos (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357294AbiCPPoO (ORCPT
+        with ESMTP id S1350516AbiCPPoo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:44:14 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E3713E1A;
-        Wed, 16 Mar 2022 08:42:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647445376; x=1678981376;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=Ixp7OhMpuLHg7wYtSO0RbosnpcFuNIgV6KAlovOHN5A=;
-  b=GHYvDGzSF9aScylHgvCprSxFoYbsmMcrk642cQFTR+uaG+RPXyNYTsGl
-   ZlExH/teClHc4NY5eAGRdDR3K6SyevC2PM2EY18Nnw9KoD8DPoT9aonME
-   uUyDCXJacBElgK6Wgbv0Kk7obaFgLaE9gCz0bpxCO1q9bK1VERWUgD54R
-   Beb7iGthWP8/IVZiDp4io/AHuQangmz47S97Y6mEWbgQagWaXCA6ZN3p0
-   73R+knLWJzOPfM4nyvxNq6KUV38EWn60Mi+L0pM7Vah+OSbrV9izuSy+Z
-   1/sy2qf3EuHfaAJODtE61s0AAQUv/EKHnRHn4g1/UKoIKnMVgYWWrCegZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="281418833"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="281418833"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:42:40 -0700
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="557506601"
-Received: from jdwaldem-mobl.amr.corp.intel.com (HELO [10.255.228.230]) ([10.255.228.230])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:42:40 -0700
-Message-ID: <947c4872-df94-0091-ebbf-b733db4bd9d6@intel.com>
-Date:   Wed, 16 Mar 2022 08:42:33 -0700
+        Wed, 16 Mar 2022 11:44:44 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0422333E14;
+        Wed, 16 Mar 2022 08:43:30 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id a17so2190726edm.9;
+        Wed, 16 Mar 2022 08:43:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EL8SPq0tFGKKMPZ6eWOoFq+B8Y0BC0Wp+VatKXyZsfg=;
+        b=ilg6KEssa9OxmAVaCZokfR8oveD05mfB2MjaDdtdZDOfsQ8sQhGe7i4Kx/aNPa6aPN
+         gZaH2xA2LCFpFjnLburwk2rSVaaHfJWl7tneHlobMqwkLCp1J8K436Em9pJ1qtJZ2Ke9
+         EyfTt9OU2rZeJkRMM3WOn+N2v/uuTYHumXN6/gT1/dJsAVb0E9YOyWXBgqZ1N5VZWicf
+         M0iRhMGMw00HQRdkqTL7JCNDHDGH8lI5SAvVSF/rCkosc61ZFPo4MZl5yjZ/7mBocWif
+         qT32n/kYN+lHVmHwMc/PXDLArbUcnVL3RGRh+PNMXdbQQTwzwQveo3K+keBGR+d4F9dE
+         lXBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EL8SPq0tFGKKMPZ6eWOoFq+B8Y0BC0Wp+VatKXyZsfg=;
+        b=wn5Jb/B035EuqEclqzv1VahJJpZ5/PZVIo5TBux/z6DX215rLE3Cq0DDHGS1pBu5j1
+         QuKdE8ozbjw7UYYmDTVsvAxGMyjJq3YimBUo8kfAgSY4sTtEtujwQxeS4zeUWuOpJ4CM
+         42MObuamw6YTsSK/9uSLt3w6XFgwqSjrdYqHbEg3u/WwFCRcCZA5gfn5vgkMiqIWLgyg
+         Yt5ujiQlLcog1lZOTbA5ag422qm2FDU7WujfYYIBgs7BjgtRzpl52rJpACIr8wb9s7Xn
+         spSO3MEHfJsoINgKbNjW/QLc8uOGQF/6B0HP4GmMnpQEl3sNbe0qFXwK8nDQcatQuExV
+         p9ZQ==
+X-Gm-Message-State: AOAM533Ir0TbiMrCw9B0uf3XCzu0s/5nb4ou2mzUIVk5qL9INDMUHz1S
+        MPCLt5RiDMUt6ETGhUCPOKv6OYVT2N32nWygVhQ=
+X-Google-Smtp-Source: ABdhPJybEl1wu5fLBjs9JJKe9wXxnEFgIV4wrI5bCRrEaFk7ObVhQKonoGWk2+0ayUXt+GkwD9+hDw5opq0w5monWKQ=
+X-Received: by 2002:aa7:da93:0:b0:416:4aca:bef7 with SMTP id
+ q19-20020aa7da93000000b004164acabef7mr111360eds.296.1647445408611; Wed, 16
+ Mar 2022 08:43:28 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Jethro Beekman <jethro@fortanix.com>,
-        Cathy Zhang <cathy.zhang@intel.com>, linux-sgx@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ashok.raj@intel.com
-References: <20220315010300.10199-1-cathy.zhang@intel.com>
- <20220315010300.10199-10-cathy.zhang@intel.com>
- <53e7d3a3-a576-7ef1-fa2d-d170fa1172a1@fortanix.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [RFC PATCH v2 09/10] x86/cpu: Call ENCLS[EUPDATESVN] procedure in
- microcode update
-In-Reply-To: <53e7d3a3-a576-7ef1-fa2d-d170fa1172a1@fortanix.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220316064716.16587-1-linmq006@gmail.com> <CAHp75Veae=8Ev-xU3zbVYh=AxbAPFayZD3MeRSrAGNNZ8LMBPg@mail.gmail.com>
+ <20220316071841.GA43@VICKYMQLIN-NB1.localdomain>
+In-Reply-To: <20220316071841.GA43@VICKYMQLIN-NB1.localdomain>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 16 Mar 2022 17:42:15 +0200
+Message-ID: <CAHp75Ve+tkrzzz3ZjhexW4eRXXCjejh=w=uTbb4Vuo6XL6jP3Q@mail.gmail.com>
+Subject: Re: [PATCH] i2c: busses: Fix error handling in synquacer_i2c_probe
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, Wolfram Sang <wsa@kernel.org>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/16/22 02:46, Jethro Beekman wrote:
->> +void update_cpusvn_intel(void) +{ +	sgx_lock_epc(); +	if
->> (sgx_zap_pages())
-> Doing this automatically and unconditionally during a microcode
-> update seems undesirable. This requires the userland tooling that is
-> coordinating the microcode update to be aware of any SGX enclaves
-> that are running and possibly coordinate sequencing with the
-> processes containing those enclaves. This coupling does not exist
-> today.
+On Wed, Mar 16, 2022 at 9:18 AM Miaoqian Lin <linmq006@gmail.com> wrote:
+>
+> Hi, Andy Shevchenko
+>
+> On Wed, Mar 16, 2022 at 09:04:06AM +0200, Andy Shevchenko wrote:
+> >
+> > > In the error handling path, the clk_prepare_enable() function
+> > > call should be balanced by a corresponding 'clk_disable_unprepare()'
+> > > call, as already done in the remove function.
+> >
+> >
+> > It=E2=80=99s not good to mix devm approach with non-devm.
+> >
+> Thanks for your review. I'm sorry, I don't quite understand. Could you pl=
+ease explain more? What functions are your referring to? Thanks.
 
-"Today" in what?
+Your entire patch is broken. The error handling in ->probe() and
+complete ->remove() now have asymmetrical ordering.
 
-If a microcode update changes SGX behavior and bumps CPUSVN, it's
-fundamentally incompatible with letting enclaves continue to run.  They
-might as well be killed.
+On top of that the CCF is NULL aware (and error pointer IIRC), so no
+need to have additional checks.
 
-But, seriously, if you can't handle enclaves being killed every few
-months, don't use SGX.  The architecture doesn't allow data to be
-persistent like normal x86.  It's fundamental to the architecture.  You
-can also think of this as a shiny new SGX *testing* feature: one that
-keeps enclave owners from becoming complacent and forgetting about what
-the SGX architecture provides.
+--=20
+With Best Regards,
+Andy Shevchenko
