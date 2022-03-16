@@ -2,126 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91362C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:25:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351357AbiCPH0X (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 03:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45466 "EHLO
+        id S241928AbiCPH0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 03:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242653AbiCPH0V (ORCPT
+        with ESMTP id S237911AbiCPH02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 03:26:21 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16C0B5F8DE
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:25:05 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id r10so1641120wrp.3
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:25:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=8BgdaLCDN6ytbgA7o8PQn3N09wAKTlqYsotJMbZ94HQ=;
-        b=t7PLX2bnFJvh2OuH8ldQ3pGj0uGpLjvI9yGGDUiqTDd7SSumcM4cnuTcNRyMpaRwAC
-         h5HtFuQ/ZdMrdt2qM+73TPfgoqxj+IcVeFIA256djzYWu7ghKi5saQi0lFK3vl71MPD1
-         02oa4G8StCr3dhefjZqhhiTuzY/JBONjGDmZTPnsxwlf2yb1U/mztbaxUu2ndWHRXc7q
-         +WWXFgf4jFI/4r3oUahqOe+JpxT03Ep9hmPGg3S83ztNt8A2YPQqgPIjE09lYpOjIBT9
-         4GMdGjAX1+hIFKtm0KnIyuYypZghIOV5P6DTbMmIVJ5HufNysqVkMaEI/nklElepRLn4
-         Edaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=8BgdaLCDN6ytbgA7o8PQn3N09wAKTlqYsotJMbZ94HQ=;
-        b=jSFnaP/DYpdeAN8406KXso4YkVPOo48ncm3EQj5U56EmOUMHyyYhIWiy3h5fZOxdVO
-         hcuYAjMQQkQIYl8KJKLHhjZRitU4s3BUysIOR1LgJdj7+l11jGI2w91O47VMu50B8pHx
-         DggmAHcIWQ0ca/LxCpuFjjm8BmtjWYKvfDnkVKz1WbQxvob8gHqsK/BI2O0+OvbkX8D0
-         tv712SligXUNaJ9V5v30cRKkU2LO64ceGs9k62WiR0tQMi0j335PBN9u06Jgwwi6ONb8
-         HHIu5bnIvW24E7iZvXBW1YksGlyP/Pgn9IBdl9JJjXh0SjevxZHluJGGH1FFW5imluzS
-         Klzg==
-X-Gm-Message-State: AOAM532uYKl6wiUxNu+AYil7MrHGtxglIWh6RWaCxwGN7FHrU8P4OD5s
-        3BaaLRKiSQyFH7gXdj+vTqY/yw==
-X-Google-Smtp-Source: ABdhPJwUBkwggjNof9CJhQ+Bfj+6ZOtK4GoDq5/024E6T6MIY1EyUUZpVIGGx2JSQ6fwq8YH99lWww==
-X-Received: by 2002:adf:e38f:0:b0:1f0:3383:77d9 with SMTP id e15-20020adfe38f000000b001f0338377d9mr22651010wrm.599.1647415504002;
-        Wed, 16 Mar 2022 00:25:04 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id p14-20020a5d59ae000000b00203dcc87d39sm1559468wrr.54.2022.03.16.00.25.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 00:25:03 -0700 (PDT)
-Date:   Wed, 16 Mar 2022 07:25:01 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Benson Leung <bleung@chromium.org>,
-        linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Guenter Roeck <groeck@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Craig Hesling <hesling@chromium.org>,
-        Tom Hughes <tomhughes@chromium.org>,
-        Alexandru M Stan <amstan@chromium.org>
-Subject: Re: [PATCH 1/2] dt-bindings: mfd: Add ChromeOS fingerprint binding
-Message-ID: <YjGQzeIz7kGPOV1H@google.com>
-References: <20220314232214.4183078-1-swboyd@chromium.org>
- <20220314232214.4183078-2-swboyd@chromium.org>
- <e7f9466e-03c9-7754-0dc6-a04823d1047a@canonical.com>
- <YjB0JOKysPpg2KGF@google.com>
- <9ec3c26a-3b85-4bea-5a5b-de9ac570cfca@canonical.com>
- <YjB46Sq3IwvgR8MB@google.com>
- <CAE-0n51uDh2Cf_wGpAVH1t=T0A1eTT=+KU3WMtxtyPL3kLDAdA@mail.gmail.com>
- <YjC1OLsB8/JXLEzF@google.com>
- <CAE-0n511YyyfXoCOKpzm3ca0-sE9_wpby31XDu-eGQts=-kV2Q@mail.gmail.com>
+        Wed, 16 Mar 2022 03:26:28 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A74A5F8E0
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:25:14 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJMFr53KvzfZ59;
+        Wed, 16 Mar 2022 15:23:44 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 15:25:11 +0800
+Subject: Re: [PATCH v3] mm/hwpoison: set PageHWPoison after passing prechecks
+ in memory_failure_hugetlb()
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        <linux-kernel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+References: <20220316014534.224447-1-naoya.horiguchi@linux.dev>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <f00b5628-41e2-6d8f-f112-e20e6931f67f@huawei.com>
+Date:   Wed, 16 Mar 2022 15:25:11 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE-0n511YyyfXoCOKpzm3ca0-sE9_wpby31XDu-eGQts=-kV2Q@mail.gmail.com>
+In-Reply-To: <20220316014534.224447-1-naoya.horiguchi@linux.dev>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 15 Mar 2022, Stephen Boyd wrote:
-
-> Quoting Lee Jones (2022-03-15 08:48:08)
-> > On Tue, 15 Mar 2022, Stephen Boyd wrote:
-> >
-> > > Quoting Lee Jones (2022-03-15 04:30:49)
-> > > > It's tough to say from what I was sent above.
-> > > >
-> > > > But yes, sounds like it.
-> > > >
-> > > > We do not want any device 'functionality' in MFD ideally.
-> > > >
-> > >
-> > > I put it next to the existing cros-ec binding. The existing binding is
-> > > there because of historical reasons as far as I know. Otherwise it
-> > > didn't seem MFD related so I didn't Cc mfd maintainer/list. New file
-> > > additions don't usually conflict with anything and this is in the
-> > > bindings directory so the driver side maintainer would be picking up the
-> > > binding.
-> >
-> > That's not how it works unfortunately.
-> >
-> > This file is located in the MFD bindings directory, so I would be
-> > picking it up (if it ends up staying here).
+On 2022/3/16 9:45, Naoya Horiguchi wrote:
+> From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 > 
-> The way it works is arbitrary 
+> There is a race condition between memory_failure_hugetlb() and hugetlb
+> free/demotion, which causes setting PageHWPoison flag on the wrong page
+> (which was a hugetlb when memory_failure() was called, but was removed
+> or demoted when memory_failure_hugetlb() is called).  This results in
+> killing wrong processes.  So set PageHWPoison flag after passing prechecks.
+> 
+> The actual user-visible effect might be obscure because even if
+> memory_failure() works as expected, some random process could be killed.
+> Even worse, the actual error is left unhandled, so no one prevents later
+> access to it, which might lead to more serious results like consuming
+> corrupted data.
+> 
+> This patch depends on Miaohe's patch titled "mm/memory-failure.c: fix
+> race with changing page compound again".
+> 
+> Reported-by: Mike Kravetz <mike.kravetz@oracle.com>
+> Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+> Cc: <stable@vger.kernel.org>
 
-Correct.
+This patch looks good to me. Many thanks!
 
-> and up to maintainer's choice.
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-Which *should* be reflected in MAINTAINERS and by extension
-get_maintainer.pl.  As is the case here.  :)
+> ---
+> ChangeLog v2 -> v3:
+> - rename the patch because page lock is not the primary factor to
+>   solve the reported issue.
+> - updated description in the same manner.
+> - call page_handle_poison() instead of __page_handle_poison() for
+>   free hugepage case.
+> - reorder put_page and unlock_page (thanks to Miaohe Lin)
+> 
+> ChangeLog v1 -> v2:
+> - pass subpage to get_hwpoison_huge_page() instead of head page.
+> - call compound_head() in hugetlb_lock to avoid race with hugetlb
+>   demotion/free.
+> ---
+>  mm/hugetlb.c        |  8 +++++---
+>  mm/memory-failure.c | 43 +++++++++++++++++++++----------------------
+>  2 files changed, 26 insertions(+), 25 deletions(-)
+> 
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index f294db835f4b..345fed90842e 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -6761,14 +6761,16 @@ bool isolate_huge_page(struct page *page, struct list_head *list)
+>  
+>  int get_hwpoison_huge_page(struct page *page, bool *hugetlb)
+>  {
+> +	struct page *head;
+>  	int ret = 0;
+>  
+>  	*hugetlb = false;
+>  	spin_lock_irq(&hugetlb_lock);
+> -	if (PageHeadHuge(page)) {
+> +	head = compound_head(page);
+> +	if (PageHeadHuge(head)) {
+>  		*hugetlb = true;
+> -		if (HPageFreed(page) || HPageMigratable(page))
+> -			ret = get_page_unless_zero(page);
+> +		if (HPageFreed(head) || HPageMigratable(head))
+> +			ret = get_page_unless_zero(head);
+>  		else
+>  			ret = -EBUSY;
+>  	}
+> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+> index a9bfd04d2a3c..c66d75b45864 100644
+> --- a/mm/memory-failure.c
+> +++ b/mm/memory-failure.c
+> @@ -1193,7 +1193,7 @@ static int __get_hwpoison_page(struct page *page, unsigned long flags)
+>  	int ret = 0;
+>  	bool hugetlb = false;
+>  
+> -	ret = get_hwpoison_huge_page(head, &hugetlb);
+> +	ret = get_hwpoison_huge_page(page, &hugetlb);
+>  	if (hugetlb)
+>  		return ret;
+>  
+> @@ -1280,11 +1280,10 @@ static int get_any_page(struct page *p, unsigned long flags)
+>  
+>  static int __get_unpoison_page(struct page *page)
+>  {
+> -	struct page *head = compound_head(page);
+>  	int ret = 0;
+>  	bool hugetlb = false;
+>  
+> -	ret = get_hwpoison_huge_page(head, &hugetlb);
+> +	ret = get_hwpoison_huge_page(page, &hugetlb);
+>  	if (hugetlb)
+>  		return ret;
+>  
+> @@ -1502,34 +1501,21 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
+>  	struct page *head = compound_head(p);
+>  	int res;
+>  	unsigned long page_flags;
+> -
+> -	if (TestSetPageHWPoison(head)) {
+> -		pr_err("Memory failure: %#lx: already hardware poisoned\n",
+> -		       pfn);
+> -		res = -EHWPOISON;
+> -		if (flags & MF_ACTION_REQUIRED)
+> -			res = kill_accessing_process(current, page_to_pfn(head), flags);
+> -		return res;
+> -	}
+> -
+> -	num_poisoned_pages_inc();
+> +	bool put = false;
+> +	bool already_hwpoisoned = false;
+>  
+>  	if (!(flags & MF_COUNT_INCREASED)) {
+>  		res = get_hwpoison_page(p, flags);
+>  		if (!res) {
+>  			lock_page(head);
+>  			if (hwpoison_filter(p)) {
+> -				if (TestClearPageHWPoison(head))
+> -					num_poisoned_pages_dec();
+>  				unlock_page(head);
+>  				return -EOPNOTSUPP;
+>  			}
+>  			unlock_page(head);
+>  			res = MF_FAILED;
+> -			if (__page_handle_poison(p)) {
+> -				page_ref_inc(p);
+> +			if (page_handle_poison(p, true, false))
+>  				res = MF_RECOVERED;
+> -			}
+>  			action_result(pfn, MF_MSG_FREE_HUGE, res);
+>  			return res == MF_RECOVERED ? 0 : -EBUSY;
+>  		} else if (res < 0) {
+> @@ -1553,13 +1539,18 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
+>  	page_flags = head->flags;
+>  
+>  	if (hwpoison_filter(p)) {
+> -		if (TestClearPageHWPoison(head))
+> -			num_poisoned_pages_dec();
+> -		put_page(p);
+> +		put = true;
+>  		res = -EOPNOTSUPP;
+>  		goto out;
+>  	}
+>  
+> +	if (TestSetPageHWPoison(head)) {
+> +		put = already_hwpoisoned = true;
+> +		goto out;
+> +	}
+> +
+> +	num_poisoned_pages_inc();
+> +
+>  	/*
+>  	 * TODO: hwpoison for pud-sized hugetlb doesn't work right now, so
+>  	 * simply disable it. In order to make it work properly, we need
+> @@ -1584,6 +1575,14 @@ static int memory_failure_hugetlb(unsigned long pfn, int flags)
+>  	return identify_page_state(pfn, p, page_flags);
+>  out:
+>  	unlock_page(head);
+> +	if (put)
+> +		put_page(p);
+> +	if (already_hwpoisoned) {
+> +		pr_err("Memory failure: %#lx: already hardware poisoned\n", pfn);
+> +		res = -EHWPOISON;
+> +		if (flags & MF_ACTION_REQUIRED)
+> +			res = kill_accessing_process(current, page_to_pfn(head), flags);
+> +	}
+>  	return res;
+>  }
+>  
+> 
 
-> I'll move it out of the mfd directory :)
-
-That does sound like a good solution, thanks Stephen.
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
