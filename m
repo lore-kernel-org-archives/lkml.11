@@ -2,162 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 420F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CDFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344487AbiCPCQg (ORCPT
+        id S1345211AbiCPCUC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
+        Tue, 15 Mar 2022 22:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241389AbiCPCQd (ORCPT
+        with ESMTP id S236034AbiCPCUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:16:33 -0400
-Received: from 189.cn (ptr.189.cn [183.61.185.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E126BCD7;
-        Tue, 15 Mar 2022 19:15:18 -0700 (PDT)
-HMM_SOURCE_IP: 10.64.8.41:49050.1605950715
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-123.150.8.43 (unknown [10.64.8.41])
-        by 189.cn (HERMES) with SMTP id 1994D1002AD;
-        Wed, 16 Mar 2022 10:15:12 +0800 (CST)
-Received: from  ([123.150.8.43])
-        by gateway-153622-dep-749df8664c-mvcg4 with ESMTP id 8f25d97f08c443a3a48ae68ce49704ae for johan@kernel.org;
-        Wed, 16 Mar 2022 10:15:18 CST
-X-Transaction-ID: 8f25d97f08c443a3a48ae68ce49704ae
-X-Real-From: chensong_2000@189.cn
-X-Receive-IP: 123.150.8.43
-X-MEDUSA-Status: 0
-Sender: chensong_2000@189.cn
-From:   Song Chen <chensong_2000@189.cn>
-To:     johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
-        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, elder@ieee.org
-Cc:     Song Chen <chensong_2000@189.cn>
-Subject: [PATCH v5] staging: greybus: introduce pwm_ops::apply
-Date:   Wed, 16 Mar 2022 10:21:25 +0800
-Message-Id: <1647397285-30061-1-git-send-email-chensong_2000@189.cn>
-X-Mailer: git-send-email 2.7.4
+        Tue, 15 Mar 2022 22:20:00 -0400
+Received: from ZXSHCAS1.zhaoxin.com (ZXSHCAS1.zhaoxin.com [203.148.12.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA7339B85;
+        Tue, 15 Mar 2022 19:18:45 -0700 (PDT)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS1.zhaoxin.com
+ (10.28.252.161) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 16 Mar
+ 2022 10:18:42 +0800
+Received: from [10.29.8.53] (10.29.8.53) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 16 Mar
+ 2022 10:18:40 +0800
+Subject: Re: [PATCH] USB:Fix ehci infinite suspend-resume loop issue in
+ zhaoxin
+To:     Alan Stern <stern@rowland.harvard.edu>
+CC:     <gregkh@linuxfoundation.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <CobeChen@zhaoxin.com>,
+        <TimGuo@zhaoxin.com>, <tonywwang@zhaoxin.com>,
+        <weitaowang@zhaoxin.com>
+References: <3d0ae3ca-9dad-bb8f-5c41-45bdcb07b9cd@zhaoxin.com>
+ <Yi9QIk+6VIWW6V/W@rowland.harvard.edu>
+ <320584eb-ef89-3759-509c-e7e9cb10f983@zhaoxin.com>
+ <YjCuOXRFZ8CjK9SD@rowland.harvard.edu>
+From:   "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
+Message-ID: <ac40c227-ea26-bccd-d254-5a2034103184@zhaoxin.com>
+Date:   Wed, 16 Mar 2022 10:18:39 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <YjCuOXRFZ8CjK9SD@rowland.harvard.edu>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.29.8.53]
+X-ClientProxiedBy: ZXSHCAS1.zhaoxin.com (10.28.252.161) To
+ zxbjmbx1.zhaoxin.com (10.29.252.163)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce newer .apply function in pwm_ops to replace legacy operations,
-like enable, disable, config and set_polarity.
+On 2022/3/15 11:18, Alan Stern wrote:
+> On Tue, Mar 15, 2022 at 08:39:09PM +0800, WeitaoWang-oc@zhaoxin.com wrote:
+>> On 2022/3/14 10:24, Alan Stern wrote:
+>>>> +       t1 = ehci_readl(ehci, &ehci->regs->status);
+>>>> +       ehci_writel(ehci, t1 & STS_PCD, &ehci->regs->status);
+>>>> +       ehci_readl(ehci, &ehci->regs->status);
+>>>
+>>> You should not clear the STS_PCD bit.  What if some other port had a
+>>> status change at the same time?  Then because you cleared the
+>>> port-change-detect bit, the system would not realize that the other port
+>>> needed to be handled.
+>>
+>> I really didn't think about this case.
+>>
+>>> Leaving the STS_PCD bit turned on will cause the driver to do a little
+>>> extra work, but it shouldn't cause any harm.
+>>>
+>> I have encountered the following situation if EHCI runtime suspend is
+>> enabled by default.
+>>
+>>
+>>
+>> 1.Wake from system to disk and boot OS.
+> 
+> You're talking about resuming after hibernation, right?
 
-This guarantees atomic changes of the pwm controller configuration.
+You're right.
+>> 2.EHCI will entry runtime suspend after enumerated by driver during boot
+>> phase of suspend to disk
+> 
+> I'm not sure what you mean by "boot phase of suspend to disk".  This is
+> while the restore kernel is starting up at the beginning of resume from
+> hibernation, right?
+> 
+You understood exactly what I was saying.
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
 
----
-v2:
-1, define duty_cycle and period as u64 in gb_pwm_config_operation.
-2, define duty and period as u64 in gb_pwm_config_request.
-3, disable before configuring duty and period if the eventual goal
-   is a disabled state.
+>> 3.EHCI will be placed to freeze state and ehci_resume is called after image
+>> is loaded.
+> 
+> ehci_resume is called to leave runtime suspend.  Going into the freeze
+> state doesn't require any changes.
+> 
+>> 4.If PCD flag is set(caused by patch), then HCD_FLAG_RH_RUNNING will be set.
+>>
+>> 5.Pci_pm_freeze_noirq is called to check ehci root hub state and return
+>> value is -EBUSY. which will cause
+>>   quiesce phase of suspend to disk fail.
+> 
+> You're talking about check_root_hub_suspended() in hcd-pci.c, right?
+> 
+It's right.
+> You know, I'm not at all certain that the callbacks for freeze and
+> freeze_noirq should ever return anything other than 0.  It's okay for
+> them to call check_root_hub_suspended(), but they should ignore its
+> return value.
+> 
+> Can you check if the patch below helps?
+> 
+> Alan Stern
+> 
+> 
+> Index: usb-devel/drivers/usb/core/hcd-pci.c
+> ===================================================================
+> --- usb-devel.orig/drivers/usb/core/hcd-pci.c
+> +++ usb-devel/drivers/usb/core/hcd-pci.c
+> @@ -575,6 +575,12 @@ static int hcd_pci_resume(struct device
+>   	return resume_common(dev, PM_EVENT_RESUME);
+>   }
+>   
+> +static int hcd_pci_freeze_check(struct device *dev)
+> +{
+> +	(void) check_root_hub_suspended(dev);
+> +	return 0;
+> +}
+> +
+>   static int hcd_pci_restore(struct device *dev)
+>   {
+>   	return resume_common(dev, PM_EVENT_RESTORE);
+> @@ -586,6 +592,7 @@ static int hcd_pci_restore(struct device
+>   #define hcd_pci_suspend_noirq	NULL
+>   #define hcd_pci_resume_noirq	NULL
+>   #define hcd_pci_resume		NULL
+> +#define hcd_pci_freeze_check	NULL
+>   #define hcd_pci_restore		NULL
+>   
+>   #endif	/* CONFIG_PM_SLEEP */
+> @@ -616,8 +623,8 @@ const struct dev_pm_ops usb_hcd_pci_pm_o
+>   	.suspend_noirq	= hcd_pci_suspend_noirq,
+>   	.resume_noirq	= hcd_pci_resume_noirq,
+>   	.resume		= hcd_pci_resume,
+> -	.freeze		= check_root_hub_suspended,
+> -	.freeze_noirq	= check_root_hub_suspended,
+> +	.freeze		= hcd_pci_freeze_check,
+> +	.freeze_noirq	= hcd_pci_freeze_check,
 
-v3:
-Regarding duty_cycle and period, I read more discussion in this thread,
-min, warn or -EINVAL, seems no perfect way acceptable for everyone.
-How about we limit their value to INT_MAX and throw a warning at the
-same time when they are wrong?
+This patch can fix pci driver's fail check in freeze_noirq phase.
 
-v4:
-1, explain why legacy operations are replaced.
-2, cap the value of period and duty to U32_MAX.
+Restoring system state from a hibernation image can continue and success.
 
-v5:
-1, revise commit message.
----
- drivers/staging/greybus/pwm.c | 59 +++++++++++++++++++++--------------
- 1 file changed, 35 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
-index 891a6a672378..3add3032678b 100644
---- a/drivers/staging/greybus/pwm.c
-+++ b/drivers/staging/greybus/pwm.c
-@@ -204,43 +204,54 @@ static void gb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
- }
- 
--static int gb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			 int duty_ns, int period_ns)
-+static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			const struct pwm_state *state)
- {
-+	int err;
-+	bool enabled = pwm->state.enabled;
-+	u64 period = state->period;
-+	u64 duty_cycle = state->duty_cycle;
- 	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 
--	return gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_ns, period_ns);
--};
-+	/* set polarity */
-+	if (state->polarity != pwm->state.polarity) {
-+		if (enabled) {
-+			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-+			enabled = false;
-+		}
-+		err = gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->polarity);
-+		if (err)
-+			return err;
-+	}
- 
--static int gb_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
--			       enum pwm_polarity polarity)
--{
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
-+	if (!state->enabled) {
-+		if (enabled)
-+			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-+		return 0;
-+	}
- 
--	return gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, polarity);
--};
-+	/* set period and duty cycle*/
-+	if (period > U32_MAX)
-+		period = U32_MAX;
- 
--static int gb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
-+	if (duty_cycle > period)
-+		duty_cycle = period;
- 
--	return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
--};
-+	err = gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_cycle, period);
-+	if (err)
-+		return err;
- 
--static void gb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
-+	/* enable/disable */
-+	if (!enabled)
-+		return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
- 
--	gb_pwm_disable_operation(pwmc, pwm->hwpwm);
--};
-+	return 0;
-+}
- 
- static const struct pwm_ops gb_pwm_ops = {
- 	.request = gb_pwm_request,
- 	.free = gb_pwm_free,
--	.config = gb_pwm_config,
--	.set_polarity = gb_pwm_set_polarity,
--	.enable = gb_pwm_enable,
--	.disable = gb_pwm_disable,
-+	.apply = gb_pwm_apply,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.25.1
-
+Weitao Wang
+>   	.thaw_noirq	= NULL,
+>   	.thaw		= NULL,
+>   	.poweroff	= hcd_pci_suspend,
+> .
+> 
