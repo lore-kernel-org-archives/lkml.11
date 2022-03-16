@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 179ABC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B52BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356219AbiCPNTA (ORCPT
+        id S1356248AbiCPNTD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
+        Wed, 16 Mar 2022 09:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356193AbiCPNSr (ORCPT
+        with ESMTP id S1356200AbiCPNSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:18:47 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C1D66ADE;
-        Wed, 16 Mar 2022 06:17:31 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NDH9X_1647436648;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NDH9X_1647436648)
+        Wed, 16 Mar 2022 09:18:49 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6CA66AD6;
+        Wed, 16 Mar 2022 06:17:34 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V7NDH9x_1647436651;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V7NDH9x_1647436651)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 16 Mar 2022 21:17:29 +0800
+          Wed, 16 Mar 2022 21:17:32 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -29,9 +29,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org,
         luodaowen.backend@bytedance.com
-Subject: [PATCH v5 03/22] cachefiles: introduce on-demand read mode
-Date:   Wed, 16 Mar 2022 21:17:04 +0800
-Message-Id: <20220316131723.111553-4-jefflexu@linux.alibaba.com>
+Subject: [PATCH v5 05/22] cachefiles: notify user daemon when withdrawing cookie
+Date:   Wed, 16 Mar 2022 21:17:06 +0800
+Message-Id: <20220316131723.111553-6-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
 References: <20220316131723.111553-1-jefflexu@linux.alibaba.com>
@@ -41,287 +41,132 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fscache/cachefiles used to serve as a local cache for remote fs. This
-patch, along with the following patches, introduces a new on-demand read
-mode for cachefiles, which can boost the scenario where on-demand read
-semantics is needed, e.g. container image distribution.
+Notify user daemon that cookie is going to be withdrawed, providing a
+hint that the associated anon_fd can be closed. The anon_fd attached in
+the CLOSE request shall be same with that in the previous OPEN request.
 
-The essential difference between the original mode and on-demand read
-mode is that, in the original mode, when cache miss, netfs itself will
-fetch data from remote, and then write the fetched data into cache file.
-While in on-demand read mode, a user daemon is responsible for fetching
-data and then writing to the cache file.
-
-This patch only adds the command to enable on-demand read mode. An
-optional parameter to "bind" command is added. On-demand mode will be
-turned on when this optional argument matches "ondemand" exactly, i.e.
-"bind ondemand". Otherwise cachefiles will keep working in the original
-mode.
-
-The following patches will implement the data plane of on-demand read
-mode.
+Be noted that this is only a hint. User daemon can close the anon_fd
+when receiving the CLOSE request, then it will receive another anon_fd
+if the cookie gets looked up. Or it can also ignore the CLOSE request,
+and keep writing data into the anon_fd. However the next time cookie
+gets looked up, the user daemon will still receive another anon_fd.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/cachefiles/Kconfig    |  11 ++++
- fs/cachefiles/daemon.c   | 132 +++++++++++++++++++++++++++++++--------
- fs/cachefiles/internal.h |   6 ++
- 3 files changed, 124 insertions(+), 25 deletions(-)
+ fs/cachefiles/daemon.c          | 27 +++++++++++++++++++++++++++
+ fs/cachefiles/interface.c       |  2 ++
+ fs/cachefiles/internal.h        |  4 ++++
+ include/uapi/linux/cachefiles.h |  5 +++++
+ 4 files changed, 38 insertions(+)
 
-diff --git a/fs/cachefiles/Kconfig b/fs/cachefiles/Kconfig
-index 719faeeda168..58aad1fb4c5c 100644
---- a/fs/cachefiles/Kconfig
-+++ b/fs/cachefiles/Kconfig
-@@ -26,3 +26,14 @@ config CACHEFILES_ERROR_INJECTION
- 	help
- 	  This permits error injection to be enabled in cachefiles whilst a
- 	  cache is in service.
-+
-+config CACHEFILES_ONDEMAND
-+	bool "Support for on-demand read"
-+	depends on CACHEFILES
-+	default n
-+	help
-+	  This permits on-demand read mode of cachefiles. In this mode, when
-+	  cache miss, the cachefiles backend instead of netfs, is responsible
-+          for fetching data, e.g. through user daemon.
-+
-+	  If unsure, say N.
 diff --git a/fs/cachefiles/daemon.c b/fs/cachefiles/daemon.c
-index 7ac04ee2c0a0..c0c3a3cbee28 100644
+index 3c3a461f8cd8..2ecfdf194206 100644
 --- a/fs/cachefiles/daemon.c
 +++ b/fs/cachefiles/daemon.c
-@@ -78,6 +78,65 @@ static const struct cachefiles_daemon_cmd cachefiles_daemon_cmds[] = {
- 	{ "",		NULL				}
- };
+@@ -338,6 +338,12 @@ static ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
+ 		goto err_put_fd;
+ 	}
  
-+#ifdef CONFIG_CACHEFILES_ONDEMAND
-+static inline void cachefiles_ondemand_open(struct cachefiles_cache *cache)
-+{
-+	xa_init_flags(&cache->reqs, XA_FLAGS_ALLOC);
-+	rwlock_init(&cache->reqs_lock);
-+}
-+
-+static inline void cachefiles_ondemand_release(struct cachefiles_cache *cache)
-+{
-+	xa_destroy(&cache->reqs);
-+}
-+
-+static inline __poll_t cachefiles_ondemand_mask(struct cachefiles_cache *cache)
-+{
-+	__poll_t mask = 0;
-+
-+	if (!xa_empty(&cache->reqs))
-+		mask |= EPOLLIN;
-+
-+	if (test_bit(CACHEFILES_CULLING, &cache->flags))
-+		mask |= EPOLLOUT;
-+
-+	return mask;
-+}
-+
-+static inline
-+bool cachefiles_ondemand_daemon_bind(struct cachefiles_cache *cache, char *args)
-+{
-+	if (!strcmp(args, "ondemand")) {
-+		set_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags);
-+		return true;
++	/* CLOSE request doesn't look forward a reply */
++	if (msg->opcode == CACHEFILES_OP_CLOSE) {
++		xa_erase(&cache->reqs, id);
++		complete(&req->done);
 +	}
 +
-+	return false;
-+}
-+
-+#else
-+static inline void cachefiles_ondemand_open(struct cachefiles_cache *cache) {}
-+static inline void cachefiles_ondemand_release(struct cachefiles_cache *cache) {}
-+
-+static inline
-+__poll_t cachefiles_ondemand_mask(struct cachefiles_cache *cache)
-+{
-+	return 0;
-+}
-+
-+static inline
-+bool cachefiles_ondemand_daemon_bind(struct cachefiles_cache *cache, char *args)
-+{
-+	return false;
-+}
-+#endif
-+
-+static inline
-+ssize_t cachefiles_ondemand_daemon_read(struct cachefiles_cache *cache,
-+					char __user *_buffer, size_t buflen)
-+{
-+	return -EOPNOTSUPP;
-+}
+ 	return n;
  
- /*
-  * Prepare a cache for caching.
-@@ -108,6 +167,7 @@ static int cachefiles_daemon_open(struct inode *inode, struct file *file)
- 	INIT_LIST_HEAD(&cache->volumes);
- 	INIT_LIST_HEAD(&cache->object_list);
- 	spin_lock_init(&cache->object_list_lock);
-+	cachefiles_ondemand_open(cache);
- 
- 	/* set default caching limits
- 	 * - limit at 1% free space and/or free files
-@@ -139,6 +199,7 @@ static int cachefiles_daemon_release(struct inode *inode, struct file *file)
- 
- 	set_bit(CACHEFILES_DEAD, &cache->flags);
- 
-+	cachefiles_ondemand_release(cache);
- 	cachefiles_daemon_unbind(cache);
- 
- 	/* clean up the control file interface */
-@@ -152,23 +213,15 @@ static int cachefiles_daemon_release(struct inode *inode, struct file *file)
+ err_put_fd:
+@@ -452,6 +458,19 @@ static int init_open_req(struct cachefiles_req *req, void *private)
  	return 0;
  }
  
--/*
-- * Read the cache state.
-- */
--static ssize_t cachefiles_daemon_read(struct file *file, char __user *_buffer,
--				      size_t buflen, loff_t *pos)
-+static ssize_t cachefiles_do_daemon_read(struct cachefiles_cache *cache,
-+					 char __user *_buffer,
-+					 size_t buflen)
- {
--	struct cachefiles_cache *cache = file->private_data;
- 	unsigned long long b_released;
- 	unsigned f_released;
- 	char buffer[256];
- 	int n;
- 
--	//_enter(",,%zu,", buflen);
--
--	if (!test_bit(CACHEFILES_READY, &cache->flags))
--		return 0;
--
- 	/* check how much space the cache has */
- 	cachefiles_has_space(cache, 0, 0, cachefiles_has_space_check);
- 
-@@ -206,6 +259,25 @@ static ssize_t cachefiles_daemon_read(struct file *file, char __user *_buffer,
- 	return n;
- }
- 
-+/*
-+ * Read the cache state.
-+ */
-+static ssize_t cachefiles_daemon_read(struct file *file, char __user *_buffer,
-+				      size_t buflen, loff_t *pos)
++static int init_close_req(struct cachefiles_req *req, void *private)
 +{
-+	struct cachefiles_cache *cache = file->private_data;
++	struct cachefiles_object *object = req->object;
++	struct cachefiles_close *load = (void *)req->msg.data;
++	int fd = object->fd;
 +
-+	//_enter(",,%zu,", buflen);
++	if (WARN_ON_ONCE(fd == -1))
++		return -EIO;
 +
-+	if (!test_bit(CACHEFILES_READY, &cache->flags))
-+		return 0;
-+
-+	if (likely(!test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags)))
-+		return cachefiles_do_daemon_read(cache, _buffer, buflen);
-+	else
-+		return cachefiles_ondemand_daemon_read(cache, _buffer, buflen);
++	load->fd = fd;
++	return 0;
 +}
 +
- /*
-  * Take a command from cachefilesd, parse it and act on it.
-  */
-@@ -284,6 +356,21 @@ static ssize_t cachefiles_daemon_write(struct file *file,
- 	goto error;
+ int cachefiles_ondemand_init_object(struct cachefiles_object *object)
+ {
+ 	struct fscache_cookie *cookie = object->cookie;
+@@ -477,6 +496,14 @@ int cachefiles_ondemand_init_object(struct cachefiles_object *object)
+ 					    init_open_req, NULL);
  }
  
-+
-+static inline
-+__poll_t cachefiles_daemon_mask(struct cachefiles_cache *cache)
++void cachefiles_ondemand_cleanup_object(struct cachefiles_object *object)
 +{
-+	__poll_t mask = 0;
-+
-+	if (test_bit(CACHEFILES_STATE_CHANGED, &cache->flags))
-+		mask |= EPOLLIN;
-+
-+	if (test_bit(CACHEFILES_CULLING, &cache->flags))
-+		mask |= EPOLLOUT;
-+
-+	return mask;
++	cachefiles_ondemand_send_req(object,
++				     CACHEFILES_OP_CLOSE,
++				     sizeof(struct cachefiles_close),
++				     init_close_req, NULL);
 +}
 +
- /*
-  * Poll for culling state
-  * - use EPOLLOUT to indicate culling state
-@@ -292,18 +379,13 @@ static __poll_t cachefiles_daemon_poll(struct file *file,
- 					   struct poll_table_struct *poll)
+ #else
+ static inline void cachefiles_ondemand_open(struct cachefiles_cache *cache) {}
+ static inline void cachefiles_ondemand_release(struct cachefiles_cache *cache) {}
+diff --git a/fs/cachefiles/interface.c b/fs/cachefiles/interface.c
+index ae93cee9d25d..c5b8fefd4ccc 100644
+--- a/fs/cachefiles/interface.c
++++ b/fs/cachefiles/interface.c
+@@ -322,6 +322,8 @@ static void cachefiles_commit_object(struct cachefiles_object *object,
+ static void cachefiles_clean_up_object(struct cachefiles_object *object,
+ 				       struct cachefiles_cache *cache)
  {
- 	struct cachefiles_cache *cache = file->private_data;
--	__poll_t mask;
- 
- 	poll_wait(file, &cache->daemon_pollwq, poll);
--	mask = 0;
--
--	if (test_bit(CACHEFILES_STATE_CHANGED, &cache->flags))
--		mask |= EPOLLIN;
--
--	if (test_bit(CACHEFILES_CULLING, &cache->flags))
--		mask |= EPOLLOUT;
- 
--	return mask;
-+	if (likely(!test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags)))
-+		return cachefiles_daemon_mask(cache);
-+	else
-+		return cachefiles_ondemand_mask(cache);
- }
- 
- /*
-@@ -687,11 +769,6 @@ static int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
- 	    cache->brun_percent  >= 100)
- 		return -ERANGE;
- 
--	if (*args) {
--		pr_err("'bind' command doesn't take an argument\n");
--		return -EINVAL;
--	}
--
- 	if (!cache->rootdirname) {
- 		pr_err("No cache directory specified\n");
- 		return -EINVAL;
-@@ -703,6 +780,11 @@ static int cachefiles_daemon_bind(struct cachefiles_cache *cache, char *args)
- 		return -EBUSY;
- 	}
- 
-+	if (!cachefiles_ondemand_daemon_bind(cache, args) && *args) {
-+		pr_err("'bind' command doesn't take an argument\n");
-+		return -EINVAL;
-+	}
++	cachefiles_ondemand_cleanup_object(object);
 +
- 	/* Make sure we have copies of the tag string */
- 	if (!cache->tag) {
- 		/*
+ 	if (test_bit(FSCACHE_COOKIE_RETIRED, &object->cookie->flags)) {
+ 		if (!test_bit(CACHEFILES_OBJECT_USING_TMPFILE, &object->flags)) {
+ 			cachefiles_see_object(object, cachefiles_obj_see_clean_delete);
 diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
-index e80673d0ab97..3f791882fa3f 100644
+index 8450ebd77949..eaac9fae74eb 100644
 --- a/fs/cachefiles/internal.h
 +++ b/fs/cachefiles/internal.h
-@@ -15,6 +15,7 @@
- #include <linux/fscache-cache.h>
- #include <linux/cred.h>
- #include <linux/security.h>
-+#include <linux/xarray.h>
+@@ -167,6 +167,7 @@ extern const struct file_operations cachefiles_daemon_fops;
  
- #define CACHEFILES_DIO_BLOCK_SIZE 4096
+ #ifdef CONFIG_CACHEFILES_ONDEMAND
+ extern int cachefiles_ondemand_init_object(struct cachefiles_object *object);
++extern void cachefiles_ondemand_cleanup_object(struct cachefiles_object *object);
  
-@@ -98,9 +99,14 @@ struct cachefiles_cache {
- #define CACHEFILES_DEAD			1	/* T if cache dead */
- #define CACHEFILES_CULLING		2	/* T if cull engaged */
- #define CACHEFILES_STATE_CHANGED	3	/* T if state changed (poll trigger) */
-+#define CACHEFILES_ONDEMAND_MODE	4	/* T if in on-demand read mode */
- 	char				*rootdirname;	/* name of cache root directory */
- 	char				*secctx;	/* LSM security context */
- 	char				*tag;		/* cache binding tag */
-+#ifdef CONFIG_CACHEFILES_ONDEMAND
-+	struct xarray			reqs;		/* xarray of pending on-demand requests */
-+	rwlock_t			reqs_lock;	/* Lock for reqs xarray */
-+#endif
+ #else
+ static inline
+@@ -174,6 +175,9 @@ int cachefiles_ondemand_init_object(struct cachefiles_object *object)
+ {
+ 	return 0;
+ }
++
++static inline
++void cachefiles_ondemand_cleanup_object(struct cachefiles_object *object) {}
+ #endif
+ 
+ /*
+diff --git a/include/uapi/linux/cachefiles.h b/include/uapi/linux/cachefiles.h
+index 5ea7285863f1..47e53043cfad 100644
+--- a/include/uapi/linux/cachefiles.h
++++ b/include/uapi/linux/cachefiles.h
+@@ -8,6 +8,7 @@
+ 
+ enum cachefiles_opcode {
+ 	CACHEFILES_OP_OPEN,
++	CACHEFILES_OP_CLOSE,
  };
  
- #include <trace/events/cachefiles.h>
+ /*
+@@ -36,4 +37,8 @@ enum cachefiles_open_flags {
+ 	CACHEFILES_OPEN_WANT_CACHE_SIZE,
+ };
+ 
++struct cachefiles_close {
++	__u32 fd;
++};
++
+ #endif
 -- 
 2.27.0
 
