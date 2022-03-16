@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A24ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:10:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351215AbiCPCL7 (ORCPT
+        id S1353060AbiCPCMD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
+        Tue, 15 Mar 2022 22:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352042AbiCPCLZ (ORCPT
+        with ESMTP id S1352668AbiCPCLZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 22:11:25 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694465E759
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5195E75A
         for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647396607; x=1678932607;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/H9cxL3Wn0YCVimtCdpIhLpxVTiPjXcc6SSTk/dzTTQ=;
-  b=SSb5Nm30KvmAdiRTyzox48Hj2hjoNNpph2zmVfDolmriDUcxD/oCD4Ky
-   v8dAKECwKKVUzNd2PwQ6QqutKX4YpXutTmwAupUkkOjLyA9DBPFcqniSP
-   lNbq8Qml+GSgwFuoNAGkcBpN0x4KLYD4zzSXTHLcb6oLmjwYP3T/U7QGF
-   j3u45SIMGLP/Q+VLZawUD41tTZ0hc56GgourA2RJrI5gA5ViZI+scZ7e2
-   xD1+O0aNdYOs8Pt0uxVZKe++0uLpGWe5DckXlYvROZc39pfAvLY5h5X3D
-   JfQC1n5bDj08nlOs1Pf6CJeJ0ki4wDHSOw/pYIArqlJUbAWAMe1mgTJ4+
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256422498"
+  bh=S4IBOovQt/MTOvQRjvopPRw4f1mjoPtSM+SRiZGpXKg=;
+  b=VYoVYflko3LKO+tmCuz1jlOf3JAp3U9XTvJKCuvBSEMH1FX3vLsFAh5Z
+   RHzvnZAw5P8k6vV4kPocSXjNRxBPVFoGt+SubpeTEevmZ9Xg9d21vzYDQ
+   sxHZSswRJ8MADegTCWHGCaGruV6H1NJV1a4Qps1BX/7DDAgWcqTQTAI1/
+   nMuoNgLZWfM5aFQJr3r1SFe5JYRcU5dHElMwgHChmivYP/oeSIxsk7CVU
+   +ukoHsPd0xRKJ/3dkYNRBHhRenZPGpVLhwpk/4kmQi5KhMvfJYaRAOTV6
+   DjpSp7/y75aROkiYuzZ49nWFd0wwuMQBSrWdBBElPwGaij6Ngnbw0h+58
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256422499"
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="256422498"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+   d="scan'208";a="256422499"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:04 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="690414200"
+   d="scan'208";a="516126476"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Mar 2022 19:09:57 -0700
+  by orsmga006.jf.intel.com with ESMTP; 15 Mar 2022 19:09:57 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id EB16D77A; Wed, 16 Mar 2022 04:10:09 +0200 (EET)
+        id C05E05F4; Wed, 16 Mar 2022 04:10:09 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -54,9 +54,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [PATCHv6 09/30] x86/tdx: Add MSR support for TDX guests
-Date:   Wed, 16 Mar 2022 05:08:35 +0300
-Message-Id: <20220316020856.24435-10-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 06/30] x86/traps: Refactor exc_general_protection()
+Date:   Wed, 16 Mar 2022 05:08:32 +0300
+Message-Id: <20220316020856.24435-7-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
@@ -66,103 +66,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use hypercall to emulate MSR read/write for the TDX platform.
+TDX brings a new exception -- Virtualization Exception (#VE). Handling
+of #VE structurally very similar to handling #GP.
 
-There are two viable approaches for doing MSRs in a TD guest:
+Extract two helpers from exc_general_protection() that can be reused for
+handling #VE.
 
-1. Execute the RDMSR/WRMSR instructions like most VMs and bare metal
-   do. Some will succeed, others will cause a #VE. All of those that
-   cause a #VE will be handled with a TDCALL.
-2. Use paravirt infrastructure.  The paravirt hook has to keep a list
-   of which MSRs would cause a #VE and use a TDCALL.  All other MSRs
-   execute RDMSR/WRMSR instructions directly.
+No functional changes.
 
-The second option can be ruled out because the list of MSRs was
-challenging to maintain. That leaves option #1 as the only viable
-solution for the minimal TDX support.
-
-Kernel relies on the exception fixup machinery to handle MSR access
-errors. #VE handler uses the same exception fixup code as #GP. It
-covers MSR accesses along with other types of fixups.
-
-For performance-critical MSR writes (like TSC_DEADLINE), future patches
-will replace the WRMSR/#VE sequence with the direct TDCALL.
-
-RDMSR and WRMSR specification details can be found in
-Guest-Host-Communication Interface (GHCI) for Intel Trust Domain
-Extensions (Intel TDX) specification, sec titled "TDG.VP.
-VMCALL<Instruction.RDMSR>" and "TDG.VP.VMCALL<Instruction.WRMSR>".
-
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
 ---
- arch/x86/coco/tdx/tdx.c | 42 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ arch/x86/kernel/traps.c | 60 +++++++++++++++++++++++------------------
+ 1 file changed, 34 insertions(+), 26 deletions(-)
 
-diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-index 3795a70463aa..8addc242aa0e 100644
---- a/arch/x86/coco/tdx/tdx.c
-+++ b/arch/x86/coco/tdx/tdx.c
-@@ -135,6 +135,44 @@ void __cpuidle tdx_safe_halt(void)
- 		WARN_ONCE(1, "HLT instruction emulation failed\n");
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 7ef00dee35be..59ed14d8c53f 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -611,13 +611,43 @@ static bool try_fixup_enqcmd_gp(void)
+ #endif
  }
  
-+static bool read_msr(struct pt_regs *regs)
++static bool gp_try_fixup_and_notify(struct pt_regs *regs, int trapnr,
++				    unsigned long error_code, const char *str)
 +{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_MSR_READ),
-+		.r12 = regs->cx,
-+	};
++	int ret;
++
++	if (fixup_exception(regs, trapnr, error_code, 0))
++		return true;
++
++	current->thread.error_code = error_code;
++	current->thread.trap_nr = trapnr;
 +
 +	/*
-+	 * Emulate the MSR read via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI), section titled "TDG.VP.VMCALL<Instruction.RDMSR>".
++	 * To be potentially processing a kprobe fault and to trust the result
++	 * from kprobe_running(), we have to be non-preemptible.
 +	 */
-+	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-+		return false;
++	if (!preemptible() && kprobe_running() &&
++	    kprobe_fault_handler(regs, trapnr))
++		return true;
 +
-+	regs->ax = lower_32_bits(args.r11);
-+	regs->dx = upper_32_bits(args.r11);
-+	return true;
++	ret = notify_die(DIE_GPF, str, regs, error_code, trapnr, SIGSEGV);
++	return ret == NOTIFY_STOP;
 +}
 +
-+static bool write_msr(struct pt_regs *regs)
++static void gp_user_force_sig_segv(struct pt_regs *regs, int trapnr,
++				   unsigned long error_code, const char *str)
 +{
-+	struct tdx_hypercall_args args = {
-+		.r10 = TDX_HYPERCALL_STANDARD,
-+		.r11 = hcall_func(EXIT_REASON_MSR_WRITE),
-+		.r12 = regs->cx,
-+		.r13 = (u64)regs->dx << 32 | regs->ax,
-+	};
-+
-+	/*
-+	 * Emulate the MSR write via hypercall. More info about ABI
-+	 * can be found in TDX Guest-Host-Communication Interface
-+	 * (GHCI) section titled "TDG.VP.VMCALL<Instruction.WRMSR>".
-+	 */
-+	return !__tdx_hypercall(&args, 0);
++	current->thread.error_code = error_code;
++	current->thread.trap_nr = trapnr;
++	show_signal(current, SIGSEGV, "", str, regs, error_code);
++	force_sig(SIGSEGV);
 +}
 +
- void tdx_get_ve_info(struct ve_info *ve)
+ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
  {
- 	struct tdx_module_output out;
-@@ -164,6 +202,10 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
- 	switch (ve->exit_reason) {
- 	case EXIT_REASON_HLT:
- 		return handle_halt();
-+	case EXIT_REASON_MSR_READ:
-+		return read_msr(regs);
-+	case EXIT_REASON_MSR_WRITE:
-+		return write_msr(regs);
- 	default:
- 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
- 		return false;
+ 	char desc[sizeof(GPFSTR) + 50 + 2*sizeof(unsigned long) + 1] = GPFSTR;
+ 	enum kernel_gp_hint hint = GP_NO_HINT;
+-	struct task_struct *tsk;
+ 	unsigned long gp_addr;
+-	int ret;
+ 
+ 	if (user_mode(regs) && try_fixup_enqcmd_gp())
+ 		return;
+@@ -636,40 +666,18 @@ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
+ 		return;
+ 	}
+ 
+-	tsk = current;
+-
+ 	if (user_mode(regs)) {
+ 		if (fixup_iopl_exception(regs))
+ 			goto exit;
+ 
+-		tsk->thread.error_code = error_code;
+-		tsk->thread.trap_nr = X86_TRAP_GP;
+-
+ 		if (fixup_vdso_exception(regs, X86_TRAP_GP, error_code, 0))
+ 			goto exit;
+ 
+-		show_signal(tsk, SIGSEGV, "", desc, regs, error_code);
+-		force_sig(SIGSEGV);
++		gp_user_force_sig_segv(regs, X86_TRAP_GP, error_code, desc);
+ 		goto exit;
+ 	}
+ 
+-	if (fixup_exception(regs, X86_TRAP_GP, error_code, 0))
+-		goto exit;
+-
+-	tsk->thread.error_code = error_code;
+-	tsk->thread.trap_nr = X86_TRAP_GP;
+-
+-	/*
+-	 * To be potentially processing a kprobe fault and to trust the result
+-	 * from kprobe_running(), we have to be non-preemptible.
+-	 */
+-	if (!preemptible() &&
+-	    kprobe_running() &&
+-	    kprobe_fault_handler(regs, X86_TRAP_GP))
+-		goto exit;
+-
+-	ret = notify_die(DIE_GPF, desc, regs, error_code, X86_TRAP_GP, SIGSEGV);
+-	if (ret == NOTIFY_STOP)
++	if (gp_try_fixup_and_notify(regs, X86_TRAP_GP, error_code, desc))
+ 		goto exit;
+ 
+ 	if (error_code)
 -- 
 2.34.1
 
