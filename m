@@ -2,84 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 809F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:55:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356518AbiCPO4m (ORCPT
+        id S1356836AbiCPO4r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
+        Wed, 16 Mar 2022 10:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239686AbiCPO4j (ORCPT
+        with ESMTP id S239650AbiCPO4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:56:39 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EFA66211;
-        Wed, 16 Mar 2022 07:55:25 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 4EC9521108;
-        Wed, 16 Mar 2022 14:55:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1647442524; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NXMA/Pj4MkM0jtnceee8WzxTN05heTV2kaXZm6L30uw=;
-        b=QuXrVF7cnCVfdd6o/hNe5x297tISgC7dDlxMmyd/phdT0zsbxaGvQm29fFTL6D6Wob5/O7
-        Ae0nbqSkzBdqZ8rMAasDxbfi2/9LpEnlvmAz1Ig8nfylZhQQhBcT1jtMdWCUtIq1SHip93
-        lBw14Zc/oc7h82hykxw6Z1sDSVSqHj4=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 31590A3B8A;
-        Wed, 16 Mar 2022 14:55:24 +0000 (UTC)
-Date:   Wed, 16 Mar 2022 15:55:23 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        qirui.001@bytedance.com
-Subject: Re: [PATCH v3] livepatch: Don't block removal of patches that are
- safe to unload
-Message-ID: <YjH6W6eL1XQAGcxD@alley>
-References: <20220312152220.88127-1-zhouchengming@bytedance.com>
+        Wed, 16 Mar 2022 10:56:44 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF6566AE4;
+        Wed, 16 Mar 2022 07:55:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647442529; x=1678978529;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hSZezmWlLRnJispv91DeDwlHSOXFgX7BmpKgikab/4Q=;
+  b=ZMgq3Dhxiy2526C/Hk4og9XQkNWPcuzAaS3/NYZpQK/R55oOxaTWSFMw
+   OpdITwxgCKQaA3Rg4TeOSe7rFcokm1YqKsTZarg5y4mwIwEhxmguuKjQm
+   ML7/fapB9+xmavczx/bE/M9SIojyCcJd2XyjOr3OckPG9MPpA/mXb0Tjq
+   7IKptN0GqeDadfOLvv68gOQwl7by+fdsaobQh+t8Bk2DzFCTQDOOMrXex
+   m1FMSKQ79o7iooPsxDQPpoc0o9W+6rpVUA2BfEDirtN+DU1WtUWj4Pw1P
+   viRpSszy09HnwTCjADUor2TdU6jvZXcYI4ymN2KLpp1dNOclJ+EYFk0HQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256806766"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="256806766"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 07:41:49 -0700
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="516364599"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 07:41:45 -0700
+Received: by lahna (sSMTP sendmail emulation); Wed, 16 Mar 2022 16:39:30 +0200
+Date:   Wed, 16 Mar 2022 16:39:30 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Cc:     Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC] thunderbolt: Automatically authorize PCIe tunnels when
+ IOMMU is active
+Message-ID: <YjH2om/NSxLQQe2H@lahna>
+References: <20220315213008.5357-1-mario.limonciello@amd.com>
+ <YjGD7N++F+ioISHb@lahna>
+ <BL1PR12MB5157349C626E3818B813D9A0E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
+ <YjHpNloXEvPpv1In@lahna>
+ <BL1PR12MB5157719E9A5C0EEBB652141BE2119@BL1PR12MB5157.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220312152220.88127-1-zhouchengming@bytedance.com>
+In-Reply-To: <BL1PR12MB5157719E9A5C0EEBB652141BE2119@BL1PR12MB5157.namprd12.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat 2022-03-12 23:22:20, Chengming Zhou wrote:
-> module_put() is not called for a patch with "forced" flag. It should
-> block the removal of the livepatch module when the code might still
-> be in use after forced transition.
+On Wed, Mar 16, 2022 at 01:48:49PM +0000, Limonciello, Mario wrote:
+> [Public]
 > 
-> klp_force_transition() currently sets "forced" flag for all patches on
-> the list.
+> > > > IOMMU is active
+> > > >
+> > > > Hi Mario,
+> > > >
+> > > > On Tue, Mar 15, 2022 at 04:30:08PM -0500, Mario Limonciello wrote:
+> > > > > Historically TBT3 in Linux used "Thunderbolt security levels" as a primary
+> > > > > means of "security" against DMA attacks. This mean that users would
+> > need
+> > > > to
+> > > > > ack any device plugged in via userspace.  In ~2018 machines started to
+> > use
+> > > > > the IOMMU for protection, but instead of dropping security levels a
+> > > > > convoluted flow was introduced:
+> > > > > * User hotplugs device
+> > > > > * Driver discovers supported tunnels
+> > > > > * Driver emits a uevent to userspace that a PCIe tunnel is present
+> > > > > * Userspace reads 'iommu_dma_protection' attribute (which currently
+> > > > >   indicates an Intel IOMMU is present and was enabled pre-boot not
+> > that
+> > > > >   it's active "now")
+> > > > > * Based on that value userspace then authorizes automatically or
+> > prompts
+> > > > >   the user like how security level based support worked.
+> > > >
+> > > > There are legitimate reasons to disable PCIe tunneling even if the
+> > IOMMU
+> > > > bits are in place. The ACPI _OSC allows the boot firmware to do so and
+> > > > our "security levels" allows the userspace policy to do the same. I
+> > > > would not like to change that unless absolutely necessary.
+> > >
+> > > Actually I intentionally left that in the RFC patch, to only do this based off
+> > > of tb_acpi_may_tunnel_pcie, so I think that should still work as you
+> > described
+> > > if boot firmware turned off PCIe tunneling.
+> > 
+> > Right but if the user still wants to disable it, like say you are
+> > travelling and you want to be sure that no PCIe devices get attached
+> > while your laptop is charging from a public "charging station" (whatever
+> > is the right term).
 > 
-> In fact, any patch can be safely unloaded when it passed through
-> the consistency model in KLP_UNPATCHED transition.
-> 
-> By other words, the "forced" flag must be set only for livepatches
-> that are being removed. In particular, set the "forced" flag:
-> 
->   + only for klp_transition_patch when the transition to KLP_UNPATCHED
->     state was forced.
-> 
->   + all replaced patches when the transition to KLP_PATCHED state was
->     forced and the patch was replacing the existing patches.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+> So wouldn't you flip the default in BIOS setup to disable PCIe tunnels then for
+> this use case?
 
-Looks reasonable, passes livepatch tests:
+What if you are on Chromebook? Or something where this is not user
+configurable?
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
+> Otherwise with how it is today you end up with the PCIe tunnel created in the
+> boot FW and then coming into the OS if it's the same path the tunnel stays
+> in place with no opportunity for userspace to authorize it, no?
 
-Just let me repeat. The "force" flags must be used carefully because
-it breaks the consistency model.
-
-Best Regards,
-Petr
+The boot FW does not need to support CM capabilites nor does it need to
+provide the ACPI _OSC.
