@@ -2,94 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F19C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E71C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350529AbiCPQyA (ORCPT
+        id S1355749AbiCPQy7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46622 "EHLO
+        Wed, 16 Mar 2022 12:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241943AbiCPQx4 (ORCPT
+        with ESMTP id S239250AbiCPQy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:53:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B3548893
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:52:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90177B81A73
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78472C340EC;
-        Wed, 16 Mar 2022 16:52:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647449558;
-        bh=Ms3SdtmMym/ZVvEz4Mg4AybfC+tKlik66Ih1Bu21854=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tmuGaGhTGM5RYI2B9+oSJZh4e7mtQ1SFXZJrZogBfAXcD9biIa9xDYy/KOQMcWPbd
-         i/kkhaK7UHmbyozcQ0ijSECPu2YfQrvVPOfH20XdFZ2GTt+hK7hZXNA9oD1kSoJOwK
-         9inXxeyumVktucHUxypg9gZHY/Wu5NV+ZvLUCD8dwo+56BUGqy6qIxSHhFSPKccgmM
-         AHpkzbYz/B3S/mIKnYDuIf43thvB01QuPup0dUAnRpHGPJQ+JBhVljEhpz0byXuQIP
-         sMnYOTlwk+36bPgyYCQ5KzFoqP1jmLB7dl/p2pt49a4L62Z0oTw0RsfFN/Gpjw61uv
-         yDfVhIPKKLI0g==
-Date:   Wed, 16 Mar 2022 09:52:31 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Sami Tolvanen <samitolvanen@google.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        Wed, 16 Mar 2022 12:54:56 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0A931341;
+        Wed, 16 Mar 2022 09:53:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647449622; x=1678985622;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=67HJ5xsUQCH77LSjNv9g0hLBWeBJ7D0jAoL2UnUtLbY=;
+  b=RYXF41fW6Lv87cYDIdZS6gM/d4eBWGuBE/wt1/Oik+I0MJXv/VUrTExc
+   xW8/n5y5hQuECkFGYHBAOSIgB3kcv6Hr302EzvGOY/WVAtt8PXLnqXO0P
+   3qkVt5RI9Rq65csYsDEBAqdKnFX9B1TF441nrFp/dP45hHjK/t4ENHS2X
+   iYsFmRZmvKa40m/j8Z3GJNJjHAHENyf/oZ71Gs/NRmWnDBV/kfAzJpGwt
+   WgdHM8aJUq0GwFyYfpiIqDo5bYRSwGqplaUHzPqdnM/DfGDP9Z4O0cs33
+   1uUSGVvDKB9Meo1VAXJkyO5V/PVyHBX4EDitc9E1xhNpV0hrCIxDqiHNl
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="317381330"
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="317381330"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:53:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="513107709"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 16 Mar 2022 09:53:36 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 7D8E3192; Wed, 16 Mar 2022 18:53:55 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, linux-staging@lists.linux.dev,
         linux-kernel@vger.kernel.org
-Subject: Re:
- [ammarfaizi2-block:google/android/kernel/common/android-4.19-q-release
- 5202/7636] ld.lld: error: -plugin-opt=-: ld.lld: Unknown command line
- argument '-stack-alignment=8'.  Try: 'ld.lld --help'
-Message-ID: <YjIVzw4JdSY4NcLz@dev-arch.thelio-3990X>
-References: <202203160848.kydLIYip-lkp@intel.com>
+Cc:     Helge Deller <deller@gmx.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 2/2] staging: fbtft: Consider type of init sequence values in fbtft_init_display()
+Date:   Wed, 16 Mar 2022 18:53:51 +0200
+Message-Id: <20220316165351.58107-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220316165351.58107-1-andriy.shevchenko@linux.intel.com>
+References: <20220316165351.58107-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202203160848.kydLIYip-lkp@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 08:30:29AM +0800, kernel test robot wrote:
-> tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-4.19-q-release
-> head:   1a3500dc59324a85c20f025cfa6485a1a0debbdf
-> commit: 205cde74877d624ef7d24a6692e6e9337b19a541 [5202/7636] ANDROID: x86: add support for CONFIG_LTO_CLANG
-> config: x86_64-randconfig-c007 (https://download.01.org/0day-ci/archive/20220316/202203160848.kydLIYip-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6b2f50fb47da3baeee10b1906da6e30ac5d26ec)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/ammarfaizi2/linux-block/commit/205cde74877d624ef7d24a6692e6e9337b19a541
->         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
->         git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-4.19-q-release
->         git checkout 205cde74877d624ef7d24a6692e6e9337b19a541
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> ld.lld: error: -plugin-opt=-: ld.lld: Unknown command line argument '-stack-alignment=8'.  Try: 'ld.lld --help'
->    ld.lld: Did you mean '--stackrealign=8'?
-> --
->    lib/irq_regs.o: no symbols
-> >> ld.lld: error: -plugin-opt=-: ld.lld: Unknown command line argument '-stack-alignment=8'.  Try: 'ld.lld --help'
->    ld.lld: Did you mean '--stackrealign=8'?
+In the fbtft_init_display() the init sequence is printed for
+the debug purposes. Unfortunately the current code doesn't take
+into account that values in the buffer are of the s16 type.
 
-Already fixed:
+Consider that and replace the printing code with fbtft_par_dbg_hex()
+call.
 
-https://android.googlesource.com/kernel/common/+/c1baa3321020cdd2ea9248d9b1ec512abf6f1c24
+Fixes: b888897014a9 ("staging/fbtft: Remove all strcpy() uses")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: no changes, just based on prerequisite
+ drivers/staging/fbtft/fbtft-core.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Bisecting an old tree with a new compiler is probably going to show
-quite a few issues, given how often we have to add changes to the kernel
-to get newer compilers to work.
+diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
+index 6dc77895a87c..3b182115bd6e 100644
+--- a/drivers/staging/fbtft/fbtft-core.c
++++ b/drivers/staging/fbtft/fbtft-core.c
+@@ -1034,10 +1034,9 @@ int fbtft_init_display(struct fbtft_par *par)
+ 			for (j = 0; par->init_sequence[i + 1 + j] >= 0; j++)
+ 				;
+ 
+-			fbtft_par_dbg(DEBUG_INIT_DISPLAY, par,
+-				      "init: write(0x%02X) %*ph\n",
+-				      par->init_sequence[i], j,
+-				      &par->init_sequence[i + 1]);
++			fbtft_par_dbg_hex(DEBUG_INIT_DISPLAY, par, par->info->device,
++					  s16, &par->init_sequence[i + 1], j,
++					  "init: write(0x%02X)", par->init_sequence[i]);
+ 
+ 			/* Write */
+ 			j = 0;
+-- 
+2.35.1
 
-Cheers,
-Nathan
