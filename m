@@ -2,155 +2,343 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B51C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E1EC43217
 	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355778AbiCPM1r (ORCPT
+        id S1355799AbiCPM1u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
+        Wed, 16 Mar 2022 08:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355751AbiCPM1i (ORCPT
+        with ESMTP id S1350986AbiCPM1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:27:38 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50053.outbound.protection.outlook.com [40.107.5.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8D16661B;
-        Wed, 16 Mar 2022 05:26:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eyI+310yWaFcU5Jd746lgJddB9tenR8tt9HtNr2qeK7xT5n2uYbUltFgDmah2J8WZp4QlqlsoJCmW9Wyjxqnp/XPYVHOS60TDfCWn0e680nBrF11FOhS8LDwau/hdDqzgV5vG5l3JfMUkJXEs+yeYp24VaUPlTm0tw3WrJ1weFKuJRAT5PSTMdVRgsT/cJkZW1MYnS84Mfc7VDzB1S48MfyGmIeQ9sFNGA5tT7fzUJ0+h8X89CA9zXxIk3nvjjbUN8YPdKUGpAwiaH+briYW5w/SgMd+lgS91GGWLEBn6BFVW/rtxU/WC20nKT6ZvMdNeWM4Pojq9Qm825KSWnrC0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vjGP0jfZZUGys5c7n5R8ExBHWwo0N9aT+qdxOs/yhb4=;
- b=TVnqILnNpJPFZjudtfSso6HFoITI4X6KzpUDtSgWCiPmCF0IgKnIaQMj2vsSEezfXVDr2ZLMZUD48zG0qeIAww0Fg1U7SMLUpvzH3DLAyB0CLprS/tDl+SI+tzdPz9uy22weLEwhSdxb0BzZ3ANO12+9ZLikwe1tWrgm/xFKwhvdb0ym77o7eMkIBcJxDH7QXQIEmDpuSr+mDmeTtDojl1YVDV+cGtu0sYtcNutIrU4uhqU2t55mqoy00weKFBztkx5d+NNehXt3n3Pu1syP55ni+WcEgcaPN/UGHe9nOwCrnm8+MmVEU8/fpL9OCWvuK+K9TCE7zHdNOSLcIcgsLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vjGP0jfZZUGys5c7n5R8ExBHWwo0N9aT+qdxOs/yhb4=;
- b=BnjsQH9huwsJwKbRQCsamTXZRvwvI09/xWLMGgQgsKHqn07MRWGnkrPKaHFsrPEr9270O4vTg61typ16rDtpt4yUCSNv1pLQIF4Ckj/Ro8u/GhNImeXfeqf1skiCSgKPCOpX9JRkILx2Qgs+8kb28dODXgnfvc9ZKb2csNiCmqM=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by VI1PR04MB4622.eurprd04.prod.outlook.com (2603:10a6:803:76::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.28; Wed, 16 Mar
- 2022 12:26:20 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7%6]) with mapi id 15.20.5061.028; Wed, 16 Mar 2022
- 12:26:20 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     Michael Walle <michael@walle.cc>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "heiko.thiery@gmail.com" <heiko.thiery@gmail.com>,
-        Anson Huang <Anson.Huang@nxp.com>
-Subject: RE: [PATCH v2] dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
-Thread-Topic: [PATCH v2] dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
-Thread-Index: AQHYOSJY50JmnziszU+ilfW0jLgn56zB77Vg
-Date:   Wed, 16 Mar 2022 12:26:20 +0000
-Message-ID: <DU0PR04MB94174894AA93F42CCD3BC89E88119@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220316104100.783068-1-michael@walle.cc>
-In-Reply-To: <20220316104100.783068-1-michael@walle.cc>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1dab3118-db2a-48cc-2537-08da07482d2d
-x-ms-traffictypediagnostic: VI1PR04MB4622:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB4622E674BD43D83C3C91339288119@VI1PR04MB4622.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XcTNG0YWBHw4J5OQOfmc8SeGVnycOptuq+xrJMlDj0CbuKksDlA0Dwnu15RHuCDOutSBGPtiM/IjPzIvzfrQ40mRFi+s+U0osgVKWZ4YRRFtu+78gMSRuWl9QKdjvErBBRKPxb2YnY9mgl4/Wx5N+JhHk7lWJQErz0Ezj0Rv4pAHhMrq9j/E/sleH12eHhz41OgtulXE8g6BGQ6P9JyeqW/3HPYbbsgUSDtTdeAAoDdQqA6+AXHlz+Jp7C+U4K+gcXv0/xLAV3sCWepAF+HweOxjtxKIMlLoXQzguwoOVvCCuCPc2PcX4S1XvMtSTu/3lsZoMU889Itl+LRqW2cFjWTfUg40XpHoLA5CVbSOHMFzhiKeRTfiIH0eoj7DYr3arzGU+ngk5W9UFAfLMgTgEGLEHErvqrtv13Kp0ps8v6lQnABTLuvMAqMsT4Wmn7vy5M9uyNn1CmIapdq1qjMemjGikSioQGRnBxyVtf8w6lKCGor88R/v+IqdwsdVeE7l6z0MBJVr602eRPGilFMKdfC6GGIOBOet/kdJAILgTs78olzvBRoyHpuLD6xjOOp25bMrt374thW//5YulMbZQMGqGA6PfWvwjvT8+xQD2frbHgZots0dtN4WJbEBEFXoRZY04PgIzmhvU39Z1qaw7Q+LePLewRg3nJFAQt3f6p3b6iT8LXnjBJ8zCMkUhFDjZtyRvBU6ocMTyMeNbbgH3cbkWWZ5CRbQNBKqNtrx/iE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(5660300002)(38100700002)(122000001)(76116006)(66946007)(66556008)(66476007)(66446008)(64756008)(508600001)(8676002)(33656002)(55016003)(83380400001)(2906002)(316002)(54906003)(71200400001)(38070700005)(8936002)(186003)(110136005)(6506007)(44832011)(52536014)(86362001)(26005)(7696005)(9686003)(32563001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?L+0oLHsmGb3MNLA4XEFMiCgr01HGfw4KVMGnoiWc8wQzFYiqPpm2JSCbuQt4?=
- =?us-ascii?Q?uahQcFyyA/MsEH3jaT2f2mBSyrbO6uBUW6lTUoHbVCwwah9zSTREvb/0IvMW?=
- =?us-ascii?Q?zTAIQ6AJAU6bfu++lHnUbuS6nol3n/n9QPOMGEO53T9u+kmhXJzyTGFSzjFw?=
- =?us-ascii?Q?QcJDWGDXz/nFBBFcQW13CLhkMSzERNxqxg2m9D5OZF6sia8sFVPJBs7ILnoo?=
- =?us-ascii?Q?BnOxrbUet10AustKtus5NY5dqgne89jSW0WcgmFNGalfltwgUFJEOFVpCCzn?=
- =?us-ascii?Q?VdeYkvtJ/9LRef3FveFV/SykpKKVL4jIkwUL9PevmyOZZ4A/2Ql0ODevWs94?=
- =?us-ascii?Q?DwTmoY8KthuTFT7oh8EWiAFJyZs7kX9jG3jwDkFqJ+yup5/V0b/k3DX+js16?=
- =?us-ascii?Q?RUVdl6pg8xIdW1z7HSrPx5lMOyFtV3t3w4TVnsrPg2izQ0Lb1AYTN3LrlXAH?=
- =?us-ascii?Q?kh+wSV234Y64BJRDEXPGEkis1pqUNXvBgCYIDplcOL14NSZaHT5gIX/v0l2a?=
- =?us-ascii?Q?18lXELA7d5GFj9A5njUtLBJicCiw5qKRqD8Jl7+w8SISYOUOZLWbONKY8HGw?=
- =?us-ascii?Q?aFVejyDtLgyKwe6efD1kOPDpU2paEGbUf4gH4MBnIgjJRFjzrXrKOjW8BJSM?=
- =?us-ascii?Q?WfK4EuakUpU8pKqijDuiVEJN3HMKqV2jeOvvxUbi4Nyc6H5LbSb1IpIKJD6s?=
- =?us-ascii?Q?wkKGQ9IxQHqTIRhtxgzLWTdA+GMtY/dVo+J2SXi7b1lG01lYjVE9Q+5XFIgV?=
- =?us-ascii?Q?tgdU3zxW7EmNOA2UzQrwmRMlzJtqS8rN1CXa4rUQnAmSyFnDnIMvvRlHG8+I?=
- =?us-ascii?Q?QM2/DH2MJwrV3aVhynEyS3poT8iJPcULNNRJ9bR1J+5U7j+rL2w9lDcKhZZX?=
- =?us-ascii?Q?rkOWoVqr7IywPC79boIfCy/xOeJ2/iI+bUFNuZH4IwIQ0nR45fBoIqRmp9g1?=
- =?us-ascii?Q?CmN86BYgKtRNWhcuCvKCCoN1x2C4ckv6U6hvZq+GaAGFh1yW9Num7H8IXTHv?=
- =?us-ascii?Q?qQQLgst9LazlHuljSWos4N+NuHrArSOrEeHs332bWmcam4b8nW7X1MI57ZcK?=
- =?us-ascii?Q?fKBaiM15Ti3bRNGqvHZ1xDsx8vpBMLvFSsHWrDeaBDJH4CQZnzyvpltZ677C?=
- =?us-ascii?Q?9GTLapKhy9/xVdt9USGfKQl5GSAKzz8Kg9eZyDIuluJvis9IzahMK+oR0esy?=
- =?us-ascii?Q?5KEitMVwLPxeFzV88RfIup0C2T/UMmWXLH+CWr0NgHDjDAEujM+ABY81Ckxi?=
- =?us-ascii?Q?7HP9x0K6nBSDcDwxeRx7k+b+vzjBuHLgmNMtPLJyAJNqTC8vYWjgdaRZiWe9?=
- =?us-ascii?Q?nSkmsCAT8AnpqdIPfc+RaETldK6cUBY+qB1bEzK6ONDPIjKVp0h63uZQ6gY+?=
- =?us-ascii?Q?hOju+7pauf1OVGPxhaFyFoG8o6UxxmK7kLgx8tmYoNrkVFPiaokX8tBjwLy+?=
- =?us-ascii?Q?EBATf2JX4fo=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 16 Mar 2022 08:27:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C2A66612;
+        Wed, 16 Mar 2022 05:26:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 969ACB81AE4;
+        Wed, 16 Mar 2022 12:26:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6283BC340E9;
+        Wed, 16 Mar 2022 12:26:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647433583;
+        bh=vWQ45p6IiUln+8RCOkkrGAhdyYJduZ3ffBungUr0sMM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=r64UMIfjBwm4SADOlvXkzugDRguLDA6OPndXYJxJ3MsievPPDI/Y3r1yMybpr7ZYw
+         fW8q7tfhJrGemWqhr3eNSj4yXgYtQbbKKPqeSebnrNfpgfy9+xphsFAFLLQUxt4ao8
+         yueHUv1r1lY3T6oY5c6/vtzMMfGB/MZ5L/8TdZC7ac7tyyqljqf1P7z46lezZyZdlh
+         s8rU18mbh/SJGBXyd/nEcxukeKaYWFBlz8ELjp06O8knZJdTdit9jSD9/K2Rm3T+FA
+         dBYErrEYKuN4qf6NbTheiEUwtExRI19EMoUu1Ny9td3juMtoA6ehdrXPnaQMGiKSF+
+         4bA2hTIsRcETw==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCHv3 bpf-next 10/13] selftests/bpf: Add kprobe_multi attach test
+Date:   Wed, 16 Mar 2022 13:24:16 +0100
+Message-Id: <20220316122419.933957-11-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220316122419.933957-1-jolsa@kernel.org>
+References: <20220316122419.933957-1-jolsa@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1dab3118-db2a-48cc-2537-08da07482d2d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2022 12:26:20.2850
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 37H9lYNI5AW4Umu/o187VOReIyfCWNkHR7muQiiEZDvByzcce9cmi3Cl6cZw9yyXFZHnX2bHH5KuqM40opvdpA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4622
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: [PATCH v2] dt-bindings: arm: fsl: add IMX8MN DDR3L eval board
->=20
-> This eval board features an IMX8MN UltraLite and has DDR3L RAM. The
-> product part number is 8MNANOD3L-EVK.
->=20
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> Reviewed-by: Heiko Thiery <heiko.thiery@gmail.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Adding kprobe_multi attach test that uses new fprobe interface to
+attach kprobe program to multiple functions.
 
-Acked-by: Peng Fan <peng.fan@nxp.com>
+The test is attaching programs to bpf_fentry_test* functions and
+uses single trampoline program bpf_prog_test_run to trigger
+bpf_fentry_test* functions.
 
-> ---
-> changes since v1:
->  - order entries alphabetically
->=20
->  Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml
-> b/Documentation/devicetree/bindings/arm/fsl.yaml
-> index 08bdd30e511c..37da3a267c94 100644
-> --- a/Documentation/devicetree/bindings/arm/fsl.yaml
-> +++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-> @@ -834,6 +834,7 @@ properties:
->                - beacon,imx8mn-beacon-kit  # i.MX8MN Beacon
-> Development Kit
->                - bsh,imx8mn-bsh-smm-s2     # i.MX8MN BSH
-> SystemMaster S2
->                - bsh,imx8mn-bsh-smm-s2pro  # i.MX8MN BSH
-> SystemMaster S2 PRO
-> +              - fsl,imx8mn-ddr3l-evk      # i.MX8MN DDR3L EVK
-> Board
->                - fsl,imx8mn-ddr4-evk       # i.MX8MN DDR4 EVK
-> Board
->                - fsl,imx8mn-evk            # i.MX8MN LPDDR4 EVK
-> Board
->                - gw,imx8mn-gw7902          # i.MX8MM Gateworks
-> Board
-> --
-> 2.30.2
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ .../bpf/prog_tests/kprobe_multi_test.c        | 141 ++++++++++++++++++
+ .../selftests/bpf/progs/kprobe_multi.c        |  95 ++++++++++++
+ tools/testing/selftests/bpf/trace_helpers.c   |   7 +
+ 3 files changed, 243 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi.c
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+new file mode 100644
+index 000000000000..ded6b8c8ec05
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+@@ -0,0 +1,141 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++#include "kprobe_multi.skel.h"
++#include "trace_helpers.h"
++
++static void kprobe_multi_test_run(struct kprobe_multi *skel)
++{
++	LIBBPF_OPTS(bpf_test_run_opts, topts);
++	int err, prog_fd;
++
++	prog_fd = bpf_program__fd(skel->progs.trigger);
++	err = bpf_prog_test_run_opts(prog_fd, &topts);
++	ASSERT_OK(err, "test_run");
++	ASSERT_EQ(topts.retval, 0, "test_run");
++
++	ASSERT_EQ(skel->bss->kprobe_test1_result, 1, "kprobe_test1_result");
++	ASSERT_EQ(skel->bss->kprobe_test2_result, 1, "kprobe_test2_result");
++	ASSERT_EQ(skel->bss->kprobe_test3_result, 1, "kprobe_test3_result");
++	ASSERT_EQ(skel->bss->kprobe_test4_result, 1, "kprobe_test4_result");
++	ASSERT_EQ(skel->bss->kprobe_test5_result, 1, "kprobe_test5_result");
++	ASSERT_EQ(skel->bss->kprobe_test6_result, 1, "kprobe_test6_result");
++	ASSERT_EQ(skel->bss->kprobe_test7_result, 1, "kprobe_test7_result");
++	ASSERT_EQ(skel->bss->kprobe_test8_result, 1, "kprobe_test8_result");
++
++	ASSERT_EQ(skel->bss->kretprobe_test1_result, 1, "kretprobe_test1_result");
++	ASSERT_EQ(skel->bss->kretprobe_test2_result, 1, "kretprobe_test2_result");
++	ASSERT_EQ(skel->bss->kretprobe_test3_result, 1, "kretprobe_test3_result");
++	ASSERT_EQ(skel->bss->kretprobe_test4_result, 1, "kretprobe_test4_result");
++	ASSERT_EQ(skel->bss->kretprobe_test5_result, 1, "kretprobe_test5_result");
++	ASSERT_EQ(skel->bss->kretprobe_test6_result, 1, "kretprobe_test6_result");
++	ASSERT_EQ(skel->bss->kretprobe_test7_result, 1, "kretprobe_test7_result");
++	ASSERT_EQ(skel->bss->kretprobe_test8_result, 1, "kretprobe_test8_result");
++}
++
++static void test_skel_api(void)
++{
++	struct kprobe_multi *skel = NULL;
++	int err;
++
++	skel = kprobe_multi__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "kprobe_multi__open_and_load"))
++		goto cleanup;
++
++	skel->bss->pid = getpid();
++	err = kprobe_multi__attach(skel);
++	if (!ASSERT_OK(err, "kprobe_multi__attach"))
++		goto cleanup;
++
++	kprobe_multi_test_run(skel);
++
++cleanup:
++	kprobe_multi__destroy(skel);
++}
++
++static void test_link_api(struct bpf_link_create_opts *opts)
++{
++	int prog_fd, link1_fd = -1, link2_fd = -1;
++	struct kprobe_multi *skel = NULL;
++
++	skel = kprobe_multi__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
++		goto cleanup;
++
++	skel->bss->pid = getpid();
++	prog_fd = bpf_program__fd(skel->progs.test_kprobe);
++	link1_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, opts);
++	if (!ASSERT_GE(link1_fd, 0, "link_fd"))
++		goto cleanup;
++
++	opts->kprobe_multi.flags = BPF_F_KPROBE_MULTI_RETURN;
++	prog_fd = bpf_program__fd(skel->progs.test_kretprobe);
++	link2_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, opts);
++	if (!ASSERT_GE(link2_fd, 0, "link_fd"))
++		goto cleanup;
++
++	kprobe_multi_test_run(skel);
++
++cleanup:
++	if (link1_fd != -1)
++		close(link1_fd);
++	if (link2_fd != -1)
++		close(link2_fd);
++	kprobe_multi__destroy(skel);
++}
++
++#define GET_ADDR(__sym, __addr) ({					\
++	__addr = ksym_get_addr(__sym);					\
++	if (!ASSERT_NEQ(__addr, 0, "kallsyms load failed for " #__sym))	\
++		return;							\
++})
++
++static void test_link_api_addrs(void)
++{
++	LIBBPF_OPTS(bpf_link_create_opts, opts);
++	unsigned long long addrs[8];
++
++	GET_ADDR("bpf_fentry_test1", addrs[0]);
++	GET_ADDR("bpf_fentry_test2", addrs[1]);
++	GET_ADDR("bpf_fentry_test3", addrs[2]);
++	GET_ADDR("bpf_fentry_test4", addrs[3]);
++	GET_ADDR("bpf_fentry_test5", addrs[4]);
++	GET_ADDR("bpf_fentry_test6", addrs[5]);
++	GET_ADDR("bpf_fentry_test7", addrs[6]);
++	GET_ADDR("bpf_fentry_test8", addrs[7]);
++
++	opts.kprobe_multi.addrs = (const unsigned long*) addrs;
++	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
++	test_link_api(&opts);
++}
++
++static void test_link_api_syms(void)
++{
++	LIBBPF_OPTS(bpf_link_create_opts, opts);
++	const char *syms[8] = {
++		"bpf_fentry_test1",
++		"bpf_fentry_test2",
++		"bpf_fentry_test3",
++		"bpf_fentry_test4",
++		"bpf_fentry_test5",
++		"bpf_fentry_test6",
++		"bpf_fentry_test7",
++		"bpf_fentry_test8",
++	};
++
++	opts.kprobe_multi.syms = syms;
++	opts.kprobe_multi.cnt = ARRAY_SIZE(syms);
++	test_link_api(&opts);
++}
++
++void test_kprobe_multi_test(void)
++{
++	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
++		return;
++
++	if (test__start_subtest("skel_api"))
++		test_skel_api();
++	if (test__start_subtest("link_api_addrs"))
++		test_link_api_syms();
++	if (test__start_subtest("link_api_syms"))
++		test_link_api_addrs();
++}
+diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi.c b/tools/testing/selftests/bpf/progs/kprobe_multi.c
+new file mode 100644
+index 000000000000..6616c082c8c2
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kprobe_multi.c
+@@ -0,0 +1,95 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++#include <stdbool.h>
++
++char _license[] SEC("license") = "GPL";
++
++extern const void bpf_fentry_test1 __ksym;
++extern const void bpf_fentry_test2 __ksym;
++extern const void bpf_fentry_test3 __ksym;
++extern const void bpf_fentry_test4 __ksym;
++extern const void bpf_fentry_test5 __ksym;
++extern const void bpf_fentry_test6 __ksym;
++extern const void bpf_fentry_test7 __ksym;
++extern const void bpf_fentry_test8 __ksym;
++
++int pid = 0;
++
++__u64 kprobe_test1_result = 0;
++__u64 kprobe_test2_result = 0;
++__u64 kprobe_test3_result = 0;
++__u64 kprobe_test4_result = 0;
++__u64 kprobe_test5_result = 0;
++__u64 kprobe_test6_result = 0;
++__u64 kprobe_test7_result = 0;
++__u64 kprobe_test8_result = 0;
++
++__u64 kretprobe_test1_result = 0;
++__u64 kretprobe_test2_result = 0;
++__u64 kretprobe_test3_result = 0;
++__u64 kretprobe_test4_result = 0;
++__u64 kretprobe_test5_result = 0;
++__u64 kretprobe_test6_result = 0;
++__u64 kretprobe_test7_result = 0;
++__u64 kretprobe_test8_result = 0;
++
++static void kprobe_multi_check(void *ctx, bool is_return)
++{
++	if (bpf_get_current_pid_tgid() >> 32 != pid)
++		return;
++
++	__u64 addr = bpf_get_func_ip(ctx);
++
++#define SET(__var, __addr) ({			\
++	if ((const void *) addr == __addr) 	\
++		__var = 1;			\
++})
++
++	if (is_return) {
++		SET(kretprobe_test1_result, &bpf_fentry_test1);
++		SET(kretprobe_test2_result, &bpf_fentry_test2);
++		SET(kretprobe_test3_result, &bpf_fentry_test3);
++		SET(kretprobe_test4_result, &bpf_fentry_test4);
++		SET(kretprobe_test5_result, &bpf_fentry_test5);
++		SET(kretprobe_test6_result, &bpf_fentry_test6);
++		SET(kretprobe_test7_result, &bpf_fentry_test7);
++		SET(kretprobe_test8_result, &bpf_fentry_test8);
++	} else {
++		SET(kprobe_test1_result, &bpf_fentry_test1);
++		SET(kprobe_test2_result, &bpf_fentry_test2);
++		SET(kprobe_test3_result, &bpf_fentry_test3);
++		SET(kprobe_test4_result, &bpf_fentry_test4);
++		SET(kprobe_test5_result, &bpf_fentry_test5);
++		SET(kprobe_test6_result, &bpf_fentry_test6);
++		SET(kprobe_test7_result, &bpf_fentry_test7);
++		SET(kprobe_test8_result, &bpf_fentry_test8);
++	}
++
++#undef SET
++}
++
++/*
++ * No tests in here, just to trigger 'bpf_fentry_test*'
++ * through tracing test_run
++ */
++SEC("fentry/bpf_modify_return_test")
++int BPF_PROG(trigger)
++{
++	return 0;
++}
++
++SEC("kprobe.multi/bpf_fentry_tes??")
++int test_kprobe(struct pt_regs *ctx)
++{
++	kprobe_multi_check(ctx, false);
++	return 0;
++}
++
++SEC("kretprobe.multi/bpf_fentry_test*")
++int test_kretprobe(struct pt_regs *ctx)
++{
++	kprobe_multi_check(ctx, true);
++	return 0;
++}
+diff --git a/tools/testing/selftests/bpf/trace_helpers.c b/tools/testing/selftests/bpf/trace_helpers.c
+index ca6abae9b09c..3d6217e3aff7 100644
+--- a/tools/testing/selftests/bpf/trace_helpers.c
++++ b/tools/testing/selftests/bpf/trace_helpers.c
+@@ -34,6 +34,13 @@ int load_kallsyms(void)
+ 	if (!f)
+ 		return -ENOENT;
+ 
++	/*
++	 * This is called/used from multiplace places,
++	 * load symbols just once.
++	 */
++	if (sym_cnt)
++		return 0;
++
+ 	while (fgets(buf, sizeof(buf), f)) {
+ 		if (sscanf(buf, "%p %c %s", &addr, &symbol, func) != 3)
+ 			break;
+-- 
+2.35.1
 
