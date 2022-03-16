@@ -2,152 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8B4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D77CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353593AbiCPFSp (ORCPT
+        id S1352458AbiCPFW7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 01:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44528 "EHLO
+        Wed, 16 Mar 2022 01:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244521AbiCPFSl (ORCPT
+        with ESMTP id S239007AbiCPFW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 01:18:41 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4065BE6D
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:17:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647407847; x=1678943847;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=w8iJ2sWnY/apWTZBfEbJmkh/L8mm0lNnZAlpbnG2gk4=;
-  b=kEMb0rRwyLwZsS5hmd7GtE7UegyzsfIT1Rr6twn2BfvOITctinU23L4Q
-   ZEYskPRPIcKxqkvso0NMwBN14MRfq50F9nU0uWI7wTBBjMVTPvCSxuY2T
-   8xcoXO2eMJFFr9uOgvIdPETMuBOklWVkwsa5Fsek4Mo1Nwslw0rIUCSD9
-   /qMfnYBwDODliYuo2fexIphzK5AhqEZhUm18GGSGs0pJg3u4wwOxVhXyd
-   PZWdR4XnR/xuboAhtOI1JtUxaLZ8k2gIdqy2FHKK4+KXU3f9T7COn3XUS
-   4YAjThWRu7jaIHAZ3uNsxCGMWm0EBkRtK/Q8fo/Acux5c3/ekgbTMbSvL
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256684997"
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="256684997"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 22:17:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="540758097"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 15 Mar 2022 22:17:26 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUM2H-000C1R-AU; Wed, 16 Mar 2022 05:17:25 +0000
-Date:   Wed, 16 Mar 2022 13:16:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dai Ngo <dai.ngo@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Chuck Lever <chuck.lever@oracle.com>
-Subject: [cel:nfsd-courteous-server 31/41] include/linux/fs.h:1340:13:
- sparse: sparse: function 'locks_owner_has_blockers' with external linkage
- has definition
-Message-ID: <202203161339.iou7bfaC-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Wed, 16 Mar 2022 01:22:58 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9965BE6C;
+        Tue, 15 Mar 2022 22:21:44 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id qa43so1788239ejc.12;
+        Tue, 15 Mar 2022 22:21:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=FJPuvcpULrXU5rJIxqChK1QcwIzv3ZufSJl5Tvybh4Q=;
+        b=Pi0mNJrZGf0xS0gPTi1wEYM9oEa9N9U6+KeW/SphwCtCMLelTdyH2/RGPTt4M00mGc
+         lWRV5j7BYg6dJzMqj9DRSExxYZ7WDl/kbnpTDfDvObVyylt52rfcqBVPaNTzSd7lPBx+
+         J6mvj01XvMNaYDH6PnF2GdcWlzSvIu5THKK+jBuHYTumIyK/NvLqqjlUEjT2lq4tdDbQ
+         qlMdqOR5DbHt5mIw8PFkcPngHD/E/49lXq6PG4gUnXbU/sVwJMCr3VJLPokY3BoDfl+a
+         msWHdYHI4A+ApGbYiwieXSu3lWIHXR5DjZpNYrNRU7H4BMuQq7IVWNgpIQ+D2JPEoPVK
+         Wt2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FJPuvcpULrXU5rJIxqChK1QcwIzv3ZufSJl5Tvybh4Q=;
+        b=Gqf2mrWUQe1dFDjSIWHrs7JTamwGUlVNWfKm9MPeHB7k4g3xWeUem7PoLn5I/ocngt
+         urxxHtv75WGN6VZ+R5CE5D9txsoi0YIkr7reMYKC8vyktdv/ZT5M3CvzH+60qzNa8Soc
+         0SGKDZLZUbKPIQS6dhGWNT7xzrJ70UYblkuTmWV9MIFY8hHFQiixrge3s3Z+wmRnLRSQ
+         EoIQk60dPdGfn6jTT4rCdqFuVajxWgFgvLcYO9tBSZmyp+pcElPlemTqSomWmpB6x3pc
+         D1KaG3vin7ZdM4tSdu9Ra93EaFEekoiDSatCLW7KQ1Hjz7z5YTABBBdeWo+LRfVQJQBM
+         G0+Q==
+X-Gm-Message-State: AOAM533zMqcmRR/2DOFwbZYTChvjW2iF4rrFQG4xpl+o2jkfBtaYCqbJ
+        65lsPnucbElIdinaI9T5YzXvalzpi8M=
+X-Google-Smtp-Source: ABdhPJyivZ/URHlB2xL5PAgwk7CHlC6dMQg2EP1/JL1OLFw8sLjTPvEWbukfEh2PKpSDFH6A/iDoog==
+X-Received: by 2002:a17:907:60cf:b0:6db:f0a6:74af with SMTP id hv15-20020a17090760cf00b006dbf0a674afmr5994072ejc.317.1647408103284;
+        Tue, 15 Mar 2022 22:21:43 -0700 (PDT)
+Received: from felia.fritz.box (200116b826783100351493f9f729970f.dip.versatel-1u1.de. [2001:16b8:2678:3100:3514:93f9:f729:970f])
+        by smtp.gmail.com with ESMTPSA id j11-20020a05640211cb00b00418572a3638sm430509edw.38.2022.03.15.22.21.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 22:21:42 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Dan Williams <dan.j.williams@intel.com>, nvdimm@lists.linux.dev
+Cc:     Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: remove section LIBNVDIMM BLK: MMIO-APERTURE DRIVER
+Date:   Wed, 16 Mar 2022 06:21:33 +0100
+Message-Id: <20220316052133.26212-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux nfsd-courteous-server
-head:   df7704ec9804486aa3f3888fca582467a796ab2d
-commit: ec6ec997faf8e90bef09f6e0376a157659a492c6 [31/41] fs/lock: add helper locks_owner_has_blockers to check for blockers
-config: h8300-randconfig-s032-20220313 (https://download.01.org/0day-ci/archive/20220316/202203161339.iou7bfaC-lkp@intel.com/config)
-compiler: h8300-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=ec6ec997faf8e90bef09f6e0376a157659a492c6
-        git remote add cel git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
-        git fetch --no-tags cel nfsd-courteous-server
-        git checkout ec6ec997faf8e90bef09f6e0376a157659a492c6
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=h8300 SHELL=/bin/bash drivers/pinctrl/mediatek/
+Commit f8669f1d6a86 ("nvdimm/blk: Delete the block-aperture window driver")
+removes the file drivers/nvdimm/blk.c, but misses to adjust MAINTAINERS.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+broken reference.
 
+The section LIBNVDIMM BLK: MMIO-APERTURE DRIVER refers to the driver in
+blk.c, and some more generic nvdimm code in region_devs.c.
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/pinctrl/mediatek/pinctrl-mt6397.c: note: in included file (through include/linux/seq_file.h, include/linux/pinctrl/pinctrl.h):
->> include/linux/fs.h:1340:13: sparse: sparse: function 'locks_owner_has_blockers' with external linkage has definition
-   include/linux/fs.h:1340:13: sparse: sparse: symbol 'locks_owner_has_blockers' was not declared. Should it be static?
---
-   drivers/pinctrl/mediatek/pinctrl-mtk-common.c: note: in included file (through include/linux/seq_file.h, include/linux/pinctrl/pinctrl.h, include/linux/gpio/driver.h):
->> include/linux/fs.h:1340:13: sparse: sparse: function 'locks_owner_has_blockers' with external linkage has definition
-   include/linux/fs.h:1340:13: sparse: sparse: symbol 'locks_owner_has_blockers' was not declared. Should it be static?
---
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through include/linux/seq_file.h, include/linux/pinctrl/pinctrl.h, include/linux/gpio/driver.h):
->> include/linux/fs.h:1340:13: sparse: sparse: function 'locks_owner_has_blockers' with external linkage has definition
-   include/linux/fs.h:1340:13: sparse: sparse: symbol 'locks_owner_has_blockers' was not declared. Should it be static?
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through include/linux/io.h, include/linux/irq.h, include/linux/gpio/driver.h):
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through arch/h8300/include/asm/io.h, include/linux/io.h, include/linux/irq.h, ...):
-   include/asm-generic/io.h:299:22: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int [usertype] b @@     got restricted __le32 [usertype] @@
-   include/asm-generic/io.h:299:22: sparse:     expected unsigned int [usertype] b
-   include/asm-generic/io.h:299:22: sparse:     got restricted __le32 [usertype]
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through include/linux/io.h, include/linux/irq.h, include/linux/gpio/driver.h):
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through arch/h8300/include/asm/io.h, include/linux/io.h, include/linux/irq.h, ...):
-   include/asm-generic/io.h:299:22: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int [usertype] b @@     got restricted __le32 [usertype] @@
-   include/asm-generic/io.h:299:22: sparse:     expected unsigned int [usertype] b
-   include/asm-generic/io.h:299:22: sparse:     got restricted __le32 [usertype]
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through include/linux/io.h, include/linux/irq.h, include/linux/gpio/driver.h):
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through arch/h8300/include/asm/io.h, include/linux/io.h, include/linux/irq.h, ...):
-   include/asm-generic/io.h:299:22: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int [usertype] b @@     got restricted __le32 [usertype] @@
-   include/asm-generic/io.h:299:22: sparse:     expected unsigned int [usertype] b
-   include/asm-generic/io.h:299:22: sparse:     got restricted __le32 [usertype]
-   drivers/pinctrl/mediatek/mtk-eint.c: note: in included file (through include/linux/io.h, include/linux/irq.h, include/linux/gpio/driver.h):
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:26:18: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
-   arch/h8300/include/asm/io.h:44:11: sparse: sparse: cast removes address space '__iomem' of expression
+As the driver is deleted, delete the section LIBNVDIMM BLK: MMIO-APERTURE
+DRIVER in MAINTAINERS as well.
 
-vim +/locks_owner_has_blockers +1340 include/linux/fs.h
+The remaining file region_devs.c is still covered by the section LIBNVDIMM:
+NON-VOLATILE MEMORY DEVICE SUBSYSTEM, and all patches to region_devs.c will
+still reach the same developers as before.
 
-  1336	
-  1337	struct files_struct;
-  1338	static inline void show_fd_locks(struct seq_file *f,
-  1339				struct file *filp, struct files_struct *files) {}
-> 1340	extern bool locks_owner_has_blockers(struct file_lock_context *flctx,
-  1341				fl_owner_t owner)
-  1342	{
-  1343		return false;
-  1344	}
-  1345	#endif /* !CONFIG_FILE_LOCKING */
-  1346	
-
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Dan, please pick this minor clean-up patch in your -next tree on top of
+the commit above.
+
+ MAINTAINERS | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index faa5e53db1dd..5eacf125e052 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11128,17 +11128,6 @@ F:	drivers/ata/
+ F:	include/linux/ata.h
+ F:	include/linux/libata.h
+ 
+-LIBNVDIMM BLK: MMIO-APERTURE DRIVER
+-M:	Dan Williams <dan.j.williams@intel.com>
+-M:	Vishal Verma <vishal.l.verma@intel.com>
+-M:	Dave Jiang <dave.jiang@intel.com>
+-L:	nvdimm@lists.linux.dev
+-S:	Supported
+-Q:	https://patchwork.kernel.org/project/linux-nvdimm/list/
+-P:	Documentation/nvdimm/maintainer-entry-profile.rst
+-F:	drivers/nvdimm/blk.c
+-F:	drivers/nvdimm/region_devs.c
+-
+ LIBNVDIMM BTT: BLOCK TRANSLATION TABLE
+ M:	Vishal Verma <vishal.l.verma@intel.com>
+ M:	Dan Williams <dan.j.williams@intel.com>
+-- 
+2.17.1
+
