@@ -2,97 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349721AbiCPOWN (ORCPT
+        id S1356838AbiCPOWs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44336 "EHLO
+        Wed, 16 Mar 2022 10:22:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343575AbiCPOVn (ORCPT
+        with ESMTP id S1356894AbiCPOWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:21:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A964EF6B;
-        Wed, 16 Mar 2022 07:19:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C36261277;
-        Wed, 16 Mar 2022 14:19:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A93A7C340F0;
-        Wed, 16 Mar 2022 14:19:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647440347;
-        bh=Y5zWl7U5Otlds0oDof3do24rzGWPA9Fl6NP3DV3Vw0U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ev2AKkdIvRSGsHse2NLrCC2KRLJOXBCgbib0B7zcoEQu900vK6tuJ/BEVBfjNtyck
-         jbCKbU7HIvQr5sqH9dCDzLam50ZuQSNQFqPRuT5AQUsy5pNcZrpxMHsOBkgHxQ5+/l
-         lcnzwDx3j/tapzQzEq8dmS/oq1NOcPvokGaoMHSTk0FdR1OkRfupEk/gHw0+NY3viH
-         DmNRzvBPFc05wxaIkBZuU2q7wfJdp8hIQhaTOl/n/27APTqV14MZC70C28h8s7aXUM
-         UGIpyrIrgsWL0xtruoBtSgbvQ6NtMeEfbPGsjEupbFKfXHO0IiFqhqZS31FM0gsD3s
-         I9To9zaC7dcgg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-spi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 3/3] spi: Fix invalid sgs value
-Date:   Wed, 16 Mar 2022 10:18:50 -0400
-Message-Id: <20220316141850.248784-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220316141850.248784-1-sashal@kernel.org>
-References: <20220316141850.248784-1-sashal@kernel.org>
+        Wed, 16 Mar 2022 10:22:30 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62176BDCE;
+        Wed, 16 Mar 2022 07:19:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647440388; x=1678976388;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yZ12FZ/N5m0qimsh4k++dJBxGP/L7/rgi9F835wYwuA=;
+  b=ndEJRu2igqH+nOTk4L+kVQuib9gV1E6BjyJ7SuY/SVXYADuLmKhMwdDV
+   6Cr91HnFZDN8Hvvopmykzd6Zmtw3KRTaGVjUGff7w2+naOy43D44Fnp6O
+   OWZ8PHVFYPeXWDJkmEq6V4dfbnH7PUxBzgY6yBqzTj1OvhuYdYl5OyX9f
+   E=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 16 Mar 2022 07:19:48 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 07:19:47 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 16 Mar 2022 07:19:47 -0700
+Received: from [10.216.32.215] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 16 Mar
+ 2022 07:19:42 -0700
+Message-ID: <5428f192-1537-fa03-8e9c-4a8322772546@quicinc.com>
+Date:   Wed, 16 Mar 2022 19:49:38 +0530
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V2,2/2] mm: madvise: skip unmapped vma holes passed to
+ process_madvise
+Content-Language: en-US
+To:     Minchan Kim <minchan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     <surenb@google.com>, <vbabka@suse.cz>, <rientjes@google.com>,
+        <sfr@canb.auug.org.au>, <edgararriaga@google.com>,
+        <nadav.amit@gmail.com>, <mhocko@suse.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>,
+        "# 5 . 10+" <stable@vger.kernel.org>
+References: <cover.1647008754.git.quic_charante@quicinc.com>
+ <4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com>
+ <YjEaFBWterxc3Nzf@google.com>
+ <20220315164807.7a9cf1694ee2db8709a8597c@linux-foundation.org>
+ <YjFAzuLKWw5eadtf@google.com>
+From:   Charan Teja Kalla <quic_charante@quicinc.com>
+In-Reply-To: <YjFAzuLKWw5eadtf@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+Thanks Andrew and Minchan.
 
-[ Upstream commit 1a4e53d2fc4f68aa654ad96d13ad042e1a8e8a7d ]
+On 3/16/2022 7:13 AM, Minchan Kim wrote:
+> On Tue, Mar 15, 2022 at 04:48:07PM -0700, Andrew Morton wrote:
+>> On Tue, 15 Mar 2022 15:58:28 -0700 Minchan Kim <minchan@kernel.org> wrote:
+>>
+>>> On Fri, Mar 11, 2022 at 08:59:06PM +0530, Charan Teja Kalla wrote:
+>>>> The process_madvise() system call is expected to skip holes in vma
+>>>> passed through 'struct iovec' vector list. But do_madvise, which
+>>>> process_madvise() calls for each vma, returns ENOMEM in case of unmapped
+>>>> holes, despite the VMA is processed.
+>>>> Thus process_madvise() should treat ENOMEM as expected and consider the
+>>>> VMA passed to as processed and continue processing other vma's in the
+>>>> vector list. Returning -ENOMEM to user, despite the VMA is processed,
+>>>> will be unable to figure out where to start the next madvise.
+>>>> Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
+>>>> Cc: <stable@vger.kernel.org> # 5.10+
+>>>
+>>> Hmm, not sure whether it's stable material since it changes semantic of
+>>> API. It would be better to change the semantic from 5.19 with man page
+>>> update to specify the change.
+>>
+>> It's a very desirable change and it makes the code match the manpage
+>> and it's cc:stable.  I think we should just absorb any transitory
+>> damage which this causes people.  I doubt if there will be much - if
+>> anyone was affected by this they would have already told us that it's
+>> broken?
+> 
+> 
+> process_madvise fails to return exact processed bytes at several cases
+> if it encounters the error, such as, -EINVAL, -EINTR, -ENOMEM in the
+> middle of processing vmas. And now we are trying to make exception for
+> change for only hole?
+I think EINTR will never return in the middle of processing VMA's for
+the behaviours supported by process_madvise().
 
-max_seg_size is unsigned int and it can have a value up to 2^32
-(for eg:-RZ_DMAC driver sets dma_set_max_seg_size as U32_MAX)
-When this value is used in min_t() as an integer type, it becomes
--1 and the value of sgs becomes 0.
+It can return EINTR when:
+-------------------------
+1) PTRACE_MODE_READ is being checked in mm_access() where it is waiting
+on task->signal->exec_update_lock. EINTR returned from here guarantees
+that process_madvise() didn't event start processing.
+https://elixir.bootlin.com/linux/v5.16.14/source/mm/madvise.c#L1264 -->
+https://elixir.bootlin.com/linux/v5.16.14/source/kernel/fork.c#L1318
 
-Fix this issue by replacing the 'int' data type with 'unsigned int'
-in min_t().
+2) The process_madvise() started processing VMA's but the required
+behavior on a VMA needs mmap_write_lock_killable(), from where EINTR is
+returned. The current behaviours supported by process_madvise(),
+MADV_COLD, PAGEOUT, WILLNEED, just need read lock here.
+https://elixir.bootlin.com/linux/v5.16.14/source/mm/madvise.c#L1164
+ **Thus I think no way for EINTR can be returned by process_madvise() in
+the middle of processing.** . No?
 
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220307184843.9994-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/spi/spi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+for EINVAL:
+-----------
+The only case, I can think of,  where EINVAL can be returned in the
+middle of processing is in examples like, given range contains VMA's
+with a hole in between and one of the VMA contains the pages that fails
+can_madv_lru_vma() condition.
+So, it's a limitation that this returns -EINVAL though some bytes are
+processed.
+	OR
+Since there exists still some invalid bytes processed it is valid to
+return -EINVAL here and user has to check the address range sent?
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 71f74015efb9..d26aefed16ac 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -774,10 +774,10 @@ static int spi_map_buf(struct spi_controller *ctlr, struct device *dev,
- 	int i, ret;
- 
- 	if (vmalloced_buf || kmap_buf) {
--		desc_len = min_t(int, max_seg_size, PAGE_SIZE);
-+		desc_len = min_t(unsigned int, max_seg_size, PAGE_SIZE);
- 		sgs = DIV_ROUND_UP(len + offset_in_page(buf), desc_len);
- 	} else if (virt_addr_valid(buf)) {
--		desc_len = min_t(int, max_seg_size, ctlr->max_dma_len);
-+		desc_len = min_t(unsigned int, max_seg_size, ctlr->max_dma_len);
- 		sgs = DIV_ROUND_UP(len, desc_len);
- 	} else {
- 		return -EINVAL;
--- 
-2.34.1
+for ENOMEM:
+----------
+Though complete range is processed still returns ENOMEM. IMO, This
+shouldn't be treated as error which the patch is targeted for. Then
+there is limitation case that you mentioned below where it returns
+positive processes bytes even though it didn't process anything if it
+couldn't find any vma for the first iteration in madvise_walk_vmas
+
+I think the above limitations with EINVAL and ENOMEM are arising because
+we are relying on do_madvise() functionality which madvise() call uses
+to process a single VMA. When 'struct iovec' vector processing interface
+is given in a system call, it is the expectation by the caller that this
+system call should return the correct bytes processed to help the user
+to take the correct decisions. Please correct me If i am wrong here.
+
+So, should we add the new function say do_process_madvise(), which take
+cares of above limitations? or any alternative suggestions here please?
+
+> IMO, it's worth to note in man page.
+> 
+
+Or the current patch for just ENOMEM is sufficient here and we just have
+to update the man page?
+
+> In addition, this change returns positive processes bytes even though
+> it didn't process anything if it couldn't find any vma for the first
+> iteration in madvise_walk_vmas.
+
+Thanks,
+Charan
 
