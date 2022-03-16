@@ -2,111 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87389C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED79EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355080AbiCPJ5d (ORCPT
+        id S1355077AbiCPKAN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 05:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
+        Wed, 16 Mar 2022 06:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350863AbiCPJ5c (ORCPT
+        with ESMTP id S1350398AbiCPKAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 05:57:32 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0107055771
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:56:17 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A073421125;
-        Wed, 16 Mar 2022 09:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1647424576; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dd5vdp3Qi8IT4o7kjNbpz9TrWOznkW6WDVyec0y1JZ4=;
-        b=QySUcHD0bhNZjxz2GTyKnYnGVe64FKvnBSTmONm+Q42Uii5EL8zO9dHCKf5+pvBq5tvjcK
-        Aopt5JEJeVMeO9ta0p7FczU+qeNjAYMo7m9YJcXdsRCV6td4NC4ISQx3SOa+wS6/KBV8IO
-        4aAWVqSGzIqNy+marQwyT0hohQ0/F00=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6CEF4A3B9E;
-        Wed, 16 Mar 2022 09:56:16 +0000 (UTC)
-Date:   Wed, 16 Mar 2022 10:56:14 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, kosaki.motohiro@jp.fujitsu.com,
-        mgorman@suse.de, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/mempolicy: fix potential mpol_new leak in
- shared_policy_replace
-Message-ID: <YjG0PsF25wpAEOY3@dhcp22.suse.cz>
-References: <20220311093624.39546-1-linmiaohe@huawei.com>
- <Yi9w7TCYbj+OLGXJ@dhcp22.suse.cz>
- <26577566-ae1e-801c-8c64-89c2c89a487d@huawei.com>
- <YjCwYpTbGzAj9kmg@dhcp22.suse.cz>
- <24b2a9ef-eea0-09bd-6842-121d8436e56a@huawei.com>
+        Wed, 16 Mar 2022 06:00:11 -0400
+X-Greylist: delayed 441 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 16 Mar 2022 02:58:57 PDT
+Received: from audible.transient.net (audible.transient.net [24.143.126.66])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id CE38764BE7
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:58:57 -0700 (PDT)
+Received: (qmail 5861 invoked from network); 16 Mar 2022 09:51:35 -0000
+Received: from cucamonga.audible.transient.net (192.168.2.5)
+  by canarsie.audible.transient.net with QMQP; 16 Mar 2022 09:51:35 -0000
+Received: (nullmailer pid 4066 invoked by uid 1000);
+        Wed, 16 Mar 2022 09:51:35 -0000
+Date:   Wed, 16 Mar 2022 09:51:35 +0000
+From:   Jamie Heilman <jamie@audible.transient.net>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: system locks up with CONFIG_SLS=Y; 5.17.0-rc
+Message-ID: <YjGzJwjrvxg5YZ0Z@audible.transient.net>
+Mail-Followup-To: linux-kernel@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <24b2a9ef-eea0-09bd-6842-121d8436e56a@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 16-03-22 14:39:37, Miaohe Lin wrote:
-> On 2022/3/15 23:27, Michal Hocko wrote:
-> > On Tue 15-03-22 21:42:29, Miaohe Lin wrote:
-> >> On 2022/3/15 0:44, Michal Hocko wrote:
-> >>> On Fri 11-03-22 17:36:24, Miaohe Lin wrote:
-> >>>> If mpol_new is allocated but not used in restart loop, mpol_new will be
-> >>>> freed via mpol_put before returning to the caller. But refcnt is not
-> >>>> initialized yet, so mpol_put could not do the right things and might
-> >>>> leak the unused mpol_new.
-> >>>
-> >>> The code is really hideous but is there really any bug there? AFAICS the
-> >>> new policy is only allocated in if (n->end > end) branch and that one
-> >>> will set the reference count on the retry. Or am I missing something?
-> >>>
-> >>
-> >> Many thanks for your comment.
-> >> IIUC, new policy is allocated via the below code:
-> >>
-> >> shared_policy_replace:
-> >> 	alloc_new:
-> >> 		write_unlock(&sp->lock);
-> >> 		ret = -ENOMEM;
-> >> 		n_new = kmem_cache_alloc(sn_cache, GFP_KERNEL);
-> >> 		if (!n_new)
-> >> 			goto err_out;
-> >> 		mpol_new = kmem_cache_alloc(policy_cache, GFP_KERNEL);
-> >> 		if (!mpol_new)
-> >> 			goto err_out;
-> >> 		goto restart;
-> >>
-> >> And mpol_new' reference count will be set before used in n->end > end case. But
-> >> if that is "not" the case, i.e. mpol_new is not inserted into the rb_tree, mpol_new
-> >> will be freed via mpol_put before return:
-> > 
-> > One thing I have missed previously is that the lock is dropped during
-> > the allocation so I guess the memory policy could have been changed
-> > during that time. Is this possible? Have you explored this possibility?
-> > Is this a theoretical problem or it can be triggered intentionally.
-> > 
-> 
-> This is found via code investigation. I think this could be triggered if there
-> are many concurrent mpol_set_shared_policy in place. But the user-visible effect
-> might be obscure as only sizeof(struct mempolicy) bytes leaks possiblely every time.
-> 
-> > These details would be really interesting for the changelog so that we
-> > can judge how important this would be.
-> 
-> This might not be that important as this issue should have been well-concealed for
-> almost ten years (since commit 42288fe366c4 ("mm: mempolicy: Convert shared_policy mutex to spinlock")).
+I've been (somewhat unsuccessfully) trying to bisect a hard lock-up
+of my workstation that occurs when I'm running 5.17 rc kernels a few
+seconds after I start a kvm guest instance.  There is no output to
+any log, everything locks up completely, sysrq doesn't even work
+anymore.  As bisection progressed closer and closer to the branch
+where straight-line-speculation mitigation was enabled, and as bisect
+landing me between 9cdbeec40968 ("x86/entry_32: Fix segment exceptions")
+and 3411506550b1 ("x86/csum: Rewrite/optimize csum_partial()") wasn't
+resulting in clear results (my system definately starts Oopsing and
+gets so hosed up that I'm forced to reboot, but it isn't quite as dire
+as sysrq continues to function) I decided to just try a build with
+CONFIG_SLS disabled, and it turns out that works just fine.  Sooo...
 
-I think it is really worth to drill down to the bottom of the issue.
-While theoretically possible can be a good enough to justify the change
-it is usually preferred to describe the underlying problem for future
-maintainability. 
+This system uses a Intel Core2 Duo E8400 processor.
+working config (CONFIG_SLS=N) and dmesg at:
+http://audible.transient.net/~jamie/k/sls.config-5.17.0-rc8
+http://audible.transient.net/~jamie/k/sls.dmesg
+
+(I don't think the dmesg of CONFIG_SLS=Y is really any different.)
+
+As far as I know the guest kernel I hand to qemu doesn't really
+matter, but the gist of my qemu command line is:
+
+qemu-system-x86_64 -m 2048 -name "$NAME" -machine pc,accel=kvm \
+    -nographic -no-user-config -nodefaults -boot strict=on \
+    -rtc base=utc -smp 1,sockets=1,cores=1,threads=1 \
+    -chardev pipe,id=char0,path="$DIR/monitor" \
+    -chardev pty,id=char1 \
+    -device isa-serial,chardev=char1 \
+    -device virtio-blk-pci,drive=blk0,bootindex=1 \
+    -device virtio-net-pci,netdev=net0,"mac=$IF_MAC" \
+    -device virtio-rng-pci,rng=rng0,max-bytes=1024,period=3000 \
+    -drive "id=blk0,file=/dev/S/$NAME,if=none,format=raw,cache=none" \
+    -mon chardev=char0,id=monitor,mode=control \
+    -netdev "tap,id=net0,ifname=$NAME,script=no,downscript=no" \
+    -object rng-random,id=rng0,filename=/dev/random
+
+
+No clue what additional debugging would help to enable here, if
+anything.  As you can see from the dmesg, I'm using gcc 11.2.0 from
+Debian unstable, 4:11.2.0-2 to be exact.  Let me know what other
+information would be useful.
+
 -- 
-Michal Hocko
-SUSE Labs
+Jamie Heilman                     http://audible.transient.net/~jamie/
