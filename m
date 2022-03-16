@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF42AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 14:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235669AbiCPOQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:16:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        id S1356464AbiCPORC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 10:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356347AbiCPOQ0 (ORCPT
+        with ESMTP id S1356472AbiCPOQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 10:16:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315D12CC93;
-        Wed, 16 Mar 2022 07:14:54 -0700 (PDT)
+        Wed, 16 Mar 2022 10:16:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3101B6352C;
+        Wed, 16 Mar 2022 07:15:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FA0C61209;
-        Wed, 16 Mar 2022 14:14:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D101C340E9;
-        Wed, 16 Mar 2022 14:14:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DECA6113D;
+        Wed, 16 Mar 2022 14:15:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E46D3C340F4;
+        Wed, 16 Mar 2022 14:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647440094;
-        bh=VneNOaM9mJpTwqnsaz3AMAgYN5lJVKmSjFQ175D3ec4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMq3JGSE+PeoDVFHUHb8NFBOOdfYVe5w7Qewh0riNNosTiZ4Io4S9flaxyRTp+wfy
-         UvZ53F3Rr5vp8TjlGtGBA25gjt7ZzX9dSYQgO6EywWREnaU2tudOLguM87bvT/b5HU
-         so2pG0zLTlLECTfu8lfyac2KY7Rfmq9x6WQqoWUqXxtOAJNcPtYX8K7XVGKYjtuQHa
-         sgCzQ4BC14PBNFv+ZtYsnnqiqI748DYP0NXqQaejvD8lHRm9lPACqwIxNJEP02EVGt
-         gfOlJhFo9mtFCuEyyxgmnicUi4fZQWLEPnIzNaMsi1ON1QqCdscLE/OzjYUSSZwK6Q
-         ldYD5m6Lp2szQ==
+        s=k20201202; t=1647440129;
+        bh=oECYDvIRBL9OMBSMeOmUsaD9PwaLEVCsd4jApkaaWug=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fFr5icXnePXgaOR76sQYjwRikIKrHoFJ+i1BFrxHAAKQPeusq+UQy5Voc8Lx0UVoJ
+         LkJ5ZMGhcmLvAf0w4NRnuA3mBXuP1aK/LW+iubrcuW8YJ4jJq5tqfAgQVcAfqST5eD
+         lOrm/WXaIMOrY8caXMLLhMG+OvX4eBh2Fvm/9JdhSnwGushFwa3UdfRN6MZC9WbxXy
+         9vhc64iBw0Phy1K/CR2NhkcSRgzn+ApFAB2ah3+LKp+8/sBtsOckWIm98blUo7y8rF
+         q/GkZDOGMCrpPwhQIP2BHCNv9235SxU8o8ps8Ib1isO40YzSLIZ+6zwfqo/0M/iq8V
+         B1Q//Wbwi59NQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        tanghui20@huawei.com, christophe.jaillet@wanadoo.fr,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 10/13] ethernet: sun: Free the coherent when failing in probing
-Date:   Wed, 16 Mar 2022 10:13:51 -0400
-Message-Id: <20220316141354.247750-10-sashal@kernel.org>
+Cc:     Steev Klimaszewski <steev@kali.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/13] arm64: dts: qcom: c630: disable crypto due to serror
+Date:   Wed, 16 Mar 2022 10:15:01 -0400
+Message-Id: <20220316141513.247965-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220316141354.247750-1-sashal@kernel.org>
-References: <20220316141354.247750-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,45 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Steev Klimaszewski <steev@kali.org>
 
-[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
+[ Upstream commit 382e3e0eb6a83f1cf73d4dfa3448ade1ed721f22 ]
 
-When the driver fails to register net device, it should free the DMA
-region first, and then do other cleanup.
+Disable the crypto block due to it causing an SError in qce_start() on
+the C630, which happens upon every boot when cryptomanager tests are
+enabled.
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Steev Klimaszewski <steev@kali.org>
+[bjorn: Reworked commit message]
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211105035235.2392-1-steev@kali.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sun/sunhme.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
-index ad9029ae6848..77e5dffb558f 100644
---- a/drivers/net/ethernet/sun/sunhme.c
-+++ b/drivers/net/ethernet/sun/sunhme.c
-@@ -3146,7 +3146,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 	if (err) {
- 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
- 		       "aborting.\n");
--		goto err_out_iounmap;
-+		goto err_out_free_coherent;
- 	}
+diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+index 617a634ac905..d6a9dbe59a1d 100644
+--- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
++++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+@@ -793,3 +793,8 @@ &wifi {
  
- 	pci_set_drvdata(pdev, hp);
-@@ -3179,6 +3179,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
- 
- 	return 0;
- 
-+err_out_free_coherent:
-+	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
-+			  hp->happy_block, hp->hblock_dvma);
+ 	qcom,snoc-host-cap-8bit-quirk;
+ };
 +
- err_out_iounmap:
- 	iounmap(hp->gregs);
- 
++&crypto {
++	/* FIXME: qce_start triggers an SError */
++	status= "disable";
++};
 -- 
 2.34.1
 
