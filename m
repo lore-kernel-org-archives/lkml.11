@@ -2,160 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C74C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2312EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357069AbiCPPLT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        id S245089AbiCPPLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357037AbiCPPKt (ORCPT
+        with ESMTP id S238370AbiCPPKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:10:49 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D9A673D7
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:15 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id u7so3483090ljk.13
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=i+b2UIYzIPR8HiB7lfNC7HnKeM/AsfglkAUtbevdP9c=;
-        b=pKQumBJ+GJsRVp/9DOhiZG5nLwVHg3P0o8Mzd4OiMre2OVw7GwRWHQFDDOj6l1s/vA
-         1w5nGNo0a8hV5fJ/UjSxv9IbAeQoH04ovDHkSWiJsu8KjaUjBh77oag+Hn7Eq4qixUVt
-         6eQTY0sehEiq+KVOLjlm9AJ82yRyh6h5Zy+bEICcQBUHCmYnCsSs+FvWQsVpRKhnSJFp
-         fzcz10VupTQQdkofQYGmIUbdEgaZ7hcDA/HtJcCsGUbtxVQtNTFsLfDx3KYyrrFESRJ7
-         0BFwb9iICX8WGq/nTqHGi+B1rime6Vp8ivGp3nf6odxboZd80FFPzo4fl9NKqK1SwJmi
-         gSIw==
+        Wed, 16 Mar 2022 11:10:53 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75586673EB
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:17 -0700 (PDT)
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id CA29B3F627
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:09:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647443353;
+        bh=0TkaUHsdiaalOGmdOdYbrrLuoBcQ76N1kyxAw52pHyQ=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=vk6SKNlZ0JQ19469gZSqRNdGQOeRuWAnsRlr65yqZNxAdt1L5ZTHPHNaO9YHD0qzH
+         Az68b1rTm0bMq8nEvbUHvsbqsxHnoH2HxctYJNL9cX9gVbGZFiQ8r+3dnpV8wiva+2
+         /RyO7tHdvonH8eBddRakhoDmOxbRgaIIk36NFNY+F0ZraNBD8mDBHfNuGRpZcrAH8v
+         TNF5p7Mrnb10vBtVo9i3HAeoFQDP2cFPRjgG35tp/TniwC8AiqCZDXyPwn4jQSIwdE
+         o/QhX6tVQ3OUHeR9C9s8ySaPzxKfwaApEHX7DZHMfDm5WfultMSnMprJOZDB6BlXab
+         6kqqaLVb7TBOA==
+Received: by mail-lj1-f200.google.com with SMTP id b24-20020a2e8958000000b00247e2570100so1031566ljk.8
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=i+b2UIYzIPR8HiB7lfNC7HnKeM/AsfglkAUtbevdP9c=;
-        b=TjMjGdZJuPlnp7O5riA7BBZ/+RArmHXx0QbpvnLA1rvOpwMIPYxMzu045IUrXGktrA
-         t49jvj4tUH/Vwg79gnMmNOPz2ZJdqriPBJoQtL9megvhteTaqL9CxZd6sLJf80q0rf7R
-         mLku3Ux1g+gQEPZOnjYcmbNW/ANesJoeTiQCLBTuMIkxrDd3zLlC+GrrzX+RGcLhnbUg
-         z3I9m6uskZjlm9ehj7KRbZ/4mpBiJu6MCOTXYBpwDXZtREjQl39o//cPwoTzKpQaYecW
-         sHO/Mx3m3x8f7bE8n4QDwnmZaQ/XA8FxijeA6nA6/q8mtCPYoqLj8dXNIRV2sEA7Vb5O
-         kyfA==
-X-Gm-Message-State: AOAM530Zpy/7AVKaKcqz1sblSIclZpetYtJIuwyb5P6z2DiEPmRLe+Xa
-        R+S88cx5YXffgnRYbTYIEE4XLw==
-X-Google-Smtp-Source: ABdhPJwxmEKzCMsYoV9W9IgcGOWsUWc8nu+1gANANSrTAa+SS4zfn83WZgUS47iF9INcsPjoA0nY6g==
-X-Received: by 2002:a2e:a236:0:b0:249:2a4b:16f5 with SMTP id i22-20020a2ea236000000b002492a4b16f5mr75402ljm.384.1647443352962;
-        Wed, 16 Mar 2022 08:09:12 -0700 (PDT)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id d2-20020a194f02000000b00448b915e2d3sm176048lfb.99.2022.03.16.08.09.12
+         :references:mime-version:content-transfer-encoding;
+        bh=0TkaUHsdiaalOGmdOdYbrrLuoBcQ76N1kyxAw52pHyQ=;
+        b=K9laSJTplDdbLyNWPJTCC1f7OQ2Q0Xf/3HcFXKqt/eeHyrB0KnqV+JLO4+Oe+uNlQZ
+         gk8avmZaTXhQBCqEJDHOY4wUHn0BY7QijYmXbe65Foz89l+HP00CxEu01Bx4YDSmSvN/
+         cytRsqO3kP6pRb+jfJ0WSBpLWOvWwNGjZ8vk0S9DhD9hYXSG4Ior8nOtUi2LL+QnSw1L
+         eY9KOZTVUoFkMfWEl2EMjzEgH28PRaG7u53krhQlNzZUE0vborsEwZ5e6a6FztfDmJha
+         akjusDRerZSX7ZtHYukK4vjRsoiaurr+kWqoy0bUD4UmY9cRBCmXC4Q0rqH7rLylHiTC
+         h9jw==
+X-Gm-Message-State: AOAM532K7WBI9hLdvgI6Qj+LszuVHeGQ+g/NBHZz+BGuY4oM5SK+fDU4
+        1ibAT7BeWRIG3l68g++7bNUzA7Y30M56kfbU4HF0n0jAi6KIzubpO6svx/xl6mfPgyQGmIfKlHI
+        ch0b56+VI7zwCYGG/xVmVSyiNKgy/17yGyJ2IJOCDmg==
+X-Received: by 2002:a5d:6442:0:b0:203:dff2:866c with SMTP id d2-20020a5d6442000000b00203dff2866cmr272603wrw.465.1647443340522;
+        Wed, 16 Mar 2022 08:09:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwnOg2aSuuzk/AN13SVnFGjUvC/KtTXL980cTeRfOeIj0D4M/X0M0ZN717fC4+xLvcCtZ4GNg==
+X-Received: by 2002:a5d:6442:0:b0:203:dff2:866c with SMTP id d2-20020a5d6442000000b00203dff2866cmr272574wrw.465.1647443340291;
+        Wed, 16 Mar 2022 08:09:00 -0700 (PDT)
+Received: from localhost.localdomain (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id u18-20020adfdd52000000b001f04e9f215fsm1895105wrm.53.2022.03.16.08.08.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 08:09:12 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: [PATCH v5 net-next 06/15] net: bridge: mst: Notify switchdev drivers of MST state changes
-Date:   Wed, 16 Mar 2022 16:08:48 +0100
-Message-Id: <20220316150857.2442916-7-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220316150857.2442916-1-tobias@waldekranz.com>
-References: <20220316150857.2442916-1-tobias@waldekranz.com>
+        Wed, 16 Mar 2022 08:08:59 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Stuart Yoder <stuyoder@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        stable@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH v5 09/11] clk: imx: scu: Fix kfree() of static memory on setting driver_override
+Date:   Wed, 16 Mar 2022 16:08:01 +0100
+Message-Id: <20220316150803.421897-3-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
+References: <20220316150533.421349-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Organization: Westermo
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Generate a switchdev notification whenever an MST state changes. This
-notification is keyed by the VLANs MSTI rather than the VID, since
-multiple VLANs may share the same MST instance.
+The driver_override field from platform driver should not be initialized
+from static memory (string literal) because the core later kfree() it,
+for example when driver_override is set via sysfs.
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Use dedicated helper to set driver_override properly.
+
+Fixes: 77d8f3068c63 ("clk: imx: scu: add two cells binding support")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Acked-by: Stephen Boyd <sboyd@kernel.org>
 ---
- include/net/switchdev.h |  7 +++++++
- net/bridge/br_mst.c     | 18 ++++++++++++++++++
- 2 files changed, 25 insertions(+)
+ drivers/clk/imx/clk-scu.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 53dfa0f7cf5b..aa0171d5786d 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -19,6 +19,7 @@
- enum switchdev_attr_id {
- 	SWITCHDEV_ATTR_ID_UNDEFINED,
- 	SWITCHDEV_ATTR_ID_PORT_STP_STATE,
-+	SWITCHDEV_ATTR_ID_PORT_MST_STATE,
- 	SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS,
- 	SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS,
- 	SWITCHDEV_ATTR_ID_PORT_MROUTER,
-@@ -32,6 +33,11 @@ enum switchdev_attr_id {
- 	SWITCHDEV_ATTR_ID_VLAN_MSTI,
- };
+diff --git a/drivers/clk/imx/clk-scu.c b/drivers/clk/imx/clk-scu.c
+index 083da31dc3ea..4b2268b7d0d0 100644
+--- a/drivers/clk/imx/clk-scu.c
++++ b/drivers/clk/imx/clk-scu.c
+@@ -683,7 +683,12 @@ struct clk_hw *imx_clk_scu_alloc_dev(const char *name,
+ 		return ERR_PTR(ret);
+ 	}
  
-+struct switchdev_mst_state {
-+	u16 msti;
-+	u8 state;
-+};
-+
- struct switchdev_brport_flags {
- 	unsigned long val;
- 	unsigned long mask;
-@@ -50,6 +56,7 @@ struct switchdev_attr {
- 	void (*complete)(struct net_device *dev, int err, void *priv);
- 	union {
- 		u8 stp_state;				/* PORT_STP_STATE */
-+		struct switchdev_mst_state mst_state;	/* PORT_MST_STATE */
- 		struct switchdev_brport_flags brport_flags; /* PORT_BRIDGE_FLAGS */
- 		bool mrouter;				/* PORT_MROUTER */
- 		clock_t ageing_time;			/* BRIDGE_AGEING_TIME */
-diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
-index 29266174e6b4..00935a19afcc 100644
---- a/net/bridge/br_mst.c
-+++ b/net/bridge/br_mst.c
-@@ -30,13 +30,31 @@ static void br_mst_vlan_set_state(struct net_bridge_port *p, struct net_bridge_v
- int br_mst_set_state(struct net_bridge_port *p, u16 msti, u8 state,
- 		     struct netlink_ext_ack *extack)
- {
-+	struct switchdev_attr attr = {
-+		.id = SWITCHDEV_ATTR_ID_PORT_MST_STATE,
-+		.orig_dev = p->dev,
-+		.u.mst_state = {
-+			.msti = msti,
-+			.state = state,
-+		},
-+	};
- 	struct net_bridge_vlan_group *vg;
- 	struct net_bridge_vlan *v;
-+	int err;
- 
- 	vg = nbp_vlan_group(p);
- 	if (!vg)
- 		return 0;
- 
-+	/* MSTI 0 (CST) state changes are notified via the regular
-+	 * SWITCHDEV_ATTR_ID_PORT_STP_STATE.
-+	 */
-+	if (msti) {
-+		err = switchdev_port_attr_set(p->dev, &attr, extack);
-+		if (err && err != -EOPNOTSUPP)
-+			return err;
+-	pdev->driver_override = "imx-scu-clk";
++	ret = driver_set_override(&pdev->dev, &pdev->driver_override,
++				  "imx-scu-clk", strlen("imx-scu-clk"));
++	if (ret) {
++		platform_device_put(pdev);
++		return ERR_PTR(ret);
 +	}
-+
- 	list_for_each_entry(v, &vg->vlan_list, vlist) {
- 		if (v->brvlan->msti != msti)
- 			continue;
+ 
+ 	ret = imx_clk_scu_attach_pd(&pdev->dev, rsrc_id);
+ 	if (ret)
 -- 
-2.25.1
+2.32.0
 
