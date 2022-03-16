@@ -2,110 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA306C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BBA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:17:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242795AbiCPXRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 19:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54084 "EHLO
+        id S240344AbiCPXSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 19:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238175AbiCPXQy (ORCPT
+        with ESMTP id S237284AbiCPXSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 19:16:54 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6BF25F0;
-        Wed, 16 Mar 2022 16:15:34 -0700 (PDT)
-X-UUID: 5c96fb7c084e46ababa923be6c4b354e-20220317
-X-UUID: 5c96fb7c084e46ababa923be6c4b354e-20220317
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2029643742; Thu, 17 Mar 2022 07:15:29 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 17 Mar 2022 07:15:27 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Mar 2022 07:15:27 +0800
-From:   <sean.wang@mediatek.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
-CC:     <sean.wang@mediatek.com>, <Soul.Huang@mediatek.com>,
-        <YN.Chen@mediatek.com>, <Leon.Yen@mediatek.com>,
-        <Eric-SY.Chang@mediatek.com>, <Deren.Wu@mediatek.com>,
-        <km.lin@mediatek.com>, <robin.chiu@mediatek.com>,
-        <Eddie.Chen@mediatek.com>, <ch.yeh@mediatek.com>,
-        <posh.sun@mediatek.com>, <ted.huang@mediatek.com>,
-        <Eric.Liang@mediatek.com>, <Stella.Chang@mediatek.com>,
-        <Tom.Chou@mediatek.com>, <steve.lee@mediatek.com>,
-        <jsiuda@google.com>, <frankgor@google.com>,
-        <abhishekpandit@google.com>, <michaelfsun@google.com>,
-        <mcchou@chromium.org>, <shawnku@google.com>,
-        <linux-bluetooth@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Yake Yang <yake.yang@mediatek.com>
-Subject: [PATCH v5 3/5] Bluetooth: mt7921s: Add .get_data_path_id
-Date:   Thu, 17 Mar 2022 07:15:21 +0800
-Message-ID: <31997a82354ed4bebf849e07f04b663a1a898a70.1647472087.git.objelf@gmail.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <d4be9c9c1ce2757bad4df19885d605e97a1ceec8.1647472087.git.objelf@gmail.com>
-References: <d4be9c9c1ce2757bad4df19885d605e97a1ceec8.1647472087.git.objelf@gmail.com>
+        Wed, 16 Mar 2022 19:18:24 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F22325D8;
+        Wed, 16 Mar 2022 16:17:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647472629; x=1679008629;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=/CvDxUBjZUpW6SgceaqsCS1Q4typ2dhyPjtjHk2B1nI=;
+  b=DK/gh4f5fzBbIOc57yioQAL2pzzCOOOl9sHgLaJMfCBCTh2NVXE5BFmh
+   tVH648CAKY1odp6vtIzkBnX7eFT1fEG78ug9jrnOaCkhjOCGKUT0qXpSN
+   hBIC+m/jdjijUeNsDxvj//Tz26MI3pEnO7SH6iXCbyQxJeOqKBjKnqqCJ
+   4=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Mar 2022 16:17:08 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 16:17:08 -0700
+Received: from [10.110.68.151] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 16 Mar
+ 2022 16:17:07 -0700
+Message-ID: <15ebcddf-a84d-7293-f672-0e8ec47537e8@quicinc.com>
+Date:   Wed, 16 Mar 2022 16:17:06 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] soc: qcom: smem: use correct format characters
+Content-Language: en-US
+To:     Bill Wendling <morbo@google.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <llvm@lists.linux.dev>
+References: <20220316213118.2352683-1-morbo@google.com>
+From:   Trilok Soni <quic_tsoni@quicinc.com>
+In-Reply-To: <20220316213118.2352683-1-morbo@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yake Yang <yake.yang@mediatek.com>
+On 3/16/2022 2:31 PM, Bill Wendling wrote:
+> When compiling with -Wformat, clang emits the following warnings:
+> 
 
-Add .get_data_path_id to fetch data_path_id for MT7921 to support HFP
-offload use case.
+I thought we have -Wno-format by default enabled for arm64, isn't it?
 
-This is a preliminary patch to add the WBS support to the MT7921 driver.
-
-Reviewed-by: Mark Chen <markyawenchen@gmail.com>
-Co-developed-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Yake Yang <yake.yang@mediatek.com>
----
-v4->v5: no change
----
- drivers/bluetooth/btmtksdio.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index 034e55278c56..4000a994fe2c 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -936,6 +936,13 @@ static int btmtksdio_mtk_reg_write(struct hci_dev *hdev, u32 reg, u32 val, u32 m
- 	return err;
- }
- 
-+static int btmtksdio_get_data_path_id(struct hci_dev *hdev, __u8 *data_path_id)
-+{
-+	/* uses 1 as data path id for all the usecases */
-+	*data_path_id = 1;
-+	return 0;
-+}
-+
- static int btmtksdio_sco_setting(struct hci_dev *hdev)
- {
- 	const struct btmtk_sco sco_setting = {
-@@ -968,7 +975,13 @@ static int btmtksdio_sco_setting(struct hci_dev *hdev)
- 		return err;
- 
- 	val |= 0x00000101;
--	return btmtksdio_mtk_reg_write(hdev, MT7921_PINMUX_1, val, ~0);
-+	err =  btmtksdio_mtk_reg_write(hdev, MT7921_PINMUX_1, val, ~0);
-+	if (err < 0)
-+		return err;
-+
-+	hdev->get_data_path_id = btmtksdio_get_data_path_id;
-+
-+	return err;
- }
- 
- static int btmtksdio_reset_setting(struct hci_dev *hdev)
--- 
-2.25.1
-
+---Trilok Soni
