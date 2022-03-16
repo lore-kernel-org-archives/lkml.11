@@ -2,163 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC27C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 18:37:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C74C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 18:37:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357724AbiCPSij (ORCPT
+        id S1357735AbiCPSio (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 14:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
+        Wed, 16 Mar 2022 14:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241347AbiCPSii (ORCPT
+        with ESMTP id S241347AbiCPSin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 14:38:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C956F6D971
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 11:37:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 723CFB81CA4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BB06C340E9;
-        Wed, 16 Mar 2022 18:37:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647455837;
-        bh=AeOKmCyzq1uIA6ULnTh98t5emlpFl5gxplN7rmXD6BI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Qockax2Wfb9NicmpzRdcZsGmXxQ288gBYZ1jXZDnmCyNI5T0nA+duNoHrBT9avwLO
-         cHBehu4dH8vAvxB1d87pIy4Ov4pfvc/FeQD3LLfMhNZl99EPVsAljonngYLtCErt97
-         s7ctPZUnA2QYbgyE3OIQdB7AN1JngCj2OqJAXvFwXImb9nW5PA9va3OsazHqNgjWXv
-         uTktlMJ7CTXLAyQllkKGDxrajDY0i55gUpl223flIJQXH+Unat1Lm0L1EQdkCHAp2+
-         oAdoNjEusV0T7DUZFYsP+ojVz8hI3adWn3OWMrn55rr9XE/liQQSRJOUNKWiXIavGf
-         jER51JVbhKioQ==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Sam Ravnborg <sam@ravnborg.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Kees Cook <keescook@chromium.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Deepak Rawat <drawat.floss@gmail.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Dillon Min <dillon.minfei@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/panel: add CONFIG_DRM_KMS_HELPER dependencies
-Date:   Wed, 16 Mar 2022 19:36:46 +0100
-Message-Id: <20220316183708.1505846-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        Wed, 16 Mar 2022 14:38:43 -0400
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D00F6E295;
+        Wed, 16 Mar 2022 11:37:28 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2e59939b862so33408787b3.10;
+        Wed, 16 Mar 2022 11:37:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S7CD9ymBGSUH9xoh9EuGWgSN+WocwcNmiO6ecrAxwYQ=;
+        b=0Pxt3atUoFC0+JWCJVRTtpPjrEB8rhRRsNl0bynn9FnjbGczrKaWan+96XpVey+KGV
+         dsxppYI99Mgro3f/lSS3SnaaP07Wmc+ZvBXWcxYj1wP7yJ2i+GP7vr2Hog5jg9Hf0A1C
+         ModXY2UCCtL3hrKF7StmQDLXYmjvzH8nE+Uc2T2hNZF1Fd2rOHYhw5PPJ3U4mqK3va9U
+         JC8j0DiBPGNibCYAqo2KUXO9lOjGS5MbcV9Tb1WxhEvECz6rgI6XuF477BAKGpgsnS10
+         YVFR4Kse/C9vOnrsb20NlO3XGIN89kjw9I3JJAuNFI/pOkKgDeJsEUNtaMCAlo8KzDAH
+         G0oA==
+X-Gm-Message-State: AOAM530GMA2fhuD1lQPW765H8INX3KD4jDIEEUx/s9vGO2EmJid0LwTg
+        z51O0rfyh9/ngczKOFCbNk9E7moAP/ulMNcORx1o+8yE
+X-Google-Smtp-Source: ABdhPJxhctPM1paCg3U/d9lI9xrFtrHRF4X2UhxMkcjRi9OXvU0gaJ8deNpRnMDeZicvOJIkfB4GLX9JHFukxmEiBy8=
+X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
+ b145-20020a811b97000000b002db640f49d8mr1600322ywb.326.1647455847918; Wed, 16
+ Mar 2022 11:37:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220314220855.939823-1-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <20220314220855.939823-1-srinivas.pandruvada@linux.intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 16 Mar 2022 19:37:17 +0100
+Message-ID: <CAJZ5v0hdRTHPeg9wVudHAwgBhRb0Enj34t_9+2HcpBs1yWXiyg@mail.gmail.com>
+Subject: Re: [PATCH v2] thermal: int340x: Increase bitmap size
+To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        "Zhang, Rui" <rui.zhang@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>,
+        Stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Mar 14, 2022 at 11:09 PM Srinivas Pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+>
+> The number of policies are 10, so can't be supported by the bitmap size
+> of u8. Even though there are no platfoms with these many policies, but
+> as correctness increase to u32.
+>
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Fixes: 16fc8eca1975 ("thermal/int340x_thermal: Add additional UUIDs")
+> Cc: stable@vger.kernel.org
+> ---
+> v2
+> - Changed u16 to u32 for better alignment as suggested by David
+>
+>  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> index 72acb1f61849..348b1f4ef801 100644
+> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> @@ -53,7 +53,7 @@ struct int3400_thermal_priv {
+>         struct art *arts;
+>         int trt_count;
+>         struct trt *trts;
+> -       u8 uuid_bitmap;
+> +       u32 uuid_bitmap;
+>         int rel_misc_dev_res;
+>         int current_uuid_index;
+>         char *data_vault;
+> --
 
-The driver fails to build when the KMS helpers are disabled:
-
-ld.lld: error: undefined symbol: drm_gem_fb_get_obj
->>> referenced by drm_mipi_dbi.c
->>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
->>> referenced by drm_mipi_dbi.c
->>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_fb_dirty) in archive drivers/built-in.a
-
-ld.lld: error: undefined symbol: drm_gem_fb_begin_cpu_access
->>> referenced by drm_mipi_dbi.c
->>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
-
-ld.lld: error: undefined symbol: drm_fb_swab
->>> referenced by drm_mipi_dbi.c
->>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
-
-ld.lld: error: undefined symbol: drm_fb_xrgb8888_to_rgb565
->>> referenced by drm_mipi_dbi.c
->>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
-
-ld.lld: error: undefined symbol: drm_fb_memcpy
->>> referenced by drm_mipi_dbi.c
->>>               gpu/drm/drm_mipi_dbi.o:(mipi_dbi_buf_copy) in archive drivers/built-in.a
-
-This is fairly hard to hit in randconfig drivers, but it eventually
-did trigger for me in a configuration where all other DRM drivers
-are loadable modules, but DRM_PANEL_WIDECHIPS_WS2401 was built-in.
-
-Adding a dependency in all drivers that select DRM_MIPI_DBI avoids
-the problem for now, adding the dependency in DRM_MIPI_DBI as well
-should help make it easier to figure out why it breaks if someone
-forgets the dependency the next time.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/gpu/drm/Kconfig       | 2 +-
- drivers/gpu/drm/panel/Kconfig | 4 ++++
- 2 files changed, 5 insertions(+), 1 deletion(-)
-
-I see this warning on 5.17-rc8, but did not test it on linux-next,
-which may already have a fix.
-
-
-diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-index b1f22e457fd0..d5ec0b77c010 100644
---- a/drivers/gpu/drm/Kconfig
-+++ b/drivers/gpu/drm/Kconfig
-@@ -30,7 +30,7 @@ menuconfig DRM
- 
- config DRM_MIPI_DBI
- 	tristate
--	depends on DRM
-+	depends on DRM_KMS_HELPER
- 
- config DRM_MIPI_DSI
- 	bool
-diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 0aec5a10b064..96887d0efb9f 100644
---- a/drivers/gpu/drm/panel/Kconfig
-+++ b/drivers/gpu/drm/panel/Kconfig
-@@ -425,6 +425,7 @@ config DRM_PANEL_SAMSUNG_DB7430
- 	tristate "Samsung DB7430-based DPI panels"
- 	depends on OF && SPI && GPIOLIB
- 	depends on BACKLIGHT_CLASS_DEVICE
-+	depends on DRM_KMS_HELPER
- 	select DRM_MIPI_DBI
- 	help
- 	  Say Y here if you want to enable support for the Samsung
-@@ -440,6 +441,7 @@ config DRM_PANEL_SAMSUNG_S6D16D0
- config DRM_PANEL_SAMSUNG_S6D27A1
- 	tristate "Samsung S6D27A1 DPI panel driver"
- 	depends on OF && SPI && GPIOLIB
-+	depends on DRM_KMS_HELPER
- 	select DRM_MIPI_DBI
- 	help
- 	  Say Y here if you want to enable support for the Samsung
-@@ -476,6 +478,7 @@ config DRM_PANEL_SAMSUNG_S6E63M0_SPI
- 	depends on SPI
- 	depends on DRM_PANEL_SAMSUNG_S6E63M0
- 	default DRM_PANEL_SAMSUNG_S6E63M0
-+	depends on DRM_KMS_HELPER
- 	select DRM_MIPI_DBI
- 	help
- 	  Say Y here if you want to be able to access the Samsung
-@@ -677,6 +680,7 @@ config DRM_PANEL_WIDECHIPS_WS2401
- 	tristate "Widechips WS2401 DPI panel driver"
- 	depends on SPI && GPIOLIB
- 	depends on BACKLIGHT_CLASS_DEVICE
-+	depends on DRM_KMS_HELPER
- 	select DRM_MIPI_DBI
- 	help
- 	  Say Y here if you want to enable support for the Widechips WS2401 DPI
--- 
-2.29.2
-
+Applied as 5.18 material, thanks!
