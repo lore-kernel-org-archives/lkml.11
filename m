@@ -2,50 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1689C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E17C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355697AbiCPM0e (ORCPT
+        id S1355701AbiCPM0j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:26:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
+        Wed, 16 Mar 2022 08:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355696AbiCPM00 (ORCPT
+        with ESMTP id S1355685AbiCPM0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:26:26 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DE766213
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 05:25:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bDzUiAE2yXW6bfjMYLO917qo5tShPrjiMEB/4GVBdHo=; b=IxGoF+ecYdmGtxiNwNM0V7D+ee
-        a5TOdJTTU/zm4JxdO8FyyLwKsA+F82YJh61KaLgAulsSFUbdQIzuFfB1yYktkXEqVJPQ4zQrfujp2
-        kD4l7k+i1PG+0exmDwYW2V2JbuhKfk6mOjiySTN8bAsG5jsUI7nw4tHTOwrwmvf795aJWEln6t/6e
-        11lWnM51z5xvKAPJjHfzfum4R315EA8ZmfrZhxNYBLyYkJcg1A55gSV5TAg9HKtEf5qxafsRdsbKi
-        80OgeJ4A1UH4G46P/qqFjjoF0IFFw/q5KNO36+9YAX/LmqKHB5I9Qff6LOxTBJsBBlCuZCKGOkEGt
-        W0dqyYFA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUSi6-005xWo-Jy; Wed, 16 Mar 2022 12:25:02 +0000
-Date:   Wed, 16 Mar 2022 12:25:02 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/swap: simplify the code of find_get_incore_page()
-Message-ID: <YjHXHi6WGr9EA35D@casper.infradead.org>
-References: <20220316075941.44816-1-linmiaohe@huawei.com>
+        Wed, 16 Mar 2022 08:26:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547B04D9D1;
+        Wed, 16 Mar 2022 05:25:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07F81B81A79;
+        Wed, 16 Mar 2022 12:25:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7093AC340E9;
+        Wed, 16 Mar 2022 12:25:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647433511;
+        bh=1VtKvNS32Uyyjrtz0RgYiCNNkAcpWfsJmRROWcx7eLU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NpCoI/nH9se+UJHpP6DsKdrrvFn3UTE9ISi+6Ikejpofff1rDIgkygROo7gJsS8Fh
+         +879CxOxcFV6HpGFzRCAr36mn51O05nkatxcHiQVHj21vqTWbe5ypDRzcoaskBcR0r
+         ZilJ7vnGVbsZPzSgDn6ppd2WMCerAJyx0OJD3auG+9anHwgHK7giW4clKb3OoDhODW
+         ++2lklc2xcqwF3eQyNJLxJEqfAHijnmHaOlrcwNUjwpDp9cYgzr9GFo4mY4ENOePIk
+         0+CI+UBt/uSFdgvbCg/KthgSpxxvwD7YwaIixi3glDudahH+HEvt9BgjoU3CX/dKO2
+         QHNaJBBSPOH4Q==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCHv3 bpf-next 04/13] bpf: Add bpf_get_func_ip kprobe helper for multi kprobe link
+Date:   Wed, 16 Mar 2022 13:24:10 +0100
+Message-Id: <20220316122419.933957-5-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220316122419.933957-1-jolsa@kernel.org>
+References: <20220316122419.933957-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316075941.44816-1-linmiaohe@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 03:59:41PM +0800, Miaohe Lin wrote:
-> pagecache_get_page() can return subpage for us if we do not specify
-> FGP_HEAD. No functional change intended.
+Adding support to call bpf_get_func_ip helper from kprobe
+programs attached by multi kprobe link.
 
-No, I'm converting this to folios soon.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ kernel/trace/bpf_trace.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index fffa2171fae4..250750932228 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1037,6 +1037,18 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ };
+ 
++BPF_CALL_1(bpf_get_func_ip_kprobe_multi, struct pt_regs *, regs)
++{
++	return instruction_pointer(regs);
++}
++
++static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe_multi = {
++	.func		= bpf_get_func_ip_kprobe_multi,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_CTX,
++};
++
+ BPF_CALL_1(bpf_get_attach_cookie_trace, void *, ctx)
+ {
+ 	struct bpf_trace_run_ctx *run_ctx;
+@@ -1280,7 +1292,9 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_override_return_proto;
+ #endif
+ 	case BPF_FUNC_get_func_ip:
+-		return &bpf_get_func_ip_proto_kprobe;
++		return prog->expected_attach_type == BPF_TRACE_KPROBE_MULTI ?
++			&bpf_get_func_ip_proto_kprobe_multi :
++			&bpf_get_func_ip_proto_kprobe;
+ 	case BPF_FUNC_get_attach_cookie:
+ 		return &bpf_get_attach_cookie_proto_trace;
+ 	default:
+-- 
+2.35.1
+
