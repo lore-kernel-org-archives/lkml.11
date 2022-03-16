@@ -2,212 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D36C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 17:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E51C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 17:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349945AbiCPRVa (ORCPT
+        id S1350579AbiCPRWO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 13:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41370 "EHLO
+        Wed, 16 Mar 2022 13:22:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232192AbiCPRV2 (ORCPT
+        with ESMTP id S232192AbiCPRWL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 13:21:28 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEBE5AA49
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 10:20:13 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id h63so3131249iof.12
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 10:20:13 -0700 (PDT)
+        Wed, 16 Mar 2022 13:22:11 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915D95AA4F;
+        Wed, 16 Mar 2022 10:20:57 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id d19so4571637pfv.7;
+        Wed, 16 Mar 2022 10:20:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZHu31H02wKCvXtiv1u3NIdRpK08igoxIqxArOW7UWyU=;
-        b=rZiKWOUZzSymkN+Yq4KLAQtJfCVFW/+Xjr+qxaZLzj8ouud7dnx2bV8X8EQoXNSBx2
-         Jhlrltfnf9Yx8RJlkCyRT4kFyK4cEJqv24EFOdqxN3cbCxJ48jvTBJWzifhR4d25wAfW
-         usl3o2rg+mhnn35fUhyy5R+9fkAHWaGNLnRVnAXneLbyhzQ5VSaKUF2gvX1vqnXd0Xca
-         0OMuhAb5sRnzgy63RV1t7idRVETz9qiNRYDvpDj/HQcRIj9KZMHbP5zyFFEglQgmlEgp
-         OCmBzrLw77ObeFFeY8pZgIVP+BwJmPPwcj4BYC9kJD87mZhP0537wG+zyzigtoJ2s+Gb
-         kU+w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Q00tc0Jq4/avpRUI+W2YPMMtTK5TxCyKgnoT7tOZx6M=;
+        b=e3LyYK82GkTpOeDruWPgkDxnEuqS1LiSMVXM8iPurdU3UDUky44tyOA8xekTWGWUgB
+         nwWOg6kMAef5BImr4ZL7zQvOhnxJ2LrUubuqN9N917PPft8w+wYPhbDjA5I5okjIUDEy
+         XAJ6OTKi5D2ge+4ua7vcIBPHW98xQdlu1t2yDQ5Tx9QDXfS6pl9VhuBPng/vuH8lHL2X
+         /ush1kElO/+J4rNEn7tdZzgkmlRPbR8ugw6CRk9IwfPUv70QIiqKibKzZkTcxMlu3G7d
+         dHmN+FzvGosRkA+LYxJJCwpfQZlB/1gGNaQQnkK/osWmUxwFg641SX6I+iUe69PcYOl/
+         958A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZHu31H02wKCvXtiv1u3NIdRpK08igoxIqxArOW7UWyU=;
-        b=Gzny4Rz+DknKOvpr8G9UTaDpIRaGPYKQoM0CiQdQEi84JWZ7Ngk5SreufdGJ1sbJU4
-         moZhSmVGDQ3u3r9iO7iayVQ3HBiZ6XPT9oo1gJhpiwI+F9qN/fPq6IXU+6WFdJW2MzkT
-         ca0xftvr/ipR2wrC/gNLmfQzraO1pB+PNgPDqOIdxIPKYSz16umzHhiGNSeZkepyDdNd
-         LnT1behG8ZIwv+AUZtkeUkmqPFUR3LWI78uQVyyNjsKe+4+kmDhJE8jF25Ygh/HO5w11
-         qeTjRK5isuFoC3B6C/BZawCdRF41bV+Z77HIin4wdMAuVu40t+Xd077uPHVWmjYoXrZc
-         KWPw==
-X-Gm-Message-State: AOAM532KQdR+GpUFemzyhCLRjm+YQ7l/Hf6Gng15no1Fj60O3S/iJgZp
-        E4041SrDB/BLLwrzPx63u9wD0iVnAloaQdTI
-X-Google-Smtp-Source: ABdhPJyZrc94uhg5ZCgdSfeLCguT5+TqrzVKMhco+wETb+0v8fLCrj1k85w00vM79bnWWKdgvyh9eQ==
-X-Received: by 2002:a05:6638:24ca:b0:319:d811:b3b5 with SMTP id y10-20020a05663824ca00b00319d811b3b5mr243642jat.235.1647451213288;
-        Wed, 16 Mar 2022 10:20:13 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id e18-20020a5d85d2000000b00649254a855fsm1257054ios.26.2022.03.16.10.20.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 10:20:12 -0700 (PDT)
-Message-ID: <a1074d55-c5ee-ced5-b9f7-0e1d023e1fea@linaro.org>
-Date:   Wed, 16 Mar 2022 12:20:11 -0500
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Q00tc0Jq4/avpRUI+W2YPMMtTK5TxCyKgnoT7tOZx6M=;
+        b=JRHJeN+eaAaxiXg7P9DKAVXnq1iPU2579f/ZKPfqPDdgAmC9llq3XcWo1t/BJTspeI
+         dSjSIUToEky319GJbyNMaWsKMC2dWJRD+3nzcIWXoRCk+9RwglM9L05wpMDj5xsDGGMK
+         H1u4TM4L5LiXvuwjsMVJAm61R3ZbBItRxYPDjuaX6sQZiSqKeYcDBiXbkycM7fBNVZ2d
+         ulse9+SFOhq0bnYeHj07puB6Y0w10OQeEqEilVQr2P02mQsFXgPf2MDX3EBGIhCKiF1s
+         KMcsbqFa6MylC+EtpPJRbWDGgk8Da/pvq7wcH8rsgrvNlZZpxbjebDJAY6gMxjqCQE5p
+         K/Rg==
+X-Gm-Message-State: AOAM5307X8Mpu/BWozfJQVEX6J94sfzXb0CAFgmWbUKSzOkjqdjz9jP6
+        0EOCWTLuT/mb7zPn17q2i1k=
+X-Google-Smtp-Source: ABdhPJy+kQ+thgGrruOCz+9zl5Y+etvUgthRquFgSlpQ/CVeoZ4H5Q0DrEgjVc6QPbIn7YTiGE/s6w==
+X-Received: by 2002:a65:5583:0:b0:380:d91a:8270 with SMTP id j3-20020a655583000000b00380d91a8270mr503520pgs.620.1647451256799;
+        Wed, 16 Mar 2022 10:20:56 -0700 (PDT)
+Received: from 9a2d8922b8f1 ([122.161.51.18])
+        by smtp.gmail.com with ESMTPSA id h18-20020a056a00231200b004f72b290994sm3093703pfh.180.2022.03.16.10.20.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 10:20:56 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 22:50:51 +0530
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 0/3] Fix dtbs warnings for arch timer
+Message-ID: <20220316172051.GA21737@9a2d8922b8f1>
+References: <20220316095433.20225-1-singh.kuldeep87k@gmail.com>
+ <5521012e957efa3c4afe2de996a1b5ac@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [greybus-dev] Re: [PATCH v5] staging: greybus: introduce
- pwm_ops::apply
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Alex Elder <elder@ieee.org>
-Cc:     Song Chen <chensong_2000@189.cn>, johan@kernel.org,
-        elder@kernel.org, thierry.reding@gmail.com, lee.jones@linaro.org,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-References: <1647397285-30061-1-git-send-email-chensong_2000@189.cn>
- <49f18070-0215-8475-907b-487d1e01c15c@ieee.org>
- <20220316162903.kwkfefyznvopvr5g@pengutronix.de>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20220316162903.kwkfefyznvopvr5g@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5521012e957efa3c4afe2de996a1b5ac@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/16/22 11:29 AM, Uwe Kleine-König wrote:
-> On Wed, Mar 16, 2022 at 10:14:30AM -0500, Alex Elder wrote:
->> On 3/15/22 9:21 PM, Song Chen wrote:
->>> diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
->>> index 891a6a672378..3add3032678b 100644
->>> --- a/drivers/staging/greybus/pwm.c
->>> +++ b/drivers/staging/greybus/pwm.c
->>> @@ -204,43 +204,54 @@ static void gb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
->>>    	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
->>>    }
->>> -static int gb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->>> -			 int duty_ns, int period_ns)
->>> +static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->>> +			const struct pwm_state *state)
->>>    {
->>> +	int err;
->>> +	bool enabled = pwm->state.enabled;
->>> +	u64 period = state->period;
->>> +	u64 duty_cycle = state->duty_cycle;
->>
->> The use of local variables here is inconsistent, and that
->> can be confusing.  Specifically, the "enabled" variable
->> represents the *current* state, while the "period" and
->> "duty_cycle" variables represent the *desired* state.  To
->> avoid confusion, if you're going to use local variables
->> like that, they should all represent *either* the current
->> state *or* the new state.  Please update your patch to
->> do one or the other.
+On Wed, Mar 16, 2022 at 11:27:10AM +0000, Marc Zyngier wrote:
+> On 2022-03-16 09:54, Kuldeep Singh wrote:
+> > This patchset is an attempt to resolve 'make dtbs_check' warning for
+> > arch timer.
+> > 
+> > Patch 1 is done in preparation for following patches which defines
+> > compatibles order in more clear way.
+> > Patch 2 documents arm,cortex-a7-timer entry in bindings similar to an
+> > existing entry arm,cortex-a15-timer.
+> > Patch 3 adds above 2 properties in of_match list to bring them in
+> > use.
+> > 
+> > Please note, this patchset is based on
+> > git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git, master
+> > 
+> > Kuldeep Singh (3):
+> >   dt-bindings: timer: Rearrange compatible entries of arch timer
+> >   dt-bindings: timer: Document arm,cortex-a7-timer for arch timer
+> >   clocksource: arch_timer: Add arm,cortex-a7/15-timer in of_match list
+> > 
+> >  .../devicetree/bindings/timer/arm,arch_timer.yaml   | 13 +++++--------
+> >  drivers/clocksource/arm_arch_timer.c                |  2 ++
+> >  2 files changed, 7 insertions(+), 8 deletions(-)
 > 
-> IMHO that it overly picky. I'm ok with the usage as is.
+> Please use my @kernel.org address exclusively. My @arm.com
+> address stopped working over two years ago, and the MAINTAINERS
+> file shows the right addresses.
 
-I see the "enabled" flag is used in a way that I didn't
-notice before.  Changing its name to "disabled" (to mean
-"we have disabled the device within this function already")
-would allow it to be used in the same way, but would make
-it more obvious it's not just a copy of "old" device state.
+Hi Marc,
 
->>>    	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->>> -	return gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_ns, period_ns);
->>> -};
->>> +	/* set polarity */
->>> +	if (state->polarity != pwm->state.polarity) {
->>> +		if (enabled) {
->>> +			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
->>> +			enabled = false;
->>> +		}
->>> +		err = gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->polarity);
->>> +		if (err)
->>> +			return err;
->>> +	}
->>> -static int gb_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
->>> -			       enum pwm_polarity polarity)
->>> -{
->>> -	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->>> +	if (!state->enabled) {
->>> +		if (enabled)
->>> +			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
->>> +		return 0;
->>
->> If you are disabling the device, you return without updating the
->> period and duty cycle.  But you *do* set polarity.  Is that
->> required by the PWM API?  (I don't actually know.)  Or can the
->> polarity setting be simply ignored as well if the new state is
->> disabled?
-> 
-> All is well here. A disabled PWM is expected to emit the inactive level.
-> So polarity matters, duty and period don't.
+I have tocmd and cccmd set in my gitconfig and it generated mail
+addresses automatically so I assume it is correct.
+tocmd ="`pwd`/scripts/get_maintainer.pl --nogit --nogit-fallback --norolestats --nol"
 
-Thanks for clarifying that.  I did not know what was expected.
+It seems your arm mail address got configured from binding file and not
+from MAINTAINERS.
 
->> Also, if the polarity changed, the device will have already been
->> disabled above, so there's no need to do so again (and perhaps
->> it might be a bad thing to do twice?).
-> 
-> That won't happen, because if the device was disabled for the polarity
-> change, enabled = false. In fact that is the purpose of the local
-> variable.
-
-Now I see, yes, the local variable gets changed when the
-disable occurred above.
-
->>> +	}
->>> -	return gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, polarity);
->>> -};
->>
->> Since you're clamping the values to 32 bits here, your comment
->> should explain why (because Greybus uses 32-bit values here,
->> while the API supports 64 bit values).  That would be a much
->> more useful piece of information than "set period and duty cycle".
->>
->>> +	/* set period and duty cycle*/
->>
->> Include a space before "*/" in your comments.
-> 
-> ack
-> 
->>> +	if (period > U32_MAX)
->>> +		period = U32_MAX;
->>> -static int gb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->>> -{
->>> -	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->>> +	if (duty_cycle > period)
->>> +		duty_cycle = period;
->>> -	return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
->>> -};
->>> +	err = gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_cycle, period);
->>> +	if (err)
->>> +		return err;
->>
->> What if the new state set usage_power to true?  It would
->> be ignored here.  Is it OK to silently ignore it?  Even
->> if it is, a comment about that would be good to see, so
->> we know it's intentional.
-> 
-> ignoring usage_power is OK. All but a single driver do it that way.
-
-I don't actually see anything that sets usage_power to true,
-although "pwm-pca9685.c" tests its value.
-
-I guess it's an advisory parameter that's passed to the apply
-callback function.  It's described as optional, but--not being
-a "PWM person"--this isn't obvious to me.  Maybe the comments
-describing the field or the apply callback could define the
-semantics a little better at some point.
-
-					-Alex
+Regards
+Kuldeep
 
 > 
-> Best regards
-> Uwe
+> Thanks,
 > 
-> 
-> _______________________________________________
-> greybus-dev mailing list -- greybus-dev@lists.linaro.org
-> To unsubscribe send an email to greybus-dev-leave@lists.linaro.org
-
+>         M.
+> -- 
+> Jazz is not dead. It just smells funny...
