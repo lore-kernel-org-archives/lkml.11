@@ -2,227 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E279C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238930AbiCPHKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 03:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35564 "EHLO
+        id S241885AbiCPHK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 03:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232916AbiCPHJ5 (ORCPT
+        with ESMTP id S232916AbiCPHKZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 03:09:57 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113AB27CD4;
-        Wed, 16 Mar 2022 00:08:41 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22G78DA9021129;
-        Wed, 16 Mar 2022 02:08:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1647414493;
-        bh=GXRBNb0KChHbT2vJ7oonxrINUF2VVKqcqQru4kA3DNM=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=elAV7nA/smOxkfx9V+ZHh4w3uK0VKBzMIFmS5dtXRWrbKbBDtVyxbIIf1f1KKqf0O
-         PVHc1tyBQVoFZQz4y4Bd3GZa9oWvKYtv1FdV1JGIr22pWfhalOlu1/NvYbzOw3zyhX
-         xogwzZkmBbAt89hQPYISYgv3uxmvMRF5Gh7Lav70=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22G78DRB033457
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 16 Mar 2022 02:08:13 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 16
- Mar 2022 02:08:13 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 16 Mar 2022 02:08:13 -0500
-Received: from [10.250.234.22] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22G787lY032732;
-        Wed, 16 Mar 2022 02:08:09 -0500
-Message-ID: <8e6e3dcb-0771-560f-4eb8-d49e7cf1f1df@ti.com>
-Date:   Wed, 16 Mar 2022 12:38:07 +0530
+        Wed, 16 Mar 2022 03:10:25 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1889C24F0A
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:09:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647414551; x=1678950551;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LouiWGDFHGRlNiTQXVxortXoLK+VtqxbnrnyktLsAUI=;
+  b=WaVleVwC8BBNag/tL4x2uhiNOZgrmypiqILusizG1V1NgUv5hLR18Vyl
+   nMrNXgGOIoBT5CsG+gtZzKHGeySTt8nmA5sC51s+tp+MQybcsCJgsTXWF
+   p16PCP/NPgbPHQTXhU86FMd4npzlB7EG58c3lrQa0NnKpopU73BeOn8yN
+   /rk3Q08GmjIZTvBoWQYh2KX/51DcmLxprHBIDhGlWTuGSX0PlSi2QTsL8
+   9aRLF6EO7uQUqmvtq7ac0Oy1+wH6lxoPeLYd/D/XzsVkRNqkD1wyG1fNI
+   JG6j7keqySqFoXiFF1G429eFOl3GdpOWjurzw8xuFaYp9dUMllTiN0C99
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236455808"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="236455808"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 00:09:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="714484284"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 16 Mar 2022 00:09:08 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUNmN-000C6Q-I8; Wed, 16 Mar 2022 07:09:07 +0000
+Date:   Wed, 16 Mar 2022 15:08:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
+ 8455/9999] arch/arm/mach-ep93xx/crunch-bits.S:94:2: error: invalid
+ instruction
+Message-ID: <202203161410.zozX61pm-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/6] spi-mem: Allow specifying the byte order in DTR
- mode
-Content-Language: en-US
-To:     <Tudor.Ambarus@microchip.com>, <p.yadav@ti.com>,
-        <michael@walle.cc>, <broonie@kernel.org>
-CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <Nicolas.Ferre@microchip.com>,
-        <zhengxunli@mxic.com.tw>, <jaimeliao@mxic.com.tw>,
-        <andreasilvagni@macronix.com>
-References: <20220311080147.453483-1-tudor.ambarus@microchip.com>
- <76eb13b6-9263-975f-3196-312259634301@ti.com>
- <9e0b6bde-838d-b8a4-9fe7-75c4f916fb27@microchip.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <9e0b6bde-838d-b8a4-9fe7-75c4f916fb27@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
+head:   19507e098be2c5f9b07ed086c94697c694473906
+commit: ffff118fe157b534c3244f8b300e655231dbd95c [8455/9999] BACKPORT: scripts/Makefile.clang: default to LLVM_IAS=1
+config: arm-ep93xx_defconfig (https://download.01.org/0day-ci/archive/20220316/202203161410.zozX61pm-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/ammarfaizi2/linux-block/commit/ffff118fe157b534c3244f8b300e655231dbd95c
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.10
+        git checkout ffff118fe157b534c3244f8b300e655231dbd95c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> arch/arm/mach-ep93xx/crunch-bits.S:94:2: error: invalid instruction
+    cfstr64 mvdx0, [r1, #0] @ save 64b registers
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:95:2: error: invalid instruction
+    cfstr64 mvdx1, [r1, #8]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:96:2: error: invalid instruction
+    cfstr64 mvdx2, [r1, #16]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:97:2: error: invalid instruction
+    cfstr64 mvdx3, [r1, #24]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:98:2: error: invalid instruction
+    cfstr64 mvdx4, [r1, #32]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:99:2: error: invalid instruction
+    cfstr64 mvdx5, [r1, #40]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:100:2: error: invalid instruction
+    cfstr64 mvdx6, [r1, #48]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:101:2: error: invalid instruction
+    cfstr64 mvdx7, [r1, #56]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:102:2: error: invalid instruction
+    cfstr64 mvdx8, [r1, #64]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:103:2: error: invalid instruction
+    cfstr64 mvdx9, [r1, #72]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:104:2: error: invalid instruction
+    cfstr64 mvdx10, [r1, #80]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:105:2: error: invalid instruction
+    cfstr64 mvdx11, [r1, #88]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:106:2: error: invalid instruction
+    cfstr64 mvdx12, [r1, #96]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:107:2: error: invalid instruction
+    cfstr64 mvdx13, [r1, #104]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:108:2: error: invalid instruction
+    cfstr64 mvdx14, [r1, #112]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:109:2: error: invalid instruction
+    cfstr64 mvdx15, [r1, #120]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:115:2: error: invalid instruction
+    cfmv32al mvfx0, mvax0 @ save 72b accumulators
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:116:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #128]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:117:2: error: invalid instruction
+    cfmv32am mvfx0, mvax0
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:118:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #132]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:119:2: error: invalid instruction
+    cfmv32ah mvfx0, mvax0
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:120:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #136]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:121:2: error: invalid instruction
+    cfmv32al mvfx0, mvax1
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:122:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #140]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:123:2: error: invalid instruction
+    cfmv32am mvfx0, mvax1
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:124:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #144]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:125:2: error: invalid instruction
+    cfmv32ah mvfx0, mvax1
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:126:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #148]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:127:2: error: invalid instruction
+    cfmv32al mvfx0, mvax2
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:128:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #152]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:129:2: error: invalid instruction
+    cfmv32am mvfx0, mvax2
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:130:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #156]
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:131:2: error: invalid instruction
+    cfmv32ah mvfx0, mvax2
+    ^
+   arch/arm/mach-ep93xx/crunch-bits.S:132:2: error: invalid instruction
+    cfstr32 mvfx0, [r1, #160]
 
 
-On 15/03/22 12:28 pm, Tudor.Ambarus@microchip.com wrote:
-> On 3/15/22 08:08, Vignesh Raghavendra wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>
->> Hi,
-> 
-> Hi,
-> 
->>
->> On 11/03/22 1:31 pm, Tudor Ambarus wrote:
->>> There are NOR flashes (Macronix) that swap the bytes on a 16-bit boundary
->>> when configured in Octal DTR mode. The byte order of 16-bit words is
->>> swapped when read or written in Octal Double Transfer Rate (DTR) mode
->>> compared to Single Transfer Rate (STR) modes. If one writes D0 D1 D2 D3
->>> bytes using 1-1-1 mode, and uses 8D-8D-8D SPI mode for reading, it will
->>> read back D1 D0 D3 D2. Swapping the bytes is a bad design decision because
->>> it may introduce some endianness problems. It can affect the boot sequence
->>> if the entire boot sequence is not handled in either 8D-8D-8D mode or 1-1-1
->>> mode. So we must swap the bytes back to have the same byte order as in STR
->>> modes. Fortunately there are controllers that can swap the bytes back at
->>> runtime, addressing the flash's endiannesses requirements.
->>> If the controllers are not capable of swapping the bytes, the protocol is
->>> downgraded via spi_nor_spimem_adjust_hwcaps(). When available, the swapping
->>> of the bytes is always done regardless if it's a data or register access,
->>> so that we comply with the JESD216 requirements: "Byte order of 16-bit
->>> words is swapped when read in 8D-8D-8D mode compared to 1-1-1".
->>>
->>
->> Sorry, bit late to the thread. But, dropping 8D-8D-8D mode support is
-> 
-> no worries
-> 
->> quite restrictive IMO.
->>
->> AFAIK, SFDP standard does not dictate how data should be stored in flash
->> or how SW should interpret after reading data from flash. It merely
->> indicates endian-ness compared to 1-1-1 mode.
->>
->> So, its up to various system SWs like bootloader/Linux to work according
->> to pre-aligned layout as there is no rule that data needs to be stored
->> in byte order.
->>
->> We have two types of controllers:
->>
->> 1. SPI controllers supporting swapping endian-ness on the fly:
->> -> For such flashes, better choice is to have SWAP option always
->> enabled. So that data written in 8D-8D-8D mode can be read correctly in
->> 1-1-1 mode and vice-versa.
->> ( I am assuming SWAP option of controller is only effective in 8D-8D-8D
->> mode and is NOP in 1-1-1 or other modes)
->>
->> But, its possible that "ROM" or other non-upgradable SWs may choose not
->> make to use of this SWAP option of HW to keep things simple in which
->> case, they cannot boot from 8D-8D-8D mode with above setting. Such SW
->> don't always have knowledge of flash and cannot be forced to have a
->> constraint to enable byte swap on read.
->>
->> So, IMO, its best left to system integrators to specify whether or not
->> SWAP option needs to be enabled (perhaps via DT as its per flash
->> specific property?)
-> 
-> we can't use DT for configuration, maybe a Kconfig instead. Are there any
-> other options?
-> 
+vim +94 arch/arm/mach-ep93xx/crunch-bits.S
 
-Problem with Kconfig is that it cannot be used when there are multiple
-flash instances on the board and both behave differently.
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   53  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   54  	.text
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   55  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   56  /*
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   57   * Lazy switching of crunch coprocessor context
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   58   *
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   59   * r10 = struct thread_info pointer
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   60   * r9  = ret_from_exception
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   61   * lr  = undefined instr exit
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   62   *
+1417a6b8dc4db7 arch/arm/mach-ep93xx/crunch-bits.S Catalin Marinas   2014-04-22   63   * called from prefetch exception handler with interrupts enabled
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   64   */
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   65  ENTRY(crunch_task_enable)
+bc94081c6ac823 arch/arm/mach-ep93xx/crunch-bits.S Catalin Marinas   2014-04-22   66  	inc_preempt_count r10, r3
+bc94081c6ac823 arch/arm/mach-ep93xx/crunch-bits.S Catalin Marinas   2014-04-22   67  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   68  	ldr	r8, =(EP93XX_APB_VIRT_BASE + 0x00130000)	@ syscon addr
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   69  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   70  	ldr	r1, [r8, #0x80]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   71  	tst	r1, #0x00800000			@ access to crunch enabled?
+bc94081c6ac823 arch/arm/mach-ep93xx/crunch-bits.S Catalin Marinas   2014-04-22   72  	bne	2f				@ if so no business here
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   73  	mov	r3, #0xaa			@ unlock syscon swlock
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   74  	str	r3, [r8, #0xc0]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   75  	orr	r1, r1, #0x00800000		@ enable access to crunch
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   76  	str	r1, [r8, #0x80]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   77  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   78  	ldr	r3, =crunch_owner
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   79  	add	r0, r10, #TI_CRUNCH_STATE	@ get task crunch save area
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   80  	ldr	r2, [sp, #60]			@ current task pc value
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   81  	ldr	r1, [r3]			@ get current crunch owner
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   82  	str	r0, [r3]			@ this task now owns crunch
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   83  	sub	r2, r2, #4			@ adjust pc back
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   84  	str	r2, [sp, #60]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   85  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   86  	ldr	r2, [r8, #0x80]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   87  	mov	r2, r2				@ flush out enable (@@@)
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   88  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   89  	teq	r1, #0				@ test for last ownership
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   90  	mov	lr, r9				@ normal exit from exception
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   91  	beq	crunch_load			@ no owner, skip save
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   92  
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   93  crunch_save:
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  @94  	cfstr64		mvdx0, [r1, #CRUNCH_MVDX0]	@ save 64b registers
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   95  	cfstr64		mvdx1, [r1, #CRUNCH_MVDX1]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   96  	cfstr64		mvdx2, [r1, #CRUNCH_MVDX2]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   97  	cfstr64		mvdx3, [r1, #CRUNCH_MVDX3]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   98  	cfstr64		mvdx4, [r1, #CRUNCH_MVDX4]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27   99  	cfstr64		mvdx5, [r1, #CRUNCH_MVDX5]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  100  	cfstr64		mvdx6, [r1, #CRUNCH_MVDX6]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  101  	cfstr64		mvdx7, [r1, #CRUNCH_MVDX7]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  102  	cfstr64		mvdx8, [r1, #CRUNCH_MVDX8]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  103  	cfstr64		mvdx9, [r1, #CRUNCH_MVDX9]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  104  	cfstr64		mvdx10, [r1, #CRUNCH_MVDX10]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  105  	cfstr64		mvdx11, [r1, #CRUNCH_MVDX11]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  106  	cfstr64		mvdx12, [r1, #CRUNCH_MVDX12]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  107  	cfstr64		mvdx13, [r1, #CRUNCH_MVDX13]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  108  	cfstr64		mvdx14, [r1, #CRUNCH_MVDX14]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  109  	cfstr64		mvdx15, [r1, #CRUNCH_MVDX15]
+c17fad11f3105c arch/arm/kernel/crunch-bits.S      Lennert Buytenhek 2006-06-27  110  
 
-This is similar to big-endian vs little-endian property used by CFI
-physmap driver and other places in kernel[1]
+:::::: The code at line 94 was first introduced by commit
+:::::: c17fad11f3105ca4d5bbb2686725aad208f5ead4 [ARM] 3370/2: ep93xx: add crunch support
 
->>
->> 2.  SPI controllers don't support endian-ness SWAP on the fly:
->> It is still possible to reliably read and write data as long as its
->> written and read back in same mode.
->>
->> De-rating speeds because of absence of this support would mean reduction
->> of speed by **16 times** (maybe even higher as 8D mode tends to support
->> higher bus freqs). Swapping bytes in Linux before writing or after
->> reading is not an option either as it negatively impacts performance.
->>
->> Asking ROM/bootloaders to swap bytes based on SFDP indication is
->> restrictive too as it involves boot time penalty and most systems with
->> OSPI flashes are using them to achieve super fast boot times.
->>
->> One more case to consider is flashes that dont have SFDP table to
->> indicate byte order but follow Macronix's convention. In such cases, its
->> better for SPI NOR layer to be as dumb as possible and not really do any
->> byte swapping, leaving it up to user space to handle/interpret data
->> appropriately.
->>
->> Also, Macronix is probably in violation of xSPI spec (JESD251A 6.9.5.2
->> 8D-8D-8D Profile 1.0) where diagrams clearly show data output should be
->> D0 D1 D2 D3... So ROMs following xSPI spec (which is the only spec
->> providing flash agnostic way of switching to 8D mode and reading data in
->> 8D mode) would not care about SFDP bit indicating byteorder and its up
->> to flasher programs to take care of the same
-> 
-> This is a bit in contradiction, because if the ROMs follow xSPI, thus little
-> endian byte order, they should swap the bytes.
-> 
+:::::: TO: Lennert Buytenhek <buytenh@wantstofly.org>
+:::::: CC: Russell King <rmk+kernel@arm.linux.org.uk>
 
-As I indicated below xSPI (JESD251) spec seems to align on little endian
-order. So, don't really need to swap the bytes on read. Anyways impact
-on performance prohibits such support and thus most ROM designs will
-expect flashing program to take care of it (especially in case where
-controller does not support on the fly swapping).
-
->>
->> IMO, kernel device drivers should just provide access to underlying HW
->> and not have too much intelligence to interpret data/take decisions
->>
->> So, simpler constraint to put is:
->> Flasher programs should program data in the same mode in which
->> ROM/bootloder/Linux is expected to read the data on that system.
-> 
-> No, this constraint doesn't cover all possible cases: take a 1-1-1 ROMcode,
-> 8D-8D-8D for other bootloaders and kernel. You need to dynamically change modes
-> in the flasher program in order to address this use case, which is a no go.
-> 
-
-Flash programmer need not change the mode, but needs to generate a byte
-swapped image and write it knowing that image is being flashed in
-8D-8D-8D mode and read in 1-1-1 mode or vice versa.
-
->>
->> For Macronix like flashes, if one has a ROM/bootloader that only
->> supports 1-1-1 mode and flashing data in 8D-8D-8D mode with Linux, then
->> please generate a byte-swapped image offline and flash it. Don't impose
-> 
-> we can't do that, see the example from above.
-> 
-
-See above, no need to change mode dynamically.
-
->> penalty on systems that do best to handle this messy situation.
->> I see this as the only option with least performance penalty.
->>
-> 
-> I take from this that we should let the byte swap be user-configurable,
-> thus a Kconfig. Which I'm not against it, but it will give users
-> headaches to sync all the software components. Making such a decision
-> implies that users know SPI NOR internal details, which also is a bit
-> stretched. Let's sync so that we move forward with this. Opinions? 
-> 
-
-I am fine with things being configurable
-
-Only issues with Kconfig: it does not help systems with multiple OSPIs
-with different endian-ness.
-
-
-[1] Documentation/devicetree/bindings/mtd/mtd-physmap.yaml
-
-
-Regards
-Vignesh
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
