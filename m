@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB4BC4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 19:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B513BC4167D
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 19:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357870AbiCPTVn (ORCPT
+        id S1357928AbiCPTVs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 15:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        Wed, 16 Mar 2022 15:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231927AbiCPTVh (ORCPT
+        with ESMTP id S239247AbiCPTVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 16 Mar 2022 15:21:37 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7029C40A3F;
-        Wed, 16 Mar 2022 12:20:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E23E64BC9;
+        Wed, 16 Mar 2022 12:20:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=zlk0pYgeFrBRJtw/N83n4t+jmPWdRVlr1V46qxOWdnE=; b=OWH0M3YCDaaUvZNoeBhNPzIFL8
-        1mOFKNuRVgUQ5Iogx2eIIw9Mj4dmnKQHT/rvRLaYy7YEu6qwyj9iN55WNZ72jUQfmwyzy+g3ArdCm
-        oAlJIiC2gYZhXLC3XI/4G2V7k/3WrVQQ9xcFl2aKGM3A7RWgmcYT7G0VSZg8WJdKy0+mxV2KWtRsb
-        ktMgcdtXuN9OVRcoh5mBRUTWlMiuU5Qx+f4y4gp+RBIP8e7Iy76TUNOOuokZ0LmtPn+WZG5E5NN0r
-        p36ObkoHZue3Sl2dvNTwt8OBP6UCI2pSUL01GUxoDuJWsfMKFSZ0CcV2BnY/gDeVhh+wmf2T+ajBI
-        rw5JcjiA==;
+        bh=kkn5nl5PyZ0q8CQgfKlyj74bCk1dDbY3QIroXRJfS3I=; b=L0Bzgh5zuGNbr91N7JyNzX75Kt
+        JhMPfxEcrzeOsN+4vC/CQeS/AfZDGU+5ouMlirI/rZlDV6medv70vXqOCpdpetjh/H7ppc9k7YjoQ
+        mWVLClmn5iciAIW8GjkzdABLcKRZNG86bC0bj6NdTgJfo5d7UAQvPrCAUQ4FQyQPcgNzA4MmEdng6
+        5M/6nJLSdV4Wjea7de1J5ZEHA4+v3/9Xn2lcAV4IQZkYqUV5mDBeYxRqeKo2F2Nxn6ij2b1jWpj/B
+        GJdT5rS8QpS8JY48lBxVds6mh4DtB5qF3Kq7M4maGkcKaJPRzyLnPEgEUUsJZEDdZVKPRbWapcHoH
+        tc+kxufg==;
 Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUZBw-00EArp-Ge; Wed, 16 Mar 2022 19:20:16 +0000
+        id 1nUZC2-00EArp-0P; Wed, 16 Mar 2022 19:20:22 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
@@ -75,9 +75,9 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
         linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
         virtualization@lists.linux-foundation.org, x86@kernel.org
-Subject: [PATCH 1/9] virtio_blk: eliminate anonymous module_init & module_exit
-Date:   Wed, 16 Mar 2022 12:20:02 -0700
-Message-Id: <20220316192010.19001-2-rdunlap@infradead.org>
+Subject: [PATCH 4/9] netfilter: h323: eliminate anonymous module_init & module_exit
+Date:   Wed, 16 Mar 2022 12:20:05 -0700
+Message-Id: <20220316192010.19001-5-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220316192010.19001-1-rdunlap@infradead.org>
 References: <20220316192010.19001-1-rdunlap@infradead.org>
@@ -107,45 +107,48 @@ Example 2: (initcall_debug log)
  calling  init+0x0/0x9a @ 1
  initcall init+0x0/0x9a returned 0 after 74 usecs
 
-Fixes: e467cde23818 ("Block driver using virtio.")
+Fixes: f587de0e2feb ("[NETFILTER]: nf_conntrack/nf_nat: add H.323 helper port")
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: virtualization@lists.linux-foundation.org
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: linux-block@vger.kernel.org
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: netfilter-devel@vger.kernel.org
+Cc: coreteam@netfilter.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
 ---
- drivers/block/virtio_blk.c |    8 ++++----
+ net/ipv4/netfilter/nf_nat_h323.c |    8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
---- lnx-517-rc8.orig/drivers/block/virtio_blk.c
-+++ lnx-517-rc8/drivers/block/virtio_blk.c
-@@ -1058,7 +1058,7 @@ static struct virtio_driver virtio_blk =
- #endif
+--- lnx-517-rc8.orig/net/ipv4/netfilter/nf_nat_h323.c
++++ lnx-517-rc8/net/ipv4/netfilter/nf_nat_h323.c
+@@ -580,7 +580,7 @@ static struct nf_ct_helper_expectfn call
  };
  
+ /****************************************************************************/
 -static int __init init(void)
-+static int __init virtio_blk_init(void)
++static int __init nf_nat_h323_init(void)
  {
- 	int error;
- 
-@@ -1084,14 +1084,14 @@ out_destroy_workqueue:
- 	return error;
+ 	BUG_ON(set_h245_addr_hook != NULL);
+ 	BUG_ON(set_h225_addr_hook != NULL);
+@@ -607,7 +607,7 @@ static int __init init(void)
  }
  
+ /****************************************************************************/
 -static void __exit fini(void)
-+static void __exit virtio_blk_fini(void)
++static void __exit nf_nat_h323_fini(void)
  {
- 	unregister_virtio_driver(&virtio_blk);
- 	unregister_blkdev(major, "virtblk");
- 	destroy_workqueue(virtblk_wq);
+ 	RCU_INIT_POINTER(set_h245_addr_hook, NULL);
+ 	RCU_INIT_POINTER(set_h225_addr_hook, NULL);
+@@ -624,8 +624,8 @@ static void __exit fini(void)
  }
+ 
+ /****************************************************************************/
 -module_init(init);
 -module_exit(fini);
-+module_init(virtio_blk_init);
-+module_exit(virtio_blk_fini);
++module_init(nf_nat_h323_init);
++module_exit(nf_nat_h323_fini);
  
- MODULE_DEVICE_TABLE(virtio, id_table);
- MODULE_DESCRIPTION("Virtio block driver");
+ MODULE_AUTHOR("Jing Min Zhao <zhaojingmin@users.sourceforge.net>");
+ MODULE_DESCRIPTION("H.323 NAT helper");
