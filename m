@@ -2,81 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7931FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0971AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353647AbiCPFhh (ORCPT
+        id S1353645AbiCPFiw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 01:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
+        Wed, 16 Mar 2022 01:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353645AbiCPFhc (ORCPT
+        with ESMTP id S237378AbiCPFiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 01:37:32 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CE65FF35
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:36:17 -0700 (PDT)
-X-UUID: 4d0029a046c149b1bae22762eb2b904c-20220316
-X-UUID: 4d0029a046c149b1bae22762eb2b904c-20220316
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <xinlei.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 754532393; Wed, 16 Mar 2022 13:35:45 +0800
-Received: from MTKMBS34N1.mediatek.inc (172.27.4.172) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 16 Mar 2022 13:35:44 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS34N1.mediatek.inc
- (172.27.4.172) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
- 2022 13:35:43 +0800
-Received: from mszsdaap41.gcn.mediatek.inc (10.16.6.141) by
- MTKCAS36.mediatek.inc (172.27.4.170) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 16 Mar 2022 13:35:42 +0800
-From:   <xinlei.lee@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <matthias.bgg@gmail.com>,
-        <angelogioacchino.delregno@collabora.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <jitao.shi@mediatek.com>, <rex-bc.chen@mediatek.com>,
-        <allen-kh.cheng@mediatek.com>, Xinlei Lee <xinlei.lee@mediatek.com>
-Subject: [PATCH v3,2/3] dt-bindings: display: mediatek: dsi: Add compatible for MediaTek MT8186
-Date:   Wed, 16 Mar 2022 13:35:33 +0800
-Message-ID: <1647408934-15775-3-git-send-email-xinlei.lee@mediatek.com>
-X-Mailer: git-send-email 2.6.4
-In-Reply-To: <1647408934-15775-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1647408934-15775-1-git-send-email-xinlei.lee@mediatek.com>
+        Wed, 16 Mar 2022 01:38:52 -0400
+X-Greylist: delayed 165 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Mar 2022 22:37:32 PDT
+Received: from p3plwbeout22-03.prod.phx3.secureserver.net (p3plsmtp22-03-2.prod.phx3.secureserver.net [68.178.252.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EAB5AA6C
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 22:37:32 -0700 (PDT)
+Received: from mailex.mailcore.me ([94.136.40.145])
+        by :WBEOUT: with ESMTP
+        id UMJ4nqLNFQy6SUMJ5nkJX5; Tue, 15 Mar 2022 22:34:47 -0700
+X-CMAE-Analysis: v=2.4 cv=FaryeLy6 c=1 sm=1 tr=0 ts=623176f7
+ a=7e6w4QD8YWtpVJ/7+iiidw==:117 a=84ok6UeoqCVsigPHarzEiQ==:17
+ a=ggZhUymU-5wA:10 a=o8Y5sQTvuykA:10 a=vqTx_GAQ2IFItUb59xIA:9
+X-SECURESERVER-ACCT: phillip@squashfs.org.uk  
+X-SID:  UMJ4nqLNFQy6S
+Received: from 82-69-79-175.dsl.in-addr.zen.co.uk ([82.69.79.175] helo=linux.fritz.box)
+        by smtp05.mailcore.me with esmtpa (Exim 4.94.2)
+        (envelope-from <phillip@squashfs.org.uk>)
+        id 1nUMJ3-0006eR-KR; Wed, 16 Mar 2022 05:34:45 +0000
+From:   Phillip Lougher <phillip@squashfs.org.uk>
+To:     a.fatoum@pengutronix.de
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        squashfs-devel@lists.sourceforge.net, phillip.lougher@gmail.com
+Subject: Re: Possible performance regression with CONFIG_SQUASHFS_DECOMP_SINGLE
+Date:   Wed, 16 Mar 2022 05:34:28 +0000
+Message-Id: <20220316053428.5758-1-phillip@squashfs.org.uk>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <c22a0f1c-883d-5122-ef88-0d7c57ab4e66@pengutronix.de>
+References: <c22a0f1c-883d-5122-ef88-0d7c57ab4e66@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-Mailcore-Auth: 439999529
+X-Mailcore-Domain: 1394945
+X-123-reg-Authenticated:  phillip@squashfs.org.uk  
+X-Originating-IP: 82.69.79.175
+X-CMAE-Envelope: MS4xfCPa6kHz3QF4r1daMeurJ0E5vtl8V/SGuxB3hbNd8D4SknkTLfXkUIGtv9OMibeon9SSx9xYtp/yMhfkeiS6jzqexenC6CxqGc2x71fEUroplIES+D4T
+ FWiihfwDS7ZtRcwcc1z8lbIUzWimpkcbn0DNJyVIjYmQB0f4SOnIm7jPQb/8r/Tmt6iPNWh1t6yg2D4/bw/kDHoJb2dl0hH1O3Q=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xinlei Lee <xinlei.lee@mediatek.com>
+Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
 
-Add dt-binding documentation of dsi for MediaTek MT8186 SoC.
+> Hello,
+> 
+> This an issue we had with v5.15 that we have since successfully worked around.
+> I am reporting it here as a pointer in case someone else runs into this and as
+> a heads up that there seems to be an underlying performance regression, so
+> here it goes:
+> 
 
-Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../devicetree/bindings/display/mediatek/mediatek,dsi.yaml       | 1 +
- 1 file changed, 1 insertion(+)
+[snip]
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-index eb49a7bb6a74..f6d8c2695dd0 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.yaml
-@@ -17,6 +17,7 @@ properties:
-       - mediatek,mt2701-dsi
-       - mediatek,mt8173-dsi
-       - mediatek,mt8183-dsi
-+      - mediatek,mt8186-dsi
- 
-   reg:
-     maxItems: 1
--- 
-2.18.0
+> 
+> Looking through the original kernel configuration we found that it has
+>  CONFIG_SQUASHFS_DECOMP_SINGLE=y and CONFIG_SQUASHFS_FILE_CACHE=y.
+> 
+> Once changed to CONFIG_SQUASHFS_FILE_DIRECT=y and
+> CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU=y, we were below 40s as we want.
 
+This sounds like the slow-down that was introduced by commit c1f6925e1091
+"mm: put readahead pages in cache earlier" (Linux V5.8)
+
+This commit prevents Squashfs from doing it's own readahead, which
+causes a slow-down in performance.  The slow-down is noticable when
+using a single decompressor (CONFIG_SQUASHFS_DECOMP_SINGLE=y), and
+can be solved by moving to a multi-decompressor configuration, because
+it removes contention on a single buffer in the single decompressor case.
+
+This has been already been fixed by commit 9eec1d897139
+"squashfs: provide backing_dev_info in order to disable read-ahead"
+which is in Linux 5.17-rc1.
+
+Phillip
