@@ -2,124 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A72F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:50:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD63C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358064AbiCPUwD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 16:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51548 "EHLO
+        id S236926AbiCPUwZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 16:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236608AbiCPUv7 (ORCPT
+        with ESMTP id S1358089AbiCPUwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 16:51:59 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D462B5A5B5
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:50:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647463844; x=1678999844;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=5rTx0VkfmyTgcyY0GLxRZZKS14Mwj2aNsggT7IlBymQ=;
-  b=GbDU4oneY2qjmD1WbUP41r8TGzT0cS0Jfvu012luZ6Cd0iSE3rvgdyEG
-   F4h2XM+lu5n1gmxdqfdSAiqTUxtpDYX7Jc28pDxTkzb4RVZmbT1kK08He
-   tSuic4B/4otnhg1kC7TRZ54SzbWYy+ZjaKA40/yHtpv6tbHei5rLW/Syn
-   ie0vFng7ORjtl5jHP0SZxxSvQRBbQK61a3nGHwSfnOjlGJTpazuuEc1SV
-   aZRpXlwjY23uL7pdsOGcfRimER+DXkGXP8ev6ePCXbajqEtlod1TytZvx
-   DTnituTfVE55swc0QQnPT/pRVwmIF0WQ9yy63f4AB853QjSmYDq2bO0ki
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="319921612"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="319921612"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 13:50:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="516491900"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 16 Mar 2022 13:50:41 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUabQ-000CuQ-IE; Wed, 16 Mar 2022 20:50:40 +0000
-Date:   Thu, 17 Mar 2022 04:49:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_kvm_aia_v1 32/38] include/linux/stddef.h:8:14:
- warning: initialization of 'unsigned int' from 'void *' makes integer from
- pointer without a cast
-Message-ID: <202203170426.cQSnwc5c-lkp@intel.com>
+        Wed, 16 Mar 2022 16:52:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC83F6E4EF;
+        Wed, 16 Mar 2022 13:51:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9284AB81D65;
+        Wed, 16 Mar 2022 20:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D5EC340E9;
+        Wed, 16 Mar 2022 20:51:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647463866;
+        bh=+HuG5Y6nJnoHSDgnSkgLUxN1bJmKug6pEGnJtApwr1A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JDpmBNqFUegg535TbNiHKQgjpfoDq1KgLrOH4ZfhxszXezKJRQsW0VztRlA4avp8c
+         fDzG3BaUFhozIAHQ+DG8oNUFi1rTmmNnjmSZ3N8KwKzens25XPmdPYisYVpqsmjSuT
+         eoSiEy62NnB0bnVoB+oR7tmF3VQG/6EC5h5+qjWHfNgkkDeTo59ZjHIoV9qhDoyeqR
+         lfKr+WQOgE+RtlJuCCaHeDWcpdsvfSrrHiKbzVDg+zDHGVR+tF/Ea7gp+ebrBHNhBR
+         qtm2ZKqFJm7RoGFlDsFgxyzW9XTlU0n9wLbcaAJdZ40JJpOtf5iyfREg1CUtOwjNub
+         BhbWptanBn06Q==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 5114D40407; Wed, 16 Mar 2022 17:51:03 -0300 (-03)
+Date:   Wed, 16 Mar 2022 17:51:03 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     kkourt@kkourt.io
+Cc:     dwarves@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kornilios Kourtis <kornilios@isovalent.com>
+Subject: Re: [PATCH 2/2] dwarves: cus__load_files: set errno if load fails
+Message-ID: <YjJNt0GpA5fAm8PQ@kernel.org>
+References: <YjHjLkYBk/XfXSK0@tinh>
+ <20220316132354.3226908-1-kkourt@kkourt.io>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220316132354.3226908-1-kkourt@kkourt.io>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
-head:   1f93371b93e3d215381b1ebcecacb9f2e54b270f
-commit: ef83a194815d993203e117d8a83e591f0a0c288e [32/38] RISC-V: KVM: Add G-stage ioremap() and iounmap() functions
-config: arm64-defconfig (https://download.01.org/0day-ci/archive/20220317/202203170426.cQSnwc5c-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/avpatel/linux/commit/ef83a194815d993203e117d8a83e591f0a0c288e
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_kvm_aia_v1
-        git checkout ef83a194815d993203e117d8a83e591f0a0c288e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/kvm/
+Em Wed, Mar 16, 2022 at 02:23:54PM +0100, kkourt@kkourt.io escreveu:
+> From: Kornilios Kourtis <kornilios@isovalent.com>
+> 
+> This patch improves the error seen by the user by setting errno in
+> cus__load_files(). Otherwise, we get a "No such file or directory" error
+> which might be confusing.
+> 
+> Before the patch, using a bogus file:
+> $ ./pahole -J ./vmlinux-5.3.18-24.102-default.debug
+> pahole: ./vmlinux-5.3.18-24.102-default.debug: No such file or directory
+> $ ls ./vmlinux-5.3.18-24.102-default.debug
+> /home/kkourt/src/hubble-fgs/vmlinux-5.3.18-24.102-default.debug
+> 
+> After the patch:
+> $ ./pahole -J ./vmlinux-5.3.18-24.102-default.debug
+> pahole: ./vmlinux-5.3.18-24.102-default.debug: Unknown error -22
+> 
+> Which is not very helpful, but less confusing.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Humm, because you should've set errno to -err back in cus__load_files(),
+with this on top of your two patches we should get the:
 
-All warnings (new ones prefixed by >>):
-
-   In file included from include/uapi/linux/posix_types.h:5,
-                    from include/uapi/linux/types.h:14,
-                    from include/linux/types.h:6,
-                    from include/linux/kasan-checks.h:5,
-                    from include/asm-generic/rwonce.h:26,
-                    from arch/arm64/include/asm/rwonce.h:71,
-                    from include/linux/compiler.h:255,
-                    from include/asm-generic/bug.h:5,
-                    from arch/arm64/include/asm/bug.h:26,
-                    from include/linux/bug.h:5,
-                    from include/linux/mmdebug.h:5,
-                    from include/linux/mm.h:9,
-                    from include/linux/mman.h:5,
-                    from arch/arm64/kvm/mmu.c:7:
-   arch/arm64/kvm/mmu.c: In function 'kvm_phys_addr_ioremap':
->> include/linux/stddef.h:8:14: warning: initialization of 'unsigned int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
-       8 | #define NULL ((void *)0)
-         |              ^
-   arch/arm64/kvm/mmu.c:768:62: note: in expansion of macro 'NULL'
-     768 |         struct kvm_mmu_memory_cache cache = { 0, __GFP_ZERO, NULL, };
-         |                                                              ^~~~
-   include/linux/stddef.h:8:14: note: (near initialization for 'cache.gfp_atomic')
-       8 | #define NULL ((void *)0)
-         |              ^
-   arch/arm64/kvm/mmu.c:768:62: note: in expansion of macro 'NULL'
-     768 |         struct kvm_mmu_memory_cache cache = { 0, __GFP_ZERO, NULL, };
-         |                                                              ^~~~
+#define EINVAL          22      /* Invalid argument */
 
 
-vim +8 include/linux/stddef.h
+"Invalid argument" or so from getting.
 
-^1da177e4c3f41 Linus Torvalds   2005-04-16  6  
-^1da177e4c3f41 Linus Torvalds   2005-04-16  7  #undef NULL
-^1da177e4c3f41 Linus Torvalds   2005-04-16 @8  #define NULL ((void *)0)
-6e218287432472 Richard Knutsson 2006-09-30  9  
+diff --git a/dwarves.c b/dwarves.c
+index 5d0b420f0110452e..89609e96c46747ce 100644
+--- a/dwarves.c
++++ b/dwarves.c
+@@ -2401,7 +2401,7 @@ int cus__load_files(struct cus *cus, struct conf_load *conf,
+ 	while (filenames[i] != NULL) {
+ 		int err = cus__load_file(cus, conf, filenames[i]);
+ 		if (err) {
+-			errno = err;
++			errno = -err;
+ 			return -++i;
+ 		}
+ 		++i;
 
-:::::: The code at line 8 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
 
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Agreed? I'll fix it up here and apply if so.
+
+- Arnaldo
+ 
+> Signed-off-by: Kornilios Kourtis <kornilios@isovalent.com>
+> ---
+>  dwarves.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/dwarves.c b/dwarves.c
+> index 89b58ef..5d0b420 100644
+> --- a/dwarves.c
+> +++ b/dwarves.c
+> @@ -2399,8 +2399,11 @@ int cus__load_files(struct cus *cus, struct conf_load *conf,
+>  	int i = 0;
+>  
+>  	while (filenames[i] != NULL) {
+> -		if (cus__load_file(cus, conf, filenames[i]))
+> +		int err = cus__load_file(cus, conf, filenames[i]);
+> +		if (err) {
+> +			errno = err;
+>  			return -++i;
+> +		}
+>  		++i;
+>  	}
+>  
+> -- 
+> 2.25.1
+
+-- 
+
+- Arnaldo
