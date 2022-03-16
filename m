@@ -2,74 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04387C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:22:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239145AbiCPGTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 02:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
+        id S1344174AbiCPGXV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 02:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353879AbiCPGTO (ORCPT
+        with ESMTP id S240322AbiCPGWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 02:19:14 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11D82183;
-        Tue, 15 Mar 2022 23:17:51 -0700 (PDT)
+        Wed, 16 Mar 2022 02:22:52 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA3A60D96;
+        Tue, 15 Mar 2022 23:21:37 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id dr20so2024675ejc.6;
+        Tue, 15 Mar 2022 23:21:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647411471; x=1678947471;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=FIrvkil500o1PdSCRXvsNurD8KwexitS8f+fJQNePe8=;
-  b=eigEuQv8DFsIvpSHxWQ6IIpd1becHWNsP0r4zFntRj0ZcdeWsEq3epsN
-   IVuMnh+oQXaZgwAcVjY4o3Uh1klsWisIG+UcYBr/uDvmN8rBzp5D4kPjO
-   Dhw4TGgLeBVpbbE8kap0pKqIwOKcoe9V5jxDYcYPsnTXt9OKgi3soVwEw
-   c=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 15 Mar 2022 23:17:51 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 15 Mar 2022 23:17:50 -0700
-X-QCInternal: smtphost
-Received: from hu-rohiagar-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
-  by ironmsg02-blr.qualcomm.com with ESMTP; 16 Mar 2022 11:47:36 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
-        id 3AC16478E; Wed, 16 Mar 2022 11:47:35 +0530 (+0530)
-From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Rohit Agarwal <quic_rohiagar@quicinc.com>
-Subject: [PATCH 2/6] ARM: dts: qcom: sdx65-mtp: Add pmk8350b and pm8150b pmic
-Date:   Wed, 16 Mar 2022 11:47:23 +0530
-Message-Id: <1647411447-25249-3-git-send-email-quic_rohiagar@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1647411447-25249-1-git-send-email-quic_rohiagar@quicinc.com>
-References: <1647411447-25249-1-git-send-email-quic_rohiagar@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hgpsIXhWXZ3F8B3VLBgLArpvJDiuNjo8cGLlauM+oRM=;
+        b=fcn5Mw2spLnzVl7JnZNa4eAUt+cPHW5WHsChwl4MbXQt94FY0iSG6neOwmJQmuU0Bn
+         GqRl9f6i+0ZQR9CchwTe4eF/iSHDGvWUg13K06KGFL6Lo8fFjPmj+8qYgm8cW11tgQ8G
+         Q7vPVz2Ij7J65XgoN8YKfKpy47OlALjWTDzn7Aup/6tj7xbotjUPA5W4Lr9HDZOCU+pF
+         IMbX1gQ/eVhWYTZG6emAnuBveZIAdnEdFBgdEA274uD8PdmUrJ06vM3nDyioSe5DlAs9
+         brsmoy4rqsXxB5Ae53AFM5ZJUE/YTnihXM9dAt733j2RjXR2L7o2UXDed1DksnJvBdXf
+         136g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hgpsIXhWXZ3F8B3VLBgLArpvJDiuNjo8cGLlauM+oRM=;
+        b=Bs+JFnWfL8Q6m7b03eU69ebucLLFWU6eODNeVykYOnfBrefvQRd+Nm3QLPg19KXzhf
+         CG8RdaSdMX/xLj2Ga6cQLHJA8eSm3c1jbABCX53mw6zc+qxBpTcbI8YyL3w/DGiyllNO
+         1rXwR5HhO9pk6b4qGho4w2v+J3ngrGEu3quhwk2XQHSSBcHJ719WkkEKLwb1kmDwszEf
+         ckJxkXqdAHnyIznM2hSjZfPYK6XqpKqR+QFuVkIUc6yLUMYirF1WnWE0cKAKG9d5mDQL
+         WaAc0nGCznhM5baYSO9VojGfB6llZZUt9kc5hndoiuNOx4xHXsjOVDuhB/FJhcQOGiVt
+         EPlw==
+X-Gm-Message-State: AOAM532IQH1kzHR2F/Weh2zGjHCl/X6oRO7bmLaIzbvENIcH+CCSBBfS
+        pH+Du7qRx5dh9ZIEv9AOefts/DaocPWK74Humy0=
+X-Google-Smtp-Source: ABdhPJwA1jJigHg/FBOIIUD5uLCtHnBLNVuez+GZ5eMj96EXdiBTqJO+J5suoQCjusSrRs4dI1W1SWT1b0D+dO/pb3c=
+X-Received: by 2002:a17:907:2d29:b0:6db:2b1f:333a with SMTP id
+ gs41-20020a1709072d2900b006db2b1f333amr25629444ejc.704.1647411696231; Tue, 15
+ Mar 2022 23:21:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220314133312.336653-1-imagedong@tencent.com>
+ <20220314133312.336653-4-imagedong@tencent.com> <20220315201706.464d5ecd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220315201706.464d5ecd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 16 Mar 2022 14:21:24 +0800
+Message-ID: <CADxym3Yj58gXe9kHRxNvxxMfNMYjvzbrdcq7sNAo6SQHXb98nQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/3] net: ipgre: add skb drop reasons to gre_rcv()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Biao Jiang <benbjiang@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SDX65-mtp features PMK8350b and PM8150B pmic, so include the dts as well
+On Wed, Mar 16, 2022 at 11:17 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 14 Mar 2022 21:33:12 +0800 menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > Replace kfree_skb() used in gre_rcv() with kfree_skb_reason(). With
+> > previous patch, we can tell that no tunnel device is found when
+> > PACKET_NEXT is returned by erspan_rcv() or ipgre_rcv().
+> >
+> > In this commit, following new drop reasons are added:
+> >
+> > SKB_DROP_REASON_GRE_CSUM
+> > SKB_DROP_REASON_GRE_NOTUNNEL
+> >
+> > Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+> > Reviewed-by: Biao Jiang <benbjiang@tencent.com>
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > ---
+> >  include/linux/skbuff.h     |  2 ++
+> >  include/trace/events/skb.h |  2 ++
+> >  net/ipv4/ip_gre.c          | 28 ++++++++++++++++++----------
+> >  3 files changed, 22 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 5edb704af5bb..4f5e58e717ee 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -448,6 +448,8 @@ enum skb_drop_reason {
+> >       SKB_DROP_REASON_GRE_NOHANDLER,  /* no handler found (version not
+> >                                        * supported?)
+> >                                        */
+> > +     SKB_DROP_REASON_GRE_CSUM,       /* GRE csum error */
+> > +     SKB_DROP_REASON_GRE_NOTUNNEL,   /* no tunnel device found */
+> >       SKB_DROP_REASON_MAX,
+> >  };
+> >
+> > diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+> > index f2bcffdc4bae..e8f95c96cf9d 100644
+> > --- a/include/trace/events/skb.h
+> > +++ b/include/trace/events/skb.h
+> > @@ -63,6 +63,8 @@
+> >       EM(SKB_DROP_REASON_TAP_TXFILTER, TAP_TXFILTER)          \
+> >       EM(SKB_DROP_REASON_GRE_VERSION, GRE_VERSION)            \
+> >       EM(SKB_DROP_REASON_GRE_NOHANDLER, GRE_NOHANDLER)        \
+> > +     EM(SKB_DROP_REASON_GRE_CSUM, GRE_CSUM)                  \
+> > +     EM(SKB_DROP_REASON_GRE_NOTUNNEL, GRE_NOTUNNEL)          \
+> >       EMe(SKB_DROP_REASON_MAX, MAX)
+> >
+> >  #undef EM
+> > diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+> > index b1579d8374fd..b989239e4abc 100644
+> > --- a/net/ipv4/ip_gre.c
+> > +++ b/net/ipv4/ip_gre.c
+> > @@ -421,9 +421,10 @@ static int ipgre_rcv(struct sk_buff *skb, const struct tnl_ptk_info *tpi,
+> >
+> >  static int gre_rcv(struct sk_buff *skb)
+> >  {
+> > +     enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+> >       struct tnl_ptk_info tpi;
+> >       bool csum_err = false;
+> > -     int hdr_len;
+> > +     int hdr_len, ret;
+> >
+> >  #ifdef CONFIG_NET_IPGRE_BROADCAST
+> >       if (ipv4_is_multicast(ip_hdr(skb)->daddr)) {
+> > @@ -438,19 +439,26 @@ static int gre_rcv(struct sk_buff *skb)
+>
+> I feel like gre_parse_header() is a good candidate for converting
+> to return a reason instead of errno.
+>
 
-Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
----
- arch/arm/boot/dts/qcom-sdx65-mtp.dts | 2 ++
- 1 file changed, 2 insertions(+)
+Enn...isn't gre_parse_header() returning the header length? And I
+didn't find much useful reason in this function.
 
-diff --git a/arch/arm/boot/dts/qcom-sdx65-mtp.dts b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-index 59457da..9fa251a 100644
---- a/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-+++ b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
-@@ -5,6 +5,8 @@
- /dts-v1/;
- 
- #include "qcom-sdx65.dtsi"
-+#include <arm64/qcom/pmk8350.dtsi>
-+#include <arm64/qcom/pm8150b.dtsi>
- 
- / {
- 	model = "Qualcomm Technologies, Inc. SDX65 MTP";
--- 
-2.7.4
+>
+> >               goto drop;
+> >
+> >       if (unlikely(tpi.proto == htons(ETH_P_ERSPAN) ||
+> > -                  tpi.proto == htons(ETH_P_ERSPAN2))) {
+> > -             if (erspan_rcv(skb, &tpi, hdr_len) == PACKET_RCVD)
+> > -                     return 0;
+> > -             goto out;
+> > -     }
+> > +                  tpi.proto == htons(ETH_P_ERSPAN2)))
+> > +             ret = erspan_rcv(skb, &tpi, hdr_len);
+> > +     else
+> > +             ret = ipgre_rcv(skb, &tpi, hdr_len);
+>
+> ipgre_rcv() OTOH may be better off taking the reason as an output
+> argument. Assuming PACKET_REJECT means NOMEM is a little fragile.
 
+Yeah, it seems not friendly. I think it's ok to ignore such 'NOMEM' reasons?
+Therefore, we only need to consider the PACKET_NEXT return value, and
+keep ipgre_rcv() still.
+
+>
+> >
+> > -     if (ipgre_rcv(skb, &tpi, hdr_len) == PACKET_RCVD)
+> > +     switch (ret) {
+> > +     case PACKET_NEXT:
+> > +             reason = SKB_DROP_REASON_GRE_NOTUNNEL;
+> > +             break;
+> > +     case PACKET_RCVD:
+> >               return 0;
+> > -
+> > -out:
+> > +     case PACKET_REJECT:
+> > +             reason = SKB_DROP_REASON_NOMEM;
+> > +             break;
+> > +     }
+> >       icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
+> >  drop:
+> > -     kfree_skb(skb);
+> > +     if (csum_err)
+> > +             reason = SKB_DROP_REASON_GRE_CSUM;
+> > +     kfree_skb_reason(skb, reason);
+> >       return 0;
+> >  }
+> >
+>
