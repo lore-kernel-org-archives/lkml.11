@@ -2,155 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB86C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350492AbiCPXsA (ORCPT
+        id S1350970AbiCPXsZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 19:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        Wed, 16 Mar 2022 19:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237308AbiCPXr7 (ORCPT
+        with ESMTP id S237308AbiCPXsW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 19:47:59 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2379E63DF
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647474404; x=1679010404;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4GjD/OZt9YStp94vzGfTNFNjIbukRi5WMqeI8i4H3aY=;
-  b=K0BF81gylwfoEKDk/OYm9fgF1bjWkvnR76MPKLok4LcijNF1YuzJ/yxu
-   ifXd5vMblKNGTXVJhvjC7p+/XSnOAGMxD0hHZ32dG3eFWmeRvncOkHGWz
-   4RIrFOJp/mmbuTN1CeqMKAEM8fHBYUU/DRrzDPfn5Tzhe9yFdjAbGHauo
-   GDTeOM1FMlbmi6Yv7sjjocCIkpIzY7e2DcjI15cv6Rl0yFJlRn44GBkDi
-   A4ZSVoYUJdMpcX8erx2By22cMiscsK3QL0Io0Y+T8AMO3Ao7AvnBYQNKN
-   XjAFKlxX0ybWxPWU4+H93wxYGAU38is0EnitiUvPPZvGzi8lgHs8g4WDr
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="319954013"
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="319954013"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 16:46:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="516547578"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 16 Mar 2022 16:46:41 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUdLk-000D5w-Jn; Wed, 16 Mar 2022 23:46:40 +0000
-Date:   Thu, 17 Mar 2022 07:45:56 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [ammarfaizi2-block:rostedt/linux-trace/merge-next-20220315 403/512]
- WARNING: modpost: vmlinux.o(.text+0x3e43c2): Section mismatch in reference
- from the function ufs_make_empty() to the function
- .init.text:set_reset_devices()
-Message-ID: <202203170727.Iy1d0my1-lkp@intel.com>
+        Wed, 16 Mar 2022 19:48:22 -0400
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5961060CC;
+        Wed, 16 Mar 2022 16:47:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
+        s=mail; t=1647474424; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j8Ooh+LCxFFoGKBoaKiMAx0jGXjqFdxKO7NQQBvBgWI=;
+        b=ySeFFnByqVzcPFdMJTkKf8CMbUFhsu6DtcQL+g38yEIxB6TLHM719Bpgr5qLXUvqZvSu8n
+        hCb71dWGYeSq2SCcLrkjywWDMvVcggEgysEZKxhz5FAQBwxWAscDKm7xzi9vmIzieiag+w
+        1fQsCYvwHY9cSdTLW9o84tZTdFRgseQ=
+Date:   Wed, 16 Mar 2022 23:46:55 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v3] pinctrl: ingenic: Fix regmap on X series SoCs
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     linus.walleij@linaro.org, linux-mips@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <7E3V8R.2BAIBRJ6ON0W1@crapouillou.net>
+In-Reply-To: <20220316232029.965361-1-aidanmacdonald.0x0@gmail.com>
+References: <20220316232029.965361-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block rostedt/linux-trace/merge-next-20220315
-head:   87a21b60077d8cb23d3e70a00a969b542d0695d8
-commit: 76c068f7115ac5a6fb351db3cf91147ccfbd955b [403/512] mm: rmap: introduce pfn_mkclean_range() to cleans PTEs
-config: riscv-randconfig-r042-20220314 (https://download.01.org/0day-ci/archive/20220317/202203170727.Iy1d0my1-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/76c068f7115ac5a6fb351db3cf91147ccfbd955b
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block rostedt/linux-trace/merge-next-20220315
-        git checkout 76c068f7115ac5a6fb351db3cf91147ccfbd955b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+Hi Aidan,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Le mer., mars 16 2022 at 23:20:30 +0000, Aidan MacDonald=20
+<aidanmacdonald.0x0@gmail.com> a =E9crit :
+> The X series Ingenic SoCs have a shadow GPIO group which is at a=20
+> higher
+> offset than the other groups, and is used for all GPIO configuration.
+> The regmap did not take this offset into account and set max_register
+> too low, so the regmap API blocked writes to the shadow group, which
+> made the pinctrl driver unable to configure any pins.
+>=20
+> Fix this by adding regmap access tables to the chip info.
+>=20
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+Since this is a fix, you need to add a Fixes: tag that points to the=20
+commit that introduced the bug, and add a Cc: <stable@vger.kernel.org>=20
+line as well.
 
->> WARNING: modpost: vmlinux.o(.text+0x3e43c2): Section mismatch in reference from the function ufs_make_empty() to the function .init.text:set_reset_devices()
-The function ufs_make_empty() references
-the function __init set_reset_devices().
-This is often because ufs_make_empty lacks a __init
-annotation or the annotation of set_reset_devices is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x3eb1f8): Section mismatch in reference from the function ufs_mknod() to the variable .init.text:.LBB130_23
-The function ufs_mknod() references
-the variable __init .LBB130_23.
-This is often because ufs_mknod lacks a __init
-annotation or the annotation of .LBB130_23 is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x446e7c): Section mismatch in reference from the function fuse_open_common() to the variable .init.data:__TRACE_SYSTEM_afs_FS_InlineBulkStatus
-The function fuse_open_common() references
-the variable __initdata __TRACE_SYSTEM_afs_FS_InlineBulkStatus.
-This is often because fuse_open_common lacks a __initdata
-annotation or the annotation of __TRACE_SYSTEM_afs_FS_InlineBulkStatus is wrong.
---
->> WARNING: modpost: vmlinux.o(.text+0x47be1a): Section mismatch in reference from the function duplicateIXtree() to the variable .init.data:__TRACE_SYSTEM_afs_file_error_dir_unmarked_ext
-The function duplicateIXtree() references
-the variable __initdata __TRACE_SYSTEM_afs_file_error_dir_unmarked_ext.
-This is often because duplicateIXtree lacks a __initdata
-annotation or the annotation of __TRACE_SYSTEM_afs_file_error_dir_unmarked_ext is wrong.
+> ---
+> v1 -> v2: use regmap_access_table
+> v2 -> v3: compute max_register instead of putting it in chip_info
+>=20
+>  drivers/pinctrl/pinctrl-ingenic.c | 46=20
+> ++++++++++++++++++++++++++++++-
+>  1 file changed, 45 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/pinctrl/pinctrl-ingenic.c=20
+> b/drivers/pinctrl/pinctrl-ingenic.c
+> index 2712f51eb238..fa6becca1788 100644
+> --- a/drivers/pinctrl/pinctrl-ingenic.c
+> +++ b/drivers/pinctrl/pinctrl-ingenic.c
+> @@ -119,6 +119,8 @@ struct ingenic_chip_info {
+>  	unsigned int num_functions;
+>=20
+>  	const u32 *pull_ups, *pull_downs;
+> +
+> +	const struct regmap_access_table *access_table;
+>  };
+>=20
+>  struct ingenic_pinctrl {
+> @@ -2179,6 +2181,17 @@ static const struct function_desc=20
+> x1000_functions[] =3D {
+>  	{ "mac", x1000_mac_groups, ARRAY_SIZE(x1000_mac_groups), },
+>  };
+>=20
+> +static const struct regmap_range x1000_access_ranges[] =3D {
+> +	regmap_reg_range(0x000, 0x400 - 4),
+> +	regmap_reg_range(0x700, 0x800 - 4),
+> +};
+> +
+> +/* shared with X1500 */
+> +static const struct regmap_access_table x1000_access_table =3D {
+> +	.yes_ranges =3D x1000_access_ranges,
+> +	.n_yes_ranges =3D ARRAY_SIZE(x1000_access_ranges),
+> +};
+> +
+>  static const struct ingenic_chip_info x1000_chip_info =3D {
+>  	.num_chips =3D 4,
+>  	.reg_offset =3D 0x100,
+> @@ -2189,6 +2202,7 @@ static const struct ingenic_chip_info=20
+> x1000_chip_info =3D {
+>  	.num_functions =3D ARRAY_SIZE(x1000_functions),
+>  	.pull_ups =3D x1000_pull_ups,
+>  	.pull_downs =3D x1000_pull_downs,
+> +	.access_table =3D &x1000_access_table,
+>  };
+>=20
+>  static int x1500_uart0_data_pins[] =3D { 0x4a, 0x4b, };
+> @@ -2300,6 +2314,7 @@ static const struct ingenic_chip_info=20
+> x1500_chip_info =3D {
+>  	.num_functions =3D ARRAY_SIZE(x1500_functions),
+>  	.pull_ups =3D x1000_pull_ups,
+>  	.pull_downs =3D x1000_pull_downs,
+> +	.access_table =3D &x1000_access_table,
+>  };
+>=20
+>  static const u32 x1830_pull_ups[4] =3D {
+> @@ -2506,6 +2521,16 @@ static const struct function_desc=20
+> x1830_functions[] =3D {
+>  	{ "mac", x1830_mac_groups, ARRAY_SIZE(x1830_mac_groups), },
+>  };
+>=20
+> +static const struct regmap_range x1830_access_ranges[] =3D {
+> +	regmap_reg_range(0x0000, 0x4000 - 4),
+> +	regmap_reg_range(0x7000, 0x8000 - 4),
+> +};
+> +
+> +static const struct regmap_access_table x1830_access_table =3D {
+> +	.yes_ranges =3D x1830_access_ranges,
+> +	.n_yes_ranges =3D ARRAY_SIZE(x1830_access_ranges),
+> +};
+> +
+>  static const struct ingenic_chip_info x1830_chip_info =3D {
+>  	.num_chips =3D 4,
+>  	.reg_offset =3D 0x1000,
+> @@ -2516,6 +2541,7 @@ static const struct ingenic_chip_info=20
+> x1830_chip_info =3D {
+>  	.num_functions =3D ARRAY_SIZE(x1830_functions),
+>  	.pull_ups =3D x1830_pull_ups,
+>  	.pull_downs =3D x1830_pull_downs,
+> +	.access_table =3D &x1830_access_table,
+>  };
+>=20
+>  static const u32 x2000_pull_ups[5] =3D {
+> @@ -2969,6 +2995,17 @@ static const struct function_desc=20
+> x2000_functions[] =3D {
+>  	{ "otg", x2000_otg_groups, ARRAY_SIZE(x2000_otg_groups), },
+>  };
+>=20
+> +static const struct regmap_range x2000_access_ranges[] =3D {
+> +	regmap_reg_range(0x000, 0x500 - 4),
+> +	regmap_reg_range(0x700, 0x800 - 4),
+> +};
+> +
+> +/* shared with X2100 */
+> +static const struct regmap_access_table x2000_access_table =3D {
+> +	.yes_ranges =3D x2000_access_ranges,
+> +	.n_yes_ranges =3D ARRAY_SIZE(x2000_access_ranges),
+> +};
+> +
+>  static const struct ingenic_chip_info x2000_chip_info =3D {
+>  	.num_chips =3D 5,
+>  	.reg_offset =3D 0x100,
+> @@ -2979,6 +3016,7 @@ static const struct ingenic_chip_info=20
+> x2000_chip_info =3D {
+>  	.num_functions =3D ARRAY_SIZE(x2000_functions),
+>  	.pull_ups =3D x2000_pull_ups,
+>  	.pull_downs =3D x2000_pull_downs,
+> +	.access_table =3D &x2000_access_table,
+>  };
+>=20
+>  static const u32 x2100_pull_ups[5] =3D {
+> @@ -3189,6 +3227,7 @@ static const struct ingenic_chip_info=20
+> x2100_chip_info =3D {
+>  	.num_functions =3D ARRAY_SIZE(x2100_functions),
+>  	.pull_ups =3D x2100_pull_ups,
+>  	.pull_downs =3D x2100_pull_downs,
+> +	.access_table =3D &x2000_access_table,
+>  };
+>=20
+>  static u32 ingenic_gpio_read_reg(struct ingenic_gpio_chip *jzgc, u8=20
+> reg)
+> @@ -4168,7 +4207,12 @@ static int __init ingenic_pinctrl_probe(struct=20
+> platform_device *pdev)
+>  		return PTR_ERR(base);
+>=20
+>  	regmap_config =3D ingenic_pinctrl_regmap_config;
+> -	regmap_config.max_register =3D chip_info->num_chips *=20
+> chip_info->reg_offset;
+> +	if (chip_info->access_table) {
+> +		regmap_config.rd_table =3D chip_info->access_table;
+> +		regmap_config.wr_table =3D chip_info->access_table;
+> +	} else {
+> +		regmap_config.max_register =3D chip_info->num_chips *=20
+> chip_info->reg_offset - 4;
 
-Note: the below error/warnings can be found in parent commit:
-<< WARNING: modpost: vmlinux.o(.text+0x34c044): Section mismatch in reference from the function nfs3_proc_unlink_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34c090): Section mismatch in reference from the function nfs3_proc_rename_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34f5ee): Section mismatch in reference from the function nfs3_xdr_enc_getacl3args() to the variable .init.text:.LBB96_19
-<< WARNING: modpost: vmlinux.o(.text+0x359bd0): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359bda): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359be4): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the variable .exit.text:.LBB97_6
-<< WARNING: modpost: vmlinux.o(.text+0x359c2e): Section mismatch in reference from the function __nlm4svc_proc_granted() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359c72): Section mismatch in reference from the function nlm4svc_callback() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359ca8): Section mismatch in reference from the function nlm4svc_callback() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359cec): Section mismatch in reference from the function nlm4svc_callback_release() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x34c044): Section mismatch in reference from the function nfs3_proc_unlink_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34c090): Section mismatch in reference from the function nfs3_proc_rename_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34f5ee): Section mismatch in reference from the function nfs3_xdr_enc_getacl3args() to the variable .init.text:.LBB96_19
-<< WARNING: modpost: vmlinux.o(.text+0x359bd0): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359bda): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359be4): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the variable .exit.text:.LBB97_6
-<< WARNING: modpost: vmlinux.o(.text+0x359c2e): Section mismatch in reference from the function __nlm4svc_proc_granted() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359c72): Section mismatch in reference from the function nlm4svc_callback() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359ca8): Section mismatch in reference from the function nlm4svc_callback() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359cec): Section mismatch in reference from the function nlm4svc_callback_release() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x34c044): Section mismatch in reference from the function nfs3_proc_unlink_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34c090): Section mismatch in reference from the function nfs3_proc_rename_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34f5ee): Section mismatch in reference from the function nfs3_xdr_enc_getacl3args() to the variable .init.text:.LBB96_19
-<< WARNING: modpost: vmlinux.o(.text+0x359bd0): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359bda): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359be4): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the variable .exit.text:.LBB97_6
-<< WARNING: modpost: vmlinux.o(.text+0x359c2e): Section mismatch in reference from the function __nlm4svc_proc_granted() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359c72): Section mismatch in reference from the function nlm4svc_callback() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359ca8): Section mismatch in reference from the function nlm4svc_callback() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359cec): Section mismatch in reference from the function nlm4svc_callback_release() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x34c044): Section mismatch in reference from the function nfs3_proc_unlink_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34c090): Section mismatch in reference from the function nfs3_proc_rename_rpc_prepare() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x34f5ee): Section mismatch in reference from the function nfs3_xdr_enc_getacl3args() to the variable .init.text:.LBB96_19
-<< WARNING: modpost: vmlinux.o(.text+0x359bd0): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359bda): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359be4): Section mismatch in reference from the function __nlm4svc_proc_unlock() to the variable .exit.text:.LBB97_6
-<< WARNING: modpost: vmlinux.o(.text+0x359c2e): Section mismatch in reference from the function __nlm4svc_proc_granted() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359c72): Section mismatch in reference from the function nlm4svc_callback() to the function .init.text:set_reset_devices()
-<< WARNING: modpost: vmlinux.o(.text+0x359ca8): Section mismatch in reference from the function nlm4svc_callback() to the function .exit.text:test_ww_mutex_exit()
-<< WARNING: modpost: vmlinux.o(.text+0x359cec): Section mismatch in reference from the function nlm4svc_callback_release() to the function .exit.text:test_ww_mutex_exit()
+You do actually change how regmap_config.max_register is computed here,=20
+without explaining anywhere why it is changed. I'm not saying that it's=20
+wrong, but you should explain in the commit message why this is changed.
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Cheers,
+-Paul
+
+> +	}
+>=20
+>  	jzpc->map =3D devm_regmap_init_mmio(dev, base, &regmap_config);
+>  	if (IS_ERR(jzpc->map)) {
+> --
+> 2.34.1
+>=20
+
+
