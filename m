@@ -2,110 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D27C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:18:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 08:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354489AbiCPIT7 (ORCPT
+        id S1354493AbiCPIVE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 04:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
+        Wed, 16 Mar 2022 04:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347658AbiCPIT5 (ORCPT
+        with ESMTP id S1347658AbiCPIVD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 04:19:57 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131E23D4AB;
-        Wed, 16 Mar 2022 01:18:42 -0700 (PDT)
-X-UUID: a72b291d1f464eb1952bece34dd9c0b7-20220316
-X-UUID: a72b291d1f464eb1952bece34dd9c0b7-20220316
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1692572578; Wed, 16 Mar 2022 16:18:40 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Wed, 16 Mar 2022 16:18:39 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 16 Mar 2022 16:18:38 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <yang.lee@linux.alibaba.com>
-CC:     <abaci@linux.alibaba.com>, <andrew-ct.chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
-        <mchehab@kernel.org>, <tiffany.lin@mediatek.com>
-Subject: Re: [PATCH -next] media: platform: Remove unnecessary print function dev_err()
-Date:   Wed, 16 Mar 2022 16:18:39 +0800
-Message-ID: <20220316081839.22093-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220316001411.80167-1-yang.lee@linux.alibaba.com>
-References: <20220316001411.80167-1-yang.lee@linux.alibaba.com>
+        Wed, 16 Mar 2022 04:21:03 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90C163529
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 01:19:49 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id r6so1813131wrr.2
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 01:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eB3Qa08xe5yQrsvIPU/lEi8D81kJpMa1SMOqC0T8EyI=;
+        b=KMgh5POQkPgJPtD8jFWJk5a5SH1QA1cwyg8ql04PZnvTkkU9yfAkqlCYaHSd54Y2XE
+         rti8sLyNq1VbL0MuuSYl/vkm89LJ5DtvjC+kxhbnWEXPXcD7g4JH6Bmic2LL5B7Y7agt
+         6RCrLY2AdJj8OYIKfqFw2Up9M4j/SsahasYIdoouI8wONF5uoB9W/uWNpqRLiLz17BnX
+         eo01QqcerJRs8lY2vWi2LlQ1h8aSDbXiiYvr1CMNRG4ruasA5hnjar+cU4qOc7n/4Rqe
+         KQ+ArjwSBaAkZsZmWgmngAg6TfN7KamEue76wnY4vzfUXnX0QdZ5eK0B2cpcGlLSQixQ
+         qoMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eB3Qa08xe5yQrsvIPU/lEi8D81kJpMa1SMOqC0T8EyI=;
+        b=n1j8XBerOs/w2YjRyhwyNVoRnr+3E6FRuDcQQiVXCQAOb0DnP0dGFhXec2DtFVeemc
+         wJrnJUki46fNHm45EyBM3OSKJr+1GsJyEcHT/We2r7Ph6cbTKkdx5Gur9BgBzaGjcHDs
+         BpvCxSZYdrcT8osjxqXsaDGgYnEx8AITA3jB5N/WsdiWczNJX25mMeYb6eZ04xvx0Trg
+         m965Iec7SltE2Q31jyLJFu3P4g3JOzmV9L9oecI/QXGhzVW7vBfmLkjBIt02lUKNKIvg
+         NjbJ+ty0rLSNro4Pa38oboVh1HcSeiPewznrWHrrll/oIqZp0cfYLLrEeJSFAQ0vIcWs
+         KOmw==
+X-Gm-Message-State: AOAM530pTnJCoHmnB5EMfnm3s8eY/hj2R4MlhoLCBfHKF1jPXDoXYFxw
+        us62WXykL8oHlV+kSfeaw0axww==
+X-Google-Smtp-Source: ABdhPJwrWBZdB7018LH8H2J5v0WSvKptIeZpUnF7AAPZMrxFp93OwZ6yln++zheKXJ8gFgNLU75vKw==
+X-Received: by 2002:a05:6000:1868:b0:203:732e:6a96 with SMTP id d8-20020a056000186800b00203732e6a96mr23454156wri.39.1647418788344;
+        Wed, 16 Mar 2022 01:19:48 -0700 (PDT)
+Received: from google.com (110.121.148.146.bc.googleusercontent.com. [146.148.121.110])
+        by smtp.gmail.com with ESMTPSA id i74-20020adf90d0000000b0020373ba7beesm1616426wri.0.2022.03.16.01.19.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 01:19:47 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 09:19:44 +0100
+From:   "Steinar H. Gunderson" <sesse@google.com>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf intel-pt: Synthesize cycle events
+Message-ID: <YjGdoGy4Z2UUG9S9@google.com>
+References: <20220310093844.982656-1-sesse@google.com>
+ <586de5fc-858b-2693-1986-5c77e8c0e3d0@intel.com>
+ <YiuKAk7SaXP7B7Ee@google.com>
+ <ba2c49da-22c5-06ea-e953-82211b953ca8@intel.com>
+ <YjBnet2813sEGjZY@google.com>
+ <c50bb87d-9fee-c4f9-a350-8729e503e43a@intel.com>
+ <YjDUO6bbyfGw/u0C@google.com>
+ <52903e58-e74c-5ea0-36b4-277ea3610af4@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <52903e58-e74c-5ea0-36b4-277ea3610af4@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yang,
+On Tue, Mar 15, 2022 at 10:11:54PM +0200, Adrian Hunter wrote:
+> Sorry, my first suggestion has issues, but the second is better.
 
->The print function dev_err() is redundant because platform_get_irq()
->already prints an error.
->
->Eliminate the follow coccicheck warnings:
->./drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c:119:2-9:
->line 119 is redundant because platform_get_irq() already prints an error
->./drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c:103:2-9:
->line 103 is redundant because platform_get_irq() already prints an error
->
->Reported-by: Abaci Robot <abaci@linux.alibaba.com>
->Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
->---
-> drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c | 4 +---
-> drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c  | 4 +---
-> 2 files changed, 2 insertions(+), 6 deletions(-)
->
->diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
->index 48dad9bb13d2..df7b25e9cbc8 100644
->--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
->+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_drv.c
->@@ -115,10 +115,8 @@ static int mtk_vcodec_init_dec_resources(struct mtk_vcodec_dev *dev)
-> 		return 0;
-> 
-> 	dev->dec_irq = platform_get_irq(pdev, 0);
->-	if (dev->dec_irq < 0) {
->-		dev_err(&pdev->dev, "failed to get irq number");
->+	if (dev->dec_irq < 0)
-> 		return dev->dec_irq;
->-	}
-> 
+I tried your second one, but can't see much difference. The original and
+your patched version still differ by a lot, and I still see various
+non-branch instructions getting very tiny fractions. (PSB packets
+_might_ be it, as there are ~1000 of them in the 165M-cycle trace.)
 
-Thanks for the patch, 
-Yihao has submitted a patch to fix mtk_vcodec_init_dec_resources() [1]
-[1] https://lore.kernel.org/lkml/20220310023645.10082-1-hanyihao@vivo.com/
+I guess the good news is that the perf report coming out of your version
+looks more likely to me; I have some functions that are around 1% that
+shouldn't intuitively be that much (and, if I write some Perl to sum up
+the cycles from the IPC lines in perf script, are more around 0.1%).
+So perhaps we should stop chasing the difference? I don't know.
 
-> 	irq_set_status_flags(dev->dec_irq, IRQ_NOAUTOEN);
-> 	ret = devm_request_irq(&pdev->dev, dev->dec_irq,
->diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c
->index 8d2a641d92f1..5f07313676bb 100644
->--- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c
->+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_dec_hw.c
->@@ -99,10 +99,8 @@ static int mtk_vdec_hw_init_irq(struct mtk_vdec_hw_dev *dev)
-> 	int ret;
-> 
-> 	dev->dec_irq = platform_get_irq(pdev, 0);
->-	if (dev->dec_irq < 0) {
->-		dev_err(&pdev->dev, "Failed to get irq resource");
->+	if (dev->dec_irq < 0)
-> 		return dev->dec_irq;
->-	}
-> 
-> 	irq_set_status_flags(dev->dec_irq, IRQ_NOAUTOEN);
-> 	ret = devm_request_irq(&pdev->dev, dev->dec_irq,
-
-Would you mind submitting mtk_vdec_hw_init_irq() part by another patch?
-
-Thanks,
-Miles
+/* Steinar */
