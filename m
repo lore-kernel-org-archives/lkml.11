@@ -2,262 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 22:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9554C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235228AbiCPWyB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 18:54:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S234550AbiCPXEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 19:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiCPWyA (ORCPT
+        with ESMTP id S229812AbiCPXEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 18:54:00 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAEE1DA40
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:52:44 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id d10so7153541eje.10
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 15:52:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=S9gCTWlc9p2G4Mf4tEdAge9wxpXHZ7B8VpsEVH/T2so=;
-        b=UMwAkeqZVJIh/5hKCUjeTsWOPqTAbH/K7YrpyWna1gutUilxrY2/7iduvI7svjw8PP
-         uLzxGFyRck4+jsBNIbE589EtFtC5PT19VJduymJcJDsVz6r9BLL1oQ+hTXRpc6jpCzAf
-         0crOO0KIgM840B9UOSVTkzcWTkod8nnEK/0VCI2OErworV2TUrPE0npOsGEIH2C+pdJF
-         oYjKaNtKYR9HGResMUM0wIoz+HxZAxhcDWBIzxuqSjveOmMF1F1LeoHFeCcAI7lC6L29
-         abZTlQa048L6nNZeql2wBr6dsYd58Y2nsY6uWQtGFXk9KQ73fKf/ExrmuUiczuSRJl0k
-         ivaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=S9gCTWlc9p2G4Mf4tEdAge9wxpXHZ7B8VpsEVH/T2so=;
-        b=ovXgvuBLW3EPkgxilLsQFor0Gw72u/MhMqo4L1OopkBkOu+gBUyo7hFl0PlYM6PqAI
-         LI8TIkTCnE4G137TA6OHxbFyw8QIJw7Y7AmS4JgaA8+vK6pq1VruTuCTWTpsTVr7JfVN
-         nWIAmmBqr/L1uOL68gkAHljt3Jiwd/pdYLBY8A+fO/Vrn2INc5wuY0XwhAsPXkhYgAK4
-         ME5oJtQWr4h9ti25S0oSYQBZ5xxBpEtUz7abqsPn8ayz+unocRNQw9jWa5TpcxkqZFPG
-         y5eK4a9TIKRgbgeptUG/t4XHbc0a5CkldSZSgCGIOMjyq/HXVjngnNyunmIsWtvs3xZ1
-         PUFg==
-X-Gm-Message-State: AOAM531iKWoYGhv3sfge0Rf7RuNvlRoe78ovaPSBMPh04oVo0G8Q5FB2
-        FvTiIJfVCgNY9L67VmDropM=
-X-Google-Smtp-Source: ABdhPJwG8k2AQakxj1x52lpQ78SDqvtYBPscQ5njb53RQX3s5Z4nQSiDJF1p+E6Uk+IMMI9LQ6HewQ==
-X-Received: by 2002:a17:906:7954:b0:6da:9ee0:2e54 with SMTP id l20-20020a170906795400b006da9ee02e54mr1914401ejo.630.1647471163128;
-        Wed, 16 Mar 2022 15:52:43 -0700 (PDT)
-Received: from linux-kernel-dev (159.137.141.34.bc.googleusercontent.com. [34.141.137.159])
-        by smtp.gmail.com with ESMTPSA id bk1-20020a170906b0c100b006d47308d84dsm1494452ejb.33.2022.03.16.15.52.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 15:52:42 -0700 (PDT)
-From:   Nam Cao <cvn249@gmail.com>
-To:     sudipm.mukherjee@gmail.com, teddy.wang@siliconmotion.com,
-        gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Cc:     Nam Cao <cvn249@gmail.com>
-Subject: [PATCH v2] staging: sm750fb: fix naming style
-Date:   Wed, 16 Mar 2022 22:49:41 +0000
-Message-Id: <20220316224940.70107-1-cvn249@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220316202335.GB7346@nam-dell>
-References: <20220316202335.GB7346@nam-dell>
+        Wed, 16 Mar 2022 19:04:52 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E13DFAC
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 16:03:33 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: dmitry.osipenko)
+        with ESMTPSA id 71F991F44C42
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1647471812;
+        bh=cw1c3IVv325Z8b6mJJEs4HEBjZj9x2UDC55LA51Tjsw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=gNN7CMmhxdZZ7js/GDH/LeNCtv99QQu//2AA/ElU7yHMo9wb9thbdFSK3P33l7byl
+         5DuTzvAk9xh5dBfjI8doFHWcLYJqarjfrzmM58A/7t9yBl4EVhZp9RXBSItKET0rjo
+         pQ3mbIPSUVvr5RuYODuK5FnD0N10cxrnnCnzxazkZ4vozKzr8qGdg9LbUjWT+AR13w
+         +OOeHCGPbbw4by9zcpnxr/rDWBDLgflOCuHLfRzORwSojjbbnTQjId9ldAs7m8YJkl
+         Ik/5QeTy+8c18s7M1sn4lH2VB0FzQ1Nx27AiCwKqNFjcjoEdSf4iHV40krt8Ca9fe4
+         QAbCpmPvPsqWQ==
+Message-ID: <3fe18a5f-081c-c5aa-7366-0a44035e5082@collabora.com>
+Date:   Thu, 17 Mar 2022 02:03:27 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v2 6/8] drm/shmem-helper: Add generic memory shrinker
+Content-Language: en-US
+To:     Steven Price <steven.price@arm.com>,
+        David Airlie <airlied@linux.ie>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Daniel Stone <daniel@fooishbar.org>,
+        virtualization@lists.linux-foundation.org,
+        Dmitry Osipenko <digetx@gmail.com>
+References: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
+ <20220314224253.236359-7-dmitry.osipenko@collabora.com>
+ <d9b39fc0-f8dd-9569-833d-7fe12a0dc859@arm.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <d9b39fc0-f8dd-9569-833d-7fe12a0dc859@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix CamelCase names defined in ddk750_dvi.c and ddk750_dvi.h, as
-reported by checkpatch.pl. Remove name suffixes such as pfn_ and g_.
+On 3/16/22 18:04, Steven Price wrote:
+> On 14/03/2022 22:42, Dmitry Osipenko wrote:
+>> Introduce a common DRM SHMEM shrinker. It allows to reduce code
+>> duplication among DRM drivers, it also handles complicated lockings
+>> for the drivers. This is initial version of the shrinker that covers
+>> basic needs of GPU drivers.
+>>
+>> This patch is based on a couple ideas borrowed from Rob's Clark MSM
+>> shrinker and Thomas' Zimmermann variant of SHMEM shrinker.
+>>
+>> GPU drivers that want to use generic DRM memory shrinker must support
+>> generic GEM reservations.
+>>
+>> Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
+>> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> This looks fine to me, but one nitpick: you should update the comment in
+> struct drm_gem_shmem_object:
+> 
+>> 	/**
+>> 	 * @madv: State for madvise
+>> 	 *
+>> 	 * 0 is active/inuse.
+>> 	 * A negative value is the object is purged.
+>> 	 * Positive values are driver specific and not used by the helpers.
+>> 	 */
+>> 	int madv;
+> This is adding a helper which cares about the positive values.
 
-Signed-off-by: Nam Cao <cvn249@gmail.com>
----
-Changes in v2:
-  - Remove name suffixes including pfn_, g_ and p_.
-  - Typo: deskew_eetting -> deskew_setting
-
- drivers/staging/sm750fb/ddk750_dvi.c | 68 ++++++++++++++--------------
- drivers/staging/sm750fb/ddk750_dvi.h | 64 +++++++++++++-------------
- 2 files changed, 66 insertions(+), 66 deletions(-)
-
-diff --git a/drivers/staging/sm750fb/ddk750_dvi.c b/drivers/staging/sm750fb/ddk750_dvi.c
-index cd564ea40779..029d9acec47d 100644
---- a/drivers/staging/sm750fb/ddk750_dvi.c
-+++ b/drivers/staging/sm750fb/ddk750_dvi.c
-@@ -11,50 +11,50 @@
-  * function API. Please set the function pointer to NULL whenever the function
-  * is not supported.
-  */
--static struct dvi_ctrl_device g_dcftSupportedDviController[] = {
-+static struct dvi_ctrl_device dcft_supported_dvi_controller[] = {
- #ifdef DVI_CTRL_SII164
- 	{
--		.pfnInit = sii164InitChip,
--		.pfnGetVendorId = sii164GetVendorID,
--		.pfnGetDeviceId = sii164GetDeviceID,
-+		.init = sii164InitChip,
-+		.get_vendor_id = sii164GetVendorID,
-+		.get_device_id = sii164GetDeviceID,
- #ifdef SII164_FULL_FUNCTIONS
--		.pfnResetChip = sii164ResetChip,
--		.pfnGetChipString = sii164GetChipString,
--		.pfnSetPower = sii164SetPower,
--		.pfnEnableHotPlugDetection = sii164EnableHotPlugDetection,
--		.pfnIsConnected = sii164IsConnected,
--		.pfnCheckInterrupt = sii164CheckInterrupt,
--		.pfnClearInterrupt = sii164ClearInterrupt,
-+		.reset_chip = sii164ResetChip,
-+		.get_chip_string = sii164GetChipString,
-+		.set_power = sii164SetPower,
-+		.enable_hot_plug_detection = sii164EnableHotPlugDetection,
-+		.is_connected = sii164IsConnected,
-+		.check_interrupt = sii164CheckInterrupt,
-+		.clear_interrupt = sii164ClearInterrupt,
- #endif
- 	},
- #endif
- };
- 
--int dviInit(unsigned char edge_select,
--	    unsigned char bus_select,
--	    unsigned char dual_edge_clk_select,
--	    unsigned char hsync_enable,
--	    unsigned char vsync_enable,
--	    unsigned char deskew_enable,
--	    unsigned char deskew_setting,
--	    unsigned char continuous_sync_enable,
--	    unsigned char pll_filter_enable,
--	    unsigned char pll_filter_value)
-+int dvi_init(unsigned char edge_select,
-+	     unsigned char bus_select,
-+	     unsigned char dual_edge_clk_select,
-+	     unsigned char hsync_enable,
-+	     unsigned char vsync_enable,
-+	     unsigned char deskew_enable,
-+	     unsigned char deskew_setting,
-+	     unsigned char continuous_sync_enable,
-+	     unsigned char pll_filter_enable,
-+	     unsigned char pll_filter_value)
- {
--	struct dvi_ctrl_device *pCurrentDviCtrl;
-+	struct dvi_ctrl_device *current_dvi_ctrl;
- 
--	pCurrentDviCtrl = g_dcftSupportedDviController;
--	if (pCurrentDviCtrl->pfnInit) {
--		return pCurrentDviCtrl->pfnInit(edge_select,
--						bus_select,
--						dual_edge_clk_select,
--						hsync_enable,
--						vsync_enable,
--						deskew_enable,
--						deskew_setting,
--						continuous_sync_enable,
--						pll_filter_enable,
--						pll_filter_value);
-+	current_dvi_ctrl = dcft_supported_dvi_controller;
-+	if (current_dvi_ctrl->init) {
-+		return current_dvi_ctrl->init(edge_select,
-+					      bus_select,
-+					      dual_edge_clk_select,
-+					      hsync_enable,
-+					      vsync_enable,
-+					      deskew_enable,
-+					      deskew_setting,
-+					      continuous_sync_enable,
-+					      pll_filter_enable,
-+					      pll_filter_value);
- 	}
- 	return -1; /* error */
- }
-diff --git a/drivers/staging/sm750fb/ddk750_dvi.h b/drivers/staging/sm750fb/ddk750_dvi.h
-index 1c7a565b617a..c2518b73bdbd 100644
---- a/drivers/staging/sm750fb/ddk750_dvi.h
-+++ b/drivers/staging/sm750fb/ddk750_dvi.h
-@@ -4,54 +4,54 @@
- 
- /* dvi chip stuffs structros */
- 
--typedef long (*PFN_DVICTRL_INIT)(unsigned char edgeSelect,
--				 unsigned char busSelect,
--				 unsigned char dualEdgeClkSelect,
--				 unsigned char hsyncEnable,
--				 unsigned char vsyncEnable,
--				 unsigned char deskewEnable,
--				 unsigned char deskewSetting,
--				 unsigned char continuousSyncEnable,
--				 unsigned char pllFilterEnable,
--				 unsigned char pllFilterValue);
-+typedef long (*PFN_DVICTRL_INIT)(unsigned char edge_select,
-+				 unsigned char bus_select,
-+				 unsigned char dual_edge_clk_select,
-+				 unsigned char hsync_enable,
-+				 unsigned char vsync_enable,
-+				 unsigned char deskew_enable,
-+				 unsigned char deskew_setting,
-+				 unsigned char continuous_sync_enable,
-+				 unsigned char pll_filter_enable,
-+				 unsigned char pll_filter_value);
- 
- typedef void (*PFN_DVICTRL_RESETCHIP)(void);
- typedef char* (*PFN_DVICTRL_GETCHIPSTRING)(void);
- typedef unsigned short (*PFN_DVICTRL_GETVENDORID)(void);
- typedef unsigned short (*PFN_DVICTRL_GETDEVICEID)(void);
--typedef void (*PFN_DVICTRL_SETPOWER)(unsigned char powerUp);
--typedef void (*PFN_DVICTRL_HOTPLUGDETECTION)(unsigned char enableHotPlug);
-+typedef void (*PFN_DVICTRL_SETPOWER)(unsigned char power_up);
-+typedef void (*PFN_DVICTRL_HOTPLUGDETECTION)(unsigned char enable_hot_plug);
- typedef unsigned char (*PFN_DVICTRL_ISCONNECTED)(void);
- typedef unsigned char (*PFN_DVICTRL_CHECKINTERRUPT)(void);
- typedef void (*PFN_DVICTRL_CLEARINTERRUPT)(void);
- 
- /* Structure to hold all the function pointer to the DVI Controller. */
- struct dvi_ctrl_device {
--	PFN_DVICTRL_INIT		pfnInit;
--	PFN_DVICTRL_RESETCHIP		pfnResetChip;
--	PFN_DVICTRL_GETCHIPSTRING	pfnGetChipString;
--	PFN_DVICTRL_GETVENDORID		pfnGetVendorId;
--	PFN_DVICTRL_GETDEVICEID		pfnGetDeviceId;
--	PFN_DVICTRL_SETPOWER		pfnSetPower;
--	PFN_DVICTRL_HOTPLUGDETECTION	pfnEnableHotPlugDetection;
--	PFN_DVICTRL_ISCONNECTED		pfnIsConnected;
--	PFN_DVICTRL_CHECKINTERRUPT	pfnCheckInterrupt;
--	PFN_DVICTRL_CLEARINTERRUPT	pfnClearInterrupt;
-+	PFN_DVICTRL_INIT		init;
-+	PFN_DVICTRL_RESETCHIP		reset_chip;
-+	PFN_DVICTRL_GETCHIPSTRING	get_chip_string;
-+	PFN_DVICTRL_GETVENDORID		get_vendor_id;
-+	PFN_DVICTRL_GETDEVICEID		get_device_id;
-+	PFN_DVICTRL_SETPOWER		set_power;
-+	PFN_DVICTRL_HOTPLUGDETECTION	enable_hot_plug_detection;
-+	PFN_DVICTRL_ISCONNECTED		is_connected;
-+	PFN_DVICTRL_CHECKINTERRUPT	check_interrupt;
-+	PFN_DVICTRL_CLEARINTERRUPT	clear_interrupt;
- };
- 
- #define DVI_CTRL_SII164
- 
- /* dvi functions prototype */
--int dviInit(unsigned char edgeSelect,
--	    unsigned char busSelect,
--	    unsigned char dualEdgeClkSelect,
--	    unsigned char hsyncEnable,
--	    unsigned char vsyncEnable,
--	    unsigned char deskewEnable,
--	    unsigned char deskewSetting,
--	    unsigned char continuousSyncEnable,
--	    unsigned char pllFilterEnable,
--	    unsigned char pllFilterValue);
-+int dvi_init(unsigned char edge_select,
-+	     unsigned char bus_select,
-+	     unsigned char dual_edge_clk_select,
-+	     unsigned char hsync_enable,
-+	     unsigned char vsync_enable,
-+	     unsigned char deskew_enable,
-+	     unsigned char deskew_setting,
-+	     unsigned char continuous_sync_enable,
-+	     unsigned char pll_filter_enable,
-+	     unsigned char pll_filter_value);
- 
- #endif
- 
--- 
-2.32.0
-
+Good catch, I'll update the comment in v3.
