@@ -2,652 +2,394 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DDEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E266C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 13:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356160AbiCPNNW (ORCPT
+        id S1356167AbiCPNN0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 09:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39962 "EHLO
+        Wed, 16 Mar 2022 09:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356155AbiCPNMx (ORCPT
+        with ESMTP id S1356161AbiCPNMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 09:12:53 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DE066AC0;
+        Wed, 16 Mar 2022 09:12:54 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD1266AC1;
         Wed, 16 Mar 2022 06:11:34 -0700 (PDT)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22G9r8K3004930;
-        Wed, 16 Mar 2022 14:11:14 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=81AC0tKKyrs0sUbd7KAH5uXIk4yAJL1tAjAFsMtkmFI=;
- b=y6n52StWihSEv2f0DwFVLYgAmkjZ6AQ7KTcqUofumchZl/oxRVrrEknzW5NmhUCbqzKB
- /e4nHL/cHfpLkagmN9iAc082HfepgF/08IY24X5Iwzp6NryYAUz2RXgXn6a/hpnsT1GR
- At5S7BpOHut/atG1Bzmln14XMh0qU+Y3Yt/qdd6lYUJxPQscION8zMSLGQxmJZZlcqa/
- cd5gefSBm1t+g0rSJ0Vjvoe+4KHw/saBthsHEtPYcP+Y8xbGvvV+ioejP5OJbsJwF/My
- IuGOofNXIrGnjfwl4YjhUNEQWE8hv7yunbfF9WXQmy7Dq+j1y5YIpjUT/Ht94nU+g02q gA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3et63j5pnp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 14:11:14 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0C74410002A;
-        Wed, 16 Mar 2022 14:11:14 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 033F72278A6;
-        Wed, 16 Mar 2022 14:11:14 +0100 (CET)
-Received: from localhost (10.75.127.49) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 16 Mar 2022 14:11:13
- +0100
-From:   <gabriel.fernandez@foss.st.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-CC:     <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KJVwp6H64zCqk1;
+        Wed, 16 Mar 2022 21:09:30 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 21:11:32 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 16 Mar 2022 21:11:31 +0800
+Subject: Re: [PATCH v21 3/5] arm64: kdump: reimplement crashkernel=X
+To:     Baoquan He <bhe@redhat.com>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        <linux-kernel@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        <kexec@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND v3 09/13] clk: stm32mp13: add all STM32MP13 kernel clocks
-Date:   Wed, 16 Mar 2022 14:09:56 +0100
-Message-ID: <20220316131000.9874-10-gabriel.fernandez@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220316131000.9874-1-gabriel.fernandez@foss.st.com>
-References: <20220316131000.9874-1-gabriel.fernandez@foss.st.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, "Jonathan Corbet" <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        "John Donnelly" <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+References: <20220227030717.1464-1-thunder.leizhen@huawei.com>
+ <20220227030717.1464-4-thunder.leizhen@huawei.com>
+ <YjHUAi0xrUy+qk/L@MiWiFi-R3L-srv>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <7d7a3e70-6a46-b722-ef48-7206a47185dd@huawei.com>
+Date:   Wed, 16 Mar 2022 21:11:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-16_04,2022-03-15_01,2022-02-23_01
+In-Reply-To: <YjHUAi0xrUy+qk/L@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 
-Complete all kernel clocks of stm32mp13.
 
-Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
----
- drivers/clk/stm32/clk-stm32mp13.c | 513 ++++++++++++++++++++++++++++++
- 1 file changed, 513 insertions(+)
+On 2022/3/16 20:11, Baoquan He wrote:
+> On 02/27/22 at 11:07am, Zhen Lei wrote:
+>> From: Chen Zhou <chenzhou10@huawei.com>
+>>
+>> There are following issues in arm64 kdump:
+>> 1. We use crashkernel=X to reserve crashkernel below 4G, which
+>> will fail when there is no enough low memory.
+>> 2. If reserving crashkernel above 4G, in this case, crash dump
+>> kernel will boot failure because there is no low memory available
+>> for allocation.
+>>
+>> To solve these issues, change the behavior of crashkernel=X and
+>> introduce crashkernel=X,[high,low]. crashkernel=X tries low allocation
+>> in DMA zone, and fall back to high allocation if it fails.
+>> We can also use "crashkernel=X,high" to select a region above DMA zone,
+>> which also tries to allocate at least 256M in DMA zone automatically.
+>> "crashkernel=Y,low" can be used to allocate specified size low memory.
+>>
+>> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+>> Co-developed-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>  arch/arm64/kernel/machine_kexec.c      |   9 ++-
+>>  arch/arm64/kernel/machine_kexec_file.c |  12 ++-
+>>  arch/arm64/mm/init.c                   | 106 +++++++++++++++++++++++--
+>>  3 files changed, 115 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/arch/arm64/kernel/machine_kexec.c b/arch/arm64/kernel/machine_kexec.c
+>> index e16b248699d5c3c..19c2d487cb08feb 100644
+>> --- a/arch/arm64/kernel/machine_kexec.c
+>> +++ b/arch/arm64/kernel/machine_kexec.c
+>> @@ -329,8 +329,13 @@ bool crash_is_nosave(unsigned long pfn)
+>>  
+>>  	/* in reserved memory? */
+>>  	addr = __pfn_to_phys(pfn);
+>> -	if ((addr < crashk_res.start) || (crashk_res.end < addr))
+>> -		return false;
+>> +	if ((addr < crashk_res.start) || (crashk_res.end < addr)) {
+>> +		if (!crashk_low_res.end)
+>> +			return false;
+>> +
+>> +		if ((addr < crashk_low_res.start) || (crashk_low_res.end < addr))
+>> +			return false;
+>> +	}
+>>  
+>>  	if (!kexec_crash_image)
+>>  		return true;
+>> diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
+>> index 59c648d51848886..889951291cc0f9c 100644
+>> --- a/arch/arm64/kernel/machine_kexec_file.c
+>> +++ b/arch/arm64/kernel/machine_kexec_file.c
+>> @@ -65,10 +65,18 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
+>>  
+>>  	/* Exclude crashkernel region */
+>>  	ret = crash_exclude_mem_range(cmem, crashk_res.start, crashk_res.end);
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	if (crashk_low_res.end) {
+>> +		ret = crash_exclude_mem_range(cmem, crashk_low_res.start, crashk_low_res.end);
+>> +		if (ret)
+>> +			goto out;
+>> +	}
+>>  
+>> -	if (!ret)
+>> -		ret =  crash_prepare_elf64_headers(cmem, true, addr, sz);
+>> +	ret = crash_prepare_elf64_headers(cmem, true, addr, sz);
+>>  
+>> +out:
+>>  	kfree(cmem);
+>>  	return ret;
+>>  }
+>> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+>> index 90f276d46b93bc6..30ae6638ff54c47 100644
+>> --- a/arch/arm64/mm/init.c
+>> +++ b/arch/arm64/mm/init.c
+>> @@ -65,6 +65,44 @@ EXPORT_SYMBOL(memstart_addr);
+>>  phys_addr_t arm64_dma_phys_limit __ro_after_init;
+>>  
+>>  #ifdef CONFIG_KEXEC_CORE
+>> +/* Current arm64 boot protocol requires 2MB alignment */
+>> +#define CRASH_ALIGN			SZ_2M
+>> +
+>> +#define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
+>> +#define CRASH_ADDR_HIGH_MAX		memblock.current_limit
+>> +
+>> +/*
+>> + * This is an empirical value in x86_64 and taken here directly. Please
+>> + * refer to the code comment in reserve_crashkernel_low() of x86_64 for more
+>> + * details.
+>> + */
+>> +#define DEFAULT_CRASH_KERNEL_LOW_SIZE	\
+>> +	max(swiotlb_size_or_default() + (8UL << 20), 256UL << 20)
+>> +
+>> +static int __init reserve_crashkernel_low(unsigned long long low_size)
+>> +{
+>> +	unsigned long long low_base;
+>> +
+>> +	/* passed with crashkernel=0,low ? */
+>> +	if (!low_size)
+>> +		return 0;
+>> +
+>> +	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
+>> +	if (!low_base) {
+>> +		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	pr_info("crashkernel low memory reserved: 0x%08llx - 0x%08llx (%lld MB)\n",
+>> +		low_base, low_base + low_size, low_size >> 20);
+>> +
+>> +	crashk_low_res.start = low_base;
+>> +	crashk_low_res.end   = low_base + low_size - 1;
+>> +	insert_resource(&iomem_resource, &crashk_low_res);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  /*
+>>   * reserve_crashkernel() - reserves memory for crash kernel
+>>   *
+>> @@ -75,30 +113,79 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
+>>  static void __init reserve_crashkernel(void)
+>>  {
+>>  	unsigned long long crash_base, crash_size;
+>> -	unsigned long long crash_max = arm64_dma_phys_limit;
+>> +	unsigned long long crash_low_size;
+>> +	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+>>  	int ret;
+> 
+> Even though reverse xmas tree style is not enforced, this 'int ret;' is
+> really annoying to look at. Maybe move it down two lines.
+> 
+>> +	bool fixed_base, high = false;
+>> +	char *cmdline = boot_command_line;
+>>  
+>> -	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
+>> +	/* crashkernel=X[@offset] */
+>> +	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
+>>  				&crash_size, &crash_base);
+>> -	/* no crashkernel= or invalid value specified */
+>> -	if (ret || !crash_size)
+>> -		return;
+>> +	if (ret || !crash_size) {
+>> +		/* crashkernel=X,high */
+>> +		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
+>> +		if (ret || !crash_size)
+>> +			return;
+>> +
+>> +		/* crashkernel=Y,low */
+>> +		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
+>> +		if (ret == -ENOENT)
+>> +			/*
+>> +			 * crashkernel=Y,low is not specified explicitly, use
+>> +			 * default size automatically.
+>> +			 */
+>> +			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
+>> +		else if (ret)
+>> +			/* crashkernel=Y,low is specified but Y is invalid */
+>> +			return;
+>> +
+>> +		/* Mark crashkernel=X,high is specified */
+>> +		high = true;
+>> +		crash_max = CRASH_ADDR_HIGH_MAX;
+>> +	}
+>>  
+>> +	fixed_base = !!crash_base;
+>>  	crash_size = PAGE_ALIGN(crash_size);
+>>  
+>>  	/* User specifies base address explicitly. */
+> This is over commenting, can't see why it's needed.
+>> -	if (crash_base)
+>> +	if (fixed_base)
+>>  		crash_max = crash_base + crash_size;
+> 
+> Hi leizhen,
+> 
+> I made change on reserve_crashkenrel(), inline comment may be slow.
+> Please check and consider if they can be taken.
 
-diff --git a/drivers/clk/stm32/clk-stm32mp13.c b/drivers/clk/stm32/clk-stm32mp13.c
-index b543474d5074..9edd32018f8f 100644
---- a/drivers/clk/stm32/clk-stm32mp13.c
-+++ b/drivers/clk/stm32/clk-stm32mp13.c
-@@ -525,10 +525,46 @@ static const struct clk_stm32_securiy stm32mp13_security[] = {
- 	SECF(SECF_MCO2, RCC_SECCFGR, RCC_SECCFGR_MCO2SEC),
- };
- 
-+static const char * const adc12_src[] = {
-+	"pll4_r", "ck_per", "pll3_q"
-+};
-+
-+static const char * const dcmipp_src[] = {
-+	"ck_axi", "pll2_q", "pll4_p", "ck_per",
-+};
-+
- static const char * const eth12_src[] = {
- 	"pll4_p", "pll3_q"
- };
- 
-+static const char * const fdcan_src[] = {
-+	"ck_hse", "pll3_q", "pll4_q", "pll4_r"
-+};
-+
-+static const char * const fmc_src[] = {
-+	"ck_axi", "pll3_r", "pll4_p", "ck_per"
-+};
-+
-+static const char * const i2c12_src[] = {
-+	"pclk1", "pll4_r", "ck_hsi", "ck_csi"
-+};
-+
-+static const char * const i2c345_src[] = {
-+	"pclk6", "pll4_r", "ck_hsi", "ck_csi"
-+};
-+
-+static const char * const lptim1_src[] = {
-+	"pclk1", "pll4_p", "pll3_q", "ck_lse", "ck_lsi", "ck_per"
-+};
-+
-+static const char * const lptim23_src[] = {
-+	"pclk3", "pll4_q", "ck_per", "ck_lse", "ck_lsi"
-+};
-+
-+static const char * const lptim45_src[] = {
-+	"pclk3", "pll4_p", "pll3_q", "ck_lse", "ck_lsi", "ck_per"
-+};
-+
- static const char * const mco1_src[] = {
- 	"ck_hsi", "ck_hse", "ck_csi", "ck_lsi", "ck_lse"
- };
-@@ -537,6 +573,70 @@ static const char * const mco2_src[] = {
- 	"ck_mpu", "ck_axi", "ck_mlahb", "pll4_p", "ck_hse", "ck_hsi"
- };
- 
-+static const char * const qspi_src[] = {
-+	"ck_axi", "pll3_r", "pll4_p", "ck_per"
-+};
-+
-+static const char * const rng1_src[] = {
-+	"ck_csi", "pll4_r", "ck_lse", "ck_lsi"
-+};
-+
-+static const char * const saes_src[] = {
-+	"ck_axi", "ck_per", "pll4_r", "ck_lsi"
-+};
-+
-+static const char * const sai1_src[] = {
-+	"pll4_q", "pll3_q", "i2s_ckin", "ck_per", "pll3_r"
-+};
-+
-+static const char * const sai2_src[] = {
-+	"pll4_q", "pll3_q", "i2s_ckin", "ck_per", "spdif_ck_symb", "pll3_r"
-+};
-+
-+static const char * const sdmmc12_src[] = {
-+	"ck_axi", "pll3_r", "pll4_p", "ck_hsi"
-+};
-+
-+static const char * const spdif_src[] = {
-+	"pll4_p", "pll3_q", "ck_hsi"
-+};
-+
-+static const char * const spi123_src[] = {
-+	"pll4_p", "pll3_q", "i2s_ckin", "ck_per", "pll3_r"
-+};
-+
-+static const char * const spi4_src[] = {
-+	"pclk6", "pll4_q", "ck_hsi", "ck_csi", "ck_hse", "i2s_ckin"
-+};
-+
-+static const char * const spi5_src[] = {
-+	"pclk6", "pll4_q", "ck_hsi", "ck_csi", "ck_hse"
-+};
-+
-+static const char * const stgen_src[] = {
-+	"ck_hsi", "ck_hse"
-+};
-+
-+static const char * const usart12_src[] = {
-+	"pclk6", "pll3_q", "ck_hsi", "ck_csi", "pll4_q", "ck_hse"
-+};
-+
-+static const char * const usart34578_src[] = {
-+	"pclk1", "pll4_q", "ck_hsi", "ck_csi", "ck_hse"
-+};
-+
-+static const char * const usart6_src[] = {
-+	"pclk2", "pll4_q", "ck_hsi", "ck_csi", "ck_hse"
-+};
-+
-+static const char * const usbo_src[] = {
-+	"pll4_r", "ck_usbo_48m"
-+};
-+
-+static const char * const usbphy_src[] = {
-+	"ck_hse", "pll4_r", "clk-hse-div2"
-+};
-+
- /* Timer clocks */
- static struct clk_stm32_gate tim2_k = {
- 	.gate_id = GATE_TIM2,
-@@ -834,6 +934,337 @@ static struct clk_stm32_gate eth2stp = {
- 	.hw.init = CLK_HW_INIT("eth2stp", "ck_axi", &clk_stm32_gate_ops, 0),
- };
- 
-+/* Kernel clocks */
-+static struct clk_stm32_composite sdmmc1_k = {
-+	.gate_id = GATE_SDMMC1,
-+	.mux_id = MUX_SDMMC1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("sdmmc1_k", sdmmc12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite sdmmc2_k = {
-+	.gate_id = GATE_SDMMC2,
-+	.mux_id = MUX_SDMMC2,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("sdmmc2_k", sdmmc12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite fmc_k = {
-+	.gate_id = GATE_FMC,
-+	.mux_id = MUX_FMC,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("fmc_k", fmc_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite qspi_k = {
-+	.gate_id = GATE_QSPI,
-+	.mux_id = MUX_QSPI,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("qspi_k", qspi_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite spi2_k = {
-+	.gate_id = GATE_SPI2,
-+	.mux_id = MUX_SPI23,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("spi2_k", spi123_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite spi3_k = {
-+	.gate_id = GATE_SPI3,
-+	.mux_id = MUX_SPI23,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("spi3_k", spi123_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite i2c1_k = {
-+	.gate_id = GATE_I2C1,
-+	.mux_id = MUX_I2C12,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("i2c1_k", i2c12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite i2c2_k = {
-+	.gate_id = GATE_I2C2,
-+	.mux_id = MUX_I2C12,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("i2c2_k", i2c12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite lptim4_k = {
-+	.gate_id = GATE_LPTIM4,
-+	.mux_id = MUX_LPTIM45,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("lptim4_k", lptim45_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite lptim5_k = {
-+	.gate_id = GATE_LPTIM5,
-+	.mux_id = MUX_LPTIM45,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("lptim5_k", lptim45_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite usart3_k = {
-+	.gate_id = GATE_USART3,
-+	.mux_id = MUX_UART35,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("usart3_k", usart34578_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite uart5_k = {
-+	.gate_id = GATE_UART5,
-+	.mux_id = MUX_UART35,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("uart5_k", usart34578_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite uart7_k = {
-+	.gate_id = GATE_UART7,
-+	.mux_id = MUX_UART78,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("uart7_k", usart34578_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite uart8_k = {
-+	.gate_id = GATE_UART8,
-+	.mux_id = MUX_UART78,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("uart8_k", usart34578_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite sai1_k = {
-+	.gate_id = GATE_SAI1,
-+	.mux_id = MUX_SAI1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("sai1_k", sai1_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite adfsdm_k = {
-+	.gate_id = GATE_ADFSDM,
-+	.mux_id = MUX_SAI1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("adfsdm_k", sai1_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite sai2_k = {
-+	.gate_id = GATE_SAI2,
-+	.mux_id = MUX_SAI2,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("sai2_k", sai2_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite adc1_k = {
-+	.gate_id = GATE_ADC1,
-+	.mux_id = MUX_ADC1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("adc1_k", adc12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite adc2_k = {
-+	.gate_id = GATE_ADC2,
-+	.mux_id = MUX_ADC2,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("adc2_k", adc12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite rng1_k = {
-+	.gate_id = GATE_RNG1,
-+	.mux_id = MUX_RNG1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("rng1_k", rng1_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite usbphy_k = {
-+	.gate_id = GATE_USBPHY,
-+	.mux_id = MUX_USBPHY,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("usbphy_k", usbphy_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite stgen_k = {
-+	.gate_id = GATE_STGENC,
-+	.mux_id = MUX_STGEN,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("stgen_k", stgen_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite spdif_k = {
-+	.gate_id = GATE_SPDIF,
-+	.mux_id = MUX_SPDIF,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("spdif_k", spdif_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite spi1_k = {
-+	.gate_id = GATE_SPI1,
-+	.mux_id = MUX_SPI1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("spi1_k", spi123_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite spi4_k = {
-+	.gate_id = GATE_SPI4,
-+	.mux_id = MUX_SPI4,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("spi4_k", spi4_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite spi5_k = {
-+	.gate_id = GATE_SPI5,
-+	.mux_id = MUX_SPI5,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("spi5_k", spi5_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite i2c3_k = {
-+	.gate_id = GATE_I2C3,
-+	.mux_id = MUX_I2C3,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("i2c3_k", i2c345_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite i2c4_k = {
-+	.gate_id = GATE_I2C4,
-+	.mux_id = MUX_I2C4,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("i2c4_k", i2c345_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite i2c5_k = {
-+	.gate_id = GATE_I2C5,
-+	.mux_id = MUX_I2C5,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("i2c5_k", i2c345_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite lptim1_k = {
-+	.gate_id = GATE_LPTIM1,
-+	.mux_id = MUX_LPTIM1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("lptim1_k", lptim1_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite lptim2_k = {
-+	.gate_id = GATE_LPTIM2,
-+	.mux_id = MUX_LPTIM2,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("lptim2_k", lptim23_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite lptim3_k = {
-+	.gate_id = GATE_LPTIM3,
-+	.mux_id = MUX_LPTIM3,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("lptim3_k", lptim23_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite usart1_k = {
-+	.gate_id = GATE_USART1,
-+	.mux_id = MUX_UART1,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("usart1_k", usart12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite usart2_k = {
-+	.gate_id = GATE_USART2,
-+	.mux_id = MUX_UART2,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("usart2_k", usart12_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite uart4_k = {
-+	.gate_id = GATE_UART4,
-+	.mux_id = MUX_UART4,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("uart4_k", usart34578_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite uart6_k = {
-+	.gate_id = GATE_USART6,
-+	.mux_id = MUX_UART6,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("uart6_k", usart6_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite fdcan_k = {
-+	.gate_id = GATE_FDCAN,
-+	.mux_id = MUX_FDCAN,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("fdcan_k", fdcan_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite dcmipp_k = {
-+	.gate_id = GATE_DCMIPP,
-+	.mux_id = MUX_DCMIPP,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("dcmipp_k", dcmipp_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite usbo_k = {
-+	.gate_id = GATE_USBO,
-+	.mux_id = MUX_USBO,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("usbo_k", usbo_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_composite saes_k = {
-+	.gate_id = GATE_SAES,
-+	.mux_id = MUX_SAES,
-+	.div_id = NO_STM32_DIV,
-+	.hw.init = CLK_HW_INIT_PARENTS("saes_k", saes_src, &clk_stm32_composite_ops,
-+				       CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_gate dfsdm_k = {
-+	.gate_id = GATE_DFSDM,
-+	.hw.init = CLK_HW_INIT("dfsdm_k", "ck_mlahb", &clk_stm32_gate_ops, 0),
-+};
-+
-+static struct clk_stm32_gate ltdc_px = {
-+	.gate_id = GATE_LTDC,
-+	.hw.init = CLK_HW_INIT("ltdc_px", "pll4_q", &clk_stm32_gate_ops, CLK_SET_RATE_PARENT),
-+};
-+
- static struct clk_stm32_mux ck_ker_eth1 = {
- 	.mux_id = MUX_ETH1,
- 	.hw.init = CLK_HW_INIT_PARENTS("ck_ker_eth1", eth12_src, &clk_stm32_mux_ops,
-@@ -851,6 +1282,23 @@ static struct clk_stm32_div eth1ptp_k = {
- 				  CLK_SET_RATE_NO_REPARENT),
- };
- 
-+static struct clk_stm32_mux ck_ker_eth2 = {
-+	.mux_id = MUX_ETH2,
-+	.hw.init = CLK_HW_INIT_PARENTS("ck_ker_eth2", eth12_src, &clk_stm32_mux_ops,
-+					    CLK_OPS_PARENT_ENABLE | CLK_SET_RATE_NO_REPARENT),
-+};
-+
-+static struct clk_stm32_gate eth2ck_k = {
-+	.gate_id = GATE_ETH2CK,
-+	.hw.init = CLK_HW_INIT_HW("eth2ck_k", &ck_ker_eth2.hw, &clk_stm32_gate_ops, 0),
-+};
-+
-+static struct clk_stm32_div eth2ptp_k = {
-+	.div_id = DIV_ETH2PTP,
-+	.hw.init = CLK_HW_INIT_HW("eth2ptp_k", &ck_ker_eth2.hw, &clk_stm32_divider_ops,
-+				  CLK_SET_RATE_NO_REPARENT),
-+};
-+
- static struct clk_stm32_composite ck_mco1 = {
- 	.gate_id = GATE_MCO1,
- 	.mux_id = MUX_MCO1,
-@@ -869,6 +1317,19 @@ static struct clk_stm32_composite ck_mco2 = {
- 				       CLK_IGNORE_UNUSED),
- };
- 
-+/* Debug clocks */
-+static struct clk_stm32_gate ck_sys_dbg = {
-+	.gate_id = GATE_DBGCK,
-+	.hw.init = CLK_HW_INIT("ck_sys_dbg", "ck_axi", &clk_stm32_gate_ops, CLK_IS_CRITICAL),
-+};
-+
-+static struct clk_stm32_composite ck_trace = {
-+	.gate_id = GATE_TRACECK,
-+	.mux_id = NO_STM32_MUX,
-+	.div_id = DIV_TRACE,
-+	.hw.init = CLK_HW_INIT("ck_trace", "ck_axi", &clk_stm32_composite_ops, CLK_IGNORE_UNUSED),
-+};
-+
- static const struct clock_config stm32mp13_clock_cfg[] = {
- 	/* Timer clocks */
- 	STM32_GATE_CFG(TIM2_K, tim2_k, SECF_NONE),
-@@ -933,9 +1394,61 @@ static const struct clock_config stm32mp13_clock_cfg[] = {
- 	STM32_GATE_CFG(ETH1STP, eth1stp, SECF_ETH1STP),
- 	STM32_GATE_CFG(ETH2STP, eth2stp, SECF_ETH2STP),
- 
-+	/* Kernel clocks */
-+	STM32_COMPOSITE_CFG(SDMMC1_K, sdmmc1_k, SECF_SDMMC1),
-+	STM32_COMPOSITE_CFG(SDMMC2_K, sdmmc2_k, SECF_SDMMC2),
-+	STM32_COMPOSITE_CFG(FMC_K, fmc_k, SECF_FMC),
-+	STM32_COMPOSITE_CFG(QSPI_K, qspi_k, SECF_QSPI),
-+	STM32_COMPOSITE_CFG(SPI2_K, spi2_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(SPI3_K, spi3_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(I2C1_K, i2c1_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(I2C2_K, i2c2_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(LPTIM4_K, lptim4_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(LPTIM5_K, lptim5_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(USART3_K, usart3_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(UART5_K, uart5_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(UART7_K, uart7_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(UART8_K, uart8_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(SAI1_K, sai1_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(SAI2_K, sai2_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(ADFSDM_K, adfsdm_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(ADC1_K, adc1_k, SECF_ADC1),
-+	STM32_COMPOSITE_CFG(ADC2_K, adc2_k, SECF_ADC2),
-+	STM32_COMPOSITE_CFG(RNG1_K, rng1_k, SECF_RNG1),
-+	STM32_COMPOSITE_CFG(USBPHY_K, usbphy_k, SECF_USBPHY),
-+	STM32_COMPOSITE_CFG(STGEN_K, stgen_k, SECF_STGENC),
-+	STM32_COMPOSITE_CFG(SPDIF_K, spdif_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(SPI1_K, spi1_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(SPI4_K, spi4_k, SECF_SPI4),
-+	STM32_COMPOSITE_CFG(SPI5_K, spi5_k, SECF_SPI5),
-+	STM32_COMPOSITE_CFG(I2C3_K, i2c3_k, SECF_I2C3),
-+	STM32_COMPOSITE_CFG(I2C4_K, i2c4_k, SECF_I2C4),
-+	STM32_COMPOSITE_CFG(I2C5_K, i2c5_k, SECF_I2C5),
-+	STM32_COMPOSITE_CFG(LPTIM1_K, lptim1_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(LPTIM2_K, lptim2_k, SECF_LPTIM2),
-+	STM32_COMPOSITE_CFG(LPTIM3_K, lptim3_k, SECF_LPTIM3),
-+	STM32_COMPOSITE_CFG(USART1_K, usart1_k, SECF_USART1),
-+	STM32_COMPOSITE_CFG(USART2_K, usart2_k, SECF_USART2),
-+	STM32_COMPOSITE_CFG(UART4_K, uart4_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(USART6_K, uart6_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(FDCAN_K, fdcan_k, SECF_NONE),
-+	STM32_COMPOSITE_CFG(DCMIPP_K, dcmipp_k, SECF_DCMIPP),
-+	STM32_COMPOSITE_CFG(USBO_K, usbo_k, SECF_USBO),
-+	STM32_COMPOSITE_CFG(SAES_K, saes_k, SECF_SAES),
-+	STM32_GATE_CFG(DFSDM_K, dfsdm_k, SECF_NONE),
-+	STM32_GATE_CFG(LTDC_PX, ltdc_px, SECF_NONE),
-+
- 	STM32_MUX_CFG(NO_ID, ck_ker_eth1, SECF_ETH1CK),
- 	STM32_GATE_CFG(ETH1CK_K, eth1ck_k, SECF_ETH1CK),
- 	STM32_DIV_CFG(ETH1PTP_K, eth1ptp_k, SECF_ETH1CK),
-+
-+	STM32_MUX_CFG(NO_ID, ck_ker_eth2, SECF_ETH2CK),
-+	STM32_GATE_CFG(ETH2CK_K, eth2ck_k, SECF_ETH2CK),
-+	STM32_DIV_CFG(ETH2PTP_K, eth2ptp_k, SECF_ETH2CK),
-+
-+	STM32_GATE_CFG(CK_DBG, ck_sys_dbg, SECF_NONE),
-+	STM32_COMPOSITE_CFG(CK_TRACE, ck_trace, SECF_NONE),
-+
- 	STM32_COMPOSITE_CFG(CK_MCO1, ck_mco1, SECF_MCO1),
- 	STM32_COMPOSITE_CFG(CK_MCO2, ck_mco2, SECF_MCO2),
- };
+That's great. Thank you very much.
+
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 30ae6638ff54..f96351da1e3e 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -109,38 +109,43 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
+>   * This function reserves memory area given in "crashkernel=" kernel command
+>   * line parameter. The memory reserved is used by dump capture kernel when
+>   * primary kernel is crashing.
+> + *
+> + * NOTE: Reservation of crashkernel,low is special since its existence
+> + * is not independent, need rely on the existence of crashkernel,high.
+> + * Hence there are different cases for crashkernel,low reservation:
+> + * 1) crashkernel=Y,low is specified explicitly, crashkernel,low takes Y;
+> + * 2) crashkernel=,low is not given, while crashkernel=,high is specified,
+> + *    take the default crashkernel,low value;
+> + * 3) crashkernel=X is specified, while fallback to get a memory region
+> + *    in high memory, take the default crashkernel,low value;
+> + * 4) crashkernel='invalid value',low is specified, failed the whole
+> + *    crashkernel reservation and bail out.
+>   */
+>  static void __init reserve_crashkernel(void)
+>  {
+>  	unsigned long long crash_base, crash_size;
+>  	unsigned long long crash_low_size;
+>  	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+> -	int ret;
+>  	bool fixed_base, high = false;
+>  	char *cmdline = boot_command_line;
+> +	int ret;
+>  
+>  	/* crashkernel=X[@offset] */
+>  	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
+>  				&crash_size, &crash_base);
+>  	if (ret || !crash_size) {
+> -		/* crashkernel=X,high */
+>  		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
+>  		if (ret || !crash_size)
+>  			return;
+>  
+> -		/* crashkernel=Y,low */
+>  		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
+>  		if (ret == -ENOENT)
+> -			/*
+> -			 * crashkernel=Y,low is not specified explicitly, use
+> -			 * default size automatically.
+> -			 */
+> +			/* case #2 of crashkernel,low reservation */
+>  			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
+>  		else if (ret)
+> -			/* crashkernel=Y,low is specified but Y is invalid */
+> +			/* case #4 of crashkernel,low reservation */
+>  			return;
+>  
+> -		/* Mark crashkernel=X,high is specified */
+>  		high = true;
+>  		crash_max = CRASH_ADDR_HIGH_MAX;
+>  	}
+> @@ -148,7 +153,6 @@ static void __init reserve_crashkernel(void)
+>  	fixed_base = !!crash_base;
+>  	crash_size = PAGE_ALIGN(crash_size);
+>  
+> -	/* User specifies base address explicitly. */
+>  	if (fixed_base)
+>  		crash_max = crash_base + crash_size;
+>  
+> @@ -172,11 +176,7 @@ static void __init reserve_crashkernel(void)
+>  	}
+>  
+>  	if (crash_base >= SZ_4G) {
+> -		/*
+> -		 * For case crashkernel=X, low memory is not enough and fall
+> -		 * back to reserve specified size of memory above 4G, try to
+> -		 * allocate minimum required memory below 4G again.
+> -		 */
+> +		/* case #3 of crashkernel,low reservation */
+>  		if (!high)
+>  			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
+>  
+> 
+>>  
+>> -	/* Current arm64 boot protocol requires 2MB alignment */
+>> -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
+>> +retry:
+>> +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
+>>  					       crash_base, crash_max);
+>>  	if (!crash_base) {
+>> +		/*
+>> +		 * Attempt to fully allocate low memory failed, fall back
+>> +		 * to high memory, the minimum required low memory will be
+>> +		 * reserved later.
+>> +		 */
+>> +		if (!fixed_base && (crash_max == CRASH_ADDR_LOW_MAX)) {
+>> +			crash_max = CRASH_ADDR_HIGH_MAX;
+>> +			goto retry;
+>> +		}
+>> +
+>>  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
+>>  			crash_size);
+>>  		return;
+>>  	}
+>>  
+>> +	if (crash_base >= SZ_4G) {
+>> +		/*
+>> +		 * For case crashkernel=X, low memory is not enough and fall
+>> +		 * back to reserve specified size of memory above 4G, try to
+>> +		 * allocate minimum required memory below 4G again.
+>> +		 */
+>> +		if (!high)
+>> +			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
+>> +
+>> +		if (reserve_crashkernel_low(crash_low_size)) {
+>> +			memblock_phys_free(crash_base, crash_size);
+>> +			return;
+>> +		}
+>> +	}
+>> +
+>>  	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
+>>  		crash_base, crash_base + crash_size, crash_size >> 20);
+>>  
+>> @@ -107,6 +194,9 @@ static void __init reserve_crashkernel(void)
+>>  	 * map. Inform kmemleak so that it won't try to access it.
+>>  	 */
+>>  	kmemleak_ignore_phys(crash_base);
+>> +	if (crashk_low_res.end)
+>> +		kmemleak_ignore_phys(crashk_low_res.start);
+>> +
+>>  	crashk_res.start = crash_base;
+>>  	crashk_res.end = crash_base + crash_size - 1;
+>>  	insert_resource(&iomem_resource, &crashk_res);
+>> -- 
+>> 2.25.1
+>>
+> 
+> .
+> 
+
 -- 
-2.25.1
-
+Regards,
+  Zhen Lei
