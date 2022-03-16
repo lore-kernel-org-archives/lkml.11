@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A20C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:11:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF28C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352615AbiCPCND (ORCPT
+        id S1353214AbiCPCNI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
+        Tue, 15 Mar 2022 22:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352964AbiCPCLn (ORCPT
+        with ESMTP id S1352955AbiCPCLn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 15 Mar 2022 22:11:43 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA6B5E761
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4005E760
         for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:10:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647396615; x=1678932615;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+WawZY27NEELHhgB1fXDvGDjjtTQQYODbL1EDFsWuKs=;
-  b=fPEfiPe47SlFBgXwxxKbA/qckFM3Xt8vF8Ag3EtqLwSSQUYL/DeEcsOA
-   ZMUskgUYwdqcUjwV9sZgBprcpbnXIJ1lwug4RAsoPeJIQ+44NZlTI977/
-   dwO/ScCcv7sykv5EGeT5aVYiDRA/PB9Xv/KY7E8eiDM6JrnvWV9rPvJFM
-   O4X3lobQXVQTd3MS83tr9FGRMplDjjnBnUeOBHzIHiQMJTjBeQ7aDXkXl
-   BzIC61/49tGJgVCSB53FX6k9RgXRqIHxehD85IXE7+O4AvUy3knEdBNWO
-   qllYbqxqKlricdjmq5keLJv93Iy1swtVf6qEslcvTeL540GBAffygZNca
+  bh=unLt1bQdnxAfB2G6yZ+wvJG5KNuky09eVm7UrRu/Wkg=;
+  b=BajA5+SUIfSnzWrntLB5qFKBBfxGf2Ju9iEg7hjAD8GmP4Zx8WyuSDEV
+   SCSsRSCgASzvIa3C1iIq2YH2vX+zuvGLnyT70oFxi09uGJQA1taZUussE
+   f3JFd7h25D+wiW4U64v+VAtmGLVSbD1kp5XR5qKu3yxb5+rIYnjLytt2Y
+   QrSgjvp0cbzVwOZIHqXPc90BkZMOA3RwckxgVffII/s8LC2tlUoTltq+S
+   XtNySVZNjKutFbmK7PCp/Myb4pahfdGn9a+8RLrC1QhjMnWHelRz9Pyd+
+   99j78hl1qsizDx6TwtKDZFiy+dIUnArcAkQnwrwq2Ln2OeAq7WUBmKpnt
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="342898594"
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="342898593"
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="342898594"
+   d="scan'208";a="342898593"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:10:12 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="646462122"
+   d="scan'208";a="646462117"
 Received: from black.fi.intel.com ([10.237.72.28])
   by orsmga004.jf.intel.com with ESMTP; 15 Mar 2022 19:10:05 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id E95B9D3B; Wed, 16 Mar 2022 04:10:10 +0200 (EET)
+        id 0BC6AEF6; Wed, 16 Mar 2022 04:10:11 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -53,9 +53,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv6 27/30] x86/kvm: Make SWIOTLB buffer shared for TD guest
-Date:   Wed, 16 Mar 2022 05:08:53 +0300
-Message-Id: <20220316020856.24435-28-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv6 29/30] ACPICA: Avoid cache flush inside virtual machines
+Date:   Wed, 16 Mar 2022 05:08:55 +0300
+Message-Id: <20220316020856.24435-30-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
@@ -65,97 +65,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Intel TDX doesn't allow VMM to directly access guest private memory.
-Any memory that is required for communication with the VMM must be
-shared explicitly. The same rule applies for any DMA to and from the
-TDX guest. All DMA pages have to be marked as shared pages. A generic way
-to achieve this without any changes to device drivers is to use the
-SWIOTLB framework.
+While running inside virtual machine, the kernel can bypass cache
+flushing. Changing sleep state in a virtual machine doesn't affect the
+host system sleep state and cannot lead to data loss.
 
-Make SWIOTLB buffer shared by generalizing mem_encrypt_init() to cover
-TDX.
+Before entering sleep states, the ACPI code flushes caches to prevent
+data loss using the WBINVD instruction.  This mechanism is required on
+bare metal.
 
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
+But, any use WBINVD inside of a guest is worthless.  Changing sleep
+state in a virtual machine doesn't affect the host system sleep state
+and cannot lead to data loss, so most hypervisors simply ignore it.
+Despite this, the ACPI code calls WBINVD unconditionally anyway.
+It's useless, but also normally harmless.
+
+In TDX guests, though, WBINVD stops being harmless; it triggers a
+virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
+were left in place, TDX guests would need handling to recover from
+the exception.
+
+Avoid using WBINVD whenever running under a hypervisor.  This both
+removes the useless WBINVDs and saves TDX from implementing WBINVD
+handling.
+
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/Kconfig                   | 2 +-
- arch/x86/coco/core.c               | 1 +
- arch/x86/include/asm/mem_encrypt.h | 6 +++---
- arch/x86/mm/mem_encrypt.c          | 9 ++++++++-
- 4 files changed, 13 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/acenv.h | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 98efb35ed7b1..1312cefb927d 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -885,7 +885,7 @@ config INTEL_TDX_GUEST
- 	depends on X86_64 && CPU_SUP_INTEL
- 	depends on X86_X2APIC
- 	select ARCH_HAS_CC_PLATFORM
--	select DYNAMIC_PHYSICAL_MASK
-+	select X86_MEM_ENCRYPT
- 	select X86_MCE
- 	help
- 	  Support running as a guest under Intel TDX.  Without this support,
-diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-index 9f74125c582d..4320fadae716 100644
---- a/arch/x86/coco/core.c
-+++ b/arch/x86/coco/core.c
-@@ -22,6 +22,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
- 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
- 	case CC_ATTR_HOTPLUG_DISABLED:
- 	case CC_ATTR_GUEST_MEM_ENCRYPT:
-+	case CC_ATTR_MEM_ENCRYPT:
- 		return true;
- 	default:
- 		return false;
-diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
-index e2c6f433ed10..88ceaf3648b3 100644
---- a/arch/x86/include/asm/mem_encrypt.h
-+++ b/arch/x86/include/asm/mem_encrypt.h
-@@ -49,9 +49,6 @@ void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages,
+diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
+index 9aff97f0de7f..d937c55e717e 100644
+--- a/arch/x86/include/asm/acenv.h
++++ b/arch/x86/include/asm/acenv.h
+@@ -13,7 +13,19 @@
  
- void __init mem_encrypt_free_decrypted_mem(void);
+ /* Asm macros */
  
--/* Architecture __weak replacement functions */
--void __init mem_encrypt_init(void);
--
- void __init sev_es_init_vc_handling(void);
+-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
++/*
++ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
++ * It is required to prevent data loss.
++ *
++ * While running inside virtual machine, the kernel can bypass cache flushing.
++ * Changing sleep state in a virtual machine doesn't affect the host system
++ * sleep state and cannot lead to data loss.
++ */
++#define ACPI_FLUSH_CPU_CACHE()					\
++do {								\
++	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
++		wbinvd();					\
++} while (0)
  
- #define __bss_decrypted __section(".bss..decrypted")
-@@ -89,6 +86,9 @@ static inline void mem_encrypt_free_decrypted_mem(void) { }
- 
- #endif	/* CONFIG_AMD_MEM_ENCRYPT */
- 
-+/* Architecture __weak replacement functions */
-+void __init mem_encrypt_init(void);
-+
- /*
-  * The __sme_pa() and __sme_pa_nodebug() macros are meant for use when
-  * writing to or comparing values from the cr3 register.  Having the
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 50d209939c66..10ee40b5204b 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -42,7 +42,14 @@ bool force_dma_unencrypted(struct device *dev)
- 
- static void print_mem_encrypt_feature_info(void)
- {
--	pr_info("AMD Memory Encryption Features active:");
-+	pr_info("Memory Encryption Features active:");
-+
-+	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {
-+		pr_cont(" Intel TDX\n");
-+		return;
-+	}
-+
-+	pr_cont("AMD ");
- 
- 	/* Secure Memory Encryption */
- 	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
+ int __acpi_acquire_global_lock(unsigned int *lock);
+ int __acpi_release_global_lock(unsigned int *lock);
 -- 
 2.34.1
 
