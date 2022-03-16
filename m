@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B667C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357075AbiCPPLJ (ORCPT
+        id S1357095AbiCPPLN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45888 "EHLO
+        Wed, 16 Mar 2022 11:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357005AbiCPPKt (ORCPT
+        with ESMTP id S1357033AbiCPPKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 16 Mar 2022 11:10:49 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D343E673C7
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:14 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id h14so4220830lfk.11
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:14 -0700 (PDT)
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E637A673D9
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:15 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id bu29so4340119lfb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:09:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=d1BPMRKxP52kqIHBcYfv+0vEKYw9y4Sk7A+PWhYRB3M=;
-        b=JvGREIFQ1BG2lwf1zdrkJ+VV4ISKNgYdDxovVbf5NDiAaNU7sTEgx871jrhfLw1+Ex
-         QioilQU+3XZhNISk2JtzgRX1RcE+z82KC5LmEMIglOEWU8qziKJrCjjk5V+j8ON1lZUm
-         pqxunc2ibDUUQUqJeIujxsx9i1Ed6La3k6/+U7kE4kFf9EdWNpmYkpXNQziPVWhz4Msc
-         G715rdUj1E7XZ05Q2pIgbfw89eH4P7+1EH+86J9MDg0hqC8jbl/vAuP4+XfETDAuncx2
-         4hRtHFJ/qpLNkJPiZqA90NttDGf+zo9Nkia3fIzezvWnB8WGdH/SFEOV1/sxj4OLvbIw
-         s4Gg==
+        bh=TJ/ysLEqmTIrEKAi22qClFzQAMPt3L4KxozAj/kLyzE=;
+        b=hWyG+mS9Kxs+/LhY6K5HDdevwY5y0klEWciUDA/sqtLTCzp0tYUn6erX4d36ClkWSI
+         VucLJnX+1P9Nj2S4aDw+ehQ4mk/jBhbbC+vjiX3HlzPHnnI685RXwraSVt+RmrsQP7yN
+         37VfSi3BGd/kPpMqU6yBeTLtn5xl1ZITJmwrwQPGfqxykFdQr7GTjj6CjXhxKSY2jS6H
+         TgWaGAMcQWl4D/+cEXhRkozGZuXibto8+xIsb3xSiHbjumN0Y71L3/DyI2kkog2Q6WCk
+         EhBt6bWXm5DxArP+Bl+oqC07OOXg15f13k7yLkIbTlCsGOvh2b6uhgRuwPa+ly6fUYE2
+         z16g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=d1BPMRKxP52kqIHBcYfv+0vEKYw9y4Sk7A+PWhYRB3M=;
-        b=Lz2QpqU/uS3Vxb1/tDlsxqa3dSnyR7m5wS2IK7ouaHmTW/0ajOkuc6RZRfH+FvvRBj
-         OL0gXtztTjYAvASCxBaYQKkwg+WV70x2fKnpcxByYT2d3iIjJDnKvHHBS2xucOVnCATL
-         LdyOtDQ2NcXMXYKC/7WBYlA/y1wBVZ9MG63VrzPw7L9HgKUuq3vT16AGhzkI1pOLWHdr
-         lReP954LXDErXb/pAFMZ/hVhWxe690Uq9mENsjyvjmFrO8T8CIBQTxQHoa3HwzL3HNc5
-         gHZSfvYuhvORupA2ptTEu7/Fyl5r7Hdr7ioPUIj8exG7DkoYljpidVJWjkmw+8CG7Jgs
-         uRgA==
-X-Gm-Message-State: AOAM530edoWWRYJ89cPDu8BjSw4KBRRxqivntilOYq9UKdKYKNndMGtU
-        l7TGsMV3sHVN0ovCcu2RLCY0YA==
-X-Google-Smtp-Source: ABdhPJxMW/eT3zQ6KmIHZbGDQZwoxkr1BXNgOZyryO7sKwzMXNNO3abS0nhIysWP9M350MqfyFJP6Q==
-X-Received: by 2002:ac2:5932:0:b0:448:bdb3:a23d with SMTP id v18-20020ac25932000000b00448bdb3a23dmr81354lfi.436.1647443352049;
-        Wed, 16 Mar 2022 08:09:12 -0700 (PDT)
+        bh=TJ/ysLEqmTIrEKAi22qClFzQAMPt3L4KxozAj/kLyzE=;
+        b=W1eRmf+6fV7ybKIOf2LvPFOQMody4UO5x3FaXXVxe5sR6gHQFux+xE/stHZx/QFasU
+         ZrD5p992o+nj5qCOzXIic+DpGiiIzHsWHA0STNRPff9+//iKt6hm6ZcGYphVFhb1bZ+9
+         ce6RIBLhBqkQ/0fd2PEitjQm+XNI7PBGUNIVuZzGb29YmBRHWddBVouof/eGQ3rn307v
+         T9jpOh+fopiGqavBnA1xL6S4hABKAiwtrnVVoiwuOtfTaNd3ux6lZgjiq+9zi6xcRWUq
+         z2IcsUVih5nQxojBOESe2N32FDoXPI+ObXPWq+SczVi7wOj15TdkaAY36n8EDp/0tRR8
+         eZtg==
+X-Gm-Message-State: AOAM533zUFWQfFtsf4KGWi8SWV3x07UJZeF9MO5y7kyf3sI5gb45QYNq
+        JznuCY490uF2lFCQezTKzN8XXA==
+X-Google-Smtp-Source: ABdhPJw3W+6hr7k/Qow2M2vxSYXUq9mv18Pdhd6yxNSHz8e12lhOMe1mcDcpa4gpziOw0j9E2jPupw==
+X-Received: by 2002:ac2:48b5:0:b0:448:b9cf:ad2 with SMTP id u21-20020ac248b5000000b00448b9cf0ad2mr63639lfg.153.1647443353835;
+        Wed, 16 Mar 2022 08:09:13 -0700 (PDT)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id d2-20020a194f02000000b00448b915e2d3sm176048lfb.99.2022.03.16.08.09.11
+        by smtp.gmail.com with ESMTPSA id d2-20020a194f02000000b00448b915e2d3sm176048lfb.99.2022.03.16.08.09.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 08:09:11 -0700 (PDT)
+        Wed, 16 Mar 2022 08:09:13 -0700 (PDT)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -65,9 +65,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Matt Johnston <matt@codeconstruct.com.au>,
         Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: [PATCH v5 net-next 05/15] net: bridge: mst: Notify switchdev drivers of VLAN MSTI migrations
-Date:   Wed, 16 Mar 2022 16:08:47 +0100
-Message-Id: <20220316150857.2442916-6-tobias@waldekranz.com>
+Subject: [PATCH v5 net-next 07/15] net: bridge: mst: Add helper to map an MSTI to a VID set
+Date:   Wed, 16 Mar 2022 16:08:49 +0100
+Message-Id: <20220316150857.2442916-8-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220316150857.2442916-1-tobias@waldekranz.com>
 References: <20220316150857.2442916-1-tobias@waldekranz.com>
@@ -78,143 +78,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Whenever a VLAN moves to a new MSTI, send a switchdev notification so
-that switchdevs can track a bridge's VID to MSTI mappings.
+br_mst_get_info answers the question: "On this bridge, which VIDs are
+mapped to the given MSTI?"
+
+This is useful in switchdev drivers, which might have to fan-out
+operations, relating to an MSTI, per VLAN.
+
+An example: When a port's MST state changes from forwarding to
+blocking, a driver may choose to flush the dynamic FDB entries on that
+port to get faster reconvergence of the network, but this should only
+be done in the VLANs that are managed by the MSTI in question.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- include/net/switchdev.h   |  7 ++++++
- net/bridge/br_mst.c       | 13 +++++++++++
- net/bridge/br_switchdev.c | 46 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 66 insertions(+)
+ include/linux/if_bridge.h |  7 +++++++
+ net/bridge/br_mst.c       | 26 ++++++++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 85dd004dc9ad..53dfa0f7cf5b 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -29,6 +29,7 @@ enum switchdev_attr_id {
- 	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
- 	SWITCHDEV_ATTR_ID_BRIDGE_MST,
- 	SWITCHDEV_ATTR_ID_MRP_PORT_ROLE,
-+	SWITCHDEV_ATTR_ID_VLAN_MSTI,
- };
- 
- struct switchdev_brport_flags {
-@@ -36,6 +37,11 @@ struct switchdev_brport_flags {
- 	unsigned long mask;
- };
- 
-+struct switchdev_vlan_msti {
-+	u16 vid;
-+	u16 msti;
-+};
+diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+index 3aae023a9353..1cf0cc46d90d 100644
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -119,6 +119,7 @@ int br_vlan_get_info(const struct net_device *dev, u16 vid,
+ 		     struct bridge_vlan_info *p_vinfo);
+ int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
+ 			 struct bridge_vlan_info *p_vinfo);
++int br_mst_get_info(const struct net_device *dev, u16 msti, unsigned long *vids);
+ #else
+ static inline bool br_vlan_enabled(const struct net_device *dev)
+ {
+@@ -151,6 +152,12 @@ static inline int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
+ {
+ 	return -EINVAL;
+ }
 +
- struct switchdev_attr {
- 	struct net_device *orig_dev;
- 	enum switchdev_attr_id id;
-@@ -52,6 +58,7 @@ struct switchdev_attr {
- 		bool mst;				/* BRIDGE_MST */
- 		bool mc_disabled;			/* MC_DISABLED */
- 		u8 mrp_port_role;			/* MRP_PORT_ROLE */
-+		struct switchdev_vlan_msti vlan_msti;	/* VLAN_MSTI */
- 	} u;
- };
++static inline int br_mst_get_info(const struct net_device *dev, u16 msti,
++				  unsigned long *vids)
++{
++	return -EINVAL;
++}
+ #endif
  
+ #if IS_ENABLED(CONFIG_BRIDGE)
 diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
-index 43ca6b97c5c3..29266174e6b4 100644
+index 00935a19afcc..00b36e629224 100644
 --- a/net/bridge/br_mst.c
 +++ b/net/bridge/br_mst.c
-@@ -69,13 +69,26 @@ static void br_mst_vlan_sync_state(struct net_bridge_vlan *pv, u16 msti)
+@@ -13,6 +13,32 @@
  
- int br_mst_vlan_set_msti(struct net_bridge_vlan *mv, u16 msti)
- {
-+	struct switchdev_attr attr = {
-+		.id = SWITCHDEV_ATTR_ID_VLAN_MSTI,
-+		.orig_dev = mv->br->dev,
-+		.u.vlan_msti = {
-+			.vid = mv->vid,
-+			.msti = msti,
-+		},
-+	};
- 	struct net_bridge_vlan_group *vg;
- 	struct net_bridge_vlan *pv;
- 	struct net_bridge_port *p;
-+	int err;
+ DEFINE_STATIC_KEY_FALSE(br_mst_used);
  
- 	if (mv->msti == msti)
- 		return 0;
- 
-+	err = switchdev_port_attr_set(mv->br->dev, &attr, NULL);
-+	if (err && err != -EOPNOTSUPP)
-+		return err;
-+
- 	mv->msti = msti;
- 
- 	list_for_each_entry(p, &mv->br->port_list, list) {
-diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index 6f6a70121a5e..8cc44c367231 100644
---- a/net/bridge/br_switchdev.c
-+++ b/net/bridge/br_switchdev.c
-@@ -331,6 +331,46 @@ br_switchdev_fdb_replay(const struct net_device *br_dev, const void *ctx,
- 	return err;
- }
- 
-+static int br_switchdev_vlan_attr_replay(struct net_device *br_dev,
-+					 const void *ctx,
-+					 struct notifier_block *nb,
-+					 struct netlink_ext_ack *extack)
++int br_mst_get_info(const struct net_device *dev, u16 msti, unsigned long *vids)
 +{
-+	struct switchdev_notifier_port_attr_info attr_info = {
-+		.info = {
-+			.dev = br_dev,
-+			.extack = extack,
-+			.ctx = ctx,
-+		},
-+	};
-+	struct net_bridge *br = netdev_priv(br_dev);
-+	struct net_bridge_vlan_group *vg;
-+	struct switchdev_attr attr;
-+	struct net_bridge_vlan *v;
-+	int err;
++	const struct net_bridge_vlan_group *vg;
++	const struct net_bridge_vlan *v;
++	const struct net_bridge *br;
 +
-+	attr_info.attr = &attr;
-+	attr.orig_dev = br_dev;
++	ASSERT_RTNL();
++
++	if (!netif_is_bridge_master(dev))
++		return -EINVAL;
++
++	br = netdev_priv(dev);
++	if (!br_opt_get(br, BROPT_MST_ENABLED))
++		return -EINVAL;
 +
 +	vg = br_vlan_group(br);
 +
 +	list_for_each_entry(v, &vg->vlan_list, vlist) {
-+		if (v->msti) {
-+			attr.id = SWITCHDEV_ATTR_ID_VLAN_MSTI;
-+			attr.u.vlan_msti.vid = v->vid;
-+			attr.u.vlan_msti.msti = v->msti;
-+
-+			err = nb->notifier_call(nb, SWITCHDEV_PORT_ATTR_SET,
-+						&attr_info);
-+			err = notifier_to_errno(err);
-+			if (err)
-+				return err;
-+		}
++		if (v->msti == msti)
++			__set_bit(v->vid, vids);
 +	}
 +
 +	return 0;
 +}
++EXPORT_SYMBOL_GPL(br_mst_get_info);
 +
- static int
- br_switchdev_vlan_replay_one(struct notifier_block *nb,
- 			     struct net_device *dev,
-@@ -425,6 +465,12 @@ static int br_switchdev_vlan_replay(struct net_device *br_dev,
- 			return err;
- 	}
- 
-+	if (adding) {
-+		err = br_switchdev_vlan_attr_replay(br_dev, ctx, nb, extack);
-+		if (err)
-+			return err;
-+	}
-+
- 	return 0;
- }
- 
+ static void br_mst_vlan_set_state(struct net_bridge_port *p, struct net_bridge_vlan *v,
+ 				  u8 state)
+ {
 -- 
 2.25.1
 
