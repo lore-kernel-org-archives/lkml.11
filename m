@@ -2,94 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7522AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 998FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 12:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355638AbiCPMQn (ORCPT
+        id S1349913AbiCPMVh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 08:16:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32932 "EHLO
+        Wed, 16 Mar 2022 08:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355646AbiCPMQi (ORCPT
+        with ESMTP id S238166AbiCPMVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 08:16:38 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D9165D20
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 05:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647432921; x=1678968921;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=c0G4VUYvrTP/R6RlQWk4H8MLQILE6MfiAroMBPqIeA0=;
-  b=SqalNWSUmUm9auoPFHdLuelHRxq8HHDdzFgd7yW0HNI+iDMhbeOHTP7p
-   WHJ7NIFXo2782jU+Efiv+wimgt0sqYUs14dGnvd9VnkvHCbTiCkaCCf3N
-   uZFzW7ByEi1ssEtnHYPkLPYq9jtj1PCVnn295o7i0uIMDH8iD7u2jm4kR
-   JgnAl/JjZ97wQKNQCtdpc1jpuW4ug2nt/goHuTGM8KE16w4uytXLIm8eD
-   CBFLxadPAPgNJb5jOEPW0OfvvJC7ly6BfR9hfYyX/d+h55lRxm4fw4d2e
-   JlK1ZMrPq5tESmZaYp2ncMHR5pkgKPhyUs9xx9lTasiogvTU1zRGs3v1Y
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256517104"
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="256517104"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 05:15:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="498412678"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 16 Mar 2022 05:15:19 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUSYh-000CNt-5C; Wed, 16 Mar 2022 12:15:19 +0000
-Date:   Wed, 16 Mar 2022 20:14:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: [intel-tdx:guest-upstream 5/32] arch/x86/coco/tdx/tdx.c:29:6:
- warning: no previous prototype for '__tdx_hypercall_failed'
-Message-ID: <202203162038.wMUgXWKE-lkp@intel.com>
+        Wed, 16 Mar 2022 08:21:35 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0087460A89;
+        Wed, 16 Mar 2022 05:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=e5pNCmyMwLlhDtqajbX8GPeOHBzCF8vz6r7PEhnW3xc=; b=ls7rHnG1dpzhabBoztBYrRisA1
+        54dfeD23UuKfpyARMO6qUgKH0DPk6Ujv/Ww9QeY5RK1v7CfeUgqZSewu3D/7M3zLecxnFV6PHCqI0
+        vvQH2wmAlWB4D2NBic3IQc6i1eDn97UJPhFvmhMWB+mEA1wVyTQTfieLKO7q3Tq7iGqQhX2IUa6bO
+        qE4wZPgNeJBWCNg+HvDuzFY5XjnyPtzt6D7z5MCXP6bPhhZeo8/XxipJ9TK5uze8Kn5NmXvy5GnQg
+        OPm2l/KZWGaEy4M2Er1+PUNseAvndWqw+GJBCxpd3NFQJ8mu/FBSOfhvb7+JdzbsXcrayvbkb3VDy
+        Ztx8Jmyw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUSdI-001XX3-H2; Wed, 16 Mar 2022 12:20:04 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CB79030003A;
+        Wed, 16 Mar 2022 13:20:01 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7EE59306DC35A; Wed, 16 Mar 2022 13:20:01 +0100 (CET)
+Date:   Wed, 16 Mar 2022 13:20:01 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, Suzuki Poulose <suzuki.poulose@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH V4 03/10] perf: Extend branch type classification
+Message-ID: <YjHV8dJpEq/M8gHC@hirez.programming.kicks-ass.net>
+References: <20220315053516.431515-1-anshuman.khandual@arm.com>
+ <20220315053516.431515-4-anshuman.khandual@arm.com>
+ <20220315112232.GF8939@worktop.programming.kicks-ass.net>
+ <0df5c352-1f0d-55f8-5d7f-e28ba33d623b@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <0df5c352-1f0d-55f8-5d7f-e28ba33d623b@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git guest-upstream
-head:   8e1641a390cef993022d8c7fcd7e212e06ba7cd3
-commit: 3878b00acc0802659680a4f4ed957d30a364961b [5/32] x86/tdx: Add __tdx_module_call() and __tdx_hypercall() helper functions
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220316/202203162038.wMUgXWKE-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/3878b00acc0802659680a4f4ed957d30a364961b
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx guest-upstream
-        git checkout 3878b00acc0802659680a4f4ed957d30a364961b
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/coco/tdx/
+On Tue, Mar 15, 2022 at 01:06:42PM +0000, Robin Murphy wrote:
+> On 2022-03-15 11:22, Peter Zijlstra wrote:
+> > On Tue, Mar 15, 2022 at 11:05:09AM +0530, Anshuman Khandual wrote:
+> > > branch_entry.type now has ran out of space to accommodate more branch types
+> > > classification. This will prevent perf branch stack implementation on arm64
+> > > (via BRBE) to capture all available branch types. Extending this bit field
+> > > i.e branch_entry.type [4 bits] is not an option as it will break user space
+> > > ABI both for little and big endian perf tools.
+> > > 
+> > > Extend branch classification with a new field branch_entry.new_type via a
+> > > new branch type PERF_BR_EXTEND_ABI in branch_entry.type. Perf tools which
+> > > could decode PERF_BR_EXTEND_ABI, will then parse branch_entry.new_type as
+> > > well.
+> > > 
+> > > branch_entry.new_type is a 4 bit field which can hold upto 16 branch types.
+> > > The first three branch types will hold various generic page faults followed
+> > > by five architecture specific branch types, which can be overridden by the
+> > > platform for specific use cases. These architecture specific branch types
+> > > gets overridden on arm64 platform for BRBE implementation.
+> > 
+> > > diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+> > > index 26d8f0b5ac0d..d29280adc3c4 100644
+> > > --- a/include/uapi/linux/perf_event.h
+> > > +++ b/include/uapi/linux/perf_event.h
+> > > @@ -255,9 +255,22 @@ enum {
+> > >   	PERF_BR_IRQ		= 12,	/* irq */
+> > >   	PERF_BR_SERROR		= 13,	/* system error */
+> > >   	PERF_BR_NO_TX		= 14,	/* not in transaction */
+> > > +	PERF_BR_EXTEND_ABI	= 15,	/* extend ABI */
+> > >   	PERF_BR_MAX,
+> > >   };
+> > 
+> > 
+> > >   #define PERF_SAMPLE_BRANCH_PLM_ALL \
+> > >   	(PERF_SAMPLE_BRANCH_USER|\
+> > >   	 PERF_SAMPLE_BRANCH_KERNEL|\
+> > > @@ -1372,7 +1385,8 @@ struct perf_branch_entry {
+> > >   		abort:1,    /* transaction abort */
+> > >   		cycles:16,  /* cycle count to last branch */
+> > >   		type:4,     /* branch type */
+> > > -		reserved:40;
+> > > +		new_type:4, /* additional branch type */
+> > > +		reserved:36;
+> > >   };
+> > 
+> > Hurmpf... this will effectively give us 5 bits of space for the cost of
+> > 8, that seems... unfortunate.
+> > 
+> > Would something like:
+> > 
+> > 		type:4,
+> > 		ext_type:4,
+> > 		reserved:36;
+> > 
+> > and have all software do:
+> > 
+> > 	type = pbe->type | (pbe->ext_type << 4);
+> > 
+> > Then old software will only know about the old types. New software on
+> > old kernels will add 4 0's, which is harmless, while new software on new
+> > kernels will get 8 bytes of type.
+> > 
+> > Would that work?
+> 
+> Depends how bad the effects of aliasing in existing software would be, I
+> guess - e.g. new kernel outputs type 0x23 which software then interprets as
+> 0x3 since it doesn't know about the extended bits. I'm guessing that's more
+> likely "confusing to the user" than "catastrophically fatal", but it might
+> still matter.
+> 
+> If software had an explicit opt-in to receiving extended types when
+> requesting branch sampling in the first place we could avoid that worry, but
+> then we'd need some additional complexity to sanitise records depending on
+> that option :/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/x86/coco/tdx/tdx.c:29:6: warning: no previous prototype for '__tdx_hypercall_failed' [-Wmissing-prototypes]
-      29 | void __tdx_hypercall_failed(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/__tdx_hypercall_failed +29 arch/x86/coco/tdx/tdx.c
-
-    27	
-    28	/* Called from __tdx_hypercall() for unrecoverable failure */
-  > 29	void __tdx_hypercall_failed(void)
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Bah.. I see.. One option is PERF_SAMPLE_BRANCH_STACK2, but yes, yuck.
