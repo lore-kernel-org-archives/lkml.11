@@ -2,123 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3044BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71891C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 23:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244229AbiCPXZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 19:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
+        id S245103AbiCPXZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 19:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiCPXZ3 (ORCPT
+        with ESMTP id S239181AbiCPXZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 19:25:29 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895D6EA8;
-        Wed, 16 Mar 2022 16:24:13 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id C6BED493;
-        Thu, 17 Mar 2022 00:24:10 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1647473050;
-        bh=FewMdmi8qEg2S9b7MWGLnLAfszTXPWwFEMPvKBys6OM=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=wFX2XoKNsVfKJ9PnzNU5gr5EEIx/VnqBXfatkHwxQUWIk0vQs39KntBZbIIEcT+Fy
-         ileRxcJbLsynYWYtRRa75qONDrxoKggzSm3Fclt7HWgVSRRcqkaxsmWEkTrwy68B1A
-         EmF7rV00/epJR/t7+umRyqSDwv34FFjU8CoMQzcw=
-Content-Type: text/plain; charset="utf-8"
+        Wed, 16 Mar 2022 19:25:49 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F36A63AD;
+        Wed, 16 Mar 2022 16:24:35 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id d18so3045563plr.6;
+        Wed, 16 Mar 2022 16:24:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=G+B8PYofFQmB5bQg2/zmTVhP0vn5BLMq4NTw0OI7YZ4=;
+        b=gNWxk6ELs485vb6iIjGlrEQUnqNt8dKzPs07QEUsL9LqGK5jU3xRo9hyoNQFgyji8E
+         r/1dHlWf5bu1t2mfl5eemQjOpRsuxhZ0Wvok/xP9J7dq3LDg0Tv+L8xnY+QSpHPsjJUf
+         XDw59AziiyL0ixjIq7cZNlXxBWTb1/SIkJ38PC0dJ8iPjQOxhfiBV3eM6V65hwA+Scr1
+         GnUdhCt3uQSKUwwcjCdSevizpfCyKLrJ8kAiNL5UymtOb8mEJVh/iScqBTJarVwkvwLL
+         kAHEkMxHYLRPsKJwbRXgftraEmGuS1YUjI1MvS4pPA3Kb+C2lF78cd1CoRVZb7QZ1qQi
+         5IzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=G+B8PYofFQmB5bQg2/zmTVhP0vn5BLMq4NTw0OI7YZ4=;
+        b=amj6/TDSvzX9+oJLW9TUdtcGgKxu1rxey4XT7JeZld/I0FF4wdTOw2Af7Sx/mW/wlH
+         oKbgts6BenVF76OImWDueQl/hgEazw4gBLodfglStzJEn9uyzeqBlSZ2b+z/TEwq7Jgt
+         NkIBPTRWQCbPBPfmcVq42DwJqpBZRzwjoMIPDOtkvgb/rnvkVwlJVSxCuIcuaIAt8TRy
+         F1LY8j7kZbbhTZh5ArHm+o4xjrct5enIx1nOBcJ/zg981dRTrHWvZ3vRgWKWQp+QLK8U
+         0nnvFGpeQKDNJqcFxjKM9KTtlzREifvpLIAGLKsMS2gzGpfBGw3ZtHAu5rQ/+f0Qw1p3
+         wS6w==
+X-Gm-Message-State: AOAM533KliiAHvrECmOX9fkmjp0FK9bTWvQG7D+pWoS8GifvgaVuRd0m
+        Lw0tGCYMO/NViLVl4GhJpl5zV+TdWjY=
+X-Google-Smtp-Source: ABdhPJzrWTgL6poswUS7VkyKDbqCzmVKQnT3yHXN8WdQInlLsPcUiqBIQX3LmjNfGb+1A6eba8/pFg==
+X-Received: by 2002:a17:90a:4214:b0:1bf:6ae9:f62a with SMTP id o20-20020a17090a421400b001bf6ae9f62amr12641462pjg.64.1647473074117;
+        Wed, 16 Mar 2022 16:24:34 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ij17-20020a17090af81100b001c67c964d93sm639714pjb.2.2022.03.16.16.24.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Mar 2022 16:24:33 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next] net: dsa: Never offload FDB entries on
+ standalone ports
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220315233033.1468071-1-tobias@waldekranz.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <3799afd4-438c-5a63-c2d2-c95aafd0326c@gmail.com>
+Date:   Wed, 16 Mar 2022 16:24:29 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAD=FV=UcfrWLQdCOx5dCfjvjrLzkdLDeoAROmMtqFWB_X90rwQ@mail.gmail.com>
-References: <20220310152227.2122960-1-kieran.bingham+renesas@ideasonboard.com> <20220310152227.2122960-3-kieran.bingham+renesas@ideasonboard.com> <CAD=FV=UcfrWLQdCOx5dCfjvjrLzkdLDeoAROmMtqFWB_X90rwQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] drm/bridge: ti-sn65dsi86: Implement bridge connector operations
-From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-To:     Doug Anderson <dianders@chromium.org>
-Date:   Wed, 16 Mar 2022 23:24:08 +0000
-Message-ID: <164747304840.11309.8075169187883378445@Monstersaurus>
-User-Agent: alot/0.10
+In-Reply-To: <20220315233033.1468071-1-tobias@waldekranz.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Doug,
+On 3/15/22 4:30 PM, Tobias Waldekranz wrote:
+> If a port joins a bridge that it can't offload, it will fallback to
+> standalone mode and software bridging. In this case, we never want to
+> offload any FDB entries to hardware either.
+> 
+> Previously, for host addresses, we would eventually end up in
+> dsa_port_bridge_host_fdb_add, which would unconditionally dereference
+> dp->bridge and cause a segfault.
+> 
+> Fixes: c26933639b54 ("net: dsa: request drivers to perform FDB isolation")
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-Quoting Doug Anderson (2022-03-10 23:10:20)
-> Hi,
->=20
-> On Thu, Mar 10, 2022 at 7:22 AM Kieran Bingham
-> <kieran.bingham+renesas@ideasonboard.com> wrote:
-> >
-> > From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> >
-> > Implement the bridge connector-related .get_edid() operation, and report
-> > the related bridge capabilities and type.
-> >
-> > Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.=
-com>
-> > Signed-off-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-> > ---
-> > Changes since v1:
-> >
-> > - The connector .get_modes() operation doesn't rely on EDID anymore,
-> >   __ti_sn_bridge_get_edid() and ti_sn_bridge_get_edid() got merged
-> >   together
-> >  - Fix on top of Sam Ravnborg's DRM_BRIDGE_STATE_OPS
-> >
-> > Changes since v2: [Kieran]
-> >  - Only support EDID on DRM_MODE_CONNECTOR_DisplayPort modes.
-> >
-> >  drivers/gpu/drm/bridge/ti-sn65dsi86.c | 17 +++++++++++++++++
-> >  1 file changed, 17 insertions(+)
-> >
-> > diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/br=
-idge/ti-sn65dsi86.c
-> > index 93b54fcba8ba..d581c820e5d8 100644
-> > --- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> > +++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-> > @@ -1135,10 +1135,24 @@ static void ti_sn_bridge_atomic_post_disable(st=
-ruct drm_bridge *bridge,
-> >         pm_runtime_put_sync(pdata->dev);
-> >  }
-> >
-> > +static struct edid *ti_sn_bridge_get_edid(struct drm_bridge *bridge,
-> > +                                         struct drm_connector *connect=
-or)
-> > +{
-> > +       struct ti_sn65dsi86 *pdata =3D bridge_to_ti_sn65dsi86(bridge);
-> > +       struct edid *edid;
-> > +
-> > +       pm_runtime_get_sync(pdata->dev);
-> > +       edid =3D drm_get_edid(connector, &pdata->aux.ddc);
-> > +       pm_runtime_put_autosuspend(pdata->dev);
->=20
-> I'm 99% sure that the pm_runtime calls here are not needed and can be
-> removed.. The AUX transfer function handles the pm_runtime_get_sync()
-> and it also does the "put" with autosuspend so that the whole EDID can
-> be read without constantly powering the bridge up and down again.
-
-Yes, digging through I agree - It does look like this may be the case.
-
-ti_sn_aux_transfer() certainly looks like it handles the pm_runtime_
-calls, and drm_get_edid() looks like it goes through there from the core
-using the standard i2c interface, with nothing else expected to touch
-the hw between.
-
-So that more or less simplifies this function to just=20
-	return drm_get_edid(connector, &pdata->aux.ddc);
-
-Thanks
---
-Kieran
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
