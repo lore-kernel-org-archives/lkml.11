@@ -2,90 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 420B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32191C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353776AbiCPGDZ (ORCPT
+        id S1353802AbiCPGDb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 02:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
+        Wed, 16 Mar 2022 02:03:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353752AbiCPGDO (ORCPT
+        with ESMTP id S1353731AbiCPGDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 02:03:14 -0400
-Received: from esa5.hc1455-7.c3s2.iphmx.com (esa5.hc1455-7.c3s2.iphmx.com [68.232.139.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D3B606D0;
+        Wed, 16 Mar 2022 02:03:11 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301A0606CB;
         Tue, 15 Mar 2022 23:01:57 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="66002957"
-X-IronPort-AV: E=Sophos;i="5.90,185,1643641200"; 
-   d="scan'208";a="66002957"
-Received: from unknown (HELO oym-r3.gw.nic.fujitsu.com) ([210.162.30.91])
-  by esa5.hc1455-7.c3s2.iphmx.com with ESMTP; 16 Mar 2022 15:01:44 +0900
-Received: from oym-m2.gw.nic.fujitsu.com (oym-nat-oym-m2.gw.nic.fujitsu.com [192.168.87.59])
-        by oym-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 7241CCA247;
-        Wed, 16 Mar 2022 15:01:43 +0900 (JST)
-Received: from oym-om3.fujitsu.com (oym-om3.o.css.fujitsu.com [10.85.58.163])
-        by oym-m2.gw.nic.fujitsu.com (Postfix) with ESMTP id 8BD1A15837;
-        Wed, 16 Mar 2022 15:01:42 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by oym-om3.fujitsu.com (Postfix) with ESMTP id 76A9E403FA055;
-        Wed, 16 Mar 2022 15:01:42 +0900 (JST)
-From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        tan.shaopeng@jp.fujitsu.com
-Subject: [PATCH v4 2/2] selftests/resctrl: Print a message if the result of MBM&CMT tests is failed on Intel cpu
-Date:   Wed, 16 Mar 2022 14:59:40 +0900
-Message-Id: <20220316055940.292550-3-tan.shaopeng@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220316055940.292550-1-tan.shaopeng@jp.fujitsu.com>
-References: <20220316055940.292550-1-tan.shaopeng@jp.fujitsu.com>
+X-UUID: 01693fc781b64e3991c9f32d7ce8ed2d-20220316
+X-UUID: 01693fc781b64e3991c9f32d7ce8ed2d-20220316
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <trevor.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1656271736; Wed, 16 Mar 2022 14:01:47 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 16 Mar 2022 14:01:46 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
+ 2022 14:01:46 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Mar 2022 14:01:46 +0800
+From:   Trevor Wu <trevor.wu@mediatek.com>
+To:     <broonie@kernel.org>, <tiwai@suse.com>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <trevor.wu@mediatek.com>, <alsa-devel@alsa-project.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <aaronyu@google.com>, <angelogioacchino.delregno@collabora.com>,
+        <yc.hung@mediatek.com>
+Subject: [PATCH v2 2/5] ASoC: dt-bindings: mediatek: mt8195: merge mt8195 machine yaml
+Date:   Wed, 16 Mar 2022 14:01:36 +0800
+Message-ID: <20220316060139.6211-3-trevor.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220316060139.6211-1-trevor.wu@mediatek.com>
+References: <20220316060139.6211-1-trevor.wu@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to "Intel Resource Director Technology (Intel RDT) on
-2nd Generation Intel Xeon Scalable Processors Reference Manual",
-When the Intel Sub-NUMA Clustering(SNC) feature is enabled,
-Intel CMT and MBM counters may not be accurate.
+Because the same binding components can be shared by all codecs
+combinations, we only reserve one binding file for mt8195 machine driver
+and rename to a generic name.
 
-However, there does not seem to be an architectural way to detect
-if SNC is enabled.
+We use compatible string to separate different codec combination instead
+of creating a new binding file for new codec combination.
 
-If the result of MBM&CMT test fails on Intel CPU,
-print a message to let users know a possible cause of failure.
-
-Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
 ---
- tools/testing/selftests/resctrl/resctrl_tests.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../sound/mt8195-mt6359-rt1011-rt5682.yaml    | 51 -------------------
+ ...-rt1019-rt5682.yaml => mt8195-mt6359.yaml} |  8 +--
+ 2 files changed, 5 insertions(+), 54 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml
+ rename Documentation/devicetree/bindings/sound/{mt8195-mt6359-rt1019-rt5682.yaml => mt8195-mt6359.yaml} (87%)
 
-diff --git a/tools/testing/selftests/resctrl/resctrl_tests.c b/tools/testing/selftests/resctrl/resctrl_tests.c
-index dc548d3e2454..97ad6cfee6ee 100644
---- a/tools/testing/selftests/resctrl/resctrl_tests.c
-+++ b/tools/testing/selftests/resctrl/resctrl_tests.c
-@@ -86,6 +86,8 @@ static void run_mbm_test(bool has_ben, char **benchmark_cmd, int span,
- 		sprintf(benchmark_cmd[5], "%s", MBA_STR);
- 	res = mbm_bw_change(span, cpu_no, bw_report, benchmark_cmd);
- 	ksft_test_result(!res, "MBM: bw change\n");
-+	if ((get_vendor() == ARCH_INTEL) && res)
-+		ksft_print_msg("Intel MBM may be inaccurate when Sub-NUMA Clustering is enabled. Check BIOS configuration.\n");
- 	mbm_test_cleanup();
- }
+diff --git a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml
+deleted file mode 100644
+index cf6ad7933e23..000000000000
+--- a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml
++++ /dev/null
+@@ -1,51 +0,0 @@
+-# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+-%YAML 1.2
+----
+-$id: http://devicetree.org/schemas/sound/mt8195-mt6359-rt1011-rt5682.yaml#
+-$schema: http://devicetree.org/meta-schemas/core.yaml#
+-
+-title: Mediatek MT8195 with MT6359, RT1011 and RT5682 ASoC sound card driver
+-
+-maintainers:
+-  - Trevor Wu <trevor.wu@mediatek.com>
+-
+-description:
+-  This binding describes the MT8195 sound card with RT1011 and RT5682.
+-
+-properties:
+-  compatible:
+-    const: mediatek,mt8195_mt6359_rt1011_rt5682
+-
+-  model:
+-    $ref: /schemas/types.yaml#/definitions/string
+-    description: User specified audio sound card name
+-
+-  mediatek,platform:
+-    $ref: "/schemas/types.yaml#/definitions/phandle"
+-    description: The phandle of MT8195 ASoC platform.
+-
+-  mediatek,dptx-codec:
+-    $ref: "/schemas/types.yaml#/definitions/phandle"
+-    description: The phandle of MT8195 Display Port Tx codec node.
+-
+-  mediatek,hdmi-codec:
+-    $ref: "/schemas/types.yaml#/definitions/phandle"
+-    description: The phandle of MT8195 HDMI codec node.
+-
+-additionalProperties: false
+-
+-required:
+-  - compatible
+-  - mediatek,platform
+-
+-examples:
+-  - |
+-
+-    sound: mt8195-sound {
+-        compatible = "mediatek,mt8195_mt6359_rt1011_rt5682";
+-        mediatek,platform = <&afe>;
+-        pinctrl-names = "default";
+-        pinctrl-0 = <&aud_pins_default>;
+-    };
+-
+-...
+diff --git a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1019-rt5682.yaml b/Documentation/devicetree/bindings/sound/mt8195-mt6359.yaml
+similarity index 87%
+rename from Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1019-rt5682.yaml
+rename to Documentation/devicetree/bindings/sound/mt8195-mt6359.yaml
+index 8f177e02ad35..74227fba91c7 100644
+--- a/Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1019-rt5682.yaml
++++ b/Documentation/devicetree/bindings/sound/mt8195-mt6359.yaml
+@@ -1,10 +1,10 @@
+ # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ %YAML 1.2
+ ---
+-$id: http://devicetree.org/schemas/sound/mt8195-mt6359-rt1019-rt5682.yaml#
++$id: http://devicetree.org/schemas/sound/mt8195-mt6359.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
-@@ -122,6 +124,8 @@ static void run_cmt_test(bool has_ben, char **benchmark_cmd, int cpu_no)
- 		sprintf(benchmark_cmd[5], "%s", CMT_STR);
- 	res = cmt_resctrl_val(cpu_no, 5, benchmark_cmd);
- 	ksft_test_result(!res, "CMT: test\n");
-+	if ((get_vendor() == ARCH_INTEL) && res)
-+		ksft_print_msg("Intel CMT may be inaccurate when Sub-NUMA Clustering is enabled. Check BIOS configuration.\n");
- 	cmt_test_cleanup();
- }
+-title: Mediatek MT8195 with MT6359, RT1019 and RT5682 ASoC sound card driver
++title: Mediatek MT8195 ASoC sound card driver
  
+ maintainers:
+   - Trevor Wu <trevor.wu@mediatek.com>
+@@ -14,7 +14,9 @@ description:
+ 
+ properties:
+   compatible:
+-    const: mediatek,mt8195_mt6359_rt1019_rt5682
++    enum:
++      - mediatek,mt8195_mt6359_rt1019_rt5682
++      - mediatek,mt8195_mt6359_rt1011_rt5682
+ 
+   model:
+     $ref: /schemas/types.yaml#/definitions/string
 -- 
-2.27.0
+2.18.0
 
