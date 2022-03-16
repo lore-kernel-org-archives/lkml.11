@@ -2,250 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EDDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D83E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 20:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354160AbiCPUHL (ORCPT
+        id S1355293AbiCPUIy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 16:07:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        Wed, 16 Mar 2022 16:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241944AbiCPUHJ (ORCPT
+        with ESMTP id S1343924AbiCPUIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 16:07:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61D486E366
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 13:05:54 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nUZtr-0007qn-8A; Wed, 16 Mar 2022 21:05:39 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nUZto-00178f-FM; Wed, 16 Mar 2022 21:05:35 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nUZtm-009cMX-CG; Wed, 16 Mar 2022 21:05:34 +0100
-Date:   Wed, 16 Mar 2022 21:05:33 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Alex Elder <elder@linaro.org>
-Cc:     Alex Elder <elder@ieee.org>, Song Chen <chensong_2000@189.cn>,
-        johan@kernel.org, elder@kernel.org, thierry.reding@gmail.com,
-        lee.jones@linaro.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [greybus-dev] Re: [PATCH v5] staging: greybus: introduce
- pwm_ops::apply
-Message-ID: <20220316200533.yuduet3gluvrmgcb@pengutronix.de>
-References: <1647397285-30061-1-git-send-email-chensong_2000@189.cn>
- <49f18070-0215-8475-907b-487d1e01c15c@ieee.org>
- <20220316162903.kwkfefyznvopvr5g@pengutronix.de>
- <a1074d55-c5ee-ced5-b9f7-0e1d023e1fea@linaro.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zicekud7pynt6tb4"
-Content-Disposition: inline
-In-Reply-To: <a1074d55-c5ee-ced5-b9f7-0e1d023e1fea@linaro.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Wed, 16 Mar 2022 16:08:53 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C89006E362;
+        Wed, 16 Mar 2022 13:07:37 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,187,1643641200"; 
+   d="scan'208";a="114644573"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 17 Mar 2022 05:07:36 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 05153409A4C2;
+        Thu, 17 Mar 2022 05:07:34 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Rob Herring <robh+dt@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        linux-renesas-soc@vger.kernel.org,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [RFC PATCH] of/platform: Drop static setup of IRQ resource from DT core
+Date:   Wed, 16 Mar 2022 20:06:33 +0000
+Message-Id: <20220316200633.28974-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Now that all the DT drivers have switched to platform_get_irq() we can now
+safely drop the static setup of IRQ resource from DT core code.
 
---zicekud7pynt6tb4
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+With the above change hierarchical setup of irq domains is no longer
+bypassed and thus allowing hierarchical interrupt domains to describe
+interrupts using "interrupts" DT property.
 
-On Wed, Mar 16, 2022 at 12:20:11PM -0500, Alex Elder wrote:
-> On 3/16/22 11:29 AM, Uwe Kleine-K=F6nig wrote:
-> > On Wed, Mar 16, 2022 at 10:14:30AM -0500, Alex Elder wrote:
-> > > On 3/15/22 9:21 PM, Song Chen wrote:
-> > > > diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybu=
-s/pwm.c
-> > > > index 891a6a672378..3add3032678b 100644
-> > > > --- a/drivers/staging/greybus/pwm.c
-> > > > +++ b/drivers/staging/greybus/pwm.c
-> > > > @@ -204,43 +204,54 @@ static void gb_pwm_free(struct pwm_chip *chip=
-, struct pwm_device *pwm)
-> > > >    	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
-> > > >    }
-> > > > -static int gb_pwm_config(struct pwm_chip *chip, struct pwm_device =
-*pwm,
-> > > > -			 int duty_ns, int period_ns)
-> > > > +static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *=
-pwm,
-> > > > +			const struct pwm_state *state)
-> > > >    {
-> > > > +	int err;
-> > > > +	bool enabled =3D pwm->state.enabled;
-> > > > +	u64 period =3D state->period;
-> > > > +	u64 duty_cycle =3D state->duty_cycle;
-> > >=20
-> > > The use of local variables here is inconsistent, and that
-> > > can be confusing.  Specifically, the "enabled" variable
-> > > represents the *current* state, while the "period" and
-> > > "duty_cycle" variables represent the *desired* state.  To
-> > > avoid confusion, if you're going to use local variables
-> > > like that, they should all represent *either* the current
-> > > state *or* the new state.  Please update your patch to
-> > > do one or the other.
-> >=20
-> > IMHO that it overly picky. I'm ok with the usage as is.
->=20
-> I see the "enabled" flag is used in a way that I didn't
-> notice before.  Changing its name to "disabled" (to mean
-> "we have disabled the device within this function already")
-> would allow it to be used in the same way, but would make
-> it more obvious it's not just a copy of "old" device state.
->=20
-> > > >    	struct gb_pwm_chip *pwmc =3D pwm_chip_to_gb_pwm_chip(chip);
-> > > > -	return gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_ns, period_=
-ns);
-> > > > -};
-> > > > +	/* set polarity */
-> > > > +	if (state->polarity !=3D pwm->state.polarity) {
-> > > > +		if (enabled) {
-> > > > +			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-> > > > +			enabled =3D false;
-> > > > +		}
-> > > > +		err =3D gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->p=
-olarity);
-> > > > +		if (err)
-> > > > +			return err;
-> > > > +	}
-> > > > -static int gb_pwm_set_polarity(struct pwm_chip *chip, struct pwm_d=
-evice *pwm,
-> > > > -			       enum pwm_polarity polarity)
-> > > > -{
-> > > > -	struct gb_pwm_chip *pwmc =3D pwm_chip_to_gb_pwm_chip(chip);
-> > > > +	if (!state->enabled) {
-> > > > +		if (enabled)
-> > > > +			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-> > > > +		return 0;
-> > >=20
-> > > If you are disabling the device, you return without updating the
-> > > period and duty cycle.  But you *do* set polarity.  Is that
-> > > required by the PWM API?  (I don't actually know.)  Or can the
-> > > polarity setting be simply ignored as well if the new state is
-> > > disabled?
-> >=20
-> > All is well here. A disabled PWM is expected to emit the inactive level.
-> > So polarity matters, duty and period don't.
->=20
-> Thanks for clarifying that.  I did not know what was expected.
->=20
-> > > Also, if the polarity changed, the device will have already been
-> > > disabled above, so there's no need to do so again (and perhaps
-> > > it might be a bad thing to do twice?).
-> >=20
-> > That won't happen, because if the device was disabled for the polarity
-> > change, enabled =3D false. In fact that is the purpose of the local
-> > variable.
->=20
-> Now I see, yes, the local variable gets changed when the
-> disable occurred above.
->=20
-> > > > +	}
-> > > > -	return gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, polarity);
-> > > > -};
-> > >=20
-> > > Since you're clamping the values to 32 bits here, your comment
-> > > should explain why (because Greybus uses 32-bit values here,
-> > > while the API supports 64 bit values).  That would be a much
-> > > more useful piece of information than "set period and duty cycle".
-> > >=20
-> > > > +	/* set period and duty cycle*/
-> > >=20
-> > > Include a space before "*/" in your comments.
-> >=20
-> > ack
-> >=20
-> > > > +	if (period > U32_MAX)
-> > > > +		period =3D U32_MAX;
-> > > > -static int gb_pwm_enable(struct pwm_chip *chip, struct pwm_device =
-*pwm)
-> > > > -{
-> > > > -	struct gb_pwm_chip *pwmc =3D pwm_chip_to_gb_pwm_chip(chip);
-> > > > +	if (duty_cycle > period)
-> > > > +		duty_cycle =3D period;
-> > > > -	return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
-> > > > -};
-> > > > +	err =3D gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_cycle, per=
-iod);
-> > > > +	if (err)
-> > > > +		return err;
-> > >=20
-> > > What if the new state set usage_power to true?  It would
-> > > be ignored here.  Is it OK to silently ignore it?  Even
-> > > if it is, a comment about that would be good to see, so
-> > > we know it's intentional.
-> >=20
-> > ignoring usage_power is OK. All but a single driver do it that way.
->=20
-> I don't actually see anything that sets usage_power to true,
-> although "pwm-pca9685.c" tests its value.
->=20
-> I guess it's an advisory parameter that's passed to the apply
-> callback function.  It's described as optional, but--not being
-> a "PWM person"--this isn't obvious to me.  Maybe the comments
-> describing the field or the apply callback could define the
-> semantics a little better at some point.
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+Hi All,
 
-One of the problems I see with usage_power is that it's not well
-defined. The idea is that when usage_power is true, the driver is free
-to implement any setting that just matches the relative duty_cycle of
-the request. So if you call pwm_apply with
+Sending this as RFC as couple of more drivers need to hit -rc yet with
+the platform_get_irq() change while that is in progress I wanted to get
+some feedback on this patch.
 
-	.duty_cycle =3D 2000
-	.period =3D 10000
-	.usage_power =3D true
-	.polarity =3D PWM_POLARITY_NORMAL
+Cheers,
+Prabhakar
+---
+ drivers/of/platform.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-you can program the hardware to implement
+diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+index 793350028906..6890f7fe556f 100644
+--- a/drivers/of/platform.c
++++ b/drivers/of/platform.c
+@@ -114,35 +114,31 @@ struct platform_device *of_device_alloc(struct device_node *np,
+ 				  struct device *parent)
+ {
+ 	struct platform_device *dev;
+-	int rc, i, num_reg = 0, num_irq;
++	int rc, i, num_reg = 0;
+ 	struct resource *res, temp_res;
+ 
+ 	dev = platform_device_alloc("", PLATFORM_DEVID_NONE);
+ 	if (!dev)
+ 		return NULL;
+ 
+-	/* count the io and irq resources */
++	/* count the io resources */
+ 	while (of_address_to_resource(np, num_reg, &temp_res) == 0)
+ 		num_reg++;
+-	num_irq = of_irq_count(np);
+ 
+ 	/* Populate the resource table */
+-	if (num_irq || num_reg) {
+-		res = kcalloc(num_irq + num_reg, sizeof(*res), GFP_KERNEL);
++	if (num_reg) {
++		res = kcalloc(num_reg, sizeof(*res), GFP_KERNEL);
+ 		if (!res) {
+ 			platform_device_put(dev);
+ 			return NULL;
+ 		}
+ 
+-		dev->num_resources = num_reg + num_irq;
++		dev->num_resources = num_reg;
+ 		dev->resource = res;
+ 		for (i = 0; i < num_reg; i++, res++) {
+ 			rc = of_address_to_resource(np, i, res);
+ 			WARN_ON(rc);
+ 		}
+-		if (of_irq_to_resource_table(np, res, num_irq) != num_irq)
+-			pr_debug("not all legacy IRQ resources mapped for %pOFn\n",
+-				 np);
+ 	}
+ 
+ 	dev->dev.of_node = of_node_get(np);
+-- 
+2.17.1
 
-	.duty_cycle =3D 200
-	.period =3D 1000
-	.polarity =3D PWM_POLARITY_NORMAL
-
-or
-
-	.duty_cycle =3D 8000000
-	.period =3D 10000000
-	.polarity =3D PWM_POLARITY_INVERTED
-
-The expectation is however to only deviate in a sensible manner from the
-request, whatever that might mean.
-
-I don't see much value in that field, there is only one implementing
-driver and no mainline user. If you're interested you can reread the
-discussions about it in the archives.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---zicekud7pynt6tb4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIyQwoACgkQwfwUeK3K
-7AlO1Af+P7X4ob1VHBq63vI9wb9jQLXGLT6oydYIJSHPalDOukXd8anEw6Jpn+mv
-V2YwTrjYQr2wjfLzq8OGiO6dexD5FZjyEjhGTkyzDoA9pjy0w1dLSB48aSct9UK8
-v2oWdSHitZYA6sHr+SLnHwK8qXDn4WSCr9JE2tyXTd1ERjLTFvQw9h1q/0XSah3x
-wSx4vKuxvASebXuOcCTvsNquDGYthH5BjYf07vt78zbp122/9zzTaPjdqhjvfrZF
-FW0F0szkXkxOOClBU2jqoDN5JEhLNynUmtwc9ghyFUtdIOuvHAdL0x+J0+Io4Jsy
-tgTPBZ6hGTZOoB+7cCgla8lDe8ohDA==
-=pyHU
------END PGP SIGNATURE-----
-
---zicekud7pynt6tb4--
