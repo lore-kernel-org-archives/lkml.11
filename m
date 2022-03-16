@@ -2,175 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61615C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC24C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 05:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353631AbiCPF1z (ORCPT
+        id S1353639AbiCPFaV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 01:27:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
+        Wed, 16 Mar 2022 01:30:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353639AbiCPF1w (ORCPT
+        with ESMTP id S1348079AbiCPFaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 01:27:52 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6AB85D5E2;
-        Tue, 15 Mar 2022 22:26:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647408398; x=1678944398;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=lslJ3Q9FvfJXCn5+f3KkGbeKasRdOfEXq0iio5WD8iE=;
-  b=Ohadg+1nIfBucsn5f3L94No8990RmPjeZgJmLZXrQtkMCUrwm6MZs35l
-   Rk4ENkpXyqRgtsRWpxat4ITmPHNPx8UR7z+i3h1rGj+l9xq+EfeqPN7M3
-   SxXQJZvCd/oFfflzje4wH4O0ZFGtEWE/x3eoqDUyyiN1zGnMVbIqzqYwJ
-   RXrmqSPM2DR5B/+wIuaPA/bWz4SxYYq7G+Bc2z1aET+Os6df3xbaAnuAq
-   VE2j1HVrvISeUDOm7FCOyjAtiHYP/Qry950dmtufgXLK2AjKSp05ANNpN
-   owH6DvKFXhhtmoERi1u2lVMQ+zx7w2hntacbr9yDXpkwTdBHRVXXzECUw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="342926746"
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="342926746"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 22:26:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
-   d="scan'208";a="512888842"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga002.jf.intel.com with ESMTP; 15 Mar 2022 22:26:38 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 22:26:37 -0700
-Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 22:26:37 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Tue, 15 Mar 2022 22:26:37 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Tue, 15 Mar 2022 22:26:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IXFSM9x4OvtOVHZW0sx38MLft5HOF0/sl/9T3VlrPqYCHlcqHs+HhpwW1cs0D0BlgYzR92Dm9n0mH0ATUc1uoJbFna7nDHknl0gsFzYGhrgcG7ySOAc+7PisERIw4DRiqHJq9DgvAf9pEuq3PFtxLfDxMkjzM7HeQl5CqMBCUpMQpRZ+dOtEMjd/qSdR6DpzcAewf0EpfQkTd+eVwkqBIRsVdx0MVrDwjI/sUYMr605a/q0/lL2POg5qC2phOOcIPqtLB6ir9Ya6i1xFvcOjzxF8GbzRwXMZxa9eT2n5r7GW2lQDbt4miKw4hshImXGSDrb8wOMg+i89Z8K5f1TG6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YDcoM2YgiA0vvSlckQMiMWQ2nDACI8NxobJmkdrpPdU=;
- b=M6UenvcS9UTOIw+WY67XNOO4WIxAQtLMn0CgyV1HPFKmL7WPX5d7uwK9fs9BA2NIYsiGHC7kdG+tlgP7LIZDxXMbxMWyAktcpka++OIX8bHDn9rYJOWn/wEfP8IY1uZp4CrVfdpFAWUmsUu2P5iLwkWgmNTAXVj/ZMiTyG6qPi4NQo2J+xaj5K9ZtOeUCIXHX3KxnNtqA/aGPjT3JOGnPC0iEzchxTExQJcgXycrCsWvubKdSvQTBABAhHry4nwFczeBWQaqzw38HfTlp6Q0mx7cfIYe/5g8at49UktzkwUg7/7nw4RWUPjeW7o+N0rNeqNlgGBeVgZPB4voC9XPKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com (2603:10b6:303:90::24)
- by CO1PR11MB4868.namprd11.prod.outlook.com (2603:10b6:303:90::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22; Wed, 16 Mar
- 2022 05:26:36 +0000
-Received: from CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::2d6d:f382:c5a3:282b]) by CO1PR11MB4914.namprd11.prod.outlook.com
- ([fe80::2d6d:f382:c5a3:282b%6]) with mapi id 15.20.5081.014; Wed, 16 Mar 2022
- 05:26:36 +0000
-Message-ID: <6fda3983-a32f-c78c-0150-37593bf5db68@intel.com>
-Date:   Tue, 15 Mar 2022 22:26:33 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH -next] ice: clean up one inconsistent indenting
-Content-Language: en-US
-To:     Yang Li <yang.lee@linux.alibaba.com>, <davem@davemloft.net>
-CC:     <kuba@kernel.org>, <anthony.l.nguyen@intel.com>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220316000307.66863-1-yang.lee@linux.alibaba.com>
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-In-Reply-To: <20220316000307.66863-1-yang.lee@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR14CA0030.namprd14.prod.outlook.com
- (2603:10b6:300:12b::16) To CO1PR11MB4914.namprd11.prod.outlook.com
- (2603:10b6:303:90::24)
+        Wed, 16 Mar 2022 01:30:17 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E707935DEE;
+        Tue, 15 Mar 2022 22:29:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id BC8B11F38C;
+        Wed, 16 Mar 2022 05:29:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647408541; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/PIDCzlHujec2z5GgI/Fxhz1Ptiq+5sj17W7kV26IFg=;
+        b=k/sKfbSrYYRa9c1IRzKH1EV1lIJNiMZHAjh0QjBh2f8r2/LjPWIs3T9GHvoWKqtUG43T1A
+        SuAP3MeGhbVbhlexyS1BFn6MhAS01BLuoGiqA7y9VVJEr1um9I4VZoJDtsiFHpPTrXcRT4
+        4FXFARFp8tWrZKdcpXmTcIDgY1YbVy4=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 82B1113B93;
+        Wed, 16 Mar 2022 05:29:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id l8SgHZ11MWJIKwAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 16 Mar 2022 05:29:01 +0000
+Message-ID: <78b16b06-9cfe-5bfd-5d23-b7e8010024fd@suse.com>
+Date:   Wed, 16 Mar 2022 06:29:00 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 385d3014-ee17-475a-bec3-08da070d8a35
-X-MS-TrafficTypeDiagnostic: CO1PR11MB4868:EE_
-X-Microsoft-Antispam-PRVS: <CO1PR11MB486844D3AA639369048C90FE97119@CO1PR11MB4868.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B+Ay+3DNcgT2B3q1K8ZS95Z5f1lZ2aAFNxPLsHCoSJIgt2QbAxO/Fq5gWTihmo3t9CPd0KzbQfZfC83v588V7WO+H+FFVfeCXCBYewkybVUG3JAj2ogLC0AgPwMX3mdyP+vGhx4Z9KcA/9NOUGtuFPQdHBW9ewgKXnZV9+qsL79BhD0nqOc7NUVCH+x3njrPErTOKTaVBd8uWI6L3GDZwGG16c7NDSjusitjcYfIAZ8c0hB1DCJ0GlDER7ns7ZuyMDaAIf+YjbnwTW6g8zA4pxkWmxcxmhJNiY8GUl1TY9AMY43IttG+46KJPbDbRlPAnL5BeKQSkZf+bVLO41chsO+YONpHFsTVP21oUqrZ4gAyGAg8KcFldkbaintCwuW/i5s5QTxdhmjM3DvXsmxMGj1J6l4Z0Zcwn/XWc1zuQqRIpz5IDGnGVBoR9Zy+mqJcy1Ga9R8D388g5k57a866EdSY86ZFmPumOyH5pTvwGqHb6XdVDwhRl2njGkyL3qZASIbuMwhiaN5s2JVeq5+BkwQnaSnoiQ3Oua9hKZ8ZpVjty7RhoNAxDcQhkz1oOxgzrS5rZUduzBTMrMWpOkU6gGARwYFdcp4roWaRSZhokD29Bk7uta9QfLzzX2O6nObg68lsyIKUSV2zx6M7jxNVF7qD7pi5VGAIE4ezOYR+vUGVv+N7JQSWSb/qtg3z/hXbgABygHmgLc7UkXHXbavB33JdqamsWIg1ZnFbxpLqtEl3GLvoTl9XQBA+MfTg1bghcHPqZsTK8nGI1X7Lb9clQhalYy7O28GbURlnQLwZqOgDImpvT8m2wZe4ndWD3szdCBJKFGK2lJY5tHGTaT3xxKrEOvC4Tu3kmjUENuDKRs0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4914.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(31696002)(86362001)(38100700002)(83380400001)(6666004)(4744005)(2906002)(8676002)(4326008)(508600001)(44832011)(6486002)(966005)(8936002)(5660300002)(66946007)(82960400001)(66476007)(66556008)(31686004)(53546011)(316002)(36756003)(6512007)(186003)(26005)(2616005)(6506007)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NDVmbnJqT3hoZVdQa01UYWNWRFptajlIaXcwUmc5eFMxRitmdjVWQkJzcG5v?=
- =?utf-8?B?VXF1VGp4Ukw3Z1RKNnE0SVQ5Y0FCbDV5OEt2MHByZ01ESDkydnBHd3B5cWJh?=
- =?utf-8?B?b3NGUGd4dkE1YitDSnpWdFhaKzUrVWRiMGtOdjZJSUpMNkVYRjlKZG00RWVw?=
- =?utf-8?B?cUwyZUpteWJ5SG5OZ1lZa0VHWDVScHVSaUJNSkhQVEpMVUhFSnR6TWRINGpo?=
- =?utf-8?B?MGtTZmxKRVRwTE5aM2ZaSlNUY3h0dkxBQnVhWHJXRTNFSXc5cjFpbE1BVHE1?=
- =?utf-8?B?RUFOWnlHRXJKYnh6Tk1tdHplV1duN0pxZWlVRDRGKzJTK0JDN3hTNnBJeDJT?=
- =?utf-8?B?N2d1M3hSRllqNFJLYWFmWlVOQXUvWlFvWHhWSGpQWW42TUFERVBxNlpIMG42?=
- =?utf-8?B?ckJLNFV3a1RTVW1vdXZ6UnFweTBmeVFpVFB2NlNMMFdyUDNBb3drVUhoMzM5?=
- =?utf-8?B?c1M5ZE1QbDN2Z202SkdGWkh5V05lTkV2VlBhYWNwa3ErNDdYSGErbVRlQ0Fy?=
- =?utf-8?B?UmlFYzJva0FjMFh2Rmc4UGhNd1IraGM4U0dHSHgxYUJZQWlXTzhkdXJjUGxa?=
- =?utf-8?B?WGEwQ2V1TnZtL0VoUWYwS1dJV2dlNjY3ajZ6eGY4R1ltdlNOWFhsVmVlYjlL?=
- =?utf-8?B?Z1lVQkR3aDYvYWZ5OGZpL0pjTXFpUnIza082RmUrNmVWV1NBUjc4SVdLb3Bx?=
- =?utf-8?B?elRKMWt4VTVpTUwyRVVTczBMdEg0RVhtSVY1Z3RYaUo4NVUwaFBKLzBVWkd5?=
- =?utf-8?B?dnp5OWNBcUVSSFhJRDJWTnJxMFJJRUFEa3Z4Z1NheGR2azBXQ2tCNVNLbzJH?=
- =?utf-8?B?cGNMeDFoZmdyR1FRRWg1NDBNUFIvRGRzM25xSjJsNXJ3ZVFPc1ZtZ1UrUS83?=
- =?utf-8?B?dWVyMitkYmNEaVVtM2FFaUk5UnNML1pUSVE1Wm9Ibkwwd1YrL1BTSlFiM2dF?=
- =?utf-8?B?TlUweDEwME9pc2Y5VFJwWm5BbjNvUUNONDZmYWVVWTgvbTdDUE5TU3Uxdll4?=
- =?utf-8?B?TDcrVWN6RVdqcjFyZUZSRHpSeDV2eFpiZzZoSzN1NlVkcjFlMTNSUGY0NVE3?=
- =?utf-8?B?aVIvbUk4Y3hQZ0tUL0ZrNXJ4TVZnSUtwS0R6alRycUpieFdpWWlpL3EvTU1j?=
- =?utf-8?B?QW1FajlmUndpMnpDWmljQjlwMGRFcnVadndWWlZKZUZCcTU5THoraEVJbm12?=
- =?utf-8?B?QWU2QlEwM09MTTJ5SHpzdUQvRk5JVDNGRkpCTEg0V3FzVGhDamMyaGZzVDEw?=
- =?utf-8?B?dTQ5UDRqK1NWUVJ2MWZGN0FSaWNWNHZNa00yc283UTM2SGxsZFlDSlJ5UjZw?=
- =?utf-8?B?Q1hrYXVOUHNiOWZtTnJZNDVGcm1WL010RmVGUHVJZkllTXlZNGlNNElUNlhX?=
- =?utf-8?B?TXd0bmh5V3pVdVdRRVJWRHRxeHNxUDNiU0hDNk12SkpPUU54eTROTEtBOTNV?=
- =?utf-8?B?Z1poSS9qbVVMbFppemFHc0x5WTZBd29OdTU1anQzWWJ0eDdIMCtjVmI0andX?=
- =?utf-8?B?aHk2eHlBZU1CWEFYM1R4ejFtRFRabDRrK0NzWHRzTkx4a296MUxKYlpxdldT?=
- =?utf-8?B?ZTFUMlQ0Z05aOERSVzZlQjdVSUhzeE9WWnJyRGUvWFZnWDl6MEFkR2JzUHpo?=
- =?utf-8?B?TVdOTkxGL0UyWEkwZmNGTFIrVCt4T3JlcGNhdytFKzBhWGdNSnR2OTR5eU1R?=
- =?utf-8?B?YVFqemRYb2tobVI1QVVnV0RuM2UzQXA3d3N3S08reUxZem5XNzNsWFk5UWFk?=
- =?utf-8?B?dXBwRUlyNWRzVE9hcmRjdVgyZUxVL0xOWmhPbThReDBMTDFSelNybFR0bkxK?=
- =?utf-8?B?T3ZyNXVVMXJWZnhNeEhZNWYrZWVqOFJuR3I3cm5kS2VFRmU1R1RrbjRGTk1G?=
- =?utf-8?B?UnhTMUYrL1dJRTYzYTNsRk1maFJoSTRoU2ZKQm8zOWhOZ0RCdk55ZDZvY25u?=
- =?utf-8?B?ZVpMYmNQZUVoVC9mTk9kY2VqbmtUNEZaTGJkd1JjcC92cnZ2d3FnWFpKVEF1?=
- =?utf-8?B?S1A2VVFGRmlnPT0=?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 385d3014-ee17-475a-bec3-08da070d8a35
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4914.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 05:26:36.2968
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: skb6JDGZf1fOU7yJo+oSi3B85YtBODuJ5RNsqKSSTcJ+i2kkzQD77vHNfyJOG8xd/iq99BcQ3f+nmnoFw+6R7UxHftZx3UHz3EVCKvsfW0k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4868
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] xen/usb: harden xen_hcd against malicious backends
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220311103509.12908-1-jgross@suse.com>
+ <YjDPtRhdrtY6tpvc@kroah.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <YjDPtRhdrtY6tpvc@kroah.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------eod0dLzbzdUZdsKtS040X2Cp"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/15/2022 5:03 PM, Yang Li wrote:
-> Eliminate the follow smatch warning:
-> drivers/net/ethernet/intel/ice/ice_switch.c:5568 ice_find_dummy_packet()
-> warn: inconsistent indenting
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------eod0dLzbzdUZdsKtS040X2Cp
+Content-Type: multipart/mixed; boundary="------------dIo5mqVJwQtgAvakBeavLCM7";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: xen-devel@lists.xenproject.org, linux-usb@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <78b16b06-9cfe-5bfd-5d23-b7e8010024fd@suse.com>
+Subject: Re: [PATCH] xen/usb: harden xen_hcd against malicious backends
+References: <20220311103509.12908-1-jgross@suse.com>
+ <YjDPtRhdrtY6tpvc@kroah.com>
+In-Reply-To: <YjDPtRhdrtY6tpvc@kroah.com>
 
-Thanks but this patch has already been submitted on intel-wired-lan, as 
-it was already reported by the kernel test robot.
+--------------dIo5mqVJwQtgAvakBeavLCM7
+Content-Type: multipart/mixed; boundary="------------RThCbjbaim80DRYqQ5E0TjUm"
 
-https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220314164314.15218-1-marcin.szycik@linux.intel.com/
+--------------RThCbjbaim80DRYqQ5E0TjUm
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-As well, the other inconsistent indent patch is also fixed at
-https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220314164137.15101-1-marcin.szycik@linux.intel.com/
+T24gMTUuMDMuMjIgMTg6NDEsIEdyZWcgS3JvYWgtSGFydG1hbiB3cm90ZToNCj4gT24gRnJp
+LCBNYXIgMTEsIDIwMjIgYXQgMTE6MzU6MDlBTSArMDEwMCwgSnVlcmdlbiBHcm9zcyB3cm90
+ZToNCj4+IE1ha2Ugc3VyZSBhIG1hbGljaW91cyBiYWNrZW5kIGNhbid0IGNhdXNlIGFueSBo
+YXJtIG90aGVyIHRoYW4gd3JvbmcNCj4+IEkvTyBkYXRhLg0KPj4NCj4+IE1pc3NpbmcgYXJl
+IHZlcmlmaWNhdGlvbiBvZiB0aGUgcmVxdWVzdCBpZCBpbiBhIHJlc3BvbnNlLCBzYW5pdGl6
+aW5nDQo+PiB0aGUgcmVwb3J0ZWQgYWN0dWFsIEkvTyBsZW5ndGgsIGFuZCBwcm90ZWN0aW9u
+IGFnYWluc3QgaW50ZXJydXB0IHN0b3Jtcw0KPj4gZnJvbSB0aGUgYmFja2VuZC4NCj4+DQo+
+PiBTaWduZWQtb2ZmLWJ5OiBKdWVyZ2VuIEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+DQo+PiAt
+LS0NCj4+ICAgZHJpdmVycy91c2IvaG9zdC94ZW4taGNkLmMgfCA1NyArKysrKysrKysrKysr
+KysrKysrKysrKysrKysrLS0tLS0tLS0tLQ0KPj4gICAxIGZpbGUgY2hhbmdlZCwgNDMgaW5z
+ZXJ0aW9ucygrKSwgMTQgZGVsZXRpb25zKC0pDQo+IA0KPiBGYWlscyB0byBhcHBseSB0byBt
+eSB0cmVlOg0KPiANCj4gY2hlY2tpbmcgZmlsZSBkcml2ZXJzL3VzYi9ob3N0L3hlbi1oY2Qu
+Yw0KPiBIdW5rICMyIHN1Y2NlZWRlZCBhdCA3MjAgKG9mZnNldCAtMSBsaW5lcykuDQo+IEh1
+bmsgIzMgc3VjY2VlZGVkIGF0IDgwNyAob2Zmc2V0IC0zIGxpbmVzKS4NCj4gSHVuayAjNCBz
+dWNjZWVkZWQgYXQgOTM0IChvZmZzZXQgLTUgbGluZXMpLg0KPiBIdW5rICM1IEZBSUxFRCBh
+dCA5ODYuDQo+IEh1bmsgIzYgc3VjY2VlZGVkIGF0IDEwMDMgd2l0aCBmdXp6IDEgKG9mZnNl
+dCAtMTAgbGluZXMpLg0KPiBIdW5rICM3IHN1Y2NlZWRlZCBhdCAxMDQ4IChvZmZzZXQgLTEw
+IGxpbmVzKS4NCj4gSHVuayAjOCBzdWNjZWVkZWQgYXQgMTA3MiAob2Zmc2V0IC0xMCBsaW5l
+cykuDQo+IEh1bmsgIzkgc3VjY2VlZGVkIGF0IDExNjEgKG9mZnNldCAtMTAgbGluZXMpLg0K
+PiBIdW5rICMxMCBzdWNjZWVkZWQgYXQgMTUxNiAob2Zmc2V0IC0xMCBsaW5lcykuDQo+IDEg
+b3V0IG9mIDEwIGh1bmtzIEZBSUxFRA0KPiANCj4gQW55IGhpbnRzPw0KDQpSZWJhc2UgeW91
+ciB0cmVlIHRvIHY1LjE3LXJjOD8gSXQgaXMgbWlzc2luZyB0aGUgcmVjZW50IHNlY3VyaXR5
+DQpwYXRjaGVzIHdoaWNoIG1vZGlmaWVkIGRyaXZlcnMvdXNiL2hvc3QveGVuLWhjZC5jLg0K
+DQoNCkp1ZXJnZW4NCg==
+--------------RThCbjbaim80DRYqQ5E0TjUm
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-They will probably be sent to net-next tomorrow in the PDT timezone.
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-Thanks!
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------RThCbjbaim80DRYqQ5E0TjUm--
+
+--------------dIo5mqVJwQtgAvakBeavLCM7--
+
+--------------eod0dLzbzdUZdsKtS040X2Cp
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmIxdZwFAwAAAAAACgkQsN6d1ii/Ey9F
+Hwf+LkGaWrpNt9vcE1twmTNgjxj3MDenPvnyDaABq2+G1W36GWL407B+xfrskqVqc/xkM9vw7Vlh
+wXEwTWHkGUF+RIXf1KGD1yjqakF5apcrfxZPzUhzWDYAc1nLEJ6a8Ajjs5xz8A0t+Mzw9/WB0IEM
+f6+mog8mAn88xCXKmWzM1+Kp06uimKRc776aSvlVj7rwSn5+zrYc+1hdGVUNfP/BtRJcuwTWm06B
+cGGd3Dnf7VvB48ehxM6poumJ9wZKZVtweduzCV/6fF/iachj6ERDpVdg4qYqKbXs4s6AHr5yQ7/J
+Fq6xOa/M0HxTzTsaosLBpQSIPHMY7bgycGmrCUR6rQ==
+=aDhE
+-----END PGP SIGNATURE-----
+
+--------------eod0dLzbzdUZdsKtS040X2Cp--
