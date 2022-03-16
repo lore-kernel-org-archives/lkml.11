@@ -2,94 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80910C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354977AbiCPJvf (ORCPT
+        id S1354985AbiCPJvt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 05:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
+        Wed, 16 Mar 2022 05:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241720AbiCPJve (ORCPT
+        with ESMTP id S1354989AbiCPJvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 05:51:34 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE701606D5;
-        Wed, 16 Mar 2022 02:50:19 -0700 (PDT)
-Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KJQT84XtZz67MtS;
-        Wed, 16 Mar 2022 17:48:44 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Wed, 16 Mar 2022 10:50:17 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Mar 2022 09:50:14 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <damien.lemoal@opensource.wdc.com>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>, <bvanassche@acm.org>,
-        <martin.wilck@suse.com>, <ming.lei@redhat.com>, <hch@lst.de>,
-        <hare@suse.de>, John Garry <john.garry@huawei.com>
-Subject: [PATCH v2] scsi: core: Fix sbitmap depth in scsi_realloc_sdev_budget_map()
-Date:   Wed, 16 Mar 2022 17:44:30 +0800
-Message-ID: <1647423870-143867-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Wed, 16 Mar 2022 05:51:46 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9420063BFE;
+        Wed, 16 Mar 2022 02:50:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647424231; x=1678960231;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ag6lF0N6GjJ11ncqT04s+Zirja0zTp5u1TVDMYmoUzc=;
+  b=WhqwqhuEzVfpPpBtQgobDcLhayVwcBukEEgkvZK3iAfd0XX0ylaEBO3S
+   d5c7OVAn2qeXKT5iZBzb5DKah4tMAjQX6QMg3pQVkZSCFzNtHsFq3aWv4
+   Vsox/JQiH/3nWGwm2PpBMFzVqaA69VU1Rr/aLRxkWELsY9ncHu7aGHvPm
+   DqWAoqgnrAUlWus67LJmoAdXZQGFcPvpknEF9e3guBBi0dJvOgmkkZata
+   wKucj4IatsdXbce305No17RdzE1c/9bKzvF1o574R7fs66SKM1LD/XXq4
+   yNzWd51wI1qqPix/4OV/6+vtZfS8MjiLhcAkeApBJ2KR+3OnXkSmdMs+Q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="254096818"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="254096818"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 02:50:31 -0700
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="598645629"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 02:50:27 -0700
+Received: by lahna (sSMTP sendmail emulation); Wed, 16 Mar 2022 11:50:25 +0200
+Date:   Wed, 16 Mar 2022 11:50:25 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Limonciello, Mario" <mario.limonciello@amd.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@infradead.org>, christian@kellner.me,
+        Michael Jamet <michael.jamet@intel.com>,
+        "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>,
+        Andreas Noever <andreas.noever@gmail.com>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 2/2] thunderbolt: Use pre-boot DMA protection on AMD
+ systems
+Message-ID: <YjGy4ZOnLnTyCh8p@lahna>
+References: <20220315162455.5190-1-mario.limonciello@amd.com>
+ <20220315162455.5190-2-mario.limonciello@amd.com>
+ <YjDDUUeZ/dvUZoDN@infradead.org>
+ <BL1PR12MB5157D7B7734122684D47923AE2109@BL1PR12MB5157.namprd12.prod.outlook.com>
+ <21d33a75-8c0e-7734-b3d1-dbe33cfe0ab0@arm.com>
+ <7d588dfa-aa57-7be1-9cbb-61897f81bf99@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7d588dfa-aa57-7be1-9cbb-61897f81bf99@amd.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit edb854a3680b ("scsi: core: Reallocate device's budget map on
-queue depth change"), the sbitmap for the device budget map may be
-reallocated after the slave device depth is configured.
+Hi,
 
-When the sbitmap is reallocated we use the result from
-scsi_device_max_queue_depth() for the sbitmap size, but don't resize to
-match the actual device queue depth.
+On Tue, Mar 15, 2022 at 01:36:11PM -0500, Limonciello, Mario wrote:
+> + Christian Kellner (Bolt userspace maintainer)
+> 
+> On 3/15/2022 13:07, Robin Murphy wrote:
+> > On 2022-03-15 16:54, Limonciello, Mario via iommu wrote:
+> > > [Public]
+> > > 
+> > > 
+> > > > On Tue, Mar 15, 2022 at 11:24:55AM -0500, Mario Limonciello wrote:
+> > > > > -     * handled natively using IOMMU. It is enabled when IOMMU is
+> > > > > -     * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
+> > > > > +     * handled natively using IOMMU. It is enabled when the IOMMU is
+> > > > > +     * enabled and either:
+> > > > > +     * ACPI DMAR table has DMAR_PLATFORM_OPT_IN set
+> > > > > +     * or
+> > > > > +     * ACPI IVRS table has DMA_REMAP bitset
+> > > > >        */
+> > > > >       return sprintf(buf, "%d\n",
+> > > > > -               iommu_present(&pci_bus_type) &&
+> > > > dmar_platform_optin());
+> > > > > +               iommu_present(&pci_bus_type) &&
+> > > > > +               (dmar_platform_optin() || amd_ivrs_remap_support()));
+> > > > 
+> > > > Yikes.  No, the thunderbot code does not have any business poking into
+> > > > either dmar_platform_optin or amd_ivrs_remap_support.  This needs
+> > > > a proper abstration from the IOMMU code.
 
-Fix by resizing the sbitmap after reallocating the budget sbitmap. We do
-this instead of init'ing the sbitmap to the device queue depth as the user
-may want to change the queue depth later via sysfs or other.
+I agree. When it was originally added it was only the DMAR (Intel) based
+platforms that provided this hint so adding an abstraction for that did
+not make much sense. Now, since we are seeing more and more USB4 host
+controllers and many of them support PCIe tunneling (and IOMMU) adding
+an API makes more sense.
 
-Fixes: edb854a3680b ("scsi: core: Reallocate device's budget map on queue depth change")
-Signed-off-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
----
-Changes since v1 (apart from sending as a separate patch):
-- Add fixes and RB tag (thanks)
-- mention in commit message why we don't init sbitmap at queue depth
+> > > 
+> > > To make sure I follow your ask - it's to make a new generic iommu
+> > > function
+> > > That would check dmar/ivrs, and switch out thunderbolt domain.c to
+> > > use the
+> > > symbol?
+> > > 
+> > > I'm happy to rework that if that is what you want.
+> > > Do you have a preferred proposed function name for that?
+> > 
+> > But why? Either IOMMU translation is enabled or it isn't, and if it is,
+> > what's to gain from guessing at *why* it might have been? And even if
+> > the IOMMU's firmware table did tell the IOMMU driver to enable the
+> > IOMMU, why should that be Thunderbolt's business?
+> A lot of this comes from baggage from early Thunderbolt 3 implementation on
+> systems with ICM (Intel's FW CM). On those systems there was a concept of
+> "Security Levels".  This meant that downstream PCIe devices were not
+> automatically authorized when a TBT3 device was plugged in.  In those cases
+> there was no guarantee that the IOMMU was in use and so the security was
+> passed on to the user to make a decision.
+> 
+> In Linux this was accomplished using the 'authorized' attribute in
+> /sys/bus/thunderbolt/devices/$NUM/authorized.  When this was set to 1 then
+> the TBT3 device and PCIe topology behind it would be enumerated.
+> 
+> Further documentation explaining how this works is available here:
+> https://www.kernel.org/doc/html/latest/admin-guide/thunderbolt.html#security-levels-and-how-to-use-them
+> 
+> (Intel based) Platforms from 2018+ w/ TBT3 started to use the IOMMU
+> consistently at runtime but had this existing implementation of security
+> levels to worry about.  Furthermore tunnels could be created pre-boot, and
+> so the thunderbolt driver may or may not re-create them based on policy.
+> 
+> So a new attribute was created "iommu_dma_protection" that userspace could
+> use as part of a policy decision to automatically authorize devices.
+> Exporting this attribute is very similar to what Microsoft does to let the
+> user see the security of the system.
+> 
+> https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/oem-kernel-dma-protection
+> 
+> In Linux today some userspace software "bolt" has a policy included by
+> default that will automatically authorize TBT3 and USB4 (w/ PCIe) devices
+> when iommu_dma_protection is set to 1.
+> 
+> > 
+> > Furthermore, looking at patch #1 I can only conclude that this is
+> > entirely meaningless anyway. AFAICS it's literally reporting whether the
+> > firmware flag was set or not. Not whether it's actually been honoured
+> > and the IOMMU is enforcing any kind of DMA protection at all. Even on
+> > Intel where the flag does at least have some effect on the IOMMU driver,
+> > that can still be overridden.
+> 
+> Take a look at the Microsoft link I shared above.  They also make policy
+> decisions based on the information in these tables.
+> 
+> > 
+> > I already have a patch refactoring this to get rid of iommu_present(),
+> > but at the time I wasn't looking to closely at what it's trying to *do*
+> > with the information. If it's supposed to accurately reflect whether the
+> > Thunderbolt device is subject to IOMMU translation and not bypassed, I
+> > can fix that too (and unexport dmar_platform_optin() in the process...)
+> > 
+> > Robin.
+> 
+> This patch series stems from that history.  To give the best experience to
+> end users you want hotplugged devices to be automatically authorized when
+> software says it's safe to do so.
+> 
+> To summarize the flow:
+> * User plugs in device
+> * USB4 CM will query supported tunnels
+> * USB4 CM will create devices in /sys/bus/thunderbolt/devices for new
+> plugged in TBT3/USB4 device
+> * "authorized" attribute will default to "0" and PCIe tunnels are not
+> created
+> * Userspace gets a uevent that the device was added
+> * Userspace (bolt) reacts by reading
+> /sys/bus/thunderbolt/devices/domainX/iommu_dma_protection
+> * If that is set to "1", bolt will write "1" to "authorized"  and USB4 CM
+> will create PCIe tunnels
+> * If that is set to "0", bolt will send an event to GUI to show a popup
+> asking to authorize the device
+> * After user acks the authorization then it will write "1" to "authorized"
+> and USB4 CM will create PCIe tunnels
+> 
+> 
+> Mika,
+> 
+> I wonder if maybe what we really want is to only use that flow for the
+> authorized attribute when using TBT3 + ICM (or IOMMU disabled at runtime).
+> If we're using a USB4 host, check IOMMU translation layer active like Robin
+> suggested and then automatically authorize from the CM.
 
-diff --git a/drivers/scsi/scsi_scan.c b/drivers/scsi/scsi_scan.c
-index f4e6c68ac99e..2ef78083f1ef 100644
---- a/drivers/scsi/scsi_scan.c
-+++ b/drivers/scsi/scsi_scan.c
-@@ -223,6 +223,8 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
- 	int ret;
- 	struct sbitmap sb_backup;
- 
-+	depth = min_t(unsigned int, depth, scsi_device_max_queue_depth(sdev));
-+
- 	/*
- 	 * realloc if new shift is calculated, which is caused by setting
- 	 * up one new default queue depth after calling ->slave_configure
-@@ -245,6 +247,9 @@ static int scsi_realloc_sdev_budget_map(struct scsi_device *sdev,
- 				scsi_device_max_queue_depth(sdev),
- 				new_shift, GFP_KERNEL,
- 				sdev->request_queue->node, false, true);
-+	if (!ret)
-+		sbitmap_resize(&sdev->budget_map, depth);
-+
- 	if (need_free) {
- 		if (ret)
- 			sdev->budget_map = sb_backup;
--- 
-2.26.2
-
+I would still leave that policy to userspace to decide.
