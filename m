@@ -2,111 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B03DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C042C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 16:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352440AbiCPQRi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 12:17:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
+        id S245049AbiCPQSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 12:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240622AbiCPQRg (ORCPT
+        with ESMTP id S245249AbiCPQSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 12:17:36 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3967BBC2F
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 09:16:22 -0700 (PDT)
+        Wed, 16 Mar 2022 12:18:35 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE48DF38;
+        Wed, 16 Mar 2022 09:17:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647447382; x=1678983382;
+  t=1647447441; x=1678983441;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=DEtLWo8Ecdeq9AIs99N5iWens02agHgLncfV1oWxOY0=;
-  b=iFOKtCzEghX99cx6i0uj7dBDOlpCIHUAHh3sR+5yGWB51odT97K9dFji
-   RCJRhbD0DsOuPPpedPoaSwM/FcqcZUWzkkusoYnGlpGX6kVbt69i81Fvw
-   niZ6LJLESdb8Ih9dTStq5aFxtD3b7fA9EL7SCvIcg55GN4QJrKWl+W7n/
-   NCBpw38yTt5GSX+FuXVskWQqji4HrVaE0P0rijLrqIa7AHxSK6LlBvi83
-   HPP4ojiFArz5FjJgFPNXlakn9g/9ID9aTg/UxVsYxSyI3vIW42Xu7U6IH
-   G7WGXFRZZMD/vMAPC8bcfcOiAJ+HodLG0zOOBPOxszyQg6riZ2LGv07r6
+  bh=HcKl2PVj7cL9qGm0V13d5bFBvlloVdpeh1fZ2EcBCrw=;
+  b=PuxED/wdtmHlT7kgWik3R3KU8qHfIfgFTuk/zvytWN28cJdt8Zau67DL
+   v1CXGjNVhJUcUyaU/5f4e1wwJHZEik0qunLJcywKfGxg+c0zI5pJR13la
+   7wFcfsEJqcWYwIZ9g14d+I36c4zYVmXif2x81eZ1Xy36JvYlkhX45CVck
+   nR2xLb0y2EzllDIIlCQQot8LxrT/N7Rdr0kJznSPqbxefwjakF+XdQ3AW
+   gqNbYdBuJ9hS2Sr3UiRK9p6V+myFoUcE3u/jdGwjv5MREaPamFQAC5yWl
+   nUYx4yZJqq1S1IiDgHcRikNBO7vpxN1xHF/rQgfNBiB60fcnEKS7WSKj3
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="256601188"
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="236595347"
 X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="256601188"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:13:26 -0700
+   d="scan'208";a="236595347"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:15:23 -0700
 X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
-   d="scan'208";a="557523347"
-Received: from zhaoq-mobl1.ccr.corp.intel.com (HELO chenyu5-mobl1) ([10.255.29.55])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:13:16 -0700
-Date:   Thu, 17 Mar 2022 00:13:11 +0800
-From:   Chen Yu <yu.c.chen@intel.com>
-To:     Tim Chen <tim.c.chen@linux.intel.com>
-Cc:     Abel Wu <wuyun.abel@bytedance.com>, linux-kernel@vger.kernel.org,
-        Tim Chen <tim.c.chen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Barry Song <21cnbao@gmail.com>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Len Brown <len.brown@intel.com>,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Aubrey Li <aubrey.li@intel.com>,
-        K Prateek Nayak <kprateek.nayak@amd.com>
-Subject: Re: [PATCH v2][RFC] sched/fair: Change SIS_PROP to search idle CPU
- based on sum of util_avg
-Message-ID: <20220316161311.GA41632@chenyu5-mobl1>
-References: <20220310005228.11737-1-yu.c.chen@intel.com>
- <444bfebb-ac1c-42b9-58f5-332780e749f7@bytedance.com>
- <20220314125657.GA30418@chenyu5-mobl1>
- <87541edf7b46c1475f73cf464a9edca932f65da5.camel@linux.intel.com>
+   d="scan'208";a="498503918"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 09:15:18 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nUWIF-000zUm-Kd;
+        Wed, 16 Mar 2022 18:14:35 +0200
+Date:   Wed, 16 Mar 2022 18:14:35 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Wander Lairson Costa <wander@redhat.com>,
+        Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Lukas Wunner <lukas@wunner.de>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, rostedt@goodmis.org,
+        senozhatsky@chromium.org, andre.goddard@gmail.com,
+        sudipm.mukherjee@gmail.com, David.Laight@aculab.com,
+        jonathanh@nvidia.com, phil@raspberrypi.com
+Subject: Re: [PATCH v4 0/5] tty/8250: Use fifo in 8250 console driver
+Message-ID: <YjIM6y7bwc+UzZCU@smile.fi.intel.com>
+References: <20220316143646.13301-1-wander@redhat.com>
+ <YjIMn/cBf7STIxBU@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87541edf7b46c1475f73cf464a9edca932f65da5.camel@linux.intel.com>
+In-Reply-To: <YjIMn/cBf7STIxBU@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 10:34:30AM -0700, Tim Chen wrote:
-> On Mon, 2022-03-14 at 20:56 +0800, Chen Yu wrote:
+On Wed, Mar 16, 2022 at 06:13:19PM +0200, Andy Shevchenko wrote:
+> On Wed, Mar 16, 2022 at 11:36:39AM -0300, Wander Lairson Costa wrote:
+> > This version fixes the bugs reported in version v3. The first patch
+> > is the same patch of v3 as is. The following commits fix the issues in the
+> > original patch. For details, please check the commit log of each patch.
 > > 
-> > > 
-> > > So nr_scan will probably be updated at llc-domain-lb-interval, which
-> > > is llc_size milliseconds. Since load can be varied a lot during such
-> > > a period, would this brought accuracy issues?
-> > > 
-> > I agree there might be delay in reflecting the latest utilization.
-> > The sum_util calculated by periodic load balance after 112ms would be
-> > decay to about 0.5 * 0.5 * 0.5 * 0.7 = 8.75%.
-> > But consider that this is a server platform, I have an impression that
-> > the CPU utilization jitter during a small period of time is not a regular
-> > scenario? It seems to be a trade-off. Checking the util_avg in newidle
-> > load balance path would be more frequent, but it also brings overhead -
-> > multiple CPUs write/read the per-LLC shared variable and introduces cache
-> > false sharing. But to make this more robust, maybe we can add time interval
-> > control in newidle load balance too.
+> > I tested these patches in the following systems:
 > > 
+> > * IBM X3550 M3
+> > * HP ProLiant DL380 Gen9
+> > * HP ProLiant BL480c G1
+> > * Dell PowerEdge R910
+> > * Cisco UCSC-C220-M3S
 > > 
+> > I cc everybody that reported problems with the previous version of this
+> > patch so they can retest and confirm their systems work flawlessly.
 > 
-> Also the idea is we allow ourselves to be non-optimal in terms of
-> scheduling for the short term variations.  But we want to make sure that if
-> there's a long term trend in the load behavior, the scheduler should
-> adjust for that.  I think if you see high utilization and CPUs are
-> all close to fully busy for quite a while, that is a long term trend 
-> that overwhelms any short load jitters.
->
-Agree. From long term trend, the scheduler should approach an optimization
-status.
+> I have got this only message and I don't see any good changelog what has
+> been done between v3 and v4.
+> 
+> > Wander Lairson Costa (5):
+> >   serial/8250: Use fifo in 8250 console driver
+> >   serial/8250: Use the cache value of the FCR register
+> >   serial/8250: Use tx_loadsz as the transmitter fifo size
+> >   serial/8250: exclude BCM283x from console_fifo_write
+> >   serial/8250: Only use fifo after the port is initialized in
+> >     console_write
 
-thanks,
-Chenyu 
-> Tim
-> 
+If you are going to (re-)send a new version, please Cc to Ilpo as well.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
