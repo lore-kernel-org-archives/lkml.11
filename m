@@ -2,480 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 072CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10657C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 09:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355030AbiCPJxZ (ORCPT
+        id S1355020AbiCPJzv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 05:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
+        Wed, 16 Mar 2022 05:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355000AbiCPJxM (ORCPT
+        with ESMTP id S1355006AbiCPJzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 05:53:12 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008B765497
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 02:51:57 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KJQSR2svjz9skp;
-        Wed, 16 Mar 2022 17:48:07 +0800 (CST)
-Received: from dggpemm500015.china.huawei.com (7.185.36.181) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Mar 2022 17:51:55 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500015.china.huawei.com
- (7.185.36.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Wed, 16 Mar
- 2022 17:51:55 +0800
-From:   Wang ShaoBo <bobo.shaobowang@huawei.com>
-CC:     <cj.chengjian@huawei.com>, <huawei.libin@huawei.com>,
-        <xiexiuqi@huawei.com>, <liwei391@huawei.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <catalin.marinas@arm.com>,
-        <will@kernel.org>, <rostedt@goodmis.org>, <mark.rutland@arm.com>,
-        <bobo.shaobowang@huawei.com>, <zengshun.wu@outlook.com>
-Subject: [RFC PATCH -next v2 4/4] arm64/ftrace: implement long jump for dynamic trampolines
-Date:   Wed, 16 Mar 2022 18:01:32 +0800
-Message-ID: <20220316100132.244849-5-bobo.shaobowang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
-References: <20220316100132.244849-1-bobo.shaobowang@huawei.com>
+        Wed, 16 Mar 2022 05:55:49 -0400
+Received: from out28-73.mail.aliyun.com (out28-73.mail.aliyun.com [115.124.28.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC5B33880;
+        Wed, 16 Mar 2022 02:54:34 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07436528|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.0161911-0.00387286-0.979936;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047199;MF=michael@allwinnertech.com;NM=1;PH=DS;RN=8;RT=8;SR=0;TI=SMTPD_---.N5pKMoy_1647424463;
+Received: from 172.30.10.142(mailfrom:michael@allwinnertech.com fp:SMTPD_---.N5pKMoy_1647424463)
+          by smtp.aliyun-inc.com(33.13.195.200);
+          Wed, 16 Mar 2022 17:54:31 +0800
+Message-ID: <32b29790-eb5c-dac0-1f91-aede38220914@allwinnertech.com>
+Date:   Wed, 16 Mar 2022 17:54:23 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggeme707-chm.china.huawei.com (10.1.199.103) To
- dggpemm500015.china.huawei.com (7.185.36.181)
-X-CFilter-Loop: Reflected
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] mmc: block: enable cache-flushing when mmc cache is on
+Content-Language: en-GB
+To:     Avri Altman <Avri.Altman@wdc.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
+        "beanhuo@micron.com" <beanhuo@micron.com>,
+        "porzio@gmail.com" <porzio@gmail.com>
+Cc:     "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        allwinner-opensource-support 
+        <allwinner-opensource-support@allwinnertech.com>
+References: <20220312044315.7994-1-michael@allwinnertech.com>
+ <83edf9a1-1712-5388-a3fa-d685f1f581df@intel.com>
+ <88e53cb9-791f-ee58-9be8-76ae9986e0e2@allwinnertech.com>
+ <DM6PR04MB6575C3B87DFA920EDCD994CCFC0F9@DM6PR04MB6575.namprd04.prod.outlook.com>
+From:   Michael Wu <michael@allwinnertech.com>
+In-Reply-To: <DM6PR04MB6575C3B87DFA920EDCD994CCFC0F9@DM6PR04MB6575.namprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cheng Jian <cj.chengjian@huawei.com>
+On 14/03/2022 17:37, Avri Altman wrote:
+>> On 14/03/2022 14:54, Adrian Hunter wrote:
+>>> On 12/03/2022 06:43, Michael Wu wrote:
+>>>> The mmc core enable cache on default. But it only enables
+>>>> cache-flushing when host supports cmd23 and eMMC supports reliable
+>> write.
+>>>> For hosts which do not support cmd23 or eMMCs which do not support
+>>>> reliable write, the cache can not be flushed by `sync` command.
+>>>> This may leads to cache data lost.
+>>>> This patch enables cache-flushing as long as cache is enabled, no
+>>>> matter host supports cmd23 and/or eMMC supports reliable write or not.
+>>>>
+>>>
+>>> Fixes tag?
+>>>
+>>
+>> Hi Adrian,
+>> My patch intend to fix the cache problem brought by the following two
+>> patches:
+>>
+>> Fixes: d0c97cfb81ebc ("mmc: core: Use CMD23 for multiblock transfers when
+>> we can.")
+>> Fixes: e9d5c746246c8 ("mmc/block: switch to using blk_queue_write_cache()")
+>>
+>> I'm not sure if this is what you referred to ("Fixes tag"). Please correct me if I
+>> misunderstood.
+>>
+>>>> Signed-off-by: Michael Wu <michael@allwinnertech.com>
+>>>> ---
+>>>>    drivers/mmc/core/block.c | 20 ++++++++++++++------
+>>>>    1 file changed, 14 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+>>>> index 689eb9afeeed..1e508c079c1e 100644
+>>>> --- a/drivers/mmc/core/block.c
+>>>> +++ b/drivers/mmc/core/block.c
+>>>> @@ -2279,6 +2279,8 @@ static struct mmc_blk_data
+>> *mmc_blk_alloc_req(struct mmc_card *card,
+>>>>       struct mmc_blk_data *md;
+>>>>       int devidx, ret;
+>>>>       char cap_str[10];
+>>>> +    bool enable_cache = false;
+>>>> +    bool enable_fua = false;
+>>>>
+>>>>       devidx = ida_simple_get(&mmc_blk_ida, 0, max_devices, GFP_KERNEL);
+>>>>       if (devidx < 0) {
+>>>> @@ -2375,12 +2377,18 @@ static struct mmc_blk_data
+>> *mmc_blk_alloc_req(struct mmc_card *card,
+>>>>                       md->flags |= MMC_BLK_CMD23;
+>>>>       }
+>>>>
+>>>> -    if (mmc_card_mmc(card) &&
+>>>> -        md->flags & MMC_BLK_CMD23 &&
+>>>> -        ((card->ext_csd.rel_param & EXT_CSD_WR_REL_PARAM_EN) ||
+>>>> -         card->ext_csd.rel_sectors)) {
+>>>> -            md->flags |= MMC_BLK_REL_WR;
+>>>> -            blk_queue_write_cache(md->queue.queue, true, true);
+>>>> +    if (mmc_card_mmc(card)) {
+>>>> +            if (md->flags & MMC_BLK_CMD23 &&
+>>>> +                    ((card->ext_csd.rel_param & EXT_CSD_WR_REL_PARAM_EN)
+>> ||
+>>>> +                    card->ext_csd.rel_sectors)) {
+>>>> +                    md->flags |= MMC_BLK_REL_WR;
+>>>> +                    enable_fua = true;
+>>>> +            }
+>>>> +
+>>>> +            if (mmc_cache_enabled(card->host))
+>>>> +                    enable_cache = true;
+>>>> +
+>>>> +            blk_queue_write_cache(md->queue.queue, enable_cache,
+>>>> + enable_fua);
+>>>>       }
+>>>
+>>> Seems like we should inform block layer about SD card cache also
+>>>
+>>
+>> I saw another mail by Avri Altman, which says few days will be needed to ask
+>> internally. Shall I wait or make another change here on 'inform block layer
+>> about SD card cache'?
+> Please don't wait.
+> 
+> Thanks,
+> Avri
+> 
+>>
+>>>>
+>>>>       string_get_size((u64)size, 512, STRING_UNITS_2,
+>>
+>> --
+>> Best Regards,
+>> Michael Wu
+Hi Avril & Adrian,
+Thanks for your efforts. Could we have an agreement now --
 
-When kaslr is enabled, long jump should be implemented for jumping
-to according trampoline and to callback from this trampoline.
+1. enabling-cache and cmd23/reliable-write should be independent;
 
-Firstly, we use -fpatchable-function-entry=5,3 to reserve 3 NOPs at
-the end of each function, and also 2 NOPs at the head as 3b23e4991fb6
-("arm64: implement ftrace with regs") does, so rec->ip should be
-rec->ip + 4 after change in case there is no extra instrument
-(such as bti ) be put the head.
+ > On 14/03/2022 18:32, Adrian Hunter wrote:
+ >> On 14/03/2022 09:26, Avri Altman wrote:
+ >>> Hi,
+ >>>> The mmc core enable cache on default. But it only enables 
+cache-flushing
+ >>>> when host supports cmd23 and eMMC supports reliable write.
+ >>>> For hosts which do not support cmd23 or eMMCs which do not support
+ >>>> reliable write, the cache can not be flushed by `sync` command.
+ >>>> This may leads to cache data lost.
+ >>>> This patch enables cache-flushing as long as cache is enabled, no
+ >>>> matter host supports cmd23 and/or eMMC supports reliable write or
+ >>>> not.
+ >>> I looked in the spec and indeed couldn't find why enabling cache is
+ >>> dependent of cmd23/reliable write.
+ >>> Nor I was able to find the original commit log.
+ >>
+ >> Reliable write was added first, so it might have been an oversight:
+ >>
+ >> commit 881d1c25f765938a95def5afe39486ce39f9fc96
+ >> Author: Seungwon Jeon <tgih.jun@samsung.com>
+ >> Date:   Fri Oct 14 14:03:21 2011 +0900
+ >>
+ >>      mmc: core: Add cache control for eMMC4.5 device
+ >>
+ >>      This patch adds cache feature of eMMC4.5 Spec.
+ >>      If device supports cache capability, host can utilize some
+ >>      specific operations.
+ >>
+ >>      Signed-off-by: Seungwon Jeon <tgih.jun@samsung.com>
+ >>      Signed-off-by: Jaehoon Chung <jh80.chung@samsung.com>
+ >>      Signed-off-by: Chris Ball <cjb@laptop.org>
 
-But should note this will increase the size of the text section:
- //Using defconfig with -fpatchable-function-entry=5,3://
-   text        data      bss     dec        hex     filename
-  27095761  14578580   533268  42207609  2840979    vmlinux
+Here's what I found in the spec JESD84-B51:
+ > 6.6.31 Cache
+ > Caching of data shall apply only for the single block
+ > read/write(CMD17/24), pre-defined multiple block
+ > read/write(CMD23+CMD18/25) and open ended multiple block
+ > read/write(CMD18/25+CMD12) commands and excludes any other access
+ > e.g., to the register space(e.g., CMD6).
+Which means with CMD18/25+CMD12 (without using CMD23), the cache can 
+also be enabled. Maybe this could be an evidence of the independence 
+between enabling-cache and cmd23/reliable-write?
 
- //Using defconfig with -fpatchable-function-entry=2://
-   text        data      bss     dec        hex     filename
-  26394597  14575988   533268  41503853  2794c6d    vmlinux
+2. We don't consider supporting SD in this change.
 
-When registering new ftrace function, we put this ftrace_ops registered
-into our trampoline allocated dynamically but not the ftrace_ops_list,
+ > On 14/03/2022 19:10, Avri Altman wrote:
+ >> Here is what our SD system guys wrote:
+ >> " In SD we don’t support reliable write and this eMMC driver may not 
+ >>    be utilizing the cache feature we added in SD5.0.
+ >>   The method of cache flush is different between SD and eMMC."
+ >>
+ >> So adding SD seems to be out of scope of this change.
 
-   .text section:
-     funcA:         |    funcA():       funcB():    |
-      `->  +-----+  |    |   ...         mov x9 x30 |
-           | ... |  |    |   adrp   <-   bl  <>     |
-           | nop |  |    |   add
-           | nop |  |    |   br   x16 ---+
-     funcB | nop |  |                    | ftrace_(regs_)caller_tramp:
-      `->  +-----+  |                    `--> +---------------------+
-           | nop |  |                         | ...                 |
-           | nop |  |       ftrace callsite   +---------------------+
-           | ... |  |                `----->  | PLT entry:          |
-           | nop |  |                         |      adrp           |
-           | nop |  |                         |      add            |
-    funcC: | nop |  | ftrace graph callsite   |      br   x16       |
-      `->  +-----+  |                `----->  +---------------------+
-           | nop |  |                         | ...                 |
-           | nop |  |                         +---------------------+
+Is there anything else I can do about this patch? Thanks again.
 
-There are three steps to concreate this conection when registering
-a ftrace_ops for a function to be traced (Take funcB as example):
-
-Step 1: use make_init_nop() to generate 'mov x9 x30' for LR reservation.
-          funcB:
-          | mov x9 x30
-          | nop        //rec->ip
-          | ...
-
-Step 2: create trampoline and use ftrace_make_call() to update plt entry:
-          funcA:
-          | ...
-          | adrp
-          | add
-	  | br   x16   //pointer to trampoline allocated
-
-Step 3: fill plt entry to where ftrace_ops(addr stored in x2) contained:
-          trampoline:
-          | ...
-          | adrp
-          | add
-          | br   x16   //pointer to callback handler
-
-At the end automically replacing nop to bl in funB to enable profiling.
-          funcB:
-          | mov x9 x30
-          | bl <>      //to first adrp in funA
-          | ...
-
-If funcB was bound to another ftrace_ops, Step2 and Step3 will be repeated,
-If funcB was bound to multiple ftrace_ops, this trampoline will not be used
-but jump to ftrace_(regs)_caller.
-
-Signed-off-by: Cheng Jian <cj.chengjian@huawei.com>
-Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
----
- arch/arm64/Makefile              |   2 +-
- arch/arm64/include/asm/ftrace.h  |   2 +-
- arch/arm64/include/asm/module.h  |   9 +++
- arch/arm64/kernel/entry-ftrace.S |   8 ++
- arch/arm64/kernel/ftrace.c       | 127 +++++++++++++++++--------------
- arch/arm64/kernel/module-plts.c  |  50 ++++++++++++
- 6 files changed, 140 insertions(+), 58 deletions(-)
-
-diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-index 2f1de88651e6..3139d6d9ee52 100644
---- a/arch/arm64/Makefile
-+++ b/arch/arm64/Makefile
-@@ -130,7 +130,7 @@ CHECKFLAGS	+= -D__aarch64__
- 
- ifeq ($(CONFIG_DYNAMIC_FTRACE_WITH_REGS),y)
-   KBUILD_CPPFLAGS += -DCC_USING_PATCHABLE_FUNCTION_ENTRY
--  CC_FLAGS_FTRACE := -fpatchable-function-entry=2
-+  CC_FLAGS_FTRACE := -fpatchable-function-entry=5,3
- endif
- 
- # Default value
-diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
-index 1494cfa8639b..d0562c13b1dc 100644
---- a/arch/arm64/include/asm/ftrace.h
-+++ b/arch/arm64/include/asm/ftrace.h
-@@ -70,7 +70,7 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
- 	 * See ftrace_init_nop() for the callsite sequence.
- 	 */
- 	if (IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS))
--		return addr + AARCH64_INSN_SIZE;
-+		return addr + AARCH64_INSN_SIZE + sizeof(struct plt_entry);
- 	/*
- 	 * addr is the address of the mcount call instruction.
- 	 * recordmcount does the necessary offset calculation.
-diff --git a/arch/arm64/include/asm/module.h b/arch/arm64/include/asm/module.h
-index 4e7fa2623896..30f5b1cd5c9c 100644
---- a/arch/arm64/include/asm/module.h
-+++ b/arch/arm64/include/asm/module.h
-@@ -36,6 +36,14 @@ extern u64 module_alloc_base;
- #define module_alloc_base	((u64)_etext - MODULES_VSIZE)
- #endif
- 
-+enum {
-+	PLT_MAKE_NOP,
-+	PLT_MAKE_CALL,
-+	PLT_MAKE_CALL_LINK,
-+	PLT_MAKE_LCALL,
-+	PLT_MAKE_LCALL_LINK
-+};
-+
- struct plt_entry {
- 	/*
- 	 * A program that conforms to the AArch64 Procedure Call Standard
-@@ -58,6 +66,7 @@ static inline bool is_forbidden_offset_for_adrp(void *place)
- }
- 
- struct plt_entry get_plt_entry(u64 dst, void *pc);
-+struct plt_entry update_plt_entry(u64 pc, u64 dst, int record);
- bool plt_entries_equal(const struct plt_entry *a, const struct plt_entry *b);
- 
- static inline bool plt_entry_is_initialized(const struct plt_entry *e)
-diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
-index 88462d925446..71290f0e0740 100644
---- a/arch/arm64/kernel/entry-ftrace.S
-+++ b/arch/arm64/kernel/entry-ftrace.S
-@@ -154,8 +154,12 @@ SYM_INNER_LABEL(ftrace_regs_caller_tramp_ops, SYM_L_GLOBAL)
- 	mov	x3, sp				// regs
- SYM_INNER_LABEL(ftrace_regs_caller_tramp_call, SYM_L_GLOBAL)
- 	nop
-+	nop
-+	nop
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
- SYM_INNER_LABEL(ftrace_regs_caller_tramp_graph_call, SYM_L_GLOBAL)
-+	nop
-+	nop
- 	nop					// ftrace_graph_caller()
- #endif
- 	ftrace_regs_restore
-@@ -175,8 +179,12 @@ SYM_INNER_LABEL(ftrace_caller_tramp_ops, SYM_L_GLOBAL)
- 	mov	x3, sp				// regs
- SYM_INNER_LABEL(ftrace_caller_tramp_call, SYM_L_GLOBAL)
- 	nop
-+	nop
-+	nop
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
- SYM_INNER_LABEL(ftrace_caller_tramp_graph_call, SYM_L_GLOBAL)
-+	nop
-+	nop
- 	nop					// ftrace_graph_caller()
- #endif
- 	ftrace_regs_restore
-diff --git a/arch/arm64/kernel/ftrace.c b/arch/arm64/kernel/ftrace.c
-index d35a042baf75..4011aceefe8c 100644
---- a/arch/arm64/kernel/ftrace.c
-+++ b/arch/arm64/kernel/ftrace.c
-@@ -234,27 +234,55 @@ ftrace_trampoline_get_func(struct ftrace_ops *ops, bool is_graph)
- 	return func;
- }
- 
-+static struct plt_entry *
-+update_ftrace_tramp_plt(unsigned long pc, unsigned long addr, bool enable, bool link)
-+{
-+	int i;
-+	struct plt_entry entry;
-+	u32 *pentry;
-+	long offset;
-+	struct plt_entry *plt = (struct plt_entry *)pc;
-+
-+	offset = (long)pc - (long)addr;
-+
-+	if (!enable)
-+		entry = update_plt_entry(pc, addr, PLT_MAKE_NOP);
-+	else if (offset < -SZ_128M || offset >= SZ_128M) {
-+		if (link)
-+			entry = update_plt_entry(pc, addr, PLT_MAKE_LCALL_LINK);
-+		else
-+			entry = update_plt_entry(pc, addr, PLT_MAKE_LCALL);
-+	} else {
-+		if (link)
-+			entry = update_plt_entry(pc, addr, PLT_MAKE_CALL_LINK);
-+		else
-+			entry = update_plt_entry(pc, addr, PLT_MAKE_CALL);
-+	}
-+
-+	pentry = (u32 *)&entry;
-+	for (i = 0; i < sizeof(struct plt_entry) / AARCH64_INSN_SIZE; i++)
-+		aarch64_insn_patch_text_nosync((void *)((u32*)pc + i), *(pentry + i));
-+
-+	return plt;
-+}
-+
- static int
- ftrace_trampoline_modify_call(struct ftrace_ops *ops, bool is_graph, bool active)
- {
- 	unsigned long offset;
- 	unsigned long pc;
- 	ftrace_func_t func;
--	u32 nop, branch;
- 
- 	offset = calc_trampoline_call_offset(ops->flags &
- 				FTRACE_OPS_FL_SAVE_REGS, is_graph);
- 	pc = ops->trampoline + offset;
- 
- 	func = ftrace_trampoline_get_func(ops, is_graph);
--	nop = aarch64_insn_gen_nop();
--	branch = aarch64_insn_gen_branch_imm(pc, (unsigned long)func,
--				AARCH64_INSN_BRANCH_LINK);
- 
--	if (active)
--		return ftrace_modify_code(pc, 0, branch, false);
--	else
--		return ftrace_modify_code(pc, 0, nop, false);
-+	if (update_ftrace_tramp_plt(pc, (unsigned long)func, active, true))
-+		return 0;
-+
-+	return -EINVAL;
- }
- 
- extern int ftrace_graph_active;
-@@ -262,13 +290,6 @@ void arch_ftrace_update_trampoline(struct ftrace_ops *ops)
- {
- 	unsigned int size;
- 
--	/*
--	 * If kaslr is enabled, the address of tramp and ftrace call
--	 * may be far away, Therefore, long jump support is required.
--	 */
--	if (IS_ENABLED(CONFIG_RANDOMIZE_BASE))
--		return;
--
- 	if (!ops->trampoline) {
- 		ops->trampoline = create_trampoline(ops, &size);
- 		if (!ops->trampoline)
-@@ -349,17 +370,34 @@ int ftrace_update_ftrace_func(ftrace_func_t func)
- 	return ftrace_modify_code(pc, 0, new, false);
- }
- 
--static struct plt_entry *get_ftrace_plt(struct module *mod, unsigned long addr)
-+extern void ftrace_kernel_plt(void);
-+static struct plt_entry *
-+get_ftrace_plt(struct module *mod, unsigned long pc, unsigned long addr)
- {
--#ifdef CONFIG_ARM64_MODULE_PLTS
--	struct plt_entry *plt = mod->arch.ftrace_trampolines;
-+	struct plt_entry *plt;
- 
--	if (addr == FTRACE_ADDR)
--		return &plt[FTRACE_PLT_IDX];
--	if (addr == FTRACE_REGS_ADDR &&
--	    IS_ENABLED(CONFIG_DYNAMIC_FTRACE_WITH_REGS))
--		return &plt[FTRACE_REGS_PLT_IDX];
-+	if (mod) {
-+#ifdef CONFIG_ARM64_MODULE_PLTS
-+		plt = mod->arch.ftrace_trampolines;
-+
-+		if (addr == FTRACE_ADDR)
-+			return &plt[FTRACE_PLT_IDX];
-+		else if (addr == FTRACE_REGS_ADDR &&
-+			IS_ENABLED(CONFIG_FTRACE_WITH_REGS))
-+			return &plt[FTRACE_REGS_PLT_IDX];
-+		else {
- #endif
-+			pc = pc - sizeof(struct plt_entry) - AARCH64_INSN_SIZE;
-+			return update_ftrace_tramp_plt(pc, addr, true, false);
-+#ifdef CONFIG_ARM64_MODULE_PLTS
-+		}
-+#endif
-+	} else {
-+		WARN_ON(addr == FTRACE_ADDR || addr == FTRACE_REGS_ADDR);
-+		pc = pc - sizeof(struct plt_entry) - AARCH64_INSN_SIZE;
-+		return update_ftrace_tramp_plt(pc, addr, true, false);
-+	}
-+
- 	return NULL;
- }
- 
-@@ -376,9 +414,6 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 		struct module *mod;
- 		struct plt_entry *plt;
- 
--		if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
--			return -EINVAL;
--
- 		/*
- 		 * On kernels that support module PLTs, the offset between the
- 		 * branch instruction and its target may legally exceed the
-@@ -393,12 +428,10 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
- 		mod = __module_text_address(pc);
- 		preempt_enable();
- 
--		if (WARN_ON(!mod))
--			return -EINVAL;
--
--		plt = get_ftrace_plt(mod, addr);
-+		plt = get_ftrace_plt(mod, pc, addr);
- 		if (!plt) {
--			pr_err("ftrace: no module PLT for %ps\n", (void *)addr);
-+			pr_err("ftrace: no %s PLT for %ps\n",
-+					mod ? "module" : "kernel", (void *)addr);
- 			return -EINVAL;
- 		}
- 
-@@ -474,36 +507,18 @@ int ftrace_make_nop(struct module *mod, struct dyn_ftrace *rec,
- 	if (offset < -SZ_128M || offset >= SZ_128M) {
- 		u32 replaced;
- 
--		if (!IS_ENABLED(CONFIG_ARM64_MODULE_PLTS))
--			return -EINVAL;
--
--		/*
--		 * 'mod' is only set at module load time, but if we end up
--		 * dealing with an out-of-range condition, we can assume it
--		 * is due to a module being loaded far away from the kernel.
--		 */
--		if (!mod) {
--			preempt_disable();
--			mod = __module_text_address(pc);
--			preempt_enable();
--
--			if (WARN_ON(!mod))
--				return -EINVAL;
--		}
--
- 		/*
--		 * The instruction we are about to patch may be a branch and
--		 * link instruction that was redirected via a PLT entry. In
--		 * this case, the normal validation will fail, but we can at
--		 * least check that we are dealing with a branch and link
--		 * instruction that points into the right module.
-+		 * The instruction we are about to patch may be a branch
-+		 * and link instruction that was redirected via a PLT entry
-+		 * supported by a dynamic trampoline or module, in this case,
-+		 * the normal validation will fail, but we can at least check
-+		 * that we are dealing with a branch and link instruction
-+		 * that points into the right place.
- 		 */
- 		if (aarch64_insn_read((void *)pc, &replaced))
- 			return -EFAULT;
- 
--		if (!aarch64_insn_is_bl(replaced) ||
--		    !within_module(pc + aarch64_get_branch_offset(replaced),
--				   mod))
-+		if (!aarch64_insn_is_bl(replaced))
- 			return -EINVAL;
- 
- 		validate = false;
-diff --git a/arch/arm64/kernel/module-plts.c b/arch/arm64/kernel/module-plts.c
-index e53493d8b208..b7a832dfaa69 100644
---- a/arch/arm64/kernel/module-plts.c
-+++ b/arch/arm64/kernel/module-plts.c
-@@ -37,6 +37,56 @@ struct plt_entry get_plt_entry(u64 dst, void *pc)
- 	return plt;
- }
- 
-+struct plt_entry update_plt_entry(u64 pc, u64 dst, int record)
-+{
-+	u32 adrp, add, br;
-+
-+	switch (record) {
-+	case PLT_MAKE_NOP:
-+		adrp = aarch64_insn_gen_nop();
-+		add = aarch64_insn_gen_nop();
-+		br = aarch64_insn_gen_nop();
-+		break;
-+
-+	case PLT_MAKE_CALL_LINK:
-+		adrp = aarch64_insn_gen_nop();
-+		add = aarch64_insn_gen_nop();
-+		br = aarch64_insn_gen_branch_imm(pc + 8, dst,
-+						 AARCH64_INSN_BRANCH_LINK);
-+		break;
-+
-+	case PLT_MAKE_LCALL_LINK:
-+		adrp = aarch64_insn_gen_adr(pc, dst, AARCH64_INSN_REG_16,
-+					    AARCH64_INSN_ADR_TYPE_ADRP);
-+		add = aarch64_insn_gen_add_sub_imm(AARCH64_INSN_REG_16,
-+						   AARCH64_INSN_REG_16, dst % SZ_4K,
-+						   AARCH64_INSN_VARIANT_64BIT,
-+						   AARCH64_INSN_ADSB_ADD);
-+		br = aarch64_insn_gen_branch_reg(AARCH64_INSN_REG_16,
-+						 AARCH64_INSN_BRANCH_LINK);
-+		break;
-+
-+	case PLT_MAKE_LCALL:
-+		adrp = aarch64_insn_gen_adr(pc, dst, AARCH64_INSN_REG_16,
-+					    AARCH64_INSN_ADR_TYPE_ADRP);
-+		add = aarch64_insn_gen_add_sub_imm(AARCH64_INSN_REG_16,
-+						   AARCH64_INSN_REG_16,
-+						   dst % SZ_4K,
-+						   AARCH64_INSN_VARIANT_64BIT,
-+						   AARCH64_INSN_ADSB_ADD);
-+		br = aarch64_insn_gen_branch_reg(AARCH64_INSN_REG_16,
-+						 AARCH64_INSN_BRANCH_NOLINK);
-+		break;
-+	default:
-+		pr_err("[%s %d] error flag %d\n", __func__, __LINE__, record);
-+		BUG();
-+		break;
-+	}
-+
-+	return (struct plt_entry){ cpu_to_le32(adrp), cpu_to_le32(add),
-+				cpu_to_le32(br) };
-+}
-+
- bool plt_entries_equal(const struct plt_entry *a, const struct plt_entry *b)
- {
- 	u64 p, q;
 -- 
-2.25.1
-
+Best Regards,
+Michael Wu
