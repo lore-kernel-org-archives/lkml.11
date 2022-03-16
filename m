@@ -2,121 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44611C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F32BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 07:29:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354203AbiCPHaB (ORCPT
+        id S1343808AbiCPHa5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 03:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50190 "EHLO
+        Wed, 16 Mar 2022 03:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237548AbiCPH35 (ORCPT
+        with ESMTP id S237548AbiCPHax (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 03:29:57 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828FAB878;
-        Wed, 16 Mar 2022 00:28:39 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id C71BD5FD04;
-        Wed, 16 Mar 2022 10:28:36 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1647415716;
-        bh=2IlBHxR34MTy4N3KHRTBgHnJ2xxkKsv6pow01JHAr2E=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=aiZQcrSk0UxNXLP8lYuD/GlPiqP+/tOv77ygcczSwDKPCB2P0/l2uk6HVTvqrW65Y
-         YvP5XJ3YzecjESk1EKop5WoxigAM8xdkmm4RI07nZvAHjV3gQS2ucDOfTgbS6HIGrU
-         CR3ewPvUJzvHSF2Fbl9n+jg1FAO10ed+gKexoe0JiSCDs/BTEsiLmsVVDyAyxM/pOI
-         C5vms8eX8n393OfBuJ8EXapW+vwIyocP+QIpBaHA/LlVg7yeVZHHzTy61zZHjZDrjo
-         GS1uoFbSMIRrYGy308fdMown/eLgAzLkgGRXJWRNgv/p/0hPQueTg74a3VBl9JNMXb
-         To9Mp5sMgE7QQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 16 Mar 2022 10:28:36 +0300 (MSK)
-From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v2 1/2] af_vsock: SOCK_SEQPACKET receive timeout test
-Thread-Topic: [RFC PATCH v2 1/2] af_vsock: SOCK_SEQPACKET receive timeout test
-Thread-Index: AQHYOQdQb7ugiPNDrEajiUcKS1B+hw==
-Date:   Wed, 16 Mar 2022 07:27:45 +0000
-Message-ID: <2bc15104-37e6-088a-1699-dc27d0e2dadf@sberdevices.ru>
-In-Reply-To: <1474b149-7d4c-27b2-7e5c-ef00a718db76@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <07689CD41ED3BF48AF8196A35B35777C@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Wed, 16 Mar 2022 03:30:53 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2ABBC32
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:29:38 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id bi13-20020a05600c3d8d00b0038c2c33d8f3so60417wmb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 00:29:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=kgNwF822XLCpGGuXU87MYUal/QeHjmk53OqzbsvP3bY=;
+        b=xD/WCj/AZbGlstB61QBDFLGXR/Q1SP1OwvMRpNEHYlufjUEV/fKRX43+FBYIWRB0mf
+         WVCcyBCJ4q+y+xkzlWFsmRK3x3aWWobiSZZ2vdJs3IOQMVrU94MJdN6vz5Ovn7wfa5o4
+         ET7lGASgldMyWo+jbMPLLaIgBLsK2xFBgLY7aggnDiAy7bMK/0vvkVURJG5iWdm0WWcL
+         UZtGMCGvt/mbF8H/jU+std2FfmIxQvj6Ht9Yqa18vsT7KyTG3L35XnIpwyaK01wpyVPk
+         d+b6Kc8t3fZetoIQTo0BoVhBFpafF//kYTtojPOh71qD3DF1npK5grUvsKtw06O+T5YW
+         IRSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=kgNwF822XLCpGGuXU87MYUal/QeHjmk53OqzbsvP3bY=;
+        b=VWp2iI55M3m7VizfI9gU4XW4EJObqwe9TENBfrZe55PU1/loEuXpOIfd8JvqwfsY3q
+         +zpPQoThC6/JXTpDsmn1AeTJHHdAyOWASkWvIitwwWA/FJw8ZfQEnFEewPipB+D2mNUM
+         tkfLj4e0e2m3M6SqQc/w0+TZDOSY/czD7mypSxROrftk0hQpWaf6j8rXHhrMawAYG8iB
+         9FXdMHujuGsW3o3hIfd1g79+UGUjlSHCrIQILa0XxbB3reX7oXhduvZ59bYlnqDWxvU2
+         y8zO+8Af3Beeuq15FiU1sFbtTPhl+26nuIm7KesKHulgTmJe95Gr1U3AAdzuKNaUgNIC
+         s8SQ==
+X-Gm-Message-State: AOAM531ZNNXJG0L2DC3x4u0Eu2YCxiuOy360AzpxnYq9ZdJx1wirYEyr
+        MZaRD/++oavXo8lcRi7tgpb61v/h6d4fpw==
+X-Google-Smtp-Source: ABdhPJzX8MMJ0NL8uSl/FdpeIZgB04fJEiEQQC/NKc206ehgFfgEO4RvrogJnLOwzfteKqBEo+fK3Q==
+X-Received: by 2002:a05:600c:3d07:b0:38b:94f2:5d17 with SMTP id bh7-20020a05600c3d0700b0038b94f25d17mr5139780wmb.67.1647415776688;
+        Wed, 16 Mar 2022 00:29:36 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id p18-20020adfba92000000b001e4ae791663sm932414wrg.62.2022.03.16.00.29.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 00:29:36 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 07:29:34 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Frank Zago <frank@zago.net>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Wolfram Sang <wsa@kernel.org>, Johan Hovold <johan@kernel.org>,
+        linux-usb@vger.kernel.org, gunar@schorcht.net
+Subject: Re: [PATCH v3] mfd: ch341: add driver for the WCH CH341 in I2C/GPIO
+ mode
+Message-ID: <YjGR3i5W4HAZfsc0@google.com>
+References: <20220314030937.22762-1-frank@zago.net>
+ <YjCpq8YVwmZzOzwE@google.com>
+ <fee91f27-17c4-25c0-c149-3b20161429ba@zago.net>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/16 03:19:00 #18979713
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fee91f27-17c4-25c0-c149-3b20161429ba@zago.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGVzdCBmb3IgcmVjZWl2ZSB0aW1lb3V0IGNoZWNrOiBjb25uZWN0aW9uIGlzIGVzdGFibGlzaGVk
-LA0KcmVjZWl2ZXIgc2V0cyB0aW1lb3V0LCBidXQgc2VuZGVyIGRvZXMgbm90aGluZy4gUmVjZWl2
-ZXIncw0KJ3JlYWQoKScgY2FsbCBtdXN0IHJldHVybiBFQUdBSU4uDQoNClNpZ25lZC1vZmYtYnk6
-IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KLS0tDQogdjEgLT4g
-djI6DQogMSkgQ2hlY2sgYW1vdW50IG9mIHRpbWUgc3BlbnQgaW4gJ3JlYWQoKScuDQoNCiB0b29s
-cy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYyB8IDc5ICsrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrDQogMSBmaWxlIGNoYW5nZWQsIDc5IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdp
-dCBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIGIvdG9vbHMvdGVzdGluZy92c29j
-ay92c29ja190ZXN0LmMNCmluZGV4IDJhMzYzOGMwYTAwOC4uNmQ3NjQ4Y2NlNWFhIDEwMDY0NA0K
-LS0tIGEvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCisrKyBiL3Rvb2xzL3Rlc3Rp
-bmcvdnNvY2svdnNvY2tfdGVzdC5jDQpAQCAtMTYsNiArMTYsNyBAQA0KICNpbmNsdWRlIDxsaW51
-eC9rZXJuZWwuaD4NCiAjaW5jbHVkZSA8c3lzL3R5cGVzLmg+DQogI2luY2x1ZGUgPHN5cy9zb2Nr
-ZXQuaD4NCisjaW5jbHVkZSA8dGltZS5oPg0KIA0KICNpbmNsdWRlICJ0aW1lb3V0LmgiDQogI2lu
-Y2x1ZGUgImNvbnRyb2wuaCINCkBAIC0zOTEsNiArMzkyLDc5IEBAIHN0YXRpYyB2b2lkIHRlc3Rf
-c2VxcGFja2V0X21zZ190cnVuY19zZXJ2ZXIoY29uc3Qgc3RydWN0IHRlc3Rfb3B0cyAqb3B0cykN
-CiAJY2xvc2UoZmQpOw0KIH0NCiANCitzdGF0aWMgdGltZV90IGN1cnJlbnRfbnNlYyh2b2lkKQ0K
-K3sNCisJc3RydWN0IHRpbWVzcGVjIHRzOw0KKw0KKwlpZiAoY2xvY2tfZ2V0dGltZShDTE9DS19S
-RUFMVElNRSwgJnRzKSkgew0KKwkJcGVycm9yKCJjbG9ja19nZXR0aW1lKDMpIGZhaWxlZCIpOw0K
-KwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCXJldHVybiAodHMudHZfc2VjICogMTAw
-MDAwMDAwMFVMTCkgKyB0cy50dl9uc2VjOw0KK30NCisNCisjZGVmaW5lIFJDVlRJTUVPX1RJTUVP
-VVRfU0VDIDENCisjZGVmaW5lIFJFQURfT1ZFUkhFQURfTlNFQyAyNTAwMDAwMDAgLyogMC4yNSBz
-ZWMgKi8NCisNCitzdGF0aWMgdm9pZCB0ZXN0X3NlcXBhY2tldF90aW1lb3V0X2NsaWVudChjb25z
-dCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0KK3sNCisJaW50IGZkOw0KKwlzdHJ1Y3QgdGltZXZh
-bCB0djsNCisJY2hhciBkdW1teTsNCisJdGltZV90IHJlYWRfZW50ZXJfbnM7DQorCXRpbWVfdCBy
-ZWFkX292ZXJoZWFkX25zOw0KKw0KKwlmZCA9IHZzb2NrX3NlcXBhY2tldF9jb25uZWN0KG9wdHMt
-PnBlZXJfY2lkLCAxMjM0KTsNCisJaWYgKGZkIDwgMCkgew0KKwkJcGVycm9yKCJjb25uZWN0Iik7
-DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJdHYudHZfc2VjID0gUkNWVElNRU9f
-VElNRU9VVF9TRUM7DQorCXR2LnR2X3VzZWMgPSAwOw0KKw0KKwlpZiAoc2V0c29ja29wdChmZCwg
-U09MX1NPQ0tFVCwgU09fUkNWVElNRU8sICh2b2lkICopJnR2LCBzaXplb2YodHYpKSA9PSAtMSkg
-ew0KKwkJcGVycm9yKCJzZXRzb2Nrb3B0ICdTT19SQ1ZUSU1FTyciKTsNCisJCWV4aXQoRVhJVF9G
-QUlMVVJFKTsNCisJfQ0KKw0KKwlyZWFkX2VudGVyX25zID0gY3VycmVudF9uc2VjKCk7DQorDQor
-CWlmICgocmVhZChmZCwgJmR1bW15LCBzaXplb2YoZHVtbXkpKSAhPSAtMSkgfHwNCisJICAgIChl
-cnJubyAhPSBFQUdBSU4pKSB7DQorCQlwZXJyb3IoIkVBR0FJTiBleHBlY3RlZCIpOw0KKwkJZXhp
-dChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCXJlYWRfb3ZlcmhlYWRfbnMgPSBjdXJyZW50X25z
-ZWMoKSAtIHJlYWRfZW50ZXJfbnMgLQ0KKwkJCTEwMDAwMDAwMDBVTEwgKiBSQ1ZUSU1FT19USU1F
-T1VUX1NFQzsNCisNCisJaWYgKHJlYWRfb3ZlcmhlYWRfbnMgPiBSRUFEX09WRVJIRUFEX05TRUMp
-IHsNCisJCWZwcmludGYoc3RkZXJyLA0KKwkJCSJ0b28gbXVjaCB0aW1lIGluIHJlYWQoMikgd2l0
-aCBTT19SQ1ZUSU1FTzogJWx1IG5zXG4iLA0KKwkJCXJlYWRfb3ZlcmhlYWRfbnMpOw0KKwkJZXhp
-dChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWNvbnRyb2xfd3JpdGVsbigiV0FJVERPTkUiKTsN
-CisJY2xvc2UoZmQpOw0KK30NCisNCitzdGF0aWMgdm9pZCB0ZXN0X3NlcXBhY2tldF90aW1lb3V0
-X3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0KK3sNCisJaW50IGZkOw0KKw0K
-KwlmZCA9IHZzb2NrX3NlcXBhY2tldF9hY2NlcHQoVk1BRERSX0NJRF9BTlksIDEyMzQsIE5VTEwp
-Ow0KKwlpZiAoZmQgPCAwKSB7DQorCQlwZXJyb3IoImFjY2VwdCIpOw0KKwkJZXhpdChFWElUX0ZB
-SUxVUkUpOw0KKwl9DQorDQorCWNvbnRyb2xfZXhwZWN0bG4oIldBSVRET05FIik7DQorCWNsb3Nl
-KGZkKTsNCit9DQorDQogc3RhdGljIHN0cnVjdCB0ZXN0X2Nhc2UgdGVzdF9jYXNlc1tdID0gew0K
-IAl7DQogCQkubmFtZSA9ICJTT0NLX1NUUkVBTSBjb25uZWN0aW9uIHJlc2V0IiwNCkBAIC00MzEs
-NiArNTA1LDExIEBAIHN0YXRpYyBzdHJ1Y3QgdGVzdF9jYXNlIHRlc3RfY2FzZXNbXSA9IHsNCiAJ
-CS5ydW5fY2xpZW50ID0gdGVzdF9zZXFwYWNrZXRfbXNnX3RydW5jX2NsaWVudCwNCiAJCS5ydW5f
-c2VydmVyID0gdGVzdF9zZXFwYWNrZXRfbXNnX3RydW5jX3NlcnZlciwNCiAJfSwNCisJew0KKwkJ
-Lm5hbWUgPSAiU09DS19TRVFQQUNLRVQgdGltZW91dCIsDQorCQkucnVuX2NsaWVudCA9IHRlc3Rf
-c2VxcGFja2V0X3RpbWVvdXRfY2xpZW50LA0KKwkJLnJ1bl9zZXJ2ZXIgPSB0ZXN0X3NlcXBhY2tl
-dF90aW1lb3V0X3NlcnZlciwNCisJfSwNCiAJe30sDQogfTsNCiANCi0tIA0KMi4yNS4xDQo=
+On Tue, 15 Mar 2022, Frank Zago wrote:
+
+> Hello Lee,
+> 
+> >> Changes from v2:
+> >>   - bug fixes
+> >>   - more robust USB enumeration
+> >>   - Changed to an MFD driver as suggested
+> > 
+> > Perhaps you should have engaged with me before potentially wasting
+> > your valuable time.
+> > 
+> > MFD is designed to take a parent platform driver and split it out into
+> > various sub-systems.  If you don't use the MFD Core API (which is the
+> > case here) it is not an MFD.  MFD is not a dumping ground for
+> > collections of random device drivers.
+> > 
+> > I have no problem with you placing registration and core code inside
+> > MFD (that *is* what it was designed for), but the leaf 'functionality'
+> > should be placed in more appropriate locations.
+> > 
+> > I2C  => drivers/i2c
+> > SPI  => drivers/spi
+> > GPIO => drivers/gpio (or perhaps drivers/pinctrl)
+> > USB  => drivers/usb
+> > UART => drivers/tty/serial
+> > 
+> > Etc ... Find places for everything.
+> > 
+> > Anything left over, give to Greg (drivers/misc). :)
+> > 
+> 
+> AFAICS that works if the driver is built-in, but not as a module. 
+
+How did you reach that conclusion?
+
+I expect most of the drivers in MFD and their children to be modules.
+
+  `git grep module_.*_driver -- drivers/mfd/`
+
+> I'd prefer that driver to be a module if desired, and have all its files in the same
+> place instead of scattered in various directories.
+
+The design and organisation of the kernel does not work like that.
+
+> I can try drivers/misc if it's a better place.
+
+I suspect you'll receive the same advice from Greg and Arnd.
+
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
