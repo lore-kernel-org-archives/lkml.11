@@ -2,79 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C46C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B3DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 06:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353725AbiCPGDK (ORCPT
+        id S1353753AbiCPGDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 02:03:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
+        Wed, 16 Mar 2022 02:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346618AbiCPGDJ (ORCPT
+        with ESMTP id S238391AbiCPGDJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 16 Mar 2022 02:03:09 -0400
-Received: from esa6.hc1455-7.c3s2.iphmx.com (esa6.hc1455-7.c3s2.iphmx.com [68.232.139.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C226606CB;
-        Tue, 15 Mar 2022 23:01:55 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="66806628"
-X-IronPort-AV: E=Sophos;i="5.90,185,1643641200"; 
-   d="scan'208";a="66806628"
-Received: from unknown (HELO yto-r3.gw.nic.fujitsu.com) ([218.44.52.219])
-  by esa6.hc1455-7.c3s2.iphmx.com with ESMTP; 16 Mar 2022 15:01:32 +0900
-Received: from yto-m1.gw.nic.fujitsu.com (yto-nat-yto-m1.gw.nic.fujitsu.com [192.168.83.64])
-        by yto-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 744A7E8CFB;
-        Wed, 16 Mar 2022 15:01:30 +0900 (JST)
-Received: from oym-om3.fujitsu.com (oym-om3.o.css.fujitsu.com [10.85.58.163])
-        by yto-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id ACEACD0435;
-        Wed, 16 Mar 2022 15:01:29 +0900 (JST)
-Received: from cn-r05-10.example.com (n3235113.np.ts.nmh.cs.fujitsu.co.jp [10.123.235.113])
-        by oym-om3.fujitsu.com (Postfix) with ESMTP id 4DB55403DFD95;
-        Wed, 16 Mar 2022 15:01:29 +0900 (JST)
-From:   Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
-To:     Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        tan.shaopeng@jp.fujitsu.com
-Subject: [PATCH v4 0/2] selftests/resctrl: Print a message if the result of MBM&CMT tests is failed on Intel cpu
-Date:   Wed, 16 Mar 2022 14:59:38 +0900
-Message-Id: <20220316055940.292550-1-tan.shaopeng@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D8B1606D5;
+        Tue, 15 Mar 2022 23:01:56 -0700 (PDT)
+X-UUID: 501b0dfcbd144bcfa85feb8c39074dd8-20220316
+X-UUID: 501b0dfcbd144bcfa85feb8c39074dd8-20220316
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <trevor.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1438559515; Wed, 16 Mar 2022 14:01:45 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 16 Mar 2022 14:01:45 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 16 Mar 2022 14:01:45 +0800
+From:   Trevor Wu <trevor.wu@mediatek.com>
+To:     <broonie@kernel.org>, <tiwai@suse.com>, <robh+dt@kernel.org>,
+        <matthias.bgg@gmail.com>
+CC:     <trevor.wu@mediatek.com>, <alsa-devel@alsa-project.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <aaronyu@google.com>, <angelogioacchino.delregno@collabora.com>,
+        <yc.hung@mediatek.com>
+Subject: [PATCH v2 0/5] ASoC: mediatek: Add support for MT8195 sound card with max98390 and rt5682
+Date:   Wed, 16 Mar 2022 14:01:34 +0800
+Message-ID: <20220316060139.6211-1-trevor.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+This series of patches adds support for mt8195 board with mt6359, max98390
+and rt5682.
 
-The aim of this series is to print a message to let users know a possible
-cause of failure, if the result of MBM&CMT tests is failed on Intel cpu.
-In order to detect Intel vendor, I extended amd vendor detect function.
+To prevent from copy-paste components, mt8195 machine drivers and 
+dt-bindings are merged in the patch.
 
-Difference from v3:
-I separated the patch into two patches.
--In order to detect intel vendor, extended the amd vendor detect function. 
- [PATCH V4 1/2]
--The same as before that print a message if the result of MBM&CMT tests
- is failed on Intel cpu.[PATCH V4 2/2]
+Patches are based on broonie tree "for-next" branch.
 
-https://lore.kernel.org/lkml/20220304103957.487660-1-tan.shaopeng@jp.fujitsu.com/
+Changes since v1:
+  - remove merged patches about reset controller
+  - propose a common machine driver instead of machine driver common code
+  - propose a common dt-bindings for mt8195 sound card
 
-This patch series is based on v5.17-rc8.
+Trevor Wu (5):
+  ASoC: mediatek: mt8195: merge machine driver
+  ASoC: dt-bindings: mediatek: mt8195: merge mt8195 machine yaml
+  ASoC: mediatek: mt8195: rename card controls
+  ASoC: mediatek: mt8195: add machine support for max98390 and rt5682
+  ASoC: dt-bindings: mediatek: mt8195: support
+    mt8195-mt6359-max98390-rt5682
 
-Shaopeng Tan (2):
-  selftest/resctrl: Extend cpu vendor detection
-  selftests/resctrl: Print a message if the result of MBM&CMT tests is
-    failed on Intel cpu
-
- tools/testing/selftests/resctrl/cat_test.c    |  2 +-
- tools/testing/selftests/resctrl/resctrl.h     |  5 ++-
- .../testing/selftests/resctrl/resctrl_tests.c | 45 +++++++++++++------
- tools/testing/selftests/resctrl/resctrlfs.c   |  2 +-
- 4 files changed, 37 insertions(+), 17 deletions(-)
+ .../sound/mt8195-mt6359-rt1011-rt5682.yaml    |   51 -
+ ...-rt1019-rt5682.yaml => mt8195-mt6359.yaml} |    9 +-
+ sound/soc/mediatek/Kconfig                    |   26 +-
+ sound/soc/mediatek/mt8195/Makefile            |    3 +-
+ .../mt8195/mt8195-mt6359-rt1011-rt5682.c      | 1198 -----------------
+ ...mt6359-rt1019-rt5682.c => mt8195-mt6359.c} |  984 +++++++++-----
+ 6 files changed, 634 insertions(+), 1637 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/sound/mt8195-mt6359-rt1011-rt5682.yaml
+ rename Documentation/devicetree/bindings/sound/{mt8195-mt6359-rt1019-rt5682.yaml => mt8195-mt6359.yaml} (84%)
+ delete mode 100644 sound/soc/mediatek/mt8195/mt8195-mt6359-rt1011-rt5682.c
+ rename sound/soc/mediatek/mt8195/{mt8195-mt6359-rt1019-rt5682.c => mt8195-mt6359.c} (76%)
 
 -- 
-2.27.0
+2.18.0
 
