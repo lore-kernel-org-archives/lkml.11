@@ -2,76 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F280C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E79C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 15:34:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240500AbiCPPes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 11:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
+        id S1344197AbiCPPfa (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 11:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235248AbiCPPep (ORCPT
+        with ESMTP id S240167AbiCPPf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 11:34:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 699B027CF5;
-        Wed, 16 Mar 2022 08:33:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19C31B81C13;
-        Wed, 16 Mar 2022 15:33:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60621C340E9;
-        Wed, 16 Mar 2022 15:33:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647444808;
-        bh=ErcNptfdS+iULWkDCthzkd1Qlz8XmSgG7d9SHtOVd6w=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=r/2kQFJvaZjB7AWFCs8Q52daB1EaPRTWtGum0gkBvfbiNec39Pc9qIC8IAJHvXAxf
-         z500tjRlXwl3m5mhyjj12lJFItWBC+6vnYT+di/0gMA/ldgwVAeDQ7QJIxN9z2If37
-         KALcW4WG5W/tauDlpQmJgoBsEhkHgNe6E+U4dPsfKidozFEi+m2durbnr6pyry5NC0
-         XwSoIjFdAjD0UNZJdLit7d6XCaNMzWC1HPc4lEVFeKGTOJnQuOer3Rb/oX4OCJWSHV
-         6A+TxwpXC/fJrQ+ui279dWTFNKXj/vyvyBMUNvrSvnnmO9Y94Ij043kjGE6YEf7Zyl
-         gOCG1H1ch9RAw==
-Content-Type: text/plain; charset="utf-8"
+        Wed, 16 Mar 2022 11:35:27 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAA028E3C
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 08:34:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647444853; x=1678980853;
+  h=message-id:date:mime-version:to:references:from:subject:
+   in-reply-to:content-transfer-encoding;
+  bh=boYCnh6qWuwCAj1Sjfgi0rW0Z9re8P6EPX8iN50WXOw=;
+  b=ihESAcpMJIFO5STBtHDfzvXBuOo1mwgMSmJv6/BbUJzTpVi7YsRR5duV
+   HpAuACApYDYRc31sLYDRP9fgGUrh4XUwcAM7b/n7a+ie8Kg/OY/bDibFa
+   q/H7wo0/a0mfidXqGLUyMI7ss9kQyw3BjwRx5PYCKP/zybv5wdLkHnqXs
+   pbv4Y9rXOvNUmDHtBGzdv448PfsOTNF9RebtivVXEZF6CDycmoZnhFwrV
+   OIILpSczrAJzvPiUYCKlC8mGRyUeZlZbR5BHjFpBzqZocWA9TlvyCaAmF
+   KTKy+6heFcvnWfDi2KZI96sCWJdFcVYj0lttA0ziRk4wNBznwpTrAU4wE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256822706"
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="256822706"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:34:13 -0700
+X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
+   d="scan'208";a="557502057"
+Received: from jdwaldem-mobl.amr.corp.intel.com (HELO [10.255.228.230]) ([10.255.228.230])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 08:34:12 -0700
+Message-ID: <aa3ffe77-8066-adab-80f0-27568ad8f2f6@intel.com>
+Date:   Wed, 16 Mar 2022 08:34:04 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+References: <YjGzJwjrvxg5YZ0Z@audible.transient.net>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: system locks up with CONFIG_SLS=Y; 5.17.0-rc
+In-Reply-To: <YjGzJwjrvxg5YZ0Z@audible.transient.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [v2] MAINTAINERS: fix ath11k DT bindings location
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220308085503.537-1-lukas.bulwahn@gmail.com>
-References: <20220308085503.537-1-lukas.bulwahn@gmail.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164744480556.16413.9130060448491474487.kvalo@kernel.org>
-Date:   Wed, 16 Mar 2022 15:33:27 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
-
-> Commit dae0978d4174 ("dt: bindings: net: add qcom,ath11k.yaml") obviously
-> adds qcom,ath11k.yaml, but the file entry in MAINTAINERS, added with
-> commit fcda1cb81663 ("MAINTAINERS: add DT bindings files for ath10k and
-> ath11k") then refers to qcom,ath11k.txt.
+On 3/16/22 02:51, Jamie Heilman wrote:
+> I've been (somewhat unsuccessfully) trying to bisect a hard lock-up
+> of my workstation that occurs when I'm running 5.17 rc kernels a few
+> seconds after I start a kvm guest instance.  There is no output to
+> any log, everything locks up completely, sysrq doesn't even work
+> anymore.  As bisection progressed closer and closer to the branch
+> where straight-line-speculation mitigation was enabled, and as bisect
+> landing me between 9cdbeec40968 ("x86/entry_32: Fix segment exceptions")
+> and 3411506550b1 ("x86/csum: Rewrite/optimize csum_partial()") wasn't
+> resulting in clear results (my system definately starts Oopsing and
+> gets so hosed up that I'm forced to reboot, but it isn't quite as dire
+> as sysrq continues to function) I decided to just try a build with
+> CONFIG_SLS disabled, and it turns out that works just fine.  Sooo...
 > 
-> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> broken reference.
+> This system uses a Intel Core2 Duo E8400 processor.
+> working config (CONFIG_SLS=N) and dmesg at:
+> http://audible.transient.net/~jamie/k/sls.config-5.17.0-rc8
+> http://audible.transient.net/~jamie/k/sls.dmesg
 > 
-> Repair this file reference in QUALCOMM ATHEROS ATH11K WIRELESS DRIVER, and
-> put it in alphabetic order while at it.
-> 
-> Fixes: fcda1cb81663 ("MAINTAINERS: add DT bindings files for ath10k and ath11k")
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> (I don't think the dmesg of CONFIG_SLS=Y is really any different.)
 
-Patch applied to wireless-next.git, thanks.
+If you get really ambitious, you could try to see if any of the
+individual things that change based on the CONFIG_SLS #ifdef trigger
+this.  Basically, turn off the config option and then go manually
+enabling each of the sites.
 
-5df2dc0087e9 MAINTAINERS: fix ath11k DT bindings location
+The odd thing is that it isn't touching anything really KVM-specific.
+It probably influences some KVM-specific assembly, but it's hard to see
+how that might break anything.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220308085503.537-1-lukas.bulwahn@gmail.com/
+The worrying part is:
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+ifdef CONFIG_SLS
+  KBUILD_CFLAGS += -mharden-sls=all
+endif
 
+That's presumably a shiny, new compiler option, also known as a
+relatively lightly tested compiler option.
