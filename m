@@ -2,151 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23812C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F04AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 16 Mar 2022 02:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347561AbiCPCFI (ORCPT
+        id S1352412AbiCPCLM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 15 Mar 2022 22:05:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        Tue, 15 Mar 2022 22:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234143AbiCPCFG (ORCPT
+        with ESMTP id S237330AbiCPCLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 15 Mar 2022 22:05:06 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2051.outbound.protection.outlook.com [40.107.20.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3888C5E171
-        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:03:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EJSrSDTMQjuCzTSPCTlRRLWMJNgELtcKhqqO3H8wsUxW0PTF6RzEakNoLfvbMqN+ZVHdGxJv1PTmWKHA2QZTBy51lpn8k/aTGvk5vUcwTfp68z6kNbSCLhxWtYmn7ENzPLy4WdxQO8PZ2ggMY90/YJ2s7pzXWnpfbu+F1Gnz8AzuQ+iSZLQiWs0Iu+tDWS8w34dpESiRtGdhp9uzz8C65ffDqW1p+C13J+ljOiT+jDWVhKwySIQ7eAxRGahmZkVbxdkugSvQfp/947KrVmqSlBwRcTsplc0Y45GQctJVzSwqV85ZM9UuivPfkO7r562LdIa5IcaQmVLkUey2MOpqFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TdsdADlqaMr5rLrWDYJGV4HH4zZl/yI+qn9F/fweHg0=;
- b=JCdyZOdXIRyY4UTAZ1JG1OiCJFczuggFyJbEPPxY8pbm6qzKc8w+Gc62l2kpCtcw4OAWCXcPHowNl6UGR3cTTCshnvjYbdfbiVm7aLI+4zc2aLU13Vas+ALbppRg7CD2jzaQwrteImKbS6phrz4+Ax5Id9r9QQ8LELKN5LlE3rtS+WWdglQC2ng0XstSxKGxraPowAkrsRPMF2Vi3wpUWbtOcQyxLp34ieRdIxtt0/vueamN3rCRxT+vSAU4WHQ9x2IJLR7gSl94ZrJXb8XGyx+TMTrppdpTS6csCsojUXLmwAoPufDLFEHZJ9TUR9THTQ2Xsh7Ip/jRDThFHXwn3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TdsdADlqaMr5rLrWDYJGV4HH4zZl/yI+qn9F/fweHg0=;
- b=lCsIU/xYWlzg0zNX8JLzf6yJ4+eILPlNHdlehuU9xhAJ/3TFsd6IyTHaWcDShaJvmw09hKcXtgwIdn683selj/Hrq70musdWYSLKIxVz4vQoRwst1EYlyWt+3UK5W7Y2/3PZLdBEYt6/mmaAgl8KDMiTipaYETO5cO+2KSHClGo=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB7PR04MB5097.eurprd04.prod.outlook.com (2603:10a6:10:15::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.30; Wed, 16 Mar
- 2022 02:03:50 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::5538:7e34:6843:2bc7%6]) with mapi id 15.20.5061.028; Wed, 16 Mar 2022
- 02:03:50 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     "kael_w@qq.com" <kael_w@qq.com>
-Subject: RE: [PATCH] mailbox: imx: Fix duplicate field initialization in imx
-Thread-Topic: [PATCH] mailbox: imx: Fix duplicate field initialization in imx
-Thread-Index: AQHYONcMs2AycHSKKEGu/JeIOsy/wazBQjfg
-Date:   Wed, 16 Mar 2022 02:03:49 +0000
-Message-ID: <DU0PR04MB9417A00C2F5BA3F8D6F2C7E088119@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220316014128.89315-1-wanjiabing@vivo.com>
-In-Reply-To: <20220316014128.89315-1-wanjiabing@vivo.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 19e184d9-01a1-457a-65e5-08da06f136b2
-x-ms-traffictypediagnostic: DB7PR04MB5097:EE_
-x-microsoft-antispam-prvs: <DB7PR04MB5097E4E42A62745319BF48DB88119@DB7PR04MB5097.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NsDyZEDoB5DBVo9b79nY5Q8VlyMY87qwHIs6hRtiyROcbFK8z7rjTd6n20Zhq9o94eK2lyzolZn9hnaNE3p65nFV+T4mZf5cVYVwYffs/h69STLIVoAYlm8jiuTf5xrjHoAK8U+LZMhYrtGmsXgPdP7BTjsblNW21EMvBr+6K0dy7GkR7bnTn8vwf82DUlwSzHjzCBDLhrec+D+rkcf877yPtbks4MWjVsgGpb+nhwzoy+xyfD6dHrXESBeqtagmZ/KnvXMbUqZ188g+VmEAkLI1l+yEp5GE1R34XuuRiRrLMuhKS5MSyo03KV0C2+VFDDyyA920nU974Qf9bsrMWh5vrWi/LC2/pKSMLHVZlMImgk/9ZMTJqW9Tta8XkSKJXCkgb8WO9CIr5FVjACsfzjMf2YRXrjLvNhczahxyaplYC4IDkCfcODdmdilh+RqjObcaAYPfF4J4ZevY4jpDg130LEwwJNMOdthCi9ocKxXuRrl/pJZM2YVK2ryybImklL2uGbYJ9xpBPeDie+b7G3atgAFAHbYN2p4QZo/Ar+uXrT5EUGTnxYJtH2kAM86DONzyZr2JjpDCS/WrLFYTcBkFqS22LqqvxiruSEmALjp0tw0fZRqtIHGWe+8n2GyDoETZ+A6xRH4IFDHCDsAb4663HRDbNTT9w+/AGw2PHNXEwC+w+6CQ8NTBX2L7PdDISizMyd34/ggy2nnKoqjg1g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(86362001)(4744005)(4326008)(508600001)(44832011)(52536014)(33656002)(38100700002)(2906002)(26005)(55016003)(186003)(83380400001)(122000001)(110136005)(71200400001)(15650500001)(5660300002)(6506007)(7696005)(9686003)(38070700005)(316002)(66446008)(64756008)(76116006)(66476007)(66556008)(66946007)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?c6DO5s46rsnGX86tTuyv5BKhE1vbnEjyFhH435F6ql03YGeuoaTnA5O0UqfZ?=
- =?us-ascii?Q?vyuKTqZsNcjYWeWP8h8yRRRG3+9BKvq/mnxBDRUbbryesstmotf8dtTVh0Uj?=
- =?us-ascii?Q?wda/DeMVZj/ML+2ydjrHx7646BB2Bb9WJin4qq/Cukmp5ZFqXd65zhOWWle+?=
- =?us-ascii?Q?kEkaeRBsqxoTbqtq4e2W2sCItbZX06tJeQiLrVJuTk/kl+kTlfeetRWHV150?=
- =?us-ascii?Q?ywZiohnl7HVGZh7/gPLs6eiNaG238Qi6BG5vQynI/AkohUmPm55VcSSQimex?=
- =?us-ascii?Q?Kx0RQGD5Q6OXSFAp4RHVR766ll+hy5hq5FAJ//8rQM2KTjW2bIKUmgwpU+91?=
- =?us-ascii?Q?n0sOzKORo6eOqIZeFE2vriV++ccjTPoU8T4Ek128XCCo8x9thLXyJ+uSEcr1?=
- =?us-ascii?Q?B+2utQ5YBT5FHx9jzM3Tn6mAdaYfSEvmFOfz2NZYijeQ/IuVcLxJlsA8tQ/a?=
- =?us-ascii?Q?hDDw982NcEVF/1VbLMsZc1o4hYhvDE5HKyXWlOHMZ9NXtvA540MtIiTcZJAp?=
- =?us-ascii?Q?AA8+EgALBWPYDEd3oB2p+NDXD/ljMcF9ATxOYLR+/cDx3zluvAFHsDT+/yri?=
- =?us-ascii?Q?C4HZK3Tf1mQM8CLdKc1wwW5WcLWdev60QJhdyT5ch9zaf22a1rY+/KCXnhpf?=
- =?us-ascii?Q?sENPQ5uxNahgPDHLQ0rhrI8wbiA6UyJEVpjUhtIa6xLqlDJ0bDlPSPadpsAQ?=
- =?us-ascii?Q?J5wNeP+C5EB5sGri+pwEjStJwgRIu7caInJ6KbCxZXTuC/yVxCzK1T1fbQnp?=
- =?us-ascii?Q?/COVspgxCVQCYJ+X/N553phM7kcJ1N1aD0n6Yyuf3JLzwZnW5xUsPoB7vaOR?=
- =?us-ascii?Q?ZMwuoSKQmc8Jx9eJPR+GLTeBiYnhuFJquYqMsSdsjMs9ktmhy5aZzeQuja8K?=
- =?us-ascii?Q?HKzVT7wSDLWxKmovZvC2PrQYmQLqDWXY/3G5tTVnYbw2PEML+Edtyu5dnJ5i?=
- =?us-ascii?Q?h28B7pjxzu4vtnS0oMcZnMk3Ev7FOdND2Xp1iP/1Hpo72EyeK1j7qTmkse7Y?=
- =?us-ascii?Q?Fx1Yp8NDD1sfWN6+aULPBr55swOI2sRpQ7wHWDUGWdywUoXunIN+LFgmSsVE?=
- =?us-ascii?Q?6LcErQBCprBKvIEJ1d6YayKHtw8ShpbSuFDW7RBcoFjGa2b7lwyR6w+JP0Xw?=
- =?us-ascii?Q?4JR0tl6M3+QniT5r9EY7pJgxX2k17dUFoFEW2lqvbxJUKVhbWzdtpsqiCDxF?=
- =?us-ascii?Q?R/NHdbUJmh0VVOTFEa0FLbxQQJ3m1+Uw54UFUTGKyEykmzwWaSjlkuO5VFgD?=
- =?us-ascii?Q?+ett++9RuJiAeo99IMEN2sK3TW761Q0gaLbIElsZxducgsXyNn3yGt2Tw0Qp?=
- =?us-ascii?Q?n2lsJbcJRqgtuW1PuiVRpYLpo4QUYkUSimDaG40At0/5GXCv1SvR12QsX9L2?=
- =?us-ascii?Q?YJzcvd+3Z8l/+XKKgVRKO44f7E6Mwy6P10cUWhKm9JAfnfzhZkees3877Joa?=
- =?us-ascii?Q?z/2r9MBcYRE=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 15 Mar 2022 22:11:10 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053DF369F5
+        for <linux-kernel@vger.kernel.org>; Tue, 15 Mar 2022 19:09:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647396597; x=1678932597;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tzFENZtM8O+DvSuYsCQwRXVQ0Acp82vrsHCRv1KUiNM=;
+  b=XrGeQj2PXS32J2qWGhOs1HRthr8gpZYJsMFHjJ0rZrQqNjKE3ppIeF9m
+   7Oxr0pSojHmOeXvCcbfymFFFz0sNt3qilUq9t00ElD5iF7UFxxd6Gc3em
+   pXDLCvv5FUoy3CEcWXIwyYN0XSYKje+52wPUVBhhnob8HclNtC8kddi+Z
+   XS7qN92lKozlkX7J/EMYrmgoVv3mcy1zRYnPDt52WTRJlZthIU4ad7KJd
+   sygArVsNMqridnSqI1zK3UyYkG0i7ZiXDnkeQIZymxuJOK3vW3ZrhwKLt
+   9TGUKZtMX2IQK1KJiCW1XV9kUPuis+GCP1m2LTwcg7OvZtxMg4hb0ZD80
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256660383"
+X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
+   d="scan'208";a="256660383"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 19:09:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; 
+   d="scan'208";a="644485137"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 15 Mar 2022 19:09:50 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 93D331D3; Wed, 16 Mar 2022 04:10:09 +0200 (EET)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: [PATCHv6 02/30] x86/tdx: Provide common base for SEAMCALL and TDCALL C wrappers
+Date:   Wed, 16 Mar 2022 05:08:28 +0300
+Message-Id: <20220316020856.24435-3-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19e184d9-01a1-457a-65e5-08da06f136b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2022 02:03:49.9330
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: J0bwKufhtCir8xYlG88T8dUhL1omBKmO0s6t+IYVQoeM/K7Jx/nozdni1Wb4PtUJAu2J9z9oExfRiC9dr1+4vw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5097
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: [PATCH] mailbox: imx: Fix duplicate field initialization in imx
->=20
-> Fix the following coccicheck warning:
-> ./drivers/mailbox/imx-mailbox.c:884:51-52: rxdb: first occurrence line 88=
-7,
-> second occurrence line 889
->=20
-> Fixes: 315d2e562418 ("mailbox: imx: introduce rxdb callback")
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Secure Arbitration Mode (SEAM) is an extension of VMX architecture.  It
+defines a new VMX root operation (SEAM VMX root) and a new VMX non-root
+operation (SEAM VMX non-root) which are both isolated from the legacy
+VMX operation where the host kernel runs.
 
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
+A CPU-attested software module (called 'TDX module') runs in SEAM VMX
+root to manage and protect VMs running in SEAM VMX non-root.  SEAM VMX
+root is also used to host another CPU-attested software module (called
+'P-SEAMLDR') to load and update the TDX module.
 
-> ---
->  drivers/mailbox/imx-mailbox.c | 1 -
->  1 file changed, 1 deletion(-)
->=20
-> diff --git a/drivers/mailbox/imx-mailbox.c b/drivers/mailbox/imx-mailbox.=
-c
-> index e88f544a1548..df8a785be324 100644
-> --- a/drivers/mailbox/imx-mailbox.c
-> +++ b/drivers/mailbox/imx-mailbox.c
-> @@ -886,7 +886,6 @@ static const struct imx_mu_dcfg imx_mu_cfg_imx8ulp
-> =3D {
->  	.rx	=3D imx_mu_generic_rx,
->  	.rxdb	=3D imx_mu_generic_rxdb,
->  	.init	=3D imx_mu_init_generic,
-> -	.rxdb	=3D imx_mu_generic_rxdb,
->  	.type	=3D IMX_MU_V2,
->  	.xTR	=3D 0x200,
->  	.xRR	=3D 0x280,
-> --
-> 2.35.1
+Host kernel transits to either P-SEAMLDR or TDX module via the new
+SEAMCALL instruction, which is essentially a VMExit from VMX root mode
+to SEAM VMX root mode.  SEAMCALLs are leaf functions defined by
+P-SEAMLDR and TDX module around the new SEAMCALL instruction.
+
+A guest kernel can also communicate with TDX module via TDCALL
+instruction.
+
+TDCALLs and SEAMCALLs use an ABI different from the x86-64 system-v ABI.
+RAX is used to carry both the SEAMCALL leaf function number (input) and
+the completion status (output).  Additional GPRs (RCX, RDX, R8-R11) may
+be further used as both input and output operands in individual leaf.
+
+TDCALL and SEAMCALL share the same ABI and require the largely same
+code to pass down arguments and retrieve results.
+
+Define an assembly macro that can be used to implement C wrapper for
+both TDCALL and SEAMCALL.
+
+TDCALL wrapper will be implemented using the macro later in the series.
+SEAMCALL wrapper is out-of-scope for the series and will be implemented
+as part of TDX host enabling.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+---
+ arch/x86/include/asm/tdx.h      | 28 ++++++++++
+ arch/x86/kernel/asm-offsets.c   |  9 ++++
+ arch/x86/virt/vmx/tdx/tdxcall.S | 94 +++++++++++++++++++++++++++++++++
+ 3 files changed, 131 insertions(+)
+ create mode 100644 arch/x86/virt/vmx/tdx/tdxcall.S
+
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index ba8042ce61c2..2ffefe22f10a 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -8,6 +8,33 @@
+ #define TDX_CPUID_LEAF_ID	0x21
+ #define TDX_IDENT		"IntelTDX    "
+ 
++/*
++ * SW-defined error codes.
++ *
++ * Bits 47:40 == 0xFF indicate Reserved status code class that never used by
++ * TDX module.
++ */
++#define TDX_ERROR			_BITUL(63)
++#define TDX_SW_ERROR			(TDX_ERROR | GENMASK_ULL(40, 47))
++#define TDX_SEAMCALL_VMFAILINVALID	(TDX_SW_ERROR | _UL(0xFFFF0000))
++
++#ifndef __ASSEMBLY__
++
++/*
++ * Used to gather the output registers values of the TDCALL and SEAMCALL
++ * instructions when requesting services from the TDX module.
++ *
++ * This is a software only structure and not part of the TDX module/VMM ABI.
++ */
++struct tdx_module_output {
++	u64 rcx;
++	u64 rdx;
++	u64 r8;
++	u64 r9;
++	u64 r10;
++	u64 r11;
++};
++
+ #ifdef CONFIG_INTEL_TDX_GUEST
+ 
+ void __init tdx_early_init(void);
+@@ -18,4 +45,5 @@ static inline void tdx_early_init(void) { };
+ 
+ #endif /* CONFIG_INTEL_TDX_GUEST */
+ 
++#endif /* !__ASSEMBLY__ */
+ #endif /* _ASM_X86_TDX_H */
+diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
+index 9fb0a2f8b62a..7dca52f5cfc6 100644
+--- a/arch/x86/kernel/asm-offsets.c
++++ b/arch/x86/kernel/asm-offsets.c
+@@ -18,6 +18,7 @@
+ #include <asm/bootparam.h>
+ #include <asm/suspend.h>
+ #include <asm/tlbflush.h>
++#include <asm/tdx.h>
+ 
+ #ifdef CONFIG_XEN
+ #include <xen/interface/xen.h>
+@@ -65,6 +66,14 @@ static void __used common(void)
+ 	OFFSET(XEN_vcpu_info_arch_cr2, vcpu_info, arch.cr2);
+ #endif
+ 
++	BLANK();
++	OFFSET(TDX_MODULE_rcx, tdx_module_output, rcx);
++	OFFSET(TDX_MODULE_rdx, tdx_module_output, rdx);
++	OFFSET(TDX_MODULE_r8,  tdx_module_output, r8);
++	OFFSET(TDX_MODULE_r9,  tdx_module_output, r9);
++	OFFSET(TDX_MODULE_r10, tdx_module_output, r10);
++	OFFSET(TDX_MODULE_r11, tdx_module_output, r11);
++
+ 	BLANK();
+ 	OFFSET(BP_scratch, boot_params, scratch);
+ 	OFFSET(BP_secure_boot, boot_params, secure_boot);
+diff --git a/arch/x86/virt/vmx/tdx/tdxcall.S b/arch/x86/virt/vmx/tdx/tdxcall.S
+new file mode 100644
+index 000000000000..a6c140fb6f0f
+--- /dev/null
++++ b/arch/x86/virt/vmx/tdx/tdxcall.S
+@@ -0,0 +1,94 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#include <asm/asm-offsets.h>
++#include <asm/tdx.h>
++
++/*
++ * TDX_MODULE_CALL - common helper macro for both
++ *                 TDCALL and SEAMCALL instructions.
++ *
++ * TDCALL   - used by TDX guests to make requests to the
++ *            TDX module and hypercalls to the VMM.
++ * SEAMCALL - used by TDX hosts to make requests to the
++ *            TDX module.
++ *
++ * Both instruction are supported in Binutils >= 2.36.
++ */
++#define tdcall		.byte 0x66,0x0f,0x01,0xcc
++#define seamcall	.byte 0x66,0x0f,0x01,0xcf
++
++.macro TDX_MODULE_CALL host:req
++	/*
++	 * R12 will be used as temporary storage for struct tdx_module_output
++	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
++	 * services supported by this function, it can be reused.
++	 */
++
++	/* Callee saved, so preserve it */
++	push %r12
++
++	/*
++	 * Push output pointer to stack.
++	 * After the operation, it will be fetched into R12 register.
++	 */
++	push %r9
++
++	/* Mangle function call ABI into TDCALL/SEAMCALL ABI: */
++	/* Move Leaf ID to RAX */
++	mov %rdi, %rax
++	/* Move input 4 to R9 */
++	mov %r8,  %r9
++	/* Move input 3 to R8 */
++	mov %rcx, %r8
++	/* Move input 1 to RCX */
++	mov %rsi, %rcx
++	/* Leave input param 2 in RDX */
++
++	.if \host
++	seamcall
++	/*
++	 * SEAMCALL instruction is essentially a VMExit from VMX root
++	 * mode to SEAM VMX root mode.  VMfailInvalid (CF=1) indicates
++	 * that the targeted SEAM firmware is not loaded or disabled,
++	 * or P-SEAMLDR is busy with another SEAMCALL.  %rax is not
++	 * changed in this case.
++	 *
++	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
++	 * This value will never be used as actual SEAMCALL error code as
++	 * it is from the Reserved status code class.
++	 */
++	jnc .Lno_vmfailinvalid
++	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
++.Lno_vmfailinvalid:
++	.else
++	tdcall
++	.endif
++
++	/*
++	 * Fetch output pointer from stack to R12 (It is used
++	 * as temporary storage)
++	 */
++	pop %r12
++
++	/*
++	 * Since this function can be initiated without an output pointer,
++	 * check if caller provided an output struct before storing output
++	 * registers.
++	 *
++	 * Update output registers, even if the call failed (RAX != 0).
++	 * Other registers may contain details of the failure.
++	 */
++	test %r12, %r12
++	jz .Lno_output_struct
++
++	/* Copy result registers to output struct: */
++	movq %rcx, TDX_MODULE_rcx(%r12)
++	movq %rdx, TDX_MODULE_rdx(%r12)
++	movq %r8,  TDX_MODULE_r8(%r12)
++	movq %r9,  TDX_MODULE_r9(%r12)
++	movq %r10, TDX_MODULE_r10(%r12)
++	movq %r11, TDX_MODULE_r11(%r12)
++
++.Lno_output_struct:
++	/* Restore the state of R12 register */
++	pop %r12
++.endm
+-- 
+2.34.1
 
