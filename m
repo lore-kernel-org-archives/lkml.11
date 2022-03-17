@@ -2,31 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D568C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:47:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 497E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229468AbiCQFsf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 01:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
+        id S229549AbiCQFsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 01:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiCQFs0 (ORCPT
+        with ESMTP id S229473AbiCQFs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 01:48:26 -0400
+        Thu, 17 Mar 2022 01:48:27 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AEBD265EB5;
-        Wed, 16 Mar 2022 22:18:42 -0700 (PDT)
-X-UUID: ae19e9ed192a44c194b7e849af8f80b1-20220317
-X-UUID: ae19e9ed192a44c194b7e849af8f80b1-20220317
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5CC265EAA;
+        Wed, 16 Mar 2022 22:18:41 -0700 (PDT)
+X-UUID: 425e829fb80e42a8b788d7fd77f6330e-20220317
+X-UUID: 425e829fb80e42a8b788d7fd77f6330e-20220317
 Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1523278037; Thu, 17 Mar 2022 13:18:33 +0800
+        with ESMTP id 46122230; Thu, 17 Mar 2022 13:18:34 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 17 Mar 2022 13:18:33 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 17 Mar 2022 13:18:32 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Mar 2022 13:18:33 +0800
+ Transport; Thu, 17 Mar 2022 13:18:32 +0800
 From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
 To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
         <robh+dt@kernel.org>
@@ -39,9 +40,9 @@ CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
         <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH V9 5/5] drm/mediatek: add display support for MT8186
-Date:   Thu, 17 Mar 2022 13:18:31 +0800
-Message-ID: <20220317051831.7107-6-rex-bc.chen@mediatek.com>
+Subject: [PATCH V9 3/5] dt-bindings: display: mediatek: change to use enum for mutex
+Date:   Thu, 17 Mar 2022 13:18:29 +0800
+Message-ID: <20220317051831.7107-4-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220317051831.7107-1-rex-bc.chen@mediatek.com>
 References: <20220317051831.7107-1-rex-bc.chen@mediatek.com>
@@ -52,96 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yongqiang Niu <yongqiang.niu@mediatek.com>
+All single entry cases in mutex can be merged as a single enum.
 
-Add mmsys driver data and compatible for MT8186 in mtk_drm_drv.c.
-
-Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
 Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: CK Hu <ck.hu@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/gpu/drm/mediatek/mtk_drm_drv.c | 33 ++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ .../display/mediatek/mediatek,mutex.yaml      | 24 +++++++------------
+ 1 file changed, 9 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 247c6ff277ef..c5f88295b434 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-@@ -158,6 +158,24 @@ static const enum mtk_ddp_comp_id mt8183_mtk_ddp_ext[] = {
- 	DDP_COMPONENT_DPI0,
- };
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
+index 00e6a1041a9b..b470fbb1b40a 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,mutex.yaml
+@@ -23,21 +23,15 @@ description: |
  
-+static const enum mtk_ddp_comp_id mt8186_mtk_ddp_main[] = {
-+	DDP_COMPONENT_OVL0,
-+	DDP_COMPONENT_RDMA0,
-+	DDP_COMPONENT_COLOR0,
-+	DDP_COMPONENT_CCORR,
-+	DDP_COMPONENT_AAL0,
-+	DDP_COMPONENT_GAMMA,
-+	DDP_COMPONENT_POSTMASK0,
-+	DDP_COMPONENT_DITHER,
-+	DDP_COMPONENT_DSI0,
-+};
+ properties:
+   compatible:
+-    oneOf:
+-      - items:
+-          - const: mediatek,mt2701-disp-mutex
+-      - items:
+-          - const: mediatek,mt2712-disp-mutex
+-      - items:
+-          - const: mediatek,mt8167-disp-mutex
+-      - items:
+-          - const: mediatek,mt8173-disp-mutex
+-      - items:
+-          - const: mediatek,mt8183-disp-mutex
+-      - items:
+-          - const: mediatek,mt8192-disp-mutex
+-      - items:
+-          - const: mediatek,mt8195-disp-mutex
++    enum:
++      - mediatek,mt2701-disp-mutex
++      - mediatek,mt2712-disp-mutex
++      - mediatek,mt8167-disp-mutex
++      - mediatek,mt8173-disp-mutex
++      - mediatek,mt8183-disp-mutex
++      - mediatek,mt8192-disp-mutex
++      - mediatek,mt8195-disp-mutex
 +
-+static const enum mtk_ddp_comp_id mt8186_mtk_ddp_ext[] = {
-+	DDP_COMPONENT_OVL_2L0,
-+	DDP_COMPONENT_RDMA1,
-+	DDP_COMPONENT_DPI0,
-+};
-+
- static const enum mtk_ddp_comp_id mt8192_mtk_ddp_main[] = {
- 	DDP_COMPONENT_OVL0,
- 	DDP_COMPONENT_OVL_2L0,
-@@ -221,6 +239,13 @@ static const struct mtk_mmsys_driver_data mt8183_mmsys_driver_data = {
- 	.ext_len = ARRAY_SIZE(mt8183_mtk_ddp_ext),
- };
+   reg:
+     maxItems: 1
  
-+static const struct mtk_mmsys_driver_data mt8186_mmsys_driver_data = {
-+	.main_path = mt8186_mtk_ddp_main,
-+	.main_len = ARRAY_SIZE(mt8186_mtk_ddp_main),
-+	.ext_path = mt8186_mtk_ddp_ext,
-+	.ext_len = ARRAY_SIZE(mt8186_mtk_ddp_ext),
-+};
-+
- static const struct mtk_mmsys_driver_data mt8192_mmsys_driver_data = {
- 	.main_path = mt8192_mtk_ddp_main,
- 	.main_len = ARRAY_SIZE(mt8192_mtk_ddp_main),
-@@ -461,6 +486,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
- 	  .data = (void *)MTK_DISP_MUTEX },
- 	{ .compatible = "mediatek,mt8183-disp-mutex",
- 	  .data = (void *)MTK_DISP_MUTEX },
-+	{ .compatible = "mediatek,mt8186-disp-mutex",
-+	  .data = (void *)MTK_DISP_MUTEX },
- 	{ .compatible = "mediatek,mt8192-disp-mutex",
- 	  .data = (void *)MTK_DISP_MUTEX },
- 	{ .compatible = "mediatek,mt8173-disp-od",
-@@ -509,12 +536,16 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
- 	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt8183-dpi",
- 	  .data = (void *)MTK_DPI },
-+	{ .compatible = "mediatek,mt8186-dpi",
-+	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt2701-dsi",
- 	  .data = (void *)MTK_DSI },
- 	{ .compatible = "mediatek,mt8173-dsi",
- 	  .data = (void *)MTK_DSI },
- 	{ .compatible = "mediatek,mt8183-dsi",
- 	  .data = (void *)MTK_DSI },
-+	{ .compatible = "mediatek,mt8186-dsi",
-+	  .data = (void *)MTK_DSI },
- 	{ }
- };
- 
-@@ -531,6 +562,8 @@ static const struct of_device_id mtk_drm_of_ids[] = {
- 	  .data = &mt8173_mmsys_driver_data},
- 	{ .compatible = "mediatek,mt8183-mmsys",
- 	  .data = &mt8183_mmsys_driver_data},
-+	{ .compatible = "mediatek,mt8186-mmsys",
-+	  .data = &mt8186_mmsys_driver_data},
- 	{ .compatible = "mediatek,mt8192-mmsys",
- 	  .data = &mt8192_mmsys_driver_data},
- 	{ }
 -- 
 2.18.0
 
