@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AEEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234193AbiCQM7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
+        id S234548AbiCQM5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234371AbiCQM4C (ORCPT
+        with ESMTP id S234881AbiCQMx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:56:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AFD2E6C43;
-        Thu, 17 Mar 2022 05:54:17 -0700 (PDT)
+        Thu, 17 Mar 2022 08:53:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350461F0828;
+        Thu, 17 Mar 2022 05:52:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1612C6157E;
-        Thu, 17 Mar 2022 12:54:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A364C340E9;
-        Thu, 17 Mar 2022 12:54:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E96B5B81E01;
+        Thu, 17 Mar 2022 12:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 311CDC340E9;
+        Thu, 17 Mar 2022 12:51:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521656;
-        bh=ZfN1xncFxQf811d6fskGB28xJbXGUg/Vxmh4O5Hkydc=;
+        s=korg; t=1647521517;
+        bh=DPdfF6q9H15BXcu0xyHzF22kFQv23DsT8xa/YMq2E1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mlmF19uT/nwPBdx2YSVfpHjKlWGQCBowUzz9/3pZsQFpGV2YhibgxshxFXsnnLlwU
-         daqOGuxhASuiitY84efbUfxOSWRUWSuuSRuoo0+CKM7OCF2vY/0xVYb0MryGe4o9U6
-         GoxyOfrJqiN2bLpv6TXhDgLdXAzDp17l5gfvzP2A=
+        b=KesRhouOAEDzayQww068SyEF8BkpFLpLTMmYPF6zvxr7Y3tJem4lwRP0Kinra1XrM
+         hjXUo1mFvge+FZMCNugoz45FCcoxZBVEd9lkZfkCsg5dUNgfERWR/yQ+1nUFGeqoIF
+         Qv2RZGiQer9biHL2M06aygcB1Zn2TQkdaICrlhfE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
+        Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 09/28] arm64: dts: agilex: use the compatible "intel,socfpga-agilex-hsotg"
-Date:   Thu, 17 Mar 2022 13:46:00 +0100
-Message-Id: <20220317124527.035775085@linuxfoundation.org>
+Subject: [PATCH 5.15 05/25] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+Date:   Thu, 17 Mar 2022 13:45:52 +0100
+Message-Id: <20220317124526.464713265@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
-References: <20220317124526.768423926@linuxfoundation.org>
+In-Reply-To: <20220317124526.308079100@linuxfoundation.org>
+References: <20220317124526.308079100@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,42 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinguyen@kernel.org>
+From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
 
-[ Upstream commit 268a491aebc25e6dc7c618903b09ac3a2e8af530 ]
+[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
 
-The DWC2 USB controller on the Agilex platform does not support clock
-gating, so use the chip specific "intel,socfpga-agilex-hsotg"
-compatible.
+There are signal integrity issues running the eMMC at 200MHz on Puma
+RK3399-Q7.
 
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Similar to the work-around found for RK3399 Gru boards, lowering the
+frequency to 100MHz made the eMMC much more stable, so let's lower the
+frequency to 100MHz.
+
+It might be possible to run at 150MHz as on RK3399 Gru boards but only
+100MHz was extensively tested.
+
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/intel/socfpga_agilex.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi b/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi
-index 0dd2d2ee765a..f4270cf18996 100644
---- a/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi
-+++ b/arch/arm64/boot/dts/intel/socfpga_agilex.dtsi
-@@ -502,7 +502,7 @@
- 		};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+index 002ece51c3ba..08fa00364b42 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+@@ -439,6 +439,12 @@
+ };
  
- 		usb0: usb@ffb00000 {
--			compatible = "snps,dwc2";
-+			compatible = "intel,socfpga-agilex-hsotg", "snps,dwc2";
- 			reg = <0xffb00000 0x40000>;
- 			interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
- 			phys = <&usbphy0>;
-@@ -515,7 +515,7 @@
- 		};
- 
- 		usb1: usb@ffb40000 {
--			compatible = "snps,dwc2";
-+			compatible = "intel,socfpga-agilex-hsotg", "snps,dwc2";
- 			reg = <0xffb40000 0x40000>;
- 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
- 			phys = <&usbphy0>;
+ &sdhci {
++	/*
++	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
++	 * enough.
++	 */
++	max-frequency = <100000000>;
++
+ 	bus-width = <8>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
 -- 
 2.34.1
 
