@@ -2,217 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A40B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231644AbiCQJBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33522 "EHLO
+        id S231666AbiCQJCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:02:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbiCQJBn (ORCPT
+        with ESMTP id S229824AbiCQJB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:01:43 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2137.outbound.protection.outlook.com [40.107.100.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F6D1D08E0;
-        Thu, 17 Mar 2022 02:00:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=csA7nIFDJvXbu8YU1hLJGHhD58jZJmFtPPmCAQdysy2EBZ+1u7ycEImsugx6ArgWwUjhR8Gn2YL4PS/9MCK28PBVZ4RxdRSi1nN6xDhxNdoA5+u1L57Gs3tXDSN82BWPhj87CCYXS0vzSJVYxs2MUJ3seYBCAC+KBTocfmPe8DlUDZO5ZPuY6yu8iWHv7Ljl/cmt04rsahKhOxl9ykfSOBQGhNGAS1oFVMsYARUmeVNYC90353RFDSMgGqyg1Oa8mR7DTlfIINTtK/2pzU7MBK8i1mw/jJb5b5k1DKFTAA4p3CwqpCy1EMb3Ynr43OmjZJYLtZPptpPecT46BwUKdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2mvKKCUlLwm6dvjixifPyGGrXPmDURiGSZ/YPlI2wNA=;
- b=ihdHBloWd1dIEMEjmJeFoqVq6zkAfBPccabWnuat4Rrl0/l6a5Kxy8RGNR625zeQD7/py2ey55uW5XNP1agR1e6sWLSdYGUxlvq+SSg1LIrX+XOqTgVrXYO5uHhVZGvGIr8Od8lZ1do4eAaYhw/g+fRxWWwpAmK6YLiX0IkRB4thLeC4icS86c5bqGxJsoRga1OADPbU+kpJTFGscB8+kybpouqPEFhI0fyexD9L2yQ6mWK87VoA7ZN3BubXLaVF/iyymQdsgsnPwHGlnyZCVNjx1/R6UkxgqckLeGyGaEtC5I+m+SV0rpVAkwlElQK4iuZj988INUUaJilgEsweQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
+        Thu, 17 Mar 2022 05:01:58 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCF61D08D1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:00:41 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id m12so5667211edc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:00:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2mvKKCUlLwm6dvjixifPyGGrXPmDURiGSZ/YPlI2wNA=;
- b=YokT8xMinaih3bY9uchW6WkMCvDZEb2MK9O7n9BibwDscWMZazitLFeoqw5Xzw7/UYOudMpBUpuRTFgpvOef26c1EQGRhZCykir+x5eNxellYJHHr19QUxBUmf3dSlvto3dSmnKRRr7aka8yhiKJT7go7IMV24usjHFpKeq2PeE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
- BL0PR01MB5236.prod.exchangelabs.com (2603:10b6:208:77::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5081.15; Thu, 17 Mar 2022 09:00:18 +0000
-Received: from SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::cd24:39ed:7042:46d6]) by SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::cd24:39ed:7042:46d6%8]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
- 09:00:18 +0000
-Message-ID: <ba91c809-ad81-1f69-cc02-3f5cf28f6350@os.amperecomputing.com>
-Date:   Thu, 17 Mar 2022 16:00:08 +0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH v6 1/4] ipmi: ssif_bmc: Add SSIF BMC driver
-Content-Language: en-US
-To:     Jae Hyun Yoo <quic_jaehyoo@quicinc.com>,
-        Corey Minyard <minyard@acm.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org
-Cc:     Open Source Submission <patches@amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>
-References: <20220310114119.13736-1-quan@os.amperecomputing.com>
- <20220310114119.13736-2-quan@os.amperecomputing.com>
- <7cd9301f-f417-e555-6025-74acfc53598a@quicinc.com>
-From:   Quan Nguyen <quan@os.amperecomputing.com>
-In-Reply-To: <7cd9301f-f417-e555-6025-74acfc53598a@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: HK2PR04CA0068.apcprd04.prod.outlook.com
- (2603:1096:202:15::12) To SJ0PR01MB7282.prod.exchangelabs.com
- (2603:10b6:a03:3f2::24)
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ioWEXzquDWHeeiOk5WANDAY/UZxcw0vNdnj9B/3BeGo=;
+        b=wr0i6WMsc5NWB3lT4XIYdpN/T5oViy8jhC4Qq7OKe5yVPedC/bYw/k+uEswkOh9v0x
+         pjvsaTnbVZ7pF/BvztJniNmJGMciCT4MRWLt1FvV8WjCig/o1tWuHfMuRLPtTy/1wqEK
+         NXbfqGB1Jht6f7v5IVU+iEUY7qOhDreTXPJbk/nWq1RgVD6Gd2/WccraK1WiWAfNl/q/
+         BhBGxR51HX1fzFNOVGrsZ2Y2aB1vqMMnLyYmlBdr42LASGLxkddTIv6Fo5P78Svkxsr2
+         9a0PE2Fu9Ed2M/2FhWoUe/ElqJF4ZOY0xUdgpUWSuozSHjFATLQWHPpTzkgc/NL6MWaL
+         tt4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ioWEXzquDWHeeiOk5WANDAY/UZxcw0vNdnj9B/3BeGo=;
+        b=SKS8wDgAuV64WoATG809csVa89go1YYveEZSaQbKhdlv/12jfOBVy0WD4pdCuSqq29
+         c9e353WyPNM83Lj8gWezrVIOKR5woGmrCptmGdbk1NXabXSWJEhSUwMcgB4qsU/xO0aq
+         wJMTvja/gMkdg1rj9bucNx9SlUgoHsy8WFSmGpWgd/HtY5U84mYK/6xQldThS5pFP8H2
+         gPLc8q04zy6LljZMMRybWBkW1dpYL0Hkh5DWUX2mVIzmP4dMXd/DQEuEoyP4LcQ7P8fv
+         lEqaIMR5/iRS+y6kwMhN4Va/on8GFR5f/O21EW8bGa51LoigJ4xh+Az4qpTpUwPbEJZ1
+         ZTgQ==
+X-Gm-Message-State: AOAM530/rBydKkpveEUlQcALM2BpQMFcSvBiYCEMqdFxMlR2MxXe/9Xd
+        v3obnCAZX6NF3V2qDT26oE4J4w==
+X-Google-Smtp-Source: ABdhPJzKVLUvYg7NMsw+S7EgudGELUf7RQ2oInfgxauvMZhYQL+jFRlVCufjOgBwZCnGL6GaigNkHw==
+X-Received: by 2002:a05:6402:4390:b0:416:a29c:660c with SMTP id o16-20020a056402439000b00416a29c660cmr3241202edc.149.1647507639752;
+        Thu, 17 Mar 2022 02:00:39 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id g11-20020a170906538b00b006ae38eb0561sm2090779ejo.195.2022.03.17.02.00.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 02:00:39 -0700 (PDT)
+Message-ID: <610eb6cc-4df4-f0fc-462a-b33145334a12@blackwall.org>
+Date:   Thu, 17 Mar 2022 11:00:37 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 617915d1-2e4d-4542-85a2-08da07f48f02
-X-MS-TrafficTypeDiagnostic: BL0PR01MB5236:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR01MB523656E9C2BB45C8AA972E14F2129@BL0PR01MB5236.prod.exchangelabs.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LCQULnP66SYOWsPz7UCaoVtbNml020XkNHjWg623H8BDlT1pyLkkU8s6zY2q+fh7WkOiRsyBg+EZSrIpyfzKpC4X2i2CWn9QZLAMKRO7V0OCPhzMJa3lRS0DL5hJYwEBr4slrFnu3yS/x2gjMFnDupRg2sXCjKj9Y2oS+7Do7uR3YaTzF8GMRKO5fKBY2wNi8SjBEeaEhQoR7UHwMVRCJDmUBNQ5+rNQ0WjAy0RweeZq8iAysKipNFhbmiXDieUKJPpU+uDdpCtm4OVyhFMTlvDRqoef9H4i1dYwLNd8x+mmDCRvex0JaDJ1MkrY6cgAsjX5mGw/ZPmzG+n9Vf2+tW6FSaKuo/vdKsQEmiToKVjY65vAAu81bBypf7YOAFRbfgUWoowjcLAvZMuUNxfqSzI/5av9IdV4MjQWVp1ragPuDTqon5DhFUBVoELxuFxoC/ezvrz4YvxKxFNkv7583i9K9y0R520ngYE0CgaUtJU9twYriz8hdv3KORwG+LO0KsBI/CqL3E4ASeEwS13yEKdVsORB0cQKJkjjaxyPEbREdjMrFi1GouSYXSqI8H7hfr5+2ye5gF1Iiin7fg5/dagVaNZssG7Sreq6XnBk5kz0yMdDqzqwIhh8DxyF2FysjS1MJrp8oI+FsONPh3AqNG7myd3dK1pObdVMT5m34GmTa+L8hVqvfvOGGeKjYpaGqXRvibpC+bH+MYoQrax9eG4p5zN3Ewojkd7EMCC8nDnSUB8Te9xANrq7k88GhzlYH1Y0N0Lq5DwmB/cqxJ2ijg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7416002)(6512007)(6506007)(2906002)(921005)(6486002)(54906003)(6666004)(110136005)(508600001)(83380400001)(31686004)(66946007)(107886003)(86362001)(31696002)(8936002)(316002)(4326008)(38100700002)(8676002)(2616005)(52116002)(53546011)(55236004)(38350700002)(186003)(66556008)(26005)(66476007)(5660300002)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dGJ4M29KK3J2YWFPWW9FWEJkL25uMiswSVlBZTNKalU1a3ZPdVZ2SE5ubmh4?=
- =?utf-8?B?SlU3WHRDeFV2L2FreG1uY3dXc2xxSHpsS3RFSm1MaHFUTTZMaThqRlpCc3BP?=
- =?utf-8?B?UGJBcFJJSVNublY1dlo5NzFUaXFmdDZUdXhvM1hqSS8xRjBIVFhjNmJBTGtx?=
- =?utf-8?B?dTRBZHlHNnAwaHlUb0lYY3NVQzVvOFhTNjZxTEFaT28xWEo2T2thQlBob0Jp?=
- =?utf-8?B?Q3lBanVtVzFVNHJVeDFXVVpTc0dnbVlsWis5NUtZdm9NT1JFMlpma050VDRE?=
- =?utf-8?B?VmwzdnRVSVA0Q0N5cW12OWlPeVVjbVljQlJWOHRRUGRGV2JySk1mMjJFclNB?=
- =?utf-8?B?K1gybzVkUWVzQ2hNaUxYRTV2NmdNVXBJU1k2dDJ3ekhZamVhUTRXZ0hCdDU2?=
- =?utf-8?B?N1ptV0dFSEVsRTM3U3pUdjNVcXRpZjFiRHpRbWEwVTN4WnYyRmlsTkkvaHA1?=
- =?utf-8?B?eW54bGJpNHUwNERzUkM2ZldoWUtSYkFTSG9JR3ZBU1pKR2psMFByR09ac1dR?=
- =?utf-8?B?VjFjRUxJNmc2VlBZZjlURzdRb0ovVFJYTm4zRkdEQVNscENVaVB1WGZzYjBr?=
- =?utf-8?B?WEthd3ZXS2tOOW1sK3NRQzJxaTlYaEFkU1B0azhQSkFKWXVDU2doOGRjVEhL?=
- =?utf-8?B?V3o0T05uN0tPY3JDREtZYWFzVmV0emVraStscnlPREU3UTBVNkhhN2VqNXV4?=
- =?utf-8?B?dFgzZ000UXRtbVB4NmpWbHhuWWtIY3RHREFiYTBxdjNtMklMYUN3Qit3VUFZ?=
- =?utf-8?B?bW45NHl5Tm45Z3B3dFlmdUY1WHh3dUVPSFlhRUJsc3BPVEcwNmlSNWoxQUQ3?=
- =?utf-8?B?RU9YNVUwcU5Ra3BWTkxnZXhWaTh2L0FEK2VIVzN6aW1scERhZFc0ZWJvMXJa?=
- =?utf-8?B?aUlvS0ZmQlpKOEYzQmxGeFhTV1MydlprMERLS3pBZWdkdkZmWGQyVDNVRmM2?=
- =?utf-8?B?T0U0akRSQnFtb3poOVJVN1pzSTRlWGRHWE90Mm9Jai9WeXpiLzlkdmppekJ0?=
- =?utf-8?B?amJMRWQwdWViK1dHbXhCb1lVYUNmTVRPVkFFTmN4OTk1WkhSOGpSRjlnbkIw?=
- =?utf-8?B?QzVaQ094czR5QVFkT3pueWt2RnU1T0tsRk9kVlhSTm1oYlo4T1ppS25XZWwx?=
- =?utf-8?B?QVV4WU5nSkdzUUJKMkJ0NVFsNTdmZDdWWnAveEp5RUU3RXJxa0szUXp1dlQ5?=
- =?utf-8?B?UVd2UE1oWVQ2MXpyMGErZjVOZzZNRzZLUWxUWmJUaXZuQ2xQYUtYbnhvL3Nl?=
- =?utf-8?B?K0V3dGJrOVVpakNVSXg5SGNtNGpiTmpRSXV6dkFVZVEvSFphVjF0aUFvVXZ4?=
- =?utf-8?B?OWNFMmpIeUZTVlRVY2k5MzRuRFJNSTNtTzdlc0VFUDVmTG8yK20yM2ZrYzE4?=
- =?utf-8?B?T21FRmxmQmhIYm5DeGM3b0JDU2oraUpnbVRwOW93U3hxaHBwSEVUT2JrRFNX?=
- =?utf-8?B?SmpDV0hWencrb0cxNHB0dkUzbTlib1RVWVZ4MTNRWGVGSTJZS3JISmJISUlT?=
- =?utf-8?B?NUoyMkFlVUFqQjBxMHlLYmtlVU9NQnl2aDU2SXdFOTdPOWZ0UmhJSlQxcy9W?=
- =?utf-8?B?SUFqdi9rZm9FekYrV25vZVNOajA4US9ReFdCSmo3VDVLQVNCUXJnYUpZczhp?=
- =?utf-8?B?R21jek9ucWlpNlhZQjIzZ2EycVRKNzNTODhpdzF1Qk14NHpEbFIwdDlaOVhU?=
- =?utf-8?B?NjhGSjU5WGpvRFplNXZ6ZVd5Q3JGZXdadXBTSTNmR1BXV01wT01CUkF4d2Ra?=
- =?utf-8?B?NTkxKzZ2azN3SjdUbVU0NC9QWE1kNmMvaDJyR1lrTjFWWWlUaVZRQW1pWUF4?=
- =?utf-8?B?Zk01UDBRY2UvM1hFRzgzV0xxejcyRG9Mc3kzUkVYQkpqOGRjZDU2MS9NVmRK?=
- =?utf-8?B?Y1FJOFkvS0xSb0g0M3ViSk9QMk85VzFYRnAwZHhZNll2S3N5Z002S3g1VE01?=
- =?utf-8?B?YkMxd2F4S250VithVTN6SklDNUhZWlBxVGJzbFV4aHRHdDZHVjZ3S0N2Z29L?=
- =?utf-8?Q?sT+b06ivwDh56Z3p/DX2IlkmCi9uwU=3D?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 617915d1-2e4d-4542-85a2-08da07f48f02
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 09:00:18.6578
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: honCA59C7zFdfmNs04QZq+tGoKoXKU2E/G5hM0OKnUjVOrKSfaDs56I0HyO/hLtnOQEAnHNsM0bYpzN4S05MV199iTWbYvSZwTE3DxLKN+M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR01MB5236
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 net-next 00/15] net: bridge: Multiple Spanning Trees
+Content-Language: en-US
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+References: <20220316150857.2442916-1-tobias@waldekranz.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220316150857.2442916-1-tobias@waldekranz.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 16/03/2022 17:08, Tobias Waldekranz wrote:
+> The bridge has had per-VLAN STP support for a while now, since:
+> 
+> https://lore.kernel.org/netdev/20200124114022.10883-1-nikolay@cumulusnetworks.com/
+> 
+> The current implementation has some problems:
+> 
+> - The mapping from VLAN to STP state is fixed as 1:1, i.e. each VLAN
+>   is managed independently. This is awkward from an MSTP (802.1Q-2018,
+>   Clause 13.5) point of view, where the model is that multiple VLANs
+>   are grouped into MST instances.
+> 
+>   Because of the way that the standard is written, presumably, this is
+>   also reflected in hardware implementations. It is not uncommon for a
+>   switch to support the full 4k range of VIDs, but that the pool of
+>   MST instances is much smaller. Some examples:
+> 
+>   Marvell LinkStreet (mv88e6xxx): 4k VLANs, but only 64 MSTIs
+>   Marvell Prestera: 4k VLANs, but only 128 MSTIs
+>   Microchip SparX-5i: 4k VLANs, but only 128 MSTIs
+> 
+> - By default, the feature is enabled, and there is no way to disable
+>   it. This makes it hard to add offloading in a backwards compatible
+>   way, since any underlying switchdevs have no way to refuse the
+>   function if the hardware does not support it
+> 
+> - The port-global STP state has precedence over per-VLAN states. In
+>   MSTP, as far as I understand it, all VLANs will use the common
+>   spanning tree (CST) by default - through traffic engineering you can
+>   then optimize your network to group subsets of VLANs to use
+>   different trees (MSTI). To my understanding, the way this is
+>   typically managed in silicon is roughly:
+> 
+>   Incoming packet:
+>   .----.----.--------------.----.-------------
+>   | DA | SA | 802.1Q VID=X | ET | Payload ...
+>   '----'----'--------------'----'-------------
+>                         |
+>                         '->|\     .----------------------------.
+>                            | +--> | VID | Members | ... | MSTI |
+>                    PVID -->|/     |-----|---------|-----|------|
+>                                   |   1 | 0001001 | ... |    0 |
+>                                   |   2 | 0001010 | ... |   10 |
+>                                   |   3 | 0001100 | ... |   10 |
+>                                   '----------------------------'
+>                                                              |
+>                                .-----------------------------'
+>                                |  .------------------------.
+>                                '->| MSTI | Fwding | Lrning |
+>                                   |------|--------|--------|
+>                                   |    0 | 111110 | 111110 |
+>                                   |   10 | 110111 | 110111 |
+>                                   '------------------------'
+> 
+>   What this is trying to show is that the STP state (whether MSTP is
+>   used, or ye olde STP) is always accessed via the VLAN table. If STP
+>   is running, all MSTI pointers in that table will reference the same
+>   index in the STP stable - if MSTP is running, some VLANs may point
+>   to other trees (like in this example).
+> 
+>   The fact that in the Linux bridge, the global state (think: index 0
+>   in most hardware implementations) is supposed to override the
+>   per-VLAN state, is very awkward to offload. In effect, this means
+>   that when the global state changes to blocking, drivers will have to
+>   iterate over all MSTIs in use, and alter them all to match. This
+>   also means that you have to cache whether the hardware state is
+>   currently tracking the global state or the per-VLAN state. In the
+>   first case, you also have to cache the per-VLAN state so that you
+>   can restore it if the global state transitions back to forwarding.
+> 
+> This series adds a new mst_enable bridge setting (as suggested by Nik)
+> that can only be changed when no VLANs are configured on the
+> bridge. Enabling this mode has the following effect:
+> 
+> - The port-global STP state is used to represent the CST (Common
+>   Spanning Tree) (1/15)
+> 
+> - Ingress STP filtering is deferred until the frame's VLAN has been
+>   resolved (1/15)
+> 
+> - The preexisting per-VLAN states can no longer be controlled directly
+>   (1/15). They are instead placed under the MST module's control,
+>   which is managed using a new netlink interface (described in 3/15)
+> 
+> - VLANs can br mapped to MSTIs in an arbitrary M:N fashion, using a
+>   new global VLAN option (2/15)
+> 
+> Switchdev notifications are added so that a driver can track:
+> - MST enabled state
+> - VID to MSTI mappings
+> - MST port states
+> 
+> An offloading implementation is this provided for mv88e6xxx.
+> 
+> A proposal for the corresponding iproute2 interface is available here:
+> 
+> https://github.com/wkz/iproute2/tree/mst
+> 
 
+Hi Tobias,
+One major missing thing is the selftests for this new feature. Do you
+have a plan to upstream them?
 
-On 15/03/2022 01:15, Jae Hyun Yoo wrote:
-> Hi Quan,
-> 
-> [...]
-> 
->> +static void on_read_requested_event(struct ssif_bmc_ctx *ssif_bmc, u8 
->> *val)
->> +{
->> +    if (ssif_bmc->state == SSIF_READY ||
->> +        ssif_bmc->state == SSIF_START ||
->> +        ssif_bmc->state == SSIF_REQ_RECVING ||
->> +        ssif_bmc->state == SSIF_RES_SENDING) {
->> +        ssif_bmc->state = SSIF_BAD_SMBUS;
->> +        dev_warn(&ssif_bmc->client->dev,
->> +             "Warn: %s unexpected READ REQUESTED in state=%s\n",
->> +             __func__, state_to_string(ssif_bmc->state));
-> 
-> It will print out that the case happens in SSIF_BAD_SMBUS state always
-> because ssif_bmc->state is already assigned as SSIF_BAD_SMBUS above.
-> Move the assignment to after the dev_warn printing.
-> 
-> [...]
-> 
-
-Thanks for pointing this out. Will fix this in next version.
-
->> +static const struct of_device_id ssif_bmc_match[] = {
->> +    { .compatible = "ampere,ssif-bmc" },
-> 
-> Does this driver have any Ampere specific handling? If not, it could be
-> "ssif-bmc" as a generic SSIF driver.
-> 
-Will change as you suggested in next version.
-
->> +    { },
->> +};
-> 
-> Add 'MODULE_DEVICE_TABLE(of, ssif_bmc_match);'
-> 
-Will do in next version
->> +
->> +static const struct i2c_device_id ssif_bmc_id[] = {
->> +    { DEVICE_NAME, 0 },
->> +    { },
->> +};
->> +
-> 
-> Remove this blank line.
-> 
-Will update in next version
-
->> +MODULE_DEVICE_TABLE(i2c, ssif_bmc_id);
->> +
->> +static struct i2c_driver ssif_bmc_driver = {
->> +    .driver         = {
->> +        .name           = DEVICE_NAME,
->> +        .of_match_table = ssif_bmc_match,
->> +    },
->> +    .probe          = ssif_bmc_probe,
->> +    .remove         = ssif_bmc_remove,
->> +    .id_table       = ssif_bmc_id,
->> +};
->> +
-> 
-> Remove this blank line too.
-> 
-> -Jae
->
-
-Thanks Jae for the review, will update in next version.
-- Quan
-
->> +module_i2c_driver(ssif_bmc_driver);
->> +
->> +MODULE_AUTHOR("Quan Nguyen <quan@os.amperecomputing.com>");
->> +MODULE_AUTHOR("Chuong Tran <chuong@os.amperecomputing.com>");
->> +MODULE_DESCRIPTION("Linux device driver of the BMC IPMI SSIF 
->> interface.");
->> +MODULE_LICENSE("GPL");
-> 
-> [...]
+Cheers,
+ Nik
