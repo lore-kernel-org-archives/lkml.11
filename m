@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C47EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E28C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:53:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233874AbiCQMwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
+        id S234194AbiCQMwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234135AbiCQMwO (ORCPT
+        with ESMTP id S234016AbiCQMwX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:52:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FD01C1ED6;
-        Thu, 17 Mar 2022 05:49:52 -0700 (PDT)
+        Thu, 17 Mar 2022 08:52:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393B11F83F4;
+        Thu, 17 Mar 2022 05:50:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 989AF61501;
-        Thu, 17 Mar 2022 12:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86B7CC36AE2;
-        Thu, 17 Mar 2022 12:49:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B76AA612AC;
+        Thu, 17 Mar 2022 12:49:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3DA8C340E9;
+        Thu, 17 Mar 2022 12:49:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521391;
-        bh=PQOuITHVPon9XW98JjJqKHvwOVzkW8LQEUKLykbyNTI=;
+        s=korg; t=1647521399;
+        bh=l5UBkHpHhHs/9/pI/wb4rOxpOmSD8CIB1JIiTa7lovk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vjycYEqpUzyA7IFVWUAbjOu5aX5MzfzoByaZ/NTLifo3eJQWqDwp8Wq4UK1yXBDON
-         6dEh9OhMAIMNvRLCPLrhPjSQAukjEE2uEmWqmua/83VAMind9rsfa/mvIptLGI2VM/
-         kn1mMDxw3w5STPtm1240xo+r6SDDGtg2aydhYqMA=
+        b=1L+bvY1GQ1LrqXA18FWP6z2fSC2Zl4TMiXHjX3jrrjinWjYVcrvxtIJswcYNPhWOB
+         e8YeyKg8ceGxcPE6plqBtBKNspTlI0f8kC8BksAEVgGM/5RxDY5JmZ4vcfN7D24ES/
+         xNc/NMO2BZhcXe2ZdwuRqJORVDv+ycP7p4Qptv7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 18/23] tcp: make tcp_read_sock() more robust
-Date:   Thu, 17 Mar 2022 13:45:59 +0100
-Message-Id: <20220317124526.486959846@linuxfoundation.org>
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.10 02/23] sctp: fix the processing for INIT chunk
+Date:   Thu, 17 Mar 2022 13:45:43 +0100
+Message-Id: <20220317124526.028103737@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
 References: <20220317124525.955110315@linuxfoundation.org>
@@ -52,50 +50,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit e3d5ea2c011ecb16fb94c56a659364e6b30fac94 ]
+commit eae5783908042a762c24e1bd11876edb91d314b1 upstream.
 
-If recv_actor() returns an incorrect value, tcp_read_sock()
-might loop forever.
+This patch fixes the problems below:
 
-Instead, issue a one time warning and make sure to make progress.
+1. In non-shutdown_ack_sent states: in sctp_sf_do_5_1B_init() and
+   sctp_sf_do_5_2_2_dupinit():
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/r/20220302161723.3910001-2-eric.dumazet@gmail.com
+  chunk length check should be done before any checks that may cause
+  to send abort, as making packet for abort will access the init_tag
+  from init_hdr in sctp_ootb_pkt_new().
+
+2. In shutdown_ack_sent state: in sctp_sf_do_9_2_reshutack():
+
+  The same checks as does in sctp_sf_do_5_2_2_dupinit() is needed
+  for sctp_sf_do_9_2_reshutack().
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ net/sctp/sm_statefuns.c |   71 +++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 46 insertions(+), 25 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 63c81af41b43..a3ec2a08027b 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1652,11 +1652,13 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 				if (!copied)
- 					copied = used;
- 				break;
--			} else if (used <= len) {
--				seq += used;
--				copied += used;
--				offset += used;
- 			}
-+			if (WARN_ON_ONCE(used > len))
-+				used = len;
-+			seq += used;
-+			copied += used;
-+			offset += used;
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -149,6 +149,12 @@ static enum sctp_disposition __sctp_sf_d
+ 					void *arg,
+ 					struct sctp_cmd_seq *commands);
+ 
++static enum sctp_disposition
++__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			   const struct sctp_association *asoc,
++			   const union sctp_subtype type, void *arg,
++			   struct sctp_cmd_seq *commands);
 +
- 			/* If recv_actor drops the lock (e.g. TCP splice
- 			 * receive) the skb pointer might be invalid when
- 			 * getting here: tcp_collapse might have deleted it
--- 
-2.34.1
-
+ /* Small helper function that checks if the chunk length
+  * is of the appropriate length.  The 'required_length' argument
+  * is set to be the size of a specific chunk we are testing.
+@@ -330,6 +336,14 @@ enum sctp_disposition sctp_sf_do_5_1B_in
+ 	if (!chunk->singleton)
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 
++	/* Make sure that the INIT chunk has a valid length.
++	 * Normally, this would cause an ABORT with a Protocol Violation
++	 * error, but since we don't have an association, we'll
++	 * just discard the packet.
++	 */
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* If the packet is an OOTB packet which is temporarily on the
+ 	 * control endpoint, respond with an ABORT.
+ 	 */
+@@ -344,14 +358,6 @@ enum sctp_disposition sctp_sf_do_5_1B_in
+ 	if (chunk->sctp_hdr->vtag != 0)
+ 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
+ 
+-	/* Make sure that the INIT chunk has a valid length.
+-	 * Normally, this would cause an ABORT with a Protocol Violation
+-	 * error, but since we don't have an association, we'll
+-	 * just discard the packet.
+-	 */
+-	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
+-		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+-
+ 	/* If the INIT is coming toward a closing socket, we'll send back
+ 	 * and ABORT.  Essentially, this catches the race of INIT being
+ 	 * backloged to the socket at the same time as the user isses close().
+@@ -1484,19 +1490,16 @@ static enum sctp_disposition sctp_sf_do_
+ 	if (!chunk->singleton)
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 
++	/* Make sure that the INIT chunk has a valid length. */
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* 3.1 A packet containing an INIT chunk MUST have a zero Verification
+ 	 * Tag.
+ 	 */
+ 	if (chunk->sctp_hdr->vtag != 0)
+ 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
+ 
+-	/* Make sure that the INIT chunk has a valid length.
+-	 * In this case, we generate a protocol violation since we have
+-	 * an association established.
+-	 */
+-	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
+-		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
+-						  commands);
+ 	/* Grab the INIT header.  */
+ 	chunk->subh.init_hdr = (struct sctp_inithdr *)chunk->skb->data;
+ 
+@@ -1814,9 +1817,9 @@ static enum sctp_disposition sctp_sf_do_
+ 	 * its peer.
+ 	*/
+ 	if (sctp_state(asoc, SHUTDOWN_ACK_SENT)) {
+-		disposition = sctp_sf_do_9_2_reshutack(net, ep, asoc,
+-				SCTP_ST_CHUNK(chunk->chunk_hdr->type),
+-				chunk, commands);
++		disposition = __sctp_sf_do_9_2_reshutack(net, ep, asoc,
++							 SCTP_ST_CHUNK(chunk->chunk_hdr->type),
++							 chunk, commands);
+ 		if (SCTP_DISPOSITION_NOMEM == disposition)
+ 			goto nomem;
+ 
+@@ -2915,13 +2918,11 @@ enum sctp_disposition sctp_sf_do_9_2_shu
+  * that belong to this association, it should discard the INIT chunk and
+  * retransmit the SHUTDOWN ACK chunk.
+  */
+-enum sctp_disposition sctp_sf_do_9_2_reshutack(
+-					struct net *net,
+-					const struct sctp_endpoint *ep,
+-					const struct sctp_association *asoc,
+-					const union sctp_subtype type,
+-					void *arg,
+-					struct sctp_cmd_seq *commands)
++static enum sctp_disposition
++__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			   const struct sctp_association *asoc,
++			   const union sctp_subtype type, void *arg,
++			   struct sctp_cmd_seq *commands)
+ {
+ 	struct sctp_chunk *chunk = arg;
+ 	struct sctp_chunk *reply;
+@@ -2955,6 +2956,26 @@ nomem:
+ 	return SCTP_DISPOSITION_NOMEM;
+ }
+ 
++enum sctp_disposition
++sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			 const struct sctp_association *asoc,
++			 const union sctp_subtype type, void *arg,
++			 struct sctp_cmd_seq *commands)
++{
++	struct sctp_chunk *chunk = arg;
++
++	if (!chunk->singleton)
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
++	if (chunk->sctp_hdr->vtag != 0)
++		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
++
++	return __sctp_sf_do_9_2_reshutack(net, ep, asoc, type, arg, commands);
++}
++
+ /*
+  * sctp_sf_do_ecn_cwr
+  *
 
 
