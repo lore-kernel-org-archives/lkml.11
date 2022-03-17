@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333A5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8D1C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234770AbiCQM6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
+        id S234643AbiCQM55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:57:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235016AbiCQMyX (ORCPT
+        with ESMTP id S234992AbiCQMyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:54:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94FB1EC6D;
-        Thu, 17 Mar 2022 05:53:07 -0700 (PDT)
+        Thu, 17 Mar 2022 08:54:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3751EC6D;
+        Thu, 17 Mar 2022 05:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57B1E61578;
-        Thu, 17 Mar 2022 12:53:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34AE9C340E9;
-        Thu, 17 Mar 2022 12:53:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E8411CE2336;
+        Thu, 17 Mar 2022 12:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF22EC340E9;
+        Thu, 17 Mar 2022 12:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521586;
-        bh=yv24BEIQB2Wa9G21wq5trSJnLc3FQVzB/HOeXIspnWk=;
+        s=korg; t=1647521579;
+        bh=5nw7cHt/RTx/pOOhvfo54s8PdS6J/svkQh4QT7q+nsg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GCWssIRfFt7sPSBBx3n8wRbQtkSr84RgCLDw1ijymaxg6AxsVAurp9TYLoczn29bS
-         DhAwupciTm+SxqJp3yK9llc5pvSM61TFNkS80HLyUGg2BhANZV5DwrB1tg7LevIOeu
-         itNTrQLjOfDSItVkL3buf/D4bc1Xng3ijuuRH8js=
+        b=US2BZAN8vnwgRJkm5XzPOF2+nF6G6J5r/JRz2bpWaqEq+4A3No8GkR1LUBNO1qZ1O
+         excL/iDH1LfLMERMAzjbHX8licbd/xMWjqUSQBdUu0Mwd/Tu1Q0peofTcEoXUwmyAH
+         Q7b+bCbqjZVkXbWjIdZuah+y0/jJPlK4hXFYByts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Ulrich Hecht <uli+renesas@fpond.eu>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 18/28] netfilter: egress: silence egress hook lockdep splats
-Date:   Thu, 17 Mar 2022 13:46:09 +0100
-Message-Id: <20220317124527.285482124@linuxfoundation.org>
+Subject: [PATCH 5.16 16/28] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
+Date:   Thu, 17 Mar 2022 13:46:07 +0100
+Message-Id: <20220317124527.228586235@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -50,43 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 17a8f31bba7bac8cce4bd12bab50697da96e7710 ]
+[ Upstream commit c5048a7b2c23ab589f3476a783bd586b663eda5b ]
 
-Netfilter assumes its called with rcu_read_lock held, but in egress
-hook case it may be called with BH readlock.
+Register the CAN device only when all the necessary initialization is
+completed. This patch makes sure all the data structures and locks are
+initialized before registering the CAN device.
 
-This triggers lockdep splat.
-
-In order to avoid to change all rcu_dereference() to
-rcu_dereference_check(..., rcu_read_lock_bh_held()), wrap nf_hook_slow
-with read lock/unlock pair.
-
-Reported-by: Eric Dumazet <eric.dumazet@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Link: https://lore.kernel.org/all/20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com
+Reported-by: Pavel Machek <pavel@denx.de>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Pavel Machek <pavel@denx.de>
+Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netfilter_netdev.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/can/rcar/rcar_canfd.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/netfilter_netdev.h b/include/linux/netfilter_netdev.h
-index b4dd96e4dc8d..e6487a691136 100644
---- a/include/linux/netfilter_netdev.h
-+++ b/include/linux/netfilter_netdev.h
-@@ -101,7 +101,11 @@ static inline struct sk_buff *nf_hook_egress(struct sk_buff *skb, int *rc,
- 	nf_hook_state_init(&state, NF_NETDEV_EGRESS,
- 			   NFPROTO_NETDEV, dev, NULL, NULL,
- 			   dev_net(dev), NULL);
-+
-+	/* nf assumes rcu_read_lock, not just read_lock_bh */
-+	rcu_read_lock();
- 	ret = nf_hook_slow(skb, &state, e, 0);
-+	rcu_read_unlock();
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 137eea4c7bad..4871428859fd 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1716,15 +1716,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
  
- 	if (ret == 1) {
- 		return skb;
+ 	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
+ 		       RCANFD_NAPI_WEIGHT);
++	spin_lock_init(&priv->tx_lock);
++	devm_can_led_init(ndev);
++	gpriv->ch[priv->channel] = priv;
+ 	err = register_candev(ndev);
+ 	if (err) {
+ 		dev_err(&pdev->dev,
+ 			"register_candev() failed, error %d\n", err);
+ 		goto fail_candev;
+ 	}
+-	spin_lock_init(&priv->tx_lock);
+-	devm_can_led_init(ndev);
+-	gpriv->ch[priv->channel] = priv;
+ 	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
+ 	return 0;
+ 
 -- 
 2.34.1
 
