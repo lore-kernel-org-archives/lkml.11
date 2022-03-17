@@ -2,201 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbiCQGNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40494 "EHLO
+        id S229748AbiCQGOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:14:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbiCQGNN (ORCPT
+        with ESMTP id S229677AbiCQGOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:13:13 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CB922B6DD;
-        Wed, 16 Mar 2022 23:03:06 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KJxQB2vQXz4xgw;
-        Thu, 17 Mar 2022 17:02:58 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647496982;
-        bh=helC+++jzqQi70QZ5QorRw4r/De1RHWf4TMymlE5AK8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=A7cNfq6P5+VB8R1Pjr8lSsYuZ3Kiyq7PtPQJ9xAphqKnX1Cy892yXGGN9bYvNz+f4
-         lkK1XGMzP0Vaf4QI9S166s9A0oBcvOb7CbECEorsp5eBYE8+2iKnyAbUuefrsWE6KX
-         0h3mt/sYmNODtfzIMAq8rN6CVMVRWBzfUYFF21Wy9r5s/2OtxicLA0YGwl8c1fzbMj
-         SPLWAYTR8aIvPE1oVpeZC+PHUbDj6bTpQHm/sHoy8BREGnqSNfiKYUMX9kPLgk5jNc
-         5Zyon3b/vbaTDzruZpq0BaznlH8fDqUGhmb8ZnJkiLuNRCmVFF/kw3Qqsuf7NeSFKX
-         rhloTVUCkCL2g==
-Date:   Thu, 17 Mar 2022 17:02:54 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Daniel Xu <dxu@dxuuu.xyz>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        Douglas Su <d0u9.su@outlook.com>,
-        Elliot Berman <quic_eberman@quicinc.com>,
-        Finn Behrens <me@kloenk.de>, Gary Guo <gary@garyguo.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Miguel Cano <macanroj@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Subject: linux-next: manual merge of the rust tree with the kbuild tree
-Message-ID: <20220317170254.0f6e3bac@canb.auug.org.au>
+        Thu, 17 Mar 2022 02:14:20 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD52160169
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:51:58 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id o106-20020a9d2273000000b005b21f46878cso2894636ota.3
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:51:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mVK6yG1N+cUUmYWJ6VDT2FBBH+Bt39KheCAm4I/IFoU=;
+        b=HqgLE2UhXsyEjjV27aBFaUHc/bInHEQ6a2qWWJ2gFJ4YWeT6x70E62GT9/SNxpS9BC
+         hVboR/wsog/4J2eHJHvsx6BRtcvbNmhebS3IuNwj/56vdBlmhF9alw6tf/MW9O+b3RRO
+         IFeD9fcfrdcx8tKUrqMqW8F9nbw1jVhMIR2GXW0YqLiSDZZNQzGL5xV++DV0tj1Fy7nu
+         wOvwU0fH4eEcHPdKmN5/7ogJF3I69DNPFknjwwN0xH64UxRDlC/uxEqOg3MfK6L/m7r9
+         95LgtI00CYke9yaqaZfRxFn12B/rP7IRU4Te25vjCvez+/gxB1OvbcZ5aq8Ew/0yzmTQ
+         rQXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mVK6yG1N+cUUmYWJ6VDT2FBBH+Bt39KheCAm4I/IFoU=;
+        b=yYIiowpaOMME6CJP8mLJNPqeaf8sI6GuOiRKq36SNvsGFsg8xLKUIrRU9kU4MZYTbC
+         anup2mtkzdr9dJHjJiTTgR0ktvq1nSpwsm+Mvx4azyopzIzbEdCQ4hrqJ65GLV6ZhokZ
+         W6uI2tRyRYuBy7xpOGvaUrbXzx8Vv/YEcMPVksC0PNIKKgIwIAJt89Mh/VisV7MfW7G1
+         jfURpAZZLjk4mCeM/oSDlEDSNnJOHRQC+MluUt7er+aeEklsAoX9PjU2JqdBJP+NNfwM
+         pCMRQJxJFEQKdKhH9Zt/IJlrrZ/6iPSRqI+bjITnnZnExJPZ0xYK6TvWt1NhYOr5YNFB
+         Y25g==
+X-Gm-Message-State: AOAM532jTQtY1AKz42Q26vHbyyWZNYpT/Qae8Bt4M794GlfE/3viGQWt
+        ZITeQ3+mhYShRfgPLfLjoQkkYIIXYx92VR4KecaWMg==
+X-Google-Smtp-Source: ABdhPJy76ekb2NCVSFjRseDkxr8YndloWbyFI2Kene2D11LYpSoDDR+0DsqVEoxwIJtDNmrqYXTmeWkJlfA18gm9Vd0=
+X-Received: by 2002:a05:6830:c7:b0:5c9:6536:5b96 with SMTP id
+ x7-20020a05683000c700b005c965365b96mr1086862oto.28.1647496317475; Wed, 16 Mar
+ 2022 22:51:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/BPgSHN+3IZml_gI+tb=ng6p";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20220226184028.111566-1-bhupesh.sharma@linaro.org>
+ <20220226184028.111566-4-bhupesh.sharma@linaro.org> <YjC8bfY2U1WyV8FY@builder.lan>
+In-Reply-To: <YjC8bfY2U1WyV8FY@builder.lan>
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Date:   Thu, 17 Mar 2022 11:21:46 +0530
+Message-ID: <CAH=2NtzHfqiFi8NKqQ=m24buzVsMT392ObOQ6ahT5BXB=fv6Hw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] arm64: dts: qcom: sm8150: Add pdc interrupt
+ controller node
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, maz@kernel.org,
+        quic_mkshah@quicinc.com, linux-gpio@vger.kernel.org,
+        linus.walleij@linaro.org, robh+dt@kernel.org,
+        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/BPgSHN+3IZml_gI+tb=ng6p
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Bjorn,
 
-Hi all,
+Thanks for your review.
 
-Today's linux-next merge of the rust tree got a conflict in:
+On Tue, 15 Mar 2022 at 21:48, Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> On Sat 26 Feb 12:40 CST 2022, Bhupesh Sharma wrote:
+>
+> > Add pdc interrupt controller for sm8150.
+> >
+> > Cc: Maulik Shah <quic_mkshah@quicinc.com>
+> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > Cc: Vinod Koul <vkoul@kernel.org>
+> > Cc: Rob Herring <robh@kernel.org>
+> > Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> > ---
+> >  arch/arm64/boot/dts/qcom/sm8150.dtsi | 10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> >
+> > diff --git a/arch/arm64/boot/dts/qcom/sm8150.dtsi b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> > index 6012322a5984..aaeacd379460 100644
+> > --- a/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sm8150.dtsi
+> > @@ -1626,6 +1626,16 @@ system-cache-controller@9200000 {
+> >                       interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
+> >               };
+> >
+> > +             pdc: interrupt-controller@b220000 {
+> > +                     compatible = "qcom,sm8150-pdc", "qcom,pdc";
+> > +                     reg = <0 0x0b220000 0 0x400>;
+> > +                     qcom,pdc-ranges = <0 480 94>, <94 609 31>,
+> > +                                       <125 63 1>;
+>
+> When I look at the platform documentation I get the impression that this
+> should be: <0 480 94>, <94 609 32>;
+>
+> Can you confirm that the last signal is correctly described?
 
-  Makefile
+Yes, I confirmed by double checking the entries in downstream 'pdc-sm8150.c'.
+The pdc pins in the 2nd range start from 94 and end at 124, so a total
+of 31 entries, but both 94 and 124 pins included.
 
-between commit:
+Or, am I missing something?
 
-  f67695c9962e ("kbuild: Add environment variables for userprogs flags")
+Thanks,
+Bhupesh
 
-from the kbuild tree and commit:
-
-  e2e7cf27b587 ("Kbuild: add Rust support")
-
-from the rust tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc Makefile
-index d2269ea42eac,67008a2d964c..000000000000
---- a/Makefile
-+++ b/Makefile
-@@@ -430,15 -437,32 +437,34 @@@ els
-  HOSTCC	=3D gcc
-  HOSTCXX	=3D g++
-  endif
-+ HOSTRUSTC =3D rustc
- =20
- -export KBUILD_USERCFLAGS :=3D -Wall -Wmissing-prototypes -Wstrict-prototy=
-pes \
- -			      -O2 -fomit-frame-pointer -std=3Dgnu89
- -export KBUILD_USERLDFLAGS :=3D
- +KBUILD_USERHOSTCFLAGS :=3D -Wall -Wmissing-prototypes -Wstrict-prototypes=
- \
- +			 -O2 -fomit-frame-pointer -std=3Dgnu11 \
- +			 -Wdeclaration-after-statement
- +KBUILD_USERCFLAGS  :=3D $(KBUILD_USERHOSTCFLAGS) $(USERCFLAGS)
- +KBUILD_USERLDFLAGS :=3D $(USERLDFLAGS)
- =20
-+ # These flags apply to all Rust code in the tree, including the kernel and
-+ # host programs.
-+ export rust_common_flags :=3D --edition=3D2021 \
-+ 			    -Zbinary_dep_depinfo=3Dy \
-+ 			    -Dunsafe_op_in_unsafe_fn -Drust_2018_idioms \
-+ 			    -Dunreachable_pub -Dnon_ascii_idents \
-+ 			    -Wmissing_docs \
-+ 			    -Drustdoc::missing_crate_level_docs \
-+ 			    -Dclippy::correctness -Dclippy::style \
-+ 			    -Dclippy::suspicious -Dclippy::complexity \
-+ 			    -Dclippy::perf \
-+ 			    -Dclippy::let_unit_value -Dclippy::mut_mut \
-+ 			    -Dclippy::needless_bitwise_bool \
-+ 			    -Dclippy::needless_continue \
-+ 			    -Wclippy::dbg_macro
-+=20
- -KBUILD_HOSTCFLAGS   :=3D $(KBUILD_USERCFLAGS) $(HOST_LFS_CFLAGS) $(HOSTCF=
-LAGS)
- +KBUILD_HOSTCFLAGS   :=3D $(KBUILD_USERHOSTCFLAGS) $(HOST_LFS_CFLAGS) $(HO=
-STCFLAGS)
-  KBUILD_HOSTCXXFLAGS :=3D -Wall -O2 $(HOST_LFS_CFLAGS) $(HOSTCXXFLAGS)
-+ KBUILD_HOSTRUSTFLAGS :=3D $(rust_common_flags) -O -Cstrip=3Ddebuginfo \
-+ 			-Zallow-features=3D $(HOSTRUSTFLAGS)
-  KBUILD_HOSTLDFLAGS  :=3D $(HOST_LFS_LDFLAGS) $(HOSTLDFLAGS)
-  KBUILD_HOSTLDLIBS   :=3D $(HOST_LFS_LIBS) $(HOSTLDLIBS)
- =20
-@@@ -517,12 -549,23 +551,23 @@@ KBUILD_CFLAGS   :=3D -Wall -Wundef -Werro
-  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
-  		   -Werror=3Dimplicit-function-declaration -Werror=3Dimplicit-int \
-  		   -Werror=3Dreturn-type -Wno-format-security \
- -		   -std=3Dgnu89
- +		   -std=3Dgnu11
-  KBUILD_CPPFLAGS :=3D -D__KERNEL__
-+ KBUILD_RUSTFLAGS :=3D $(rust_common_flags) \
-+ 		    --target=3D$(objtree)/rust/target.json \
-+ 		    -Cpanic=3Dabort -Cembed-bitcode=3Dn -Clto=3Dn \
-+ 		    -Cforce-unwind-tables=3Dn -Ccodegen-units=3D1 \
-+ 		    -Csymbol-mangling-version=3Dv0 \
-+ 		    -Crelocation-model=3Dstatic \
-+ 		    -Zfunction-sections=3Dn \
-+ 		    -Dclippy::float_arithmetic
-+=20
-  KBUILD_AFLAGS_KERNEL :=3D
-  KBUILD_CFLAGS_KERNEL :=3D
-+ KBUILD_RUSTFLAGS_KERNEL :=3D
-  KBUILD_AFLAGS_MODULE  :=3D -DMODULE
-  KBUILD_CFLAGS_MODULE  :=3D -DMODULE
-+ KBUILD_RUSTFLAGS_MODULE :=3D --cfg MODULE
-  KBUILD_LDFLAGS_MODULE :=3D
-  KBUILD_LDFLAGS :=3D
-  CLANG_FLAGS :=3D
-@@@ -783,9 -858,12 +861,12 @@@ KBUILD_CFLAGS +=3D $(stackp-flags-y
-  KBUILD_CFLAGS-$(CONFIG_WERROR) +=3D -Werror
-  KBUILD_CFLAGS +=3D $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
- =20
-+ KBUILD_RUSTFLAGS-$(CONFIG_WERROR) +=3D -Dwarnings
-+ KBUILD_RUSTFLAGS +=3D $(KBUILD_RUSTFLAGS-y)
-+=20
-  ifdef CONFIG_CC_IS_CLANG
-  KBUILD_CPPFLAGS +=3D -Qunused-arguments
- -# The kernel builds with '-std=3Dgnu89' so use of GNU extensions is accep=
-table.
- +# The kernel builds with '-std=3Dgnu11' so use of GNU extensions is accep=
-table.
-  KBUILD_CFLAGS +=3D -Wno-gnu
-  # CLANG uses a _MergedGlobals as optimization, but this breaks modpost, a=
-s the
-  # source of a reference will be _MergedGlobals and not on of the whitelis=
-ted names.
-
---Sig_/BPgSHN+3IZml_gI+tb=ng6p
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIyzw4ACgkQAVBC80lX
-0GyefQgAieBGh2nAAPUJilnI9hVlKmg3eYr2zwzsGaAD1zwPNVykP8Dr67b9PXx/
-LTiYyJbgg2eHDA5OiyRLr0Hf0GkyrxIMsPl7Onw/50oL4kLDww8lgEnEtdg5uvla
-CWnGURHzWgmb0x5iVNGN177a/ssoUuXkHSW7eH2Fu8VRhl31VKp88xWGLSVTenwI
-+gpSdPXb1A03hoRY2sFhu46oyX5fgdkacxRngjSX9b5FFYzoWHiZmDpFUZu9IDAt
-UHXoOlUdekQ+XLWv5B7K37kMATrFGdfDlCzVPIYpu5+mRqsyCZyaV1UP4yupO/9v
-JXLWv24edim2b97zGPOdk8bQalko8Q==
-=r15x
------END PGP SIGNATURE-----
-
---Sig_/BPgSHN+3IZml_gI+tb=ng6p--
+> > +                     #interrupt-cells = <2>;
+> > +                     interrupt-parent = <&intc>;
+> > +                     interrupt-controller;
+> > +             };
+> > +
+> >               ufs_mem_hc: ufshc@1d84000 {
+> >                       compatible = "qcom,sm8150-ufshc", "qcom,ufshc",
+> >                                    "jedec,ufs-2.0";
+> > --
+> > 2.35.1
+> >
