@@ -2,144 +2,302 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2761C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB586C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236389AbiCQQNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 12:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
+        id S236394AbiCQQNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 12:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232842AbiCQQN3 (ORCPT
+        with ESMTP id S236401AbiCQQNk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 12:13:29 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B05214F95;
-        Thu, 17 Mar 2022 09:12:13 -0700 (PDT)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22HGA7Mb001466;
-        Thu, 17 Mar 2022 16:11:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : references : date : in-reply-to : message-id : content-type :
- mime-version; s=pp1; bh=p25VD7f9NEbYVMjA8oW0QFkZVMeTUhG3CnH7cS//y/k=;
- b=X9yFhI44zN/g5Djdk7CUVe3XnJ2j55gpP8zMApLg81dXRdugfttKvk7dcCMrAOISaezK
- Vag3hzezdHuU9lV6FuhPd8E1aaBkjdMqJY6UjedClTXjBOLZvfKFPwKfIt7RfLNIgFPk
- ou9lOq7QRacw+dpgEh7JaVZ8O6sv5mY75j8VJetIN1+WkPtWw0yz5fsuhZgJh2QB/394
- +QB/iZu4DGng16LIQzti5X8jM5psouV0fMi05tXl8ARsXeGXA6ZcCY1ZsIw+xqUWWU8+
- E0oznKOxI8ngGlQF4HR1qUvNIX7twIKPZ6Eq3kI6nE9HJNlu9Z8NSqqSJgmpbZ5C1C8d Sg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ev1vq0grp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Mar 2022 16:11:49 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22HGAAco001870;
-        Thu, 17 Mar 2022 16:11:49 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ev1vq0gqw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Mar 2022 16:11:49 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22HFx27Q003925;
-        Thu, 17 Mar 2022 16:11:46 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3erk593r4x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Mar 2022 16:11:46 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22HGBhpe29164004
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Mar 2022 16:11:43 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3E0B0A405B;
-        Thu, 17 Mar 2022 16:11:43 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DD193A4054;
-        Thu, 17 Mar 2022 16:11:42 +0000 (GMT)
-Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Thu, 17 Mar 2022 16:11:42 +0000 (GMT)
-From:   Sven Schnelle <svens@linux.ibm.com>
-To:     Ritesh Harjani <riteshh@linux.ibm.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>, linux-ext4@vger.kernel.org,
-        Jan Kara <jack@suse.cz>, "Theodore Ts'o" <tytso@mit.edu>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@kernel.org, hca@linux.ibm.com
-Subject: Re: [PATCHv3 02/10] ext4: Fix ext4_fc_stats trace point
-References: <cover.1647057583.git.riteshh@linux.ibm.com>
-        <b4b9691414c35c62e570b723e661c80674169f9a.1647057583.git.riteshh@linux.ibm.com>
-        <yt9dr1706b4i.fsf@linux.ibm.com>
-        <20220317145008.73nm7hqtccyjy353@riteshh-domain>
-Date:   Thu, 17 Mar 2022 17:11:42 +0100
-In-Reply-To: <20220317145008.73nm7hqtccyjy353@riteshh-domain> (Ritesh
-        Harjani's message of "Thu, 17 Mar 2022 20:20:08 +0530")
-Message-ID: <yt9d1qz05zk1.fsf@linux.ibm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: uOqWNEA3DQxmNIk6-ZvU0e3rRTxJ6Cya
-X-Proofpoint-ORIG-GUID: cEKF-wgx2ytzbbcc3RIkPT8_WeRzuC-x
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 17 Mar 2022 12:13:40 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A38A215453
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:12:21 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id r7so3402148wmq.2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:12:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pXtqp8iuAz8ol8GDqPVE/H1Hyn8eNzNnz8ekbU+Hmwo=;
+        b=CPnUpNsj8Hj1XGqs2SJeL5iW/7Z/awl6wloKV6MiaYjgBco5AT8o8xWb8zFyd3bdP8
+         qTSRy8fDUAuqJ4k060r14ggrCqqOATgAAH3VqLi4Bu7UNzTU5l9Y38bxX1K2tjE/Sww4
+         12cHTUt2qQs3b/sNPTJHfKbKGYqg97duxbmbXph7A8zy1hDFzJRSoiuO7JYFysLydMoc
+         1w09yG1VwVXqpuibHzr1d96+ViEs6sIHQpkDz/yL25/dadR3JWeh/9pRqJr4FH06PfHe
+         y59mqRMXZlEB9ZkG3Npxv401QxGoxC2FYEzh+HI3J5qOUk20N87/2WNDo5tc/iw2rXX7
+         LulQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pXtqp8iuAz8ol8GDqPVE/H1Hyn8eNzNnz8ekbU+Hmwo=;
+        b=UyAsETF5+9eeUtA1G02fw5gtVdPcfLptYCKMCenODK9nLzAMkd4RN0LoX0+oCEvOGa
+         0pkc5g/LXq1qUu1uQxnnjpgNUe4a59TPTLUCKa0y2OORKP56ePodoaKpECa9DldIoadH
+         Y9+M2XfxhO3/7xSVL0tvfop6GoBieoP3qAy+UpMbRmjUJUAbhLkbH9iHvrlC7oHHJNUY
+         XVXQ5Xxn0z3dwwuGThsWvlk6rkn41Drk4Vc3JTWZ+KZGmzn0/xrdygWCi3pJ9Qasyvoe
+         iaC0JdHA80g16asrK9HvyQ/dWOWAgtgvvFETvqqJ+jg/Aa3Zt5XB89vwb9yddoRam9ec
+         gKsQ==
+X-Gm-Message-State: AOAM5336N9s3BeZqpvZRvYU8WpZFusdjE4r6klTesRedhNCb4Y+K5SBZ
+        v17+4y4JZs9elch1DTpAYsmwcVt/KzkonZv/N7U=
+X-Google-Smtp-Source: ABdhPJz3P9FkP1bWgVUHNiTWpz4nMrwBTVKAgukRWLso36ZSA+d1U/sb4Pw2jD4jzVsQcJa+SOamChWHDIiq4zEGn2o=
+X-Received: by 2002:a05:600c:35d6:b0:38c:4358:8e30 with SMTP id
+ r22-20020a05600c35d600b0038c43588e30mr4756809wmq.102.1647533539863; Thu, 17
+ Mar 2022 09:12:19 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-17_06,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
- suspectscore=0 spamscore=0 clxscore=1015 impostorscore=0 adultscore=0
- priorityscore=1501 bulkscore=0 malwarescore=0 mlxlogscore=874 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203170092
+References: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
+ <20220314224253.236359-7-dmitry.osipenko@collabora.com> <CAF6AEGsmtM6rTJtOJwTA49cwW7wCjF53Devzodd_PzLO0EOkVw@mail.gmail.com>
+ <be3b09ff-08ea-3e13-7d8c-06af6fffbd8f@collabora.com>
+In-Reply-To: <be3b09ff-08ea-3e13-7d8c-06af6fffbd8f@collabora.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Thu, 17 Mar 2022 09:13:00 -0700
+Message-ID: <CAF6AEGv2Ob7_Zp3+m-16QExDTM9vYfAkeSuBtjWG7ukHnY73UA@mail.gmail.com>
+Subject: Re: [PATCH v2 6/8] drm/shmem-helper: Add generic memory shrinker
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
+        Gurchetan Singh <gurchetansingh@chromium.org>,
+        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Daniel Almeida <daniel.almeida@collabora.com>,
+        Gert Wollny <gert.wollny@collabora.com>,
+        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Rob Herring <robh@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:VIRTIO GPU DRIVER" 
+        <virtualization@lists.linux-foundation.org>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Dmitry Osipenko <digetx@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-Ritesh Harjani <riteshh@linux.ibm.com> writes:
-
-> On 22/03/17 01:01PM, Sven Schnelle wrote:
->> Ritesh Harjani <riteshh@linux.ibm.com> writes:
->>
->> [    0.958403] Hardware name: IBM 3906 M04 704 (z/VM 7.1.0)
->> [    0.958407] Workqueue: eval_map_wq eval_map_work_func
->>
->> [    0.958446] Krnl PSW : 0704e00180000000 000000000090a9d6 (number+0x25e/0x3c0)
->> [    0.958456]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:2 PM:0 RI:0 EA:3
->> [    0.958461] Krnl GPRS: 0000000000000058 00000000010de0ac 0000000000000001 00000000fffffffc
->> [    0.958467]            0000038000047b80 0affffff010de0ab 0000000000000000 0000000000000000
->> [    0.958481]            0000000000000020 0000038000000000 00000000010de0ad 00000000010de0ab
->> [    0.958484]            0000000080312100 0000000000e68910 0000038000047b50 0000038000047ab8
->> [    0.958494] Krnl Code: 000000000090a9c6: f0c84112b001        srp     274(13,%r4),1(%r11),8
->> [    0.958494]            000000000090a9cc: 41202001            la      %r2,1(%r2)
->> [    0.958494]           #000000000090a9d0: ecab0006c065        clgrj   %r10,%r11,12,000000000090a9dc
->> [    0.958494]           >000000000090a9d6: d200b0004000        mvc     0(1,%r11),0(%r4)
->> [    0.958494]            000000000090a9dc: 41b0b001            la      %r11,1(%r11)
->> [    0.958494]            000000000090a9e0: a74bffff
->>             aghi    %r4,-1
->> [    0.958494]            000000000090a9e4: a727fff6            brctg   %r2,000000000090a9d0
->> [    0.958494]            000000000090a9e8: a73affff            ahi     %r3,-1
->> [    0.958575] Call Trace:
->> [    0.958580]  [<000000000090a9d6>] number+0x25e/0x3c0
->> [    0.958594] ([<0000000000289516>] update_event_printk+0xde/0x200)
->> [    0.958602]  [<0000000000910020>] vsnprintf+0x4b0/0x7c8
->> [    0.958606]  [<00000000009103e8>] snprintf+0x40/0x50
->> [    0.958610]  [<00000000002893d2>] eval_replace+0x62/0xc8
->> [    0.958614]  [<000000000028e2fe>] trace_event_eval_update+0x206/0x248
+On Wed, Mar 16, 2022 at 5:13 PM Dmitry Osipenko
+<dmitry.osipenko@collabora.com> wrote:
 >
-> This looks like you must have this patch from Steven as well [2].
-> Although I did test the patch and didn't see such a crash on my qemu box [3].
+> On 3/16/22 23:00, Rob Clark wrote:
+> > On Mon, Mar 14, 2022 at 3:44 PM Dmitry Osipenko
+> > <dmitry.osipenko@collabora.com> wrote:
+> >>
+> >> Introduce a common DRM SHMEM shrinker. It allows to reduce code
+> >> duplication among DRM drivers, it also handles complicated lockings
+> >> for the drivers. This is initial version of the shrinker that covers
+> >> basic needs of GPU drivers.
+> >>
+> >> This patch is based on a couple ideas borrowed from Rob's Clark MSM
+> >> shrinker and Thomas' Zimmermann variant of SHMEM shrinker.
+> >>
+> >> GPU drivers that want to use generic DRM memory shrinker must support
+> >> generic GEM reservations.
+> >>
+> >> Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
+> >> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+> >> ---
+> >>  drivers/gpu/drm/drm_gem_shmem_helper.c | 194 +++++++++++++++++++++++++
+> >>  include/drm/drm_device.h               |   4 +
+> >>  include/drm/drm_gem.h                  |  11 ++
+> >>  include/drm/drm_gem_shmem_helper.h     |  25 ++++
+> >>  4 files changed, 234 insertions(+)
+> >>
+> >> diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
+> >> index 37009418cd28..35be2ee98f11 100644
+> >> --- a/drivers/gpu/drm/drm_gem_shmem_helper.c
+> >> +++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
+> >> @@ -139,6 +139,9 @@ void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
+> >>  {
+> >>         struct drm_gem_object *obj = &shmem->base;
+> >>
+> >> +       /* take out shmem GEM object from the memory shrinker */
+> >> +       drm_gem_shmem_madvise(shmem, 0);
+> >> +
+> >>         WARN_ON(shmem->vmap_use_count);
+> >>
+> >>         if (obj->import_attach) {
+> >> @@ -163,6 +166,42 @@ void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
+> >>  }
+> >>  EXPORT_SYMBOL_GPL(drm_gem_shmem_free);
+> >>
+> >> +static void drm_gem_shmem_update_purgeable_status(struct drm_gem_shmem_object *shmem)
+> >> +{
+> >> +       struct drm_gem_object *obj = &shmem->base;
+> >> +       struct drm_gem_shmem_shrinker *gem_shrinker = obj->dev->shmem_shrinker;
+> >> +       size_t page_count = obj->size >> PAGE_SHIFT;
+> >> +
+> >> +       if (!gem_shrinker || obj->import_attach || !obj->funcs->purge)
+> >> +               return;
+> >> +
+> >> +       mutex_lock(&shmem->vmap_lock);
+> >> +       mutex_lock(&shmem->pages_lock);
+> >> +       mutex_lock(&gem_shrinker->lock);
+> >> +
+> >> +       if (shmem->madv < 0) {
+> >> +               list_del_init(&shmem->madv_list);
+> >> +               goto unlock;
+> >> +       } else if (shmem->madv > 0) {
+> >> +               if (!list_empty(&shmem->madv_list))
+> >> +                       goto unlock;
+> >> +
+> >> +               WARN_ON(gem_shrinker->shrinkable_count + page_count < page_count);
+> >> +               gem_shrinker->shrinkable_count += page_count;
+> >> +
+> >> +               list_add_tail(&shmem->madv_list, &gem_shrinker->lru);
+> >> +       } else if (!list_empty(&shmem->madv_list)) {
+> >> +               list_del_init(&shmem->madv_list);
+> >> +
+> >> +               WARN_ON(gem_shrinker->shrinkable_count < page_count);
+> >> +               gem_shrinker->shrinkable_count -= page_count;
+> >> +       }
+> >> +unlock:
+> >> +       mutex_unlock(&gem_shrinker->lock);
+> >> +       mutex_unlock(&shmem->pages_lock);
+> >> +       mutex_unlock(&shmem->vmap_lock);
+> >> +}
+> >> +
+> >>  static int drm_gem_shmem_get_pages_locked(struct drm_gem_shmem_object *shmem)
+> >>  {
+> >>         struct drm_gem_object *obj = &shmem->base;
+> >> @@ -366,6 +405,8 @@ int drm_gem_shmem_vmap(struct drm_gem_shmem_object *shmem,
+> >>         ret = drm_gem_shmem_vmap_locked(shmem, map);
+> >>         mutex_unlock(&shmem->vmap_lock);
+> >>
+> >> +       drm_gem_shmem_update_purgeable_status(shmem);
+> >> +
+> >>         return ret;
+> >>  }
+> >>  EXPORT_SYMBOL(drm_gem_shmem_vmap);
+> >> @@ -409,6 +450,8 @@ void drm_gem_shmem_vunmap(struct drm_gem_shmem_object *shmem,
+> >>         mutex_lock(&shmem->vmap_lock);
+> >>         drm_gem_shmem_vunmap_locked(shmem, map);
+> >>         mutex_unlock(&shmem->vmap_lock);
+> >> +
+> >> +       drm_gem_shmem_update_purgeable_status(shmem);
+> >>  }
+> >>  EXPORT_SYMBOL(drm_gem_shmem_vunmap);
+> >>
+> >> @@ -451,6 +494,8 @@ int drm_gem_shmem_madvise(struct drm_gem_shmem_object *shmem, int madv)
+> >>
+> >>         mutex_unlock(&shmem->pages_lock);
+> >>
+> >> +       drm_gem_shmem_update_purgeable_status(shmem);
+> >> +
+> >>         return (madv >= 0);
+> >>  }
+> >>  EXPORT_SYMBOL(drm_gem_shmem_madvise);
+> >> @@ -763,6 +808,155 @@ drm_gem_shmem_prime_import_sg_table(struct drm_device *dev,
+> >>  }
+> >>  EXPORT_SYMBOL_GPL(drm_gem_shmem_prime_import_sg_table);
+> >>
+> >> +static struct drm_gem_shmem_shrinker *
+> >> +to_drm_shrinker(struct shrinker *shrinker)
+> >> +{
+> >> +       return container_of(shrinker, struct drm_gem_shmem_shrinker, base);
+> >> +}
+> >> +
+> >> +static unsigned long
+> >> +drm_gem_shmem_shrinker_count_objects(struct shrinker *shrinker,
+> >> +                                    struct shrink_control *sc)
+> >> +{
+> >> +       struct drm_gem_shmem_shrinker *gem_shrinker = to_drm_shrinker(shrinker);
+> >> +       u64 count = gem_shrinker->shrinkable_count;
+> >> +
+> >> +       if (count >= SHRINK_EMPTY)
+> >> +               return SHRINK_EMPTY - 1;
+> >> +
+> >> +       return count ?: SHRINK_EMPTY;
+> >> +}
+> >> +
+> >> +static unsigned long
+> >> +drm_gem_shmem_shrinker_scan_objects(struct shrinker *shrinker,
+> >> +                                   struct shrink_control *sc)
+> >> +{
+> >> +       struct drm_gem_shmem_shrinker *gem_shrinker = to_drm_shrinker(shrinker);
+> >> +       struct drm_gem_shmem_object *shmem;
+> >> +       struct list_head still_in_list;
+> >> +       bool lock_contention = true;
+> >> +       struct drm_gem_object *obj;
+> >> +       unsigned long freed = 0;
+> >> +
+> >> +       INIT_LIST_HEAD(&still_in_list);
+> >> +
+> >> +       mutex_lock(&gem_shrinker->lock);
+> >> +
+> >> +       while (freed < sc->nr_to_scan) {
+> >> +               shmem = list_first_entry_or_null(&gem_shrinker->lru,
+> >> +                                                typeof(*shmem), madv_list);
+> >> +               if (!shmem)
+> >> +                       break;
+> >> +
+> >> +               obj = &shmem->base;
+> >> +               list_move_tail(&shmem->madv_list, &still_in_list);
+> >> +
+> >> +               /*
+> >> +                * If it's in the process of being freed, gem_object->free()
+> >> +                * may be blocked on lock waiting to remove it.  So just
+> >> +                * skip it.
+> >> +                */
+> >> +               if (!kref_get_unless_zero(&obj->refcount))
+> >> +                       continue;
+> >> +
+> >> +               mutex_unlock(&gem_shrinker->lock);
+> >> +
+> >> +               /* prevent racing with job submission code paths */
+> >> +               if (!dma_resv_trylock(obj->resv))
+> >> +                       goto shrinker_lock;
+> >
+> > jfwiw, the trylock here is in the msm code isn't so much for madvise
+> > (it is an error to submit jobs that reference DONTNEED objects), but
+> > instead for the case of evicting WILLNEED but inactive objects to
+> > swap.  Ie. in the case that we need to move bo's back in to memory, we
+> > don't want to unpin/evict a buffer that is later on the list for the
+> > same job.. msm shrinker re-uses the same scan loop for both
+> > inactive_dontneed (purge) and inactive_willneed (evict)
 >
-> [2]: https://lore.kernel.org/linux-ext4/20220310233234.4418186a@gandalf.local.home/
-> [3]: https://lore.kernel.org/linux-ext4/20220311051249.ltgqbjjothbrkbno@riteshh-domain/
+> I don't see connection between the objects on the shrinker's list and
+> the job's BOs. Jobs indeed must not have any objects marked as DONTNEED,
+> this case should never happen in practice, but we still need to protect
+> from it.
+
+Hmm, let me try to explain with a simple example.. hopefully this makes sense.
+
+Say you have a job with two bo's, A and B..  bo A is not backed with
+memory (either hasn't been used before or was evicted.  Allocating
+pages for A triggers shrinker.  But B is still on the
+inactive_willneed list, however it is already locked (because we don't
+want to evict B to obtain backing pages for A).
+
 >
-> @Steven,
-> Sorry to bother. But does this crash strike anything obvious to you?
+> > I suppose using trylock is not technically wrong, and it would be a
+> > good idea if the shmem helpers supported eviction as well.  But I
+> > think in the madvise/purge case if you lose the trylock then there is
+> > something else bad going on.
+>
+> This trylock is intended for protecting job's submission path from
+> racing with madvise ioctl invocation followed by immediate purging of
+> BOs while job is in a process of submission, i.e. it protects from a
+> use-after-free.
 
-Looking at the oops output again made me realizes that the snprintf
-tries to write into pages that are mapped RO. Talking to Heiko he
-mentioned that s390 maps rodata/text RO when setting up the initial
-mapping while x86 has a RW mapping in the beginning and changes that
-later to RO. I haven't verified that, but that might be a reason why it
-works on x86.
+ahh, ok
 
-Thanks
-Sven
+> If you'll lose this trylock, then shrinker can't use
+> dma_resv_test_signaled() reliably anymore and shrinker may purge BO
+> before job had a chance to add fence to the BO's reservation.
+>
+> > Anyways, from the PoV of minimizing lock contention when under memory
+> > pressure, this all looks good to me.
+>
+> Thank you. I may try to add generic eviction support to the v3.
+
+eviction is a trickier thing to get right, I wouldn't blame you for
+splitting that out into it's own patchset ;-)
+
+You probably also would want to make it a thing that is opt-in for
+drivers using the shmem helpers
+
+BR,
+-R
