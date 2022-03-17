@@ -2,177 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E457C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F776C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236496AbiCQQZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 12:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60940 "EHLO
+        id S236520AbiCQQ0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 12:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiCQQZW (ORCPT
+        with ESMTP id S233658AbiCQQ0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 12:25:22 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8103ABB92A;
-        Thu, 17 Mar 2022 09:24:05 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id t14so3028247pgr.3;
-        Thu, 17 Mar 2022 09:24:05 -0700 (PDT)
+        Thu, 17 Mar 2022 12:26:30 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF60BD7E8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:25:13 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id w4so4844959ply.13
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:25:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=CxHgpSNZZuEtV5slXCliwgtbxDqjHZAN89PA6Kha9DQ=;
-        b=iPAspoN1cg41/RL92HB4FhRGyagjBvagM5CpfCMVgHIe/NOZVcb+ykblGBqEVqTLtz
-         xF8Skv9VuPLU37EdRRSifh8gynYM+K5ULxGEmG3ByTmueZrXPQIj6+ouCaCTlWRFLlNF
-         otsnBI08np3EV3drQhJ0xTW/L483Q5q85CxzujVmQ0LH7ytdX/neCpf/MYBCnR3RrKDu
-         10Wxy4Kr6ABKpryrufH/P8PxG6GplEO/7NTNESKE5F2SHT3bVkrKcobomZ84iUTfIYim
-         KRl3H4JGmn10rTxV4JZI/N1J7jWwvpt7DWmPPgNB/x3LSmoZPmAmkDyFeNBrPKXGpLju
-         VkpQ==
+        bh=6sSNVFojWkEa+kB1rxVwpwdlRixm4OOVySYgWgA6hHU=;
+        b=MIjoGDMSbCb+8RaIRBW4suJHxfXpTo855FIRj8RMraN9uYrseVjLtsfrJaw8R1WJRC
+         w7a/cIO3C4JIYz+QMRRQycoo5YTjncyXCvOMJEJrWvAuq9oZjUyAGlG32MpJ7JLZ4KVQ
+         UuIs7rZVwuFSzXVdmtTDGuiHE4yihgkRMDzdEBLzr4WJGgGovWg8w9oRagk3iJksXpiP
+         j+6kzguWQ39dcsXRZSE0xnhH+Z4dzJ9j1NO5YApUmQYCVNaeFvltVT0gEu64ITs0BluW
+         4VoClCJ/rnS+Pdl4OyVHHYU/2ftCeULXTeKY23yLhfY0f5m4g4ssHj+30FXiuBSncF1c
+         Ycjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=CxHgpSNZZuEtV5slXCliwgtbxDqjHZAN89PA6Kha9DQ=;
-        b=rnYnkAxudSxOCXZbojhRtiTVTIV2n2vFApaO8Ge6stD9ACvpkTn+9J26+nacjhL8ai
-         V9PZ9SNjqS8Yi+R59OiIzH4eqGjRF2SXc+QB9h6rM36Ry86fRGNFNfSqzOaOmge4pyzn
-         Pob5XVmFPFi19kVXUrj1MNpZklkPMlPhV4QcTBleshnH4KYwDn7mg3SCc5RjeFGYyNDX
-         Hoj0g67+ruSD9sYR/c8XkGSayNQRyuqmOKGhtESAQZDgVwsNAgZ72U/y2Wo9uyPQy+Hy
-         kYPHzWGll7NYH+RWuDUm2hJNfWdOa2+WyKCIcs6k61QhO92rE9+8MCU7HSxgQuyD5E5s
-         RYhg==
-X-Gm-Message-State: AOAM5338gSGrqK2WH4CF+8Gg3JLGG1Nep1vLwppUE8vhD6Sel74XLE2g
-        07dVP0tlB9A2QVFdBK/h7yCvBmq9oP4=
-X-Google-Smtp-Source: ABdhPJxzBcB7aeTPqJrx6jD8KKAt6PoUG1RqtUoPQyS+6jB+C9zd1Ix29rCWyHkQ1xVZp+b2p2Sjew==
-X-Received: by 2002:a63:cd:0:b0:382:1204:84f6 with SMTP id 196-20020a6300cd000000b00382120484f6mr2059100pga.109.1647534244814;
-        Thu, 17 Mar 2022 09:24:04 -0700 (PDT)
-Received: from google.com ([2620:15c:211:201:b625:fd41:4746:7bf5])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056a0002c500b004f6dbd217c9sm6726611pft.108.2022.03.17.09.24.03
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6sSNVFojWkEa+kB1rxVwpwdlRixm4OOVySYgWgA6hHU=;
+        b=W48IDRRQ3yiJSeWkPLirw+L8hOW0cqcMV1XI4RPebGsq/TjJxDyNyn409As89E4o4z
+         ivvsihu6GhlnO+60Y0exXU0nwsPkOVdp5xDoNf7jrv5pyIvzZoGqnOmZayAk/qKhx9eM
+         dAT1h5+tKOLvQK0q3KCcfcEzGRxTY2y4a4Y+NQa1hMYhF1cnY9t9nyTlrlC0ts+mq1gs
+         zkx5LJf+jIuDUvQtwXVIgYQ9Xr+Rdkpm+fQa7OHVCzU9di3eZ4B8I7RAskio6Eu5V8mC
+         gV9ENLvxmnx/ysVQjx0an5jBAOYpHDpShBBPONUVlo4/4eaqf88OhAcgvuSE733NrEGa
+         SBxw==
+X-Gm-Message-State: AOAM531F8x5pMBzhvh0ITLt8v3yqQHshqh0xtOA1xyULuzACsN+nG1As
+        Z+dxLLV0TNFEp7kKvwlTxbFHLA==
+X-Google-Smtp-Source: ABdhPJwFtbsxAvxS4DCDF9la8zCNKh+F6SHycDDweS3/B6oT2kQgW7jmQaauv6istzAcTM5eZtk0rQ==
+X-Received: by 2002:a17:90a:6441:b0:1c6:8de6:9fc0 with SMTP id y1-20020a17090a644100b001c68de69fc0mr3243379pjm.163.1647534312833;
+        Thu, 17 Mar 2022 09:25:12 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id mq6-20020a17090b380600b001c6357f146csm10359793pjb.12.2022.03.17.09.25.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 09:24:04 -0700 (PDT)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Thu, 17 Mar 2022 09:24:01 -0700
-From:   Minchan Kim <minchan@kernel.org>
-To:     Charan Teja Kalla <quic_charante@quicinc.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, surenb@google.com,
-        vbabka@suse.cz, rientjes@google.com, sfr@canb.auug.org.au,
-        edgararriaga@google.com, nadav.amit@gmail.com, mhocko@suse.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "# 5 . 10+" <stable@vger.kernel.org>
-Subject: Re: [PATCH V2,2/2] mm: madvise: skip unmapped vma holes passed to
- process_madvise
-Message-ID: <YjNgoeg1yOocsjWC@google.com>
-References: <cover.1647008754.git.quic_charante@quicinc.com>
- <4f091776142f2ebf7b94018146de72318474e686.1647008754.git.quic_charante@quicinc.com>
- <YjEaFBWterxc3Nzf@google.com>
- <20220315164807.7a9cf1694ee2db8709a8597c@linux-foundation.org>
- <YjFAzuLKWw5eadtf@google.com>
- <5428f192-1537-fa03-8e9c-4a8322772546@quicinc.com>
+        Thu, 17 Mar 2022 09:25:11 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 10:25:09 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-remoteproc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH v4] remoteproc: mediatek: Fix side effect of mt8195 sram
+ power on
+Message-ID: <20220317162509.GA2630429@p14s>
+References: <20220316031117.7311-1-tinghan.shen@mediatek.com>
+ <20220316163451.GA2546942@p14s>
+ <8a7be596-531a-52f4-c1b0-ed1d23cfa1bb@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5428f192-1537-fa03-8e9c-4a8322772546@quicinc.com>
+In-Reply-To: <8a7be596-531a-52f4-c1b0-ed1d23cfa1bb@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 07:49:38PM +0530, Charan Teja Kalla wrote:
-> Thanks Andrew and Minchan.
-> 
-> On 3/16/2022 7:13 AM, Minchan Kim wrote:
-> > On Tue, Mar 15, 2022 at 04:48:07PM -0700, Andrew Morton wrote:
-> >> On Tue, 15 Mar 2022 15:58:28 -0700 Minchan Kim <minchan@kernel.org> wrote:
-> >>
-> >>> On Fri, Mar 11, 2022 at 08:59:06PM +0530, Charan Teja Kalla wrote:
-> >>>> The process_madvise() system call is expected to skip holes in vma
-> >>>> passed through 'struct iovec' vector list. But do_madvise, which
-> >>>> process_madvise() calls for each vma, returns ENOMEM in case of unmapped
-> >>>> holes, despite the VMA is processed.
-> >>>> Thus process_madvise() should treat ENOMEM as expected and consider the
-> >>>> VMA passed to as processed and continue processing other vma's in the
-> >>>> vector list. Returning -ENOMEM to user, despite the VMA is processed,
-> >>>> will be unable to figure out where to start the next madvise.
-> >>>> Fixes: ecb8ac8b1f14("mm/madvise: introduce process_madvise() syscall: an external memory hinting API")
-> >>>> Cc: <stable@vger.kernel.org> # 5.10+
-> >>>
-> >>> Hmm, not sure whether it's stable material since it changes semantic of
-> >>> API. It would be better to change the semantic from 5.19 with man page
-> >>> update to specify the change.
-> >>
-> >> It's a very desirable change and it makes the code match the manpage
-> >> and it's cc:stable.  I think we should just absorb any transitory
-> >> damage which this causes people.  I doubt if there will be much - if
-> >> anyone was affected by this they would have already told us that it's
-> >> broken?
+On Wed, Mar 16, 2022 at 05:44:04PM +0100, AngeloGioacchino Del Regno wrote:
+> Il 16/03/22 17:34, Mathieu Poirier ha scritto:
+> > Good morning,
 > > 
+> > On Wed, Mar 16, 2022 at 11:11:17AM +0800, Tinghan Shen wrote:
+> > > The definition of L1TCM_SRAM_PDN bits on mt8195 is different to mt8192.
+> > > 
+> > > L1TCM_SRAM_PDN bits[3:0] control the power of mt8195 L1TCM SRAM.
+> > > 
+> > > L1TCM_SRAM_PDN bits[7:4] control the access path to EMI for SCP.
+> > > These bits have to be powered on to allow EMI access for SCP.
+> > > 
+> > > Bits[7:4] also affect audio DSP because audio DSP and SCP are
+> > > placed on the same hardware bus. If SCP cannot access EMI, audio DSP is
+> > > blocked too.
+> > > 
+> > > L1TCM_SRAM_PDN bits[31:8] are not used.
+> > > 
+> > > This fix removes modification of bits[7:4] when power on/off mt8195 SCP
+> > > L1TCM. It's because the modification introduces a short period of time
+> > > blocking audio DSP to access EMI. This was not a problem until we have
+> > > to load both SCP module and audio DSP module. audio DSP needs to access
+> > > EMI because it has source/data on DRAM. Audio DSP will have unexpected
+> > > behavior when it accesses EMI and the SCP driver blocks the EMI path at
+> > > the same time.
+> > > 
+> > > Fixes: 79111df414fc ("remoteproc: mediatek: Support mt8195 scp")
+> > > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> > > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> > > ---
+> > > v4: add Fixes and Reviewed-by tags
+> > > v3: fix build error
+> > > v2: apply comments about macro definition and function calls
+> > > ---
+> > >   drivers/remoteproc/mtk_common.h |  2 ++
+> > >   drivers/remoteproc/mtk_scp.c    | 67 +++++++++++++++++++++++++++++++----------
+> > >   2 files changed, 53 insertions(+), 16 deletions(-)
+> > > 
+> > > diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
+> > > index 5ff3867c72f3..ff954a06637c 100644
+> > > --- a/drivers/remoteproc/mtk_common.h
+> > > +++ b/drivers/remoteproc/mtk_common.h
+> > > @@ -51,6 +51,8 @@
+> > >   #define MT8192_CORE0_WDT_IRQ		0x10030
+> > >   #define MT8192_CORE0_WDT_CFG		0x10034
+> > > +#define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		GENMASK(7, 4)
+> > > +
+> > >   #define SCP_FW_VER_LEN			32
+> > >   #define SCP_SHARE_BUFFER_SIZE		288
+> > > diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
+> > > index 36e48cf58ed6..5f686fe09203 100644
+> > > --- a/drivers/remoteproc/mtk_scp.c
+> > > +++ b/drivers/remoteproc/mtk_scp.c
+> > > @@ -365,22 +365,22 @@ static int mt8183_scp_before_load(struct mtk_scp *scp)
+> > >   	return 0;
+> > >   }
+> > > -static void mt8192_power_on_sram(void __iomem *addr)
+> > > +static void scp_sram_power_on(void __iomem *addr, u32 reserved_mask)
 > > 
-> > process_madvise fails to return exact processed bytes at several cases
-> > if it encounters the error, such as, -EINVAL, -EINTR, -ENOMEM in the
-> > middle of processing vmas. And now we are trying to make exception for
-> > change for only hole?
-> I think EINTR will never return in the middle of processing VMA's for
-> the behaviours supported by process_madvise().
+> > Why is @reserved_mask needed?  It is not described in the changelong and as far
+> > as I can see in this patchset the parameter is always set to '0', which has no
+> > effect on the mask that gets generated.
+> > 
 > 
-> It can return EINTR when:
-> -------------------------
-> 1) PTRACE_MODE_READ is being checked in mm_access() where it is waiting
-> on task->signal->exec_update_lock. EINTR returned from here guarantees
-> that process_madvise() didn't event start processing.
-> https://elixir.bootlin.com/linux/v5.16.14/source/mm/madvise.c#L1264 -->
-> https://elixir.bootlin.com/linux/v5.16.14/source/kernel/fork.c#L1318
+> Hello Mathieu,
+> the @reserved_mask is explained in perhaps not very very clear terms, meaning
+> that he's not explicitly saying the name of the new param, but that's it:
 > 
-> 2) The process_madvise() started processing VMA's but the required
-> behavior on a VMA needs mmap_write_lock_killable(), from where EINTR is
-> returned. The current behaviours supported by process_madvise(),
-> MADV_COLD, PAGEOUT, WILLNEED, just need read lock here.
-> https://elixir.bootlin.com/linux/v5.16.14/source/mm/madvise.c#L1164
->  **Thus I think no way for EINTR can be returned by process_madvise() in
-> the middle of processing.** . No?
+> "This fix removes modification of bits[7:4] when power on/off mt8195 SCP
+> L1TCM."
 > 
-> for EINVAL:
-> -----------
-> The only case, I can think of,  where EINVAL can be returned in the
-> middle of processing is in examples like, given range contains VMA's
-> with a hole in between and one of the VMA contains the pages that fails
-> can_madv_lru_vma() condition.
-> So, it's a limitation that this returns -EINVAL though some bytes are
-> processed.
-> 	OR
-> Since there exists still some invalid bytes processed it is valid to
-> return -EINVAL here and user has to check the address range sent?
+> ....and it's actually being used, check below....
 > 
-> for ENOMEM:
-> ----------
-> Though complete range is processed still returns ENOMEM. IMO, This
-> shouldn't be treated as error which the patch is targeted for. Then
-> there is limitation case that you mentioned below where it returns
-> positive processes bytes even though it didn't process anything if it
-> couldn't find any vma for the first iteration in madvise_walk_vmas
+> > Thanks,
+> > Mathieu
+> > 
+> > >   {
+> > >   	int i;
+> > >   	for (i = 31; i >= 0; i--)
+> > > -		writel(GENMASK(i, 0), addr);
+> > > +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
+> > >   	writel(0, addr);
+> > >   }
+> > > -static void mt8192_power_off_sram(void __iomem *addr)
+> > > +static void scp_sram_power_off(void __iomem *addr, u32 reserved_mask)
 > 
-> I think the above limitations with EINVAL and ENOMEM are arising because
-> we are relying on do_madvise() functionality which madvise() call uses
-> to process a single VMA. When 'struct iovec' vector processing interface
-> is given in a system call, it is the expectation by the caller that this
-> system call should return the correct bytes processed to help the user
-> to take the correct decisions. Please correct me If i am wrong here.
+> ...snip...
 > 
-> So, should we add the new function say do_process_madvise(), which take
-> cares of above limitations? or any alternative suggestions here please?
+> > > +static int mt8195_scp_before_load(struct mtk_scp *scp)
+> > > +{
+> > > +	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
+> > > +	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
+> > > +
+> > > +	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
+> > > +
+> > > +	/* enable SRAM clock */
+> > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
+> > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
+> > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
+> 
+> 
+> > > +	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
+> > > +			  MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
+> 
+> here	
 
-What I am thinking now is that the process_madvise needs own iterator(i.e.,
-do_process_madvise) and it should represent exact bytes it addressed with
-exacts ranges like process_vm_readv/writev. Poviding valid ranges is
-responsiblity from the user.
+Yes - it's obvious now that you point it out.  
+
+This patch conflicts with the newly added support for mt8186[1].  I tried to fix
+it but did not know if mt8185 needed the same kind of bit masking as mt8195.
+Please have a look and rebase to rproc-next.
+
+Thanks,
+Mathieu
+
+[1]. 80d691854ffb remoteproc: mediatek: Support mt8186 scp
 
 > 
-> > IMO, it's worth to note in man page.
-> > 
+> > > +	scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
+> > >   	/* enable MPU for all memory regions */
+> > >   	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
 > 
-> Or the current patch for just ENOMEM is sufficient here and we just have
-> to update the man page?
+> ...snip...
 > 
-> > In addition, this change returns positive processes bytes even though
-> > it didn't process anything if it couldn't find any vma for the first
-> > iteration in madvise_walk_vmas.
+> > > +
+> > > +static void mt8195_scp_stop(struct mtk_scp *scp)
+> > > +{
+> > > +	/* Disable SRAM clock */
+> > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
+> > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
+> > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
+> > > +	scp_sram_power_off(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
+> > > +			   MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
 > 
-> Thanks,
-> Charan
+> and here 			^^^^^^^^
 > 
+> > > +	scp_sram_power_off(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
+> 
+> Cheers,
+> Angelo
