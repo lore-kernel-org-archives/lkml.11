@@ -2,138 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C645C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47153C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235045AbiCQOWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:22:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43780 "EHLO
+        id S235054AbiCQOYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:24:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiCQOWE (ORCPT
+        with ESMTP id S231233AbiCQOYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:22:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAEB169B18;
-        Thu, 17 Mar 2022 07:20:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1179CB81ECB;
-        Thu, 17 Mar 2022 14:20:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2231C340E9;
-        Thu, 17 Mar 2022 14:20:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647526845;
-        bh=1jUnKiTd1ovbIfeqqvU+XJdp2zp/6es7srgZU1ueVYU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=K/Xy2Izpna9w9dzEslqf7bO8KZu+v9fBTe2zkXFrzLYzjVA2zW8PG2G6ccy2UzuCe
-         +megLNyEoALM3Wc8R31tGQJskEsN8hODtURw7ibV+t4q7ilQhqt4qgn/13I7VIINMS
-         Raevqn7AT3PUjJ6u8el4RlvUW+rE0W0awJW/fJDL0F+20UP/OW2m4wQTbde7j1uh0a
-         ZyAoK4E1eJZOwaMp5kSQAIeN7ZeCJvZPHjrz7ckm6u5LxS/+/OIcijzsnNunJhLgdF
-         aLl9ogG6jaQw2DzprxRfjZwrgMk2aombKs6hJyMAz/BWGJTwtc+L++V4JVOLZ+279E
-         EFOsoMUelAbPg==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nUqzb-00FCgJ-4z; Thu, 17 Mar 2022 14:20:43 +0000
+        Thu, 17 Mar 2022 10:24:33 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A7D3DDCB;
+        Thu, 17 Mar 2022 07:23:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=U3YBJWruFs9ahkXSkuJtoG3rsMMVJ7pMrWmhkqc3kms=; b=s+MWaUn4qp3Q0lHwtYNWnMTQfq
+        9q7Euphy8neOQ9jGWn432pEdBi+znYgee7nl8kqAaJ+lnlG9Rb3zkZJGu/k3KNZSmx1UvyzmuZJ7C
+        gFKS3Dz52B94R8wqAhTA9+JWXyHRf81ngOoAC5w+gYfxHSYz8Fr6bTLvKAIllkUFI2N38AgoayNIU
+        ZszwCES5jNkW1yHQmZs0IKg+IyaQlkuHI16YTRh78FbnSF7v6JpLq0rAY/KQO7pouameutdvZyIrJ
+        b2md3gbooOYDWmHnhsuULHLUX/jgno0DI2EvQCvDLYSZKPDpLb0Qm+5DQoavi7yKZA5Ugv+ROdjUo
+        ha9AwA1Q==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUr21-0072LH-0W; Thu, 17 Mar 2022 14:23:13 +0000
+Message-ID: <21c5336c-96e3-fdae-dc52-c1ab2f52df3b@infradead.org>
+Date:   Thu, 17 Mar 2022 07:23:08 -0700
 MIME-Version: 1.0
-Date:   Thu, 17 Mar 2022 14:20:42 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Pierre Gondois <Pierre.Gondois@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
-        Lukasz.Luba@arm.com, Morten.Rasmussen@arm.com,
-        Dietmar.Eggemann@arm.com, mka@chromium.org,
-        daniel.lezcano@linaro.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Fuad Tabba <tabba@google.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v1 1/3] cpufreq: CPPC: Add cppc_cpufreq_search_cpu_data
-In-Reply-To: <20220317133419.3901736-2-Pierre.Gondois@arm.com>
-References: <20220317133419.3901736-1-Pierre.Gondois@arm.com>
- <20220317133419.3901736-2-Pierre.Gondois@arm.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <746641141c630dc1d02943d6133a6c8d@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: Pierre.Gondois@arm.com, linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com, Morten.Rasmussen@arm.com, Dietmar.Eggemann@arm.com, mka@chromium.org, daniel.lezcano@linaro.org, catalin.marinas@arm.com, will@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org, mark.rutland@arm.com, ardb@kernel.org, tabba@google.com, valentin.schneider@arm.com, robh@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [powerpc] 5.17-rc8-next-20220317 build break kernel/sched/fair.o
+Content-Language: en-US
+To:     Sachin Sant <sachinp@linux.ibm.com>, linux-next@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     open list <linux-kernel@vger.kernel.org>
+References: <EF33D230-9A8F-41C5-A38D-95128603224F@linux.ibm.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <EF33D230-9A8F-41C5-A38D-95128603224F@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-17 13:34, Pierre Gondois wrote:
-> cppc_cpufreq_get_cpu_data() allocates a new struct cppc_cpudata
-> for the input CPU at each call.
-> 
-> To search the struct associated with a cpu without allocating
-> a new one, add cppc_cpufreq_search_cpu_data().
-> Also add an early prototype.
-> 
-> This will be used in a later patch, when generating artificial
-> performance states to register an artificial Energy Model in the
-> cppc_cpufreq driver and enable the Energy Aware Scheduler for ACPI
-> based systems.
-> 
-> Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
-> ---
->  drivers/cpufreq/cppc_cpufreq.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/drivers/cpufreq/cppc_cpufreq.c 
-> b/drivers/cpufreq/cppc_cpufreq.c
-> index 82d370ae6a4a..8f950fe72765 100644
-> --- a/drivers/cpufreq/cppc_cpufreq.c
-> +++ b/drivers/cpufreq/cppc_cpufreq.c
-> @@ -41,6 +41,8 @@
->   */
->  static LIST_HEAD(cpu_data_list);
-> 
-> +static struct cppc_cpudata *cppc_cpufreq_search_cpu_data(unsigned int 
-> cpu);
-> +
->  static bool boost_supported;
-> 
->  struct cppc_workaround_oem_info {
-> @@ -479,6 +481,19 @@ static void cppc_cpufreq_put_cpu_data(struct
-> cpufreq_policy *policy)
->  	policy->driver_data = NULL;
->  }
-> 
-> +static inline struct cppc_cpudata *
 
-Why the inline? This is hardly performance critical, and if
-it is, you want something better than iterating over a list.
 
-> +cppc_cpufreq_search_cpu_data(unsigned int cpu)
-> +{
-> +	struct cppc_cpudata *iter, *tmp;
-> +
-> +	list_for_each_entry_safe(iter, tmp, &cpu_data_list, node) {
-> +		if (cpumask_test_cpu(cpu, iter->shared_cpu_map))
-> +			return iter;
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
->  static int cppc_cpufreq_cpu_init(struct cpufreq_policy *policy)
->  {
->  	unsigned int cpu = policy->cpu;
+On 3/17/22 03:35, Sachin Sant wrote:
+> Today’s next (5.17.0-rc8-next-20220317) fails to build on powerpc
+> with following error:
+> 
+>   CC      kernel/sched/fair.o
+> In file included from ./arch/powerpc/include/generated/asm/rwonce.h:1,
+>                  from ./include/linux/compiler.h:248,
+>                  from ./include/linux/kernel.h:20,
+>                  from ./include/linux/cpumask.h:10,
+>                  from ./include/linux/energy_model.h:4,
+>                  from kernel/sched/fair.c:23:
+> ./include/linux/psi.h: In function 'cgroup_move_task':
+> ./include/linux/rcupdate.h:414:36: error: dereferencing pointer to incomplete type 'struct css_set'
+>  #define RCU_INITIALIZER(v) (typeof(*(v)) __force __rcu *)(v)
+>                                     ^~~~
+> ./include/asm-generic/rwonce.h:55:33: note: in definition of macro '__WRITE_ONC'
+>   *(volatile typeof(x) *)&(x) = (val);    \
+>                                  ^~~
+> ./arch/powerpc/include/asm/barrier.h:74:2: note: in expansion of macro 'WRITE_ONCE'
+>   WRITE_ONCE(*p, v);      \
+>   ^~~~~~~~~~
+> ./include/asm-generic/barrier.h:164:55: note: in expansion of macro '__smp_store_release'
+>  #define smp_store_release(p, v) do { kcsan_release(); __smp_store_release(p, v); } while (0)
+>                                                        ^~~~~~~~~~~~~~~~~~~
+> ./include/linux/rcupdate.h:455:3: note: in expansion of macro 'smp_store_releas'
+>    smp_store_release(&p, RCU_INITIALIZER((typeof(p))_r_a_p__v)); \
+>    ^~~~~~~~~~~~~~~~~
+> ./include/linux/rcupdate.h:455:25: note: in expansion of macro 'RCU_INITIALIZER'
+>    smp_store_release(&p, RCU_INITIALIZER((typeof(p))_r_a_p__v)); \
+>                          ^~~~~~~~~~~~~~~
+> ./include/linux/psi.h:58:2: note: in expansion of macro 'rcu_assign_pointer'
+>   rcu_assign_pointer(p->cgroups, to);
+>   ^~~~~~~~~~~~~~~~~~
+> make[2]: *** [scripts/Makefile.build:309: kernel/sched/fair.o] Error 1
+> make[1]: *** [scripts/Makefile.build:578: kernel/sched] Error 2
+> make: *** [Makefile:1834: kernel] Error 2
+> 
+> Git bisect points to:
+> 
+> commit c4ad6fcb67c42d65481c85733c8009c8afdfdf4e (refs/bisect/bad)
+>     sched/headers: Reorganize, clean up and optimize kernel/sched/fair.c dependencies
+> 
+> I have attached .config
 
-Thanks,
+Here is a fix for the CONFIG_PSI=n build error:
 
-         M.
+https://lore.kernel.org/lkml/917e9ce0-c8cf-61b2-d1ba-ebf25bbd979d@infradead.org/
+
 -- 
-Jazz is not dead. It just smells funny...
+~Randy
