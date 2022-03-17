@@ -2,109 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 189A1C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7091DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229594AbiCQUWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 16:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        id S229603AbiCQUXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 16:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiCQUWG (ORCPT
+        with ESMTP id S229585AbiCQUXB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 16:22:06 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46DA0133DBD
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:20:49 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id bn33so8754391ljb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:20:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ByaGDxG5X1KUgztH3SIHl92iZntE1/kLAfg0SkefsmM=;
-        b=EjumO/osdajILuAhSqSQ/Da7QJir8FzyqTQFbc4UpDaN9fXvRfiv40LZLT+eA7gkRB
-         3vrFp/3jfymjknQthDrJSkB7xwoAOJvsz5Di0hyjlAaE9gN3uxJTEwY9XyMaCjozjoVc
-         HJC0mUBHn0IlY0e7CK/wBrjxwXuJPdYWxPSteqHXsHHQSWOZ0f9MLWUtNY1JHrSc3gJ9
-         oxFmp2K8l/AnAaP3yd3LR+9tPCxgtg+5YNpkIsyFWyvAdd/pDdzg6/VBo/pOHywTahXB
-         bZW50vBFEwtpEAkIYgnseTsBUvSdfqcEbIBWmWkh9gGTDgrOtN0oRmFiO3hBahEVXDEB
-         ijZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ByaGDxG5X1KUgztH3SIHl92iZntE1/kLAfg0SkefsmM=;
-        b=JNoDQ8gfZEsv2SrrVrGb/xZ7CckgCmU0EK+sz5iQqZDru0D2rQZ/zQrhUsJlEG7pNt
-         m47kSTFjI2ehf/Tc6J6vAPb8Smt/b+VDn0oYaVp26+psAuf4Z5oJZJEFY42bEt2a9e6U
-         Kr2Ia2mTaCZaei8eTXtI5C8fOFLsEVL6dcHLhYDO9MuafWQm6MYQi8/y/m2Z8NDJ5Iu/
-         WbLX32zu/k+BK0IR0NLgQlaMsYCV/e/ZWx1JubHpOVQsq5Ze8XvOOhFeoKQUaoh0Fb08
-         K316O/Pb7GJACKD5kS3Vros3IGN+tt25W2DVBRLWqzOohGTUtQxGo5fmnsxtJUwXakLH
-         an7g==
-X-Gm-Message-State: AOAM531uaqqLA3d5ibc3IoiyoqF5arNpJj96WUqMDzp0NyvtQz0ubnuF
-        PNdB0L28gy8ZyDKorZfoEoVJKl/wGhYp4v5DbTvqqg==
-X-Google-Smtp-Source: ABdhPJwDEfWHv2pGVJTBNzJFj6FyJ5V3aLxhQdKByl4OEnifeiYrk0bX3nPrSRiG85pauGo4XpR1S23j9NY/aPe/dHg=
-X-Received: by 2002:a2e:9e81:0:b0:248:7c35:385a with SMTP id
- f1-20020a2e9e81000000b002487c35385amr4103253ljk.527.1647548447219; Thu, 17
- Mar 2022 13:20:47 -0700 (PDT)
+        Thu, 17 Mar 2022 16:23:01 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF58E13BAE3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:21:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647548504; x=1679084504;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5r+UM7uGE8iSy2g3vezLNOSUEun6kfdmzTbiW3xpeuo=;
+  b=A/zpUHFnh3yDslfgo63fvecYvvgDTQFDtApURKOI1WEZxpxvHpRSZent
+   6A9RX8xNrdLklKeAY07Gl5LxPtHM9BHZVpkExjufqrv6YmxZSEez+CKKt
+   SNQdivLCD4isjEI7ErKv29iKdzRsGW55L04kly2jqiEjOib3xfOkXINWZ
+   O6uL5RI24L7flqXRlYLQqw0IhicgJjFu32kAEV2ZyLwAWgCvW7bo3iHNe
+   4D+Mv7Lhxmi8pypHfvDLS8BnvFNtLH1dhlVsWJgFcMW2SgwGE6gkfGlhG
+   S5x9FMKEtRFg1YSPujNOZ/X7uMvv3ojrnBusZGgz4PFWrOkoSLx3siH1/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="236919352"
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="236919352"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 13:21:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="498972946"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 17 Mar 2022 13:21:36 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 30489107; Thu, 17 Mar 2022 22:21:55 +0200 (EET)
+Date:   Thu, 17 Mar 2022 23:21:55 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Boris Petkov <bp@alien8.de>
+Cc:     tglx@linutronix.de, dave.hansen@intel.com, mingo@redhat.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        brijesh.singh@amd.com, ak@linux.intel.com, david@redhat.com,
+        dan.j.williams@intel.com, wanpengli@tencent.com, jgross@suse.com,
+        linux-kernel@vger.kernel.org, hpa@zytor.com, jmattson@google.com,
+        pbonzini@redhat.com, seanjc@google.com, jpoimboe@redhat.com,
+        vkuznets@redhat.com, joro@8bytes.org, thomas.lendacky@amd.com,
+        sdeep@vmware.com, x86@kernel.org, knsathya@kernel.org,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        tony.luck@intel.com
+Subject: Re: [PATCHv6 20/30] x86/boot: Add a trampoline for booting APs via
+ firmware handoff
+Message-ID: <20220317202155.aurobskmy3v57nse@black.fi.intel.com>
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+ <20220316020856.24435-21-kirill.shutemov@linux.intel.com>
+ <3D4C3388-DC6A-41A5-A79F-B23FBFFE4E0F@alien8.de>
 MIME-Version: 1.0
-References: <20220307213356.2797205-1-brijesh.singh@amd.com>
- <20220307213356.2797205-33-brijesh.singh@amd.com> <CAMkAt6pO0xZb2pye-VEKdFQ_dYFgLA21fkYmnYPTWo8mzPrKDQ@mail.gmail.com>
- <20220310212504.2kt6sidexljh2s6p@amd.com> <YiuBqZnjEUyMfBMu@suse.de>
- <CAMkAt6r==_=U4Ha6ZTmii-JL3htJ3-dD4tc+QBqN7dVt711N2A@mail.gmail.com> <23728EEA-37B8-478E-9576-DBFD6FE2A294@suse.de>
-In-Reply-To: <23728EEA-37B8-478E-9576-DBFD6FE2A294@suse.de>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Thu, 17 Mar 2022 14:20:35 -0600
-Message-ID: <CAMkAt6qeSYbsGCsgu0+mfYoYVxS25OMoRYzhEebFvfZzNkxOaA@mail.gmail.com>
-Subject: Re: [PATCH v12 32/46] x86/compressed/64: Add support for SEV-SNP
- CPUID table in #VC handlers
-To:     Boris Petkov <bp@suse.de>
-Cc:     Joerg Roedel <jroedel@suse.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        Andy Lutomirski <luto@kernel.org>,
-        Sergio Lopez <slp@redhat.com>, linux-efi@vger.kernel.org,
-        linux-coco@lists.linux.dev, Ingo Molnar <mingo@redhat.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>, linux-mm@kvack.org,
-        Jim Mattson <jmattson@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>, brijesh.ksingh@gmail.com,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Marc Orr <marcorr@google.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3D4C3388-DC6A-41A5-A79F-B23FBFFE4E0F@alien8.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 7:11 AM Boris Petkov <bp@suse.de> wrote:
->
-> On March 14, 2022 5:34:42 PM UTC, Peter Gonda <pgonda@google.com> wrote:
-> >I was also thinking about adding a vcpu run exit reason for
-> >termination. It would be nice to get a more informative exit reason
-> >than -EINVAL in userspace. Thoughts?
->
-> Absolutely - it should be unambiguously clear why we're terminating.
->
-> --
-> Sent from a small device: formatting sux and brevity is inevitable.
+On Thu, Mar 17, 2022 at 12:44:42PM +0000, Boris Petkov wrote:
+> On March 16, 2022 2:08:46 AM UTC, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com> wrote:
+> >diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+> >index 48067af94678..35006e151774 100644
+> >--- a/arch/x86/include/asm/apic.h
+> >+++ b/arch/x86/include/asm/apic.h
+> >@@ -328,6 +328,8 @@ struct apic {
+> > 
+> > 	/* wakeup_secondary_cpu */
+> > 	int	(*wakeup_secondary_cpu)(int apicid, unsigned long start_eip);
+> >+	/* wakeup secondary CPU using 64-bit wakeup point */
+> >+	int	(*wakeup_secondary_cpu_64)(int apicid, unsigned long start_eip);
+> > 
+> > 	void	(*inquire_remote_apic)(int apicid);
+> > 
+> >diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+> >index 331474b150f1..fd6f6e5b755a 100644
+> >--- a/arch/x86/include/asm/realmode.h
+> >+++ b/arch/x86/include/asm/realmode.h
+> >@@ -25,6 +25,7 @@ struct real_mode_header {
+> > 	u32	sev_es_trampoline_start;
+> > #endif
+> > #ifdef CONFIG_X86_64
+> >+	u32	trampoline_start64;
+> 
+> I had already asked about those here: why do you need to add a new u32 here and can't use trampoline_start?
+> 
+> Ditto for the new function pointer too.
+> 
+> And yes, sev_es_trampoline_start is superfluous too.
 
-Great, I can work on that too.
+As I said[1], I'm confused by the request. These field initialized at
+build time. I don't see how a single field would work.
+
+[1] https://lore.kernel.org/all/20220216141009.ymmjduf5doqnhnqy@black.fi.intel.com/
+
+-- 
+ Kirill A. Shutemov
