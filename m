@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D01C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233768AbiCQMsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
+        id S233805AbiCQMsj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233762AbiCQMs1 (ORCPT
+        with ESMTP id S233755AbiCQMsd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:48:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDCF12223B;
-        Thu, 17 Mar 2022 05:47:10 -0700 (PDT)
+        Thu, 17 Mar 2022 08:48:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 815ED1EE8E8;
+        Thu, 17 Mar 2022 05:47:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6E7861240;
-        Thu, 17 Mar 2022 12:47:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA410C340E9;
-        Thu, 17 Mar 2022 12:47:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B68FB81EA1;
+        Thu, 17 Mar 2022 12:47:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F709C340E9;
+        Thu, 17 Mar 2022 12:47:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521229;
-        bh=nhAet1PHLRU3hiDgHDoXu5exwgMOqMhgC3qA5krXhb0=;
+        s=korg; t=1647521232;
+        bh=l5UBkHpHhHs/9/pI/wb4rOxpOmSD8CIB1JIiTa7lovk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1XaJMjCbLgzBehDoHYd0rLkx3GgJwydli4tlFFxvTdJGcIyWBIf22RXKZGrUHQUz
-         +ZXVwFyQOo9dICDoNSmzGwOKFE/GU8ZO835Q8gqJNp5tDVgPnSNfWmkufek6vi+1W7
-         NYJvDyWqgutWk9jzfLZEVf9nVRnwi02eOrMobfoY=
+        b=c0ds0moYnHP5Y6Zl7nRt8ZIZYr9wuvAWV/gFkkwxRgUJQw+5UFSBgyfN7of35CnNo
+         93WDnymQgQHiraHcFhJvO9+JimC8inrxLNS+YbzGPC8UqYyTFYozySBcuByh2n9cix
+         NbxGktjbFdmZUXY2qGgijUplBScOYrl3zyQwNQG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 19/43] arm64: Add percpu vectors for EL1
-Date:   Thu, 17 Mar 2022 13:45:30 +0100
-Message-Id: <20220317124528.207095791@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 5.4 02/43] sctp: fix the processing for INIT chunk
+Date:   Thu, 17 Mar 2022 13:45:13 +0100
+Message-Id: <20220317124527.743269183@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
 References: <20220317124527.672236844@linuxfoundation.org>
@@ -49,221 +50,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Morse <james.morse@arm.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit bd09128d16fac3c34b80bd6a29088ac632e8ce09 upstream.
+commit eae5783908042a762c24e1bd11876edb91d314b1 upstream.
 
-The Spectre-BHB workaround adds a firmware call to the vectors. This
-is needed on some CPUs, but not others. To avoid the unaffected CPU in
-a big/little pair from making the firmware call, create per cpu vectors.
+This patch fixes the problems below:
 
-The per-cpu vectors only apply when returning from EL0.
+1. In non-shutdown_ack_sent states: in sctp_sf_do_5_1B_init() and
+   sctp_sf_do_5_2_2_dupinit():
 
-Systems using KPTI can use the canonical 'full-fat' vectors directly at
-EL1, the trampoline exit code will switch to this_cpu_vector on exit to
-EL0. Systems not using KPTI should always use this_cpu_vector.
+  chunk length check should be done before any checks that may cause
+  to send abort, as making packet for abort will access the init_tag
+  from init_hdr in sctp_ootb_pkt_new().
 
-this_cpu_vector will point at a vector in tramp_vecs or
-__bp_harden_el1_vectors, depending on whether KPTI is in use.
+2. In shutdown_ack_sent state: in sctp_sf_do_9_2_reshutack():
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: James Morse <james.morse@arm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  The same checks as does in sctp_sf_do_5_2_2_dupinit() is needed
+  for sctp_sf_do_9_2_reshutack().
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/mmu.h     |  2 +-
- arch/arm64/include/asm/vectors.h | 27 +++++++++++++++++++++++++++
- arch/arm64/kernel/cpufeature.c   | 11 +++++++++++
- arch/arm64/kernel/entry.S        | 16 ++++++++++------
- arch/arm64/kvm/hyp/switch.c      |  8 ++++++--
- 5 files changed, 55 insertions(+), 9 deletions(-)
+ net/sctp/sm_statefuns.c |   71 +++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 46 insertions(+), 25 deletions(-)
 
-diff --git a/arch/arm64/include/asm/mmu.h b/arch/arm64/include/asm/mmu.h
-index f217e3292919..353450011e3d 100644
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -29,7 +29,7 @@ typedef struct {
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -149,6 +149,12 @@ static enum sctp_disposition __sctp_sf_d
+ 					void *arg,
+ 					struct sctp_cmd_seq *commands);
+ 
++static enum sctp_disposition
++__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			   const struct sctp_association *asoc,
++			   const union sctp_subtype type, void *arg,
++			   struct sctp_cmd_seq *commands);
++
+ /* Small helper function that checks if the chunk length
+  * is of the appropriate length.  The 'required_length' argument
+  * is set to be the size of a specific chunk we are testing.
+@@ -330,6 +336,14 @@ enum sctp_disposition sctp_sf_do_5_1B_in
+ 	if (!chunk->singleton)
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 
++	/* Make sure that the INIT chunk has a valid length.
++	 * Normally, this would cause an ABORT with a Protocol Violation
++	 * error, but since we don't have an association, we'll
++	 * just discard the packet.
++	 */
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* If the packet is an OOTB packet which is temporarily on the
+ 	 * control endpoint, respond with an ABORT.
+ 	 */
+@@ -344,14 +358,6 @@ enum sctp_disposition sctp_sf_do_5_1B_in
+ 	if (chunk->sctp_hdr->vtag != 0)
+ 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
+ 
+-	/* Make sure that the INIT chunk has a valid length.
+-	 * Normally, this would cause an ABORT with a Protocol Violation
+-	 * error, but since we don't have an association, we'll
+-	 * just discard the packet.
+-	 */
+-	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
+-		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+-
+ 	/* If the INIT is coming toward a closing socket, we'll send back
+ 	 * and ABORT.  Essentially, this catches the race of INIT being
+ 	 * backloged to the socket at the same time as the user isses close().
+@@ -1484,19 +1490,16 @@ static enum sctp_disposition sctp_sf_do_
+ 	if (!chunk->singleton)
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 
++	/* Make sure that the INIT chunk has a valid length. */
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
+ 	/* 3.1 A packet containing an INIT chunk MUST have a zero Verification
+ 	 * Tag.
+ 	 */
+ 	if (chunk->sctp_hdr->vtag != 0)
+ 		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
+ 
+-	/* Make sure that the INIT chunk has a valid length.
+-	 * In this case, we generate a protocol violation since we have
+-	 * an association established.
+-	 */
+-	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
+-		return sctp_sf_violation_chunklen(net, ep, asoc, type, arg,
+-						  commands);
+ 	/* Grab the INIT header.  */
+ 	chunk->subh.init_hdr = (struct sctp_inithdr *)chunk->skb->data;
+ 
+@@ -1814,9 +1817,9 @@ static enum sctp_disposition sctp_sf_do_
+ 	 * its peer.
+ 	*/
+ 	if (sctp_state(asoc, SHUTDOWN_ACK_SENT)) {
+-		disposition = sctp_sf_do_9_2_reshutack(net, ep, asoc,
+-				SCTP_ST_CHUNK(chunk->chunk_hdr->type),
+-				chunk, commands);
++		disposition = __sctp_sf_do_9_2_reshutack(net, ep, asoc,
++							 SCTP_ST_CHUNK(chunk->chunk_hdr->type),
++							 chunk, commands);
+ 		if (SCTP_DISPOSITION_NOMEM == disposition)
+ 			goto nomem;
+ 
+@@ -2915,13 +2918,11 @@ enum sctp_disposition sctp_sf_do_9_2_shu
+  * that belong to this association, it should discard the INIT chunk and
+  * retransmit the SHUTDOWN ACK chunk.
   */
- #define ASID(mm)	((mm)->context.id.counter & 0xffff)
- 
--static inline bool arm64_kernel_unmapped_at_el0(void)
-+static __always_inline bool arm64_kernel_unmapped_at_el0(void)
+-enum sctp_disposition sctp_sf_do_9_2_reshutack(
+-					struct net *net,
+-					const struct sctp_endpoint *ep,
+-					const struct sctp_association *asoc,
+-					const union sctp_subtype type,
+-					void *arg,
+-					struct sctp_cmd_seq *commands)
++static enum sctp_disposition
++__sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			   const struct sctp_association *asoc,
++			   const union sctp_subtype type, void *arg,
++			   struct sctp_cmd_seq *commands)
  {
- 	return IS_ENABLED(CONFIG_UNMAP_KERNEL_AT_EL0) &&
- 	       cpus_have_const_cap(ARM64_UNMAP_KERNEL_AT_EL0);
-diff --git a/arch/arm64/include/asm/vectors.h b/arch/arm64/include/asm/vectors.h
-index 16ca74260375..3f76dfd9e074 100644
---- a/arch/arm64/include/asm/vectors.h
-+++ b/arch/arm64/include/asm/vectors.h
-@@ -5,6 +5,15 @@
- #ifndef __ASM_VECTORS_H
- #define __ASM_VECTORS_H
+ 	struct sctp_chunk *chunk = arg;
+ 	struct sctp_chunk *reply;
+@@ -2955,6 +2956,26 @@ nomem:
+ 	return SCTP_DISPOSITION_NOMEM;
+ }
  
-+#include <linux/bug.h>
-+#include <linux/percpu.h>
-+
-+#include <asm/fixmap.h>
-+
-+extern char vectors[];
-+extern char tramp_vectors[];
-+extern char __bp_harden_el1_vectors[];
-+
- /*
-  * Note: the order of this enum corresponds to two arrays in entry.S:
-  * tramp_vecs and __bp_harden_el1_vectors. By default the canonical
-@@ -31,4 +40,22 @@ enum arm64_bp_harden_el1_vectors {
- 	EL1_VECTOR_KPTI,
- };
- 
-+/* The vectors to use on return from EL0. e.g. to remap the kernel */
-+DECLARE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector);
-+
-+#ifndef CONFIG_UNMAP_KERNEL_AT_EL0
-+#define TRAMP_VALIAS	0
-+#endif
-+
-+static inline const char *
-+arm64_get_bp_hardening_vector(enum arm64_bp_harden_el1_vectors slot)
++enum sctp_disposition
++sctp_sf_do_9_2_reshutack(struct net *net, const struct sctp_endpoint *ep,
++			 const struct sctp_association *asoc,
++			 const union sctp_subtype type, void *arg,
++			 struct sctp_cmd_seq *commands)
 +{
-+	if (arm64_kernel_unmapped_at_el0())
-+		return (char *)TRAMP_VALIAS + SZ_2K * slot;
++	struct sctp_chunk *chunk = arg;
 +
-+	WARN_ON_ONCE(slot == EL1_VECTOR_KPTI);
++	if (!chunk->singleton)
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
 +
-+	return __bp_harden_el1_vectors + SZ_2K * slot;
++	if (!sctp_chunk_length_valid(chunk, sizeof(struct sctp_init_chunk)))
++		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
++
++	if (chunk->sctp_hdr->vtag != 0)
++		return sctp_sf_tabort_8_4_8(net, ep, asoc, type, arg, commands);
++
++	return __sctp_sf_do_9_2_reshutack(net, ep, asoc, type, arg, commands);
 +}
 +
- #endif /* __ASM_VECTORS_H */
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index 6b77e4942495..0d89d535720f 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -10,11 +10,13 @@
- #include <linux/bsearch.h>
- #include <linux/cpumask.h>
- #include <linux/crash_dump.h>
-+#include <linux/percpu.h>
- #include <linux/sort.h>
- #include <linux/stop_machine.h>
- #include <linux/types.h>
- #include <linux/mm.h>
- #include <linux/cpu.h>
-+
- #include <asm/cpu.h>
- #include <asm/cpufeature.h>
- #include <asm/cpu_ops.h>
-@@ -23,6 +25,7 @@
- #include <asm/processor.h>
- #include <asm/sysreg.h>
- #include <asm/traps.h>
-+#include <asm/vectors.h>
- #include <asm/virt.h>
- 
- /* Kernel representation of AT_HWCAP and AT_HWCAP2 */
-@@ -45,6 +48,8 @@ static struct arm64_cpu_capabilities const __ro_after_init *cpu_hwcaps_ptrs[ARM6
- /* Need also bit for ARM64_CB_PATCH */
- DECLARE_BITMAP(boot_capabilities, ARM64_NPATCHABLE);
- 
-+DEFINE_PER_CPU_READ_MOSTLY(const char *, this_cpu_vector) = vectors;
-+
  /*
-  * Flag to indicate if we have computed the system wide
-  * capabilities based on the boot time active CPUs. This
-@@ -1047,6 +1052,12 @@ kpti_install_ng_mappings(const struct arm64_cpu_capabilities *__unused)
- 	static bool kpti_applied = false;
- 	int cpu = smp_processor_id();
- 
-+	if (__this_cpu_read(this_cpu_vector) == vectors) {
-+		const char *v = arm64_get_bp_hardening_vector(EL1_VECTOR_KPTI);
-+
-+		__this_cpu_write(this_cpu_vector, v);
-+	}
-+
- 	/*
- 	 * We don't need to rewrite the page-tables if either we've done
- 	 * it already or we have KASLR enabled and therefore have not
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index e4b5a15c2e2e..fcfbb2b009e2 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -60,7 +60,6 @@
- 	.macro kernel_ventry, el, label, regsize = 64
- 	.align 7
- .Lventry_start\@:
--#ifdef CONFIG_UNMAP_KERNEL_AT_EL0
- 	.if	\el == 0
- 	/*
- 	 * This must be the first instruction of the EL0 vector entries. It is
-@@ -75,7 +74,6 @@
- 	.endif
- .Lskip_tramp_vectors_cleanup\@:
- 	.endif
--#endif
- 
- 	sub	sp, sp, #S_FRAME_SIZE
- #ifdef CONFIG_VMAP_STACK
-@@ -1129,10 +1127,14 @@ alternative_else_nop_endif
- 	.endm
- 
- 	.macro tramp_exit, regsize = 64
--	adr	x30, tramp_vectors
--#ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
--	add	x30, x30, SZ_4K
--#endif
-+	tramp_data_read_var	x30, this_cpu_vector
-+alternative_if_not ARM64_HAS_VIRT_HOST_EXTN
-+	mrs	x29, tpidr_el1
-+alternative_else
-+	mrs	x29, tpidr_el2
-+alternative_endif
-+	ldr	x30, [x30, x29]
-+
- 	msr	vbar_el1, x30
- 	ldr	lr, [sp, #S_LR]
- 	tramp_unmap_kernel	x29
-@@ -1193,6 +1195,8 @@ __entry_tramp_data_vectors:
- __entry_tramp_data___sdei_asm_trampoline_next_handler:
- 	.quad	__sdei_asm_handler
- #endif /* CONFIG_ARM_SDE_INTERFACE */
-+__entry_tramp_data_this_cpu_vector:
-+	.quad	this_cpu_vector
- 	.popsection				// .rodata
- #endif /* CONFIG_RANDOMIZE_BASE */
- #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
-diff --git a/arch/arm64/kvm/hyp/switch.c b/arch/arm64/kvm/hyp/switch.c
-index 14607fac7ca3..768983bd2326 100644
---- a/arch/arm64/kvm/hyp/switch.c
-+++ b/arch/arm64/kvm/hyp/switch.c
-@@ -25,6 +25,7 @@
- #include <asm/debug-monitors.h>
- #include <asm/processor.h>
- #include <asm/thread_info.h>
-+#include <asm/vectors.h>
- 
- extern struct exception_table_entry __start___kvm_ex_table;
- extern struct exception_table_entry __stop___kvm_ex_table;
-@@ -152,7 +153,7 @@ static void __hyp_text __activate_traps(struct kvm_vcpu *vcpu)
- 
- static void deactivate_traps_vhe(void)
- {
--	extern char vectors[];	/* kernel exception vectors */
-+	const char *host_vectors = vectors;
- 	write_sysreg(HCR_HOST_VHE_FLAGS, hcr_el2);
- 
- 	/*
-@@ -163,7 +164,10 @@ static void deactivate_traps_vhe(void)
- 	asm(ALTERNATIVE("nop", "isb", ARM64_WORKAROUND_1165522));
- 
- 	write_sysreg(CPACR_EL1_DEFAULT, cpacr_el1);
--	write_sysreg(vectors, vbar_el1);
-+
-+	if (!arm64_kernel_unmapped_at_el0())
-+		host_vectors = __this_cpu_read(this_cpu_vector);
-+	write_sysreg(host_vectors, vbar_el1);
- }
- NOKPROBE_SYMBOL(deactivate_traps_vhe);
- 
--- 
-2.34.1
-
+  * sctp_sf_do_ecn_cwr
+  *
 
 
