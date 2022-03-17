@@ -2,181 +2,374 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B10C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 07:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9369C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 07:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbiCQHqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 03:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
+        id S230299AbiCQHuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 03:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiCQHqu (ORCPT
+        with ESMTP id S229482AbiCQHud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 03:46:50 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2106.outbound.protection.outlook.com [40.107.94.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0299ABF01A;
-        Thu, 17 Mar 2022 00:45:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pabr0xoDhvoyEgGT/UYFTo6g57SF9btUbXbYygXh5tN+JTgDCtcD6Ip495D8P4f5bwiL1KawcI2fZtuJDJ4mR0zBImn10yxPWqvL41P6IJZVRs4Cz4o1rLdDcr3Rfd5KQaIRHrvxTPFFcB9JdvZ7mH8csVC/mG7amrxGEq8EpYwCtxByVSG0RA95aMi3KzDWkMDukFfKlFwOmSIWX9P5EwyccgPFTCp8HVBw33inQoznKb5MkqVeFWNvT/nkGo3nDFODPLWq3/Zcxm12jy0RnKgcfl7Aip2aTO/VSz0nfQ4yUIeVOFy9LTiwTwR86Ct+QwDmQCMPSpYM7PNMWFp9JA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2TT1BbLE0dKSi7i9LFluVaG481IREHPR0NXb6VkIQSA=;
- b=iBeSpOTdB6lBK5Ea/OQrPNt4LG7sEWGL9oc8+djr2BbMAxKwQNY5S0aHse7QYXpHjaB2znWjvb7MJKYMVYKC1fCKeOaCKD0cEGFJ1Wf+iBuZMzaBLiQsGGlOSNIKN6g1sUTU8nLyq9k0l+p8aNOzTOvcmsYMWo2e+pivfBcqNsCXVlb8bByHjxV53XlWWYrTNInjNsYziTjPvEEj8Zy14jDbcRik4Pf21nvJ+OzPUAw20llEHDgoOEG+QAmzpwHN8V+g+emdx8mQeF0BtKpS3mtOlCXV1QcWQQeGSxfScCVEkSDSB4Bpzi4GLi8ydwKwQ88ZJYL7+MNnH2/yWPZR7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
- header.from=os.amperecomputing.com; dkim=pass
- header.d=os.amperecomputing.com; arc=none
+        Thu, 17 Mar 2022 03:50:33 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA0BD3719
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 00:49:16 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2dbd8777564so49450807b3.0
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 00:49:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=os.amperecomputing.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2TT1BbLE0dKSi7i9LFluVaG481IREHPR0NXb6VkIQSA=;
- b=DAmTDZp/yzni0PijX7J7JACoFoTEnkNSYARHkI5Rnj0CHnSk+PmLPppGdkpNIb3WzNY2Pxw9nAs2Eb+0jitRJZYB3hLn/HvsUzP7CF0riZB/PJaU/DdOOy2KDR3F2uibNiSm9ehK+hn0SWCAHnXCPVnNqCglvWAcL9vD63LR+5c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
-Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
- DM6PR01MB4283.prod.exchangelabs.com (2603:10b6:5:1d::27) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5061.26; Thu, 17 Mar 2022 07:45:32 +0000
-Received: from SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::cd24:39ed:7042:46d6]) by SJ0PR01MB7282.prod.exchangelabs.com
- ([fe80::cd24:39ed:7042:46d6%8]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
- 07:45:32 +0000
-Message-ID: <db5a879e-5e2f-24f0-c0fb-4971679a45cb@os.amperecomputing.com>
-Date:   Thu, 17 Mar 2022 14:45:19 +0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.0
-Subject: Re: [PATCH v6 3/4] ipmi: ssif_bmc: Return -EFAULT if copy_from_user()
- fails
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Wolfram Sang <wsa@kernel.org>, Corey Minyard <minyard@acm.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        openipmi-developer@lists.sourceforge.net,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Open Source Submission <patches@amperecomputing.com>,
-        Phong Vo <phong@os.amperecomputing.com>,
-        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
-References: <20220310114119.13736-1-quan@os.amperecomputing.com>
- <20220310114119.13736-4-quan@os.amperecomputing.com>
- <YirzJj/BBUQTbKS3@ninjato>
-From:   Quan Nguyen <quan@os.amperecomputing.com>
-In-Reply-To: <YirzJj/BBUQTbKS3@ninjato>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: HK2PR02CA0157.apcprd02.prod.outlook.com
- (2603:1096:201:1f::17) To SJ0PR01MB7282.prod.exchangelabs.com
- (2603:10b6:a03:3f2::24)
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CxhKs33qKz6suXNHm1jB53sEskKF4ehz7UKKwX7WH2I=;
+        b=UroNxQQhcYn985C7c6vcxusQLfDBM+C2CO8CHxjLA1nsurUzi5xOkQ7eU0yGHUax4/
+         Zy/odR/jxAAvMnxTnlVJnOkBko5/+fR9X6OdcfRtBTLNYcMcpR/tb0e8mjLnEJv1w1Un
+         qtl9toarqI6xoRpuz4tdrN/DmsMVvdwHDnMBo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CxhKs33qKz6suXNHm1jB53sEskKF4ehz7UKKwX7WH2I=;
+        b=E4ZuGFNXqurqsUEph3x8nxC3BSgWDrO6jxTEfTKmulEEb3Qe3Okdajey4R6OYR24k6
+         imCXds9gA4o+RnG1UKQ601tUPIi8ENrWnlXQtcP+b5ODorhwHH9bfL7gX6GszQtX9Gyi
+         5LMZUScKQ16hOxwx/IXtJfKmQGED5w35XytLmRFiwLhynEWAABuQJGwqHBaPXAjB9h1W
+         2hxm/iooZsBRu8ABBBg9tEs9jwYqrglXOnWA3spRslFjtUL9+CofkriPm4CQkKk5cyB+
+         FTAg9hzUF3xmtXunHOu35bgpRS15H+o7hUBP+o+JmhLJqZ0RI8eVTSHhi3M+i/JKx/Pq
+         z4hA==
+X-Gm-Message-State: AOAM533WBfRPZgXdGKXEEpbKlXeFOkckqBJnOtaPl9Z/ru4YVQJ76u6K
+        3F7IUGlwORHJ+ZUPRn2rVNfCUS3Cv1pcH92L2d6Gcw==
+X-Google-Smtp-Source: ABdhPJygD5+S+JgKaE9mUCzyufJmjkB9OUVTcyUSN6SZ1eaIaWsdz/JRaHZmaWs9B4adB/ypoNHHUdsFjVRMQD2gXbs=
+X-Received: by 2002:a0d:e297:0:b0:2e5:9bbc:2455 with SMTP id
+ l145-20020a0de297000000b002e59bbc2455mr4377377ywe.21.1647503356026; Thu, 17
+ Mar 2022 00:49:16 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 63223b2b-a7e6-4583-7619-08da07ea1c97
-X-MS-TrafficTypeDiagnostic: DM6PR01MB4283:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR01MB4283C132FAD0E0D67D14D2F7F2129@DM6PR01MB4283.prod.exchangelabs.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +V0CdS9yUxLg2Dqc5BgXYGbS/LcPrbLY4LpUt76yocRgcg1XU0tVAGqRM4/93qeyPaIpepXolGDaxtAZvNDNDo4+CBtEy4Hs0E7KLscwLqj2fkp+v1M4k2c5f9Z/24cV9M6Y6NzS6LBm7JpuewXncnp0pvoOp16Bq18h34kPJVir9agv1Gavh+4tYf8JdxsCFzRMTR3GVmrZhmNWKHVMhhHV1XtpsVJXl8x8ZBfPQmVVkVjecAagWLkigPo+ngmSA9ARajgRJSInTz5d7HXN2g3O0+a3KBTs9gZMtAMJV00P2eWN//irR2IGpzn4prfjIEU4Sx/jvgDwr6TBOA+QJNoKpetuFBnlE42MXJgHUF63KfJkPmWg2dm3YptA/pMoxD9AatI4nQrnS4qIrH1qt3wmtVEt9NKzOB8Ba8IRRwQWSAkEwHM5NmKrF2MJQso0c15IvHdD0N0IRuoUckXHRWQsz6olgyPjcLR69DpAI22t3UQTP3Llzj0sqltHFQPm1yA6AIGFsjrztJcMYdipwBODcaS8KPEjO+673QF+MIJvsjVni5X855yQLr/e5fbPEXA24aSTfZ3CI99Z/MtMKiIUZ9uq+ooRhCquT34HUM+R9cdbE2nZ+g4Qw3Krs/sjCQ2OgwaC2pbQJw8DzHatp8qrGfu4f0lDlHNsXLVaYNZ+2ZAK6ZJou3u3I2715ylqYX9S6NPWRlp0HzLUa/PSRRnbx6zIvEyNrvP1jaRPr7/4MvleJVXW4xfE+mEWhn/T
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(8936002)(38100700002)(38350700002)(921005)(66476007)(66946007)(66556008)(86362001)(31696002)(53546011)(6506007)(55236004)(8676002)(6636002)(316002)(52116002)(508600001)(6486002)(6512007)(110136005)(7416002)(2906002)(186003)(26005)(31686004)(5660300002)(2616005)(83380400001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?N21CV2NwWVZTbGZQNDBGeFJ4SFBHOFNMSnZsczFJaktMdkZiamxoMlBNK2p3?=
- =?utf-8?B?UXpyaU1rZ1g0Z1RWUDhZbnZaL1RaRUcrQVU5ZVFTYzZhb3ZOd3IxQTY3SVRB?=
- =?utf-8?B?Q0t5RkhCTGl0akFRS0lkY3VUeVNVUnBNN2FIRzU2dmMweDVhR3B0c0gwc0FW?=
- =?utf-8?B?cUpOQjVMd3FTUTNaaTdmanZPZnVtMjA2Z2dyTENrbWd2MWVJbThHVlVYeGJH?=
- =?utf-8?B?MktudDRGL0MyZ1FkVm1jZEVyajVRV2h1UmZISGpmVU55NXBnYW1tYkFlbGU1?=
- =?utf-8?B?d0F6dCtWL01WK0VUQTBFd3Z4ZnBvenRQeFZRVmNOVjV0TEh4TXJnaS9IaXRw?=
- =?utf-8?B?VjV6c3BOQzhQNmdGT3orOS9OazgvcDhZTDdENHBhT004UGFBOURlL3pSZlVl?=
- =?utf-8?B?b3JiZDZZVHh0N1Z1T3I1M0R6OEZGcFcxVkhHZVR3aWtlNzRsSG1MaVMxYitS?=
- =?utf-8?B?Yi9QZVRhWDJEU0c1d21zY2hMS1ZWVWFTTTA0UXl6Ym5vbUc1L0Q3WW9McVEr?=
- =?utf-8?B?YVJnemg3N0xNcjFkV1hQa3VrUkh6TnhwQVg0dyt4aWdXNklVaDdCOXNzVTVP?=
- =?utf-8?B?cjM1cjR5Nlk4OUowUDBMMm1jWFd6Z0ttcmp3RVdJYk9tQmJWUzA1YWxobmpj?=
- =?utf-8?B?QVRVczVJbmdURi80MkxjSUNZaXk3U0MveGtjM3Jxa2g2Qm5kWUFwN0l0Z0dx?=
- =?utf-8?B?N3dRMkxoRFl2WW1VZ29CMVgrNjNlczhXek0wcG9ZKzk1b0RqOG5CUzBzd3VZ?=
- =?utf-8?B?c3RRQ2xNVENYUUVab1FBN0hyNTMzRm9ybXQ4NDNRaDc5ZkpGOEtCM0Y0M0R0?=
- =?utf-8?B?YTFaYThhekNCcUhYTWtaVDgyNEsxd3pxei9NVXpweUNSTnNaeVBDTVVldGhr?=
- =?utf-8?B?OU1iNGZVMFJuQm8wN1lCOUdkYW8rY3RZTkthK294dW9zQitTcHBqMmQrVFJ6?=
- =?utf-8?B?MTlHelk0andCVVZjeENGRWMyMy9HQzVDMThsOVdSeHRmN05xMFl0NWxybVVB?=
- =?utf-8?B?WHZtaUdNQVVYNkFmcWU3QnpodEFNOURrV0hCWWJFT3Z0ajFwY2t0YkFQcjh4?=
- =?utf-8?B?YUUzUWkweis0dFg0ZUtSUzFnMnc1OGppdDNiWjBEMW1MWjBVN3ZnbFRoTjdP?=
- =?utf-8?B?aU4xbHZNYXhCRXpkZzgvbW1oVUxETW55a2haaTNBbU13S2xVTWlKZzNpQ3gz?=
- =?utf-8?B?d1ZSZlVhS1p0bTFFcWZOVlBkc0ExYXNjRGlubllKemc3WDhINDRXZzRUY2Ru?=
- =?utf-8?B?SVJpSjZvalVPOXR0UytNbHdiMnFHd3FjUUp5SURadFp4TEFTTW1NeTczcjBH?=
- =?utf-8?B?ZHIzblZtbUNuQmUwajFteUdGSW9NNFV1RStnS0FhRWk3ZmUraW9KQ0lwbHJa?=
- =?utf-8?B?Q0M2SDR4clNXNjkxdndpT0VsdnY2WU1oWUZsS0xvMlJUTUlIWE9JbklNMXM4?=
- =?utf-8?B?eWxsYlRmaHVycWRnRDd3WDRZdzNwNG9qZTFSb1picmQ4VWFmTzNacHNYYS9R?=
- =?utf-8?B?bVJTL2JGZUtUdFVlbjlQMi8walBxUWVvRzIzVGdCT0hBNHBURGtqdlVOWDVB?=
- =?utf-8?B?aWV4ckdwSkFZQnE1dCtReGV6QS9vMkJ0cVluNTVNbU9UTVNuZjIwOEpmdW9z?=
- =?utf-8?B?VEFBMlZlanJDczRSTUhOVkdsc1AxM01UMWY0UjJtbGJvUW9qd0VIdDkyTVlN?=
- =?utf-8?B?NEtJK2FHRU43L0tzQjdPMzRTaW9wSk5kS1k2aEI4THE1aGNOM2syZHlVY1lp?=
- =?utf-8?B?RWM5THNDYTNXZjhGejZmbVo0YUVaZWs0R1VBaStSQWNKd1AzVldzZ0dTbUJS?=
- =?utf-8?B?NzBPS2lrTFloWHk0UG1jODlRcGlPUnMwMFJXVW0wVTh5aWNpSGgvUnRWRWc4?=
- =?utf-8?B?YjI5cU9xaGtRV04zWURac1VyQVVJUlhtdmEwV3NJdXBGUXlYVmRGaXFTQ0VV?=
- =?utf-8?B?eDAvNmgrbjdCYjAvM1QyR29RRk5KTUNlWWwwVklQSVBvUVlDekxoWUtHa3Fo?=
- =?utf-8?Q?OsDK9NnnmoCTcfQO9IJjGRbq77Fi+8=3D?=
-X-OriginatorOrg: os.amperecomputing.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 63223b2b-a7e6-4583-7619-08da07ea1c97
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 07:45:32.3692
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F62kzhaywn6eBDU5aMgP2qM4ZxNsHEaaLtYu1cMzxJXl1dm3+9qtDfjZuHM6XpV4n6m0tCj9eGrhhUpbAJz+6GzFK4sR25WjTxcHuqnEVhs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR01MB4283
+References: <20220311133527.5914-1-jianjun.wang@mediatek.com> <20220311133527.5914-2-jianjun.wang@mediatek.com>
+In-Reply-To: <20220311133527.5914-2-jianjun.wang@mediatek.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Thu, 17 Mar 2022 15:49:05 +0800
+Message-ID: <CAGXv+5GxML3Ga5ampXdLBpPr52C99OiJXg65qn2p_spzP4dhPw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] phy: mediatek: Add PCIe PHY driver
+To:     Jianjun Wang <jianjun.wang@mediatek.com>
+Cc:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rex-bc.chen@mediatek.com, Randy.Wu@mediatek.com,
+        jieyy.yang@mediatek.com, chuanjia.liu@mediatek.com,
+        qizhong.cheng@mediatek.com, jian.yang@mediatek.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Added Dan as I have missed Dan's email address in the first place.
-My apologize,
-- Quan
+On Fri, Mar 11, 2022 at 9:46 PM Jianjun Wang <jianjun.wang@mediatek.com> wrote:
+>
+> Add PCIe GEN3 PHY driver support on MediaTek chipsets.
+>
+> Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+> ---
+>  drivers/phy/mediatek/Kconfig        |  11 ++
+>  drivers/phy/mediatek/Makefile       |   1 +
+>  drivers/phy/mediatek/phy-mtk-pcie.c | 198 ++++++++++++++++++++++++++++
+>  3 files changed, 210 insertions(+)
+>  create mode 100644 drivers/phy/mediatek/phy-mtk-pcie.c
+>
+> diff --git a/drivers/phy/mediatek/Kconfig b/drivers/phy/mediatek/Kconfig
+> index 55f8e6c048ab..387ed1b3f2cc 100644
+> --- a/drivers/phy/mediatek/Kconfig
+> +++ b/drivers/phy/mediatek/Kconfig
+> @@ -55,3 +55,14 @@ config PHY_MTK_MIPI_DSI
+>         select GENERIC_PHY
+>         help
+>           Support MIPI DSI for Mediatek SoCs.
+> +
+> +config PHY_MTK_PCIE
+> +       tristate "MediaTek PCIe-PHY Driver"
+> +       depends on ARCH_MEDIATEK || COMPILE_TEST
+> +       depends on OF
+> +       select GENERIC_PHY
+> +       help
+> +         Say 'Y' here to add support for MediaTek PCIe PHY driver.
+> +         This driver create the basic PHY instance and provides initialize
+> +         callback for PCIe GEN3 port, it supports software efuse
+> +         initialization.
+> diff --git a/drivers/phy/mediatek/Makefile b/drivers/phy/mediatek/Makefile
+> index ace660fbed3a..788c13147f63 100644
+> --- a/drivers/phy/mediatek/Makefile
+> +++ b/drivers/phy/mediatek/Makefile
+> @@ -6,6 +6,7 @@
+>  obj-$(CONFIG_PHY_MTK_TPHY)             += phy-mtk-tphy.o
+>  obj-$(CONFIG_PHY_MTK_UFS)              += phy-mtk-ufs.o
+>  obj-$(CONFIG_PHY_MTK_XSPHY)            += phy-mtk-xsphy.o
+> +obj-$(CONFIG_PHY_MTK_PCIE)             += phy-mtk-pcie.o
+>
+>  phy-mtk-hdmi-drv-y                     := phy-mtk-hdmi.o
+>  phy-mtk-hdmi-drv-y                     += phy-mtk-hdmi-mt2701.o
+> diff --git a/drivers/phy/mediatek/phy-mtk-pcie.c b/drivers/phy/mediatek/phy-mtk-pcie.c
+> new file mode 100644
+> index 000000000000..45a67d9171f6
+> --- /dev/null
+> +++ b/drivers/phy/mediatek/phy-mtk-pcie.c
+> @@ -0,0 +1,198 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2022 MediaTek Inc.
+> + * Author: Jianjun Wang <jianjun.wang@mediatek.com>
+> + */
+> +
 
-On 11/03/2022 13:58, Wolfram Sang wrote:
-> On Thu, Mar 10, 2022 at 06:41:18PM +0700, Quan Nguyen wrote:
->> From: Dan Carpenter <dan.carpenter@oracle.com>
->>
->> The copy_from_user() function returns the number of bytes remaining to
->> be copied but we should return -EFAULT here.
->>
->> Fixes: 501c25b59508 ("ipmi: ssif_bmc: Add SSIF BMC driver")
->> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->> Signed-off-by: Corey Minyard <cminyard@mvista.com>
->> Signed-off-by: Quan Nguyen <quan@os.amperecomputing.com>
-> 
-> It is nice that you want to keep this patch seperate to give Dan
-> credits, but I still think it should be merged into patch 1, so the
-> initial driver is as flawless as it can be. You could give Dan still
-> credits by mentioning him in the commit message IMO. Dan, would you be
-> fine with this?
-> 
->> v6:
->>    + New add in v6, thanks Dan for the patch     [Dan]
->>
->>   drivers/char/ipmi/ssif_bmc.c | 5 ++---
->>   1 file changed, 2 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/char/ipmi/ssif_bmc.c b/drivers/char/ipmi/ssif_bmc.c
->> index 62db97773654..91ac2cae756e 100644
->> --- a/drivers/char/ipmi/ssif_bmc.c
->> +++ b/drivers/char/ipmi/ssif_bmc.c
->> @@ -87,9 +87,8 @@ static ssize_t ssif_bmc_write(struct file *file, const char __user *buf, size_t
->>   	if (count > sizeof(struct ssif_msg))
->>   		return -EINVAL;
->>   
->> -	ret = copy_from_user(&msg, buf, count);
->> -	if (ret)
->> -		return ret;
->> +	if (copy_from_user(&msg, buf, count))
->> +		return -EFAULT;
->>   
->>   	if (!msg.len || count < ssif_msg_len(&msg))
->>   		return -EINVAL;
->> -- 
->> 2.35.1
->>
+Please include linux/bits.h for GENMASK().
+
+> +#include <linux/io.h>
+> +#include <linux/iopoll.h>
+
+You don't need these two headers.
+
+You could include linux/compiler_types.h for definition of __iomem.
+
+> +#include <linux/module.h>
+> +#include <linux/nvmem-consumer.h>
+
+> +#include <linux/of_address.h>
+> +#include <linux/of_device.h>
+
+Nor do you need these two.
+
+> +#include <linux/phy/phy.h>
+> +#include <linux/platform_device.h>
+
+Please include linux/slab.h for kmalloc() and friends.
+
+> +
+> +#include "phy-mtk-io.h"
+> +
+> +#define PEXTP_ANA_GLB_00_REG           0x9000
+> +#define PEXTP_ANA_LN0_TX_REG           0xA004
+> +#define PEXTP_ANA_LN0_RX_REG           0xA03C
+> +#define PEXTP_ANA_LN1_TX_REG           0xA104
+> +#define PEXTP_ANA_LN1_RX_REG           0xA13c
+> +
+> +/* PEXTP_GLB_00_RG[28:24] Internal Resistor Selection of TX Bias Current */
+> +#define EFUSE_GLB_INTR_SEL             GENMASK(28, 24)
+> +#define EFUSE_GLB_INTR_VAL(x)          ((0x1f & (x)) << 24)
+> +
+> +/* PEXTP_ANA_LN_RX_RG[3:0] LN0 RX impedance selection */
+> +#define EFUSE_LN_RX_SEL                        GENMASK(3, 0)
+> +#define EFUSE_LN_RX_VAL(x)             (0xf & (x))
+> +
+> +/* PEXTP_ANA_LN_TX_RG[5:2] LN0 TX PMOS impedance selection */
+> +#define EFUSE_LN_TX_PMOS_SEL           GENMASK(5, 2)
+> +#define EFUSE_LN_TX_PMOS_VAL(x)                ((0xf & (x)) << 2)
+> +
+> +/* PEXTP_ANA_LN_TX_RG[11:8] LN0 TX NMOS impedance selection */
+> +#define EFUSE_LN_TX_NMOS_SEL           GENMASK(11, 8)
+> +#define EFUSE_LN_TX_NMOS_VAL(x)                ((0xf & (x)) << 8)
+
+Register definitions look good. I matched them to the datasheet.
+
+> +struct mtk_pcie_phy {
+> +       struct device *dev;
+> +       struct phy *phy;
+> +       void __iomem *sif_base;
+> +};
+> +
+> +static int mtk_pcie_phy_init(struct phy *phy)
+> +{
+> +       struct mtk_pcie_phy *pcie_phy = phy_get_drvdata(phy);
+> +       struct device *dev = pcie_phy->dev;
+> +       bool nvmem_enabled;
+> +       u32 glb_intr, tx_pmos, tx_nmos, rx_data;
+> +       int ret;
+> +
+> +       nvmem_enabled = device_property_read_bool(dev, "nvmem-cells");
+> +       if (!nvmem_enabled)
+> +               return 0;
+> +
+> +       /* Set efuse value for lane0 */
+> +       ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln0_pmos", &tx_pmos);
+> +       if (ret) {
+> +               dev_err(dev, "%s: Failed to read tx_ln0_pmos\n", __func__);
+> +               return ret;
+> +       }
+> +
+> +       ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln0_nmos", &tx_nmos);
+> +       if (ret) {
+> +               dev_err(dev, "%s: Failed to read tx_ln0_nmos\n", __func__);
+> +               return ret;
+> +       }
+> +
+> +       ret = nvmem_cell_read_variable_le_u32(dev, "rx_ln0", &rx_data);
+> +       if (ret) {
+> +               dev_err(dev, "%s: Failed to read rx_ln0\n", __func__);
+> +               return ret;
+> +       }
+> +
+> +       /* Don't wipe the old data if there is no data in efuse cell */
+> +       if (!(tx_pmos || tx_nmos || rx_data)) {
+> +               dev_warn(dev, "%s: No efuse data found, but dts enable it\n",
+> +                        __func__);
+> +               return 0;
+> +       }
+> +
+> +       mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN0_TX_REG,
+> +                           EFUSE_LN_TX_PMOS_SEL,
+> +                           EFUSE_LN_TX_PMOS_VAL(tx_pmos));
+> +
+> +       mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN0_TX_REG,
+> +                           EFUSE_LN_TX_NMOS_SEL,
+> +                           EFUSE_LN_TX_NMOS_VAL(tx_nmos));
+> +
+> +       mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN0_RX_REG,
+> +                           EFUSE_LN_RX_SEL, EFUSE_LN_RX_VAL(rx_data));
+> +
+> +       /* Set global data */
+> +       ret = nvmem_cell_read_variable_le_u32(dev, "glb_intr", &glb_intr);
+> +       if (ret) {
+> +               dev_err(dev, "%s: Failed to read glb_intr\n", __func__);
+> +               return ret;
+> +       }
+> +
+> +       mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_GLB_00_REG,
+> +                           EFUSE_GLB_INTR_SEL, EFUSE_GLB_INTR_VAL(glb_intr));
+> +
+> +       /*
+> +        * Set efuse value for lane1, only available for the platform which
+> +        * supports two lane.
+> +        */
+> +       ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln1_pmos", &tx_pmos);
+> +       if (ret) {
+> +               dev_err(dev, "%s: Failed to read tx_ln1_pmos, efuse value not support for lane 1\n",
+> +                       __func__);
+> +               return 0;
+> +       }
+> +
+> +       ret = nvmem_cell_read_variable_le_u32(dev, "tx_ln1_nmos", &tx_nmos);
+> +       if (ret) {
+> +               dev_err(dev, "%s: Failed to read tx_ln1_pmos\n", __func__);
+> +               return ret;
+> +       }
+> +
+> +       ret = nvmem_cell_read_variable_le_u32(dev, "rx_ln1", &rx_data);
+> +       if (ret) {
+> +               dev_err(dev, "%s: Failed to read rx_ln1\n", __func__);
+> +               return ret;
+> +       }
+> +
+> +       if (!(tx_pmos || tx_nmos || rx_data))
+> +               return 0;
+> +
+> +       mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN1_TX_REG,
+> +                           EFUSE_LN_TX_PMOS_SEL,
+> +                           EFUSE_LN_TX_PMOS_VAL(tx_pmos));
+> +
+> +       mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN1_TX_REG,
+> +                           EFUSE_LN_TX_NMOS_SEL,
+> +                           EFUSE_LN_TX_NMOS_VAL(tx_nmos));
+> +
+> +       mtk_phy_update_bits(pcie_phy->sif_base + PEXTP_ANA_LN1_RX_REG,
+> +                           EFUSE_LN_RX_SEL, EFUSE_LN_RX_VAL(rx_data));
+> +
+> +       return 0;
+> +}
+> +
+> +static const struct phy_ops mtk_pcie_phy_ops = {
+> +       .init   = mtk_pcie_phy_init,
+
+This function doesn't look like it is enabling any resources, and there
+is no .exit counterpart. You could simply call this in the probe function.
+
+Or maybe the hardware settings get reset during suspend, and you want the
+settings reinitialized when the consumer calls phy_init() again? This
+design limitation and decision should be noted in a comment.
+
+
+Also, it is better to do the NVMEM readout at probe time, so if
+nvmem_cell_read_* returns -EPROBE_DEFER, you get proper probe
+sequencing.
+
+Consumers likely won't be expecting -EPROBE_DEFER from phy_init().
+
+> +       .owner  = THIS_MODULE,
+> +};
+> +
+> +static int mtk_pcie_phy_probe(struct platform_device *pdev)
+> +{
+> +       struct device *dev = &pdev->dev;
+> +       struct phy_provider *provider;
+> +       struct mtk_pcie_phy *pcie_phy;
+> +
+> +       pcie_phy = devm_kzalloc(dev, sizeof(*pcie_phy), GFP_KERNEL);
+> +       if (!pcie_phy)
+> +               return -ENOMEM;
+> +
+> +       pcie_phy->dev = dev;
+> +
+> +       pcie_phy->sif_base = devm_platform_ioremap_resource_byname(pdev, "sif");
+> +       if (IS_ERR(pcie_phy->sif_base)) {
+> +               dev_err(dev, "%s: Failed to map phy-sif base\n", __func__);
+> +               return PTR_ERR(pcie_phy->sif_base);
+
+Use "return dev_err_probe(...)".
+
+> +       }
+> +
+> +       pcie_phy->phy = devm_phy_create(dev, dev->of_node, &mtk_pcie_phy_ops);
+> +       if (IS_ERR(pcie_phy->phy)) {
+> +               dev_err(dev, "%s: Failed to create PCIe phy\n", __func__);
+> +               return PTR_ERR(pcie_phy->phy);
+
+Same here.
+
+> +       }
+> +
+> +       phy_set_drvdata(pcie_phy->phy, pcie_phy);
+> +
+> +       provider = devm_of_phy_provider_register(dev, of_phy_simple_xlate);
+> +
+> +       return PTR_ERR_OR_ZERO(provider);
+
+No error message if it fails?
+
+Also, small nit: many prefer not to use PTR_ERR_OR_ZERO, as it adds a line
+that needs to be changed if the core needs to be extended.
+
+> +}
+> +
+> +static const struct of_device_id mtk_pcie_phy_of_match[] = {
+> +       { .compatible = "mediatek,pcie-phy" },
+
+As mentioned for the binding patch, use a SoC specific compatible string.
+
+
+Regards
+ChenYu
+
+
+> +       { },
+> +};
+> +MODULE_DEVICE_TABLE(of, mtk_pcie_phy_of_match);
+> +
+> +static struct platform_driver mtk_pcie_phy_driver = {
+> +       .probe  = mtk_pcie_phy_probe,
+> +       .driver = {
+> +               .name = "mtk-pcie-phy",
+> +               .of_match_table = mtk_pcie_phy_of_match,
+> +       },
+> +};
+> +module_platform_driver(mtk_pcie_phy_driver);
+> +
+> +MODULE_DESCRIPTION("MediaTek PCIe PHY driver");
+> +MODULE_AUTHOR("Jianjun Wang <jianjun.wang@mediatek.com>");
+> +MODULE_LICENSE("GPL v2");
+> --
+> 2.18.0
+>
+>
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
