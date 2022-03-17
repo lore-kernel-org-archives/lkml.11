@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F49C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E123C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235839AbiCQP1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
+        id S235845AbiCQP1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235769AbiCQP0p (ORCPT
+        with ESMTP id S235761AbiCQP0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:26:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B2C205BEF
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:25:27 -0700 (PDT)
+        Thu, 17 Mar 2022 11:26:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6035C205BDF
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:25:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65A88B81EF6
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AB7B61973
         for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E95F8C340FA;
-        Thu, 17 Mar 2022 15:25:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8886C3410C;
+        Thu, 17 Mar 2022 15:25:24 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nUs0A-004zf9-RF;
-        Thu, 17 Mar 2022 11:25:22 -0400
-Message-ID: <20220317152522.671663837@goodmis.org>
+        id 1nUs0C-004ziV-0E;
+        Thu, 17 Mar 2022 11:25:24 -0400
+Message-ID: <20220317152523.833350491@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 17 Mar 2022 11:25:03 -0400
+Date:   Thu, 17 Mar 2022 11:25:09 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
@@ -46,7 +46,7 @@ Cc:     Ingo Molnar <mingo@kernel.org>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [for-next][PATCH 05/13] rethook: x86: Add rethook x86 implementation
+Subject: [for-next][PATCH 11/13] fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
 References: <20220317152458.213689956@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,10 +56,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Masami Hiramatsu <mhiramat@kernel.org>
 
-Add rethook for x86 implementation. Most of the code has been copied from
-kretprobes on x86.
+Introduce FPROBE_FL_KPROBE_SHARED flag for sharing fprobe callback with
+kprobes safely from the viewpoint of recursion.
 
-Link: https://lkml.kernel.org/r/164735286243.1084943.7477055110527046644.stgit@devnote2
+Since the recursion safety of the fprobe (and ftrace) is a bit different
+from the kprobes, this may cause an issue if user wants to run the same
+code from the fprobe and the kprobes.
+
+The kprobes has per-cpu 'current_kprobe' variable which protects the
+kprobe handler from recursion in any case. On the other hand, the fprobe
+uses only ftrace_test_recursion_trylock(), which will allow interrupt
+context calls another (or same) fprobe during the fprobe user handler is
+running.
+
+This is not a matter in cases if the common callback shared among the
+kprobes and the fprobe has its own recursion detection, or it can handle
+the recursion in the different contexts (normal/interrupt/NMI.)
+But if it relies on the 'current_kprobe' recursion lock, it has to check
+kprobe_running() and use kprobe_busy_*() APIs.
+
+Fprobe has FPROBE_FL_KPROBE_SHARED flag to do this. If your common callback
+code will be shared with kprobes, please set FPROBE_FL_KPROBE_SHARED
+*before* registering the fprobe, like;
+
+ fprobe.flags = FPROBE_FL_KPROBE_SHARED;
+
+ register_fprobe(&fprobe, "func*", NULL);
+
+This will protect your common callback from the nested call.
+
+Link: https://lkml.kernel.org/r/164735293127.1084943.15687374237275817599.stgit@devnote2
 
 Cc: Jiri Olsa <jolsa@kernel.org>
 Cc: Alexei Starovoitov <ast@kernel.org>
@@ -77,207 +103,91 @@ Cc: "David S . Miller" <davem@davemloft.net>
 Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- arch/x86/Kconfig                 |   1 +
- arch/x86/include/asm/unwind.h    |   8 ++-
- arch/x86/kernel/Makefile         |   1 +
- arch/x86/kernel/kprobes/common.h |   1 +
- arch/x86/kernel/rethook.c        | 119 +++++++++++++++++++++++++++++++
- 5 files changed, 129 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/kernel/rethook.c
+ include/linux/fprobe.h  | 12 ++++++++++++
+ include/linux/kprobes.h |  3 +++
+ kernel/trace/fprobe.c   | 19 ++++++++++++++++++-
+ 3 files changed, 33 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660..a91373c56d9f 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -220,6 +220,7 @@ config X86
- 	select HAVE_KPROBES_ON_FTRACE
- 	select HAVE_FUNCTION_ERROR_INJECTION
- 	select HAVE_KRETPROBES
-+	select HAVE_RETHOOK
- 	select HAVE_KVM
- 	select HAVE_LIVEPATCH			if X86_64
- 	select HAVE_MIXED_BREAKPOINTS_REGS
-diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
-index 2a1f8734416d..192df5b2094d 100644
---- a/arch/x86/include/asm/unwind.h
-+++ b/arch/x86/include/asm/unwind.h
-@@ -5,6 +5,7 @@
- #include <linux/sched.h>
- #include <linux/ftrace.h>
- #include <linux/kprobes.h>
-+#include <linux/rethook.h>
- #include <asm/ptrace.h>
- #include <asm/stacktrace.h>
+diff --git a/include/linux/fprobe.h b/include/linux/fprobe.h
+index 8eefec2b485e..1c2bde0ead73 100644
+--- a/include/linux/fprobe.h
++++ b/include/linux/fprobe.h
+@@ -34,13 +34,25 @@ struct fprobe {
+ 	void (*exit_handler)(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
+ };
  
-@@ -16,7 +17,7 @@ struct unwind_state {
- 	unsigned long stack_mask;
- 	struct task_struct *task;
- 	int graph_idx;
--#ifdef CONFIG_KRETPROBES
-+#if defined(CONFIG_KRETPROBES) || defined(CONFIG_RETHOOK)
- 	struct llist_node *kr_cur;
- #endif
- 	bool error;
-@@ -107,6 +108,11 @@ static inline
- unsigned long unwind_recover_kretprobe(struct unwind_state *state,
- 				       unsigned long addr, unsigned long *addr_p)
++/* This fprobe is soft-disabled. */
+ #define FPROBE_FL_DISABLED	1
+ 
++/*
++ * This fprobe handler will be shared with kprobes.
++ * This flag must be set before registering.
++ */
++#define FPROBE_FL_KPROBE_SHARED	2
++
+ static inline bool fprobe_disabled(struct fprobe *fp)
  {
-+#ifdef CONFIG_RETHOOK
-+	if (is_rethook_trampoline(addr))
-+		return rethook_find_ret_addr(state->task, (unsigned long)addr_p,
-+					     &state->kr_cur);
-+#endif
- #ifdef CONFIG_KRETPROBES
- 	return is_kretprobe_trampoline(addr) ?
- 		kretprobe_find_ret_addr(state->task, addr_p, &state->kr_cur) :
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 6aef9ee28a39..792a893a5cc5 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -106,6 +106,7 @@ obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += ftrace.o
- obj-$(CONFIG_FTRACE_SYSCALLS)	+= ftrace.o
- obj-$(CONFIG_X86_TSC)		+= trace_clock.o
- obj-$(CONFIG_TRACING)		+= trace.o
-+obj-$(CONFIG_RETHOOK)		+= rethook.o
- obj-$(CONFIG_CRASH_CORE)	+= crash_core_$(BITS).o
- obj-$(CONFIG_KEXEC_CORE)	+= machine_kexec_$(BITS).o
- obj-$(CONFIG_KEXEC_CORE)	+= relocate_kernel_$(BITS).o crash.o
-diff --git a/arch/x86/kernel/kprobes/common.h b/arch/x86/kernel/kprobes/common.h
-index 7d3a2e2daf01..c993521d4933 100644
---- a/arch/x86/kernel/kprobes/common.h
-+++ b/arch/x86/kernel/kprobes/common.h
-@@ -6,6 +6,7 @@
+ 	return (fp) ? fp->flags & FPROBE_FL_DISABLED : false;
+ }
  
- #include <asm/asm.h>
- #include <asm/frame.h>
-+#include <asm/insn.h>
++static inline bool fprobe_shared_with_kprobes(struct fprobe *fp)
++{
++	return (fp) ? fp->flags & FPROBE_FL_KPROBE_SHARED : false;
++}
++
+ #ifdef CONFIG_FPROBE
+ int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter);
+ int register_fprobe_ips(struct fprobe *fp, unsigned long *addrs, int num);
+diff --git a/include/linux/kprobes.h b/include/linux/kprobes.h
+index 19b884353b15..5f1859836deb 100644
+--- a/include/linux/kprobes.h
++++ b/include/linux/kprobes.h
+@@ -427,6 +427,9 @@ static inline struct kprobe *kprobe_running(void)
+ {
+ 	return NULL;
+ }
++#define kprobe_busy_begin()	do {} while (0)
++#define kprobe_busy_end()	do {} while (0)
++
+ static inline int register_kprobe(struct kprobe *p)
+ {
+ 	return -EOPNOTSUPP;
+diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
+index 38073632bfe4..8b2dd5b9dcd1 100644
+--- a/kernel/trace/fprobe.c
++++ b/kernel/trace/fprobe.c
+@@ -56,6 +56,20 @@ static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
+ }
+ NOKPROBE_SYMBOL(fprobe_handler);
  
- #ifdef CONFIG_X86_64
++static void fprobe_kprobe_handler(unsigned long ip, unsigned long parent_ip,
++				  struct ftrace_ops *ops, struct ftrace_regs *fregs)
++{
++	struct fprobe *fp = container_of(ops, struct fprobe, ops);
++
++	if (unlikely(kprobe_running())) {
++		fp->nmissed++;
++		return;
++	}
++	kprobe_busy_begin();
++	fprobe_handler(ip, parent_ip, ops, fregs);
++	kprobe_busy_end();
++}
++
+ static void fprobe_exit_handler(struct rethook_node *rh, void *data,
+ 				struct pt_regs *regs)
+ {
+@@ -110,7 +124,10 @@ static unsigned long *get_ftrace_locations(const char **syms, int num)
+ static void fprobe_init(struct fprobe *fp)
+ {
+ 	fp->nmissed = 0;
+-	fp->ops.func = fprobe_handler;
++	if (fprobe_shared_with_kprobes(fp))
++		fp->ops.func = fprobe_kprobe_handler;
++	else
++		fp->ops.func = fprobe_handler;
+ 	fp->ops.flags |= FTRACE_OPS_FL_SAVE_REGS;
+ }
  
-diff --git a/arch/x86/kernel/rethook.c b/arch/x86/kernel/rethook.c
-new file mode 100644
-index 000000000000..f0f2f0608282
---- /dev/null
-+++ b/arch/x86/kernel/rethook.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * x86 implementation of rethook. Mostly copied from arch/x86/kernel/kprobes/core.c.
-+ */
-+#include <linux/bug.h>
-+#include <linux/rethook.h>
-+#include <linux/kprobes.h>
-+
-+#include "kprobes/common.h"
-+
-+__visible void arch_rethook_trampoline_callback(struct pt_regs *regs);
-+
-+/*
-+ * When a target function returns, this code saves registers and calls
-+ * arch_rethook_trampoline_callback(), which calls the rethook handler.
-+ */
-+asm(
-+	".text\n"
-+	".global arch_rethook_trampoline\n"
-+	".type arch_rethook_trampoline, @function\n"
-+	"arch_rethook_trampoline:\n"
-+#ifdef CONFIG_X86_64
-+	/* Push a fake return address to tell the unwinder it's a kretprobe. */
-+	"	pushq $arch_rethook_trampoline\n"
-+	UNWIND_HINT_FUNC
-+	/* Save the 'sp - 8', this will be fixed later. */
-+	"	pushq %rsp\n"
-+	"	pushfq\n"
-+	SAVE_REGS_STRING
-+	"	movq %rsp, %rdi\n"
-+	"	call arch_rethook_trampoline_callback\n"
-+	RESTORE_REGS_STRING
-+	/* In the callback function, 'regs->flags' is copied to 'regs->sp'. */
-+	"	addq $8, %rsp\n"
-+	"	popfq\n"
-+#else
-+	/* Push a fake return address to tell the unwinder it's a kretprobe. */
-+	"	pushl $arch_rethook_trampoline\n"
-+	UNWIND_HINT_FUNC
-+	/* Save the 'sp - 4', this will be fixed later. */
-+	"	pushl %esp\n"
-+	"	pushfl\n"
-+	SAVE_REGS_STRING
-+	"	movl %esp, %eax\n"
-+	"	call arch_rethook_trampoline_callback\n"
-+	RESTORE_REGS_STRING
-+	/* In the callback function, 'regs->flags' is copied to 'regs->sp'. */
-+	"	addl $4, %esp\n"
-+	"	popfl\n"
-+#endif
-+	"	ret\n"
-+	".size arch_rethook_trampoline, .-arch_rethook_trampoline\n"
-+);
-+NOKPROBE_SYMBOL(arch_rethook_trampoline);
-+
-+/*
-+ * Called from arch_rethook_trampoline
-+ */
-+__used __visible void arch_rethook_trampoline_callback(struct pt_regs *regs)
-+{
-+	unsigned long *frame_pointer;
-+
-+	/* fixup registers */
-+	regs->cs = __KERNEL_CS;
-+#ifdef CONFIG_X86_32
-+	regs->gs = 0;
-+#endif
-+	regs->ip = (unsigned long)&arch_rethook_trampoline;
-+	regs->orig_ax = ~0UL;
-+	regs->sp += sizeof(long);
-+	frame_pointer = &regs->sp + 1;
-+
-+	/*
-+	 * The return address at 'frame_pointer' is recovered by the
-+	 * arch_rethook_fixup_return() which called from this
-+	 * rethook_trampoline_handler().
-+	 */
-+	rethook_trampoline_handler(regs, (unsigned long)frame_pointer);
-+
-+	/*
-+	 * Copy FLAGS to 'pt_regs::sp' so that arch_rethook_trapmoline()
-+	 * can do RET right after POPF.
-+	 */
-+	regs->sp = regs->flags;
-+}
-+NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
-+
-+/*
-+ * arch_rethook_trampoline() skips updating frame pointer. The frame pointer
-+ * saved in arch_rethook_trampoline_callback() points to the real caller
-+ * function's frame pointer. Thus the arch_rethook_trampoline() doesn't have
-+ * a standard stack frame with CONFIG_FRAME_POINTER=y.
-+ * Let's mark it non-standard function. Anyway, FP unwinder can correctly
-+ * unwind without the hint.
-+ */
-+STACK_FRAME_NON_STANDARD_FP(arch_rethook_trampoline);
-+
-+/* This is called from rethook_trampoline_handler(). */
-+void arch_rethook_fixup_return(struct pt_regs *regs,
-+			       unsigned long correct_ret_addr)
-+{
-+	unsigned long *frame_pointer = &regs->sp + 1;
-+
-+	/* Replace fake return address with real one. */
-+	*frame_pointer = correct_ret_addr;
-+}
-+NOKPROBE_SYMBOL(arch_rethook_fixup_return);
-+
-+void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
-+{
-+	unsigned long *stack = (unsigned long *)regs->sp;
-+
-+	rh->ret_addr = stack[0];
-+	rh->frame = regs->sp;
-+
-+	/* Replace the return addr with trampoline addr */
-+	stack[0] = (unsigned long) arch_rethook_trampoline;
-+}
-+NOKPROBE_SYMBOL(arch_rethook_prepare);
 -- 
 2.35.1
