@@ -2,137 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64573C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 280D9C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237381AbiCQSTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        id S237387AbiCQSVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237337AbiCQSTg (ORCPT
+        with ESMTP id S237337AbiCQSVF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:19:36 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC46F5D181
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:18:18 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647541096;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=X1cMRioNx9dyBHJVz2CH0cxjLaOPntib9co0rfHgwgU=;
-        b=Qwnh3wirWfWrTNOaSMoLiRggVDoBJWJqwgsac8TwO2aXHM/Csr4Ev8uzz/p9rXDUctImmG
-        dHBeGfNHLypxIDjPbxuOyaLAwhX4p9u8suz7kHja7f7zJYjSY6pTWCePgU8OSTEHShw36E
-        YJ6OcRxOCEggZawGP+Um3yi4d3pQjGvvvR3DOcfn6G0FbjSePDvwf0QFBuXYlrSG5fFnZM
-        AhjYv6i+uicoy3Uf3Rn3t8gLmHqKa90SYli+pTRW96YuWdy0IHHzF4DoCkD3FQZqhlhHen
-        9JUbAO8wusF9B641iIeSLJQGOfCSPCiVtJXrMQtJb53ZC8zaQSJHJqdN7XHbeA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647541096;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=X1cMRioNx9dyBHJVz2CH0cxjLaOPntib9co0rfHgwgU=;
-        b=SabTM6h+J39HEs/HdKKtPDESeI6Qyc5crpV+6SBE2jLSTqW7Ok/JWoGjxwPhlru3PeujNl
-        CuIvw7zWGOq/hwCw==
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: Re: [PATCHv6 07/30] x86/traps: Add #VE support for TDX guest
-In-Reply-To: <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-8-kirill.shutemov@linux.intel.com>
- <877d8t2ykp.ffs@tglx> <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
-Date:   Thu, 17 Mar 2022 19:18:15 +0100
-Message-ID: <87czikcujc.ffs@tglx>
+        Thu, 17 Mar 2022 14:21:05 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62764221BB5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:19:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647541188; x=1679077188;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Dd1Fx2C8nau5BfZpLzjrRCCTIM9HuEvH9Zm4mhUpWsM=;
+  b=LIc+jVo0SmaRGzSH6+Vu5yIr5m55ioNVxBc2uol5EyQ1emSldV8R3SLm
+   myQZ0edkpceApskdU2g+MWeMbPCI7GIX2JFk++/UF8Uw6dpDNhcCjyomf
+   UKlaLXIINd2kJIpHcGbrtZv7gW6Tsg+6CxQy91jnFXYHWRFFbU9wLXh56
+   tUlGHxBgd+VYGazz5MuUlE0JGZNO0uMHLSiTajhYhvRs+2yRpqAqtdYhH
+   07S8qNH6r5CDpw22bioPVwS84hQa1DTIaYlsIUI12FMPjatrwl//jt/to
+   xbVNB54aDxMuX9/sp2Q4uMtAx96wrjm+rEtRpq4jU6O8zlHdPNnKVSQla
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="343382207"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="343382207"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 11:19:47 -0700
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="715144088"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 11:19:47 -0700
+Date:   Thu, 17 Mar 2022 11:23:04 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        "Zanussi, Tom" <tom.zanussi@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 3/8] iommu/vt-d: Implement device_pasid domain attach
+ ops
+Message-ID: <20220317112304.61cf8953@jacob-builder>
+In-Reply-To: <20220317132308.GV11336@nvidia.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+        <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
+        <20220315143322.GW11336@nvidia.com>
+        <20220315153620.710a30fa@jacob-builder>
+        <20220315230457.GO11336@nvidia.com>
+        <20220316135004.61ae1611@jacob-builder>
+        <20220316221550.GS11336@nvidia.com>
+        <20220316174959.08040193@jacob-builder>
+        <20220317132308.GV11336@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17 2022 at 20:33, Kirill A. Shutemov wrote:
-> On Thu, Mar 17, 2022 at 01:48:54AM +0100, Thomas Gleixner wrote:
->> On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
->> Hmm?
->
-> Does the changed version below address your concerns?
->
-> 	void tdx_get_ve_info(struct ve_info *ve)
-> 	{
-> 		struct tdx_module_output out;
->
-> 		/*
-> 		 * Called during #VE handling to retrieve the #VE info from the
-> 		 * TDX module.
-> 		 *
-> 		 * This has to be called early in #VE handling.  A "nested" #VE which
-> 		 * occurs before this will raise a #DF and is not recoverable.
-> 		 *
-> 		 * The call retrieves the #VE info from the TDX module, which also
-> 		 * clears the "#VE valid" flag. This must be done before anything else
-> 		 * because any #VE that occurs while the valid flag is set will lead to
-> 		 * #DF.
-> 		 *
-> 		 * Note, the TDX module treats virtual NMIs as inhibited if the #VE
-> 		 * valid flag is set. It means that NMI=>#VE will not result in a #DF.
-> 		 */
-> 		tdx_module_call(TDX_GET_VEINFO, 0, 0, 0, 0, &out);
->
-> 		/* Transfer the output parameters */
-> 		ve->exit_reason = out.rcx;
-> 		ve->exit_qual   = out.rdx;
-> 		ve->gla         = out.r8;
-> 		ve->gpa         = out.r9;
-> 		ve->instr_len   = lower_32_bits(out.r10);
-> 		ve->instr_info  = upper_32_bits(out.r10);
-> 	}
+Hi Jason,
 
-Nice.
+On Thu, 17 Mar 2022 10:23:08 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
->> The point is that any #VE in such a code path is fatal and you better
->> come up with some reasonable explanation why this is not the case in
->> those code pathes and how a potential violation of that assumption might
->> be detected especially in rarely used corner cases. If such a violation
->> is not detectable by audit, CI, static code analysis or whatever then
->> document the consequences instead of pretending that the problem does
->> not exist and the kernel is perfect today and forever.
->
-> It is detectable by audit. The critical windows very limited and located
-> in the highly scrutinized entry code. But, yes, I cannot guarantee that
-> this code will be perfect forever.
+> On Wed, Mar 16, 2022 at 05:49:59PM -0700, Jacob Pan wrote:
+> 
+> > > I would expect real applications will try to use the same PASID for
+> > > the same IOVA map to optimize IOTLB caching.
+> > > 
+> > > Is there a use case for that I'm missing?
+> > >   
+> > Yes. it would be more efficient for PASID selective domain TLB flush.
+> > But on VT-d IOTLB is also tagged by domain ID, domain flush can use DID
+> > if there are many PASIDs. Not sure about other archs. Agree that
+> > optimizing PASIDs for TLB flush should be a common goal.  
+> 
+> If you sort the list of (device, pasid) tuples can something like VT-d
+> collapse all the same devices and just issue one DID invalidation:
+> 
+>  list_for_each()
+>     if (itm->device == last_invalidated_device)
+>           continue;
+>     invalidate(itm->device);
+>     last_invalidated_device = itm->device;
+> 
+I assume this is for devTLB since IOMMU's IOTLB flush doesn't care about
+device. I think it works for device-wide invalidation.
 
-Fair enough.
+> While something that was per-pasid could issue per-pasid invalidations
+> from the same data structure?
+> 
+yes. we can use the same data structure for PASID selective devTLB but 
+ list_for_each()
+     if (itm->pasid == pasid_to_be_invalidated;
+	     invalidate(itm->device, pasid);
 
-> Consequences of #VE in these critical windows are mentioned in the
-> comment:
->
-> 	Any exception in this window leads to hard to debug issues and can
-> 	be exploited for privilege escalation. 
->
-> I have hard time understanding what I has to change here. Do you want
-> details of audit to be documented? Make consequences of #VE at the wrong
-> point to be more prominent in the comment? 
+For IOMMU's IOTLB, we also have two granularities
+1. domain-wide
+2. pasid-wide
+For #1, we just use DID to invalidate w/o traverse the list.
+For #2, we just need to sanity check the pasid is indeed attached by going
+through the list.
 
-So having something like this in the comment would be helpful:
+Seems to work!
 
-        *
-	* The entry code has been audited carefuly for following these
-        * expectations. Changes in the entry code have to be audited for
-        * correctness vs. this aspect.  #VE in these places will cause
-        * [an instant kernel panic | whatever | fill the blanks ]
-        *
+> > > Otherwise your explanation is what I was imagining as well.
+> > > 
+> > > I would also think about expanding your struct so that the device
+> > > driver can track per-device per-domain data as well, that seems
+> > > useful IIRC?
+> > >   
+> > yes, at least both VT-d and FSL drivers have struct device_domain_info.
+> >   
+> > > ie put a 'sizeof_iommu_dev_pasid_data' in the domain->ops and
+> > > allocate that much memory so the driver can use the trailer space for
+> > > its own purpose.
+> > >   
+> > That sounds great to have but not sure i understood correctly how to do
+> > it.
+> > 
+> > Do you mean for each vendor driver's struct device_domain_info (or
+> > equivalent), we carve out sizeof_iommu_dev_pasid_data as common data,
+> > then the rest of the space is vendor specific? I don't feel I get your
+> > point, could you elaborate?  
+> 
+> I've seen it done two ways..
+> 
+> With a flex array:
+> 
+>  struct iommu_device_data {
+>      struct list_head list
+>      ioasid_t pasid;
+>      struct device *dev;
+>      [..]
+>      u64 device_data[];
+>  }
+> 
+>  struct intel_device_data {
+>       [..]
+>  }
+>  struct iommu_device_data *dev_data;
+>  struct intel_device_data *intel_data = (void *)&dev_data->device_data;
+> 
+> Or with container of:
+> 
+>  struct iommu_device_data {
+>      struct list_head list
+>      ioasid_t pasid;
+>      struct device *dev;
+>      [..]
+>  }
+> 
+>  struct intel_device_data {
+>      struct iommu_device_data iommu; // must be first
+>      [...]
+>  }
+>  struct iommu_device_data *dev_data;
+>  struct intel_device_data *intel_data = container_of(dev_data, struct
+> intel_device_data, iommu);
+> 
+> In either case you'd add a size_t to the domain->ops specifying how
+> much extra memory for the core code to allocate when it manages the
+> datastructure. The first case allocates based on struct_size, the
+> second case allocates what is specified.
+> 
+> Look at INIT_RDMA_OBJ_SIZE() for some more complicated example how the
+> latter can work. I like it because it has the nice container_of
+> pattern in drivers, the downside is it requires a BUILD_BUG_ON to
+> check that the driver ordered its struct properly.
+> 
+> The point is to consolidate all the code for allocating and walking
+> the data structure without having to force two allocations and extra
+> pointer indirections on performance paths.
+Make sense, very neat. Vendor driver would not need to do allocations. Let
+me give that a try. Seems #2 has better type safety.
 
-Thanks,
+Thank you so much for the thorough explanation!
 
-        tglx
+Jacob
