@@ -2,71 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11378C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 742D5C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbiCQMrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35464 "EHLO
+        id S233686AbiCQMr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231530AbiCQMrr (ORCPT
+        with ESMTP id S233678AbiCQMrw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:47:47 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89CF105074
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:46:30 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647521189;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6UWSnFJfyk89o7rv8EPIFwEm6EdPuHp5eJF4BxTz6A8=;
-        b=mjxI6T6gLnySTe1LlKvUeulr1uJ4VHy0kpoQCCrtNohrfOd6vplkmnchXxeYzaJbtodgZN
-        gIP61eEs4VbeI3SDPMFEVhUSeysggJjrmZDzxABjL+bnlEqHUMCwdG7blMtNg+oMtU9IoQ
-        cgV+SqrCHUBwBDcen/Z6CpDV6iSjkOaIpmlO6fsw0iPmpMY/qFBZt1ZZQsiomlVWaKtwCA
-        HGlRrB35F/iL+0AS9VLSt6zDaasJTQNe9JoiTooLXDkMZfICc3xIA43CRyaD4fEgwL6+iH
-        /aZNOywuZX7wUm79urqpekgHgNVotd1o+SgphkCgXEUBt9g41BiHgzpdC0wbag==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647521189;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6UWSnFJfyk89o7rv8EPIFwEm6EdPuHp5eJF4BxTz6A8=;
-        b=4BgG7RPsmYMViCMUP1fWipHpMA9zfS8Rc4HcliVU1B6LyhfbBa5IWLMv6o2KFb03/dQtni
-        CDXY1s+CnmVyHsDA==
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: Re: [PATCHv6 22/30] x86/boot: Set CR0.NE early and keep it set
- during the boot
-In-Reply-To: <20220316020856.24435-23-kirill.shutemov@linux.intel.com>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-23-kirill.shutemov@linux.intel.com>
-Date:   Thu, 17 Mar 2022 13:46:29 +0100
-Message-ID: <87wngszqze.ffs@tglx>
+        Thu, 17 Mar 2022 08:47:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFDB12223B;
+        Thu, 17 Mar 2022 05:46:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F33656124B;
+        Thu, 17 Mar 2022 12:46:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5E14C340E9;
+        Thu, 17 Mar 2022 12:46:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647521195;
+        bh=xPAcPPJ50ONHzDAW0yAHWghTy3kIpEpvRsviX4k9V2c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xu7C0RH3M2oQO/fPSyWEsqbqngUegRnaWd8bcDWjpv6pcrpvwtX+p8K/cckObcJL0
+         swOgwanfbbYRdJTSx0hqP/1OcfXTMsmX20oeeTQL/mFFFNQKabXBKjbHvsy9/Y2f2Y
+         9wOpTlveGy8QTkRhmtNVUVfNXB3KKC5PupBRtHq4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kai Lueke <kailueke@linux.microsoft.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.4 01/43] Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
+Date:   Thu, 17 Mar 2022 13:45:12 +0100
+Message-Id: <20220317124527.716217551@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
+References: <20220317124527.672236844@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
-> Make CR0 initialization consistent, deriving the initial value of CR0
-> from CR0_STATE. Since CR0_STATE always has CR0.NE=1, this ensures that
-> CR0.NE is never 0 and avoids the #GP.
->
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+From: Kai Lueke <kailueke@linux.microsoft.com>
 
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+commit a3d9001b4e287fc043e5539d03d71a32ab114bcb upstream.
+
+This reverts commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 because ID
+0 was meant to be used for configuring the policy/state without
+matching for a specific interface (e.g., Cilium is affected, see
+https://github.com/cilium/cilium/pull/18789 and
+https://github.com/cilium/cilium/pull/19019).
+
+Signed-off-by: Kai Lueke <kailueke@linux.microsoft.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/xfrm/xfrm_user.c |   21 +++------------------
+ 1 file changed, 3 insertions(+), 18 deletions(-)
+
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -621,13 +621,8 @@ static struct xfrm_state *xfrm_state_con
+ 
+ 	xfrm_smark_init(attrs, &x->props.smark);
+ 
+-	if (attrs[XFRMA_IF_ID]) {
++	if (attrs[XFRMA_IF_ID])
+ 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
+-		if (!x->if_id) {
+-			err = -EINVAL;
+-			goto error;
+-		}
+-	}
+ 
+ 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
+ 	if (err)
+@@ -1333,13 +1328,8 @@ static int xfrm_alloc_userspi(struct sk_
+ 
+ 	mark = xfrm_mark_get(attrs, &m);
+ 
+-	if (attrs[XFRMA_IF_ID]) {
++	if (attrs[XFRMA_IF_ID])
+ 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
+-		if (!if_id) {
+-			err = -EINVAL;
+-			goto out_noput;
+-		}
+-	}
+ 
+ 	if (p->info.seq) {
+ 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
+@@ -1641,13 +1631,8 @@ static struct xfrm_policy *xfrm_policy_c
+ 
+ 	xfrm_mark_get(attrs, &xp->mark);
+ 
+-	if (attrs[XFRMA_IF_ID]) {
++	if (attrs[XFRMA_IF_ID])
+ 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
+-		if (!xp->if_id) {
+-			err = -EINVAL;
+-			goto error;
+-		}
+-	}
+ 
+ 	return xp;
+  error:
+
+
