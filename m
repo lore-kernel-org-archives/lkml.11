@@ -2,92 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6767EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1971EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230390AbiCQXvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 19:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
+        id S230250AbiCQXvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 19:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230428AbiCQXvP (ORCPT
+        with ESMTP id S230263AbiCQXvb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 19:51:15 -0400
+        Thu, 17 Mar 2022 19:51:31 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272CC2B3D6C
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:49:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024912AD5C2;
+        Thu, 17 Mar 2022 16:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0133611B7
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 23:49:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5363DC340E9;
-        Thu, 17 Mar 2022 23:49:39 +0000 (UTC)
-Date:   Thu, 17 Mar 2022 19:49:37 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [for-next][PATCH 03/13] fprobe: Add ftrace based probe APIs
-Message-ID: <20220317194937.08584828@gandalf.local.home>
-In-Reply-To: <CAEf4BzaN_HnyAkVYeUmYoxvW01cFKR2FW0MwZJBL3gvkRw0TYg@mail.gmail.com>
-References: <20220317152458.213689956@goodmis.org>
-        <20220317152522.284233550@goodmis.org>
-        <CAEf4BzaN_HnyAkVYeUmYoxvW01cFKR2FW0MwZJBL3gvkRw0TYg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B737611A5;
+        Thu, 17 Mar 2022 23:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D3141C340EC;
+        Thu, 17 Mar 2022 23:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647561012;
+        bh=lBNdt/nO7ZFYgwo/Ygc3BGmzIQC0WVaK+x/djCiU1jU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jS3vRB9JS/QIoJwWZem26OC8MH8F/DGw+nzH7FtU00AhB3n8MzBGB3J7RTpsilK1M
+         gK3TyjtG4g0luzSN0Xrnqo76hpEWzCcvBVCgT9O8AcNGOF+EBd1NzjcapuxcsdWb7s
+         mg0ORIH75CE9E6+RLVaG0/oPN+Bk5+IxMTnQms374thqkg36cKCi38GlXhIxmRApSl
+         BIdftxu6LdUNUPumkZwgm3IfC6vySlYTQs5jgG6LigpBvyDiC7MEN25tV4rb42RPHo
+         6RB+i/H2+4dn8hOYe6qe5/8wkXn3mJMZ1Cs4zHA5AWx1D3D/SnD2kg1BRarEVqcsZ7
+         3wL/f4QpzZtSw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B560CF03842;
+        Thu, 17 Mar 2022 23:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] vlan: use correct format characters
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164756101273.14093.94529379877808891.git-patchwork-notify@kernel.org>
+Date:   Thu, 17 Mar 2022 23:50:12 +0000
+References: <20220316213125.2353370-1-morbo@google.com>
+In-Reply-To: <20220316213125.2353370-1-morbo@google.com>
+To:     Bill Wendling <morbo@google.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022 15:03:33 -0700
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+Hello:
 
-> Do I understand correctly that this patch set was applied in your
-> tree? I was under the impression that we agreed to route this through
-> the bpf-next tree earlier (see [0]), but I might have misunderstood
-> something, sorry.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 16 Mar 2022 14:31:25 -0700 you wrote:
+> When compiling with -Wformat, clang emits the following warning:
 > 
-> Either way, the reason it matters is because Jiri's multi-attach
-> kprobe patch set ([1]) is depending on Masami's patches and having
-> fprobe patches in bpf-next tree would simplify logistics
-> significantly.
-
-I knew Jiri's patches were to go through the bpf tree, but I missed that
-those were dependent on this and you wanted these to go through as well.
-
-I had just finished my automated tests that ran these patches. I haven't
-pushed them to my next branch yet so I can hold them off. I don't have
-anything dependent on them.
-
-Would you be able to take these for-next patches directly (as they all have
-been tested) and you can switch my signed-off-by to Reviewed-by.
-
-The first of the series is unrelated and will go through my tree. That's
-the user_events patch.
-
--- Steve
-
-
+> net/8021q/vlanproc.c:284:22: warning: format specifies type 'unsigned
+> short' but the argument has type 'int' [-Wformat]
+>                                    mp->priority, ((mp->vlan_qos >> 13) & 0x7));
+>                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 > 
-> So I wonder if it's still possible to route it through bpf-next?
-> 
-> If not, we'd need a way to get these changes into the bpf-next tree
-> somehow. Having it in a separate branch that we can merge would be a
-> way to go about this, I presume? But it's certainly a more complicated
-> way, so it would be preferable to back it out and land through
-> bpf-next.
+> [...]
+
+Here is the summary with links:
+  - vlan: use correct format characters
+    https://git.kernel.org/netdev/net-next/c/8624a95ecdea
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
