@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8106C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0791EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbiCQL1v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 07:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51756 "EHLO
+        id S233013AbiCQL24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 07:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiCQL1t (ORCPT
+        with ESMTP id S229451AbiCQL2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 07:27:49 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD01A1E3E0D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:26:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647516393; x=1679052393;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iJqvGVWhzDVUcAPg0HUz1xEF0GH29mLyFmMcU266Tbs=;
-  b=ATpkQ75wDGL67e+VcRip4QWbcWThpTQZysIXQhKU79Pogu52OM/Ht+RP
-   qHIkhqmZ5+nuYS6ffyJ1dkSb//Ev2w6dgFwePpD2TBQ3vEaEN8hQOIdqg
-   XPY6lzusBqunednSJIpgh/9FRPyZwJqyOLlfbND/utG86tepBrn30ypd/
-   OtcNUWJaxAentVdhKH8f4M2u5nuzO4tbH/TP7aWYjHfcP9reoif/5LXv5
-   xESHYiaICKDgd8Nz4p44RFFQxifKkiBLnAe/nkKq6shEyuJ1zwYAW4ATK
-   b6Zrr5HOheAujeda6trsl3hrPIcu/FVNXVqIe34wHVxMKa/Q/r4efBWes
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="237453613"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="237453613"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 04:26:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="714998094"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 17 Mar 2022 04:26:32 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUoH1-000DdL-Ev; Thu, 17 Mar 2022 11:26:31 +0000
-Date:   Thu, 17 Mar 2022 19:26:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kishen Maloor <kishen.maloor@intel.com>
-Cc:     kbuild-all@lists.01.org, mathew.j.martineau@linux.intel.com,
-        linux-kernel@vger.kernel.org
-Subject: [martineau:kbuild-mptcp-enabled 7/19] net/mptcp/pm_netlink.c:397:23:
- warning: variable 'pernet' set but not used
-Message-ID: <202203171940.XUdtPaZP-lkp@intel.com>
+        Thu, 17 Mar 2022 07:28:55 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98561E3E16;
+        Thu, 17 Mar 2022 04:27:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=6pSjtFwZExqOXA+yysNgtvdz+muXo5bfQL+YBtE9pIU=; b=iG6ZHYm09e+pzmWv7SrbFgUFNu
+        QW7P4qPMvTf9Iv9kqoiSPrZY5PB2irtdQEjRan1bsLaTfYRlfte+n7e67FBphG0RPMWMd7a+7IcRM
+        uMgJt6Z0NE3rz5VsbVhew8lJDu173grOW8GwaBUfq1dyekucOjm8d6cN28ATM3S7C7d5JsmNQgvHe
+        eFkZv2nHnVoGB2/EbKOHIQdqv5Kyi0vzjTIL0wXDjVMPfInGlwXCymNyLvjZKLQYd5ijzqUp2Pqw8
+        Wl1Cr1veut6D0bFKTPS+3nk/D7LPqAWG/f2B3quw0yyy4IQtRwHFZxOSp2YzsVySkLXC6AF7jSGzj
+        WSSEnTiQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUoHs-001s9t-U1; Thu, 17 Mar 2022 11:27:25 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8FF333001EA;
+        Thu, 17 Mar 2022 12:27:24 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7DD7422B9050A; Thu, 17 Mar 2022 12:27:24 +0100 (CET)
+Date:   Thu, 17 Mar 2022 12:27:24 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sandipan Das <sandipan.das@amd.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        x86@kernel.org, bp@alien8.de, dave.hansen@linux.intel.com,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
+        jolsa@kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        pbonzini@redhat.com, jmattson@google.com, like.xu.linux@gmail.com,
+        eranian@google.com, ananth.narayan@amd.com, ravi.bangoria@amd.com,
+        santosh.shukla@amd.com
+Subject: Re: [PATCH 3/7] perf/x86/amd/core: Detect PerfMonV2 support
+Message-ID: <YjMbHKwtOKJTfVIh@hirez.programming.kicks-ass.net>
+References: <cover.1647498015.git.sandipan.das@amd.com>
+ <1ddd003765ac0d057b2137eab869be4ffee69473.1647498015.git.sandipan.das@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1ddd003765ac0d057b2137eab869be4ffee69473.1647498015.git.sandipan.das@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/martineau/linux.git kbuild-mptcp-enabled
-head:   1842e2df09dac50790d935c8db37aae18f7ad5ab
-commit: 11b70f473e519350157fa74fefbdb6d12a99a199 [7/19] mptcp: handle local addrs announced by userspace PMs
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220317/202203171940.XUdtPaZP-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/martineau/linux.git/commit/?id=11b70f473e519350157fa74fefbdb6d12a99a199
-        git remote add martineau https://git.kernel.org/pub/scm/linux/kernel/git/martineau/linux.git
-        git fetch --no-tags martineau kbuild-mptcp-enabled
-        git checkout 11b70f473e519350157fa74fefbdb6d12a99a199
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash net/mptcp/
+On Thu, Mar 17, 2022 at 11:58:32AM +0530, Sandipan Das wrote:
+> AMD Performance Monitoring Version 2 (PerfMonV2) introduces
+> some new Core PMU features such as detection of the number
+> of available PMCs and managing PMCs using global registers
+> namely, PerfCntrGlobalCtl and PerfCntrGlobalStatus.
+> 
+> Clearing PerfCntrGlobalCtl and PerfCntrGlobalStatus ensures
+> that all PMCs are inactive and have no pending overflows
+> when CPUs are onlined or offlined.
+> 
+> The PMU version (x86_pmu.version) now indicates PerfMonV2
+> support and will be used to bypass the new features on
+> unsupported processors.
+> 
+> Signed-off-by: Sandipan Das <sandipan.das@amd.com>
+> ---
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> +static void amd_pmu_cpu_reset(int cpu)
+> +{
+> +	if (x86_pmu.version < 2)
+> +		return;
+> +
+> +	/* Clear enable bits i.e. PerfCntrGlobalCtl.PerfCntrEn */
+> +	wrmsrl_on_cpu(cpu, MSR_AMD64_PERF_CNTR_GLOBAL_CTL, 0);
+> +
+> +	/* Clear overflow bits i.e. PerfCntrGLobalStatus.PerfCntrOvfl */
+> +	wrmsrl_on_cpu(cpu, MSR_AMD64_PERF_CNTR_GLOBAL_STATUS_CLR,
+> +		      amd_pmu_global_cntr_mask);
+> +}
 
-All warnings (new ones prefixed by >>):
-
-   net/mptcp/pm_netlink.c: In function 'mptcp_free_local_addr_list':
->> net/mptcp/pm_netlink.c:397:23: warning: variable 'pernet' set but not used [-Wunused-but-set-variable]
-     397 |  struct pm_nl_pernet *pernet;
-         |                       ^~~~~~
-   At top level:
-   net/mptcp/pm_netlink.c:902:12: warning: 'mptcp_userspace_pm_append_new_local_addr' defined but not used [-Wunused-function]
-     902 | static int mptcp_userspace_pm_append_new_local_addr(struct mptcp_sock *msk,
-         |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/pernet +397 net/mptcp/pm_netlink.c
-
-   392	
-   393	void mptcp_free_local_addr_list(struct mptcp_sock *msk)
-   394	{
-   395		struct mptcp_pm_addr_entry *entry, *tmp;
-   396		struct sock *sk = (struct sock *)msk;
- > 397		struct pm_nl_pernet *pernet;
-   398		LIST_HEAD(free_list);
-   399	
-   400		if (!mptcp_pm_is_userspace(msk))
-   401			return;
-   402	
-   403		pernet = net_generic(sock_net(sk), pm_nl_pernet_id);
-   404	
-   405		mptcp_data_lock(sk);
-   406		list_splice_init(&msk->local_addr_list, &free_list);
-   407		mptcp_data_unlock(sk);
-   408	
-   409		list_for_each_entry_safe(entry, tmp, &free_list, list) {
-   410			sock_kfree_s(sk, entry, sizeof(*entry));
-   411		}
-   412	}
-   413	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I think these can be wrmsrl() both starting and dead run on the target
+cpu.
