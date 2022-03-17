@@ -2,118 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF117C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237587AbiCQSta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        id S237600AbiCQSuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237584AbiCQSt0 (ORCPT
+        with ESMTP id S237584AbiCQSul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:49:26 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A264C11BE52;
-        Thu, 17 Mar 2022 11:48:08 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: adalessandro)
-        with ESMTPSA id ABF301F45A25
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647542886;
-        bh=0WzZgN9aj0s8HEM+nPIbGUukn4MTB8wYqvpInAw1fPY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=N7TCbvr7Xn1NBsfZdq5HFid3scc3xT6XYCe80AU9aFufOzzv5jFqfCPumrdJedHmb
-         AVdzMfFYrR64U8BRyKzhAICQSO2TYQaFDyR1MbtHBE9RBxaL5C52+Q5yccbYmi/iBS
-         M+0vYNRJonT0VJpJFR9lEp+l1lTLDSIEgovl4QFcuBiQMqu+GmnJhoypmm5ZI/Wr8w
-         IM0GP0iCzWyeFRcAdktirYF7fHhcuzYwOy1+dMUB+bV4jBlrJY2I56o4YZJlgnx3Y4
-         hTQhgxW9U30DTtqNcAlJp+lS+QRjygHO/80E+xJse+1btt2BeUvoqzmqbvFgirMlm7
-         58oLeFJuq3s6Q==
-Message-ID: <d748d03d-4e9c-50a5-6c9e-089ec44a2540@collabora.com>
-Date:   Thu, 17 Mar 2022 15:47:56 -0300
+        Thu, 17 Mar 2022 14:50:41 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A366514964C;
+        Thu, 17 Mar 2022 11:49:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1647542964; x=1679078964;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ZmwolZ5iOd/9V4MN6DapEmj7rhiSSyG/Olfb51uk8Nk=;
+  b=P2FE7yt0lsG78FVzk+y0JJV83P6YNuMRk2OeIijCX/br6YUpfFvq5Sb4
+   wHqUSAsrr//Mkwqvw/t0uZdkSOQrSx4qheBsu+Qb2Owsx0d5IIJZSb0zy
+   GjR6by5YXKG4Ud6NdOqjx5M7W4sx4rNKEx/W0rStLFoATWMRKOBnWJvBP
+   ivl25OYn3BbkNNSdTtevvb1v85oE4ESi24RVU3BfYXqTx0HkVoENg3eUt
+   CvcptiUffaObytPWJ2AC41Cb+PPCHR/ph59mnFIt4zko61z6MCjASvMvS
+   MVcNYq2lillaQ0t3VARlsNiXTZ6Rr9C29YkQC8PapPwL6dGu86CCmmA8u
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
+   d="scan'208";a="89304216"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 11:49:23 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 17 Mar 2022 11:49:23 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 17 Mar 2022 11:49:21 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 0/5] net: lan966x: Add support for FDMA
+Date:   Thu, 17 Mar 2022 19:51:54 +0100
+Message-ID: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v2 2/2] arm64: dts: imx8mn-bsh-smm-s2pro: Add
- tlv320aic31xx audio card node
-Content-Language: en-US
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Linux-ALSA <alsa-devel@alsa-project.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Sascha Hauer <kernel@pengutronix.de>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-References: <20220210134049.32576-1-ariel.dalessandro@collabora.com>
- <20220210134049.32576-2-ariel.dalessandro@collabora.com>
- <CAOMZO5DuB4d1243H46d1=heiNiz+pQVkjrGU+zV_r3GFKRTZfQ@mail.gmail.com>
-From:   Ariel D'Alessandro <ariel.dalessandro@collabora.com>
-In-Reply-To: <CAOMZO5DuB4d1243H46d1=heiNiz+pQVkjrGU+zV_r3GFKRTZfQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabio,
+Currently when injecting or extracting a frame from CPU, the frame
+is given to the HW each word at a time. There is another way to
+inject/extract frames from CPU using FDMA(Frame Direct Memory Access).
+In this way the entire frame is given to the HW. This improves both
+RX and TX bitrate.
 
-On 3/10/22 09:29, Fabio Estevam wrote:
-> Hi Ariel,
-> 
-> On Thu, Feb 10, 2022 at 10:41 AM Ariel D'Alessandro
-> <ariel.dalessandro@collabora.com> wrote:
-> 
->> +&i2c2 {
->> +       clock-frequency = <400000>;
->> +       pinctrl-names = "default";
->> +       pinctrl-0 = <&pinctrl_i2c2>;
->> +       status = "okay";
->> +
->> +       codec: tlv320dac3101@18 {
->> +               #sound-dai-cells = <0>;
->> +               compatible = "ti,tlv320dac3101";
->> +               pinctrl-names = "default";
->> +               pinctrl-0 = <&pinctrl_dac_rst>;
->> +               reg = <0x18>;
->> +
->> +               ai31xx-micbias-vg = <MICBIAS_AVDDV>;
->> +
->> +               HPVDD-supply = <&buck4_reg>;
->> +               SPRVDD-supply = <&vdd_input>;
->> +               SPLVDD-supply = <&vdd_input>;
->> +               AVDD-supply = <&buck4_reg>;
->> +               IOVDD-supply = <&buck4_reg>;
->> +               DVDD-supply = <&buck5_reg>;
->> +               reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
->> +
->> +               clocks = <&clk IMX8MN_CLK_SAI3_ROOT>;
->> +               clock-names = "mclk";
-> 
-> The clocks and clock-names properties are not documented in the codec bindings.
-> 
-> Also, the driver does not use call clk_get() on this mclk clock.
-> 
-> You should drop the clocks and clock-names properties.
+Horatiu Vultur (5):
+  dt-bindings: net: lan966x: Extend with FDMA interrupt
+  net: lan966x: Add registers that are used for FDMA.
+  net: lan966x: Expose functions that are needed by FDMA
+  net: lan966x: Add FDMA functionality
+  net: lan96x: Update FDMA to change MTU.
 
-The sound card driver is calling clk_get() on the codec's clock. See
-sound/soc/fsl/fsl-asoc-card.c:
+ .../net/microchip,lan966x-switch.yaml         |   2 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_fdma.c | 772 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_main.c |  44 +-
+ .../ethernet/microchip/lan966x/lan966x_main.h | 120 +++
+ .../ethernet/microchip/lan966x/lan966x_port.c |   3 +
+ .../ethernet/microchip/lan966x/lan966x_regs.h | 106 +++
+ 7 files changed, 1037 insertions(+), 12 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
 
-    /* Get the MCLK rate only, and leave it controlled by CODEC drivers */
-    if (codec_dev) {
-        struct clk *codec_clk = clk_get(codec_dev, NULL);
+-- 
+2.33.0
 
-        if (!IS_ERR(codec_clk)) {
-            priv->codec_priv.mclk_freq = clk_get_rate(codec_clk);
-            clk_put(codec_clk);
-        }
-    }
-
-Regards,
-Ariel
