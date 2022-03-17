@@ -2,117 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A282DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87404C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237751AbiCQS76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
+        id S237756AbiCQTBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 15:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233676AbiCQS74 (ORCPT
+        with ESMTP id S233676AbiCQTBa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:59:56 -0400
-X-Greylist: delayed 856 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Mar 2022 11:58:40 PDT
-Received: from srv1.home.kabele.me (gw.home.kabele.me [195.88.143.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4651167F8C;
-        Thu, 17 Mar 2022 11:58:39 -0700 (PDT)
-Received: from srv1.home.kabele.me (localhost [IPv6:::1])
-        by srv1.home.kabele.me (Postfix) with ESMTP id 0F0BF1692A5;
-        Thu, 17 Mar 2022 19:58:43 +0100 (CET)
-Received: from localhost ([2a01:c22:8dfa:1400:beea:2810:7764:7afc])
-        by srv1.home.kabele.me with ESMTPSA
-        id kQzaAOOEM2JWWDQAnmUwTQ
-        (envelope-from <vit@kabele.me>); Thu, 17 Mar 2022 19:58:43 +0100
-Date:   Thu, 17 Mar 2022 19:58:37 +0100
-From:   Vit Kabele <vit@kabele.me>
-To:     platform-driver-x86@vger.kernel.org
-Cc:     r.marek@assembler.cz, devel@acpica.org, mingo@redhat.com,
-        robert.moore@intel.com, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH 1/3 RESEND] platform/x86: Check validity of EBDA pointer in
- mpparse.c
-Message-ID: <YjOE3QLbvU1d0wAX@czspare1-lap.sysgo.cz>
-Mail-Followup-To: platform-driver-x86@vger.kernel.org, r.marek@assembler.cz,
-        devel@acpica.org, mingo@redhat.com, robert.moore@intel.com,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org
-References: <cover.1647526995.git.vit@kabele.me>
+        Thu, 17 Mar 2022 15:01:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D23916BCF7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 12:00:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED87D617B7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 19:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4176C340E9;
+        Thu, 17 Mar 2022 19:00:08 +0000 (UTC)
+Date:   Thu, 17 Mar 2022 19:00:04 +0000
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Tong Tiangen <tongtiangen@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Palmer Dabbelt <palmerdabbelt@google.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH -next 3/4] arm64: mm: add support for page table check
+Message-ID: <YjOFNEvj7EfBasCI@arm.com>
+References: <20220317141203.3646253-1-tongtiangen@huawei.com>
+ <20220317141203.3646253-4-tongtiangen@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1647526995.git.vit@kabele.me>
+In-Reply-To: <20220317141203.3646253-4-tongtiangen@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pointer to EBDA area is retrieved from a word at 0x40e in BDA.
-In case that the memory there is not initialized and contains garbage,
-it might happen that the kernel touches memory above 640K.
+On Thu, Mar 17, 2022 at 02:12:02PM +0000, Tong Tiangen wrote:
+> @@ -628,6 +647,25 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+>  #define pud_leaf(pud)		pud_sect(pud)
+>  #define pud_valid(pud)		pte_valid(pud_pte(pud))
+>  
+> +#ifdef CONFIG_PAGE_TABLE_CHECK
+> +static inline bool pte_user_accessible_page(pte_t pte)
+> +{
+> +	return (pte_val(pte) & PTE_VALID) && (pte_val(pte) & PTE_USER);
+> +}
 
-This may cause unwanted reads from VGA memory which may not be decoded,
-or even present when running under virtualization.
+There is another class of user mappings, execute-only, that have both
+PTE_USER and PTE_UXN cleared. So this logic should be:
 
-This patch adds sanity check for the EBDA pointer retrieved from the memory
-so that scanning EBDA does not leave the low memory.
+	pte_valid(pte) && (pte_user(pte) || pte_user_exec(pte))
 
-Signed-off-by: Vit Kabele <vit@kabele.me>
-Reviewed-by: Rudolf Marek <r.marek@assembler.cz>
----
- arch/x86/include/asm/bios_ebda.h |  3 +++
- arch/x86/kernel/ebda.c           |  3 ---
- arch/x86/kernel/mpparse.c        | 12 +++++++++++-
- 3 files changed, 14 insertions(+), 4 deletions(-)
+with pte_user() as:
 
-diff --git a/arch/x86/include/asm/bios_ebda.h b/arch/x86/include/asm/bios_ebda.h
-index 4d5a17e2febe..c3133c01d5b7 100644
---- a/arch/x86/include/asm/bios_ebda.h
-+++ b/arch/x86/include/asm/bios_ebda.h
-@@ -4,6 +4,9 @@
- 
- #include <asm/io.h>
- 
-+#define BIOS_START_MIN		0x20000U	/* 128K, less than this is insane */
-+#define BIOS_START_MAX		0x9f000U	/* 640K, absolute maximum */
-+
- /*
-  * Returns physical address of EBDA.  Returns 0 if there is no EBDA.
-  */
-diff --git a/arch/x86/kernel/ebda.c b/arch/x86/kernel/ebda.c
-index 38e7d597b660..86c0801fc3ce 100644
---- a/arch/x86/kernel/ebda.c
-+++ b/arch/x86/kernel/ebda.c
-@@ -50,9 +50,6 @@
- 
- #define BIOS_RAM_SIZE_KB_PTR	0x413
- 
--#define BIOS_START_MIN		0x20000U	/* 128K, less than this is insane */
--#define BIOS_START_MAX		0x9f000U	/* 640K, absolute maximum */
--
- void __init reserve_bios_regions(void)
- {
- 	unsigned int bios_start, ebda_start;
-diff --git a/arch/x86/kernel/mpparse.c b/arch/x86/kernel/mpparse.c
-index fed721f90116..6bba0744d32d 100644
---- a/arch/x86/kernel/mpparse.c
-+++ b/arch/x86/kernel/mpparse.c
-@@ -633,7 +633,17 @@ void __init default_find_smp_config(void)
- 	 */
- 
- 	address = get_bios_ebda();
--	if (address)
-+
-+	/* Check that the EBDA address is sane and the get_bios_ebda() did not
-+	 * return just garbage from memory.
-+	 * The upper bound is considered valid if it points below 1K before
-+	 * end of the lower memory (i.e. 639K). The EBDA can be smaller
-+	 * than 1K in which case the pointer will point above 639K but that
-+	 * case is handled in step 2) above, and we don't need to adjust scan
-+	 * size to not bump into the memory above 640K.
-+	 */
-+	if (address >= BIOS_START_MIN &&
-+	    address < 639 * 0x400)
- 		smp_scan_config(address, 0x400);
- }
- 
+#define pte_user(pte)	(!!(pte_val(pte) & PTE_USER))
+
+Do we care about PROT_NONE mappings here? They have the valid bit
+cleared but pte_present() is true.
+
+> +static inline bool pmd_user_accessible_page(pmd_t pmd)
+> +{
+> +	return pmd_leaf(pmd) && (pmd_val(pmd) & PTE_VALID) &&
+> +		(pmd_val(pmd) & PTE_USER);
+> +}
+
+pmd_leaf() implies valid, so you can skip it if that's the aim.
+
+Similar comment to the pte variant on execute-only and PROT_NONE
+mappings.
+
 -- 
-2.30.2
-
+Catalin
