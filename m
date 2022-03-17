@@ -2,302 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB586C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 453FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236394AbiCQQNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 12:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        id S236406AbiCQQOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 12:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236401AbiCQQNk (ORCPT
+        with ESMTP id S232842AbiCQQOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 12:13:40 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A38A215453
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:12:21 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id r7so3402148wmq.2
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:12:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pXtqp8iuAz8ol8GDqPVE/H1Hyn8eNzNnz8ekbU+Hmwo=;
-        b=CPnUpNsj8Hj1XGqs2SJeL5iW/7Z/awl6wloKV6MiaYjgBco5AT8o8xWb8zFyd3bdP8
-         qTSRy8fDUAuqJ4k060r14ggrCqqOATgAAH3VqLi4Bu7UNzTU5l9Y38bxX1K2tjE/Sww4
-         12cHTUt2qQs3b/sNPTJHfKbKGYqg97duxbmbXph7A8zy1hDFzJRSoiuO7JYFysLydMoc
-         1w09yG1VwVXqpuibHzr1d96+ViEs6sIHQpkDz/yL25/dadR3JWeh/9pRqJr4FH06PfHe
-         y59mqRMXZlEB9ZkG3Npxv401QxGoxC2FYEzh+HI3J5qOUk20N87/2WNDo5tc/iw2rXX7
-         LulQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pXtqp8iuAz8ol8GDqPVE/H1Hyn8eNzNnz8ekbU+Hmwo=;
-        b=UyAsETF5+9eeUtA1G02fw5gtVdPcfLptYCKMCenODK9nLzAMkd4RN0LoX0+oCEvOGa
-         0pkc5g/LXq1qUu1uQxnnjpgNUe4a59TPTLUCKa0y2OORKP56ePodoaKpECa9DldIoadH
-         Y9+M2XfxhO3/7xSVL0tvfop6GoBieoP3qAy+UpMbRmjUJUAbhLkbH9iHvrlC7oHHJNUY
-         XVXQ5Xxn0z3dwwuGThsWvlk6rkn41Drk4Vc3JTWZ+KZGmzn0/xrdygWCi3pJ9Qasyvoe
-         iaC0JdHA80g16asrK9HvyQ/dWOWAgtgvvFETvqqJ+jg/Aa3Zt5XB89vwb9yddoRam9ec
-         gKsQ==
-X-Gm-Message-State: AOAM5336N9s3BeZqpvZRvYU8WpZFusdjE4r6klTesRedhNCb4Y+K5SBZ
-        v17+4y4JZs9elch1DTpAYsmwcVt/KzkonZv/N7U=
-X-Google-Smtp-Source: ABdhPJz3P9FkP1bWgVUHNiTWpz4nMrwBTVKAgukRWLso36ZSA+d1U/sb4Pw2jD4jzVsQcJa+SOamChWHDIiq4zEGn2o=
-X-Received: by 2002:a05:600c:35d6:b0:38c:4358:8e30 with SMTP id
- r22-20020a05600c35d600b0038c43588e30mr4756809wmq.102.1647533539863; Thu, 17
- Mar 2022 09:12:19 -0700 (PDT)
+        Thu, 17 Mar 2022 12:14:39 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eus2azon11020021.outbound.protection.outlook.com [52.101.56.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B1813F17;
+        Thu, 17 Mar 2022 09:13:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jLzN/OhbanPe3vVYMW+8WhCIZxsWgXd97JJvu7Qmu3bNRtUcTEiBkTVlmYtx85rIuKoqYla7glWF9Z3XDor13mpUIMA/guXE52iiOKI+LjgpRDy98Zg8DEQ8YbXFD39vImneY8mFs7bEIrucb4qv44JTuKKUuJSGRpN8qcJLxyl0esgm0hlW6q/MhoAlZwWSd9bSwuKIKznRe5zoid1fswuDINJdhkvaXig1uE98Lz2sK+9pBxwy96GtxNKKNAB4Rt1fy0zRgr9OFe1H5DwgJV53+s+vYm5NMGJZ0qRmCP/hWxiBZkZH9tUp0TCLo7ghXXegVWGceRnYLltKRS4hWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LO1YdWsiEnaF9VQyrEJVPHKwnv+MhPiQSoaZvJ3DwgI=;
+ b=KagHVo8lhKlVmhfHauJRHMqTKYY5/2u++phJHsNYhEUsrcWcZd2JriIzhdOV5OmWSp2wfeAXPax1YghSCa2H5yj+vWNPDNgg3sYI1yEVeeU9uEpD3BspoiG64w/pRGwP/XysEp+sbcZketzkNiumbkfL9zmAUtZTqT12xW+D9PhmFm8wyeyNY9Nt/Da1riKE0IanRrueO4gfu0OZq9E8FVUcda7Obm1sOHfcgv/zW/yX2yW6UVGP0drqVghwE8Pvp6Y9BJZp+Vj3dRiVJwDzrT3QCffqgXXHEwHOi6Y/5Zw4XJ7p5iQ1zSXYIIgylCV6qBvDqfuKkJklABZnsQUOog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LO1YdWsiEnaF9VQyrEJVPHKwnv+MhPiQSoaZvJ3DwgI=;
+ b=ZqhDBm4l1xIbRE9Wv2qAgM7me4xuB7l9tsTx5Tay6cAFyrOypFOFrzbTE6XqQHXavLDYZHXJKj83wQSW8XfXKLE4lhijXSNoimX+yD9Zwb3ztxg+lyk2jnIkoyedWzDjy69dexdweItitovYEKHhwNJYrcSexP6mMeLv+SjT9cc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from DM6PR21MB1514.namprd21.prod.outlook.com (2603:10b6:5:22d::11)
+ by BL0PR2101MB0995.namprd21.prod.outlook.com (2603:10b6:207:36::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Thu, 17 Mar
+ 2022 16:13:19 +0000
+Received: from DM6PR21MB1514.namprd21.prod.outlook.com
+ ([fe80::8c81:f644:fc1c:1357]) by DM6PR21MB1514.namprd21.prod.outlook.com
+ ([fe80::8c81:f644:fc1c:1357%4]) with mapi id 15.20.5102.007; Thu, 17 Mar 2022
+ 16:13:19 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, rafael@kernel.org,
+        lenb@kernel.org, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        kw@linux.com, bhelgass@google.com, hch@lst.de,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        iommu@lists.linux-foundation.org
+Cc:     mikelley@microsoft.com
+Subject: [PATCH 0/4] Fix coherence for VMbus and PCI pass-thru devices in Hyper-V VM
+Date:   Thu, 17 Mar 2022 09:12:39 -0700
+Message-Id: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MW3PR06CA0007.namprd06.prod.outlook.com
+ (2603:10b6:303:2a::12) To DM6PR21MB1514.namprd21.prod.outlook.com
+ (2603:10b6:5:22d::11)
 MIME-Version: 1.0
-References: <20220314224253.236359-1-dmitry.osipenko@collabora.com>
- <20220314224253.236359-7-dmitry.osipenko@collabora.com> <CAF6AEGsmtM6rTJtOJwTA49cwW7wCjF53Devzodd_PzLO0EOkVw@mail.gmail.com>
- <be3b09ff-08ea-3e13-7d8c-06af6fffbd8f@collabora.com>
-In-Reply-To: <be3b09ff-08ea-3e13-7d8c-06af6fffbd8f@collabora.com>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Thu, 17 Mar 2022 09:13:00 -0700
-Message-ID: <CAF6AEGv2Ob7_Zp3+m-16QExDTM9vYfAkeSuBtjWG7ukHnY73UA@mail.gmail.com>
-Subject: Re: [PATCH v2 6/8] drm/shmem-helper: Add generic memory shrinker
-To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Cc:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Herring <robh@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:VIRTIO GPU DRIVER" 
-        <virtualization@lists.linux-foundation.org>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Dmitry Osipenko <digetx@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 73609d37-2d96-4d66-c85c-08da08310cf1
+X-MS-TrafficTypeDiagnostic: BL0PR2101MB0995:EE_
+X-MS-Exchange-AtpMessageProperties: SA|SL
+X-Microsoft-Antispam-PRVS: <BL0PR2101MB0995005F7E4BE8BA03737FC4D7129@BL0PR2101MB0995.namprd21.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nPxtzWIhT4uj8csDWBf/oPbwaFLBrNKhhyNPkMd6y149rVFqSWTR/OdlVchReScvPk7zh+Vgtw8hg/SO90sViHaF/+XnfJY8pwLp+9QQVs7VyHvR2nIeiwP/Qhjtq3nwB6kA7K1nmsFwIUoEB6xDW4Mn6qImBIX0KGN2wpHszdw3BZEalNvnlAe2D5TKM3wXhc5b7v6AT8Iqvaw6yKCmEGVO86qUisBJaLd5zwgvHioJL/SWW3jCaFAFaFvYPjBdmzYNJRelyKnS+PNa531IjglhkdCZUxyMlatHnLCWg8Zq5dZVG17IKo1AilkG0dqy9dtNutcjBO4rR+/yowjlJkpvPYYz1aF1crDB2OnQl+uZJwdghQfWnrvJqmqM3Y0pNiLqnt/T+SnzgguTZvfhEy3mMu8Qm+WX/wfyzJ2QeyWLJHu15/DToTX6OCwFTCJ1TB0SVfpW5AsflaGTgCClKE5WCjs0aw/aL3Eql7iB+m0gDFg8jlCMvDdNymEr1l/4zmQ5CDogDo9lgisYku20PPp0bqLnJdQFyVcVongUQYq1bazRcC6GaaK8b3hVWs4FovuGFUmXYHlsScTIn0Ly65x74JGxmHh0U902qo0bmlUxvNzmnz7JtSFvBo9hRceV4qlUJQTlnb7iE4RpA9qW949g2ljYC/mKa66GHZhAk4m0XMwY40jkDEOHyaAdSegF3kXV4zy5L7k8pDZXp5mxLfBBHG0tDW7k3E7JKcZB5gRastENzsuaHGptIHuu2mEeByunqRDUffwmv30wBMGGbw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1514.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(83380400001)(186003)(26005)(4326008)(8676002)(2616005)(8936002)(66946007)(66476007)(66556008)(107886003)(38100700002)(38350700002)(316002)(36756003)(10290500003)(6486002)(86362001)(5660300002)(921005)(6512007)(82960400001)(7416002)(82950400001)(6506007)(2906002)(508600001)(6666004)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tZ6Lpu8LrHgb1aJq3omqdCAXMAps5ZKWhCPLtY1Ko2t1fsPWniSEVg73m5Fa?=
+ =?us-ascii?Q?dt7j1x5OE4aHYns8PagRQR17htU9KBns8L0gZn/jHp66dy43fl25UYYwIOss?=
+ =?us-ascii?Q?uUOQqwY/oWVyh2sIQvDr9rAWpw8YNGjk5Euk7a7/K+/G5A0qCf0Xmh255OMa?=
+ =?us-ascii?Q?lV3bachgGKJkicYdcQZPMe9/E7eHQXvcpmYS5L3Cczq3Ix/UQ8JqTLN/ZmM4?=
+ =?us-ascii?Q?Wr6x6HkoU8Z43xbDZfhf/3EQIVbG+7+qzs0CxD7kZtEl7UvfU4uQ5NFm89s6?=
+ =?us-ascii?Q?5SVPO3I5McJMCBct6wlsXUdHmGixNF6DW33GPY+eVMWcaHgaH7YPPDFoEcWr?=
+ =?us-ascii?Q?NZhCBhyJsBNnRZzX6dFuc0+s+ZANcbZ2trsa/y+fp99YgAZYmA4+7yaQgvMP?=
+ =?us-ascii?Q?TDVr5ViherFy2ZO6+2b+NN2SyyP3WEsll2o43M0iswZSokZPpObUSdp25Vtm?=
+ =?us-ascii?Q?yR1nPfOG8JprGN7HDkB6pef/2bx9sQbSjWznZNNXH5auLYXy/kiJW8CRnA4Z?=
+ =?us-ascii?Q?gOXdWYc1pK6NDmkzMx9VnxhOcRHFB8AX15Z2vFjpIlIisGSK8zrEY0vHUTZc?=
+ =?us-ascii?Q?gXJKTKoq1tmaDhEWBMPkQbVxRNIZP1M7XfNChTK26cErHFP76D49wXCL6yv2?=
+ =?us-ascii?Q?LrvOhMsPabyADcRhJCB5YKF0A26OwzEEtLDycNkfKVQKNpQF6Z22G2HkBtLO?=
+ =?us-ascii?Q?KA7QajJl/ocP+tBRXDrDHLYrr051TXYGfVQo2GyVMFQVHcMJqnWU/GUdwfmr?=
+ =?us-ascii?Q?DfsNHloP5HD50sEMno8Wo/lV/A7yL37m86ODDcd2aXj91LP/ajVQtM0p5VLp?=
+ =?us-ascii?Q?HZOT/hM4ybtTIfc9rRALNY/KqzxskO6xuKrK81Ah0u+GAEuhMvsIyjXZbgN9?=
+ =?us-ascii?Q?QKepvWqhApC1P4/cBvNxrhQ5Rimi6WEaSyZGO9L1j+pqc5b0hyQ1b8DajJ1j?=
+ =?us-ascii?Q?FaJ0DFPLjLRqPEUWfmtUKK6E1Pe9R4bUtkwgIr8Ynt1otmPfbnIcEnVgdQtJ?=
+ =?us-ascii?Q?cKmIzdkHiOx6GE5zm2OgX9g7GEos/GX1srd7ri8UOakUj2UGtaFdNnPNggKT?=
+ =?us-ascii?Q?uIjGo5MlL1HXWyZBmh+owCGvZ4HvmKfycAwIS3d3OGfNBGH5rEkQyqHSlutg?=
+ =?us-ascii?Q?d7nLaAjaVg0kU/YFbaaKnD52arT1eJTXtcdhh0BO53Ko/C9f1Rf4nAdx6I46?=
+ =?us-ascii?Q?rFAFgqqhGcxx50U9YARYtZK9kt7u7CezRJw0cUFG11o5bUaD8rwHFKres+9H?=
+ =?us-ascii?Q?c6/M1+hBDudaKB06WkCGMpz1xlH/hZbjCjhQjDnfR2OTmkZ7+zPGdIr2veKF?=
+ =?us-ascii?Q?Air6iwr6kjWHpAO8JwuXO4+IXv4PG0mMBMZWkjFKLe/nV7WC3RfrYvTbFty3?=
+ =?us-ascii?Q?GTHVj2b7FlChfzSTSHGdrzsNpyCiVdp88lDiJXAGkcJfTrarTPe83NwdVM8m?=
+ =?us-ascii?Q?3vyFH10M5S9pl1COoz5HDDbHLnfhuW5MRUdMvFy0TdqHxT5sE7kYCg=3D=3D?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73609d37-2d96-4d66-c85c-08da08310cf1
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1514.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 16:13:19.1337
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: snRMojjKXjofr4oHeNQb1QzwyF8HWDkMxFGF6POyVlxjLxaV+A215yEYWNz/A/rDfbgDwAytrDrqIrjyO5dEiw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB0995
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 5:13 PM Dmitry Osipenko
-<dmitry.osipenko@collabora.com> wrote:
->
-> On 3/16/22 23:00, Rob Clark wrote:
-> > On Mon, Mar 14, 2022 at 3:44 PM Dmitry Osipenko
-> > <dmitry.osipenko@collabora.com> wrote:
-> >>
-> >> Introduce a common DRM SHMEM shrinker. It allows to reduce code
-> >> duplication among DRM drivers, it also handles complicated lockings
-> >> for the drivers. This is initial version of the shrinker that covers
-> >> basic needs of GPU drivers.
-> >>
-> >> This patch is based on a couple ideas borrowed from Rob's Clark MSM
-> >> shrinker and Thomas' Zimmermann variant of SHMEM shrinker.
-> >>
-> >> GPU drivers that want to use generic DRM memory shrinker must support
-> >> generic GEM reservations.
-> >>
-> >> Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
-> >> Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> >> ---
-> >>  drivers/gpu/drm/drm_gem_shmem_helper.c | 194 +++++++++++++++++++++++++
-> >>  include/drm/drm_device.h               |   4 +
-> >>  include/drm/drm_gem.h                  |  11 ++
-> >>  include/drm/drm_gem_shmem_helper.h     |  25 ++++
-> >>  4 files changed, 234 insertions(+)
-> >>
-> >> diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-> >> index 37009418cd28..35be2ee98f11 100644
-> >> --- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-> >> +++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-> >> @@ -139,6 +139,9 @@ void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
-> >>  {
-> >>         struct drm_gem_object *obj = &shmem->base;
-> >>
-> >> +       /* take out shmem GEM object from the memory shrinker */
-> >> +       drm_gem_shmem_madvise(shmem, 0);
-> >> +
-> >>         WARN_ON(shmem->vmap_use_count);
-> >>
-> >>         if (obj->import_attach) {
-> >> @@ -163,6 +166,42 @@ void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
-> >>  }
-> >>  EXPORT_SYMBOL_GPL(drm_gem_shmem_free);
-> >>
-> >> +static void drm_gem_shmem_update_purgeable_status(struct drm_gem_shmem_object *shmem)
-> >> +{
-> >> +       struct drm_gem_object *obj = &shmem->base;
-> >> +       struct drm_gem_shmem_shrinker *gem_shrinker = obj->dev->shmem_shrinker;
-> >> +       size_t page_count = obj->size >> PAGE_SHIFT;
-> >> +
-> >> +       if (!gem_shrinker || obj->import_attach || !obj->funcs->purge)
-> >> +               return;
-> >> +
-> >> +       mutex_lock(&shmem->vmap_lock);
-> >> +       mutex_lock(&shmem->pages_lock);
-> >> +       mutex_lock(&gem_shrinker->lock);
-> >> +
-> >> +       if (shmem->madv < 0) {
-> >> +               list_del_init(&shmem->madv_list);
-> >> +               goto unlock;
-> >> +       } else if (shmem->madv > 0) {
-> >> +               if (!list_empty(&shmem->madv_list))
-> >> +                       goto unlock;
-> >> +
-> >> +               WARN_ON(gem_shrinker->shrinkable_count + page_count < page_count);
-> >> +               gem_shrinker->shrinkable_count += page_count;
-> >> +
-> >> +               list_add_tail(&shmem->madv_list, &gem_shrinker->lru);
-> >> +       } else if (!list_empty(&shmem->madv_list)) {
-> >> +               list_del_init(&shmem->madv_list);
-> >> +
-> >> +               WARN_ON(gem_shrinker->shrinkable_count < page_count);
-> >> +               gem_shrinker->shrinkable_count -= page_count;
-> >> +       }
-> >> +unlock:
-> >> +       mutex_unlock(&gem_shrinker->lock);
-> >> +       mutex_unlock(&shmem->pages_lock);
-> >> +       mutex_unlock(&shmem->vmap_lock);
-> >> +}
-> >> +
-> >>  static int drm_gem_shmem_get_pages_locked(struct drm_gem_shmem_object *shmem)
-> >>  {
-> >>         struct drm_gem_object *obj = &shmem->base;
-> >> @@ -366,6 +405,8 @@ int drm_gem_shmem_vmap(struct drm_gem_shmem_object *shmem,
-> >>         ret = drm_gem_shmem_vmap_locked(shmem, map);
-> >>         mutex_unlock(&shmem->vmap_lock);
-> >>
-> >> +       drm_gem_shmem_update_purgeable_status(shmem);
-> >> +
-> >>         return ret;
-> >>  }
-> >>  EXPORT_SYMBOL(drm_gem_shmem_vmap);
-> >> @@ -409,6 +450,8 @@ void drm_gem_shmem_vunmap(struct drm_gem_shmem_object *shmem,
-> >>         mutex_lock(&shmem->vmap_lock);
-> >>         drm_gem_shmem_vunmap_locked(shmem, map);
-> >>         mutex_unlock(&shmem->vmap_lock);
-> >> +
-> >> +       drm_gem_shmem_update_purgeable_status(shmem);
-> >>  }
-> >>  EXPORT_SYMBOL(drm_gem_shmem_vunmap);
-> >>
-> >> @@ -451,6 +494,8 @@ int drm_gem_shmem_madvise(struct drm_gem_shmem_object *shmem, int madv)
-> >>
-> >>         mutex_unlock(&shmem->pages_lock);
-> >>
-> >> +       drm_gem_shmem_update_purgeable_status(shmem);
-> >> +
-> >>         return (madv >= 0);
-> >>  }
-> >>  EXPORT_SYMBOL(drm_gem_shmem_madvise);
-> >> @@ -763,6 +808,155 @@ drm_gem_shmem_prime_import_sg_table(struct drm_device *dev,
-> >>  }
-> >>  EXPORT_SYMBOL_GPL(drm_gem_shmem_prime_import_sg_table);
-> >>
-> >> +static struct drm_gem_shmem_shrinker *
-> >> +to_drm_shrinker(struct shrinker *shrinker)
-> >> +{
-> >> +       return container_of(shrinker, struct drm_gem_shmem_shrinker, base);
-> >> +}
-> >> +
-> >> +static unsigned long
-> >> +drm_gem_shmem_shrinker_count_objects(struct shrinker *shrinker,
-> >> +                                    struct shrink_control *sc)
-> >> +{
-> >> +       struct drm_gem_shmem_shrinker *gem_shrinker = to_drm_shrinker(shrinker);
-> >> +       u64 count = gem_shrinker->shrinkable_count;
-> >> +
-> >> +       if (count >= SHRINK_EMPTY)
-> >> +               return SHRINK_EMPTY - 1;
-> >> +
-> >> +       return count ?: SHRINK_EMPTY;
-> >> +}
-> >> +
-> >> +static unsigned long
-> >> +drm_gem_shmem_shrinker_scan_objects(struct shrinker *shrinker,
-> >> +                                   struct shrink_control *sc)
-> >> +{
-> >> +       struct drm_gem_shmem_shrinker *gem_shrinker = to_drm_shrinker(shrinker);
-> >> +       struct drm_gem_shmem_object *shmem;
-> >> +       struct list_head still_in_list;
-> >> +       bool lock_contention = true;
-> >> +       struct drm_gem_object *obj;
-> >> +       unsigned long freed = 0;
-> >> +
-> >> +       INIT_LIST_HEAD(&still_in_list);
-> >> +
-> >> +       mutex_lock(&gem_shrinker->lock);
-> >> +
-> >> +       while (freed < sc->nr_to_scan) {
-> >> +               shmem = list_first_entry_or_null(&gem_shrinker->lru,
-> >> +                                                typeof(*shmem), madv_list);
-> >> +               if (!shmem)
-> >> +                       break;
-> >> +
-> >> +               obj = &shmem->base;
-> >> +               list_move_tail(&shmem->madv_list, &still_in_list);
-> >> +
-> >> +               /*
-> >> +                * If it's in the process of being freed, gem_object->free()
-> >> +                * may be blocked on lock waiting to remove it.  So just
-> >> +                * skip it.
-> >> +                */
-> >> +               if (!kref_get_unless_zero(&obj->refcount))
-> >> +                       continue;
-> >> +
-> >> +               mutex_unlock(&gem_shrinker->lock);
-> >> +
-> >> +               /* prevent racing with job submission code paths */
-> >> +               if (!dma_resv_trylock(obj->resv))
-> >> +                       goto shrinker_lock;
-> >
-> > jfwiw, the trylock here is in the msm code isn't so much for madvise
-> > (it is an error to submit jobs that reference DONTNEED objects), but
-> > instead for the case of evicting WILLNEED but inactive objects to
-> > swap.  Ie. in the case that we need to move bo's back in to memory, we
-> > don't want to unpin/evict a buffer that is later on the list for the
-> > same job.. msm shrinker re-uses the same scan loop for both
-> > inactive_dontneed (purge) and inactive_willneed (evict)
->
-> I don't see connection between the objects on the shrinker's list and
-> the job's BOs. Jobs indeed must not have any objects marked as DONTNEED,
-> this case should never happen in practice, but we still need to protect
-> from it.
+Hyper-V VMs have VMbus synthetic devices and PCI pass-thru devices that are added
+dynamically via the VMbus protocol and are not represented in the ACPI DSDT. Only
+the top level VMbus node exists in the DSDT. As such, on ARM64 these devices don't
+pick up coherence information and default to not hardware coherent.  This results
+in extra software coherence management overhead since the synthetic devices are
+always hardware coherent. PCI pass-thru devices are also hardware coherent in all
+current usage scenarios.
 
-Hmm, let me try to explain with a simple example.. hopefully this makes sense.
+Fix this by propagating coherence information from the top level VMbus node in
+the DSDT to all VMbus synthetic devices and PCI pass-thru devices. While smaller
+granularity of control would be better, basing on the VMbus node in the DSDT
+gives as escape path if a future scenario arises with devices that are not
+hardware coherent.
 
-Say you have a job with two bo's, A and B..  bo A is not backed with
-memory (either hasn't been used before or was evicted.  Allocating
-pages for A triggers shrinker.  But B is still on the
-inactive_willneed list, however it is already locked (because we don't
-want to evict B to obtain backing pages for A).
+The first two patches are prep to allow manipulating device coherence from a
+module (since the VMbus driver can be built as a module) and from architecture
+independent code without having a bunch of #ifdef's.
 
->
-> > I suppose using trylock is not technically wrong, and it would be a
-> > good idea if the shmem helpers supported eviction as well.  But I
-> > think in the madvise/purge case if you lose the trylock then there is
-> > something else bad going on.
->
-> This trylock is intended for protecting job's submission path from
-> racing with madvise ioctl invocation followed by immediate purging of
-> BOs while job is in a process of submission, i.e. it protects from a
-> use-after-free.
+The third patch propagates the VMbus node coherence to VMbus synthetic devices.
 
-ahh, ok
+The fourth patch propagates the coherence to PCI pass-thru devices.
 
-> If you'll lose this trylock, then shrinker can't use
-> dma_resv_test_signaled() reliably anymore and shrinker may purge BO
-> before job had a chance to add fence to the BO's reservation.
->
-> > Anyways, from the PoV of minimizing lock contention when under memory
-> > pressure, this all looks good to me.
->
-> Thank you. I may try to add generic eviction support to the v3.
+Michael Kelley (4):
+  ACPI: scan: Export acpi_get_dma_attr()
+  dma-mapping: Add wrapper function to set dma_coherent
+  Drivers: hv: vmbus: Propagate VMbus coherence to each VMbus device
+  PCI: hv: Propagate coherence from VMbus device to PCI device
 
-eviction is a trickier thing to get right, I wouldn't blame you for
-splitting that out into it's own patchset ;-)
+ drivers/acpi/scan.c                 |  1 +
+ drivers/hv/vmbus_drv.c              | 15 +++++++++++++++
+ drivers/pci/controller/pci-hyperv.c | 17 +++++++++++++----
+ include/linux/dma-map-ops.h         |  9 +++++++++
+ 4 files changed, 38 insertions(+), 4 deletions(-)
 
-You probably also would want to make it a thing that is opt-in for
-drivers using the shmem helpers
+-- 
+1.8.3.1
 
-BR,
--R
