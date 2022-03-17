@@ -2,77 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC36C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:39:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55390C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229479AbiCQFkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 01:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
+        id S229480AbiCQFsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 01:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiCQFku (ORCPT
+        with ESMTP id S229457AbiCQFsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 01:40:50 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BA0D3732
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:10:52 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KJtPz3ydZz1GCM8;
-        Thu, 17 Mar 2022 11:47:35 +0800 (CST)
-Received: from dggpeml500003.china.huawei.com (7.185.36.200) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 11:52:34 +0800
-Received: from [10.174.177.173] (10.174.177.173) by
- dggpeml500003.china.huawei.com (7.185.36.200) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 11:52:34 +0800
-Message-ID: <ef12136f-fc4d-05c5-a7bd-66ade28957e4@huawei.com>
-Date:   Thu, 17 Mar 2022 11:52:32 +0800
+        Thu, 17 Mar 2022 01:48:23 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCC626454C;
+        Wed, 16 Mar 2022 22:18:38 -0700 (PDT)
+X-UUID: c92563bb299242cfbdc9b565f4dc3e39-20220317
+X-UUID: c92563bb299242cfbdc9b565f4dc3e39-20220317
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 45080494; Thu, 17 Mar 2022 13:18:34 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Mar 2022 13:18:32 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Mar 2022 13:18:32 +0800
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
+        <airlied@linux.ie>, <daniel@ffwll.ch>, <jassisinghbrar@gmail.com>,
+        <fparent@baylibre.com>, <yongqiang.niu@mediatek.com>,
+        <hsinyi@chromium.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Rex-BC Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH V9 2/5] dt-bindings: display: mediatek: revise enum to const
+Date:   Thu, 17 Mar 2022 13:18:28 +0800
+Message-ID: <20220317051831.7107-3-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220317051831.7107-1-rex-bc.chen@mediatek.com>
+References: <20220317051831.7107-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH -next] bus: mhi: ep: remove useless judgement in
- mhi_ep_ring_add_element
-Content-Language: en-US
-To:     <linux-kernel@vger.kernel.org>
-CC:     <manivannan.sadhasivam@linaro.org>, <liwei391@huawei.com>
-References: <20220317033117.367027-1-liaoyu15@huawei.com>
-From:   Yu Liao <liaoyu15@huawei.com>
-In-Reply-To: <20220317033117.367027-1-liaoyu15@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.173]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500003.china.huawei.com (7.185.36.200)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Manivannan, I found that 'ret = ' has been removed. If this is intentional,
-the check of 'ret' is redundant.
+There won't be more than 1 fallback for these bindings, so we modify
+them to use const instead of enum.
 
-Thanks,
+Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ .../devicetree/bindings/display/mediatek/mediatek,aal.yaml  | 3 +--
+ .../bindings/display/mediatek/mediatek,ccorr.yaml           | 3 +--
+ .../bindings/display/mediatek/mediatek,color.yaml           | 6 ++----
+ .../bindings/display/mediatek/mediatek,dither.yaml          | 3 +--
+ .../bindings/display/mediatek/mediatek,gamma.yaml           | 3 +--
+ .../devicetree/bindings/display/mediatek/mediatek,ovl.yaml  | 6 ++----
+ .../devicetree/bindings/display/mediatek/mediatek,rdma.yaml | 6 ++----
+ 7 files changed, 10 insertions(+), 20 deletions(-)
 
-Yu
-On 2022/3/17 11:31, Yu Liao wrote:
-> Remove the check of 'ret' that is impossible to be non-zero.
-> 
-> Signed-off-by: Yu Liao <liaoyu15@huawei.com>
-> ---
->  drivers/bus/mhi/ep/ring.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/bus/mhi/ep/ring.c b/drivers/bus/mhi/ep/ring.c
-> index ac2043e71943..161505cd628f 100644
-> --- a/drivers/bus/mhi/ep/ring.c
-> +++ b/drivers/bus/mhi/ep/ring.c
-> @@ -131,8 +131,6 @@ int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *e
->  
->  	mhi_cntrl->write_to_host(mhi_cntrl, (void __iomem *)el, ring->rbase + (old_offset *
->  				 sizeof(*el)), sizeof(*el));
-> -	if (ret < 0)
-> -		return ret;
->  
->  	return 0;
->  }
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+index d7b87a99c00e..0f965cab2d20 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
+@@ -30,8 +30,7 @@ properties:
+               - mediatek,mt8183-disp-aal
+               - mediatek,mt8192-disp-aal
+               - mediatek,mt8195-disp-aal
+-          - enum:
+-              - mediatek,mt8173-disp-aal
++          - const: mediatek,mt8173-disp-aal
+ 
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+index 0ed53b6238f0..7766c806c102 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ccorr.yaml
+@@ -28,8 +28,7 @@ properties:
+       - items:
+           - enum:
+               - mediatek,mt8195-disp-ccorr
+-          - enum:
+-              - mediatek,mt8192-disp-ccorr
++          - const: mediatek,mt8192-disp-ccorr
+ 
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+index 3ad842eb5668..0c9095b0411e 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,color.yaml
+@@ -32,15 +32,13 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-color
+               - mediatek,mt2712-disp-color
+-          - enum:
+-              - mediatek,mt2701-disp-color
++          - const: mediatek,mt2701-disp-color
+       - items:
+           - enum:
+               - mediatek,mt8183-disp-color
+               - mediatek,mt8192-disp-color
+               - mediatek,mt8195-disp-color
+-          - enum:
+-              - mediatek,mt8173-disp-color
++          - const: mediatek,mt8173-disp-color
+   reg:
+     maxItems: 1
+ 
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
+index 6657549af165..8180ed0a89ff 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dither.yaml
+@@ -28,8 +28,7 @@ properties:
+           - enum:
+               - mediatek,mt8192-disp-dither
+               - mediatek,mt8195-disp-dither
+-          - enum:
+-              - mediatek,mt8183-disp-dither
++          - const: mediatek,mt8183-disp-dither
+ 
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
+index 78442339314f..5f1825b4512b 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,gamma.yaml
+@@ -29,8 +29,7 @@ properties:
+           - enum:
+               - mediatek,mt8192-disp-gamma
+               - mediatek,mt8195-disp-gamma
+-          - enum:
+-              - mediatek,mt8183-disp-gamma
++          - const: mediatek,mt8183-disp-gamma
+ 
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+index f77094e61443..51f8235f1b1b 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ovl.yaml
+@@ -33,13 +33,11 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-ovl
+               - mediatek,mt2712-disp-ovl
+-          - enum:
+-              - mediatek,mt2701-disp-ovl
++          - const: mediatek,mt2701-disp-ovl
+       - items:
+           - enum:
+               - mediatek,mt8195-disp-ovl
+-          - enum:
+-              - mediatek,mt8183-disp-ovl
++          - const: mediatek,mt8183-disp-ovl
+ 
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
+index e8c72afa0630..9a6756f185ee 100644
+--- a/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
++++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,rdma.yaml
+@@ -35,13 +35,11 @@ properties:
+           - enum:
+               - mediatek,mt7623-disp-rdma
+               - mediatek,mt2712-disp-rdma
+-          - enum:
+-              - mediatek,mt2701-disp-rdma
++          - const: mediatek,mt2701-disp-rdma
+       - items:
+           - enum:
+               - mediatek,mt8192-disp-rdma
+-          - enum:
+-              - mediatek,mt8183-disp-rdma
++          - const: mediatek,mt8183-disp-rdma
+ 
+   reg:
+     maxItems: 1
+-- 
+2.18.0
+
