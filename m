@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5DCC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41180C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234291AbiCQM7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        id S235547AbiCQM7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:59:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234290AbiCQMzu (ORCPT
+        with ESMTP id S234210AbiCQMzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:55:50 -0400
+        Thu, 17 Mar 2022 08:55:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0688A94E2;
-        Thu, 17 Mar 2022 05:54:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A73BA27E9;
+        Thu, 17 Mar 2022 05:53:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB375B81DA1;
-        Thu, 17 Mar 2022 12:53:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB8FCC340E9;
-        Thu, 17 Mar 2022 12:53:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1C51B81EA1;
+        Thu, 17 Mar 2022 12:53:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D67E2C36AE2;
+        Thu, 17 Mar 2022 12:53:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521637;
-        bh=oGJyW9VB8SVJrrMO0vttarNjtv3xd82FZtlB3Ii/tZE=;
+        s=korg; t=1647521630;
+        bh=ttqHx00Pz/KQ4MnXgN1hjdqSE3T+gxajqzQTE81Z/74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=189SxMmauxQ+8b69e8lIeX6XGcRH5O794dG7YNao1X9JmbHtf36SQyKvcnCvu0F05
-         pe9Y5G1XUvf5AFLbRzN4TSU7iuhelc/R5H8IBQqU9j4WnQf/n2dKD2DwrCG4qV7iIA
-         IZaQ7gUZiOk9VcRR59dD87XMQh0DJ+K1zDwELGOA=
+        b=ym+yOjqntpe+Yxyme7l/EJK1rh1T18cy0yX1BjCDdJgXgkYODQyUp/Sc9Ol9KkYOQ
+         VPCV7WuChRK6DBKQvk6v3Dd/+Gc3+20kraukInrZ3SI6SAltBnX3gaftQFiO2TPv67
+         +EBDsclOsZM2nysqcGYINnAxDFMsR+7HDLOMO/E0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yan Yan <evitayan@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 04/28] xfrm: Check if_id in xfrm_migrate
-Date:   Thu, 17 Mar 2022 13:45:55 +0100
-Message-Id: <20220317124526.896673291@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
+        Petr Oros <poros@redhat.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 28/28] ice: Fix race condition during interface enslave
+Date:   Thu, 17 Mar 2022 13:46:19 +0100
+Message-Id: <20220317124527.562546441@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -49,205 +50,162 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yan Yan <evitayan@google.com>
+From: Ivan Vecera <ivecera@redhat.com>
 
-[ Upstream commit c1aca3080e382886e2e58e809787441984a2f89b ]
+commit 5cb1ebdbc4342b1c2ce89516e19808d64417bdbc upstream.
 
-This patch enables distinguishing SAs and SPs based on if_id during
-the xfrm_migrate flow. This ensures support for xfrm interfaces
-throughout the SA/SP lifecycle.
+Commit 5dbbbd01cbba83 ("ice: Avoid RTNL lock when re-creating
+auxiliary device") changes a process of re-creation of aux device
+so ice_plug_aux_dev() is called from ice_service_task() context.
+This unfortunately opens a race window that can result in dead-lock
+when interface has left LAG and immediately enters LAG again.
 
-When there are multiple existing SPs with the same direction,
-the same xfrm_selector and different endpoint addresses,
-xfrm_migrate might fail with ENODATA.
+Reproducer:
+```
+#!/bin/sh
 
-Specifically, the code path for performing xfrm_migrate is:
-  Stage 1: find policy to migrate with
-    xfrm_migrate_policy_find(sel, dir, type, net)
-  Stage 2: find and update state(s) with
-    xfrm_migrate_state_find(mp, net)
-  Stage 3: update endpoint address(es) of template(s) with
-    xfrm_policy_migrate(pol, m, num_migrate)
+ip link add lag0 type bond mode 1 miimon 100
+ip link set lag0
 
-Currently "Stage 1" always returns the first xfrm_policy that
-matches, and "Stage 3" looks for the xfrm_tmpl that matches the
-old endpoint address. Thus if there are multiple xfrm_policy
-with same selector, direction, type and net, "Stage 1" might
-rertun a wrong xfrm_policy and "Stage 3" will fail with ENODATA
-because it cannot find a xfrm_tmpl with the matching endpoint
-address.
+for n in {1..10}; do
+        echo Cycle: $n
+        ip link set ens7f0 master lag0
+        sleep 1
+        ip link set ens7f0 nomaster
+done
+```
 
-The fix is to allow userspace to pass an if_id and add if_id
-to the matching rule in Stage 1 and Stage 2 since if_id is a
-unique ID for xfrm_policy and xfrm_state. For compatibility,
-if_id will only be checked if the attribute is set.
+This results in:
+[20976.208697] Workqueue: ice ice_service_task [ice]
+[20976.213422] Call Trace:
+[20976.215871]  __schedule+0x2d1/0x830
+[20976.219364]  schedule+0x35/0xa0
+[20976.222510]  schedule_preempt_disabled+0xa/0x10
+[20976.227043]  __mutex_lock.isra.7+0x310/0x420
+[20976.235071]  enum_all_gids_of_dev_cb+0x1c/0x100 [ib_core]
+[20976.251215]  ib_enum_roce_netdev+0xa4/0xe0 [ib_core]
+[20976.256192]  ib_cache_setup_one+0x33/0xa0 [ib_core]
+[20976.261079]  ib_register_device+0x40d/0x580 [ib_core]
+[20976.266139]  irdma_ib_register_device+0x129/0x250 [irdma]
+[20976.281409]  irdma_probe+0x2c1/0x360 [irdma]
+[20976.285691]  auxiliary_bus_probe+0x45/0x70
+[20976.289790]  really_probe+0x1f2/0x480
+[20976.298509]  driver_probe_device+0x49/0xc0
+[20976.302609]  bus_for_each_drv+0x79/0xc0
+[20976.306448]  __device_attach+0xdc/0x160
+[20976.310286]  bus_probe_device+0x9d/0xb0
+[20976.314128]  device_add+0x43c/0x890
+[20976.321287]  __auxiliary_device_add+0x43/0x60
+[20976.325644]  ice_plug_aux_dev+0xb2/0x100 [ice]
+[20976.330109]  ice_service_task+0xd0c/0xed0 [ice]
+[20976.342591]  process_one_work+0x1a7/0x360
+[20976.350536]  worker_thread+0x30/0x390
+[20976.358128]  kthread+0x10a/0x120
+[20976.365547]  ret_from_fork+0x1f/0x40
+...
+[20976.438030] task:ip              state:D stack:    0 pid:213658 ppid:213627 flags:0x00004084
+[20976.446469] Call Trace:
+[20976.448921]  __schedule+0x2d1/0x830
+[20976.452414]  schedule+0x35/0xa0
+[20976.455559]  schedule_preempt_disabled+0xa/0x10
+[20976.460090]  __mutex_lock.isra.7+0x310/0x420
+[20976.464364]  device_del+0x36/0x3c0
+[20976.467772]  ice_unplug_aux_dev+0x1a/0x40 [ice]
+[20976.472313]  ice_lag_event_handler+0x2a2/0x520 [ice]
+[20976.477288]  notifier_call_chain+0x47/0x70
+[20976.481386]  __netdev_upper_dev_link+0x18b/0x280
+[20976.489845]  bond_enslave+0xe05/0x1790 [bonding]
+[20976.494475]  do_setlink+0x336/0xf50
+[20976.502517]  __rtnl_newlink+0x529/0x8b0
+[20976.543441]  rtnl_newlink+0x43/0x60
+[20976.546934]  rtnetlink_rcv_msg+0x2b1/0x360
+[20976.559238]  netlink_rcv_skb+0x4c/0x120
+[20976.563079]  netlink_unicast+0x196/0x230
+[20976.567005]  netlink_sendmsg+0x204/0x3d0
+[20976.570930]  sock_sendmsg+0x4c/0x50
+[20976.574423]  ____sys_sendmsg+0x1eb/0x250
+[20976.586807]  ___sys_sendmsg+0x7c/0xc0
+[20976.606353]  __sys_sendmsg+0x57/0xa0
+[20976.609930]  do_syscall_64+0x5b/0x1a0
+[20976.613598]  entry_SYSCALL_64_after_hwframe+0x65/0xca
 
-Tested with additions to Android's kernel unit test suite:
-https://android-review.googlesource.com/c/kernel/tests/+/1668886
+1. Command 'ip link ... set nomaster' causes that ice_plug_aux_dev()
+   is called from ice_service_task() context, aux device is created
+   and associated device->lock is taken.
+2. Command 'ip link ... set master...' calls ice's notifier under
+   RTNL lock and that notifier calls ice_unplug_aux_dev(). That
+   function tries to take aux device->lock but this is already taken
+   by ice_plug_aux_dev() in step 1
+3. Later ice_plug_aux_dev() tries to take RTNL lock but this is already
+   taken in step 2
+4. Dead-lock
 
-Signed-off-by: Yan Yan <evitayan@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The patch fixes this issue by following changes:
+- Bit ICE_FLAG_PLUG_AUX_DEV is kept to be set during ice_plug_aux_dev()
+  call in ice_service_task()
+- The bit is checked in ice_clear_rdma_cap() and only if it is not set
+  then ice_unplug_aux_dev() is called. If it is set (in other words
+  plugging of aux device was requested and ice_plug_aux_dev() is
+  potentially running) then the function only clears the bit
+- Once ice_plug_aux_dev() call (in ice_service_task) is finished
+  the bit ICE_FLAG_PLUG_AUX_DEV is cleared but it is also checked
+  whether it was already cleared by ice_clear_rdma_cap(). If so then
+  aux device is unplugged.
+
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Co-developed-by: Petr Oros <poros@redhat.com>
+Signed-off-by: Petr Oros <poros@redhat.com>
+Reviewed-by: Dave Ertman <david.m.ertman@intel.com>
+Link: https://lore.kernel.org/r/20220310171641.3863659-1-ivecera@redhat.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/xfrm.h     |  5 +++--
- net/key/af_key.c       |  2 +-
- net/xfrm/xfrm_policy.c | 14 ++++++++------
- net/xfrm/xfrm_state.c  |  7 ++++++-
- net/xfrm/xfrm_user.c   |  6 +++++-
- 5 files changed, 23 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h      |   11 ++++++++++-
+ drivers/net/ethernet/intel/ice/ice_main.c |   12 +++++++++++-
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 301a164f17e9..358dfe6fefef 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1679,14 +1679,15 @@ int km_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 	       const struct xfrm_migrate *m, int num_bundles,
- 	       const struct xfrm_kmaddress *k,
- 	       const struct xfrm_encap_tmpl *encap);
--struct xfrm_state *xfrm_migrate_state_find(struct xfrm_migrate *m, struct net *net);
-+struct xfrm_state *xfrm_migrate_state_find(struct xfrm_migrate *m, struct net *net,
-+						u32 if_id);
- struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
- 				      struct xfrm_migrate *m,
- 				      struct xfrm_encap_tmpl *encap);
- int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 		 struct xfrm_migrate *m, int num_bundles,
- 		 struct xfrm_kmaddress *k, struct net *net,
--		 struct xfrm_encap_tmpl *encap);
-+		 struct xfrm_encap_tmpl *encap, u32 if_id);
- #endif
- 
- int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport);
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index de24a7d474df..9bf52a09b5ff 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2623,7 +2623,7 @@ static int pfkey_migrate(struct sock *sk, struct sk_buff *skb,
- 	}
- 
- 	return xfrm_migrate(&sel, dir, XFRM_POLICY_TYPE_MAIN, m, i,
--			    kma ? &k : NULL, net, NULL);
-+			    kma ? &k : NULL, net, NULL, 0);
- 
-  out:
- 	return err;
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 4924b9135c6e..fbc0b2798184 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -4257,7 +4257,7 @@ static bool xfrm_migrate_selector_match(const struct xfrm_selector *sel_cmp,
- }
- 
- static struct xfrm_policy *xfrm_migrate_policy_find(const struct xfrm_selector *sel,
--						    u8 dir, u8 type, struct net *net)
-+						    u8 dir, u8 type, struct net *net, u32 if_id)
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -891,7 +891,16 @@ static inline void ice_set_rdma_cap(stru
+  */
+ static inline void ice_clear_rdma_cap(struct ice_pf *pf)
  {
- 	struct xfrm_policy *pol, *ret = NULL;
- 	struct hlist_head *chain;
-@@ -4266,7 +4266,8 @@ static struct xfrm_policy *xfrm_migrate_policy_find(const struct xfrm_selector *
- 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
- 	chain = policy_hash_direct(net, &sel->daddr, &sel->saddr, sel->family, dir);
- 	hlist_for_each_entry(pol, chain, bydst) {
--		if (xfrm_migrate_selector_match(sel, &pol->selector) &&
-+		if ((if_id == 0 || pol->if_id == if_id) &&
-+		    xfrm_migrate_selector_match(sel, &pol->selector) &&
- 		    pol->type == type) {
- 			ret = pol;
- 			priority = ret->priority;
-@@ -4278,7 +4279,8 @@ static struct xfrm_policy *xfrm_migrate_policy_find(const struct xfrm_selector *
- 		if ((pol->priority >= priority) && ret)
- 			break;
- 
--		if (xfrm_migrate_selector_match(sel, &pol->selector) &&
-+		if ((if_id == 0 || pol->if_id == if_id) &&
-+		    xfrm_migrate_selector_match(sel, &pol->selector) &&
- 		    pol->type == type) {
- 			ret = pol;
- 			break;
-@@ -4394,7 +4396,7 @@ static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate)
- int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 		 struct xfrm_migrate *m, int num_migrate,
- 		 struct xfrm_kmaddress *k, struct net *net,
--		 struct xfrm_encap_tmpl *encap)
-+		 struct xfrm_encap_tmpl *encap, u32 if_id)
- {
- 	int i, err, nx_cur = 0, nx_new = 0;
- 	struct xfrm_policy *pol = NULL;
-@@ -4413,14 +4415,14 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
- 	}
- 
- 	/* Stage 1 - find policy */
--	if ((pol = xfrm_migrate_policy_find(sel, dir, type, net)) == NULL) {
-+	if ((pol = xfrm_migrate_policy_find(sel, dir, type, net, if_id)) == NULL) {
- 		err = -ENOENT;
- 		goto out;
- 	}
- 
- 	/* Stage 2 - find and update state(s) */
- 	for (i = 0, mp = m; i < num_migrate; i++, mp++) {
--		if ((x = xfrm_migrate_state_find(mp, net))) {
-+		if ((x = xfrm_migrate_state_find(mp, net, if_id))) {
- 			x_cur[nx_cur] = x;
- 			nx_cur++;
- 			xc = xfrm_state_migrate(x, mp, encap);
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 100b4b3723e7..291236d7676f 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1605,7 +1605,8 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	return NULL;
- }
- 
--struct xfrm_state *xfrm_migrate_state_find(struct xfrm_migrate *m, struct net *net)
-+struct xfrm_state *xfrm_migrate_state_find(struct xfrm_migrate *m, struct net *net,
-+						u32 if_id)
- {
- 	unsigned int h;
- 	struct xfrm_state *x = NULL;
-@@ -1621,6 +1622,8 @@ struct xfrm_state *xfrm_migrate_state_find(struct xfrm_migrate *m, struct net *n
- 				continue;
- 			if (m->reqid && x->props.reqid != m->reqid)
- 				continue;
-+			if (if_id != 0 && x->if_id != if_id)
-+				continue;
- 			if (!xfrm_addr_equal(&x->id.daddr, &m->old_daddr,
- 					     m->old_family) ||
- 			    !xfrm_addr_equal(&x->props.saddr, &m->old_saddr,
-@@ -1636,6 +1639,8 @@ struct xfrm_state *xfrm_migrate_state_find(struct xfrm_migrate *m, struct net *n
- 			if (x->props.mode != m->mode ||
- 			    x->id.proto != m->proto)
- 				continue;
-+			if (if_id != 0 && x->if_id != if_id)
-+				continue;
- 			if (!xfrm_addr_equal(&x->id.daddr, &m->old_daddr,
- 					     m->old_family) ||
- 			    !xfrm_addr_equal(&x->props.saddr, &m->old_saddr,
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 17f0623c4508..a8c142bd1263 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -2592,6 +2592,7 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	int n = 0;
- 	struct net *net = sock_net(skb->sk);
- 	struct xfrm_encap_tmpl  *encap = NULL;
-+	u32 if_id = 0;
- 
- 	if (attrs[XFRMA_MIGRATE] == NULL)
- 		return -EINVAL;
-@@ -2616,7 +2617,10 @@ static int xfrm_do_migrate(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			return -ENOMEM;
- 	}
- 
--	err = xfrm_migrate(&pi->sel, pi->dir, type, m, n, kmp, net, encap);
-+	if (attrs[XFRMA_IF_ID])
-+		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
+-	ice_unplug_aux_dev(pf);
++	/* We can directly unplug aux device here only if the flag bit
++	 * ICE_FLAG_PLUG_AUX_DEV is not set because ice_unplug_aux_dev()
++	 * could race with ice_plug_aux_dev() called from
++	 * ice_service_task(). In this case we only clear that bit now and
++	 * aux device will be unplugged later once ice_plug_aux_device()
++	 * called from ice_service_task() finishes (see ice_service_task()).
++	 */
++	if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++		ice_unplug_aux_dev(pf);
 +
-+	err = xfrm_migrate(&pi->sel, pi->dir, type, m, n, kmp, net, encap, if_id);
+ 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
+ 	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
+ }
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2237,9 +2237,19 @@ static void ice_service_task(struct work
+ 		return;
+ 	}
  
- 	kfree(encap);
+-	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++	if (test_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags)) {
++		/* Plug aux device per request */
+ 		ice_plug_aux_dev(pf);
  
--- 
-2.34.1
-
++		/* Mark plugging as done but check whether unplug was
++		 * requested during ice_plug_aux_dev() call
++		 * (e.g. from ice_clear_rdma_cap()) and if so then
++		 * plug aux device.
++		 */
++		if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++			ice_unplug_aux_dev(pf);
++	}
++
+ 	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
+ 		struct iidc_event *event;
+ 
 
 
