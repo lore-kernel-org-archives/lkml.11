@@ -2,104 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA0BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiCQGKK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
+        id S230030AbiCQGNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiCQGJm (ORCPT
+        with ESMTP id S229788AbiCQGNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:09:42 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73810FDE27;
-        Wed, 16 Mar 2022 22:47:27 -0700 (PDT)
+        Thu, 17 Mar 2022 02:13:11 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5461E99EF5;
+        Wed, 16 Mar 2022 23:03:03 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id qx21so8457865ejb.13;
+        Wed, 16 Mar 2022 23:03:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647496047; x=1679032047;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=6KoLxshBUSQgrxvXs8rBJCOuvua+PRWtt1ALGtU2HME=;
-  b=HzHP9vgaYIFl8WMMD8iNuDaTzi6cZ6Z92SNxYh+IDv2dDQK2oez2bxeU
-   ro2VlrAiO2MSJHZYkwBKsFGk8KhZx2k8yZ4I+Ssc1UEGFCmrOx9EMP6eX
-   e4X5P/kwjhBKdBb6/xSDlM/tuzE++eQODx8dJXWcywFT5fcq0y01c1PPT
-   g=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 16 Mar 2022 22:47:27 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 22:47:26 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 16 Mar 2022 22:47:26 -0700
-Received: from [10.216.39.133] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 16 Mar
- 2022 22:47:21 -0700
-Subject: Re: [PATCH v2 0/3] Refactor xhci quirks and plat private data
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Pawel Laszczak <pawell@cadence.com>,
-        Peter Chen <peter.chen@kernel.org>,
-        Roger Quadros <rogerq@kernel.org>,
-        Aswath Govindraju <a-govindraju@ti.com>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
-        <quic_ppratap@quicinc.com>
-References: <1646130507-26796-1-git-send-email-quic_c_sanm@quicinc.com>
-From:   "Sandeep Maheswaram (Temp)" <quic_c_sanm@quicinc.com>
-Message-ID: <ddc86a4f-8d1c-c02c-5600-4fa851568557@quicinc.com>
-Date:   Thu, 17 Mar 2022 11:17:17 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.1
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OOH6gnDuS8Igvj6VsPfk/9cEpfu0P7pulJAkbuWoKdM=;
+        b=hck6V50rDYKiathOEJ+G1zkLJH45wzzmkmLCrHehJMfdjpSqCorl/p+7cUiHBXca50
+         a/aBgfy+WZ8FzgDPZzT+rjJbwr/MlScONMNq+biaiH+XSrd1HFONeLQoUHYvkPvDImYt
+         bkq7IqMCotphjYD2HuDSpGysixnmo8Z5fV7PF+KQVUFsRDnspid+VJCoMLuSJuHyi+r+
+         uxp01xf3Dp5cf8SJs9CRMMzjH/cJn3POz+QoMW3enVNpK7J7vR1H3UxWbGFRbivFmZjw
+         q+24gnsDa5fns6vkYUaet7g+Js/Ys4WEecvUwydGA82Vt6lWuV5eMA2PBJc5edkq+/aV
+         JpuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OOH6gnDuS8Igvj6VsPfk/9cEpfu0P7pulJAkbuWoKdM=;
+        b=RyRa7azFMF1hj7ykfAJr40jhemWCeOkJVrTQiN0VWyrLpW0hwdw2IfM72SrmX85Wai
+         a9IzedLQcY42yc6ggD3FpF2GBrIVM3rPtZAz54yC7BQWQMaggRIZbf4nA9RdnRpu/9ny
+         6YlJyuu71GSSVC1y/g461kGnsaepYfusAbsDaXysaP+7XcnSEN5Ch8q392UEVuKjy/eM
+         UFWmfOf9/1ozCFbIAj4/p3467HwkiHdmT1xBn5qUEogzb/ql6OHIUv+09m/WW057kvQK
+         UvWncKd04tH7C6rHkEzznOduOOQmMRD00kb6zuEaQnrQff9rFK/EsCHx8LRqIHf/1Co2
+         zrqw==
+X-Gm-Message-State: AOAM531w4ktRx/xfwlmZKLNxNa5azj4jdEtHlr4d0jr46TG844SIYNA4
+        or71SLsKtcFkB3gbvYLduY7jodB1UuRBUNkXIXY=
+X-Google-Smtp-Source: ABdhPJwuer1Z/hIDA7KkDvBu5GQcKq2//+8P1Fo9pzf3qOTSe7orgQqefd5ey+XG7caRb7yfRmbC6wGYuLJpn9uSrtA=
+X-Received: by 2002:a17:906:2695:b0:6cf:e1b4:118b with SMTP id
+ t21-20020a170906269500b006cfe1b4118bmr2845593ejc.348.1647496981212; Wed, 16
+ Mar 2022 23:03:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1646130507-26796-1-git-send-email-quic_c_sanm@quicinc.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220316063148.700769-1-imagedong@tencent.com>
+ <20220316063148.700769-4-imagedong@tencent.com> <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org> <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Thu, 17 Mar 2022 14:02:49 +0800
+Message-ID: <CADxym3Zqy1mQnRm5Ec9AfGy=abn0F1WJ_NSgxg-aqTWmKn=Qig@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
+ to icmp protocol
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Biao Jiang <benbjiang@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
-
-On 3/1/2022 3:58 PM, Sandeep Maheswaram wrote:
-> changes in v2:
-> Added a PATCH 2/3 to remove unwanted header inclusion.
-> Fixed minor nitpicks in PATCH 3/3.
+On Thu, Mar 17, 2022 at 12:05 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Pavankumar Kondeti (1):
->    usb: xhci: refactor quirks and plat private data
+> On Wed, 16 Mar 2022 21:35:47 -0600 David Ahern wrote:
+> > On 3/16/22 9:18 PM, Jakub Kicinski wrote:
+> > >
+> > > I guess this set raises the follow up question to Dave if adding
+> > > drop reasons to places with MIB exception stats means improving
+> > > the granularity or one MIB stat == one reason?
+> >
+> > There are a few examples where multiple MIB stats are bumped on a drop,
+> > but the reason code should always be set based on first failure. Did you
+> > mean something else with your question?
 >
-> Sandeep Maheswaram (2):
->    usb: xhci: Remove unwanted header inclusion
->    usb: dwc: host: add xhci_plat_priv quirk XHCI_SKIP_PHY_INIT
->
->   drivers/usb/cdns3/host.c        |  2 +-
->   drivers/usb/dwc3/host.c         | 13 ++++++++
->   drivers/usb/host/xhci-plat.c    |  3 +-
->   drivers/usb/host/xhci-plat.h    | 24 ---------------
->   drivers/usb/host/xhci-rcar.c    |  3 +-
->   drivers/usb/host/xhci.h         | 60 ++++--------------------------------
->   include/linux/usb/xhci-plat.h   | 24 +++++++++++++++
->   include/linux/usb/xhci-quirks.h | 67 +++++++++++++++++++++++++++++++++++++++++
->   8 files changed, 115 insertions(+), 81 deletions(-)
->   delete mode 100644 drivers/usb/host/xhci-plat.h
->   create mode 100644 include/linux/usb/xhci-plat.h
->   create mode 100644 include/linux/usb/xhci-quirks.h
+> I meant whether we want to differentiate between TYPE, and BROADCAST or
+> whatever other possible invalid protocol cases we can get here or just
+> dump them all into a single protocol error code.
 
-Please let me know your opinion about this patch series.
-
-Regards
-
-Sandeep
-
+Such as a SKB_DROP_REASON_PROTO_NOTSUPPORTED? and apply
+it to 'GRE_VERSION' such cases too? Which means the data is not supported
+by current protocol.
