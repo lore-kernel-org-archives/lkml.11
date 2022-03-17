@@ -2,91 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98447C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A2DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234942AbiCQOHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
+        id S234961AbiCQOIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234948AbiCQOHe (ORCPT
+        with ESMTP id S234977AbiCQOHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:07:34 -0400
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61245136660;
-        Thu, 17 Mar 2022 07:06:18 -0700 (PDT)
-Received: by mail-pj1-f49.google.com with SMTP id mz9-20020a17090b378900b001c657559290so5285575pjb.2;
-        Thu, 17 Mar 2022 07:06:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=l5TJbPNzDqPASdkDHCLk62DytQZBW+wKClOw+PHQQjc=;
-        b=Nx9GdB+OwF0Pai9M39tso/lBKaWwCYr/T/8yjX2C2nMSEDAV5zs6+8gbBqwNRTX61l
-         4bG9EVIxs8ysO2B46J8jb1lQ+moEoCGW6r25FZWuGUzpi5q7FYGeDSbNqZShf+6qu/X5
-         faRuUJlBC9bL3t9l/vzJn77gRuxToRaOL+Y5l99gFVx7hrCLbOI9AMpPwF6oQ2qO79Pv
-         8bhfXXp648tsz+l2vm0k7OVRWrG3fMOlvHEYOuwh7b1ifoD4E/5+bCoHIdTQhusMaNI7
-         AVTRFTax2x/n5zZwCEkMdnVNFV07l+OU7Dm/tA7qCjcSStOIwxE/e/AmEj1xYhhnoHPw
-         pUug==
-X-Gm-Message-State: AOAM533rK3AN72GmFi8H/jxVPF2+ZnvKG4Upg11f6pq1iLG2DrKymtgj
-        yFitzGswO7FWH5CxivlBxUs=
-X-Google-Smtp-Source: ABdhPJw+trXwAO+jp5KEgP7+0YMzXFmtnQ7Oi+H6HoOCE18jVvu7LSrsSPwBrEX4TkUVY2eHcaADhA==
-X-Received: by 2002:a17:902:e94f:b0:14f:1636:c8a8 with SMTP id b15-20020a170902e94f00b0014f1636c8a8mr4952381pll.130.1647525977380;
-        Thu, 17 Mar 2022 07:06:17 -0700 (PDT)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
-        by smtp.gmail.com with ESMTPSA id na8-20020a17090b4c0800b001bf191ee347sm10381694pjb.27.2022.03.17.07.06.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Mar 2022 07:06:17 -0700 (PDT)
-Message-ID: <22cd48e9-fe36-414c-942e-382b8139ab4b@acm.org>
-Date:   Thu, 17 Mar 2022 07:06:15 -0700
+        Thu, 17 Mar 2022 10:07:50 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3796139ACC;
+        Thu, 17 Mar 2022 07:06:31 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KK86N6d2YzfZ66;
+        Thu, 17 Mar 2022 22:05:00 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
+ 2022 22:06:29 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next v2] jbd2: Fix null-ptr-deref when process reserved list in jbd2_journal_commit_transaction
+Date:   Thu, 17 Mar 2022 22:21:37 +0800
+Message-ID: <20220317142137.1821590-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 1/3] block: don't show disk stats if io accounting is
- disabled
-Content-Language: en-US
-To:     Yu Kuai <yukuai3@huawei.com>, axboe@kernel.dk, mpatocka@redhat.com,
-        snitzer@redhat.com
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-References: <20220317112653.1019490-1-yukuai3@huawei.com>
- <20220317112653.1019490-2-yukuai3@huawei.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20220317112653.1019490-2-yukuai3@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/17/22 04:26, Yu Kuai wrote:
-> If io accounting is disabled, there is no point to handle such device
-> in diskstats_show(), and it can be confused for users because all fields
-> in iostat are zero while the disk is handling io.
-> 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> ---
->   block/genhd.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/block/genhd.c b/block/genhd.c
-> index c3b32c665aec..e5307f512185 100644
-> --- a/block/genhd.c
-> +++ b/block/genhd.c
-> @@ -937,6 +937,9 @@ ssize_t part_stat_show(struct device *dev,
->   	struct disk_stats stat;
->   	unsigned int inflight;
->   
-> +	if (!blk_queue_io_stat(q))
-> +		return sprintf(buf, "io accounting is disabled\n");
-> +
+we got issue as follows:
+[   72.796117] EXT4-fs error (device sda): ext4_journal_check_start:83: comm fallocate: Detected aborted journal
+[   72.826847] EXT4-fs (sda): Remounting filesystem read-only
+fallocate: fallocate failed: Read-only file system
+[   74.791830] jbd2_journal_commit_transaction: jh=0xffff9cfefe725d90 bh=0x0000000000000000 end delay
+[   74.793597] ------------[ cut here ]------------
+[   74.794203] kernel BUG at fs/jbd2/transaction.c:2063!
+[   74.794886] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+[   74.795533] CPU: 4 PID: 2260 Comm: jbd2/sda-8 Not tainted 5.17.0-rc8-next-20220315-dirty #150
+[   74.798327] RIP: 0010:__jbd2_journal_unfile_buffer+0x3e/0x60
+[   74.801971] RSP: 0018:ffffa828c24a3cb8 EFLAGS: 00010202
+[   74.802694] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+[   74.803601] RDX: 0000000000000001 RSI: ffff9cfefe725d90 RDI: ffff9cfefe725d90
+[   74.804554] RBP: ffff9cfefe725d90 R08: 0000000000000000 R09: ffffa828c24a3b20
+[   74.805471] R10: 0000000000000001 R11: 0000000000000001 R12: ffff9cfefe725d90
+[   74.806385] R13: ffff9cfefe725d98 R14: 0000000000000000 R15: ffff9cfe833a4d00
+[   74.807301] FS:  0000000000000000(0000) GS:ffff9d01afb00000(0000) knlGS:0000000000000000
+[   74.808338] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   74.809084] CR2: 00007f2b81bf4000 CR3: 0000000100056000 CR4: 00000000000006e0
+[   74.810047] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   74.810981] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   74.811897] Call Trace:
+[   74.812241]  <TASK>
+[   74.812566]  __jbd2_journal_refile_buffer+0x12f/0x180
+[   74.813246]  jbd2_journal_refile_buffer+0x4c/0xa0
+[   74.813869]  jbd2_journal_commit_transaction.cold+0xa1/0x148
+[   74.817550]  kjournald2+0xf8/0x3e0
+[   74.819056]  kthread+0x153/0x1c0
+[   74.819963]  ret_from_fork+0x22/0x30
 
-Hmm ... the above looks sub-optimal to me. Has it been considered to 
-return an error code instead or even better to hide the stat attribute 
-if I/O accounting is disabled? The latter can be achieved by modifying 
-disk_visible().
+Above issue may happen as follows:
+        write                   truncate                   kjournald2
+generic_perform_write
+ ext4_write_begin
+  ext4_walk_page_buffers
+   do_journal_get_write_access ->add BJ_Reserved list
+ ext4_journalled_write_end
+  ext4_walk_page_buffers
+   write_end_fn
+    ext4_handle_dirty_metadata
+                ***************JBD2 ABORT**************
+     jbd2_journal_dirty_metadata
+ -> return -EROFS, jh in reserved_list
+                                                   jbd2_journal_commit_transaction
+                                                    while (commit_transaction->t_reserved_list)
+                                                      jh = commit_transaction->t_reserved_list;
+                        truncate_pagecache_range
+                         do_invalidatepage
+			  ext4_journalled_invalidatepage
+			   jbd2_journal_invalidatepage
+			    journal_unmap_buffer
+			     __dispose_buffer
+			      __jbd2_journal_unfile_buffer
+			       jbd2_journal_put_journal_head ->put last ref_count
+			        __journal_remove_journal_head
+				 bh->b_private = NULL;
+				 jh->b_bh = NULL;
+				                      jbd2_journal_refile_buffer(journal, jh);
+							bh = jh2bh(jh);
+							->bh is NULL, later will trigger null-ptr-deref
+				 journal_free_journal_head(jh);
 
-Thanks,
+As after 96f1e0974575 commit, handle reserved list will not hold "journal->j_state_lock"
+when kjournald2 commit transaction. So journal_unmap_buffer maybe free
+journal_head when handle reserved list. And lead to null-ptr-deref or some
+strange errors.
+As reserved list almost time is empty. Use "journal->j_state_lock" to protect
+handle reserved list can simply solve above issue.
 
-Bart.
+Fixes: 96f1e0974575("jbd2: avoid long hold times of j_state_lock while committing a transaction")
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/jbd2/commit.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
+index 5b9408e3b370..ac7f067b7bdd 100644
+--- a/fs/jbd2/commit.c
++++ b/fs/jbd2/commit.c
+@@ -488,7 +488,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+ 	jbd2_journal_wait_updates(journal);
+ 
+ 	commit_transaction->t_state = T_SWITCH;
+-	write_unlock(&journal->j_state_lock);
+ 
+ 	J_ASSERT (atomic_read(&commit_transaction->t_outstanding_credits) <=
+ 			journal->j_max_transaction_buffers);
+@@ -508,6 +507,8 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+ 	 * has reserved.  This is consistent with the existing behaviour
+ 	 * that multiple jbd2_journal_get_write_access() calls to the same
+ 	 * buffer are perfectly permissible.
++	 * We use journal->j_state_lock here to serialize processing of
++	 * t_reserved_list with eviction of buffers from journal_unmap_buffer().
+ 	 */
+ 	while (commit_transaction->t_reserved_list) {
+ 		jh = commit_transaction->t_reserved_list;
+@@ -527,6 +528,7 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+ 		jbd2_journal_refile_buffer(journal, jh);
+ 	}
+ 
++	write_unlock(&journal->j_state_lock);
+ 	/*
+ 	 * Now try to drop any written-back buffers from the journal's
+ 	 * checkpoint lists.  We do this *before* commit because it potentially
+-- 
+2.31.1
+
