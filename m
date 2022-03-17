@@ -2,88 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB70C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230477AbiCQIMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40160 "EHLO
+        id S229756AbiCQINS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:13:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229760AbiCQIMo (ORCPT
+        with ESMTP id S229760AbiCQINO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 04:12:44 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E937108193
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:11:28 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id m12so5536087edc.12
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:11:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jtQWBLaDrBArWqmWot/qK2nwyh+bP+vnDzmbHrJsXek=;
-        b=VxDQoKvXVFOlQ5TLzCU2fxc7EvaiNrogmhzQPCzOhaSPOp7ktvSUZ99ByEQmid/qxC
-         XVNGRkUipWg1lcLOn5nXVFul/geyxG82EIKjflOGsklDVWS2OsTOsnMR+wOACm6lsybU
-         ixx6fJxwlHv3bhsSZopP+LRaHLqI+B6ztmDoVkPfcBNn1dEwWa098gNJWFSDXY3sWsL9
-         c14DL9RY6yvNiDFCWOMZDSFQGog4nHjO7GnmdMyEDm3AeB5Qr22c0MfmJp0ogtt84ILm
-         nOdYeJRgchvNlaiMOLzf+fUnLWDKEZ4qGBLyhC1qubebSIvkgr20L5mcoVMv5218LMxB
-         MUfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jtQWBLaDrBArWqmWot/qK2nwyh+bP+vnDzmbHrJsXek=;
-        b=KzayE+lrvMI2iCX+dCCprpwUjtGfjBSn00lCK7aYdExxbQc2b6k5nRzjaIXtBjyKKn
-         dABVevSP67kZPA7iJea/VkXQ4+ks9h6m+HQgfRO/yY4jR79CTUI/RhZ2lhzptmZ8C/XT
-         K+gMv+L8+XDMXdQIcLAGYSKM+H3IbHJRznfv/FxTeqHEniDkAMTkoTZ5lLYp+YhalR/u
-         NPZCY5ejUSQhqaHjQ0Cudcx4Rt2FsS3jjBooqgre79b2RLMgz1RPud/PxANqrdU6mm7q
-         ozJj/WwSu7SbFfK3IeKdd0qp6r27ozZBbEUDBDiZCyq4cMMe+6hJ5xPidfvOpOQmcA8/
-         R4ew==
-X-Gm-Message-State: AOAM5300UHJ5M/1zojA4mammnAWcAH4jRgPmUadXO+n7IeH+NzbiEp+E
-        vsaL+DAnpZCUPcxh6OxBil9J0A==
-X-Google-Smtp-Source: ABdhPJyB2yYg/gh58dKJRPw4PSASfvzsov2cAcREU9vG4rJaR7aZFopg2DCMD8VY8T43CyWuNoCglQ==
-X-Received: by 2002:a05:6402:42c6:b0:416:541:4be1 with SMTP id i6-20020a05640242c600b0041605414be1mr3146063edc.238.1647504686456;
-        Thu, 17 Mar 2022 01:11:26 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id i5-20020a05640242c500b00416701e9466sm2191421edc.26.2022.03.17.01.11.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 01:11:25 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 09:11:25 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
-Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, oliver@neukum.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
-Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb
- mode
-Message-ID: <YjLtLdH9gmg7yaNl@nanopsycho>
-References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
+        Thu, 17 Mar 2022 04:13:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F9D1C591B
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:11:59 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nUlEd-00049d-0F; Thu, 17 Mar 2022 09:11:51 +0100
+Received: from pengutronix.de (2a03-f580-87bc-d400-5ff9-b2f4-7100-5120.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5ff9:b2f4:7100:5120])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 30E074CFDE;
+        Thu, 17 Mar 2022 08:11:49 +0000 (UTC)
+Date:   Thu, 17 Mar 2022 09:11:48 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     rcsekar@samsung.com, wg@grandegger.com, davem@davemloft.net,
+        kuba@kernel.org, linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] can: m_can: fix a possible use after free in
+ m_can_tx_handler()
+Message-ID: <20220317081148.rdnacm4bry76rny4@pengutronix.de>
+References: <20220317030143.14668-1-hbh25y@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nbv2ga6m4oauj6bi"
 Content-Disposition: inline
-In-Reply-To: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
+In-Reply-To: <20220317030143.14668-1-hbh25y@gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thu, Mar 17, 2022 at 07:15:21AM CET, sunshouxin@chinatelecom.cn wrote:
->This patch is implementing IPV6 RLB for balance-alb mode.
->
->Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
 
+--nbv2ga6m4oauj6bi
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Could you please reply to my question I asked for v1:
-Out of curiosity, what is exactly your usecase? I'm asking because
-I don't see any good reason to use RLB/ALB modes. I have to be missing
-something.
+On 17.03.2022 11:01:43, Hangyu Hua wrote:
+> can_put_echo_skb will clone skb then free the skb. It is better to avoid =
+using
+> skb after can_put_echo_skb.
 
-This is adding a lot of code in bonding that needs to be maintained.
-However, if there is no particular need to add it, why would we?
+Why not move the can_put_echo_skb() instead? I'll send a patch.
 
-Could you please spell out why exactly do you need this? I'm pretty sure
-that in the end well find out, that you really don't need this at all.
+Marc
 
-Thanks!
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--nbv2ga6m4oauj6bi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIy7UIACgkQrX5LkNig
+0126egf/eXMrD3xPjDnj4X60OnWYTRdu7/JjPrpV+l7EWntc/GElPXfB2IHoGhNJ
+yHrEWYruDHUtmYug48mqvaysS+vvCtZ/U1pLyMqueKYEidkgQTmorSudgYUOZny/
+y25MOIXTjNgl9p/BBwv5aezPXhUFZufPX/G1D+LB7CJGO9W8K9k/O4AKLtNPAlTf
+ElnfT7sjXo/Cr+XPiSJXr0h4lAhXglR6+KhsxZwoP+41nzIM6G2z/f0nDQ7ShQGY
+tGJN+icRxf8izwPanROz+74zIlOKEwn9uHPl5U35CcN8cyzk9A1PMm8DS+tdazh7
+Gz5zi+xJChAkYuXXrPTuW3y39SfZGQ==
+=5dNZ
+-----END PGP SIGNATURE-----
+
+--nbv2ga6m4oauj6bi--
