@@ -2,122 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D56EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A361FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbiCQXSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 19:18:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
+        id S229640AbiCQXW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 19:22:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiCQXSI (ORCPT
+        with ESMTP id S229555AbiCQXWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 19:18:08 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8AD1A7706
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:16:50 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so5605526ybg.8
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:16:50 -0700 (PDT)
+        Thu, 17 Mar 2022 19:22:51 -0400
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904551FD2D8;
+        Thu, 17 Mar 2022 16:21:33 -0700 (PDT)
+Received: by mail-oo1-xc29.google.com with SMTP id w3-20020a4ac183000000b0031d806bbd7eso8301764oop.13;
+        Thu, 17 Mar 2022 16:21:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=hvoW0T1Jxa8buR1vUq7mHDbmRrmWB7evEEmXb00k+lk=;
-        b=EtXmvJO9en2amaPkrnmu4Xi2E9HoWfDQIP1qHWBhasehZ0Js3ng9DDzb3y9dipxnUB
-         tJkMpUjlnXmmQG8+/Z4NjP4BaY71AfTo28LuJepcfxKRJR1ERDZwTcZ+v8ZLC5SUXC4z
-         2JED2DjpEw+go1rHx758n8RKcI+UaiCQ3diW1EtbbwWTUhn3qJYsl7r1pBROGXmWyuoT
-         492o3BveZFBpi49Uuy90Z8h/USxSqgmJ67+bVC2J7KOlr3LWLvj2z1HDXM8ePZMaqzwE
-         v5QwAMqFnE5DUR+G0ntw2c93sWJ/vBYfOdE9uzdPzhDXHoDK2sAdQ/6vRHpepqKpvSu3
-         CQlQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cV2G53aQ8gy5xgFrzeVM67TOnDJP6UFgv7JOAg+ZKWQ=;
+        b=M7g23SMXsoBSpy5meppRZhZ9iJd6A1uiBr9hvVMVpqk+LXXZx6qHDtr5tv8/j5pqXl
+         18GJFWFYcUiH8MfsMi05vmvsjihNU6mF10W/KnfcwystkmUCBfcHc3Dzelei1Dv2kyI3
+         9LhhVYktOShrLdOw4kqCJ/cOlOAkM1C1+kzA/Uw93daCZYZaHrpxIQq4LB4w1eLL2rSe
+         vu/DLza6h8iMKOUrFA+LYcKYBfb8X/5zXDwDYP7ZRCUKjry2F8oeEzUxHHdBeW0Chje1
+         GTEVVwGXVwXMuFP0sDOqDOaGErYFIDJ7ejZYdgkkwtUyBhwf94QX16auJz1djyhta7P4
+         SsEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=hvoW0T1Jxa8buR1vUq7mHDbmRrmWB7evEEmXb00k+lk=;
-        b=eruN4IiSjmDcrekA5bhqj8hh2aRjFK6lTyino63tOfs5RzS3kVAA6MLgcd3/iy6h01
-         jCgQ0plT0k8g+y4o5kGHMsQW8lLOO0fe+i179T3sUNH/w0QiF2E3V8pX1FnPsmcFTuE9
-         uLDMmpNRDy42wY7g0ykIek44+qHSen+IOAiYn2ss8zli7INk3UI6VnJDyYrCBdXJn1XW
-         a/+ss0odaP+0yvJAyUNYqRhQEyji4dyr2pPC34gDAQBR+m+jIEGFGm4WyeItJVg8RA1F
-         8Vf/50pemS4P+AFyWoEjdy7SzXQNclrRxKdPsDA7XDa7O8JQJKleCk6jfU4MzBz4h+8z
-         zZRA==
-X-Gm-Message-State: AOAM530IYkb7kuR8qgPAHLRD8IoEv97GVboMaD+NImS+LVbSOfVn3Ld/
-        RY5+lLyAamdLtnHrfFD6eNbFA8Qg6kE0
-X-Google-Smtp-Source: ABdhPJxiYWuxPZ+gOFx5nyIRI2ACj30mUOekasrtLlPHsJhLpmg75DvxfbzQm+haX3k7arH+uIq5nFB7RPmr
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:6811:1685:e3b9:7904])
- (user=irogers job=sendgmr) by 2002:a25:cf47:0:b0:633:854f:b710 with SMTP id
- f68-20020a25cf47000000b00633854fb710mr7499660ybg.475.1647559009908; Thu, 17
- Mar 2022 16:16:49 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 16:16:43 -0700
-Message-Id: <20220317231643.550902-1-irogers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-Subject: [PATCH v2] perf evlist: Avoid iteration for empty evlist.
-From:   Ian Rogers <irogers@google.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cV2G53aQ8gy5xgFrzeVM67TOnDJP6UFgv7JOAg+ZKWQ=;
+        b=qrrFrxh+EFYIMfStyOxYALZzeV65H7TaujNOcJX9wZoQmLQUs1jXUxImTH3BWHokUy
+         CUAuWJ1JofSGG8x3FFomx5u8JQ8fv9efqqMk77ak7FrwDALBjyoRRLI4dBg++0vLMuVZ
+         /5LVDKAfYOUqeXeaAsgXofIjnx9pHnx67PhYklWWfdrEyzEYOJOW5ZnmYI46Lw3EKzoH
+         L+aNtD00Y9Zg+zbl1WlxLLhLPqTJY2rodQ8fKEneB1/9GgEKXwb174VjZYuG5SncQBny
+         etJu2fx9D+sIFd1Gbojhje9kHCzQG8ypTTvsP7feIfWLF9pAqkaFp3n1Toj9lcTKx9Ha
+         OXPw==
+X-Gm-Message-State: AOAM533Hl0znHYDb8RncHgEuLYsXz3FYlc2t1/21FhTUy+TDoamZ3b4O
+        S4cXLv/dWuEa+NyXZ0FNpeg6TYfbjJe+mA==
+X-Google-Smtp-Source: ABdhPJxJ+l9rTlCJYd2wVYy2pwNS7uAh2Sp5Ne51ph7mT/7XNCauNvYRHmWpLePy55iAhu00t0gKlw==
+X-Received: by 2002:a05:6870:c10b:b0:da:40b:9d92 with SMTP id f11-20020a056870c10b00b000da040b9d92mr2800341oad.31.1647559292787;
+        Thu, 17 Mar 2022 16:21:32 -0700 (PDT)
+Received: from fstone04p1.aus.stglabs.ibm.com ([129.41.86.15])
+        by smtp.gmail.com with ESMTPSA id 2-20020a056870124200b000dd9ac0d61esm2869159oao.24.2022.03.17.16.21.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 16:21:32 -0700 (PDT)
+From:   Brandon Wyman <bjwyman@gmail.com>
+To:     Joel Stanley <joel@jms.id.au>, openbmc@lists.ozlabs.org,
+        Eddie James <eajames@linux.ibm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Brandon Wyman <bjwyman@gmail.com>
+Subject: [PATCH] hwmon: (pmbus) Add Vin unit off handling
+Date:   Thu, 17 Mar 2022 23:21:23 +0000
+Message-Id: <20220317232123.2103592-1-bjwyman@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As seen with 'perf stat --null ..' and reported in:
-https://lore.kernel.org/lkml/YjCLcpcX2peeQVCH@kernel.org/
+If there is an input undervoltage fault, reported in STATUS_INPUT
+command response, there is quite likely a "Unit Off For Insufficient
+Input Voltage" condition as well.
 
-v2. Avoids setting evsel in the empty list case as suggested by Jiri
-    Olsa <jolsa@kernel.org>.
-Fixes: 472832d2c000 ("perf evlist: Refactor evlist__for_each_cpu()")
-Signed-off-by: Ian Rogers <irogers@google.com>
+Add a constant for bit 3 of STATUS_INPUT. Update the Vin limit
+attributes to include both bits in the mask for clearing faults.
+
+If an input undervoltage fault occurs, causing a unit off for
+insufficient input voltage, but the unit is off bit is not cleared, the
+STATUS_WORD will not be updated to clear the input fault condition.
+Including the unit is off bit (bit 3) allows for the input fault
+condition to completely clear.
+
+Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
 ---
- tools/perf/util/evlist.c | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
+ drivers/hwmon/pmbus/pmbus.h      | 1 +
+ drivers/hwmon/pmbus/pmbus_core.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
-index 8134d45e2164..9bb79e049957 100644
---- a/tools/perf/util/evlist.c
-+++ b/tools/perf/util/evlist.c
-@@ -346,7 +346,7 @@ struct evlist_cpu_iterator evlist__cpu_begin(struct evlist *evlist, struct affin
- {
- 	struct evlist_cpu_iterator itr = {
- 		.container = evlist,
--		.evsel = evlist__first(evlist),
-+		.evsel = NULL,
- 		.cpu_map_idx = 0,
- 		.evlist_cpu_map_idx = 0,
- 		.evlist_cpu_map_nr = perf_cpu_map__nr(evlist->core.all_cpus),
-@@ -354,16 +354,22 @@ struct evlist_cpu_iterator evlist__cpu_begin(struct evlist *evlist, struct affin
- 		.affinity = affinity,
- 	};
- 
--	if (itr.affinity) {
--		itr.cpu = perf_cpu_map__cpu(evlist->core.all_cpus, 0);
--		affinity__set(itr.affinity, itr.cpu.cpu);
--		itr.cpu_map_idx = perf_cpu_map__idx(itr.evsel->core.cpus, itr.cpu);
--		/*
--		 * If this CPU isn't in the evsel's cpu map then advance through
--		 * the list.
--		 */
--		if (itr.cpu_map_idx == -1)
--			evlist_cpu_iterator__next(&itr);
-+	if (evlist__empty(evlist)) {
-+		/* Ensure the empty list doesn't iterate. */
-+		itr.evlist_cpu_map_idx = itr.evlist_cpu_map_nr;
-+	} else {
-+		itr.evsel = evlist__first(evlist);
-+		if (itr.affinity) {
-+			itr.cpu = perf_cpu_map__cpu(evlist->core.all_cpus, 0);
-+			affinity__set(itr.affinity, itr.cpu.cpu);
-+			itr.cpu_map_idx = perf_cpu_map__idx(itr.evsel->core.cpus, itr.cpu);
-+			/*
-+			 * If this CPU isn't in the evsel's cpu map then advance
-+			 * through the list.
-+			 */
-+			if (itr.cpu_map_idx == -1)
-+				evlist_cpu_iterator__next(&itr);
-+		}
- 	}
- 	return itr;
- }
+diff --git a/drivers/hwmon/pmbus/pmbus.h b/drivers/hwmon/pmbus/pmbus.h
+index e0aa8aa46d8c..ef3a8ecde4df 100644
+--- a/drivers/hwmon/pmbus/pmbus.h
++++ b/drivers/hwmon/pmbus/pmbus.h
+@@ -319,6 +319,7 @@ enum pmbus_fan_mode { percent = 0, rpm };
+ /*
+  * STATUS_VOUT, STATUS_INPUT
+  */
++#define PB_VOLTAGE_VIN_OFF		BIT(3)
+ #define PB_VOLTAGE_UV_FAULT		BIT(4)
+ #define PB_VOLTAGE_UV_WARNING		BIT(5)
+ #define PB_VOLTAGE_OV_WARNING		BIT(6)
+diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+index ac2fbee1ba9c..a0d899dc81f0 100644
+--- a/drivers/hwmon/pmbus/pmbus_core.c
++++ b/drivers/hwmon/pmbus/pmbus_core.c
+@@ -1373,7 +1373,7 @@ static const struct pmbus_limit_attr vin_limit_attrs[] = {
+ 		.reg = PMBUS_VIN_UV_FAULT_LIMIT,
+ 		.attr = "lcrit",
+ 		.alarm = "lcrit_alarm",
+-		.sbit = PB_VOLTAGE_UV_FAULT,
++		.sbit = (PB_VOLTAGE_UV_FAULT | PB_VOLTAGE_VIN_OFF),
+ 	}, {
+ 		.reg = PMBUS_VIN_OV_WARN_LIMIT,
+ 		.attr = "max",
 -- 
-2.35.1.894.gb6a874cedc-goog
+2.25.1
 
