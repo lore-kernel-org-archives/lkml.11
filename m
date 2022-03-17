@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7019CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358394AbiCQB3H (ORCPT
+        id S1358452AbiCQB3L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 21:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
+        Wed, 16 Mar 2022 21:29:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358296AbiCQB2x (ORCPT
+        with ESMTP id S1358384AbiCQB25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 21:28:53 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F111EC44
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:27:07 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id r23so4880250edb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:27:07 -0700 (PDT)
+        Wed, 16 Mar 2022 21:28:57 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D3E1EEFF
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:27:20 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id h13so4822424ede.5
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:27:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=IwLQkBh4p0/MlSYiHpWT3LVO0kaAxEAmEy894o/lBAk=;
-        b=QdGLAG/PyeyxYlxilJap5GzmvukNm9ZyaNle+oQe0mlud/4tIh33bGgDrnbfokq8TF
-         F9vCY5oAoVAw27hbBDaVi10giHe9AaBACGopJfFZEWxXZ+JV5uCfLUV+/ThB1ed7KCQL
-         BtJ6KCb32sqFuKw4m38aGiOIG0cIFsZfscm+r+ln3NZbj3+lJ8HF/Lr/aHFretDA3iCo
-         SbKdB/Wvso3rIipXfznYMJXlw0iee767ymYRJOQJPJ9RmCtJp3KU9hazCS33LSbJzppD
-         0qpNvkPu8cAWp2XTC4m9y1SkYzQnGBm4ifo+EGKF58wtYT0q+BmjeKr/VDTu4EPe+M8x
-         HuvQ==
+        bh=VOxKsTGlBiXPbLWsRjfTqw/sHWeUi1uspD6WChZvBGc=;
+        b=LNQndeOSXW/bAWh7JNokNGhZ5eqGvlPxbUsfct7uX8e652+AZTZFl6ZnbKhzWsZnR1
+         F98RG8Wz1O2VsVCedS3lzBDewtqbBDLRgtzBBR4D0o7EZvQZNJjxyuAKcQhdfpXgs2kj
+         KIIyEkSMSMqcOZyYfIPhbZTyng29T83GGHYU2CJJoH9IK8oJWnuaI8G4WSTUQr7ENP5L
+         TNY2t+1Q1U69nlq1sH6hKoMoKg1JCpnaIZSqb3up1G95PvRLagrF6NifKl20EyuOChZ9
+         J7dAHfJVKkdxD77XohB1NZlmtuNEsAZkWX2IGX4KCaGAcTbIRASL5NQ6BYDQFt4YerPo
+         B6Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IwLQkBh4p0/MlSYiHpWT3LVO0kaAxEAmEy894o/lBAk=;
-        b=CEQZkdAGIf9kIeOS0OrE59pvmHmgcWNO07n5ZW2MqLSXB+Dl5niRGmxQeGAWKX+lq1
-         E3rWO4dM3shrixrO+hDqSp3uQquL4ozbgeIxx3I16jf/w3RDYByaYmVElONHuG3a6Yoj
-         oJHftyF+bLNBog6b/HlsOLAdQhBMt/PKkD6oFjChDdAxaLs07Vw3QFCPVc3ychTLi4/r
-         1cT/sfLYB8acoN1HSa4ky4OfN2CC9bIoWfSmjyX2uOfWMwBFysavo0oWInIICLVVP2lD
-         XsE/mKK6jCzEJSE2eIq4UQ2U3uv4bdRFyV/U6aAbic2rQZ32Sylex5gc9aPBkF3j6P+g
-         OPqw==
-X-Gm-Message-State: AOAM532tnqMowJSKi8SNheYtmNuUQeW3l2J+CEprzIs+jYkGcVnD850d
-        XK6HpXue3L9Z/E/GrDweuLXvTXcI2cOUPgp1qMr1
-X-Google-Smtp-Source: ABdhPJwngiMDrHlrSoWnA729RQinXoUDLUX6Mk3PvLSB5d+1UKewSWcwwlpQVbmesK3RoQZPw/mnWOtGWK0iz+LG5iM=
-X-Received: by 2002:a05:6402:2552:b0:416:a745:9626 with SMTP id
- l18-20020a056402255200b00416a7459626mr2022463edb.405.1647480426068; Wed, 16
- Mar 2022 18:27:06 -0700 (PDT)
+        bh=VOxKsTGlBiXPbLWsRjfTqw/sHWeUi1uspD6WChZvBGc=;
+        b=Ihwzew+nh/Y2vrxSdms6jdnFDRk4HSjRZ411gW36Bg4HB6tdh63TjtE6NLc+8F+EtN
+         NAJNeYzG3cX33ZOrQDiS2bpvd22ZsdyRMiG6O/wcXizl19BRXEQ0bg9oDxj3KaptCMa+
+         JSHNGhszA3AbfxeF1ACL5Tz+6//WRNEnt5L0X97EH37ySW65/3tjnN+12GY2HUomPinQ
+         AiD/kZEpNT7o3Ca2helQK6bwz8+v95pON/GG6+MnLZmyBIMwVsXHquCHe/SvZvMTZ1fM
+         ili51zO7U3XPYzJN+1OoCta7UQ6jUTkTXcOQCjQqlm8OPnz0F50i756pE45N2P20B6Nt
+         kWNg==
+X-Gm-Message-State: AOAM533bMWJJf044Y25Ml1m0zjJpgDlJ1NPuzLhalBXQkJXrcrXPWgzy
+        mdSBGPOhY3k2WsqvVbXNIWRuapLN+fx54pbm3hZw
+X-Google-Smtp-Source: ABdhPJzKzxlZ+0pm3CY5Kl7j8CFXMcoRrP56pFWJh+04iR0sxvt0PPoz+ZQBE4MeZ3T3Tg/mmXPL96Pxy2osfTaCu6E=
+X-Received: by 2002:a05:6402:1746:b0:418:d816:14e0 with SMTP id
+ v6-20020a056402174600b00418d81614e0mr2016945edx.340.1647480439041; Wed, 16
+ Mar 2022 18:27:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220221212522.320243-1-mic@digikod.net> <20220221212522.320243-9-mic@digikod.net>
-In-Reply-To: <20220221212522.320243-9-mic@digikod.net>
+References: <20220221212522.320243-1-mic@digikod.net> <20220221212522.320243-11-mic@digikod.net>
+In-Reply-To: <20220221212522.320243-11-mic@digikod.net>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 16 Mar 2022 21:26:55 -0400
-Message-ID: <CAHC9VhRwOfCN3BWVguiM7smVg7Rs9SrQsBZP-wwtFQ-b=gidUQ@mail.gmail.com>
-Subject: Re: [PATCH v1 08/11] samples/landlock: Add support for file reparenting
+Date:   Wed, 16 Mar 2022 21:27:07 -0400
+Message-ID: <CAHC9VhTSTkOLx_CfB9DsG1GqZm87o2Ds0urZv+gS+sA4gMjfFA@mail.gmail.com>
+Subject: Re: [PATCH v1 10/11] landlock: Document good practices about
+ filesystem policies
 To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
 Cc:     James Morris <jmorris@namei.org>,
         "Serge E . Hallyn" <serge@hallyn.com>,
@@ -75,15 +76,11 @@ wrote:
 >
 > From: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
 >
-> Add LANDLOCK_ACCESS_FS_REFER to the "roughly write" access rights and
-> leverage the Landlock ABI version to only try to enforce it if it is
-> supported by the running kernel.
->
 > Signed-off-by: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
-> Link: https://lore.kernel.org/r/20220221212522.320243-9-mic@digikod.net
+> Link: https://lore.kernel.org/r/20220221212522.320243-11-mic@digikod.net
 > ---
->  samples/landlock/sandboxer.c | 37 +++++++++++++++++++++++++-----------
->  1 file changed, 26 insertions(+), 11 deletions(-)
+>  Documentation/userspace-api/landlock.rst | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
 
 Reviewed-by: Paul Moore <paul@paul-moore.com>
 
