@@ -2,215 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F776C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:25:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFED7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:25:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236520AbiCQQ0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 12:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
+        id S236528AbiCQQ0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 12:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233658AbiCQQ0a (ORCPT
+        with ESMTP id S234815AbiCQQ0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 12:26:30 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF60BD7E8
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:25:13 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id w4so4844959ply.13
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 09:25:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6sSNVFojWkEa+kB1rxVwpwdlRixm4OOVySYgWgA6hHU=;
-        b=MIjoGDMSbCb+8RaIRBW4suJHxfXpTo855FIRj8RMraN9uYrseVjLtsfrJaw8R1WJRC
-         w7a/cIO3C4JIYz+QMRRQycoo5YTjncyXCvOMJEJrWvAuq9oZjUyAGlG32MpJ7JLZ4KVQ
-         UuIs7rZVwuFSzXVdmtTDGuiHE4yihgkRMDzdEBLzr4WJGgGovWg8w9oRagk3iJksXpiP
-         j+6kzguWQ39dcsXRZSE0xnhH+Z4dzJ9j1NO5YApUmQYCVNaeFvltVT0gEu64ITs0BluW
-         4VoClCJ/rnS+Pdl4OyVHHYU/2ftCeULXTeKY23yLhfY0f5m4g4ssHj+30FXiuBSncF1c
-         Ycjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6sSNVFojWkEa+kB1rxVwpwdlRixm4OOVySYgWgA6hHU=;
-        b=W48IDRRQ3yiJSeWkPLirw+L8hOW0cqcMV1XI4RPebGsq/TjJxDyNyn409As89E4o4z
-         ivvsihu6GhlnO+60Y0exXU0nwsPkOVdp5xDoNf7jrv5pyIvzZoGqnOmZayAk/qKhx9eM
-         dAT1h5+tKOLvQK0q3KCcfcEzGRxTY2y4a4Y+NQa1hMYhF1cnY9t9nyTlrlC0ts+mq1gs
-         zkx5LJf+jIuDUvQtwXVIgYQ9Xr+Rdkpm+fQa7OHVCzU9di3eZ4B8I7RAskio6Eu5V8mC
-         gV9ENLvxmnx/ysVQjx0an5jBAOYpHDpShBBPONUVlo4/4eaqf88OhAcgvuSE733NrEGa
-         SBxw==
-X-Gm-Message-State: AOAM531F8x5pMBzhvh0ITLt8v3yqQHshqh0xtOA1xyULuzACsN+nG1As
-        Z+dxLLV0TNFEp7kKvwlTxbFHLA==
-X-Google-Smtp-Source: ABdhPJwFtbsxAvxS4DCDF9la8zCNKh+F6SHycDDweS3/B6oT2kQgW7jmQaauv6istzAcTM5eZtk0rQ==
-X-Received: by 2002:a17:90a:6441:b0:1c6:8de6:9fc0 with SMTP id y1-20020a17090a644100b001c68de69fc0mr3243379pjm.163.1647534312833;
-        Thu, 17 Mar 2022 09:25:12 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id mq6-20020a17090b380600b001c6357f146csm10359793pjb.12.2022.03.17.09.25.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 09:25:11 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 10:25:09 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH v4] remoteproc: mediatek: Fix side effect of mt8195 sram
- power on
-Message-ID: <20220317162509.GA2630429@p14s>
-References: <20220316031117.7311-1-tinghan.shen@mediatek.com>
- <20220316163451.GA2546942@p14s>
- <8a7be596-531a-52f4-c1b0-ed1d23cfa1bb@collabora.com>
+        Thu, 17 Mar 2022 12:26:53 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A021CF4A3;
+        Thu, 17 Mar 2022 09:25:34 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 022D71C000F;
+        Thu, 17 Mar 2022 16:25:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647534333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ALLei3Iid7g2f1Vlipcd3o4ARbpYuWc1mA/FuF55Vc8=;
+        b=k9f2Sl/YQbbeQF2+xpKVWjRLn+R21VdIU6zkCahjTpxNn0SWaJien4auiqVQBavL9Qm+E7
+        eprs5GO1ca5uE+oIgeltqYtcB83uVuDX8DtdW+WQY4cXY7plXWp9owt+qOlx/AbKnkNUWj
+        1ocrN2PvfVeGSjNYZoPphiLcKjwcp9cTI+QfuW56iHcjvde17Ph83Hw6JngXQjMkXUPG+4
+        T+TZbml6cUtyYqEEYExF6T98cRR/bmNV+UZ8qy3moYP7czZzwQ0uBMhVlMzVzCOmJh4th4
+        2KGYIaiIilZoAOtv/Of545k1tyQm/1SE7x+DLL6G1LfbmJ3/iL21LoML05pu5Q==
+Date:   Thu, 17 Mar 2022 17:25:29 +0100
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v3 5/9] media: sunxi: Add support for the A31 MIPI CSI-2
+ controller
+Message-ID: <YjNg+T+J1YkOm9LE@aptenodytes>
+References: <20220302220739.144303-1-paul.kocialkowski@bootlin.com>
+ <20220302220739.144303-6-paul.kocialkowski@bootlin.com>
+ <YjHluwVnbPyHo1kp@paasikivi.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="bi/43uRme1u2xO1q"
 Content-Disposition: inline
-In-Reply-To: <8a7be596-531a-52f4-c1b0-ed1d23cfa1bb@collabora.com>
+In-Reply-To: <YjHluwVnbPyHo1kp@paasikivi.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 05:44:04PM +0100, AngeloGioacchino Del Regno wrote:
-> Il 16/03/22 17:34, Mathieu Poirier ha scritto:
-> > Good morning,
-> > 
-> > On Wed, Mar 16, 2022 at 11:11:17AM +0800, Tinghan Shen wrote:
-> > > The definition of L1TCM_SRAM_PDN bits on mt8195 is different to mt8192.
-> > > 
-> > > L1TCM_SRAM_PDN bits[3:0] control the power of mt8195 L1TCM SRAM.
-> > > 
-> > > L1TCM_SRAM_PDN bits[7:4] control the access path to EMI for SCP.
-> > > These bits have to be powered on to allow EMI access for SCP.
-> > > 
-> > > Bits[7:4] also affect audio DSP because audio DSP and SCP are
-> > > placed on the same hardware bus. If SCP cannot access EMI, audio DSP is
-> > > blocked too.
-> > > 
-> > > L1TCM_SRAM_PDN bits[31:8] are not used.
-> > > 
-> > > This fix removes modification of bits[7:4] when power on/off mt8195 SCP
-> > > L1TCM. It's because the modification introduces a short period of time
-> > > blocking audio DSP to access EMI. This was not a problem until we have
-> > > to load both SCP module and audio DSP module. audio DSP needs to access
-> > > EMI because it has source/data on DRAM. Audio DSP will have unexpected
-> > > behavior when it accesses EMI and the SCP driver blocks the EMI path at
-> > > the same time.
-> > > 
-> > > Fixes: 79111df414fc ("remoteproc: mediatek: Support mt8195 scp")
-> > > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> > > Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> > > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> > > ---
-> > > v4: add Fixes and Reviewed-by tags
-> > > v3: fix build error
-> > > v2: apply comments about macro definition and function calls
-> > > ---
-> > >   drivers/remoteproc/mtk_common.h |  2 ++
-> > >   drivers/remoteproc/mtk_scp.c    | 67 +++++++++++++++++++++++++++++++----------
-> > >   2 files changed, 53 insertions(+), 16 deletions(-)
-> > > 
-> > > diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
-> > > index 5ff3867c72f3..ff954a06637c 100644
-> > > --- a/drivers/remoteproc/mtk_common.h
-> > > +++ b/drivers/remoteproc/mtk_common.h
-> > > @@ -51,6 +51,8 @@
-> > >   #define MT8192_CORE0_WDT_IRQ		0x10030
-> > >   #define MT8192_CORE0_WDT_CFG		0x10034
-> > > +#define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		GENMASK(7, 4)
-> > > +
-> > >   #define SCP_FW_VER_LEN			32
-> > >   #define SCP_SHARE_BUFFER_SIZE		288
-> > > diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
-> > > index 36e48cf58ed6..5f686fe09203 100644
-> > > --- a/drivers/remoteproc/mtk_scp.c
-> > > +++ b/drivers/remoteproc/mtk_scp.c
-> > > @@ -365,22 +365,22 @@ static int mt8183_scp_before_load(struct mtk_scp *scp)
-> > >   	return 0;
-> > >   }
-> > > -static void mt8192_power_on_sram(void __iomem *addr)
-> > > +static void scp_sram_power_on(void __iomem *addr, u32 reserved_mask)
-> > 
-> > Why is @reserved_mask needed?  It is not described in the changelong and as far
-> > as I can see in this patchset the parameter is always set to '0', which has no
-> > effect on the mask that gets generated.
-> > 
-> 
-> Hello Mathieu,
-> the @reserved_mask is explained in perhaps not very very clear terms, meaning
-> that he's not explicitly saying the name of the new param, but that's it:
-> 
-> "This fix removes modification of bits[7:4] when power on/off mt8195 SCP
-> L1TCM."
-> 
-> ....and it's actually being used, check below....
-> 
-> > Thanks,
-> > Mathieu
-> > 
-> > >   {
-> > >   	int i;
-> > >   	for (i = 31; i >= 0; i--)
-> > > -		writel(GENMASK(i, 0), addr);
-> > > +		writel(GENMASK(i, 0) & ~reserved_mask, addr);
-> > >   	writel(0, addr);
-> > >   }
-> > > -static void mt8192_power_off_sram(void __iomem *addr)
-> > > +static void scp_sram_power_off(void __iomem *addr, u32 reserved_mask)
-> 
-> ...snip...
-> 
-> > > +static int mt8195_scp_before_load(struct mtk_scp *scp)
-> > > +{
-> > > +	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
-> > > +	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
-> > > +
-> > > +	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
-> > > +
-> > > +	/* enable SRAM clock */
-> > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
-> > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-> > > +	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
-> 
-> 
-> > > +	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
-> > > +			  MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
-> 
-> here	
 
-Yes - it's obvious now that you point it out.  
+--bi/43uRme1u2xO1q
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch conflicts with the newly added support for mt8186[1].  I tried to fix
-it but did not know if mt8185 needed the same kind of bit masking as mt8195.
-Please have a look and rebase to rproc-next.
+Hi Sakari,
 
-Thanks,
-Mathieu
+On Wed 16 Mar 22, 15:27, Sakari Ailus wrote:
+> Hi Paul,
+>=20
+> Thanks for the set.
+>=20
+> On Wed, Mar 02, 2022 at 11:07:35PM +0100, Paul Kocialkowski wrote:
+> ...
+> > +static int sun6i_mipi_csi2_s_stream(struct v4l2_subdev *subdev, int on)
+> > +{
+> > +	struct sun6i_mipi_csi2_device *csi2_dev =3D v4l2_get_subdevdata(subde=
+v);
+> > +	struct v4l2_subdev *source_subdev =3D csi2_dev->bridge.source_subdev;
+> > +	union phy_configure_opts dphy_opts =3D { 0 };
+> > +	struct phy_configure_opts_mipi_dphy *dphy_cfg =3D &dphy_opts.mipi_dph=
+y;
+> > +	struct v4l2_mbus_framefmt *mbus_format =3D &csi2_dev->bridge.mbus_for=
+mat;
+> > +	const struct sun6i_mipi_csi2_format *format;
+> > +	struct phy *dphy =3D csi2_dev->dphy;
+> > +	struct device *dev =3D csi2_dev->dev;
+> > +	struct v4l2_ctrl *ctrl;
+> > +	unsigned int lanes_count =3D
+> > +		csi2_dev->bridge.endpoint.bus.mipi_csi2.num_data_lanes;
+> > +	unsigned long pixel_rate;
+> > +	/* Initialize to 0 to use both in disable label (ret !=3D 0) and off.=
+ */
+> > +	int ret =3D 0;
+> > +
+> > +	if (!source_subdev)
+> > +		return -ENODEV;
+> > +
+> > +	if (!on) {
+> > +		v4l2_subdev_call(source_subdev, video, s_stream, 0);
+> > +		goto disable;
+> > +	}
+> > +
+> > +	/* Runtime PM */
+> > +
+> > +	ret =3D pm_runtime_resume_and_get(dev);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	/* Sensor Pixel Rate */
+> > +
+> > +	ctrl =3D v4l2_ctrl_find(source_subdev->ctrl_handler, V4L2_CID_PIXEL_R=
+ATE);
+> > +	if (!ctrl) {
+> > +		dev_err(dev, "missing sensor pixel rate\n");
+> > +		ret =3D -ENODEV;
+> > +		goto error_pm;
+> > +	}
+> > +
+> > +	pixel_rate =3D (unsigned long)v4l2_ctrl_g_ctrl_int64(ctrl);
+> > +	if (!pixel_rate) {
+> > +		dev_err(dev, "missing (zero) sensor pixel rate\n");
+> > +		ret =3D -ENODEV;
+> > +		goto error_pm;
+> > +	}
+> > +
+> > +	/* D-PHY */
+> > +
+> > +	if (!lanes_count) {
+>=20
+> I first thought this check could be moved to the beginning, but it's also
+> redundant. v4l2_fwnode_endpoint_parse() will check the configuration is
+> valid, i.e. the number of lanes is not zero.
 
-[1]. 80d691854ffb remoteproc: mediatek: Support mt8186 scp
+Good to know, thanks!
 
-> 
-> > > +	scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
-> > >   	/* enable MPU for all memory regions */
-> > >   	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
-> 
-> ...snip...
-> 
-> > > +
-> > > +static void mt8195_scp_stop(struct mtk_scp *scp)
-> > > +{
-> > > +	/* Disable SRAM clock */
-> > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
-> > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
-> > > +	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
-> > > +	scp_sram_power_off(scp->reg_base + MT8192_L1TCM_SRAM_PDN,
-> > > +			   MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
-> 
-> and here 			^^^^^^^^
-> 
-> > > +	scp_sram_power_off(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
-> 
-> Cheers,
-> Angelo
+> But should you add checks to make sure the hardware supports what has been
+> configured? I'd do that right after parsing the endpoint.
+
+I guess you mean checking that we don't get more than 4 lanes?
+And maybe something related to lane ordering too?
+
+> And you only seem to be using the number of data lanes, nothing more. So
+> I'd store that, instead of the entire parsed v4l2_fwnode_endpoint.
+
+That's correct, why not.
+
+> The same applies to patch 8.
+>=20
+> I think these could be done on top of this set after it is merged. Up to
+> you.
+
+I'll go for another iteration.
+
+Thanks!
+
+Paul
+
+> ...
+>=20
+> > +static int
+> > +sun6i_mipi_csi2_bridge_source_setup(struct sun6i_mipi_csi2_device *csi=
+2_dev)
+> > +{
+> > +	struct v4l2_async_notifier *notifier =3D &csi2_dev->bridge.notifier;
+> > +	struct v4l2_fwnode_endpoint *endpoint =3D &csi2_dev->bridge.endpoint;
+> > +	struct v4l2_async_subdev *subdev_async;
+> > +	struct fwnode_handle *handle;
+> > +	struct device *dev =3D csi2_dev->dev;
+> > +	int ret;
+> > +
+> > +	handle =3D fwnode_graph_get_endpoint_by_id(dev_fwnode(dev), 0, 0,
+> > +						 FWNODE_GRAPH_ENDPOINT_NEXT);
+> > +	if (!handle)
+> > +		return -ENODEV;
+> > +
+> > +	endpoint->bus_type =3D V4L2_MBUS_CSI2_DPHY;
+> > +
+> > +	ret =3D v4l2_fwnode_endpoint_parse(handle, endpoint);
+> > +	if (ret)
+> > +		goto complete;
+> > +
+> > +	subdev_async =3D v4l2_async_nf_add_fwnode_remote(notifier, handle,
+> > +		struct v4l2_async_subdev);
+> > +	if (IS_ERR(subdev_async))
+> > +		ret =3D PTR_ERR(subdev_async);
+> > +
+> > +complete:
+> > +	fwnode_handle_put(handle);
+> > +
+> > +	return ret;
+> > +}
+>=20
+> --=20
+> Kind regards,
+>=20
+> Sakari Ailus
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--bi/43uRme1u2xO1q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIzYPkACgkQ3cLmz3+f
+v9FKsQf/REx8HWGAsHL4EqjK6NNY4P9j3krw6UROSlwsH6bZY5rQyi+CvqZgK3/P
+yD7lqlJLu0Ejaifq6TFv/2G5trwxpR9CMdUS4XDGLKMNpQwFQihPIKN9GeZaB9GJ
+xEWMgbnwMd+j7ip9XOPtQNNLMmEiuGEJe1cNgWNOlY6srAvLgJ9oe6ceUhEJoGWa
+OZhAZ7ZUYNY0QAxZ343P3W9cIvGEOJEDGXEz29BUlNH3XKvzFyw6esG7CI606aE0
+HoNlm/6r3uPwvjcmTu8TmX/bAFInySEN+KED2AQEFJfNnX3OQSLgwz+nM857wva7
+0iXY8fnh8ItjVpkNOGg8hZ066dzSCg==
+=1gfj
+-----END PGP SIGNATURE-----
+
+--bi/43uRme1u2xO1q--
