@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41180C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235547AbiCQM7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
+        id S234453AbiCQM7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234210AbiCQMzV (ORCPT
+        with ESMTP id S234335AbiCQMz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:55:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A73BA27E9;
-        Thu, 17 Mar 2022 05:53:53 -0700 (PDT)
+        Thu, 17 Mar 2022 08:55:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C72BB920;
+        Thu, 17 Mar 2022 05:54:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1C51B81EA1;
-        Thu, 17 Mar 2022 12:53:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D67E2C36AE2;
-        Thu, 17 Mar 2022 12:53:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FE56614F0;
+        Thu, 17 Mar 2022 12:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02807C340EF;
+        Thu, 17 Mar 2022 12:54:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521630;
-        bh=ttqHx00Pz/KQ4MnXgN1hjdqSE3T+gxajqzQTE81Z/74=;
+        s=korg; t=1647521644;
+        bh=DPdfF6q9H15BXcu0xyHzF22kFQv23DsT8xa/YMq2E1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ym+yOjqntpe+Yxyme7l/EJK1rh1T18cy0yX1BjCDdJgXgkYODQyUp/Sc9Ol9KkYOQ
-         VPCV7WuChRK6DBKQvk6v3Dd/+Gc3+20kraukInrZ3SI6SAltBnX3gaftQFiO2TPv67
-         +EBDsclOsZM2nysqcGYINnAxDFMsR+7HDLOMO/E0=
+        b=S05oLSeXKc3hOfghWJtg+hbBpaQ6c9Nb4bB23q5baJfHdGMuQZZ7vy8+qW5KVM3La
+         oz/BBKqnOXmiVdSqJJ+pEle0PzgfZ+/EXMzka654i6oxCWFH2Y/h9FVMWyAAAsJGal
+         N89kd8zJljBvM25F2fnFKyxCTS2qnLRWKja4U24k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
-        Petr Oros <poros@redhat.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 28/28] ice: Fix race condition during interface enslave
-Date:   Thu, 17 Mar 2022 13:46:19 +0100
-Message-Id: <20220317124527.562546441@linuxfoundation.org>
+        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
+        Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
+        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 06/28] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+Date:   Thu, 17 Mar 2022 13:45:57 +0100
+Message-Id: <20220317124526.953096814@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -50,162 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
 
-commit 5cb1ebdbc4342b1c2ce89516e19808d64417bdbc upstream.
+[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
 
-Commit 5dbbbd01cbba83 ("ice: Avoid RTNL lock when re-creating
-auxiliary device") changes a process of re-creation of aux device
-so ice_plug_aux_dev() is called from ice_service_task() context.
-This unfortunately opens a race window that can result in dead-lock
-when interface has left LAG and immediately enters LAG again.
+There are signal integrity issues running the eMMC at 200MHz on Puma
+RK3399-Q7.
 
-Reproducer:
-```
-#!/bin/sh
+Similar to the work-around found for RK3399 Gru boards, lowering the
+frequency to 100MHz made the eMMC much more stable, so let's lower the
+frequency to 100MHz.
 
-ip link add lag0 type bond mode 1 miimon 100
-ip link set lag0
+It might be possible to run at 150MHz as on RK3399 Gru boards but only
+100MHz was extensively tested.
 
-for n in {1..10}; do
-        echo Cycle: $n
-        ip link set ens7f0 master lag0
-        sleep 1
-        ip link set ens7f0 nomaster
-done
-```
-
-This results in:
-[20976.208697] Workqueue: ice ice_service_task [ice]
-[20976.213422] Call Trace:
-[20976.215871]  __schedule+0x2d1/0x830
-[20976.219364]  schedule+0x35/0xa0
-[20976.222510]  schedule_preempt_disabled+0xa/0x10
-[20976.227043]  __mutex_lock.isra.7+0x310/0x420
-[20976.235071]  enum_all_gids_of_dev_cb+0x1c/0x100 [ib_core]
-[20976.251215]  ib_enum_roce_netdev+0xa4/0xe0 [ib_core]
-[20976.256192]  ib_cache_setup_one+0x33/0xa0 [ib_core]
-[20976.261079]  ib_register_device+0x40d/0x580 [ib_core]
-[20976.266139]  irdma_ib_register_device+0x129/0x250 [irdma]
-[20976.281409]  irdma_probe+0x2c1/0x360 [irdma]
-[20976.285691]  auxiliary_bus_probe+0x45/0x70
-[20976.289790]  really_probe+0x1f2/0x480
-[20976.298509]  driver_probe_device+0x49/0xc0
-[20976.302609]  bus_for_each_drv+0x79/0xc0
-[20976.306448]  __device_attach+0xdc/0x160
-[20976.310286]  bus_probe_device+0x9d/0xb0
-[20976.314128]  device_add+0x43c/0x890
-[20976.321287]  __auxiliary_device_add+0x43/0x60
-[20976.325644]  ice_plug_aux_dev+0xb2/0x100 [ice]
-[20976.330109]  ice_service_task+0xd0c/0xed0 [ice]
-[20976.342591]  process_one_work+0x1a7/0x360
-[20976.350536]  worker_thread+0x30/0x390
-[20976.358128]  kthread+0x10a/0x120
-[20976.365547]  ret_from_fork+0x1f/0x40
-...
-[20976.438030] task:ip              state:D stack:    0 pid:213658 ppid:213627 flags:0x00004084
-[20976.446469] Call Trace:
-[20976.448921]  __schedule+0x2d1/0x830
-[20976.452414]  schedule+0x35/0xa0
-[20976.455559]  schedule_preempt_disabled+0xa/0x10
-[20976.460090]  __mutex_lock.isra.7+0x310/0x420
-[20976.464364]  device_del+0x36/0x3c0
-[20976.467772]  ice_unplug_aux_dev+0x1a/0x40 [ice]
-[20976.472313]  ice_lag_event_handler+0x2a2/0x520 [ice]
-[20976.477288]  notifier_call_chain+0x47/0x70
-[20976.481386]  __netdev_upper_dev_link+0x18b/0x280
-[20976.489845]  bond_enslave+0xe05/0x1790 [bonding]
-[20976.494475]  do_setlink+0x336/0xf50
-[20976.502517]  __rtnl_newlink+0x529/0x8b0
-[20976.543441]  rtnl_newlink+0x43/0x60
-[20976.546934]  rtnetlink_rcv_msg+0x2b1/0x360
-[20976.559238]  netlink_rcv_skb+0x4c/0x120
-[20976.563079]  netlink_unicast+0x196/0x230
-[20976.567005]  netlink_sendmsg+0x204/0x3d0
-[20976.570930]  sock_sendmsg+0x4c/0x50
-[20976.574423]  ____sys_sendmsg+0x1eb/0x250
-[20976.586807]  ___sys_sendmsg+0x7c/0xc0
-[20976.606353]  __sys_sendmsg+0x57/0xa0
-[20976.609930]  do_syscall_64+0x5b/0x1a0
-[20976.613598]  entry_SYSCALL_64_after_hwframe+0x65/0xca
-
-1. Command 'ip link ... set nomaster' causes that ice_plug_aux_dev()
-   is called from ice_service_task() context, aux device is created
-   and associated device->lock is taken.
-2. Command 'ip link ... set master...' calls ice's notifier under
-   RTNL lock and that notifier calls ice_unplug_aux_dev(). That
-   function tries to take aux device->lock but this is already taken
-   by ice_plug_aux_dev() in step 1
-3. Later ice_plug_aux_dev() tries to take RTNL lock but this is already
-   taken in step 2
-4. Dead-lock
-
-The patch fixes this issue by following changes:
-- Bit ICE_FLAG_PLUG_AUX_DEV is kept to be set during ice_plug_aux_dev()
-  call in ice_service_task()
-- The bit is checked in ice_clear_rdma_cap() and only if it is not set
-  then ice_unplug_aux_dev() is called. If it is set (in other words
-  plugging of aux device was requested and ice_plug_aux_dev() is
-  potentially running) then the function only clears the bit
-- Once ice_plug_aux_dev() call (in ice_service_task) is finished
-  the bit ICE_FLAG_PLUG_AUX_DEV is cleared but it is also checked
-  whether it was already cleared by ice_clear_rdma_cap(). If so then
-  aux device is unplugged.
-
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Co-developed-by: Petr Oros <poros@redhat.com>
-Signed-off-by: Petr Oros <poros@redhat.com>
-Reviewed-by: Dave Ertman <david.m.ertman@intel.com>
-Link: https://lore.kernel.org/r/20220310171641.3863659-1-ivecera@redhat.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Quentin Schulz <foss+kernel@0leil.net>
+Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice.h      |   11 ++++++++++-
- drivers/net/ethernet/intel/ice/ice_main.c |   12 +++++++++++-
- 2 files changed, 21 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -891,7 +891,16 @@ static inline void ice_set_rdma_cap(stru
-  */
- static inline void ice_clear_rdma_cap(struct ice_pf *pf)
- {
--	ice_unplug_aux_dev(pf);
-+	/* We can directly unplug aux device here only if the flag bit
-+	 * ICE_FLAG_PLUG_AUX_DEV is not set because ice_unplug_aux_dev()
-+	 * could race with ice_plug_aux_dev() called from
-+	 * ice_service_task(). In this case we only clear that bit now and
-+	 * aux device will be unplugged later once ice_plug_aux_device()
-+	 * called from ice_service_task() finishes (see ice_service_task()).
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+index 002ece51c3ba..08fa00364b42 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
+@@ -439,6 +439,12 @@
+ };
+ 
+ &sdhci {
++	/*
++	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
++	 * enough.
 +	 */
-+	if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
-+		ice_unplug_aux_dev(pf);
++	max-frequency = <100000000>;
 +
- 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
- 	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
- }
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2237,9 +2237,19 @@ static void ice_service_task(struct work
- 		return;
- 	}
- 
--	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
-+	if (test_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags)) {
-+		/* Plug aux device per request */
- 		ice_plug_aux_dev(pf);
- 
-+		/* Mark plugging as done but check whether unplug was
-+		 * requested during ice_plug_aux_dev() call
-+		 * (e.g. from ice_clear_rdma_cap()) and if so then
-+		 * plug aux device.
-+		 */
-+		if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
-+			ice_unplug_aux_dev(pf);
-+	}
-+
- 	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
- 		struct iidc_event *event;
- 
+ 	bus-width = <8>;
+ 	mmc-hs400-1_8v;
+ 	mmc-hs400-enhanced-strobe;
+-- 
+2.34.1
+
 
 
