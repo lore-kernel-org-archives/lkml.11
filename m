@@ -2,92 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52916C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9460AC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231765AbiCQJPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
+        id S231773AbiCQJQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiCQJPG (ORCPT
+        with ESMTP id S229666AbiCQJQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:15:06 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A88D76F8;
-        Thu, 17 Mar 2022 02:13:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647508430; x=1679044430;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8IL//g/TMfBIk8JNUXUEvy1l+g02hROaz5Pc67EYVBM=;
-  b=VogIT2l/LSLhQMNk1Fo+3EQGs8vyuxnfD+vcUYMVjQ2i/UbZ/pNArPJ1
-   YHuHZrAgEl2+R+1qtMQlYJIICuGU/7d3AEt9wtpw6647/0xcYRJL5/YpV
-   ZsMyNL9M3ioZVT5ooG6mvLJkOnY4VKdUwkcGW43ZZOWzYC5z1OFbiP/NV
-   CIoX5XExwalmEGS3zbbtrH4MgcW1XldDTYMpvv/90YNCNBrX7AtuptyPR
-   UqgFzU6HPyGA+W3Ld+ckpjDvNmpTS9cTrd07w/2RCAZ/s/T0qnrgL6x7W
-   ZgHOT8Go/nhJfNcmFEEM61SDzxdjj+bpC4fLPEiHc4DdL/enjK5+vaO9f
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="238984974"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="238984974"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:13:28 -0700
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="635304398"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:13:25 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nUmBZ-001QAZ-Rm;
-        Thu, 17 Mar 2022 11:12:45 +0200
-Date:   Thu, 17 Mar 2022 11:12:45 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bill Wendling <morbo@google.com>
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-gpio@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] gpiolib: acpi: use correct format characters
-Message-ID: <YjL7jWpOCjo9R0SH@smile.fi.intel.com>
-References: <20220316213055.2351342-1-morbo@google.com>
- <YjL6K49CkH+YC4FQ@smile.fi.intel.com>
+        Thu, 17 Mar 2022 05:16:07 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C10F65D6;
+        Thu, 17 Mar 2022 02:14:46 -0700 (PDT)
+X-UUID: 6d811081027345b2a724fe939a06c0be-20220317
+X-UUID: 6d811081027345b2a724fe939a06c0be-20220317
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 248666534; Thu, 17 Mar 2022 17:14:44 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Mar 2022 17:14:43 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Mar
+ 2022 17:14:42 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Mar 2022 17:14:42 +0800
+Message-ID: <42ab6ee6bdad6157a9d24197cd9d0311da0423e7.camel@mediatek.com>
+Subject: Re: [PATCH V4 6/6] spi: mediatek: support hclk
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "Mark Brown" <broonie@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Date:   Thu, 17 Mar 2022 17:14:42 +0800
+In-Reply-To: <e3facd86-9e93-bda7-b6dd-c18f1660466a@collabora.com>
+References: <20220315032411.2826-1-leilk.liu@mediatek.com>
+         <20220315032411.2826-7-leilk.liu@mediatek.com>
+         <e3facd86-9e93-bda7-b6dd-c18f1660466a@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjL6K49CkH+YC4FQ@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 11:06:51AM +0200, Andy Shevchenko wrote:
-> On Wed, Mar 16, 2022 at 02:30:55PM -0700, Bill Wendling wrote:
-> > When compiling with -Wformat, clang emits the following warning:
+On Tue, 2022-03-15 at 10:37 +0100, AngeloGioacchino Del Regno wrote:
+> Il 15/03/22 04:24, Leilk Liu ha scritto:
+> > this patch adds hclk support.
 > > 
-> > drivers/gpio/gpiolib-acpi.c:393:4: warning: format specifies type
-> > 'unsigned char' but the argument has type 'int' [-Wformat]
-> >                         pin);
-> >                         ^~~
+> > Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+> > ---
+> >   drivers/spi/spi-mt65xx.c | 85 ++++++++++++++++++++++++++++++++---
+> > -----
+> >   1 file changed, 69 insertions(+), 16 deletions(-)
 > > 
-> > The types of these arguments are unconditionally defined, so this patch
-> > updates the format character to the correct ones for ints and unsigned
-> > ints.
+> > diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
+> > index 8958c3fa4fea..d4a602e78aa7 100644
+> > --- a/drivers/spi/spi-mt65xx.c
+> > +++ b/drivers/spi/spi-mt65xx.c
+> > @@ -130,7 +130,7 @@ struct mtk_spi {
+> >   	u32 state;
+> >   	int pad_num;
+> >   	u32 *pad_sel;
+> > -	struct clk *parent_clk, *sel_clk, *spi_clk;
+> > +	struct clk *parent_clk, *sel_clk, *spi_clk, *spi_hclk;
+> >   	struct spi_transfer *cur_transfer;
+> >   	u32 xfer_len;
+> >   	u32 num_xfered;
+> > @@ -1252,25 +1252,38 @@ static int mtk_spi_probe(struct
+> > platform_device *pdev)
+> >   		goto err_put_master;
+> >   	}
+> >   
+> > +	mdata->spi_hclk = devm_clk_get(&pdev->dev, "hclk");
+> > +	if (!IS_ERR(mdata->spi_hclk)) {
 > 
-> hhX specifier refers to unsigned char. It's a bug in the compiler.
+> What you're doing here can be simplified by using
+> devm_clk_get_optional() instead.
+> Please use that.
+
+Hi AngeloGioacchino, thanks for your suggestion, I'll fix it.
+
 > 
-> NAK.
+> > +		ret = clk_prepare_enable(mdata->spi_hclk);
+> > +		if (ret < 0) {
+> > +			dev_err(&pdev->dev, "failed to enable hclk
+> > (%d)\n", ret);
+> > +			goto err_put_master;
+> > +		}
+> > +	}
+> > +
+> >   	ret = clk_prepare_enable(mdata->spi_clk);
+> >   	if (ret < 0) {
+> >   		dev_err(&pdev->dev, "failed to enable spi_clk (%d)\n",
+> > ret);
+> > -		goto err_put_master;
+> > +		goto err_disable_spi_hclk;
+> >   	}
+> >   
+> >   	ret = clk_set_parent(mdata->sel_clk, mdata->parent_clk);
+> >   	if (ret < 0) {
+> >   		dev_err(&pdev->dev, "failed to clk_set_parent (%d)\n",
+> > ret);
+> > -		clk_disable_unprepare(mdata->spi_clk);
+> > -		goto err_put_master;
+> > +		goto err_disable_spi_clk;
+> >   	}
+> >   
+> >   	mdata->spi_clk_hz = clk_get_rate(mdata->spi_clk);
+> >   
+> > -	if (mdata->dev_comp->no_need_unprepare)
+> > +	if (mdata->dev_comp->no_need_unprepare) {
+> >   		clk_disable(mdata->spi_clk);
+> > -	else
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> > +			clk_disable(mdata->spi_hclk);
+> > +	} else {
+> >   		clk_disable_unprepare(mdata->spi_clk);
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> > +			clk_disable_unprepare(mdata->spi_hclk);
+> > +	}
+> >   
+> >   	pm_runtime_enable(&pdev->dev);
+> >   
+> > @@ -1310,6 +1323,11 @@ static int mtk_spi_probe(struct
+> > platform_device *pdev)
+> >   
+> >   err_disable_runtime_pm:
+> >   	pm_runtime_disable(&pdev->dev);
+> > +err_disable_spi_clk:
+> > +	clk_disable_unprepare(mdata->spi_clk);
+> > +err_disable_spi_hclk:
+> > +	if (!IS_ERR(mdata->spi_hclk))
+> 
+> When using devm_clk_get_optional(), you can simply omit this check,
+> since it will
+> be impossible to reach this point with an error pointer stored in
+> spi_hclk.
+OK, I'll fix it.
 
-Oh, I read this wrong, sorry. The pin has been checked to fit in one byte,
-but its type is bigger indeed.
+> 
+> > +		clk_disable_unprepare(mdata->spi_hclk);
+> >   err_put_master:
+> >   	spi_master_put(master);
+> >   
+> > @@ -1325,8 +1343,11 @@ static int mtk_spi_remove(struct
+> > platform_device *pdev)
+> >   
+> >   	mtk_spi_reset(mdata);
+> >   
+> > -	if (mdata->dev_comp->no_need_unprepare)
+> > +	if (mdata->dev_comp->no_need_unprepare) {
+> >   		clk_unprepare(mdata->spi_clk);
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> > +			clk_unprepare(mdata->spi_hclk);
+> > +	}
+> >   
+> >   	return 0;
+> >   }
+> > @@ -1342,8 +1363,11 @@ static int mtk_spi_suspend(struct device
+> > *dev)
+> >   	if (ret)
+> >   		return ret;
+> >   
+> > -	if (!pm_runtime_suspended(dev))
+> > +	if (!pm_runtime_suspended(dev)) {
+> >   		clk_disable_unprepare(mdata->spi_clk);
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> > +			clk_disable_unprepare(mdata->spi_hclk);
+> > +	}
+> >   
+> >   	return ret;
+> >   }
+> > @@ -1360,11 +1384,23 @@ static int mtk_spi_resume(struct device
+> > *dev)
+> >   			dev_err(dev, "failed to enable spi_clk (%d)\n",
+> > ret);
+> >   			return ret;
+> >   		}
+> > +
+> > +		if (!IS_ERR(mdata->spi_hclk)) {
+> 
+> Since you will be using devm_clk_get_optional(), you can also omit
+> this check.
+OK, I'll fix it.
 
-I will apply your patch right away and send as a fix after rc1.
+> 
+> > +			clk_prepare_enable(mdata->spi_hclk);
+> 
+> There's a typo. ret = clk_prepare_enable....
+OK, I'll fix it.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> > +			if (ret < 0) {
+> > +				dev_err(dev, "failed to enable spi_hclk
+> > (%d)\n", ret);
+> > +				clk_disable_unprepare(mdata->spi_clk);
+> > +				return ret;
+> > +			}
+> > +		}
+> >   	}
+> >   
+> >   	ret = spi_master_resume(master);
+> > -	if (ret < 0)
+> > +	if (ret < 0) {
+> >   		clk_disable_unprepare(mdata->spi_clk);
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> 
+> Same here and everywhere else, no error check if you set this as
+> optional clock.
+OK, I'll fix it.
 
+> 
+> > +			clk_disable_unprepare(mdata->spi_hclk);
+> > +	}
+> >   
+> >   	return ret;
+> >   }
+> > @@ -1376,10 +1412,15 @@ static int mtk_spi_runtime_suspend(struct
+> > device *dev)
+> >   	struct spi_master *master = dev_get_drvdata(dev);
+> >   	struct mtk_spi *mdata = spi_master_get_devdata(master);
+> >   
+> > -	if (mdata->dev_comp->no_need_unprepare)
+> > +	if (mdata->dev_comp->no_need_unprepare) {
+> >   		clk_disable(mdata->spi_clk);
+> > -	else
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> > +			clk_disable(mdata->spi_hclk);
+> > +	} else {
+> >   		clk_disable_unprepare(mdata->spi_clk);
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> > +			clk_disable_unprepare(mdata->spi_hclk);
+> > +	}
+> >   
+> >   	return 0;
+> >   }
+> > @@ -1390,13 +1431,25 @@ static int mtk_spi_runtime_resume(struct
+> > device *dev)
+> >   	struct mtk_spi *mdata = spi_master_get_devdata(master);
+> >   	int ret;
+> >   
+> > -	if (mdata->dev_comp->no_need_unprepare)
+> > +	if (mdata->dev_comp->no_need_unprepare) {
+> >   		ret = clk_enable(mdata->spi_clk);
+> > -	else
+> > +		if (!IS_ERR(mdata->spi_hclk))
+> > +			clk_enable(mdata->spi_hclk);
+> > +	} else {
+> >   		ret = clk_prepare_enable(mdata->spi_clk);
+> > -	if (ret < 0) {
+> > -		dev_err(dev, "failed to enable spi_clk (%d)\n", ret);
+> > -		return ret;
+> > +		if (ret < 0) {
+> > +			dev_err(dev, "failed to enable spi_clk (%d)\n",
+> > ret);
+> > +			return ret;
+> > +		}
+> > +
+> > +		if (!IS_ERR(mdata->spi_hclk)) {
+> > +			ret = clk_prepare_enable(mdata->spi_hclk);
+> > +			if (ret < 0) {
+> > +				dev_err(dev, "failed to enable spi_hclk
+> > (%d)\n", ret);
+> > +				clk_disable_unprepare(mdata->spi_clk);
+> > +				return ret;
+> > +			}
+> > +		}
+> >   	}
+> >   
+> >   	return 0;
+> > 
+> 
+> 
+> Regards,
+> Angelo
+> 
+> 
 
