@@ -2,103 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC021C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:17:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E1AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbiCQNSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 09:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        id S234368AbiCQNUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 09:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234457AbiCQNRw (ORCPT
+        with ESMTP id S231321AbiCQNUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 09:17:52 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF77019E0BE
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 06:16:35 -0700 (PDT)
-Received: from [192.168.1.101] (unknown [88.235.220.59])
-        by gnuweeb.org (Postfix) with ESMTPSA id 6419E7E2F3;
-        Thu, 17 Mar 2022 13:16:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1647522994;
-        bh=5fmrA3PukZjwJ+KCbiuPihtvucTo0WoBkiBojIPQC+E=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=TjwkIQZGniiLHugynrg1EpLzHpECUGp9+Uk1nazx14oOaJ2DXbgoCwuxWZU2PB43F
-         IaE6QWBf4NsGt4gPtE6XDtlmDRXiRgo7Zk8bFLwpIY18ZXz5FvUbz6Psjp7igY3YkI
-         lqzx7MTw6qUhehgi62SHNsT3iFuSwresujmjTfQL9N4GOdOkFrrvw3D5c/r9m3QbOB
-         /PdST/HM95MId091Zn24isCbFCMuQjcMJURVTL5VhXLPkOSs8oWDL/qD6wJKkY5TcC
-         dFWt1OOrV766r21SG4orJKV6NbbTD7LIiueIe+1tANKEXuEOKh/2qXnlP3u9rXsS+3
-         hwc/KQB9mhtXg==
-Message-ID: <7b4f98d92a57af35c927aef6c85373f8eeeab29c.camel@gnuweeb.org>
-Subject: Re: [PATCH] boot install: Partially refactor the logic for
- detecting bootloader
-From:   Beru Shinsetsu <windowz414@gnuweeb.org>
-To:     Boris Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Date:   Thu, 17 Mar 2022 16:16:26 +0300
-In-Reply-To: <2E28CA0C-34F2-4985-86CC-B1823AF8D747@alien8.de>
-References: <20220316173221.5937-1-windowz414@gnuweeb.org>
-         <2E28CA0C-34F2-4985-86CC-B1823AF8D747@alien8.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 
+        Thu, 17 Mar 2022 09:20:14 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449EF171ECC;
+        Thu, 17 Mar 2022 06:18:57 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KK6zR5P09z1GCVs;
+        Thu, 17 Mar 2022 21:13:55 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
+ 2022 21:18:54 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <dmitry.torokhov@gmail.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@foss.st.com>, <linux-input@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] Input: fix reference leak in stmfts_input_open
+Date:   Thu, 17 Mar 2022 13:16:04 +0000
+Message-ID: <20220317131604.53538-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-03-17 at 12:36 +0000, Boris Petkov wrote:
-> On March 16, 2022 5:32:21 PM UTC, Beru Shinsetsu
-> <windowz414@gnuweeb.org> wrote:
-> > While running `make install` after building the kernel and
-> > installing
-> > modules on several distros like EndeavourOS, there would be a
-> > pretty
-> > little output (To be exact, "Cannot find LILO") due to lack of LILO
-> > bootloader, which is really uncommon for a user to have it while
-> > GRUB is there. 
-> 
-> As a matter of fact I saw this yesterday on one of the test boxes
-> here and was wondering why I am even seeing this.
+pm_runtime_get_sync() will increment pm usage counter even it
+failed. Forgetting to call pm_runtime_put_noidle will result
+in reference leak in stmfts_input_open, so we should fix it.
 
-I guess I had pure luck having this patch seen? xd
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ drivers/input/touchscreen/stmfts.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-> So before we do anything, it'd be prudent to know what has changed
-> recently to cause this error message to happen. Because we would have
-> to backport a fix to some kernels probably.
-
-To be honest with you, nothing has changed _just recently_ to cause
-this error message to come up. It was a long living thing (since the
-time LILO check has appeared and the last change to it was in 2007. I
-can't find when did the check appear for the first time as Linus
-apparently ripped off the whole history from before 2.16.12-rc2.), just
-was unseen as most of Linux distros love to ship their own ways to
-install kernels... except Arch Linux and distros based on it, as they
-have Arch User Repository to automatically compile the kernel locally
-and make a PacMan package out of the artifacts using some external
-package manager like Yay or Aura. And if you have checked the
-ServerFault forum thread I have appended in original commit message,
-you can see it was there for really long and has been happening only on
-Arch Linux or distros based on it, like EndeavourOS. I have also tested
-this out on my environment (I have EndeavourOS on my laptop's HDD and
-Ubuntu Budgie on my USB HDD). I get the error message on Endeavour
-while I don't on Ubuntu Budgie if I run `make install` without this
-patch I made applied. But if I apply this patch then run it, it works
-on both.
-
-TL;DR, this was something that has been there since 2.x and wasn't
-patched ever since, so here I do as I figured out how it's handled
-without requirement of user interaction, through this patch.
-
-Commit ripping off the history from before 2.16.12-rc2: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 (Linux-2.6.12-rc2)
-Last commit towards LILO check: 47f82189b185bf4b0de4ebce237850e8d3b1d0b6 (broken lilo check on make install)
-
-> Thx.
-
-And I thank you for your attention! :)
+diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
+index bc11203c9cf7..72e0b767e1ba 100644
+--- a/drivers/input/touchscreen/stmfts.c
++++ b/drivers/input/touchscreen/stmfts.c
+@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
+ 
+ 	err = pm_runtime_get_sync(&sdata->client->dev);
+ 	if (err < 0)
+-		return err;
++		goto out;
+ 
+ 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
+ 	if (err)
+-		return err;
++		goto out;
+ 
+ 	mutex_lock(&sdata->mutex);
+ 	sdata->running = true;
+@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
+ 				 "failed to enable touchkey\n");
+ 	}
+ 
+-	return 0;
++out:
++	pm_runtime_put_noidle(&sdata->client->dev);
++	return err;
+ }
+ 
+ static void stmfts_input_close(struct input_dev *dev)
 -- 
-Beru Shinsetsu
+2.17.1
+
