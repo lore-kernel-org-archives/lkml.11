@@ -2,134 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A00C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F64C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230148AbiCQXFo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 19:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39442 "EHLO
+        id S229578AbiCQXQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 19:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230140AbiCQXFk (ORCPT
+        with ESMTP id S229489AbiCQXQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 19:05:40 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD582C77BB
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:04:23 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id u103so12927967ybi.9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:04:23 -0700 (PDT)
+        Thu, 17 Mar 2022 19:16:21 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790611A48A1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:15:04 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id p6so4304180lfh.1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:15:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VGYk8110mxEIfZb97hjNSOmSSAM9U3Ysh5enZGGhhu8=;
-        b=UiJxJlc4/xpUFMOyYI60SdngqCq0itChQDoI227vzhkyaBmHb9JeQGsE/YMnQrHGag
-         DkHB7CFzQLIr0i38uhyRbunBatMWQR/RB5qV7YfA2Cfb7wDBHu8GuIKJIN4ObfYuMtGm
-         wHrcS6QEL6E62FcC69vnga/S0aE/b/qKfDP+R2WPFUyfZYYiMxWwVS9ijl63S/ArikBk
-         Q1S5eoR7Lqjx5pbNHzb69iokOtUB/NVhZIpLboRq84aN3oz5i11pNEyhLOZG3TfHsv9X
-         +PKfBzwwU70sDh45fCJGG3jw29X/LoPxKDK97gFfRTuFHa4UcMKgsZX2PDN8u7NogtWQ
-         xN7Q==
+        bh=LCz5dsdb439gQ6NFh6L/ZZspwpi2O9i4cDJAAPMlk6E=;
+        b=LFhk0Dn2ewD1I/HLuCI4l4PHmBU4Mm2MQc/C6mwY6H/MHG3f3zwB1gwA+hhJ/cZFSe
+         YMeDugKytCZGRcGrkfQnojwqQvKymdHqaAgwc/+APTFIBY2HRL3JTsGFAloYDEkRbZW5
+         EHCvt4Cvw4Zz2QX8DPojHA55443DrYT09Z5hI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VGYk8110mxEIfZb97hjNSOmSSAM9U3Ysh5enZGGhhu8=;
-        b=JhJlhoyd1DY49Gxt9nVNLosZkEsRmJeuABJyjW5om6Zk+XOGjbnWFv3ABogJp++zzx
-         cZuaX9TAYnRIzwvfqRH+CNEx/XGe84veFTELTaFcPSkq+xGTcnzE5/dd9FNYNv6deFx5
-         RWl9SjtfTjtS6SVCJ8NdPriisj7j+1S2ZUK6xHoSwlRoDKMrg69PwIgm/rAVt4xSEeOO
-         PQxIVcqQt+sJsGBV7bq3WF8+tT9w6FKUJzqZCITvlydGT67Uf/Ft2LucebC76YoxI3gd
-         zjndsQ9AGm9JfnDnjc2GwHZEZL7GecaY0kmp5J34bIS+nc2fnlDIQK068H+/KESKtPEC
-         oq9g==
-X-Gm-Message-State: AOAM530oRu8jGhqlVpAPAOt4T2hz4Drng8Q+xmOEQU/GeKHDT9XZa7XB
-        DGGBwXtIO45aqx0b7bBEiqcxkFUg0KUIEgL8tTOPZw==
-X-Google-Smtp-Source: ABdhPJwPczS+6WCYnnhcITlCGDk3THAAaV4Jc7NXiOhLRFH1Y2B7Em3vO9MiZ6aLM2JmJGpm22pOvfhVqCZ16YWK0xQ=
-X-Received: by 2002:a25:e749:0:b0:633:93d4:4b66 with SMTP id
- e70-20020a25e749000000b0063393d44b66mr7378064ybh.553.1647558262082; Thu, 17
- Mar 2022 16:04:22 -0700 (PDT)
+        bh=LCz5dsdb439gQ6NFh6L/ZZspwpi2O9i4cDJAAPMlk6E=;
+        b=OXICvihHXFUo2V3beJgOCoXXCn5TZ/fxWBj1EfryszGnOATKwq89DDLYK336mBPSfa
+         pmEXZ+7q0swlb8MaxF1GPcKmgNHzULepkNXIzf2MAF7m9P3ufKjGpvPXTqrLn1WFoHS4
+         gPfmNKmwPurC35qMDQIsuUIhbjTbAJ/XTAHVtNvnx18xAxmyr1OtBdOyNUgPMa8Brz9x
+         ejSewfBEWPClXBfPr59qUPKxRcsxcPr/bAPp2miFcBjfkAokhX6A9Oob3lDaT/EyWMbx
+         uhh2X+B9FLXyuPrbWtBxCdVdNFUaMpHBo7T1oGQU+s9B/lVec0nMrnecXk/ITgU+fzXF
+         gS4g==
+X-Gm-Message-State: AOAM532jbfjHUd2gQ6DNNXAN5DG2ADucD6SZAxahqmHfJuJjjcSC2RHJ
+        +UYJVsfPZCrfoAonw4qMwqUTwMAzKyghuLpZSs4=
+X-Google-Smtp-Source: ABdhPJz8GiTNzObzQ/XF+9YuALR4ra47fjsXaJwQMB/zjqBhVeNXnHrI5XMC0H99uBnsamwTaudVxA==
+X-Received: by 2002:a05:6512:1698:b0:448:872b:4425 with SMTP id bu24-20020a056512169800b00448872b4425mr4234539lfb.377.1647558902487;
+        Thu, 17 Mar 2022 16:15:02 -0700 (PDT)
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
+        by smtp.gmail.com with ESMTPSA id n18-20020a05651203f200b004482d9a014esm574163lfq.174.2022.03.17.16.14.58
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 16:14:59 -0700 (PDT)
+Received: by mail-lf1-f49.google.com with SMTP id p14so188334lfe.4
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:14:58 -0700 (PDT)
+X-Received: by 2002:ac2:4f92:0:b0:448:7eab:c004 with SMTP id
+ z18-20020ac24f92000000b004487eabc004mr4214994lfs.27.1647558898113; Thu, 17
+ Mar 2022 16:14:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220225012819.1807147-1-surenb@google.com> <YiY7K4ftAI3t6km8@dhcp22.suse.cz>
- <CAJuCfpEt6V+v_FcLsYWpGLA1vwCK01vv0PqNernfKM2GTzNqKg@mail.gmail.com>
-In-Reply-To: <CAJuCfpEt6V+v_FcLsYWpGLA1vwCK01vv0PqNernfKM2GTzNqKg@mail.gmail.com>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Thu, 17 Mar 2022 16:04:11 -0700
-Message-ID: <CAJuCfpHgTb5Uvd7yfwSHnPx7gf2wXDfRa0U+XOwr=qHm+JJTNA@mail.gmail.com>
-Subject: Re: [RFC 1/1] mm: page_alloc: replace mm_percpu_wq with kthreads in drain_all_pages
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Petr Mladek <pmladek@suse.com>,
+References: <20220210223134.233757-1-morbo@google.com> <20220301201903.4113977-1-morbo@google.com>
+ <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com>
+ <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com> <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com>
+ <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com>
+ <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com>
+ <CAGG=3QW2ey2w91TxqJ6tzfJOswhTce2e0QTW7kAWyvxeiO+VNg@mail.gmail.com>
+ <CAHk-=whn3iYE7gZM4vHx1kFhWBD2P9Wvmcyj8OOqv=y_7nemGQ@mail.gmail.com>
+ <CAGG=3QWC9VS9RdGFTwY8VGqujDnFYnRTT1dQ6kkVr+0SRk6COg@mail.gmail.com>
+ <CAHk-=wh=x7oCk05JD1=6XNsvvgpsidRWupoqySw1zODmvNy9Ug@mail.gmail.com>
+ <CAGG=3QWcKof_NXrC0kznM2ikwTA00AgUJrcWhKBTitmjCuOxqw@mail.gmail.com> <CAHk-=wj=aK2T+h=rRJL4jDDTgV2U533E_duroCoVSUfkvYd0OQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wj=aK2T+h=rRJL4jDDTgV2U533E_duroCoVSUfkvYd0OQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 17 Mar 2022 16:14:41 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgsYO2BAv+WaeHzP5GkeiWfdUW7tVQ5CG-aVRwANWMBsg@mail.gmail.com>
+Message-ID: <CAHk-=wgsYO2BAv+WaeHzP5GkeiWfdUW7tVQ5CG-aVRwANWMBsg@mail.gmail.com>
+Subject: Re: [PATCH v5] x86: use builtins to read eflags
+To:     Bill Wendling <morbo@google.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Roman Gushchin <guro@fb.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Minchan Kim <minchan@kernel.org>,
-        Tim Murray <timmurray@google.com>,
-        linux-mm <linux-mm@kvack.org>,
+        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
         LKML <linux-kernel@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>
+        linux-toolchains <linux-toolchains@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Mar 7, 2022 at 9:24 AM Suren Baghdasaryan <surenb@google.com> wrote:
+On Thu, Mar 17, 2022 at 3:51 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> On Mon, Mar 7, 2022 at 9:04 AM 'Michal Hocko' via kernel-team
-> <kernel-team@android.com> wrote:
-> >
-> > On Thu 24-02-22 17:28:19, Suren Baghdasaryan wrote:
-> > > Sending as an RFC to confirm if this is the right direction and to
-> > > clarify if other tasks currently executed on mm_percpu_wq should be
-> > > also moved to kthreads. The patch seems stable in testing but I want
-> > > to collect more performance data before submitting a non-RFC version.
-> > >
-> > >
-> > > Currently drain_all_pages uses mm_percpu_wq to drain pages from pcp
-> > > list during direct reclaim. The tasks on a workqueue can be delayed
-> > > by other tasks in the workqueues using the same per-cpu worker pool.
-> > > This results in sizable delays in drain_all_pages when cpus are highly
-> > > contended.
-> >
-> > This is not about cpus being highly contended. It is about too much work
-> > on the WQ context.
->
-> Ack.
->
-> >
-> > > Memory management operations designed to relieve memory pressure should
-> > > not be allowed to block by other tasks, especially if the task in direct
-> > > reclaim has higher priority than the blocking tasks.
-> >
-> > Agreed here.
-> >
-> > > Replace the usage of mm_percpu_wq with per-cpu low priority FIFO
-> > > kthreads to execute draining tasks.
-> >
-> > This looks like a natural thing to do when WQ context is not suitable
-> > but I am not sure the additional resources is really justified. Large
-> > machines with a lot of cpus would create a lot of kernel threads. Can we
-> > do better than that?
-> >
-> > Would it be possible to have fewer workers (e.g. 1 or one per numa node)
-> > and it would perform the work on a dedicated cpu by changing its
-> > affinity? Or would that introduce an unacceptable overhead?
->
-> Not sure but I can try implementing per-node kthreads and measure the
-> performance of the reclaim path, comparing with the current and with
-> per-cpu approach.
+> I still think that from a sanity standpoint, it would be good to
+> actually strengthen the semantics of "asm volatile" to literally act
+> as - and be ordered with - volatile memory accesses.
 
-Just to update on this RFC. In my testing I don't see a meaningful
-improvement from using the kthreads yet. This might be due to my test
-setup, so I'll keep exploring. Will post the next version only if I
-get demonstrable improvements.
-Thanks!
+Side note: the reason I personally would prefer these semantics is
+that if we had a stronger definition of what "asm volatile" actually
+means, we could get rid of some - but certainly not all - "memory"
+clobbers.
 
->
-> >
-> > Or would it be possible to update the existing WQ code to use rescuer
-> > well before the WQ is completely clogged?
-> > --
-> > Michal Hocko
-> > SUSE Labs
-> >
-> > --
-> > To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
-> >
+And while I've been very positive about memory clobbers in this thread
+- because they give us that serialization we so often need - they can
+often be bad for code generation.
+
+Quite often it's not actually a huge deal. Even with a memory clobber,
+it's not like the compiler needs to flush any spills or local
+variables that haven't had their address taken to memory.
+
+So quite often a memory clobber is only going to affect instruction
+ordering a bit, and that's usually exactly what you want.
+
+But it certainly _can_ be quite noticeable, and while things like
+"cli" really wants a memory clobber anyway because it really does want
+to order with respect to memory accesses that the compiler does, other
+operations wouldn't necessarily need it.
+
+That "native_save_fl()" that does that "pushf ; pop %0" instruction,
+for example, would be perfectly happy only being ordered wrt other asm
+instructions (notably ordered wrt cli/sti).
+
+So we could easily remove the "memory" clobber there, but only if we
+had that other ordering constraint of "asm volatile" being ordered wrt
+each other.
+
+Right now we have memory clobbers just about everywhere. It's almost
+the default, unless it's purely about some purely arithmetic
+operation. I'm not sure how many of them we could remove, but I do
+think that pushf/popf is _one_ such case.
+
+So stronger semantics for "asm volatile" could potentially help
+generate better code.
+
+Of course, then the "I just don't want you to optimize this away"
+crowd might be unhappy and find cases where it really hurts.
+
+               Linus
