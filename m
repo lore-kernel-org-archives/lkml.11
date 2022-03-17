@@ -2,97 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 718BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 07:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 07:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230154AbiCQHND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 03:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46882 "EHLO
+        id S230159AbiCQHNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 03:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiCQHMx (ORCPT
+        with ESMTP id S230170AbiCQHM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 03:12:53 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BEE616A698;
-        Thu, 17 Mar 2022 00:11:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647501097; x=1679037097;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tSam5KRaNM/8DfVu9EshgRDDpoP1gUPFMYRqDojPRDo=;
-  b=EXOCMSjFiQuWJNR6bv+sEGoLixckiav3bpCO523JM/7CplkQJE48Jugg
-   lNs0+/vVdjr82uHx+hlBByHOrDFAKqhaHEhmdypq/QrqNzRUHmdZDNcZH
-   yjoak+MPNdzGlQcv6bwPIyO2IE0ik8JTwJC6el7B37PoiHUrfzmxdyS5d
-   6Yz9olfCeEDAK/7Hv6mzYiiak/W1nP1WqwuhhF4P2iH0dhdTXMcs5+G4j
-   bkNOYBvx9R3nIEgB6eL+XBA0JXZ9GdfJHi4G+Lp3fDkS9NSDqVXDHkk3D
-   tnt8kgcVO3NPBYRaMP7CURNam+O3Uou65j/2bbnEuOAfpZPrY4kCLCvav
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="320011600"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="320011600"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 00:11:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="690856282"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Mar 2022 00:11:33 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUkIH-000DQP-3v; Thu, 17 Mar 2022 07:11:33 +0000
-Date:   Thu, 17 Mar 2022 15:10:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        oliver@neukum.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn,
-        sunshouxin@chinatelecom.cn
-Subject: Re: [PATCH v3 3/4] net:bonding:Add support for IPV6 RLB to
- balance-alb mode
-Message-ID: <202203171423.P1bFFyoQ-lkp@intel.com>
-References: <20220316084958.21169-4-sunshouxin@chinatelecom.cn>
+        Thu, 17 Mar 2022 03:12:57 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D5316A698;
+        Thu, 17 Mar 2022 00:11:41 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id j29so3137412ila.4;
+        Thu, 17 Mar 2022 00:11:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lsH1jTwGh70nbMJVP8wAJmLqUSHhmR9shuFU76M+9Dc=;
+        b=EBzB740TKu1d1Imn3mpaSB1EfZ2FjXarBVL0Npr4JVxuTydJxK6GaorJm5cvoHan50
+         vid57wYTSwXyO/dPQEoc3X4KoEUoPrrxfj+fIagyseVtSHFazHuJcsVS4DC0u8l/7CZ7
+         QpUcDmZaqTc0eu0rXYtIrRTDKW44Nsl+7U6kTOHKQlI0d3A2is47q9H5Lm6YKIwokwif
+         bu5m2qhNTXEzDk07DaC1a0TwpqdPkxzIEfeffk19Si+088MSC3fURJLeLeA4KvopIpj4
+         ldGfVVm7o0WDdtHqG0wYQtxjEPI/yExWJky43z4PltQEh9PsZNwU4h6GrjWNCbxOrvyA
+         Tr/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lsH1jTwGh70nbMJVP8wAJmLqUSHhmR9shuFU76M+9Dc=;
+        b=23wqmmZBHZS3Xr6HJtueq+9C7Eunj8Bk3XKhNCvTIb6B4tWojy+KWMXa0+GkqPfEVb
+         S4HESCiHBC/ZC/L3EweouG7SxkG7iVck9yxd9g5AymhcJKs+ktzmLPDXDFKc8yBn1P18
+         ikR7MSkSUs0+1FpqRMEKib3d2CIOxVF7Zd6t0B0osPWVciJ61cdUeYmYTas7v/WmcGcz
+         QWwVy8wDD8bWpMq/1bOVNln8rseuPszFAR1D2zvwgTvmk0uTB0FYfR6dM+HtKvB8IRta
+         8EaIBFjKBHzW8CAOOdSl2LOKe7Jjs/C7R3FdPd5z3mVolUuwoDHlM1LAtLWBhDMkfB0E
+         0xPw==
+X-Gm-Message-State: AOAM5304TBP6wF/qwQVS0k2gsOlAjrvxuIOtXO0Q+pGIo2GmjX9cxCI1
+        /xEsfT2XBPHEExa1L/Wc8hHaCpiw3C2isClH1ZI=
+X-Google-Smtp-Source: ABdhPJylbMRWa83N8Qi1rEHyJaDatdhRujBdMy27TMS6aUMu0aXeRV6F+XT1QD0fGBvkRtFEXxUAEinfYkWcWu6zA1g=
+X-Received: by 2002:a05:6e02:1846:b0:2c7:b032:5d92 with SMTP id
+ b6-20020a056e02184600b002c7b0325d92mr1331857ilv.237.1647501100639; Thu, 17
+ Mar 2022 00:11:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316084958.21169-4-sunshouxin@chinatelecom.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220317170254.0f6e3bac@canb.auug.org.au>
+In-Reply-To: <20220317170254.0f6e3bac@canb.auug.org.au>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Thu, 17 Mar 2022 08:11:29 +0100
+Message-ID: <CANiq72=Ww3Qb4RfAHfognp8F2PbCRyA-3asqB-6f2R76uBLiXg@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the rust tree with the kbuild tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Daniel Xu <dxu@dxuuu.xyz>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        Douglas Su <d0u9.su@outlook.com>,
+        Elliot Berman <quic_eberman@quicinc.com>,
+        Finn Behrens <me@kloenk.de>, Gary Guo <gary@garyguo.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Miguel Cano <macanroj@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sun,
+Hi Stephen,
 
-Thank you for the patch! Yet something to improve:
+On Thu, Mar 17, 2022 at 7:03 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> I fixed it up (see below) and can carry the fix as necessary. This
 
-[auto build test ERROR on c84d86a0295c24487db5b7db1a61d9c0eddfbb66]
+Looks good to me -- thanks!
 
-url:    https://github.com/0day-ci/linux/commits/Sun-Shouxin/net-bonding-Add-support-for-IPV6-RLB-to-balance-alb-mode/20220316-165337
-base:   c84d86a0295c24487db5b7db1a61d9c0eddfbb66
-config: parisc-randconfig-r015-20220317 (https://download.01.org/0day-ci/archive/20220317/202203171423.P1bFFyoQ-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/3a611f03dffa0db3ae6be64c95ea878718762ae9
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Sun-Shouxin/net-bonding-Add-support-for-IPV6-RLB-to-balance-alb-mode/20220316-165337
-        git checkout 3a611f03dffa0db3ae6be64c95ea878718762ae9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   hppa-linux-ld: drivers/net/bonding/bond_alb.o: in function `rlb_nd_recv':
->> (.text+0x221c): undefined reference to `ipv6_get_ifaddr'
->> hppa-linux-ld: (.text+0x2408): undefined reference to `inet6_ifa_finish_destroy'
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Cheers,
+Miguel
