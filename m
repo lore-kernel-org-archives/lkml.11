@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AED4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01157C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233270AbiCQL7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 07:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34934 "EHLO
+        id S233367AbiCQL71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 07:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233278AbiCQL7J (ORCPT
+        with ESMTP id S233286AbiCQL7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 07:59:09 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402591E747F
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:57:47 -0700 (PDT)
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        Thu, 17 Mar 2022 07:59:10 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EA71E8CC1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:57:50 -0700 (PDT)
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id ECF073F5F3
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:57:43 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6A0CA3FDC7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:57:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647518263;
-        bh=HVRdo0a9Zp5ow/1mp1AbDSb5pnZ9OyDrT3JP+Xnx0c8=;
+        s=20210705; t=1647518267;
+        bh=9NVaJhFyk/7XIToYVXJ7m5aI93pLstb15hWUEyZBYi8=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=e+Pn0oQyQjy8ZLwNW+paYE8muqYFnFhK5Pb8WvkOB8wqyBK5mqYMj9PQB1jhqaTHM
-         TyBryShlwadXJ6kAl4Nsf+8lkpVxlYwygnJoOX9jyOFkMdHby8xvM7o5XcbXt4KQtY
-         UIpfYuZWIuQ+V8hXfa9NxbJ1OK785GQcUFNJaov5p+xtvXkigoxphZowuqNBp2npD6
-         VtkSIUwX1epEQVntnzvozH9sK2IEGvXALLpOCsCckp5QIbFesbC3w9sE2PtIWB2jOH
-         oHc8ZyYRYzUWd4YaQbqkwGjyvplOyvQ/PhwvqY+skCao6igL6X2eqP0dF/XBEnC1lt
-         +e6m92CWtIykQ==
-Received: by mail-wr1-f72.google.com with SMTP id q4-20020adfc504000000b00203e15159e8so1352007wrf.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:57:43 -0700 (PDT)
+         MIME-Version:Content-Type;
+        b=DcpbK+tUABWB6T4PB1jKjHfXpt+IIdj02N/ZNcslK08QR0g4jNMZsGOhVa9JrW25w
+         TtKxSLVkW6oMcIkKB7V8WwurQmobjwiIp7AH3RxOYYPomOIEuyhtIuSBTeXnT6EABt
+         MbMTuCFqXe9fgaRHYVyzbVHZsG+2IPTdC84PTEKRPvPYsZ/UDdOZ1TQn7sg8qnS1Nd
+         79S06hSXWkqvyTpgJCQRKqU9ZqEFiNcMaxPj4wGxnRiisFtRqf80YxjHv3AJNQzVBA
+         9WsTl6xPtnOgBhCDs8NXwVErjfK9RINSjvSGsrSG9AeXGxwyejS8ghYtkoM7GMy3CL
+         2disZ1xINbWOQ==
+Received: by mail-wr1-f69.google.com with SMTP id 15-20020adf808f000000b00203e488fa4eso992911wrl.3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:57:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HVRdo0a9Zp5ow/1mp1AbDSb5pnZ9OyDrT3JP+Xnx0c8=;
-        b=rKVaU1PVsPpN3KDftGGPPZx36EaEyhLsgb8IA7gJbO/PRYMbxJu73prDUk/ea6YuNG
-         m1kDn23W+jIHtwDFSaQU+JLT+JYW79U+JUZatwHnM8jQ3VMt+nevQHcnn9UzBoUYuD6p
-         Uo1pVX8pCkkzur9SM4kvw61Sue32qSMZSKYBo3vUrHAyxNARRVMOa03H+mhF4jUVyaYz
-         vZfqk8K4FDtVmm6o5uzh1eCpYvhoQfY7FeKnsidCsxi3Sg475LvYdq4qL8LaqFrhCzuV
-         ANokQXT5mpLpekCHZl2nZ2jhWR5eXpTc4qTVb6bFAzR0S0TXBLgCJFdETVO3EBNiK+sL
-         q3Cg==
-X-Gm-Message-State: AOAM530Rv6B8zEcLcM0KW9bqE/Zzj8cAAHEfffA+XSDPLXVJJ+Rq2Bns
-        tWWjqPrfKCz6tPhLdhJKc2/Ww3v8DxgBh3zxCDZV6wR3SqsrgTRTYCDVGBzUh6wl6hS1UH+mBX8
-        shMV3rcDqQUssFhldkqgjtLUgezMr6ZJH5PB3EEn16w==
-X-Received: by 2002:a05:600c:3ac7:b0:38b:f9c6:27b8 with SMTP id d7-20020a05600c3ac700b0038bf9c627b8mr3514931wms.75.1647518253408;
-        Thu, 17 Mar 2022 04:57:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx3/O+rMez/BwQ/7F1CSUo1QHlpo1ME2REeH/FIItXP6CKvP9B/nZFl1eiLRHNeDKPj7C+b9g==
-X-Received: by 2002:a05:600c:3ac7:b0:38b:f9c6:27b8 with SMTP id d7-20020a05600c3ac700b0038bf9c627b8mr3514901wms.75.1647518253208;
-        Thu, 17 Mar 2022 04:57:33 -0700 (PDT)
+        bh=9NVaJhFyk/7XIToYVXJ7m5aI93pLstb15hWUEyZBYi8=;
+        b=iFERo57SaX5bxpOMN1adxqXdWrWCL3sH6xGJHkmWp5Z8ndanp0Iz51geOOPaCLXXQ+
+         IcXalDWZ/Qq5Owh0ikfc2zyMLseh9hudQUNn9Qj72W5480TNaD24oqm+8gKqgAccpZGG
+         E5uLzQ/OoWPgKYR+JT27/9MbyVqyr4VKa3daD+NxvLAJn/3Hp5hsvsUdskqa5PkFsmHI
+         9j4K4Y3OSC8UNiZJvItqE5bqr2LQbJhzwHb33qOzUbjoo0Pc0kqdqeoSFHIdJ/jISN0X
+         k3XUlQGu16Rabqd7RSBVlirx9gng7myUZRU9x7It3hhqwM7s0qAGxhNB2/YJRAgPI12r
+         MLtA==
+X-Gm-Message-State: AOAM533n+gbH3v+bvlWlhFI2Ckn5GC/bzO/I8IJyH5+UcKqSzqwS7ppD
+        BBOVlccTzl0CKcrZcxAvmWKLKMsKKvC3kPXu+uXkOIuJLhxI9h8MojcjlMN2kGpJoHNlh1xpuD1
+        UjIv1dbb1l3fBH+rZoe7NRsJj2lofNHEbdoTnWoT1mw==
+X-Received: by 2002:a05:6000:156f:b0:1f1:f99e:779e with SMTP id 15-20020a056000156f00b001f1f99e779emr3699051wrz.99.1647518266483;
+        Thu, 17 Mar 2022 04:57:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJymVAcTeO15IweAkScwvNQ6HG8sMEO3vGt45XqrwFfDK9yidy0suv6zYu7bE0rR0hIs55pTgQ==
+X-Received: by 2002:a05:6000:156f:b0:1f1:f99e:779e with SMTP id 15-20020a056000156f00b001f1f99e779emr3699013wrz.99.1647518266228;
+        Thu, 17 Mar 2022 04:57:46 -0700 (PDT)
 Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id r65-20020a1c4444000000b0038c48dd23b9sm5824900wma.5.2022.03.17.04.57.29
+        by smtp.gmail.com with ESMTPSA id r65-20020a1c4444000000b0038c48dd23b9sm5824900wma.5.2022.03.17.04.57.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 04:57:32 -0700 (PDT)
+        Thu, 17 Mar 2022 04:57:45 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -97,97 +97,58 @@ To:     Thomas Gleixner <tglx@linutronix.de>,
         linux-actions@lists.infradead.org, openbmc@lists.ozlabs.org,
         linux-riscv@lists.infradead.org, linux-oxnas@groups.io
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH 09/18] dt-bindings: irqchip: loongson: include generic schema
-Date:   Thu, 17 Mar 2022 12:56:56 +0100
-Message-Id: <20220317115705.450427-8-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 14/18] dt-bindings: irqchip: nuvoton,wpcm450-aic: include generic schema
+Date:   Thu, 17 Mar 2022 12:57:01 +0100
+Message-Id: <20220317115705.450427-13-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220317115542.450032-1-krzysztof.kozlowski@canonical.com>
 References: <20220317115542.450032-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include generic interrupt-controller.yaml and msi-controller.yaml
-schema, which enforces node naming and other generic properties.
+Include generic interrupt-controller.yaml schema, which enforces node
+naming and other generic properties.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../bindings/interrupt-controller/loongson,htvec.yaml        | 5 ++++-
- .../bindings/interrupt-controller/loongson,pch-msi.yaml      | 5 ++++-
- .../bindings/interrupt-controller/loongson,pch-pic.yaml      | 5 ++++-
- 3 files changed, 12 insertions(+), 3 deletions(-)
+ .../bindings/interrupt-controller/nuvoton,wpcm450-aic.yaml | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/loongson,htvec.yaml b/Documentation/devicetree/bindings/interrupt-controller/loongson,htvec.yaml
-index 87a74558204f..d58cbc852b09 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/loongson,htvec.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/loongson,htvec.yaml
-@@ -13,6 +13,9 @@ description:
-   This interrupt controller is found in the Loongson-3 family of chips for
-   receiving vectorized interrupts from PCH's interrupt controller.
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/nuvoton,wpcm450-aic.yaml b/Documentation/devicetree/bindings/interrupt-controller/nuvoton,wpcm450-aic.yaml
+index 9ce6804bdb99..285c20de0962 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/nuvoton,wpcm450-aic.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/nuvoton,wpcm450-aic.yaml
+@@ -9,6 +9,9 @@ title: Nuvoton WPCM450 Advanced Interrupt Controller bindings
+ maintainers:
+   - Jonathan Neuschäfer <j.neuschaefer@gmx.net>
  
 +allOf:
 +  - $ref: /schemas/interrupt-controller.yaml#
 +
  properties:
-   compatible:
-     const: loongson,htvec-1.0
-@@ -37,7 +40,7 @@ required:
-   - interrupt-controller
-   - '#interrupt-cells'
+   '#interrupt-cells':
+     const: 2
+@@ -21,14 +24,14 @@ properties:
+   reg:
+     maxItems: 1
  
 -additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-msi.yaml b/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-msi.yaml
-index 1f6fd73d4624..9b6d69066e54 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-msi.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-msi.yaml
-@@ -14,6 +14,9 @@ description:
-   transforming interrupts from PCIe MSI into HyperTransport vectorized
-   interrupts.
- 
-+allOf:
-+  - $ref: msi-controller.yaml#
-+
- properties:
-   compatible:
-     const: loongson,pch-msi-1.0
-@@ -46,7 +49,7 @@ required:
-   - loongson,msi-base-vec
-   - loongson,msi-num-vecs
- 
--additionalProperties: true #fixme
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-pic.yaml b/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-pic.yaml
-index fdd6a38a31db..0c7bee42946a 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-pic.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/loongson,pch-pic.yaml
-@@ -14,6 +14,9 @@ description:
-   transforming interrupts from on-chip devices into HyperTransport vectorized
-   interrupts.
- 
-+allOf:
-+  - $ref: /schemas/interrupt-controller.yaml#
-+
- properties:
-   compatible:
-     const: loongson,pch-pic-1.0
-@@ -41,7 +44,7 @@ required:
-   - interrupt-controller
+-
+ required:
    - '#interrupt-cells'
+   - compatible
+   - reg
+   - interrupt-controller
  
--additionalProperties: false
 +unevaluatedProperties: false
- 
++
  examples:
    - |
+     aic: interrupt-controller@b8002000 {
 -- 
 2.32.0
 
