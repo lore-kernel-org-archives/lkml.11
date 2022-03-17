@@ -2,99 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0275C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234465AbiCQM74 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
+        id S234484AbiCQNAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 09:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234199AbiCQM4I (ORCPT
+        with ESMTP id S234387AbiCQM4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:56:08 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9ACE6C57;
-        Thu, 17 Mar 2022 05:54:17 -0700 (PDT)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nUpdu-0003Ys-Jj; Thu, 17 Mar 2022 13:54:14 +0100
-Message-ID: <d541b534-8b83-b566-56eb-ea8baa7c998e@leemhuis.info>
-Date:   Thu, 17 Mar 2022 13:54:11 +0100
+        Thu, 17 Mar 2022 08:56:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085BEE9948;
+        Thu, 17 Mar 2022 05:54:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D5FF60F1B;
+        Thu, 17 Mar 2022 12:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A5FCC340E9;
+        Thu, 17 Mar 2022 12:54:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647521660;
+        bh=Oiwz1Z86UsbOiF/D/+uZsqFlOG7gt+YtJPBjmB8q8KM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NBYwLnP8k7chZmwJ7Xz9+Z5MIr9RC1IvS7xIaqHnaouepDvgGMBAt5pC5pt1qpn04
+         VgG0/naTzcE4J4aBuJVLHyXqb/bttC8uBx1uVLzyS/WgRkfquj+/tI4p+1MLTxZ+6M
+         6MahGgb5mbd41EWHWvuBY+QraFf1ErpK4y40+aMs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.16 00/28] 5.16.16-rc1 review
+Date:   Thu, 17 Mar 2022 13:45:51 +0100
+Message-Id: <20220317124526.768423926@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
- PCI-passed-through to Windows VM
-Content-Language: en-US
-To:     James Turner <linuxkernel.foss@dmarc-none.turner.link>
-Cc:     Alex Deucher <alexdeucher@gmail.com>,
-        "Lazar, Lijo" <lijo.lazar@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Koenig, Christian" <Christian.Koenig@amd.com>
-References: <87ee57c8fu.fsf@turner.link>
- <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
- <87a6ftk9qy.fsf@dmarc-none.turner.link> <87zgnp96a4.fsf@turner.link>
- <fc2b7593-db8f-091c-67a0-ae5ffce71700@leemhuis.info>
- <CADnq5_Nr5-FR2zP1ViVsD_ZMiW=UHC1wO8_HEGm26K_EG2KDoA@mail.gmail.com>
- <87czkk1pmt.fsf@dmarc-none.turner.link>
- <BYAPR12MB46140BE09E37244AE129C01A975C9@BYAPR12MB4614.namprd12.prod.outlook.com>
- <87sftfqwlx.fsf@dmarc-none.turner.link>
- <BYAPR12MB4614E2CFEDDDEAABBAB986A0975E9@BYAPR12MB4614.namprd12.prod.outlook.com>
- <87ee4wprsx.fsf@turner.link> <4b3ed7f6-d2b6-443c-970e-d963066ebfe3@amd.com>
- <87pmo8r6ob.fsf@turner.link>
- <5a68afe4-1e9e-c683-e06d-30afc2156f14@leemhuis.info>
- <CADnq5_MCKTLOfWKWvi94Q9-d5CGdWBoWVxEYL3YXOpMiPnLOyg@mail.gmail.com>
- <87pmnnpmh5.fsf@dmarc-none.turner.link>
- <CADnq5_NG_dQCYwqHM0umjTMg5Uud6zC4=MiscH91Y9v7mW9bJA@mail.gmail.com>
- <092b825a-10ff-e197-18a1-d3e3a097b0e3@leemhuis.info>
- <877d96to55.fsf@dmarc-none.turner.link> <87lexdw8gd.fsf@turner.link>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <87lexdw8gd.fsf@turner.link>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1647521657;08da124f;
-X-HE-SMSGID: 1nUpdu-0003Ys-Jj
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.16-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.16.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.16.16-rc1
+X-KernelTest-Deadline: 2022-03-19T12:45+00:00
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.03.22 19:33, James Turner wrote:
->
->> My understanding at this point is that the root problem is probably
->> not in the Linux kernel but rather something else (e.g. the machine
->> firmware or AMD Windows driver) and that the change in f9b7f3703ff9
->> ("drm/amdgpu/acpi: make ATPX/ATCS structures global (v2)") simply
->> exposed the underlying problem.
+This is the start of the stable review cycle for the 5.16.16 release.
+There are 28 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-FWIW: that in the end is irrelevant when it comes to the Linux kernel's
-'no regressions' rule. For details see:
+Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
+Anything received after that time might be too late.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/admin-guide/reporting-regressions.rst
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/process/handling-regressions.rst
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.16-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+and the diffstat can be found below.
 
-That being said: sometimes for the greater good it's better to not
-insist on that. And I guess that might be the case here.
+thanks,
 
-> I'm not sure where to go from here. This issue isn't much of a concern> for me anymore, since blacklisting `amdgpu` works for my machine. At>
-this point, my understanding is that the root problem needs to be fixed>
-in AMD's Windows GPU driver or Dell's firmware, not the Linux kernel.
-If> any of the AMD developers on this thread would like to forward it to
-the> AMD Windows driver team, I'd be happy to work with AMD to fix the
-issue> properly.
-In that case I'll drop it from the list of regressions, unless what I
-wrote above makes you change your mind.
+greg k-h
 
-#regzbot invalid: firmware issue exposed by kernel change, user seems to
-be happy with a workaround
+-------------
+Pseudo-Shortlog of commits:
 
-Thx everyone who participated in handling this.
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.16.16-rc1
 
-Ciao, Thorsten
+Ivan Vecera <ivecera@redhat.com>
+    ice: Fix race condition during interface enslave
+
+Chengming Zhou <zhouchengming@bytedance.com>
+    kselftest/vm: fix tests build with old libc
+
+Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+    bnx2: Fix an error message
+
+Niels Dossche <dossche.niels@gmail.com>
+    sfc: extend the locking on mcdi->seqno
+
+Eric Dumazet <edumazet@google.com>
+    tcp: make tcp_read_sock() more robust
+
+Sreeramya Soratkal <quic_ssramya@quicinc.com>
+    nl80211: Update bss channel on channel switch for P2P_CLIENT
+
+Manasi Navare <manasi.d.navare@intel.com>
+    drm/vrr: Set VRR capable prop only if it is attached to connector
+
+Golan Ben Ami <golan.ben.ami@intel.com>
+    iwlwifi: don't advertise TWT support
+
+Hans de Goede <hdegoede@redhat.com>
+    Input: goodix - workaround Cherry Trail devices with a bogus ACPI Interrupt() resource
+
+Hans de Goede <hdegoede@redhat.com>
+    Input: goodix - use the new soc_intel_is_byt() helper
+
+Florian Westphal <fw@strlen.de>
+    netfilter: egress: silence egress hook lockdep splats
+
+Jia-Ju Bai <baijiaju1990@gmail.com>
+    atm: firestream: check the return value of ioremap() in fs_init()
+
+Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+    can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: hci_core: Fix leaking sent_cmd skb
+
+Julian Braha <julianbraha@gmail.com>
+    ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
+
+Alexander Lobakin <alobakin@pm.me>
+    MIPS: smp: fill in sibling and core maps earlier
+
+Johannes Berg <johannes.berg@intel.com>
+    mac80211: refuse aggregations sessions before authorized
+
+Corentin Labbe <clabbe@baylibre.com>
+    ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
+
+Sascha Hauer <s.hauer@pengutronix.de>
+    ARM: dts: rockchip: reorder rk322x hmdi clocks
+
+Dinh Nguyen <dinguyen@kernel.org>
+    arm64: dts: agilex: use the compatible "intel,socfpga-agilex-hsotg"
+
+Sascha Hauer <s.hauer@pengutronix.de>
+    arm64: dts: rockchip: reorder rk3399 hdmi clocks
+
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+    arm64: dts: rockchip: align pl330 node name with dtschema
+
+Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+    arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+
+Yan Yan <evitayan@google.com>
+    xfrm: Fix xfrm migrate issues when address family changes
+
+Yan Yan <evitayan@google.com>
+    xfrm: Check if_id in xfrm_migrate
+
+Quentin Schulz <quentin.schulz@theobroma-systems.com>
+    arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
+
+Frank Wunderlich <frank-w@public-files.de>
+    arm64: dts: rockchip: fix dma-controller node names on rk356x
+
+Kai Lueke <kailueke@linux.microsoft.com>
+    Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |  4 +--
+ arch/arm/boot/dts/rk322x.dtsi                      |  4 +--
+ arch/arm/boot/dts/rk3288.dtsi                      |  2 +-
+ arch/arm64/boot/dts/intel/socfpga_agilex.dtsi      |  4 +--
+ arch/arm64/boot/dts/rockchip/px30.dtsi             |  2 +-
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi           |  2 +-
+ .../arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |  1 +
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      | 20 +++++++++++++
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi           |  6 ++--
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi           |  4 +--
+ arch/mips/kernel/smp.c                             |  6 ++--
+ drivers/atm/firestream.c                           |  2 ++
+ drivers/gpu/drm/drm_connector.c                    |  3 ++
+ drivers/input/touchscreen/goodix.c                 | 34 +++++++++++-----------
+ drivers/net/can/rcar/rcar_canfd.c                  |  6 ++--
+ drivers/net/ethernet/broadcom/bnx2.c               |  2 +-
+ drivers/net/ethernet/intel/ice/ice.h               | 11 ++++++-
+ drivers/net/ethernet/intel/ice/ice_main.c          | 12 +++++++-
+ drivers/net/ethernet/sfc/mcdi.c                    |  2 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |  3 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |  1 -
+ include/linux/netfilter_netdev.h                   |  4 +++
+ include/net/xfrm.h                                 |  5 ++--
+ lib/Kconfig                                        |  1 -
+ net/bluetooth/hci_core.c                           |  1 +
+ net/ipv4/tcp.c                                     | 10 ++++---
+ net/key/af_key.c                                   |  2 +-
+ net/mac80211/agg-tx.c                              | 10 ++++++-
+ net/wireless/nl80211.c                             |  3 +-
+ net/xfrm/xfrm_policy.c                             | 14 +++++----
+ net/xfrm/xfrm_state.c                              | 15 +++++++---
+ net/xfrm/xfrm_user.c                               | 27 +++++------------
+ tools/testing/selftests/vm/userfaultfd.c           |  1 +
+ 33 files changed, 141 insertions(+), 83 deletions(-)
+
 
