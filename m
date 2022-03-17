@@ -2,79 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD38C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229565AbiCQFtA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 01:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
+        id S229550AbiCQFtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 01:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiCQFs1 (ORCPT
+        with ESMTP id S229498AbiCQFs0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 01:48:27 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966AC2013CB;
-        Wed, 16 Mar 2022 22:18:43 -0700 (PDT)
-X-UUID: 7fb02f528d0e42e29771c08dd1e0cddf-20220317
-X-UUID: 7fb02f528d0e42e29771c08dd1e0cddf-20220317
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1454406901; Thu, 17 Mar 2022 13:18:33 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 17 Mar 2022 13:18:32 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Mar 2022 13:18:32 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <matthias.bgg@gmail.com>,
-        <robh+dt@kernel.org>
-CC:     <krzysztof.kozlowski@canonical.com>, <p.zabel@pengutronix.de>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <jassisinghbrar@gmail.com>,
-        <fparent@baylibre.com>, <yongqiang.niu@mediatek.com>,
-        <hsinyi@chromium.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH V9 1/5] dt-bindings: display: mediatek: add aal binding for MT8183
-Date:   Thu, 17 Mar 2022 13:18:27 +0800
-Message-ID: <20220317051831.7107-2-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220317051831.7107-1-rex-bc.chen@mediatek.com>
-References: <20220317051831.7107-1-rex-bc.chen@mediatek.com>
+        Thu, 17 Mar 2022 01:48:26 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831FE1FF421
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:18:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647494319; x=1679030319;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7e3pe/Jd89FX8Aua1Fg+D9PE3vqDQCC1cV1PYno25kg=;
+  b=Au6hSqURlFy6XN/OyZzRAIPDkGeX4/UNHIYIXWODt8J1C/87QE6ldy+Y
+   KfhPT1RGKUX/kliXjfF0EwbZIxtz/Zo6TnacAkn3FZWP5OeUtrHKPYCnQ
+   u4t819TY4cr2fEEBOSyEqwhcVLVM4dPKvu6uQCIxdGb/XyJF1u+UjJaeX
+   EiU8A5kb9Tat2MMrFmVH75Oi5EwATDs8wGTXTDuGW9maxhPXU8r/a/xGi
+   qJrZgsiYTkPnnvHDNTfv1sSSh99MG9ExuJCO1AKOLboK9qbLQCAucvXAD
+   rpVl/LGEvKCu0TpkTntSq7wYvCk+MkpGw9FZre4g5dT8jq8D2u5KQcMiK
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="319995875"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="319995875"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 22:18:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="821212455"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 16 Mar 2022 22:18:36 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUiWx-000DJk-R5; Thu, 17 Mar 2022 05:18:35 +0000
+Date:   Thu, 17 Mar 2022 13:18:17 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/cleanups] BUILD SUCCESS
+ d4c9df20a37d128f6acb3c6286db7e694554a51b
+Message-ID: <6232c499.IwPceR+n4E18/jSg%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add aal binding for MT8183.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cleanups
+branch HEAD: d4c9df20a37d128f6acb3c6286db7e694554a51b  x86/nmi: Remove the 'strange power saving mode' hint from unknown NMI handler
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+elapsed time: 726m
+
+configs tested: 166
+configs skipped: 82
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+i386                 randconfig-c001-20220314
+mips                       bmips_be_defconfig
+sh                         ecovec24_defconfig
+arm                        oxnas_v6_defconfig
+mips                           ci20_defconfig
+powerpc                  storcenter_defconfig
+sh                           sh2007_defconfig
+alpha                            alldefconfig
+ia64                            zx1_defconfig
+arc                     nsimosci_hs_defconfig
+sh                         ap325rxa_defconfig
+arm                           h3600_defconfig
+arm                            lart_defconfig
+powerpc                         wii_defconfig
+h8300                            alldefconfig
+arm                         nhk8815_defconfig
+powerpc                     pq2fads_defconfig
+sh                          rsk7264_defconfig
+sh                             sh03_defconfig
+powerpc                       eiger_defconfig
+ia64                         bigsur_defconfig
+powerpc                     rainier_defconfig
+powerpc                     ep8248e_defconfig
+parisc                generic-64bit_defconfig
+xtensa                           alldefconfig
+sh                              ul2_defconfig
+arm                           sama5_defconfig
+m68k                          atari_defconfig
+powerpc                     tqm8548_defconfig
+xtensa                    xip_kc705_defconfig
+sh                ecovec24-romimage_defconfig
+sh                          sdk7786_defconfig
+arc                    vdk_hs38_smp_defconfig
+xtensa                          iss_defconfig
+arc                      axs103_smp_defconfig
+m68k                       bvme6000_defconfig
+arm                           sunxi_defconfig
+arm                        trizeps4_defconfig
+arm                        multi_v7_defconfig
+parisc64                            defconfig
+mips                           jazz_defconfig
+arc                              alldefconfig
+sh                   secureedge5410_defconfig
+arm                         lubbock_defconfig
+sh                             shx3_defconfig
+powerpc                    adder875_defconfig
+m68k                       m5208evb_defconfig
+sh                         apsh4a3a_defconfig
+arm                           tegra_defconfig
+mips                         cobalt_defconfig
+arm                  randconfig-c002-20220317
+arm                  randconfig-c002-20220313
+arm                  randconfig-c002-20220314
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                 randconfig-a003-20220314
+i386                 randconfig-a004-20220314
+i386                 randconfig-a001-20220314
+i386                 randconfig-a006-20220314
+i386                 randconfig-a002-20220314
+i386                 randconfig-a005-20220314
+x86_64               randconfig-a004-20220314
+x86_64               randconfig-a005-20220314
+x86_64               randconfig-a003-20220314
+x86_64               randconfig-a002-20220314
+x86_64               randconfig-a006-20220314
+x86_64               randconfig-a001-20220314
+arc                  randconfig-r043-20220313
+arc                  randconfig-r043-20220314
+riscv                randconfig-r042-20220313
+s390                 randconfig-r044-20220313
+arc                  randconfig-r043-20220317
+riscv                randconfig-r042-20220317
+s390                 randconfig-r044-20220317
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                                  kexec
+
+clang tested configs:
+arm                  randconfig-c002-20220313
+x86_64                        randconfig-c007
+powerpc              randconfig-c003-20220313
+riscv                randconfig-c006-20220313
+mips                 randconfig-c004-20220313
+i386                          randconfig-c001
+mips                            e55_defconfig
+powerpc                      pmac32_defconfig
+powerpc                     kilauea_defconfig
+mips                           mtx1_defconfig
+mips                        maltaup_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64               randconfig-a014-20220314
+x86_64               randconfig-a015-20220314
+x86_64               randconfig-a016-20220314
+x86_64               randconfig-a012-20220314
+x86_64               randconfig-a013-20220314
+x86_64               randconfig-a011-20220314
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                 randconfig-a013-20220314
+i386                 randconfig-a015-20220314
+i386                 randconfig-a014-20220314
+i386                 randconfig-a011-20220314
+i386                 randconfig-a016-20220314
+i386                 randconfig-a012-20220314
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220314
+hexagon              randconfig-r045-20220313
+riscv                randconfig-r042-20220314
+hexagon              randconfig-r041-20220313
+hexagon              randconfig-r041-20220314
+
 ---
- .../devicetree/bindings/display/mediatek/mediatek,aal.yaml   | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
-index 61f0ed1e388f..d7b87a99c00e 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,aal.yaml
-@@ -21,8 +21,9 @@ description: |
- properties:
-   compatible:
-     oneOf:
--      - items:
--          - const: mediatek,mt8173-disp-aal
-+      - enum:
-+          - mediatek,mt8173-disp-aal
-+          - mediatek,mt8183-disp-aal
-       - items:
-           - enum:
-               - mediatek,mt2712-disp-aal
--- 
-2.18.0
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
