@@ -2,177 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 180E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C545C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbiCQUob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 16:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39420 "EHLO
+        id S229911AbiCQUrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 16:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229886AbiCQUo2 (ORCPT
+        with ESMTP id S229887AbiCQUrC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 16:44:28 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4073163E17
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:43:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647549791; x=1679085791;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=HvPciZAkV4hSYDrRdNDz9KtkNzvTDaaFCpDcxV7tsFY=;
-  b=FdTrKbv1FISBVkRYWeQHT4EsjXJuiY8m1TbkZ9bmn4cVM4Vc5lOUPHrR
-   0xDTy0v/+vtH9XkjdySSPAramtECT3oo+YnTnpDr99jd7glsD0cs1A1WG
-   9ZFd+Pg6W+F5pYVO3S2+jKgyDR+wciG1kSD6tlryI47Y5VoLpXr3JGxWU
-   QtsHAk19l3t29sYFlU3KYWdMtc30qWXWdBZXheqyQr3jrq79PUSfjyMzA
-   NNlyK2dmMc/1z00qcWBpPZlbKTXyC5hCN7pBibYRSm4JStc1ryVox1qy+
-   Tv7ICW0m9sr5C6pOv6JIp1UYL7edVESS5sVSH/MICNTOXxHW1zqwiK2AU
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="237593128"
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="237593128"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 13:43:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="715188885"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 17 Mar 2022 13:43:10 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUwxh-000E3z-LM; Thu, 17 Mar 2022 20:43:09 +0000
-Date:   Fri, 18 Mar 2022 04:42:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:merge.2022.03.15a] BUILD SUCCESS
- 2747a744e72828bcbcb65a206ced6fe9c34c5d7f
-Message-ID: <62339d3d.d6iqbtFYVDIpfx9E%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 17 Mar 2022 16:47:02 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACCA19D61A;
+        Thu, 17 Mar 2022 13:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647549944; x=1679085944;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=hl8P+qRLRH8B9uYa1kVh8yuL9rMFyQViq9H9Yb65PJM=;
+  b=vE5TOZz1Gk0i3j52GTzgvr0DXUksiyaTynqh4zMNIn2x7iUQqk8rjOvu
+   dlcbNnSjNg5duqEApe10Ny1h5BosQa4ipCbxAFsxfcyTHBTcgT6YR9XES
+   EwqDy6BZoNgc3plVpljsxsvkD2XZkFhbe8WP6fTJxifkP2YIc26LeaBBX
+   k=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 17 Mar 2022 13:45:44 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 13:45:42 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 17 Mar 2022 13:45:42 -0700
+Received: from [10.216.15.137] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 17 Mar
+ 2022 13:45:37 -0700
+Message-ID: <3b066b63-c180-09c6-e39f-b408464b5bc1@quicinc.com>
+Date:   Fri, 18 Mar 2022 02:15:34 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [Freedreno] [PATCH 3/3] drm/msm/gpu: Remove mutex from wait_event
+ condition
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>, <dri-devel@lists.freedesktop.org>
+CC:     Rob Clark <robdclark@chromium.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        David Airlie <airlied@linux.ie>,
+        <linux-arm-msm@vger.kernel.org>,
+        "Vladimir Lypak" <vladimir.lypak@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sean Paul <sean@poorly.run>, Daniel Vetter <daniel@ffwll.ch>,
+        <freedreno@lists.freedesktop.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+References: <20220310234611.424743-1-robdclark@gmail.com>
+ <20220310234611.424743-4-robdclark@gmail.com>
+From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
+In-Reply-To: <20220310234611.424743-4-robdclark@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git merge.2022.03.15a
-branch HEAD: 2747a744e72828bcbcb65a206ced6fe9c34c5d7f  Merge commit '04d4e665a6090' into HEAD
+On 3/11/2022 5:16 AM, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
+>
+> The mutex wasn't really protecting anything before.  Before the previous
+> patch we could still be racing with the scheduler's kthread, as that is
+> not necessarily frozen yet.  Now that we've parked the sched threads,
+> the only race is with jobs retiring, and that is harmless, ie.
+>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+>   drivers/gpu/drm/msm/adreno/adreno_device.c | 11 +----------
+>   1 file changed, 1 insertion(+), 10 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
+> index 0440a98988fc..661dfa7681fb 100644
+> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
+> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
+> @@ -607,15 +607,6 @@ static int adreno_runtime_resume(struct device *dev)
+>   	return gpu->funcs->pm_resume(gpu);
+>   }
+>   
+> -static int active_submits(struct msm_gpu *gpu)
+> -{
+> -	int active_submits;
+> -	mutex_lock(&gpu->active_lock);
+> -	active_submits = gpu->active_submits;
+> -	mutex_unlock(&gpu->active_lock);
+I assumed that this lock here was to ensure proper barriers while 
+reading active_submits. Is that not required?
 
-elapsed time: 749m
+-Akhil.
+> -	return active_submits;
+> -}
+> -
+>   static int adreno_runtime_suspend(struct device *dev)
+>   {
+>   	struct msm_gpu *gpu = dev_to_gpu(dev);
+> @@ -669,7 +660,7 @@ static int adreno_system_suspend(struct device *dev)
+>   	suspend_scheduler(gpu);
+>   
+>   	remaining = wait_event_timeout(gpu->retire_event,
+> -				       active_submits(gpu) == 0,
+> +				       gpu->active_submits == 0,
+>   				       msecs_to_jiffies(1000));
+>   	if (remaining == 0) {
+>   		dev_err(dev, "Timeout waiting for GPU to suspend\n");
 
-configs tested: 102
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm                              allmodconfig
-arm                              allyesconfig
-arm64                               defconfig
-arm64                            allyesconfig
-i386                          randconfig-c001
-powerpc                     tqm8548_defconfig
-sh                          kfr2r09_defconfig
-xtensa                              defconfig
-parisc                generic-64bit_defconfig
-sh                               alldefconfig
-powerpc                     tqm8541_defconfig
-powerpc                     tqm8555_defconfig
-h8300                               defconfig
-sh                        edosk7705_defconfig
-mips                           ip32_defconfig
-arm                            xcep_defconfig
-arm                  randconfig-c002-20220317
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nds32                             allnoconfig
-nios2                               defconfig
-arc                              allyesconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                               defconfig
-alpha                            allyesconfig
-nds32                               defconfig
-arc                                 defconfig
-sh                               allmodconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-parisc                              defconfig
-s390                                defconfig
-parisc64                            defconfig
-s390                             allmodconfig
-s390                             allyesconfig
-parisc                           allyesconfig
-sparc                            allyesconfig
-i386                             allyesconfig
-i386                              debian-10.3
-i386                   debian-10.3-kselftests
-i386                                defconfig
-sparc                               defconfig
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-i386                          randconfig-a003
-i386                          randconfig-a001
-i386                          randconfig-a005
-x86_64                        randconfig-a002
-x86_64                        randconfig-a004
-x86_64                        randconfig-a006
-x86_64                        randconfig-a015
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-arc                  randconfig-r043-20220317
-riscv                randconfig-r042-20220317
-s390                 randconfig-r044-20220317
-riscv                            allyesconfig
-riscv                             allnoconfig
-riscv                               defconfig
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-x86_64                                  kexec
-x86_64                           allyesconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
-
-clang tested configs:
-arm                            mmp2_defconfig
-mips                           ip22_defconfig
-powerpc                     powernv_defconfig
-powerpc                 mpc832x_rdb_defconfig
-mips                         tb0287_defconfig
-arm                       versatile_defconfig
-arm                         orion5x_defconfig
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220317
-hexagon              randconfig-r041-20220317
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
