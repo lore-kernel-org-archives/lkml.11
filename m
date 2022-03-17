@@ -2,139 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F98C4167E
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236414AbiCQQOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 12:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        id S236449AbiCQQOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 12:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233044AbiCQQOk (ORCPT
+        with ESMTP id S236400AbiCQQOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 12:14:40 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-eus2azon11020021.outbound.protection.outlook.com [52.101.56.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F41D167F4;
-        Thu, 17 Mar 2022 09:13:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BjkmuHUA8rhKyqCndwbvCHE7bhFcDpxoTe4XApiK+CHxBAfn5SNoUjQnCn1gcP6oMEvPdn88OLdNG55UB1McOWP9k1kLL3M8K47Y+/DK861KesaoN3mvDythmgu3cp8LsSdos1otUoYKnFB7ZdX8lfPcplNS7yjhaZk7KJnI00f+gXksk6uFJc7fGkauUjjcGY/m8dNZPGTsiyhMYyQXd0gYY4x1SvtP5rk6IbR3UUJSgSaUNnFOq+SgVzHFAUBVgHpCHEnj3mSYeJz+0s8o8BK64CqJbBZ+Qy+SSlvNZvSiOAvp8tTXfv0wVXibb3bX9i/auUm3gmpGiUhHK6NO9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fANw3N96wb/SEz2HYRPFH4oNYkebZSLj6chgN0ZIU84=;
- b=JEKxydoVBhbsk07j+z1HjdK+hv3H25po61mKDmWefjvRPODqOxwd0e1UoXKrgrPpSBbxxZMVF5PTgyXASJW9zBfxhJvNtBFwK1J+id6Eay1kln0+pQYG7YjhCCko99tw0kzhX77bM2UxLhTSWfELRm3kaxfzxZVGxZJ27zzBWOmHKtnA9yl2EX3SKew8/uR3kEncJ09WxxJjotuFADWHYYvEcdjLDqNj22yeFTBGGvo34KddVvYKDd9PuqcCc7yxCKonQuZo+MfKkX8LXW/EBjx3WXskDR+uzQLnuoyJLa9U5bM/Dms7AeaDzK94XB6WXF2TsFlxndD2WC7CczzIYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fANw3N96wb/SEz2HYRPFH4oNYkebZSLj6chgN0ZIU84=;
- b=Cj4NzznzV4wQ9PdTJDlDkNKJ8NzeGPWaYbN2kL7ia3ZLbqdX/ZRyIqyugM73xMtM/NkyW9/9NClcI6rjVZIVbUjwNrEAIHGrBOH8k2sQExqUTD8zbKqUpUJos1ab+UPEJdbBwIsqm8mSXbb36/BYSCyY2ia7qQjgnlUiLqxiMYE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from DM6PR21MB1514.namprd21.prod.outlook.com (2603:10b6:5:22d::11)
- by BL0PR2101MB0995.namprd21.prod.outlook.com (2603:10b6:207:36::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Thu, 17 Mar
- 2022 16:13:20 +0000
-Received: from DM6PR21MB1514.namprd21.prod.outlook.com
- ([fe80::8c81:f644:fc1c:1357]) by DM6PR21MB1514.namprd21.prod.outlook.com
- ([fe80::8c81:f644:fc1c:1357%4]) with mapi id 15.20.5102.007; Thu, 17 Mar 2022
- 16:13:20 +0000
-From:   Michael Kelley <mikelley@microsoft.com>
-To:     sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, rafael@kernel.org,
-        lenb@kernel.org, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        kw@linux.com, bhelgass@google.com, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        iommu@lists.linux-foundation.org
-Cc:     mikelley@microsoft.com
-Subject: [PATCH 1/4] ACPI: scan: Export acpi_get_dma_attr()
-Date:   Thu, 17 Mar 2022 09:12:40 -0700
-Message-Id: <1647533563-2170-2-git-send-email-mikelley@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
-References: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain
-X-ClientProxiedBy: MW3PR06CA0007.namprd06.prod.outlook.com
- (2603:10b6:303:2a::12) To DM6PR21MB1514.namprd21.prod.outlook.com
- (2603:10b6:5:22d::11)
+        Thu, 17 Mar 2022 12:14:42 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E3D19C19;
+        Thu, 17 Mar 2022 09:13:25 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id a1so6659882wrh.10;
+        Thu, 17 Mar 2022 09:13:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jF/+b29n2k6QwgY1N7ytCrLXHO8Y7Zm3vkBb+Xdt3qs=;
+        b=Uj7KjY3fF36OqFiimwFYxV7pRXYGE7AoLg7hDmDZIemHwqwiVsCR+j/WWUNbrL2svN
+         VccqsNnUcjCUctBn5gJI90IFOf0axEhmCIRsp8lwM4NkqzRg+lVVir9qDtHi/yuaodTo
+         fj2rECP9DlQ/7zNZjDwipzNOUfJ3fZqc8X1f7GmHZdNM3jpA1KC2dMtcqLj2wWs5FBnD
+         rBjDFroMyz9qtRxBdM6v4DB35E8pdkXr9abM4RSmas/nx+Pv8b/ERsaPJ7mUdnWF5wc4
+         sQVFPx09LZIiOruCkiMwfcUgZVtmHpFzaWOCqWByzXaG91bAOnlOmDi/OsjJsVGWztfi
+         aorA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jF/+b29n2k6QwgY1N7ytCrLXHO8Y7Zm3vkBb+Xdt3qs=;
+        b=CYj9stgUX6Fu7Zhci9VlNOWVkHhHVFXV8ynxe+u1d8bvEzerSbiyazo2pVJ67pm3Yo
+         7Gn9CsdnMK7yFZxjbuNl5yOCiAGHjHgOHTkTmAv+05qMOROUAnmsoxTD0CDV5KaIK6HL
+         YEuRFukgadP9KvkAsJMAmGvvbnra4cGArY/h7z0GlXIQu1zJ/vBr5PIokwmTcu36r4pz
+         DY2nuK6Z3BB7oOQU+RmF/WLIZMO8EfLVRc5nedv2Ga6uhRA6QNzvcUBglrw+uCsrDACp
+         4Q5pyioOYxJhG7zvZujW2LFbqXvVWIYZC2yg3MPegzetxtyeDtl1ys6vwhwbwmb5re8u
+         mQWg==
+X-Gm-Message-State: AOAM532ArcmSVcmciv5nfbAc09bZiq7T1eDTTL92yAA+kmSgs2sXkoE2
+        SVb0dTFlRLnNQEPG+5ElaQLzqvXTjwsyevRy04jk7P5ylDitog==
+X-Google-Smtp-Source: ABdhPJzoKDyBbVV/h3RA8+GrQf9PozlA+frXzSHUXmbwV0v7vgqz+5I9Hmz1OQYOvh9UQdtU2mwZGkNja2h4nbhPbNk=
+X-Received: by 2002:a5d:47a7:0:b0:203:d1b4:8f6 with SMTP id
+ 7-20020a5d47a7000000b00203d1b408f6mr4862024wrb.36.1647533604016; Thu, 17 Mar
+ 2022 09:13:24 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5c4a72cf-95d6-45fe-0749-08da08310da9
-X-MS-TrafficTypeDiagnostic: BL0PR2101MB0995:EE_
-X-MS-Exchange-AtpMessageProperties: SA|SL
-X-Microsoft-Antispam-PRVS: <BL0PR2101MB09959DB73944BEC866C7E90CD7129@BL0PR2101MB0995.namprd21.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YiP+Rr8tt0Rf1WyyjlpF5bj0HsFxvDzokvhvuX8g43Iz6SPSgqSigWvb3zWgS3sBJDK2haWZMETorFL5k4wLPrn7PKvrJlpin7CEXzw7c2F/neT/oOk/PAlB/DIzQXYD4c2x56ICiIFA4ld/fymwYcLInjryoWzpAJwnbZEs13KdpGSyknEGbkvPQJGALp8w1ICrsxdIpCGLiyOvfilQJDxQ+BDeHm3C8A8S8nzVdA30jsufl3MTGxlVp73/DMqofVQWJBxl/9s8MvN/LM7Z+Zp5dD0GKNLwmD82C8MInKllsqxFvz3x6IAwyvFL8EMGsYu8sjfn8wUN4dNmvtwWICOu90KJG6nIl2D24JBfxdDySEHkO87z8bKOaObMOWb7UlGjB8TXHU7Nu+RLJBA/s78OKPscXCVUJjhvScq/xeGrH1YhrwmbFkMlK8QxW+oPSXTRamHewdeh8YqK5Q9Mk77/Nw6bsd5dHO6srKQeTF26yzSk/RwuPe/D6+8BRLUC5Rjh51zElNV9M3MfUnFcH9yibKq+1x+R2QapMhymEAfmYPHAM2k5IZOnMT7zqg0OpPwDeQD6ATxPvI7QoyOUw4UdQ2z9NzJqWZSSbNL7bt3VJaM4+F+vurkQY0I/0+9pOm8WaOndl2Xv43lJCwBR4jTcgHu+ybaKmtQK6Pzo1x+tDSG8CnR3hu/Wqtl8QkprtI8EeNUGaD9ilKjhOJCgWhfOV8zknFfPAkVRRaQWmSgKG+IceQCQgteewlZqQtqDHmfAVd3W+13FxXF2ppEvCg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1514.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(186003)(26005)(4326008)(8676002)(2616005)(8936002)(66946007)(66476007)(66556008)(107886003)(38100700002)(38350700002)(316002)(36756003)(10290500003)(4744005)(6486002)(86362001)(5660300002)(921005)(6512007)(82960400001)(7416002)(82950400001)(6506007)(2906002)(508600001)(6666004)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?g/Nf1JDFHyzLc4yhaPYLvZUnuYhjAClA/WFwf8cqgaWqk2FaTh8EEYByjuIa?=
- =?us-ascii?Q?4NJVO+Xnkr2e3GJAly6Oy43FtSchnjVIag8lkbA5FkII5uobmPM0Mt3cE5pR?=
- =?us-ascii?Q?EyY/9YuWDW22q7iCAlMcGlRcWC1NGcET5WB623a1Q3Z23C6APlhQ8Q4V/ojK?=
- =?us-ascii?Q?9KdXosdbux9M2UP8q9wIwn0Jo8fygE93ruixYopO8VvMb7HK2DBJYGgE1tWQ?=
- =?us-ascii?Q?BZJcY/BAw+JuTc5o/eXt6TMJnJzv2HdkQdJcBHU/5oCHjto6se2txJzRDalE?=
- =?us-ascii?Q?HabxsVDHS3KCJzdRRhVk3npF9z1jxsjikNmu8EvnH8UyWfYnfzFruLaHS4v2?=
- =?us-ascii?Q?kRqP8jO3+dgEq/XnITlTWnYckSM1ZGTlhrb6BG7WuXk4M8baeQeEQ8OpfD9G?=
- =?us-ascii?Q?xhVzLFISzawiKx8CdGz2o7nIGci3fz7qzQ4Jvv79dU4D7zBlbQ0ftonPWWPY?=
- =?us-ascii?Q?LxdxxM9ND0xYGXXDVNfYHi1b6Gh318RDvrakDDTR1mgME69A4PZJbzOiE2Sb?=
- =?us-ascii?Q?gcS0lL+/JQxmzlOcD+TZW8TxM1O+/Sk8c4h+03RnbHqr7/LFUxSUP1V5gqMt?=
- =?us-ascii?Q?5zuRiiV2HSD7GQHqf+2HoiuoryhNTBqVOhUaYPMmspmEhMbsf7KaHEyb7H7Z?=
- =?us-ascii?Q?Lh4P7kB4JW8Eg2pb81//pwz0Eg/V8mzXH+NNwagxmrAa8FrkT90fzQHXoCa2?=
- =?us-ascii?Q?X7t+fAXUqNXzOKtJyhFwtAXCmdWhLTq3qDuMX/J42c9GqkB/+yB2a8NGo3PQ?=
- =?us-ascii?Q?6i6htzdaYbpaE4TvJ95WZnYSg6yeeBBt2hdkAhCsG/nByAM1YIHFIejpysql?=
- =?us-ascii?Q?Hley9Q0r+XLO4UTK8IQPP/SUgRPXEfvM0XcfIrlGpgD0pS6UXaK00+iUVH8M?=
- =?us-ascii?Q?6a9wumbBrSaWlgElgD/KmX9W/pdmjT8X/7T82qyBMEZ9oB90Tqjb3YJKQFDP?=
- =?us-ascii?Q?evbVu/Z8LoStCLyUpkhDg3EsNa9MSZFcRy6pHOtoZlSDAxIDKysRcy5iohKR?=
- =?us-ascii?Q?4bU6KFE8tQufJfhKOLoOhXn9qWKMFsO0roNBOctoZ/XRWdk75Dqk+bAWXdX1?=
- =?us-ascii?Q?+gR66ys/TrYLxERhtS0R3N4bsUH4+lf5h5wAMHXlJoWbQ25OqCPPxvOlUHXl?=
- =?us-ascii?Q?XWLjddetuS3c3fRLtTo8BI+sdtED8pbm7veAnkizO5LwXZk3LLT06eCeDq6T?=
- =?us-ascii?Q?HsYEpotO0LsR+wcSvtAnQBBxieKHZqdGDNWNTCOuP7hsyJR8eLGEtL+y4gFo?=
- =?us-ascii?Q?4ZcGr6KyaIv6hK1Ma6mfjiK5HDHZ2g2/LWmIWCBXBX9A+lFP3iK6f1ZGEYRi?=
- =?us-ascii?Q?FzlG57B6Xx3Oy4EOqOPmRuniC6D0+6Nmwgf1ZUcnTElne7ZoU/fWjkLa5XbP?=
- =?us-ascii?Q?DJ05gz+FFDNvzC1FKxNaTRMPrbeYSWVYvRKxHYjqJPYXxIDz+V+GD15jOKcx?=
- =?us-ascii?Q?RH3PNjhxf6Ziuo4d18sxwUdMMrsYbyzllShfqV3K6Ve4Fk71WVczmg=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c4a72cf-95d6-45fe-0749-08da08310da9
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1514.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 16:13:20.3247
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jSOWCiZtIB2q0qPNK00ZSp+LgtlZeAKmba7e5kMzxwZfyLMKMophg2weFRZzJ+rmyskbepiHW3dA7F/bM0EW/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB0995
+References: <20220311181014.3448936-1-bjwyman@gmail.com> <fa8b2d9f-e5c9-73f4-3916-84e370748687@roeck-us.net>
+ <CAK_vbW2S07+S8+PrQnBLjvXYnLBXU06FHBvfM2zaT6RYx9HO+g@mail.gmail.com> <582086fe-1cc3-d161-a866-f4726d04a254@roeck-us.net>
+In-Reply-To: <582086fe-1cc3-d161-a866-f4726d04a254@roeck-us.net>
+From:   Brandon Wyman <bjwyman@gmail.com>
+Date:   Thu, 17 Mar 2022 11:12:49 -0500
+Message-ID: <CAK_vbW1Lfroo91cMxsLpuf-uuDwcsssG1=fjp3an_O5-FUHjMQ@mail.gmail.com>
+Subject: Re: [PATCH v2] hwmon: (pmbus/ibm-cffps) Add clear_faults debugfs entry
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Joel Stanley <joel@jms.id.au>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Eddie James <eajames@linux.ibm.com>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Export acpi_get_dma_attr() so that it can be used by the Hyper-V
-VMbus driver, which may be built as a module. The related function
-acpi_dma_configure_id() is already exported.
+On Wed, Mar 16, 2022 at 3:14 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> On 3/16/22 13:03, Brandon Wyman wrote:
+> > On Sun, Mar 13, 2022 at 11:36 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >>
+> >> On 3/11/22 10:10, Brandon Wyman wrote:
+> >>> Add a clear_faults write-only debugfs entry for the ibm-cffps device
+> >>> driver.
+> >>>
+> >>> Certain IBM power supplies require clearing some latched faults in order
+> >>> to indicate that the fault has indeed been observed/noticed.
+> >>>
+> >>
+> >> That is insufficient, sorry. Please provide the affected power supplies as
+> >> well as the affected faults, and confirm that the problem still exists
+> >> in v5.17-rc6 or later kernels - or, more specifically, in any kernel which
+> >> includes commit 35f165f08950 ("hwmon: (pmbus) Clear pmbus fault/warning
+> >> bits after read").
+> >>
+> >> Thanks,
+> >> Guenter
+> >
+> > Sorry for the delay in responding. I did some testing with commit
+> > 35f165f08950. I could not get that code to send the CLEAR_FAULTS
+> > command to the power supplies.
+> >
+> > I can update the commit message to be more specific about which power
+> > supplies need this CLEAR_FAULTS sent, and which faults. It is observed
+> > with the 1600W power supplies (2B1E model). The faults that latch are
+> > the VIN_UV and INPUT faults in the STATUS_WORD. The corresponding
+> > STATUS_INPUT fault bits are VIN_UV_FAULT and Unit is Off.
+> >
+>
+> The point is that the respective fault bits should be reset when the
+> corresponding alarm attributes are read. This isn't about executing
+> a CLEAR_FAULTS command, but about selectively resetting fault bits
+> while ensuring that faults are reported at least once. Executing
+> CLEAR_FAULTS is a big hammer.
+>
+> With the patch I pointed to in place, input (and other) faults should
+> be reset after the corresponding alarm attributes are read, assuming
+> that the condition no longer exists. If that does not happen, we should
+> fix the problem instead of deploying the big hammer.
+>
+> Thanks,
+> Guenter
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
----
- drivers/acpi/scan.c | 1 +
- 1 file changed, 1 insertion(+)
+Okay, I see what you are pointing out there. I had been mostly looking
+at the "files" in the debugfs paths. Those do not end up running
+through that pmbus_get_boolean() function, so the individual fault
+clearing was not being attempted. The fault I was interested in
+appears to be associated with in1_lcrti_alarm. Reading that will give
+me a 1 if there is a VIN_UV fault, and then it sends 0x10 to
+STATUS_INPUT. That clears out VIN_UV, but the STATUS_INPUT command was
+returning 0x18. Nothing appears to handle clearing BIT(3), that 0x08
+mask.
 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1331756..9f3c88f 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1489,6 +1489,7 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
- 	else
- 		return DEV_DMA_NON_COHERENT;
- }
-+EXPORT_SYMBOL_GPL(acpi_get_dma_attr);
- 
- /**
-  * acpi_dma_get_range() - Get device DMA parameters.
--- 
-1.8.3.1
+Should there be some kind of define for BIT(3) over in pmbus.h?
+Something like PB_VOLTAGE_OFF? Somehow we need something using that in
+sbit of the attributes. I had a quick hack that just OR'ed BIT(3) with
+BIT(4) for that PB_VOLTAGE_UV_FAULT. That resulted in a clear of both
+bits in STATUS_INPUT, and the faults clearing in STATUS_WORD.
 
+It is not clear if there should be a separate alarm for that "Unit Off
+For Insufficient Input Voltage", or if the one for in1_lcrit_alarm
+could just be the two bits OR'ed into one mask. I can send a patch
+with a proposal on how to fix this one bit not getting cleared.
+
+>
+> >>
+> >>> Signed-off-by: Brandon Wyman <bjwyman@gmail.com>
+> >>> ---
+> >>> V1 -> V2: Explain why this change is needed
+> >>>
+> >>>    drivers/hwmon/pmbus/ibm-cffps.c | 11 +++++++++++
+> >>>    1 file changed, 11 insertions(+)
+> >>>
+> >>> diff --git a/drivers/hwmon/pmbus/ibm-cffps.c b/drivers/hwmon/pmbus/ibm-cffps.c
+> >>> index e3294a1a54bb..3f02dde02a4b 100644
+> >>> --- a/drivers/hwmon/pmbus/ibm-cffps.c
+> >>> +++ b/drivers/hwmon/pmbus/ibm-cffps.c
+> >>> @@ -67,6 +67,7 @@ enum {
+> >>>        CFFPS_DEBUGFS_CCIN,
+> >>>        CFFPS_DEBUGFS_FW,
+> >>>        CFFPS_DEBUGFS_ON_OFF_CONFIG,
+> >>> +     CFFPS_DEBUGFS_CLEAR_FAULTS,
+> >>>        CFFPS_DEBUGFS_NUM_ENTRIES
+> >>>    };
+> >>>
+> >>> @@ -274,6 +275,13 @@ static ssize_t ibm_cffps_debugfs_write(struct file *file,
+> >>>                if (rc)
+> >>>                        return rc;
+> >>>
+> >>> +             rc = 1;
+> >>> +             break;
+> >>> +     case CFFPS_DEBUGFS_CLEAR_FAULTS:
+> >>> +             rc = i2c_smbus_write_byte(psu->client, PMBUS_CLEAR_FAULTS);
+> >>> +             if (rc < 0)
+> >>> +                     return rc;
+> >>> +
+> >>>                rc = 1;
+> >>>                break;
+> >>>        default:
+> >>> @@ -607,6 +615,9 @@ static int ibm_cffps_probe(struct i2c_client *client)
+> >>>        debugfs_create_file("on_off_config", 0644, ibm_cffps_dir,
+> >>>                            &psu->debugfs_entries[CFFPS_DEBUGFS_ON_OFF_CONFIG],
+> >>>                            &ibm_cffps_fops);
+> >>> +     debugfs_create_file("clear_faults", 0200, ibm_cffps_dir,
+> >>> +                         &psu->debugfs_entries[CFFPS_DEBUGFS_CLEAR_FAULTS],
+> >>> +                         &ibm_cffps_fops);
+> >>>
+> >>>        return 0;
+> >>>    }
+> >>
+>
