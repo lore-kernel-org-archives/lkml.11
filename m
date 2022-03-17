@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B85C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B37C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234165AbiCQMz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
+        id S234262AbiCQMzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234073AbiCQMwi (ORCPT
+        with ESMTP id S234189AbiCQMwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:52:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E1F1F2DE1;
-        Thu, 17 Mar 2022 05:50:21 -0700 (PDT)
+        Thu, 17 Mar 2022 08:52:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFB91F9FCD;
+        Thu, 17 Mar 2022 05:50:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07ACB614F9;
-        Thu, 17 Mar 2022 12:50:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 137FAC36AE3;
-        Thu, 17 Mar 2022 12:50:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB5CAB81EA1;
+        Thu, 17 Mar 2022 12:50:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 124E8C340EF;
+        Thu, 17 Mar 2022 12:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521420;
-        bh=7OKr3nU3lmnU8/BDZvxuhWPz+5MGZaFGXpqhRXZxc7U=;
+        s=korg; t=1647521427;
+        bh=+NO3Y5jxTEI9XGoLE4d9xOmOUvfLtebc6R7z/A9A54A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZIlGCDBAK0D4vxhVtaoPhZwmiSX+8/latil983q51YgFaAMI7ROYVIr0b+wXQUsoU
-         6jXUd9THZ1iNPH/ZeP3/lbagumFdSj3W6mrYnf3n8qgzcp2lGu0o9hvoQtxeq0938p
-         /yHdjWBdYFMCQfWv9YIBH17nCoQGtbfY85DgO9OE=
+        b=2bn/nZN9eTjz4CM5qrH2r1TGkk1/oeqS+VbGAd7i+kuxa8Pr1i9Lx10g76ZViioKr
+         vvinwrkBeFCvoNXfF3HlXG9IMv/pBe1dLF0YbnTcQyVJYfrmyNprymA/R8JZ46ODHg
+         PT0gG9M/fX41zjBrTy5x8crZq3i7WjkKM3HHE64o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yan Yan <evitayan@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 04/23] xfrm: Fix xfrm migrate issues when address family changes
-Date:   Thu, 17 Mar 2022 13:45:45 +0100
-Message-Id: <20220317124526.084103564@linuxfoundation.org>
+Subject: [PATCH 5.10 06/23] arm64: dts: rockchip: reorder rk3399 hdmi clocks
+Date:   Thu, 17 Mar 2022 13:45:47 +0100
+Message-Id: <20220317124526.140384928@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
 References: <20220317124525.955110315@linuxfoundation.org>
@@ -49,56 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yan Yan <evitayan@google.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
 
-[ Upstream commit e03c3bba351f99ad932e8f06baa9da1afc418e02 ]
+[ Upstream commit 2e8a8b5955a000cc655f7e368670518cbb77fe58 ]
 
-xfrm_migrate cannot handle address family change of an xfrm_state.
-The symptons are the xfrm_state will be migrated to a wrong address,
-and sending as well as receiving packets wil be broken.
+The binding specifies the clock order to "cec", "grf", "vpll". Reorder
+the clocks accordingly.
 
-This commit fixes it by breaking the original xfrm_state_clone
-method into two steps so as to update the props.family before
-running xfrm_init_state. As the result, xfrm_state's inner mode,
-outer mode, type and IP header length in xfrm_state_migrate can
-be updated with the new address family.
-
-Tested with additions to Android's kernel unit test suite:
-https://android-review.googlesource.com/c/kernel/tests/+/1885354
-
-Signed-off-by: Yan Yan <evitayan@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Link: https://lore.kernel.org/r/20220126145549.617165-19-s.hauer@pengutronix.de
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_state.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 37fe22b2e843..1befc6db723b 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1542,9 +1542,6 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
- 	memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
- 
--	if (xfrm_init_state(x) < 0)
--		goto error;
--
- 	x->props.flags = orig->props.flags;
- 	x->props.extra_flags = orig->props.extra_flags;
- 
-@@ -1631,6 +1628,11 @@ struct xfrm_state *xfrm_state_migrate(struct xfrm_state *x,
- 	if (!xc)
- 		return NULL;
- 
-+	xc->props.family = m->new_family;
-+
-+	if (xfrm_init_state(xc) < 0)
-+		goto error;
-+
- 	memcpy(&xc->id.daddr, &m->new_daddr, sizeof(xc->id.daddr));
- 	memcpy(&xc->props.saddr, &m->new_saddr, sizeof(xc->props.saddr));
- 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+index 4b6065dbba55..52ba4d07e771 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
+@@ -1770,10 +1770,10 @@
+ 		interrupts = <GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH 0>;
+ 		clocks = <&cru PCLK_HDMI_CTRL>,
+ 			 <&cru SCLK_HDMI_SFR>,
+-			 <&cru PLL_VPLL>,
++			 <&cru SCLK_HDMI_CEC>,
+ 			 <&cru PCLK_VIO_GRF>,
+-			 <&cru SCLK_HDMI_CEC>;
+-		clock-names = "iahb", "isfr", "vpll", "grf", "cec";
++			 <&cru PLL_VPLL>;
++		clock-names = "iahb", "isfr", "cec", "grf", "vpll";
+ 		power-domains = <&power RK3399_PD_HDCP>;
+ 		reg-io-width = <4>;
+ 		rockchip,grf = <&grf>;
 -- 
 2.34.1
 
