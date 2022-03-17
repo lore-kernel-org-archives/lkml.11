@@ -2,149 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C91C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:34:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A577C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231357AbiCQIft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53718 "EHLO
+        id S231203AbiCQIhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiCQIfm (ORCPT
+        with ESMTP id S230246AbiCQIhN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 04:35:42 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFA619EC7A;
-        Thu, 17 Mar 2022 01:34:24 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A2E855FD05;
-        Thu, 17 Mar 2022 11:34:22 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1647506062;
-        bh=LGU09vhzRvbaXVh4zCZLvOQiYSoxLgPwllmoT//4/MI=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=p+ZIgJEpcWVTFVby4bh7EgOzxA8YRNbOmwBtURWIA29Y5FxCzUJvvxY1j5IdcW16O
-         sbwTlrNUP4hCztuQ/QzZ57feLkQLWyWe93C6dCDM/EP9iq3687+RUHUB6aZPhPb6zl
-         uY5KHhpZaWbUj0We2fdpYV8gMD/CVcsHdBuk8bGNQEU0VwsfE1oQtb0b5Bzx/IB0im
-         tkbFGab569KUrPvZP9p3TPCmqCNv+p8dCWUgaHbY3YoxfCuvos7Btqk/HideW+TxdM
-         dTrPSVHCExq7ZnwBAyQtWcDwrpeW4UjDSELHNcJ3/3XO0Syfk2+RaLecnnsUSKjoSx
-         seGT6Nq+hEHFw==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 17 Mar 2022 11:34:22 +0300 (MSK)
-From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v4 2/2] af_vsock: SOCK_SEQPACKET broken buffer test
-Thread-Topic: [PATCH net-next v4 2/2] af_vsock: SOCK_SEQPACKET broken buffer
- test
-Thread-Index: AQHYOdmmZPUuaFrjOkW5sEESwiVkGg==
-Date:   Thu, 17 Mar 2022 08:33:23 +0000
-Message-ID: <c35b79ff-ca96-2cc7-68a5-cfcec3b0eca9@sberdevices.ru>
-In-Reply-To: <97d6d8c6-f7b2-1b03-a3d9-f312c33134ec@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B2E9406776EC6444B553A1D6304345E0@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Thu, 17 Mar 2022 04:37:13 -0400
+Received: from smtp-8fac.mail.infomaniak.ch (smtp-8fac.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fac])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599761AD39D
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:35:56 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KK0pf5LWCzMq31C;
+        Thu, 17 Mar 2022 09:35:54 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KK0pd1DtQzlhRV1;
+        Thu, 17 Mar 2022 09:35:53 +0100 (CET)
+Message-ID: <ed8467f2-dcd0-bc2f-8e98-1d9129fb2c30@digikod.net>
+Date:   Thu, 17 Mar 2022 09:36:36 +0100
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/17 04:52:00 #18991242
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: 
+Content-Language: en-US
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>
+References: <20220221212522.320243-1-mic@digikod.net>
+ <20220221212522.320243-2-mic@digikod.net>
+ <CAHC9VhQEEKGgCn7fYgUt-_WhXc-vrKq9TVm=cfwJUyWaUgY2Vw@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v1 01/11] landlock: Define access_mask_t to enforce a
+ consistent access mask size
+In-Reply-To: <CAHC9VhQEEKGgCn7fYgUt-_WhXc-vrKq9TVm=cfwJUyWaUgY2Vw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-QWRkIHRlc3Qgd2hlcmUgc2VuZGVyIHNlbmRzIHR3byBtZXNzYWdlLCBlYWNoIHdpdGggb3duDQpk
-YXRhIHBhdHRlcm4uIFJlYWRlciB0cmllcyB0byByZWFkIGZpcnN0IHRvIGJyb2tlbiBidWZmZXI6
-DQppdCBoYXMgdGhyZWUgcGFnZXMgc2l6ZSwgYnV0IG1pZGRsZSBwYWdlIGlzIHVubWFwcGVkLiBU
-aGVuLA0KcmVhZGVyIHRyaWVzIHRvIHJlYWQgc2Vjb25kIG1lc3NhZ2UgdG8gdmFsaWQgYnVmZmVy
-LiBUZXN0DQpjaGVja3MsIHRoYXQgdW5jb3BpZWQgcGFydCBvZiBmaXJzdCBtZXNzYWdlIHdhcyBk
-cm9wcGVkDQphbmQgdGh1cyBub3QgY29waWVkIGFzIHBhcnQgb2Ygc2Vjb25kIG1lc3NhZ2UuDQoN
-ClNpZ25lZC1vZmYtYnk6IEtyYXNub3YgQXJzZW5peSBWbGFkaW1pcm92aWNoIDxBVktyYXNub3ZA
-c2JlcmRldmljZXMucnU+DQpSZXZpZXdlZC1ieTogU3RlZmFubyBHYXJ6YXJlbGxhIDxzZ2FyemFy
-ZUByZWRoYXQuY29tPg0KLS0tDQogdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMgfCAx
-MzEgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KIDEgZmlsZSBjaGFuZ2VkLCAxMzEg
-aW5zZXJ0aW9ucygrKQ0KDQpkaWZmIC0tZ2l0IGEvdG9vbHMvdGVzdGluZy92c29jay92c29ja190
-ZXN0LmMgYi90b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYw0KaW5kZXggNWI4NTYxYjgw
-OTE0Li5kYzU3NzQ2MWFmYzIgMTAwNjQ0DQotLS0gYS90b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2Nr
-X3Rlc3QuYw0KKysrIGIvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCkBAIC0xNyw2
-ICsxNyw3IEBADQogI2luY2x1ZGUgPHN5cy90eXBlcy5oPg0KICNpbmNsdWRlIDxzeXMvc29ja2V0
-Lmg+DQogI2luY2x1ZGUgPHRpbWUuaD4NCisjaW5jbHVkZSA8c3lzL21tYW4uaD4NCiANCiAjaW5j
-bHVkZSAidGltZW91dC5oIg0KICNpbmNsdWRlICJjb250cm9sLmgiDQpAQCAtNDcwLDYgKzQ3MSwx
-MzEgQEAgc3RhdGljIHZvaWQgdGVzdF9zZXFwYWNrZXRfdGltZW91dF9zZXJ2ZXIoY29uc3Qgc3Ry
-dWN0IHRlc3Rfb3B0cyAqb3B0cykNCiAJY2xvc2UoZmQpOw0KIH0NCiANCisjZGVmaW5lIEJVRl9Q
-QVRURVJOXzEgJ2EnDQorI2RlZmluZSBCVUZfUEFUVEVSTl8yICdiJw0KKw0KK3N0YXRpYyB2b2lk
-IHRlc3Rfc2VxcGFja2V0X2ludmFsaWRfcmVjX2J1ZmZlcl9jbGllbnQoY29uc3Qgc3RydWN0IHRl
-c3Rfb3B0cyAqb3B0cykNCit7DQorCWludCBmZDsNCisJdW5zaWduZWQgY2hhciAqYnVmMTsNCisJ
-dW5zaWduZWQgY2hhciAqYnVmMjsNCisJaW50IGJ1Zl9zaXplID0gZ2V0cGFnZXNpemUoKSAqIDM7
-DQorDQorCWZkID0gdnNvY2tfc2VxcGFja2V0X2Nvbm5lY3Qob3B0cy0+cGVlcl9jaWQsIDEyMzQp
-Ow0KKwlpZiAoZmQgPCAwKSB7DQorCQlwZXJyb3IoImNvbm5lY3QiKTsNCisJCWV4aXQoRVhJVF9G
-QUlMVVJFKTsNCisJfQ0KKw0KKwlidWYxID0gbWFsbG9jKGJ1Zl9zaXplKTsNCisJaWYgKCFidWYx
-KSB7DQorCQlwZXJyb3IoIidtYWxsb2MoKScgZm9yICdidWYxJyIpOw0KKwkJZXhpdChFWElUX0ZB
-SUxVUkUpOw0KKwl9DQorDQorCWJ1ZjIgPSBtYWxsb2MoYnVmX3NpemUpOw0KKwlpZiAoIWJ1ZjIp
-IHsNCisJCXBlcnJvcigiJ21hbGxvYygpJyBmb3IgJ2J1ZjInIik7DQorCQlleGl0KEVYSVRfRkFJ
-TFVSRSk7DQorCX0NCisNCisJbWVtc2V0KGJ1ZjEsIEJVRl9QQVRURVJOXzEsIGJ1Zl9zaXplKTsN
-CisJbWVtc2V0KGJ1ZjIsIEJVRl9QQVRURVJOXzIsIGJ1Zl9zaXplKTsNCisNCisJaWYgKHNlbmQo
-ZmQsIGJ1ZjEsIGJ1Zl9zaXplLCAwKSAhPSBidWZfc2l6ZSkgew0KKwkJcGVycm9yKCJzZW5kIGZh
-aWxlZCIpOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWlmIChzZW5kKGZkLCBi
-dWYyLCBidWZfc2l6ZSwgMCkgIT0gYnVmX3NpemUpIHsNCisJCXBlcnJvcigic2VuZCBmYWlsZWQi
-KTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwljbG9zZShmZCk7DQorfQ0KKw0K
-K3N0YXRpYyB2b2lkIHRlc3Rfc2VxcGFja2V0X2ludmFsaWRfcmVjX2J1ZmZlcl9zZXJ2ZXIoY29u
-c3Qgc3RydWN0IHRlc3Rfb3B0cyAqb3B0cykNCit7DQorCWludCBmZDsNCisJdW5zaWduZWQgY2hh
-ciAqYnJva2VuX2J1ZjsNCisJdW5zaWduZWQgY2hhciAqdmFsaWRfYnVmOw0KKwlpbnQgcGFnZV9z
-aXplID0gZ2V0cGFnZXNpemUoKTsNCisJaW50IGJ1Zl9zaXplID0gcGFnZV9zaXplICogMzsNCisJ
-c3NpemVfdCByZXM7DQorCWludCBwcm90ID0gUFJPVF9SRUFEIHwgUFJPVF9XUklURTsNCisJaW50
-IGZsYWdzID0gTUFQX1BSSVZBVEUgfCBNQVBfQU5PTllNT1VTOw0KKwlpbnQgaTsNCisNCisJZmQg
-PSB2c29ja19zZXFwYWNrZXRfYWNjZXB0KFZNQUREUl9DSURfQU5ZLCAxMjM0LCBOVUxMKTsNCisJ
-aWYgKGZkIDwgMCkgew0KKwkJcGVycm9yKCJhY2NlcHQiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJF
-KTsNCisJfQ0KKw0KKwkvKiBTZXR1cCBmaXJzdCBidWZmZXIuICovDQorCWJyb2tlbl9idWYgPSBt
-bWFwKE5VTEwsIGJ1Zl9zaXplLCBwcm90LCBmbGFncywgLTEsIDApOw0KKwlpZiAoYnJva2VuX2J1
-ZiA9PSBNQVBfRkFJTEVEKSB7DQorCQlwZXJyb3IoIm1tYXAgZm9yICdicm9rZW5fYnVmJyIpOw0K
-KwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCS8qIFVubWFwICJob2xlIiBpbiBidWZm
-ZXIuICovDQorCWlmIChtdW5tYXAoYnJva2VuX2J1ZiArIHBhZ2Vfc2l6ZSwgcGFnZV9zaXplKSkg
-ew0KKwkJcGVycm9yKCInYnJva2VuX2J1Zicgc2V0dXAiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJF
-KTsNCisJfQ0KKw0KKwl2YWxpZF9idWYgPSBtbWFwKE5VTEwsIGJ1Zl9zaXplLCBwcm90LCBmbGFn
-cywgLTEsIDApOw0KKwlpZiAodmFsaWRfYnVmID09IE1BUF9GQUlMRUQpIHsNCisJCXBlcnJvcigi
-bW1hcCBmb3IgJ3ZhbGlkX2J1ZiciKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0K
-KwkvKiBUcnkgdG8gZmlsbCBidWZmZXIgd2l0aCB1bm1hcHBlZCBtaWRkbGUuICovDQorCXJlcyA9
-IHJlYWQoZmQsIGJyb2tlbl9idWYsIGJ1Zl9zaXplKTsNCisJaWYgKHJlcyAhPSAtMSkgew0KKwkJ
-ZnByaW50ZihzdGRlcnIsDQorCQkJImV4cGVjdGVkICdicm9rZW5fYnVmJyByZWFkKDIpIGZhaWx1
-cmUsIGdvdCAlemlcbiIsDQorCQkJcmVzKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0K
-Kw0KKwlpZiAoZXJybm8gIT0gRU5PTUVNKSB7DQorCQlwZXJyb3IoInVuZXhwZWN0ZWQgZXJybm8g
-b2YgJ2Jyb2tlbl9idWYnIik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJLyog
-VHJ5IHRvIGZpbGwgdmFsaWQgYnVmZmVyLiAqLw0KKwlyZXMgPSByZWFkKGZkLCB2YWxpZF9idWYs
-IGJ1Zl9zaXplKTsNCisJaWYgKHJlcyA8IDApIHsNCisJCXBlcnJvcigidW5leHBlY3RlZCAndmFs
-aWRfYnVmJyByZWFkKDIpIGZhaWx1cmUiKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0K
-Kw0KKwlpZiAocmVzICE9IGJ1Zl9zaXplKSB7DQorCQlmcHJpbnRmKHN0ZGVyciwNCisJCQkiaW52
-YWxpZCAndmFsaWRfYnVmJyByZWFkKDIpLCBleHBlY3RlZCAlaSwgZ290ICV6aVxuIiwNCisJCQli
-dWZfc2l6ZSwgcmVzKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlmb3IgKGkg
-PSAwOyBpIDwgYnVmX3NpemU7IGkrKykgew0KKwkJaWYgKHZhbGlkX2J1ZltpXSAhPSBCVUZfUEFU
-VEVSTl8yKSB7DQorCQkJZnByaW50ZihzdGRlcnIsDQorCQkJCSJpbnZhbGlkIHBhdHRlcm4gZm9y
-ICd2YWxpZF9idWYnIGF0ICVpLCBleHBlY3RlZCAlaGhYLCBnb3QgJWhoWFxuIiwNCisJCQkJaSwg
-QlVGX1BBVFRFUk5fMiwgdmFsaWRfYnVmW2ldKTsNCisJCQlleGl0KEVYSVRfRkFJTFVSRSk7DQor
-CQl9DQorCX0NCisNCisJLyogVW5tYXAgYnVmZmVycy4gKi8NCisJbXVubWFwKGJyb2tlbl9idWYs
-IHBhZ2Vfc2l6ZSk7DQorCW11bm1hcChicm9rZW5fYnVmICsgcGFnZV9zaXplICogMiwgcGFnZV9z
-aXplKTsNCisJbXVubWFwKHZhbGlkX2J1ZiwgYnVmX3NpemUpOw0KKwljbG9zZShmZCk7DQorfQ0K
-Kw0KIHN0YXRpYyBzdHJ1Y3QgdGVzdF9jYXNlIHRlc3RfY2FzZXNbXSA9IHsNCiAJew0KIAkJLm5h
-bWUgPSAiU09DS19TVFJFQU0gY29ubmVjdGlvbiByZXNldCIsDQpAQCAtNTE1LDYgKzY0MSwxMSBA
-QCBzdGF0aWMgc3RydWN0IHRlc3RfY2FzZSB0ZXN0X2Nhc2VzW10gPSB7DQogCQkucnVuX2NsaWVu
-dCA9IHRlc3Rfc2VxcGFja2V0X3RpbWVvdXRfY2xpZW50LA0KIAkJLnJ1bl9zZXJ2ZXIgPSB0ZXN0
-X3NlcXBhY2tldF90aW1lb3V0X3NlcnZlciwNCiAJfSwNCisJew0KKwkJLm5hbWUgPSAiU09DS19T
-RVFQQUNLRVQgaW52YWxpZCByZWNlaXZlIGJ1ZmZlciIsDQorCQkucnVuX2NsaWVudCA9IHRlc3Rf
-c2VxcGFja2V0X2ludmFsaWRfcmVjX2J1ZmZlcl9jbGllbnQsDQorCQkucnVuX3NlcnZlciA9IHRl
-c3Rfc2VxcGFja2V0X2ludmFsaWRfcmVjX2J1ZmZlcl9zZXJ2ZXIsDQorCX0sDQogCXt9LA0KIH07
-DQogDQotLSANCjIuMjUuMQ0K
+
+On 17/03/2022 02:26, Paul Moore wrote:
+> On Mon, Feb 21, 2022 at 4:15 PM Mickaël Salaün <mic@digikod.net> wrote:
+>>
+>> From: Mickaël Salaün <mic@linux.microsoft.com>
+>>
+>> Create and use the access_mask_t typedef to enforce a consistent access
+>> mask size and uniformly use a 16-bits type.  This will helps transition
+>> to a 32-bits value one day.
+>>
+>> Add a build check to make sure all (filesystem) access rights fit in.
+>> This will be extended with a following commit.
+>>
+>> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
+>> Link: https://lore.kernel.org/r/20220221212522.320243-2-mic@digikod.net
+>> ---
+>>   security/landlock/fs.c      | 19 ++++++++++---------
+>>   security/landlock/fs.h      |  2 +-
+>>   security/landlock/limits.h  |  2 ++
+>>   security/landlock/ruleset.c |  6 ++++--
+>>   security/landlock/ruleset.h | 17 +++++++++++++----
+>>   5 files changed, 30 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>> index 97b8e421f617..9de2a460a762 100644
+>> --- a/security/landlock/fs.c
+>> +++ b/security/landlock/fs.c
+>> @@ -150,7 +150,7 @@ static struct landlock_object *get_inode_object(struct inode *const inode)
+>>    * @path: Should have been checked by get_path_from_fd().
+>>    */
+>>   int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+>> -               const struct path *const path, u32 access_rights)
+>> +               const struct path *const path, access_mask_t access_rights)
+>>   {
+>>          int err;
+>>          struct landlock_object *object;
+>> @@ -182,8 +182,8 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+>>
+>>   static inline u64 unmask_layers(
+>>                  const struct landlock_ruleset *const domain,
+>> -               const struct path *const path, const u32 access_request,
+>> -               u64 layer_mask)
+>> +               const struct path *const path,
+>> +               const access_mask_t access_request, u64 layer_mask)
+>>   {
+>>          const struct landlock_rule *rule;
+>>          const struct inode *inode;
+>> @@ -223,7 +223,8 @@ static inline u64 unmask_layers(
+>>   }
+>>
+>>   static int check_access_path(const struct landlock_ruleset *const domain,
+>> -               const struct path *const path, u32 access_request)
+>> +               const struct path *const path,
+>> +               const access_mask_t access_request)
+>>   {
+>>          bool allowed = false;
+>>          struct path walker_path;
+>> @@ -308,7 +309,7 @@ static int check_access_path(const struct landlock_ruleset *const domain,
+>>   }
+>>
+>>   static inline int current_check_access_path(const struct path *const path,
+>> -               const u32 access_request)
+>> +               const access_mask_t access_request)
+>>   {
+>>          const struct landlock_ruleset *const dom =
+>>                  landlock_get_current_domain();
+>> @@ -511,7 +512,7 @@ static int hook_sb_pivotroot(const struct path *const old_path,
+>>
+>>   /* Path hooks */
+>>
+>> -static inline u32 get_mode_access(const umode_t mode)
+>> +static inline access_mask_t get_mode_access(const umode_t mode)
+>>   {
+>>          switch (mode & S_IFMT) {
+>>          case S_IFLNK:
+>> @@ -563,7 +564,7 @@ static int hook_path_link(struct dentry *const old_dentry,
+>>                          get_mode_access(d_backing_inode(old_dentry)->i_mode));
+>>   }
+>>
+>> -static inline u32 maybe_remove(const struct dentry *const dentry)
+>> +static inline access_mask_t maybe_remove(const struct dentry *const dentry)
+>>   {
+>>          if (d_is_negative(dentry))
+>>                  return 0;
+>> @@ -631,9 +632,9 @@ static int hook_path_rmdir(const struct path *const dir,
+>>
+>>   /* File hooks */
+>>
+>> -static inline u32 get_file_access(const struct file *const file)
+>> +static inline access_mask_t get_file_access(const struct file *const file)
+>>   {
+>> -       u32 access = 0;
+>> +       access_mask_t access = 0;
+>>
+>>          if (file->f_mode & FMODE_READ) {
+>>                  /* A directory can only be opened in read mode. */
+>> diff --git a/security/landlock/fs.h b/security/landlock/fs.h
+>> index 187284b421c9..74be312aad96 100644
+>> --- a/security/landlock/fs.h
+>> +++ b/security/landlock/fs.h
+>> @@ -65,6 +65,6 @@ static inline struct landlock_superblock_security *landlock_superblock(
+>>   __init void landlock_add_fs_hooks(void);
+>>
+>>   int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
+>> -               const struct path *const path, u32 access_hierarchy);
+>> +               const struct path *const path, access_mask_t access_hierarchy);
+>>
+>>   #endif /* _SECURITY_LANDLOCK_FS_H */
+>> diff --git a/security/landlock/limits.h b/security/landlock/limits.h
+>> index 2a0a1095ee27..458d1de32ed5 100644
+>> --- a/security/landlock/limits.h
+>> +++ b/security/landlock/limits.h
+>> @@ -9,6 +9,7 @@
+>>   #ifndef _SECURITY_LANDLOCK_LIMITS_H
+>>   #define _SECURITY_LANDLOCK_LIMITS_H
+>>
+>> +#include <linux/bitops.h>
+>>   #include <linux/limits.h>
+>>   #include <uapi/linux/landlock.h>
+>>
+>> @@ -17,5 +18,6 @@
+>>
+>>   #define LANDLOCK_LAST_ACCESS_FS                LANDLOCK_ACCESS_FS_MAKE_SYM
+>>   #define LANDLOCK_MASK_ACCESS_FS                ((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
+>> +#define LANDLOCK_NUM_ACCESS_FS         __const_hweight64(LANDLOCK_MASK_ACCESS_FS)
+> 
+> The line above, and the static_assert() in ruleset.h are clever.  I'll
+> admit I didn't even know the hweightX() macros existed until looking
+> at this code :)
+> 
+> However, the LANDLOCK_NUM_ACCESS_FS is never really going to be used
+> outside the static_assert() in ruleset.h is it?  I wonder if it would
+> be better to skip the extra macro and rewrite the static_assert like
+> this:
+> 
+> static_assert(BITS_PER_TYPE(access_mask_t) >=
+> __const_hweight64(LANDLOCK_MASK_ACCESS_FS));
+> 
+> If not, I might suggest changing LANDLOCK_NUM_ACCESS_FS to
+> LANDLOCK_BITS_ACCESS_FS or something similar.
+
+I declared LANDLOCK_NUM_ACCESS_FS in this patch to be able to have the 
+static_assert() here and ease the review, but LANDLOCK_NUM_ACCESS_FS is 
+really used in patch 6/11 to define an array size: 
+get_handled_acceses(), init_layer_masks(), is_superset(), 
+check_access_path_dual()…
+
+
+> 
+> 
+>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>> index 2d3ed7ec5a0a..7e7cac68e443 100644
+>> --- a/security/landlock/ruleset.h
+>> +++ b/security/landlock/ruleset.h
+>> @@ -9,13 +9,20 @@
+>>   #ifndef _SECURITY_LANDLOCK_RULESET_H
+>>   #define _SECURITY_LANDLOCK_RULESET_H
+>>
+>> +#include <linux/bitops.h>
+>> +#include <linux/build_bug.h>
+>>   #include <linux/mutex.h>
+>>   #include <linux/rbtree.h>
+>>   #include <linux/refcount.h>
+>>   #include <linux/workqueue.h>
+>>
+>> +#include "limits.h"
+>>   #include "object.h"
+>>
+>> +typedef u16 access_mask_t;
+>> +/* Makes sure all filesystem access rights can be stored. */
+>> +static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
+> 
+> --
+> paul-moore.com
