@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 218AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233936AbiCQMvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
+        id S233957AbiCQMve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233856AbiCQMu3 (ORCPT
+        with ESMTP id S234025AbiCQMu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:50:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B861F42D6;
-        Thu, 17 Mar 2022 05:48:38 -0700 (PDT)
+        Thu, 17 Mar 2022 08:50:58 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFE81F163F;
+        Thu, 17 Mar 2022 05:49:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 73EBFCE233F;
-        Thu, 17 Mar 2022 12:48:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B1A9C340E9;
-        Thu, 17 Mar 2022 12:48:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0B429CE2343;
+        Thu, 17 Mar 2022 12:49:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF0BDC340E9;
+        Thu, 17 Mar 2022 12:48:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521314;
-        bh=H/+OWuh64FediRe9ouUSlMUf1wnrCI98Ue1lo1LOoN0=;
+        s=korg; t=1647521338;
+        bh=bQKb/8DrWNMbBis+IalTjpk+vmrHXhZPKgQ8CXaTJww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l9mSO8nW+BDmaN3A3e3ArQnlZK5jtwJW2X3qb7Ox/UPfEx3OL/Jm6EKHeED3rGXD0
-         cAWdjQyxGdl5/3gMs+AnfhBEOpa4rz4BsUL9xyiZDaNuqLdp3W0v5U/FqM0DYEnLka
-         i2F4Ui1dbuMS93m4MrOPk18ITX4cVCaGksTB/474=
+        b=scfxrp89+l5CodvXQ6m+cak4xuwpqAzexYKmE0dnIgrF1TDaplPi8sc3GnRq32a+i
+         kXTpp8R+oORoNtUV0w0jy5oJErSvmpbc/bJbmlOQ0sjzGpFyQTk6z74ptiiOnCBkiE
+         vftT90NMdBrPct1fS13iBZJJX+MaZwUU//86yNcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        James Morse <james.morse@arm.com>,
+        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 04/43] arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
-Date:   Thu, 17 Mar 2022 13:45:15 +0100
-Message-Id: <20220317124527.798651965@linuxfoundation.org>
+Subject: [PATCH 5.4 41/43] sfc: extend the locking on mcdi->seqno
+Date:   Thu, 17 Mar 2022 13:45:52 +0100
+Message-Id: <20220317124528.809707535@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
 References: <20220317124527.672236844@linuxfoundation.org>
@@ -53,48 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit 2d0d656700d67239a57afaf617439143d8dac9be upstream.
+[ Upstream commit f1fb205efb0ccca55626fd4ef38570dd16b44719 ]
 
-Add the CPU Partnumbers for the new Arm designs.
+seqno could be read as a stale value outside of the lock. The lock is
+already acquired to protect the modification of seqno against a possible
+race condition. Place the reading of this value also inside this locking
+to protect it against a possible race condition.
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/20211019163153.3692640-2-suzuki.poulose@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Acked-by: Martin Habets <habetsm.xilinx@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/cputype.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/sfc/mcdi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
-index b009d4813537..6a0acbec77ae 100644
---- a/arch/arm64/include/asm/cputype.h
-+++ b/arch/arm64/include/asm/cputype.h
-@@ -72,6 +72,8 @@
- #define ARM_CPU_PART_CORTEX_A76		0xD0B
- #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
- #define ARM_CPU_PART_CORTEX_A77		0xD0D
-+#define ARM_CPU_PART_CORTEX_A710	0xD47
-+#define ARM_CPU_PART_NEOVERSE_N2	0xD49
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
+index 2713300343c7..ec551def5835 100644
+--- a/drivers/net/ethernet/sfc/mcdi.c
++++ b/drivers/net/ethernet/sfc/mcdi.c
+@@ -163,9 +163,9 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
+ 	/* Serialise with efx_mcdi_ev_cpl() and efx_mcdi_ev_death() */
+ 	spin_lock_bh(&mcdi->iface_lock);
+ 	++mcdi->seqno;
++	seqno = mcdi->seqno & SEQ_MASK;
+ 	spin_unlock_bh(&mcdi->iface_lock);
  
- #define APM_CPU_PART_POTENZA		0x000
- 
-@@ -104,6 +106,8 @@
- #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
- #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
- #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
-+#define MIDR_CORTEX_A710 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710)
-+#define MIDR_NEOVERSE_N2 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2)
- #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
- #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
- #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
+-	seqno = mcdi->seqno & SEQ_MASK;
+ 	xflags = 0;
+ 	if (mcdi->mode == MCDI_MODE_EVENTS)
+ 		xflags |= MCDI_HEADER_XFLAGS_EVREQ;
 -- 
 2.34.1
 
