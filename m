@@ -2,89 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64705C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6136CC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234098AbiCQMy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
+        id S234074AbiCQMzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234099AbiCQMwe (ORCPT
+        with ESMTP id S234134AbiCQMwg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:52:34 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36011F1610;
-        Thu, 17 Mar 2022 05:50:03 -0700 (PDT)
-X-UUID: f5aa5bbfc3644e8b9cee734ed2988ae6-20220317
-X-UUID: f5aa5bbfc3644e8b9cee734ed2988ae6-20220317
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1145659024; Thu, 17 Mar 2022 20:49:58 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 17 Mar 2022 20:49:56 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Mar 2022 20:49:56 +0800
-Message-ID: <87120a97d4316b6ea7c6aea9cf0cd7c95c4813cd.camel@mediatek.com>
-Subject: Re: [PATCH v1, 1/1] drm/mediatek: fixup crtc event null pointer
- issue
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        "Dennis YC Hsieh" <dennis-yc.hsieh@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Thu, 17 Mar 2022 20:49:56 +0800
-In-Reply-To: <20220314074239.28507-2-yongqiang.niu@mediatek.com>
-References: <20220314074239.28507-1-yongqiang.niu@mediatek.com>
-         <20220314074239.28507-2-yongqiang.niu@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 17 Mar 2022 08:52:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0CD1F9740;
+        Thu, 17 Mar 2022 05:50:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98E46B81EAA;
+        Thu, 17 Mar 2022 12:50:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF3CDC340ED;
+        Thu, 17 Mar 2022 12:50:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647521403;
+        bh=lKT98KkKG5kh3JkISIjpK29ucPOSTqmgmau06sMC1p4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rgqnwG0TbEXz3+z+Xq5l/d7GNMV6lJnNaGe+fKGD+JNfZsKm4VAlwrLr7o18c/miF
+         Hfd7mVchS2a7mQBTKkNUMY7yeBqeVSsEsdUsY9FtqBYDfEkGbD54khUYB0y75BWJHM
+         hl0mf6qbWO8rA0kdEtk3SPE/w+CMmWeiT5H+/DDQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 20/23] bnx2: Fix an error message
+Date:   Thu, 17 Mar 2022 13:46:01 +0100
+Message-Id: <20220317124526.543596817@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
+References: <20220317124525.955110315@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-14 at 15:42 +0800, Yongqiang Niu wrote:
-> if crtc event is null pointer, do not send vblank event
-> 
-> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_drm_crtc.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> index d661edf7e0fe..265fed446628 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> @@ -92,6 +92,9 @@ static void mtk_drm_crtc_finish_page_flip(struct
-> mtk_drm_crtc *mtk_crtc)
->  	struct drm_crtc *crtc = &mtk_crtc->base;
->  	unsigned long flags;
->  
-> +	if (!mtk_crtc->event)
-> +		return;
-> +
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+[ Upstream commit 8ccffe9ac3239e549beaa0a9d5e1a1eac94e866c ]
 
->  	spin_lock_irqsave(&crtc->dev->event_lock, flags);
->  	drm_crtc_send_vblank_event(crtc, mtk_crtc->event);
->  	drm_crtc_vblank_put(crtc);
+Fix an error message and report the correct failing function.
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/broadcom/bnx2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 633b10389653..93129d9a87f4 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -8229,7 +8229,7 @@ bnx2_init_board(struct pci_dev *pdev, struct net_device *dev)
+ 		rc = pci_set_consistent_dma_mask(pdev, persist_dma_mask);
+ 		if (rc) {
+ 			dev_err(&pdev->dev,
+-				"pci_set_consistent_dma_mask failed, aborting\n");
++				"dma_set_coherent_mask failed, aborting\n");
+ 			goto err_out_unmap;
+ 		}
+ 	} else if ((rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) != 0) {
+-- 
+2.34.1
+
+
 
