@@ -2,106 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21083C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 00:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F99C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 00:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355281AbiCQA7p (ORCPT
+        id S1355958AbiCQA7s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 20:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51548 "EHLO
+        Wed, 16 Mar 2022 20:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350471AbiCQA7e (ORCPT
+        with ESMTP id S1354372AbiCQA7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 20:59:34 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EDF113E31
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 17:58:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647478699; x=1679014699;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=f8bXk3IskXH8eFFzpaNPyeyddF0leRb7wqn21Yw5bec=;
-  b=YVLu8DNzBp+6vacIJ5wNX7YGa9LQBdiGj7ZI6qOLF8pCa3SW0YZPj2Wx
-   e4ysYd9i3EWqxv4ZJZ9dOILLu6rsWZ+ReoFmLB9wqmcmKcZOm/P4iiLFV
-   8Rad/gIrOT9Fge9AotjA+HauHZMZcUFIOKuiSgHzlNran3iKBOmlozm0+
-   kJqsMzQ6gk9lmMSjmcDh7US4WJHX2IEJVsQ787HrfOR+mMLGn+XbIoAcS
-   FGQxqAqGtF9SfinYYBYKn/keuHqxrQwg4NXJX8O2vdvmT1ZOhhLR6WtQE
-   velMCpwhTC3hKkIxjNWwMRDGfVLdOUir0KbX433tR6dS+NTigVlHT2DoI
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="236696964"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="236696964"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 17:58:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="516566728"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 16 Mar 2022 17:58:17 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUeT2-000D96-OS; Thu, 17 Mar 2022 00:58:16 +0000
-Date:   Thu, 17 Mar 2022 08:58:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 915/2335] ./usr/include/linux/if_tunnel.h:5:10:
- fatal error: 'uapi/linux/sockios.h' file not found
-Message-ID: <202203170800.LxF9hGll-lkp@intel.com>
+        Wed, 16 Mar 2022 20:59:36 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997E513E31
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 17:58:21 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id c11so1447370pgu.11
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 17:58:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Z1n9UVVKMRQXDGbxIDzUh2jfKVbWO78ULBsARLp7tcY=;
+        b=jfxExfhHKLLo+nlGGwg/kE8Wp98nbRHDe7mpV6j9ryWVuWNtR5aVsotE7/Y+oBCKrU
+         TSlfbZSGBsJgcuxaFYUd76kKS3SAAYiW9XaHU0b2oEdS57zl/AFIJUdv5NJ9tP/q47MG
+         UN6RbggXW88VoY+3jOyluiBheLsz+/pqAt4CU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Z1n9UVVKMRQXDGbxIDzUh2jfKVbWO78ULBsARLp7tcY=;
+        b=JFla2k6mIG+xhasMUpycsIR35RFtvDdB59020VCaYo05CeLlLTWGON8dgfmX30HQgz
+         Bip0sazFYaPhaNhUcdEqfOHrYg6n8pCDsACBZpBAOr6ImZQAmItNsbskIwpGhOmwNUt0
+         pLWtxwY5SK74/R6nxDGCTODrWnsMvY9X2uoPqcsRMBshvm9l2sW1QvjLGWLIrL6Z6GBU
+         xALiiCuP7CLUkio8CF1eXZNJfzwLcDPdAYWkywBqZfKoPJzuVLN/NzMOCTM+CyhlMqiH
+         F45AkWrqe4zX+LMPrCWyvXvZYQi5nhMBs95UvaDkb5Y6CZDVXacenWsKiJ+2Rk9Ua3Uk
+         NoyQ==
+X-Gm-Message-State: AOAM530kvzfWeO+3mnfoLJ+bHWDtxDoq8Hqx07jRjy2DBaagDtQQht8g
+        K+Jfk+DSvthBmLrcJEs6TcdKsw==
+X-Google-Smtp-Source: ABdhPJwS+9f+tcwKXhz47Sw1tD3D6y77gcriRiKA8DMzgNiPiuYcnTfpw9IDP0DyDkMLvXrtVFWTng==
+X-Received: by 2002:a05:6a00:2131:b0:4f7:b6da:9ed0 with SMTP id n17-20020a056a00213100b004f7b6da9ed0mr2254839pfj.69.1647478700537;
+        Wed, 16 Mar 2022 17:58:20 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:dec5:e3f8:cbd7:f5a7])
+        by smtp.gmail.com with ESMTPSA id l20-20020a056a00141400b004f65cedfb09sm4433445pfu.48.2022.03.16.17.58.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 17:58:20 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Benson Leung <bleung@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Craig Hesling <hesling@chromium.org>,
+        Tom Hughes <tomhughes@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v2 3/3] platform/chrome: cros_ec_spi: Boot fingerprint processor during probe
+Date:   Wed, 16 Mar 2022 17:58:14 -0700
+Message-Id: <20220317005814.2496302-4-swboyd@chromium.org>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+In-Reply-To: <20220317005814.2496302-1-swboyd@chromium.org>
+References: <20220317005814.2496302-1-swboyd@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: b8d36bc5384ae56de169ae667aec58547181384f [915/2335] headers/deps: Add header dependencies to .h files: <uapi/linux/sockios.h>
-config: i386-randconfig-a012-20220314 (https://download.01.org/0day-ci/archive/20220317/202203170800.LxF9hGll-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=b8d36bc5384ae56de169ae667aec58547181384f
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout b8d36bc5384ae56de169ae667aec58547181384f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Add gpio control to this driver so that the fingerprint device can be
+booted if the BIOS isn't doing it already. This eases bringup of new
+hardware as we don't have to wait for the BIOS to be ready, supports
+kexec where the GPIOs may not be configured by the previous boot stage,
+and is all around good hygiene because we control GPIOs for this device
+from the device driver.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from <built-in>:1:
->> ./usr/include/linux/if_tunnel.h:5:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
---
-   In file included from <built-in>:1:
->> ./usr/include/linux/kcm.h:18:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
---
-   In file included from <built-in>:1:
->> ./usr/include/linux/x25.h:15:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
---
-   In file included from <built-in>:1:
->> ./usr/include/linux/rds.h:38:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
-
+Cc: Guenter Roeck <groeck@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Craig Hesling <hesling@chromium.org>
+Cc: Tom Hughes <tomhughes@chromium.org>
+Cc: Alexandru M Stan <amstan@chromium.org>
+Cc: Tzung-Bi Shih <tzungbi@kernel.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/platform/chrome/cros_ec_spi.c | 42 +++++++++++++++++++++++++--
+ 1 file changed, 39 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/platform/chrome/cros_ec_spi.c b/drivers/platform/chrome/cros_ec_spi.c
+index d0f9496076d6..13d413a2fe46 100644
+--- a/drivers/platform/chrome/cros_ec_spi.c
++++ b/drivers/platform/chrome/cros_ec_spi.c
+@@ -4,6 +4,7 @@
+ // Copyright (C) 2012 Google, Inc
+ 
+ #include <linux/delay.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+@@ -77,6 +78,8 @@ struct cros_ec_spi {
+ 	unsigned int start_of_msg_delay;
+ 	unsigned int end_of_msg_delay;
+ 	struct kthread_worker *high_pri_worker;
++	struct gpio_desc *boot0;
++	struct gpio_desc *reset;
+ };
+ 
+ typedef int (*cros_ec_xfer_fn_t) (struct cros_ec_device *ec_dev,
+@@ -690,7 +693,7 @@ static int cros_ec_cmd_xfer_spi(struct cros_ec_device *ec_dev,
+ 	return cros_ec_xfer_high_pri(ec_dev, ec_msg, do_cros_ec_cmd_xfer_spi);
+ }
+ 
+-static void cros_ec_spi_dt_probe(struct cros_ec_spi *ec_spi, struct device *dev)
++static int cros_ec_spi_dt_probe(struct cros_ec_spi *ec_spi, struct device *dev)
+ {
+ 	struct device_node *np = dev->of_node;
+ 	u32 val;
+@@ -703,6 +706,37 @@ static void cros_ec_spi_dt_probe(struct cros_ec_spi *ec_spi, struct device *dev)
+ 	ret = of_property_read_u32(np, "google,cros-ec-spi-msg-delay", &val);
+ 	if (!ret)
+ 		ec_spi->end_of_msg_delay = val;
++
++	if (!of_device_is_compatible(np, "google,cros-ec-fp"))
++		return 0;
++
++	ec_spi->boot0 = devm_gpiod_get(dev, "boot0", 0);
++	if (IS_ERR(ec_spi->boot0))
++		return PTR_ERR(ec_spi->boot0);
++
++	ec_spi->reset = devm_gpiod_get(dev, "reset", 0);
++	if (IS_ERR(ec_spi->reset))
++		return PTR_ERR(ec_spi->reset);
++
++	/*
++	 * Take the FPMCU out of reset and wait for it to boot if it's in
++	 * bootloader mode or held in reset. This isn't the normal flow because
++	 * typically the BIOS has already powered on the device to avoid the
++	 * multi-second delay waiting for the FPMCU to boot and be responsive.
++	 */
++	if (gpiod_get_value(ec_spi->boot0) || gpiod_get_value(ec_spi->reset)) {
++		/* Boot0 is sampled on reset deassertion */
++		gpiod_set_value(ec_spi->boot0, 0);
++		gpiod_set_value(ec_spi->reset, 1);
++		usleep_range(1000, 2000);
++		gpiod_set_value(ec_spi->reset, 0);
++
++		/* Wait for boot; there isn't a "boot done" signal */
++		dev_info(dev, "Waiting for FPMCU to boot\n");
++		msleep(2000);
++	}
++
++	return 0;
+ }
+ 
+ static void cros_ec_spi_high_pri_release(void *worker)
+@@ -754,8 +788,10 @@ static int cros_ec_spi_probe(struct spi_device *spi)
+ 	if (!ec_dev)
+ 		return -ENOMEM;
+ 
+-	/* Check for any DT properties */
+-	cros_ec_spi_dt_probe(ec_spi, dev);
++	/* Check for any DT properties and boot FPMCU if applicable */
++	err = cros_ec_spi_dt_probe(ec_spi, dev);
++	if (err)
++		return err;
+ 
+ 	spi_set_drvdata(spi, ec_dev);
+ 	ec_dev->dev = dev;
+-- 
+https://chromeos.dev
+
