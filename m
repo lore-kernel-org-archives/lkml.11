@@ -2,39 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D95BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4723C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237761AbiCQTB4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 15:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S237771AbiCQTCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 15:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237757AbiCQTBy (ORCPT
+        with ESMTP id S237068AbiCQTCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 15:01:54 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1976816BCF7;
-        Thu, 17 Mar 2022 12:00:36 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7FBC31A2CD1;
-        Thu, 17 Mar 2022 20:00:35 +0100 (CET)
+        Thu, 17 Mar 2022 15:02:37 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489271DE6F4;
+        Thu, 17 Mar 2022 12:01:20 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E29FD2001CD;
+        Thu, 17 Mar 2022 20:01:18 +0100 (CET)
 Received: from smtp.na-rdc02.nxp.com (usphx01srsp001v.us-phx01.nxp.com [134.27.49.11])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3C3FF1A2CC9;
-        Thu, 17 Mar 2022 20:00:35 +0100 (CET)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A47D6200022;
+        Thu, 17 Mar 2022 20:01:18 +0100 (CET)
 Received: from right.am.freescale.net (right.am.freescale.net [10.81.116.145])
-        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id 0352E4030F;
-        Thu, 17 Mar 2022 12:00:33 -0700 (MST)
+        by usphx01srsp001v.us-phx01.nxp.com (Postfix) with ESMTP id 650034030F;
+        Thu, 17 Mar 2022 12:01:17 -0700 (MST)
 From:   Li Yang <leoyang.li@nxp.com>
 To:     Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Harninder Rai <harninder.rai@nxp.com>,
-        Bhaskar Upadhaya <Bhaskar.Upadhaya@nxp.com>
-Cc:     Zhang Ying-22455 <ying.zhang22455@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: ls1012a: correct the size of dcfg block
-Date:   Thu, 17 Mar 2022 13:59:37 -0500
-Message-Id: <20220317185941.3650-1-leoyang.li@nxp.com>
+Subject: [PATCH 1/6] arm64: dts: ls2080a-qds: add mdio mux nodes from on-board FPGA
+Date:   Thu, 17 Mar 2022 14:01:04 -0500
+Message-Id: <20220317190109.3742-1-leoyang.li@nxp.com>
 X-Mailer: git-send-email 2.25.1.377.g2d2118b
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -43,27 +40,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes: ba3213602d28 ("arm64: dts: Add support for FSL's LS1012A SoC")
+Add mmio mdio mux nodes from the on-board FPGA.
 
-Signed-off-by: Zhang Ying-22455 <ying.zhang22455@nxp.com>
 Signed-off-by: Li Yang <leoyang.li@nxp.com>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../boot/dts/freescale/fsl-ls2080a-qds.dts    | 69 +++++++++++++++++++
+ 1 file changed, 69 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi
-index 50a72cda4727..b1ae15547e15 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1012a.dtsi
-@@ -282,7 +282,7 @@ sec_mon: sec_mon@1e90000 {
- 		dcfg: dcfg@1ee0000 {
- 			compatible = "fsl,ls1012a-dcfg",
- 				     "syscon";
--			reg = <0x0 0x1ee0000 0x0 0x10000>;
-+			reg = <0x0 0x1ee0000 0x0 0x1000>;
- 			big-endian;
- 		};
- 
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls2080a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls2080a-qds.dts
+index f6c3ee78ace0..c3caca1c0ab6 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls2080a-qds.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls2080a-qds.dts
+@@ -23,3 +23,72 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ };
++
++/* Update DPMAC connections to external PHYs, under SerDes 0x2a_0x49. */
++&dpmac9 {
++	phy-handle = <&mdio0_phy12>;
++	phy-connection-type = "sgmii";
++};
++
++&dpmac10 {
++	phy-handle = <&mdio0_phy13>;
++	phy-connection-type = "sgmii";
++};
++
++&dpmac11 {
++	phy-handle = <&mdio0_phy14>;
++	phy-connection-type = "sgmii";
++};
++
++&dpmac12 {
++	phy-handle = <&mdio0_phy15>;
++	phy-connection-type = "sgmii";
++};
++
++&ifc {
++	boardctrl: board-control@3,0 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		compatible = "fsl,tetra-fpga", "fsl,fpga-qixis", "simple-mfd";
++		reg = <3 0 0x300>;
++		ranges = <0 3 0 0x300>;
++
++		mdio_mux_emi1 {
++			compatible = "mdio-mux-mmioreg", "mdio-mux";
++			mdio-parent-bus = <&emdio1>;
++			reg = <0x54 1>;		/* BRDCFG4 */
++			mux-mask = <0xe0>;	/* EMI1_MDIO */
++
++			#address-cells=<1>;
++			#size-cells = <0>;
++
++			/* Child MDIO buses, one for each riser card:
++			 * reg = 0x0, 0x20, 0x40, 0x60, 0x80, 0xa0.
++			 * VSC8234 PHYs on the riser cards.
++			 */
++
++			mdio_mux3: mdio@60 {
++				reg = <0x60>;
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				mdio0_phy12: mdio_phy0@1c {
++					reg = <0x1c>;
++				};
++
++				mdio0_phy13: mdio_phy1@1d {
++					reg = <0x1d>;
++				};
++
++				mdio0_phy14: mdio_phy2@1e {
++					reg = <0x1e>;
++				};
++
++				mdio0_phy15: mdio_phy3@1f {
++					reg = <0x1f>;
++				};
++			};
++		};
++	};
++};
++
 -- 
 2.25.1
 
