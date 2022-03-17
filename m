@@ -2,105 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79781C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2522C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbiCQGU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35260 "EHLO
+        id S229889AbiCQGVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbiCQGUL (ORCPT
+        with ESMTP id S229850AbiCQGVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:20:11 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D998C120D8E;
-        Wed, 16 Mar 2022 23:09:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=VyFqe0+9Q5DJGBQKh8EVe9afKqvNdtEGhYtwaUik3yk=; b=VBLeR91KB/5LrCFBGInhWgpub6
-        B5MSRoF5KBeEmupeGG8n0Zjls45v8J+WqoZkJ8vbta2GyU12Rrl1j01iiqusuvKgOwKGB7+o4QtJn
-        FHnLO31jpAVc3obGn6a5a7JaPjXHuFTDNkWAKSo17G/SrU9rSOBaI8Mvx/WptWlBf60+H2rhU6rny
-        RiCMzNGC2HiDrIbi1O0L9HZTgbfQbHOXeW+kYwp+cOgn/PnRj7vhuSAuJp6KEZgsLog6PEVd4VmvU
-        bw4DyRg/h4SnnVOexz2WL2uMoPlemVVTaFzusrdAUZ/JnOSgo2YrDfHjEjwXJ2oSpjIfIeXzYDQtH
-        QAiQ6YxQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUhdb-001mAe-NM; Thu, 17 Mar 2022 04:21:24 +0000
-Message-ID: <0f622499-36e1-ea43-ddc3-a8b3bb08d34b@infradead.org>
-Date:   Wed, 16 Mar 2022 21:21:16 -0700
+        Thu, 17 Mar 2022 02:21:35 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B86131942;
+        Wed, 16 Mar 2022 23:10:33 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id z8so8388175ybh.7;
+        Wed, 16 Mar 2022 23:10:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VR1NhHDBNWvTmsBrOFP6HJbH1ggjLumhtoOfnuEXWKI=;
+        b=fu4hQROzacXnjEwEickLat//Rsxu9Mg2FA2L9aNavavKzn0dy5RrL8/eZ8e2nZF3bv
+         fVW2xyaDnnwnoC0HgYzzqDf09WFCtCDRjgFQPFkVSLXbiDLAJVHOjSXybUgX449Pw7eT
+         Q2hxqjQvk5Ms4SAMC/5SebEIT7IGnNuzkKTZkdxBvHReCBY5is2qRUoczKFGn7vFMt7Z
+         xWnHJ8ehuz1yo5/EBZY95KOoGP0rjCQWHC5goHSZNz0f+2JZEbtWneqri0DerNcbrjxG
+         2N5hVUQwtat2x1LfXr9o4w4e017Jzf03v8joZg+SU0MHa/Zl03jK6+N/OuWOI0SwIRu4
+         s5yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VR1NhHDBNWvTmsBrOFP6HJbH1ggjLumhtoOfnuEXWKI=;
+        b=oxi4u5knUQTV9ogG9CfMlIS1xBJH0yeGBfxGypQR7F4/VWux0WN1EHzYzTw12uSbW5
+         QW30Ye+0tuvWMcJjjkWMNsFDE5gC2akIEaW4T8iR3dcAgl2199SrY1HlPYymZvKUvgy6
+         jBYMnxiXP4qTR6Ff56Ha6xrnPFp6McU5yr19OLvkxhmpBdbjXd2/uHoeOVGV1Pd0izh6
+         QfM+NSU7R+kq21wiZdd8cPOH/k5Jb7mjjU5aUcamNnrnMIiF1C/3HR8mGyqmPheEB1B+
+         A20HjAjQqmiRU8wWl3o3rrBrpo9QB+OtRciZMZHqhU24LjIWH7cr7z1uGIHITBjLJhPH
+         PS1A==
+X-Gm-Message-State: AOAM530wFEl3YTWrahrkAgOkPogwHrP1RD8RH6NfNrBpadZXaIDFpAXy
+        rueVfEpZSNbRDy9JqpW2NQE0xdLjtcJlqIWca4k=
+X-Google-Smtp-Source: ABdhPJzQqgUkL5oq0fuMuFq3UxEvtkIDlfD5E6dHXD5tJDQpxFdTJEw7TX0b6u6guiTEMMBwB50+ZyiQdXb65QCDXvs=
+X-Received: by 2002:a05:6902:13c1:b0:61d:969c:109c with SMTP id
+ y1-20020a05690213c100b0061d969c109cmr3275233ybu.133.1647497432674; Wed, 16
+ Mar 2022 23:10:32 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: mmotm 2022-03-16-17-42 uploaded (uml sub-x86_64, sched/fair, RCU)
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
-        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
-        linux-um <linux-um@lists.infradead.org>, paulmck@kernel.org,
-        Richard Weinberger <richard@nod.at>,
-        Johannes Berg <johannes@sipsolutions.net>
-References: <20220317004304.95F89C340E9@smtp.kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220317004304.95F89C340E9@smtp.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
+In-Reply-To: <f1deaeabfd31fdf512ff6502f38186ef842c2b1f.1646413117.git.darren@os.amperecomputing.com>
+From:   Barry Song <21cnbao@gmail.com>
+Date:   Thu, 17 Mar 2022 19:10:19 +1300
+Message-ID: <CAGsJ_4x-ZmAfAGBmAY6HoWNGuCVc945Er4v337eGHR_zLcCHFQ@mail.gmail.com>
+Subject: Re: [PATCH v3] topology: make core_mask include at least cluster_siblings
+To:     Darren Hart <darren@os.amperecomputing.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Arm <linux-arm-kernel@lists.infradead.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        "D . Scott Phillips" <scott@os.amperecomputing.com>,
+        Ilkka Koskinen <ilkka@os.amperecomputing.com>,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sat, Mar 5, 2022 at 8:54 AM Darren Hart
+<darren@os.amperecomputing.com> wrote:
+>
+> Ampere Altra defines CPU clusters in the ACPI PPTT. They share a Snoop
+> Control Unit, but have no shared CPU-side last level cache.
+>
+> cpu_coregroup_mask() will return a cpumask with weight 1, while
+> cpu_clustergroup_mask() will return a cpumask with weight 2.
+>
+> As a result, build_sched_domain() will BUG() once per CPU with:
+>
+> BUG: arch topology borken
+> the CLS domain not a subset of the MC domain
+>
+> The MC level cpumask is then extended to that of the CLS child, and is
+> later removed entirely as redundant. This sched domain topology is an
+> improvement over previous topologies, or those built without
+> SCHED_CLUSTER, particularly for certain latency sensitive workloads.
+> With the current scheduler model and heuristics, this is a desirable
+> default topology for Ampere Altra and Altra Max system.
+>
+> Rather than create a custom sched domains topology structure and
+> introduce new logic in arch/arm64 to detect these systems, update the
+> core_mask so coregroup is never a subset of clustergroup, extending it
+> to cluster_siblings if necessary.
+>
+> This has the added benefit over a custom topology of working for both
+> symmetric and asymmetric topologies. It does not address systems where
+> the cluster topology is above a populated mc topology, but these are not
+> considered today and can be addressed separately if and when they
+> appear.
+>
+> The final sched domain topology for a 2 socket Ampere Altra system is
+> unchanged with or without CONFIG_SCHED_CLUSTER, and the BUG is avoided:
+>
+> For CPU0:
+>
+> CONFIG_SCHED_CLUSTER=y
+> CLS  [0-1]
+> DIE  [0-79]
+> NUMA [0-159]
+>
+> CONFIG_SCHED_CLUSTER is not set
+> DIE  [0-79]
+> NUMA [0-159]
+>
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Vincent Guittot <vincent.guittot@linaro.org>
+> Cc: Barry Song <song.bao.hua@hisilicon.com>
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> Cc: D. Scott Phillips <scott@os.amperecomputing.com>
+> Cc: Ilkka Koskinen <ilkka@os.amperecomputing.com>
+> Cc: <stable@vger.kernel.org> # 5.16.x
+> Suggested-by: Barry Song <song.bao.hua@hisilicon.com>
+> Signed-off-by: Darren Hart <darren@os.amperecomputing.com>
 
+Reviewed-by: Barry Song <baohua@kernel.org>
 
-On 3/16/22 17:43, Andrew Morton wrote:
-> The mm-of-the-moment snapshot 2022-03-16-17-42 has been uploaded to
-> 
->    https://www.ozlabs.org/~akpm/mmotm/
-> 
-> mmotm-readme.txt says
-> 
-> README for mm-of-the-moment:
-> 
-> https://www.ozlabs.org/~akpm/mmotm/
-> 
-> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-> more than once a week.
-> 
-> You will need quilt to apply these patches to the latest Linus release (5.x
-> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-> https://ozlabs.org/~akpm/mmotm/series
+> ---
+> v1: Drop MC level if coregroup weight == 1
+> v2: New sd topo in arch/arm64/kernel/smp.c
+> v3: No new topo, extend core_mask to cluster_siblings
+>
+>  drivers/base/arch_topology.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> index 976154140f0b..a96f45db928b 100644
+> --- a/drivers/base/arch_topology.c
+> +++ b/drivers/base/arch_topology.c
+> @@ -628,6 +628,14 @@ const struct cpumask *cpu_coregroup_mask(int cpu)
+>                         core_mask = &cpu_topology[cpu].llc_sibling;
+>         }
+>
+> +       /*
+> +        * For systems with no shared cpu-side LLC but with clusters defined,
+> +        * extend core_mask to cluster_siblings. The sched domain builder will
+> +        * then remove MC as redundant with CLS if SCHED_CLUSTER is enabled.
+> +        */
+> +       if (cpumask_subset(core_mask, &cpu_topology[cpu].cluster_sibling))
+> +               core_mask = &cpu_topology[cpu].cluster_sibling;
+> +
+>         return core_mask;
+>  }
+>
+> --
+> 2.31.1
+>
 
-
-UML for x86_64, defconfig:
-
-In file included from ./arch/x86/include/generated/asm/rwonce.h:1:0,
-                 from ../include/linux/compiler.h:248,
-                 from ../include/linux/kernel.h:20,
-                 from ../include/linux/cpumask.h:10,
-                 from ../include/linux/energy_model.h:4,
-                 from ../kernel/sched/fair.c:23:
-../include/linux/psi.h: In function ‘cgroup_move_task’:
-../include/linux/rcupdate.h:414:36: error: dereferencing pointer to incomplete type ‘struct css_set’
- #define RCU_INITIALIZER(v) (typeof(*(v)) __force __rcu *)(v)
-                                    ^~~~
-../include/asm-generic/rwonce.h:55:33: note: in definition of macro ‘__WRITE_ONCE’
-  *(volatile typeof(x) *)&(x) = (val);    \
-                                 ^~~
-../include/asm-generic/barrier.h:190:2: note: in expansion of macro ‘WRITE_ONCE’
-  WRITE_ONCE(*p, v);      \
-  ^~~~~~~~~~
-../include/linux/rcupdate.h:455:3: note: in expansion of macro ‘smp_store_release’
-   smp_store_release(&p, RCU_INITIALIZER((typeof(p))_r_a_p__v)); \
-   ^~~~~~~~~~~~~~~~~
-../include/linux/rcupdate.h:455:25: note: in expansion of macro ‘RCU_INITIALIZER’
-   smp_store_release(&p, RCU_INITIALIZER((typeof(p))_r_a_p__v)); \
-                         ^~~~~~~~~~~~~~~
-../include/linux/psi.h:58:2: note: in expansion of macro ‘rcu_assign_pointer’
-  rcu_assign_pointer(p->cgroups, to);
-  ^~~~~~~~~~~~~~~~~~
-
-
-
--- 
-~Randy
+Thanks
+Barry
