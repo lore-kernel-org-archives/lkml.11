@@ -2,139 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D172DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:23:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233500AbiCQMVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41504 "EHLO
+        id S233508AbiCQMYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiCQMVv (ORCPT
+        with ESMTP id S232878AbiCQMYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:21:51 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B4E41A94A5;
-        Thu, 17 Mar 2022 05:20:34 -0700 (PDT)
-Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KK5h51DdszcZxN;
-        Thu, 17 Mar 2022 20:15:33 +0800 (CST)
-Received: from huawei.com (10.175.104.170) by kwepemi500016.china.huawei.com
- (7.221.188.220) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
- 2022 20:20:31 +0800
-From:   Zhipeng Xie <xiezhipeng1@huawei.com>
-To:     <peterz@infradead.org>
-CC:     <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <fanwentao@huawei.com>, <jolsa@redhat.com>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <mark.rutland@arm.com>, <mingo@redhat.com>, <namhyung@kernel.org>,
-        <xiezhipeng1@huawei.com>, <xiexiuqi@huawei.com>
-Subject: Re: PING: [PATCH v2] perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
-Date:   Thu, 17 Mar 2022 21:19:41 -0400
-Message-ID: <20220318011941.19116-1-xiezhipeng1@huawei.com>
-X-Mailer: git-send-email 2.18.1
-In-Reply-To: <20220216165427.18270-1-xiezhipeng1@huawei.com>
-References: <20220216165427.18270-1-xiezhipeng1@huawei.com>
+        Thu, 17 Mar 2022 08:24:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EAE19F6CC
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:22:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647519773;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yX02XpRMKMKyrhCKJ+Q/Jp6VfNS2QcQlDe8XZZXmMQE=;
+        b=T/fwsf7aMqsLDKmY3Cim6NchmxuEdmFLpfBfuEuLx5p44hGgOhmU9dl1r/iDIBSD/XHAD9
+        wd4h19iixDQjO7zgAYEhFC1Nusissv72pY8IfoSUCs4iJIhFmKUkz6S7OSosz8P4ozCbfA
+        /9U6jEptHWJs9S3oRc1QcH0tppjiixg=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-16-YPsi2uNoNdKh6w4hBWiQpw-1; Thu, 17 Mar 2022 08:22:52 -0400
+X-MC-Unique: YPsi2uNoNdKh6w4hBWiQpw-1
+Received: by mail-lj1-f197.google.com with SMTP id d16-20020a2e8910000000b00247ff33e987so1995364lji.14
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:22:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yX02XpRMKMKyrhCKJ+Q/Jp6VfNS2QcQlDe8XZZXmMQE=;
+        b=wgPek6WjJq8Af7OvBe+Y+BLbAt6qkBViRn5IBPmQLzR6nHUiv3lA3b53VaEdXAbkLb
+         qGBEQuxKAyENnMSNCoch9sNIavOK5dcuWnS/9vCrDNOnC4hIdMi7tAstDKO4mbjHQow3
+         KfbPWXmeNJc1IPzaNw7/x3UPz64jvMP71T19SHO6ll1pwsA/AAznlZfQRCls6W0vgvAI
+         YhcHwiCa4DTaVTAz5R1g9445AhpntfPtQ6isK6vZB4p4uwPcJ/HWumyeojFiexfzoH89
+         YM7I8pQKHUfOLQQLDcfW4+Q6ps+BTKUKfVm/rYUq1PhgZZbSYSEwo8lwTNwFPSuIfFeR
+         gAxg==
+X-Gm-Message-State: AOAM531+uuk1uPiLthUwbnohPHJQ+S7B9+lAZQGlO1g/xRpeZwIkhzjS
+        QxBFR3vTjKUEliJ+r233xsCM43QbQwFVZoRL0dlnBDR+HKrkPIkSGOFiw4N2jgY4q0FeVMI22Iy
+        NY7MhSyUJ9ly4YxdPFnJdgMqO1iWPQ+24+lbKraLF
+X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id z9-20020ac24189000000b00448bc2be762mr2576753lfh.471.1647519770417;
+        Thu, 17 Mar 2022 05:22:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx1rJqT6+g/fKTYm+1dcMdSVQxbzMyICiFHJGIWw3B+6PHmjLZGBFQKLst/7DouRH0T5POM7UoxpgR0fSAeKns=
+X-Received: by 2002:ac2:4189:0:b0:448:bc2b:e762 with SMTP id
+ z9-20020ac24189000000b00448bc2be762mr2576737lfh.471.1647519770215; Thu, 17
+ Mar 2022 05:22:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.104.170]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemi500016.china.huawei.com (7.221.188.220)
-X-CFilter-Loop: Reflected
+References: <20220316143646.13301-1-wander@redhat.com> <20220316143646.13301-6-wander@redhat.com>
+ <4914513f-cdb8-7698-be7f-968d343c5693@kernel.org>
+In-Reply-To: <4914513f-cdb8-7698-be7f-968d343c5693@kernel.org>
+From:   Wander Costa <wcosta@redhat.com>
+Date:   Thu, 17 Mar 2022 09:22:39 -0300
+Message-ID: <CAAq0SUmuwc7KZWQOwoQfDrX+os8TVRhdr2pcXiwFNAgGCeRi=g@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] serial/8250: Only use fifo after the port is
+ initialized in console_write
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Wander Lairson Costa <wander@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johan Hovold <johan@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        =?UTF-8?Q?Andr=C3=A9_Goddard_Rosa?= <andre.goddard@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        David Laight <David.Laight@aculab.com>,
+        Jon Hunter <jonathanh@nvidia.com>, phil@raspberrypi.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ping again, sorry for the noise.
-
-On Thu, February 17, 2022 12:54 AM, Zhipeng Xie wrote:
-> 
-> Hi, Peter
-> 
-> Could you please review the V2 version?
-> 
-> On Wed, February 9, 2022 10:54 PM, Zhipeng Xie wrote:
-> > This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled
-> > on both
-> > x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
-> > sysdig -B works fine after rebuilding the kernel with
-> > CONFIG_PERF_USE_VMALLOC
-> > disabled.
+On Thu, Mar 17, 2022 at 4:06 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+>
+> On 16. 03. 22, 15:36, Wander Lairson Costa wrote:
+> > The serial driver set the value of uart_8250_port.fcr in the function
+> > serial8250_config_port, but only writes the value to the controller
+> > register later in the initalization code.
 > >
-> > I tracked it down to the if condition event->rb->nr_pages != nr_pages in
-> > perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
-> > event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to return
-> > -EINVAL.This is because when CONFIG_PERF_USE_VMALLOC is enabled,
-> > rb->nr_pages
-> > is always equal to 1.
+> > That opens a small window in which is not safe to use the fifo for
+> > console write.
 > >
-> > Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
-> > arc/arm/csky/mips/sh/sparc/xtensa
-> > Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
-> > x86_64/aarch64/...
+> > Make sure the port is initialized correctly before reading the FCR
+> > cached value.
 > >
-> > Fix this problem by using data_page_nr.
+> > Unfortunately, I lost track of who originally reported the issue. If
+> > s/he is reading this, please speak up so I can give you the due credit.
 > >
-> > [1] https://github.com/draios/sysdig
-> >
-> > Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
+> > Signed-off-by: Wander Lairson Costa <wander@redhat.com>
 > > ---
-> >  kernel/events/core.c        | 2 +-
-> >  kernel/events/internal.h    | 5 +++++
-> >  kernel/events/ring_buffer.c | 5 -----
-> >  3 files changed, 6 insertions(+), 6 deletions(-)
+> >   drivers/tty/serial/8250/8250_port.c | 1 +
+> >   1 file changed, 1 insertion(+)
 > >
-> > diff --git a/kernel/events/core.c b/kernel/events/core.c
-> > index 57c7197838db..370292effd32 100644
-> > --- a/kernel/events/core.c
-> > +++ b/kernel/events/core.c
-> > @@ -6352,7 +6352,7 @@ static int perf_mmap(struct file *file, struct
-> > vm_area_struct *vma)
-> >  again:
-> > mutex_lock(&event->mmap_mutex);
-> > if (event->rb) {
-> > -       if (event->rb->nr_pages != nr_pages) {
-> > +       if (data_page_nr(event->rb) != nr_pages) {
-> >         ret = -EINVAL;
-> >         goto unlock;
-> >     }
-> > diff --git a/kernel/events/internal.h b/kernel/events/internal.h
-> > index 082832738c8f..5816c0719dbf 100644
-> > --- a/kernel/events/internal.h
-> > +++ b/kernel/events/internal.h
-> > @@ -116,6 +116,11 @@ static inline int page_order(struct perf_buffer *rb)
-> >  }
-> >  #endif
-> >
-> > +static int data_page_nr(struct perf_buffer *rb)
-> > +{
-> > +   return rb->nr_pages << page_order(rb);
-> > +}
-> > +
-> >  static inline unsigned long perf_data_size(struct perf_buffer *rb)
-> >  {
-> > return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
-> > diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
-> > index 52868716ec35..fb35b926024c 100644
-> > --- a/kernel/events/ring_buffer.c
-> > +++ b/kernel/events/ring_buffer.c
-> > @@ -859,11 +859,6 @@ void rb_free(struct perf_buffer *rb)
-> >  }
-> >
-> >  #else
-> > -static int data_page_nr(struct perf_buffer *rb)
-> > -{
-> > -   return rb->nr_pages << page_order(rb);
-> > -}
-> > -
-> >  static struct page *
-> >  __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
-> >  {
-> > --
-> > 2.18.1
-> 
-> Best Regards,
-> Zhipeng Xie
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> > index 4acf620be241..7e2227161555 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -3416,6 +3416,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
+> >               !(up->capabilities & UART_CAP_MINI) &&
+> >               up->tx_loadsz > 1 &&
+> >               (up->fcr & UART_FCR_ENABLE_FIFO) &&
+> > +             test_bit(TTY_PORT_INITIALIZED, &port->state->port.iflags) &&
+>
+> Cannot be port->state be NULL sometimes here?
+>
 
-Best Regards,
-Zhipeng Xie
+IIUC, state is assigned at early port registration in
+uart_add_one_port(), so this function wouldn't be called when state is
+NULL. But I think it causes no harm to add an extra check. Thanks!
+
+> >               /*
+> >                * After we put a data in the FIFO, the controller will send
+> >                * it regardless of the CTS state. Therefore, only use fifo
+>
+>
+> --
+> js
+> suse labs
+>
+
