@@ -2,130 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C061C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A097C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:51:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236640AbiCQQvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 12:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
+        id S236646AbiCQQwb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 12:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232196AbiCQQvK (ORCPT
+        with ESMTP id S232196AbiCQQw2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 12:51:10 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5594F20A94E;
-        Thu, 17 Mar 2022 09:49:53 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22HGnV6B012906;
-        Thu, 17 Mar 2022 11:49:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1647535771;
-        bh=+aNB9KHNL1PTMNUTpdQe7rMub1NeQ/aOpyqSHiNlDt4=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=WAzERI4+ZGn+2aQoq1WNPad9nvnMv9/ma9CauR3UQ9K2RC4j5KzbicgEchYsr/23Y
-         nxSryQLyTxxzfxez4mspNAdP1DmUS3hENsebv3bjM/Fujn7FVP4sWlQ/4MQn1LlNTt
-         llZfIqRapCAnKp4ZrkBpICUqJmjJDqXZBpB2G9zI=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22HGnVHP072116
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 17 Mar 2022 11:49:31 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 17
- Mar 2022 11:49:31 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 17 Mar 2022 11:49:31 -0500
-Received: from [10.250.234.22] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22HGnQdg028012;
-        Thu, 17 Mar 2022 11:49:27 -0500
-Message-ID: <d755a917-7763-764e-7030-3afd5154053c@ti.com>
-Date:   Thu, 17 Mar 2022 22:19:25 +0530
+        Thu, 17 Mar 2022 12:52:28 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BEC20A959;
+        Thu, 17 Mar 2022 09:51:08 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id kx13-20020a17090b228d00b001c6715c9847so3736292pjb.1;
+        Thu, 17 Mar 2022 09:51:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1fhGdDZ+4+A9O0kCAE2qwkKzIiiq6BxVXVjKbXoOSjc=;
+        b=ac9lDNWQnaCjB8ARNToKqWJDqJP5c28Oek7OnIM8tObf04cglsVkYnXBmiuN9c3Vv5
+         2NYJaoYf5XGUKw3PSYK+DyxInZZKD+1OAcKuFi5M5X8gN4eXpwEBM/lXs/2jp4AB3HtV
+         Op8GJqf+gOusx4Twv2NDLrsanY7dvJieFhLKej2mwDe8ynGiPDWcxYkH8fIoFoeHSzDD
+         S3QJ4T2e0YrbaBaapqQuGQ2R+jZ3nxjWphDWla4JwCtJCimnu3watw7KvWCSxfPq8yw1
+         pN1Efdd8hY6wHe2SlJHqkKgy1i+D5xu9uPDhn10kskC5Oix83cLBVBFyURLBiUmXw8kg
+         OJPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1fhGdDZ+4+A9O0kCAE2qwkKzIiiq6BxVXVjKbXoOSjc=;
+        b=YPuKVmZm5Af6Gmzn53K5gggdKEK7JA4qWxu1GBI4p40WRCsWWoW+wLAT+NtJZnummY
+         jz2yNQ58jn9ycy01iDjWnfLtY9SSoMU08X7zbiar5CHp4LmqVNNLYRzVJYEm5c4MuFq+
+         a2GC0se8dBU5N6DOCg5El5PnJVqK9cTNqmS7cfWos2HR5TysoRJINF1AUqbT4AG9hXEr
+         xrfGyeLRQYojqzO8H9iCdXDZG6Yt7XWOOZRDVBGuTMgNW0uZ8IvoVJr41/fopiQto4Pq
+         bJuLSlt/d7QVhBY9c6MvUyYtu/QZN6bG8N1dNW9D+Vh2t6T6+fyyB8e8l7/NR79k934L
+         PZzg==
+X-Gm-Message-State: AOAM530HXYH9uR7qmaduymxiMEPIwn9gfV9eRhvMZd629U0hJ0CBAgbT
+        gB43C//P3/5SpS/W9yFMA74=
+X-Google-Smtp-Source: ABdhPJwOV8GUTP9XpL07YdxSy7tQQ35mfNlI37jPr60/Ls8AYizX9BfbQrjuvdQDSL4LF/zStG7h0w==
+X-Received: by 2002:a17:90b:1d8d:b0:1c4:ba77:3e29 with SMTP id pf13-20020a17090b1d8d00b001c4ba773e29mr6509256pjb.206.1647535868296;
+        Thu, 17 Mar 2022 09:51:08 -0700 (PDT)
+Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
+        by smtp.gmail.com with ESMTPSA id d19-20020a056a00199300b004f7b7bb0733sm7071888pfl.60.2022.03.17.09.51.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 09:51:07 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Emma Anholt <emma@anholt.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        linux-kernel@vger.kernel.org (open list),
+        Vladimir Lypak <vladimir.lypak@gmail.com>
+Subject: [PATCH v2 0/3] drm/msm: Add comm/cmdline override
+Date:   Thu, 17 Mar 2022 09:51:37 -0700
+Message-Id: <20220317165144.222101-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/6] spi-mem: Allow specifying the byte order in DTR
- mode
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "'Michael Walle'" <michael@walle.cc>
-CC:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        "p.yadav@ti.com" <p.yadav@ti.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>
-References: <20220311080147.453483-1-tudor.ambarus@microchip.com>
- <76eb13b6-9263-975f-3196-312259634301@ti.com>
- <b60064231d33581c20279172cf8f765e@walle.cc>
- <0f271365-354b-82e2-02a2-9d69a6ac85b1@ti.com>
- <9bc530d1fdaf4490a00fee150f963ac7@AcuMS.aculab.com>
- <bc2083a8903fdabc65083f7e5232ca2d@walle.cc>
- <8b765d24cb9a422bb383aad07251b65f@AcuMS.aculab.com>
- <c17fe9c6-0757-dbb6-6efb-69d05d7ff589@ti.com>
- <fcae2d955b3f43af8d64f1aa50fbc685@AcuMS.aculab.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <fcae2d955b3f43af8d64f1aa50fbc685@AcuMS.aculab.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Rob Clark <robdclark@chromium.org>
 
+Add a way to override comm/cmdline per-drm_file.  This is useful for
+VM scenarios where the host process is just a proxy for the actual
+guest process.
 
-On 17/03/22 4:40 pm, David Laight wrote:
-> From: Vignesh Raghavendra
->> Sent: 17 March 2022 10:24
-> ...
->> Modern OSPI/QSPI flash controllers provide MMIO interface to read from
->> flash where DMA can pull data as if though you are reading from On chip RAM
-> 
-> So the cpu does an MMIO read cycle to the controller which doesn't
-> complete until (for the nibble-mode spi device I have):
-> 1) Chipselect is asserted.
-> 2) The 8-bit command has been clocked out.
-> 3) The 32bit address have been clocked out (8 clocks in nibbles).
-> 4) A few (probably 4) extra delay clocks are added.
-> 5) The data is read - 8 clocks for 32bits in nibble mode.
-> 6) Chipselect is removed.
-> 
-> Now you can do long sequential reads without all the red tape.
-> But a random read in nibble mode is about 30 clocks.
-> 16 bit mode saves 6 clocks for the data and maybe 6 for the address?
-> 
-> The controller could do 'clever stuff' for sequential reads.
-> At a cost of slowing down random reads.
-> 
-> So even at 400MHz it isn't that fast.
+Rob Clark (3):
+  drm/msm: Add support for pointer params
+  drm/msm: Split out helper to get comm/cmdline
+  drm/msm: Add a way to override processes comm/cmdline
 
-Random CPU reads would be inherently slow, its just how HW is.
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c | 49 ++++++++++++++++++++++++-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h |  4 +-
+ drivers/gpu/drm/msm/msm_drv.c           |  8 ++--
+ drivers/gpu/drm/msm/msm_gpu.c           | 40 ++++++++++++--------
+ drivers/gpu/drm/msm/msm_gpu.h           | 10 ++++-
+ drivers/gpu/drm/msm/msm_rd.c            |  5 ++-
+ drivers/gpu/drm/msm/msm_submitqueue.c   |  2 +
+ include/uapi/drm/msm_drm.h              |  4 ++
+ 8 files changed, 94 insertions(+), 28 deletions(-)
 
-But, there are cases like image load from flash and Filesystem over
-flash which would use DMA to maximize performance, such cases would be
-greatly affected if we do SW byte swap
+-- 
+2.35.1
 
-> 
-> If the MMIO interface to the flash controller is PCIe you can
-> add in a load of extra latency for the cpu read itself.
-> 
-> While PCIe allows multiple read requests to be outstanding,
-> the Intel cpu I've looked at serialise the reads from each
-> cpu core (each cpu always uses the same TLP tag).
-> 
-> Now longer read TLP help a lot (IIRC max is 256 bytes).
-> But the x86 cpu will only generate read TLP for register reads.
-> You need to use AVX512 registers (or cache line fetches) to
-> get better throughput!
-> 
-
-Direct CPU fetch from SPI would not be able to make use of full
-Bandwidth for high speed flashes and its not the only usecase.
-
-Regards
-Vignesh
