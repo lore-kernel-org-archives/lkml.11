@@ -2,128 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28832C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235213AbiCQOqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50750 "EHLO
+        id S235340AbiCQOs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiCQOqD (ORCPT
+        with ESMTP id S234232AbiCQOs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:46:03 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90DAED9EAE;
-        Thu, 17 Mar 2022 07:44:45 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 88A451570;
-        Thu, 17 Mar 2022 07:44:45 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C71FD3F7B4;
-        Thu, 17 Mar 2022 07:44:41 -0700 (PDT)
-Message-ID: <76a15179-560f-d412-1512-7ec28ea62cd9@arm.com>
-Date:   Thu, 17 Mar 2022 15:44:35 +0100
+        Thu, 17 Mar 2022 10:48:57 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2472A2016B0;
+        Thu, 17 Mar 2022 07:47:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647528461; x=1679064461;
+  h=to:cc:subject:references:date:mime-version:
+   content-transfer-encoding:from:message-id:in-reply-to;
+  bh=UZap/b0SYrOdXDP0hhu1xHuutZyUBeA2EnD7XmyjMwQ=;
+  b=TU6M44X6GUEv/0pUrbPjRhwZKkdjetXbMx+CoierGZ+t3nuu/6lTLlKW
+   vXNP8SUBChNuLdW9OKaZ2BqLdRRCCZ5wchYF7JeF0oIA6ZNq9YbO8yk4v
+   8B8/vSiQFPzI/pjxNTK4Bl8LzkS8yZkanF0AC4iLuipBWG4C+1u6jvt1c
+   kDRXMswZE7k0k2udarczaaZit4O5tDR9BtK8lg3H+XwEJmSUKe4PQxNDs
+   D232WCIomDp9fs6mmrjs3vb7GRMMPzv4sj5f4Cv28fd1K4tHOOsV4GCfM
+   HRC3VPGvmxlLZS9zhOxajiP+tPtE+wjhIK/oiqvhT/GEU/ARs6JBToty8
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="281671973"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="281671973"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 07:47:40 -0700
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="557958937"
+Received: from hhuan26-mobl1.amr.corp.intel.com (HELO hhuan26-mobl1.mshome.net) ([10.255.39.199])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA; 17 Mar 2022 07:47:38 -0700
+Content-Type: text/plain; charset=iso-8859-15; format=flowed; delsp=yes
+To:     "Jarkko Sakkinen" <jarkko@kernel.org>
+Cc:     "Reinette Chatre" <reinette.chatre@intel.com>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        nathaniel@profian.com
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+References: <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com> <YimWaAqEnXHbLdjh@iki.fi> <op.1itu5vkewjvjmi@hhuan26-mobl1.mshome.net> <Yis8LV99mORcLYs6@iki.fi> <Yis9rA8uC/0bmWCF@iki.fi> <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com> <Yi6tPLLt9Q+ailQ3@iki.fi> <Yi6tinbF+Y7a66eQ@iki.fi> <Yi6va4dCaljiQ1WQ@iki.fi> <op.1i01q9s0wjvjmi@hhuan26-mobl1.mshome.net> <YjK7BppjPCio0xv7@iki.fi>
+Date:   Thu, 17 Mar 2022 09:47:36 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1 1/3] cpufreq: CPPC: Add cppc_cpufreq_search_cpu_data
-Content-Language: en-US
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
-        Lukasz.Luba@arm.com, Morten.Rasmussen@arm.com,
-        Dietmar.Eggemann@arm.com, mka@chromium.org,
-        daniel.lezcano@linaro.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Fuad Tabba <tabba@google.com>, Rob Herring <robh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
-References: <20220317133419.3901736-1-Pierre.Gondois@arm.com>
- <20220317133419.3901736-2-Pierre.Gondois@arm.com>
- <746641141c630dc1d02943d6133a6c8d@kernel.org>
-From:   Pierre Gondois <pierre.gondois@arm.com>
-In-Reply-To: <746641141c630dc1d02943d6133a6c8d@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
+From:   "Haitao Huang" <haitao.huang@linux.intel.com>
+Organization: Intel Corp
+Message-ID: <op.1i6jdmnqwjvjmi@hhuan26-mobl1.mshome.net>
+In-Reply-To: <YjK7BppjPCio0xv7@iki.fi>
+User-Agent: Opera Mail/1.0 (Win32)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 16 Mar 2022 23:37:26 -0500, Jarkko Sakkinen <jarkko@kernel.org>  
+wrote:
 
+> On Mon, Mar 14, 2022 at 10:39:36AM -0500, Haitao Huang wrote:
+>> I also see this model as consistent to what kernel does for regular  
+>> memory
+>> mappings: adding physical pages on #PF or pre-fault and changing PTE
+>> permissions only after mprotect is called.
+>
+> And you were against this in EAUG's case. As in the EAUG's case
+> EMODPR could be done as part of the mprotect() flow.
+>
 
-On 3/17/22 15:20, Marc Zyngier wrote:
-> On 2022-03-17 13:34, Pierre Gondois wrote:
->> cppc_cpufreq_get_cpu_data() allocates a new struct cppc_cpudata
->> for the input CPU at each call.
->>
->> To search the struct associated with a cpu without allocating
->> a new one, add cppc_cpufreq_search_cpu_data().
->> Also add an early prototype.
->>
->> This will be used in a later patch, when generating artificial
->> performance states to register an artificial Energy Model in the
->> cppc_cpufreq driver and enable the Energy Aware Scheduler for ACPI
->> based systems.
->>
->> Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
->> ---
->>   drivers/cpufreq/cppc_cpufreq.c | 15 +++++++++++++++
->>   1 file changed, 15 insertions(+)
->>
->> diff --git a/drivers/cpufreq/cppc_cpufreq.c
->> b/drivers/cpufreq/cppc_cpufreq.c
->> index 82d370ae6a4a..8f950fe72765 100644
->> --- a/drivers/cpufreq/cppc_cpufreq.c
->> +++ b/drivers/cpufreq/cppc_cpufreq.c
->> @@ -41,6 +41,8 @@
->>    */
->>   static LIST_HEAD(cpu_data_list);
->>
->> +static struct cppc_cpudata *cppc_cpufreq_search_cpu_data(unsigned int
->> cpu);
->> +
->>   static bool boost_supported;
->>
->>   struct cppc_workaround_oem_info {
->> @@ -479,6 +481,19 @@ static void cppc_cpufreq_put_cpu_data(struct
->> cpufreq_policy *policy)
->>   	policy->driver_data = NULL;
->>   }
->>
->> +static inline struct cppc_cpudata *
-> 
-> Why the inline? This is hardly performance critical, and if
-> it is, you want something better than iterating over a list.
+I preferred not automatic/unconditional EAUG during mmap.
+Here I think automatic/unconditional EMODPR(PROT_READ) on #PF would not  
+work for all cases. See my reply to your other email.
 
-This was made inline mainly because the function was small. The function
-is called only at boot, so it should not be performance critical. The
-'inline' can be removed if necessary.
-Would letting it inlined have a negative impact ?
-
-
-> 
->> +cppc_cpufreq_search_cpu_data(unsigned int cpu)
->> +{
->> +	struct cppc_cpudata *iter, *tmp;
->> +
->> +	list_for_each_entry_safe(iter, tmp, &cpu_data_list, node) {
->> +		if (cpumask_test_cpu(cpu, iter->shared_cpu_map))
->> +			return iter;
->> +	}
->> +
->> +	return NULL;
->> +}
->> +
->>   static int cppc_cpufreq_cpu_init(struct cpufreq_policy *policy)
->>   {
->>   	unsigned int cpu = policy->cpu;
-> 
-> Thanks,
-> 
->           M.
-
-Regards,
-Pierre
+Thanks
+Haitao
