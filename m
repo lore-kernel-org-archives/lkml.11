@@ -2,220 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC940C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234603AbiCQNeT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 09:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
+        id S234613AbiCQNfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 09:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230392AbiCQNeP (ORCPT
+        with ESMTP id S234604AbiCQNfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 09:34:15 -0400
-Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4526284EC1;
-        Thu, 17 Mar 2022 06:32:57 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id D71BD3EF8C9;
-        Thu, 17 Mar 2022 09:32:55 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id XwBmmPWWkR0C; Thu, 17 Mar 2022 09:32:55 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 4F70D3EF77F;
-        Thu, 17 Mar 2022 09:32:55 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 4F70D3EF77F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1647523975;
-        bh=wct8eVEa0hyiF8ndwRu5T5PaGpotfWjNhp+9R8kW+s8=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=lGnED4zxgbG0vseXdlUEavmRoPLg4UR394DvrGypfKoiiEMidhk9TLgbIcCY0KpOz
-         DRse9pJkcPn2acV0pe8YeElkPGA+cU5LxWAD+j0IamHsxFh8x6rXt1qgj3ae7yyCbV
-         81iEu+yA17cwl++bvfzucRRGsZ4S51iT0irUtJsP0U0G13hKo3/0dZw2EtvMAhGZF3
-         PUhfOKR73ccoiszTXWmWXfSZozyeIWu6Tc99N/M4zpMA1FTGHoGlnbOIfaXLVn0Wr0
-         6upvTZ4E5ciHcvM3BLCAbOnTLUeazTLKWCzxOxHnzDmFzdu78i42OdsyGxXVdI2KbG
-         UPMi16FjDA8bw==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id msDecMQlYrpc; Thu, 17 Mar 2022 09:32:55 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 39C4C3EFA91;
-        Thu, 17 Mar 2022 09:32:55 -0400 (EDT)
-Date:   Thu, 17 Mar 2022 09:32:55 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        paulmck <paulmck@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Radoslaw Burny <rburny@google.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Message-ID: <636955156.156341.1647523975127.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20220316224548.500123-2-namhyung@kernel.org>
-References: <20220316224548.500123-1-namhyung@kernel.org> <20220316224548.500123-2-namhyung@kernel.org>
-Subject: Re: [PATCH 1/2] locking: Add lock contention tracepoints
+        Thu, 17 Mar 2022 09:35:48 -0400
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com [209.85.219.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4637E1D8327;
+        Thu, 17 Mar 2022 06:34:32 -0700 (PDT)
+Received: by mail-yb1-f176.google.com with SMTP id m67so10263636ybm.4;
+        Thu, 17 Mar 2022 06:34:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bVTYHCw+sIjTpGlaPwKVewFptDurXIS2uuawHeJHLLA=;
+        b=BAtPILSFs0nOVFUgxIJXGVA8Vn2gs6IHJTl3UVn2oIYb07qBdvEcM+TxzOBQ0GUKyl
+         PYwl10DDAgfPGI3peyrO21r47edXNngbEqLCpOS6lD7zBR9viMXpi4SxSMI5FYYLbybj
+         yXfCxOj3QhZFyJFmIxsB3aLRjKHkHx0vSyBMohfyYNXR9lUwfxrisNCittoZAJpcmXsq
+         MWy7dl5KV1R4TgfXyCrrF9hgHrOoh1jnLWxYBX+DPgySFJ7oWOnVmpBx4shF/ShP74n5
+         iSkyc9MjSoT6ojrItTnPxRvzlIITWLjjIKfZTMBiCFtbw3kd7Nm1KYiEGaV8LfJQ3MuF
+         JCsg==
+X-Gm-Message-State: AOAM532mF7MR/mLo83auoMzkIy8EMx5E+Bj5cL9f5rP0GXZkHCBTav1J
+        XKAwrpHxr3/crNABaPsFduh1W6/lvSllth6czm4=
+X-Google-Smtp-Source: ABdhPJy6DKisf5GePZUAUsw10mXzY76VFI0VY63YMwwR6uG1gCWv7s4+Qd2m05v8v17o1iGhmVwXH1okd/5VI0MkbZc=
+X-Received: by 2002:a25:3a41:0:b0:628:86a2:dbc with SMTP id
+ h62-20020a253a41000000b0062886a20dbcmr4619617yba.633.1647524071539; Thu, 17
+ Mar 2022 06:34:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF98 (Linux)/8.8.15_GA_4232)
-Thread-Topic: locking: Add lock contention tracepoints
-Thread-Index: PDRNuPsg7auX4dM8Q+u651v+KCfqMw==
+References: <2630560.mvXUDI8C0e@kreacher> <5558236.DvuYhMxLoT@kreacher>
+In-Reply-To: <5558236.DvuYhMxLoT@kreacher>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 17 Mar 2022 14:34:20 +0100
+Message-ID: <CAJZ5v0jEFdDdw3TLAFwwSjHrruk9ak4KNXjzZjcXz-7jyVFrxg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] cpuidle: intel_idle: Update intel_idle() kerneldoc comment
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ On Mar 16, 2022, at 6:45 PM, Namhyung Kim namhyung@kernel.org wrote:
-
-> This adds two new lock contention tracepoints like below:
-> 
-> * lock:contention_begin
-> * lock:contention_end
-> 
-> The lock:contention_begin takes a flags argument to classify locks.  I
-> found it useful to identify what kind of locks it's tracing like if
-> it's spinning or sleeping, reader-writer lock, real-time, and per-cpu.
-> 
-> Move tracepoint definitions into mutex.c so that we can use them
-> without lockdep.
-> 
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+On Tue, Mar 15, 2022 at 8:37 PM Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
+>
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>
+> Commit bf9282dc26e7 ("cpuidle: Make CPUIDLE_FLAG_TLB_FLUSHED generic")
+> moved the leave_mm() call away from intel_idle(), but it didn't update
+> its kerneldoc comment accordingly, so do that now.
+>
+> Fixes: bf9282dc26e7 ("cpuidle: Make CPUIDLE_FLAG_TLB_FLUSHED generic")
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 > ---
-> include/trace/events/lock.h | 54 ++++++++++++++++++++++++++++++++++---
-> kernel/locking/lockdep.c    |  1 -
-> kernel/locking/mutex.c      |  3 +++
-> 3 files changed, 54 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/trace/events/lock.h b/include/trace/events/lock.h
-> index d7512129a324..2a3df36d4fdb 100644
-> --- a/include/trace/events/lock.h
-> +++ b/include/trace/events/lock.h
-> @@ -5,11 +5,21 @@
-> #if !defined(_TRACE_LOCK_H) || defined(TRACE_HEADER_MULTI_READ)
-> #define _TRACE_LOCK_H
-> 
-> -#include <linux/lockdep.h>
-> +#include <linux/sched.h>
-> #include <linux/tracepoint.h>
-> 
-> +/* flags for lock:contention_begin */
-> +#define LCB_F_SPIN	(1U << 0)
-> +#define LCB_F_READ	(1U << 1)
-> +#define LCB_F_WRITE	(1U << 2)
-> +#define LCB_F_RT	(1U << 3)
-> +#define LCB_F_PERCPU	(1U << 4)
+>  drivers/idle/intel_idle.c |    3 ---
+>  1 file changed, 3 deletions(-)
+>
+> Index: linux-pm/drivers/idle/intel_idle.c
+> ===================================================================
+> --- linux-pm.orig/drivers/idle/intel_idle.c
+> +++ linux-pm/drivers/idle/intel_idle.c
+> @@ -122,9 +122,6 @@ static unsigned int mwait_substates __in
+>   * If the local APIC timer is not known to be reliable in the target idle state,
+>   * enable one-shot tick broadcasting for the target CPU before executing MWAIT.
+>   *
+> - * Optionally call leave_mm() for the target CPU upfront to avoid wakeups due to
+> - * flushing user TLBs.
+> - *
+>   * Must be called under local_irq_disable().
+>   */
+>  static __cpuidle int intel_idle(struct cpuidle_device *dev,
+>
 
-Unless there is a particular reason for using preprocessor defines here, the
-following form is typically better because it does not pollute the preprocessor
-defines, e.g.:
-
-enum lock_contention_flags {
-        LCB_F_SPIN =   1U << 0;
-        LCB_F_READ =   1U << 1;
-        LCB_F_WRITE =  1U << 2;
-        LCB_F_RT =     1U << 3;
-        LCB_F_PERCPU = 1U << 4;
-};
-
-Thanks,
-
-Mathieu
-
-> +
-> +
-> #ifdef CONFIG_LOCKDEP
-> 
-> +#include <linux/lockdep.h>
-> +
-> TRACE_EVENT(lock_acquire,
-> 
-> 	TP_PROTO(struct lockdep_map *lock, unsigned int subclass,
-> @@ -78,8 +88,46 @@ DEFINE_EVENT(lock, lock_acquired,
-> 	TP_ARGS(lock, ip)
-> );
-> 
-> -#endif
-> -#endif
-> +#endif /* CONFIG_LOCK_STAT */
-> +#endif /* CONFIG_LOCKDEP */
-> +
-> +TRACE_EVENT(contention_begin,
-> +
-> +	TP_PROTO(void *lock, unsigned int flags),
-> +
-> +	TP_ARGS(lock, flags),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(void *, lock_addr)
-> +		__field(unsigned int, flags)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->lock_addr = lock;
-> +		__entry->flags = flags;
-> +	),
-> +
-> +	TP_printk("%p (flags=%x)", __entry->lock_addr, __entry->flags)
-> +);
-> +
-> +TRACE_EVENT(contention_end,
-> +
-> +	TP_PROTO(void *lock, int ret),
-> +
-> +	TP_ARGS(lock, ret),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(void *, lock_addr)
-> +		__field(int, ret)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->lock_addr = lock;
-> +		__entry->ret = ret;
-> +	),
-> +
-> +	TP_printk("%p (ret=%d)", __entry->lock_addr, __entry->ret)
-> +);
-> 
-> #endif /* _TRACE_LOCK_H */
-> 
-> diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-> index 50036c10b518..08f8fb6a2d1e 100644
-> --- a/kernel/locking/lockdep.c
-> +++ b/kernel/locking/lockdep.c
-> @@ -60,7 +60,6 @@
-> 
-> #include "lockdep_internals.h"
-> 
-> -#define CREATE_TRACE_POINTS
-> #include <trace/events/lock.h>
-> 
-> #ifdef CONFIG_PROVE_LOCKING
-> diff --git a/kernel/locking/mutex.c b/kernel/locking/mutex.c
-> index 5e3585950ec8..ee2fd7614a93 100644
-> --- a/kernel/locking/mutex.c
-> +++ b/kernel/locking/mutex.c
-> @@ -30,6 +30,9 @@
-> #include <linux/debug_locks.h>
-> #include <linux/osq_lock.h>
-> 
-> +#define CREATE_TRACE_POINTS
-> +#include <trace/events/lock.h>
-> +
-> #ifndef CONFIG_PREEMPT_RT
-> #include "mutex.h"
-> 
-> --
-> 2.35.1.894.gb6a874cedc-goog
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Assuming no objections, so applied.
