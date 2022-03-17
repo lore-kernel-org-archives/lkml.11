@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4675EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98AA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbiCQIUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
+        id S230520AbiCQIUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbiCQIT6 (ORCPT
+        with ESMTP id S229599AbiCQIT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Mar 2022 04:19:58 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A10D149648
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319CB149644
         for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:18:38 -0700 (PDT)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:f500:58f9:d953:424b])
-        by michel.telenet-ops.be with bizsmtp
-        id 7LJa2700R0M4NNo06LJaKT; Thu, 17 Mar 2022 09:18:36 +0100
+        by albert.telenet-ops.be with bizsmtp
+        id 7LJa2700a0M4NNo06LJafd; Thu, 17 Mar 2022 09:18:36 +0100
 Received: from rox.of.borg ([192.168.97.57] helo=rox)
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nUlL8-004vC9-4S; Thu, 17 Mar 2022 09:18:34 +0100
+        id 1nUlL8-004vC6-6p; Thu, 17 Mar 2022 09:18:34 +0100
 Received: from geert by rox with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nUlL7-00559q-8c; Thu, 17 Mar 2022 09:18:33 +0100
+        id 1nUlL7-00559Z-5V; Thu, 17 Mar 2022 09:18:33 +0100
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
@@ -37,99 +37,50 @@ To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 3/5] drm/ssd130x: Fix rectangle updates
-Date:   Thu, 17 Mar 2022 09:18:28 +0100
-Message-Id: <20220317081830.1211400-4-geert@linux-m68k.org>
+Subject: [PATCH v2 0/5] drm: Fix monochrome conversion for sdd130x
+Date:   Thu, 17 Mar 2022 09:18:25 +0100
+Message-Id: <20220317081830.1211400-1-geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220317081830.1211400-1-geert@linux-m68k.org>
-References: <20220317081830.1211400-1-geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The rectangle update functions ssd130x_fb_blit_rect() and
-ssd130x_update_rect() do not behave correctly when x1 != 0 or y1 !=
-0, or when y1 or y2 are not aligned to display page boundaries.
-E.g. when used as a text console, only the first line of text is shown
-on the display.
+        Hi all,
 
-  1. The buffer passed by ssd130x_fb_blit_rect() points to the first
-     byte of monochrome bitmap data, and thus has its origin at (x1,
-     y1), while ssd130x_update_rect() assumes it is at (0, 0).
-     Fix ssd130x_update_rect() by changing the vertical and horizontal
-     loop ranges, and adding the offsets only when needed.
+This patch series contains fixes and improvements for the XRGB888 to
+monochrome conversion in the DRM core, and for its users.
 
-  2. In ssd130x_fb_blit_rect(), align y1 and y2 to the display page
-     boundaries before doing the color conversion, so the full page
-     is converted and updated.
-     Remove the correction for an unaligned y1 from
-     ssd130x_update_rect(), and add a check to make sure y1 is aligned.
+This has been tested on an Adafruit FeatherWing 128x32 OLED, connected
+to an OrangeCrab ECP5 FPGA board running a 64 MHz VexRiscv RISC-V
+softcore, using a text console with 4x6, 7x14 and 8x8 fonts.
 
-Fixes: a61732e808672cfa ("drm: Add driver for Solomon SSD130x OLED displays")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Javier Martinez Canillas <javierm@redhat.com>
----
-v2:
-  - Add Acked-by.
+Thanks!
 
-Note that instead of calling drm_fb_xrgb8888_to_mono() and transposing
-the bitmap, the image data could be converted to the transposed format
-directly.  However, that would preclude exposing a monochrome format to
-userspace when a fourcc for such a monochrome format is introduced.
----
- drivers/gpu/drm/solomon/ssd130x.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+Geert Uytterhoeven (5):
+  drm/format-helper: Rename drm_fb_xrgb8888_to_mono_reversed()
+  drm/format-helper: Fix XRGB888 to monochrome conversion
+  drm/ssd130x: Fix rectangle updates
+  drm/ssd130x: Reduce temporary buffer sizes
+  drm/repaper: Reduce temporary buffer size in repaper_fb_dirty()
 
-diff --git a/drivers/gpu/drm/solomon/ssd130x.c b/drivers/gpu/drm/solomon/ssd130x.c
-index caee851efd5726e7..7c99af4ce9dd4e5c 100644
---- a/drivers/gpu/drm/solomon/ssd130x.c
-+++ b/drivers/gpu/drm/solomon/ssd130x.c
-@@ -355,11 +355,14 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	unsigned int width = drm_rect_width(rect);
- 	unsigned int height = drm_rect_height(rect);
- 	unsigned int line_length = DIV_ROUND_UP(width, 8);
--	unsigned int pages = DIV_ROUND_UP(y % 8 + height, 8);
-+	unsigned int pages = DIV_ROUND_UP(height, 8);
-+	struct drm_device *drm = &ssd130x->drm;
- 	u32 array_idx = 0;
- 	int ret, i, j, k;
- 	u8 *data_array = NULL;
- 
-+	drm_WARN_ONCE(drm, y % 8 != 0, "y must be aligned to screen page\n");
-+
- 	data_array = kcalloc(width, pages, GFP_KERNEL);
- 	if (!data_array)
- 		return -ENOMEM;
-@@ -401,13 +404,13 @@ static int ssd130x_update_rect(struct ssd130x_device *ssd130x, u8 *buf,
- 	if (ret < 0)
- 		goto out_free;
- 
--	for (i = y / 8; i < y / 8 + pages; i++) {
-+	for (i = 0; i < pages; i++) {
- 		int m = 8;
- 
- 		/* Last page may be partial */
--		if (8 * (i + 1) > ssd130x->height)
-+		if (8 * (y / 8 + i + 1) > ssd130x->height)
- 			m = ssd130x->height % 8;
--		for (j = x; j < x + width; j++) {
-+		for (j = 0; j < width; j++) {
- 			u8 data = 0;
- 
- 			for (k = 0; k < m; k++) {
-@@ -454,6 +457,10 @@ static int ssd130x_fb_blit_rect(struct drm_framebuffer *fb, const struct iosys_m
- 	int ret = 0;
- 	u8 *buf = NULL;
- 
-+	/* Align y to display page boundaries */
-+	rect->y1 = round_down(rect->y1, 8);
-+	rect->y2 = min_t(unsigned int, round_up(rect->y2, 8), ssd130x->height);
-+
- 	buf = kcalloc(fb->width, fb->height, GFP_KERNEL);
- 	if (!buf)
- 		return -ENOMEM;
+ drivers/gpu/drm/drm_format_helper.c | 74 +++++++++++------------------
+ drivers/gpu/drm/solomon/ssd130x.c   | 24 +++++++---
+ drivers/gpu/drm/tiny/repaper.c      |  4 +-
+ include/drm/drm_format_helper.h     |  5 +-
+ 4 files changed, 48 insertions(+), 59 deletions(-)
+
 -- 
 2.25.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
