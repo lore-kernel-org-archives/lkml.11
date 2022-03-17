@@ -2,83 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1332C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BC3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234793AbiCQOQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48386 "EHLO
+        id S234920AbiCQOQh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233290AbiCQOQJ (ORCPT
+        with ESMTP id S234866AbiCQOQd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:16:09 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BCBA6E1D;
-        Thu, 17 Mar 2022 07:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=75pCC8pCmtUToJup8gThaeeaMx/WM4Wbw3nLi1njfHE=; b=Wx+mEggFd3WNHg/gDH8VjqPvEu
-        0HE5nRP8IRhSRGrBiXVCsOQP0Rkiz+rRkdRt56xwj9GbBpEB7kl30F2DD/ozcebaLB+Qm7qkTFJdd
-        lbDVnVlmbbWLPIpmJ8sdxhQbwMf5IPzJALphzjIjmK96r5XW/aLm9i/pFZtLVQHu/LRM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nUqtc-00BQDn-OL; Thu, 17 Mar 2022 15:14:32 +0100
-Date:   Thu, 17 Mar 2022 15:14:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v2 1/8] dt-bindings: pinctrl: mvebu: Document bindings
- for AC5
-Message-ID: <YjNCSENOP8EyWArw@lunn.ch>
-References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
- <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
- <4e6df448-5562-8f50-6f46-91acb279bc1a@canonical.com>
- <7e73bba0-8b54-772c-2e94-8fca4e4e3294@alliedtelesis.co.nz>
- <cb0af80e-3e5a-fbd9-cd8b-7b252ebe33fe@canonical.com>
- <6d902e7d-b71f-9dcd-9175-cc706e3d60cc@alliedtelesis.co.nz>
- <4b1f4772-35f9-3e21-6429-b64c7427144a@canonical.com>
+        Thu, 17 Mar 2022 10:16:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B2DA6E1D;
+        Thu, 17 Mar 2022 07:15:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31DB3617BE;
+        Thu, 17 Mar 2022 14:15:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E5EC340E9;
+        Thu, 17 Mar 2022 14:15:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647526511;
+        bh=Gw06cUiqZUFqaQ47kCBtK/oLuXtFQCo2+/8QuxFZfl8=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=ttAwNCiZfGksZpSzkyklqcmY6KoXhdZmcnUpZXPNhpZS+flX7riy2hVdfRRcbIp5G
+         8IjZQRHDP2l4PJYlo7NOljcIC3pFMApz+fWqWCFhdr66uOApjpzg7uV7OD7FzZYfZa
+         6nvl++P+fZ4nWxrlF2vC79amqP4do/zeI0EV4ugJwM2OqXad5UQSnNymM1JuOkQRWz
+         CutvRCb7Rs0w1FXBh6+aLKtE3u90bZMCqBEzsTgSEOjj2OlvtGLm/EWV0OLemqGdQn
+         0eVVS5iRa1I1MbhBlM7SafO/tTbeR4vVhbq4QM4ixsO4m/+bi5SWh7d0HXnN2K+FZ9
+         TpsJBZsQJeEYg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4b1f4772-35f9-3e21-6429-b64c7427144a@canonical.com>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] iwlwifi: mei: fix building iwlmei
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220316183617.1470631-1-arnd@kernel.org>
+References: <20220316183617.1470631-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164752649601.16149.4589465777164464023.kvalo@kernel.org>
+Date:   Thu, 17 Mar 2022 14:15:09 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> What do you mean "driver fails to load"? You control the driver, don't
-> you?
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-It is a thin wrapper around the mvebu driver, which does all the real
-work. So no, Chris does not really control what the core of the driver
-does.
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Building iwlmei without CONFIG_CFG80211 causes a link-time warning:
+> 
+> ld.lld: error: undefined symbol: ieee80211_hdrlen
+> >>> referenced by net.c
+> >>>               net/wireless/intel/iwlwifi/mei/net.o:(iwl_mei_tx_copy_to_csme) in archive drivers/built-in.a
+> 
+> Add an explicit dependency to avoid this. In theory it should not
+> be needed here, but it also seems pointless to allow IWLMEI
+> for configurations without CFG80211.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Acked-by: Emmanuel Grumbach <Emmanuel.grumbach@intel.com>
+> Acked-by: Luca Coelho <luciano.coelho@intel.com>
 
-The existing binding documentation says:
+Patch applied to wireless-next.git, thanks.
 
-    * Marvell Armada 37xx SoC pin and gpio controller
+066291bec0c5 iwlwifi: mei: fix building iwlmei
 
-    Each Armada 37xx SoC come with two pin and gpio controller one for
-    the south bridge and the other for the north bridge.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20220316183617.1470631-1-arnd@kernel.org/
 
-    Inside this set of register the gpio latch allows exposing some
-    configuration of the SoC and especially the clock frequency of the
-    xtal. Hence, this node is a represent as syscon allowing sharing
-    the register between multiple hardware block.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-
-So the syscon is there to allow the clock driver to share the register
-space.
-
-	Andrew
