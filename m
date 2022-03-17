@@ -2,70 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84053C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 844E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:33:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229666AbiCQFW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 01:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
+        id S229472AbiCQFe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 01:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiCQFWz (ORCPT
+        with ESMTP id S229448AbiCQFez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 01:22:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01612895A5;
-        Wed, 16 Mar 2022 22:12:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36624B81DB3;
-        Thu, 17 Mar 2022 03:35:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E4B4C340E9;
-        Thu, 17 Mar 2022 03:35:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647488149;
-        bh=paWihGFxhBOaMt0VHs3SQWTSWY2AWfDsf6Gl2cAcNZo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=f7hrjNVghhi7pksepcE3OBmuuXEm0FqXXG40l6Kgsxg7Hgr5eJ+qPw6Ob93UgcQzI
-         Db8CihnqZOn2uVam/6thFgWTqWM4xw4U9a1MJnDWNA8j/A+fY/pp/0tEQh3dyAxy7Q
-         PYwEoNf5Ia16QOQvAy3XgMQCiNPXz5qbaCe+9kaE4K2luLCQliWzdJY29md4viXeF5
-         byTlpWJYWIfrO+n/+FvCB+kY7DKgy2f8ZqhHvuelVK5uF08VWlml/d6w8pfUoGu/Js
-         4pmSgoGWJ9Lop7o1BaoISknVZYJTSE831ZSfcoXFAlGkoTzkxXLQ2P7z/lFXwZDz/A
-         vArm0urldSIKw==
-Message-ID: <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org>
-Date:   Wed, 16 Mar 2022 21:35:47 -0600
+        Thu, 17 Mar 2022 01:34:55 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9182335F8
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:02:36 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id kd12so3495348qvb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:02:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VvVRu/eQ4rluWWC4xLbR2tgbkWAUCRDnVAYNhV1Z6xc=;
+        b=M8svGS/iYe/6Axq12vi5bRDCEMlzc6Ij8qRz9Jv2zShz/ObYi/K8LvxnXddnqwdlZ5
+         Hy8n9AmCKbusB4osSPTnHAVp8vUxmh7SSg9lwbwwufhybms+bvk63V8UIvo3q7mbeWUr
+         ms0f7znXjC7cHbVmrOohql/i6f8ctFGbu8I9sNEgFyiZeOLtmREtacl8Yw4snmOA8pXM
+         kQilYsz8Wh8v2crCMneeQf+7yJnPEZ2x4vdo/qdi/D/NOFRsSbZ+5MsxXFKvgaMYLpf+
+         WUk8rZ4g3h3S5QvnL30UOp/JJuMmWm3L6uvPr4rQBgKs/g6hiojbCciTRUP/h0N9SzjX
+         D/YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VvVRu/eQ4rluWWC4xLbR2tgbkWAUCRDnVAYNhV1Z6xc=;
+        b=AC1TZFB+NXjyApUwfjEqJG8AnFd/vH2QU5AKNbpXNYrAExtcGNlSTcCag1tS2Smuly
+         zF7KoOxgCchy4RjquJQs74qtuVfrpHyJDMC7fS0xsAgrs3FuWKddp0A4fDQAg9DT05J4
+         hxuHjkDIyegAcXd14C5QLP7OBsdQlDvJfSqS1ySn33h7JTvbyWbxcYtMe2Zluv6TCTf9
+         yUCTMNzWVQshhIfuEcjdpnnFequB0h6QgjVI9hCR3S8qTYkcg4bWZ1E/oQMwtvNY+Tjg
+         A1hK2v810M9grJuTknG0Gj5BUotgBx99IxYPo295sgHsLAxGalROff3Ljb3d8fmd8SPO
+         eR4A==
+X-Gm-Message-State: AOAM533dvB6pb0wILK6ICz5KeFwWilIsokqi1hGXXOErbITuoriA38CH
+        ddhWTKlzYqMSrsEm5NWPNo/f7/4p8+Xznw==
+X-Google-Smtp-Source: ABdhPJyi19/Qz8TowVm2OmKd/W9qF6RFe2vVau6sqR7JL6Hr7iGFozZcp/GI1PSjE0Jf1/f0WMuLow==
+X-Received: by 2002:a17:903:234d:b0:153:b63f:8abf with SMTP id c13-20020a170903234d00b00153b63f8abfmr3060697plh.51.1647489342392;
+        Wed, 16 Mar 2022 20:55:42 -0700 (PDT)
+Received: from localhost.localdomain ([122.171.160.59])
+        by smtp.gmail.com with ESMTPSA id 132-20020a62168a000000b004f40e8b3133sm5074436pfw.188.2022.03.16.20.55.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 20:55:41 -0700 (PDT)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Atish Patra <atishp@atishpatra.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>, kvm@vger.kernel.org,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Anup Patel <apatel@ventanamicro.com>,
+        stable@vger.kernel.org
+Subject: [PATCH] RISC-V: KVM: Don't clear hgatp CSR in kvm_arch_vcpu_put()
+Date:   Thu, 17 Mar 2022 09:25:21 +0530
+Message-Id: <20220317035521.272486-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
- to icmp protocol
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, menglong8.dong@gmail.com
-Cc:     pabeni@redhat.com, rostedt@goodmis.org, mingo@redhat.com,
-        xeb@mail.ru, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, benbjiang@tencent.com
-References: <20220316063148.700769-1-imagedong@tencent.com>
- <20220316063148.700769-4-imagedong@tencent.com>
- <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/16/22 9:18 PM, Jakub Kicinski wrote:
-> 
-> I guess this set raises the follow up question to Dave if adding 
-> drop reasons to places with MIB exception stats means improving 
-> the granularity or one MIB stat == one reason?
-> 
+We might have RISC-V systems (such as QEMU) where VMID is not part
+of the TLB entry tag so these systems will have to flush all TLB
+enteries upon any change in hgatp.VMID.
 
-There are a few examples where multiple MIB stats are bumped on a drop,
-but the reason code should always be set based on first failure. Did you
-mean something else with your question?
+Currently, we zero-out hgatp CSR in kvm_arch_vcpu_put() and we
+re-program hgatp CSR in kvm_arch_vcpu_load(). For above described
+systems, this will flush all TLB enteries whenever VCPU exits to
+user-space hence reducing performance.
+
+This patch fixes above described performance issue by not clearing
+hgatp CSR in kvm_arch_vcpu_put().
+
+Fixes: 34bde9d8b9e6 ("RISC-V: KVM: Implement VCPU world-switch")
+Cc: stable@vger.kernel.org
+Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+---
+ arch/riscv/kvm/vcpu.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+index 624166004e36..6785aef4cbd4 100644
+--- a/arch/riscv/kvm/vcpu.c
++++ b/arch/riscv/kvm/vcpu.c
+@@ -653,8 +653,6 @@ void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
+ 				     vcpu->arch.isa);
+ 	kvm_riscv_vcpu_host_fp_restore(&vcpu->arch.host_context);
+ 
+-	csr_write(CSR_HGATP, 0);
+-
+ 	csr->vsstatus = csr_read(CSR_VSSTATUS);
+ 	csr->vsie = csr_read(CSR_VSIE);
+ 	csr->vstvec = csr_read(CSR_VSTVEC);
+-- 
+2.25.1
+
