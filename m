@@ -2,53 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4429C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A17B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236160AbiCQPvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        id S236174AbiCQPvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236168AbiCQPur (ORCPT
+        with ESMTP id S235062AbiCQPvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:50:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60EF7173360;
-        Thu, 17 Mar 2022 08:49:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12BB1B81EF8;
-        Thu, 17 Mar 2022 15:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C16C340E9;
-        Thu, 17 Mar 2022 15:49:25 +0000 (UTC)
-Date:   Thu, 17 Mar 2022 11:49:24 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Zhang Qiao <zhangqiao22@huawei.com>
-Cc:     <paulmck@kernel.org>, <josh@joshtriplett.org>,
-        <mathieu.desnoyers@efficios.com>, <jiangshanlai@gmail.com>,
-        <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] rcu: Use printk_deferred when holding rtp->cbs_gbl_lock
-Message-ID: <20220317114924.791c6500@gandalf.local.home>
-In-Reply-To: <20220317084726.77336-1-zhangqiao22@huawei.com>
-References: <20220317084726.77336-1-zhangqiao22@huawei.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 17 Mar 2022 11:51:06 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C28849A990;
+        Thu, 17 Mar 2022 08:49:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1647532190; x=1679068190;
+  h=from:to:cc:subject:date:message-id;
+  bh=dQspgOQe8R6aBy50ayGKKroELAHAvWCjWGvNGhlXm0k=;
+  b=QESZiVK7Yl6GRoF4NVzcLffpYlPfLn0Rl2qlTpiWRQUjUeZ3sL6+atKM
+   sQS6gs5tMedWdBnxUhDeTgo6WtOgAIE7R129FCiLPkAc4wgowSskKhEsk
+   HlfUxkVAoeh4I8nx8pdWGC2yIMJ1W991lomgqTHHBAuQI9Dxoua3qTMYr
+   E=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 17 Mar 2022 08:49:49 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 17 Mar 2022 08:49:47 -0700
+X-QCInternal: smtphost
+Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 17 Mar 2022 21:19:28 +0530
+Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
+        id 87B7B4CAF; Thu, 17 Mar 2022 21:19:27 +0530 (IST)
+From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+To:     ulf.hansson@linaro.org, robh+dt@kernel.org, krzk+dt@kernel.org,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org
+Cc:     quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
+        quic_sartgarg@quicinc.com, quic_nitirawa@quicinc.com,
+        quic_sayalil@quicinc.com,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Subject: [PATCH V3 0/2] Add reset entries for SDCC controllers
+Date:   Thu, 17 Mar 2022 21:19:23 +0530
+Message-Id: <1647532165-6302-1-git-send-email-quic_c_sbhanu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022 16:47:26 +0800
-Zhang Qiao <zhangqiao22@huawei.com> wrote:
+Changes since V2:
+	- Updated commit subject and comments in dtsi file.
+	- Added resets entry in sdhci-msm dt-bindings.
 
-> This patch tries to avoid this issue by using printk_deferred().
+Changes since V1:
+	- Updated commit message, subject and comments in dtsi file as
+	  suggested by Krzysztof Kozlowski.
 
-Isn't the new printk work suppose to resolve this?
+Shaik Sajida Bhanu (2):
+  dt-bindings: mmc: sdhci-msm: Add gcc resets strings
+  arm64: dts: qcom: sc7280: Add reset entries for SDCC controllers
 
-If so, can we have another way to quiet these splats if that work is not in
-yet?
+ Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 4 ++++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi                | 8 ++++++++
+ 2 files changed, 12 insertions(+)
 
--- Steve
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+of Code Aurora Forum, hosted by The Linux Foundation
+
