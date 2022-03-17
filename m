@@ -2,105 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE00C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8489C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237670AbiCQSxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32942 "EHLO
+        id S236650AbiCQSxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237633AbiCQSxO (ORCPT
+        with ESMTP id S237673AbiCQSxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:53:14 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B842221BBF
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:51:57 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id bx5so5640051pjb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:51:57 -0700 (PDT)
+        Thu, 17 Mar 2022 14:53:17 -0400
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0C4221BBF
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:51:58 -0700 (PDT)
+Received: by mail-oo1-xc34.google.com with SMTP id x26-20020a4a9b9a000000b003211029e80fso7579471ooj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:51:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vw3XaM6v46z2MuOTuiLDtIikE5mFUpXQTggdnZPb20Q=;
-        b=YNQzE2c4U8b/woj51/ICQ9KfXeN9biR00rtSvs3CeHEc5pKderDQ+lRx0Pc4Se4eDG
-         MdjX1//yOBAcpbxT94It7UqzBzhtdndBEZgvISaNEyw9iG83yAlLsuMJpWjh9ZIGm/ef
-         CX5do56FUQ7IEDTgEUxBzfZpjMXbWfJKlzuNcD27yRmMdX9iE7m1OFlKyC7b8cGWb6tF
-         ENwQ1kHdJyUTwjFXpQzJt5KM/MBHKbjjXVlh7Neopn2YpSGU+1zqyBmhnZeKFwwdzL6B
-         dbRSftw+MU//29I2CZWQdUiZpuuql6sVSA/pGsUpnRyaIJnFBoSGfQOotN7gJo19/xuv
-         Rkcw==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=Ln5X3FYiET6quLutW+fBa5PAa2R/NGbsBbvlqsFX1AM=;
+        b=eapkJ4LZQY8T81pdnb187KvmOcaFP3Md1t6sfp1G8G5IWg2d+1ijy0HUIQ/Rhtr9Pf
+         3i5adY8bAYnRNC2pTJL6939FgWt2BAmYngpDRoOW/xazsRctafz1SHRzzhEz033at/HX
+         HkR2YNNeBCqsp6DbDcwqnq+n/HBd9PtSJAEA8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vw3XaM6v46z2MuOTuiLDtIikE5mFUpXQTggdnZPb20Q=;
-        b=jHQsJugpVlev8MOMnUYxxRdObYg7l+U2lAmuCaDHbLCKwPZIADAgv9c+O7wKNywfBQ
-         WVDtHqJX/EQWmYpZXuBjWh3wHnz0fj70mWIxIro9XWTYvjd/w3EqrRp7igPwkpT4Stz2
-         53eMEGL2I7RUhkQsgBYt1l2XAGjGgzwWo8ayyafbr1sLDQTd+AB/cIJCR2hfPaNIQfB5
-         h6+NkSbYbW832wJ0cnFB9SiQkyvB+FiEPoUodWBj7rui0BeEd2XCspvdCekWUj/T4qAR
-         3es2w/ITeIfHFDDEno6tmGq2w7gBUnK1nfs7f5C1AUJ4ZABrXOY8Qbr48QUiePxB/6nk
-         +l5g==
-X-Gm-Message-State: AOAM5309xmdDXMlfo4zSM0rB9QPpx/KFymYCLGf64+fknuWq3a6s7XG0
-        p9A4FXpPPT3wf79uBszyH/MNyvopMPK+DRwlmijA
-X-Google-Smtp-Source: ABdhPJwqBUNPutkqf0ZNA9iXOQ6U8fxduS3yLPrsiTJ0HTunQXu2ts8GnvQ/f5rybTBoEVsneLLdoiD3ctaUsdhl4S4=
-X-Received: by 2002:a17:902:ec89:b0:153:f480:5089 with SMTP id
- x9-20020a170902ec8900b00153f4805089mr3655434plg.166.1647543116685; Thu, 17
- Mar 2022 11:51:56 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=Ln5X3FYiET6quLutW+fBa5PAa2R/NGbsBbvlqsFX1AM=;
+        b=HqzbXyzEKWfd/X0xvmQTi1/XmE4VKGxZ7wuIZe3qbpeDe8zuDKdMv0e5SoDEl9wygo
+         JzmfeF2x4usmVYWbtpwehWuhOYhNPMYmrb0zn9NlUInCWpAzqeF7DJ2cJ2QQgAX5kZfg
+         4bmZ7GKcVGwW6YWMKSou/j6I86h1Vkgf12wcJPt/eozxhM065Z6AcYxxmWBpBeOya60B
+         QD/azvsKKxRkx32yl1xDrBGHa8dUpq2z11x1Cj+R9Xa4Mq5akw1eWkEQiSkz1UH3Ypxo
+         OI1Xbm+AiQcx6I//2iSjJOKpT2d3Tamb/8/hY9TixxRaTGD60godn1ThlwMVaRbaiKZy
+         dOLA==
+X-Gm-Message-State: AOAM531CdPffOCh+VfZyy2vjXovE1Wo0dNBpqT1iDjsla/uwhWoTTe3G
+        bBNB80RKzJdJP7aUVGazpa2vwXhMRS3r7hKtFSY7Tw==
+X-Google-Smtp-Source: ABdhPJwMlEAWZFipgY1vRYdu6iNFOqREpoDQgz2PJ1HtzdTvNDo0OlteL+UgXaH2WcO7uGn8L+oyNE0EVybinDppK4w=
+X-Received: by 2002:a05:6820:199a:b0:324:15f5:a205 with SMTP id
+ bp26-20020a056820199a00b0032415f5a205mr1823338oob.25.1647543117996; Thu, 17
+ Mar 2022 11:51:57 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 17 Mar 2022 14:51:57 -0400
 MIME-Version: 1.0
-References: <20220316213109.2352015-1-morbo@google.com> <AM9PR04MB8397B7734E38A4E60C6965DB96129@AM9PR04MB8397.eurprd04.prod.outlook.com>
-In-Reply-To: <AM9PR04MB8397B7734E38A4E60C6965DB96129@AM9PR04MB8397.eurprd04.prod.outlook.com>
-From:   Bill Wendling <morbo@google.com>
-Date:   Thu, 17 Mar 2022 11:51:45 -0700
-Message-ID: <CAGG=3QXGZKy2HCs=khGbmWC5MWs47S654p1b7SCD+sRqMv2DPQ@mail.gmail.com>
-Subject: Re: [PATCH] enetc: use correct format characters
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+In-Reply-To: <20220316172814.v1.2.Ib0fbb7e5218201c81a2d064ff13c9bc1b0863212@changeid>
+References: <20220316172814.v1.1.I2deda8f2cd6adfbb525a97d8fee008a8477b7b0e@changeid>
+ <20220316172814.v1.2.Ib0fbb7e5218201c81a2d064ff13c9bc1b0863212@changeid>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 17 Mar 2022 14:51:57 -0400
+Message-ID: <CAE-0n516_kKzdfqz2NYw2ROEAd8_Zu+L_Rb2Kg-RhZAjnKTy5w@mail.gmail.com>
+Subject: Re: [PATCH v1 2/4] arm64: dts: qcom: sc7280: Add 'piglin' to the
+ crd-r3 compatible strings
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 10:37 AM Claudiu Manoil <claudiu.manoil@nxp.com> wrote:
+Quoting Matthias Kaehlcke (2022-03-16 17:28:18)
+> With newer bootloader versions the crd-r3 (aka CRD 1.0 and 2.0) is
+> identified as a 'piglin' board (like the IDP2 board), instead of 'hoglin'
+> Add the compatible strings 'google,piglin-rev{3,4}'. The hoglin entries
+> are kept to make sure the board keeps booting with older bootloader
+> versions.
 >
-> > -----Original Message-----
-> > From: Bill Wendling <morbo@google.com>
-> > Sent: Wednesday, March 16, 2022 11:31 PM
-> [...]
-> > Subject: [PATCH] enetc: use correct format characters
-> >
-> > When compiling with -Wformat, clang emits the following warning:
-> >
-> > drivers/net/ethernet/freescale/enetc/enetc_mdio.c:151:22: warning:
-> > format specifies type 'unsigned char' but the argument has type 'int'
-> > [-Wformat]
-> >                         phy_id, dev_addr, regnum);
-> >                                           ^~~~~~
-> > ./include/linux/dev_printk.h:163:47: note: expanded from macro 'dev_dbg'
-> >                 dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
-> >                                                     ~~~     ^~~~~~~~~~~
-> > ./include/linux/dev_printk.h:129:34: note: expanded from macro
-> > 'dev_printk'
-> >                 _dev_printk(level, dev, fmt, ##__VA_ARGS__);            \
-> >                                         ~~~    ^~~~~~~~~~~
-> >
-> > The types of these arguments are unconditionally defined, so this patch
-> > updates the format character to the correct ones for ints and unsigned ints.
-> >
-> > Link: ClangBuiltLinux/linux#378
-> > Signed-off-by: Bill Wendling <morbo@google.com>
+> The compatible string 'google,piglin' (without revision information) is
+> still used by the IDP2 board, which is not expected to evolve further.
 >
-> Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-> Fixes: ebfcb23d62ab ("enetc: Add ENETC PF level external MDIO support")
->
-Thanks Claudiu.
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
 
-Could you change the Link about to this one? It's a valid URL.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-
-> Can be also net-next material. It's up to you. Thx.
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
