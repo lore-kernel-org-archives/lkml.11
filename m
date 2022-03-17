@@ -2,121 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF0AC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0275C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235494AbiCQM7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39760 "EHLO
+        id S234465AbiCQM74 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234716AbiCQMx0 (ORCPT
+        with ESMTP id S234199AbiCQM4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:53:26 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6D61FE576;
-        Thu, 17 Mar 2022 05:51:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D8764CE2340;
-        Thu, 17 Mar 2022 12:51:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF5FC340E9;
-        Thu, 17 Mar 2022 12:51:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521490;
-        bh=WB/A9z0bllwl5fTK4cuQmxEQkRdoAy5zWdRVr5axPS4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QYMz/MKoQTn5tcwxqb+XPeH98ouBYNf/U1N3P5J0b5nNdHIim36cS9njmZQW0qow5
-         U9Xb7o6Por4RTSxvEBT/k6HOgoSurob+D/kPACc04tImvZSLub0pV3GJxnydNt4JQA
-         rR7cHQY9zvHOyrskV5l8+7mroRNtVbGbDMfedGn4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 02/25] arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-Date:   Thu, 17 Mar 2022 13:45:49 +0100
-Message-Id: <20220317124526.381270640@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124526.308079100@linuxfoundation.org>
-References: <20220317124526.308079100@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 17 Mar 2022 08:56:08 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9ACE6C57;
+        Thu, 17 Mar 2022 05:54:17 -0700 (PDT)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nUpdu-0003Ys-Jj; Thu, 17 Mar 2022 13:54:14 +0100
+Message-ID: <d541b534-8b83-b566-56eb-ea8baa7c998e@leemhuis.info>
+Date:   Thu, 17 Mar 2022 13:54:11 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
+ PCI-passed-through to Windows VM
+Content-Language: en-US
+To:     James Turner <linuxkernel.foss@dmarc-none.turner.link>
+Cc:     Alex Deucher <alexdeucher@gmail.com>,
+        "Lazar, Lijo" <lijo.lazar@amd.com>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>
+References: <87ee57c8fu.fsf@turner.link>
+ <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
+ <87a6ftk9qy.fsf@dmarc-none.turner.link> <87zgnp96a4.fsf@turner.link>
+ <fc2b7593-db8f-091c-67a0-ae5ffce71700@leemhuis.info>
+ <CADnq5_Nr5-FR2zP1ViVsD_ZMiW=UHC1wO8_HEGm26K_EG2KDoA@mail.gmail.com>
+ <87czkk1pmt.fsf@dmarc-none.turner.link>
+ <BYAPR12MB46140BE09E37244AE129C01A975C9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87sftfqwlx.fsf@dmarc-none.turner.link>
+ <BYAPR12MB4614E2CFEDDDEAABBAB986A0975E9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87ee4wprsx.fsf@turner.link> <4b3ed7f6-d2b6-443c-970e-d963066ebfe3@amd.com>
+ <87pmo8r6ob.fsf@turner.link>
+ <5a68afe4-1e9e-c683-e06d-30afc2156f14@leemhuis.info>
+ <CADnq5_MCKTLOfWKWvi94Q9-d5CGdWBoWVxEYL3YXOpMiPnLOyg@mail.gmail.com>
+ <87pmnnpmh5.fsf@dmarc-none.turner.link>
+ <CADnq5_NG_dQCYwqHM0umjTMg5Uud6zC4=MiscH91Y9v7mW9bJA@mail.gmail.com>
+ <092b825a-10ff-e197-18a1-d3e3a097b0e3@leemhuis.info>
+ <877d96to55.fsf@dmarc-none.turner.link> <87lexdw8gd.fsf@turner.link>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <87lexdw8gd.fsf@turner.link>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1647521657;08da124f;
+X-HE-SMSGID: 1nUpdu-0003Ys-Jj
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+On 13.03.22 19:33, James Turner wrote:
+>
+>> My understanding at this point is that the root problem is probably
+>> not in the Linux kernel but rather something else (e.g. the machine
+>> firmware or AMD Windows driver) and that the change in f9b7f3703ff9
+>> ("drm/amdgpu/acpi: make ATPX/ATCS structures global (v2)") simply
+>> exposed the underlying problem.
 
-[ Upstream commit ed2c66a95c0c5669880aa93d0d34c6e9694b4cbd ]
+FWIW: that in the end is irrelevant when it comes to the Linux kernel's
+'no regressions' rule. For details see:
 
-The micro USB3.0 port available on the Haikou evaluation kit for Puma
-RK3399-Q7 SoM supports dual-role model (aka drd or OTG) but its support
-was broken until now because of missing logic around the ID pin.
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/admin-guide/reporting-regressions.rst
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/process/handling-regressions.rst
 
-This adds proper support for USB OTG on Puma Haikou by "connecting" the
-GPIO used for USB ID to the USB3 controller device.
+That being said: sometimes for the greater good it's better to not
+insist on that. And I guess that might be the case here.
 
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Link: https://lore.kernel.org/r/20220120125156.16217-1-quentin.schulz@theobroma-systems.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |  1 +
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+> I'm not sure where to go from here. This issue isn't much of a concern> for me anymore, since blacklisting `amdgpu` works for my machine. At>
+this point, my understanding is that the root problem needs to be fixed>
+in AMD's Windows GPU driver or Dell's firmware, not the Linux kernel.
+If> any of the AMD developers on this thread would like to forward it to
+the> AMD Windows driver team, I'd be happy to work with AMD to fix the
+issue> properly.
+In that case I'll drop it from the list of regressions, unless what I
+wrote above makes you change your mind.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-index 292bb7e80cf3..3ae5d727e367 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma-haikou.dts
-@@ -232,6 +232,7 @@
- 
- &usbdrd_dwc3_0 {
- 	dr_mode = "otg";
-+	extcon = <&extcon_usb3>;
- 	status = "okay";
- };
- 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-index fb67db4619ea..002ece51c3ba 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-@@ -25,6 +25,13 @@
- 		};
- 	};
- 
-+	extcon_usb3: extcon-usb3 {
-+		compatible = "linux,extcon-usb-gpio";
-+		id-gpio = <&gpio1 RK_PC2 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&usb3_id>;
-+	};
-+
- 	clkin_gmac: external-gmac-clock {
- 		compatible = "fixed-clock";
- 		clock-frequency = <125000000>;
-@@ -422,6 +429,13 @@
- 			  <4 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
- 		};
- 	};
-+
-+	usb3 {
-+		usb3_id: usb3-id {
-+			rockchip,pins =
-+			  <1 RK_PC2 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
-+	};
- };
- 
- &sdhci {
--- 
-2.34.1
+#regzbot invalid: firmware issue exposed by kernel change, user seems to
+be happy with a workaround
 
+Thx everyone who participated in handling this.
 
+Ciao, Thorsten
 
