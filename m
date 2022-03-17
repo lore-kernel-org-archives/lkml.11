@@ -2,116 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:23:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231751AbiCQJS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
+        id S231822AbiCQJYd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:24:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiCQJSZ (ORCPT
+        with ESMTP id S229480AbiCQJYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:18:25 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29215124C32;
-        Thu, 17 Mar 2022 02:17:08 -0700 (PDT)
-Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MtfRp-1oONmW22Jz-00v6tb; Thu, 17 Mar 2022 10:17:07 +0100
-Received: by mail-wr1-f42.google.com with SMTP id r10so6444443wrp.3;
-        Thu, 17 Mar 2022 02:17:07 -0700 (PDT)
-X-Gm-Message-State: AOAM533aOR4+cyrobtkfyRj1oDMGMwF63p3OjAuP3F0IbfwWZTM5ZtbY
-        mhZKKjjY94Gsh9lcxdYiegB9PoN8ACf5kJmgXh4=
-X-Google-Smtp-Source: ABdhPJzHxRGEWXDlBot3JUsd9DgwDJ6ivxcLghivZobZjz3wwreUXbJML8BPLrLgeRbd4dSRRrBLY4hc87aaQUXL1EU=
-X-Received: by 2002:a05:6000:1e0d:b0:203:e950:7b74 with SMTP id
- bj13-20020a0560001e0d00b00203e9507b74mr1946333wrb.219.1647508627012; Thu, 17
- Mar 2022 02:17:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220316232600.20419-1-palmer@rivosinc.com>
-In-Reply-To: <20220316232600.20419-1-palmer@rivosinc.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 17 Mar 2022 10:16:50 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0J3ViDWserQew2wt95Hnu6AHT5gmSxtUz0x5W2fWdxBA@mail.gmail.com>
-Message-ID: <CAK8P3a0J3ViDWserQew2wt95Hnu6AHT5gmSxtUz0x5W2fWdxBA@mail.gmail.com>
-Subject: Re: [PATCH 0/5] Generic Ticket Spinlocks
-To:     Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     linux-riscv <linux-riscv@lists.infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Openrisc <openrisc@lists.librecores.org>,
+        Thu, 17 Mar 2022 05:24:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A3B126FA2;
+        Thu, 17 Mar 2022 02:23:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 329F8616B2;
+        Thu, 17 Mar 2022 09:23:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DAA4C340E9;
+        Thu, 17 Mar 2022 09:23:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647508991;
+        bh=YGn+Z4H/YBaaOjmefJswWEOVJ5oKib0xXfG0EOkv2Jc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iYQzPnAcGBuGMrTVfPcGOotEs/hPzXCfKWAs2Ouaqc2emPvt/bUdHsyFtBVcd1dIH
+         nqLbIEf82HgdEwolh4hcTsFVhbtBFaW5XyRsexkbQ5GIegJ3ns0jR9csnmUjeLP0Am
+         9Nw0JlAqMW9M+qAApGww2kScdzCHITvXoi+O2SqwoGqMbW6jPl+mZNG0BPIHVg1h/o
+         H9QZgVbwtteqAWsqOxoDsp3nXvki0RZ9WZsJbGK3MlZva00B7q5vPLavTOTFt5g3At
+         jh5Q7rk0hPRP6UqpM1NxwbbXo9fBAvR4b9XvFwagjXQpjyc5TTdBrwnZvPC2pIhNg8
+         rh77u/8BfP0zg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUmLd-00F8Bg-2X; Thu, 17 Mar 2022 09:23:09 +0000
+Date:   Thu, 17 Mar 2022 09:23:08 +0000
+Message-ID: <87wngtx79f.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:A8t+JNQ6hnfKWa5ZvcXXjImC9GHMIrJRw1UUen1iqsyraxUR3B2
- IoPgjisorvwAoB+Zyb1Vr6LscrQ0ft+lf6/vlyMhxuoK7BmeSDmEfycB7T36OFb1hGh9Qjh
- cDYXU1F9M9OvcpV6EIrlccH1mqZmjOQiC7DCeLZI7NV+dzj0Buh6H6DhTJ4aBxWvmkWVd5R
- cHSLUKq3tcy7AUApZ2BUA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:0maHK8ZCjz8=:RcAArPyC15KFEFlLUXqXie
- +YrGxC300capN6HgP2eEXhvAFuBurqss1Eff1jBdCv0spP460aIftn0ii1An5MWa9l7w0Mp7g
- mdFQIWlsHiWqAo6Bm4gifactIrEo7L9vkUHNCZJL4kPfpJ2aue+zPQ2/d2e+nnbJASbRNYctP
- 20INB5uJaIZfSVai1jzWAZs8fpq6NrM1ZC+EY+Fgb8Gh3iMc15lT7UJ5gmblObQgE/g5TMP8t
- PqHQspg9xo6EizCocgwjAQ6KQ2yEe6BCVWIHdIe8HiTgfidi4a5bcuhrkQ2kQF+z0c301GGjp
- MYYBse3vxbsWCds2Rt0Pp3gN48ionkcU124WFMRkbvjx64S3CmKkcfQRDr0P69vWeapUzLZPh
- U/QSE93IHG8Z4ji92VouT8ReNq8GJjuGpwXNFqFBjmaW54JtwZzyJ4HIXxeqfsWXVGxBvQ3ij
- h34AGJalj9gLMDYiE0K2eV9L8gCjVMds9aD0LrLMeY3zYsO3jU0a16T3LeMh/MrFYbQPYOOEL
- GIIjxbY/cXk3JorOmN4lYslu7rPDMcylHOR7nj9HPHIHAEJpbt+s8ivcwQpl1887oV7OLx2J+
- fZpr+EkAjQGdctMA2QHCaxI+ywzVguFc9S9oTqc8otEJclm5kbn5V69QEQvQj7cinoesPwhkV
- z3FvNv2nQnijBabHLw7YZ9BI1XfAArtDu2crLLA+g1fsWv/+CRSqvl38JViBBcGO+wSfEjG+4
- DsPJxC3kD9Vbad+TgjE0xaJiAeHLXnVJuPPzDu7XppI6+EVkOzvievc9AFyanPYPesKmJK6B/
- KXfve/WAFlTd1v/rWUVdhAq4AaM2OIWslIssKe6YgBXEOCjSJM=
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [RFC PATCH v4 0/5] Renesas RZ/G2L IRQC support
+In-Reply-To: <CAHp75Vc+uSNF4L0WCfCyadOqJ6szXS3Ct5BmEUbeQ_aKg1zjWg@mail.gmail.com>
+References: <20220317012404.8069-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <CAHp75Vc+uSNF4L0WCfCyadOqJ6szXS3Ct5BmEUbeQ_aKg1zjWg@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: andy.shevchenko@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com, tglx@linutronix.de, robh+dt@kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, geert+renesas@glider.be, p.zabel@pengutronix.de, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, prabhakar.csengg@gmail.com, biju.das.jz@bp.renesas.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 12:25 AM Palmer Dabbelt <palmer@rivosinc.com> wrote:
->
-> Peter sent an RFC out about a year ago
-> <https://lore.kernel.org/lkml/YHbBBuVFNnI4kjj3@hirez.programming.kicks-ass.net/>,
-> but after a spirited discussion it looks like we lost track of things.
-> IIRC there was broad consensus on this being the way to go, but there
-> was a lot of discussion so I wasn't sure.  Given that it's been a year,
-> I figured it'd be best to just send this out again formatted a bit more
-> explicitly as a patch.
->
-> This has had almost no testing (just a build test on RISC-V defconfig),
-> but I wanted to send it out largely as-is because I didn't have a SOB
-> from Peter on the code.  I had sent around something sort of similar in
-> spirit, but this looks completely re-written.  Just to play it safe I
-> wanted to send out almost exactly as it was posted.  I'd probably rename
-> this tspinlock and tspinlock_types, as the mis-match kind of makes my
-> eyes go funny, but I don't really care that much.  I'll also go through
-> the other ports and see if there's any more candidates, I seem to
-> remember there having been more than just OpenRISC but it's been a
-> while.
->
-> I'm in no big rush for this and given the complex HW dependencies I
-> think it's best to target it for 5.19, that'd give us a full merge
-> window for folks to test/benchmark it on their systems to make sure it's
-> OK.  RISC-V has a forward progress guarantee so we should be safe, but
-> these can always trip things up.
+On Thu, 17 Mar 2022 08:46:14 +0000,
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> 
+> On Thu, Mar 17, 2022 at 5:43 AM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> >
+> > Hi All,
+> >
+> > The RZ/G2L Interrupt Controller is a front-end for the GIC found on
+> > Renesas RZ/G2L SoC's with below pins:
+> > - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI interrupts
+> > - GPIO pins used as external interrupt input pins out of GPIOINT0-122 a
+> >   maximum of only 32 can be mapped to 32 GIC SPI interrupts,
+> > - NMI edge select.
+> >
+> What I want to know now is whether it is going to collide with Marc's
+> series about GPIO IRQ chip constification?
 
-This all looks good to me, feel free to merge the asm-generic
-bits through the riscv tree.
+Probably, but the current scheme will still be alive for some time
+(you'll need a couple of cycles to sort out all the drivers).
 
-Regarding the naming, my preference would be to just use
-this version in place of the (currently useless) asm-generic/spinlock.h,
-and just naming it arch_spin_lock() etc.
+Worse case, this can be fixed at merge time.
 
-This way, converting an architecture to the generic ticket lock can
-be done simply by removing its custom asm/spinlock.h. Or it
-could stay with the current name, but then have a new
-asm-generic/spinlock.h that just includes both asm/ticket_lock.h
-and asm/qrwlock.h.
+	M.
 
-      Arnd
+-- 
+Without deviation from the norm, progress is not possible.
