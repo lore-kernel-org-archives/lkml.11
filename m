@@ -2,92 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28832C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 14:47:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235340AbiCQOs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 10:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
+        id S235392AbiCQOtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 10:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234232AbiCQOs5 (ORCPT
+        with ESMTP id S229482AbiCQOs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 10:48:57 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2472A2016B0;
-        Thu, 17 Mar 2022 07:47:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647528461; x=1679064461;
-  h=to:cc:subject:references:date:mime-version:
-   content-transfer-encoding:from:message-id:in-reply-to;
-  bh=UZap/b0SYrOdXDP0hhu1xHuutZyUBeA2EnD7XmyjMwQ=;
-  b=TU6M44X6GUEv/0pUrbPjRhwZKkdjetXbMx+CoierGZ+t3nuu/6lTLlKW
-   vXNP8SUBChNuLdW9OKaZ2BqLdRRCCZ5wchYF7JeF0oIA6ZNq9YbO8yk4v
-   8B8/vSiQFPzI/pjxNTK4Bl8LzkS8yZkanF0AC4iLuipBWG4C+1u6jvt1c
-   kDRXMswZE7k0k2udarczaaZit4O5tDR9BtK8lg3H+XwEJmSUKe4PQxNDs
-   D232WCIomDp9fs6mmrjs3vb7GRMMPzv4sj5f4Cv28fd1K4tHOOsV4GCfM
-   HRC3VPGvmxlLZS9zhOxajiP+tPtE+wjhIK/oiqvhT/GEU/ARs6JBToty8
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="281671973"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="281671973"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 07:47:40 -0700
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="557958937"
-Received: from hhuan26-mobl1.amr.corp.intel.com (HELO hhuan26-mobl1.mshome.net) ([10.255.39.199])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA; 17 Mar 2022 07:47:38 -0700
-Content-Type: text/plain; charset=iso-8859-15; format=flowed; delsp=yes
-To:     "Jarkko Sakkinen" <jarkko@kernel.org>
-Cc:     "Reinette Chatre" <reinette.chatre@intel.com>,
-        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        nathaniel@profian.com
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-References: <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com> <YimWaAqEnXHbLdjh@iki.fi> <op.1itu5vkewjvjmi@hhuan26-mobl1.mshome.net> <Yis8LV99mORcLYs6@iki.fi> <Yis9rA8uC/0bmWCF@iki.fi> <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com> <Yi6tPLLt9Q+ailQ3@iki.fi> <Yi6tinbF+Y7a66eQ@iki.fi> <Yi6va4dCaljiQ1WQ@iki.fi> <op.1i01q9s0wjvjmi@hhuan26-mobl1.mshome.net> <YjK7BppjPCio0xv7@iki.fi>
-Date:   Thu, 17 Mar 2022 09:47:36 -0500
+        Thu, 17 Mar 2022 10:48:56 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867892013F8;
+        Thu, 17 Mar 2022 07:47:39 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id h15so7697081wrc.6;
+        Thu, 17 Mar 2022 07:47:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iAY6mibbxuK/0wWYDuqywXzaMd/5FzXh9vcIhJweRKY=;
+        b=SJBt57bnGy6HdTYOTZBTGdtMyB/8XA9RnrVj74KIFig/GnWzV7XpERQS1SHmX/fGkT
+         tscdW8wbobBuMLGWv+OUUZZdB1GGnJcIq30C7ljrlfnJWIjFn2EbUfetzzjArQGMhVjW
+         QUylAYAX27+pCNkXZItJmoE8/u87Fs+POSqLHaBAffZUPNRJ5Ua8RNggcwjDtXqNUrAt
+         p1W3UEFTX1wB1gRtyJDECJ9+7rJxDca/2wGklOCK8/NIWbu50opk5KwI5Vg1SSAHu6s+
+         EhC2WbBVS/n1gHFZhq8YOrTrLJ43LB5att9rsRZNQet3j133wbbtM6Ac51EwnO6ux1y1
+         cfmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iAY6mibbxuK/0wWYDuqywXzaMd/5FzXh9vcIhJweRKY=;
+        b=Pxgy63Eqf2poyz+U36okyZwTRUuRGike6tVCBu7ZbE/4sNolBxH82zyO+iNFke4LdS
+         vXJb4MWirU6C3QGKyMN9DcdeiW516klJClwxoSsnFyevMn+uSj3M+D361uch88P1SdEA
+         645rlaqz85CGr0XHc4F1/CUoKpd/uy0M7A9DLoMwyY8jcnHqEbT4i2RrRLlELS88M4N9
+         GFEcV3mKypVkJYJ/+XlaJ+a+OC8jVFFwt9R75qORgUBOsmVd6V/nZGjWV3670ydE1qy9
+         5+a2mcUg6+Z6OKSTc5j1GG1RffgHuW4gUxxtE+0moWL7zQPIe4uG8BrXdJE0hlZ5p4JZ
+         Fsxg==
+X-Gm-Message-State: AOAM532GXd37VDWR3v2w71bkgSPg1N1TxB1md78DwcSTpGjdt+sUHSjE
+        coJoIMj7nYlHwKHqBrar50Q0IHRD5rY=
+X-Google-Smtp-Source: ABdhPJx/2+gFste4yVyJ6+zjQpmPqk5zxgPGnsAv4etjAm3ffaBI/rYPNqu5+Zuxa90g3U9S7GtgYQ==
+X-Received: by 2002:a05:6000:156a:b0:1f1:f168:69ac with SMTP id 10-20020a056000156a00b001f1f16869acmr4568180wrz.184.1647528458014;
+        Thu, 17 Mar 2022 07:47:38 -0700 (PDT)
+Received: from localhost.localdomain ([141.72.243.13])
+        by smtp.gmail.com with ESMTPSA id f12-20020a5d64cc000000b00203d01e1075sm4612768wri.50.2022.03.17.07.47.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 07:47:37 -0700 (PDT)
+From:   Moses Christopher Bollavarapu <mosescb.dev@gmail.com>
+To:     mchehab@kernel.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Moses Christopher Bollavarapu <mosescb.dev@gmail.com>
+Subject: [PATCH] media: ov7640: Use ARRAY_SIZE instead of manual checking
+Date:   Thu, 17 Mar 2022 15:47:14 +0100
+Message-Id: <20220317144714.47442-1-mosescb.dev@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   "Haitao Huang" <haitao.huang@linux.intel.com>
-Organization: Intel Corp
-Message-ID: <op.1i6jdmnqwjvjmi@hhuan26-mobl1.mshome.net>
-In-Reply-To: <YjK7BppjPCio0xv7@iki.fi>
-User-Agent: Opera Mail/1.0 (Win32)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Mar 2022 23:37:26 -0500, Jarkko Sakkinen <jarkko@kernel.org>  
-wrote:
+Currently, the driver ends the reg-val list with a 0xFF as a check to stop
+the loop. Instead an array of reg-vals can be used to avoid this check,
+by using the ARRAY_SIZE(arr) macro to obtain the length of the array and
+iterate over it.
 
-> On Mon, Mar 14, 2022 at 10:39:36AM -0500, Haitao Huang wrote:
->> I also see this model as consistent to what kernel does for regular  
->> memory
->> mappings: adding physical pages on #PF or pre-fault and changing PTE
->> permissions only after mprotect is called.
->
-> And you were against this in EAUG's case. As in the EAUG's case
-> EMODPR could be done as part of the mprotect() flow.
->
+Signed-off-by: Moses Christopher Bollavarapu <mosescb.dev@gmail.com>
+---
+ drivers/media/i2c/ov7640.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-I preferred not automatic/unconditional EAUG during mmap.
-Here I think automatic/unconditional EMODPR(PROT_READ) on #PF would not  
-work for all cases. See my reply to your other email.
+diff --git a/drivers/media/i2c/ov7640.c b/drivers/media/i2c/ov7640.c
+index 010803d58ce8..977cd2d8ad33 100644
+--- a/drivers/media/i2c/ov7640.c
++++ b/drivers/media/i2c/ov7640.c
+@@ -13,23 +13,28 @@
+ MODULE_DESCRIPTION("OmniVision ov7640 sensor driver");
+ MODULE_LICENSE("GPL v2");
+ 
+-static const u8 initial_registers[] = {
+-	0x12, 0x80,
+-	0x12, 0x54,
+-	0x14, 0x24,
+-	0x15, 0x01,
+-	0x28, 0x20,
+-	0x75, 0x82,
+-	0xFF, 0xFF, /* Terminator (reg 0xFF is unused) */
++struct reg_val {
++	u8 reg;
++	u8 val;
+ };
+ 
+-static int write_regs(struct i2c_client *client, const u8 *regs)
+-{
+-	int i;
++static const struct reg_val regval_init[] = {
++	{0x12, 0x80},
++	{0x12, 0x54},
++	{0x14, 0x24},
++	{0x15, 0x01},
++	{0x28, 0x20},
++	{0x75, 0x82},
++};
+ 
+-	for (i = 0; regs[i] != 0xFF; i += 2)
+-		if (i2c_smbus_write_byte_data(client, regs[i], regs[i + 1]) < 0)
++static int write_regs(struct i2c_client *client,
++		const struct reg_val *rv, int len)
++{
++	while (--len >= 0) {
++		if (i2c_smbus_write_byte_data(client, rv->reg, rv->val) < 0)
+ 			return -1;
++		rv++;
++	}
+ 	return 0;
+ }
+ 
+@@ -56,7 +61,7 @@ static int ov7640_probe(struct i2c_client *client,
+ 	v4l_info(client, "chip found @ 0x%02x (%s)\n",
+ 			client->addr << 1, client->adapter->name);
+ 
+-	if (write_regs(client, initial_registers) < 0) {
++	if (write_regs(client, regval_init, ARRAY_SIZE(regval_init)) < 0) {
+ 		v4l_err(client, "error initializing OV7640\n");
+ 		return -ENODEV;
+ 	}
+-- 
+2.30.2
 
-Thanks
-Haitao
