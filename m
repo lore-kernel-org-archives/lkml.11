@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D256DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbiCQUXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 16:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S229619AbiCQUYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 16:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiCQUXl (ORCPT
+        with ESMTP id S229602AbiCQUYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 16:23:41 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5E61427F9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5ynJ63fuZlq/Q/DDYvx8FSGQPk2RfeTabFUx6AZiQ6A=; b=mouiyjq2GiFti606CpaZKdD/0+
-        amvlNWrtul5jE5roZSSspQgi8ps/wFB7OWZH1ZGFnIpe1l9LHIZ9dccSoCU9d15wrN+0OQY85PQQd
-        nfZTpXjSAZhlIdI/LNINaj6EJ5594cMP5K3xWtN7mTCv4HnEGsolNOxeXanSi5xYdPeQCj70SzPXr
-        TJJsMmSXvJ0xR4pGuh7stiwxiYKvSyjLasTPNGfz3KW47KLVlu4dTsiNeoO142dIlpWMzxSG4XxQH
-        QIHhB3cG64FBCt4qkIv7Du2kLwkYdXi0AaAXqahgxASeuqNoWNrWS9/grH4h3+wD8xkqtQCMoRrBo
-        bT0gBf0A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUwcw-001zQw-1N; Thu, 17 Mar 2022 20:21:42 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6E04D9882B3; Thu, 17 Mar 2022 21:21:41 +0100 (CET)
-Date:   Thu, 17 Mar 2022 21:21:41 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@intel.com, luto@kernel.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: Re: [PATCHv6 07/30] x86/traps: Add #VE support for TDX guest
-Message-ID: <20220317202141.GO8939@worktop.programming.kicks-ass.net>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-8-kirill.shutemov@linux.intel.com>
- <877d8t2ykp.ffs@tglx>
- <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
+        Thu, 17 Mar 2022 16:24:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942191459A3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:23:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647548601; x=1679084601;
+  h=message-id:date:mime-version:from:to:cc:references:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=oZJ4KFDXQV7ySk5DGdry86aL5ZaJLmcTxOI6m7btcbY=;
+  b=gqGYnfCQr5R8cvbpc2ophXSMA3KQ8VxfwQ6jg11t322r+sWVbOS6MlHN
+   Q3DaN1SnPoDhkbnsCTmeRGtCbVizHFnCh4GAsuJNSDr8z40QQizRYRnkv
+   wA03Emxm6OvXBEjA6rPOzOKipjfKb9r7g/Nf5yQqo64dcR7CAPTe3gk7r
+   AnfjxzVXAC8G4bF67yl7uYmlMC26DHGU0hVb3yqernQftdyJ8cNusnZx9
+   xlwHGBOboWgigDth8sqoEYLzXXv07ilL63Ew7EDySiFNXe/O4YAW8JMOj
+   mDgdizHijYHK/WlFRUlNvuDUVgcSFV233atsgKq60gxn+IMpHOGj1sdtQ
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="254531026"
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="254531026"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 13:23:19 -0700
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="516912256"
+Received: from dstanfie-mobl2.amr.corp.intel.com (HELO [10.212.178.19]) ([10.212.178.19])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 13:23:18 -0700
+Message-ID: <2b91abe5-88bd-2941-d561-a8b0ad40f62b@intel.com>
+Date:   Thu, 17 Mar 2022 13:23:12 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+From:   Dave Hansen <dave.hansen@intel.com>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     mingo@redhat.com, bp@alien8.de, luto@kernel.org,
+        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
+        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        david@redhat.com, hpa@zytor.com, jgross@suse.com,
+        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
+        knsathya@kernel.org, pbonzini@redhat.com, sdeep@vmware.com,
+        seanjc@google.com, tony.luck@intel.com, vkuznets@redhat.com,
+        wanpengli@tencent.com, thomas.lendacky@amd.com,
+        brijesh.singh@amd.com, x86@kernel.org, linux-kernel@vger.kernel.org
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+ <20220316020856.24435-16-kirill.shutemov@linux.intel.com>
+ <87czik22wk.ffs@tglx> <20220317201054.5wdykfru5hhvukvd@black.fi.intel.com>
+ <c3b640aa-05a1-7706-0c0f-b3f75eee58c6@intel.com>
+Subject: Re: [PATCHv6 15/30] x86/boot: Port I/O: allow to hook up alternative
+ helpers
+In-Reply-To: <c3b640aa-05a1-7706-0c0f-b3f75eee58c6@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 08:33:54PM +0300, Kirill A. Shutemov wrote:
+On 3/17/22 13:20, Dave Hansen wrote:
+> You keep the preprocessor away from things like
+> 
+> 	foo.inb = bar;
+> 
+> with:
+> 
+> 	#define inb(x) pio_ops.inb(x)
 
-> [ Disclaimer: I have limited understanding of the entry code complexity
->   and may miss some crucial details. But I try my best. ]
-> 
-> Yes, it is the same comment, but it is based on code audit, not only on
-> testing.
-> 
-> I claim that kernel does not do anything that can possibly trigger #VE
-> where kernel cannot deal with it:
-> 
->  - on syscall entry code before kernel stack is set up (few instructions
->    in the beginning of entry_SYSCALL_64())
-> 
->  - in NMI entry code (asm_exc_nmi()) before NMI nesting is safe:
->    + for NMI from user mode, before switched to thread stack
->    + for NMI from kernel, up to end_repead_nmi
-> 
-> After that points #VE is safe.
+... and I spotted my nonsense just as I hit send.
 
-In what way is it guaranteed that #VE isn't raised in those places? What
-does an auditor / future coder looking to changes things, need to
-consider to keep this so.
+You could do that ^^.  But you'd need to rename the 'inb' op  like:
 
-From vague memories #VE can be raised on any memop, loading the stack
-address in the syscall-gap is a memop. What makes that special? Can we
-get a comment _there_ to explain how this is safe such that we can keep
-it so?
+struct port_io_ops {
+	u8 (*f_inb)(u16 port);
+	...
+};
 
-Same for the NMI path I suppose.
+so that you do:
+
+	#define inb(x) pio_ops.f_inb(x)
+
+But, remember when I said I hate playing #define tricks? ;)  This is one
+reason why.
