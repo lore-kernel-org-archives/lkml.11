@@ -2,225 +2,380 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A577C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9841EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbiCQIhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60918 "EHLO
+        id S231332AbiCQIhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230246AbiCQIhN (ORCPT
+        with ESMTP id S229967AbiCQIho (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 04:37:13 -0400
-Received: from smtp-8fac.mail.infomaniak.ch (smtp-8fac.mail.infomaniak.ch [IPv6:2001:1600:4:17::8fac])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599761AD39D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 01:35:56 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KK0pf5LWCzMq31C;
-        Thu, 17 Mar 2022 09:35:54 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KK0pd1DtQzlhRV1;
-        Thu, 17 Mar 2022 09:35:53 +0100 (CET)
-Message-ID: <ed8467f2-dcd0-bc2f-8e98-1d9129fb2c30@digikod.net>
-Date:   Thu, 17 Mar 2022 09:36:36 +0100
-MIME-Version: 1.0
-User-Agent: 
+        Thu, 17 Mar 2022 04:37:44 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449091B989E;
+        Thu, 17 Mar 2022 01:36:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647506187; x=1679042187;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=jf3cycBY4b9bAa1z4+DQe7hnOaypKuYYrMB41iTWVvE=;
+  b=QXtw5QGivTKgHD5zqAHWVO3NLIvzylUL64xy4iTDtEoZ2t/YkKwZXFw8
+   Yk66i7OUqTmdiC61ICs0UzZJbHitosc+SdHD7VKvOMJiyqRN1WtvhZIWJ
+   bC336QzVwi++cpVdnbMkNY5QnEd44lH3CnEhR5wSBO7l8N0vFheSSO64e
+   chJZ4MhI2A7pNheXo0xZuttJY+LuUE39MVTMK3bpt5nLuVGhPBgmTRP1N
+   CO+mzaV970Y7NkHionWXg9Icem4/45vd7ZnuP5/qXuyObtWpZW0FLKNVb
+   +Sf+m9LGVIrCPzb8gWe60Wt/AbzbdvB2xYHTt2YAIxzEB5fX9uxOmzTgk
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="256767267"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="256767267"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 01:36:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="498753607"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga003.jf.intel.com with ESMTP; 17 Mar 2022 01:36:26 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 01:36:26 -0700
+Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 01:36:25 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Thu, 17 Mar 2022 01:36:25 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Thu, 17 Mar 2022 01:36:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NO1VsK2GlEcN9df1VhFF8WSKdXfeK3PsacXcAH5ctcY69WbRRX2+SNXw9lvmlfbOuTwFGGA6OnEK+S238A1/VdTHPCwjVy53fwPwl/BRSGxusFUL5C3N0QSiCeX6WILQLWdDiDkVYFD8AV0ez7ipE7qbbHKlpmTxla3RBkg+YTtJShFCqlDCuoEHrDOWJWMRMSezoRtb2gUj7xFAiogTNrRm2x/06nCKmltoQ/8KGJBaWVW0ERIGB2GcSkOjIfl0AtsQtZf3e3nFCA/vbpiw06w+cgtNjNqbJZdIxkhMvHWtB5pziOpSCyL6kvPoWXfwAGyMV21ON+dyMDdTTvVmzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=i8CMYHj05OzMRTepSAfD/UHnESFHX4LOSDsO+WgaFUg=;
+ b=CSC1zWFix5owiCNfZYE/U0/R9l0u6LBZoMWlyuiASIjukO31v/aLzZ68moYgSZHYrqAJn5oIW1b2gw/GA1L0G/BIXJGlMHOSO5gdtIurHMImSFAzD0uGYr2paG6whsri1vu2DgpccdsZMQGHvoR5oxsMe18MKv1sLyTeVfQW+aASbVZLzsSr74sB55N3VD/oeNT9vRdMGWRNHBUsgTreUMOxdbf+Gu6QQ+HmU5EGFjLrzqrNpTeSBGj/umqzEZ0WuE5bGvBc16iELABskw6v23BXNdejsa7ecGeut3GRNth1xt0x958bhddLQY1ziKhOSiuK1GdTNOdL729jMoM7yw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM6PR11MB3819.namprd11.prod.outlook.com (2603:10b6:5:13f::31)
+ by DM5PR11MB1258.namprd11.prod.outlook.com (2603:10b6:3:14::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.26; Thu, 17 Mar
+ 2022 08:36:21 +0000
+Received: from DM6PR11MB3819.namprd11.prod.outlook.com
+ ([fe80::d9ee:5bb8:1828:222d]) by DM6PR11MB3819.namprd11.prod.outlook.com
+ ([fe80::d9ee:5bb8:1828:222d%7]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
+ 08:36:21 +0000
+From:   "Wu, Hao" <hao.wu@intel.com>
+To:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        "mdf@kernel.org" <mdf@kernel.org>,
+        "Xu, Yilun" <yilun.xu@intel.com>,
+        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>
+CC:     "corbet@lwn.net" <corbet@lwn.net>
+Subject: RE: [PATCH v6 6/6] Documentation: fpga: dfl: add description of OFS
+Thread-Topic: [PATCH v6 6/6] Documentation: fpga: dfl: add description of OFS
+Thread-Index: AQHYOQUjzk21EyQOPEqBNWzwea0TrazDPyyQ
+Date:   Thu, 17 Mar 2022 08:36:21 +0000
+Message-ID: <DM6PR11MB381974F8F1D288871C1FB5A285129@DM6PR11MB3819.namprd11.prod.outlook.com>
+References: <20220316070814.1916017-1-tianfei.zhang@intel.com>
+ <20220316070814.1916017-7-tianfei.zhang@intel.com>
+In-Reply-To: <20220316070814.1916017-7-tianfei.zhang@intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>
-References: <20220221212522.320243-1-mic@digikod.net>
- <20220221212522.320243-2-mic@digikod.net>
- <CAHC9VhQEEKGgCn7fYgUt-_WhXc-vrKq9TVm=cfwJUyWaUgY2Vw@mail.gmail.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v1 01/11] landlock: Define access_mask_t to enforce a
- consistent access mask size
-In-Reply-To: <CAHC9VhQEEKGgCn7fYgUt-_WhXc-vrKq9TVm=cfwJUyWaUgY2Vw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d9583599-761d-42b7-2152-08da07f13701
+x-ms-traffictypediagnostic: DM5PR11MB1258:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <DM5PR11MB125878452ACDCC3A6E8929CA85129@DM5PR11MB1258.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uURVer1yTWPgR+FizgnACKrf59kGRGzBp60b6/2b7XaG5tN2fM6eFj4UtxDIMiMRpQjhJQqLrYnQJQxIU3py57oSA3QHmxH8Yv0OczTZIkVX2IqAWOHNkfLrB0Uf6Wty8viiLw+85wu8btMRoI/V+GbZB85hFxBXbpQ9fRcOeUKXDDWZFw8S2E7LplgcoGVl98Vk2uM4mhhCbppQZZvVMFua55kVCdQv+ByNsbVa7n3gqy6a/Ev0/RRTRX/AICmHlIcf3mg65K5fe+ERP8tqIXCyizHMoIsk17wznALuEkgC63SaHgygN3UsKtQ4av9obnTV7Y2TY2vdW+wOd3cpWDxDF5yq4p1aDAU0pZYJvGc7sCOMkwSI1jTUNgnBvjEA+NLgpTJWznDK3rKxZajAuyUXajCmuZpO4Tcj8gug6FtQ/zzFg9xpo2j3eQJO1u5wkqL7GXqTs359jUWMqlRe6HhIkV5ac5PJ5ReLc76YlMzcfT2dNCMahV9Y4dB1SjhFL2QfJbKDMtslNUCri9lQVDwTi0AQljWcdTuyTR0fiqRKl82Ihg1mDcrOvjM9+OIH6ur/TicvE0qw+oEDKOkUX0+C5Z67LGzr5bvfCQ51MWOGFIltPM06Z9jKYgXj6Nz2NArVo8yraazVWBnjKadOA3Ix89jI3YIdeeqkkU3JOVWCxeZzhVMhfk13WBNyrw33sItHj41N1NpzqtU/iTtuh/8wyyQC79j3KmuX8stD/lI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3819.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(82960400001)(38100700002)(921005)(122000001)(9686003)(7696005)(83380400001)(6506007)(186003)(86362001)(26005)(71200400001)(2906002)(508600001)(55016003)(4326008)(66946007)(52536014)(66556008)(66476007)(66446008)(64756008)(5660300002)(316002)(76116006)(38070700005)(8936002)(33656002)(8676002)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?W39WVgmhcfkhYZZ3vGUNEALwADln8nlnbJl+zgvIJBV9kORyqeeCZ+y/6tol?=
+ =?us-ascii?Q?WZESRMvAeHzJlhapfofvlhHA86FkDvwxP3CApujZlsx4q513by8faBCYTCfZ?=
+ =?us-ascii?Q?1wWMvu+K79rnhGvLNP7pb37wZCrmYLRVsnXALAtjE645A0XVnteoo4jE2vwG?=
+ =?us-ascii?Q?KerVJ7N04Ab/YMB2Ek50IHy7qyah6s9xQrvqoCb4ZFYdyrt9l8EJ7Bnu7big?=
+ =?us-ascii?Q?wdz1cwrdRdqGsX/6khsHydn2TM3/LqzuX5YQCfFGy2MrSqwyAFoqCtVZ2IU6?=
+ =?us-ascii?Q?pO+87678Fzq92V0NvBfutGgG9AXEh073hAI23O2djCQFI2QtlCsJ9iYvnKmT?=
+ =?us-ascii?Q?Bw/xvubrvbdVm3YatAp9i6g2fcKB8g3Br9C849uyw1dZPbEv7KuZiW2PUmtj?=
+ =?us-ascii?Q?L6T0pkjU3Cd4QZiSJ/vI3UP7lm3e4t7llGmFOPGH2kblyaBkuhfMkhkf2PYO?=
+ =?us-ascii?Q?Kzzd/75gsCPxcspg1dlgeRiO12KEc/LgTbPVBjesvMbHlxwzUaVLmfEfT87P?=
+ =?us-ascii?Q?Whh4X1+jcaZd7g/DCAm5E22a8tFWjo44zeFE7hs+WaTu4A7yfBnjVk/h6uMs?=
+ =?us-ascii?Q?ohyU3AuzVBontb+FZfKsfcd/pmj7TzROfV5dySerMPIWmwKMCRE/ypDx6/Op?=
+ =?us-ascii?Q?BOCPZX57AhHgX/rrL7i72hxKhghlk4LweTa9IQl1nDcpzV+kr4Ta8c4zSXJv?=
+ =?us-ascii?Q?TI9phXyquxmRV7pzB6RQ5+kvtqejaSKB2/x2BEAvFhAirBgwDK4cTZympNCA?=
+ =?us-ascii?Q?iXvP8GFYE6vncflB/DIIMCLupj2eqCKERswh1XUOQo5NIe0kHgssg842E3Ki?=
+ =?us-ascii?Q?FNJJgBgxM+JIVCA5/OBFuCOEqDl9yzGygONYUa05dy7g4AuPM7QKKhuggQnW?=
+ =?us-ascii?Q?lMxcr113wqv5zmX1JvDfMdoqQMbB9fMGencQUFHPQZoanGzci2w6/jNe5h66?=
+ =?us-ascii?Q?x1BSMl/kP+YfyIohBXhP+Tz3s2E4XIR0kKk0nDgilrEwKet46eTcOuETBRnc?=
+ =?us-ascii?Q?WlEDaIsk+vdTJI6U/DDIjhOhIZLG1fZHz8QMhi19DjPNBfhaYMvfe2PnPflq?=
+ =?us-ascii?Q?y2abGbvld97YIZpMQ02hYY1CeS+eDUSSHmK/4RejVbGHRNBcvnKfB7CrguRQ?=
+ =?us-ascii?Q?b+/vWKUpas27yXfmSDy1evU3RzL/0aTggMYbRH9Eqid88XjMyeiGlIjPpLJX?=
+ =?us-ascii?Q?slzTYobRz58SZCwaqhHrbLmjcvPk2buAQ6A9FLBwd40Zl0aJ63eWLoIBbLtG?=
+ =?us-ascii?Q?dAzKTwK9kuuL3uZw0bWIr9FQD4uiSC41iWaztmzpqFsLcsaT2yic1mZ2DLS/?=
+ =?us-ascii?Q?aIbg4ABOMR5x4/C0Np0NPLcEtXI9hKKkQs0xN4rj6zbVKZRZhRJ141LLvXzj?=
+ =?us-ascii?Q?KyVRgqE890/pK+RTbnJ9r38zRBNNOuG67esLtv9+1bpv80DUiN/2JReMPX9+?=
+ =?us-ascii?Q?Tx8JUKcMENQ=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3819.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9583599-761d-42b7-2152-08da07f13701
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2022 08:36:21.6117
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hfWhFbtn+JfdNQtpCgFiDhlxWblNYp/reLYl0bP+LFDbul7DDK/7JEZJpcklkcth/KkDQFY5KHSqsUQMEqbvPQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1258
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+> Subject: [PATCH v6 6/6] Documentation: fpga: dfl: add description of OFS
+>=20
+> From: Tianfei zhang <tianfei.zhang@intel.com>
+>=20
+> This patch adds description about OFS support for DFL.
 
-On 17/03/2022 02:26, Paul Moore wrote:
-> On Mon, Feb 21, 2022 at 4:15 PM Mickaël Salaün <mic@digikod.net> wrote:
->>
->> From: Mickaël Salaün <mic@linux.microsoft.com>
->>
->> Create and use the access_mask_t typedef to enforce a consistent access
->> mask size and uniformly use a 16-bits type.  This will helps transition
->> to a 32-bits value one day.
->>
->> Add a build check to make sure all (filesystem) access rights fit in.
->> This will be extended with a following commit.
->>
->> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
->> Link: https://lore.kernel.org/r/20220221212522.320243-2-mic@digikod.net
->> ---
->>   security/landlock/fs.c      | 19 ++++++++++---------
->>   security/landlock/fs.h      |  2 +-
->>   security/landlock/limits.h  |  2 ++
->>   security/landlock/ruleset.c |  6 ++++--
->>   security/landlock/ruleset.h | 17 +++++++++++++----
->>   5 files changed, 30 insertions(+), 16 deletions(-)
->>
->> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
->> index 97b8e421f617..9de2a460a762 100644
->> --- a/security/landlock/fs.c
->> +++ b/security/landlock/fs.c
->> @@ -150,7 +150,7 @@ static struct landlock_object *get_inode_object(struct inode *const inode)
->>    * @path: Should have been checked by get_path_from_fd().
->>    */
->>   int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->> -               const struct path *const path, u32 access_rights)
->> +               const struct path *const path, access_mask_t access_rights)
->>   {
->>          int err;
->>          struct landlock_object *object;
->> @@ -182,8 +182,8 @@ int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->>
->>   static inline u64 unmask_layers(
->>                  const struct landlock_ruleset *const domain,
->> -               const struct path *const path, const u32 access_request,
->> -               u64 layer_mask)
->> +               const struct path *const path,
->> +               const access_mask_t access_request, u64 layer_mask)
->>   {
->>          const struct landlock_rule *rule;
->>          const struct inode *inode;
->> @@ -223,7 +223,8 @@ static inline u64 unmask_layers(
->>   }
->>
->>   static int check_access_path(const struct landlock_ruleset *const domain,
->> -               const struct path *const path, u32 access_request)
->> +               const struct path *const path,
->> +               const access_mask_t access_request)
->>   {
->>          bool allowed = false;
->>          struct path walker_path;
->> @@ -308,7 +309,7 @@ static int check_access_path(const struct landlock_ruleset *const domain,
->>   }
->>
->>   static inline int current_check_access_path(const struct path *const path,
->> -               const u32 access_request)
->> +               const access_mask_t access_request)
->>   {
->>          const struct landlock_ruleset *const dom =
->>                  landlock_get_current_domain();
->> @@ -511,7 +512,7 @@ static int hook_sb_pivotroot(const struct path *const old_path,
->>
->>   /* Path hooks */
->>
->> -static inline u32 get_mode_access(const umode_t mode)
->> +static inline access_mask_t get_mode_access(const umode_t mode)
->>   {
->>          switch (mode & S_IFMT) {
->>          case S_IFLNK:
->> @@ -563,7 +564,7 @@ static int hook_path_link(struct dentry *const old_dentry,
->>                          get_mode_access(d_backing_inode(old_dentry)->i_mode));
->>   }
->>
->> -static inline u32 maybe_remove(const struct dentry *const dentry)
->> +static inline access_mask_t maybe_remove(const struct dentry *const dentry)
->>   {
->>          if (d_is_negative(dentry))
->>                  return 0;
->> @@ -631,9 +632,9 @@ static int hook_path_rmdir(const struct path *const dir,
->>
->>   /* File hooks */
->>
->> -static inline u32 get_file_access(const struct file *const file)
->> +static inline access_mask_t get_file_access(const struct file *const file)
->>   {
->> -       u32 access = 0;
->> +       access_mask_t access = 0;
->>
->>          if (file->f_mode & FMODE_READ) {
->>                  /* A directory can only be opened in read mode. */
->> diff --git a/security/landlock/fs.h b/security/landlock/fs.h
->> index 187284b421c9..74be312aad96 100644
->> --- a/security/landlock/fs.h
->> +++ b/security/landlock/fs.h
->> @@ -65,6 +65,6 @@ static inline struct landlock_superblock_security *landlock_superblock(
->>   __init void landlock_add_fs_hooks(void);
->>
->>   int landlock_append_fs_rule(struct landlock_ruleset *const ruleset,
->> -               const struct path *const path, u32 access_hierarchy);
->> +               const struct path *const path, access_mask_t access_hierarchy);
->>
->>   #endif /* _SECURITY_LANDLOCK_FS_H */
->> diff --git a/security/landlock/limits.h b/security/landlock/limits.h
->> index 2a0a1095ee27..458d1de32ed5 100644
->> --- a/security/landlock/limits.h
->> +++ b/security/landlock/limits.h
->> @@ -9,6 +9,7 @@
->>   #ifndef _SECURITY_LANDLOCK_LIMITS_H
->>   #define _SECURITY_LANDLOCK_LIMITS_H
->>
->> +#include <linux/bitops.h>
->>   #include <linux/limits.h>
->>   #include <uapi/linux/landlock.h>
->>
->> @@ -17,5 +18,6 @@
->>
->>   #define LANDLOCK_LAST_ACCESS_FS                LANDLOCK_ACCESS_FS_MAKE_SYM
->>   #define LANDLOCK_MASK_ACCESS_FS                ((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
->> +#define LANDLOCK_NUM_ACCESS_FS         __const_hweight64(LANDLOCK_MASK_ACCESS_FS)
-> 
-> The line above, and the static_assert() in ruleset.h are clever.  I'll
-> admit I didn't even know the hweightX() macros existed until looking
-> at this code :)
-> 
-> However, the LANDLOCK_NUM_ACCESS_FS is never really going to be used
-> outside the static_assert() in ruleset.h is it?  I wonder if it would
-> be better to skip the extra macro and rewrite the static_assert like
-> this:
-> 
-> static_assert(BITS_PER_TYPE(access_mask_t) >=
-> __const_hweight64(LANDLOCK_MASK_ACCESS_FS));
-> 
-> If not, I might suggest changing LANDLOCK_NUM_ACCESS_FS to
-> LANDLOCK_BITS_ACCESS_FS or something similar.
+I think another major extension is for SRIOV support, DFL needs to be exten=
+ded to support
+another SRIOV usage model, could we have some more descriptions for that?
+e.g. In the new usage model, that PORT is not turned into VF and still can =
+be accessed
+in PF? how port release will be handled (or ignored) in this new model?=20
 
-I declared LANDLOCK_NUM_ACCESS_FS in this patch to be able to have the 
-static_assert() here and ease the review, but LANDLOCK_NUM_ACCESS_FS is 
-really used in patch 6/11 to define an array size: 
-get_handled_acceses(), init_layer_masks(), is_superset(), 
-check_access_path_dual()…
-
-
-> 
-> 
->> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->> index 2d3ed7ec5a0a..7e7cac68e443 100644
->> --- a/security/landlock/ruleset.h
->> +++ b/security/landlock/ruleset.h
->> @@ -9,13 +9,20 @@
->>   #ifndef _SECURITY_LANDLOCK_RULESET_H
->>   #define _SECURITY_LANDLOCK_RULESET_H
->>
->> +#include <linux/bitops.h>
->> +#include <linux/build_bug.h>
->>   #include <linux/mutex.h>
->>   #include <linux/rbtree.h>
->>   #include <linux/refcount.h>
->>   #include <linux/workqueue.h>
->>
->> +#include "limits.h"
->>   #include "object.h"
->>
->> +typedef u16 access_mask_t;
->> +/* Makes sure all filesystem access rights can be stored. */
->> +static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
-> 
+>=20
+> ---
+> v6:
+> fix documentation with Randy's comment.
+> v5:
+> fix documentation with Matthew and Randy's comment.
+> v4:
+> add description about access the AFU on "multiple VFs per PR slot" model.
+> v3:
+> change IOFS to OFS in documentation.
+> v2:
+> * Fixs some typos.
+> * Adds more detail description about the models of AFU access which suppo=
+rted
+> in OFS.
+>=20
+> Signed-off-by: Tianfei zhang <tianfei.zhang@intel.com>
+> ---
+>  Documentation/fpga/dfl.rst | 114 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 114 insertions(+)
+>=20
+> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
+> index ef9eec71f6f3..93f262fe7b8c 100644
+> --- a/Documentation/fpga/dfl.rst
+> +++ b/Documentation/fpga/dfl.rst
+> @@ -556,6 +556,120 @@ new DFL feature via UIO direct access, its feature =
+id
+> should be added to the
+>  driver's id_table.
+>=20
+>=20
+> +Open FPGA Stack
+> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+> +Open FPGA Stack (OFS) is a collection of RTL and open source software
+> providing
+> +interfaces to access the instantiated RTL easily in an FPGA. OFS leverag=
+es the
+> +DFL for the implementation of the FPGA RTL design.
+> +
+> +OFS designs allow for the arrangement of software interfaces across mult=
+iple
+> +PCIe endpoints. Some of these interfaces may be PFs defined in the stati=
+c
+> region
+> +that connect to interfaces in an IP that is loaded via Partial Reconfigu=
+ration
+> (PR).
+> +And some of these interfaces may be VFs defined in the PR region that ca=
+n be
+> +reconfigured by the end-user. Furthermore, these PFs/VFs may use DFLs su=
+ch
+> that
+> +features may be discovered and accessed in user space (with the aid of a
+> generic
+> +kernel driver like vfio-pci). The diagram below depicts an example desig=
+n with
+> two
+> +PFs and two VFs. In this example, it will export the management function=
+s via
+> PF0,
+> +PF1 will bind with virtio-net driver presenting itself as a network inte=
+rface to
+> +the OS. The other functions, VF0 and VF1, leverage VFIO to export the MM=
+IO
+> space
+> +to an application or assign to a VM.
+> +::
+> +
+> +     +-----------------+  +--------------+  +-------------+  +----------=
+--+
+> +     | FPGA Management |  |   VirtIO     |  |  User App   |  | Virtual  =
+  |
+> +     |      App        |  |     App      |  |             |  | Machine  =
+  |
+> +     +--------+--------+  +------+-------+  +------+------+  +-----+----=
+--+
+> +              |                  |                 |               |
+> +     +--------+--------+  +------+-------+  +------+------+        |
+> +     |     DFL Driver  |  |VirtIO driver |  |    VFIO     |        |
+> +     +--------+--------+  +------+-------+  +------+------+        |
+> +              |                  |                 |               |
+> +              |                  |                 |               |
+> +     +--------+--------+  +------+-------+  +------+------+   +----+----=
+--+
+> +     |     PF0         |  |     PF1      |  |   PF0_VF0   |   |  PF0_VF1=
+  |
+> +     +-----------------+  +--------------+  +-------------+   +---------=
+--+
+> +
+> +As accelerators are specialized hardware, they are typically limited in =
+the
+> +number installed in a given system. Many use cases require them to be sh=
+ared
+> +across multiple software contexts or threads of software execution, eith=
+er
+> +through partitioning of individual dedicated resources, or virtualizatio=
+n of
+> +shared resources. OFS provides several models to share the AFU resources=
+ via
+> +PR mechanism and hardware-based virtualization schemes.
+> +
+> +1. Legacy model.
+> +   With legacy model FPGA cards like Intel PAC N3000 or N5000, there is
+> +   a notion that the boundary between the AFU and the shell is also the =
+unit of
+> +   PR for those FPGA platforms. This model is only able to handle a
+> +   single context, because it only has one PR engine, and one PR region =
+which
+> +   has an associated Port device.
+> +2. Multiple VFs per PR slot.
+> +   In this model, available AFU resources may allow instantiation of man=
+y VFs
+> +   which have a dedicated PCIe function with their own dedicated MMIO sp=
+ace,
+> or
+> +   partition a region of MMIO space on a single PCIe function. Intel PAC=
+ N6000
+> +   card has implemented this model.
+> +   In this model, the AFU/PR slot was not connected to port device. For =
+DFL's
+> view,
+> +   the Next_AFU pointer in FIU feature header of port device points to N=
+ULL in
+> this
+> +   model, so in AFU driver perspective, there is no AFU MMIO region mana=
+ged
+> by
+> +   AFU driver. On the other hand, each VF can start with an AFU feature =
+header
+> without
+> +   being connected to a FIU Port feature header.
+> +
+> +In multiple VFs per PR slot model, the port device can still be accessed=
+ using
+> +ioctls API which expose /dev/dfl-port.h device nodes, like port reset, g=
+et
+> +port info, whose APIs were mentioned in AFU section in this documentatio=
+n.
+> But
+> +it cannot access the AFU MMIO space via AFU ioctl APIs like
+> DFL_FPGA_PORT_DMA_MAP
+> +because there is no AFU MMIO space managed in the AFU driver. Users can
+> access
+> +the AFU resource by creating VF devices via PCIe SRIOV interface, and th=
+en
+> access
+> +the VF via VFIO driver or assign the VF to VM.
+> +
+> +In multiple VFs per PR slot model, the steps to enable VFs are compatibl=
+e with
+> +legacy mode which are mentioned in "FPGA virtualization - PCIe SRIOV" se=
+ction
+> +in this documentation.
+> +
+> +OFS provides the diversity for accessing the AFU resource to RTL develop=
+er.
+> +An IP designer may choose to add more than one PF for interfacing with I=
+P
+> +on the FPGA and choose different model to access the AFU resource.
+> +
+> +There is one reference architecture design using the "Multiple VFs per P=
+R slot"
+> +model for OFS as illustrated below. In this reference design, it exports=
+ the
+> +FPGA management functions via PF0. PF1 will bind with virtio-net driver
+> +presenting itself as a network interface to the OS. PF2 will bind to the
+> +vfio-pci driver allowing the user space software to discover and interfa=
+ce
+> +with the specific workload like diagnostic test. To access the AFU resou=
+rce,
+> +it uses SR-IOV to partition workload interfaces across various VFs.
+> +::
+> +
+> +                              +----------------------+
+> +                              |   PF/VF mux/demux    |
+> +                              +--+--+-----+------+-+-+
+> +                                 |  |     |      | |
+> +        +------------------------+  |     |      | |
+> +  PF0   |                 +---------+   +-+      | |
+> +    +---+---+             |         +---+----+   | |
+> +    |  DFH  |             |         |   DFH  |   | |
+> +    +-------+       +-----+----+    +--------+   | |
+> +    |  FME  |       |  VirtIO  |    |  Test  |   | |
+> +    +---+---+       +----------+    +--------+   | |
+> +        |                PF1            PF2      | |
+> +        |                                        | |
+> +        |                             +----------+ |
+> +        |                             |           ++
+> +        |                             |           |
+> +        |                             | PF0_VF0   | PF0_VF1
+> +        |           +-----------------+-----------+------------+
+> +        |           |           +-----+-----------+--------+   |
+> +        |           |           |     |           |        |   |
+> +        |           | +------+  |  +--+ -+     +--+---+    |   |
+> +        |           | | Port |  |  | DFH |     |  DFH |    |   |
+> +        +-----------+ +------+  |  +-----+     +------+    |   |
+> +                    |           |  | DEV |     |  DEV |    |   |
+> +                    |           |  +-----+     +------+    |   |
+> +                    |           |            PR Slot       |   |
+> +                    |           +--------------------------+   |
+> +                    | Port Gasket                              |
+> +                    +------------------------------------------+
+> +
+> +
+>  Open discussion
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>  FME driver exports one ioctl (DFL_FPGA_FME_PORT_PR) for partial
+> reconfiguration
 > --
-> paul-moore.com
+> 2.26.2
+
