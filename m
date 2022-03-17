@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 565C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97A83C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:56:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234345AbiCQM5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
+        id S234383AbiCQM5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234917AbiCQMyD (ORCPT
+        with ESMTP id S234914AbiCQMyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:54:03 -0400
+        Thu, 17 Mar 2022 08:54:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2F91F1613;
-        Thu, 17 Mar 2022 05:52:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26C41F0CB7;
+        Thu, 17 Mar 2022 05:52:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76C16614F0;
-        Thu, 17 Mar 2022 12:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C8EDC340E9;
-        Thu, 17 Mar 2022 12:52:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E2CB614F0;
+        Thu, 17 Mar 2022 12:52:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D1FC340ED;
+        Thu, 17 Mar 2022 12:52:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521556;
-        bh=90WLKe+ICTMTgb7QBJQdv7Tp3vRHvzNNvaeLMeuUQpU=;
+        s=korg; t=1647521544;
+        bh=BCx64xO3Wbry2wCPfTZARKe6NTiar7S30FYEF5kz4GU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bZ4HtDEx90xKkW/NSy3ZcFw9LklzMlQv9m16xI+d+taWLWiscP0W9mFvRRxsEM387
-         jtnKoEG/kFhLB56GB8qXtUqTBwgGaizb1EPckAHD60sH1pltTnv6qFyBnN+cS8fRT9
-         Awm//FCvVDitT0kgsTTb/FlOJ9jrPHW1zkmM1jTs=
+        b=QPDURMUMwy71KDAbVCC7pgGMX+xEoPVjU+RTZVFpqjksuGOWR22k8+pX+bop0q2ZC
+         1DGmhbsDtaCGR9erSrD0w59sLBOg/EnNF47KvyMkKTuxZeuQpyjDr0I53ZSLvmx5go
+         asaQPH8C62dEuBMZSx7OH1e3kT+TEShNtS4v/tig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 10/28] ARM: dts: rockchip: reorder rk322x hmdi clocks
-Date:   Thu, 17 Mar 2022 13:46:01 +0100
-Message-Id: <20220317124527.062853116@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
+        Petr Oros <poros@redhat.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 25/25] ice: Fix race condition during interface enslave
+Date:   Thu, 17 Mar 2022 13:46:12 +0100
+Message-Id: <20220317124527.024081334@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
-References: <20220317124526.768423926@linuxfoundation.org>
+In-Reply-To: <20220317124526.308079100@linuxfoundation.org>
+References: <20220317124526.308079100@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +50,162 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Ivan Vecera <ivecera@redhat.com>
 
-[ Upstream commit be4e65bdffab5f588044325117df77dad7e9c45a ]
+commit 5cb1ebdbc4342b1c2ce89516e19808d64417bdbc upstream.
 
-The binding specifies the clock order to "iahb", "isfr", "cec". Reorder
-the clocks accordingly.
+Commit 5dbbbd01cbba83 ("ice: Avoid RTNL lock when re-creating
+auxiliary device") changes a process of re-creation of aux device
+so ice_plug_aux_dev() is called from ice_service_task() context.
+This unfortunately opens a race window that can result in dead-lock
+when interface has left LAG and immediately enters LAG again.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Link: https://lore.kernel.org/r/20220210142353.3420859-1-s.hauer@pengutronix.de
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reproducer:
+```
+#!/bin/sh
+
+ip link add lag0 type bond mode 1 miimon 100
+ip link set lag0
+
+for n in {1..10}; do
+        echo Cycle: $n
+        ip link set ens7f0 master lag0
+        sleep 1
+        ip link set ens7f0 nomaster
+done
+```
+
+This results in:
+[20976.208697] Workqueue: ice ice_service_task [ice]
+[20976.213422] Call Trace:
+[20976.215871]  __schedule+0x2d1/0x830
+[20976.219364]  schedule+0x35/0xa0
+[20976.222510]  schedule_preempt_disabled+0xa/0x10
+[20976.227043]  __mutex_lock.isra.7+0x310/0x420
+[20976.235071]  enum_all_gids_of_dev_cb+0x1c/0x100 [ib_core]
+[20976.251215]  ib_enum_roce_netdev+0xa4/0xe0 [ib_core]
+[20976.256192]  ib_cache_setup_one+0x33/0xa0 [ib_core]
+[20976.261079]  ib_register_device+0x40d/0x580 [ib_core]
+[20976.266139]  irdma_ib_register_device+0x129/0x250 [irdma]
+[20976.281409]  irdma_probe+0x2c1/0x360 [irdma]
+[20976.285691]  auxiliary_bus_probe+0x45/0x70
+[20976.289790]  really_probe+0x1f2/0x480
+[20976.298509]  driver_probe_device+0x49/0xc0
+[20976.302609]  bus_for_each_drv+0x79/0xc0
+[20976.306448]  __device_attach+0xdc/0x160
+[20976.310286]  bus_probe_device+0x9d/0xb0
+[20976.314128]  device_add+0x43c/0x890
+[20976.321287]  __auxiliary_device_add+0x43/0x60
+[20976.325644]  ice_plug_aux_dev+0xb2/0x100 [ice]
+[20976.330109]  ice_service_task+0xd0c/0xed0 [ice]
+[20976.342591]  process_one_work+0x1a7/0x360
+[20976.350536]  worker_thread+0x30/0x390
+[20976.358128]  kthread+0x10a/0x120
+[20976.365547]  ret_from_fork+0x1f/0x40
+...
+[20976.438030] task:ip              state:D stack:    0 pid:213658 ppid:213627 flags:0x00004084
+[20976.446469] Call Trace:
+[20976.448921]  __schedule+0x2d1/0x830
+[20976.452414]  schedule+0x35/0xa0
+[20976.455559]  schedule_preempt_disabled+0xa/0x10
+[20976.460090]  __mutex_lock.isra.7+0x310/0x420
+[20976.464364]  device_del+0x36/0x3c0
+[20976.467772]  ice_unplug_aux_dev+0x1a/0x40 [ice]
+[20976.472313]  ice_lag_event_handler+0x2a2/0x520 [ice]
+[20976.477288]  notifier_call_chain+0x47/0x70
+[20976.481386]  __netdev_upper_dev_link+0x18b/0x280
+[20976.489845]  bond_enslave+0xe05/0x1790 [bonding]
+[20976.494475]  do_setlink+0x336/0xf50
+[20976.502517]  __rtnl_newlink+0x529/0x8b0
+[20976.543441]  rtnl_newlink+0x43/0x60
+[20976.546934]  rtnetlink_rcv_msg+0x2b1/0x360
+[20976.559238]  netlink_rcv_skb+0x4c/0x120
+[20976.563079]  netlink_unicast+0x196/0x230
+[20976.567005]  netlink_sendmsg+0x204/0x3d0
+[20976.570930]  sock_sendmsg+0x4c/0x50
+[20976.574423]  ____sys_sendmsg+0x1eb/0x250
+[20976.586807]  ___sys_sendmsg+0x7c/0xc0
+[20976.606353]  __sys_sendmsg+0x57/0xa0
+[20976.609930]  do_syscall_64+0x5b/0x1a0
+[20976.613598]  entry_SYSCALL_64_after_hwframe+0x65/0xca
+
+1. Command 'ip link ... set nomaster' causes that ice_plug_aux_dev()
+   is called from ice_service_task() context, aux device is created
+   and associated device->lock is taken.
+2. Command 'ip link ... set master...' calls ice's notifier under
+   RTNL lock and that notifier calls ice_unplug_aux_dev(). That
+   function tries to take aux device->lock but this is already taken
+   by ice_plug_aux_dev() in step 1
+3. Later ice_plug_aux_dev() tries to take RTNL lock but this is already
+   taken in step 2
+4. Dead-lock
+
+The patch fixes this issue by following changes:
+- Bit ICE_FLAG_PLUG_AUX_DEV is kept to be set during ice_plug_aux_dev()
+  call in ice_service_task()
+- The bit is checked in ice_clear_rdma_cap() and only if it is not set
+  then ice_unplug_aux_dev() is called. If it is set (in other words
+  plugging of aux device was requested and ice_plug_aux_dev() is
+  potentially running) then the function only clears the bit
+- Once ice_plug_aux_dev() call (in ice_service_task) is finished
+  the bit ICE_FLAG_PLUG_AUX_DEV is cleared but it is also checked
+  whether it was already cleared by ice_clear_rdma_cap(). If so then
+  aux device is unplugged.
+
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Co-developed-by: Petr Oros <poros@redhat.com>
+Signed-off-by: Petr Oros <poros@redhat.com>
+Reviewed-by: Dave Ertman <david.m.ertman@intel.com>
+Link: https://lore.kernel.org/r/20220310171641.3863659-1-ivecera@redhat.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/rk322x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice.h      |   11 ++++++++++-
+ drivers/net/ethernet/intel/ice/ice_main.c |   12 +++++++++++-
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
-index 8eed9e3a92e9..5868eb512f69 100644
---- a/arch/arm/boot/dts/rk322x.dtsi
-+++ b/arch/arm/boot/dts/rk322x.dtsi
-@@ -718,8 +718,8 @@
- 		interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
- 		assigned-clocks = <&cru SCLK_HDMI_PHY>;
- 		assigned-clock-parents = <&hdmi_phy>;
--		clocks = <&cru SCLK_HDMI_HDCP>, <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_CEC>;
--		clock-names = "isfr", "iahb", "cec";
-+		clocks = <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_HDCP>, <&cru SCLK_HDMI_CEC>;
-+		clock-names = "iahb", "isfr", "cec";
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&hdmii2c_xfer &hdmi_hpd &hdmi_cec>;
- 		resets = <&cru SRST_HDMI_P>;
--- 
-2.34.1
-
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -703,7 +703,16 @@ static inline void ice_set_rdma_cap(stru
+  */
+ static inline void ice_clear_rdma_cap(struct ice_pf *pf)
+ {
+-	ice_unplug_aux_dev(pf);
++	/* We can directly unplug aux device here only if the flag bit
++	 * ICE_FLAG_PLUG_AUX_DEV is not set because ice_unplug_aux_dev()
++	 * could race with ice_plug_aux_dev() called from
++	 * ice_service_task(). In this case we only clear that bit now and
++	 * aux device will be unplugged later once ice_plug_aux_device()
++	 * called from ice_service_task() finishes (see ice_service_task()).
++	 */
++	if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++		ice_unplug_aux_dev(pf);
++
+ 	clear_bit(ICE_FLAG_RDMA_ENA, pf->flags);
+ 	clear_bit(ICE_FLAG_AUX_ENA, pf->flags);
+ }
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -2143,9 +2143,19 @@ static void ice_service_task(struct work
+ 		return;
+ 	}
+ 
+-	if (test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++	if (test_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags)) {
++		/* Plug aux device per request */
+ 		ice_plug_aux_dev(pf);
+ 
++		/* Mark plugging as done but check whether unplug was
++		 * requested during ice_plug_aux_dev() call
++		 * (e.g. from ice_clear_rdma_cap()) and if so then
++		 * plug aux device.
++		 */
++		if (!test_and_clear_bit(ICE_FLAG_PLUG_AUX_DEV, pf->flags))
++			ice_unplug_aux_dev(pf);
++	}
++
+ 	if (test_and_clear_bit(ICE_FLAG_MTU_CHANGED, pf->flags)) {
+ 		struct iidc_event *event;
+ 
 
 
