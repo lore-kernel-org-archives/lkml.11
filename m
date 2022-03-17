@@ -2,174 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D53ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 07:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 07:16:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiCQHNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 03:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50556 "EHLO
+        id S230174AbiCQHRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 03:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbiCQHNf (ORCPT
+        with ESMTP id S229643AbiCQHR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 03:13:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FE716A6A7;
-        Thu, 17 Mar 2022 00:12:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D73612FC;
-        Thu, 17 Mar 2022 07:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37790C340E9;
-        Thu, 17 Mar 2022 07:12:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647501138;
-        bh=KgNHp5UtA+XTjbpsJS9b38tGdPvseTfHTAntYwQVbQ8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QX4Usa9E6tfR7ySnyycPJNu2ur3MT8VOvJeJOx2OwZ+HcPug0zl2wREFI7hHwTu5V
-         AzL9WrmnaMHqmTOhVxRLHngfh/TbYs2Yt/tmolOnGyDfLPChPfzE9BWU3eNmQbOqba
-         pRtLR+CyuZiwLIbU+h1gMy8+C41+kqvLH1SeJrwOCyChtDjAC8dZhTnMtnmJXydNaH
-         XtaCX4q2RCuAGrfDQxAVJ4Jxa0NfWu9iiGqBDDbY7WJIjFOPxK+oh72H6gC+4+H+py
-         odvdpZ5XhXYlfzZEyqwCZGFk+4FJHncfC9QYss70oow/mZJ4Q0iQLJ1tZTPspo9oCl
-         thp18aown5SXQ==
-Date:   Thu, 17 Mar 2022 09:11:28 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Haitao Huang <haitao.huang@linux.intel.com>
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        nathaniel@profian.com
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-Message-ID: <YjLfIMz4/Vx8Jm24@iki.fi>
-References: <YimWaAqEnXHbLdjh@iki.fi>
- <op.1itu5vkewjvjmi@hhuan26-mobl1.mshome.net>
- <Yis8LV99mORcLYs6@iki.fi>
- <Yis9rA8uC/0bmWCF@iki.fi>
- <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com>
- <Yi6tPLLt9Q+ailQ3@iki.fi>
- <Yi6tinbF+Y7a66eQ@iki.fi>
- <Yi6va4dCaljiQ1WQ@iki.fi>
- <op.1i01q9s0wjvjmi@hhuan26-mobl1.mshome.net>
- <YjLcr9TwLNWUtwkS@iki.fi>
+        Thu, 17 Mar 2022 03:17:29 -0400
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359BB1868BB
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 00:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647501373; x=1679037373;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VMuPTzjUtfWWz+ZHfaPYTTyjUsRiOTqgMlVmWqJJSg4=;
+  b=XmjD+9sfRf4DxA/SQUlWq+5efo9tAW9UtsnzIHL/tkJiGcJIAEmwz6r0
+   p8i9kNRU6G30xPQSDJsH5YtIR2fSLK9YxUERUg//zmmn5wocoMivr6p1w
+   13jIaXbTxbR9I8uKS0qW1Dp62apaq+0hk8KsCYGvRTOVh1RG9PQtvIcsJ
+   Y3iKMXEnu89szzHrK+2innLFPHzXMgefJmfRcyCuDm1JtQb4KDBU+9M+j
+   ZUSUjnCnrA2PR3DO/XYQibxBEdOYQdsOP1PzFLJcpLiQHA3jhcGyhmvWE
+   8xV5wr74zJeQ77uzUHVhDi8HnDevKyf/1OFYQcsWB4qgYg8N8HgI1n4x6
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="317519879"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="317519879"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 00:16:12 -0700
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="557813131"
+Received: from xsang-optiplex-9020.sh.intel.com (HELO xsang-OptiPlex-9020) ([10.239.159.143])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 00:16:11 -0700
+Date:   Thu, 17 Mar 2022 15:16:08 +0800
+From:   Oliver Sang <oliver.sang@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     lkp@lists.01.org, lkp@intel.com,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [fixup! EXP srcu]  7bf8d644f8:
+ WARNING:at_kernel/rcu/srcutree.c:#process_srcu
+Message-ID: <20220317071608.GB735@xsang-OptiPlex-9020>
+References: <20220312155919.GD1189@xsang-OptiPlex-9020>
+ <20220314203814.GZ4285@paulmck-ThinkPad-P17-Gen-1>
+ <20220316165342.GA1931135@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YjLcr9TwLNWUtwkS@iki.fi>
+In-Reply-To: <20220316165342.GA1931135@paulmck-ThinkPad-P17-Gen-1>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 09:01:07AM +0200, Jarkko Sakkinen wrote:
-> On Mon, Mar 14, 2022 at 10:39:36AM -0500, Haitao Huang wrote:
-> > Hi Jarkko
-> > 
-> > On Sun, 13 Mar 2022 21:58:51 -0500, Jarkko Sakkinen <jarkko@kernel.org>
-> > wrote:
-> > 
-> > > On Mon, Mar 14, 2022 at 04:50:56AM +0200, Jarkko Sakkinen wrote:
-> > > > On Mon, Mar 14, 2022 at 04:49:37AM +0200, Jarkko Sakkinen wrote:
-> > > > > On Fri, Mar 11, 2022 at 09:53:29AM -0800, Reinette Chatre wrote:
-> > > > >
-> > > > > > I saw Haitao's note that EMODPE requires "Read access permitted
-> > > > by enclave".
-> > > > > > This motivates that EMODPR->PROT_NONE should not be allowed
-> > > > since it would
-> > > > > > not be possible to relax permissions (run EMODPE) after that.
-> > > > Even so, I
-> > > > > > also found in the SDM that EACCEPT has the note "Read access
-> > > > permitted
-> > > > > > by enclave". That seems to indicate that EMODPR->PROT_NONE is
-> > > > not practical
-> > > > > > from that perspective either since the enclave will not be able to
-> > > > > > EACCEPT the change. Does that match your understanding?
-> > > > >
-> > > > > Yes, PROT_NONE should not be allowed.
-> > > > >
-> > > > > This is however the real problem.
-> > > > >
-> > > > > The current kernel patch set has inconsistent API and EMODPR ioctl is
-> > > > > simply unacceptable. It  also requires more concurrency management
-> > > > from
-> > > > > user space run-time, which would be heck a lot easier to do in the
-> > > > kernel.
-> > > > >
-> > > > > If you really want EMODPR as ioctl, then for consistencys sake,
-> > > > then EAUG
-> > > > > should be too. Like this when things go opposite directions, this
-> > > > patch set
-> > > > > plain and simply will not work out.
-> > > > >
-> > > > > I would pick EAUG's strategy from these two as it requires half
-> > > > the back
-> > > > > calls to host from an enclave. I.e. please combine mprotect() and
-> > > > EMODPR,
-> > > > > either in the #PF handler or as part of mprotect(), which ever
-> > > > suits you
-> > > > > best.
-> > > > >
-> > > > > I'll try demonstrate this with two examples.
-> > > > >
-> > > > > mmap() could go something like this() (simplified):
-> > > > > 1. Execution #UD's to SYSCALL.
-> > > > > 2. Host calls enclave's mmap() handler with mmap() parameters.
-> > > > > 3. Enclave up-calls host's mmap().
-> > > > > 4. Loops the range with EACCEPTCOPY.
-> > > > >
-> > > > > mprotect() has to be done like this:
-> > > > > 1. Execution #UD's to SYSCALL.
-> > > > > 2. Host calls enclave's mprotect() handler.
-> > > > > 3. Enclave up-calls host's mprotect().
-> > > > > 4. Enclave up-calls host's ioctl() to SGX_IOC_ENCLAVE_PERMISSIONS.
-> > 
-> > I assume up-calls here are ocalls as we call them in our implementation,
-> > which are the calls enclave make to untrusted side via EEXIT.
-> > 
-> > If so, can your implementation combine this two up-calls into one, then host
-> > side just do ioctl() and mprotect to kernel? If so, would that address your
-> > concern about extra up-calls?
-> > 
-> > 
-> > > > > 3. Loops the range with EACCEPT.
-> > > >   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > >   5. Loops the range with EACCEPT + EMODPE.
-> > > > 
-> > > > > This is just terrible IMHO. I hope these examples bring some insight.
+hi, Paul,
+
+On Wed, Mar 16, 2022 at 09:53:42AM -0700, Paul E. McKenney wrote:
+> On Mon, Mar 14, 2022 at 01:38:14PM -0700, Paul E. McKenney wrote:
+> > On Sat, Mar 12, 2022 at 11:59:19PM +0800, kernel test robot wrote:
 > > > 
-> > > E.g. in Enarx we have to add a special up-call (so called enarxcall in
-> > > intermediate that we call sallyport, which provides shared buffer to
-> > > communicate with the enclave) just for reseting the range with PROT_READ.
-> > > Feel very redundant, adds ugly cruft and is completely opposite strategy
-> > > to
-> > > what you've chosen to do with EAUG, which is I think correct choice as
-> > > far
-> > > as API is concerned.
+> > > 
+> > > Greeting,
+> > > 
+> > > FYI, we noticed the following commit (built with gcc-9):
+> > > 
+> > > commit: 7bf8d644f869260f63eaaedebabdd2054f59ecc4 ("fixup! EXP srcu: Check for too many zero-delay srcu_reschedule() calls")
+> > > https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev.2022.03.01a
+> > > 
+> > > in testcase: boot
+> > > 
+> > > on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
+> > > 
+> > > caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> > > 
+> > > 
+> > > 
+> > > If you fix the issue, kindly add following tag
+> > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > 
+> > > 
+> > > [ 27.088275][ T42] WARNING: CPU: 1 PID: 42 at kernel/rcu/srcutree.c:1555 process_srcu (kernel/rcu/srcutree.c:1555 (discriminator 3)) 
+> > > [   27.089252][   T42] Modules linked in: libata(+) serio_raw i2c_piix4 parport_pc(+) parport ip_tables
+> > > [   27.090253][   T42] CPU: 1 PID: 42 Comm: kworker/1:1 Not tainted 5.17.0-rc1-00191-g7bf8d644f869 #1
+> > > [   27.091212][   T42] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
+> > > [   27.092176][   T42] Workqueue: rcu_gp process_srcu
+> > > [ 27.092718][ T42] RIP: 0010:process_srcu (kernel/rcu/srcutree.c:1555 (discriminator 3)) 
+> > > [ 27.093653][ T42] Code: 6b f8 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 80 3c 02 00 0f 85 91 02 00 00 48 8b 43 f8 31 f6 48 83 f8 32 0f 86 02 fe ff ff <0f> 0b e9 fb fd ff ff 4c 8d b3 58 ff ff ff 48 b8 00 00 00 00 00 fc
 > > 
-> > The problem with EMODPR on #PF is that kernel needs to know what permissions
-> > requested from enclave at the time of #PF. So enclave has to make at least
-> > one call to kernel (again via ocall in our case, I assume up-call in your
-> > case) to make the change.
+> > I had a feeling that the simple fix wasn't going to cut it, so thank you
+> > for finding a scenario that proves that to be the case.  Fix in progress,
+> > to be folded into the original with attribution.
 > 
-> The #PF handler should do unconditionally EMODPR with PROT_READ.
+> OK, the attribution isn't quite there yet, but the squished-together
+> commit is here:
+> 
+> ea0098f19115 ("srcu: Prevent expedited GPs and blocking readers from consuming CPU")
+> 
+> Does this version behave better for you?
 
-Or mprotect(), as long as secinfo contains PROT_READ. I don't care about
-this detail hugely anymore because it does not affect uapi. 
+we tested this commit, found the issue gone.
+please be noted the issue on 7bf8d644f8 is random and ~25% rate.
+so I queued to run 100 times for this new commit, which is finally clean
+according to tests.
 
-Using EMODPR as a permission control mechanism is a ridiculous idea, and
-I cannot commit to maintain a broken uapi.
+=========================================================================================
+compiler/kconfig/rootfs/sleep/tbox_group/testcase:
+  gcc-9/x86_64-rhel-8.3-func/debian-10.4-x86_64-20200603.cgz/1/vm-snb/boot
 
-BR, Jarkko
+commit:
+  feebd043ec6b ("Revert "srcu: Avoid expedited GPs and blocking readers from consuming CPU"")
+  7bf8d644f869 ("fixup! EXP srcu: Check for too many zero-delay srcu_reschedule() calls")
+  ea0098f19115 ("srcu: Prevent expedited GPs and blocking readers from consuming CPU")
+
+feebd043ec6b9eab 7bf8d644f869260f63eaaedebab ea0098f191152c7fe3db5181a2e
+---------------- --------------------------- ---------------------------
+       fail:runs  %reproduction    fail:runs  %reproduction    fail:runs
+           |             |             |             |             |
+           :16          25%           4:16           0%            :100   dmesg.RIP:process_srcu
+           :16          25%           4:16           0%            :100   dmesg.WARNING:at_kernel/rcu/srcutree.c:#process_srcu
+
+
+> 
+> 							Thanx, Paul
+> 
