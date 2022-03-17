@@ -2,95 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84038C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43B73C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:51:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237648AbiCQSvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
+        id S237617AbiCQSxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237639AbiCQSvT (ORCPT
+        with ESMTP id S237695AbiCQSwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:51:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1F315855B;
-        Thu, 17 Mar 2022 11:49:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6FED0CE2421;
-        Thu, 17 Mar 2022 18:49:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 135C9C340E9;
-        Thu, 17 Mar 2022 18:49:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647542995;
-        bh=8Z1XVSc7H5Hxk/DGfrhzpPCrEGYqxRVGj582MxmoFts=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=U3LXXsy3YjBCtFZPHXFuI+X3DzcHg9tNdkwTCn41x6XEtrKMh3VnpNf2c5OdXAnE7
-         KhvplqlDxTu2OOaKmyuftp1QXcf4QWlG9f1yuUq9O1LKWsD8mIgOHy221LWkCSlkvB
-         GHaTdbaWApjIIgUPhzzR3I5sSsBnOHaAub0Yl3oVPdrPWR7CUKc2xhvR3X6lpslVr+
-         UAR4tiFy6QKhruRCWIKPxm/GvmRrzKixSTNJoCaMSaVV/d8CzPYzPJW4vDhJ6DMcMq
-         t886+vI3CLO2tPJfkfgM8Ugb7mgmsEcY11uATWRnW11ZnhAtXijoSG6wC7Ezir6lB3
-         BAy6hg5eSJnRQ==
-Message-ID: <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
-Date:   Thu, 17 Mar 2022 12:49:54 -0600
+        Thu, 17 Mar 2022 14:52:53 -0400
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C42221B9F
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:51:37 -0700 (PDT)
+Received: by mail-ot1-x32f.google.com with SMTP id o106-20020a9d2273000000b005b21f46878cso4125360ota.3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:51:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=c6pTj9KdqfKH8gYFJGRgPsV8D6Jtyz/2xq1oN8sgvN4=;
+        b=FWohKLdZNgf8kbisorHcnMjgpt/aPXZc/rEOQ6MELgwFIDlE4b+AqPWmDeATQBwm6F
+         GfDrEKcrCc5c/1vXtAF/NprKjQOkagM8hODfOAWgChdKBzsg01MSwca8p6dFLOYMAG4F
+         /eZ0qpRCJ/KINsgAyJy9g+DCH/I9MLaLF8txU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=c6pTj9KdqfKH8gYFJGRgPsV8D6Jtyz/2xq1oN8sgvN4=;
+        b=fpSJEULuh29Go03Z21+Sc0Gu/xo9cvRrNBgu/YrFiGtIwXIEJE6xZ1Oz08+sdpzXfZ
+         R1Fe3wPzYYslw2e4mZfRnNrET4rxY804DaWdQntKhxZ0dMy6ZMIB2pdXbRpizv2w/d4q
+         j0TZsJ4ok5U1sOvZJLfoodfxh9fsqDziAjXeuiFx+Uwq9/94KJhGX5YRMlG1dNu6YT+O
+         mQy7eS3X+l5cNG6bvDNZp3CCtckN21s7SjBghZhU6w7siKk84soJjXa+aIetq4evFGBI
+         XEWqpAEAmMN3nAhKzoMotv2lxQJomTvOzJ2vnm6KElMnVO8SjVOgT0ijIjQG3TxM9Rne
+         +fqg==
+X-Gm-Message-State: AOAM5304Dgrh7SfGxLNUk0RE7/VwXEBsd7OsB+4wgYdVi94igUVr8DzN
+        nBdIyCw3PZDAzLmmcO94vFEtNS9f5yoBQJfZJSUPlA==
+X-Google-Smtp-Source: ABdhPJwlc/YePSN6KuA53OPyCYHDKxjmeChzSSlIiOob596/ux9Ijh6S+8A8bUKsv7+dVBd2dmJfLKNhu4dhqWjq9QU=
+X-Received: by 2002:a9d:5a01:0:b0:5b2:5b6c:232b with SMTP id
+ v1-20020a9d5a01000000b005b25b6c232bmr2065256oth.159.1647543096410; Thu, 17
+ Mar 2022 11:51:36 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 17 Mar 2022 14:51:36 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb
- mode
-Content-Language: en-US
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, oliver@neukum.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220316172814.v1.1.I2deda8f2cd6adfbb525a97d8fee008a8477b7b0e@changeid>
+References: <20220316172814.v1.1.I2deda8f2cd6adfbb525a97d8fee008a8477b7b0e@changeid>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 17 Mar 2022 14:51:35 -0400
+Message-ID: <CAE-0n53oY5ZDtmasq0C1-+TtzACE0zBAtt=SVcoVLGpCT5z2Yw@mail.gmail.com>
+Subject: Re: [PATCH v1 1/4] arm64: dts: qcom: sc7280: Rename crd to crd-r3
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/17/22 12:15 AM, Sun Shouxin wrote:
-> This patch is implementing IPV6 RLB for balance-alb mode.
-> 
-> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+Quoting Matthias Kaehlcke (2022-03-16 17:28:17)
+> There are multiple revisions of CRD boards. The current sc7280-crd.dts
+> describes revision 3 and 4 (aka CRD 1.0 and 2.0). Support for a newer
+> version will be added by another patch. Add the revision number to
+> distinguish it from the versionn. Also add the revision numbers to
+> the compatible string.
+>
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 > ---
-> changelog:
-> v1-->v2:
-> -Remove ndisc_bond_send_na and refactor ndisc_send_na.
-> -In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
-> -Don't send neighbor advertisement message when receiving
->  neighbor advertisement message in rlb6_update_entry_from_na.
-> 
-> v2-->v3:
-> -Don't export ndisc_send_na.
-> -Use ipv6_stub->ndisc_send_na to replace ndisc_send_na
->  in rlb6_update_client.
-> 
-> v3-->v4:
-> -Submit all code at a whole patch.
 
-you misunderstood Jakub's comment. The code should evolve with small,
-focused patches and each patch needs to compile and function correctly
-(ie., no breakage).
-
-You need to respond to Jiri's question about why this feature is needed.
-After that:
-
-1. patch 1 adds void *data to ndisc_send_na stub function and
-ndisc_send_na direct function. Update all places that use both
-ndisc_send_na to pass NULL as the data parameter.
-
-2. patch 2 refactors ndisc_send_na to handle the new data argument
-
-3. patch 3 exports any IPv6 functions. explain why each needs to be
-exported.
-
-4. patch 4 .... bonding changes. (bonding folks can respond on how to
-introduce that change).
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
