@@ -2,112 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19886C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8260C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbiCQIsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
+        id S231371AbiCQIta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:49:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231482AbiCQIso (ORCPT
+        with ESMTP id S230413AbiCQIt1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 04:48:44 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E351C404A;
-        Thu, 17 Mar 2022 01:47:28 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id pv16so9287989ejb.0;
-        Thu, 17 Mar 2022 01:47:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZG5185nJ6k1YXwanTMNCyELYsf9XafiDPUoNL5M7s7c=;
-        b=UjRIu4w9EW6mJAEI8yux7EMavG4fNOozHxLNna5jngKBoA0q3QaEUx2jqtlTZO0lUZ
-         kMpImqv9K8doOTDIR/6CL+IP2hm9SqjrtBhsIEm/bV2py+4DKNNSYKgA7DH2fcwcIvVx
-         0Gcnee6kfeaze1qVSKAuLploPo92n4HRJr2UJ7UW6wo0eHtxblzbcvJMi4fsmIK39bXU
-         KxkcnplYZOkLflHie4BWdj9NFfIt/GCMT+f9vUXbchF4bL0cCah3Zl66ebghy3QLFdsw
-         boluZplmS0FmDOC3mDc9UtSnCbd00QGblOU2aL8MeIQjqYJlRvG43OryYFRsp+fGSo2h
-         c9AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZG5185nJ6k1YXwanTMNCyELYsf9XafiDPUoNL5M7s7c=;
-        b=pWAhplIKKuqf3smYtXBFeCYQbmVBqH96irWnJu24XTgdAQqJ7XOsClEra1rdxzbGD/
-         DHQuvL+rN5dS3RMATwaa1eQ8W0djI1JY3lYCT9+MKRBdEDOeQ5CjNQD9lj8Cc8wtDTNH
-         lTo8rhl/lo7TwGhDfsNliZkltuUPHyuLypEDp/U61ag1C7Mfxt+XMFTivGUF3I2exZkp
-         d9VNWY7/cYPLngDkzGMwYweI3+3T00sjHzCIsW5LJ8BW/y36PzA/D/5PIOeO+B25Ibe2
-         pctAGGbEDxL64Xz0m5C6APnWd9uU0DfSWy37l/K5hmfiHctun77Ll3tuPk1zSgqGL5hW
-         AeJg==
-X-Gm-Message-State: AOAM5333tdKTITayUyw0sx94gzhlC9oEO3AS/jUoHmAd48M6C8ZlKqhs
-        tQ5Nbd2avawPqWlursUeE9R/CEGR7SAmZ3qoTKQ=
-X-Google-Smtp-Source: ABdhPJyHwl6Pt0flOWQCs8CzoVmYea2PjIP/v1XQBe5xLIQpQxHGpyqeaZHSvx6ZSFPjZbRCVa1tg1kxTr4BfCAFYYU=
-X-Received: by 2002:a17:907:e93:b0:6df:10b3:4fc0 with SMTP id
- ho19-20020a1709070e9300b006df10b34fc0mr3432415ejc.44.1647506846924; Thu, 17
- Mar 2022 01:47:26 -0700 (PDT)
+        Thu, 17 Mar 2022 04:49:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5322E034;
+        Thu, 17 Mar 2022 01:48:10 -0700 (PDT)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KK0z059dkz1GCXH;
+        Thu, 17 Mar 2022 16:43:08 +0800 (CST)
+Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 16:48:07 +0800
+Received: from huawei.com (10.67.174.153) by dggpeml500018.china.huawei.com
+ (7.185.36.186) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
+ 2022 16:48:07 +0800
+From:   Zhang Qiao <zhangqiao22@huawei.com>
+To:     <paulmck@kernel.org>, <josh@joshtriplett.org>
+CC:     <rostedt@goodmis.org>, <mathieu.desnoyers@efficios.com>,
+        <jiangshanlai@gmail.com>, <joel@joelfernandes.org>,
+        <rcu@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Zhang Qiao <zhangqiao22@huawei.com>
+Subject: [PATCH] rcu: Use printk_deferred when holding rtp->cbs_gbl_lock
+Date:   Thu, 17 Mar 2022 16:47:26 +0800
+Message-ID: <20220317084726.77336-1-zhangqiao22@huawei.com>
+X-Mailer: git-send-email 2.18.0.huawei.25
 MIME-Version: 1.0
-References: <20220317012404.8069-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220317012404.8069-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 17 Mar 2022 10:46:14 +0200
-Message-ID: <CAHp75Vc+uSNF4L0WCfCyadOqJ6szXS3Ct5BmEUbeQ_aKg1zjWg@mail.gmail.com>
-Subject: Re: [RFC PATCH v4 0/5] Renesas RZ/G2L IRQC support
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.153]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500018.china.huawei.com (7.185.36.186)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 5:43 AM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> Hi All,
->
-> The RZ/G2L Interrupt Controller is a front-end for the GIC found on
-> Renesas RZ/G2L SoC's with below pins:
-> - IRQ sense select for 8 external interrupts, mapped to 8 GIC SPI interrupts
-> - GPIO pins used as external interrupt input pins out of GPIOINT0-122 a
->   maximum of only 32 can be mapped to 32 GIC SPI interrupts,
-> - NMI edge select.
->
->                                                                 _____________
->                                                                 |    GIC     |
->                                                                 |  ________  |
->                                          ____________           | |        | |
-> NMI ------------------------------------>|          |  SPI0-479 | | GIC-600| |
->                 _______                  |          |------------>|        | |
->                 |      |                 |          |  PPI16-31 | |        | |
->                 |      | IRQ0-IRQ7       |   IRQC   |------------>|        | |
-> P0_P48_4 ------>| GPIO |---------------->|          |           | |________| |
->                 |      |GPIOINT0-122     |          |           |            |
->                 |      |---------------->| TINT0-31 |           |            |
->                 |______|                 |__________|           |____________|
->
-> The proposed RFC patches adds hierarchical IRQ domain one in IRQC driver and other in
+There is a lockdep complains about invalid context:
 
-add
-domain, one
-another
+[2.464191] [ BUG: Invalid wait context ]
+[2.464192] 5.17.0-rc8-43124-gf8d61731923c #75 Not tainted
+[2.464193] -----------------------------
+[2.464193] swapper/0/1 is trying to lock:
+[2.464194] ffffffff846e8c38 (&port_lock_key){....}-{3:3}, at: serial8250_console_write+0x2b0/0x320
+[2.464202] other info that might help us debug this:
+[2.464202] context-{5:5}
+[2.464203] 3 locks held by swapper/0/1:
+[2.464204]  #0: ffffffff82b77f08 (rcu_tasks.cbs_gbl_lock){....}-{2:2}, at: cblist_init_generic+0x26/0x2a0
+[2.464211]  #1: ffffffff82b74540 (console_lock){+.+.}-{0:0}, at: vprintk_emit+0xb5/0x2a0
+[2.464217]  #2: ffffffff82a94320 (console_owner){....}-{0:0}, at: console_unlock+0x18a/0x5f0
+[2.464221] stack backtrace:
+...
+[2.464266]  _printk+0x52/0x6e
+[2.464271]  cblist_init_generic+0x25a/0x2a0
+[2.464277]  rcu_init_tasks_generic+0x21/0xe1
+[2.464280]  kernel_init_freeable+0x156/0x324
+[2.464285]  kernel_init+0x17/0x150
+[2.464288]  ret_from_fork+0x22/0x30
+[2.464293]  </TASK>
 
-> pinctrl driver. Upon interrupt requests map the interrupt to GIC. Out of GPIOINT0-122
-> only 32 can be mapped to GIC SPI, this mapping is handled by the pinctrl and IRQC driver.
+At cblist_init_generic() and rcu_tasks_need_gpcb(),
+After taking rtp->cbs_gbl_lock(raw spinlock), at cblist_init_generic()
+and rcu_tasks_need_gpcb(), we print some logs and will attempt to
+acquire a spinlock(port_lock_key). Since spin_lock() can sleep
+with PREEMPT_RT, it is illegal that attempt to acquire spinlocks
+inside raw_spinlocks.
 
-What I want to know now is whether it is going to collide with Marc's
-series about GPIO IRQ chip constification?
+This patch tries to avoid this issue by using printk_deferred().
 
+Fixes: ab97152f88a4 ("rcu-tasks: Use more callback queues if contention encountered")
+Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+---
+ kernel/rcu/tasks.h | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index d64f0b1d8cd3..98249e6a1054 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -222,7 +222,8 @@ static void cblist_init_generic(struct rcu_tasks *rtp)
+ 	if (rcu_task_enqueue_lim < 0) {
+ 		rcu_task_enqueue_lim = 1;
+ 		rcu_task_cb_adjust = true;
+-		pr_info("%s: Setting adjustable number of callback queues.\n", __func__);
++		printk_deferred("%s: Setting adjustable number of callback queues.\n",
++				__func__);
+ 	} else if (rcu_task_enqueue_lim == 0) {
+ 		rcu_task_enqueue_lim = 1;
+ 	}
+@@ -305,7 +306,8 @@ static void call_rcu_tasks_generic(struct rcu_head *rhp, rcu_callback_t func,
+ 			WRITE_ONCE(rtp->percpu_enqueue_shift, ilog2(nr_cpu_ids) + 1);
+ 			WRITE_ONCE(rtp->percpu_dequeue_lim, nr_cpu_ids);
+ 			smp_store_release(&rtp->percpu_enqueue_lim, nr_cpu_ids);
+-			pr_info("Switching %s to per-CPU callback queuing.\n", rtp->name);
++			printk_deferred("Switching %s to per-CPU callback queuing.\n",
++					rtp->name);
+ 		}
+ 		raw_spin_unlock_irqrestore(&rtp->cbs_gbl_lock, flags);
+ 	}
+@@ -420,7 +422,8 @@ static int rcu_tasks_need_gpcb(struct rcu_tasks *rtp)
+ 			WRITE_ONCE(rtp->percpu_enqueue_shift, ilog2(nr_cpu_ids) + 1);
+ 			smp_store_release(&rtp->percpu_enqueue_lim, 1);
+ 			rtp->percpu_dequeue_gpseq = get_state_synchronize_rcu();
+-			pr_info("Starting switch %s to CPU-0 callback queuing.\n", rtp->name);
++			printk_deferred("Starting switch %s to CPU-0 callback queuing.\n",
++					rtp->name);
+ 		}
+ 		raw_spin_unlock_irqrestore(&rtp->cbs_gbl_lock, flags);
+ 	}
+@@ -429,7 +432,8 @@ static int rcu_tasks_need_gpcb(struct rcu_tasks *rtp)
+ 		raw_spin_lock_irqsave(&rtp->cbs_gbl_lock, flags);
+ 		if (rtp->percpu_enqueue_lim < rtp->percpu_dequeue_lim) {
+ 			WRITE_ONCE(rtp->percpu_dequeue_lim, 1);
+-			pr_info("Completing switch %s to CPU-0 callback queuing.\n", rtp->name);
++			printk_deferred("Completing switch %s to CPU-0 callback queuing.\n",
++					rtp->name);
+ 		}
+ 		raw_spin_unlock_irqrestore(&rtp->cbs_gbl_lock, flags);
+ 	}
 -- 
-With Best Regards,
-Andy Shevchenko
+2.18.0.huawei.25
+
