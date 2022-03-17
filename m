@@ -2,83 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 401C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA38C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:37:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiCQXdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 19:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56158 "EHLO
+        id S230119AbiCQXiq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 19:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiCQXdg (ORCPT
+        with ESMTP id S229713AbiCQXip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 19:33:36 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE7C2986F6;
-        Thu, 17 Mar 2022 16:32:18 -0700 (PDT)
-X-UUID: c3f41a52f448425ebc731f678739e579-20220318
-X-UUID: c3f41a52f448425ebc731f678739e579-20220318
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 48263738; Fri, 18 Mar 2022 07:32:12 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 18 Mar 2022 07:32:10 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 18 Mar 2022 07:32:10 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <irui.wang@mediatek.com>
-CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <acourbot@chromium.org>, <andrew-ct.chen@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <devicetree@vger.kernel.org>, <frkoenig@chromium.org>,
-        <hsinyi@chromium.org>, <hverkuil-cisco@xs4all.nl>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <longfei.wang@mediatek.com>,
-        <maoguang.meng@mediatek.com>, <matthias.bgg@gmail.com>,
-        <mchehab@kernel.org>, <robh+dt@kernel.org>,
-        <srv_heupstream@mediatek.com>, <tfiga@google.com>,
-        <tiffany.lin@mediatek.com>, <tzungbi@chromium.org>,
-        <yong.wu@mediatek.com>, <yunfei.dong@mediatek.com>
-Subject: Re: [PATCH v3, 03/10] dt-bindings: media: mtk-vcodec: Adds encoder cores dt-bindings for mt8195
-Date:   Fri, 18 Mar 2022 07:32:10 +0800
-Message-ID: <20220317233210.6744-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220317082230.23622-4-irui.wang@mediatek.com>
-References: <20220317082230.23622-4-irui.wang@mediatek.com>
+        Thu, 17 Mar 2022 19:38:45 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9D22986F6;
+        Thu, 17 Mar 2022 16:37:27 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R961e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0V7TGI0g_1647560243;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V7TGI0g_1647560243)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 18 Mar 2022 07:37:24 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     dinguyen@kernel.org
+Cc:     bp@alien8.de, mchehab@kernel.org, tony.luck@intel.com,
+        james.morse@arm.com, rric@kernel.org, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] EDAC/altera: Remove unnecessary print function dev_err()
+Date:   Fri, 18 Mar 2022 07:37:22 +0800
+Message-Id: <20220317233722.109036-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Irui,
+The print function dev_err() is redundant because platform_get_irq()
+already prints an error.
 
-> +
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/media/mediatek,vcodec-encoder-core.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Mediatek Video Encoder Accelerator With Multi Core
+Eliminate the follow coccicheck warnings:
+./drivers/edac/altera_edac.c:2153:2-9: line 2153 is redundant because
+platform_get_irq() already prints an error
+./drivers/edac/altera_edac.c:2188:2-9: line 2188 is redundant because
+platform_get_irq() already prints an error
 
-s/Mediatek/MediaTek/
-> +
-> +maintainers:
-> +  - Irui Wang <irui.wang@mediatek.com>
-> +
-> +description: |
-> +  Mediatek Video Encode is the video encode hardware present in Mediatek
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/edac/altera_edac.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-s/Mediatek/MediaTek/
+diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
+index e7e8e624a436..47dc35938fa8 100644
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -2149,10 +2149,8 @@ static int altr_edac_a10_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	edac->sb_irq = platform_get_irq(pdev, 0);
+-	if (edac->sb_irq < 0) {
+-		dev_err(&pdev->dev, "No SBERR IRQ resource\n");
++	if (edac->sb_irq < 0)
+ 		return edac->sb_irq;
+-	}
+ 
+ 	irq_set_chained_handler_and_data(edac->sb_irq,
+ 					 altr_edac_a10_irq_handler,
+@@ -2184,10 +2182,8 @@ static int altr_edac_a10_probe(struct platform_device *pdev)
+ 	}
+ #else
+ 	edac->db_irq = platform_get_irq(pdev, 1);
+-	if (edac->db_irq < 0) {
+-		dev_err(&pdev->dev, "No DBERR IRQ resource\n");
++	if (edac->db_irq < 0)
+ 		return edac->db_irq;
+-	}
+ 	irq_set_chained_handler_and_data(edac->db_irq,
+ 					 altr_edac_a10_irq_handler, edac);
+ #endif
+-- 
+2.20.1.7.g153144c
 
-> +  SoCs which supports high resolution encoding functionalities. Required
-> +  parent and child device node.
-> +
-
-Thanks,
-Miles
