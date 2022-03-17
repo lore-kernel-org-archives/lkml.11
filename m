@@ -2,88 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28FEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:43:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A2AC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbiCQJpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
+        id S232136AbiCQJpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbiCQJpE (ORCPT
+        with ESMTP id S232131AbiCQJpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:45:04 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D3016F6F3;
-        Thu, 17 Mar 2022 02:43:47 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A589021112;
-        Thu, 17 Mar 2022 09:43:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647510226; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DFWUSkd4grL19DFDB5+w67woVPRC/6JXoVuQx8Tt1BE=;
-        b=UgY4MmIo/99tez4EdWkQdmC30OGtPfhCa7QDm+cGJhcCGJeMGCHvovlsnBgfDHWem+ELuF
-        glYTZ2nBNQNdURK8PnccbBbGq+cNZF2WOdnF3EtCcvcQ5Uj7A3dQ1f0OzsTFgzm6viJ0rf
-        zKTT05afs/HmaXfUC5a7nETQ6ZAqTMM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647510226;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DFWUSkd4grL19DFDB5+w67woVPRC/6JXoVuQx8Tt1BE=;
-        b=2pw/H3XZRxrPCe7n/gPiLACwOASm1Xr54f79xLwFNzAZTE/qyULNihLSzsGDSjrgeQX5O+
-        2PjKV+ND4zvyO4Dw==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 25FC1A3B89;
-        Thu, 17 Mar 2022 09:43:46 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id BBA6DA0615; Thu, 17 Mar 2022 10:43:44 +0100 (CET)
-Date:   Thu, 17 Mar 2022 10:43:44 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Thomas Dreibholz <dreibh@simula.no>
-Cc:     gandalf@winds.org, david@fromorbit.com, jack@suse.cz,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        reiserfs-devel@vger.kernel.org, willy@infradead.org
-Subject: Re: Is it time to remove reiserfs?
-Message-ID: <20220317094344.5s3shqk54qfpumey@quack3.lan>
-References: <1a5cd8ce-e7c7-5aa8-e475-ad7810e2f057@winds.org>
- <842c582a-ecb6-31a1-fad1-54a4e9c05b94@simula.no>
+        Thu, 17 Mar 2022 05:45:30 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060BD197AF3;
+        Thu, 17 Mar 2022 02:44:13 -0700 (PDT)
+X-UUID: 67d16cc1e9444f90b9cc772c0ef77b8d-20220317
+X-UUID: 67d16cc1e9444f90b9cc772c0ef77b8d-20220317
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 303202656; Thu, 17 Mar 2022 17:44:08 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 17 Mar 2022 17:44:06 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Mar
+ 2022 17:44:06 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Mar 2022 17:44:04 +0800
+Message-ID: <85717fa0b71f26431e4ca5de794e79c32c503552.camel@mediatek.com>
+Subject: Re: [PATCH V4 4/6] spi: mediatek: add spi memory support for ipm
+ design
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "Mark Brown" <broonie@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Date:   Thu, 17 Mar 2022 17:44:04 +0800
+In-Reply-To: <b6394c1a-28ee-f4bb-434f-afd311893fb8@collabora.com>
+References: <20220315032411.2826-1-leilk.liu@mediatek.com>
+         <20220315032411.2826-5-leilk.liu@mediatek.com>
+         <b237c1fe-9ddd-0a2e-ecf2-05bfb984c5dd@collabora.com>
+         <602f93f020967789eff49e2fd821d1b03f5b009f.camel@mediatek.com>
+         <b6394c1a-28ee-f4bb-434f-afd311893fb8@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <842c582a-ecb6-31a1-fad1-54a4e9c05b94@simula.no>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+On Thu, 2022-03-17 at 10:33 +0100, AngeloGioacchino Del Regno wrote:
+> Il 17/03/22 10:27, Leilk Liu ha scritto:
+> > On Tue, 2022-03-15 at 10:31 +0100, AngeloGioacchino Del Regno
+> > wrote:
+> > > Il 15/03/22 04:24, Leilk Liu ha scritto:
+> > > > this patch add the support of spi-mem for ipm design.
+> > > > 
+> > > > Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+> > > > ---
+> > > >    drivers/spi/spi-mt65xx.c | 349
+> > > > ++++++++++++++++++++++++++++++++++++++-
+> > > >    1 file changed, 348 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-
+> > > > mt65xx.c
+> > > > index 1a0b3208dfca..8958c3fa4fea 100644
+> > > > --- a/drivers/spi/spi-mt65xx.c
+> > > > +++ b/drivers/spi/spi-mt65xx.c
+> > > 
+> > > ...snip...
+> > > 
+> > > > +
+> > > > +static void of_mtk_spi_parse_dt(struct spi_master *master,
+> > > > struct
+> > > > device_node *nc)
+> > > > +{
+> > > > +	struct mtk_spi *mdata = spi_master_get_devdata(master);
+> > > > +	u32 value;
+> > > > +
+> > > > +	if (!of_property_read_u32(nc, "spi-tx-bus-width",
+> > > > &value)) {
+> > > 
+> > > Hello Leilk,
+> > > 
+> > > thanks for considering my advice about "spi-{tx,rx}-bus-width",
+> > > but
+> > > there's
+> > > something that you have misunderstood about it.
+> > > 
+> > > Simply, you don't need this function at all. Whatever you are
+> > > doing
+> > > here is
+> > > already being performed in the Linux SPI framework: at the end of
+> > > the
+> > > probe
+> > > function, this driver is calling the (legacy)
+> > > devm_spi_register_master(),
+> > > which calls devm_spi_register_controller().
+> > > 
+> > > In drivers/spi/spi.c, function spi_register_controller(), will in
+> > > turn call
+> > > of_register_spi_devices(ctlr) -> of_register_spi_device(ctlr,
+> > > nc)...
+> > > that
+> > > will end up finally calling function of_spi_parse_dt(ctlr, spi,
+> > > nc).
+> > > 
+> > > The last mentioned function already contains the logic and setup
+> > > to
+> > > check
+> > > devicetree properties "spi-tx-bus-width" and "spi-rx-bus-width"
+> > > (and
+> > > some
+> > > others, as well).
+> > > 
+> > > This means that spi-mt65xx.c already probed these even before
+> > > your
+> > > IPM
+> > > implementation, hence ***function of_mtk_spi_parse_dt() is not
+> > > needed***.
+> > > 
+> > > Simply drop it and don't check for these properties: that's
+> > > already
+> > > done.
+> > > 
+> > > 
+> > > Regards,
+> > > Angelo
+> > > 
+> > 
+> > Hi Angelo,
+> > 
+> > Thanks for your advice.
+> > 
+> > There are two spi controllor on MT7986. One supports single/dual
+> > mode,
+> > the other supports quad mode. Both of them can support spi memory
+> > framework(one's tx/rx bus width is 1/2, the other one's tx/rx bus
+> > width
+> > is 1/2/4).
+> > 
+> > Can I use of_mtk_spi_parse_dt() to parse the information? What's
+> > your
+> > suggestion?
+> > 
+> > Thanks!
+> > 
+> 
+> As I've already said, this does NOT require any devicetree handling
+> in
+> spi-mt65xx.c, as setting the right mode_bits is already handled in
+> drivers/spi/spi.c - please follow the explaination that I have given
+> before to fully understand the situation.
+> 
+> Regards,
+> Angelo
+> 
+OK, I'll fix it, thanks.
 
-On Thu 17-03-22 09:53:22, Thomas Dreibholz wrote:
-> I just noticed the thread about ReiserFS deprecation. We are currently still
-> using ReiserFS on ca. 50 production machines of the NorNet Core
-> infrastructure (https://www.nntb.no/). While newer machines use BTRFS
-> instead, the older machines had ReiserFS used, due to its stability and
-> better performance in comparison to ext4. At their installation time, we did
-> not consider BTRFS being mature enough. A deprecation period of ca. 5 years
-> from now seems to be reasonable, although it would be nice to have at least
-> a read-only capability available for some longer time, for the case it
-> becomes necessary to read an old ReiserFS file system on a newer system.
+> 
+> > 
+> > > > +		switch (value) {
+> > > > +		case 1:
+> > > > +			break;
+> > > > +		case 2:
+> > > > +			master->mode_bits |= SPI_TX_DUAL;
+> > > > +			break;
+> > > > +		case 4:
+> > > > +			master->mode_bits |= SPI_TX_QUAD;
+> > > > +			break;
+> > > > +		default:
+> > > > +			dev_warn(mdata->dev,
+> > > > +				 "spi-tx-bus-width %d not
+> > > > supported\n",
+> > > > +				value);
+> > > > +			break;
+> > > > +		}
+> > > > +	}
+> > > > +
+> > > > +	if (!of_property_read_u32(nc, "spi-rx-bus-width",
+> > > > &value)) {
+> > > > +		switch (value) {
+> > > > +		case 1:
 
-Thanks for your feedback! So the current plan is to remove the support from
-current upstream kernel in ~3 years, as people noted, you can still use
-upstream -stable kernels branched at the end of the deprecation period for
-another two years which gives you around 5 years to migrate if you are
-using upstream stable kernels. 
-
-You can still use sufficiently old kernel (VM?) or FUSE (although someone
-motivated would probably need to write proper support module but e.g. grub2
-has reiserfs support in userspace implemented) to get data out of
-Reiserfs partitions after that... At least that's the current plan.
-
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
