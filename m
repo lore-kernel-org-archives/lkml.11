@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8D1C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E96C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234643AbiCQM55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:57:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        id S234827AbiCQM6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234992AbiCQMyT (ORCPT
+        with ESMTP id S235032AbiCQMy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:54:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E3751EC6D;
-        Thu, 17 Mar 2022 05:53:02 -0700 (PDT)
+        Thu, 17 Mar 2022 08:54:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDCB1EC6D;
+        Thu, 17 Mar 2022 05:53:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E8411CE2336;
-        Thu, 17 Mar 2022 12:53:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF22EC340E9;
-        Thu, 17 Mar 2022 12:52:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E74B2B81E5C;
+        Thu, 17 Mar 2022 12:53:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5026AC340E9;
+        Thu, 17 Mar 2022 12:53:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521579;
-        bh=5nw7cHt/RTx/pOOhvfo54s8PdS6J/svkQh4QT7q+nsg=;
+        s=korg; t=1647521589;
+        bh=OHgK3l61XigknepnxkAHN1zj8F8/Ze2Ht/Z9K6dhxxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=US2BZAN8vnwgRJkm5XzPOF2+nF6G6J5r/JRz2bpWaqEq+4A3No8GkR1LUBNO1qZ1O
-         excL/iDH1LfLMERMAzjbHX8licbd/xMWjqUSQBdUu0Mwd/Tu1Q0peofTcEoXUwmyAH
-         Q7b+bCbqjZVkXbWjIdZuah+y0/jJPlK4hXFYByts=
+        b=K1+KA7QMXq9T7Sn/HVR87ME0zcnmfvzxKRWDY6kVkT+5eHXw5/TKGIR2Fkejrhchb
+         h85SDsWaIx7Uomm5/35UPgOpW9FrdclTmGhyv6nZNUhOpEsp19PSc+72fk7Snsd/Ov
+         qqp8SRiYzdy6mNsSqQY2cec2gjBmPQJ/1XSwS3aU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 16/28] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-Date:   Thu, 17 Mar 2022 13:46:07 +0100
-Message-Id: <20220317124527.228586235@linuxfoundation.org>
+Subject: [PATCH 5.16 19/28] Input: goodix - use the new soc_intel_is_byt() helper
+Date:   Thu, 17 Mar 2022 13:46:10 +0100
+Message-Id: <20220317124527.312793322@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -51,48 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit c5048a7b2c23ab589f3476a783bd586b663eda5b ]
+[ Upstream commit d176708ffc20332d1c730098d2b111e0b77ece82 ]
 
-Register the CAN device only when all the necessary initialization is
-completed. This patch makes sure all the data structures and locks are
-initialized before registering the CAN device.
+Use the new soc_intel_is_byt() helper from linux/platform_data/x86/soc.h.
 
-Link: https://lore.kernel.org/all/20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Pavel Machek <pavel@denx.de>
-Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220131143539.109142-5-hdegoede@redhat.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/rcar/rcar_canfd.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/input/touchscreen/goodix.c | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index 137eea4c7bad..4871428859fd 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1716,15 +1716,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
+index aaa3c455e01e..e053aadea3c9 100644
+--- a/drivers/input/touchscreen/goodix.c
++++ b/drivers/input/touchscreen/goodix.c
+@@ -18,6 +18,7 @@
+ #include <linux/delay.h>
+ #include <linux/irq.h>
+ #include <linux/interrupt.h>
++#include <linux/platform_data/x86/soc.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
+ #include <linux/of.h>
+@@ -686,21 +687,6 @@ static int goodix_reset(struct goodix_ts_data *ts)
+ }
  
- 	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
- 		       RCANFD_NAPI_WEIGHT);
-+	spin_lock_init(&priv->tx_lock);
-+	devm_can_led_init(ndev);
-+	gpriv->ch[priv->channel] = priv;
- 	err = register_candev(ndev);
- 	if (err) {
- 		dev_err(&pdev->dev,
- 			"register_candev() failed, error %d\n", err);
- 		goto fail_candev;
- 	}
--	spin_lock_init(&priv->tx_lock);
--	devm_can_led_init(ndev);
--	gpriv->ch[priv->channel] = priv;
- 	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
- 	return 0;
+ #ifdef ACPI_GPIO_SUPPORT
+-#include <asm/cpu_device_id.h>
+-#include <asm/intel-family.h>
+-
+-static const struct x86_cpu_id baytrail_cpu_ids[] = {
+-	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ATOM_SILVERMONT, X86_FEATURE_ANY, },
+-	{}
+-};
+-
+-static inline bool is_byt(void)
+-{
+-	const struct x86_cpu_id *id = x86_match_cpu(baytrail_cpu_ids);
+-
+-	return !!id;
+-}
+-
+ static const struct acpi_gpio_params first_gpio = { 0, 0, false };
+ static const struct acpi_gpio_params second_gpio = { 1, 0, false };
  
+@@ -784,7 +770,7 @@ static int goodix_add_acpi_gpio_mappings(struct goodix_ts_data *ts)
+ 		dev_info(dev, "Using ACPI INTI and INTO methods for IRQ pin access\n");
+ 		ts->irq_pin_access_method = IRQ_PIN_ACCESS_ACPI_METHOD;
+ 		gpio_mapping = acpi_goodix_reset_only_gpios;
+-	} else if (is_byt() && ts->gpio_count == 2 && ts->gpio_int_idx == -1) {
++	} else if (soc_intel_is_byt() && ts->gpio_count == 2 && ts->gpio_int_idx == -1) {
+ 		dev_info(dev, "No ACPI GpioInt resource, assuming that the GPIO order is reset, int\n");
+ 		ts->irq_pin_access_method = IRQ_PIN_ACCESS_ACPI_GPIO;
+ 		gpio_mapping = acpi_goodix_int_last_gpios;
 -- 
 2.34.1
 
