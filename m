@@ -2,97 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B78FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 21:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9467C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 21:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230286AbiCQVUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 17:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41976 "EHLO
+        id S230228AbiCQVXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 17:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230281AbiCQVUt (ORCPT
+        with ESMTP id S230195AbiCQVXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 17:20:49 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF14BC43;
-        Thu, 17 Mar 2022 14:19:29 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id t2so7831162pfj.10;
-        Thu, 17 Mar 2022 14:19:29 -0700 (PDT)
+        Thu, 17 Mar 2022 17:23:12 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3297A9A2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 14:21:54 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id w7so11133279lfd.6
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 14:21:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=E0FghEjS/Rw5fgY3QFgY5tO8sn18k23p8upmZjRX6VQ=;
-        b=YKg1Cy6p/GmNp3eJGkiFcNW3+VsuSs1HOoCHGW2tmG3+7L6cZALRLH5RG3Nuy9mDxO
-         XkX/eOKowUqrtX1ifkThqh9IXD08cC9GzVZJQYF8/w8gpsROPA6mUp4GYLdJXcGZGNLq
-         TXBfIKevQWgyXX8t3lxw/dusfVsNXAb1HtGXMNdrxEfECWjrQuoV2lSgdMwxzfs81zbD
-         LlyJttNivr1Vx7v+mXae5ipct1aRegQIit5fJsA5FzQarkDTipqKpnEzeng+48K5Gbn8
-         1vU8vf8oqu6unXFqILFt2wmWUl0GN1x5u2oJtf9yTnVX+grtbiDmgUuuPa1F0D5AkNDh
-         UCXQ==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qRvk/VVnw4/zCdH06gyReu2Cz7SwRimW7RvRCfYZG4A=;
+        b=dCDHswjwXChioTR3TMtLF47+FPdp3xR2CaEXTo6XGOtouRJ2I30xou2UBTwg5UYt5h
+         niC3YiH/fcpCugWi3ZcOsMK6xoTFUjOHwqBU9sBz7hGe2ACJVpQu065giZSEtMNG0lbA
+         Gb7Bvip8XiGbNvYEe5dxzeYkcjGEseJM1fPnM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=E0FghEjS/Rw5fgY3QFgY5tO8sn18k23p8upmZjRX6VQ=;
-        b=oLdG05mg6k9nCFi7nbCGcNEn9ypndNdXZPzKOpLDUSa9yFNCz6BfqohlAF7FIYo2pC
-         9Rb/OE/FayBhflqKjVh/FgSrMWcAK3LL12A6Z3Mp5qZdGfE0HWLbFdCdrfSStNUwwe01
-         cNTA84Wubt+dVIdjUTgrNvJ7nkg6xYEr2oDf0Js9A3zE0mTafW24HK7YGIltYODC5hdv
-         c3mCZoc94vhkLNV3OTGoPCykgG7hJ/pPLL9fz4XbX3jKhREFPamTmSnplvpP1skuOW/Y
-         wQpKzWNgVnHAfDKgAfx//ioEiW0x1lhwOBKHBN4F+MxP11VdFIpXHY7cXUtKUTz76C3I
-         p5Yg==
-X-Gm-Message-State: AOAM530Hn4qeSKN7jBul7MWuaFnbInGJ4pvopwOPur0zgIu5OzNLJo13
-        bsCa/yG8mAY3eTaelQHQLA9FcURuY/o=
-X-Google-Smtp-Source: ABdhPJxS6AsPEzJcAbDKaR6kjQG9O2clYK2m18uZSi9kl8/+pxS1sI7lKq9kHdBRrTkMDVHktVXGKQ==
-X-Received: by 2002:a63:dc53:0:b0:381:7f41:3a2d with SMTP id f19-20020a63dc53000000b003817f413a2dmr5333223pgj.126.1647551969420;
-        Thu, 17 Mar 2022 14:19:29 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id om17-20020a17090b3a9100b001bf0fffee9bsm11285688pjb.52.2022.03.17.14.19.21
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qRvk/VVnw4/zCdH06gyReu2Cz7SwRimW7RvRCfYZG4A=;
+        b=BysUJbaTRML1ug7hbGB0kca9po674Q09Inf/JSP5+heaFg35x2tfkohGphbhBzLn6F
+         h5fKa4gLGleVab1IEqp6DiGph/LEIu+oj7hhIicB+0ua7HiDUoq+Wh6JpGwYVjdjhNEg
+         Mr4/uAlPcFXcHgtz8MQ4H6SNGSt8Sr7t1PMhHhcVEzcMPrpIuOFhlQOvBuoCncr0EWA3
+         xdP6Aj8mMRnFEHbBmyQ8lBWxG6L/J9conr7eD63QZw/9BhWeGojuSAVKNmzlPyzp3NTl
+         WE9EE1JSIt/tMdMSNzs0hCDjmJIEO+EtGaGYd0aAPcNqv9g3tDj+8RDmkDdmMBytBC2k
+         Nhzw==
+X-Gm-Message-State: AOAM532Umf66peU2zCbVJoEaSCQlO8ReqrmGutyEB/mZlE/2ONqmjuEs
+        nxYBgL/fQ7f7nJiHDTuPYzGlG6Pfg5qE3QTi0V4=
+X-Google-Smtp-Source: ABdhPJyK03/PYJwqPsBFzAJnc0v2ngc1BwmfvxUJhp0YLSviNFHBG6C2UhZdMBPGvGcbIdAHT+GeJA==
+X-Received: by 2002:a05:6512:3dac:b0:449:f740:eb87 with SMTP id k44-20020a0565123dac00b00449f740eb87mr3140579lfv.579.1647552113244;
+        Thu, 17 Mar 2022 14:21:53 -0700 (PDT)
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com. [209.85.167.45])
+        by smtp.gmail.com with ESMTPSA id p1-20020a05651238c100b004435d1d47fasm543466lft.102.2022.03.17.14.21.52
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Mar 2022 14:19:28 -0700 (PDT)
-Subject: Re: [PATCH 5.10 00/23] 5.10.107-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220317124525.955110315@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <84699378-88db-f3fe-25fa-cea7c9af2ba4@gmail.com>
-Date:   Thu, 17 Mar 2022 14:19:19 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Thu, 17 Mar 2022 14:21:53 -0700 (PDT)
+Received: by mail-lf1-f45.google.com with SMTP id bu29so11219030lfb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 14:21:52 -0700 (PDT)
+X-Received: by 2002:a05:6512:b13:b0:448:90c6:dc49 with SMTP id
+ w19-20020a0565120b1300b0044890c6dc49mr4276267lfu.542.1647552112472; Thu, 17
+ Mar 2022 14:21:52 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220210223134.233757-1-morbo@google.com> <20220301201903.4113977-1-morbo@google.com>
+ <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com>
+ <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com> <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com>
+ <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com>
+ <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com>
+ <CAGG=3QW2ey2w91TxqJ6tzfJOswhTce2e0QTW7kAWyvxeiO+VNg@mail.gmail.com>
+ <CAHk-=whn3iYE7gZM4vHx1kFhWBD2P9Wvmcyj8OOqv=y_7nemGQ@mail.gmail.com> <CAGG=3QWC9VS9RdGFTwY8VGqujDnFYnRTT1dQ6kkVr+0SRk6COg@mail.gmail.com>
+In-Reply-To: <CAGG=3QWC9VS9RdGFTwY8VGqujDnFYnRTT1dQ6kkVr+0SRk6COg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 17 Mar 2022 14:21:36 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh=x7oCk05JD1=6XNsvvgpsidRWupoqySw1zODmvNy9Ug@mail.gmail.com>
+Message-ID: <CAHk-=wh=x7oCk05JD1=6XNsvvgpsidRWupoqySw1zODmvNy9Ug@mail.gmail.com>
+Subject: Re: [PATCH v5] x86: use builtins to read eflags
+To:     Bill Wendling <morbo@google.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/17/22 5:45 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.107 release.
-> There are 23 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.107-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+On Thu, Mar 17, 2022 at 2:10 PM Bill Wendling <morbo@google.com> wrote:
+> >
+> > As a result, we mark pretty much all system instructions as being
+> > memory clobbers, because that actually works.
+>
+> For now.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+No. Forever.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+If you change the compiler to ignore memory clobbers in inline asms,
+we'll stop using clang again.
+
+This is not some kind of "threat". This is literally just a plain fact.
+
+If you turn your compiler into garbage, we can't use it.
+
+End of discussion.
+
+> > Whether they actually clobber memory or not is immaterial, and is not
+> > why we do it.
+>
+> I understand that. My point is that it's not a guarantee that the
+> compiler won't change in the future.
+
+YES IT DAMN WELL IS.
+
+If I have an inline asm thing, and I tell the compiler "this inline
+asm reads or writes memory in ways you don't understand", and you then
+move externally visible memory operations around it - or move other
+inline asms that do the same thing around it - then your compiler is
+simply not a compiler any more.
+
+IT IS BROKEN  SHIT.
+
+See?
+
+That memory clobber is not a "please mister compiler, can you pretty
+please take this into account".
+
+That memory clobber is a "if you don't take this into account, you are
+now no longer a working compiler, and thank Gods we have
+alternatives".
+
+This is not a "in ten years things can change" kind of issue. This is
+a very fundamental and simple thing.
+
+I don't understand why you can't just admit that.
+
+This is as simple as 2+2 being 4. That's black and white.
+
+There is no "the compiler might optimize it to be 3 at some future date".
+
+               Linus
