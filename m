@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8B4C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92229C433F5
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234856AbiCQM6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
+        id S235066AbiCQM6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235051AbiCQMyb (ORCPT
+        with ESMTP id S235142AbiCQMyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:54:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755A83B00E;
-        Thu, 17 Mar 2022 05:53:15 -0700 (PDT)
+        Thu, 17 Mar 2022 08:54:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7B03B00E;
+        Thu, 17 Mar 2022 05:53:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BE20B81E5C;
-        Thu, 17 Mar 2022 12:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D9D6C340ED;
-        Thu, 17 Mar 2022 12:53:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB68C61240;
+        Thu, 17 Mar 2022 12:53:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CCCC340E9;
+        Thu, 17 Mar 2022 12:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521592;
-        bh=j1bNvp8+7Dxv3PwhV/qjUZjvW3kzu3o9Fl0oVcTEDKA=;
+        s=korg; t=1647521610;
+        bh=1n0/fjh8481R1/+vVkCK08P+a7iR+AerTmZh2YvhAQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BMyGKRREKbFX71SoEskw3R9dSrBjhPpRlCt8E1Semmf77szEtmDRoCTFFT97hv0l0
-         pn1dM5RHiaLR54f0frc2h3BFlT+34srMhDO2WO+t6fQaVEAUh0fqWgNGiG1itLfhSu
-         5WgRpvUxjow8hBDMKb9jpFaNtdyXYCUW5R68X0zo=
+        b=OHI6tfLyxZ2/yge8yuppsTeOLTrfYN0KMZFH7sx13nMDxrXM29e8fzoD0aPbrdjJY
+         7y/jac5mW7fbQJdKcZ4rFzTVFHheb4HIwuV0GFveQ5ky/I7CiRL6mWMpIoxg3E+Yh7
+         kOlCrqJqi0sJJ7XBK8PnsZd26frKMDROOo1QzwuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org,
+        Sreeramya Soratkal <quic_ssramya@quicinc.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 02/28] arm64: dts: rockchip: fix dma-controller node names on rk356x
-Date:   Thu, 17 Mar 2022 13:45:53 +0100
-Message-Id: <20220317124526.839790483@linuxfoundation.org>
+Subject: [PATCH 5.16 23/28] nl80211: Update bss channel on channel switch for P2P_CLIENT
+Date:   Thu, 17 Mar 2022 13:46:14 +0100
+Message-Id: <20220317124527.424056121@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -49,51 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+From: Sreeramya Soratkal <quic_ssramya@quicinc.com>
 
-[ Upstream commit 2ddd96aadbd0412040ef49eda94549c32de6c92c ]
+[ Upstream commit e50b88c4f076242358b66ddb67482b96947438f2 ]
 
-DMA-Cotrollers defined in rk356x.dtsi do not match the pattern in bindings.
+The wdev channel information is updated post channel switch only for
+the station mode and not for the other modes. Due to this, the P2P client
+still points to the old value though it moved to the new channel
+when the channel change is induced from the P2P GO.
 
-arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
-  dmac@fe530000: $nodename:0: 'dmac@fe530000' does not match '^dma-controller(@.*)?$'
-	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
-arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
-  dmac@fe550000: $nodename:0: 'dmac@fe550000' does not match '^dma-controller(@.*)?$'
-	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
+Update the bss channel after CSA channel switch completion for P2P client
+interface as well.
 
-This Patch fixes it.
-
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Link: https://lore.kernel.org/r/20220123133615.135789-1-linux@fw-web.de
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Signed-off-by: Sreeramya Soratkal <quic_ssramya@quicinc.com>
+Link: https://lore.kernel.org/r/1646114600-31479-1-git-send-email-quic_ssramya@quicinc.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk356x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/wireless/nl80211.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-index 46d9552f6028..688e3585525a 100644
---- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -647,7 +647,7 @@
- 		status = "disabled";
- 	};
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index f73251828782..9b4bb1460cef 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -17757,7 +17757,8 @@ void cfg80211_ch_switch_notify(struct net_device *dev,
+ 	wdev->chandef = *chandef;
+ 	wdev->preset_chandef = *chandef;
  
--	dmac0: dmac@fe530000 {
-+	dmac0: dma-controller@fe530000 {
- 		compatible = "arm,pl330", "arm,primecell";
- 		reg = <0x0 0xfe530000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
-@@ -658,7 +658,7 @@
- 		#dma-cells = <1>;
- 	};
+-	if (wdev->iftype == NL80211_IFTYPE_STATION &&
++	if ((wdev->iftype == NL80211_IFTYPE_STATION ||
++	     wdev->iftype == NL80211_IFTYPE_P2P_CLIENT) &&
+ 	    !WARN_ON(!wdev->current_bss))
+ 		cfg80211_update_assoc_bss_entry(wdev, chandef->chan);
  
--	dmac1: dmac@fe550000 {
-+	dmac1: dma-controller@fe550000 {
- 		compatible = "arm,pl330", "arm,primecell";
- 		reg = <0x0 0xfe550000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
 -- 
 2.34.1
 
