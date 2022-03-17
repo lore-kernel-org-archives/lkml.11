@@ -2,365 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4563BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64573C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237390AbiCQSSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
+        id S237381AbiCQSTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237594AbiCQSSV (ORCPT
+        with ESMTP id S237337AbiCQSTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:18:21 -0400
-Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A20D221B8F;
-        Thu, 17 Mar 2022 11:17:03 -0700 (PDT)
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172]) (authenticated)
-        by conssluserg-01.nifty.com with ESMTP id 22HIGhM3021798;
-        Fri, 18 Mar 2022 03:16:43 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 22HIGhM3021798
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1647541004;
-        bh=rc+MZb1Rc8UPoapVsTEVnBHBc6LjyMDA/XIc+yuBoSY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=vW89vEr1VVvLOEYYcHgnFJh42EyomgIlx0lni27MK6tzXrjfEZZi1yt7TgNyDzjyP
-         /U30r4wxQdCXkaZo8UX8T2kthAbZSF00DuWKH5tSFY3x45AZl4L7CIVk0seWkxIOk+
-         4+Ds1yPMqO8kL/0txA4FR3pA75axaTU59JFOCAUdaJPM+GpHPi77AtUwlCIwQTvQ36
-         G2W2zoiHfmlCPY9zJn4SLYOkSNVLNLeZ4lYWH3rCrGwlm59nMdZgnjfYBwcLfdA3Dz
-         cfDKQUDq7WqT+s0k25zKR2Iq8+JuHvClw1veATO6H8w1jjIFamDrpd4PAydoJpOnNM
-         JwDjrEBroTfqg==
-X-Nifty-SrcIP: [209.85.214.172]
-Received: by mail-pl1-f172.google.com with SMTP id n2so5131191plf.4;
-        Thu, 17 Mar 2022 11:16:43 -0700 (PDT)
-X-Gm-Message-State: AOAM530cxknO3VurzKXCFaClNmOXeC7Ygma7A6TXlMQ+QZIB0gApZHAx
-        NdRB44f9cqaBBbDUbe+sD8v1gOnZgHrXf/IRXwo=
-X-Google-Smtp-Source: ABdhPJxoion/ay/c2AhKta6zCpPI6szxP6ejFc5c0oLrFVXBuEiPalN7opqhLo4zJMojy6smgj9q7pJsiLRzajm/kBY=
-X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
- s7-20020a170902988700b001516e1c7082mr6326693plp.162.1647541002797; Thu, 17
- Mar 2022 11:16:42 -0700 (PDT)
+        Thu, 17 Mar 2022 14:19:36 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC46F5D181
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:18:18 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647541096;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=X1cMRioNx9dyBHJVz2CH0cxjLaOPntib9co0rfHgwgU=;
+        b=Qwnh3wirWfWrTNOaSMoLiRggVDoBJWJqwgsac8TwO2aXHM/Csr4Ev8uzz/p9rXDUctImmG
+        dHBeGfNHLypxIDjPbxuOyaLAwhX4p9u8suz7kHja7f7zJYjSY6pTWCePgU8OSTEHShw36E
+        YJ6OcRxOCEggZawGP+Um3yi4d3pQjGvvvR3DOcfn6G0FbjSePDvwf0QFBuXYlrSG5fFnZM
+        AhjYv6i+uicoy3Uf3Rn3t8gLmHqKa90SYli+pTRW96YuWdy0IHHzF4DoCkD3FQZqhlhHen
+        9JUbAO8wusF9B641iIeSLJQGOfCSPCiVtJXrMQtJb53ZC8zaQSJHJqdN7XHbeA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647541096;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=X1cMRioNx9dyBHJVz2CH0cxjLaOPntib9co0rfHgwgU=;
+        b=SabTM6h+J39HEs/HdKKtPDESeI6Qyc5crpV+6SBE2jLSTqW7Ok/JWoGjxwPhlru3PeujNl
+        CuIvw7zWGOq/hwCw==
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Subject: Re: [PATCHv6 07/30] x86/traps: Add #VE support for TDX guest
+In-Reply-To: <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
+References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
+ <20220316020856.24435-8-kirill.shutemov@linux.intel.com>
+ <877d8t2ykp.ffs@tglx> <20220317173354.rqymufl37lcrtmjh@black.fi.intel.com>
+Date:   Thu, 17 Mar 2022 19:18:15 +0100
+Message-ID: <87czikcujc.ffs@tglx>
 MIME-Version: 1.0
-References: <20220309190917.w3tq72alughslanq@ast-mbp.dhcp.thefacebook.com>
- <YinGZObp37b27LjK@hirez.programming.kicks-ass.net> <YioBZmicMj7aAlLf@hirez.programming.kicks-ass.net>
- <YionV0+v/cUBiOh0@hirez.programming.kicks-ass.net> <YisnG9lW6kp8lBp3@hirez.programming.kicks-ass.net>
- <CAADnVQJfffD9tH_cWThktCCwXeoRV1XLZq69rKK5vKy_y6BN8A@mail.gmail.com>
- <20220312154407.GF28057@worktop.programming.kicks-ass.net>
- <CAADnVQL7xrafAviUJg47LfvFSJpgZLwyP18Bm3S_KQwRyOpheQ@mail.gmail.com>
- <20220313085214.GK28057@worktop.programming.kicks-ass.net>
- <Yi9YOdn5Nbq9BBwd@hirez.programming.kicks-ass.net> <20220315081522.GA8939@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220315081522.GA8939@worktop.programming.kicks-ass.net>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Fri, 18 Mar 2022 03:15:59 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQ2mYMnOKMQheVi+6byUFE3KEkjm1zcndNUfe0tORGvug@mail.gmail.com>
-Message-ID: <CAK7LNAQ2mYMnOKMQheVi+6byUFE3KEkjm1zcndNUfe0tORGvug@mail.gmail.com>
-Subject: Re: [PATCH v4 00/45] x86: Kernel IBT
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        X86 ML <x86@kernel.org>, joao@overdrivepizza.com,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mark Rutland <mark.rutland@arm.com>, alyssa.milburn@intel.com,
-        Miroslav Benes <mbenes@suse.cz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 5:15 PM Peter Zijlstra <peterz@infradead.org> wrote:
+On Thu, Mar 17 2022 at 20:33, Kirill A. Shutemov wrote:
+> On Thu, Mar 17, 2022 at 01:48:54AM +0100, Thomas Gleixner wrote:
+>> On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
+>> Hmm?
 >
-> On Mon, Mar 14, 2022 at 03:59:05PM +0100, Peter Zijlstra wrote:
-> > On Sun, Mar 13, 2022 at 09:52:14AM +0100, Peter Zijlstra wrote:
-> > > On Sat, Mar 12, 2022 at 05:33:39PM -0800, Alexei Starovoitov wrote:
-> > > > During the build with gcc 8.5 I see:
-> > > >
-> > > > arch/x86/crypto/crc32c-intel.o: warning: objtool: file already has
-> > > > .ibt_endbr_seal, skipping
-> > > > arch/x86/crypto/crc32c-intel.o: warning: objtool: file already has
-> > > > .orc_unwind section, skipping
-> > > >   LD [M]  crypto/async_tx/async_xor.ko
-> > > >   LD [M]  crypto/authenc.ko
-> > > > make[3]: *** [../scripts/Makefile.modfinal:61:
-> > > > arch/x86/crypto/crc32c-intel.ko] Error 255
-> > > > make[3]: *** Waiting for unfinished jobs....
-> > > >
-> > > > but make clean cures it.
-> > > > I suspect it's some missing makefile dependency.
-> > >
-> > > Yes, I recently ran into it; I've been trying to kick Makefile into
-> > > submission but have not had success yet. Will try again on Monday.
-> > >
-> > > Problem appears to be that it will re-link .ko even though .o hasn't
-> > > changed, resulting in duplicate objtool runs. I've been trying to have
-> > > makefile generate .o.objtool empty file to serve as dependency marker to
-> > > avoid doing second objtool run, but like said, no luck yet.
-> >
-> > Masahiro-san, I'm trying the below, but afaict it's not working because
-> > the rule for the .o file itself:
-> >
-> Ha, sleep, it is marvelous!
+> Does the changed version below address your concerns?
 >
-> The below appears to be working as desired.
+> 	void tdx_get_ve_info(struct ve_info *ve)
+> 	{
+> 		struct tdx_module_output out;
 >
-> ---
-> Index: linux-2.6/scripts/Makefile.build
-> ===================================================================
-> --- linux-2.6.orig/scripts/Makefile.build
-> +++ linux-2.6/scripts/Makefile.build
-> @@ -86,12 +86,18 @@ ifdef need-builtin
->  targets-for-builtin += $(obj)/built-in.a
->  endif
+> 		/*
+> 		 * Called during #VE handling to retrieve the #VE info from the
+> 		 * TDX module.
+> 		 *
+> 		 * This has to be called early in #VE handling.  A "nested" #VE which
+> 		 * occurs before this will raise a #DF and is not recoverable.
+> 		 *
+> 		 * The call retrieves the #VE info from the TDX module, which also
+> 		 * clears the "#VE valid" flag. This must be done before anything else
+> 		 * because any #VE that occurs while the valid flag is set will lead to
+> 		 * #DF.
+> 		 *
+> 		 * Note, the TDX module treats virtual NMIs as inhibited if the #VE
+> 		 * valid flag is set. It means that NMI=>#VE will not result in a #DF.
+> 		 */
+> 		tdx_module_call(TDX_GET_VEINFO, 0, 0, 0, 0, &out);
 >
-> -targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
-> +targets-for-modules :=
+> 		/* Transfer the output parameters */
+> 		ve->exit_reason = out.rcx;
+> 		ve->exit_qual   = out.rdx;
+> 		ve->gla         = out.r8;
+> 		ve->gpa         = out.r9;
+> 		ve->instr_len   = lower_32_bits(out.r10);
+> 		ve->instr_info  = upper_32_bits(out.r10);
+> 	}
+
+Nice.
+
+>> The point is that any #VE in such a code path is fatal and you better
+>> come up with some reasonable explanation why this is not the case in
+>> those code pathes and how a potential violation of that assumption might
+>> be detected especially in rarely used corner cases. If such a violation
+>> is not detectable by audit, CI, static code analysis or whatever then
+>> document the consequences instead of pretending that the problem does
+>> not exist and the kernel is perfect today and forever.
 >
->  ifdef CONFIG_LTO_CLANG
->  targets-for-modules += $(patsubst %.o, %.lto.o, $(filter %.o, $(obj-m)))
->  endif
+> It is detectable by audit. The critical windows very limited and located
+> in the highly scrutinized entry code. But, yes, I cannot guarantee that
+> this code will be perfect forever.
+
+Fair enough.
+
+> Consequences of #VE in these critical windows are mentioned in the
+> comment:
 >
-> +ifdef CONFIG_X86_KERNEL_IBT
-> +targets-for-modules += $(patsubst %.o, %.objtool, $(filter %.o, $(obj-m)))
-> +endif
-> +
-> +targets-for-modules += $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
-> +
->  ifdef need-modorder
->  targets-for-modules += $(obj)/modules.order
->  endif
-> @@ -276,6 +282,19 @@ cmd_mod = { \
->  $(obj)/%.mod: $(obj)/%$(mod-prelink-ext).o FORCE
->         $(call if_changed,mod)
+> 	Any exception in this window leads to hard to debug issues and can
+> 	be exploited for privilege escalation. 
 >
-> +#
-> +# Since objtool will re-write the file it will change the timestamps, therefore
-> +# it is critical that the %.objtool file gets a timestamp *after* objtool runs.
-> +#
-> +# Additionally, care must be had with ordering this rule against the other rules
-> +# that take %.o as a dependency.
-> +#
-> +cmd_objtool_mod =                                                      \
-> +       true $(cmd_objtool) ; touch $@
-> +
-> +$(obj)/%.objtool: $(obj)/%$(mod-prelink-ext).o FORCE
-> +       $(call if_changed,objtool_mod)
-> +
->  quiet_cmd_cc_lst_c = MKLST   $@
->        cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
->                      $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
-> Index: linux-2.6/scripts/Makefile.lib
-> ===================================================================
-> --- linux-2.6.orig/scripts/Makefile.lib
-> +++ linux-2.6/scripts/Makefile.lib
-> @@ -552,9 +552,8 @@ objtool_args =                                                              \
->         $(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)             \
->         $(if $(CONFIG_SLS), --sls)
->
-> -cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $@)
-> -cmd_objtool_mod = $(if $(objtool-enabled), $(objtool) $(objtool_args) $(@:.ko=.o) ; )
-> -cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$@: $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
-> +cmd_objtool = $(if $(objtool-enabled), ; $(objtool) $(objtool_args) $(@:.objtool=.o))
-> +cmd_gen_objtooldep = $(if $(objtool-enabled), { echo ; echo '$(@:.objtool=.o): $$(wildcard $(objtool))' ; } >> $(dot-target).cmd)
->
->  endif # CONFIG_STACK_VALIDATION
->
-> @@ -575,8 +574,8 @@ $(obj)/%.o: objtool-enabled :=
->
->  # instead run objtool on the module as a whole, right before
->  # the final link pass with the linker script.
-> -%.ko: objtool-enabled = y
-> -%.ko: part-of-module := y
-> +$(obj)/%.objtool: objtool-enabled = y
-> +$(obj)/%.objtool: part-of-module := y
->
->  else
->
-> Index: linux-2.6/scripts/Makefile.modfinal
-> ===================================================================
-> --- linux-2.6.orig/scripts/Makefile.modfinal
-> +++ linux-2.6/scripts/Makefile.modfinal
-> @@ -32,7 +32,6 @@ ARCH_POSTLINK := $(wildcard $(srctree)/a
->
->  quiet_cmd_ld_ko_o = LD [M]  $@
->        cmd_ld_ko_o +=                                                   \
-> -       $(cmd_objtool_mod)                                              \
->         $(LD) -r $(KBUILD_LDFLAGS)                                      \
->                 $(KBUILD_LDFLAGS_MODULE) $(LDFLAGS_MODULE)              \
->                 -T scripts/module.lds -o $@ $(filter %.o, $^);          \
+> I have hard time understanding what I has to change here. Do you want
+> details of audit to be documented? Make consequences of #VE at the wrong
+> point to be more prominent in the comment? 
 
+So having something like this in the comment would be helpful:
 
+        *
+	* The entry code has been audited carefuly for following these
+        * expectations. Changes in the entry code have to be audited for
+        * correctness vs. this aspect.  #VE in these places will cause
+        * [an instant kernel panic | whatever | fill the blanks ]
+        *
 
+Thanks,
 
-
-I wrote cleaner code for the Kbuild part.
-
-This replaces
-  scripts/Makefile*
-  scripts/mod/modpost.c
-of ("x86/alternative: Use .ibt_endbr_seal to seal indirect calls")
-
-If there is more time, I have an even cleaner idea.
-
-
-
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index a4b89b757287..12812cbb54cd 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -88,8 +88,8 @@ endif
-
- targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
-
--ifdef CONFIG_LTO_CLANG
--targets-for-modules += $(patsubst %.o, %.lto.o, $(filter %.o, $(obj-m)))
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
-+targets-for-modules += $(patsubst %.o, %.prelink.o, $(filter %.o, $(obj-m)))
- endif
-
- ifdef need-modorder
-@@ -170,7 +170,7 @@ ifdef CONFIG_MODVERSIONS
- #   the actual value of the checksum generated by genksyms
- # o remove .tmp_<file>.o to <file>.o
-
--ifdef CONFIG_LTO_CLANG
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- # Generate .o.symversions files for each .o with exported symbols,
-and link these
- # to the kernel and/or modules at the end.
- cmd_modversions_c =
-         \
-@@ -230,6 +230,7 @@ objtool := $(objtree)/tools/objtool/objtool
- objtool_args =                                                         \
-        $(if $(CONFIG_UNWINDER_ORC),orc generate,check)                 \
-        $(if $(part-of-module), --module)                               \
-+       $(if $(CONFIG_X86_KERNEL_IBT), --lto --ibt)                     \
-        $(if $(CONFIG_FRAME_POINTER),, --no-fp)                         \
-        $(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
-        $(if $(CONFIG_RETPOLINE), --retpoline)                          \
-@@ -242,7 +243,7 @@ cmd_gen_objtooldep = $(if $(objtool-enabled), {
-echo ; echo '$@: $$(wildcard $(o
-
- endif # CONFIG_STACK_VALIDATION
-
--ifdef CONFIG_LTO_CLANG
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
-
- # Skip objtool for LLVM bitcode
- $(obj)/%.o: objtool-enabled :=
-@@ -288,24 +289,24 @@ $(obj)/%.o: $(src)/%.c $(recordmcount_source) FORCE
-        $(call if_changed_rule,cc_o_c)
-        $(call cmd,force_checksrc)
-
--ifdef CONFIG_LTO_CLANG
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- # Module .o files may contain LLVM bitcode, compile them into native code
- # before ELF processing
--quiet_cmd_cc_lto_link_modules = LTO [M] $@
--cmd_cc_lto_link_modules =                                              \
-+quiet_cmd_cc_prelink_modules = LD [M]  $@
-+      cmd_cc_prelink_modules =                                         \
-        $(LD) $(ld_flags) -r -o $@                                      \
--               $(shell [ -s $(@:.lto.o=.o.symversions) ] &&            \
--                       echo -T $(@:.lto.o=.o.symversions))             \
-+               $(shell [ -s $(@:.prelink.o=.o.symversions) ] &&
-         \
-+                       echo -T $(@:.prelink.o=.o.symversions))         \
-                --whole-archive $(filter-out FORCE,$^)                  \
-                $(cmd_objtool)
-
- # objtool was skipped for LLVM bitcode, run it now that we have compiled
- # modules into native code
--$(obj)/%.lto.o: objtool-enabled = y
--$(obj)/%.lto.o: part-of-module := y
-+$(obj)/%.prelink.o: objtool-enabled = y
-+$(obj)/%.prelink.o: part-of-module := y
-
--$(obj)/%.lto.o: $(obj)/%.o FORCE
--       $(call if_changed,cc_lto_link_modules)
-+$(obj)/%.prelink.o: $(obj)/%.o FORCE
-+       $(call if_changed,cc_prelink_modules)
- endif
-
- cmd_mod = { \
-@@ -469,7 +470,7 @@ $(obj)/lib.a: $(lib-y) FORCE
- # Do not replace $(filter %.o,^) with $(real-prereqs). When a single object
- # module is turned into a multi object module, $^ will contain header file
- # dependencies recorded in the .*.cmd file.
--ifdef CONFIG_LTO_CLANG
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- quiet_cmd_link_multi-m = AR [M]  $@
- cmd_link_multi-m =                                             \
-        $(cmd_update_lto_symversions);                          \
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 79be57fdd32a..8bfc9238237c 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -230,11 +230,11 @@ dtc_cpp_flags  = -Wp,-MMD,$(depfile).pre.tmp
--nostdinc                    \
-                 $(addprefix -I,$(DTC_INCLUDE))                          \
-                 -undef -D__DTS__
-
--ifeq ($(CONFIG_LTO_CLANG),y)
-+ifneq ($(CONFIG_LTO_CLANG)$(CONFIG_X86_KERNEL_IBT),)
- # With CONFIG_LTO_CLANG, .o files in modules might be LLVM bitcode, so we
- # need to run LTO to compile them into native code (.lto.o) before further
- # processing.
--mod-prelink-ext := .lto
-+mod-prelink-ext := .prelink
- endif
-
- # Useful for describing the dependency of composite objects
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 6bfa33217914..09c3ab0a9b37 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1989,9 +1989,9 @@ static char *remove_dot(char *s)
-                if (m && (s[n + m] == '.' || s[n + m] == 0))
-                        s[n] = 0;
-
--               /* strip trailing .lto */
--               if (strends(s, ".lto"))
--                       s[strlen(s) - 4] = '\0';
-+               /* strip trailing .prelink */
-+               if (strends(s, ".prelink"))
-+                       s[strlen(s) - 8] = '\0';
-        }
-        return s;
- }
-@@ -2015,9 +2015,9 @@ static void read_symbols(const char *modname)
-                /* strip trailing .o */
-                tmp = NOFAIL(strdup(modname));
-                tmp[strlen(tmp) - 2] = '\0';
--               /* strip trailing .lto */
--               if (strends(tmp, ".lto"))
--                       tmp[strlen(tmp) - 4] = '\0';
-+               /* strip trailing .prelink */
-+               if (strends(tmp, ".prelink"))
-+                       tmp[strlen(tmp) - 8] = '\0';
-                mod = new_module(tmp);
-                free(tmp);
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
---
-Best Regards
-Masahiro Yamada
+        tglx
