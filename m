@@ -2,191 +2,533 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DBEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26916C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 16:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236468AbiCQQPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 12:15:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58882 "EHLO
+        id S236455AbiCQQPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 12:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236408AbiCQQOp (ORCPT
+        with ESMTP id S236416AbiCQQO4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 12:14:45 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-eus2azon11020021.outbound.protection.outlook.com [52.101.56.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D03381A1;
-        Thu, 17 Mar 2022 09:13:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D0XUdOPuwLZ8xC6HhysLCejSgCpB0BaxKTNaSKDH9u8gphuCjGm9PPDg7XaG5QRLIkRCxVSfz9JB6Rl7GRxExOmeYmswiHyuBbtUUxVCr/rOghb0lNetWg3XxPqpSUlkmibsM2iFULQx6Wf9ZLDMfDiTso7W5+yHpsFO93QxFalS1hzDlbWHF5tVjP7YpL4qZuqClQLG8ADpF4SU8MbQ7x8ZHXVpTdrkHlqf8W4dMDsVKCxKakuI/wvcf05u1/C2HiVn622g95dN26GbwY4nT1xq/qw5XKOf7BUGMAnkklV5e4LRjAQj4vaYJKYKs4D6oBEfnwyuwlrV5qwqE0JaRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TMBkvB8XqJXPIW9KcFtQrPV7sFII7sr9r1YK92fPbUg=;
- b=VBxbGBjt/2YkPUB7PrjK2SU0vVyRFAmBZMjwNzu0Joa3bqVg9GtBP50LImtJjI4gLwlLb5UPfTabFsO+YZ5uNbWZ8h1TXyIAljt4vSTFuV8jM/fyIwnk1rCjV/qbMckU2g2AkVO/aDG4UHEoGQPvWfFF/gzF1WPVKkhSTxOzMqCC6EQ8/kqrKYJy3f0EGTeJGXmq4rUmoy3b0lR9UxMYP/IjcVwjE739ZLpTtZko9ssTUONNXsEhuk3XgDra2CRdwxAoDPLT5GomiQKsfK8Q/YtrI+r4OukFBC81E12LH5S1huuUyue8uI0+QaBynTAQHYqkK0ML0p2dHvDsnx1YxQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TMBkvB8XqJXPIW9KcFtQrPV7sFII7sr9r1YK92fPbUg=;
- b=dkDavD1FvmusPuQ6fUI/IYFBt8jEmGBHKTm+RrvAMycyf35y5UlBKJF5fEFXmTOGbu0VNIPJzuKwylizlWgTERLPToyMOmSs4kGe8LPpbX160flUUkTDlOEXq2SWUBOfE6NpRjqHF5ENx0tWu4stK8f2UbCRRFBq+yag9UxKsgw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-Received: from DM6PR21MB1514.namprd21.prod.outlook.com (2603:10b6:5:22d::11)
- by BL0PR2101MB0995.namprd21.prod.outlook.com (2603:10b6:207:36::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Thu, 17 Mar
- 2022 16:13:24 +0000
-Received: from DM6PR21MB1514.namprd21.prod.outlook.com
- ([fe80::8c81:f644:fc1c:1357]) by DM6PR21MB1514.namprd21.prod.outlook.com
- ([fe80::8c81:f644:fc1c:1357%4]) with mapi id 15.20.5102.007; Thu, 17 Mar 2022
- 16:13:24 +0000
-From:   Michael Kelley <mikelley@microsoft.com>
-To:     sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, rafael@kernel.org,
-        lenb@kernel.org, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        kw@linux.com, bhelgass@google.com, hch@lst.de,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        iommu@lists.linux-foundation.org
-Cc:     mikelley@microsoft.com
-Subject: [PATCH 4/4] PCI: hv: Propagate coherence from VMbus device to PCI device
-Date:   Thu, 17 Mar 2022 09:12:43 -0700
-Message-Id: <1647533563-2170-5-git-send-email-mikelley@microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
-References: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
-Content-Type: text/plain
-X-ClientProxiedBy: MW3PR06CA0007.namprd06.prod.outlook.com
- (2603:10b6:303:2a::12) To DM6PR21MB1514.namprd21.prod.outlook.com
- (2603:10b6:5:22d::11)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d4cff443-a6ff-451c-1ab7-08da08310fc9
-X-MS-TrafficTypeDiagnostic: BL0PR2101MB0995:EE_
-X-MS-Exchange-AtpMessageProperties: SA|SL
-X-Microsoft-Antispam-PRVS: <BL0PR2101MB09957DF22A2DDDBD87313E81D7129@BL0PR2101MB0995.namprd21.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OMR6hD5Bk6K3zmqTVppztAr2rn0i7snSxUA1q7rvhxiFiuQBKdKbD+5ytAlCq13HIatV+kSW74Nn8OMet8ii8M89Cs2kwUbrUT3/gz/67OPGum6dj/TwuvOgljr2vKqPhQHUHVMy+P7htbOZqN3EfWXpk1x7uofKugs2s6/2/otn7gR7IC284WW5tpN+7xtDv/LYnH5wepErD6LpRK5l1D+G7A4+gplWWpN05LaadCnF5LmRE0y3Cy4Ly4GqjvPoR2KJw3jTwhczKr+ibPoM5tVCjotqWro3lt2F0EDjeu7JRc0USGiZPvXHYEQlFHSA+3x7t62sjEhahOgsYb1aBo7cquqt50kAb9c1bnoGCRamwa+UGfmfubU7QT8huJwUAJ0KOXme+GhlbTuOh5UM1cdrDrs5NM4Qf5CYyViC43njdPbPzeohqyjC5iw5QGsrSSa9O3ID6DsXky+Gn5syRfjhygbJSQJcVPUGO4IWEEccCSyZDq/RUcX1+IRBw5PCK8smRs+3Ft+W749Rv4HTMJMoyRE7DnADyV6OUDmy2qUjq5ta9lMB1Owne9FxV04U8xhVvwAYui+njx9x84IPGl347UcJVQPhqRs9oPU9YNmMfRd2NfgPLhBQio+YIHEwPIiM7OxYBbF9GdY6/SUMZ14pVRAnbIg2fklzoNsOpFmKBS0IAAju7zBDYMGhwDOZQppmhlk7n9fOw2wASdmJ82I9mjCKahaIGPhHtHk+ibmB+H5spNoObMHaBPx14NuJBEFf0vWBKr8Rm8bs5wWlHg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR21MB1514.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(83380400001)(186003)(26005)(4326008)(8676002)(2616005)(8936002)(66946007)(66476007)(66556008)(107886003)(38100700002)(38350700002)(316002)(36756003)(10290500003)(6486002)(86362001)(5660300002)(921005)(6512007)(82960400001)(7416002)(82950400001)(6506007)(2906002)(508600001)(6666004)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?wpa7za5s+S79bphKolbPoSax4gOtIK9fIyPAJIfMpadwHMiv0Qggvg/4aJLQ?=
- =?us-ascii?Q?WuYuRJ+ouTQ3JJ1dWC5ZpiAJt4AtnKKFwWzvqrdr2Z8RnokxbTE7YcSSKpP0?=
- =?us-ascii?Q?DeLfsDi5y2AJfN/7C9UGY1mWaV7bqpQEF03iMUE+NdgrLHQmMZyuIQpJLCZc?=
- =?us-ascii?Q?M5RHWzXBQRAbe0ZCRIFuL99kwPVzImWWb0/Ccnn2EifrQ+WVet/6Mc+qH3rA?=
- =?us-ascii?Q?CLxAD4sQ2LuPk4L7YNNLLm/l7FdW3jJ61/UAB46+XJK6dArPmmEBJfVjcPg0?=
- =?us-ascii?Q?swFMWPTd0Fs96SYp1Vt2QGjlpC5LUz6nj+To7VrMndaDWrbqDzW1lqcHfpJA?=
- =?us-ascii?Q?g1qec4PT9z/nMb+DL6o/KqmGZlKuDsDUq6y4sVp3mqrMVWW6m684rNSF+Enn?=
- =?us-ascii?Q?P+dCtQ20zDBMtq1ELNqFTvZU+Y32xMhemt28x7yh2tw+5pmQn62BYp7oU0O6?=
- =?us-ascii?Q?OwixHT8KTTUVL2qjGSlk/3Dhs/BIG6HXDf1wcyWI5/SVr1yf9q+vRfRL8wkH?=
- =?us-ascii?Q?ywwshmPJrPCTbZfkCrWS4VQyXmq1TcRaDEcHQGwYPAaJRsyLN8U+64cO4TeC?=
- =?us-ascii?Q?7FvUSPXRq4eGaG70FDs6lAyWMTNMcPRCj8EIjKHjZdJXnjqqhaF/ebSVEEHn?=
- =?us-ascii?Q?CJdUPOcCjNm5zIVcQwmYGFEmrFJDHNQKuFtRRf+Juz7clBUrdUqrAWeK2uAp?=
- =?us-ascii?Q?SdFFOX+OeLGIYNyDa1hpPFLmwuY4DrdXgA8L/WC8JbZN3JAnHdw9tUeAq2av?=
- =?us-ascii?Q?zjNq9Eg8C1FEL5aN2vrFLkJOq014JNwQYPrtXaorMzxeOb2D4XT5FbYhw916?=
- =?us-ascii?Q?+ReYKuPo8lxk2DCbJNun+9QmOYpTBjRD01VK2EEmRSmuN35KISo/2wTlXThg?=
- =?us-ascii?Q?n8Pmxp7fz46jpOdFwK3yDjUO9vsZztL43W0zNivTW+mezsLWVeV57VUkJlpi?=
- =?us-ascii?Q?6xjMd2kBZv2ayVqqQ7KxE6a8LDBD86168+7vLFnlpkofD5C+5yUOLwwxM91m?=
- =?us-ascii?Q?dv1iT7B1M8syLq7BjiMthy8TVRW4iRkGdNWid76Yhf1ZLDca6uC4LuSQN2gw?=
- =?us-ascii?Q?0BBhhFvCCcFmvzZ3RCbFH4jrPK1Pss80jb+f3Tb4M/UL5Nohj5NYXJr25ZoW?=
- =?us-ascii?Q?A/H5nigs5seymNNrOEusXtYezut+ouEYLu6VYMNALtq8l4FVCp35okmHqjUC?=
- =?us-ascii?Q?x9lLQb+q6SzIIfaHc5NXI4rLkRgGs0l6717c7LjaCD87gc4cLpHi4fUb0lpZ?=
- =?us-ascii?Q?jmwRsh+oFiEZ8gUc4J2E0AKFbXVNaLv9K3Xk0fJN3EbAUgfZWv1IaShut3k/?=
- =?us-ascii?Q?k8Dmw+JccrZVZGkQiqTih3fScVl3EBmBOfvq8lDYSwysRcTc6MYC8fK8jZey?=
- =?us-ascii?Q?PsHyOWTehpDB4e3yKtKBXO4DTh94NE5qFpFC3Vr5bJoHmevSOqKWUN8UOQhm?=
- =?us-ascii?Q?GYq6l+T7BlvadEQAZ8kKGFjr1/d4uIH/0v4BS0gHu1pEeC3kceX/pw=3D=3D?=
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4cff443-a6ff-451c-1ab7-08da08310fc9
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1514.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 16:13:23.8587
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7hTbIRfFZ8ioxq3ygHo1svUQtGR4o2oQK6kuWh0plS6lQfsFeL7XGAj+35Jc5FU9sCVsnzCCUMk8HSLrSpzhPw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB0995
+        Thu, 17 Mar 2022 12:14:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AA0CB82F5;
+        Thu, 17 Mar 2022 09:13:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32F55B81F13;
+        Thu, 17 Mar 2022 16:13:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88CB3C340EF;
+        Thu, 17 Mar 2022 16:13:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647533614;
+        bh=Tu536cqcac0KGT+JP/suBXBn5PgT7OIv4s/Ep1zRlfI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PL2n33nFCHRlp91VmYYeTGcnVs3kP6gU7VHuu95tS5GRglXyKgdSgk4rrNBSLObT3
+         fj2oF4cdz2ueA0rRNEw2dGv7VZ08fIYQ7SvsEn7V3LcEhfBu/JUrqguAXKCXp9H7AJ
+         F1rHRIcsKMh8th7DBDlulW3ZWKjdZy3VTOYQGEjt0K9u75cVzweLqpnCipP1AtsoiN
+         lRhqm6goPvUH0WNKZ6ehxniR3aG3hJB4gSUJ95xejCqT4xSjrVUSItKo2e6j1r6Pkc
+         5ihr+5iLz8wSw0ol3VPv0BSZtiTfxxH3ugUEcr2FO4W/yaHDzstIS/hsWJbAe7i/Xl
+         /myMW9A4PUXaw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUskm-00FEW8-2j; Thu, 17 Mar 2022 16:13:32 +0000
+Date:   Thu, 17 Mar 2022 16:13:31 +0000
+Message-ID: <87pmmky2tw.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [RFC PATCH v4 2/5] irqchip: Add RZ/G2L IA55 Interrupt Controller driver
+In-Reply-To: <20220317012404.8069-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220317012404.8069-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        <20220317012404.8069-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: prabhakar.mahadev-lad.rj@bp.renesas.com, tglx@linutronix.de, robh+dt@kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, geert+renesas@glider.be, p.zabel@pengutronix.de, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, prabhakar.csengg@gmail.com, biju.das.jz@bp.renesas.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PCI pass-thru devices in a Hyper-V VM are represented as a VMBus
-device and as a PCI device.  The coherence of the VMbus device is
-set based on the VMbus node in ACPI, but the PCI device has no
-ACPI node and defaults to not hardware coherent.  This results
-in extra software coherence management overhead on ARM64 when
-devices are hardware coherent.
+On Thu, 17 Mar 2022 01:24:01 +0000,
+Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> 
+> Add a driver for the Renesas RZ/G2L Interrupt Controller.
+> 
+> This supports external pins being used as interrupts. It supports
+> one line for NMI, 8 external pins and 32 GPIO pins (out of 123)
+> to be used as IRQ lines.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  drivers/irqchip/Kconfig             |   8 +
+>  drivers/irqchip/Makefile            |   1 +
+>  drivers/irqchip/irq-renesas-rzg2l.c | 462 ++++++++++++++++++++++++++++
+>  3 files changed, 471 insertions(+)
+>  create mode 100644 drivers/irqchip/irq-renesas-rzg2l.c
+> 
+> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> index 7038957f4a77..afc5999f4955 100644
+> --- a/drivers/irqchip/Kconfig
+> +++ b/drivers/irqchip/Kconfig
+> @@ -242,6 +242,14 @@ config RENESAS_RZA1_IRQC
+>  	  Enable support for the Renesas RZ/A1 Interrupt Controller, to use up
+>  	  to 8 external interrupts with configurable sense select.
+>  
+> +config RENESAS_RZG2L_IRQC
+> +	bool "Renesas RZ/G2L (and alike SoC) IRQC support" if COMPILE_TEST
+> +	select GENERIC_IRQ_CHIP
+> +	select IRQ_DOMAIN_HIERARCHY
+> +	help
+> +	  Enable support for the Renesas RZ/G2L (and alike SoC) Interrupt Controller
+> +	  for external devices.
+> +
+>  config SL28CPLD_INTC
+>  	bool "Kontron sl28cpld IRQ controller"
+>  	depends on MFD_SL28CPLD=y || COMPILE_TEST
+> diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
+> index c1f611cbfbf8..b536e514a7c9 100644
+> --- a/drivers/irqchip/Makefile
+> +++ b/drivers/irqchip/Makefile
+> @@ -51,6 +51,7 @@ obj-$(CONFIG_RDA_INTC)			+= irq-rda-intc.o
+>  obj-$(CONFIG_RENESAS_INTC_IRQPIN)	+= irq-renesas-intc-irqpin.o
+>  obj-$(CONFIG_RENESAS_IRQC)		+= irq-renesas-irqc.o
+>  obj-$(CONFIG_RENESAS_RZA1_IRQC)		+= irq-renesas-rza1.o
+> +obj-$(CONFIG_RENESAS_RZG2L_IRQC)	+= irq-renesas-rzg2l.o
+>  obj-$(CONFIG_VERSATILE_FPGA_IRQ)	+= irq-versatile-fpga.o
+>  obj-$(CONFIG_ARCH_NSPIRE)		+= irq-zevio.o
+>  obj-$(CONFIG_ARCH_VT8500)		+= irq-vt8500.o
+> diff --git a/drivers/irqchip/irq-renesas-rzg2l.c b/drivers/irqchip/irq-renesas-rzg2l.c
+> new file mode 100644
+> index 000000000000..be9741e88bd7
+> --- /dev/null
+> +++ b/drivers/irqchip/irq-renesas-rzg2l.c
+> @@ -0,0 +1,462 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Renesas RZ/G2L IRQC Driver
+> + *
+> + * Copyright (C) 2022 Renesas Electronics Corporation.
+> + *
+> + * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/irqchip.h>
+> +#include <linux/irqdomain.h>
+> +#include <linux/of_address.h>
+> +#include <linux/reset.h>
+> +#include <linux/spinlock.h>
+> +
+> +#define IRQC_IRQ_START			1
+> +#define IRQC_IRQ_COUNT			8
+> +#define IRQC_TINT_START			9
+> +#define IRQC_TINT_COUNT			32
+> +#define IRQC_NUM_IRQ			41
+> +
+> +#define ISCR				0x10
+> +#define IITSR				0x14
+> +#define TSCR				0x20
+> +#define TITSR0				0x24
+> +#define TITSR1				0x28
+> +#define TITSR0_MAX_INT			16
+> +#define TITSEL_WIDTH			0x2
+> +#define TSSR(n)				(0x30 + ((n) * 4))
+> +#define TIEN				BIT(7)
+> +#define TSSEL_SHIFT(n)			(8 * (n))
+> +#define TSSEL_MASK			GENMASK(7, 0)
+> +#define IRQ_MASK			0x3
+> +
+> +#define TSSR_OFFSET(n)			((n) % 4)
+> +#define TSSR_INDEX(n)			((n) / 4)
+> +
+> +#define TITSR_TITSEL_EDGE_RISING	0
+> +#define TITSR_TITSEL_EDGE_FALLING	1
+> +#define TITSR_TITSEL_LEVEL_HIGH		2
+> +#define TITSR_TITSEL_LEVEL_LOW		3
+> +
+> +#define IITSR_IITSEL(n, sense)		((sense) << ((n) * 2))
+> +#define IITSR_IITSEL_LEVEL_LOW		0
+> +#define IITSR_IITSEL_EDGE_FALLING	1
+> +#define IITSR_IITSEL_EDGE_RISING	2
+> +#define IITSR_IITSEL_EDGE_BOTH		3
+> +#define IITSR_IITSEL_MASK(n)		IITSR_IITSEL((n), 3)
+> +
+> +#define TINT_EXTRACT_HWIRQ(x)		((x) & ~GENMASK(31, 16))
+> +#define TINT_EXTRACT_GPIOINT(x)		((x) >> 16)
+> +
+> +struct rzg2l_irqc_priv {
+> +	void __iomem *base;
+> +	struct of_phandle_args map[IRQC_NUM_IRQ];
+> +	raw_spinlock_t lock;
+> +};
+> +
+> +struct rzg2l_irqc_chip_data {
+> +	int tint;
+> +};
+> +
+> +static struct rzg2l_irqc_priv *irq_data_to_priv(struct irq_data *data)
+> +{
+> +	return data->domain->host_data;
+> +}
+> +
+> +static void rzg2l_irq_eoi(struct irq_data *d)
+> +{
+> +	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> +	unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_IRQ_START;
+> +	u16 bit = BIT(hw_irq);
+> +	unsigned long flags;
+> +	u32 reg;
+> +
+> +	raw_spin_lock_irqsave(&priv->lock, flags);
 
-Fix this by propagating the coherence of the VMbus device to the
-PCI device.  There's no effect on x86/x64 where devices are
-always hardware coherent.
+Why the irqsave flavour? Is there any case where EOI isn't performed
+in a context that has interrupts already disabled?
 
-Signed-off-by: Michael Kelley <mikelley@microsoft.com>
----
- drivers/pci/controller/pci-hyperv.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+> +	reg = readl_relaxed(priv->base + ISCR);
+> +	if (reg & bit)
+> +		writel_relaxed(GENMASK(IRQC_IRQ_COUNT - 1, 0) & ~bit,
+> +			       priv->base + ISCR);
+> +	raw_spin_unlock_irqrestore(&priv->lock, flags);
+> +	irq_chip_eoi_parent(d);
+> +}
+> +
+> +static void rzg2l_tint_eoi(struct irq_data *d)
+> +{
+> +	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> +	unsigned int hw_irq = irqd_to_hwirq(d);
+> +	u32 bit = BIT(hw_irq - IRQC_TINT_START);
+> +	unsigned long flags;
+> +	u32 reg;
+> +
+> +	raw_spin_lock_irqsave(&priv->lock, flags);
+> +	reg = readl_relaxed(priv->base + TSCR);
+> +	if (reg & bit)
+> +		writel_relaxed(GENMASK(IRQC_TINT_COUNT - 1, 0) & ~bit,
+> +			       priv->base + TSCR);
+> +	raw_spin_unlock_irqrestore(&priv->lock, flags);
+> +	irq_chip_eoi_parent(d);
+> +}
+> +
+> +static void rzg2l_irqc_eoi(struct irq_data *d)
+> +{
+> +	unsigned int hw_irq = irqd_to_hwirq(d);
+> +
+> +	if (hw_irq >= IRQC_IRQ_START && hw_irq <= IRQC_IRQ_COUNT)
+> +		return rzg2l_irq_eoi(d);
 
-diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-index ae0bc2f..14276f5 100644
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -49,6 +49,7 @@
- #include <linux/refcount.h>
- #include <linux/irqdomain.h>
- #include <linux/acpi.h>
-+#include <linux/dma-map-ops.h>
- #include <asm/mshyperv.h>
- 
- /*
-@@ -2142,9 +2143,9 @@ static void hv_pci_remove_slots(struct hv_pcibus_device *hbus)
- }
- 
- /*
-- * Set NUMA node for the devices on the bus
-+ * Set NUMA node and DMA coherence for the devices on the bus
-  */
--static void hv_pci_assign_numa_node(struct hv_pcibus_device *hbus)
-+static void hv_pci_assign_properties(struct hv_pcibus_device *hbus)
- {
- 	struct pci_dev *dev;
- 	struct pci_bus *bus = hbus->bridge->bus;
-@@ -2167,6 +2168,14 @@ static void hv_pci_assign_numa_node(struct hv_pcibus_device *hbus)
- 				     numa_map_to_online_node(
- 					     hv_dev->desc.virtual_numa_node));
- 
-+		/*
-+		 * On ARM64, propagate the DMA coherence from the VMbus device
-+		 * to the corresponding PCI device. On x86/x64, these calls
-+		 * have no effect because DMA is always hardware coherent.
-+		 */
-+		dev_set_dma_coherent(&dev->dev,
-+			dev_is_dma_coherent(&hbus->hdev->device));
-+
- 		put_pcichild(hv_dev);
- 	}
- }
-@@ -2191,7 +2200,7 @@ static int create_root_hv_pci_bus(struct hv_pcibus_device *hbus)
- 		return error;
- 
- 	pci_lock_rescan_remove();
--	hv_pci_assign_numa_node(hbus);
-+	hv_pci_assign_properties(hbus);
- 	pci_bus_assign_resources(bridge->bus);
- 	hv_pci_assign_slots(hbus);
- 	pci_bus_add_devices(bridge->bus);
-@@ -2458,7 +2467,7 @@ static void pci_devices_present_work(struct work_struct *work)
- 		 */
- 		pci_lock_rescan_remove();
- 		pci_scan_child_bus(hbus->bridge->bus);
--		hv_pci_assign_numa_node(hbus);
-+		hv_pci_assign_properties(hbus);
- 		hv_pci_assign_slots(hbus);
- 		pci_unlock_rescan_remove();
- 		break;
+return function_returning_void()? No, please.
+
+> +	else if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT)
+> +		return rzg2l_tint_eoi(d);
+
+Move the locking and the call to irq_chip_eoi_parent() here, as there
+is no need to duplicate any of this.
+
+> +}
+> +
+> +static void rzg2l_irqc_irq_disable(struct irq_data *d)
+> +{
+> +	unsigned int hw_irq = irqd_to_hwirq(d);
+> +
+> +	if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT) {
+> +		struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> +		u32 offset = hw_irq - IRQC_TINT_START;
+> +		u32 tssr_offset = TSSR_OFFSET(offset);
+> +		u8 tssr_index = TSSR_INDEX(offset);
+> +		unsigned long flags;
+> +		u32 reg;
+> +
+> +		raw_spin_lock_irqsave(&priv->lock, flags);
+> +		reg = readl_relaxed(priv->base + TSSR(tssr_index));
+> +		reg &= ~(TSSEL_MASK << tssr_offset);
+> +		writel_relaxed(reg, priv->base + TSSR(tssr_index));
+> +		raw_spin_unlock_irqrestore(&priv->lock, flags);
+> +	}
+> +	irq_chip_disable_parent(d);
+> +}
+> +
+> +static void rzg2l_irqc_irq_enable(struct irq_data *d)
+> +{
+> +	unsigned int hw_irq = irqd_to_hwirq(d);
+> +
+> +	if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT) {
+> +		struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> +		struct rzg2l_irqc_chip_data *chip_data = d->chip_data;
+> +		u32 offset = hw_irq - IRQC_TINT_START;
+> +		u32 tssr_offset = TSSR_OFFSET(offset);
+> +		u8 tssr_index = TSSR_INDEX(offset);
+> +		unsigned long flags;
+> +		u32 reg;
+> +
+> +		raw_spin_lock_irqsave(&priv->lock, flags);
+> +		reg = readl_relaxed(priv->base + TSSR(tssr_index));
+> +		reg |= (TIEN | chip_data->tint) << TSSEL_SHIFT(tssr_offset);
+> +		writel_relaxed(reg, priv->base + TSSR(tssr_index));
+> +		raw_spin_unlock_irqrestore(&priv->lock, flags);
+> +	}
+> +	irq_chip_enable_parent(d);
+> +}
+> +
+> +static int rzg2l_irq_set_type(struct irq_data *d, unsigned int type)
+> +{
+> +	unsigned int hw_irq = irqd_to_hwirq(d) - IRQC_IRQ_START;
+> +	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> +	unsigned long flags;
+> +	u16 sense, tmp;
+> +
+> +	switch (type & IRQ_TYPE_SENSE_MASK) {
+> +	case IRQ_TYPE_LEVEL_LOW:
+> +		sense = IITSR_IITSEL_LEVEL_LOW;
+> +		break;
+> +
+> +	case IRQ_TYPE_EDGE_FALLING:
+> +		sense = IITSR_IITSEL_EDGE_FALLING;
+> +		break;
+> +
+> +	case IRQ_TYPE_EDGE_RISING:
+> +		sense = IITSR_IITSEL_EDGE_RISING;
+> +		break;
+> +
+> +	case IRQ_TYPE_EDGE_BOTH:
+> +		sense = IITSR_IITSEL_EDGE_BOTH;
+> +		break;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	raw_spin_lock_irqsave(&priv->lock, flags);
+
+This already happens in an irq disabled context.
+
+> +	tmp = readl_relaxed(priv->base + IITSR);
+> +	tmp &= ~IITSR_IITSEL_MASK(hw_irq);
+> +	tmp |= IITSR_IITSEL(hw_irq, sense);
+> +	writel_relaxed(tmp, priv->base + IITSR);
+> +	raw_spin_unlock_irqrestore(&priv->lock, flags);
+
+What about the parent irqchip? If this is a hierarchical setup, it
+definitely should be told.
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int rzg2l_tint_set_edge(struct irq_data *d, unsigned int type)
+> +{
+> +	struct rzg2l_irqc_priv *priv = irq_data_to_priv(d);
+> +	unsigned int hwirq = irqd_to_hwirq(d);
+> +	u32 titseln = hwirq - IRQC_TINT_START;
+> +	unsigned long flags;
+> +	u32 offset;
+> +	u8 sense;
+> +	u32 reg;
+> +
+> +	switch (type & IRQ_TYPE_SENSE_MASK) {
+> +	case IRQ_TYPE_EDGE_RISING:
+> +		sense = TITSR_TITSEL_EDGE_RISING;
+> +		break;
+> +
+> +	case IRQ_TYPE_EDGE_FALLING:
+> +		sense = TITSR_TITSEL_EDGE_FALLING;
+> +		break;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (titseln < TITSR0_MAX_INT) {
+> +		offset = TITSR0;
+> +	} else {
+> +		titseln /= TITSEL_WIDTH;
+> +		offset  = TITSR1;
+> +	}
+> +
+> +	raw_spin_lock_irqsave(&priv->lock, flags);
+> +	reg = readl_relaxed(priv->base + offset);
+> +	reg &= ~(IRQ_MASK << (titseln * TITSEL_WIDTH));
+> +	reg |= sense << (titseln * TITSEL_WIDTH);
+> +	writel_relaxed(reg, priv->base + offset);
+> +	raw_spin_unlock_irqrestore(&priv->lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rzg2l_irqc_set_type(struct irq_data *d, unsigned int type)
+> +{
+> +	unsigned int hw_irq = irqd_to_hwirq(d);
+> +
+> +	if (hw_irq >= IRQC_IRQ_START && hw_irq <= IRQC_IRQ_COUNT)
+> +		return rzg2l_irq_set_type(d, type);
+> +	else if (hw_irq >= IRQC_TINT_START && hw_irq <= IRQC_TINT_COUNT)
+> +		return rzg2l_tint_set_edge(d, type);
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static struct irq_chip irqc_chip = {
+> +	.name			= "rzg2l-irqc",
+> +	.irq_eoi		= rzg2l_irqc_eoi,
+> +	.irq_mask		= irq_chip_mask_parent,
+> +	.irq_unmask		= irq_chip_unmask_parent,
+> +	.irq_disable		= rzg2l_irqc_irq_disable,
+> +	.irq_enable		= rzg2l_irqc_irq_enable,
+
+So this looks a bit odd. irq_mask only calls the parent and does nothing
+locally, while irq_disable does something locally and calls into the
+parent. If the parent is a GIC, this is turned into a mask (GIC has no
+notion of disabled).
+
+If that's the flow you expect, good. But please check this is the case.
+
+> +	.irq_get_irqchip_state	= irq_chip_get_parent_state,
+> +	.irq_set_irqchip_state	= irq_chip_set_parent_state,
+> +	.irq_retrigger		= irq_chip_retrigger_hierarchy,
+> +	.irq_set_type		= rzg2l_irqc_set_type,
+> +	.flags			= IRQCHIP_MASK_ON_SUSPEND |
+> +				  IRQCHIP_SET_TYPE_MASKED |
+> +				  IRQCHIP_SKIP_SET_WAKE,
+> +};
+> +
+> +static int rzg2l_irqc_alloc(struct irq_domain *domain, unsigned int virq,
+> +			    unsigned int nr_irqs, void *arg)
+> +{
+> +	struct rzg2l_irqc_priv *priv = domain->host_data;
+> +	struct rzg2l_irqc_chip_data *chip_data = NULL;
+> +	struct irq_fwspec spec;
+> +	irq_hw_number_t hwirq;
+> +	int tint = -EINVAL;
+> +	unsigned int type;
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	ret = irq_domain_translate_twocell(domain, arg, &hwirq, &type);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * For TINIT interrupts ie where pinctrl driver is child of irqc domain
+> +	 * the hwirq and TINT are encoded in fwspec->param[0].
+> +	 * hwirq for TINIT range from 9-40, hwirq is embedded 0-15 bits and TINT
+> +	 * from 16-31 bits. TINIT from the pinctrl driver needs to be programmed
+> +	 * in IRQC registers to enable a given gpio pin as interrupt.
+> +	 */
+> +	if (hwirq > IRQC_IRQ_COUNT) {
+> +		tint = TINT_EXTRACT_GPIOINT(hwirq);
+> +		hwirq = TINT_EXTRACT_HWIRQ(hwirq);
+> +	}
+> +
+> +	if (hwirq > (IRQC_NUM_IRQ - 1))
+> +		return -EINVAL;
+> +
+> +	if (tint != -EINVAL && (hwirq < IRQC_TINT_START || hwirq > (IRQC_NUM_IRQ - 1)))
+> +		return -EINVAL;
+> +
+> +	chip_data = kzalloc(sizeof(*chip_data), GFP_KERNEL);
+> +	if (!chip_data)
+> +		return -ENOMEM;
+> +	chip_data->tint = tint;
+> +
+> +	ret = irq_domain_set_hwirq_and_chip(domain, virq, hwirq, &irqc_chip,
+> +					    chip_data);
+> +	if (ret) {
+> +		kfree(chip_data);
+> +		return ret;
+> +	}
+> +
+> +	spec.fwnode = domain->parent->fwnode;
+> +	spec.param_count = priv->map[hwirq].args_count;
+> +	for (i = 0; i < spec.param_count; i++)
+> +		spec.param[i] = priv->map[hwirq].args[i];
+> +
+> +	ret = irq_domain_alloc_irqs_parent(domain, virq, nr_irqs, &spec);
+> +	if (ret)
+> +		kfree(chip_data);
+> +
+> +	return ret;
+> +}
+> +
+> +static void rzg2l_irqc_domain_free(struct irq_domain *domain, unsigned int virq,
+> +				   unsigned int nr_irqs)
+> +{
+> +	struct irq_data *d;
+> +
+> +	d = irq_domain_get_irq_data(domain, virq);
+> +	if (d) {
+> +		struct rzg2l_irqc_chip_data *chip_data = d->chip_data;
+> +
+> +		kfree(chip_data);
+> +	}
+> +	irq_domain_free_irqs_common(domain, virq, nr_irqs);
+> +}
+> +
+> +static const struct irq_domain_ops rzg2l_irqc_domain_ops = {
+> +	.alloc = rzg2l_irqc_alloc,
+> +	.free = rzg2l_irqc_domain_free,
+> +	.translate = irq_domain_translate_twocell,
+> +};
+> +
+> +static int rzg2l_irqc_parse_map(struct rzg2l_irqc_priv *priv,
+> +				struct device_node *np,
+> +				struct device_node *parent)
+> +{
+> +	unsigned int len, j;
+> +	const __be32 *range;
+> +
+> +	range = of_get_property(np, "interrupts", &len);
+> +	if (!range)
+> +		return -EINVAL;
+> +
+> +	for (len /= sizeof(*range), j = 0; len >= 3; len -= 3) {
+> +		if (j >= IRQC_NUM_IRQ)
+> +			return -EINVAL;
+> +
+> +		priv->map[j].args[0] = be32_to_cpu(*range++);
+> +		priv->map[j].args[1] = be32_to_cpu(*range++);
+> +		priv->map[j].args[2] = be32_to_cpu(*range++);
+> +		priv->map[j].args_count = 3;
+> +		j++;
+> +	}
+
+I'm confused. Why do you have to invent a new interrupt parser? What
+is wrong with of_irq_parse_one() populating the of_phandle_args array?
+I expected to see something like:
+
+static void rzg2l_irqc_parse_map(struct rzg2l_irqc_priv *priv,
+				 struct device_node *np)
+{
+	int i;
+
+	for (i = 0; i < IRQC_NUM_IRQ; i++)
+		of_irq_parse_one(np, i, &priv->map[i]);
+}
+
+and that's it.
+
+Thanks,
+
+	M.
+
 -- 
-1.8.3.1
-
+Without deviation from the norm, progress is not possible.
