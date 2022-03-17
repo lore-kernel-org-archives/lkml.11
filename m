@@ -2,109 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DFECC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235827AbiCQP30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:29:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
+        id S235881AbiCQP3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235847AbiCQP3V (ORCPT
+        with ESMTP id S235869AbiCQP3i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:29:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0324154497
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:28:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85F99B81E9E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:28:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4847CC340E9;
-        Thu, 17 Mar 2022 15:28:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647530881;
-        bh=hN8xQVVF/q7RWAXWD35WxGlCSnYQIq4OKytp1ktzTLE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ptgbokUFdfVwmApcrCiYJJ8eaaUD9B2IXUnSJeEldTKiNy/7B4erY9BjQQOKlUDZm
-         cs+IszBPzAj1T31lipeQshGD7ItljRdN+X7fNbAQ6zxluEf08kSNkElu5WHdyk/j0M
-         x9VsfAOzAZA+jHbc1feSB7YHC/sypjbDwH0ZqyLWYocVup3D5B9VwFqRAd6EC0Q629
-         X1If6cnkGDAVc0w5AhhRX+74NcU3q88U7E+4cg+GCHohCJ0WiScUfwNGtzn0KrlKqo
-         nYKigeFn6zzVIfjKj7NXCHau1Dq0ZhnYAkTr2u8h+SzumWUtRh/pgvuewMhdZjEaJ9
-         Ux6Bs5HJMw51w==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nUs2g-00FDm3-Vu; Thu, 17 Mar 2022 15:27:59 +0000
-MIME-Version: 1.0
-Date:   Thu, 17 Mar 2022 15:27:58 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Shawn Guo <shawn.guo@linaro.org>
-Cc:     YueHaibing <yuehaibing@huawei.com>, tglx@linutronix.de,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] irq/qcom-mpm: Fix build error without MAILBOX
-In-Reply-To: <20220317135917.GA360113@dragon>
-References: <20220317131956.30004-1-yuehaibing@huawei.com>
- <20220317135917.GA360113@dragon>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <e1a74161a77004a565906e65ff764f65@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: shawn.guo@linaro.org, yuehaibing@huawei.com, tglx@linutronix.de, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+        Thu, 17 Mar 2022 11:29:38 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA15C163E05
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:28:21 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id t11so10869675ybi.6
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:28:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:mime-version:date:message-id:subject:to;
+        bh=9YV+XxfN9qvqRlfP0nyAbGHXEabT3Ft7uOsdiJpOEbM=;
+        b=lGuslnfBaWMbbTMGXl0suTb8KZvmlrDwASdirV6i7OVpwShU2qRoiyPp28W4jw8i6+
+         sIolQqUXb+oxjJknfx6ZW3L8YzRcsS7Ncpsbd5hkiudTFhuFPt2Rtu5XPHWGN0j/wSTU
+         WkRK4afrSelXiVXZUA1UwAmi0D/tBK7dxdVterVaiJn4t+hsvQAhifvT4f0p6+E/0acj
+         wHYeowkERpl9w4LDmflA+oR+UbsrNzJHhYMNq72Z+N7ZBhGXYoopgpNuLHuz2+B4YGxk
+         USpQwVvfwnptyrXw0Th+mWgasxZU4J3WWpjy0CbqoyZU6XADd4Uc7kEdKPIkCYbgd4cR
+         OtLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:mime-version:date:message-id:subject:to;
+        bh=9YV+XxfN9qvqRlfP0nyAbGHXEabT3Ft7uOsdiJpOEbM=;
+        b=aF1MmHJX/i4qimVuxew2ozWgdkEWvHwohVxHiw3aTlZnHEelrdxQDDv7vBEOY7f6M2
+         z4Eghu6YfCS7WODYPXHSlrzd/K2qj+YfemGBnr/e9VKtMJMW2pixZA7uvF3UZljS2Pe/
+         nG51t6lPdhy/F+MvifWbGGc0mDpoSJOHK0qtgaN9fQVNSZTkqyfdcj+FDhmX4iIibZdZ
+         cpHrenGhf+N2ukBO4og183/sqJ1JhOxD3XT0TkHkAiafKTfK1y3uAnmwJ+5DfX1kezen
+         x+7owarX8DEbXTMs3XhW2xtixCFswKAcvbBMddAf+VUGD+6IuLBYJQaZ41ppXihkQbKw
+         BZQA==
+X-Gm-Message-State: AOAM532P/cc3j0eFIEviFD9grUSxzzxQWblK1MSWvoLPh+n0R2uoTZvm
+        5sSTaeTdNAqMw6McKju1B0syD3/UselOArZv5mNj+YiaRF4=
+X-Google-Smtp-Source: ABdhPJwzN+qhuY6d1e8nPNKMtQ9MzYuQcyUBpOvfUX9WKFVHc8aIN5GsdYsQImC70dCMd/R5wf/87fMKAeIL9Ob6lug=
+X-Received: by 2002:a25:6c03:0:b0:62c:2c43:cd29 with SMTP id
+ h3-20020a256c03000000b0062c2c43cd29mr5518882ybc.478.1647530900946; Thu, 17
+ Mar 2022 08:28:20 -0700 (PDT)
+Received: from 332509754669 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 17 Mar 2022 08:28:20 -0700
+From:   Scott Anderson <karban002@gmail.com>
+Mime-Version: 1.0
+Date:   Thu, 17 Mar 2022 08:28:20 -0700
+Message-ID: <CAGcbcMABWeNFFTr4rLs1CqhhrNuKV8bVB9L2qcqCFuJAO2b4pA@mail.gmail.com>
+Subject: Banners Order
+To:     linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-17 13:59, Shawn Guo wrote:
-> On Thu, Mar 17, 2022 at 09:19:56PM +0800, YueHaibing wrote:
->> If MAILBOX is n, building fails:
->> 
->> drivers/irqchip/irq-qcom-mpm.o: In function `mpm_pd_power_off':
->> irq-qcom-mpm.c:(.text+0x174): undefined reference to 
->> `mbox_send_message'
->> irq-qcom-mpm.c:(.text+0x174): relocation truncated to fit: 
->> R_AARCH64_CALL26 against undefined symbol `mbox_send_message'
->> 
->> Make QCOM_MPM depends on MAILBOX to fix this.
->> 
->> Fixes: a6199bb514d8 ("irqchip: Add Qualcomm MPM controller driver")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> 
-> Acked-by: Shawn Guo <shawn.guo@linaro.org>
-> 
->> ---
->>  drivers/irqchip/Kconfig | 1 +
->>  1 file changed, 1 insertion(+)
->> 
->> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
->> index 680d2fcf2686..15edb9a6fcae 100644
->> --- a/drivers/irqchip/Kconfig
->> +++ b/drivers/irqchip/Kconfig
->> @@ -433,6 +433,7 @@ config QCOM_PDC
->>  config QCOM_MPM
->>  	tristate "QCOM MPM"
->>  	depends on ARCH_QCOM
->> +	depends on MAILBOX
->>  	select IRQ_DOMAIN_HIERARCHY
->>  	help
->>  	  MSM Power Manager driver to manage and configure wakeup
->> --
->> 2.17.1
->> 
+Hello Good Day,
+     My name is Scott Anderson and i am sending this email to your
+business in regards to the order for some Banners and the sizes that i
+am looking for are :
 
-Hmmm... Even if that fix the build, this still isn't correct, is it?
-You also need the mailbox *driver* to be selected. How is that
-dependency enforced?
+1. Measures 30 x 60 inches
+2. One sided on Vinyl
+3. Full copies Black Ink on White vinyl
+4. I want you to write on the Banner ( DON'T MISS YOUR SHOT TO STOP
+COVID-19 ) For the Artwork.
+5. Hemmed With 4 grommet for outdoor use
 
-I'll queue this to fix -next, but this really is papering over
-a bigger problem.
+I would like you to email me back with the total pick up price plus
+tax on the quantity of 150 copies , excluding shipping. Is there a
+surcharge on the use of Visa or MasterCard for payment ?Kindly respond
+to me as soon as possible for us to proceed further with the order..
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+Urgently Waiting to hear from you soon.
+Scott
