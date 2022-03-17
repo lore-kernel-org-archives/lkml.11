@@ -2,219 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D66C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A38CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 10:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231425AbiCQKA1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 06:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36434 "EHLO
+        id S232231AbiCQKBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 06:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbiCQKA0 (ORCPT
+        with ESMTP id S232174AbiCQKBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 06:00:26 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFCBD3714
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:59:09 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id r6so6581946wrr.2
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:59:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zUt2tWkZnzZmR22TBfzVAfjbYftNAG6kYb5PLZxCQe0=;
-        b=jgPd4/lzC2G8C7BxbIVBbZg/T/CeFLTTtdnT7GDQIMkDTo3olfLtrfpc2XKCmFMmLN
-         1Ova22BUpr4EodnpmV4Us7t7xKvV6+Esqjh2hNtkN1dB9CtVfUXFClvd9PfYf7z22COq
-         HvGTOMyMWbS0rIEfjLDuu2TOeyboi4LUHLuIY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=zUt2tWkZnzZmR22TBfzVAfjbYftNAG6kYb5PLZxCQe0=;
-        b=rF0NuI4pByROVxCAocK9g2n3PvO4VGxeda6hxJRU8TLuDVzdJwuTMHDUpMDtbKQHBu
-         fhkAh35XeXEVy3I7UhunpzAL8JfC9wyn7eb0h3DzU/F/Rg8qAf/asOBfBeH1/TnmQ4Yr
-         opIuihxfpG6yktTxEPg7fmfhwBDx0zeNcIb4wvQQrgipC7yVTLp3jc1gMyxsucDc5QYb
-         M/WsLhUQb9q5+lc7cYpmucL/or2g0jjOtFEjHyF7GojbJWIkUbLkCeV6RaiPGIhtiGH3
-         1wRdUU55AzhHcpWT0+SapnlrSFG7MODyfKKbc9t1Bfb81xWBZhluYxKNuW9wHsU5r/pJ
-         yohA==
-X-Gm-Message-State: AOAM533zwsSaDK/umS44tVA9KYq+Hi+ogSMV6NT5woW3NCwa2nDJb3ON
-        tcP5COBJEWJ0hNlT60A/d8trLQ==
-X-Google-Smtp-Source: ABdhPJyVRbvMqP3RkZC3MlKGRoYqlAqtY6uzXCzQNDy205UCPIRTLqvSpNmTlOSJ5ttBBEhl2Snd4A==
-X-Received: by 2002:a05:6000:1688:b0:203:8efe:e0b0 with SMTP id y8-20020a056000168800b002038efee0b0mr3108580wrd.289.1647511148160;
-        Thu, 17 Mar 2022 02:59:08 -0700 (PDT)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id u7-20020a5d6da7000000b00203d9d1875bsm4016772wrs.73.2022.03.17.02.59.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 02:59:07 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 10:59:05 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Rob Clark <robdclark@gmail.com>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>
-Cc:     dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] drm/msm/gpu: Park scheduler threads for system
- suspend
-Message-ID: <YjMGac4Hnjmg1wE8@phenom.ffwll.local>
-Mail-Followup-To: Rob Clark <robdclark@gmail.com>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220310234611.424743-1-robdclark@gmail.com>
- <20220310234611.424743-3-robdclark@gmail.com>
+        Thu, 17 Mar 2022 06:01:33 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7EF2186FA1;
+        Thu, 17 Mar 2022 03:00:14 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 77CB41F390;
+        Thu, 17 Mar 2022 10:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1647511213; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Abm9aZWjRWB02cH/iiBq5Tgw+x5jzud0k0C7ziDw03s=;
+        b=vlCVYJPBh0M/MyMvfRsEwu+cDkSf5traFO1dx4P8KF/jzfHC257LnEVgCVdUv1B9+ZgxvD
+        npSQxNmlyBk0bVPntWWUbBKaz1MTkraSdf9gn6leS7M/Cs8AOBvj1yqsmSW5RMglEDxtNH
+        rANFb+MUiW1cdgoUlbE3BTTmylLQoJE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1647511213;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Abm9aZWjRWB02cH/iiBq5Tgw+x5jzud0k0C7ziDw03s=;
+        b=fhBXT5ne5WKxIElVBhepugvk3o08MdErSKw1XcU5a/cEY1ha/sMHd3GIsCliNVcOIjjwQH
+        5BHlJKFVAMUDq4Dw==
+Received: from quack3.suse.cz (unknown [10.100.200.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 572BAA3B94;
+        Thu, 17 Mar 2022 10:00:13 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id D7602A0615; Thu, 17 Mar 2022 11:00:12 +0100 (CET)
+Date:   Thu, 17 Mar 2022 11:00:12 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Ye Bin <yebin10@huawei.com>
+Cc:     tytso@mit.edu, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jack@suse.cz, lczerner@redhat.com
+Subject: Re: [PATCH -next] jbd2: Fix null-ptr-deref when process reserved
+ list in jbd2_journal_commit_transaction
+Message-ID: <20220317100012.mw7iuvrehlaj5jve@quack3.lan>
+References: <20220317012755.2621687-1-yebin10@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220310234611.424743-3-robdclark@gmail.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+In-Reply-To: <20220317012755.2621687-1-yebin10@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 03:46:05PM -0800, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Thu 17-03-22 09:27:55, Ye Bin wrote:
+> we got issue as follows:
+> [   72.796117] EXT4-fs error (device sda): ext4_journal_check_start:83: comm fallocate: Detected aborted journal
+> [   72.826847] EXT4-fs (sda): Remounting filesystem read-only
+> fallocate: fallocate failed: Read-only file system
+> [   74.791830] jbd2_journal_commit_transaction: jh=0xffff9cfefe725d90 bh=0x0000000000000000 end delay
+> [   74.793597] ------------[ cut here ]------------
+> [   74.794203] kernel BUG at fs/jbd2/transaction.c:2063!
+> [   74.794886] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> [   74.795533] CPU: 4 PID: 2260 Comm: jbd2/sda-8 Not tainted 5.17.0-rc8-next-20220315-dirty #150
+> [   74.798327] RIP: 0010:__jbd2_journal_unfile_buffer+0x3e/0x60
+> [   74.801971] RSP: 0018:ffffa828c24a3cb8 EFLAGS: 00010202
+> [   74.802694] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> [   74.803601] RDX: 0000000000000001 RSI: ffff9cfefe725d90 RDI: ffff9cfefe725d90
+> [   74.804554] RBP: ffff9cfefe725d90 R08: 0000000000000000 R09: ffffa828c24a3b20
+> [   74.805471] R10: 0000000000000001 R11: 0000000000000001 R12: ffff9cfefe725d90
+> [   74.806385] R13: ffff9cfefe725d98 R14: 0000000000000000 R15: ffff9cfe833a4d00
+> [   74.807301] FS:  0000000000000000(0000) GS:ffff9d01afb00000(0000) knlGS:0000000000000000
+> [   74.808338] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   74.809084] CR2: 00007f2b81bf4000 CR3: 0000000100056000 CR4: 00000000000006e0
+> [   74.810047] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   74.810981] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [   74.811897] Call Trace:
+> [   74.812241]  <TASK>
+> [   74.812566]  __jbd2_journal_refile_buffer+0x12f/0x180
+> [   74.813246]  jbd2_journal_refile_buffer+0x4c/0xa0
+> [   74.813869]  jbd2_journal_commit_transaction.cold+0xa1/0x148
+> [   74.817550]  kjournald2+0xf8/0x3e0
+> [   74.819056]  kthread+0x153/0x1c0
+> [   74.819963]  ret_from_fork+0x22/0x30
 > 
-> In the system suspend path, we don't want to be racing with the
-> scheduler kthreads pushing additional queued up jobs to the hw
-> queue (ringbuffer).  So park them first.  While we are at it,
-> move the wait for active jobs to complete into the new system-
-> suspend path.
+> Above issue may happen as follows:
+>         write                   truncate                   kjournald2
+> generic_perform_write
+>  ext4_write_begin
+>   ext4_walk_page_buffers
+>    do_journal_get_write_access ->add BJ_Reserved list
+>  ext4_journalled_write_end
+>   ext4_walk_page_buffers
+>    write_end_fn
+>     ext4_handle_dirty_metadata
+>                 ***************JBD2 ABORT**************
+>      jbd2_journal_dirty_metadata
+>  -> return -EROFS, jh in reserved_list
+>                                                    jbd2_journal_commit_transaction
+>                                                     while (commit_transaction->t_reserved_list)
+>                                                       jh = commit_transaction->t_reserved_list;
+>                         truncate_pagecache_range
+>                          do_invalidatepage
+> 			  ext4_journalled_invalidatepage
+> 			   jbd2_journal_invalidatepage
+> 			    journal_unmap_buffer
+> 			     __dispose_buffer
+> 			      __jbd2_journal_unfile_buffer
+> 			       jbd2_journal_put_journal_head ->put last ref_count
+> 			        __journal_remove_journal_head
+> 				 bh->b_private = NULL;
+> 				 jh->b_bh = NULL;
+> 				                      jbd2_journal_refile_buffer(journal, jh);
+> 							bh = jh2bh(jh);
+> 							->bh is NULL, later will trigger null-ptr-deref
+> 				 journal_free_journal_head(jh);
 > 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->  drivers/gpu/drm/msm/adreno/adreno_device.c | 68 ++++++++++++++++++++--
->  1 file changed, 64 insertions(+), 4 deletions(-)
+> As after 96f1e0974575 commit, handle reserved list will not hold "journal->j_state_lock"
+> when kjournald2 commit transaction. So journal_unmap_buffer maybe free
+> journal_head when handle reserved list. And lead to null-ptr-deref or some
+> strange errors.
+> As reserved list almost time is empty. Use "journal->j_state_lock" to protect
+> handle reserved list can simply solve above issue.
 > 
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-> index 8859834b51b8..0440a98988fc 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-> @@ -619,22 +619,82 @@ static int active_submits(struct msm_gpu *gpu)
->  static int adreno_runtime_suspend(struct device *dev)
->  {
->  	struct msm_gpu *gpu = dev_to_gpu(dev);
-> -	int remaining;
-> +
-> +	/*
-> +	 * We should be holding a runpm ref, which will prevent
-> +	 * runtime suspend.  In the system suspend path, we've
-> +	 * already waited for active jobs to complete.
-> +	 */
-> +	WARN_ON_ONCE(gpu->active_submits);
-> +
-> +	return gpu->funcs->pm_suspend(gpu);
-> +}
-> +
-> +static void suspend_scheduler(struct msm_gpu *gpu)
-> +{
-> +	int i;
-> +
-> +	/*
-> +	 * Shut down the scheduler before we force suspend, so that
-> +	 * suspend isn't racing with scheduler kthread feeding us
-> +	 * more work.
-> +	 *
-> +	 * Note, we just want to park the thread, and let any jobs
-> +	 * that are already on the hw queue complete normally, as
-> +	 * opposed to the drm_sched_stop() path used for handling
-> +	 * faulting/timed-out jobs.  We can't really cancel any jobs
-> +	 * already on the hw queue without racing with the GPU.
-> +	 */
-> +	for (i = 0; i < gpu->nr_rings; i++) {
-> +		struct drm_gpu_scheduler *sched = &gpu->rb[i]->sched;
-> +		kthread_park(sched->thread);
+> Fixes: 96f1e0974575("jbd2: avoid long hold times of j_state_lock while committing a transaction")
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
 
-Shouldn't we have some proper interfaces for this? Also I'm kinda
-wondering how other drivers do this, feels like we should have a standard
-way.
+Good spotting! Thanks for the analysis and the patch!
 
-Finally not flushing out all in-flight requests sounds a bit like a bad
-idea for system suspend/resume since that's also the hibernation path, and
-that would mean your shrinker/page reclaim stops working. At least in full
-generality. Which ain't good for hibernation.
-
-Adding Christian and Andrey.
--Daniel
-
-> +	}
-> +}
-> +
-> +static void resume_scheduler(struct msm_gpu *gpu)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < gpu->nr_rings; i++) {
-> +		struct drm_gpu_scheduler *sched = &gpu->rb[i]->sched;
-> +		kthread_unpark(sched->thread);
-> +	}
-> +}
-> +
-> +static int adreno_system_suspend(struct device *dev)
-> +{
-> +	struct msm_gpu *gpu = dev_to_gpu(dev);
-> +	int remaining, ret;
-> +
-> +	suspend_scheduler(gpu);
+> diff --git a/fs/jbd2/commit.c b/fs/jbd2/commit.c
+> index 5b9408e3b370..2b737b928d26 100644
+> --- a/fs/jbd2/commit.c
+> +++ b/fs/jbd2/commit.c
+> @@ -488,7 +488,6 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+>  	jbd2_journal_wait_updates(journal);
 >  
->  	remaining = wait_event_timeout(gpu->retire_event,
->  				       active_submits(gpu) == 0,
->  				       msecs_to_jiffies(1000));
->  	if (remaining == 0) {
->  		dev_err(dev, "Timeout waiting for GPU to suspend\n");
-> -		return -EBUSY;
-> +		ret = -EBUSY;
-> +		goto out;
+>  	commit_transaction->t_state = T_SWITCH;
+> -	write_unlock(&journal->j_state_lock);
+>  
+>  	J_ASSERT (atomic_read(&commit_transaction->t_outstanding_credits) <=
+>  			journal->j_max_transaction_buffers);
+> @@ -527,6 +526,7 @@ void jbd2_journal_commit_transaction(journal_t *journal)
+>  		jbd2_journal_refile_buffer(journal, jh);
 >  	}
 >  
-> -	return gpu->funcs->pm_suspend(gpu);
-> +	ret = pm_runtime_force_suspend(dev);
-> +out:
-> +	if (ret)
-> +		resume_scheduler(gpu);
-> +
-> +	return ret;
->  }
-> +
-> +static int adreno_system_resume(struct device *dev)
-> +{
-> +	resume_scheduler(dev_to_gpu(dev));
-> +	return pm_runtime_force_resume(dev);
-> +}
-> +
->  #endif
->  
->  static const struct dev_pm_ops adreno_pm_ops = {
-> -	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
-> +	SET_SYSTEM_SLEEP_PM_OPS(adreno_system_suspend, adreno_system_resume)
->  	SET_RUNTIME_PM_OPS(adreno_runtime_suspend, adreno_runtime_resume, NULL)
->  };
->  
-> -- 
-> 2.35.1
-> 
+> +	write_unlock(&journal->j_state_lock);
+>  	/*
+>  	 * Now try to drop any written-back buffers from the journal's
+>  	 * checkpoint lists.  We do this *before* commit because it potentially
+
+Honestly, using j_state_lock seems like unnecessarily big hammer for this.
+I'd rather use journal->j_list_lock for this which is much more natural for
+list processing. And we grab it anyway from jbd2_journal_refile_buffer() so
+it is not like there will be any additional overhead anyway.
+
+								Honza
 
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
