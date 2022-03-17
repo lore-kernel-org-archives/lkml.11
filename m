@@ -2,93 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC2BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3978AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiCQUYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 16:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54638 "EHLO
+        id S229643AbiCQUZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 16:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiCQUYi (ORCPT
+        with ESMTP id S229595AbiCQUZT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 16:24:38 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942191459A3
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:23:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647548601; x=1679084601;
-  h=message-id:date:mime-version:from:to:cc:references:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=oZJ4KFDXQV7ySk5DGdry86aL5ZaJLmcTxOI6m7btcbY=;
-  b=gqGYnfCQr5R8cvbpc2ophXSMA3KQ8VxfwQ6jg11t322r+sWVbOS6MlHN
-   Q3DaN1SnPoDhkbnsCTmeRGtCbVizHFnCh4GAsuJNSDr8z40QQizRYRnkv
-   wA03Emxm6OvXBEjA6rPOzOKipjfKb9r7g/Nf5yQqo64dcR7CAPTe3gk7r
-   AnfjxzVXAC8G4bF67yl7uYmlMC26DHGU0hVb3yqernQftdyJ8cNusnZx9
-   xlwHGBOboWgigDth8sqoEYLzXXv07ilL63Ew7EDySiFNXe/O4YAW8JMOj
-   mDgdizHijYHK/WlFRUlNvuDUVgcSFV233atsgKq60gxn+IMpHOGj1sdtQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="254531026"
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="254531026"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 13:23:19 -0700
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="516912256"
-Received: from dstanfie-mobl2.amr.corp.intel.com (HELO [10.212.178.19]) ([10.212.178.19])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 13:23:18 -0700
-Message-ID: <2b91abe5-88bd-2941-d561-a8b0ad40f62b@intel.com>
-Date:   Thu, 17 Mar 2022 13:23:12 -0700
+        Thu, 17 Mar 2022 16:25:19 -0400
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABD4F144B7A;
+        Thu, 17 Mar 2022 13:24:02 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id B9C01FF86A;
+        Thu, 17 Mar 2022 20:24:01 +0000 (UTC)
+Date:   Thu, 17 Mar 2022 21:23:59 +0100
+From:   Max Staudt <max@enpas.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent Mailhol <vincent.mailhol@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>
+Subject: Re: [PATCH v3] can, tty: elmcan CAN/ldisc driver for ELM327 based
+ OBD-II adapters
+Message-ID: <20220317212359.71252c57.max@enpas.org>
+In-Reply-To: <20220314220408.hn4vdohtjdbfoaqo@pengutronix.de>
+References: <20220307214303.1822590-1-max@enpas.org>
+        <CAMZ6RqJZObevKPc29jW+m6i0eAgestTbw8KCPXxSGHzSXK7cRg@mail.gmail.com>
+        <20220309135414.34f77251.max@enpas.org>
+        <CAMZ6RqJJ-PO=WeFeuXk4iC9GHLXz_ZMWtsVCm6sGVGbmeE5U1Q@mail.gmail.com>
+        <20220314220408.hn4vdohtjdbfoaqo@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-From:   Dave Hansen <dave.hansen@intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     mingo@redhat.com, bp@alien8.de, luto@kernel.org,
-        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
-        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
-        david@redhat.com, hpa@zytor.com, jgross@suse.com,
-        jmattson@google.com, joro@8bytes.org, jpoimboe@redhat.com,
-        knsathya@kernel.org, pbonzini@redhat.com, sdeep@vmware.com,
-        seanjc@google.com, tony.luck@intel.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, thomas.lendacky@amd.com,
-        brijesh.singh@amd.com, x86@kernel.org, linux-kernel@vger.kernel.org
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-16-kirill.shutemov@linux.intel.com>
- <87czik22wk.ffs@tglx> <20220317201054.5wdykfru5hhvukvd@black.fi.intel.com>
- <c3b640aa-05a1-7706-0c0f-b3f75eee58c6@intel.com>
-Subject: Re: [PATCHv6 15/30] x86/boot: Port I/O: allow to hook up alternative
- helpers
-In-Reply-To: <c3b640aa-05a1-7706-0c0f-b3f75eee58c6@intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/17/22 13:20, Dave Hansen wrote:
-> You keep the preprocessor away from things like
+On Mon, 14 Mar 2022 23:04:08 +0100
+Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+
+> On 09.03.2022 22:49:49, Vincent Mailhol wrote:
+> > Either we agree that using can_rx_offload without implementing
+> > the mailbox_read() is OK and in that case, the can_rx_offload
+> > framework should be modified to allow mailbox_read() to be a NULL
+> > pointer.
+> > 
+> > Either it is not the case and you use the more classic
+> > netif_rx().
+> > 
+> > And I do not have the answer. I haven't studied can_rx_offload
+> > enough to be a judge here. Sorry.
+> > 
+> > @Marc, any thoughts?  
 > 
-> 	foo.inb = bar;
+> Use can_rx_offload_add_manual() instead.
+
+m-(
+
+Yes, it's right underneath _add_fifo() and does the right thing. No
+idea how I missed it, I thought I had looked through all variants.
+
+Thanks!
+
+
+> > Also give a look at can_dropped_invalid_skb().  
 > 
-> with:
-> 
-> 	#define inb(x) pio_ops.inb(x)
+> ACK
 
-... and I spotted my nonsense just as I hit send.
+Done.
 
-You could do that ^^.  But you'd need to rename the 'inb' op  like:
 
-struct port_io_ops {
-	u8 (*f_inb)(u16 port);
-	...
-};
+> Marc
 
-so that you do:
-
-	#define inb(x) pio_ops.f_inb(x)
-
-But, remember when I said I hate playing #define tricks? ;)  This is one
-reason why.
+Max
