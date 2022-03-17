@@ -2,123 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE072C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:32:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC3F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:38:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237466AbiCQSeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        id S237506AbiCQSkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235157AbiCQSeF (ORCPT
+        with ESMTP id S237476AbiCQSkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:34:05 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76A8E9CB2;
-        Thu, 17 Mar 2022 11:32:48 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:54822)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nUuvX-00EeQu-9o; Thu, 17 Mar 2022 12:32:47 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38386 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nUuvW-000unu-Ab; Thu, 17 Mar 2022 12:32:46 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@ZenIV.linux.org.uk>, linux-api@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
-        <87bl1kunjj.fsf@email.froward.int.ebiederm.org>
-        <87r19opkx1.fsf_-_@email.froward.int.ebiederm.org>
-        <87o82gdlu9.fsf_-_@email.froward.int.ebiederm.org>
-        <87tubyx0rg.fsf_-_@email.froward.int.ebiederm.org>
-        <875yoe7qdp.fsf_-_@email.froward.int.ebiederm.org>
-        <20220317180856.GB13318@redhat.com>
-Date:   Thu, 17 Mar 2022 13:31:58 -0500
-In-Reply-To: <20220317180856.GB13318@redhat.com> (Oleg Nesterov's message of
-        "Thu, 17 Mar 2022 19:08:57 +0100")
-Message-ID: <871qz04eht.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 17 Mar 2022 14:40:03 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E011DEC2E;
+        Thu, 17 Mar 2022 11:38:46 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 5653F210FC;
+        Thu, 17 Mar 2022 18:38:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1647542325; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LBacharOGiwQ08qhwNeSRWmmgP1vxvAH8sHIAd4C4U0=;
+        b=MdDOtVyxovBp1evqe2Cv2pc6XovHQmgrdbc+TUVi3ahCx6pATF8S9HbLQlbgxsvPI2Qe+n
+        MlDaUfo9A30RdzJXiHfF+6mbhTSbkRkN2YTQ8DZUAwdSU+YqQ7m0ZVQ7/NKG54yTpbj9eU
+        y5GCKi6oKYu6JO8WMs+2MJ28SlA2BKw=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 349AEA3B83;
+        Thu, 17 Mar 2022 18:38:44 +0000 (UTC)
+Date:   Thu, 17 Mar 2022 19:38:44 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, live-patching@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com
+Subject: Re: [PATCH v3] livepatch: Don't block removal of patches that are
+ safe to unload
+Message-ID: <YjOANCt6Kfnzp+HZ@alley>
+References: <20220312152220.88127-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nUuvW-000unu-Ab;;;mid=<871qz04eht.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+s7QqFvk2d1PVvznaot3c59gGze14b/sE=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 2/2] ptrace: Return the signal to continue with from
- ptrace_stop
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220312152220.88127-1-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Oleg Nesterov <oleg@redhat.com> writes:
+On Sat 2022-03-12 23:22:20, Chengming Zhou wrote:
+> module_put() is not called for a patch with "forced" flag. It should
+> block the removal of the livepatch module when the code might still
+> be in use after forced transition.
+> 
+> klp_force_transition() currently sets "forced" flag for all patches on
+> the list.
+> 
+> In fact, any patch can be safely unloaded when it passed through
+> the consistency model in KLP_UNPATCHED transition.
+> 
+> By other words, the "forced" flag must be set only for livepatches
+> that are being removed. In particular, set the "forced" flag:
+> 
+>   + only for klp_transition_patch when the transition to KLP_UNPATCHED
+>     state was forced.
+> 
+>   + all replaced patches when the transition to KLP_PATCHED state was
+>     forced and the patch was replacing the existing patches.
+> 
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-> Not sure I understand this patch, I can't apply it. I guess I need to
-> clone your tree first, will do later.
->
-> Just one question right now,
->
-> On 03/15, Eric W. Biederman wrote:
->>
->> +static int ptrace_stop(int exit_code, int why, int clear_code,
->>  			unsigned long message, kernel_siginfo_t *info)
->>  	__releases(&current->sighand->siglock)
->>  	__acquires(&current->sighand->siglock)
->>  {
->>  	bool gstop_done = false;
->> +	bool read_code = true;
->>  
->>  	if (arch_ptrace_stop_needed()) {
->>  		/*
->> @@ -2305,8 +2307,9 @@ static void ptrace_stop(int exit_code, int why, int clear_code,
->>  
->>  		/* tasklist protects us from ptrace_freeze_traced() */
->>  		__set_current_state(TASK_RUNNING);
->> +		read_code = false;
->>  		if (clear_code)
->> -			current->exit_code = 0;
->> +			exit_code = 0;
->>  		read_unlock(&tasklist_lock);
->>  	}
->>  
->> @@ -2316,8 +2319,10 @@ static void ptrace_stop(int exit_code, int why, int clear_code,
->>  	 * any signal-sending on another CPU that wants to examine it.
->>  	 */
->>  	spin_lock_irq(&current->sighand->siglock);
->> +	if (read_code) exit_code = current->exit_code;
->
-> style ;)
->
->>  	current->last_siginfo = NULL;
->>  	current->ptrace_message = 0;
->> +	current->exit_code = 0;
->
-> OK, I like it... but can't we remove the ugly "int clear_code" arg?
+The patch has been committed, with the proposed wording changes,
+into livepatching/livepatching.git, branch for-5.18/fixes,
+see
+https://git.kernel.org/pub/scm/linux/kernel/git/livepatching/livepatching.git/commit/?h=for-5.18/fixes&id=2957308343fa7c621df9f342fab88cb970b8d5f3
 
-The flag clear_code controls what happens if a ptrace_stop does not
-stop.  In particular clear_code means do not continue with
-a signal if we can not stop.
-
-For do_jobctl_trap calling ptrace_stop it clearly does not matter.
-
-For ptrace_signal it would be a change in behavior, that would
-cause the signal not to be delivered.
-
-For ptrace_do_notify we don't have a signal to deliver unless userspace
-gives us one so clear_code makes sense at that point.
-
-Which is a long way of saying that no we can not remove clear_stop
-because the behavior it is used to implement makes sense and userspace
-can reasonably depend upon it.
-
-Eric
-
-
+Best Regards,
+Petr
