@@ -2,35 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B63C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 02:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA43C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 02:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348001AbiCQCK4 (ORCPT
+        id S1349329AbiCQCON (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 22:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
+        Wed, 16 Mar 2022 22:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbiCQCKz (ORCPT
+        with ESMTP id S229966AbiCQCOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 22:10:55 -0400
-Received: from out199-15.us.a.mail.aliyun.com (out199-15.us.a.mail.aliyun.com [47.90.199.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD1C1EACC
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 19:09:39 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R341e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V7P.asN_1647482968;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V7P.asN_1647482968)
+        Wed, 16 Mar 2022 22:14:10 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB68A188;
+        Wed, 16 Mar 2022 19:12:54 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V7OwIyg_1647483171;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V7OwIyg_1647483171)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 17 Mar 2022 10:09:34 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     mingo@redhat.com
-Cc:     peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+          Thu, 17 Mar 2022 10:12:52 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     dhowells@redhat.com
+Cc:     dwmw2@infradead.org, keyrings@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
         Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] sched/fair: Fix duplicate include
-Date:   Thu, 17 Mar 2022 10:09:26 +0800
-Message-Id: <20220317020926.27745-1-jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH -next] certs: Fix some kernel-doc comments
+Date:   Thu, 17 Mar 2022 10:12:49 +0800
+Message-Id: <20220317021249.31655-1-yang.lee@linux.alibaba.com>
 X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -38,30 +35,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up the following includecheck warning:
+Remove some warnings found by running scripts/kernel-doc,
+which is caused by using 'make W=1'.
 
-./kernel/sched/fair.c: linux/sched/cond_resched.h is included more than
-once.
+certs/system_keyring.c:46: warning: expecting prototype for
+restrict_link_to_builtin_trusted(). Prototype was for
+restrict_link_by_builtin_trusted() instead
+certs/system_keyring.c:80: warning: This comment starts with '/**', but
+isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- kernel/sched/fair.c | 2 --
- 1 file changed, 2 deletions(-)
+ certs/system_keyring.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 8bcc1dbc544c..f6a7e65b711f 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -48,8 +48,6 @@
+diff --git a/certs/system_keyring.c b/certs/system_keyring.c
+index 05b66ce9d1c9..f0eb8c680cac 100644
+--- a/certs/system_keyring.c
++++ b/certs/system_keyring.c
+@@ -34,7 +34,7 @@ extern __initconst const unsigned long system_certificate_list_size;
+ extern __initconst const unsigned long module_cert_size;
  
- #include <asm/switch_to.h>
+ /**
+- * restrict_link_to_builtin_trusted - Restrict keyring addition by built in CA
++ * restrict_link_by_builtin_trusted - Restrict keyring addition by built in CA
+  *
+  * Restrict the addition of keys into a keyring based on the key-to-be-added
+  * being vouched for by a key in the built in system keyring.
+@@ -77,8 +77,9 @@ int restrict_link_by_builtin_and_secondary_trusted(
+ }
  
--#include <linux/sched/cond_resched.h>
--
- #include "sched.h"
- #include "stats.h"
- #include "autogroup.h"
+ /**
+- * Allocate a struct key_restriction for the "builtin and secondary trust"
+- * keyring. Only for use in system_trusted_keyring_init().
++ * get_builtin_and_secondary_restriction - Allocate a struct key_restriction
++ * for the "builtin and secondary trust" keyring. Only for use in
++ * system_trusted_keyring_init().
+  */
+ static __init struct key_restriction *get_builtin_and_secondary_restriction(void)
+ {
 -- 
 2.20.1.7.g153144c
 
