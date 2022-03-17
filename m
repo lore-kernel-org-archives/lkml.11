@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 247F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BFFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbiCQGXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        id S229598AbiCQGX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbiCQGWl (ORCPT
+        with ESMTP id S230197AbiCQGW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:22:41 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C117FCF4AC;
-        Wed, 16 Mar 2022 23:12:54 -0700 (PDT)
+        Thu, 17 Mar 2022 02:22:57 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DB511BE49;
+        Wed, 16 Mar 2022 23:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647497574; x=1679033574;
+  t=1647497586; x=1679033586;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=vFm/1iPltzV2y4DMijEhe5IyJTZ/LWY1V45aTZ9IiEs=;
-  b=aQcM4w8+4W9fCZi4c+uNp+vdYori5WDUzAiOoT6iVPtwQ+I3MNa7M2OV
-   tMF4MM0RbMjsNIWxP+qqjjjKNmxiPqkGJencPz11y/njKOHAGnf3L8oQh
-   XcY6nm3i6oABkHn7N9UJh7o4b1Fj+goX26H7j4+j6KvycfEWRp2JMWVLk
-   g=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 16 Mar 2022 23:12:54 -0700
+  bh=9W8MONWCB3nHa5cG39eCdoNQ68ZRf4zFDKZRUOobOfU=;
+  b=S6d8EjiAmOws4OPCZCiKjsmCNcWPrmWy+l96LMuavGTkmh7wNHQyu31r
+   MT7CRNVXY4/l0y9pwEjxFVV/LQ5OLSye1YdrlUA9Obe0Z3Euo7y5qlt2I
+   A76Qn+HSfaCUNH4NJRTJhKYgd6f85frSK7M9CbknJ8/HW53Fn2gAzEVz6
+   w=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 16 Mar 2022 23:13:06 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 23:12:54 -0700
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 23:13:06 -0700
 Received: from nalasex01c.na.qualcomm.com (10.47.97.35) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 16 Mar 2022 23:12:53 -0700
+ 15.2.986.22; Wed, 16 Mar 2022 23:13:05 -0700
 Received: from fenglinw-gv.qualcomm.com (10.80.80.8) by
  nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 16 Mar 2022 23:12:51 -0700
+ 15.2.986.22; Wed, 16 Mar 2022 23:13:03 -0700
 From:   Fenglin Wu <quic_fenglinw@quicinc.com>
 To:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <sboyd@kernel.org>
 CC:     <collinsd@codeaurora.org>, <subbaram@codeaurora.org>,
-        <quic_fenglinw@quicinc.com>, <tglx@linutronix.de>,
-        <maz@kernel.org>, "Ashay Jaiswal" <ashayj@codeaurora.org>
-Subject: [PATCH v6 05/10] spmi: pmic-arb: add support to dispatch interrupt based on IRQ status
-Date:   Thu, 17 Mar 2022 14:12:10 +0800
-Message-ID: <1647497535-32151-6-git-send-email-quic_fenglinw@quicinc.com>
+        <quic_fenglinw@quicinc.com>, <tglx@linutronix.de>, <maz@kernel.org>
+Subject: [PATCH v6 09/10] spmi: pmic-arb: make interrupt support optional
+Date:   Thu, 17 Mar 2022 14:12:14 +0800
+Message-ID: <1647497535-32151-10-git-send-email-quic_fenglinw@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1647497535-32151-1-git-send-email-quic_fenglinw@quicinc.com>
 References: <1647497535-32151-1-git-send-email-quic_fenglinw@quicinc.com>
@@ -59,73 +58,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ashay Jaiswal <ashayj@codeaurora.org>
+From: David Collins <collinsd@codeaurora.org>
 
-Current implementation of SPMI arbiter dispatches interrupt based on the
-Arbiter's accumulator status, in some cases the accumulator status may
-remain zero and the interrupt remains un-handled. Add logic to dispatch
-interrupts based Arbiter's IRQ status if the accumulator status is zero.
+Make the support of PMIC peripheral interrupts optional for
+spmi-pmic-arb devices.  This is useful in situations where
+SPMI address mapping is required without the need for IRQ
+support.
 
-Signed-off-by: Ashay Jaiswal <ashayj@codeaurora.org>
 Signed-off-by: David Collins <collinsd@codeaurora.org>
 Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
 ---
- drivers/spmi/spmi-pmic-arb.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/spmi/spmi-pmic-arb.c | 45 +++++++++++++++++++++++++++-----------------
+ 1 file changed, 28 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/spmi/spmi-pmic-arb.c b/drivers/spmi/spmi-pmic-arb.c
-index e19eaec..56f2294 100644
+index 39f25bc..0496e5d 100644
 --- a/drivers/spmi/spmi-pmic-arb.c
 +++ b/drivers/spmi/spmi-pmic-arb.c
-@@ -630,12 +630,18 @@ static void pmic_arb_chained_irq(struct irq_desc *desc)
- 	u8 ee = pmic_arb->ee;
- 	u32 status, enable, handled = 0;
- 	int i, id, apid;
-+	/* status based dispatch */
-+	bool acc_valid = false;
-+	u32 irq_status = 0;
+@@ -1386,10 +1386,12 @@ static int spmi_pmic_arb_probe(struct platform_device *pdev)
+ 		goto err_put_ctrl;
+ 	}
  
- 	chained_irq_enter(chip, desc);
+-	pmic_arb->irq = platform_get_irq_byname(pdev, "periph_irq");
+-	if (pmic_arb->irq < 0) {
+-		err = pmic_arb->irq;
+-		goto err_put_ctrl;
++	if (of_find_property(pdev->dev.of_node, "interrupt-controller", NULL)) {
++		pmic_arb->irq = platform_get_irq_byname(pdev, "periph_irq");
++		if (pmic_arb->irq < 0) {
++			err = pmic_arb->irq;
++			goto err_put_ctrl;
++		}
+ 	}
  
- 	for (i = first >> 5; i <= last >> 5; ++i) {
- 		status = readl_relaxed(
- 				ver_ops->owner_acc_status(pmic_arb, ee, i));
-+		if (status)
-+			acc_valid = true;
-+
- 		while (status) {
- 			id = ffs(status) - 1;
- 			status &= ~BIT(id);
-@@ -653,6 +659,29 @@ static void pmic_arb_chained_irq(struct irq_desc *desc)
+ 	err = of_property_read_u32(pdev->dev.of_node, "qcom,channel", &channel);
+@@ -1449,17 +1451,22 @@ static int spmi_pmic_arb_probe(struct platform_device *pdev)
  		}
  	}
  
-+	/* ACC_STATUS is empty but IRQ fired check IRQ_STATUS */
-+	if (!acc_valid) {
-+		for (i = first; i <= last; i++) {
-+			/* skip if APPS is not irq owner */
-+			if (pmic_arb->apid_data[i].irq_ee != pmic_arb->ee)
-+				continue;
-+
-+			irq_status = readl_relaxed(
-+					     ver_ops->irq_status(pmic_arb, i));
-+			if (irq_status) {
-+				enable = readl_relaxed(
-+					     ver_ops->acc_enable(pmic_arb, i));
-+				if (enable & SPMI_PIC_ACC_ENABLE_BIT) {
-+					dev_dbg(&pmic_arb->spmic->dev,
-+						"Dispatching IRQ for apid=%d status=%x\n",
-+						i, irq_status);
-+					if (periph_interrupt(pmic_arb, i) != 0)
-+						handled++;
-+				}
-+			}
+-	dev_dbg(&pdev->dev, "adding irq domain\n");
+-	pmic_arb->domain = irq_domain_add_tree(pdev->dev.of_node,
+-					 &pmic_arb_irq_domain_ops, pmic_arb);
+-	if (!pmic_arb->domain) {
+-		dev_err(&pdev->dev, "unable to create irq_domain\n");
+-		err = -ENOMEM;
+-		goto err_put_ctrl;
++	if (pmic_arb->irq > 0) {
++		dev_dbg(&pdev->dev, "adding irq domain\n");
++		pmic_arb->domain = irq_domain_add_tree(pdev->dev.of_node,
++					    &pmic_arb_irq_domain_ops, pmic_arb);
++		if (!pmic_arb->domain) {
++			dev_err(&pdev->dev, "unable to create irq_domain\n");
++			err = -ENOMEM;
++			goto err_put_ctrl;
 +		}
-+	}
 +
- 	if (handled == 0)
- 		handle_bad_irq(desc);
++		irq_set_chained_handler_and_data(pmic_arb->irq,
++						pmic_arb_chained_irq, pmic_arb);
++	} else {
++		dev_dbg(&pdev->dev, "not supporting PMIC interrupts\n");
+ 	}
  
+-	irq_set_chained_handler_and_data(pmic_arb->irq, pmic_arb_chained_irq,
+-					pmic_arb);
+ 	err = spmi_controller_add(ctrl);
+ 	if (err)
+ 		goto err_domain_remove;
+@@ -1467,8 +1474,10 @@ static int spmi_pmic_arb_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ err_domain_remove:
+-	irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
+-	irq_domain_remove(pmic_arb->domain);
++	if (pmic_arb->irq > 0) {
++		irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
++		irq_domain_remove(pmic_arb->domain);
++	}
+ err_put_ctrl:
+ 	spmi_controller_put(ctrl);
+ 	return err;
+@@ -1479,8 +1488,10 @@ static int spmi_pmic_arb_remove(struct platform_device *pdev)
+ 	struct spmi_controller *ctrl = platform_get_drvdata(pdev);
+ 	struct spmi_pmic_arb *pmic_arb = spmi_controller_get_drvdata(ctrl);
+ 	spmi_controller_remove(ctrl);
+-	irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
+-	irq_domain_remove(pmic_arb->domain);
++	if (pmic_arb->irq > 0) {
++		irq_set_chained_handler_and_data(pmic_arb->irq, NULL, NULL);
++		irq_domain_remove(pmic_arb->domain);
++	}
+ 	spmi_controller_put(ctrl);
+ 	return 0;
+ }
 -- 
 2.7.4
 
