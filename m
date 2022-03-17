@@ -2,107 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D09C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B082C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237224AbiCQSLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
+        id S237228AbiCQSLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237194AbiCQSK5 (ORCPT
+        with ESMTP id S236915AbiCQSLb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:10:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D201AAA6E;
-        Thu, 17 Mar 2022 11:09:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F17D61645;
-        Thu, 17 Mar 2022 18:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 423FBC340E9;
-        Thu, 17 Mar 2022 18:09:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647540579;
-        bh=+QvcLNYNLk8z+Trz3uCkGKDhIM9gllwONqzhspxkHyc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gWB1MPFYLKL2w4IRkMzG8oZFR8/OcM+rzXWYl2UsWatYxmN/Daz8tWpi5xMNmD80l
-         aRi9aUPVsGkUnzKP4FuyMB4u0P1dOrbjN1lJPEe6U9BevLhODQqntXlHA6BlvLO1R7
-         K9Q2CyyCwZU0mF6m1nfHTzT9BSTpe60QtN7htFisrTJYFX4iT7jHShgGDKaNG3ApGR
-         S3D/uNbFOHYzHIb8nSs1OKiG6u3NAfwNjDewJSXmFR18WTJUk65F52+x52EBx75phl
-         9VjM2YR+Pp4CLCeEd5URd2kbsoHyBIWNz4r6iYCil8DIbcQakTABoqqpV8ObP30CJ9
-         e5slxH9/HZlJw==
-Date:   Thu, 17 Mar 2022 18:09:33 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Cc:     Jonathan Hunter <jonathanh@nvidia.com>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        Ashish Singhal <ashishsingha@nvidia.com>,
-        Sowjanya Komatineni <skomatineni@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] spi: tegra210-quad: Add wait polling support
-Message-ID: <YjN5XRuHU1ReFGOW@sirena.org.uk>
-References: <20220317012006.15080-1-kyarlagadda@nvidia.com>
- <20220317012006.15080-3-kyarlagadda@nvidia.com>
- <391736bc-84c2-ec8b-9f04-614365953da3@nvidia.com>
- <DM4PR12MB57692EB17ABCA36E0515412EC3129@DM4PR12MB5769.namprd12.prod.outlook.com>
- <edcae0c1-a576-1560-5ecb-9dcf08d8ead3@nvidia.com>
- <7032fbfb-8899-d00b-a7fa-811e19d38ce2@nvidia.com>
- <DM4PR12MB57695F4DF462E705EC58D826C3129@DM4PR12MB5769.namprd12.prod.outlook.com>
+        Thu, 17 Mar 2022 14:11:31 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553C621A896;
+        Thu, 17 Mar 2022 11:10:09 -0700 (PDT)
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 22HI9ZKp008822;
+        Fri, 18 Mar 2022 03:09:36 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 22HI9ZKp008822
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1647540576;
+        bh=9fJ0T7LBj+VU4wzwseO6SCq15p5l4MT92+XwYbfyh7A=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=g0O2QY2eOMQdP4tqgFmRtI0ZzTg45v1vExNUAbTdEuFaTMU8WVxgdu/ng7CaUp70S
+         GgoLF8ASuT4i5QseAAxWbZb+cSnrMR4b1mGVA55jgDgmQ1TSk9CqwkOZDMhLcN06Rh
+         fREZ2aWEgBaJZC4AAoukLuHU8Iq2lNNB2GhPGqsXQJeRaWCvo+5H+uKlzRz2vahXEp
+         sLQey0FjyP1u+3nmCBL9VHJ6Mwic8qK4C/43zBMYYNpKLAlbnorsnKmSxUhKkISIPF
+         wUInAL/45+qKV9QiFdH3oWtWcAuS/8XGurRolJzmYBVDc5RNlqyBo1SBDxGQc6XpnT
+         1s8ZT8keKbXNQ==
+X-Nifty-SrcIP: [209.85.215.181]
+Received: by mail-pg1-f181.google.com with SMTP id e7so3248786pgf.7;
+        Thu, 17 Mar 2022 11:09:36 -0700 (PDT)
+X-Gm-Message-State: AOAM5316/3Y9JE5EfQJkxFSnUTHsf8D1wTJPxXjaGbM4q4aY4s4Im7xr
+        evmjaUF/78+pQ0eL6uIX7viS5xaVnSBxQ7DpCUE=
+X-Google-Smtp-Source: ABdhPJx0RR1qQGluLqOYdNH7spVWbNI1goPxD8fcRJEZvGMku52AkzedmY31/7M4+9/aMhhtWkemtBOceL9JJft1uyU=
+X-Received: by 2002:a05:6a02:182:b0:374:5a57:cbf9 with SMTP id
+ bj2-20020a056a02018200b003745a57cbf9mr4694200pgb.616.1647540575244; Thu, 17
+ Mar 2022 11:09:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vDOeRupVhPVhNhc1"
-Content-Disposition: inline
-In-Reply-To: <DM4PR12MB57695F4DF462E705EC58D826C3129@DM4PR12MB5769.namprd12.prod.outlook.com>
-X-Cookie: What foods these morsels be!
+References: <20220223191016.1658728-1-usama.anjum@collabora.com> <63c5d7ad-b0b2-9b37-16c3-354ac10858b6@collabora.com>
+In-Reply-To: <63c5d7ad-b0b2-9b37-16c3-354ac10858b6@collabora.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 18 Mar 2022 03:08:50 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATkTPEBPWBSv6Rum0siHiHcJ0Q7VvPVoUQFH=S0M1fqow@mail.gmail.com>
+Message-ID: <CAK7LNATkTPEBPWBSv6Rum0siHiHcJ0Q7VvPVoUQFH=S0M1fqow@mail.gmail.com>
+Subject: Re: [PATCH] Makefile: Fix separate output directory build of kselftests
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        kernel@collabora.com, kernelci@groups.io,
+        "Cc: Shuah Khan" <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 17, 2022 at 7:49 PM Muhammad Usama Anjum
+<usama.anjum@collabora.com> wrote:
+>
+> Reminder. Shuah is okay with this patch. Any thoughts?
 
---vDOeRupVhPVhNhc1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I do not think this is the right fix,
+but something you just happen to find working.
 
-On Thu, Mar 17, 2022 at 06:00:25PM +0000, Krishna Yarlagadda wrote:
 
-> > >> Wait polling still has to be selected on slave devices that can
-> > >> support it.
-> > >> I will add one line description for the properties in next version.
+The Make is working in a wrong directory, that is why
+the relative path does not work
+(and you use the absolute path to work around it)
 
-> > > I can't say I am familiar with this, but it seems that the ideal
-> > > solution would be able to detect if this needs to be enabled depending
-> > > on the device connected. Is that not possible?
 
-> We cannot detect at runtime which slave supports wait polling.
 
-How would the client device have any knowledge of how the controller
-internal implementation works?  What even is a "wait state inserted by
-TPM device"?  If this is something the client device is doing then it
-should be something that is expressed through the generic SPI API by the
-client device, if some controllers have some way of optimising this then
-we can add support for that but presumably it's just something that's
-generically supported by that device so we shouldn't need a DT property
-for it on the device side either.
 
---vDOeRupVhPVhNhc1
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIzeV0ACgkQJNaLcl1U
-h9CKXwf+JvwR/r2buQv0cfR4FwAaEUnboaLw15RvPY50AkyFvNHI+Vkwh6HvQD86
-PR7Smy8yCjrhHJOBln9tJ+/DH2IE4INXOvNrfODfRZmUspMx+U/1Rrq9MD9Om68Z
-LMPSD17NwUkfU+BZlnxQ6EVu0dzBcPFESpCqcbTiOo1KxrpUsQ0bylfj8smGWmxa
-xjXtr6jYLAOpdNmpIVZ7lHJW1Rncx2Wgk3Fcir1WDtjbv4PlphYaVn5isipMBTcQ
-WXnYVvzvMvXduLMjpWfrwPQ8DVn8rYZvd0GvlcMMFv7u8o0h4VA2EzcLzV7BXqIy
-HLpD6kWY9yKhJoO7d7Pao35pFEidtw==
-=aJ6j
------END PGP SIGNATURE-----
 
---vDOeRupVhPVhNhc1--
+
+>
+> On 2/24/22 12:10 AM, Muhammad Usama Anjum wrote:
+> > Build of kselftests fail if kernel's top most Makefile is used for
+> > running or building kselftests with separate output directory. The
+> > absolute path is needed to reference other files during this kind of
+> > build. Set KBUILD_ABS_SRCTREE to use absolute path during the build. It
+> > fixes the following different types of errors:
+> >
+> > make kselftest-all O=/linux_mainline/build
+> > Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
+> >
+> > make kselftest-all O=build
+> > Makefile:1080: ../scripts/Makefile.extrawarn: No such file or directory
+> >
+> > Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> > ---
+> > I've tested this patch on top of next-20220217. The latest next-20220222
+> > have missing patches.
+> > ---
+> >  Makefile | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/Makefile b/Makefile
+> > index 86f633c2809ea..62b3eb8a102ab 100644
+> > --- a/Makefile
+> > +++ b/Makefile
+> > @@ -1411,10 +1411,10 @@ tools/%: FORCE
+> >
+> >  PHONY += kselftest
+> >  kselftest:
+> > -     $(Q)$(MAKE) -C $(srctree)/tools/testing/selftests run_tests
+> > +     $(Q)$(MAKE) -C $(srctree)/tools/testing/selftests KBUILD_ABS_SRCTREE=1 run_tests
+> >
+> >  kselftest-%: FORCE
+> > -     $(Q)$(MAKE) -C $(srctree)/tools/testing/selftests $*
+> > +     $(Q)$(MAKE) -C $(srctree)/tools/testing/selftests KBUILD_ABS_SRCTREE=1 $*
+> >
+> >  PHONY += kselftest-merge
+> >  kselftest-merge:
+>
+> --
+> Muhammad Usama Anjum
+
+
+
+--
+Best Regards
+Masahiro Yamada
