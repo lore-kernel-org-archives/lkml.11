@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD79C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F49C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235833AbiCQP1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43126 "EHLO
+        id S235839AbiCQP1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235762AbiCQP0m (ORCPT
+        with ESMTP id S235769AbiCQP0p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:26:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF6D205BDC
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:25:26 -0700 (PDT)
+        Thu, 17 Mar 2022 11:26:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B2C205BEF
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:25:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 507A961977
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65A88B81EF6
         for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B072C36AE2;
-        Thu, 17 Mar 2022 15:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E95F8C340FA;
+        Thu, 17 Mar 2022 15:25:23 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nUs0C-004zj4-6N;
-        Thu, 17 Mar 2022 11:25:24 -0400
-Message-ID: <20220317152524.027268941@goodmis.org>
+        id 1nUs0A-004zf9-RF;
+        Thu, 17 Mar 2022 11:25:22 -0400
+Message-ID: <20220317152522.671663837@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 17 Mar 2022 11:25:10 -0400
+Date:   Thu, 17 Mar 2022 11:25:03 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
@@ -46,7 +46,7 @@ Cc:     Ingo Molnar <mingo@kernel.org>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [for-next][PATCH 12/13] docs: fprobe: Add fprobe description to ftrace-use.rst
+Subject: [for-next][PATCH 05/13] rethook: x86: Add rethook x86 implementation
 References: <20220317152458.213689956@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,10 +56,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Masami Hiramatsu <mhiramat@kernel.org>
 
-Add a documentation of fprobe for the user who needs
-this interface.
+Add rethook for x86 implementation. Most of the code has been copied from
+kretprobes on x86.
 
-Link: https://lkml.kernel.org/r/164735294272.1084943.12372175959382037397.stgit@devnote2
+Link: https://lkml.kernel.org/r/164735286243.1084943.7477055110527046644.stgit@devnote2
 
 Cc: Jiri Olsa <jolsa@kernel.org>
 Cc: Alexei Starovoitov <ast@kernel.org>
@@ -75,204 +75,209 @@ Cc: "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>
 Cc: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
 Cc: "David S . Miller" <davem@davemloft.net>
 Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-[ Removed extra line at end of fprobe.rst ]
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- Documentation/trace/fprobe.rst | 173 +++++++++++++++++++++++++++++++++
- Documentation/trace/index.rst  |   1 +
- 2 files changed, 174 insertions(+)
- create mode 100644 Documentation/trace/fprobe.rst
+ arch/x86/Kconfig                 |   1 +
+ arch/x86/include/asm/unwind.h    |   8 ++-
+ arch/x86/kernel/Makefile         |   1 +
+ arch/x86/kernel/kprobes/common.h |   1 +
+ arch/x86/kernel/rethook.c        | 119 +++++++++++++++++++++++++++++++
+ 5 files changed, 129 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/kernel/rethook.c
 
-diff --git a/Documentation/trace/fprobe.rst b/Documentation/trace/fprobe.rst
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 9f5bd41bf660..a91373c56d9f 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -220,6 +220,7 @@ config X86
+ 	select HAVE_KPROBES_ON_FTRACE
+ 	select HAVE_FUNCTION_ERROR_INJECTION
+ 	select HAVE_KRETPROBES
++	select HAVE_RETHOOK
+ 	select HAVE_KVM
+ 	select HAVE_LIVEPATCH			if X86_64
+ 	select HAVE_MIXED_BREAKPOINTS_REGS
+diff --git a/arch/x86/include/asm/unwind.h b/arch/x86/include/asm/unwind.h
+index 2a1f8734416d..192df5b2094d 100644
+--- a/arch/x86/include/asm/unwind.h
++++ b/arch/x86/include/asm/unwind.h
+@@ -5,6 +5,7 @@
+ #include <linux/sched.h>
+ #include <linux/ftrace.h>
+ #include <linux/kprobes.h>
++#include <linux/rethook.h>
+ #include <asm/ptrace.h>
+ #include <asm/stacktrace.h>
+ 
+@@ -16,7 +17,7 @@ struct unwind_state {
+ 	unsigned long stack_mask;
+ 	struct task_struct *task;
+ 	int graph_idx;
+-#ifdef CONFIG_KRETPROBES
++#if defined(CONFIG_KRETPROBES) || defined(CONFIG_RETHOOK)
+ 	struct llist_node *kr_cur;
+ #endif
+ 	bool error;
+@@ -107,6 +108,11 @@ static inline
+ unsigned long unwind_recover_kretprobe(struct unwind_state *state,
+ 				       unsigned long addr, unsigned long *addr_p)
+ {
++#ifdef CONFIG_RETHOOK
++	if (is_rethook_trampoline(addr))
++		return rethook_find_ret_addr(state->task, (unsigned long)addr_p,
++					     &state->kr_cur);
++#endif
+ #ifdef CONFIG_KRETPROBES
+ 	return is_kretprobe_trampoline(addr) ?
+ 		kretprobe_find_ret_addr(state->task, addr_p, &state->kr_cur) :
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index 6aef9ee28a39..792a893a5cc5 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -106,6 +106,7 @@ obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += ftrace.o
+ obj-$(CONFIG_FTRACE_SYSCALLS)	+= ftrace.o
+ obj-$(CONFIG_X86_TSC)		+= trace_clock.o
+ obj-$(CONFIG_TRACING)		+= trace.o
++obj-$(CONFIG_RETHOOK)		+= rethook.o
+ obj-$(CONFIG_CRASH_CORE)	+= crash_core_$(BITS).o
+ obj-$(CONFIG_KEXEC_CORE)	+= machine_kexec_$(BITS).o
+ obj-$(CONFIG_KEXEC_CORE)	+= relocate_kernel_$(BITS).o crash.o
+diff --git a/arch/x86/kernel/kprobes/common.h b/arch/x86/kernel/kprobes/common.h
+index 7d3a2e2daf01..c993521d4933 100644
+--- a/arch/x86/kernel/kprobes/common.h
++++ b/arch/x86/kernel/kprobes/common.h
+@@ -6,6 +6,7 @@
+ 
+ #include <asm/asm.h>
+ #include <asm/frame.h>
++#include <asm/insn.h>
+ 
+ #ifdef CONFIG_X86_64
+ 
+diff --git a/arch/x86/kernel/rethook.c b/arch/x86/kernel/rethook.c
 new file mode 100644
-index 000000000000..5d0454cd3196
+index 000000000000..f0f2f0608282
 --- /dev/null
-+++ b/Documentation/trace/fprobe.rst
-@@ -0,0 +1,173 @@
-+.. SPDX-License-Identifier: GPL-2.0
++++ b/arch/x86/kernel/rethook.c
+@@ -0,0 +1,119 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * x86 implementation of rethook. Mostly copied from arch/x86/kernel/kprobes/core.c.
++ */
++#include <linux/bug.h>
++#include <linux/rethook.h>
++#include <linux/kprobes.h>
 +
-+==================================
-+Fprobe - Function entry/exit probe
-+==================================
++#include "kprobes/common.h"
 +
-+.. Author: Masami Hiramatsu <mhiramat@kernel.org>
++__visible void arch_rethook_trampoline_callback(struct pt_regs *regs);
 +
-+Introduction
-+============
++/*
++ * When a target function returns, this code saves registers and calls
++ * arch_rethook_trampoline_callback(), which calls the rethook handler.
++ */
++asm(
++	".text\n"
++	".global arch_rethook_trampoline\n"
++	".type arch_rethook_trampoline, @function\n"
++	"arch_rethook_trampoline:\n"
++#ifdef CONFIG_X86_64
++	/* Push a fake return address to tell the unwinder it's a kretprobe. */
++	"	pushq $arch_rethook_trampoline\n"
++	UNWIND_HINT_FUNC
++	/* Save the 'sp - 8', this will be fixed later. */
++	"	pushq %rsp\n"
++	"	pushfq\n"
++	SAVE_REGS_STRING
++	"	movq %rsp, %rdi\n"
++	"	call arch_rethook_trampoline_callback\n"
++	RESTORE_REGS_STRING
++	/* In the callback function, 'regs->flags' is copied to 'regs->sp'. */
++	"	addq $8, %rsp\n"
++	"	popfq\n"
++#else
++	/* Push a fake return address to tell the unwinder it's a kretprobe. */
++	"	pushl $arch_rethook_trampoline\n"
++	UNWIND_HINT_FUNC
++	/* Save the 'sp - 4', this will be fixed later. */
++	"	pushl %esp\n"
++	"	pushfl\n"
++	SAVE_REGS_STRING
++	"	movl %esp, %eax\n"
++	"	call arch_rethook_trampoline_callback\n"
++	RESTORE_REGS_STRING
++	/* In the callback function, 'regs->flags' is copied to 'regs->sp'. */
++	"	addl $4, %esp\n"
++	"	popfl\n"
++#endif
++	"	ret\n"
++	".size arch_rethook_trampoline, .-arch_rethook_trampoline\n"
++);
++NOKPROBE_SYMBOL(arch_rethook_trampoline);
 +
-+Fprobe is a function entry/exit probe mechanism based on ftrace.
-+Instead of using ftrace full feature, if you only want to attach callbacks
-+on function entry and exit, similar to the kprobes and kretprobes, you can
-+use fprobe. Compared with kprobes and kretprobes, fprobe gives faster
-+instrumentation for multiple functions with single handler. This document
-+describes how to use fprobe.
++/*
++ * Called from arch_rethook_trampoline
++ */
++__used __visible void arch_rethook_trampoline_callback(struct pt_regs *regs)
++{
++	unsigned long *frame_pointer;
 +
-+The usage of fprobe
-+===================
++	/* fixup registers */
++	regs->cs = __KERNEL_CS;
++#ifdef CONFIG_X86_32
++	regs->gs = 0;
++#endif
++	regs->ip = (unsigned long)&arch_rethook_trampoline;
++	regs->orig_ax = ~0UL;
++	regs->sp += sizeof(long);
++	frame_pointer = &regs->sp + 1;
 +
-+The fprobe is a wrapper of ftrace (+ kretprobe-like return callback) to
-+attach callbacks to multiple function entry and exit. User needs to set up
-+the `struct fprobe` and pass it to `register_fprobe()`.
++	/*
++	 * The return address at 'frame_pointer' is recovered by the
++	 * arch_rethook_fixup_return() which called from this
++	 * rethook_trampoline_handler().
++	 */
++	rethook_trampoline_handler(regs, (unsigned long)frame_pointer);
 +
-+Typically, `fprobe` data structure is initialized with the `entry_handler`
-+and/or `exit_handler` as below.
++	/*
++	 * Copy FLAGS to 'pt_regs::sp' so that arch_rethook_trapmoline()
++	 * can do RET right after POPF.
++	 */
++	regs->sp = regs->flags;
++}
++NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
 +
-+.. code-block:: c
++/*
++ * arch_rethook_trampoline() skips updating frame pointer. The frame pointer
++ * saved in arch_rethook_trampoline_callback() points to the real caller
++ * function's frame pointer. Thus the arch_rethook_trampoline() doesn't have
++ * a standard stack frame with CONFIG_FRAME_POINTER=y.
++ * Let's mark it non-standard function. Anyway, FP unwinder can correctly
++ * unwind without the hint.
++ */
++STACK_FRAME_NON_STANDARD_FP(arch_rethook_trampoline);
 +
-+ struct fprobe fp = {
-+        .entry_handler  = my_entry_callback,
-+        .exit_handler   = my_exit_callback,
-+ };
++/* This is called from rethook_trampoline_handler(). */
++void arch_rethook_fixup_return(struct pt_regs *regs,
++			       unsigned long correct_ret_addr)
++{
++	unsigned long *frame_pointer = &regs->sp + 1;
 +
-+To enable the fprobe, call one of register_fprobe(), register_fprobe_ips(), and
-+register_fprobe_syms(). These functions register the fprobe with different types
-+of parameters.
++	/* Replace fake return address with real one. */
++	*frame_pointer = correct_ret_addr;
++}
++NOKPROBE_SYMBOL(arch_rethook_fixup_return);
 +
-+The register_fprobe() enables a fprobe by function-name filters.
-+E.g. this enables @fp on "func*()" function except "func2()".::
++void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
++{
++	unsigned long *stack = (unsigned long *)regs->sp;
 +
-+  register_fprobe(&fp, "func*", "func2");
++	rh->ret_addr = stack[0];
++	rh->frame = regs->sp;
 +
-+The register_fprobe_ips() enables a fprobe by ftrace-location addresses.
-+E.g.
-+
-+.. code-block:: c
-+
-+  unsigned long ips[] = { 0x.... };
-+
-+  register_fprobe_ips(&fp, ips, ARRAY_SIZE(ips));
-+
-+And the register_fprobe_syms() enables a fprobe by symbol names.
-+E.g.
-+
-+.. code-block:: c
-+
-+  char syms[] = {"func1", "func2", "func3"};
-+
-+  register_fprobe_syms(&fp, syms, ARRAY_SIZE(syms));
-+
-+To disable (remove from functions) this fprobe, call::
-+
-+  unregister_fprobe(&fp);
-+
-+You can temporally (soft) disable the fprobe by::
-+
-+  disable_fprobe(&fp);
-+
-+and resume by::
-+
-+  enable_fprobe(&fp);
-+
-+The above is defined by including the header::
-+
-+  #include <linux/fprobe.h>
-+
-+Same as ftrace, the registered callbacks will start being called some time
-+after the register_fprobe() is called and before it returns. See
-+:file:`Documentation/trace/ftrace.rst`.
-+
-+Also, the unregister_fprobe() will guarantee that the both enter and exit
-+handlers are no longer being called by functions after unregister_fprobe()
-+returns as same as unregister_ftrace_function().
-+
-+The fprobe entry/exit handler
-+=============================
-+
-+The prototype of the entry/exit callback function is as follows:
-+
-+.. code-block:: c
-+
-+ void callback_func(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
-+
-+Note that both entry and exit callbacks have same ptototype. The @entry_ip is
-+saved at function entry and passed to exit handler.
-+
-+@fp
-+        This is the address of `fprobe` data structure related to this handler.
-+        You can embed the `fprobe` to your data structure and get it by
-+        container_of() macro from @fp. The @fp must not be NULL.
-+
-+@entry_ip
-+        This is the ftrace address of the traced function (both entry and exit).
-+        Note that this may not be the actual entry address of the function but
-+        the address where the ftrace is instrumented.
-+
-+@regs
-+        This is the `pt_regs` data structure at the entry and exit. Note that
-+        the instruction pointer of @regs may be different from the @entry_ip
-+        in the entry_handler. If you need traced instruction pointer, you need
-+        to use @entry_ip. On the other hand, in the exit_handler, the instruction
-+        pointer of @regs is set to the currect return address.
-+
-+Share the callbacks with kprobes
-+================================
-+
-+Since the recursion safeness of the fprobe (and ftrace) is a bit different
-+from the kprobes, this may cause an issue if user wants to run the same
-+code from the fprobe and the kprobes.
-+
-+Kprobes has per-cpu 'current_kprobe' variable which protects the kprobe
-+handler from recursion in all cases. On the other hand, fprobe uses
-+only ftrace_test_recursion_trylock(). This allows interrupt context to
-+call another (or same) fprobe while the fprobe user handler is running.
-+
-+This is not a matter if the common callback code has its own recursion
-+detection, or it can handle the recursion in the different contexts
-+(normal/interrupt/NMI.)
-+But if it relies on the 'current_kprobe' recursion lock, it has to check
-+kprobe_running() and use kprobe_busy_*() APIs.
-+
-+Fprobe has FPROBE_FL_KPROBE_SHARED flag to do this. If your common callback
-+code will be shared with kprobes, please set FPROBE_FL_KPROBE_SHARED
-+*before* registering the fprobe, like:
-+
-+.. code-block:: c
-+
-+ fprobe.flags = FPROBE_FL_KPROBE_SHARED;
-+
-+ register_fprobe(&fprobe, "func*", NULL);
-+
-+This will protect your common callback from the nested call.
-+
-+The missed counter
-+==================
-+
-+The `fprobe` data structure has `fprobe::nmissed` counter field as same as
-+kprobes.
-+This counter counts up when;
-+
-+ - fprobe fails to take ftrace_recursion lock. This usually means that a function
-+   which is traced by other ftrace users is called from the entry_handler.
-+
-+ - fprobe fails to setup the function exit because of the shortage of rethook
-+   (the shadow stack for hooking the function return.)
-+
-+The `fprobe::nmissed` field counts up in both cases. Therefore, the former
-+skips both of entry and exit callback and the latter skips the exit
-+callback, but in both case the counter will increase by 1.
-+
-+Note that if you set the FTRACE_OPS_FL_RECURSION and/or FTRACE_OPS_FL_RCU to
-+`fprobe::ops::flags` (ftrace_ops::flags) when registering the fprobe, this
-+counter may not work correctly, because ftrace skips the fprobe function which
-+increase the counter.
-+
-+
-+Functions and structures
-+========================
-+
-+.. kernel-doc:: include/linux/fprobe.h
-+.. kernel-doc:: kernel/trace/fprobe.c
-diff --git a/Documentation/trace/index.rst b/Documentation/trace/index.rst
-index 3a47aa8341c6..f9b7bcb5a630 100644
---- a/Documentation/trace/index.rst
-+++ b/Documentation/trace/index.rst
-@@ -9,6 +9,7 @@ Linux Tracing Technologies
-    tracepoint-analysis
-    ftrace
-    ftrace-uses
-+   fprobe
-    kprobes
-    kprobetrace
-    uprobetracer
++	/* Replace the return addr with trampoline addr */
++	stack[0] = (unsigned long) arch_rethook_trampoline;
++}
++NOKPROBE_SYMBOL(arch_rethook_prepare);
 -- 
 2.35.1
