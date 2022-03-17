@@ -2,155 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CA0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3EDC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236021AbiCQPlC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
+        id S236030AbiCQPlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236015AbiCQPk5 (ORCPT
+        with ESMTP id S236013AbiCQPlB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:40:57 -0400
-Received: from unicorn.mansr.com (unicorn.mansr.com [IPv6:2001:8b0:ca0d:8d8e::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D508220C2E0;
-        Thu, 17 Mar 2022 08:39:38 -0700 (PDT)
-Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
-        by unicorn.mansr.com (Postfix) with ESMTPS id EF05B15360;
-        Thu, 17 Mar 2022 15:39:35 +0000 (GMT)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-        id 86495210BC8; Thu, 17 Mar 2022 15:39:35 +0000 (GMT)
-From:   Mans Rullgard <mans@mansr.com>
-To:     Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vitaly Bordug <vbordug@ru.mvista.com>,
-        Dan Malek <dan@embeddededge.com>,
-        Joakim Tjernlund <joakim.tjernlund@lumentis.se>,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC][PATCH] net: fs_enet: fix tx error handling
-Date:   Thu, 17 Mar 2022 15:38:58 +0000
-Message-Id: <20220317153858.20719-1-mans@mansr.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 17 Mar 2022 11:41:01 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7C220D516;
+        Thu, 17 Mar 2022 08:39:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=w7LH+XYgp1TElmi+XKfDK45mdQpBTmiaAJ1ksWS+y2s=; b=LaJzz1HoN9jfolmpLabHmiD5eS
+        0KpDGuHsmyUf2nmdOjeSUH9westzvWmXaQ/JrKCxkAGxmmQ2/hjVh3ERqdl9PYEOTXTnjC4nt06ay
+        2sh/4VaMfZlcZHNLowiB9JvNP2eTtoUKiIJ1TUHUMZpX2ftejGT3OWWEN1XzSSak04dO+89BpAarm
+        BtNW4uJJKc7xfRl/i4PcXCbTBxksqJ6nGzOhNkpe87qMWByTo/lHTHKyNiFOu4oGsN8Aio1VhsdNE
+        lvXt+00dGfrWe0OZbmZZB0WXlrERsBfdkf04i+uvlc1AnFupMh/3AAMKEKg0u7YOpY812lSatQq6C
+        W3l/uXlg==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUsDz-00GeUK-Uv; Thu, 17 Mar 2022 15:39:40 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-acpi@vger.kernel.org
+Subject: [PATCH v4] clocksource: acpi_pm: fix return value of __setup handler
+Date:   Thu, 17 Mar 2022 08:39:39 -0700
+Message-Id: <20220317153939.31542-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some cases, the TXE flag is apparently set without any error
-indication in the buffer descriptor status. When this happens, tx
-stalls until the tx_restart() function is called via the device
-watchdog which can take a long time.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled.
+A return of 0 causes the boot option/value to be listed as an Unknown
+kernel parameter and added to init's (limited) environment strings.
 
-To fix this, check for TXE in the napi poll function and trigger a
-tx_restart() call as for errors reported in the buffer descriptor.
+The __setup() handler interface isn't meant to handle negative return
+values -- they are non-zero, so they mean "handled" (like a return
+value of 1 does), but that's just a quirk. So return 1 from
+parse_pmtmr(). Also print a warning message if kstrtouint() returns
+an error.
 
-This change makes the FCC based Ethernet controller on MPC82xx devices
-usable. It probably breaks the other modes (FEC, SCC) which I have no
-way of testing.
-
-Signed-off-by: Mans Rullgard <mans@mansr.com>
+Fixes: 6b148507d3d0 ("pmtmr: allow command line override of ioport")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: linux-acpi@vger.kernel.org
 ---
- .../ethernet/freescale/fs_enet/fs_enet-main.c | 47 +++++++------------
- .../net/ethernet/freescale/fs_enet/mac-fcc.c  |  2 +-
- 2 files changed, 19 insertions(+), 30 deletions(-)
+v4: correct Igor's email address to be Reported-by: (Rafael)
+v3: also cc: linux-acpi (Rafael)
+v2: correct the Fixes: tag (Dan Carpenter);
+    remove Cc: John Stultz <john.stultz@linaro.org> (bouncing)
 
-diff --git a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
-index 78e008b81374..4276becd07cf 100644
---- a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
-+++ b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
-@@ -94,14 +94,22 @@ static int fs_enet_napi(struct napi_struct *napi, int budget)
- 	int curidx;
- 	int dirtyidx, do_wake, do_restart;
- 	int tx_left = TX_RING_SIZE;
-+	u32 int_events;
+ drivers/clocksource/acpi_pm.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- linux-next-20220315.orig/drivers/clocksource/acpi_pm.c
++++ linux-next-20220315/drivers/clocksource/acpi_pm.c
+@@ -229,8 +229,10 @@ static int __init parse_pmtmr(char *arg)
+ 	int ret;
  
- 	spin_lock(&fep->tx_lock);
- 	bdp = fep->dirty_tx;
-+	do_wake = do_restart = 0;
-+
-+	int_events = (*fep->ops->get_int_events)(dev);
-+
-+	if (int_events & fep->ev_err) {
-+		(*fep->ops->ev_error)(dev, int_events);
-+		do_restart = 1;
+ 	ret = kstrtouint(arg, 16, &base);
+-	if (ret)
+-		return ret;
++	if (ret) {
++		pr_warn("PMTMR: invalid 'pmtmr=' value: '%s'\n", arg);
++		return 1;
 +	}
  
- 	/* clear status bits for napi*/
- 	(*fep->ops->napi_clear_event)(dev);
- 
--	do_wake = do_restart = 0;
- 	while (((sc = CBDR_SC(bdp)) & BD_ENET_TX_READY) == 0 && tx_left) {
- 		dirtyidx = bdp - fep->tx_bd_base;
- 
-@@ -318,43 +326,24 @@ fs_enet_interrupt(int irq, void *dev_id)
- {
- 	struct net_device *dev = dev_id;
- 	struct fs_enet_private *fep;
--	const struct fs_platform_info *fpi;
- 	u32 int_events;
--	u32 int_clr_events;
--	int nr, napi_ok;
--	int handled;
- 
- 	fep = netdev_priv(dev);
--	fpi = fep->fpi;
- 
--	nr = 0;
--	while ((int_events = (*fep->ops->get_int_events)(dev)) != 0) {
--		nr++;
-+	int_events = (*fep->ops->get_int_events)(dev);
-+	if (!int_events)
-+		return IRQ_NONE;
- 
--		int_clr_events = int_events;
--		int_clr_events &= ~fep->ev_napi;
-+	int_events &= ~fep->ev_napi;
- 
--		(*fep->ops->clear_int_events)(dev, int_clr_events);
--
--		if (int_events & fep->ev_err)
--			(*fep->ops->ev_error)(dev, int_events);
--
--		if (int_events & fep->ev) {
--			napi_ok = napi_schedule_prep(&fep->napi);
--
--			(*fep->ops->napi_disable)(dev);
--			(*fep->ops->clear_int_events)(dev, fep->ev_napi);
--
--			/* NOTE: it is possible for FCCs in NAPI mode    */
--			/* to submit a spurious interrupt while in poll  */
--			if (napi_ok)
--				__napi_schedule(&fep->napi);
--		}
-+	(*fep->ops->clear_int_events)(dev, int_events);
- 
-+	if (napi_schedule_prep(&fep->napi)) {
-+		(*fep->ops->napi_disable)(dev);
-+		__napi_schedule(&fep->napi);
- 	}
- 
--	handled = nr > 0;
--	return IRQ_RETVAL(handled);
-+	return IRQ_HANDLED;
- }
- 
- void fs_init_bds(struct net_device *dev)
-diff --git a/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c b/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c
-index b47490be872c..66c8f82a8333 100644
---- a/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c
-+++ b/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c
-@@ -124,7 +124,7 @@ static int do_pd_setup(struct fs_enet_private *fep)
- 	return ret;
- }
- 
--#define FCC_NAPI_EVENT_MSK	(FCC_ENET_RXF | FCC_ENET_RXB | FCC_ENET_TXB)
-+#define FCC_NAPI_EVENT_MSK	(FCC_ENET_RXF | FCC_ENET_RXB | FCC_ENET_TXB | FCC_ENET_TXE)
- #define FCC_EVENT		(FCC_ENET_RXF | FCC_ENET_TXB)
- #define FCC_ERR_EVENT_MSK	(FCC_ENET_TXE)
- 
--- 
-2.35.1
-
+ 	pr_info("PMTMR IOPort override: 0x%04x -> 0x%04x\n", pmtmr_ioport,
+ 		base);
