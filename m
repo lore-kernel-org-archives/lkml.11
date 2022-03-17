@@ -2,40 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E50BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 02:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF698C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 03:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238319AbiCQDAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 23:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
+        id S1353802AbiCQDDQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 16 Mar 2022 23:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234652AbiCQDAG (ORCPT
+        with ESMTP id S229861AbiCQDDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 23:00:06 -0400
-Received: from ha.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 276FF201BC;
-        Wed, 16 Mar 2022 19:58:51 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by ha.nfschina.com (Postfix) with ESMTP id 98BF11E80D24;
-        Thu, 17 Mar 2022 10:57:50 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from ha.nfschina.com ([127.0.0.1])
-        by localhost (ha.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ZotB6GPQhZ7h; Thu, 17 Mar 2022 10:57:47 +0800 (CST)
-Received: from localhost.localdomain (unknown [101.228.249.16])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by ha.nfschina.com (Postfix) with ESMTPA id 548181E80CD2;
-        Thu, 17 Mar 2022 10:57:47 +0800 (CST)
-From:   yuzhe <yuzhe@nfschina.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        yuzhe <yuzhe@nfschina.com>
-Subject: [PATCH] sched: Fix spelling mistake "then" -> "than"
-Date:   Wed, 16 Mar 2022 19:58:41 -0700
-Message-Id: <20220317025841.5738-1-yuzhe@nfschina.com>
+        Wed, 16 Mar 2022 23:03:13 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5CF201BC;
+        Wed, 16 Mar 2022 20:01:58 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id o6-20020a17090a9f8600b001c6562049d9so4281282pjp.3;
+        Wed, 16 Mar 2022 20:01:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bW9+q/9DwRXDLHNrIZZ/P9kRXSJfYeSaV3DA8Q5JRv4=;
+        b=b1peUcfkYv9TPtgx1X3WqhvxAvkvLBXzLgo3imFWUVeEneSj5cJkwjJpfKC7cH62cK
+         kBYhIDxUtoDhnEgQPxXvhmvrxwZE7eLAhd7ks1WzWBTvoiffZry/F1Lmi26i7czxJEw1
+         wierKAuzuPU4eactCjcfxeRyQ+ark5rLYRRGXv/XLDGXky8yMv32FdQ0rvHEQdpA7coB
+         xCaW2k2VE1FUPnk0ddzd2FoCrt9JjpirMvqPZ+8RMNIlKslGqjxDZITktHsQnJH8/wY7
+         FV59ZHK4Y2i8m6mGvqerQcAtwVY07lpY+e9vK81Yt2iZhhXgzW0LWxIQ4G9ZtMbDmrhF
+         4iWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bW9+q/9DwRXDLHNrIZZ/P9kRXSJfYeSaV3DA8Q5JRv4=;
+        b=lb2B+nnULV2+f2nkqjImX8KhSqKz5bYMtVMNJzkBWblN/Yq7t0iOQqXWKvqCrBGHQ4
+         sTpRX3G0Y3iAav1wYBxL232N5kgp2Gsn7dOXhFMpKhox8bIM1Os1muNwitpNbYtvCtCW
+         6otbIRMcl0JMZALgO6ihd3bSsV2Yk65XQTiY6BUoNs6uTgRiU48FXVdgYkxnZHXAK5zL
+         XhH2JlKY0e3xf9L8Jr7c7i7ob26QYEntsLMIsJ4yH3kgayeXBm/AEwE1FjlkH9jKt/ut
+         DliaeBh5bzYztXziSnhEWy9Q1czUCkPgDKZCKfjPQzutYQRC0YlMO4YG4LqFoyd+6U3u
+         A8rw==
+X-Gm-Message-State: AOAM531TwHMm38viV0yDZxxex57ehTuL7ixIg2g35cgSo+5YOElbUR9k
+        88rINK3MUyfuWKQcP9+Dk9U=
+X-Google-Smtp-Source: ABdhPJyvTCaZCTHpNlEIYKI142s3jeY3M0F8Ct/E1H/vK+HfB5ZhmJSy60u3kauO3RfFra6p4VWznw==
+X-Received: by 2002:a17:90b:1bc1:b0:1bf:7dc6:bc78 with SMTP id oa1-20020a17090b1bc100b001bf7dc6bc78mr2928126pjb.122.1647486118027;
+        Wed, 16 Mar 2022 20:01:58 -0700 (PDT)
+Received: from slim.das-security.cn ([103.84.139.54])
+        by smtp.gmail.com with ESMTPSA id o5-20020a056a0015c500b004f7988f16c3sm5015705pfu.30.2022.03.16.20.01.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 20:01:57 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     rcsekar@samsung.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] can: m_can: fix a possible use after free in m_can_tx_handler()
+Date:   Thu, 17 Mar 2022 11:01:43 +0800
+Message-Id: <20220317030143.14668-1-hbh25y@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -43,26 +64,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a spelling mistake in comment.Fix it.
+can_put_echo_skb will clone skb then free the skb. It is better to avoid using
+skb after can_put_echo_skb.
 
-Signed-off-by: yuzhe <yuzhe@nfschina.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
- kernel/sched/fair.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/m_can/m_can.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 8bcc1dbc544c..e6b3d62389c9 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -5944,7 +5944,7 @@ static unsigned long capacity_of(int cpu)
- static void record_wakee(struct task_struct *p)
- {
- 	/*
--	 * Only decay a single time; tasks that have less then 1 wakeup per
-+	 * Only decay a single time; tasks that have less than 1 wakeup per
- 	 * jiffy will not have built up many flips.
- 	 */
- 	if (time_after(jiffies, current->wakee_flip_decay_ts + HZ)) {
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 1a4b56f6fa8c..98be5742f4f5 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1607,6 +1607,7 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 	u32 cccr, fdflags;
+ 	int err;
+ 	int putidx;
++	unsigned int len = skb->len;
+ 
+ 	cdev->tx_skb = NULL;
+ 
+@@ -1642,7 +1643,7 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
+ 			cccr = m_can_read(cdev, M_CAN_CCCR);
+ 			cccr &= ~CCCR_CMR_MASK;
+-			if (can_is_canfd_skb(skb)) {
++			if (len == CANFD_MTU) {
+ 				if (cf->flags & CANFD_BRS)
+ 					cccr |= FIELD_PREP(CCCR_CMR_MASK,
+ 							   CCCR_CMR_CANFD_BRS);
 -- 
 2.25.1
 
