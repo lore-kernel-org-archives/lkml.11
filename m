@@ -2,154 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6756AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA41C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:51:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbiCQWwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 18:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50746 "EHLO
+        id S229989AbiCQWxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 18:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229958AbiCQWwm (ORCPT
+        with ESMTP id S229973AbiCQWxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 18:52:42 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D791B2C4C
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:51:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647557484; x=1679093484;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=o6EcUI/nffbKAi/tVN1u/XWuc/zFkhXJLQjXqtiJbJc=;
-  b=MIzpDxxQ2kduY+noKGPZAHCdGDP6FgIvI6v5zSm8fPxrWqyjIf0gx+d4
-   QjIws8VSjZYCJL6x8uooMjCHoNLSgQlHV+X0bIruNBPehlk546+dveHra
-   i1DXiEBaH2HJznj+smXrIrCeIQIt3b0tMx2UsI7T6VJykgei4H3D2dblO
-   Fo3bRQMsjy/WkaPap9vWi72t7KYyix8YGwfwNP3fB+/uFsdqdweBFpFZG
-   7b+S74VHYGwrfKrSm5JQdq60Qzw45NmDgCvY5Cc3z5z3xQPdoY5NrXtOj
-   ozhWuam5dhA2GFNu8BTsgguR00haYGndUq06bJcvLBNQfMWYp4x/11FVo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="257187731"
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="257187731"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 15:51:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
-   d="scan'208";a="647226771"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 17 Mar 2022 15:51:22 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUyxl-000EBL-Ct; Thu, 17 Mar 2022 22:51:21 +0000
-Date:   Fri, 18 Mar 2022 06:51:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nicolin Chen <nicolinc@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>
-Subject: [luxis1999-iommufd:iommufd-v5.17-rc6 38/40] ld.lld: error: undefined
- symbol: interval_tree_iter_first
-Message-ID: <202203180632.Yo8yADOY-lkp@intel.com>
+        Thu, 17 Mar 2022 18:53:08 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DC71D190F
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:51:50 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id o6so9198903ljp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:51:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4Ggl/MKy9XRVzUM8Rcs5TJdLd4Il3RiYZLoq63qTJK8=;
+        b=aB/PPKlDrKRoBhLTrJwzPyuNJHKMZwzBoG0rWaX2qAOgQ9CjuDGv+hSVYksU8EpQTo
+         YalzViobDb8KoaWEuWddyYckVjHqBPFi3+RgSCFumrPJ9guxgC5y4ez7ObNQBMEJugrz
+         umyGFNVU7J5jZGcsHv0h4PyaKF6RxL69ELA78=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4Ggl/MKy9XRVzUM8Rcs5TJdLd4Il3RiYZLoq63qTJK8=;
+        b=2pgQK/Gz4KfjxZxE2TrDB9WaVLIM9/1b8kdfcJq402OY70KeaOoOpKkRYyoNPreMma
+         pSa6qm+8DPkPhb23yj6P24cLgjur/xPiiJBYmKEotO85zoaLZA0l/Quy9GzcRrcniJke
+         KsYh7uEBnGQ715eBqYEKEKNyqyEbu2UVebSX/vOvzI17DjZ1JNy6XLLk3z6xGLAQfRbn
+         WzR0/opgU8Sh3yqVfORlL0J+9MbKEopzmegAMIUJ4NBBiFUmygxvsWWRfbnTkW/ZootL
+         l4g3eRukk8WxYvmvHk1T/lZJ/pS44lT1BT8ptyaVek1v+g6bZIaBtv2hKvKa97lXRW+F
+         3EYA==
+X-Gm-Message-State: AOAM533sWxMvrOg+AVFYrObvvEUlCPhv+L7VL/AkHp/gAsTTa0e2bTQn
+        PVZHyYlfj1u5IaurjcS6qLDhnYRirzC+SZQWENo=
+X-Google-Smtp-Source: ABdhPJzorFCr/t+5+GD/K6gDkwErtqDgd7w2zuTb/lM0tgQOPxfDTqag8wvzfhByqcCsgpTiJzUwKA==
+X-Received: by 2002:a2e:9203:0:b0:247:ebe3:7d0c with SMTP id k3-20020a2e9203000000b00247ebe37d0cmr4278918ljg.278.1647557508737;
+        Thu, 17 Mar 2022 15:51:48 -0700 (PDT)
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com. [209.85.167.45])
+        by smtp.gmail.com with ESMTPSA id 24-20020ac24858000000b004481ff4805esm569616lfy.151.2022.03.17.15.51.45
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 15:51:46 -0700 (PDT)
+Received: by mail-lf1-f45.google.com with SMTP id p15so700404lfk.8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:51:45 -0700 (PDT)
+X-Received: by 2002:ac2:4f92:0:b0:448:7eab:c004 with SMTP id
+ z18-20020ac24f92000000b004487eabc004mr4172510lfs.27.1647557504973; Thu, 17
+ Mar 2022 15:51:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220210223134.233757-1-morbo@google.com> <20220301201903.4113977-1-morbo@google.com>
+ <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com>
+ <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com> <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com>
+ <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com> <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com>
+ <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com>
+ <CAGG=3QW2ey2w91TxqJ6tzfJOswhTce2e0QTW7kAWyvxeiO+VNg@mail.gmail.com>
+ <CAHk-=whn3iYE7gZM4vHx1kFhWBD2P9Wvmcyj8OOqv=y_7nemGQ@mail.gmail.com>
+ <CAGG=3QWC9VS9RdGFTwY8VGqujDnFYnRTT1dQ6kkVr+0SRk6COg@mail.gmail.com>
+ <CAHk-=wh=x7oCk05JD1=6XNsvvgpsidRWupoqySw1zODmvNy9Ug@mail.gmail.com> <CAGG=3QWcKof_NXrC0kznM2ikwTA00AgUJrcWhKBTitmjCuOxqw@mail.gmail.com>
+In-Reply-To: <CAGG=3QWcKof_NXrC0kznM2ikwTA00AgUJrcWhKBTitmjCuOxqw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 17 Mar 2022 15:51:28 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj=aK2T+h=rRJL4jDDTgV2U533E_duroCoVSUfkvYd0OQ@mail.gmail.com>
+Message-ID: <CAHk-=wj=aK2T+h=rRJL4jDDTgV2U533E_duroCoVSUfkvYd0OQ@mail.gmail.com>
+Subject: Re: [PATCH v5] x86: use builtins to read eflags
+To:     Bill Wendling <morbo@google.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/luxis1999/iommufd iommufd-v5.17-rc6
-head:   5ab19f95878da0c393e4b8c3f5b0bb51efb9f99a
-commit: a7d1827d76767fe3e5366ef50efd50ebea0ed089 [38/40] vfio: Add iommufd VFIO compat support to group_fd
-config: x86_64-randconfig-a001 (https://download.01.org/0day-ci/archive/20220318/202203180632.Yo8yADOY-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/luxis1999/iommufd/commit/a7d1827d76767fe3e5366ef50efd50ebea0ed089
-        git remote add luxis1999-iommufd https://github.com/luxis1999/iommufd
-        git fetch --no-tags luxis1999-iommufd iommufd-v5.17-rc6
-        git checkout a7d1827d76767fe3e5366ef50efd50ebea0ed089
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Thu, Mar 17, 2022 at 2:45 PM Bill Wendling <morbo@google.com> wrote:
+>
+> I'm NOT saying that it WILL change or that it SHOULD change. I'm also
+> not saying that your concern isn't justified. What I am saying is that
+> unless you're using a compiler feature that's DEFINED as having a
+> certain effect, then you are not using that feature correctly,
+> regardless of how it's acted in the past. And it has the potential to
+> bite you in the ass sooner or later. We've all seen such things happen
+> before.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+So I think most of inline asm constraints are fairly well defined.
+Certainly "memory" clobbers are.
 
-All errors (new ones prefixed by >>):
+The unfortunate exception to this is, I think, "volatile".  It has
+always had somewhat undefined semantics (iirc originally gcc talked
+about it not being "moved significantly" etc), and it ends up getting
+mixed reasons for existing.
 
-   vmlinux.o: warning: objtool: do_syscall_64()+0x18: call to static_key_count() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: do_int80_syscall_32()+0x25: call to static_key_count() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: __do_fast_syscall_32()+0x29: call to static_key_count() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: fixup_bad_iret()+0x21: call to memset() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: in_task_stack()+0xc: call to task_stack_page() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: in_entry_stack()+0x9: call to cpu_entry_stack() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: enter_from_user_mode()+0x2e: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: syscall_enter_from_user_mode()+0x36: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare()+0x2e: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: exit_to_user_mode()+0x26: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: syscall_exit_to_user_mode()+0xde: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: irqentry_enter_from_user_mode()+0x2e: call to __kcsan_check_access() leaves .noinstr.text section
-   vmlinux.o: warning: objtool: irqentry_exit_to_user_mode()+0x2d: call to __kcsan_check_access() leaves .noinstr.text section
->> ld.lld: error: undefined symbol: interval_tree_iter_first
-   >>> referenced by io_pagetable.c:161 (drivers/iommu/iommufd/io_pagetable.c:161)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_map_pages) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.h:91 (drivers/iommu/iommufd/io_pagetable.h:91)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_map_pages) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.h:91 (drivers/iommu/iommufd/io_pagetable.h:91)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_find_exact_area) in archive drivers/built-in.a
-   >>> referenced 14 more times
---
->> ld.lld: error: undefined symbol: interval_tree_span_iter_first
-   >>> referenced by io_pagetable.c:89 (drivers/iommu/iommufd/io_pagetable.c:89)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_map_pages) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.c:97 (drivers/iommu/iommufd/io_pagetable.c:97)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_map_pages) in archive drivers/built-in.a
-   >>> referenced by ioas.c:93 (drivers/iommu/iommufd/ioas.c:93)
-   >>> iommu/iommufd/ioas.o:(iommufd_ioas_iova_ranges) in archive drivers/built-in.a
-   >>> referenced 8 more times
---
->> ld.lld: error: undefined symbol: interval_tree_span_iter_next
-   >>> referenced by io_pagetable.c:101 (drivers/iommu/iommufd/io_pagetable.c:101)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_map_pages) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.c:92 (drivers/iommu/iommufd/io_pagetable.c:92)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_map_pages) in archive drivers/built-in.a
-   >>> referenced by ioas.c:96 (drivers/iommu/iommufd/ioas.c:96)
-   >>> iommu/iommufd/ioas.o:(iommufd_ioas_iova_ranges) in archive drivers/built-in.a
-   >>> referenced 8 more times
---
->> ld.lld: error: undefined symbol: interval_tree_insert
-   >>> referenced by io_pagetable.c:179 (drivers/iommu/iommufd/io_pagetable.c:179)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_map_pages) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.c:528 (drivers/iommu/iommufd/io_pagetable.c:528)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_reserve_iova) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.c:678 (drivers/iommu/iommufd/io_pagetable.c:678)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_table_add_domain) in archive drivers/built-in.a
-   >>> referenced 2 more times
---
->> ld.lld: error: undefined symbol: interval_tree_remove
-   >>> referenced by io_pagetable.c:192 (drivers/iommu/iommufd/io_pagetable.c:192)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_abort_area) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.c:546 (drivers/iommu/iommufd/io_pagetable.c:546)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_remove_reserved_iova) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.c:697 (drivers/iommu/iommufd/io_pagetable.c:697)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_table_add_domain) in archive drivers/built-in.a
-   >>> referenced 3 more times
---
->> ld.lld: error: undefined symbol: interval_tree_iter_next
-   >>> referenced by io_pagetable.h:103 (drivers/iommu/iommufd/io_pagetable.h:103)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_access_pages) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.h:103 (drivers/iommu/iommufd/io_pagetable.h:103)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_unaccess_pages) in archive drivers/built-in.a
-   >>> referenced by io_pagetable.c:543 (drivers/iommu/iommufd/io_pagetable.c:543)
-   >>> iommu/iommufd/io_pagetable.o:(iopt_remove_reserved_iova) in archive drivers/built-in.a
-   >>> referenced 6 more times
+The *natural* semantics would be to literally make it have the same
+rules as volatile data accesses: something like "'volatile' marks the
+asm as having visible side effects in the virtual machine".
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for IOMMUFD
-   Depends on IOMMU_SUPPORT
-   Selected by
-   - VFIO && MMU && (X86 || S390 || ARM || ARM64)
+So I think natural semantics for "asm volatile" - and the ones that
+would be simple to document - would literally be to compare it to
+those volatile memory accesses, and say that it can't be optimized
+away, and it's ordered wrt other volatile operations (whether volatile
+data accesses or other volatile asm instructions).
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+But that is, afaik, not what it ever did, so it always had somewhat
+random semantics, the main being "it can't be removed even if its
+outputs are never used". So the "cannot be optimized away" ends up
+being the central part of the definition, but without the conceptual
+sense.
+
+And then we in the kernel have then also co-opted 'asm volatile' to
+just fix some compiler bugs, so we end up using "asm volatile goto"
+because of
+
+      http://gcc.gnu.org/bugzilla/show_bug.cgi?id=58670
+
+although *that* particular issue is probably historical now that we
+require more modern compiler versions.
+
+I still think that from a sanity standpoint, it would be good to
+actually strengthen the semantics of "asm volatile" to literally act
+as - and be ordered with - volatile memory accesses.
+
+But I guess that's water under the bridge.
+
+                  Linus
