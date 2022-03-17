@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E96C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E59C43219
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234827AbiCQM6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34384 "EHLO
+        id S234963AbiCQM6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235032AbiCQMy3 (ORCPT
+        with ESMTP id S235092AbiCQMyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:54:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDCB1EC6D;
-        Thu, 17 Mar 2022 05:53:12 -0700 (PDT)
+        Thu, 17 Mar 2022 08:54:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAD41EC6D;
+        Thu, 17 Mar 2022 05:53:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E74B2B81E5C;
-        Thu, 17 Mar 2022 12:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5026AC340E9;
-        Thu, 17 Mar 2022 12:53:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8438A614F0;
+        Thu, 17 Mar 2022 12:53:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C30A5C340E9;
+        Thu, 17 Mar 2022 12:53:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521589;
-        bh=OHgK3l61XigknepnxkAHN1zj8F8/Ze2Ht/Z9K6dhxxQ=;
+        s=korg; t=1647521602;
+        bh=88f2Inyp4nMPXG1F0eSXddJ2jr5Uf6R8ttDLN4ddLcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K1+KA7QMXq9T7Sn/HVR87ME0zcnmfvzxKRWDY6kVkT+5eHXw5/TKGIR2Fkejrhchb
-         h85SDsWaIx7Uomm5/35UPgOpW9FrdclTmGhyv6nZNUhOpEsp19PSc+72fk7Snsd/Ov
-         qqp8SRiYzdy6mNsSqQY2cec2gjBmPQJ/1XSwS3aU=
+        b=N9hs0V4labmMcPQTNaqF9y4QwZHtuqkrCDFLCYy1T+h936r/yChA0zAKHX6BjYqme
+         ww3ySde/4kUL/VU1OH1du3hBcxViE5ZaJCdA9bbFCdxTOwNM1EP5cc74EXWcN28ZtC
+         99ITClBSjFMND7Z9sLGj2/oVffqSwB0/SLkHZ0IY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        stable@vger.kernel.org, Golan Ben Ami <golan.ben.ami@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 19/28] Input: goodix - use the new soc_intel_is_byt() helper
-Date:   Thu, 17 Mar 2022 13:46:10 +0100
-Message-Id: <20220317124527.312793322@linuxfoundation.org>
+Subject: [PATCH 5.16 21/28] iwlwifi: dont advertise TWT support
+Date:   Thu, 17 Mar 2022 13:46:12 +0100
+Message-Id: <20220317124527.368108305@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -49,63 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Golan Ben Ami <golan.ben.ami@intel.com>
 
-[ Upstream commit d176708ffc20332d1c730098d2b111e0b77ece82 ]
+[ Upstream commit 1db5fcbba2631277b78d7f8aff99c9607d29f6d8 ]
 
-Use the new soc_intel_is_byt() helper from linux/platform_data/x86/soc.h.
+Some APs misbehave when TWT is used and cause our firmware to crash.
+We don't know a reasonable way to detect and work around this problem
+in the FW yet.  To prevent these crashes, disable TWT in the driver by
+stopping to advertise TWT support.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220131143539.109142-5-hdegoede@redhat.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215523
+Signed-off-by: Golan Ben Ami <golan.ben.ami@intel.com>
+[reworded the commit message]
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20220301072926.153969-1-luca@coelho.fi
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/touchscreen/goodix.c | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c | 3 +--
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
-index aaa3c455e01e..e053aadea3c9 100644
---- a/drivers/input/touchscreen/goodix.c
-+++ b/drivers/input/touchscreen/goodix.c
-@@ -18,6 +18,7 @@
- #include <linux/delay.h>
- #include <linux/irq.h>
- #include <linux/interrupt.h>
-+#include <linux/platform_data/x86/soc.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
- #include <linux/of.h>
-@@ -686,21 +687,6 @@ static int goodix_reset(struct goodix_ts_data *ts)
- }
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
+index f470f9aea50f..c97798f6290a 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c
+@@ -552,8 +552,7 @@ static const struct ieee80211_sband_iftype_data iwl_he_capa[] = {
+ 			.has_he = true,
+ 			.he_cap_elem = {
+ 				.mac_cap_info[0] =
+-					IEEE80211_HE_MAC_CAP0_HTC_HE |
+-					IEEE80211_HE_MAC_CAP0_TWT_REQ,
++					IEEE80211_HE_MAC_CAP0_HTC_HE,
+ 				.mac_cap_info[1] =
+ 					IEEE80211_HE_MAC_CAP1_TF_MAC_PAD_DUR_16US |
+ 					IEEE80211_HE_MAC_CAP1_MULTI_TID_AGG_RX_QOS_8,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index cde3d2ce0b85..a65024fc96dd 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -223,7 +223,6 @@ static const u8 he_if_types_ext_capa_sta[] = {
+ 	 [0] = WLAN_EXT_CAPA1_EXT_CHANNEL_SWITCHING,
+ 	 [2] = WLAN_EXT_CAPA3_MULTI_BSSID_SUPPORT,
+ 	 [7] = WLAN_EXT_CAPA8_OPMODE_NOTIF,
+-	 [9] = WLAN_EXT_CAPA10_TWT_REQUESTER_SUPPORT,
+ };
  
- #ifdef ACPI_GPIO_SUPPORT
--#include <asm/cpu_device_id.h>
--#include <asm/intel-family.h>
--
--static const struct x86_cpu_id baytrail_cpu_ids[] = {
--	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ATOM_SILVERMONT, X86_FEATURE_ANY, },
--	{}
--};
--
--static inline bool is_byt(void)
--{
--	const struct x86_cpu_id *id = x86_match_cpu(baytrail_cpu_ids);
--
--	return !!id;
--}
--
- static const struct acpi_gpio_params first_gpio = { 0, 0, false };
- static const struct acpi_gpio_params second_gpio = { 1, 0, false };
- 
-@@ -784,7 +770,7 @@ static int goodix_add_acpi_gpio_mappings(struct goodix_ts_data *ts)
- 		dev_info(dev, "Using ACPI INTI and INTO methods for IRQ pin access\n");
- 		ts->irq_pin_access_method = IRQ_PIN_ACCESS_ACPI_METHOD;
- 		gpio_mapping = acpi_goodix_reset_only_gpios;
--	} else if (is_byt() && ts->gpio_count == 2 && ts->gpio_int_idx == -1) {
-+	} else if (soc_intel_is_byt() && ts->gpio_count == 2 && ts->gpio_int_idx == -1) {
- 		dev_info(dev, "No ACPI GpioInt resource, assuming that the GPIO order is reset, int\n");
- 		ts->irq_pin_access_method = IRQ_PIN_ACCESS_ACPI_GPIO;
- 		gpio_mapping = acpi_goodix_int_last_gpios;
+ static const struct wiphy_iftype_ext_capab he_iftypes_ext_capa[] = {
 -- 
 2.34.1
 
