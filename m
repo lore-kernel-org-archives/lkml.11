@@ -2,85 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD5CC4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B88CCC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234266AbiCQMzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:55:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
+        id S234188AbiCQMzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234258AbiCQMw7 (ORCPT
+        with ESMTP id S234286AbiCQMxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:52:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA43D1F6877;
-        Thu, 17 Mar 2022 05:50:40 -0700 (PDT)
+        Thu, 17 Mar 2022 08:53:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485861F37B2;
+        Thu, 17 Mar 2022 05:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46A9DB81EA1;
-        Thu, 17 Mar 2022 12:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D397C36AF9;
-        Thu, 17 Mar 2022 12:50:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 535CE61228;
+        Thu, 17 Mar 2022 12:50:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4420C36AE3;
+        Thu, 17 Mar 2022 12:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521438;
-        bh=lB5hDVitc5GoR8Fyu+Qgh6xvmHGiLNbl7eDd70/dM9I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zIBY05CoA/kiw0yFhBzSyF2Tj6OrTSgaLpGT3YIezSJfGRP4NFGtl/tEBD6MOS9s2
-         pBEwlLCmVt1SHAj0bMobvUYdB3JyyXbtN0gsHDz5ALn19iq/dQA897sbKYn4xaTnBH
-         7wilvswT//ADrLHlzzBA+yHf34JN9CNfvI+Jdcqg=
+        s=korg; t=1647521442;
+        bh=47kc/EkYoQrF0s9N1D4V2pV5DbK2/5oIvPOncHnKFko=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gaGD/o23ov4xXUlhZeM2U+9IVbyAuFZUmNoAB3HQu3S916SSJxhx7bdaCFXFm52Rt
+         qkup1SrU+vAQuF45wLUD5oTafs42CrGeSRfU3eHa3EK6GuZjZ5aJ35P/bL6Lc5T9ck
+         PQ12vz3L5d5hiNsTpesCPH72XDRIp+ofd2C+GOZM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 09/23] ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
-Date:   Thu, 17 Mar 2022 13:45:50 +0100
-Message-Id: <20220317124526.223590864@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.10 00/23] 5.10.107-rc1 review
+Date:   Thu, 17 Mar 2022 13:45:41 +0100
+Message-Id: <20220317124525.955110315@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124525.955110315@linuxfoundation.org>
-References: <20220317124525.955110315@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.107-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.10.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.10.107-rc1
+X-KernelTest-Deadline: 2022-03-19T12:45+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corentin Labbe <clabbe@baylibre.com>
+This is the start of the stable review cycle for the 5.10.107 release.
+There are 23 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit 3916c3619599a3970d3e6f98fb430b7c46266ada ]
+Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
+Anything received after that time might be too late.
 
-crypto-controller had a typo, fix it.
-In the same time, rename it to just crypto
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.107-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+and the diffstat can be found below.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20220209120355.1985707-1-clabbe@baylibre.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/boot/dts/rk3288.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks,
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index 0d89ad274268..9051fb4a267d 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -990,7 +990,7 @@
- 		status = "disabled";
- 	};
- 
--	crypto: cypto-controller@ff8a0000 {
-+	crypto: crypto@ff8a0000 {
- 		compatible = "rockchip,rk3288-crypto";
- 		reg = <0x0 0xff8a0000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
--- 
-2.34.1
+greg k-h
 
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.10.107-rc1
+
+James Morse <james.morse@arm.com>
+    arm64: kvm: Fix copy-and-paste error in bhb templates for v5.10 stable
+
+Pavel Begunkov <asml.silence@gmail.com>
+    io_uring: return back safer resurrect
+
+Chengming Zhou <zhouchengming@bytedance.com>
+    kselftest/vm: fix tests build with old libc
+
+Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+    bnx2: Fix an error message
+
+Niels Dossche <dossche.niels@gmail.com>
+    sfc: extend the locking on mcdi->seqno
+
+Eric Dumazet <edumazet@google.com>
+    tcp: make tcp_read_sock() more robust
+
+Sreeramya Soratkal <quic_ssramya@quicinc.com>
+    nl80211: Update bss channel on channel switch for P2P_CLIENT
+
+Manasi Navare <manasi.d.navare@intel.com>
+    drm/vrr: Set VRR capable prop only if it is attached to connector
+
+Golan Ben Ami <golan.ben.ami@intel.com>
+    iwlwifi: don't advertise TWT support
+
+Jia-Ju Bai <baijiaju1990@gmail.com>
+    atm: firestream: check the return value of ioremap() in fs_init()
+
+Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+    can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
+
+Julian Braha <julianbraha@gmail.com>
+    ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
+
+Alexander Lobakin <alobakin@pm.me>
+    MIPS: smp: fill in sibling and core maps earlier
+
+Johannes Berg <johannes.berg@intel.com>
+    mac80211: refuse aggregations sessions before authorized
+
+Corentin Labbe <clabbe@baylibre.com>
+    ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
+
+Sascha Hauer <s.hauer@pengutronix.de>
+    ARM: dts: rockchip: reorder rk322x hmdi clocks
+
+Dinh Nguyen <dinguyen@kernel.org>
+    arm64: dts: agilex: use the compatible "intel,socfpga-agilex-hsotg"
+
+Sascha Hauer <s.hauer@pengutronix.de>
+    arm64: dts: rockchip: reorder rk3399 hdmi clocks
+
+Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+    arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
+
+Yan Yan <evitayan@google.com>
+    xfrm: Fix xfrm migrate issues when address family changes
+
+Yan Yan <evitayan@google.com>
+    xfrm: Check if_id in xfrm_migrate
+
+Xin Long <lucien.xin@gmail.com>
+    sctp: fix the processing for INIT chunk
+
+Kai Lueke <kailueke@linux.microsoft.com>
+    Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |  4 +-
+ arch/arm/boot/dts/rk322x.dtsi                      |  4 +-
+ arch/arm/boot/dts/rk3288.dtsi                      |  2 +-
+ arch/arm64/boot/dts/intel/socfpga_agilex.dtsi      |  4 +-
+ arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      |  6 ++
+ arch/arm64/boot/dts/rockchip/rk3399.dtsi           |  6 +-
+ arch/arm64/kvm/hyp/smccc_wa.S                      |  4 +-
+ arch/mips/kernel/smp.c                             |  6 +-
+ drivers/atm/firestream.c                           |  2 +
+ drivers/gpu/drm/drm_connector.c                    |  3 +
+ drivers/net/can/rcar/rcar_canfd.c                  |  6 +-
+ drivers/net/ethernet/broadcom/bnx2.c               |  2 +-
+ drivers/net/ethernet/sfc/mcdi.c                    |  2 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |  3 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |  1 -
+ fs/io_uring.c                                      | 18 ++++--
+ include/net/xfrm.h                                 |  5 +-
+ lib/Kconfig                                        |  1 -
+ net/ipv4/tcp.c                                     | 10 +--
+ net/key/af_key.c                                   |  2 +-
+ net/mac80211/agg-tx.c                              | 10 ++-
+ net/sctp/sm_statefuns.c                            | 71 ++++++++++++++--------
+ net/wireless/nl80211.c                             |  3 +-
+ net/xfrm/xfrm_policy.c                             | 14 +++--
+ net/xfrm/xfrm_state.c                              | 15 +++--
+ net/xfrm/xfrm_user.c                               | 27 +++-----
+ tools/testing/selftests/vm/userfaultfd.c           |  1 +
+ 27 files changed, 141 insertions(+), 91 deletions(-)
 
 
