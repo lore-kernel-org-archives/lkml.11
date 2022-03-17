@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E579DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 646D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235811AbiCQP1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
+        id S235780AbiCQP1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235759AbiCQP0m (ORCPT
+        with ESMTP id S235758AbiCQP0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Mar 2022 11:26:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B02205BDA
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BEE205BE3
         for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:25:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E817A6196B
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2FB9C3410A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0929661950
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62ADEC34106;
         Thu, 17 Mar 2022 15:25:24 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nUs0B-004zhx-QC;
+        id 1nUs0B-004zgn-Dt;
         Thu, 17 Mar 2022 11:25:23 -0400
-Message-ID: <20220317152523.643326783@goodmis.org>
+Message-ID: <20220317152523.260343309@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 17 Mar 2022 11:25:08 -0400
+Date:   Thu, 17 Mar 2022 11:25:06 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
@@ -46,7 +46,7 @@ Cc:     Ingo Molnar <mingo@kernel.org>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [for-next][PATCH 10/13] fprobe: Add sample program for fprobe
+Subject: [for-next][PATCH 08/13] ARM: rethook: Add rethook arm implementation
 References: <20220317152458.213689956@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,17 +56,12 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Masami Hiramatsu <mhiramat@kernel.org>
 
-Add a sample program for the fprobe. The sample_fprobe puts a fprobe on
-kernel_clone() by default. This dump stack and some called address info
-at the function entry and exit.
+Add rethook arm implementation. Most of the code has been copied from
+kretprobes on arm.
+Since the arm's ftrace implementation is a bit special, this needs a
+special care using from fprobe.
 
-The sample_fprobe.ko gets 2 parameters.
-- symbol: you can specify the comma separated symbols or wildcard symbol
-  pattern (in this case you can not use comma)
-- stackdump: a bool value to enable or disable stack dump in the fprobe
-  handler.
-
-Link: https://lkml.kernel.org/r/164735291987.1084943.4449670993752806840.stgit@devnote2
+Link: https://lkml.kernel.org/r/164735289643.1084943.15184590256680485720.stgit@devnote2
 
 Cc: Jiri Olsa <jolsa@kernel.org>
 Cc: Alexei Starovoitov <ast@kernel.org>
@@ -84,175 +79,189 @@ Cc: "David S . Miller" <davem@davemloft.net>
 Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- samples/Kconfig                 |   7 ++
- samples/Makefile                |   1 +
- samples/fprobe/Makefile         |   3 +
- samples/fprobe/fprobe_example.c | 120 ++++++++++++++++++++++++++++++++
- 4 files changed, 131 insertions(+)
- create mode 100644 samples/fprobe/Makefile
- create mode 100644 samples/fprobe/fprobe_example.c
+ arch/arm/Kconfig                  |   1 +
+ arch/arm/include/asm/stacktrace.h |   4 +-
+ arch/arm/kernel/stacktrace.c      |   6 ++
+ arch/arm/probes/Makefile          |   1 +
+ arch/arm/probes/rethook.c         | 103 ++++++++++++++++++++++++++++++
+ 5 files changed, 113 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm/probes/rethook.c
 
-diff --git a/samples/Kconfig b/samples/Kconfig
-index 10e021c72282..470ee3baf2e1 100644
---- a/samples/Kconfig
-+++ b/samples/Kconfig
-@@ -79,6 +79,13 @@ config SAMPLE_HW_BREAKPOINT
- 	help
- 	  This builds kernel hardware breakpoint example modules.
- 
-+config SAMPLE_FPROBE
-+	tristate "Build fprobe examples -- loadable modules only"
-+	depends on FPROBE && m
-+	help
-+	  This builds a fprobe example module. This module has an option 'symbol'.
-+	  You can specify a probed symbol or symbols separated with ','.
-+
- config SAMPLE_KFIFO
- 	tristate "Build kfifo examples -- loadable modules only"
- 	depends on m
-diff --git a/samples/Makefile b/samples/Makefile
-index 448343e8faeb..701e912ab5af 100644
---- a/samples/Makefile
-+++ b/samples/Makefile
-@@ -34,3 +34,4 @@ subdir-$(CONFIG_SAMPLE_WATCHDOG)	+= watchdog
- subdir-$(CONFIG_SAMPLE_WATCH_QUEUE)	+= watch_queue
- obj-$(CONFIG_DEBUG_KMEMLEAK_TEST)	+= kmemleak/
- obj-$(CONFIG_SAMPLE_CORESIGHT_SYSCFG)	+= coresight/
-+obj-$(CONFIG_SAMPLE_FPROBE)		+= fprobe/
-diff --git a/samples/fprobe/Makefile b/samples/fprobe/Makefile
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 4c97cb40eebb..440f69ee8af5 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -107,6 +107,7 @@ config ARM
+ 	select HAVE_MOD_ARCH_SPECIFIC
+ 	select HAVE_NMI
+ 	select HAVE_OPTPROBES if !THUMB2_KERNEL
++	select HAVE_RETHOOK
+ 	select HAVE_PERF_EVENTS
+ 	select HAVE_PERF_REGS
+ 	select HAVE_PERF_USER_STACK_DUMP
+diff --git a/arch/arm/include/asm/stacktrace.h b/arch/arm/include/asm/stacktrace.h
+index 8f54f9ad8a9b..babed1707ca8 100644
+--- a/arch/arm/include/asm/stacktrace.h
++++ b/arch/arm/include/asm/stacktrace.h
+@@ -14,7 +14,7 @@ struct stackframe {
+ 	unsigned long sp;
+ 	unsigned long lr;
+ 	unsigned long pc;
+-#ifdef CONFIG_KRETPROBES
++#if defined(CONFIG_KRETPROBES) || defined(CONFIG_RETHOOK)
+ 	struct llist_node *kr_cur;
+ 	struct task_struct *tsk;
+ #endif
+@@ -27,7 +27,7 @@ void arm_get_current_stackframe(struct pt_regs *regs, struct stackframe *frame)
+ 		frame->sp = regs->ARM_sp;
+ 		frame->lr = regs->ARM_lr;
+ 		frame->pc = regs->ARM_pc;
+-#ifdef CONFIG_KRETPROBES
++#if defined(CONFIG_KRETPROBES) || defined(CONFIG_RETHOOK)
+ 		frame->kr_cur = NULL;
+ 		frame->tsk = current;
+ #endif
+diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
+index 75e905508f27..f509c6be4f57 100644
+--- a/arch/arm/kernel/stacktrace.c
++++ b/arch/arm/kernel/stacktrace.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #include <linux/export.h>
+ #include <linux/kprobes.h>
++#include <linux/rethook.h>
+ #include <linux/sched.h>
+ #include <linux/sched/debug.h>
+ #include <linux/stacktrace.h>
+@@ -66,6 +67,11 @@ int notrace unwind_frame(struct stackframe *frame)
+ 	frame->sp = *(unsigned long *)(fp - 8);
+ 	frame->pc = *(unsigned long *)(fp - 4);
+ #endif
++#ifdef CONFIG_RETHOOK
++	if (is_rethook_trampoline(frame->pc))
++		frame->pc = rethook_find_ret_addr(frame->tsk, frame->fp,
++						  &frame->kr_cur);
++#endif
+ #ifdef CONFIG_KRETPROBES
+ 	if (is_kretprobe_trampoline(frame->pc))
+ 		frame->pc = kretprobe_find_ret_addr(frame->tsk,
+diff --git a/arch/arm/probes/Makefile b/arch/arm/probes/Makefile
+index 8b0ea5ace100..10c083a22223 100644
+--- a/arch/arm/probes/Makefile
++++ b/arch/arm/probes/Makefile
+@@ -6,3 +6,4 @@ obj-$(CONFIG_KPROBES)		+= decode-thumb.o
+ else
+ obj-$(CONFIG_KPROBES)		+= decode-arm.o
+ endif
++obj-$(CONFIG_RETHOOK)		+= rethook.o
+diff --git a/arch/arm/probes/rethook.c b/arch/arm/probes/rethook.c
 new file mode 100644
-index 000000000000..ecccbfa6e99b
+index 000000000000..1c1357a86365
 --- /dev/null
-+++ b/samples/fprobe/Makefile
-@@ -0,0 +1,3 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+obj-$(CONFIG_SAMPLE_FPROBE) += fprobe_example.o
-diff --git a/samples/fprobe/fprobe_example.c b/samples/fprobe/fprobe_example.c
-new file mode 100644
-index 000000000000..24d3cf109140
---- /dev/null
-+++ b/samples/fprobe/fprobe_example.c
-@@ -0,0 +1,120 @@
++++ b/arch/arm/probes/rethook.c
+@@ -0,0 +1,103 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Here's a sample kernel module showing the use of fprobe to dump a
-+ * stack trace and selected registers when kernel_clone() is called.
-+ *
-+ * For more information on theory of operation of kprobes, see
-+ * Documentation/trace/kprobes.rst
-+ *
-+ * You will see the trace data in /var/log/messages and on the console
-+ * whenever kernel_clone() is invoked to create a new process.
++ * arm implementation of rethook. Mostly copied from arch/arm/probes/kprobes/core.c
 + */
 +
-+#define pr_fmt(fmt) "%s: " fmt, __func__
++#include <linux/kprobes.h>
++#include <linux/rethook.h>
 +
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/fprobe.h>
-+#include <linux/sched/debug.h>
-+#include <linux/slab.h>
-+
-+#define BACKTRACE_DEPTH 16
-+#define MAX_SYMBOL_LEN 4096
-+struct fprobe sample_probe;
-+
-+static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
-+module_param_string(symbol, symbol, sizeof(symbol), 0644);
-+static char nosymbol[MAX_SYMBOL_LEN] = "";
-+module_param_string(nosymbol, nosymbol, sizeof(nosymbol), 0644);
-+static bool stackdump = true;
-+module_param(stackdump, bool, 0644);
-+
-+static void show_backtrace(void)
++/* Called from arch_rethook_trampoline */
++static __used unsigned long arch_rethook_trampoline_callback(struct pt_regs *regs)
 +{
-+	unsigned long stacks[BACKTRACE_DEPTH];
-+	unsigned int len;
-+
-+	len = stack_trace_save(stacks, BACKTRACE_DEPTH, 2);
-+	stack_trace_print(stacks, len, 24);
++	return rethook_trampoline_handler(regs, regs->ARM_fp);
 +}
++NOKPROBE_SYMBOL(arch_rethook_trampoline_callback);
 +
-+static void sample_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
++/*
++ * When a rethook'ed function returns, it returns to arch_rethook_trampoline
++ * which calls rethook callback. We construct a struct pt_regs to
++ * give a view of registers r0-r11, sp, lr, and pc to the user
++ * return-handler. This is not a complete pt_regs structure, but that
++ * should be enough for stacktrace from the return handler with or
++ * without pt_regs.
++ */
++asm(
++	".text\n"
++	".global arch_rethook_trampoline\n"
++	".type arch_rethook_trampoline, %function\n"
++	"arch_rethook_trampoline:\n"
++#ifdef CONFIG_FRAME_POINTER
++	"ldr	lr, =arch_rethook_trampoline	\n\t"
++	/* this makes a framepointer on pt_regs. */
++#ifdef CONFIG_CC_IS_CLANG
++	"stmdb	sp, {sp, lr, pc}	\n\t"
++	"sub	sp, sp, #12		\n\t"
++	/* In clang case, pt_regs->ip = lr. */
++	"stmdb	sp!, {r0 - r11, lr}	\n\t"
++	/* fp points regs->r11 (fp) */
++	"add	fp, sp,	#44		\n\t"
++#else /* !CONFIG_CC_IS_CLANG */
++	/* In gcc case, pt_regs->ip = fp. */
++	"stmdb	sp, {fp, sp, lr, pc}	\n\t"
++	"sub	sp, sp, #16		\n\t"
++	"stmdb	sp!, {r0 - r11}		\n\t"
++	/* fp points regs->r15 (pc) */
++	"add	fp, sp, #60		\n\t"
++#endif /* CONFIG_CC_IS_CLANG */
++#else /* !CONFIG_FRAME_POINTER */
++	"sub	sp, sp, #16		\n\t"
++	"stmdb	sp!, {r0 - r11}		\n\t"
++#endif /* CONFIG_FRAME_POINTER */
++	"mov	r0, sp			\n\t"
++	"bl	arch_rethook_trampoline_callback	\n\t"
++	"mov	lr, r0			\n\t"
++	"ldmia	sp!, {r0 - r11}		\n\t"
++	"add	sp, sp, #16		\n\t"
++#ifdef CONFIG_THUMB2_KERNEL
++	"bx	lr			\n\t"
++#else
++	"mov	pc, lr			\n\t"
++#endif
++	".size arch_rethook_trampoline, .-arch_rethook_trampoline\n"
++);
++NOKPROBE_SYMBOL(arch_rethook_trampoline);
++
++/*
++ * At the entry of function with mcount. The stack and registers are prepared
++ * for the mcount function as below.
++ *
++ * mov     ip, sp
++ * push    {fp, ip, lr, pc}
++ * sub     fp, ip, #4	; FP[0] = PC, FP[-4] = LR, and FP[-12] = call-site FP.
++ * push    {lr}
++ * bl      <__gnu_mcount_nc> ; call ftrace
++ *
++ * And when returning from the function, call-site FP, SP and PC are restored
++ * from stack as below;
++ *
++ * ldm     sp, {fp, sp, pc}
++ *
++ * Thus, if the arch_rethook_prepare() is called from real function entry,
++ * it must change the LR and save FP in pt_regs. But if it is called via
++ * mcount context (ftrace), it must change the LR on stack, which is next
++ * to the PC (= FP[-4]), and save the FP value at FP[-12].
++ */
++void arch_rethook_prepare(struct rethook_node *rh, struct pt_regs *regs, bool mcount)
 +{
-+	pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
-+	if (stackdump)
-+		show_backtrace();
-+}
++	unsigned long *ret_addr, *frame;
 +
-+static void sample_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	unsigned long rip = instruction_pointer(regs);
-+
-+	pr_info("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
-+		(void *)ip, (void *)ip, (void *)rip, (void *)rip);
-+	if (stackdump)
-+		show_backtrace();
-+}
-+
-+static int __init fprobe_init(void)
-+{
-+	char *p, *symbuf = NULL;
-+	const char **syms;
-+	int ret, count, i;
-+
-+	sample_probe.entry_handler = sample_entry_handler;
-+	sample_probe.exit_handler = sample_exit_handler;
-+
-+	if (strchr(symbol, '*')) {
-+		/* filter based fprobe */
-+		ret = register_fprobe(&sample_probe, symbol,
-+				      nosymbol[0] == '\0' ? NULL : nosymbol);
-+		goto out;
-+	} else if (!strchr(symbol, ',')) {
-+		symbuf = symbol;
-+		ret = register_fprobe_syms(&sample_probe, (const char **)&symbuf, 1);
-+		goto out;
++	if (mcount) {
++		ret_addr = (unsigned long *)(regs->ARM_fp - 4);
++		frame = (unsigned long *)(regs->ARM_fp - 12);
++	} else {
++		ret_addr = &regs->ARM_lr;
++		frame = &regs->ARM_fp;
 +	}
 +
-+	/* Comma separated symbols */
-+	symbuf = kstrdup(symbol, GFP_KERNEL);
-+	if (!symbuf)
-+		return -ENOMEM;
-+	p = symbuf;
-+	count = 1;
-+	while ((p = strchr(++p, ',')) != NULL)
-+		count++;
++	rh->ret_addr = *ret_addr;
++	rh->frame = *frame;
 +
-+	pr_info("%d symbols found\n", count);
-+
-+	syms = kcalloc(count, sizeof(char *), GFP_KERNEL);
-+	if (!syms) {
-+		kfree(symbuf);
-+		return -ENOMEM;
-+	}
-+
-+	p = symbuf;
-+	for (i = 0; i < count; i++)
-+		syms[i] = strsep(&p, ",");
-+
-+	ret = register_fprobe_syms(&sample_probe, syms, count);
-+	kfree(syms);
-+	kfree(symbuf);
-+out:
-+	if (ret < 0)
-+		pr_err("register_fprobe failed, returned %d\n", ret);
-+	else
-+		pr_info("Planted fprobe at %s\n", symbol);
-+
-+	return ret;
++	/* Replace the return addr with trampoline addr. */
++	*ret_addr = (unsigned long)arch_rethook_trampoline;
 +}
-+
-+static void __exit fprobe_exit(void)
-+{
-+	unregister_fprobe(&sample_probe);
-+
-+	pr_info("fprobe at %s unregistered\n", symbol);
-+}
-+
-+module_init(fprobe_init)
-+module_exit(fprobe_exit)
-+MODULE_LICENSE("GPL");
++NOKPROBE_SYMBOL(arch_rethook_prepare);
 -- 
 2.35.1
