@@ -2,72 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 411A2C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D98FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:20:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234381AbiCQNU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 09:20:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
+        id S234411AbiCQNVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 09:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbiCQNUX (ORCPT
+        with ESMTP id S231321AbiCQNVS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 09:20:23 -0400
+        Thu, 17 Mar 2022 09:21:18 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645701728B8;
-        Thu, 17 Mar 2022 06:19:06 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KK7322MQBzCqkp;
-        Thu, 17 Mar 2022 21:17:02 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664F61760C8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 06:20:02 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KK74l4vC7zfYwF;
+        Thu, 17 Mar 2022 21:18:31 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
- 2022 21:19:03 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>,
-        <linux-crypto@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] crypto: fix reference leak in stm32_crc_remove
-Date:   Thu, 17 Mar 2022 13:16:13 +0000
-Message-ID: <20220317131613.53628-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.17.1
+ 2022 21:20:00 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <tglx@linutronix.de>, <maz@kernel.org>, <shawn.guo@linaro.org>
+CC:     <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH -next] irq/qcom-mpm: Fix build error without MAILBOX
+Date:   Thu, 17 Mar 2022 21:19:56 +0800
+Message-ID: <20220317131956.30004-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500013.china.huawei.com (7.221.188.120)
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500007.china.huawei.com (7.192.104.62)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pm_runtime_get_sync() will increment pm usage counter even it
-failed. Forgetting to call pm_runtime_put_noidle will result
-in reference leak in stm32_crc_remove, so we should fix it.
+If MAILBOX is n, building fails:
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+drivers/irqchip/irq-qcom-mpm.o: In function `mpm_pd_power_off':
+irq-qcom-mpm.c:(.text+0x174): undefined reference to `mbox_send_message'
+irq-qcom-mpm.c:(.text+0x174): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `mbox_send_message'
+
+Make QCOM_MPM depends on MAILBOX to fix this.
+
+Fixes: a6199bb514d8 ("irqchip: Add Qualcomm MPM controller driver")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/crypto/stm32/stm32-crc32.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/irqchip/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/crypto/stm32/stm32-crc32.c b/drivers/crypto/stm32/stm32-crc32.c
-index be1bf39a317d..90a920e7f664 100644
---- a/drivers/crypto/stm32/stm32-crc32.c
-+++ b/drivers/crypto/stm32/stm32-crc32.c
-@@ -384,8 +384,10 @@ static int stm32_crc_remove(struct platform_device *pdev)
- 	struct stm32_crc *crc = platform_get_drvdata(pdev);
- 	int ret = pm_runtime_get_sync(crc->dev);
- 
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_put_noidle(crc->dev);
- 		return ret;
-+	}
- 
- 	spin_lock(&crc_list.lock);
- 	list_del(&crc->list);
+diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+index 680d2fcf2686..15edb9a6fcae 100644
+--- a/drivers/irqchip/Kconfig
++++ b/drivers/irqchip/Kconfig
+@@ -433,6 +433,7 @@ config QCOM_PDC
+ config QCOM_MPM
+ 	tristate "QCOM MPM"
+ 	depends on ARCH_QCOM
++	depends on MAILBOX
+ 	select IRQ_DOMAIN_HIERARCHY
+ 	help
+ 	  MSM Power Manager driver to manage and configure wakeup
 -- 
 2.17.1
 
