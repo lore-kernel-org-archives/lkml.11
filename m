@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E1AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 411A2C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 13:19:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234368AbiCQNUQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 09:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55474 "EHLO
+        id S234381AbiCQNU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 09:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbiCQNUO (ORCPT
+        with ESMTP id S231321AbiCQNUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 09:20:14 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449EF171ECC;
-        Thu, 17 Mar 2022 06:18:57 -0700 (PDT)
+        Thu, 17 Mar 2022 09:20:23 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645701728B8;
+        Thu, 17 Mar 2022 06:19:06 -0700 (PDT)
 Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KK6zR5P09z1GCVs;
-        Thu, 17 Mar 2022 21:13:55 +0800 (CST)
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KK7322MQBzCqkp;
+        Thu, 17 Mar 2022 21:17:02 +0800 (CST)
 Received: from huawei.com (10.175.112.208) by kwepemi500013.china.huawei.com
  (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
- 2022 21:18:54 +0800
+ 2022 21:19:03 +0800
 From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <dmitry.torokhov@gmail.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@foss.st.com>, <linux-input@vger.kernel.org>,
+To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>,
+        <linux-crypto@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH] Input: fix reference leak in stmfts_input_open
-Date:   Thu, 17 Mar 2022 13:16:04 +0000
-Message-ID: <20220317131604.53538-1-zhengyongjun3@huawei.com>
+Subject: [PATCH] crypto: fix reference leak in stm32_crc_remove
+Date:   Thu, 17 Mar 2022 13:16:13 +0000
+Message-ID: <20220317131613.53628-1-zhengyongjun3@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
  kwepemi500013.china.huawei.com (7.221.188.120)
 X-CFilter-Loop: Reflected
 Precedence: bulk
@@ -44,42 +45,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 pm_runtime_get_sync() will increment pm usage counter even it
 failed. Forgetting to call pm_runtime_put_noidle will result
-in reference leak in stmfts_input_open, so we should fix it.
+in reference leak in stm32_crc_remove, so we should fix it.
 
 Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
- drivers/input/touchscreen/stmfts.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/crypto/stm32/stm32-crc32.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index bc11203c9cf7..72e0b767e1ba 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -339,11 +339,11 @@ static int stmfts_input_open(struct input_dev *dev)
+diff --git a/drivers/crypto/stm32/stm32-crc32.c b/drivers/crypto/stm32/stm32-crc32.c
+index be1bf39a317d..90a920e7f664 100644
+--- a/drivers/crypto/stm32/stm32-crc32.c
++++ b/drivers/crypto/stm32/stm32-crc32.c
+@@ -384,8 +384,10 @@ static int stm32_crc_remove(struct platform_device *pdev)
+ 	struct stm32_crc *crc = platform_get_drvdata(pdev);
+ 	int ret = pm_runtime_get_sync(crc->dev);
  
- 	err = pm_runtime_get_sync(&sdata->client->dev);
- 	if (err < 0)
--		return err;
-+		goto out;
+-	if (ret < 0)
++	if (ret < 0) {
++		pm_runtime_put_noidle(crc->dev);
+ 		return ret;
++	}
  
- 	err = i2c_smbus_write_byte(sdata->client, STMFTS_MS_MT_SENSE_ON);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	mutex_lock(&sdata->mutex);
- 	sdata->running = true;
-@@ -366,7 +366,9 @@ static int stmfts_input_open(struct input_dev *dev)
- 				 "failed to enable touchkey\n");
- 	}
- 
--	return 0;
-+out:
-+	pm_runtime_put_noidle(&sdata->client->dev);
-+	return err;
- }
- 
- static void stmfts_input_close(struct input_dev *dev)
+ 	spin_lock(&crc_list.lock);
+ 	list_del(&crc->list);
 -- 
 2.17.1
 
