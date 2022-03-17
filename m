@@ -2,203 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77CC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84038C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237674AbiCQSvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
+        id S237648AbiCQSvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237650AbiCQSvH (ORCPT
+        with ESMTP id S237639AbiCQSvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:51:07 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175251557EF;
-        Thu, 17 Mar 2022 11:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647542984; x=1679078984;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RIdhHdpM5nL7HMZXAvGb9SlP3iancAtq9XoW3asZ+fA=;
-  b=Pu3O+0bCfB/IKGjZYx6GfB0vBGF8KVblmJHZccAHDx2rEVuqT8pvX+b+
-   eShCNihi+xCwupmgA7JAwtVhXZLTkp3evRevZoAkFEBaq6CKB+1FmP938
-   mMxxUVnb7kEhFdJ4fN/ihjAfolVMCu6hzp+UsSb5lRGlYWCBIUOsEXydu
-   AuvTmKMDloBlqZ2Ll+i8QCh+q3/9d3CL540ctehq9Ofk1/1CdehPxvu2D
-   JOdeKYfPzHrpEURUVpjlj+DRu/mvbXgFy782wkGgm6Z0BQEHv+ma6s3CG
-   JpKDLwDfF9DyzK/6QUv6j/Tz0uLKGZL0OcbVl8wpSuQ2eZJ+wNn2R2nWn
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
-   d="scan'208";a="152385628"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 11:49:39 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Mar 2022 11:49:34 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 17 Mar 2022 11:49:32 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 5/5] net: lan96x: Update FDMA to change MTU.
-Date:   Thu, 17 Mar 2022 19:51:59 +0100
-Message-ID: <20220317185159.1661469-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
-References: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
+        Thu, 17 Mar 2022 14:51:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1F315855B;
+        Thu, 17 Mar 2022 11:49:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6FED0CE2421;
+        Thu, 17 Mar 2022 18:49:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 135C9C340E9;
+        Thu, 17 Mar 2022 18:49:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647542995;
+        bh=8Z1XVSc7H5Hxk/DGfrhzpPCrEGYqxRVGj582MxmoFts=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=U3LXXsy3YjBCtFZPHXFuI+X3DzcHg9tNdkwTCn41x6XEtrKMh3VnpNf2c5OdXAnE7
+         KhvplqlDxTu2OOaKmyuftp1QXcf4QWlG9f1yuUq9O1LKWsD8mIgOHy221LWkCSlkvB
+         GHaTdbaWApjIIgUPhzzR3I5sSsBnOHaAub0Yl3oVPdrPWR7CUKc2xhvR3X6lpslVr+
+         UAR4tiFy6QKhruRCWIKPxm/GvmRrzKixSTNJoCaMSaVV/d8CzPYzPJW4vDhJ6DMcMq
+         t886+vI3CLO2tPJfkfgM8Ugb7mgmsEcY11uATWRnW11ZnhAtXijoSG6wC7Ezir6lB3
+         BAy6hg5eSJnRQ==
+Message-ID: <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
+Date:   Thu, 17 Mar 2022 12:49:54 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb
+ mode
+Content-Language: en-US
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, yoshfuji@linux-ipv6.org, oliver@neukum.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When changing the MTU, it is required to change also the size of the
-DBs. In case those frames will arrive to CPU.
+On 3/17/22 12:15 AM, Sun Shouxin wrote:
+> This patch is implementing IPV6 RLB for balance-alb mode.
+> 
+> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+> ---
+> changelog:
+> v1-->v2:
+> -Remove ndisc_bond_send_na and refactor ndisc_send_na.
+> -In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
+> -Don't send neighbor advertisement message when receiving
+>  neighbor advertisement message in rlb6_update_entry_from_na.
+> 
+> v2-->v3:
+> -Don't export ndisc_send_na.
+> -Use ipv6_stub->ndisc_send_na to replace ndisc_send_na
+>  in rlb6_update_client.
+> 
+> v3-->v4:
+> -Submit all code at a whole patch.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 95 +++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.c |  2 +-
- .../ethernet/microchip/lan966x/lan966x_main.h |  1 +
- 3 files changed, 97 insertions(+), 1 deletion(-)
+you misunderstood Jakub's comment. The code should evolve with small,
+focused patches and each patch needs to compile and function correctly
+(ie., no breakage).
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index c23e521a1f8b..a33329cc4834 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -633,6 +633,101 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
- 	return err;
- }
- 
-+static int lan966x_fdma_get_max_mtu(struct lan966x *lan966x)
-+{
-+	int max_mtu = 0;
-+	int i;
-+
-+	for (i = 0; i < lan966x->num_phys_ports; ++i) {
-+		int mtu;
-+
-+		if (!lan966x->ports[i])
-+			continue;
-+
-+		mtu = lan966x->ports[i]->dev->mtu;
-+		if (mtu > max_mtu)
-+			max_mtu = mtu;
-+	}
-+
-+	return max_mtu;
-+}
-+
-+static int lan966x_qsys_sw_status(struct lan966x *lan966x)
-+{
-+	return lan_rd(lan966x, QSYS_SW_STATUS(CPU_PORT));
-+}
-+
-+static void lan966x_fdma_reload(struct lan966x *lan966x, int new_mtu)
-+{
-+	void *rx_dcb, *tx_dcb, *tx_dcb_buf;
-+	dma_addr_t rx_dma, tx_dma;
-+	unsigned long flags;
-+	u32 size;
-+
-+	/* Store these for later to free them */
-+	rx_dma = lan966x->rx.dma;
-+	tx_dma = lan966x->tx.dma;
-+	rx_dcb = lan966x->rx.dcbs;
-+	tx_dcb = lan966x->tx.dcbs;
-+	tx_dcb_buf = lan966x->tx.dcbs_buf;
-+
-+	lan966x_fdma_rx_disable(&lan966x->rx);
-+	lan966x_fdma_rx_free_skbs(&lan966x->rx);
-+	lan966x->rx.page_order = round_up(new_mtu, PAGE_SIZE) / PAGE_SIZE - 1;
-+	lan966x_fdma_rx_alloc(&lan966x->rx);
-+	lan966x_fdma_rx_start(&lan966x->rx);
-+
-+	spin_lock_irqsave(&lan966x->tx_lock, flags);
-+	lan966x_fdma_tx_disable(&lan966x->tx);
-+	lan966x_fdma_tx_alloc(&lan966x->tx);
-+	spin_unlock_irqrestore(&lan966x->tx_lock, flags);
-+
-+	/* Now it is possible to clean */
-+	size = sizeof(struct lan966x_tx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+	dma_free_coherent(lan966x->dev, size, tx_dcb, tx_dma);
-+
-+	kfree(tx_dcb_buf);
-+
-+	size = sizeof(struct lan966x_rx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+	dma_free_coherent(lan966x->dev, size, rx_dcb, rx_dma);
-+}
-+
-+int lan966x_fdma_change_mtu(struct lan966x *lan966x)
-+{
-+	int max_mtu;
-+	u32 val;
-+
-+	max_mtu = lan966x_fdma_get_max_mtu(lan966x);
-+	if (round_up(max_mtu, PAGE_SIZE) / PAGE_SIZE - 1 ==
-+	    lan966x->rx.page_order)
-+		return 0;
-+
-+	/* Disable the CPU port */
-+	lan_rmw(QSYS_SW_PORT_MODE_PORT_ENA_SET(0),
-+		QSYS_SW_PORT_MODE_PORT_ENA,
-+		lan966x, QSYS_SW_PORT_MODE(CPU_PORT));
-+
-+	/* Flush the CPU queues */
-+	readx_poll_timeout(lan966x_qsys_sw_status, lan966x,
-+			   val, !(QSYS_SW_STATUS_EQ_AVAIL_GET(val)),
-+			   READL_SLEEP_US, READL_TIMEOUT_US);
-+
-+	/* Add a sleep in case there are frames between the queues and the CPU
-+	 * port
-+	 */
-+	usleep_range(1000, 2000);
-+
-+	lan966x_fdma_reload(lan966x, max_mtu);
-+
-+	/* Enable back the CPU port */
-+	lan_rmw(QSYS_SW_PORT_MODE_PORT_ENA_SET(1),
-+		QSYS_SW_PORT_MODE_PORT_ENA,
-+		lan966x,  QSYS_SW_PORT_MODE(CPU_PORT));
-+	return 0;
-+}
-+
- void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev)
- {
- 	if (lan966x->fdma_ndev)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 6cb9fffc3058..a78fee5471e7 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -359,7 +359,7 @@ static int lan966x_port_change_mtu(struct net_device *dev, int new_mtu)
- 	       lan966x, DEV_MAC_MAXLEN_CFG(port->chip_port));
- 	dev->mtu = new_mtu;
- 
--	return 0;
-+	return !lan966x->fdma ? 0 : lan966x_fdma_change_mtu(lan966x);
- }
- 
- static int lan966x_mc_unsync(struct net_device *dev, const unsigned char *addr)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index bfa7feea2b56..fa4016f2b5d4 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -397,6 +397,7 @@ void lan966x_ptp_txtstamp_release(struct lan966x_port *port,
- irqreturn_t lan966x_ptp_irq_handler(int irq, void *args);
- 
- int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev);
-+int lan966x_fdma_change_mtu(struct lan966x *lan966x);
- void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev);
- void lan966x_fdma_netdev_deinit(struct lan966x *lan966x, struct net_device *dev);
- void lan966x_fdma_init(struct lan966x *lan966x);
--- 
-2.33.0
+You need to respond to Jiri's question about why this feature is needed.
+After that:
+
+1. patch 1 adds void *data to ndisc_send_na stub function and
+ndisc_send_na direct function. Update all places that use both
+ndisc_send_na to pass NULL as the data parameter.
+
+2. patch 2 refactors ndisc_send_na to handle the new data argument
+
+3. patch 3 exports any IPv6 functions. explain why each needs to be
+exported.
+
+4. patch 4 .... bonding changes. (bonding folks can respond on how to
+introduce that change).
 
