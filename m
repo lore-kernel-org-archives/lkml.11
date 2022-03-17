@@ -2,159 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA39AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2ECC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 20:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbiCQUML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 16:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
+        id S229491AbiCQUPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 16:15:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiCQUMH (ORCPT
+        with ESMTP id S229463AbiCQUPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 16:12:07 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB2D2EE94D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:10:45 -0700 (PDT)
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 17 Mar 2022 16:15:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D915171EFD
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:13:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647547994;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9qNtFrtkLvPTt+C4lJhyxR9PYkHaXFWorb7+v2VNB60=;
+        b=K13O57P+kOOV4fP7twTgvpfPTJHf8aUEEZZ4s98Z3n4/Us9aoMyCCAfXyZxU12MCbIXnSs
+        N/nGqNrPyOcZv63tIdNCirRyKYAYrp8CsIF6xpLbRjclfOouJWnaunSXbJ9Sqc2wrPHKTt
+        a1MohrjuxuF5IntnSAtVPZ+B5Ms2LLE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-199-BvINtsxcOa6wZL1C7IXwhw-1; Thu, 17 Mar 2022 16:13:11 -0400
+X-MC-Unique: BvINtsxcOa6wZL1C7IXwhw-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 021163F07E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 20:10:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647547835;
-        bh=oGka89Ju4SH1eJbMmEz67bGmXAxdjFKHnHgVhuc4y5I=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=sw/5GufZAgBNmERL1Y9HmuS3umWXoV2LJzjY+01EAlEwJymaQ6Py5UKQg5jQ17e/j
-         FJwQFOObsuqqLRyUJuzEC4uBPqopCxzvb+VjLCi2QIr6MEgdodY0JfBWuB2Lli07uZ
-         X3PYAjkOeeOqA1lZQl1usTtxfj31YEVn4zzOlX5xeIU9YZcsESK3YewSlqAPQfJ0Jn
-         NMxJhP+pwoAPVgQMcfZPQfPc2hvfwnnmpbkb5J+OXoEvI3zhE3uY5VyZIojQX+AAee
-         vkJ5hOlqTEtLw7TOTeJZJkWxYxeqqkIKj6biABYlIPbRN3z9AZ3gzf/yRPsG2TESOa
-         Mwk7oAUqWWZeQ==
-Received: by mail-pj1-f69.google.com with SMTP id om8-20020a17090b3a8800b001c68e7ccd5fso1390303pjb.9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 13:10:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :comments:mime-version:content-id:date:message-id;
-        bh=oGka89Ju4SH1eJbMmEz67bGmXAxdjFKHnHgVhuc4y5I=;
-        b=7se+F3FeDPTMMO7f6cp1A+Oo7J52dIDoMAbH6L2ryFeM4n8tF9sDUdEzEUqIko3lcd
-         cwQE25ZRGeZpQAAsFyylpzY374/DaCpb2n2f3baCoXfkT5ffRdu9Bzx++laRxXOlgSCR
-         HD98hufzjNtVl9djQO5xZT0VlkmjKLDbLnIyScaL9m7Dn5eiwuwy5xa+v0I6Ur2CT4R6
-         oCoinGk68H/WcdstWWKmvpETVBXvOCIkErHjNtUUHflTPU9GP6mLlyGHtXeVKXMZJf6r
-         tQASY0pWSnPGhtQ9m28fgk2G4+XKo9mnnKzpMeVt/WIK2TTupuEeSzY6nPGVQ7SZtW3M
-         3jjQ==
-X-Gm-Message-State: AOAM533tTVKO20ZP3U1mlF1VMzaOIti2O/eiU1vr3xQ5lLNoy0hPxJ1K
-        Y12ORSHBZDJCarNpQJ+gX2SoVgeoJ87QISbfRQlPC2w3Le7POmh8ib3Yb4bsowfDfCoE0APkAGd
-        atwFqfAPAspWIn9jZj1VEgbwWYl4g50njR9b3UAslmA==
-X-Received: by 2002:a17:90b:1e05:b0:1bf:4673:7e7d with SMTP id pg5-20020a17090b1e0500b001bf46737e7dmr18136860pjb.10.1647547832989;
-        Thu, 17 Mar 2022 13:10:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyIWov4910PEae3SHu9J2fytnHDI9r4/fCyzFHyStsFyiNnPRcM6KxaBT6Do9lWoJyhJ8XkTA==
-X-Received: by 2002:a17:90b:1e05:b0:1bf:4673:7e7d with SMTP id pg5-20020a17090b1e0500b001bf46737e7dmr18136848pjb.10.1647547832729;
-        Thu, 17 Mar 2022 13:10:32 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id q10-20020a056a00088a00b004f7ceff389esm8019135pfj.152.2022.03.17.13.10.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 17 Mar 2022 13:10:32 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id D9ACA5FDEE; Thu, 17 Mar 2022 13:10:31 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id D2725A0B18;
-        Thu, 17 Mar 2022 13:10:31 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     David Ahern <dsahern@kernel.org>
-cc:     Sun Shouxin <sunshouxin@chinatelecom.cn>, vfalico@gmail.com,
-        andy@greyhouse.net, davem@davemloft.net, kuba@kernel.org,
-        yoshfuji@linux-ipv6.org, oliver@neukum.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
-Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb mode
-In-reply-to: <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
-References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn> <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
-Comments: In-reply-to David Ahern <dsahern@kernel.org>
-   message dated "Thu, 17 Mar 2022 12:49:54 -0600."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E35EE296A613;
+        Thu, 17 Mar 2022 20:13:10 +0000 (UTC)
+Received: from oldenburg.str.redhat.com (unknown [10.39.192.88])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0662D401E75;
+        Thu, 17 Mar 2022 20:13:06 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Bill Wendling <morbo@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH v5] x86: use builtins to read eflags
+References: <20220210223134.233757-1-morbo@google.com>
+        <20220301201903.4113977-1-morbo@google.com>
+        <CAGG=3QWh90r5C3gmTj9zxiJb-mwD=PGqGwZZTjAfyi1NCb1_9w@mail.gmail.com>
+        <AC3D873E-A28B-41F1-8BF4-2F6F37BCEEB4@zytor.com>
+        <CAGG=3QVu5QjQK8m2FWiYn-XQuVBjUGXcbznSbK22jVMB5GAutw@mail.gmail.com>
+        <F5296439-4CA3-4F31-BD91-5ED1510BC382@zytor.com>
+        <CAKwvOdkk-C8HMemKs4+yoxvNDgTLmvZG1rmwjVXBqhsQ-cED5g@mail.gmail.com>
+        <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com>
+Date:   Thu, 17 Mar 2022 21:13:05 +0100
+In-Reply-To: <CAHk-=whJfKN8Jag=8DS=pbZR3TY90znUOP6Km+TLRJ9dZEgNqw@mail.gmail.com>
+        (Linus Torvalds's message of "Thu, 17 Mar 2022 11:52:26 -0700")
+Message-ID: <878rt8gwxa.fsf@oldenburg.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <24596.1647547831.1@famine>
-Date:   Thu, 17 Mar 2022 13:10:31 -0700
-Message-ID: <24597.1647547831@famine>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-David Ahern <dsahern@kernel.org> wrote:
+* Linus Torvalds:
 
->On 3/17/22 12:15 AM, Sun Shouxin wrote:
->> This patch is implementing IPV6 RLB for balance-alb mode.
->> 
->> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->> ---
->> changelog:
->> v1-->v2:
->> -Remove ndisc_bond_send_na and refactor ndisc_send_na.
->> -In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
->> -Don't send neighbor advertisement message when receiving
->>  neighbor advertisement message in rlb6_update_entry_from_na.
->> 
->> v2-->v3:
->> -Don't export ndisc_send_na.
->> -Use ipv6_stub->ndisc_send_na to replace ndisc_send_na
->>  in rlb6_update_client.
->> 
->> v3-->v4:
->> -Submit all code at a whole patch.
+> You can actually operate on EFLAGS at multiple granularities.
 >
->you misunderstood Jakub's comment. The code should evolve with small,
->focused patches and each patch needs to compile and function correctly
->(ie., no breakage).
+>  - normal pushf/popf. Don't do it unless you are doing system software.
 
-	Agreed; the split of the patches was not at issue, it was that
-each patch in a series must compile and the built kernel must function
-rationally.
+There's one exception: PUSHF/twiddle/POPF/PUSHF/compare is the
+recommended sequence to detect CPUID support on i386 (in userspace and
+elsewhere).
 
->You need to respond to Jiri's question about why this feature is needed.
+>  - you can use lahf/sahc to load/store only the arithmetic flags
+> into/from AH. Deprecated, and going away, but historically supported.
 
-	I'm not entirely sold on adding IPv6 RLB for balance-alb, but
-the IPv4 version of it does see moderate levels of use, even now.  It's
-less common than LACP by far, though.  I'd like to know why someone
-would choose IPv6 RLB over LACP.  I wonder if this is a checklist item
-somewhere that something must have "complete support for IPv6" or words
-to that effect, versus an actual functional need.
+And these instructions were missing from the original long mode, but
+they were added back.
 
->After that:
+> Yes, yes, that complete mental breakdown with pushf/popf did get
+> fixed, but it really makes me very wary of thinking that we should
+> ever use a built-in that compiler writers really fundamentally got so
+> wrong before.
 >
->1. patch 1 adds void *data to ndisc_send_na stub function and
->ndisc_send_na direct function. Update all places that use both
->ndisc_send_na to pass NULL as the data parameter.
->
->2. patch 2 refactors ndisc_send_na to handle the new data argument
->
->3. patch 3 exports any IPv6 functions. explain why each needs to be
->exported.
->
->4. patch 4 .... bonding changes. (bonding folks can respond on how to
->introduce that change).
+> What would make me think that you'd get it right now? In user space,
+> you'll basically never actually see the whole system flags issues, so
+> your test-cases would never work or be very contrieved. You'd have to
+> really work at it to see the problems.
 
-	Looking at the previous patch for bonding, my two initial
-requests are:
+I think as the result of the nature of that kind of bug it does not
+matter whether you use a compiler builtin to access the flags (to put
+their combined value into a general-purpose register).
 
-	1) A more detailed commit message.  The only way to understand
-how any of this actually works is reading the code, there is no higher
-level description.
+GCC doesn't have barriers in the built-ins (if we are talking about
+__builtin_ia32_readeflags_u64 and __builtin_ia32_writeeflags_u64).  I
+expect they are actually pretty useless, and were merely added for
+completeness of the intrinsics headers.
 
-	2) How does this interact with the IPv4 RLB logic?  Is it
-possible for a given bond interface MAC to be "assigned" to two
-different peers (one IPv4, one IPv6), and if so, does that behave in an
-expected manner?  I.e., two peers on the network could receive
-contradictory information via ARP and ND for the MAC address of a given
-peer.  This is already possible with the IPv4 RLB, but with an
-additional IPv6 RLB, a single peer could see two different MACs for a
-given host (one via IPv4, one via IPv6), and another peer could see the
-opposite, or even disjoint information across several peers.
+It's not that you can write
 
-	-J
+  unsigned a, b, c;
+  // =E2=80=A6
+  c =3D a + b;
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+and examine __builtin_ia32_readeflags_u64() to see if there was an
+overflow.  Neither GCC nor Clang model the EFLAGS register and
+arithmetic expression side effects to make this possible.
+
+Thanks,
+Florian
+
