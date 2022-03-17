@@ -2,114 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B99C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbiCQGRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
+        id S229781AbiCQGS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiCQGQz (ORCPT
+        with ESMTP id S229578AbiCQGSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:16:55 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE86173F4F;
-        Wed, 16 Mar 2022 22:58:00 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id b15so5265894edn.4;
-        Wed, 16 Mar 2022 22:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M46+b6LrSwlI17F3i2XgwwHhummNRK4ZjijSW7M5eUw=;
-        b=MLTj4ZmHdyx25fg7w0lOrZpPwEk7fIl7wAVtHpvwbK6NEeUfcO5SVg0X1F/bXuT1Xb
-         JW6S8Gw/HDvoRzKQN1LyGLjLXypdrZQtpGe7po37uu0Ssk4P8YqTr9+3qBW52vNNqN5T
-         rVmrUAdSSTZPTKHfIq56U3PbaSPy267wvVJEEgeOcPojiYk/yrr6c6AOtE43FUZ87/B0
-         uIBs7yFagvX6GcGaF04hxyIwE4PxLEL+0X7LX2H0ACBNEiIqMJtVNFIBarxS+g6NpIx5
-         XJFu/4ylG+SOO+ni2HNYpnYhmjuHFl037esPjHzsKmvPj7dlNzMu4A//agoMYA7ZqodZ
-         rzqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M46+b6LrSwlI17F3i2XgwwHhummNRK4ZjijSW7M5eUw=;
-        b=DnNfNZ228xG1NnIHIK2IYYr101JzweS1joWyPpwMV9+0L/BS0Iuhnaxf0YqkL1I/Ae
-         0M/u9CT2qublrnOVPnIMox6USiGV7cG5AxI0cX/FA55KwjWhPVj0tfaukCD2s/IqeVSJ
-         qmwxkgwjWJh42vWrjSscMujJvu1IxwxIS+C0PiXU0L7x6H6GD5Xcitd8eN6jEx4sGcgR
-         Fgdl1qZ0unleCHmrehoCKiDAywoxbIjmlkZ+4sSzInK8u0MpQ7yxqOvXqHc3+22Mjx3O
-         9mJoo9wBhtee7ebjUxX/tje6Nx5Ip3UsPJ3lLf0qBBxQo7rMJUQ1AxoSa0wpAxaKwMzI
-         753A==
-X-Gm-Message-State: AOAM531WQuoS9wOsjLSji1fr9qxg2PH3EUT8vHxo1kf87AmkZmm7TjLI
-        SQCSMcIiIbCqvXgu0PkW8CmQyUlU/XrgeOD1R2E=
-X-Google-Smtp-Source: ABdhPJwwgfN9Pm7u8o3A/pWTIWCkEF7haDR9qtfyQEOxF/c5gMjwo7rBL5gSc4AclOQ9nadb//7GGAa6ClPLzDmItQw=
-X-Received: by 2002:a05:6402:486:b0:413:bd00:4f3f with SMTP id
- k6-20020a056402048600b00413bd004f3fmr2673050edv.103.1647496679362; Wed, 16
- Mar 2022 22:57:59 -0700 (PDT)
+        Thu, 17 Mar 2022 02:18:49 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04C2C17586B
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647496554; x=1679032554;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=NxbwI92yI+pL93u2hlCxc/xo3yfiTLVhuDA8944/m48=;
+  b=ebYENT614gnv1DIFWjMbjoVGai5ttz2/3/eqcoD5qmrQCCrYdNuACrz+
+   pULt65OFm3g+ZkS8tCBNaRFZNJfe7dkRvsuODKnxD1sfaLk0b2N1qWIhU
+   b2SCGmD1URAIbiIJQ+VS3Z1jLWdKyVTc/6RdQpkL23b0lJXZqMr69+5RE
+   +P4Rqz6FYkbs7lWF5/tvSwm6+8GdnTOquXOTuoZIbpRtxxxM72AbFGjJP
+   5ynKf6QxCKuwCFiXpBfoAdfHtHJWaRobQixgNCVe6Mhap/AWKt5Y2AChZ
+   qGX6EZNyHG8/g5xTiSObYfkIjcaNYRw6DHpo+2++DdrHwJVKUPMBDmxJE
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="236719466"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="236719466"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 20:46:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="516606116"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 16 Mar 2022 20:46:29 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUh5p-000DGB-2e; Thu, 17 Mar 2022 03:46:29 +0000
+Date:   Thu, 17 Mar 2022 11:46:03 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:master 1564/2335] ./usr/include/linux/netdevice.h:29:10:
+ fatal error: uapi/linux/if.h: No such file or directory
+Message-ID: <202203171122.ZrWJABIg-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220316063148.700769-1-imagedong@tencent.com>
- <20220316063148.700769-4-imagedong@tencent.com> <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Thu, 17 Mar 2022 13:57:47 +0800
-Message-ID: <CADxym3attjUpVhP6NYO+MyFg8Psko1VhrSo9aNf=atgQgWo_uQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
- to icmp protocol
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Hao Peng <flyingpeng@tencent.com>,
-        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Biao Jiang <benbjiang@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 11:18 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-[......]
-> > -bool ping_rcv(struct sk_buff *skb)
-> > +enum skb_drop_reason ping_rcv(struct sk_buff *skb)
-> >  {
-> > +     enum skb_drop_reason reason = SKB_DROP_REASON_NO_SOCKET;
-> >       struct sock *sk;
-> >       struct net *net = dev_net(skb->dev);
-> >       struct icmphdr *icmph = icmp_hdr(skb);
-> > -     bool rc = false;
-> >
-> >       /* We assume the packet has already been checked by icmp_rcv */
-> >
-> > @@ -980,15 +980,17 @@ bool ping_rcv(struct sk_buff *skb)
-> >               struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
-> >
-> >               pr_debug("rcv on socket %p\n", sk);
-> > -             if (skb2 && !ping_queue_rcv_skb(sk, skb2))
-> > -                     rc = true;
-> > +             if (skb2)
-> > +                     reason = __ping_queue_rcv_skb(sk, skb2);
-> > +             else
-> > +                     reason = SKB_DROP_REASON_NOMEM;
-> >               sock_put(sk);
-> >       }
-> >
-> > -     if (!rc)
-> > +     if (reason)
-> >               pr_debug("no socket, dropping\n");
->
-> This is going to be printed on memory allocation failures now as well.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
+head:   85293bf3fca6d85608cff1447ce3097583f15fab
+commit: 928b32ae19a729802c77e9754fb7b9d4fe05bf0a [1564/2335] headers/deps: net: Optimize <uapi/linux/netdevice.h>
+config: i386-randconfig-a006-20220314 (https://download.01.org/0day-ci/archive/20220317/202203171122.ZrWJABIg-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=928b32ae19a729802c77e9754fb7b9d4fe05bf0a
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip master
+        git checkout 928b32ae19a729802c77e9754fb7b9d4fe05bf0a
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Enn...This logic is not changed. In the previous, skb2==NULL means
-rc is false, and this message is printed too.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Seems this can be optimized by the way? Printing the message only for
-no socket found.
+All errors (new ones prefixed by >>):
+
+   In file included from ./usr/include/linux/if_arp.h:27,
+                    from <command-line>:32:
+>> ./usr/include/linux/netdevice.h:29:10: fatal error: uapi/linux/if.h: No such file or directory
+      29 | #include <uapi/linux/if.h>
+         |          ^~~~~~~~~~~~~~~~~
+   compilation terminated.
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
