@@ -2,235 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF87C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E582FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229573AbiCQWCh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 18:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
+        id S229532AbiCQWFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 18:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiCQWC3 (ORCPT
+        with ESMTP id S229451AbiCQWFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 18:02:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0961959C3;
-        Thu, 17 Mar 2022 15:01:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8ED4CB81E91;
-        Thu, 17 Mar 2022 22:01:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6FB4C340E9;
-        Thu, 17 Mar 2022 22:01:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647554468;
-        bh=EvbJwNZK/WSFgkuBFOh/+QIchcc/X2Y9rQl+FqCdeR0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hYvJQIwciKreLhuUUF3SHtPfz7pAmeeogDIOjLlM99+68AS/mu/I/o1iUxXT7eXC+
-         mNcS15U3Y7jOwK3Z9xcR3dnDpnqYJPfjNvDdN5Pedz2kn/vtWZXER26HkpzOzplfK8
-         khYqKS/Rw7K4Z0lY44EBFzeGEiTw7BpQlcMlqaFeIlyGenvTWMi6smMJ91W5CRhWzR
-         b8VwGsm7nIn6h6LsF8MjIOcYJwTwnfnSlOQzldX+GgwRdzfFKRWEiP/z+pQt6U44XL
-         TOFurNagPqQ7NqNPfXP+g8mLaZwEQi7yi7VocTcczEEOQS3Awg/6cbx4VuRcz2aUK0
-         LQM6zCflnqh7Q==
-Date:   Fri, 18 Mar 2022 00:00:17 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Haitao Huang <haitao.huang@linux.intel.com>
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        nathaniel@profian.com
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-Message-ID: <YjOvcbdM+YmYw37c@iki.fi>
-References: <Yis9rA8uC/0bmWCF@iki.fi>
- <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com>
- <Yi6tPLLt9Q+ailQ3@iki.fi>
- <Yi6tinbF+Y7a66eQ@iki.fi>
- <Yi6va4dCaljiQ1WQ@iki.fi>
- <op.1i01q9s0wjvjmi@hhuan26-mobl1.mshome.net>
- <YjLcr9TwLNWUtwkS@iki.fi>
- <YjLfIMz4/Vx8Jm24@iki.fi>
- <op.1i6iegamwjvjmi@hhuan26-mobl1.mshome.net>
- <YjOtLp4f4nu18Fzx@iki.fi>
+        Thu, 17 Mar 2022 18:05:04 -0400
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A168E116B52
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:03:45 -0700 (PDT)
+Received: by mail-io1-xd29.google.com with SMTP id e22so7464803ioe.11
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:03:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qTabM7n0BoyDX6ZD2j1IXdmhWUV9Un2uw2keLgRSpCA=;
+        b=B7vyF3M3g03Oull46QpewO+Evk7OZKsDT2Dl3123BE9ScGlhRxPaFPHX0Wn4ji5F9x
+         d5xzwzdbyqNY2CNoeTejfMdV3kD+BtTkOKDV3O8TuB4CjeBdW4cmpWk4HhvuthtcWDf5
+         eRs2E3lfbxX4vRXOh62LnkRhV/PlgPnau5DWBi0MPiIZZj03sOs0iW6vyLoJnkkVu5ZY
+         F1Da53joklwPYW9449PxQi1h80vhkf0o60ZjXtW9zgeH+xHLPXtF/X5hacYn4RKRb/+L
+         kKA6kT/KIWkajcvYJiCdK6FvCFYd9hXrLOCaFrY4WrK8mMjgbh1CviY0KGqb2HFdBDF8
+         AVtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qTabM7n0BoyDX6ZD2j1IXdmhWUV9Un2uw2keLgRSpCA=;
+        b=54MteByLfzM0X+fXLzE5SIvFxX1fGwT1O6BlBqu2zEOxBXItVdXNepBfUaamkImVAb
+         A/jqR9ylOPL4Q4PWOJj/pK/PR1kCAx5Lxr6CWzdlbCoHkRy7ynjGTwY3msNRtJSLZjTa
+         GLQB0pGAdLseEwzVsgJfUkjUOtbtyglkRq6xHu5zMexE89oCOnxOz8iBPZYDbAtzh7Ar
+         W9VPawIsBtGWtfRpP/2R0PnzzDK7PX2qo8m0DZ0GckreDD8G7RHU3SqiJZuszQaljZz4
+         ccYKJ4IWu/QIEHPSTXw0DI1HOwT6KtG0qBP0fMEnFmZ/Xz1EwGXbPnmHqx8ov720gT8Y
+         QR+w==
+X-Gm-Message-State: AOAM5313MWMXA9LXi5694qF46WWSQheHZLBJB/OxHAwj9htOXNIb6DL5
+        gOdvu8mPYQ9EwFG+qQgcMgOEjaBAnPV1/s9KQOE=
+X-Google-Smtp-Source: ABdhPJzmpC3FaPzymZm0MUm+gkG7m5Ndgj5W+M3ddfE+XAu+jt4cb9fOCxWgzYR99WehbuHz/6/roL2lsfaqPRu78vg=
+X-Received: by 2002:a05:6638:33a8:b0:319:cb5c:f6d9 with SMTP id
+ h40-20020a05663833a800b00319cb5cf6d9mr3189302jav.93.1647554625049; Thu, 17
+ Mar 2022 15:03:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjOtLp4f4nu18Fzx@iki.fi>
+References: <20220317152458.213689956@goodmis.org> <20220317152522.284233550@goodmis.org>
+In-Reply-To: <20220317152522.284233550@goodmis.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 17 Mar 2022 15:03:33 -0700
+Message-ID: <CAEf4BzaN_HnyAkVYeUmYoxvW01cFKR2FW0MwZJBL3gvkRw0TYg@mail.gmail.com>
+Subject: Re: [for-next][PATCH 03/13] fprobe: Add ftrace based probe APIs
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 11:50:41PM +0200, Jarkko Sakkinen wrote:
-> On Thu, Mar 17, 2022 at 09:28:45AM -0500, Haitao Huang wrote:
-> > Hi
-> > 
-> > On Thu, 17 Mar 2022 02:11:28 -0500, Jarkko Sakkinen <jarkko@kernel.org>
-> > wrote:
-> > 
-> > > On Thu, Mar 17, 2022 at 09:01:07AM +0200, Jarkko Sakkinen wrote:
-> > > > On Mon, Mar 14, 2022 at 10:39:36AM -0500, Haitao Huang wrote:
-> > > > > Hi Jarkko
-> > > > >
-> > > > > On Sun, 13 Mar 2022 21:58:51 -0500, Jarkko Sakkinen
-> > > > <jarkko@kernel.org>
-> > > > > wrote:
-> > > > >
-> > > > > > On Mon, Mar 14, 2022 at 04:50:56AM +0200, Jarkko Sakkinen wrote:
-> > > > > > > On Mon, Mar 14, 2022 at 04:49:37AM +0200, Jarkko Sakkinen wrote:
-> > > > > > > > On Fri, Mar 11, 2022 at 09:53:29AM -0800, Reinette Chatre wrote:
-> > > > > > > >
-> > > > > > > > > I saw Haitao's note that EMODPE requires "Read access
-> > > > permitted
-> > > > > > > by enclave".
-> > > > > > > > > This motivates that EMODPR->PROT_NONE should not be allowed
-> > > > > > > since it would
-> > > > > > > > > not be possible to relax permissions (run EMODPE) after that.
-> > > > > > > Even so, I
-> > > > > > > > > also found in the SDM that EACCEPT has the note "Read access
-> > > > > > > permitted
-> > > > > > > > > by enclave". That seems to indicate that EMODPR->PROT_NONE is
-> > > > > > > not practical
-> > > > > > > > > from that perspective either since the enclave will not be
-> > > > able to
-> > > > > > > > > EACCEPT the change. Does that match your understanding?
-> > > > > > > >
-> > > > > > > > Yes, PROT_NONE should not be allowed.
-> > > > > > > >
-> > > > > > > > This is however the real problem.
-> > > > > > > >
-> > > > > > > > The current kernel patch set has inconsistent API and EMODPR
-> > > > ioctl is
-> > > > > > > > simply unacceptable. It  also requires more concurrency
-> > > > management
-> > > > > > > from
-> > > > > > > > user space run-time, which would be heck a lot easier to do
-> > > > in the
-> > > > > > > kernel.
-> > > > > > > >
-> > > > > > > > If you really want EMODPR as ioctl, then for consistencys sake,
-> > > > > > > then EAUG
-> > > > > > > > should be too. Like this when things go opposite directions,
-> > > > this
-> > > > > > > patch set
-> > > > > > > > plain and simply will not work out.
-> > > > > > > >
-> > > > > > > > I would pick EAUG's strategy from these two as it requires half
-> > > > > > > the back
-> > > > > > > > calls to host from an enclave. I.e. please combine
-> > > > mprotect() and
-> > > > > > > EMODPR,
-> > > > > > > > either in the #PF handler or as part of mprotect(), which ever
-> > > > > > > suits you
-> > > > > > > > best.
-> > > > > > > >
-> > > > > > > > I'll try demonstrate this with two examples.
-> > > > > > > >
-> > > > > > > > mmap() could go something like this() (simplified):
-> > > > > > > > 1. Execution #UD's to SYSCALL.
-> > > > > > > > 2. Host calls enclave's mmap() handler with mmap() parameters.
-> > > > > > > > 3. Enclave up-calls host's mmap().
-> > > > > > > > 4. Loops the range with EACCEPTCOPY.
-> > > > > > > >
-> > > > > > > > mprotect() has to be done like this:
-> > > > > > > > 1. Execution #UD's to SYSCALL.
-> > > > > > > > 2. Host calls enclave's mprotect() handler.
-> > > > > > > > 3. Enclave up-calls host's mprotect().
-> > > > > > > > 4. Enclave up-calls host's ioctl() to
-> > > > SGX_IOC_ENCLAVE_PERMISSIONS.
-> > > > >
-> > > > > I assume up-calls here are ocalls as we call them in our
-> > > > implementation,
-> > > > > which are the calls enclave make to untrusted side via EEXIT.
-> > > > >ar
-> > > > > If so, can your implementation combine this two up-calls into one,
-> > > > then host
-> > > > > side just do ioctl() and mprotect to kernel? If so, would that
-> > > > address your
-> > > > > concern about extra up-calls?
-> > > > >
-> > > > >
-> > > > > > > > 3. Loops the range with EACCEPT.
-> > > > > > >   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > > > > >   5. Loops the range with EACCEPT + EMODPE.
-> > > > > > >
-> > > > > > > > This is just terrible IMHO. I hope these examples bring some
-> > > > insight.
-> > > > > >
-> > > > > > E.g. in Enarx we have to add a special up-call (so called
-> > > > enarxcall in
-> > > > > > intermediate that we call sallyport, which provides shared buffer to
-> > > > > > communicate with the enclave) just for reseting the range with
-> > > > PROT_READ.
-> > > > > > Feel very redundant, adds ugly cruft and is completely opposite
-> > > > strategy
-> > > > > > to
-> > > > > > what you've chosen to do with EAUG, which is I think correct
-> > > > choice as
-> > > > > > far
-> > > > > > as API is concerned.
-> > > > >
-> > > > > The problem with EMODPR on #PF is that kernel needs to know what
-> > > > permissions
-> > > > > requested from enclave at the time of #PF. So enclave has to make
-> > > > at least
-> > > > > one call to kernel (again via ocall in our case, I assume up-call
-> > > > in your
-> > > > > case) to make the change.
-> > > > 
-> > > > The #PF handler should do unconditionally EMODPR with PROT_READ.
-> > > 
-> > > Or mprotect(), as long as secinfo contains PROT_READ. I don't care about
-> > > this detail hugely anymore because it does not affect uapi.
-> > > 
-> > > Using EMODPR as a permission control mechanism is a ridiculous idea, and
-> > > I cannot commit to maintain a broken uapi.
-> > > 
-> > 
-> > Jarkko, how would automatically forcing PROT_READ on #PF work for this
-> > sequence?
-> > 
-> > 1) EAUG a page (has to be RW)
-> > 2) EACCEPT(RW)
-> > 3) enclave copies some data to page
-> > 4) enclave wants to change permission to R
-> > 
-> > If you are proposing mprotect, then as I indicated earlier, please address
-> > concerns raised by Reinette:
-> > https://lore.kernel.org/linux-sgx/e1c04077-0165-c5ec-53be-7fd732965e80@intel.com/
-> 
-> For EAUG you can choose between #PF handler and having it as part of
-> mmap() with the same uapi.
-> 
-> For EMODPR clearly #PF handler would be tricky but nothing prevents
-> resetting the permissions as part of mprotect() flow, which is trivial.
-> 
-> One good reason to have a fixed EMODPR is that e.g. emulating properly
-> mprotect() is almost undoable if you don't do it otherwise. Specifically
+On Thu, Mar 17, 2022 at 8:25 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> From: Masami Hiramatsu <mhiramat@kernel.org>
+>
+> The fprobe is a wrapper API for ftrace function tracer.
+> Unlike kprobes, this probes only supports the function entry, but this
+> can probe multiple functions by one fprobe. The usage is similar, user
+> will set their callback to fprobe::entry_handler and call
+> register_fprobe*() with probed functions.
+> There are 3 registration interfaces,
+>
+>  - register_fprobe() takes filtering patterns of the functin names.
+>  - register_fprobe_ips() takes an array of ftrace-location addresses.
+>  - register_fprobe_syms() takes an array of function names.
+>
+> The registered fprobes can be unregistered with unregister_fprobe().
+> e.g.
+>
+> struct fprobe fp = { .entry_handler = user_handler };
+> const char *targets[] = { "func1", "func2", "func3"};
+> ...
+>
+> ret = register_fprobe_syms(&fp, targets, ARRAY_SIZE(targets));
+>
+> ...
+>
+> unregister_fprobe(&fp);
+>
+> Link: https://lkml.kernel.org/r/164735283857.1084943.1154436951479395551.stgit@devnote2
+>
+> Cc: Jiri Olsa <jolsa@kernel.org>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Andrii Nakryiko <andrii@kernel.org>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: KP Singh <kpsingh@chromium.org>
+> Cc: "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>
+> Cc: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
+> Cc: "David S . Miller" <davem@davemloft.net>
+> Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> ---
 
-s/don't//g
+Hey Steven!
 
-> the scenario where your address range spans through multiple adjacent
-> VMAs. It's even without EMODPR complex enough scenario that you really
-> don't want to ask yourself for more trouble than use EMODPR in a super
-> conservative manner.
-> 
-> Having EMODPR fully exposed will only make more difficult API to do with
-> extra round-trips. If you want to use ring-0 instructions fully exposed,
-> please don't use a kernel. There's a bunch of hardware features in Intel
-> CPUs for which Linux does not provide 1:1 all wide open interfaces.
-> 
-> BR, Jarkko
+Do I understand correctly that this patch set was applied in your
+tree? I was under the impression that we agreed to route this through
+the bpf-next tree earlier (see [0]), but I might have misunderstood
+something, sorry.
+
+Either way, the reason it matters is because Jiri's multi-attach
+kprobe patch set ([1]) is depending on Masami's patches and having
+fprobe patches in bpf-next tree would simplify logistics
+significantly.
+
+So I wonder if it's still possible to route it through bpf-next?
+
+If not, we'd need a way to get these changes into the bpf-next tree
+somehow. Having it in a separate branch that we can merge would be a
+way to go about this, I presume? But it's certainly a more complicated
+way, so it would be preferable to back it out and land through
+bpf-next.
+
+Please let me know how we should proceed. Thanks!
+
+  [0] https://lore.kernel.org/bpf/CAEf4BzaugZWf6f_0JzA-mqaGfp52tCwEp5dWdhpeVt6GjDLQ3Q@mail.gmail.com/
+  [1] https://lore.kernel.org/bpf/20220316122419.933957-1-jolsa@kernel.org/
+
+>  include/linux/fprobe.h |  87 +++++++++++++++++
+>  kernel/trace/Kconfig   |  12 +++
+>  kernel/trace/Makefile  |   1 +
+>  kernel/trace/fprobe.c  | 211 +++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 311 insertions(+)
+>  create mode 100644 include/linux/fprobe.h
+>  create mode 100644 kernel/trace/fprobe.c
+>
+
+[...]
