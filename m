@@ -2,104 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC36C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229475AbiCQFjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 01:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
+        id S229479AbiCQFkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 01:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiCQFjO (ORCPT
+        with ESMTP id S229445AbiCQFku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 01:39:14 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6808C26A978
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:08:28 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id q19so1811659pgm.6
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:08:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WjOHj/8BATPBP0IusStgCkjkvXpEOFe7FfCA17j19dU=;
-        b=o1u3cr7gjNAmLIFszokjYtRlBW9YgENKNSlekv8UL8chTfVfPdo6wVkoY6bwpm60l6
-         l3jwfncEOHo063kGAFw3R6s40XnNCmp8ZGTK9gz8JM69rP4B5e7w2FewsQG+0kY8xkBE
-         VY11XP+IZ7GEHIlyOyh7s8/Rbkdl9MqIsfNeSmI6fiksjsG4xzEalnCm8D4AwuPqOO6S
-         uXEKkzZkHrHl3dLpgT9W2dx3xNS3+P6sjXgIYRYKxv6lZ5nlA4sVTQMiGVM2+dLHvn+x
-         s9Akgp3UHRCkylI1xF2HXF6cpEaW//VHHRTxW+JxEouHH72oSD9c91epcZkwmiepKuMF
-         1+qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WjOHj/8BATPBP0IusStgCkjkvXpEOFe7FfCA17j19dU=;
-        b=Ha7kOiO0PpPGNJ3imrtxUsmM9QFqOuMqcJRbjLDHzbL9rzNGp1/h6NBz6uCprnHVOO
-         7bfdFz7tZD9YIvmYmh2IZBMf96zeW3Ywq1/RWpA9TeQ3xH9pcpBX91O+wGKC1+jb/dmG
-         WnOCRg0Ys1NW7//rnj2asXVFjp7gc6mIphHvqkvgldWW31GiFDKJ0WY7r8NSXwQ0L7gg
-         qd7RiXT7acq0SeJd0BA3ZhFKcX6On8P30u6dq1SBi1pA3G21R5SWWgk9OF8ukk43HcJM
-         r29lWY6iWG1abRU+BTj47mdDnTQfxw8WkwKzXDYyUNFq6cUO7MWjTCPSwzz11vwH1qdn
-         qWXA==
-X-Gm-Message-State: AOAM532/90WWDxsy/9R5KgptkPJSIHZ44oHcdmJq5tdePuZlzAdPRNaa
-        hez3trMV5mgKSAqTW1/bETOOk19DJJZA/g==
-X-Google-Smtp-Source: ABdhPJzI9v1AsK1frl/OfapPyfUjcQq9CI1+CjtXBFdgE2i0TOisHVwLb4aM0S1NFFwVdeouAbr7lQ==
-X-Received: by 2002:a63:1743:0:b0:381:42cf:187 with SMTP id 3-20020a631743000000b0038142cf0187mr2035408pgx.397.1647489361831;
-        Wed, 16 Mar 2022 20:56:01 -0700 (PDT)
-Received: from localhost.localdomain ([122.171.160.59])
-        by smtp.gmail.com with ESMTPSA id g9-20020a056a0023c900b004f736d081d9sm5184749pfc.64.2022.03.16.20.55.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 20:56:01 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH] RISC-V: Increase range and default value of NR_CPUS
-Date:   Thu, 17 Mar 2022 09:25:42 +0530
-Message-Id: <20220317035542.272547-1-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 17 Mar 2022 01:40:50 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BA0D3732
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:10:52 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KJtPz3ydZz1GCM8;
+        Thu, 17 Mar 2022 11:47:35 +0800 (CST)
+Received: from dggpeml500003.china.huawei.com (7.185.36.200) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 11:52:34 +0800
+Received: from [10.174.177.173] (10.174.177.173) by
+ dggpeml500003.china.huawei.com (7.185.36.200) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 11:52:34 +0800
+Message-ID: <ef12136f-fc4d-05c5-a7bd-66ade28957e4@huawei.com>
+Date:   Thu, 17 Mar 2022 11:52:32 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH -next] bus: mhi: ep: remove useless judgement in
+ mhi_ep_ring_add_element
+Content-Language: en-US
+To:     <linux-kernel@vger.kernel.org>
+CC:     <manivannan.sadhasivam@linaro.org>, <liwei391@huawei.com>
+References: <20220317033117.367027-1-liaoyu15@huawei.com>
+From:   Yu Liao <liaoyu15@huawei.com>
+In-Reply-To: <20220317033117.367027-1-liaoyu15@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.173]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500003.china.huawei.com (7.185.36.200)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, the range and default value of NR_CPUS is too restrictive
-for high-end RISC-V systems with large number of HARTs. The latest
-QEMU virt machine supports upto 512 CPUs so the current NR_CPUS is
-restrictive for QEMU as well. Other major architectures (such as
-ARM64, x86_64, MIPS, etc) have a much higher range and default
-value of NR_CPUS.
+Hi Manivannan, I found that 'ret = ' has been removed. If this is intentional,
+the check of 'ret' is redundant.
 
-This patch increases NR_CPUS range to 2-256 and default value to
-XLEN (i.e. 32 for RV32 and 64 for RV64).
+Thanks,
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/Kconfig | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 5adcbd9b5e88..54f125eb10f6 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -274,10 +274,11 @@ config SMP
- 	  If you don't know what to do here, say N.
- 
- config NR_CPUS
--	int "Maximum number of CPUs (2-32)"
--	range 2 32
-+	int "Maximum number of CPUs (2-256)"
-+	range 2 256
- 	depends on SMP
--	default "8"
-+	default "32" if 32BIT
-+	default "64" if 64BIT
- 
- config HOTPLUG_CPU
- 	bool "Support for hot-pluggable CPUs"
--- 
-2.25.1
-
+Yu
+On 2022/3/17 11:31, Yu Liao wrote:
+> Remove the check of 'ret' that is impossible to be non-zero.
+> 
+> Signed-off-by: Yu Liao <liaoyu15@huawei.com>
+> ---
+>  drivers/bus/mhi/ep/ring.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/bus/mhi/ep/ring.c b/drivers/bus/mhi/ep/ring.c
+> index ac2043e71943..161505cd628f 100644
+> --- a/drivers/bus/mhi/ep/ring.c
+> +++ b/drivers/bus/mhi/ep/ring.c
+> @@ -131,8 +131,6 @@ int mhi_ep_ring_add_element(struct mhi_ep_ring *ring, struct mhi_ring_element *e
+>  
+>  	mhi_cntrl->write_to_host(mhi_cntrl, (void __iomem *)el, ring->rbase + (old_offset *
+>  				 sizeof(*el)), sizeof(*el));
+> -	if (ret < 0)
+> -		return ret;
+>  
+>  	return 0;
+>  }
