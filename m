@@ -2,150 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CB9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A86C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 08:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbiCQIOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 04:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
+        id S230502AbiCQIOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 04:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbiCQIOS (ORCPT
+        with ESMTP id S230504AbiCQIOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 04:14:18 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4370FBD7E8;
-        Thu, 17 Mar 2022 01:12:59 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 812485FD05;
-        Thu, 17 Mar 2022 11:12:56 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1647504776;
-        bh=oNYXe+MX8qzbJCdiqWmvkgUmHLB8utUcXDJzvB5NPTQ=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=czrNEOSWJPef3KIfJUcQOC7icquU7LBdbDULZBQlhD0C+6yHWHHStzphSxlM7sJP8
-         SWr+/SoEIbeyIF4liuscl+mW9l+TE5rIB15hQJTiCJoI7joIoNYy4ycIshSVs4zyXs
-         ELp1krrvJZSSh3SLj9UteV40FNSmlnOVDlG7op++KIL/jy9JOhUpHAGE+R9608tdZi
-         KaDbLQjoDUGWZzIZ+KIUegeG1stCSo56tRrfGfVUA4F7+cbcVTNt2G5WCwBU5UjVou
-         /oqSbA57/WRj0QtEY/PsXcxXX1EHS4c6pxpbtRP6Vu9iKiZl8TWMsZV2is9aIfivzS
-         aGFL9hdx8HKgg==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 17 Mar 2022 11:12:54 +0300 (MSK)
-From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 1/2] af_vsock: SOCK_SEQPACKET receive timeout
- test
-Thread-Topic: [PATCH net-next v3 1/2] af_vsock: SOCK_SEQPACKET receive timeout
- test
-Thread-Index: AQHYOb+Ukv8XF38YE06ap5RsA4YM1qzDBjQAgAABhoA=
-Date:   Thu, 17 Mar 2022 08:11:43 +0000
-Message-ID: <118c7f13-fa18-8699-1936-0b838f9adf5d@sberdevices.ru>
-References: <4ecfa306-a374-93f6-4e66-be62895ae4f7@sberdevices.ru>
- <a3f95812-d5bb-86a0-46a0-78935651e39e@sberdevices.ru>
- <20220317080708.duovh4tnf6oxhciq@sgarzare-redhat>
-In-Reply-To: <20220317080708.duovh4tnf6oxhciq@sgarzare-redhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5D13004DD337E84780209FA0165C4696@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Thu, 17 Mar 2022 04:14:30 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19831342CB;
+        Thu, 17 Mar 2022 01:13:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647504791; x=1679040791;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XfM++llsVg7AzR19XcfpPkISpAk7yp2WcnUrhhsvXJ0=;
+  b=Q9AYe2/sH/+ggaN2vMFuqprLxnOvnWHwVNe3Xlw7Bp3DrFeIwaoRkuOT
+   reAWLed9pvIh1FMB2efpJ4Xiccutfhk5lnBLNH00LxgWs0CfKxB0vQLZN
+   lbZYQZ1hQszAdkbRM2tO3YJ3AW01ZDqdZiRsPwKWHHpxwU8BjhNS6w3ML
+   LHejTYSs/5VIK+s/YX+49uMjzrp1Zh1/MOjaYTRGwi8NSYemkEEtMEgU/
+   3b5rLIYDs7qshcquxX5XrWPgP22WdKLNH3sIoUpoNSk3qLar6GpNESuhr
+   Zi3/kVR7QxC9gvnE1CWU4V+eFZeoWhG+mQczDhnSFGmZ2vEJmgVBiYBo0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="244266190"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="244266190"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 01:13:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="498748509"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 17 Mar 2022 01:13:05 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUlFo-000DU7-HL; Thu, 17 Mar 2022 08:13:04 +0000
+Date:   Thu, 17 Mar 2022 16:13:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Medad CChien <medadyoung@gmail.com>, rric@kernel.org,
+        james.morse@arm.com, tony.luck@intel.com, mchehab@kernel.org,
+        bp@alien8.de, robh+dt@kernel.org, benjaminfair@google.com,
+        yuenn@google.com, venture@google.com, KWLIU@nuvoton.com,
+        YSCHU@nuvoton.com, JJLIU0@nuvoton.com, KFTING@nuvoton.com,
+        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        ctcchien@nuvoton.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v5 3/3] EDAC: nuvoton: Add NPCM memory controller driver
+Message-ID: <202203171641.zYjMuQjO-lkp@intel.com>
+References: <20220317015854.18864-4-ctcchien@nuvoton.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/17 04:52:00 #18991242
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220317015854.18864-4-ctcchien@nuvoton.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMTcuMDMuMjAyMiAxMTowNywgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBPbiBUaHUs
-IE1hciAxNywgMjAyMiBhdCAwNToyNjo0NUFNICswMDAwLCBLcmFzbm92IEFyc2VuaXkgVmxhZGlt
-aXJvdmljaCB3cm90ZToNCj4+IFRlc3QgZm9yIHJlY2VpdmUgdGltZW91dCBjaGVjazogY29ubmVj
-dGlvbiBpcyBlc3RhYmxpc2hlZCwNCj4+IHJlY2VpdmVyIHNldHMgdGltZW91dCwgYnV0IHNlbmRl
-ciBkb2VzIG5vdGhpbmcuIFJlY2VpdmVyJ3MNCj4+ICdyZWFkKCknIGNhbGwgbXVzdCByZXR1cm4g
-RUFHQUlOLg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IEtyYXNub3YgQXJzZW5peSBWbGFkaW1pcm92
-aWNoIDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+DQo+PiAtLS0NCj4+IHYyIC0+IHYzOg0KPj4g
-MSkgVXNlICdmcHJpbnRmKCknIGluc3RlYWQgb2YgJ3BlcnJvcigpJyB3aGVyZSAnZXJybm8nIHZh
-cmlhYmxlDQo+PiDCoMKgIGlzIG5vdCBhZmZlY3RlZC4NCj4+IDIpIFByaW50ICdyZWFkKCknIG92
-ZXJoZWFkLg0KPj4NCj4+IHRvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIHwgODQgKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4+IDEgZmlsZSBjaGFuZ2VkLCA4NCBpbnNl
-cnRpb25zKCspDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tf
-dGVzdC5jIGIvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCj4+IGluZGV4IDJhMzYz
-OGMwYTAwOC4uZjU0OThkZTY3NTFkIDEwMDY0NA0KPj4gLS0tIGEvdG9vbHMvdGVzdGluZy92c29j
-ay92c29ja190ZXN0LmMNCj4+ICsrKyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5j
-DQo+PiBAQCAtMTYsNiArMTYsNyBAQA0KPj4gI2luY2x1ZGUgPGxpbnV4L2tlcm5lbC5oPg0KPj4g
-I2luY2x1ZGUgPHN5cy90eXBlcy5oPg0KPj4gI2luY2x1ZGUgPHN5cy9zb2NrZXQuaD4NCj4+ICsj
-aW5jbHVkZSA8dGltZS5oPg0KPj4NCj4+ICNpbmNsdWRlICJ0aW1lb3V0LmgiDQo+PiAjaW5jbHVk
-ZSAiY29udHJvbC5oIg0KPj4gQEAgLTM5MSw2ICszOTIsODQgQEAgc3RhdGljIHZvaWQgdGVzdF9z
-ZXFwYWNrZXRfbXNnX3RydW5jX3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0K
-Pj4gwqDCoMKgwqBjbG9zZShmZCk7DQo+PiB9DQo+Pg0KPj4gK3N0YXRpYyB0aW1lX3QgY3VycmVu
-dF9uc2VjKHZvaWQpDQo+PiArew0KPj4gK8KgwqDCoCBzdHJ1Y3QgdGltZXNwZWMgdHM7DQo+PiAr
-DQo+PiArwqDCoMKgIGlmIChjbG9ja19nZXR0aW1lKENMT0NLX1JFQUxUSU1FLCAmdHMpKSB7DQo+
-PiArwqDCoMKgwqDCoMKgwqAgcGVycm9yKCJjbG9ja19nZXR0aW1lKDMpIGZhaWxlZCIpOw0KPj4g
-K8KgwqDCoMKgwqDCoMKgIGV4aXQoRVhJVF9GQUlMVVJFKTsNCj4+ICvCoMKgwqAgfQ0KPj4gKw0K
-Pj4gK8KgwqDCoCByZXR1cm4gKHRzLnR2X3NlYyAqIDEwMDAwMDAwMDBVTEwpICsgdHMudHZfbnNl
-YzsNCj4+ICt9DQo+PiArDQo+PiArI2RlZmluZSBSQ1ZUSU1FT19USU1FT1VUX1NFQyAxDQo+PiAr
-I2RlZmluZSBSRUFEX09WRVJIRUFEX05TRUMgMjUwMDAwMDAwIC8qIDAuMjUgc2VjICovDQo+PiAr
-DQo+PiArc3RhdGljIHZvaWQgdGVzdF9zZXFwYWNrZXRfdGltZW91dF9jbGllbnQoY29uc3Qgc3Ry
-dWN0IHRlc3Rfb3B0cyAqb3B0cykNCj4+ICt7DQo+PiArwqDCoMKgIGludCBmZDsNCj4+ICvCoMKg
-wqAgc3RydWN0IHRpbWV2YWwgdHY7DQo+PiArwqDCoMKgIGNoYXIgZHVtbXk7DQo+PiArwqDCoMKg
-IHRpbWVfdCByZWFkX2VudGVyX25zOw0KPj4gK8KgwqDCoCB0aW1lX3QgcmVhZF9vdmVyaGVhZF9u
-czsNCj4+ICsNCj4+ICvCoMKgwqAgZmQgPSB2c29ja19zZXFwYWNrZXRfY29ubmVjdChvcHRzLT5w
-ZWVyX2NpZCwgMTIzNCk7DQo+PiArwqDCoMKgIGlmIChmZCA8IDApIHsNCj4+ICvCoMKgwqDCoMKg
-wqDCoCBwZXJyb3IoImNvbm5lY3QiKTsNCj4+ICvCoMKgwqDCoMKgwqDCoCBleGl0KEVYSVRfRkFJ
-TFVSRSk7DQo+PiArwqDCoMKgIH0NCj4+ICsNCj4+ICvCoMKgwqAgdHYudHZfc2VjID0gUkNWVElN
-RU9fVElNRU9VVF9TRUM7DQo+PiArwqDCoMKgIHR2LnR2X3VzZWMgPSAwOw0KPj4gKw0KPj4gK8Kg
-wqDCoCBpZiAoc2V0c29ja29wdChmZCwgU09MX1NPQ0tFVCwgU09fUkNWVElNRU8sICh2b2lkICop
-JnR2LCBzaXplb2YodHYpKSA9PSAtMSkgew0KPj4gK8KgwqDCoMKgwqDCoMKgIHBlcnJvcigic2V0
-c29ja29wdCAnU09fUkNWVElNRU8nIik7DQo+PiArwqDCoMKgwqDCoMKgwqAgZXhpdChFWElUX0ZB
-SUxVUkUpOw0KPj4gK8KgwqDCoCB9DQo+PiArDQo+PiArwqDCoMKgIHJlYWRfZW50ZXJfbnMgPSBj
-dXJyZW50X25zZWMoKTsNCj4+ICsNCj4+ICvCoMKgwqAgaWYgKGVycm5vICE9IEVBR0FJTikgew0K
-Pj4gK8KgwqDCoMKgwqDCoMKgIHBlcnJvcigiRUFHQUlOIGV4cGVjdGVkIik7DQo+PiArwqDCoMKg
-wqDCoMKgwqAgZXhpdChFWElUX0ZBSUxVUkUpOw0KPj4gK8KgwqDCoCB9DQo+IA0KPiBTaG91bGQg
-dGhpcyBjaGVjayBnbyBhZnRlciByZWFkKCk/DQo+IA0KPiBJbmRlZWQgbm93IHRoZSB0ZXN0IGZh
-aWxzIG9uIG15IGVudmlyb25tZW50IHdpdGggIkVBR0FJTiBleHBlY3RlZCIgbWVzc2FnZS4NCj4g
-DQo+IFRoZSByZXN0IExHVE0gOi0pDQoNCk9vcHMsIHNvcnJ5IDopIA0KDQo+IA0KPiBTdGVmYW5v
-DQo+IA0KPj4gKw0KPj4gK8KgwqDCoCBpZiAocmVhZChmZCwgJmR1bW15LCBzaXplb2YoZHVtbXkp
-KSAhPSAtMSkgew0KPj4gK8KgwqDCoMKgwqDCoMKgIGZwcmludGYoc3RkZXJyLA0KPj4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgImV4cGVjdGVkICdkdW1teScgcmVhZCgyKSBmYWlsdXJlXG4iKTsN
-Cj4+ICvCoMKgwqDCoMKgwqDCoCBleGl0KEVYSVRfRkFJTFVSRSk7DQo+PiArwqDCoMKgIH0NCj4+
-ICsNCj4+ICvCoMKgwqAgcmVhZF9vdmVyaGVhZF9ucyA9IGN1cnJlbnRfbnNlYygpIC0gcmVhZF9l
-bnRlcl9ucyAtDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAxMDAwMDAwMDAwVUxMICogUkNW
-VElNRU9fVElNRU9VVF9TRUM7DQo+PiArDQo+PiArwqDCoMKgIGlmIChyZWFkX292ZXJoZWFkX25z
-ID4gUkVBRF9PVkVSSEVBRF9OU0VDKSB7DQo+PiArwqDCoMKgwqDCoMKgwqAgZnByaW50ZihzdGRl
-cnIsDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAidG9vIG11Y2ggdGltZSBpbiByZWFkKDIp
-LCAlbHUgPiAlaSBuc1xuIiwNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJlYWRfb3Zlcmhl
-YWRfbnMsIFJFQURfT1ZFUkhFQURfTlNFQyk7DQo+PiArwqDCoMKgwqDCoMKgwqAgZXhpdChFWElU
-X0ZBSUxVUkUpOw0KPj4gK8KgwqDCoCB9DQo+PiArDQo+PiArwqDCoMKgIGNvbnRyb2xfd3JpdGVs
-bigiV0FJVERPTkUiKTsNCj4+ICvCoMKgwqAgY2xvc2UoZmQpOw0KPj4gK30NCj4+ICsNCj4+ICtz
-dGF0aWMgdm9pZCB0ZXN0X3NlcXBhY2tldF90aW1lb3V0X3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVz
-dF9vcHRzICpvcHRzKQ0KPj4gK3sNCj4+ICvCoMKgwqAgaW50IGZkOw0KPj4gKw0KPj4gK8KgwqDC
-oCBmZCA9IHZzb2NrX3NlcXBhY2tldF9hY2NlcHQoVk1BRERSX0NJRF9BTlksIDEyMzQsIE5VTEwp
-Ow0KPj4gK8KgwqDCoCBpZiAoZmQgPCAwKSB7DQo+PiArwqDCoMKgwqDCoMKgwqAgcGVycm9yKCJh
-Y2NlcHQiKTsNCj4+ICvCoMKgwqDCoMKgwqDCoCBleGl0KEVYSVRfRkFJTFVSRSk7DQo+PiArwqDC
-oMKgIH0NCj4+ICsNCj4+ICvCoMKgwqAgY29udHJvbF9leHBlY3RsbigiV0FJVERPTkUiKTsNCj4+
-ICvCoMKgwqAgY2xvc2UoZmQpOw0KPj4gK30NCj4+ICsNCj4+IHN0YXRpYyBzdHJ1Y3QgdGVzdF9j
-YXNlIHRlc3RfY2FzZXNbXSA9IHsNCj4+IMKgwqDCoMKgew0KPj4gwqDCoMKgwqDCoMKgwqAgLm5h
-bWUgPSAiU09DS19TVFJFQU0gY29ubmVjdGlvbiByZXNldCIsDQo+PiBAQCAtNDMxLDYgKzUxMCwx
-MSBAQCBzdGF0aWMgc3RydWN0IHRlc3RfY2FzZSB0ZXN0X2Nhc2VzW10gPSB7DQo+PiDCoMKgwqDC
-oMKgwqDCoCAucnVuX2NsaWVudCA9IHRlc3Rfc2VxcGFja2V0X21zZ190cnVuY19jbGllbnQsDQo+
-PiDCoMKgwqDCoMKgwqDCoCAucnVuX3NlcnZlciA9IHRlc3Rfc2VxcGFja2V0X21zZ190cnVuY19z
-ZXJ2ZXIsDQo+PiDCoMKgwqDCoH0sDQo+PiArwqDCoMKgIHsNCj4+ICvCoMKgwqDCoMKgwqDCoCAu
-bmFtZSA9ICJTT0NLX1NFUVBBQ0tFVCB0aW1lb3V0IiwNCj4+ICvCoMKgwqDCoMKgwqDCoCAucnVu
-X2NsaWVudCA9IHRlc3Rfc2VxcGFja2V0X3RpbWVvdXRfY2xpZW50LA0KPj4gK8KgwqDCoMKgwqDC
-oMKgIC5ydW5fc2VydmVyID0gdGVzdF9zZXFwYWNrZXRfdGltZW91dF9zZXJ2ZXIsDQo+PiArwqDC
-oMKgIH0sDQo+PiDCoMKgwqDCoHt9LA0KPj4gfTsNCj4+DQo+PiAtLcKgDQo+PiAyLjI1LjENCj4g
-DQoNCg==
+Hi Medad,
+
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on ras/edac-for-next]
+[also build test WARNING on robh/for-next v5.17-rc8 next-20220316]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Medad-CChien/EDAC-nuvoton-Add-nuvoton-NPCM-memory-controller-driver/20220317-100014
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/ras/ras.git edac-for-next
+config: riscv-randconfig-r033-20220317 (https://download.01.org/0day-ci/archive/20220317/202203171641.zYjMuQjO-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/0day-ci/linux/commit/94dbdfede018043818636c4c749ba374a45eaba1
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Medad-CChien/EDAC-nuvoton-Add-nuvoton-NPCM-memory-controller-driver/20220317-100014
+        git checkout 94dbdfede018043818636c4c749ba374a45eaba1
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/edac/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/edac/npcm_edac.c:8:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from drivers/edac/npcm_edac.c:8:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from drivers/edac/npcm_edac.c:8:
+   In file included from include/linux/interrupt.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:1024:55: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           return (port > MMIO_UPPER_LIMIT) ? NULL : PCI_IOBASE + port;
+                                                     ~~~~~~~~~~ ^
+>> drivers/edac/npcm_edac.c:370:6: warning: logical not is only applied to the left hand side of this bitwise operator [-Wlogical-not-parentheses]
+           if (!readl(priv->reg + npcm_chip->ecc_ctl_en_reg) & npcm_chip->ecc_ctl_ecc_enable_mask)
+               ^                                             ~
+   drivers/edac/npcm_edac.c:370:6: note: add parentheses after the '!' to evaluate the bitwise operator first
+           if (!readl(priv->reg + npcm_chip->ecc_ctl_en_reg) & npcm_chip->ecc_ctl_ecc_enable_mask)
+               ^
+                (                                                                                )
+   drivers/edac/npcm_edac.c:370:6: note: add parentheses around left hand side expression to silence this warning
+           if (!readl(priv->reg + npcm_chip->ecc_ctl_en_reg) & npcm_chip->ecc_ctl_ecc_enable_mask)
+               ^
+               (                                            )
+>> drivers/edac/npcm_edac.c:579:6: warning: mixing declarations and code is a C99 extension [-Wdeclaration-after-statement]
+           u32 ecc_en = readl(reg + npcm_chip->ecc_ctl_en_reg);
+               ^
+   9 warnings generated.
+
+
+vim +370 drivers/edac/npcm_edac.c
+
+   352	
+   353	static ssize_t forced_ecc_error_store(struct device *dev,
+   354					      struct device_attribute *mattr,
+   355					      const char *data, size_t count)
+   356	{
+   357		struct mem_ctl_info *mci = to_mci(dev);
+   358		struct priv_data *priv = mci->pvt_info;
+   359		const struct npcm_edac_platform_data *npcm_chip = priv->npcm_chip;
+   360		int	args_cnt;
+   361		int	ret;
+   362		char	**args;
+   363		u32	regval;
+   364		u8	bit_no;
+   365	
+   366		/* Split string buffer into separate parameters */
+   367		args = argv_split(GFP_KERNEL, data, &args_cnt);
+   368	
+   369		/* Check ecc enabled */
+ > 370		if (!readl(priv->reg + npcm_chip->ecc_ctl_en_reg) & npcm_chip->ecc_ctl_ecc_enable_mask)
+   371			return count;
+   372	
+   373		/* Check no write operation pending to controller*/
+   374		while (readl(priv->reg + npcm_chip->ddr_ctl_controller_busy_reg) &
+   375				CTL_CONTROLLER_BUSY_FLAG) {
+   376			usleep_range(1000, 10000);
+   377		}
+   378	
+   379		/* Write appropriate syndrome to xor_check_bit*/
+   380		if (!strcmp(args[0], "CE") && args_cnt == 3) {
+   381			ret = kstrtou8(args[2], 0, &bit_no);
+   382			if (ret)
+   383				return ret;
+   384			if (!strcmp(args[1], "checkcode")) {
+   385				if (bit_no > 7) {
+   386					edac_printk(KERN_INFO, NPCM_EDAC_MOD_NAME, "bit_no for checkcode must be 0~7\n");
+   387					return count;
+   388				}
+   389				regval = readl(priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   390				regval = (regval & ~(NPCM_ECC_CTL_XOR_BITS_MASK)) |
+   391					(check_synd[bit_no] << XOR_CHECK_BIT_SPLIT_WIDTH);
+   392				writel(regval, priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   393			} else if (!strcmp(args[1], "data")) {
+   394				if (bit_no > 63) {
+   395					edac_printk(KERN_INFO, NPCM_EDAC_MOD_NAME, "bit_no for data must be 0~63\n");
+   396					return count;
+   397				}
+   398				regval = readl(priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   399				regval = (regval & ~(NPCM_ECC_CTL_XOR_BITS_MASK)) |
+   400						 (data_synd[bit_no] << XOR_CHECK_BIT_SPLIT_WIDTH);
+   401				writel(regval, priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   402			}
+   403			/* Enable the ECC writeback_en for corrected error */
+   404			regval = readl(priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   405			writel((regval | NPCM_ECC_CTL_AUTO_WRITEBACK_EN),
+   406			       priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   407		} else if (!strcmp(args[0], "UE")) {
+   408			regval = readl(priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   409			regval = (regval & ~(NPCM_ECC_CTL_XOR_BITS_MASK)) |
+   410					 (ECC_DOUBLE_MULTI_ERR_SYND << XOR_CHECK_BIT_SPLIT_WIDTH);
+   411			writel(regval, priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   412		}
+   413	
+   414		/* Assert fwc */
+   415		writel((NPCM_ECC_CTL_FORCE_WC | readl(priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg)),
+   416		       priv->reg + npcm_chip->ecc_ctl_xor_check_bits_reg);
+   417	
+   418		return count;
+   419	}
+   420	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
