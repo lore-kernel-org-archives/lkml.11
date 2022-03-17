@@ -2,69 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54158C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:41:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 335ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:43:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233086AbiCQLmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 07:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35090 "EHLO
+        id S231867AbiCQLoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 07:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233068AbiCQLmQ (ORCPT
+        with ESMTP id S232562AbiCQLov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 07:42:16 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED701E3E38
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:40:59 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KK4tS5V6GzfZ8C;
-        Thu, 17 Mar 2022 19:39:28 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 19:40:57 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.152) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 19:40:57 +0800
-From:   Wang Weiyang <wangweiyang2@huawei.com>
-To:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <paul@crapouillou.net>
-CC:     <wangweiyang2@huawei.com>, <linux-mtd@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] mtd: rawnand: davinci: Remove redundant unsigned comparison to zero
-Date:   Thu, 17 Mar 2022 19:39:07 +0800
-Message-ID: <20220317113907.96006-1-wangweiyang2@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 17 Mar 2022 07:44:51 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CDFC56773;
+        Thu, 17 Mar 2022 04:43:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647517415; x=1679053415;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=izMyFSd/6/exTcmhx8kxg+WRK3vb/oe1G6XfehxbOcw=;
+  b=bamGKhWgR22flfkrNChcQ9UNGjblXG8A4DjIUq2qRnkAlIzLUVXtT5Wg
+   aqgz/zzyV8Me+aag4xKN4PQb7hmTr/gHcKvQsgLInh+qRXY/xNM1uQfs/
+   qZY+Mib8TRmOx23hs9MCMqivXK9ia7ZvvrX435uXa6nku/92E1D94qTw1
+   Iq6AtF4p3aKwNkZMyxFDDkJAMor8FzFiRZFVYI49n7Nn2g6IQ3C6aGvRg
+   BoYlziYSY5uL+Ld3tHnV2HiQFp9Z/PbUQpfKjbQpAeRc0SFDlC514uQBo
+   xd9DB4UhEHPOXae36sK9w4To4EfH9LxM2FQ9rgf+T45reWrsWEKF16NPY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="254402656"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="254402656"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 04:43:34 -0700
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="513397834"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 04:43:31 -0700
+Received: by lahna (sSMTP sendmail emulation); Thu, 17 Mar 2022 13:43:29 +0200
+Date:   Thu, 17 Mar 2022 13:43:29 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: Re: [PATCH v1 0/2] ACPI: bus: Fix platform-level _OSC handling and
+ avoid CPPC is not supported
+Message-ID: <YjMe4Wdh6Y8PkVE5@lahna>
+References: <4734682.31r3eYUQgx@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.152]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4734682.31r3eYUQgx@kreacher>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since core_chipsel is uint32_t, comparison to zero is redundant
+Hi Rafael,
 
-Signed-off-by: Wang Weiyang <wangweiyang2@huawei.com>
----
- drivers/mtd/nand/raw/davinci_nand.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Mar 16, 2022 at 01:35:23PM +0100, Rafael J. Wysocki wrote:
+> Hi All,
+> 
+> The following two patches revert a commit that caused the handling of
+> platform-level _OSC to fail in some legitimate cases and address the
+> CPPC handling breakage that was the motivation for the reverted commit.
+> 
+> Please refer to the patch changelogs for details.
 
-diff --git a/drivers/mtd/nand/raw/davinci_nand.c b/drivers/mtd/nand/raw/davinci_nand.c
-index 45fec8c192ab..3e98e3c255bf 100644
---- a/drivers/mtd/nand/raw/davinci_nand.c
-+++ b/drivers/mtd/nand/raw/davinci_nand.c
-@@ -727,7 +727,7 @@ static int nand_davinci_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 
- 	/* which external chipselect will we be managing? */
--	if (pdata->core_chipsel < 0 || pdata->core_chipsel > 3)
-+	if (pdata->core_chipsel > 3)
- 		return -ENODEV;
- 
- 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
--- 
-2.17.1
+For both,
 
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
