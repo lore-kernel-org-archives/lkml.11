@@ -2,55 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F71C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 02:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A41C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 02:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358486AbiCQClc (ORCPT
+        id S1358493AbiCQClf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 22:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49498 "EHLO
+        Wed, 16 Mar 2022 22:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233551AbiCQCl1 (ORCPT
+        with ESMTP id S1354977AbiCQCl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 22:41:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2904D1FCEB;
-        Wed, 16 Mar 2022 19:40:12 -0700 (PDT)
+        Wed, 16 Mar 2022 22:41:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A5F20185;
+        Wed, 16 Mar 2022 19:40:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6ED5614FF;
-        Thu, 17 Mar 2022 02:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0B875C340F7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 814FFB81DEA;
+        Thu, 17 Mar 2022 02:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 294E7C340EF;
         Thu, 17 Mar 2022 02:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647484811;
-        bh=aYdUrgw8/IglXx8axGitcK3uGwS71gfO9jM+NaC3evY=;
+        bh=d6PHNPVPmTysZRBit4MXXt2WuAvPHuq0x2xiVX6+buQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gVfjhHNroMTsx0EPvPu/2UYb83st04LDinYEoQHoYt887mnAt6vLV/kS5HR5MAAI4
-         wA4pGHf/bOTc2EjPjRmIfpranOWfRsDasvpJOxQr8mTcAOwf8r4ksYgv8mOJza6C5G
-         LIhy2nKr73zPrSIIcThtYIo8gqbuIE/ouXzfDaei6UyZaK0ndsp0JlF/cY7SuWwzMp
-         5jz6vUMc4J6UBzBMwJobS931O0kE/wf5Sy7rNAG8Q32NfxQChGMYqRhJrR8JiGqe8S
-         Dk+uRiFvYdzsXAgQIIIh5BwunERR00LOm+TcjTtC3afIpedITY48CZlU6x7JK5tyho
-         2Pf9dG+g0kOug==
+        b=Bd03dVaQKeLa5kOBEyhtT8eCYCLD/LUX/77MAU8WEW/Gr/wbI9ZqqKXFS7jtixiZW
+         rfJtkwdDOBlb9sx5sAIW6FCgXkbjhtX8OxzwhBFghAKl3zfDguPK1HFcAZ9cs50ixn
+         R6xuGNdYYtfG8VzV/bzaKtPAc3B4ePpNZQcZmbEOarpoHzSkU9rbWpTzpPYNeivBx/
+         t81cumUNi+67xotsGyRyc/UJ31hEI2xX0pvVqhAH+1VCH5q/uK9oNFqJod8dWMzZB5
+         aQfl1vQS5gB8DRrxp8FwQscKBOMPPiiN3FQIfoPwuReXFMK/ddUO/VFZw3+3MsMVC2
+         K1uaMWuAy1IMA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2730F03846;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E8A2BF03848;
         Thu, 17 Mar 2022 02:40:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V2] net: mv643xx_eth: undo some opreations in
- mv643xx_eth_probe
+Subject: Re: [PATCH] net: hns3: Fix spelling mistake "does't" -> "doesn't"
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164748481085.31245.4456158628838052950.git-patchwork-notify@kernel.org>
+Message-Id: <164748481094.31245.11981080354188425621.git-patchwork-notify@kernel.org>
 Date:   Thu, 17 Mar 2022 02:40:10 +0000
-References: <20220316012444.2126070-1-chi.minghao@zte.com.cn>
-In-Reply-To: <20220316012444.2126070-1-chi.minghao@zte.com.cn>
-To:     CGEL <cgel.zte@gmail.com>
-Cc:     kuba@kernel.org, sebastian.hesselbarth@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, chi.minghao@zte.com.cn,
-        zealci@zte.com.cn
+References: <20220315222914.2960786-1-colin.i.king@gmail.com>
+In-Reply-To: <20220315222914.2960786-1-colin.i.king@gmail.com>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, kuba@kernel.org, huangguangbin2@huawei.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -60,20 +59,17 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 16 Mar 2022 01:24:44 +0000 you wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
+On Tue, 15 Mar 2022 22:29:14 +0000 you wrote:
+> There is a spelling mistake in a dev_warn message. Fix it.
 > 
-> Cannot directly return platform_get_irq return irq, there
-> are operations that need to be undone.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> 
-> [...]
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Here is the summary with links:
-  - [V2] net: mv643xx_eth: undo some opreations in mv643xx_eth_probe
-    https://git.kernel.org/netdev/net-next/c/571703ff387c
+  - net: hns3: Fix spelling mistake "does't" -> "doesn't"
+    https://git.kernel.org/netdev/net-next/c/f403443015c6
 
 You are awesome, thank you!
 -- 
