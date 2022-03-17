@@ -2,154 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B097BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 00:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BB3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 00:58:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354625AbiCQAuO (ORCPT
+        id S1354768AbiCQA7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 20:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
+        Wed, 16 Mar 2022 20:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235950AbiCQAuL (ORCPT
+        with ESMTP id S1345483AbiCQA7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 20:50:11 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB271A3A4
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 17:48:56 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647478135;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=E+I2OaTMS7yIBdpG2ZjhPVOzcWitmDk5Sz3Ki56Qk9c=;
-        b=CCn9/qBit4a8Gzo3WK6I/8fHd/DuILEyz09ecA2i49PpVtIQdLNFDLbYiET2cXlRUU9Abf
-        A4Uw0UCwRT03+XgtN6VKihzkK3Kt1FH3TfY54PJ728YSsJPzFV6kd5mEhqvGAfi/aO9xem
-        2t0ohZmqcd4rbKNv60jjvPF0UXarO+c1xJrId4sltFC0gm1C1G2yL5NTapg+Wv+n4G9XxS
-        GpgSeXnJDWPRovxC7NE4y4YDyej8S3kRPt7UV2zVy1zSeDHGrbGsMlrs8aMPv6UhyOm0F+
-        EIx0mcS+/uWDX/9XeP66P/n+oNvoJ8pOk2TG306YY4AyUzGKQGO1EPx6TkxaeQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647478135;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=E+I2OaTMS7yIBdpG2ZjhPVOzcWitmDk5Sz3Ki56Qk9c=;
-        b=gzkIHjRH6o8WZ8ZChDRDFNX+8SRLEXXSYIKteRAqckvuGy3+22otFFEHMYSm4T0pk6Vstd
-        M0ABuiKzbDUbm0DA==
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Subject: Re: [PATCHv6 07/30] x86/traps: Add #VE support for TDX guest
-In-Reply-To: <20220316020856.24435-8-kirill.shutemov@linux.intel.com>
-References: <20220316020856.24435-1-kirill.shutemov@linux.intel.com>
- <20220316020856.24435-8-kirill.shutemov@linux.intel.com>
-Date:   Thu, 17 Mar 2022 01:48:54 +0100
-Message-ID: <877d8t2ykp.ffs@tglx>
+        Wed, 16 Mar 2022 20:59:34 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D987F13CCD
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 17:58:18 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id l8so5569691pfu.1
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 17:58:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=iVaSiMrGUBcuxr+BXheMhCpTwOTEdY3UKmynqOZB7GE=;
+        b=laiMa1UGEj7YbxyVRZ7aUO9i2EcvkGLOGcVqw5do55ZZ0ighV06QEkme6Dd7iBf3nF
+         qSL3a1C7XNtfO27iCLFd13f3TDzDZJC9+J7gM6ug1YOavfLB/h5sFsrmO/JLPkOXn7vM
+         FkrYbi7f5hydijrpe6WfdHplPq9VFdm15W61Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=iVaSiMrGUBcuxr+BXheMhCpTwOTEdY3UKmynqOZB7GE=;
+        b=Pmj3ggZ8lypqTLQQrg3tBS9DQg7bCrBP6v740p9PhA00v1olLvgtuhos/l2XuukaRm
+         eW8YyJvHvnnevZMSUkBuSDMUguVYe4RlLzNmGZ6ekJ9UmjnRyvtyHe+XNMtOVVsybPwN
+         tVkAVBZSt7AAhtDfU9944bmKYWpqBHvqm219ptZkI/p/vowynZaO/5GCc6+EPcFcBWuJ
+         yF1Tu4rBv4Fl7KMNhPaoF1qP+m9XSCizXL7poOQcDsJUwGcZ+RyYzFQmUDJB70OOv9B7
+         shvRPCaM96qYT1uJAA1Yv7ueYkl5NUZCrtEPxnXmWqq6Zqu488l/LWdjOhQVwj+hob7E
+         JiRA==
+X-Gm-Message-State: AOAM533u++quR+R/fNWhaDAwOh9eg5xkXJhagTtoC8loJyg4XBmWxQCm
+        G/SrWF0SVeI/nsAGYfasNLPyzQ==
+X-Google-Smtp-Source: ABdhPJw5GSVzk93O9AbsNKLeH45njGoSIqITsaIK4AQ+v4ZD3t8POB/0cPylVtYlqcqNRymomj4wGw==
+X-Received: by 2002:a05:6a00:1146:b0:4c9:ede0:725a with SMTP id b6-20020a056a00114600b004c9ede0725amr2144828pfm.35.1647478698387;
+        Wed, 16 Mar 2022 17:58:18 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:dec5:e3f8:cbd7:f5a7])
+        by smtp.gmail.com with ESMTPSA id l20-20020a056a00141400b004f65cedfb09sm4433445pfu.48.2022.03.16.17.58.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 17:58:18 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Benson Leung <bleung@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Craig Hesling <hesling@chromium.org>,
+        Tom Hughes <tomhughes@chromium.org>,
+        Alexandru M Stan <amstan@chromium.org>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: [PATCH v2 1/3] dt-bindings: chrome: Add ChromeOS fingerprint binding
+Date:   Wed, 16 Mar 2022 17:58:12 -0700
+Message-Id: <20220317005814.2496302-2-swboyd@chromium.org>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+In-Reply-To: <20220317005814.2496302-1-swboyd@chromium.org>
+References: <20220317005814.2496302-1-swboyd@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16 2022 at 05:08, Kirill A. Shutemov wrote:
-> +void tdx_get_ve_info(struct ve_info *ve)
-> +{
-> +	struct tdx_module_output out;
-> +
-> +	/*
-> +	 * Called during #VE handling to retrieve the #VE info from the
-> +	 * TDX module.
-> +	 *
-> +	 * This should called done early in #VE handling.  A "nested"
+Add a binding to describe the fingerprint processor found on Chromebooks
+with a fingerprint sensor.
 
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: <devicetree@vger.kernel.org>
+Cc: Guenter Roeck <groeck@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Craig Hesling <hesling@chromium.org>
+Cc: Tom Hughes <tomhughes@chromium.org>
+Cc: Alexandru M Stan <amstan@chromium.org>
+Cc: Tzung-Bi Shih <tzungbi@kernel.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
+ .../bindings/chrome/google,cros-ec-fp.yaml    | 85 +++++++++++++++++++
+ 1 file changed, 85 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/chrome/google,cros-ec-fp.yaml
 
-... has to be called early ..
+diff --git a/Documentation/devicetree/bindings/chrome/google,cros-ec-fp.yaml b/Documentation/devicetree/bindings/chrome/google,cros-ec-fp.yaml
+new file mode 100644
+index 000000000000..ba4212e6b583
+--- /dev/null
++++ b/Documentation/devicetree/bindings/chrome/google,cros-ec-fp.yaml
+@@ -0,0 +1,85 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/chrome/google,cros-ec-fp.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ChromeOS Embedded Fingerprint Controller
++
++description:
++  Google's ChromeOS embedded fingerprint controller is a device which
++  implements fingerprint functionality such as unlocking a Chromebook
++  without typing a password.
++
++maintainers:
++  - Tom Hughes <tomhughes@chromium.org>
++
++properties:
++  compatible:
++    const: google,cros-ec-fp
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 3000000
++
++  interrupts:
++    maxItems: 1
++
++  reset-gpios: true
++  boot0-gpios:
++    maxItems: 1
++    description: Assert for bootloader mode.
++
++  vdd-supply: true
++
++  google,cros-ec-spi-pre-delay:
++    description:
++      This property specifies the delay in usecs between the
++      assertion of the CS and the first clock pulse.
++    allOf:
++      - $ref: /schemas/types.yaml#/definitions/uint32
++      - default: 0
++      - minimum: 0
++
++  google,cros-ec-spi-msg-delay:
++    description:
++      This property specifies the delay in usecs between messages.
++    allOf:
++      - $ref: /schemas/types.yaml#/definitions/uint32
++      - default: 0
++      - minimum: 0
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - reset-gpios
++  - boot0-gpios
++  - vdd-supply
++  - spi-max-frequency
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++      #address-cells = <0x1>;
++      #size-cells = <0x0>;
++      ec@0 {
++        compatible = "google,cros-ec-fp";
++        reg = <0>;
++        interrupt-parent = <&gpio_controller>;
++        interrupts = <4 IRQ_TYPE_LEVEL_LOW>;
++        spi-max-frequency = <3000000>;
++        google,cros-ec-spi-msg-delay = <37>;
++        google,cros-ec-spi-pre-delay = <5>;
++        reset-gpios = <&gpio_controller 5 GPIO_ACTIVE_LOW>;
++        boot0-gpios = <&gpio_controller 10 GPIO_ACTIVE_HIGH>;
++        vdd-supply = <&pp3300_fp_mcu>;
++      };
++    };
++...
+-- 
+https://chromeos.dev
 
-> +	 * #VE which occurs before this will raise a #DF and is not
-> +	 * recoverable.
-> +	 */
-> +	tdx_module_call(TDX_GET_VEINFO, 0, 0, 0, 0, &out);
-> +
-> +	/* Interrupts and NMIs can be delivered again. */
-
-Please put a new line between this comment and the code below because
-they are completely unrelated. Also interrupts cannot be delivered here
-because this code runs with interrupts disabled ...
-
-And I rather have this comment above the tdx_module_call() invocation:
-
-	 * recoverable.
-         *
-         * <Useful comment about VE info and NMIs>
-
-When I reviewed this last time, Sean provided a very concise comment for
-this.
-
-         */
-         tdx_module_call(...);
-         
-         /* Transfer the output parameters */
-
-> +	ve->exit_reason = out.rcx;
-        ....
-
-Hmm?
-
-> +/*
-> + * Virtualization Exceptions (#VE) are delivered to TDX guests due to
-> + * specific guest actions which may happen in either user space or the
-> + * kernel:
-> + *
-> + *  * Specific instructions (WBINVD, for example)
-> + *  * Specific MSR accesses
-> + *  * Specific CPUID leaf accesses
-> + *  * Access to specific guest physical addresses
-> + *
-> + * In the settings that Linux will run in, virtualization exceptions are
-> + * never generated on accesses to normal, TD-private memory that has been
-> + * accepted.
-> + *
-> + * Syscall entry code has a critical window where the kernel stack is not
-> + * yet set up. Any exception in this window leads to hard to debug issues
-> + * and can be exploited for privilege escalation. Exceptions in the NMI
-> + * entry code also cause issues. Returning from the exception handler with
-> + * IRET will re-enable NMIs and nested NMI will corrupt the NMI stack.
-> + *
-> + * For these reasons, the kernel avoids #VEs during the syscall gap and
-> + * the NMI entry code. Entry code paths do not access TD-shared memory,
-> + * MMIO regions, use #VE triggering MSRs, instructions, or CPUID leaves
-> + * that might generate #VE.
-
-I asked that before:
-
-  "How is that enforced or validated? What checks for a violation of that
-   assumption?"
-
-This is still exactly the same comment which is based on testing which
-did not yet explode in your face, right?
-
-So what's the point of this blurb? Create expectations which are not
-accountable?
-
-The point is that any #VE in such a code path is fatal and you better
-come up with some reasonable explanation why this is not the case in
-those code pathes and how a potential violation of that assumption might
-be detected especially in rarely used corner cases. If such a violation
-is not detectable by audit, CI, static code analysis or whatever then
-document the consequences instead of pretending that the problem does
-not exist and the kernel is perfect today and forever.
-
-Thanks,
-
-        tglx
