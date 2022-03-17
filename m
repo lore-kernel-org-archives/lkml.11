@@ -2,109 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09AD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:12:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6713C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237300AbiCQSNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58864 "EHLO
+        id S237308AbiCQSNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237296AbiCQSMx (ORCPT
+        with ESMTP id S237325AbiCQSM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:12:53 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E29E21A8A2
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:11:34 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id r22so8339079ljd.4
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:11:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GvRtkI+aajtqCy2c1b2F4MUYD+uMLWJPyiKwyzY7fBQ=;
-        b=hne5dkL1r66jaWeZwLdqsQWeaYzLA0jCNqUeaPeX4MK0bcpogrmJFtTsAHSYPHTv37
-         F31NNlIDn9bslKYtcs9T7Ma0331NI3pAKkY7Smg4Njyl7fKErwUzZLR77VAJgDJGt60n
-         8yoAF2gzIx0ez9xH7e1/L5DkEJjrMCAG7htDNgWR4IVaW+tvIGLmwLqztCBKJVgv8JNg
-         9J29bhh2X/xEUKQYCshpyqmTT6OTC0cbzKTXSYQzOMHmhryjwsJyMrPUTkPxAl/m9Ng8
-         HHfV7rzkYosyidu3QWTr29KI54SAqAdUXPgypkWcpypqbuGZSPra+xml3A+fuJpxtgBF
-         iU+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GvRtkI+aajtqCy2c1b2F4MUYD+uMLWJPyiKwyzY7fBQ=;
-        b=7P2lJvBcia2pJ0z13ErEOaU0DFko2ocv0bw74WCHmC+HMo6GJnmGkHn4MUlqZsCBUu
-         5BA4ZlC6Yj/pRpzUheHGnqpoLsHNFqHd3F6zK23yOptxCPscB/GqwbChm/DOkCtuYiX8
-         cfcoJfjL1ayYYXVWSF4jNnmd4tnTcxQ9tS6eExwQyPxnPfRA+Jh6+z6+94sT5Mnb7aiK
-         PG8b4JiSvJgostH68C97OSBXd3l8hr2x9sQjNYc1kjBnwUEHvwwbjQ2lQNugvoalkUbU
-         UoGabzKkDlMI9BW23B1XLKG7G+Xm6iehBiTK+zYtW4j0/x6CeDLqaugvyVZd2wuF9jzM
-         krRA==
-X-Gm-Message-State: AOAM532jtq/CP08pZio9awq0w842p2cinWl0dC0hAbyPkNHZbZI23phI
-        Qr+GZqHytGFNSasT/1jq5WJGZKgLrvrqm0kf/gFiPw==
-X-Google-Smtp-Source: ABdhPJw321RYGnd+eSI0h5Spru1PQ/7vVF+BX9Nro0IcXN12RAcPjoehXMVZPqBvuitiGJFoQTKh96/tVTcy8uPYIkw=
-X-Received: by 2002:a05:651c:1791:b0:243:94bd:d94c with SMTP id
- bn17-20020a05651c179100b0024394bdd94cmr3596248ljb.468.1647540692501; Thu, 17
- Mar 2022 11:11:32 -0700 (PDT)
+        Thu, 17 Mar 2022 14:12:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167B121DF1F;
+        Thu, 17 Mar 2022 11:11:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0EC961663;
+        Thu, 17 Mar 2022 18:11:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DA00C340EE;
+        Thu, 17 Mar 2022 18:11:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647540701;
+        bh=ApspYmKimTsDaiKmY2HBxsKKPe+ifO/dur0fE3PhxaQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JwxwYQCpujUbn3iSxMbqq1IT3VjQDchj8PsKL7f1Gda6BxP1wQjgohMpTeASsXvZu
+         DT/OcpPIbFK7PfWLSMcDcA4h3tw/iQBXq6/bBufdhjnML8Pu6b2W2a7if65KUEA2Qc
+         d+tXlywh3msUCFgD0d+xcKNUzQleDukjCgZMgJXDrm5mmmMoQZp5zIQ3RtA4mwZ5u/
+         V+2ysz9RHvVQdIEbZ8xpcg1gbib2QR7Xp35wEP6fNyM3sxyfND9bvO95AOELWDPN3h
+         oMekcEVoFIwPBWlDbNS5+kTq7tT6A7qIXEesWzUZz15aKWk5ZdJCrIGL6tpQbP+okF
+         4VtV4e0NPS8wA==
+From:   Miguel Ojeda <ojeda@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Miguel Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Subject: [PATCH v5 07/20] rust: add `build_error` crate
+Date:   Thu, 17 Mar 2022 19:09:55 +0100
+Message-Id: <20220317181032.15436-8-ojeda@kernel.org>
+In-Reply-To: <20220317181032.15436-1-ojeda@kernel.org>
+References: <20220317181032.15436-1-ojeda@kernel.org>
 MIME-Version: 1.0
-References: <20220316213055.2351342-1-morbo@google.com> <YjL6K49CkH+YC4FQ@smile.fi.intel.com>
-In-Reply-To: <YjL6K49CkH+YC4FQ@smile.fi.intel.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 17 Mar 2022 11:11:21 -0700
-Message-ID: <CAKwvOdkjb3uR+kqjfdKL5gqA8R+00c5=3E7uGGW+mGZ3QRsjqg@mail.gmail.com>
-Subject: Re: [PATCH] gpiolib: acpi: use correct format characters
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bill Wendling <morbo@google.com>
-Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-gpio@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 2:07 AM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Wed, Mar 16, 2022 at 02:30:55PM -0700, Bill Wendling wrote:
-> > When compiling with -Wformat, clang emits the following warning:
-> >
-> > drivers/gpio/gpiolib-acpi.c:393:4: warning: format specifies type
-> > 'unsigned char' but the argument has type 'int' [-Wformat]
-> >                         pin);
-> >                         ^~~
-> >
-> > The types of these arguments are unconditionally defined, so this patch
-> > updates the format character to the correct ones for ints and unsigned
-> > ints.
->
-> hhX specifier refers to unsigned char. It's a bug in the compiler.
->
-> NAK.
+From: Gary Guo <gary@garyguo.net>
 
-Andy,
-Our goal is to enable -Wformat for CC=clang.  Please see also:
-commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
-unnecessary %h[xudi] and %hh[xudi]")
-and the lore link it cites.
-https://lore.kernel.org/lkml/CAHk-=wgoxnmsj8GEVFJSvTwdnWm8wVJthefNk2n6+4TC=20e0Q@mail.gmail.com/
-(I saw your follow up; this patch is one of the less controversial
-ones though since the types are not ones that are promoted).
+The `build_error` crate provides the `build_error` function which
+is then used to provide the `build_error!` and the `build_assert!`
+macros.
 
-Bill,
-I just remembered that we will want to explicitly set
--Wno-format-pedantic when enabling -Wformat. Remember that -Wformat is
-a group flag that turns on other flags, such as -Wformat-security
-(currently disabled) and -Wformat-pedantic.  See also:
-https://reviews.llvm.org/rGcc01d6421f4a896820c02da2ea92b82d973b431e
-commit a8735821d198 ("Kbuild: Disable the -Wformat-security gcc flag")
+`build_assert!` is intended to be used when `static_assert!` cannot
+be used, e.g. when the condition refers to generic parameters or
+parameters of an inline function.
 
-It may be helpful to cite
-commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
-unnecessary %h[xudi] and %hh[xudi]")
-in future commits that change the format flags for types that are promoted.
+Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+Signed-off-by: Gary Guo <gary@garyguo.net>
+Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
+Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
+---
+ rust/build_error.rs | 29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+ create mode 100644 rust/build_error.rs
+
+diff --git a/rust/build_error.rs b/rust/build_error.rs
+new file mode 100644
+index 000000000000..34e589149d3e
+--- /dev/null
++++ b/rust/build_error.rs
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Build-time error.
++//!
++//! This crate provides a function `build_error`, which will panic in
++//! compile-time if executed in const context, and will cause a build error
++//! if not executed at compile time and the optimizer does not optimise away the
++//! call.
++//!
++//! It is used by `build_assert!` in the kernel crate, allowing checking of
++//! conditions that could be checked statically, but could not be enforced in
++//! Rust yet (e.g. perform some checks in const functions, but those
++//! functions could still be called in the runtime).
++
++#![no_std]
++
++/// Panics if executed in const context, or triggers a build error if not.
++#[inline(never)]
++#[cold]
++#[no_mangle]
++#[track_caller]
++pub const fn build_error(msg: &'static str) -> ! {
++    panic!("{}", msg);
++}
++
++#[cfg(CONFIG_RUST_BUILD_ASSERT_WARN)]
++#[link_section = ".gnu.warning.build_error"]
++#[used]
++static BUILD_ERROR_WARNING: [u8; 45] = *b"call to build_error present after compilation";
 -- 
-Thanks,
-~Nick Desaulniers
+2.35.1
+
