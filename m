@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B170C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80EC6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:47:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233842AbiCQMsy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36658 "EHLO
+        id S230210AbiCQMtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233814AbiCQMsm (ORCPT
+        with ESMTP id S233821AbiCQMsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:48:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4631EFE10;
-        Thu, 17 Mar 2022 05:47:22 -0700 (PDT)
+        Thu, 17 Mar 2022 08:48:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C221F0CB0;
+        Thu, 17 Mar 2022 05:47:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B7861261;
-        Thu, 17 Mar 2022 12:47:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74D00C36AE2;
-        Thu, 17 Mar 2022 12:47:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 670C6612ED;
+        Thu, 17 Mar 2022 12:47:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59BB6C340E9;
+        Thu, 17 Mar 2022 12:47:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521241;
-        bh=eeQW6u0y7OJL7l69NjxsDzmGnugamvqScXN5CPlReDc=;
+        s=korg; t=1647521247;
+        bh=cVQ0mikGG2uvtBw2oyZsyqRCTbenVT0xZkWKqqJoTsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sReShsP3pv0oCR2jCOBN0X+XL2w7eiCkuKj6m8rQcLIRsyAh77osQUB1vhxJWy7rI
-         mUiS4bYEQPDyCA/9mXERKpHtkoyhquqmBQjIA09SooK+al4fdALq5KgHKFJ+IoN7ZP
-         MBqxK0b+zlPqfDZduEuLKIM4GRSf2lbPv2zpmRu4=
+        b=blxtSckKiBDFEi/44DiPsBDStLW4rlTOehiIqD1VnaTspRkTFt09LH32uEfjvdHw7
+         8rZguTCdcYoVwRSN/h9Vv7oSKU7ckl/u7j/bbE3sfs8cvialyu+vHLY/vSb9LBbqnN
+         3o6k2WRJUBi62reYNP/0ehxSUxA+X3xZA1Ftis8g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Morse <james.morse@arm.com>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 21/43] KVM: arm64: Add templates for BHB mitigation sequences
-Date:   Thu, 17 Mar 2022 13:45:32 +0100
-Message-Id: <20220317124528.260155982@linuxfoundation.org>
+Subject: [PATCH 5.4 23/43] KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
+Date:   Thu, 17 Mar 2022 13:45:34 +0100
+Message-Id: <20220317124528.320984338@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
 References: <20220317124527.672236844@linuxfoundation.org>
@@ -50,244 +53,178 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Morse <james.morse@arm.com>
 
-KVM writes the Spectre-v2 mitigation template at the beginning of each
-vector when a CPU requires a specific sequence to run.
+commit a5905d6af492ee6a4a2205f0d550b3f931b03d03 upstream.
 
-Because the template is copied, it can not be modified by the alternatives
-at runtime.
+KVM allows the guest to discover whether the ARCH_WORKAROUND SMCCC are
+implemented, and to preserve that state during migration through its
+firmware register interface.
 
-Add templates for calling ARCH_WORKAROUND_3 and one for each value of K
-in the brancy-loop. Instead of adding dummy functions for 'fn', which would
-disable the Spectre-v2 mitigation, add template_start to indicate that a
-template (and which one) is in use. Finally add a copy of
-install_bp_hardening_cb() that is able to install these.
+Add the necessary boiler plate for SMCCC_ARCH_WORKAROUND_3.
 
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+[ kvm code moved to virt/kvm/arm. ]
 Signed-off-by: James Morse <james.morse@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/include/asm/cpucaps.h |  3 +-
- arch/arm64/include/asm/kvm_mmu.h |  6 ++-
- arch/arm64/include/asm/mmu.h     |  6 +++
- arch/arm64/kernel/cpu_errata.c   | 65 +++++++++++++++++++++++++++++++-
- arch/arm64/kvm/hyp/hyp-entry.S   | 54 ++++++++++++++++++++++++++
- 5 files changed, 130 insertions(+), 4 deletions(-)
+ arch/arm/include/asm/kvm_host.h   |  7 +++++++
+ arch/arm/include/uapi/asm/kvm.h   |  6 ++++++
+ arch/arm64/include/asm/kvm_host.h |  5 +++++
+ arch/arm64/include/uapi/asm/kvm.h |  5 +++++
+ virt/kvm/arm/psci.c               | 34 ++++++++++++++++++++++++++++---
+ 5 files changed, 54 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/include/asm/cpucaps.h b/arch/arm64/include/asm/cpucaps.h
-index 1dc3c762fdcb..4ffa86149d28 100644
---- a/arch/arm64/include/asm/cpucaps.h
-+++ b/arch/arm64/include/asm/cpucaps.h
-@@ -55,7 +55,8 @@
- #define ARM64_WORKAROUND_CAVIUM_TX2_219_TVM	45
- #define ARM64_WORKAROUND_CAVIUM_TX2_219_PRFM	46
- #define ARM64_WORKAROUND_1542419		47
-+#define ARM64_SPECTRE_BHB			48
+diff --git a/arch/arm/include/asm/kvm_host.h b/arch/arm/include/asm/kvm_host.h
+index 32564b017ba0..d8ac89879327 100644
+--- a/arch/arm/include/asm/kvm_host.h
++++ b/arch/arm/include/asm/kvm_host.h
+@@ -15,6 +15,7 @@
+ #include <asm/kvm_asm.h>
+ #include <asm/kvm_mmio.h>
+ #include <asm/fpstate.h>
++#include <asm/spectre.h>
+ #include <kvm/arm_arch_timer.h>
  
--#define ARM64_NCAPS				48
-+#define ARM64_NCAPS				49
+ #define __KVM_HAVE_ARCH_INTC_INITIALIZED
+@@ -424,4 +425,10 @@ static inline bool kvm_arm_vcpu_is_finalized(struct kvm_vcpu *vcpu)
  
- #endif /* __ASM_CPUCAPS_H */
-diff --git a/arch/arm64/include/asm/kvm_mmu.h b/arch/arm64/include/asm/kvm_mmu.h
-index befe37d4bc0e..78d110667c0c 100644
---- a/arch/arm64/include/asm/kvm_mmu.h
-+++ b/arch/arm64/include/asm/kvm_mmu.h
-@@ -478,7 +478,8 @@ static inline void *kvm_get_hyp_vector(void)
- 	void *vect = kern_hyp_va(kvm_ksym_ref(__kvm_hyp_vector));
- 	int slot = -1;
+ #define kvm_arm_vcpu_loaded(vcpu)	(false)
  
--	if (cpus_have_const_cap(ARM64_HARDEN_BRANCH_PREDICTOR) && data->fn) {
-+	if ((cpus_have_const_cap(ARM64_HARDEN_BRANCH_PREDICTOR) ||
-+	     cpus_have_const_cap(ARM64_SPECTRE_BHB)) && data->template_start) {
- 		vect = kern_hyp_va(kvm_ksym_ref(__bp_harden_hyp_vecs_start));
- 		slot = data->hyp_vectors_slot;
- 	}
-@@ -507,7 +508,8 @@ static inline int kvm_map_vectors(void)
- 	 * !HBP +  HEL2 -> allocate one vector slot and use exec mapping
- 	 *  HBP +  HEL2 -> use hardened vertors and use exec mapping
- 	 */
--	if (cpus_have_const_cap(ARM64_HARDEN_BRANCH_PREDICTOR)) {
-+	if (cpus_have_const_cap(ARM64_HARDEN_BRANCH_PREDICTOR) ||
-+	    cpus_have_const_cap(ARM64_SPECTRE_BHB)) {
- 		__kvm_bp_vect_base = kvm_ksym_ref(__bp_harden_hyp_vecs_start);
- 		__kvm_bp_vect_base = kern_hyp_va(__kvm_bp_vect_base);
- 	}
-diff --git a/arch/arm64/include/asm/mmu.h b/arch/arm64/include/asm/mmu.h
-index 353450011e3d..1b9e49fb0e1b 100644
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -82,6 +82,12 @@ typedef void (*bp_hardening_cb_t)(void);
- struct bp_hardening_data {
- 	int			hyp_vectors_slot;
- 	bp_hardening_cb_t	fn;
-+
-+	/*
-+	 * template_start is only used by the BHB mitigation to identify the
-+	 * hyp_vectors_slot sequence.
-+	 */
-+	const char *template_start;
- };
- 
- #if (defined(CONFIG_HARDEN_BRANCH_PREDICTOR) ||	\
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 182305000de3..30818b757d51 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -116,6 +116,14 @@ DEFINE_PER_CPU_READ_MOSTLY(struct bp_hardening_data, bp_hardening_data);
- #ifdef CONFIG_KVM_INDIRECT_VECTORS
- extern char __smccc_workaround_1_smc_start[];
- extern char __smccc_workaround_1_smc_end[];
-+extern char __smccc_workaround_3_smc_start[];
-+extern char __smccc_workaround_3_smc_end[];
-+extern char __spectre_bhb_loop_k8_start[];
-+extern char __spectre_bhb_loop_k8_end[];
-+extern char __spectre_bhb_loop_k24_start[];
-+extern char __spectre_bhb_loop_k24_end[];
-+extern char __spectre_bhb_loop_k32_start[];
-+extern char __spectre_bhb_loop_k32_end[];
- 
- static void __copy_hyp_vect_bpi(int slot, const char *hyp_vecs_start,
- 				const char *hyp_vecs_end)
-@@ -129,11 +137,11 @@ static void __copy_hyp_vect_bpi(int slot, const char *hyp_vecs_start,
- 	__flush_icache_range((uintptr_t)dst, (uintptr_t)dst + SZ_2K);
- }
- 
-+static DEFINE_RAW_SPINLOCK(bp_lock);
- static void install_bp_hardening_cb(bp_hardening_cb_t fn,
- 				    const char *hyp_vecs_start,
- 				    const char *hyp_vecs_end)
- {
--	static DEFINE_RAW_SPINLOCK(bp_lock);
- 	int cpu, slot = -1;
- 
- 	/*
-@@ -161,6 +169,7 @@ static void install_bp_hardening_cb(bp_hardening_cb_t fn,
- 
- 	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
- 	__this_cpu_write(bp_hardening_data.fn, fn);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
- 	raw_spin_unlock(&bp_lock);
- }
- #else
-@@ -1052,3 +1061,57 @@ enum mitigation_state arm64_get_spectre_bhb_state(void)
- {
- 	return spectre_bhb_state;
- }
-+
-+#ifdef CONFIG_KVM_INDIRECT_VECTORS
-+static const char *kvm_bhb_get_vecs_end(const char *start)
++static inline int kvm_arm_get_spectre_bhb_state(void)
 +{
-+	if (start == __smccc_workaround_3_smc_start)
-+		return __smccc_workaround_3_smc_end;
-+	else if (start == __spectre_bhb_loop_k8_start)
-+		return __spectre_bhb_loop_k8_end;
-+	else if (start == __spectre_bhb_loop_k24_start)
-+		return __spectre_bhb_loop_k24_end;
-+	else if (start == __spectre_bhb_loop_k32_start)
-+		return __spectre_bhb_loop_k32_end;
-+
-+	return NULL;
++	/* 32bit guests don't need firmware for this */
++	return SPECTRE_VULNERABLE; /* aka SMCCC_RET_NOT_SUPPORTED */
 +}
 +
-+void kvm_setup_bhb_slot(const char *hyp_vecs_start)
+ #endif /* __ARM_KVM_HOST_H__ */
+diff --git a/arch/arm/include/uapi/asm/kvm.h b/arch/arm/include/uapi/asm/kvm.h
+index 2769360f195c..89b8e70068a1 100644
+--- a/arch/arm/include/uapi/asm/kvm.h
++++ b/arch/arm/include/uapi/asm/kvm.h
+@@ -227,6 +227,12 @@ struct kvm_vcpu_events {
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED	3
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED	(1U << 4)
+ 
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3	KVM_REG_ARM_FW_REG(3)
++	/* Higher values mean better protection. */
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL		0
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL		1
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED	2
++
+ /* Device Control API: ARM VGIC */
+ #define KVM_DEV_ARM_VGIC_GRP_ADDR	0
+ #define KVM_DEV_ARM_VGIC_GRP_DIST_REGS	1
+diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+index 697702a1a1ff..e6efdbe88c0a 100644
+--- a/arch/arm64/include/asm/kvm_host.h
++++ b/arch/arm64/include/asm/kvm_host.h
+@@ -684,4 +684,9 @@ bool kvm_arm_vcpu_is_finalized(struct kvm_vcpu *vcpu);
+ 
+ #define kvm_arm_vcpu_loaded(vcpu)	((vcpu)->arch.sysregs_loaded_on_cpu)
+ 
++static inline enum mitigation_state kvm_arm_get_spectre_bhb_state(void)
 +{
-+	int cpu, slot = -1;
-+	const char *hyp_vecs_end;
++	return arm64_get_spectre_bhb_state();
++}
 +
-+	if (!IS_ENABLED(CONFIG_KVM) || !is_hyp_mode_available())
-+		return;
+ #endif /* __ARM64_KVM_HOST_H__ */
+diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+index 67c21f9bdbad..08440ce57a1c 100644
+--- a/arch/arm64/include/uapi/asm/kvm.h
++++ b/arch/arm64/include/uapi/asm/kvm.h
+@@ -240,6 +240,11 @@ struct kvm_vcpu_events {
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED	3
+ #define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_ENABLED     	(1U << 4)
+ 
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3	KVM_REG_ARM_FW_REG(3)
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL		0
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL		1
++#define KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED	2
 +
-+	hyp_vecs_end = kvm_bhb_get_vecs_end(hyp_vecs_start);
-+	if (WARN_ON_ONCE(!hyp_vecs_start || !hyp_vecs_end))
-+		return;
-+
-+	raw_spin_lock(&bp_lock);
-+	for_each_possible_cpu(cpu) {
-+		if (per_cpu(bp_hardening_data.template_start, cpu) == hyp_vecs_start) {
-+			slot = per_cpu(bp_hardening_data.hyp_vectors_slot, cpu);
+ /* SVE registers */
+ #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
+ 
+diff --git a/virt/kvm/arm/psci.c b/virt/kvm/arm/psci.c
+index 48fde38d64c3..2f5dc7fb437b 100644
+--- a/virt/kvm/arm/psci.c
++++ b/virt/kvm/arm/psci.c
+@@ -426,6 +426,18 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+ 				break;
+ 			}
+ 			break;
++		case ARM_SMCCC_ARCH_WORKAROUND_3:
++			switch (kvm_arm_get_spectre_bhb_state()) {
++			case SPECTRE_VULNERABLE:
++				break;
++			case SPECTRE_MITIGATED:
++				val = SMCCC_RET_SUCCESS;
++				break;
++			case SPECTRE_UNAFFECTED:
++				val = SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED;
++				break;
++			}
 +			break;
+ 		}
+ 		break;
+ 	default:
+@@ -438,7 +450,7 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+ 
+ int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
+ {
+-	return 3;		/* PSCI version and two workaround registers */
++	return 4;		/* PSCI version and three workaround registers */
+ }
+ 
+ int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+@@ -452,6 +464,9 @@ int kvm_arm_copy_fw_reg_indices(struct kvm_vcpu *vcpu, u64 __user *uindices)
+ 	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2, uindices++))
+ 		return -EFAULT;
+ 
++	if (put_user(KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3, uindices++))
++		return -EFAULT;
++
+ 	return 0;
+ }
+ 
+@@ -486,9 +501,20 @@ static int get_kernel_wa_level(u64 regid)
+ 			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED;
+ 		case KVM_SSBD_UNKNOWN:
+ 		default:
+-			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_UNKNOWN;
++			break;
+ 		}
+-	}
++		return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_UNKNOWN;
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
++		switch (kvm_arm_get_spectre_bhb_state()) {
++		case SPECTRE_VULNERABLE:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
++		case SPECTRE_MITIGATED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_AVAIL;
++		case SPECTRE_UNAFFECTED:
++			return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_REQUIRED;
 +		}
-+	}
-+
-+	if (slot == -1) {
-+		slot = atomic_inc_return(&arm64_el2_vector_last_slot);
-+		BUG_ON(slot >= BP_HARDEN_EL2_SLOTS);
-+		__copy_hyp_vect_bpi(slot, hyp_vecs_start, hyp_vecs_end);
-+	}
-+
-+	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
-+	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
-+	raw_spin_unlock(&bp_lock);
-+}
-+#else
-+#define __smccc_workaround_3_smc_start NULL
-+#define __spectre_bhb_loop_k8_start NULL
-+#define __spectre_bhb_loop_k24_start NULL
-+#define __spectre_bhb_loop_k32_start NULL
-+
-+void kvm_setup_bhb_slot(const char *hyp_vecs_start) { }
-+#endif
-diff --git a/arch/arm64/kvm/hyp/hyp-entry.S b/arch/arm64/kvm/hyp/hyp-entry.S
-index f36aad0f207b..2ad750208e33 100644
---- a/arch/arm64/kvm/hyp/hyp-entry.S
-+++ b/arch/arm64/kvm/hyp/hyp-entry.S
-@@ -347,4 +347,58 @@ ENTRY(__smccc_workaround_1_smc_start)
- 	ldp	x0, x1, [sp, #(8 * 2)]
- 	add	sp, sp, #(8 * 4)
- ENTRY(__smccc_workaround_1_smc_end)
-+
-+ENTRY(__smccc_workaround_3_smc_start)
-+	esb
-+	sub	sp, sp, #(8 * 4)
-+	stp	x2, x3, [sp, #(8 * 0)]
-+	stp	x0, x1, [sp, #(8 * 2)]
-+	mov	w0, #ARM_SMCCC_ARCH_WORKAROUND_3
-+	smc	#0
-+	ldp	x2, x3, [sp, #(8 * 0)]
-+	ldp	x0, x1, [sp, #(8 * 2)]
-+	add	sp, sp, #(8 * 4)
-+ENTRY(__smccc_workaround_3_smc_end)
-+
-+ENTRY(__spectre_bhb_loop_k8_start)
-+	esb
-+	sub	sp, sp, #(8 * 2)
-+	stp	x0, x1, [sp, #(8 * 0)]
-+	mov	x0, #8
-+2:	b	. + 4
-+	subs	x0, x0, #1
-+	b.ne	2b
-+	dsb	nsh
-+	isb
-+	ldp	x0, x1, [sp, #(8 * 0)]
-+	add	sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k8_end)
-+
-+ENTRY(__spectre_bhb_loop_k24_start)
-+	esb
-+	sub	sp, sp, #(8 * 2)
-+	stp	x0, x1, [sp, #(8 * 0)]
-+	mov	x0, #24
-+2:	b	. + 4
-+	subs	x0, x0, #1
-+	b.ne	2b
-+	dsb	nsh
-+	isb
-+	ldp	x0, x1, [sp, #(8 * 0)]
-+	add	sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k24_end)
-+
-+ENTRY(__spectre_bhb_loop_k32_start)
-+	esb
-+	sub	sp, sp, #(8 * 2)
-+	stp	x0, x1, [sp, #(8 * 0)]
-+	mov     x0, #32
-+2:	b	. + 4
-+	subs	x0, x0, #1
-+	b.ne	2b
-+	dsb	nsh
-+	isb
-+	ldp	x0, x1, [sp, #(8 * 0)]
-+	add	sp, sp, #(8 * 2)
-+ENTRY(__spectre_bhb_loop_k32_end)
- #endif
++		return KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3_NOT_AVAIL;
++        }
+ 
+ 	return -EINVAL;
+ }
+@@ -503,6 +529,7 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 		val = kvm_psci_version(vcpu, vcpu->kvm);
+ 		break;
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		val = get_kernel_wa_level(reg->id) & KVM_REG_FEATURE_LEVEL_MASK;
+ 		break;
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2:
+@@ -555,6 +582,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
+ 	}
+ 
+ 	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1:
++	case KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_3:
+ 		if (val & ~KVM_REG_FEATURE_LEVEL_MASK)
+ 			return -EINVAL;
+ 
 -- 
 2.34.1
 
