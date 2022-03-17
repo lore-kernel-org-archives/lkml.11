@@ -2,157 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F133FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:28:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbiCQM3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
+        id S233563AbiCQMad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233556AbiCQM3P (ORCPT
+        with ESMTP id S229941AbiCQMaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:29:15 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D168119C
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:27:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647520078; x=1679056078;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Cw/m7jCM3UKk76lgGQDLtcnyG+Gpqo+DFD6TSOHi86Y=;
-  b=dru8eotoDPBv4B2sgyWqoZ3msOLQcWF6mHhuS+f22lvdH3X0XDbIciMk
-   lV1Ww4A+x6qWjl2TpdZsyI3iB8x9cBC8IPe7OFGNwvI9ltDZ3KwExddR8
-   OgVccsXIW5q/dCo0TfbtyuZnYRKb7cxLGoNP1gPlUnX61Vz0jM6RHCcRp
-   mQ8IjtWZQPtI23yQ7HSzoAGBv2vcgXMRQxrW25IwOHfrJkNbZDnWUh6Ya
-   +jIpgGlK8RKVTFf+AKpJ003XQTz4eCNTMl3TKHtOAypQk0oj2I0VgBUzg
-   WZ/04aQZBrIaBoBNugGtX4h/Y2+cEMaB3aNfCqjgUvrhi64RSvXvdX6Wi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="244307004"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="244307004"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 05:27:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="516746009"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 17 Mar 2022 05:27:33 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nUpE5-000Dfj-4Z; Thu, 17 Mar 2022 12:27:33 +0000
-Date:   Thu, 17 Mar 2022 20:26:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 592/2335] kernel/kallsyms.c:88:3: warning:
- 'strncpy' specified bound 128 equals destination size
-Message-ID: <202203172007.S4q5m0Xm-lkp@intel.com>
+        Thu, 17 Mar 2022 08:30:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D2061DDFC6
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:29:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647520153;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OR8FPIU54nAtKIYmPBp3wH3w+/iiohWrYlbeO55Ka1Q=;
+        b=JH6Bv4c6KhTq4wA+ZuqJMip4VxiWuJtL8C+/i3ZkMiAbBJueFIcY2tAsmg/pzHvMdF/CQ7
+        z+QY4sBetqGSwo90N95USY0jxnu7CAg8CFjaDv2f+jY9s8qa0O+N7a+jnCAauOAwqvyeN4
+        hQRIrxx9O/ZvbJ8YlPvR5tgyCSc+V/8=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-631-mxOHEzGgP7qf6vs7pOIXnA-1; Thu, 17 Mar 2022 08:29:11 -0400
+X-MC-Unique: mxOHEzGgP7qf6vs7pOIXnA-1
+Received: by mail-wm1-f71.google.com with SMTP id c126-20020a1c3584000000b00380dee8a62cso1579189wma.8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:29:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=OR8FPIU54nAtKIYmPBp3wH3w+/iiohWrYlbeO55Ka1Q=;
+        b=7Jap7zKRpjI9AdoDxGlr5GKOpfZ+SYf6SHNOFh7Yw0ShmawfZkdfBZyJpv2RTyeYNS
+         meK8rQXSk7FRoc4UOWTMA8kkN4Tb9Jz44/lITdyhk3UoWr7Mz95Y8qJrQJltzTgYJYk9
+         UfMjYeWxyDGoI4cDlAGOC2maSId11TFmPBOWiYSl0Pb4x/RSt1V6vdlf9L1kQXd9y0qi
+         sZTwsJ8LwljZGa7NDIPjBKKkC9f76Ufmy1s8nk7sUiAWC3+mEfeDk9+nobq/l3OBd11j
+         Ibxv8c7l0eV+ad608shkTf1O27/5+iyzEBkWWay6bSFytzOWOoOFqlVer5LOta+Ip275
+         OADw==
+X-Gm-Message-State: AOAM530KGg1KRmQ5tbpFOs6bw6As51d7mxlRLBMMMvzBiThpuHo9+ltS
+        b5nveoonoxLAui+t8AJtDwje51YC+9JVcx8feBvFowRs04mKlZITVV91zKaXeYHpEXd3+J4Pdlf
+        fLUa7XjP/PenqyOisHvYxyqDR
+X-Received: by 2002:a5d:4392:0:b0:1f1:e683:de90 with SMTP id i18-20020a5d4392000000b001f1e683de90mr3962546wrq.551.1647520150670;
+        Thu, 17 Mar 2022 05:29:10 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwztFIjSTfrh/Pnb4zbDJ2gsMcOFsG/vVgG9Rt4Z4Wb5WXu7mBT8uqW87+Rv7vn9IAvIllz9w==
+X-Received: by 2002:a5d:4392:0:b0:1f1:e683:de90 with SMTP id i18-20020a5d4392000000b001f1e683de90mr3962526wrq.551.1647520150384;
+        Thu, 17 Mar 2022 05:29:10 -0700 (PDT)
+Received: from ?IPV6:2a09:80c0:192:0:20af:34be:985b:b6c8? ([2a09:80c0:192:0:20af:34be:985b:b6c8])
+        by smtp.gmail.com with ESMTPSA id m3-20020a5d6a03000000b001f06621641fsm3867611wru.96.2022.03.17.05.29.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 05:29:10 -0700 (PDT)
+Message-ID: <79e0be67-341d-34cb-bb48-30f122d9e239@redhat.com>
+Date:   Thu, 17 Mar 2022 13:29:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v3 1/2] mm/memory-failure.c: avoid calling
+ invalidate_inode_page() with unexpected pages
+Content-Language: en-US
+To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org,
+        naoya.horiguchi@nec.com, shy828301@gmail.com,
+        mike.kravetz@oracle.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220318073945.62164-1-linmiaohe@huawei.com>
+ <20220318073945.62164-2-linmiaohe@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220318073945.62164-2-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   85293bf3fca6d85608cff1447ce3097583f15fab
-commit: 37139bbbb8552f3151a0344dc39d572fabbf4061 [592/2335] kallsyms/objtool: Utilize the kallsyms_syms[] table in kallsyms_expand_symbol() and kallsyms_sym_address()
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220317/202203172007.S4q5m0Xm-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=37139bbbb8552f3151a0344dc39d572fabbf4061
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 37139bbbb8552f3151a0344dc39d572fabbf4061
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On 18.03.22 08:39, Miaohe Lin wrote:
+> invalidate_inode_page() can invalidate the pages in the swap cache because
+> the check of page->mapping != mapping is removed via Matthew's patch titled
+> "mm/truncate: Inline invalidate_complete_page() into its one caller". But
+> invalidate_inode_page() is not expected to deal with the pages in the swap
+> cache. Also non-lru movable page can reach here too. They're not page cache
+> pages. Skip these pages by checking PageSwapCache and PageLRU to fix this
+> unexpected issue.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> ---
+>  mm/memory-failure.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+> index 5444a8ef4867..ecf45961f3b6 100644
+> --- a/mm/memory-failure.c
+> +++ b/mm/memory-failure.c
+> @@ -2178,7 +2178,7 @@ static int __soft_offline_page(struct page *page)
+>  		return 0;
+>  	}
+>  
+> -	if (!PageHuge(page))
+> +	if (!PageHuge(page) && PageLRU(page) && !PageSwapCache(page))
+>  		/*
+>  		 * Try to invalidate first. This should work for
+>  		 * non dirty unmapped page cache pages.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I'm not familiar with this code to ack this, but it looks sane to me.
 
-All warnings (new ones prefixed by >>):
+-- 
+Thanks,
 
-   kernel/kallsyms.c:636:12: warning: no previous prototype for 'arch_get_kallsym' [-Wmissing-prototypes]
-     636 | int __weak arch_get_kallsym(unsigned int symnum, unsigned long *value,
-         |            ^~~~~~~~~~~~~~~~
-   In function 'kallsyms_expand_symbol',
-       inlined from 'kallsyms_lookup_name' at kernel/kallsyms.c:256:9:
->> kernel/kallsyms.c:88:3: warning: 'strncpy' specified bound 128 equals destination size [-Wstringop-truncation]
-      88 |   strncpy(result, sym->name, maxlen);
-         |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+David / dhildenb
 
-
-vim +/strncpy +88 kernel/kallsyms.c
-
-    68	
-    69	/*
-    70	 * Expand a compressed symbol data into the resulting uncompressed string,
-    71	 * if uncompressed string is too long (>= maxlen), it will be truncated,
-    72	 * given the offset to where the symbol is in the compressed stream.
-    73	 */
-    74	static unsigned int kallsyms_expand_symbol(unsigned int off,
-    75						   char *result, size_t maxlen)
-    76	{
-    77		int len, skipped_first = 0;
-    78		const char *tptr;
-    79		const u8 *data;
-    80	
-    81		if (WARN_ON_ONCE(!result || !maxlen))
-    82			return 0;
-    83	
-    84	#ifdef CONFIG_KALLSYMS_FAST
-    85		{
-    86			struct kallsyms_sym *sym = kallsyms_syms + off;
-    87	
-  > 88			strncpy(result, sym->name, maxlen);
-    89	
-    90			return off + 1;
-    91		}
-    92	#endif
-    93		/* Get the compressed symbol length from the first symbol byte. */
-    94		data = &kallsyms_names[off];
-    95		len = *data;
-    96		data++;
-    97	
-    98		/*
-    99		 * Update the offset to return the offset for the next symbol on
-   100		 * the compressed stream.
-   101		 */
-   102		off += len + 1;
-   103	
-   104		/*
-   105		 * For every byte on the compressed symbol data, copy the table
-   106		 * entry for that byte.
-   107		 */
-   108		while (len) {
-   109			tptr = &kallsyms_token_table[kallsyms_token_index[*data]];
-   110			data++;
-   111			len--;
-   112	
-   113			while (*tptr) {
-   114				if (skipped_first) {
-   115					if (maxlen <= 1)
-   116						goto tail;
-   117					*result = *tptr;
-   118					result++;
-   119					maxlen--;
-   120				} else
-   121					skipped_first = 1;
-   122				tptr++;
-   123			}
-   124		}
-   125	
-   126	tail:
-   127		if (maxlen)
-   128			*result = '\0';
-   129	
-   130		/* Return to offset to the next symbol. */
-   131		return off;
-   132	}
-   133	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
