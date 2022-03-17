@@ -2,97 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 739E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84488C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229711AbiCQWTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 18:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        id S229514AbiCQWVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 18:21:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiCQWS6 (ORCPT
+        with ESMTP id S229469AbiCQWVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 18:18:58 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5444F3A42;
-        Thu, 17 Mar 2022 15:17:41 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id w4so5580521ply.13;
-        Thu, 17 Mar 2022 15:17:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=u67mlsAXienNJbjA1K4Up/3jKdev0UtOsvojY5N2v+c=;
-        b=MvTFWt0GdexJeJwp3RzA1CULnksX9odWe0/2yFbSNF1pNDZwe1XtVGjCsN6VWy4pAn
-         94AAIVO//mV5IgO3kpuUxpHuGnAOO/2fCmTuKnkGrHSFlqPSkj9iLio6yD6XrJyrCr+V
-         UZkn2iY2JMc7BPIqYL/564GNsxHeYGgpll38Y0Dr9oVWHQPv4x+StOuoAsZ873fDgM/7
-         AtJBz+VNKPSksnK5NIEt5XD15xrI4WPKPmPZmoX0X83Wc/nZGD5KuMtwtcszPwtrM5Jt
-         lSDi3MIkNgugSD2KFzOmapJj4uaI7RCCFjSh2/btIq7NhJhKjBvKW0GEVpJDxCFfHrE7
-         1ftw==
+        Thu, 17 Mar 2022 18:21:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E78A817B8BB
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647555589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hQGIwBER0m+3DWeFVm7NY1/fkMpgtqQj1Lt77v4lZ+w=;
+        b=P0n0AFW0SxxAS4m62EH4G2hinxjlbWFRmAIBbkWw8TVb7Kfnd/Vm8qt5Vt1rFELY+l/sxI
+        +AdS77ZBXQ76VgKgZQFGP2a11yxRq9Tws8nrewq4giwak5uHZLus/l3W0KmEIv02asqAOV
+        IHYWpym1EHaI8F6/4WXfpj0eJxmldaE=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-OwtwWL76M6m7tWuwXEC2AA-1; Thu, 17 Mar 2022 18:19:47 -0400
+X-MC-Unique: OwtwWL76M6m7tWuwXEC2AA-1
+Received: by mail-qk1-f197.google.com with SMTP id 195-20020a3707cc000000b0067b0c849285so4295166qkh.5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:19:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=u67mlsAXienNJbjA1K4Up/3jKdev0UtOsvojY5N2v+c=;
-        b=clTN0XWi4HXCSFK42iXVMZELa0I6kxC8QpF0WtATJ2CC2H5z6HFSmOhFrYQTBPhG3r
-         Kgg6TfGJ5SZuXBjOzB6ZocT3QePfmC5h9ebrzI4PDW4nAxvfDfJczDgVIzggdzANXs5a
-         cfRI6QyTy62N5SEb+ytFSxXwkVrufs93eXlbqjprM+HJ+UtSrKunSCa95k7V5LG8L92s
-         M00k3q68MSKTXCngpaXXuBmVBYEqxQMWSk5H5/0DDnLauCpfscity/bxS2iZ4GGfkBWg
-         t9ZGS3IpumgvCh6FE9hQZ1Rgypo1r1ZIu0Rnu8nBz3wdag9wZwZScifCCqJ3UP5DFJA5
-         LMbA==
-X-Gm-Message-State: AOAM5312k10/OiJ4615tuqr6vSDvQqWN4PtOq5Rp8vcb3gRqUwsdKpvZ
-        +id/vWUE+YuZZ/q+2PWNyQB0z743Soo=
-X-Google-Smtp-Source: ABdhPJxJ9ZWoUcHW/JAixS9O0eqNQTrtD/qALlEirnDDlzQnu5Zc8sxAyjjTWNgRCaKEz8e4kphmWA==
-X-Received: by 2002:a17:902:8d8f:b0:153:6546:2530 with SMTP id v15-20020a1709028d8f00b0015365462530mr7223109plo.81.1647555461172;
-        Thu, 17 Mar 2022 15:17:41 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id l2-20020a637c42000000b003644cfa0dd1sm5918388pgn.79.2022.03.17.15.17.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Mar 2022 15:17:40 -0700 (PDT)
-Subject: Re: [PATCH 5.16 00/28] 5.16.16-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220317124526.768423926@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <37c2fb44-eb26-2b97-e7e2-7dd58d6cdb44@gmail.com>
-Date:   Thu, 17 Mar 2022 15:17:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hQGIwBER0m+3DWeFVm7NY1/fkMpgtqQj1Lt77v4lZ+w=;
+        b=X3+4FTybdJ1Ekrz0FHXHYkTQtDEL61i4pYKA0bcuFPAVndd57m98EuFAgIr5KRCYpz
+         kLdEu1pOmbVGV8HP1qIpiz4INje5LU+uHomH2BJrcDZx/BH6DWVhVCjkZ21WXpZBShHZ
+         gHa8vbZ24exKGDEHx1AFgwo4tFNqbAsMpZhLXK5ic3aKayDYUZa9vNimvx1Q01vG/xNV
+         p1sluiOmhhFkmXOg5ir+873JEBfw4FPU56ZuvkD1SzT4pfmr6oSRjejggN3Ftn/7vX9j
+         RL9lTn0u7l4ZJSHo00LyMSYzDERxh3KQS1ELcHxt0ZdeZJEX0MzcuL1qHZ0EmlYk2idY
+         h86A==
+X-Gm-Message-State: AOAM531/fUSe3dv++KrxTczYE1eMAgxt8IjQMJcANn6+QyQWmmYByjx2
+        WA2lG1cLgD/4V+2rmLKdgefM0H6YK7fAZfYQf4LUj3KrHf0RY7zBSBK0JYh1LCBK2rWEDVpUp/8
+        j70ZDInk3QZCpHilnjvf2EGEB
+X-Received: by 2002:ac8:7c46:0:b0:2e1:d6c2:2b15 with SMTP id o6-20020ac87c46000000b002e1d6c22b15mr5537939qtv.405.1647555587303;
+        Thu, 17 Mar 2022 15:19:47 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx7ZexznbauwoFGulSphibHkdYv25hNa9G+dJs27LjUY/VCW+59JLVomIg/9lvgrDRIr7gW9w==
+X-Received: by 2002:ac8:7c46:0:b0:2e1:d6c2:2b15 with SMTP id o6-20020ac87c46000000b002e1d6c22b15mr5537922qtv.405.1647555587028;
+        Thu, 17 Mar 2022 15:19:47 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id p2-20020a05620a15e200b0067d2c0455bcsm2965460qkm.36.2022.03.17.15.19.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 15:19:46 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 15:19:43 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH] x86/sev: Add ENCODE_FRAME_POINTER after stack changed
+ for #VC
+Message-ID: <20220317221943.6vhoqx3fdv7py6hi@treble>
+References: <20220316041612.71357-1-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <20220316041612.71357-1-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/17/22 5:45 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.16 release.
-> There are 28 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, Mar 16, 2022 at 12:16:12PM +0800, Lai Jiangshan wrote:
+> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 > 
-> Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
-> Anything received after that time might be too late.
+> In idtentry_vc(), the real frame is changed after it switches to new
+> stack, ENCODE_FRAME_POINTER should be called in case for unwinder.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.16-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
+> Cc: Joerg Roedel <jroedel@suse.de>
+> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> ---
+>  arch/x86/entry/entry_64.S | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> thanks,
-> 
-> greg k-h
+> diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+> index e20eabaa56b8..f99f2881ed83 100644
+> --- a/arch/x86/entry/entry_64.S
+> +++ b/arch/x86/entry/entry_64.S
+> @@ -540,6 +540,7 @@ SYM_CODE_START(\asmsym)
+>  	call	vc_switch_off_ist
+>  	movq	%rax, %rsp		/* Switch to new stack */
+>  
+> +	ENCODE_FRAME_POINTER
+>  	UNWIND_HINT_REGS
+>  
+>  	/* Update pt_regs */
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Looks right to me.  Any chance you have the ability to test this
+scenario by unwinding from #VC with CONFIG_FRAME_POINTER?
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Florian
+Josh
+
