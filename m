@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DCFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0B7C4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234548AbiCQM5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38756 "EHLO
+        id S234717AbiCQM6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234881AbiCQMx7 (ORCPT
+        with ESMTP id S235009AbiCQMyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:53:59 -0400
+        Thu, 17 Mar 2022 08:54:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350461F0828;
-        Thu, 17 Mar 2022 05:52:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A2E1EC6D;
+        Thu, 17 Mar 2022 05:53:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E96B5B81E01;
-        Thu, 17 Mar 2022 12:51:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 311CDC340E9;
-        Thu, 17 Mar 2022 12:51:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1ED1B81EA1;
+        Thu, 17 Mar 2022 12:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E07B4C340EF;
+        Thu, 17 Mar 2022 12:53:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521517;
-        bh=DPdfF6q9H15BXcu0xyHzF22kFQv23DsT8xa/YMq2E1I=;
+        s=korg; t=1647521583;
+        bh=18sop7HHeHWk2N9tOaxxTwb116X8umHAw2ytwpnKPGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KesRhouOAEDzayQww068SyEF8BkpFLpLTMmYPF6zvxr7Y3tJem4lwRP0Kinra1XrM
-         hjXUo1mFvge+FZMCNugoz45FCcoxZBVEd9lkZfkCsg5dUNgfERWR/yQ+1nUFGeqoIF
-         Qv2RZGiQer9biHL2M06aygcB1Zn2TQkdaICrlhfE=
+        b=drG51cAQl90S4sVSm8IfQ7O4JoI4GFU7JebjNl9qNLGm/GCxMFPMvWsiJx5ZNb8Cm
+         r73AbRiZG0TLVdx8Qe5njgyJJ3BJ7h1aryWo0waIKYGA/WEdCQTKLvAhnmcNeokV17
+         2pqpM4wiICNv7xSrpNkcgqmz+1jgHqPS3ivEwFSE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Schulz <foss+kernel@0leil.net>,
-        Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>,
-        Quentin Schulz <quentin.schulz@theobroma-systems.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 05/25] arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
-Date:   Thu, 17 Mar 2022 13:45:52 +0100
-Message-Id: <20220317124526.464713265@linuxfoundation.org>
+Subject: [PATCH 5.16 17/28] atm: firestream: check the return value of ioremap() in fs_init()
+Date:   Thu, 17 Mar 2022 13:46:08 +0100
+Message-Id: <20220317124527.257269422@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124526.308079100@linuxfoundation.org>
-References: <20220317124526.308079100@linuxfoundation.org>
+In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
+References: <20220317124526.768423926@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 62966cbdda8a92f82d966a45aa671e788b2006f7 ]
+[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
 
-There are signal integrity issues running the eMMC at 200MHz on Puma
-RK3399-Q7.
+The function ioremap() in fs_init() can fail, so its return value should
+be checked.
 
-Similar to the work-around found for RK3399 Gru boards, lowering the
-frequency to 100MHz made the eMMC much more stable, so let's lower the
-frequency to 100MHz.
-
-It might be possible to run at 150MHz as on RK3399 Gru boards but only
-100MHz was extensively tested.
-
-Cc: Quentin Schulz <foss+kernel@0leil.net>
-Signed-off-by: Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
-Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-Link: https://lore.kernel.org/r/20220119134948.1444965-1-quentin.schulz@theobroma-systems.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/atm/firestream.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-index 002ece51c3ba..08fa00364b42 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi
-@@ -439,6 +439,12 @@
- };
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index 3bc3c314a467..4f67404fe64c 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1676,6 +1676,8 @@ static int fs_init(struct fs_dev *dev)
+ 	dev->hw_base = pci_resource_start(pci_dev, 0);
  
- &sdhci {
-+	/*
-+	 * Signal integrity isn't great at 200MHz but 100MHz has proven stable
-+	 * enough.
-+	 */
-+	max-frequency = <100000000>;
-+
- 	bus-width = <8>;
- 	mmc-hs400-1_8v;
- 	mmc-hs400-enhanced-strobe;
+ 	dev->base = ioremap(dev->hw_base, 0x1000);
++	if (!dev->base)
++		return 1;
+ 
+ 	reset_chip (dev);
+   
 -- 
 2.34.1
 
