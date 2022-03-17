@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE2FC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4713C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233417AbiCQL7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 07:59:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
+        id S231799AbiCQL77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 07:59:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233268AbiCQL7Z (ORCPT
+        with ESMTP id S233313AbiCQL7a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 07:59:25 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC9F1700BB
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:58:02 -0700 (PDT)
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com [209.85.208.197])
+        Thu, 17 Mar 2022 07:59:30 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69561700A1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:58:10 -0700 (PDT)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4AF4C3F625
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:58:01 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id BAFBD3FFD8
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:58:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647518281;
-        bh=nw83rNQU0DG2T5abexM+HrA3AT5FpHyglSBWAvBerB4=;
+        s=20210705; t=1647518286;
+        bh=KFmifwXJp5W4UT7dzRYgwV6FTL9sctX1thCEx5C+nkM=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=kQ2mLTAXFpuho4SExyqLuVNWBR6HKM2OQyzLi8AN3pXhVYdQAMb97fXIvg9FmR+zT
-         26bpUNONzM+rI016Xal/E519i0ZboEJQik7j8LgoXcLuWNS5f6KnM7vFv6uPmgMGlI
-         mg+5XGBrTtC453y1tbJ9OddeqzIW7rJBW6wgIo8QBp1XjnRDWLYaDnbGcmcRpSCO3t
-         VYhp+rHUjWzRgtz59X1i4cBHuDOIanPOzKXFxZyMqc5BxbHD18LVoqC+1JduxWv2hr
-         8s7NcoDjzh90JG/ZJLd57y151KQowWdzoAQg7msclm3OkJ2y4WgMwewzul6rYI0Tpa
-         b1lDv0B/41dQg==
-Received: by mail-lj1-f197.google.com with SMTP id v9-20020a2e9909000000b00247ecf60956so1986897lji.12
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:58:01 -0700 (PDT)
+        b=dy1BtMr9FpqWvrJ0af4Qg0knda8iYlCDRQs5YR+RK0uU/6Gl3ETXxa+EMRlguytC3
+         coW4tQaBIjMcmjPofSz2rM9FQtqSSkv1h4ov77iFfUmaQ5BfMo+X7fFTOyT/XELcIL
+         6Z3yXFbUIOnDe0B4X3FNL4sbjbp58SXP4ao5S+JW2F8XaDQ7OHz9F2+tEid8j6lAyD
+         rHYqniMjDtJNvVcPEViIPgRlkcIE6Psr+/9+8H8TxzO2LoeCwOJLGC4344EuMmMNMi
+         ODAdEhEfjoHG60SiNTOXHq6SjJtHPakhKttfrGuey+aK80S33pF867kWUyvPF3DpVX
+         75pEMEtdMbuXg==
+Received: by mail-ej1-f72.google.com with SMTP id hy26-20020a1709068a7a00b006dfa034862cso550883ejc.23
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:58:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nw83rNQU0DG2T5abexM+HrA3AT5FpHyglSBWAvBerB4=;
-        b=JXPxQ93UFj31UPNMp61qMyJxuqCJ6RM2HTvoePVm4WncZuO0gMVSsAY2ug7Lf2muxH
-         1epx1WuqMW1CcMP8xUyvUpAelPXST+MJZm94JUkKmwvO5Cypqt+7JQ8Z3yWhypn4fVd2
-         L+S61GHKh6bAeOuYH6+TFRVl0vEC1ZcQ+qAkqs0rlusJYl/RgbGGIQ9isaqxNdjbJv8f
-         hl09R3CK3NRjOsHTdJJ4LDT6MJeegqDzAf4pf7QC+LxkMpynPAc0ClP6q2bghFrAwRpY
-         NQjpMSSrT3Z2F1WTp/CAFSAYgRaLkQq0V4a4wuTPZ5TObs6AZihkIvesix9h2rW3Ncrl
-         +nDA==
-X-Gm-Message-State: AOAM533aQ9MgwrypiGz2u+Jp1okcrWgtDj6GRTeqrWU2neiZRNj2UX43
-        h0H9CV9yCRmPFUhGnws0AoW4gI3Aw8ldbjnZtDx5wax1LrqsKXHRwHYXZ5lFCqAotftngIcEApI
-        CTBRJPl7XB8AzFHRiDOmPxcQY9qJfnJasGJKXcrAfiA==
-X-Received: by 2002:adf:d1e5:0:b0:203:d609:38da with SMTP id g5-20020adfd1e5000000b00203d60938damr3610511wrd.675.1647518269088;
-        Thu, 17 Mar 2022 04:57:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyjFXvDvHdQ01w0zg1EFDDh642eLMUzgHUDqkxXLdtcKH+7Ko3TzWiEFBj3msxkYp0Y5lUMFA==
-X-Received: by 2002:adf:d1e5:0:b0:203:d609:38da with SMTP id g5-20020adfd1e5000000b00203d60938damr3610457wrd.675.1647518268881;
-        Thu, 17 Mar 2022 04:57:48 -0700 (PDT)
+        bh=KFmifwXJp5W4UT7dzRYgwV6FTL9sctX1thCEx5C+nkM=;
+        b=2cwu9pBekbUzqXiSxgelGXcxLGcjWfhJDvB1+AQmhqCVLZsRCyWkAf93T/UbzU8G+M
+         LkXmhkJaLqkcMt1v6n3CesrGo9k4ZbfW1WNldp08PLLsLFsS1o4Y34Q/1N3ZeUaDaHoQ
+         bKu4NVqybGa0TX8DRI5mJJMYY9NJ/SxfcqMNIoOHh8vGSfFSb+VPt/HyIt8yrd5qXPwe
+         8MfChyiAof4ZtybXedazGRKsO+GJneCB3ju77wZgTxISEdznp3ckoBO6XSzZ0XqFZ4Fk
+         8MUmR4rSNIlxUC03m4ZVKJdHcLDX4FnmukXkCfgqpOIbXu3dn6qishdP3ff356fFcNHe
+         rDlQ==
+X-Gm-Message-State: AOAM530ETPQ3Ggh3yL65V8vKsZahFGpHnIN4sWSKHKuOD6dil9xOcGRw
+        GMsghJrQXffRQcw+2FY4whdkKQSbRWiRJrTTQKXH2Tf7ySyijKuf05bGfbuw58Z54lDJvVqZ/HQ
+        ZZGce/Xv9G8i/uAQmPgKNOSchfpexqlDPG1sKYHv+bA==
+X-Received: by 2002:a05:6000:15c1:b0:1f0:73d6:b716 with SMTP id y1-20020a05600015c100b001f073d6b716mr3663317wry.293.1647518274495;
+        Thu, 17 Mar 2022 04:57:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwQvKKHcnhZqthCpzLO2USNLVXIsLYfJdNKGccVKarN3fEhfI5+MqhVsRHbxfF78ndbEuW0XA==
+X-Received: by 2002:a05:6000:15c1:b0:1f0:73d6:b716 with SMTP id y1-20020a05600015c100b001f073d6b716mr3663274wry.293.1647518274258;
+        Thu, 17 Mar 2022 04:57:54 -0700 (PDT)
 Received: from krzk-bin.. (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id r65-20020a1c4444000000b0038c48dd23b9sm5824900wma.5.2022.03.17.04.57.46
+        by smtp.gmail.com with ESMTPSA id r65-20020a1c4444000000b0038c48dd23b9sm5824900wma.5.2022.03.17.04.57.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 04:57:47 -0700 (PDT)
+        Thu, 17 Mar 2022 04:57:53 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
         Marc Zyngier <maz@kernel.org>,
@@ -97,9 +97,9 @@ To:     Thomas Gleixner <tglx@linutronix.de>,
         linux-actions@lists.infradead.org, openbmc@lists.ozlabs.org,
         linux-riscv@lists.infradead.org, linux-oxnas@groups.io
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH 15/18] dt-bindings: irqchip: realtek,rtl-intc: include generic schema
-Date:   Thu, 17 Mar 2022 12:57:02 +0100
-Message-Id: <20220317115705.450427-14-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 17/18] dt-bindings: irqchip: sifive: include generic schema
+Date:   Thu, 17 Mar 2022 12:57:04 +0100
+Message-Id: <20220317115705.450427-16-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220317115542.450032-1-krzysztof.kozlowski@canonical.com>
 References: <20220317115542.450032-1-krzysztof.kozlowski@canonical.com>
@@ -114,26 +114,26 @@ naming and other generic properties.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../bindings/interrupt-controller/realtek,rtl-intc.yaml      | 5 ++++-
+ .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml     | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
-index 9e76fff20323..4c00d44923b9 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
-@@ -11,6 +11,9 @@ maintainers:
-   - Bert Vermeulen <bert@biot.com>
-   - John Crispin <john@phrozen.org>
+diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+index 27092c6a86c4..e3c08cff89d2 100644
+--- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
++++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+@@ -44,6 +44,9 @@ maintainers:
+   - Paul Walmsley  <paul.walmsley@sifive.com>
+   - Palmer Dabbelt <palmer@dabbelt.com>
  
 +allOf:
 +  - $ref: /schemas/interrupt-controller.yaml#
 +
  properties:
    compatible:
-     const: realtek,rtl-intc
-@@ -40,7 +43,7 @@ required:
-   - "#address-cells"
-   - interrupt-map
+     oneOf:
+@@ -91,7 +94,7 @@ required:
+   - interrupts-extended
+   - riscv,ndev
  
 -additionalProperties: false
 +unevaluatedProperties: false
