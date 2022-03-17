@@ -2,169 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358374AbiCQBva (ORCPT
+        id S1358385AbiCQBvd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 21:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
+        Wed, 16 Mar 2022 21:51:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242731AbiCQBv2 (ORCPT
+        with ESMTP id S1358365AbiCQBva (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 21:51:28 -0400
+        Wed, 16 Mar 2022 21:51:30 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48B0C15A05
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:50:13 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJqmq1CjZzfYqR;
-        Thu, 17 Mar 2022 09:48:43 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C272F15A05;
+        Wed, 16 Mar 2022 18:50:15 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJqhq1PNtzcb6q;
+        Thu, 17 Mar 2022 09:45:15 +0800 (CST)
+Received: from dggpemm500017.china.huawei.com (7.185.36.178) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 09:50:11 +0800
-Subject: Re: [PATCH v2] mm/mlock: fix potential imbalanced rlimit ucounts
- adjustment
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-CC:     <akpm@linux-foundation.org>, <hughd@google.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Alexey Gladkov <legion@kernel.org>
-References: <20220314064039.62972-1-linmiaohe@huawei.com>
- <87h78036hl.fsf@email.froward.int.ebiederm.org>
- <82cf5aa8-a721-3ff3-7b09-54a66da0d506@huawei.com>
- <87lexbyslf.fsf@email.froward.int.ebiederm.org>
- <4803adf1-ba98-badc-6820-0948871b0742@huawei.com>
- <87sfri3s32.fsf@email.froward.int.ebiederm.org>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <bb5e67b5-0cf7-08b7-98ac-c49f468c8dec@huawei.com>
-Date:   Thu, 17 Mar 2022 09:50:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2308.21; Thu, 17 Mar 2022 09:50:14 +0800
+Received: from huawei.com (10.175.101.6) by dggpemm500017.china.huawei.com
+ (7.185.36.178) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
+ 2022 09:50:13 +0800
+From:   Wenchao Hao <haowenchao@huawei.com>
+To:     Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        <open-iscsi@googlegroups.com>, <linux-scsi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zhiqiang Liu <liuzhiqiang26@huawei.com>, Wu Bo <wubo40@huawei.com>,
+        <linfeilong@huawei.com>, Wenchao Hao <haowenchao@huawei.com>
+Subject: [PATCH] scsi:libiscsi: remove unnecessary memset in iscsi_conn_setup
+Date:   Thu, 17 Mar 2022 11:01:16 -0400
+Message-ID: <20220317150116.194140-1-haowenchao@huawei.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <87sfri3s32.fsf@email.froward.int.ebiederm.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.101.6]
 X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500002.china.huawei.com (7.192.104.244)
+ dggpemm500017.china.huawei.com (7.185.36.178)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/16 22:11, Eric W. Biederman wrote:
-> Miaohe Lin <linmiaohe@huawei.com> writes:
-> 
->> On 2022/3/16 2:32, Eric W. Biederman wrote:
->>> Miaohe Lin <linmiaohe@huawei.com> writes:
->>>
->>>> On 2022/3/14 23:21, Eric W. Biederman wrote:
->>>>> Miaohe Lin <linmiaohe@huawei.com> writes:
->>>>>
->>>>>> user_shm_lock forgets to set allowed to 0 when get_ucounts fails. So
->>>>>> the later user_shm_unlock might do the extra dec_rlimit_ucounts. Fix
->>>>>> this by resetting allowed to 0.
->>>>>
->>>>> This fix looks correct.  But the ability for people to follow and read
->>>>> the code seems questionable.  I saw in v1 of this patch Hugh originally
->>>>> misread the logic.
->>>>>
->>>>> Could we instead change the code to leave lock_limit at ULONG_MAX aka
->>>>> RLIM_INFINITY, leave initialized to 0, and not even need a special case
->>>>> of RLIM_INFINITY as nothing can be greater that ULONG_MAX?
->>>>>
->>>>
->>>> Many thanks for your advice. This looks good but it seems this results in different
->>>> behavior: When (memlock == LONG_MAX) && !capable(CAP_IPC_LOCK), we would fail now
->>>> while it will always success without this change. We should avoid this difference.
->>>> Or am I miss something? Maybe the origin patch is more suitable and
->>>> simple?
->>>
->>> Interesting.  I think that is an unintended and necessary bug fix.
->>>
->>> When memlock == LONG_MAX that means inc_rlimit_ucounts failed.
->>>
->>> It either failed because at another level the limit was exceeded or
->>> because the counter wrapped.  In either case it is not appropriate to
->>> succeed if inc_rlimit_ucounts detects a failure.
->>>
->>> Which is a long way of saying I think we really want the simplification
->>> because it found and fixed another bug as well.
->>>
->>> Without the simplification I don't think I will be confident the code is
->>> correct.
->>
->> Agree with you. This is a potential bug and you just catch it with the
->> code simplification. :)
->>
->> Am I supposed to do this altogether or will you do this simplification part?
->> Many thanks.
-> 
-> If you can that would be great, and you can have the credit.
-> 
-> Otherwise I will make my proposed changes into a proper patch.  At this
-> point we just need to dot the i's and cross the t's and get this fix in.
+iscsi_cls_conn is alloced by kzalloc(), the whole iscsi_cls_conn is
+zero filled already including the dd_data. So it is unnecessary to
+call memset again.
 
-I will try to do this. Many thanks!
+Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
+Reviewed-by: Wu Bo <wubo40@huawei.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+---
+ drivers/scsi/libiscsi.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> 
-> Eric
-> 
->>>>> Something like this?
->>>>>
->>>>> diff --git a/mm/mlock.c b/mm/mlock.c
->>>>> index 8f584eddd305..e7eabf5193ab 100644
->>>>> --- a/mm/mlock.c
->>>>> +++ b/mm/mlock.c
->>>>> @@ -827,13 +827,12 @@ int user_shm_lock(size_t size, struct ucounts *ucounts)
->>>>>  
->>>>>  	locked = (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
->>>>>  	lock_limit = rlimit(RLIMIT_MEMLOCK);
->>>>> -	if (lock_limit == RLIM_INFINITY)
->>>>> -		allowed = 1;
->>>>> -	lock_limit >>= PAGE_SHIFT;
->>>>> +	if (lock_limit != RLIM_INFINITY)
->>>>> +		lock_limit >>= PAGE_SHIFT;
->>>>>  	spin_lock(&shmlock_user_lock);
->>>>>  	memlock = inc_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
->>>>>  
->>>>> -	if (!allowed && (memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
->>>>> +	if ((memlock == LONG_MAX || memlock > lock_limit) && !capable(CAP_IPC_LOCK)) {
->>>>>  		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
->>>>>  		goto out;
->>>>>  	}
->>>>>
->>>>>>
->>>>>> Fixes: d7c9e99aee48 ("Reimplement RLIMIT_MEMLOCK on top of ucounts")
->>>>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>>>>> Acked-by: Hugh Dickins <hughd@google.com>
->>>>>> ---
->>>>>> v1->v2:
->>>>>>   correct Fixes tag and collect Acked-by tag
->>>>>>   Thanks Hugh for review!
->>>>>> ---
->>>>>>  mm/mlock.c | 1 +
->>>>>>  1 file changed, 1 insertion(+)
->>>>>>
->>>>>> diff --git a/mm/mlock.c b/mm/mlock.c
->>>>>> index 29372c0eebe5..efd2dd2943de 100644
->>>>>> --- a/mm/mlock.c
->>>>>> +++ b/mm/mlock.c
->>>>>> @@ -733,6 +733,7 @@ int user_shm_lock(size_t size, struct ucounts *ucounts)
->>>>>>  	}
->>>>>>  	if (!get_ucounts(ucounts)) {
->>>>>>  		dec_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_MEMLOCK, locked);
->>>>>> +		allowed = 0;
->>>>>>  		goto out;
->>>>>>  	}
->>>>>>  	allowed = 1;
->>>>>
->>>>> Eric
->>>>> .
->>>>>
->>> .
->>>
-> .
-> 
+diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
+index d09926e6c8a8..cf4211c6500d 100644
+--- a/drivers/scsi/libiscsi.c
++++ b/drivers/scsi/libiscsi.c
+@@ -3045,7 +3045,6 @@ iscsi_conn_setup(struct iscsi_cls_session *cls_session, int dd_size,
+ 	if (!cls_conn)
+ 		return NULL;
+ 	conn = cls_conn->dd_data;
+-	memset(conn, 0, sizeof(*conn) + dd_size);
+ 
+ 	conn->dd_data = cls_conn->dd_data + sizeof(*conn);
+ 	conn->session = session;
+-- 
+2.32.0
 
