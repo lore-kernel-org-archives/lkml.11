@@ -2,138 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF08C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF18C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229913AbiCQGHs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
+        id S229983AbiCQGII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiCQGHa (ORCPT
+        with ESMTP id S229950AbiCQGHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:07:30 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BC037B139;
-        Wed, 16 Mar 2022 22:41:55 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8A571476;
-        Wed, 16 Mar 2022 22:41:54 -0700 (PDT)
-Received: from [10.163.32.135] (unknown [10.163.32.135])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2C4E93F7F5;
-        Wed, 16 Mar 2022 22:41:49 -0700 (PDT)
-Message-ID: <229defd6-657b-df65-187f-7eef9999e23a@arm.com>
-Date:   Thu, 17 Mar 2022 11:11:55 +0530
+        Thu, 17 Mar 2022 02:07:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6B119315A;
+        Wed, 16 Mar 2022 22:42:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87DE36176A;
+        Thu, 17 Mar 2022 04:05:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 254F7C340E9;
+        Thu, 17 Mar 2022 04:05:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647489936;
+        bh=NGN9ZhkibSIf00mfrRrfihSPTloWTNjxCfxfbDIq/Hs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aLh9rNSOkAFytCS8Z6mFXcO9YVBj4JsA2EgLEVv+SuQbXfgpIQlXWIHiB02uwdloX
+         rILE1trsxG8UIQfRXImbAl7sIM+pbH8qjC1lRCI0vh+MYkm8TZHpNIx3Fy9Qv5hhA1
+         lRCe3GeVHLBRFXpXvYdNSzLSIzeBWyop1NI4Vvp/rinYWnfBunx5gigrWhptuP2W2I
+         /uTb8FElp4xGu5Drf9TettlTNtWQ3BVrlCPy7mZ9KqjqT8l3UCoAMatcUdbJlcalSv
+         gbOPdJ6vxWXR9B0lycilHPgcMXiNs8rvGCgw6+HhC9nBcnuadvV1QtGm8cdjtHbXKj
+         VdRql+nyKrwww==
+Date:   Wed, 16 Mar 2022 21:05:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     menglong8.dong@gmail.com, pabeni@redhat.com, rostedt@goodmis.org,
+        mingo@redhat.com, xeb@mail.ru, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, imagedong@tencent.com,
+        edumazet@google.com, kafai@fb.com, talalahmad@google.com,
+        keescook@chromium.org, alobakin@pm.me, flyingpeng@tencent.com,
+        mengensun@tencent.com, dongli.zhang@oracle.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        benbjiang@tencent.com
+Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
+ to icmp protocol
+Message-ID: <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org>
+References: <20220316063148.700769-1-imagedong@tencent.com>
+        <20220316063148.700769-4-imagedong@tencent.com>
+        <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V4 03/10] perf: Extend branch type classification
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, Suzuki Poulose <suzuki.poulose@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220315053516.431515-1-anshuman.khandual@arm.com>
- <20220315053516.431515-4-anshuman.khandual@arm.com>
- <20220315112232.GF8939@worktop.programming.kicks-ass.net>
- <0df5c352-1f0d-55f8-5d7f-e28ba33d623b@arm.com>
- <YjHV8dJpEq/M8gHC@hirez.programming.kicks-ass.net>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <YjHV8dJpEq/M8gHC@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 3/16/22 17:50, Peter Zijlstra wrote:
-> On Tue, Mar 15, 2022 at 01:06:42PM +0000, Robin Murphy wrote:
->> On 2022-03-15 11:22, Peter Zijlstra wrote:
->>> On Tue, Mar 15, 2022 at 11:05:09AM +0530, Anshuman Khandual wrote:
->>>> branch_entry.type now has ran out of space to accommodate more branch types
->>>> classification. This will prevent perf branch stack implementation on arm64
->>>> (via BRBE) to capture all available branch types. Extending this bit field
->>>> i.e branch_entry.type [4 bits] is not an option as it will break user space
->>>> ABI both for little and big endian perf tools.
->>>>
->>>> Extend branch classification with a new field branch_entry.new_type via a
->>>> new branch type PERF_BR_EXTEND_ABI in branch_entry.type. Perf tools which
->>>> could decode PERF_BR_EXTEND_ABI, will then parse branch_entry.new_type as
->>>> well.
->>>>
->>>> branch_entry.new_type is a 4 bit field which can hold upto 16 branch types.
->>>> The first three branch types will hold various generic page faults followed
->>>> by five architecture specific branch types, which can be overridden by the
->>>> platform for specific use cases. These architecture specific branch types
->>>> gets overridden on arm64 platform for BRBE implementation.
->>>
->>>> diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
->>>> index 26d8f0b5ac0d..d29280adc3c4 100644
->>>> --- a/include/uapi/linux/perf_event.h
->>>> +++ b/include/uapi/linux/perf_event.h
->>>> @@ -255,9 +255,22 @@ enum {
->>>>   	PERF_BR_IRQ		= 12,	/* irq */
->>>>   	PERF_BR_SERROR		= 13,	/* system error */
->>>>   	PERF_BR_NO_TX		= 14,	/* not in transaction */
->>>> +	PERF_BR_EXTEND_ABI	= 15,	/* extend ABI */
->>>>   	PERF_BR_MAX,
->>>>   };
->>>
->>>
->>>>   #define PERF_SAMPLE_BRANCH_PLM_ALL \
->>>>   	(PERF_SAMPLE_BRANCH_USER|\
->>>>   	 PERF_SAMPLE_BRANCH_KERNEL|\
->>>> @@ -1372,7 +1385,8 @@ struct perf_branch_entry {
->>>>   		abort:1,    /* transaction abort */
->>>>   		cycles:16,  /* cycle count to last branch */
->>>>   		type:4,     /* branch type */
->>>> -		reserved:40;
->>>> +		new_type:4, /* additional branch type */
->>>> +		reserved:36;
->>>>   };
->>>
->>> Hurmpf... this will effectively give us 5 bits of space for the cost of
->>> 8, that seems... unfortunate.
->>>
->>> Would something like:
->>>
->>> 		type:4,
->>> 		ext_type:4,
->>> 		reserved:36;
->>>
->>> and have all software do:
->>>
->>> 	type = pbe->type | (pbe->ext_type << 4);
->>>
->>> Then old software will only know about the old types. New software on
->>> old kernels will add 4 0's, which is harmless, while new software on new
->>> kernels will get 8 bytes of type.
->>>
->>> Would that work?
->>
->> Depends how bad the effects of aliasing in existing software would be, I
->> guess - e.g. new kernel outputs type 0x23 which software then interprets as
->> 0x3 since it doesn't know about the extended bits. I'm guessing that's more
->> likely "confusing to the user" than "catastrophically fatal", but it might
->> still matter.
->>
->> If software had an explicit opt-in to receiving extended types when
->> requesting branch sampling in the first place we could avoid that worry, but
->> then we'd need some additional complexity to sanitise records depending on
->> that option :/
+On Wed, 16 Mar 2022 21:35:47 -0600 David Ahern wrote:
+> On 3/16/22 9:18 PM, Jakub Kicinski wrote:
+> > 
+> > I guess this set raises the follow up question to Dave if adding 
+> > drop reasons to places with MIB exception stats means improving 
+> > the granularity or one MIB stat == one reason?
 > 
-> Bah.. I see.. One option is PERF_SAMPLE_BRANCH_STACK2, but yes, yuck.
+> There are a few examples where multiple MIB stats are bumped on a drop,
+> but the reason code should always be set based on first failure. Did you
+> mean something else with your question?
 
-Could you please elaborate on this ? Are you suggesting to add another perf
-sample flag i.e PERF_SAMPLE_BRANCH_STACK2 just to capture and process these
-new branch types ?
+I meant whether we want to differentiate between TYPE, and BROADCAST or
+whatever other possible invalid protocol cases we can get here or just
+dump them all into a single protocol error code.
