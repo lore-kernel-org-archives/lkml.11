@@ -2,223 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4437CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0683EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:16:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235683AbiCQPPB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
+        id S235626AbiCQPRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:17:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235663AbiCQPOy (ORCPT
+        with ESMTP id S235680AbiCQPRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:14:54 -0400
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9D51EC6D;
-        Thu, 17 Mar 2022 08:13:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1647530014;
-  x=1679066014;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fHWs2R0/HroMWVTCgnVUe4lBXlDwFYBBcGLvlS7a3UU=;
-  b=eCq2n5lNToApmhDsKXn4E79J8H4m7M/YXX6eaIbt5TBne2OfQ18/VdR8
-   AfwwUCEwN5ZGJlxcONC1XDxcb8mjhGlfZ7sYceaK6NEN6YWvCxQLEbYJ2
-   p9kefYYFBf0iWQrJyGJC1aQPYSAohoDKQu+C1TJV+0DaPWDqAFvmAtZ96
-   N/1fJXReS1Wyxn5jlZhFOo4uLUZuz/AoZ+k70MRjgt5+RGMsV+u4o8Il0
-   +32WuT5ti+4qJT3WkU7ARWFi+2mX1CclqcnlduLRHrPknPQ1XiLScwXBE
-   MnZY7G+q5qacSWdKWphD/AI5foCpo0nYeLzxD8nnvZwpk7dRFeLo2Xbx4
-   A==;
-Date:   Thu, 17 Mar 2022 16:13:26 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <kernel@axis.com>,
-        <devicetree@vger.kernel.org>, <linux-um@lists.infradead.org>,
-        <shuah@kernel.org>, <brendanhiggins@google.com>,
-        <linux-kselftest@vger.kernel.org>, <jic23@kernel.org>,
-        <linux-iio@vger.kernel.org>, <lgirdwood@gmail.com>,
-        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <linux-rtc@vger.kernel.org>, <corbet@lwn.net>,
-        <linux-doc@vger.kernel.org>
-Subject: Re: [RFC v1 09/10] regulator: tps62864: add roadtest
-Message-ID: <20220317151326.GA7832@axis.com>
-References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
- <20220311162445.346685-10-vincent.whitchurch@axis.com>
- <YiuPvkQroV/WdFpx@sirena.org.uk>
+        Thu, 17 Mar 2022 11:17:46 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DE513366E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:16:29 -0700 (PDT)
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4B37A3F07E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:16:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647530187;
+        bh=SfVY8hBTeV5QQndiPv96NqW12VeOymyYrpsKvO+Iim4=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=nyp9m520tu0JhUVFk5oJVlHF6ogfckkScCnsfT3NVe2NaZYctJZ75OTHEdLKS4jo5
+         WHGs4vOBMnkBigMIwZWje3zZq2eK90aX/lhE2SRi2Laen/oEFS26+SsO6nFMQ4DpjZ
+         O68w3QzXsskNgVpirh3DxQh4p+cY8pza4CTwNAn9vl+oWn6JOUZL+vTw18PEIGfKEW
+         3E9I28RbO8E4WkTn9vxPn6CdNCB/o8s6NVO7W4H/OfAlwS3Snn7hLW+cg/kVybBzGi
+         s2tYNN86Nrchl+0/sWo9GKTv0GvBhmCuZifS7aach/CkvnCXMFIr/3FVF+6LUm6c0H
+         RvAi3F7g9fLRQ==
+Received: by mail-wm1-f72.google.com with SMTP id h127-20020a1c2185000000b0038c6f7e22a4so2409791wmh.9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:16:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SfVY8hBTeV5QQndiPv96NqW12VeOymyYrpsKvO+Iim4=;
+        b=AkEaApprNlSVW7K41bb1fzN9YHBPIplSNTSEUug7rLyk1N8S3710OyfAYPXjrEGl9U
+         3PCubHUDwRAGexetMFtiXHuLdnig8W5j0DQJlrnP5lDKwctAZ0snRvlH/W8PtEJ7nR7X
+         g4qCfs4+5g0C2pSp52f4bddBSuG382csZNzkui9jUYYKJr3pGIATc/Vy/E+YkEBDKYvc
+         3IsbCZINLgidez7hELyvDiUgzaAlxsMXhvAUgYMmbfWk/qzPw6cOb1IZbhBWrpOJ0MOa
+         2Yhq2/hHQrjbWJXKRDPW3I5FLbvWjAOyhG8FMCYDcQJD4wFLS+sKjd8wGtI/cyKB+frh
+         lj4w==
+X-Gm-Message-State: AOAM531fn8sLsbKL4lAbjWzIeH13oYyvKnjiPjjOOLd3Jc2g4xjLZTjM
+        f2Ab9JgMqEL+QcFPrFyZ6CWoEGQg3XSjY1eyGgA3ZcV7vZNfmjVUOwCvlA5h3ItU4imUN1U0gCg
+        D12930XANXjsUsx4Odc7dk/1bBXGwtnBMltQNQ1LI7Q==
+X-Received: by 2002:a05:600c:42d6:b0:389:868e:8638 with SMTP id j22-20020a05600c42d600b00389868e8638mr12466706wme.178.1647530186996;
+        Thu, 17 Mar 2022 08:16:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzzh994ZACGJIGGTR33UaTb+Ql5s8q357d3PN1fjyohVWd1lsnaDb3M6I5RQtPefhwooPdvAg==
+X-Received: by 2002:a05:600c:42d6:b0:389:868e:8638 with SMTP id j22-20020a05600c42d600b00389868e8638mr12466692wme.178.1647530186807;
+        Thu, 17 Mar 2022 08:16:26 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id r12-20020a5d6c6c000000b00203ec2b1255sm1820380wrz.60.2022.03.17.08.16.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 08:16:26 -0700 (PDT)
+Message-ID: <9143a2b5-8d53-9767-ea3c-d2b3555333f2@canonical.com>
+Date:   Thu, 17 Mar 2022 16:16:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YiuPvkQroV/WdFpx@sirena.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/8] dt-bindings: pinctrl: mvebu: Document bindings for
+ AC5
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+ <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
+ <4e6df448-5562-8f50-6f46-91acb279bc1a@canonical.com>
+ <7e73bba0-8b54-772c-2e94-8fca4e4e3294@alliedtelesis.co.nz>
+ <cb0af80e-3e5a-fbd9-cd8b-7b252ebe33fe@canonical.com>
+ <6d902e7d-b71f-9dcd-9175-cc706e3d60cc@alliedtelesis.co.nz>
+ <4b1f4772-35f9-3e21-6429-b64c7427144a@canonical.com>
+ <YjNCSENOP8EyWArw@lunn.ch>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <YjNCSENOP8EyWArw@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 06:06:54PM +0000, Mark Brown wrote:
-> On Fri, Mar 11, 2022 at 05:24:44PM +0100, Vincent Whitchurch wrote:
-> This looks like it could be useful, modulo the general concerns with
-> mocking stuff.  I've not looked at the broader framework stuff in any
-> meanigful way.
-
-Thank you for having a look!
-
-Here's a bit of background story about how I used this particular test,
-which hopefully shows an example of where I've seen the benefits of
-mocking hardware: 
-
-When I wrote this tps6286x driver a while ago, I tested it as one
-usually does, checking with i2cdump that the correct register values are
-written, measuring the voltages with a multimeter, rising and repeating
-with different devicetree properties, and so on.  (This framework didn't
-exist at that point.)
-
-Later, when preparing the driver for mainline submission, I wanted a
-quick way to check that any changes or cleanups that I needed to do
-during that process didn't invalidate all my and others' earlier
-testing.  The easiest way to do that was to ensure that the driver
-continued to write the same bits in the same registers when given the
-same set of inputs and devicetree properties, and that is where I found
-the mocking to be useful.
-
-In this case where there is no external input, the testing could of
-course have all been done manually with the real hardware, but there was
-little reason to do so when the hardware was the one factor which had
-not changed.  The abilitly to create multiple devices with different
-devicetree properties (such as fast mode on/off) was a real time-saver
-too.
-
-> > +    @classmethod
-> > +    def setUpClass(cls) -> None:
-> > +        insmod("tps6286x-regulator")
+On 17/03/2022 15:14, Andrew Lunn wrote:
+>> What do you mean "driver fails to load"? You control the driver, don't
+>> you?
 > 
-> Shouldn't this get figured out when the device gets created in DT (if it
-> doesn't I guess the tests found a bug...)?
+> It is a thin wrapper around the mvebu driver, which does all the real
+> work. So no, Chris does not really control what the core of the driver
+> does.
 
-The system isn't set up to load modules automatically.  The reason for
-this is to give the test cases full control of when the module is loaded
-and unload, since the tests could want to load the module with specific
-options.
-
-Also, the framework splits up logs and shows errors that occurs during
-each specific test if the tests fail, and this would become less useful
-if all modules for all the devices in the devicetree get loaded on
-startup when the devicetree is parsed and one of the modules failed to
-load or crashed when loaded.
+This this design still require a pinctrl to be a child of some node?
 
 > 
-> > +    def setUp(self) -> None:
-> > +        self.driver = I2CDriver("tps6286x")
-> > +        self.hw = Hardware("i2c")
-> > +        self.hw.load_model(TPS62864)
+> The existing binding documentation says:
 > 
-> This feels like there could be some syntactic sugar to say "create this
-> I2C device" in one call?  In general a lot of the frameworkish stuff
-> feels verbose.
-
-Yes, I agree this could be simplified.  I think the
-update_mock/reset_mock dance could also potentially be simplified with a
-with statement.
-
-Beyond that, yes, there is some boilerplate setup for each test to bind
-the devices.  This can differ between drivers and subsystems so I'm not
-sure how much could be shared, but I guess some of them could be
-separated out into a internal function for this particular test.
-
-> > +    def test_voltage(self) -> None:
-> > +        with (
-> > +            self.driver.bind(self.dts["normal"]),
-> > +            PlatformDriver("reg-virt-consumer").bind(
-> > +                "tps62864_normal_consumer"
-> > +            ) as consumerdev,
-> > +        ):
-> > +            maxfile = consumerdev.path / "max_microvolts"
-> > +            minfile = consumerdev.path / "min_microvolts"
-> > +
-> > +            write_int(maxfile, 1675000)
-> > +            write_int(minfile, 800000)
-> > +
-> > +            mock = self.hw.update_mock()
-> > +            mock.assert_reg_write_once(self, REG_CONTROL, 1 << 5)
-> > +            mock.assert_reg_write_once(self, REG_VOUT1, 0x50)
-> > +            mock.reset_mock()
+>     * Marvell Armada 37xx SoC pin and gpio controller
 > 
-> Some comments about the assertations here would seem to be in order.
-> It's not altogether clear what this is testing - it looks to be
-> verifying that the regulator is enabled with the voltage set to 800mV
-> mapping to 0x50 in VOUT1 but I'm not sure that the idle reader would
-> pick that up.
-
-Yes, I will add some comments.  I also made some of the bit fields use
-constants in some of the other driver, that could be done here too.
-
+>     Each Armada 37xx SoC come with two pin and gpio controller one for
+>     the south bridge and the other for the north bridge.
 > 
-> > +            mV = 1000
-> > +            data = [
-> > +                (400 * mV, 0x00),
-> > +                (900 * mV, 0x64),
-> > +                (1675 * mV, 0xFF),
-> > +            ]
-> > +
-> > +            for voltage, val in data:
-> > +                write_int(minfile, voltage)
-> > +                mock = self.hw.update_mock()
-> > +                mock.assert_reg_write_once(self, REG_VOUT1, val)
-> > +                mock.reset_mock()
+>     Inside this set of register the gpio latch allows exposing some
+>     configuration of the SoC and especially the clock frequency of the
+>     xtal. Hence, this node is a represent as syscon allowing sharing
+>     the register between multiple hardware block.
 > 
-> For covering regulators in general (especially those like this that use
-> the generic helpers) I'd be inclined to go through every single voltage
-> that can be set which isn't so interesting for this driver with it's
-> linear voltage control but more interesting for something that's not
-> continuous.
+> 
+> So the syscon is there to allow the clock driver to share the register
+> space.
 
-That could be useful in some cases, but if going through all the
-voltages in a loop requires that the test implement the exact same
-voltage-to-bitfield conversion function as the driver, then the benefit
-of that part of the test is unclear.  That's the reason why for example
-the OPT3001 test uses known values from the datasheet rather than just
-copying the conversion function in the driver to Python.
 
-> I'd also put a cross check in that the voltage and enable
-> state that's reported via the read interface in sysfs is the one that we
-> think we've just set, that'd validate that the framework's model of
-> what's going on matches both what the driver did to the "hardware" and
-> what the running kernel thinks is going on so we're joined up top to
-> bottom (for the regulator framework the read values come from the
-> driver so it is actually covering the driver).
+This makes sense. Solution here would be to add syscon compatible to
+pinctrl node. This parent simple-mfd+syscon node looks like a workaround
+to share some registers in a highly flexible way. However isn't it
+better to have more obvious owner of the register space (e.g. pinctrl)?
+IOW, if there is only one child of syscon+simple-mfd node, why not
+getting rid of it and making pinctrl owner of this address space? It's
+also simpler code.
 
-Makes sense, I can add that.
 
-> This all feels like it could readily be factored out into a generic
-> helper, much as the actual drivers are especially when they're more data
-> driven.  Ideally with the ability to override the default I/O operations
-> for things with sequences that need to be followed instead of just a
-> bitfield to update.  Callbacks to validate enable state, voltage, mode
-> and so on in the hardware.  If we did that then rather than open coding
-> every single test for every single device we could approach things at
-> the framework level and give people working on a given device a pile of
-> off the shelf tests which are more likely to catch things that an
-> individual driver author might've missed, it also avoids the test
-> coverage being more laborious than writing the actual driver.
-
-Things could certainly be factored out in the future, but I'm a bit wary
-of attempting to do that when we have a test for only one regulator
-driver, and a very minimal regulator driver at that.
-
-> This does raise the questions I mentioned about how useful the testing
-> really is of course, even more so when someone works out how to generate
-> the data tables for the test and the driver from the same source, but
-> that's just generally an issue for mocked tests at the conceptual level
-> and clearly it's an approach that's fairly widely used and people get
-> value from.
-
-For the regulator drivers which are purely-data driven such as the ones
-mostly implemented by setting the various fields in struct
-regulator_desc along with the helpers in the framework, it could perhaps
-be useful to implement kunit tests in the regulator subsystem which test
-that using the various fields actually results in the expected
-consumer-visible behaviour with the regulator API.
-
-Then, for the indivudal drivers themselves, roadtests could cover things
-like probe handling, functions implemented without using helpers, checks
-that the correct variant's registers are used in drivers supporting
-multiple variants, custom devicetree properties, interrupt handling, and
-the like.
+Best regards,
+Krzysztof
