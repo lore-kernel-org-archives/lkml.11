@@ -2,320 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 10:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74456C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 10:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232597AbiCQKf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 06:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        id S232637AbiCQKgd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 06:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232615AbiCQKfT (ORCPT
+        with ESMTP id S232615AbiCQKgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 06:35:19 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1040BE6160;
-        Thu, 17 Mar 2022 03:34:03 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 7D6511F44CCB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1647513241;
-        bh=rI9DZ9jsH6eaZI5FatE4QcNepkJ88+Mje76GPlYvw8I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jFH5ZndPzsVi2tZw5UDkJLE1ixNvmShub6JnU23RGhysdZD2I/pLBby5g3s5LtBDh
-         H8x0XFC9jcOeiFSWeNfSCgkqWpj0gdom4elq0xw/0Yn6q2rkPYhtbEa0blIiylvJSE
-         w1HcAAaHnCyua7D2oLxOVrUGyhMjXCZnrOY+XWy8RflvKcTmiFIkVWdU4YbXBSzUp3
-         wUHbZ8pAF6ttmAEkZaIEtEKQjeIlq/tCzVzRrASGCU1as72E9E2Kehj7eRFm6nz/n5
-         9SpiS9s7l15/4lYdwU2wnoInspfRsCfDCrUJtGDnQUq6L73F+YNLpoHenXo8ldva8o
-         GYZm3Fv71dFTw==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Gabriel Krisman Bertazi <krisman@collabora.com>,
-        usama.anjum@collabora.com, kernel@collabora.com, david@redhat.com,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH V5 2/2] selftests: vm: Add test for Soft-Dirty PTE bit
-Date:   Thu, 17 Mar 2022 15:33:22 +0500
-Message-Id: <20220317103323.94799-2-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220317103323.94799-1-usama.anjum@collabora.com>
-References: <20220317103323.94799-1-usama.anjum@collabora.com>
+        Thu, 17 Mar 2022 06:36:32 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E022613F8DA
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 03:35:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647513315; x=1679049315;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=2zHfKZKPoHZZnn4wJvN+JDaLnv8NiPFqvhCKQhrKxPQ=;
+  b=kVZLPhU0aoYWoG8cxek4KfpTOICObKv6lh8yRhK+7QlHYl0Y7Zqs/Oh+
+   /YUK2Fxz1lI67OjrxPq7eq9qjBaRbZTtp+Jx2y736K/YPb+hO0uiA8Cdv
+   gWB/MHW/ymys0cTgVZSCvA+MkwM+Hmpg+Q9bBQRdOZHD29DID7JTY4o2+
+   AUvwGBcyLyw7OePcZo00lEu4jOj9ttSBjm3zu8iaW2eSEIm8zXWGNKI0O
+   2nowsT13zhu42rM/px3LWTJyXzXsAxP5fbrJkNJfXFVHOoHSwYkgWNqN4
+   o7Twv6iOqeSB5DgC61/CgCH32eWISMfUa/JnDEZOa1uaeQU+rG/JsOv1w
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="254391900"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="254391900"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 03:35:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="541321853"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 17 Mar 2022 03:35:14 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUnTN-000Dao-9p; Thu, 17 Mar 2022 10:35:13 +0000
+Date:   Thu, 17 Mar 2022 18:34:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 111/2308] init/main.c:886:13: warning: no
+ previous prototype for function 'init_per_task_early'
+Message-ID: <202203171800.i5UHGBco-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gabriel Krisman Bertazi <krisman@collabora.com>
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   ef90a8d1de7ff54bfd0fcfe6371c20f544b14d6d
+commit: 3e2fb1b92a2026ae3608f3d77d302217390dee27 [111/2308] headers/deps: cpusets: Move task_struct::mems_allowed_seq to per_task()
+config: x86_64-randconfig-a001 (https://download.01.org/0day-ci/archive/20220317/202203171800.i5UHGBco-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=3e2fb1b92a2026ae3608f3d77d302217390dee27
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 3e2fb1b92a2026ae3608f3d77d302217390dee27
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-This introduces three tests:
-1) Sanity check soft dirty basic semantics: allocate area, clean, dirty,
-check if the SD bit is flipped.
-2) Check VMA reuse: validate the VM_SOFTDIRTY usage
-3) Check soft-dirty on huge pages
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This was motivated by Will Deacon's fix commit 912efa17e512 ("mm: proc:
-Invalidate TLB after clearing soft-dirty page state"). I was tracking the
-same issue that he fixed, and this test would have caught it.
+All warnings (new ones prefixed by >>):
 
-Cc: Will Deacon <will@kernel.org>
-Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+   init/main.c:782:20: warning: no previous prototype for function 'mem_encrypt_init' [-Wmissing-prototypes]
+   void __init __weak mem_encrypt_init(void) { }
+                      ^
+   init/main.c:782:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init __weak mem_encrypt_init(void) { }
+   ^
+   static 
+>> init/main.c:886:13: warning: no previous prototype for function 'init_per_task_early' [-Wmissing-prototypes]
+   void __init init_per_task_early(void)
+               ^
+   init/main.c:886:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void __init init_per_task_early(void)
+   ^
+   static 
+   2 warnings generated.
+
+
+vim +/init_per_task_early +886 init/main.c
+
+   781	
+ > 782	void __init __weak mem_encrypt_init(void) { }
+   783	
+   784	void __init __weak poking_init(void) { }
+   785	
+   786	void __init __weak pgtable_cache_init(void) { }
+   787	
+   788	void __init __weak trap_init(void) { }
+   789	
+   790	bool initcall_debug;
+   791	core_param(initcall_debug, initcall_debug, bool, 0644);
+   792	
+   793	#ifdef TRACEPOINTS_ENABLED
+   794	static void __init initcall_debug_enable(void);
+   795	#else
+   796	static inline void initcall_debug_enable(void)
+   797	{
+   798	}
+   799	#endif
+   800	
+   801	/* Report memory auto-initialization states for this boot. */
+   802	static void __init report_meminit(void)
+   803	{
+   804		const char *stack;
+   805	
+   806		if (IS_ENABLED(CONFIG_INIT_STACK_ALL_PATTERN))
+   807			stack = "all(pattern)";
+   808		else if (IS_ENABLED(CONFIG_INIT_STACK_ALL_ZERO))
+   809			stack = "all(zero)";
+   810		else if (IS_ENABLED(CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL))
+   811			stack = "byref_all(zero)";
+   812		else if (IS_ENABLED(CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF))
+   813			stack = "byref(zero)";
+   814		else if (IS_ENABLED(CONFIG_GCC_PLUGIN_STRUCTLEAK_USER))
+   815			stack = "__user(zero)";
+   816		else
+   817			stack = "off";
+   818	
+   819		pr_info("mem auto-init: stack:%s, heap alloc:%s, heap free:%s\n",
+   820			stack, want_init_on_alloc(GFP_KERNEL) ? "on" : "off",
+   821			want_init_on_free() ? "on" : "off");
+   822		if (want_init_on_free())
+   823			pr_info("mem auto-init: clearing system memory may take some time...\n");
+   824	}
+   825	
+   826	/*
+   827	 * Set up kernel memory allocators
+   828	 */
+   829	static void __init mm_init(void)
+   830	{
+   831		/*
+   832		 * page_ext requires contiguous pages,
+   833		 * bigger than MAX_ORDER unless SPARSEMEM.
+   834		 */
+   835		page_ext_init_flatmem();
+   836		init_mem_debugging_and_hardening();
+   837		kfence_alloc_pool();
+   838		report_meminit();
+   839		stack_depot_early_init();
+   840		mem_init();
+   841		mem_init_print_info();
+   842		kmem_cache_init();
+   843		/*
+   844		 * page_owner must be initialized after buddy is ready, and also after
+   845		 * slab is ready so that stack_depot_init() works properly
+   846		 */
+   847		page_ext_init_flatmem_late();
+   848		kmemleak_init();
+   849		pgtable_init();
+   850		debug_objects_mem_init();
+   851		vmalloc_init();
+   852		/* Should be run before the first non-init thread is created */
+   853		init_espfix_bsp();
+   854		/* Should be run after espfix64 is set up. */
+   855		pti_init();
+   856	}
+   857	
+   858	#ifdef CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET
+   859	DEFINE_STATIC_KEY_MAYBE_RO(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,
+   860				   randomize_kstack_offset);
+   861	DEFINE_PER_CPU(u32, kstack_offset);
+   862	
+   863	static int __init early_randomize_kstack_offset(char *buf)
+   864	{
+   865		int ret;
+   866		bool bool_result;
+   867	
+   868		ret = kstrtobool(buf, &bool_result);
+   869		if (ret)
+   870			return ret;
+   871	
+   872		if (bool_result)
+   873			static_branch_enable(&randomize_kstack_offset);
+   874		else
+   875			static_branch_disable(&randomize_kstack_offset);
+   876		return 0;
+   877	}
+   878	early_param("randomize_kstack_offset", early_randomize_kstack_offset);
+   879	#endif
+   880	
+   881	void __init __weak arch_call_rest_init(void)
+   882	{
+   883		rest_init();
+   884	}
+   885	
+ > 886	void __init init_per_task_early(void)
+   887	{
+   888	#ifdef CONFIG_POSIX_TIMERS
+   889		per_task(&init_task, posix_cputimers) = (struct posix_cputimers) __INIT_CPU_TIMERS(init_task);
+   890	#endif
+   891	
+
 ---
-Andrew has dropped the V3 of this patch.
-
-Changes in V5:
-- Correct indentation of macros
-- Tested by reverting 912efa17e512 and one sub test failed
-- Updated the writing values to the memory and added a comment
-
-Changes in V4:
-Cosmetic changes
-Removed global variables
-Replaced ksft_print_msg with ksft_exit_fail_msg to exit the program at
-once
-Some other minor changes
-Correct the authorship of the patch
-
-Tests of soft dirty bit in this patch and in madv_populate.c are
-non-overlapping. madv_populate.c has only one soft-dirty bit test in the
-context of different advise (MADV_POPULATE_READ and
-MADV_POPULATE_WRITE). This new test adds more tests.
-
-Tab width of 8 has been used to align the macros. This alignment may look
-odd in shell or email. But it looks alright in editors.
-
-Test output:
-TAP version 13
-1..5
-ok 1 Test test_simple
-ok 2 Test test_vma_reuse reused memory location
-ok 3 Test test_vma_reuse dirty bit of previous page
-ok 4 Test test_hugepage huge page allocation
-ok 5 Test test_hugepage huge page dirty bit
- # Totals: pass:5 fail:0 xfail:0 xpass:0 skip:0 error:0
-
-Or
-
-TAP version 13
-1..5
-ok 1 Test test_simple
-ok 2 Test test_vma_reuse reused memory location
-ok 3 Test test_vma_reuse dirty bit of previous page
-ok 4 # SKIP Test test_hugepage huge page allocation
-ok 5 # SKIP Test test_hugepage huge page dirty bit
- # Totals: pass:3 fail:0 xfail:0 xpass:0 skip:2 error:0
-
-Changes in V3:
-Move test to selftests/vm
-Use kselftest macros
-Minor updates to make code more maintainable
-Add configurations in config file
-
-V2 of this patch:
-https://lore.kernel.org/lkml/20210603151518.2437813-1-krisman@collabora.com/
----
- tools/testing/selftests/vm/.gitignore   |   1 +
- tools/testing/selftests/vm/Makefile     |   2 +
- tools/testing/selftests/vm/config       |   2 +
- tools/testing/selftests/vm/soft-dirty.c | 146 ++++++++++++++++++++++++
- 4 files changed, 151 insertions(+)
- create mode 100644 tools/testing/selftests/vm/soft-dirty.c
-
-diff --git a/tools/testing/selftests/vm/.gitignore b/tools/testing/selftests/vm/.gitignore
-index d7507f3c7c76a..3cb4fa771ec2a 100644
---- a/tools/testing/selftests/vm/.gitignore
-+++ b/tools/testing/selftests/vm/.gitignore
-@@ -29,5 +29,6 @@ write_to_hugetlbfs
- hmm-tests
- memfd_secret
- local_config.*
-+soft-dirty
- split_huge_page_test
- ksm_tests
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index 4e68edb26d6b6..f25eb30b5f0cb 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -47,6 +47,7 @@ TEST_GEN_FILES += on-fault-limit
- TEST_GEN_FILES += thuge-gen
- TEST_GEN_FILES += transhuge-stress
- TEST_GEN_FILES += userfaultfd
-+TEST_GEN_PROGS += soft-dirty
- TEST_GEN_PROGS += split_huge_page_test
- TEST_GEN_FILES += ksm_tests
- 
-@@ -92,6 +93,7 @@ KSFT_KHDR_INSTALL := 1
- include ../lib.mk
- 
- $(OUTPUT)/madv_populate: vm_util.c
-+$(OUTPUT)/soft-dirty: vm_util.c
- $(OUTPUT)/split_huge_page_test: vm_util.c
- 
- ifeq ($(MACHINE),x86_64)
-diff --git a/tools/testing/selftests/vm/config b/tools/testing/selftests/vm/config
-index 60e82da0de850..be087c4bc3961 100644
---- a/tools/testing/selftests/vm/config
-+++ b/tools/testing/selftests/vm/config
-@@ -4,3 +4,5 @@ CONFIG_TEST_VMALLOC=m
- CONFIG_DEVICE_PRIVATE=y
- CONFIG_TEST_HMM=m
- CONFIG_GUP_TEST=y
-+CONFIG_TRANSPARENT_HUGEPAGE=y
-+CONFIG_MEM_SOFT_DIRTY=y
-diff --git a/tools/testing/selftests/vm/soft-dirty.c b/tools/testing/selftests/vm/soft-dirty.c
-new file mode 100644
-index 0000000000000..3153ebac6909b
---- /dev/null
-+++ b/tools/testing/selftests/vm/soft-dirty.c
-@@ -0,0 +1,146 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdbool.h>
-+#include <fcntl.h>
-+#include <stdint.h>
-+#include <malloc.h>
-+#include <sys/mman.h>
-+#include "../kselftest.h"
-+#include "vm_util.h"
-+
-+#define PAGEMAP_FILE_PATH "/proc/self/pagemap"
-+#define TEST_ITERATIONS 10000
-+
-+static void test_simple(int pagemap_fd, int pagesize)
-+{
-+	int i;
-+	char *map;
-+
-+	map = aligned_alloc(pagesize, pagesize);
-+	if (!map)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	clear_softdirty();
-+
-+	for (i = 0 ; i < TEST_ITERATIONS; i++) {
-+		if (pagemap_is_softdirty(pagemap_fd, map) == 1) {
-+			ksft_print_msg("dirty bit was 1, but should be 0 (i=%d)\n", i);
-+			break;
-+		}
-+
-+		clear_softdirty();
-+		// Write something to the page to get the dirty bit enabled on the page
-+		map[0] = i % 255;
-+
-+		if (pagemap_is_softdirty(pagemap_fd, map) == 0) {
-+			ksft_print_msg("dirty bit was 0, but should be 1 (i=%d)\n", i);
-+			break;
-+		}
-+
-+		clear_softdirty();
-+	}
-+	free(map);
-+
-+	ksft_test_result(i == TEST_ITERATIONS, "Test %s\n", __func__);
-+}
-+
-+static void test_vma_reuse(int pagemap_fd, int pagesize)
-+{
-+	char *map, *map2;
-+
-+	map = mmap(NULL, pagesize, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANON), -1, 0);
-+	if (map == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed");
-+
-+	clear_softdirty();
-+
-+	/* Write to the page before unmapping and map the same size region again to check
-+	 * if same memory region is gotten next time and if dirty bit is preserved across
-+	 * this type of allocations.
-+	 */
-+	map[0]++;
-+
-+	munmap(map, pagesize);
-+
-+	map2 = mmap(NULL, pagesize, (PROT_READ | PROT_WRITE), (MAP_PRIVATE | MAP_ANON), -1, 0);
-+	if (map2 == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed");
-+
-+	ksft_test_result(map == map2, "Test %s reused memory location\n", __func__);
-+
-+	ksft_test_result(pagemap_is_softdirty(pagemap_fd, map) != 0,
-+			 "Test %s dirty bit of previous page\n", __func__);
-+
-+	munmap(map2, pagesize);
-+}
-+
-+static void test_hugepage(int pagemap_fd, int pagesize)
-+{
-+	char *map;
-+	int i, ret;
-+	size_t hpage_len = read_pmd_pagesize();
-+
-+	map = memalign(hpage_len, hpage_len);
-+	if (!map)
-+		ksft_exit_fail_msg("memalign failed\n");
-+
-+	ret = madvise(map, hpage_len, MADV_HUGEPAGE);
-+	if (ret)
-+		ksft_exit_fail_msg("madvise failed %d\n", ret);
-+
-+	for (i = 0; i < hpage_len; i++)
-+		map[i] = (char)i;
-+
-+	if (check_huge(map)) {
-+		ksft_test_result_pass("Test %s huge page allocation\n", __func__);
-+
-+		clear_softdirty();
-+		for (i = 0 ; i < TEST_ITERATIONS ; i++) {
-+			if (pagemap_is_softdirty(pagemap_fd, map) == 1) {
-+				ksft_print_msg("dirty bit was 1, but should be 0 (i=%d)\n", i);
-+				break;
-+			}
-+
-+			clear_softdirty();
-+			// Write something to the page to get the dirty bit enabled on the page
-+			map[0] = i % 255;
-+
-+			if (pagemap_is_softdirty(pagemap_fd, map) == 0) {
-+				ksft_print_msg("dirty bit was 0, but should be 1 (i=%d)\n", i);
-+				break;
-+			}
-+			clear_softdirty();
-+		}
-+
-+		ksft_test_result(i == TEST_ITERATIONS, "Test %s huge page dirty bit\n", __func__);
-+	} else {
-+		// hugepage allocation failed. skip these tests
-+		ksft_test_result_skip("Test %s huge page allocation\n", __func__);
-+		ksft_test_result_skip("Test %s huge page dirty bit\n", __func__);
-+	}
-+	free(map);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int pagemap_fd;
-+	int pagesize;
-+
-+	ksft_print_header();
-+	ksft_set_plan(5);
-+
-+	pagemap_fd = open(PAGEMAP_FILE_PATH, O_RDONLY);
-+	if (pagemap_fd < 0)
-+		ksft_exit_fail_msg("Failed to open %s\n", PAGEMAP_FILE_PATH);
-+
-+	pagesize = getpagesize();
-+
-+	test_simple(pagemap_fd, pagesize);
-+	test_vma_reuse(pagemap_fd, pagesize);
-+	test_hugepage(pagemap_fd, pagesize);
-+
-+	close(pagemap_fd);
-+
-+	return ksft_exit_pass();
-+}
--- 
-2.30.2
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
