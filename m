@@ -2,156 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD58AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F88C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237872AbiCQTMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 15:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40482 "EHLO
+        id S234978AbiCQTMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 15:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234978AbiCQTM3 (ORCPT
+        with ESMTP id S237878AbiCQTMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 15:12:29 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2BFE994B;
-        Thu, 17 Mar 2022 12:11:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647544270; x=1679080270;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fmhExObKJfb9BUNo4OAayqN1xl6unRSZn3MfjAV8Bug=;
-  b=dIcw9GlpVUZYE2C8r9jV/KJOPAgKt4E7RGx6xS+BWgvs1KVnO7TbkjqP
-   IMTX/htfpMwzdKX9sC0Tb4z1MFTw7lKpo5bnXfAbhxvsgBLqGcTPY/qpU
-   KIYM0RV0oUCHt4LHVy+9N951U942h91qdylf5CKlgcDlnTJqcUYlcX4X+
-   NXzCvZkp/kfVnue7CWfZ/GzHkkv1+nm5lSEmCMWTRnxJgUtNARFnUyIcy
-   98tbC7Y1GwvODEznP5cHDwWkFSJJie/B8u0uLLBXpS30m3lbuXT6D0S9y
-   oqVQzz/XwnA17GFQ/koIBCvWxEECOwTf8rDgpwteHGhSSYReRk9Q5wCdt
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
-   d="scan'208";a="89307365"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 12:11:09 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Mar 2022 12:11:09 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 17 Mar 2022 12:11:08 -0700
-Date:   Thu, 17 Mar 2022 20:14:06 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Michael Walle <michael@walle.cc>
-CC:     Krzysztof Kozlowski <krzk@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-Subject: Re: [PATCH net-next v2 1/3] dt-bindings: net: mscc-miim: add lan966x
- compatible
-Message-ID: <20220317191406.5ivtfkdlwzngmobi@soft-dev3-1.localhost>
-References: <20220313002536.13068-1-michael@walle.cc>
- <20220313002536.13068-2-michael@walle.cc>
- <08b89b3f-d0d3-e96f-d1c3-80e8dfd0798f@kernel.org>
- <d18291ff8d81f03a58900935d92115f2@walle.cc>
- <2d35127c-d4ef-6644-289a-5c10bcbbbf84@kernel.org>
- <145fc079ce8c266b8c2265aacfd3b077@walle.cc>
+        Thu, 17 Mar 2022 15:12:34 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 401AF208C23
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 12:11:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647544277; x=1679080277;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=QtbZsZYj0hr0+LT60TV+H4KtAWp3GNm9B4MX5TPGWQk=;
+  b=GUmy1ma1DosoGBcQ2Hy4tPidmyGAzHsqv8FsAP0CJPjwWUDOjfs3xHJk
+   IlJVcZOA4igLz9A6eNPG8BLcq5TTSAmQrJaxCgXcvxmdkklBwpf91CHhs
+   NYJxQOy/1+JbslfKE86ufTTgNwAosSe5ZEBiYTsCjH1bqWjO4rTQ2u14n
+   w9dUZUSSNf7G7hjdSJvIlMLf9CzBhkCckPzpmWB0dw1coj18+IYrF53N7
+   v5cr31n15CUtl++bNhSMBT89rdFCAHEeaPnmWEKAii/RRBlBPwmZDU0l3
+   /EJ7ETOxJVXvfOy3Z1WcQCD34qawwUpsNxc6vp3qmd21RT5Fec0wfU3fe
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="237574612"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="237574612"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 12:11:16 -0700
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="581411403"
+Received: from dstanfie-mobl2.amr.corp.intel.com (HELO [10.212.178.19]) ([10.212.178.19])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 12:11:16 -0700
+Message-ID: <96f9b880-876f-bf4d-8eb0-9ae8bbc8df6d@intel.com>
+Date:   Thu, 17 Mar 2022 12:11:08 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <145fc079ce8c266b8c2265aacfd3b077@walle.cc>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Nadav Amit <namit@vmware.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "lkp@lists.01.org" <lkp@lists.01.org>,
+        "lkp@intel.com" <lkp@intel.com>,
+        "ying.huang@intel.com" <ying.huang@intel.com>,
+        "feng.tang@intel.com" <feng.tang@intel.com>,
+        "zhengjun.xing@linux.intel.com" <zhengjun.xing@linux.intel.com>,
+        "fengwei.yin@intel.com" <fengwei.yin@intel.com>
+References: <20220317090415.GE735@xsang-OptiPlex-9020>
+ <c85ae95a-6603-ca0d-a653-b3f2f7069e20@intel.com>
+ <3B958B13-75F0-4B81-B8CF-99CD140436EB@vmware.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [x86/mm/tlb] 6035152d8e: will-it-scale.per_thread_ops -13.2%
+ regression
+In-Reply-To: <3B958B13-75F0-4B81-B8CF-99CD140436EB@vmware.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 03/13/2022 17:30, Michael Walle wrote:
+On 3/17/22 12:02, Nadav Amit wrote:
+>> This new "early lazy check" behavior could theoretically work both ways.
+>> If threads tended to be waking up from idle when TLB flushes were being
+>> sent, this would tend to reduce the number of IPIs.  But, since they
+>> tend to be going to sleep it increases the number of IPIs.
+>>
+>> Anybody have a better theory?  I think we should probably revert the commit.
+> 
+> Let’s get back to the motivation behind this patch.
+> 
+> Originally we had an indirect branch that on system which are
+> vulnerable to Spectre v2 translates into a retpoline.
+> 
+> So I would not paraphrase this patch purpose as “early lazy check”
+> but instead “more efficient lazy check”. There is very little code
+> that was executed between the call to on_each_cpu_cond_mask() and
+> the actual check of tlb_is_not_lazy(). So what it seems to happen
+> in this test-case - according to what you say - is that *slower*
+> checks of is-lazy allows to send fewer IPIs since some cores go
+> into idle-state.
+> 
+> Was this test run with retpolines? If there is a difference in
+> performance without retpoline - I am probably wrong.
 
-Hi Michael,
+Nope, no retpolines:
 
-> 
-> [adding Horatiu and Kavyasree from Microchip]
-> 
-> Am 2022-03-13 17:10, schrieb Krzysztof Kozlowski:
-> > On 13/03/2022 11:47, Michael Walle wrote:
-> > > Am 2022-03-13 10:47, schrieb Krzysztof Kozlowski:
-> > > > On 13/03/2022 01:25, Michael Walle wrote:
-> > > > > The MDIO controller has support to release the internal PHYs from
-> > > > > reset
-> > > > > by specifying a second memory resource. This is different between
-> > > > > the
-> > > > > currently supported SparX-5 and the LAN966x. Add a new compatible to
-> > > > > distiguish between these two.
-> > 
-> > Typo here, BTW.
-> > 
-> > > > > 
-> > > > > Signed-off-by: Michael Walle <michael@walle.cc>
-> > > > > ---
-> > > > >  Documentation/devicetree/bindings/net/mscc-miim.txt | 2 +-
-> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt
-> > > > > b/Documentation/devicetree/bindings/net/mscc-miim.txt
-> > > > > index 7104679cf59d..a9efff252ca6 100644
-> > > > > --- a/Documentation/devicetree/bindings/net/mscc-miim.txt
-> > > > > +++ b/Documentation/devicetree/bindings/net/mscc-miim.txt
-> > > > > @@ -2,7 +2,7 @@ Microsemi MII Management Controller (MIIM) / MDIO
-> > > > >  =================================================
-> > > > > 
-> > > > >  Properties:
-> > > > > -- compatible: must be "mscc,ocelot-miim"
-> > > > > +- compatible: must be "mscc,ocelot-miim" or "mscc,lan966x-miim"
-> > > > 
-> > > > No wildcards, use one, specific compatible.
-> > > 
-> > > I'm in a kind of dilemma here, have a look yourself:
-> > > grep -r "lan966[28x]-" Documentation
-> > > 
-> > > Should I deviate from the common "name" now? To make things
-> > > worse, there was a similar request by Arnd [1]. But the
-> > > solution feels like cheating ("lan966x" -> "lan966") ;)
-> > 
-> > The previous 966x cases were added by one person from Microchip, so he
-> > actually might know something. But do you know whether lan966x will
-> > cover all current and future designs from Microchip? E.g. lan9669 (if
-> > ever made) will be the same? Avoiding wildcard is the easiest, just
-> > choose one implementation, e.g. "lan9662".
-> 
-> So if Microchip would review/ack this it would be ok? I don't really
-> have a strong opinion, I just want to avoid any inconsistencies. If no
-> one from Microchip will answer, I'll use microchip,lan9668-miim.
+> /sys/devices/system/cpu/vulnerabilities/spectre_v2:Mitigation: Enhanced IBRS, IBPB: conditional, RSB filling
 
-I think it is OK to use microchip,lan966x.
-I am not aware of any plans to create future lan966x designed(lan9664 or
-lan9669). But we can also be on the safe side and use microchip,lan9668.
-I don't have any strong opinion on this.
+which is the same situation as the "Xeon Platinum 8358" which found this
+in 0day.
 
-Acked-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Maybe the increased IPIs with this approach end up being a wash with the
+reduced retpoline overhead.
 
-> 
-> > Different topic is that all current lan966[28] are from Microchip and
-> > you still add Microsemi, even though it was acquired by Microchip.
-> > That's an inconsistency which should be rather fixed.
-> 
-> Agreed, that was an oversight by me.
-> 
-> > > On a side note, I understand that there should be no wildcards,
-> > > because the compatible should target one specific implementation,
-> > > right? But then the codename "ocelot" represents a whole series of
-> > > chips. Therefore, names for whole families shouldn't be used neither,
-> > > right?
-> > 
-> > You're not adding "ocelot" now, so it is separate topic. However a
-> > compatible like "mscc,ocelot" feels wrong, unless it is used as a
-> > fallback (see: git grep 'apple,').
-> 
-> Sure, it was just a question for my understanding, not to make a
-> point for a discussion.
-> 
-> -michael
-
--- 
-/Horatiu
+Did you have any specific performance numbers that show the benefit on
+retpoline systems?
