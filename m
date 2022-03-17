@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72E1FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8B4C433EF
 	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235006AbiCQM6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
+        id S234856AbiCQM6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235112AbiCQMyn (ORCPT
+        with ESMTP id S235051AbiCQMyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:54:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F05B1EC6D;
-        Thu, 17 Mar 2022 05:53:27 -0700 (PDT)
+        Thu, 17 Mar 2022 08:54:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755A83B00E;
+        Thu, 17 Mar 2022 05:53:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0903D614FF;
-        Thu, 17 Mar 2022 12:53:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E75EDC340E9;
-        Thu, 17 Mar 2022 12:53:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BE20B81E5C;
+        Thu, 17 Mar 2022 12:53:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D9D6C340ED;
+        Thu, 17 Mar 2022 12:53:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521606;
-        bh=pnnLmjgrFj3YqWEw384JKVp/R+b1txHwuHbbSAYmroM=;
+        s=korg; t=1647521592;
+        bh=j1bNvp8+7Dxv3PwhV/qjUZjvW3kzu3o9Fl0oVcTEDKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LbU6c0Cytrvfq9O9yyOsjUbGb0m4345e/GN8/XbJM/DSkm91k0rCJM/6Oi0B9rLz/
-         hhQVpmFdkyIKmpVyFU8uklrKtLA+P8wO41pvZBRMMnf1OmtZ7eznEFx/ITNyrUf5jQ
-         vpHc0NHu/CJzusZH+V+xle41xtYcTLYG9qFvu7GU=
+        b=BMyGKRREKbFX71SoEskw3R9dSrBjhPpRlCt8E1Semmf77szEtmDRoCTFFT97hv0l0
+         pn1dM5RHiaLR54f0frc2h3BFlT+34srMhDO2WO+t6fQaVEAUh0fqWgNGiG1itLfhSu
+         5WgRpvUxjow8hBDMKb9jpFaNtdyXYCUW5R68X0zo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jani Nikula <jani.nikula@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, dri-devel@lists.freedesktop.org,
-        Manasi Navare <manasi.d.navare@intel.com>,
+        stable@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 22/28] drm/vrr: Set VRR capable prop only if it is attached to connector
-Date:   Thu, 17 Mar 2022 13:46:13 +0100
-Message-Id: <20220317124527.396397346@linuxfoundation.org>
+Subject: [PATCH 5.16 02/28] arm64: dts: rockchip: fix dma-controller node names on rk356x
+Date:   Thu, 17 Mar 2022 13:45:53 +0100
+Message-Id: <20220317124526.839790483@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
 References: <20220317124526.768423926@linuxfoundation.org>
@@ -51,40 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manasi Navare <manasi.d.navare@intel.com>
+From: Frank Wunderlich <frank-w@public-files.de>
 
-[ Upstream commit 62929726ef0ec72cbbe9440c5d125d4278b99894 ]
+[ Upstream commit 2ddd96aadbd0412040ef49eda94549c32de6c92c ]
 
-VRR capable property is not attached by default to the connector
-It is attached only if VRR is supported.
-So if the driver tries to call drm core set prop function without
-it being attached that causes NULL dereference.
+DMA-Cotrollers defined in rk356x.dtsi do not match the pattern in bindings.
 
-Cc: Jani Nikula <jani.nikula@intel.com>
-Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Cc: dri-devel@lists.freedesktop.org
-Signed-off-by: Manasi Navare <manasi.d.navare@intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220225013055.9282-1-manasi.d.navare@intel.com
+arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
+  dmac@fe530000: $nodename:0: 'dmac@fe530000' does not match '^dma-controller(@.*)?$'
+	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
+arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
+  dmac@fe550000: $nodename:0: 'dmac@fe550000' does not match '^dma-controller(@.*)?$'
+	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
+
+This Patch fixes it.
+
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+Link: https://lore.kernel.org/r/20220123133615.135789-1-linux@fw-web.de
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_connector.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-index 52e20c68813b..6ae26e7d3dec 100644
---- a/drivers/gpu/drm/drm_connector.c
-+++ b/drivers/gpu/drm/drm_connector.c
-@@ -2275,6 +2275,9 @@ EXPORT_SYMBOL(drm_connector_atomic_hdr_metadata_equal);
- void drm_connector_set_vrr_capable_property(
- 		struct drm_connector *connector, bool capable)
- {
-+	if (!connector->vrr_capable_property)
-+		return;
-+
- 	drm_object_property_set_value(&connector->base,
- 				      connector->vrr_capable_property,
- 				      capable);
+diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+index 46d9552f6028..688e3585525a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+@@ -647,7 +647,7 @@
+ 		status = "disabled";
+ 	};
+ 
+-	dmac0: dmac@fe530000 {
++	dmac0: dma-controller@fe530000 {
+ 		compatible = "arm,pl330", "arm,primecell";
+ 		reg = <0x0 0xfe530000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
+@@ -658,7 +658,7 @@
+ 		#dma-cells = <1>;
+ 	};
+ 
+-	dmac1: dmac@fe550000 {
++	dmac1: dma-controller@fe550000 {
+ 		compatible = "arm,pl330", "arm,primecell";
+ 		reg = <0x0 0xfe550000 0x0 0x4000>;
+ 		interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
 -- 
 2.34.1
 
