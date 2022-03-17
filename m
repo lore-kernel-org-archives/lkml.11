@@ -2,90 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E23C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BADC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233959AbiCQMuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
+        id S233980AbiCQMu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233875AbiCQMuO (ORCPT
+        with ESMTP id S233891AbiCQMuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:50:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEB91EE8C3;
-        Thu, 17 Mar 2022 05:48:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B9D361240;
-        Thu, 17 Mar 2022 12:48:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C1BC340E9;
-        Thu, 17 Mar 2022 12:48:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521309;
-        bh=iymArtpMW/H0eWCqroOB6vxEQ4DFO6aJhvCmhHdvW1s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d5Dh+CeSFAwqi0y5AuxJsZXIp3jcqd5/KXGgn6tABBTFvTAfLYFjBMKTQOo2rwwUw
-         qXcDsohOUrL2+tpIEB7tqfVLL7vPKVmKCyteiitmwHC0sWMskHnnhXFH6eHxt0KTgp
-         Mw/XOtoZhYvuA8cWzEboTNobnaKP0G5LvR0mL2wE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sreeramya Soratkal <quic_ssramya@quicinc.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 39/43] nl80211: Update bss channel on channel switch for P2P_CLIENT
-Date:   Thu, 17 Mar 2022 13:45:50 +0100
-Message-Id: <20220317124528.755360045@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
-References: <20220317124527.672236844@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Thu, 17 Mar 2022 08:50:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C271F42E2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:48:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647521319; x=1679057319;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=mYhgx/HiEDdDexClao7e4niJkKbELvWjIJ75bMdPt3Q=;
+  b=K2oZ8BPXVkRC3nh9mQgMh/eOSQasFujxwpvd422EKBxngmVfYcTZOhfR
+   cQQgxO+jaFgWWijRR9/t+Q0l8BKtZw5A7feEwy20EVU19q2gCOMcvBNt7
+   YO+HCFiutahW0ZuAGC0FMmOmEoYd+ihAmQckgsRW4HmGi4jpJ70oPY18l
+   OjldNHOhkMYv1OmoOGDRGqwuJ+99HPn3PKui3dUi9XatE/sXJHVfii2RW
+   VZPE6qQxwBVcWeu0PPxnD/DfQRUpDO18CqGi8ZcKMmaBfY3XHvg07263d
+   ONqb+LDkWX/5Vtvws9yoUuCzwR1uGhw/438QOG71G2wZfBocB8qc1jFI8
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="236801165"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="236801165"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 05:48:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="581281562"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 17 Mar 2022 05:48:38 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUpYT-000Dgf-C2; Thu, 17 Mar 2022 12:48:37 +0000
+Date:   Thu, 17 Mar 2022 20:47:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:master 1844/2335]
+ arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for
+ 'sysenter_setup'
+Message-ID: <202203172022.xT4Voz39-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreeramya Soratkal <quic_ssramya@quicinc.com>
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
+head:   85293bf3fca6d85608cff1447ce3097583f15fab
+commit: b2730b92628ba23505877fc0c22a6c794bdcbe1e [1844/2335] headers/deps: x86/elf: Optimize <asm/elf.h> dependencies, split out <asm/elf_api.h>
+config: i386-randconfig-a001-20220314 (https://download.01.org/0day-ci/archive/20220317/202203172022.xT4Voz39-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=b2730b92628ba23505877fc0c22a6c794bdcbe1e
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip master
+        git checkout b2730b92628ba23505877fc0c22a6c794bdcbe1e
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/entry/vdso/ arch/x86/pci/
 
-[ Upstream commit e50b88c4f076242358b66ddb67482b96947438f2 ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The wdev channel information is updated post channel switch only for
-the station mode and not for the other modes. Due to this, the P2P client
-still points to the old value though it moved to the new channel
-when the channel change is induced from the P2P GO.
+All warnings (new ones prefixed by >>):
 
-Update the bss channel after CSA channel switch completion for P2P client
-interface as well.
+>> arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for 'sysenter_setup' [-Wmissing-prototypes]
+      55 | int __init sysenter_setup(void)
+         |            ^~~~~~~~~~~~~~
 
-Signed-off-by: Sreeramya Soratkal <quic_ssramya@quicinc.com>
-Link: https://lore.kernel.org/r/1646114600-31479-1-git-send-email-quic_ssramya@quicinc.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+vim +/sysenter_setup +55 arch/x86/entry/vdso/vdso32-setup.c
+
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  54  
+a6c4e076ee4c1e arch/i386/kernel/sysenter.c        Jeremy Fitzhardinge 2007-05-02 @55  int __init sysenter_setup(void)
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  56  {
+0a6d1fa0d2b48f arch/x86/entry/vdso/vdso32-setup.c Andy Lutomirski     2015-10-05  57  	init_vdso_image(&vdso_image_32);
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  58  
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  59  	return 0;
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  60  }
+e6e5494cb23d19 arch/i386/kernel/sysenter.c        Ingo Molnar         2006-06-27  61  
+
+:::::: The code at line 55 was first introduced by commit
+:::::: a6c4e076ee4c1ea670e4faa55814e63dd08e3f29 [PATCH] i386: clean up identify_cpu
+
+:::::: TO: Jeremy Fitzhardinge <jeremy@goop.org>
+:::::: CC: Andi Kleen <andi@basil.nowhere.org>
+
 ---
- net/wireless/nl80211.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index f2bc465de284..d3e2b97d5d05 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -16314,7 +16314,8 @@ void cfg80211_ch_switch_notify(struct net_device *dev,
- 	wdev->chandef = *chandef;
- 	wdev->preset_chandef = *chandef;
- 
--	if (wdev->iftype == NL80211_IFTYPE_STATION &&
-+	if ((wdev->iftype == NL80211_IFTYPE_STATION ||
-+	     wdev->iftype == NL80211_IFTYPE_P2P_CLIENT) &&
- 	    !WARN_ON(!wdev->current_bss))
- 		cfg80211_update_assoc_bss_entry(wdev, chandef->chan);
- 
--- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
