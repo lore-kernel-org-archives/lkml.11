@@ -2,106 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FEEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:46:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B44C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:46:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233697AbiCQMsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35542 "EHLO
+        id S233709AbiCQMsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233690AbiCQMrz (ORCPT
+        with ESMTP id S233680AbiCQMr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:47:55 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DB0114368;
-        Thu, 17 Mar 2022 05:46:38 -0700 (PDT)
-X-UUID: 44fd6c30f71a49728e795696ef312435-20220317
-X-UUID: 44fd6c30f71a49728e795696ef312435-20220317
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 58590688; Thu, 17 Mar 2022 20:46:34 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 17 Mar 2022 20:46:33 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 17 Mar
- 2022 20:46:31 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Mar 2022 20:46:30 +0800
-Message-ID: <07e040716fed3f1c3a15af698767dbe8f77308ea.camel@mediatek.com>
-Subject: Re: [PATCH v1, 1/1] drm/mediatek: fixup ovl vblank callback data
- null pointer issue
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        "Dennis YC Hsieh" <dennis-yc.hsieh@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Thu, 17 Mar 2022 20:46:31 +0800
-In-Reply-To: <20220314080808.29370-2-yongqiang.niu@mediatek.com>
-References: <20220314080808.29370-1-yongqiang.niu@mediatek.com>
-         <20220314080808.29370-2-yongqiang.niu@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 17 Mar 2022 08:47:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47963122221;
+        Thu, 17 Mar 2022 05:46:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE081B81E93;
+        Thu, 17 Mar 2022 12:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE9CC340E9;
+        Thu, 17 Mar 2022 12:46:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647521198;
+        bh=7gd2/C+I+xWqj+l0Oq9fXfdr7bORx5BBhwegg7medfY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ipZyQE+2PYFX2y2OJTXQqopJLWqpAFtyxvZChuMBuaKeQxC2nKo8XMTAVyB8VoPrt
+         gEZij1/5q1hp3mAEK064iiHc1iODmcXyzJaOorGtlTaoK1CunTJXengJ1lajV5ckrT
+         9Ocr3XdJ813Dq+AYWEzWN8PzqjeQZs8dS7SqZyYg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 10/43] arm64: entry: Move the trampoline data page before the text page
+Date:   Thu, 17 Mar 2022 13:45:21 +0100
+Message-Id: <20220317124527.963476921@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
+References: <20220317124527.672236844@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-03-14 at 16:08 +0800, Yongqiang Niu wrote:
-> ovl vblank_cb_data will be null pointer when disable ovl
-> vblank
-> 
+From: James Morse <james.morse@arm.com>
 
-Hello Yongqiang,
+commit c091fb6ae059cda563b2a4d93fdbc548ef34e1d6 upstream.
 
-What issue do you encounter?
-Is it a timing issue?
+The trampoline code has a data page that holds the address of the vectors,
+which is unmapped when running in user-space. This ensures that with
+CONFIG_RANDOMIZE_BASE, the randomised address of the kernel can't be
+discovered until after the kernel has been mapped.
 
-> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> ---
->  drivers/gpu/drm/mediatek/mtk_disp_ovl.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-> b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-> index 2146299e5f52..f3a450c0ef2d 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-> @@ -113,7 +113,6 @@ void mtk_ovl_disable_vblank(struct device *dev)
->  	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
->  
->  	ovl->vblank_cb = NULL;
-> -	ovl->vblank_cb_data = NULL;
+If the trampoline text page is extended to include multiple sets of
+vectors, it will be larger than a single page, making it tricky to
+find the data page without knowing the size of the trampoline text
+pages, which will vary with PAGE_SIZE.
 
-IMO, this may be not a good solution.
-If this is a timing issue and you don't need to handle irq after
-disable vblank.
-I think you should handle  ovl->vblank_cb_data == NULL in
-mtk_disp_ovl_irq_handler?
+Move the data page to appear before the text page. This allows the
+data page to be found without knowing the size of the trampoline text
+pages. 'tramp_vectors' is used to refer to the beginning of the
+.entry.tramp.text section, do that explicitly.
 
-If I am wrong, please correct me.
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/include/asm/fixmap.h | 2 +-
+ arch/arm64/kernel/entry.S       | 9 +++++++--
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-Thanks.
+diff --git a/arch/arm64/include/asm/fixmap.h b/arch/arm64/include/asm/fixmap.h
+index f987b8a8f325..2e0977c7564c 100644
+--- a/arch/arm64/include/asm/fixmap.h
++++ b/arch/arm64/include/asm/fixmap.h
+@@ -63,8 +63,8 @@ enum fixed_addresses {
+ #endif /* CONFIG_ACPI_APEI_GHES */
+ 
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+-	FIX_ENTRY_TRAMP_DATA,
+ 	FIX_ENTRY_TRAMP_TEXT,
++	FIX_ENTRY_TRAMP_DATA,
+ #define TRAMP_VALIAS		(__fix_to_virt(FIX_ENTRY_TRAMP_TEXT))
+ #endif /* CONFIG_UNMAP_KERNEL_AT_EL0 */
+ 	__end_of_permanent_fixed_addresses,
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index 7e52b6991bf1..7822ecc0e165 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -1061,6 +1061,11 @@ alternative_else_nop_endif
+ 	 */
+ 	.endm
+ 
++	.macro tramp_data_page	dst
++	adr	\dst, .entry.tramp.text
++	sub	\dst, \dst, PAGE_SIZE
++	.endm
++
+ 	.macro tramp_ventry, regsize = 64
+ 	.align	7
+ 1:
+@@ -1077,7 +1082,7 @@ alternative_else_nop_endif
+ 2:
+ 	tramp_map_kernel	x30
+ #ifdef CONFIG_RANDOMIZE_BASE
+-	adr	x30, tramp_vectors + PAGE_SIZE
++	tramp_data_page		x30
+ alternative_insn isb, nop, ARM64_WORKAROUND_QCOM_FALKOR_E1003
+ 	ldr	x30, [x30]
+ #else
+@@ -1228,7 +1233,7 @@ ENTRY(__sdei_asm_entry_trampoline)
+ 1:	str	x4, [x1, #(SDEI_EVENT_INTREGS + S_ORIG_ADDR_LIMIT)]
+ 
+ #ifdef CONFIG_RANDOMIZE_BASE
+-	adr	x4, tramp_vectors + PAGE_SIZE
++	tramp_data_page		x4
+ 	add	x4, x4, #:lo12:__sdei_asm_trampoline_next_handler
+ 	ldr	x4, [x4]
+ #else
+-- 
+2.34.1
 
-BRs,
-Rex
 
->  	writel_relaxed(0x0, ovl->regs + DISP_REG_OVL_INTEN);
->  }
->  
 
