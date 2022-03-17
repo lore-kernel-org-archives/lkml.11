@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A51C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 239F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234392AbiCQM5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39672 "EHLO
+        id S234332AbiCQM5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234922AbiCQMyE (ORCPT
+        with ESMTP id S234908AbiCQMyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:54:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0D51F125F;
-        Thu, 17 Mar 2022 05:52:48 -0700 (PDT)
+        Thu, 17 Mar 2022 08:54:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046CB1EE8E5;
+        Thu, 17 Mar 2022 05:52:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7FD961578;
-        Thu, 17 Mar 2022 12:52:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFAA5C340E9;
-        Thu, 17 Mar 2022 12:52:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93993614F0;
+        Thu, 17 Mar 2022 12:52:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18E5C340E9;
+        Thu, 17 Mar 2022 12:52:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521567;
-        bh=sy3aP4fnh8SyAGLvHPsjL4Mx6PXZBmUBSdow+IfmEWg=;
+        s=korg; t=1647521538;
+        bh=R/C8STymm8ReCkBQLt18z2XcBrbpXSFwqEfZsjQ2/iE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqPXuN9yMjGSWYRC0U4b83vGUwtgXqlWBli7esJaV+DfIM6f4oFP/Bl7L7sQ/KQVO
-         eQul7Jff5PA/aC/T1ggF34fY2OavoEM3WvGSyHUxBmUo4Lp2JaSIepyWooOQ9hJqUt
-         mN+3HWy1NoWL0k8q8bIgubpUavpXnHqFY6/Taa98=
+        b=JUZj78snFCjDuFVcGosogCXj3XRkG8vjKswoSK5JPJ2FrSK+uGU0k9rDLiOwIl94+
+         nVb/BpBfjd7SaTHusMffU3DW1iOKTYtJ9nul9XviSVKSxHJzJ1ao5VVNm0oMDo/CzO
+         vDTWdbjHAohB3N1p5KXHbCVuOQZmZ1mNAPkyoY4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Lobakin <alobakin@pm.me>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 13/28] MIPS: smp: fill in sibling and core maps earlier
-Date:   Thu, 17 Mar 2022 13:46:04 +0100
-Message-Id: <20220317124527.146347831@linuxfoundation.org>
+Subject: [PATCH 5.15 09/25] ARM: dts: rockchip: reorder rk322x hmdi clocks
+Date:   Thu, 17 Mar 2022 13:45:56 +0100
+Message-Id: <20220317124526.575679406@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317124526.768423926@linuxfoundation.org>
-References: <20220317124526.768423926@linuxfoundation.org>
+In-Reply-To: <20220317124526.308079100@linuxfoundation.org>
+References: <20220317124526.308079100@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,102 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
+From: Sascha Hauer <s.hauer@pengutronix.de>
 
-[ Upstream commit f2703def339c793674010cc9f01bfe4980231808 ]
+[ Upstream commit be4e65bdffab5f588044325117df77dad7e9c45a ]
 
-After enabling CONFIG_SCHED_CORE (landed during 5.14 cycle),
-2-core 2-thread-per-core interAptiv (CPS-driven) started emitting
-the following:
+The binding specifies the clock order to "iahb", "isfr", "cec". Reorder
+the clocks accordingly.
 
-[    0.025698] CPU1 revision is: 0001a120 (MIPS interAptiv (multi))
-[    0.048183] ------------[ cut here ]------------
-[    0.048187] WARNING: CPU: 1 PID: 0 at kernel/sched/core.c:6025 sched_core_cpu_starting+0x198/0x240
-[    0.048220] Modules linked in:
-[    0.048233] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.17.0-rc3+ #35 b7b319f24073fd9a3c2aa7ad15fb7993eec0b26f
-[    0.048247] Stack : 817f0000 00000004 327804c8 810eb050 00000000 00000004 00000000 c314fdd1
-[    0.048278]         830cbd64 819c0000 81800000 817f0000 83070bf4 00000001 830cbd08 00000000
-[    0.048307]         00000000 00000000 815fcbc4 00000000 00000000 00000000 00000000 00000000
-[    0.048334]         00000000 00000000 00000000 00000000 817f0000 00000000 00000000 817f6f34
-[    0.048361]         817f0000 818a3c00 817f0000 00000004 00000000 00000000 4dc33260 0018c933
-[    0.048389]         ...
-[    0.048396] Call Trace:
-[    0.048399] [<8105a7bc>] show_stack+0x3c/0x140
-[    0.048424] [<8131c2a0>] dump_stack_lvl+0x60/0x80
-[    0.048440] [<8108b5c0>] __warn+0xc0/0xf4
-[    0.048454] [<8108b658>] warn_slowpath_fmt+0x64/0x10c
-[    0.048467] [<810bd418>] sched_core_cpu_starting+0x198/0x240
-[    0.048483] [<810c6514>] sched_cpu_starting+0x14/0x80
-[    0.048497] [<8108c0f8>] cpuhp_invoke_callback_range+0x78/0x140
-[    0.048510] [<8108d914>] notify_cpu_starting+0x94/0x140
-[    0.048523] [<8106593c>] start_secondary+0xbc/0x280
-[    0.048539]
-[    0.048543] ---[ end trace 0000000000000000 ]---
-[    0.048636] Synchronize counters for CPU 1: done.
-
-...for each but CPU 0/boot.
-Basic debug printks right before the mentioned line say:
-
-[    0.048170] CPU: 1, smt_mask:
-
-So smt_mask, which is sibling mask obviously, is empty when entering
-the function.
-This is critical, as sched_core_cpu_starting() calculates
-core-scheduling parameters only once per CPU start, and it's crucial
-to have all the parameters filled in at that moment (at least it
-uses cpu_smt_mask() which in fact is `&cpu_sibling_map[cpu]` on
-MIPS).
-
-A bit of debugging led me to that set_cpu_sibling_map() performing
-the actual map calculation, was being invocated after
-notify_cpu_start(), and exactly the latter function starts CPU HP
-callback round (sched_core_cpu_starting() is basically a CPU HP
-callback).
-While the flow is same on ARM64 (maps after the notifier, although
-before calling set_cpu_online()), x86 started calculating sibling
-maps earlier than starting the CPU HP callbacks in Linux 4.14 (see
-[0] for the reference). Neither me nor my brief tests couldn't find
-any potential caveats in calculating the maps right after performing
-delay calibration, but the WARN splat is now gone.
-The very same debug prints now yield exactly what I expected from
-them:
-
-[    0.048433] CPU: 1, smt_mask: 0-1
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/commit/?id=76ce7cfe35ef
-
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Link: https://lore.kernel.org/r/20220210142353.3420859-1-s.hauer@pengutronix.de
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/kernel/smp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/rk322x.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/kernel/smp.c b/arch/mips/kernel/smp.c
-index d542fb7af3ba..1986d1309410 100644
---- a/arch/mips/kernel/smp.c
-+++ b/arch/mips/kernel/smp.c
-@@ -351,6 +351,9 @@ asmlinkage void start_secondary(void)
- 	cpu = smp_processor_id();
- 	cpu_data[cpu].udelay_val = loops_per_jiffy;
- 
-+	set_cpu_sibling_map(cpu);
-+	set_cpu_core_map(cpu);
-+
- 	cpumask_set_cpu(cpu, &cpu_coherent_mask);
- 	notify_cpu_starting(cpu);
- 
-@@ -362,9 +365,6 @@ asmlinkage void start_secondary(void)
- 	/* The CPU is running and counters synchronised, now mark it online */
- 	set_cpu_online(cpu, true);
- 
--	set_cpu_sibling_map(cpu);
--	set_cpu_core_map(cpu);
--
- 	calculate_cpu_foreign_map();
- 
- 	/*
+diff --git a/arch/arm/boot/dts/rk322x.dtsi b/arch/arm/boot/dts/rk322x.dtsi
+index 75af99c76d7e..f31cf1df892b 100644
+--- a/arch/arm/boot/dts/rk322x.dtsi
++++ b/arch/arm/boot/dts/rk322x.dtsi
+@@ -718,8 +718,8 @@
+ 		interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+ 		assigned-clocks = <&cru SCLK_HDMI_PHY>;
+ 		assigned-clock-parents = <&hdmi_phy>;
+-		clocks = <&cru SCLK_HDMI_HDCP>, <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_CEC>;
+-		clock-names = "isfr", "iahb", "cec";
++		clocks = <&cru PCLK_HDMI_CTRL>, <&cru SCLK_HDMI_HDCP>, <&cru SCLK_HDMI_CEC>;
++		clock-names = "iahb", "isfr", "cec";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&hdmii2c_xfer &hdmi_hpd &hdmi_cec>;
+ 		resets = <&cru SRST_HDMI_P>;
 -- 
 2.34.1
 
