@@ -2,311 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3975FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E489BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231379AbiCQJBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60942 "EHLO
+        id S231628AbiCQJB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbiCQJBL (ORCPT
+        with ESMTP id S230473AbiCQJB1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:01:11 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56012BF02E;
-        Thu, 17 Mar 2022 01:59:55 -0700 (PDT)
+        Thu, 17 Mar 2022 05:01:27 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891FFD0AB9;
+        Thu, 17 Mar 2022 02:00:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647507595; x=1679043595;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=+RCQdWu9jlGSUgyAV0d8pIHUutQ36xenA7XYSksK1s4=;
-  b=MDXvwtgtOlDfDFGCu0njJ5C++N/b6taMKbIGbINuukeYeQ5o08t/KMPZ
-   X0zrPO4UG5hO0Gy9F1V+QIGaxSs4Sd9RiX3PcmAKQuJxeQjhmB2ozFHu2
-   t6DklMdWWbet6kUNikzs8nVr7/fkBr1rjFUVZiNrtKTwD7pg2rVX0Vp/7
-   oF13gbai+UfDSVD8iVHVBYkw8YAFoS6mS2qAvOm5CPkRTjSrFr8Fohd5l
-   rx4hZ5IlYRnCUAepcBxzEhYuFrHSkow2Fxwg7M9CbXwOo5o4FtNx5riF2
-   fJz7BminqXS7x3Kf7K3bDW08nLb1Dw8brsfp/JfrLczyEf1bGRnS21wW8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="256547143"
+  t=1647507610; x=1679043610;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2ha6NQ8Ir36VJy9aR+o21fKqfFIdIighF2kdl4D0/UQ=;
+  b=Mktf8san8lgb2DxAIJ9fzxe79JiFu5w1LCDc6GZxItTgc1EI3hkZlWXS
+   anNnlvVCRpSeme+gj/QYDDFz4O6mo07wJ0N8tXA4p+WQCDxLYnWcxdybh
+   9Je4ngd0IDeYMOnTJqAfbFUHwhDAEzROxDXM4GD/+MfG/P1CLkEvFbUQT
+   M/4tNhM3R/9Zm2FZ8YTdCRZVyRNtHfymTg9SGdQSFm9l2FVHI6DZFYJIx
+   wIXaaZJWfmdOEl+tPjKw2T1W+oBbY60MzBevPBZP/rnRTYIkIZaHuIZXk
+   RlG4hBrhTAZw8QtajuWPNjZZ4mbMDFDNH8PwAFABrOc9vtUMkflwsUwGZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="320030315"
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="256547143"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 01:57:54 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="320030315"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:00:10 -0700
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="714959179"
-Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
-  by orsmga005.jf.intel.com with ESMTP; 17 Mar 2022 01:57:53 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 01:57:53 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 01:57:53 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Thu, 17 Mar 2022 01:57:53 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Thu, 17 Mar 2022 01:57:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XrO3YWHddel+hcQmcGfq4ymJ+5nzi1Wb84EhnPcVJJQwTMmr5PqTiv1FZD/HpVC3aOLt+zqstYinnhiYouch5WlwFl1hPkoujoV6ZjEQt8Nrn0jHDBltevmskOj15tyW74rtGGAjhSnpb2qLDqiLkYZmuAHYI80aGZ64tthSI3hhH7nF8hwG4vHEgc6SoN/kjY9p1Jd+LEnpTybDtr88rEw04J9J2kwSSVk8io7PQFqhRIcstd+JtQHdJAfP9dSQLRqzvpqrFGF+G3XfVoIZ24XSWaaFVQI/LwZM0c3hNqqatW55mEqx6BCNT+LICtqpu9N/phLmw86Q/gNs0jC3Dg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wop2VrOjV5rptE8XKe+x8Ov6UapSLu/S7xi1Askmyi0=;
- b=bT7LWf2nTdWfsOq0Kf7LCwYuotUAgEM860UYbXG7J+szOlrcvORB8px1QHQmvz9jrnNl6exuj2zO2eTO7igd7vOeMRVkWDKqZ3Sk2zGkCsTMuCqWTQ2y1c5dFKQBTdaqIXmYFkvTVqDOqr020/wZWCmbpyubtlEzZxtKeBuGIJAlzEblF6ayeivTrWLPeuN7XybC+SgweYX4TRiEbdNwWFQ+N7kzWfzFZUaCK1l+OK0LyNfyDOyHnhxSKTLxtG/lTXbct/0uoNeYIaPm/UmEwj0eVbGzFiWnaq5dwHKi8Z8D+OKfntZzCxGjaIzSsQEJelHylHtQYDMado/w84UOYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5483.namprd11.prod.outlook.com (2603:10b6:408:104::10)
- by BN7PR11MB2610.namprd11.prod.outlook.com (2603:10b6:406:ab::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Thu, 17 Mar
- 2022 08:57:35 +0000
-Received: from BN9PR11MB5483.namprd11.prod.outlook.com
- ([fe80::8c4b:e24c:c69f:7809]) by BN9PR11MB5483.namprd11.prod.outlook.com
- ([fe80::8c4b:e24c:c69f:7809%5]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
- 08:57:35 +0000
-From:   "Zhang, Tianfei" <tianfei.zhang@intel.com>
-To:     "Wu, Hao" <hao.wu@intel.com>, "trix@redhat.com" <trix@redhat.com>,
-        "mdf@kernel.org" <mdf@kernel.org>,
-        "Xu, Yilun" <yilun.xu@intel.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>
-CC:     "corbet@lwn.net" <corbet@lwn.net>,
-        Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Subject: RE: [PATCH v6 2/6] fpga: dfl: tracking port conntected with AFU
-Thread-Topic: [PATCH v6 2/6] fpga: dfl: tracking port conntected with AFU
-Thread-Index: AQHYOQUdy5VVRHPbC0+e1MzNi0A5CazDPxmAgAACSqA=
-Date:   Thu, 17 Mar 2022 08:57:35 +0000
-Message-ID: <BN9PR11MB5483F7CD0E49ADE326D866B9E3129@BN9PR11MB5483.namprd11.prod.outlook.com>
-References: <20220316070814.1916017-1-tianfei.zhang@intel.com>
- <20220316070814.1916017-3-tianfei.zhang@intel.com>
- <DM6PR11MB3819F26BDA4AA2826AFD5CA285129@DM6PR11MB3819.namprd11.prod.outlook.com>
-In-Reply-To: <DM6PR11MB3819F26BDA4AA2826AFD5CA285129@DM6PR11MB3819.namprd11.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.401.20
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7acb36b7-1189-4460-e31c-08da07f42e03
-x-ms-traffictypediagnostic: BN7PR11MB2610:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <BN7PR11MB26107BD9E93C02FAB1D3BC29E3129@BN7PR11MB2610.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sZxEDp3DBJqYmfcjJnKm/Igtg0B1vAtY6GNQcnMdyKwYldd3ucMUheIIAGs2IpVQFnXEKZzQfqe8jGM1P3OG1ukJu/b2vx0y26xZB7Z+o1FWFwA1WnN5GovPzxTHVOhg5v+PSyfCgQnKuvvLvOKUGgg1aapc9aGo6iK7Ud42wUv4WXg5TbCpls1ScWFNyrp/QzxiAkMe54OLquixf6oA/R/M+Pc4TykIaxLLRJFUM1BEXmSkgLBVYfGP9EEfiQgtopD0+FkR8bm5OeDXgxxXn+ZJaQKmknBlahIGgt79DZQO79xDw1MGLprI2FSWPv1by1S0eR2G8pyV0/Wz9mq9dY7MiTmC4ldCsizTgdGb+Z/nEr4mz0UKn7aTvPI24O3PncLWa68wnbMxuR5KiyKz6XMOvBMnI98n5GvkyHzKcWzAqsnUHlZbkGDlE3PagpJ4dn+IyC1RVyvFYwbQSGBtMgsJ852hjk9qenpGFB1lFmLu3XB06S+rcoq+YrZ0bf13NvTBmCm4PObKSE3G9Zau75CWboR9Rhlzs6WX4tkYMZt5JkOt7CEaD3T4sxHc1cLCvlQXaJg6BxOwE+66M5v7sVl0delZ5hJ0uXG0/UjRw9KezsTA8zgcZhp/bmXc5OHj7e5Lqquv89dC+05sItiis48aCOHIe8IH98zzMYSQIUb2jQLwA6tPjBLO2EvNPsREzc727evnQ09p+o9phLM5k3P5kqnpgEBeDwXDBLWzHZU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5483.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(64756008)(66476007)(55016003)(4326008)(54906003)(7696005)(6506007)(66946007)(110136005)(71200400001)(53546011)(66446008)(508600001)(76116006)(8676002)(66556008)(316002)(5660300002)(52536014)(8936002)(9686003)(83380400001)(33656002)(186003)(38070700005)(86362001)(38100700002)(2906002)(26005)(122000001)(921005)(82960400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MhT2Z9xY8Qrog/RHRg/287OH1qp5InES+NLWo0Ve9K1lar+bXe+Zcii/MxLn?=
- =?us-ascii?Q?R+ibl8TCFr5ZocpSZUV/vWMvY8jsLz2QO//RUbfYLN9seP8YwAAtkkRzUJ3b?=
- =?us-ascii?Q?t3kVJUMqGzrTzARNZyGMzXQVD/iQtDnru/K90vGGeYoc2ukQTUB12xFvwJ7f?=
- =?us-ascii?Q?yCX2cjshXZ79L2f1aiKFVjGm8Mz9eG4YOKVqZh8Frj6yn0JnVlJdMjRUDf+V?=
- =?us-ascii?Q?P0WN/0aARhOEoReItjU3vp2CoR5TE1eoTonM0D/oPj5B6xpLy8vBMFLRMyaH?=
- =?us-ascii?Q?9ocbqlo0dJ09BjD0IcKN6xIIIrW90gG2iHiAaWjR35+g09+FYTVW4b/GGSH9?=
- =?us-ascii?Q?MHGkOxFv4Ly0exA7yBPWBwJXYttYKHrbko7yD971TBS0GZPjXDE7sz53kgjO?=
- =?us-ascii?Q?VgD60ZZbCsUk9BCMsS5x1gXt6LDRDzO8ow3ulpXWRqaBFErfdzG1UDe0MOyk?=
- =?us-ascii?Q?jb/TjdwdYHaWrctLCr2ULl0z7vaBAjAyeyv+WcjNSQJx/YiYshL7QgfpRzTt?=
- =?us-ascii?Q?hhkTibXWCTjneP3Tl4rZdjNIJrrUmlTLbq5FX+CrWA8LjeD9yFvFHR3nWD5Y?=
- =?us-ascii?Q?XgQKWByD5jPT8oa/4O/GqgNhXJHSghgHw9vyj3cPF9sqI9KIdfBGZ9wLTpDL?=
- =?us-ascii?Q?t9aZr3KrIYCwN+DrHQlJcFQB4e8wvLPkRURARVN0OHKSKiZs3cB9MmmgCMIB?=
- =?us-ascii?Q?TG4V7JSrc5cD3zC6KYD5NvTtB3Wa/0NTW+VrABuPmOMTxjPL0MPPHePqJJab?=
- =?us-ascii?Q?fxWKMC5+hzRlsPUBzwvOsiot5CwYt+/6JJDlt9/vmLSJRBlESxigQN7CKrT8?=
- =?us-ascii?Q?oJmM7MQtvAOmraLp2YQfjOXHSv5pcSaCBK08xaAehGjaus9VhYatS1k0mZXS?=
- =?us-ascii?Q?DRlq0IIfOFmk9s9SwS8zGXJ5AzjF7ZJmD+YFQ7AZ95kZv0a0hJj7TcfM2PJM?=
- =?us-ascii?Q?m97zzYpYAN768XuWinjn6KRcp1e7Vn7fZU8QVwGHP8G6r+6t6+vlM6qHFlUN?=
- =?us-ascii?Q?NCPOgqh7g9rrWY/U3G9bnBdaodA+Z6QC9XsHiAZUbdF4lykemKuDfJO1x96P?=
- =?us-ascii?Q?sqCWi/ej6xy2krX1pYxMQfs5vdGCgpmdIC0f7v9bX1Ow9dWT1xraawQAZIjl?=
- =?us-ascii?Q?NoyRa4jbEISQxAlp+6uFxC3EO+vlRH3glTZ7L6HZVRzsmcKuEgmlOFdx0grE?=
- =?us-ascii?Q?wJ5pbnmyVR0p4LgZC9G/+My1c3PxWMFkWO8RPSpZ2VU6SUYR/0Emy1BqLnea?=
- =?us-ascii?Q?bdr4w3Q4Fxr3qb60/5JnP+YmKAeTbtNFTC9N5p8/aII7P6dDogIb18NshSkj?=
- =?us-ascii?Q?xM97jOqVCfmt49JKIvTLJ43tiYvZoIRHHNK7845ZQXFBdmbwe4W0n01Lgv8e?=
- =?us-ascii?Q?lJ7dAQizxKJpieAx7d73orSvzh9q+zRsqy4HA24Zt8wj0q3igQojAgnvfAOs?=
- =?us-ascii?Q?AvTwD4sQlVWORKqw61TwB1KhC+KtyVAs?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="645022180"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:00:08 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nUlyi-001Ppl-Nk;
+        Thu, 17 Mar 2022 10:59:28 +0200
+Date:   Thu, 17 Mar 2022 10:59:28 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, micklorain@protonmail.com,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v1 1/1] PCI: Enable INTx quirk for ATI PCIe-USB adapter
+Message-ID: <YjL4cEBXCQ1eSy48@smile.fi.intel.com>
+References: <YjIMY1/r15xj65pZ@smile.fi.intel.com>
+ <20220316211548.GA677098@bhelgaas>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5483.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7acb36b7-1189-4460-e31c-08da07f42e03
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2022 08:57:35.0674
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AXbJckidAOegR6ArleF2W2r/X1Tegmp1CwfJ4JAoJ3b2eEuIYRhbTZiJDQZhHFP6NkcO3uyO9pXSj6OltUrf4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2610
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220316211548.GA677098@bhelgaas>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Mar 16, 2022 at 04:15:48PM -0500, Bjorn Helgaas wrote:
+> On Wed, Mar 16, 2022 at 06:12:19PM +0200, Andy Shevchenko wrote:
+> > On Wed, Mar 16, 2022 at 06:52:09AM -0500, Bjorn Helgaas wrote:
+> > > On Wed, Mar 16, 2022 at 12:27:57PM +0200, Andy Shevchenko wrote:
+> > > > On Tue, Mar 15, 2022 at 03:22:31PM -0500, Bjorn Helgaas wrote:
+> > > > > On Tue, Mar 15, 2022 at 12:09:08PM +0200, Andy Shevchenko wrote:
+> > > > > > On Mon, Mar 14, 2022 at 02:42:53PM -0500, Bjorn Helgaas wrote:
+> > > > > > > On Mon, Mar 14, 2022 at 12:14:48PM +0200, Andy Shevchenko wrote:
+> > > > > > > > ATI PCIe-USB adapter advertises MSI, but it doesn't work
+> > > > > > > > if INTx is disabled.  Enable the respective quirk as
+> > > > > > > > it's done for other ATI devices on this chipset,
+> > > > > > > > 
+> > > > > > > > Fixes: 306c54d0edb6 ("usb: hcd: Try MSI interrupts on
+> > > > > > > > PCI devices")
+> 
+> > > > > Anyway, I applied this to pci/msi for v5.18 with the following
+> > > > > commit log:
+> > > > > 
+> > > > >     PCI: Disable broken MSI on ATI SB600 USB adapters
+> > > > > 
+> > > > >     Some ATI SB600 USB adapters advertise MSI, but MSI doesn't
+> > > > >     work if INTx is disabled.  Disable MSI on these adapters.
+> > > > 
+> > > > But IIUC MSI is _not_ disabled. That's why I have issued this
+> > > > version of the patch with different commit message. Did I
+> > > > misunderstand something?
+> > > 
+> > > Oh, right, of course.  Sorry, I was asleep at the wheel.
+> > 
+> > Are you going to fix that?
+> 
+> Yes, of course, I'll do something with the commit message after we
+> figure out how to handle PCI_COMMAND_INTX_DISABLE.
+> 
+> > > I guess it's just that for these devices, we don't disable INTx
+> > > when enabling MSI.  I can't remember why we disable INTx when
+> > > enabling MSI, but it raises the question of whether it's better to
+> > > leave INTx enabled or to just disable use of MSI completely.
+> > 
+> > It's required by specification to disable INTx if I read 6.1.4.3
+> > Enabling Operation correctly.
+> 
+> Thanks for the reference; I was looking for something like that.  But
+> I don't think this section requires us to set
+> PCI_COMMAND_INTX_DISABLE.  For the benefit of folks without the spec,
+> PCIe r6.0, sec 6.1.4.3 says:
+> 
+>   To maintain backward compatibility, the MSI Enable bit in the
+>   Message Control Register for MSI and the MSI-X Enable bit in the
+>   Message Control Register for MSI-X are each Clear by default (MSI
+>   and MSI-X are both disabled). System configuration software Sets one
+>   of these bits to enable either MSI or MSI-X, but never both
+>   simultaneously. Behavior is undefined if both MSI and MSI-X are
+>   enabled simultaneously. Software disabling either mechanism during
+>   active operation may result in the Function dropping pending
+>   interrupt conditions or failing to recognize new interrupt
+>   conditions. While enabled for MSI or MSI-X operation, a Function is
+>   prohibited from using INTx interrupts (if implemented) to request
+>   service (MSI, MSI-X, and INTx are mutually exclusive).
+> 
+> The only *software* constraints I see are (1) software must never
+> enable both MSI and MSI-X simultaneously, and (2) if software disables
+> MSI or MSI-X during active operation, the Function may fail to
+> generate an interrupt when it should.
+> 
+> I read the last sentence as a constraint on the *hardware*: if either
+> MSI or MSI-X is enabled, the Function is not allowed to use INTx,
+> regardless of the state of PCI_COMMAND_INTX_DISABLE.
+> 
+> I searched the spec for "Interrupt Disable", looking for situations
+> where software might be *required* to set it, but I didn't see
+> anything.
+> 
+> I suspect "Interrupt Disable" was intended to help the OS stop all
+> activity from a device during hot-plug or reconfiguration, as hinted
+> at in sec 6.4, "Device Synchronization":
+> 
+>   The ability of the driver and/or system software to block new
+>   Requests from the device is supported by the Bus Master Enable,
+>   SERR# Enable, and Interrupt Disable bits in the Command register
+>   (Section 7.5.1.1.3) of each device Function, and other such control
+>   bits.
+> 
+> So I'm trying to figure out why when enabling MSI we need to set
+> PCI_COMMAND_INTX_DISABLE for most devices, but it's safe to skip that
+> for these quirked devices.
 
+I guess it's wrong wording in the last paragraph. It's not safe, but it's
+_required_ since HW doesn't follow PCI specification that clearly says:
+"MSI, MSI-X, and INTx are mutually exclusive".
 
-> -----Original Message-----
-> From: Wu, Hao <hao.wu@intel.com>
-> Sent: Thursday, March 17, 2022 4:26 PM
-> To: Zhang, Tianfei <tianfei.zhang@intel.com>; trix@redhat.com;
-> mdf@kernel.org; Xu, Yilun <yilun.xu@intel.com>; linux-fpga@vger.kernel.or=
-g;
-> linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org;
-> rdunlap@infradead.org
-> Cc: corbet@lwn.net; Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> Subject: RE: [PATCH v6 2/6] fpga: dfl: tracking port conntected with AFU
->=20
-> > -----Original Message-----
-> > From: Zhang, Tianfei <tianfei.zhang@intel.com>
-> > Sent: Wednesday, March 16, 2022 3:08 PM
-> > To: Wu, Hao <hao.wu@intel.com>; trix@redhat.com; mdf@kernel.org; Xu,
-> > Yilun <yilun.xu@intel.com>; linux-fpga@vger.kernel.org;
-> > linux-doc@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > rdunlap@infradead.org
-> > Cc: corbet@lwn.net; Zhang, Tianfei <tianfei.zhang@intel.com>; Matthew
-> > Gerlach <matthew.gerlach@linux.intel.com>
-> > Subject: [PATCH v6 2/6] fpga: dfl: tracking port conntected with AFU
-> >
->=20
-> "conntected" -> "connected"
->=20
-> > From: Tianfei zhang <tianfei.zhang@intel.com>
-> >
-> > Introducing flags in dfl_fpga_cdev to track extensions or new features
-> > discovered during DFL enumeration. It uses some lowest bits of flags
-> > to track the port status which the AFU was connected to port device or
-> > not. In legacy model, the AFU was connected to Port device, but in
-> > "multiple VFs per PR slot" model, the AFU or PR slot without connected
-> > to Port device directly.
->=20
-> It's "Port with AFU vs "Port without AFU", so why we have this flag in co=
-ntainer
-> device not for each port device?
+This is also supported by the other devices on the same chipset doing
+that and by the reported of the issue.
 
-I think this is a global flag during the DFL enumeration.=20
-After the DFL enumeration, we can know that the Port connected with AFU or =
-not.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> and probably you need to describe why we need this flag.=20
-
-The next patch will use those flags for VF creation.
-
-> What I am thinking is
-> that port driver can use this flag to decide if afu related interface wil=
-l be visible
-> or not...does it make more sense to have this flag for port device itself=
-?
-
-The different between "port with AFU" and "port without AFU" was that the A=
-FU MMIO space add into=20
-AFU driver or not. In "port without AFU" case, we cannot access the AFU via=
- mmap API. But for both cases,
-we still can access the port device by "/dev/dfl-port.h" device nodes.
-
-The flag was used for VF creation. If we want to put the flag in port devic=
-e, I think it only can add the flag in port device's dfl_feature_platform_d=
-ata,
-but I don't think this is a good idea.=20
-
->=20
->=20
-> >
-> > Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-> > Signed-off-by: Tianfei zhang <tianfei.zhang@intel.com>
-> > ---
-> >  drivers/fpga/dfl.c | 11 ++++++++++-
-> >  drivers/fpga/dfl.h | 12 ++++++++++++
-> >  2 files changed, 22 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c index
-> > 599bb21d86af..712c53363fda 100644
-> > --- a/drivers/fpga/dfl.c
-> > +++ b/drivers/fpga/dfl.c
-> > @@ -1124,8 +1124,10 @@ static void build_info_complete(struct
-> > build_feature_devs_info *binfo)  static int parse_feature_fiu(struct
-> > build_feature_devs_info *binfo,
-> >  			     resource_size_t ofst)
-> >  {
-> > +	struct dfl_fpga_cdev *cdev =3D binfo->cdev;
-> >  	int ret =3D 0;
-> >  	u32 offset;
-> > +	u32 port;
-> >  	u16 id;
-> >  	u64 v;
-> >
-> > @@ -1160,8 +1162,15 @@ static int parse_feature_fiu(struct
-> > build_feature_devs_info *binfo,
-> >  	v =3D readq(binfo->ioaddr + NEXT_AFU);
-> >
-> >  	offset =3D FIELD_GET(NEXT_AFU_NEXT_DFH_OFST, v);
-> > -	if (offset)
-> > +	if (offset) {
-> > +		if (dfh_id_to_type(id) =3D=3D PORT_ID) {
-> > +			port =3D FIELD_GET(PORT_CAP_PORT_NUM,
-> > +					 readq(binfo->ioaddr +
-> > PORT_HDR_CAP));
-> > +			cdev->flags |=3D dfl_feat_port_connect_afu(port);
-> > +		}
-> > +
-> >  		return parse_feature_afu(binfo, offset);
-> > +	}
-> >
-> >  	dev_dbg(binfo->dev, "No AFUs detected on FIU %d\n", id);
-> >
-> > diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h index
-> > 1fd493e82dd8..bc56b7e8c01b 100644
-> > --- a/drivers/fpga/dfl.h
-> > +++ b/drivers/fpga/dfl.h
-> > @@ -461,6 +461,16 @@ int dfl_fpga_enum_info_add_irq(struct
-> > dfl_fpga_enum_info *info,
-> >  			       unsigned int nr_irqs, int *irq_table);  void
-> > dfl_fpga_enum_info_free(struct dfl_fpga_enum_info *info);
-> >
-> > +/*
-> > + * Bitfields in flags of dfl_fpga_cdev.
-> > + *
-> > + * 0 - (DFL_PORT_CONNECT_BITS -1): AFU was connected with Port device.
-> > + * DFL_PORT_CONNECT_BITS - 63: reserved.
-> > + */
-> > +#define dfl_feat_port_connect_afu(port) (BIT_ULL(port)) #define
-> > +DFL_PORT_CONNECT_BITS  MAX_DFL_FPGA_PORT_NUM #define
-> > +DFL_FEAT_PORT_CONNECT_MASK ((1UL <<
-> > (DFL_PORT_CONNECT_BITS)) - 1)
-> > +
-> >  /**
-> >   * struct dfl_fpga_cdev - container device of DFL based FPGA
-> >   *
-> > @@ -470,6 +480,7 @@ void dfl_fpga_enum_info_free(struct
-> > dfl_fpga_enum_info *info);
-> >   * @lock: mutex lock to protect the port device list.
-> >   * @port_dev_list: list of all port feature devices under this contain=
-er device.
-> >   * @released_port_num: released port number under this container devic=
-e.
-> > + * @flags: extensions discovered during DFL enumeration.
-> >   */
-> >  struct dfl_fpga_cdev {
-> >  	struct device *parent;
-> > @@ -478,6 +489,7 @@ struct dfl_fpga_cdev {
-> >  	struct mutex lock;
-> >  	struct list_head port_dev_list;
-> >  	int released_port_num;
-> > +	u64 flags;
-> >  };
-> >
-> >  struct dfl_fpga_cdev *
-> > --
-> > 2.26.2
 
