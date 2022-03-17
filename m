@@ -2,115 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C471C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:13:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiCQJLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        id S231694AbiCQJOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:14:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230307AbiCQJLo (ORCPT
+        with ESMTP id S229666AbiCQJOj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:11:44 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1046E728B;
-        Thu, 17 Mar 2022 02:10:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647508228; x=1679044228;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mU8Qb91onFIWfxnHBD8lFTb9SqVTKEG/q66dCayIafc=;
-  b=na+Uh66G66GSI3kssiPDNMjYVNXlOooqTAxZgoVJ2xtly7E/zHgO+609
-   t2ridFdooFONni9YLd17LWQTzgDDuH6ji6/LS/79dSGwlWttOLgxkfcIx
-   ZDqtAno3K8z6niPHSWaJc+NCHYaNMyskucU6LJzkjGNih2YFTb3n/vrFi
-   E/CBagY57qo3BxWDh6ABa+mp9v7oLGaEyztNHVfy01AyWswGDS90y2XKQ
-   X9T4Bjn7aQ2wM0g26Whc5Uld+CriOpvDa6zTgC6EOCdijhoVINvozBSVZ
-   6FTa5ANCN0GeRq2JZWWHcvUndjh6i3ruVP6FGRnGuOyu3TyD6qcxLuplm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="256549509"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="256549509"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:10:28 -0700
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="645024733"
-Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 02:10:25 -0700
-Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
-        by paasikivi.fi.intel.com (Postfix) with SMTP id 6D8CE20399;
-        Thu, 17 Mar 2022 11:10:23 +0200 (EET)
-Date:   Thu, 17 Mar 2022 11:10:23 +0200
-From:   Sakari Ailus <sakari.ailus@linux.intel.com>
-To:     Kate Hsuan <hpa@redhat.com>
-Cc:     Bingbu Cao <bingbu.cao@intel.com>,
-        Tianshu Qiu <tian.shu.qiu@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Hans De Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v4] staging: media: ipu3: Fix AF x_start position when
- rightmost stripe is used
-Message-ID: <YjL6/wOVjSvZjSZ5@paasikivi.fi.intel.com>
-References: <20220317075713.10633-1-hpa@redhat.com>
- <YjLxFuRXKzg3m9HH@paasikivi.fi.intel.com>
- <CAEth8oHqSS7EsPofmERRB=pmtS8YPP+MeM6fMG6tJT2z_qChxA@mail.gmail.com>
+        Thu, 17 Mar 2022 05:14:39 -0400
+X-Greylist: delayed 171289 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Mar 2022 02:13:23 PDT
+Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [5.144.164.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01883ECDA9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:13:22 -0700 (PDT)
+Received: from [192.168.1.100] (unknown [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id AAA133F707;
+        Thu, 17 Mar 2022 10:13:20 +0100 (CET)
+Message-ID: <636d90ea-327f-f61f-8d88-074c351aea2e@somainline.org>
+Date:   Thu, 17 Mar 2022 10:13:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEth8oHqSS7EsPofmERRB=pmtS8YPP+MeM6fMG6tJT2z_qChxA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH,v2] drm/panel: Fix return value check in nt35950_probe()
+Content-Language: en-US
+To:     Lu Wei <luwei32@huawei.com>, thierry.reding@gmail.com,
+        sam@ravnborg.org, airlied@linux.ie, daniel@ffwll.ch,
+        marijn.suijten@somainline.org, dri-devel@lists.freedesktop.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220317083707.237039-1-luwei32@huawei.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>
+In-Reply-To: <20220317083707.237039-1-luwei32@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 04:53:07PM +0800, Kate Hsuan wrote:
-> Hi Sakari,
+Il 17/03/22 09:37, Lu Wei ha scritto:
+> In function nt35950_probe(), mipi_dsi_device_register_full() is called
+> to create a MIPI DSI device. If it fails, a pointer encoded with an error
+> will be returned, so use IS_ERR() to check the return value. Besides, use
+> PTR_ERR to return the actual errno.
 > 
-> On Thu, Mar 17, 2022 at 4:28 PM Sakari Ailus
-> <sakari.ailus@linux.intel.com> wrote:
-> >
-> > On Thu, Mar 17, 2022 at 03:57:13PM +0800, Kate Hsuan wrote:
-> > > For the AF configuration, if the rightmost stripe is used, the AF scene
-> > > will be at the incorrect location of the sensor.
-> > >
-> > > The AF coordinate may be set to the right part of the sensor. This
-> > > configuration would lead to x_start being greater than the
-> > > down_scaled_stripes offset and the leftmost stripe would be disabled
-> > > and only the rightmost stripe is used to control the AF coordinate. If
-> > > the x_start doesn't perform any adjustments, the AF coordinate will be
-> > > at the wrong place of the sensor since down_scaled_stripes offset
-> > > would be the new zero of the coordinate system.
-> > >
-> > > In this patch, if only the rightmost stripe is used, x_start should
-> > > minus down_scaled_stripes offset to maintain its correctness of AF
-> > > scene coordinate.
-> > >
-> > > Changes in v2:
-> > > 1. Remove the setting of the first stripe.
-> > >
-> > > Changes in v4:
-> > > 1. x_start is estimated based on the method for both stripes are enabled.
-> > > 2. x_end is estimated based on the width.
-> >
-> > Please put the changelog before '---' line. I've removed it from the commit
-> > message this time.
+> Fixes: 623a3531e9cf ("drm/panel: Add driver for Novatek NT35950 DSI DriverIC panels")
+> Signed-off-by: Lu Wei <luwei32@huawei.com>
 
-I meant to say after. Then it won't be part of the commit message.
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 
-> >
-> > --
-> > Sakari Ailus
-> >
-> 
-> Okay, I got it.
-> 
-> Thank you.
-> 
-> -- 
-> BR,
-> Kate
-> 
+Thanks!
 
--- 
-Sakari Ailus
+> ---
+>   drivers/gpu/drm/panel/panel-novatek-nt35950.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35950.c b/drivers/gpu/drm/panel/panel-novatek-nt35950.c
+> index 288c7fa83ecc..d252e5e56228 100644
+> --- a/drivers/gpu/drm/panel/panel-novatek-nt35950.c
+> +++ b/drivers/gpu/drm/panel/panel-novatek-nt35950.c
+> @@ -579,9 +579,9 @@ static int nt35950_probe(struct mipi_dsi_device *dsi)
+>   		}
+>   
+>   		nt->dsi[1] = mipi_dsi_device_register_full(dsi_r_host, info);
+> -		if (!nt->dsi[1]) {
+> +		if (IS_ERR(nt->dsi[1])) {
+>   			dev_err(dev, "Cannot get secondary DSI node\n");
+> -			return -ENODEV;
+> +			return PTR_ERR(nt->dsi[1]);
+>   		}
+>   		num_dsis++;
+>   	}
+
