@@ -2,214 +2,565 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F6D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:10:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC4AC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbiCQSLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        id S237249AbiCQSMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236915AbiCQSLw (ORCPT
+        with ESMTP id S234468AbiCQSMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:11:52 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2049.outbound.protection.outlook.com [40.107.92.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07762217C70;
-        Thu, 17 Mar 2022 11:10:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kYVvvKCfcUA9UJgLBo6IUWjwY5Fif3E/Q+d4bqB6TxsvRnIwEiWXZqEtfo3xiMHMfB4oYoKrWA1yiP5vDbPuwgT6gKw6fLwOo0UAItWt0uJkDrNeufblJeARVS93wqmONsv/e9VEnXLy5WKw/E9z+TZVDcwCjZSltL4OJud7jyu/S6iL0XxRJkTFADCaNyuSc4WcDj/NKtF8GZDpS6/UYlUhH7sRH69hzBlfKjmo60eSnOFctrGKECav9t5Dh2TDkqyChrTL75ji5JFTwfj4tLkIR8/6PmrK034qLzRhdL9cN+9s3Q9Ie45mbBfFkpV1UhcDc3hVEavuRL18NlbP/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yUZnYOsoAYlFR6kl+DIrmDSDloBHCLicnBDqLC4k5Jg=;
- b=QE1xFjpWmatC1Hwat9rDQMAV87CQkdL1JSM2A6TKv5Dhev26+DWstfRw4RFCFZK7upIqUeoienKvZHbUtYSyt0HULjyMCm6gQGCaN3enU2CeCUniZFyeUjIA40TMSrL93BBDiCeH+7O31NPYGMsn+fu3YaI5E5zEp/iG2sUZD2LAk8/DvjvTdyDbp1Z68sdAodLvvPPGN9qf0dkSoJFj1C3HiOzAKIejFso6wmSB5tGyHCpvtju6nJdAHH/lrYTCjlFvUkn0cgud49ScYfn2h2jdEXAyk56uiuWjacMK1RctAkwSCDiMa89O5ztAU1ntak39oVJBHedPGM+JO7e6MQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yUZnYOsoAYlFR6kl+DIrmDSDloBHCLicnBDqLC4k5Jg=;
- b=mmZ0S+b7UI2IZ37VbWYEB2L8JI9mqDTV5JOkEqqC6OTRVllbT5DaQQPeH8szF/zANCxZ+iT1CtUHaYJtt3e1Ukgdji0KGAZETXxNWupULwniMR90/0oZ1ixAV9Zzn6VBxKP0hUxxzfCK4/Vf5ATKZEmeA5Yi95K/SJYr7QWNF20=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1947.namprd12.prod.outlook.com (2603:10b6:3:111::23)
- by CO6PR12MB5475.namprd12.prod.outlook.com (2603:10b6:5:354::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Thu, 17 Mar
- 2022 18:10:33 +0000
-Received: from DM5PR12MB1947.namprd12.prod.outlook.com
- ([fe80::90bd:5b12:918d:5703]) by DM5PR12MB1947.namprd12.prod.outlook.com
- ([fe80::90bd:5b12:918d:5703%6]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
- 18:10:32 +0000
-Message-ID: <3a475e5a-1090-e2f4-779c-6915fc8524b1@amd.com>
-Date:   Thu, 17 Mar 2022 14:10:28 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 2/3] drm/msm/gpu: Park scheduler threads for system
- suspend
-Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Akhil P Oommen <quic_akhilpo@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220310234611.424743-1-robdclark@gmail.com>
- <20220310234611.424743-3-robdclark@gmail.com>
- <YjMGac4Hnjmg1wE8@phenom.ffwll.local>
- <3945551d-47d2-1974-f637-1dbc61e14702@amd.com>
- <CAF6AEGv36V8bLoDn5O1SW3iTUtzd3O1XeuT5gJxyLMxd1E-o3Q@mail.gmail.com>
- <865abcff-9f52-dca4-df38-b11189c739ff@amd.com>
- <CAF6AEGuoBeYoMTR6-KM9xGZ05XSSnSJWMDciawczi7qtiLN9Vw@mail.gmail.com>
- <915537e2-ac5b-ab0e-3697-2b16a9ec8f91@amd.com>
- <CAF6AEGsyFAOPmHqT7YX1wsukP4-gYAstCukr89r9w28V0YSCUw@mail.gmail.com>
-From:   Andrey Grodzovsky <andrey.grodzovsky@amd.com>
-In-Reply-To: <CAF6AEGsyFAOPmHqT7YX1wsukP4-gYAstCukr89r9w28V0YSCUw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: YT1PR01CA0095.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2d::34) To DM5PR12MB1947.namprd12.prod.outlook.com
- (2603:10b6:3:111::23)
+        Thu, 17 Mar 2022 14:12:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F460217C70;
+        Thu, 17 Mar 2022 11:11:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C262B81F38;
+        Thu, 17 Mar 2022 18:11:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AA2C340E9;
+        Thu, 17 Mar 2022 18:11:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647540670;
+        bh=XdgzuXN9aeiZfb9/RrTbmUugTKoTTSFNgHTlI0iJos8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=vLjaZJaxmo531Mi1n7H19XJu/GxO5162QeJ+FG/vMCecmulIudwOj8+3iCDM7DoMN
+         q0tbyyarTHDi2WBOlOc17afP30b27KMTQMECxxaWv0pOkVzqDCSf3KgxcIi9z3eaJH
+         KnI8iZBnnG/sR7sHpdY0c9aj+rlaqCjb+aYg3ZSBKkQF6VtKwX9prE6UaRuYBtIZ4I
+         5C47ZsXGaeJ0WLvBFCkwIlS0K9OJWKnhNUHmVNdnwKIXksy0ltCXIwXr6vRPMPFlMe
+         SzEGR8a6tnPSeH9iMqNOKZOvYMmr/nia1eGYzFZLOf0Aytdk3DArm8eaE4mphDaXfX
+         qV3YLz3aYwiMw==
+From:   Miguel Ojeda <ojeda@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Miguel Ojeda <ojeda@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, live-patching@vger.kernel.org
+Subject: [PATCH v5 00/20] Rust support
+Date:   Thu, 17 Mar 2022 19:09:48 +0100
+Message-Id: <20220317181032.15436-1-ojeda@kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7716cd27-8ab4-42ad-eaf6-08da08416ceb
-X-MS-TrafficTypeDiagnostic: CO6PR12MB5475:EE_
-X-Microsoft-Antispam-PRVS: <CO6PR12MB547518F84B27C208D742BD0CEA129@CO6PR12MB5475.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DcZWPkCFFQAdOI4i2ERHpey6pKXWv25uUUi5pZbHRfvedfrwTZCu47rOPktbCeLxgyCPhp4ZwLhJtq8RviYe+OzXfuJUy5vE+vbKC/Mxkla5tKOjpcclGYYlxplGnR6Au9HtuttQIxPl/JPMLb0ZqSoyN3X7oMK300RyFxBgeTM8agbT2UdDc6Kn/VT3mpG7nW4ezT8xYATTmun5Y7cOmcCAoBKPryOJz0eTitP1a2jfvwewykGPsIR/O3AQpje/OviZW1LhMRPWZv7LwHu7c9b3gkFZhuOjpsqfE35ZFNDu2yEtnwG/kd1JinaqX8gjlPlZKZCG58Hu99SEceLirF0PY7rlZqOHluGNjRHOV9hg/Vbin+MgEeVfYtTNkYQcnNADN15U5Jxdrl7XHj4USi73WixTacRWwjQH6u4sTBxv5LhGD//oVFfosyKsPC+05a5oDpxPzyFvkwpWHzcQj0WwqW96NfaH6B132u9vlg9il7bpSctIV2Ep792WD3vDenmehEIFl55gJbw4Iho8haVnxqFIZ8ItjDVSZb2NPIhFDEFKxoXjXslt7Yf4Dvkw4PCsR7d66mEbWtcqPN4CZb1eVknhcg9iXhuzVt10YakfFgcoJJBi0ysVClO6AJpZIofb8/FW4KCbAFjo9/LcGuwtreQZOTcZfISZuyHTEz0kNdT0jTndTB61YulY6Xt26ixXLTIIM9nA08VELo84eDTjIXANjVpc/oWmqETk30zoNmOG3ADMWCx7PBQxSS9F
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1947.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(15650500001)(2616005)(54906003)(110136005)(6666004)(31686004)(6636002)(316002)(6506007)(31696002)(2906002)(53546011)(6512007)(38100700002)(6486002)(83380400001)(4326008)(186003)(44832011)(5660300002)(66946007)(66574015)(66476007)(66556008)(86362001)(508600001)(7416002)(8676002)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UlNQK3E5SzQ2VTc3a1pYdVZxYVpBODkvQ2M1amVkSXM2ajE5eWZ1T3dCSDZR?=
- =?utf-8?B?b0RHS3ZGa3ozVWsyTStsS1pzN0J4a1ppVWlneFhlNU1DdU9XL3l2OWpEc3NO?=
- =?utf-8?B?a09MTDdJYzZ1d0IxV0dkZHZST1VCdllmVm42anBRTmdpd3RxaWZRYVlMcHhK?=
- =?utf-8?B?VERmQzBBUThVZXV4SmJNM01CQ2UvMENlUjdkTS9HdCtwV1cvUGRvMFVkUVZY?=
- =?utf-8?B?VTZSTmcyMVZoTENRUDVlWDlpTVR5VmVndExUVDBvMnhaOVVublg4MXdaS0V1?=
- =?utf-8?B?NGN4VC9YQnFpRGFkVUpRNGdYcThkNHpqZ0RuLzZDRzlzNUlFTjd2R21taFFD?=
- =?utf-8?B?UFJXK3FVcTcwMlZsSnAzSVk1V0Fqcmg4TUx5ekxSbXVYaUFjcDJ1Mjkwdmpl?=
- =?utf-8?B?Z3MrWHd2TnJ5SlJFQTNpN3NQMEZqOHBFeDluN1FFb0RDVytrNktFbFJMYjJ3?=
- =?utf-8?B?MnNaTVltS2M1eFpPcGdBL05zbnByeEJDNm8yQzArTHp6Q0IycTkwYjkyUGVm?=
- =?utf-8?B?c1JZZS9qQTQyWG5SQ05FSXQ2ZWEvMDdzOUZEby9mT3NxV3Y4MVZYbEtGclB3?=
- =?utf-8?B?RnloVk9sUzhaMDVxcE9OVnlzeXFzb0JSOHZQTWhlbDFIcVR1N0g2bmMyQllT?=
- =?utf-8?B?RzI0cU16eXRnZ0RJdDRIWHo1dDd1eFhpNk1JU3dqSU01V2NqK1kwdEJuQU1W?=
- =?utf-8?B?U2gyTm9oVHUzbWw4ZmNTVDJtS1pxTDRCeWtFTzhoNkhUdUluSU1iMzMwcjZ4?=
- =?utf-8?B?ekpyN3ZVTmxCSDRGRW5ZamFLZEgrMk9VemxlakIrWStpdWcra3V0ZG1DTVpP?=
- =?utf-8?B?Yjd4TCt5ZjlsRXk1STJTSTZyUkZ5a1RSN0M4cmJmRjZlTmpvdy9zOHg0OENa?=
- =?utf-8?B?bkdjRVhaTlpBSUJ1ZHpsUVgySUpMdUVjbkFFT3ZEd3FyK1YwTlN5VW04RENn?=
- =?utf-8?B?ZmVvMU8xbkFnbjlOSHRMTmZHcHBjaHJ2MjNZL091Z2taT3U1d3dYWitPVHhP?=
- =?utf-8?B?ZmZCTXBiT3RLa240Mkp6emJKcjRxM0g0b2ZqWEZOYlM0NElseEswYWJFWXln?=
- =?utf-8?B?QUxrTWhsYURNTFVXTkFaVTVQNTFQam5WcXpBTnh2Mmw1ckV5UzRycUhUelJm?=
- =?utf-8?B?NmtpMis5eFUrYU9jRXlVdURwWTZrUUtxTVJVdGliWjdxTU9abVgvS2dTSnUy?=
- =?utf-8?B?SEVQd1dPekplNVhMMFo2TEQ5cDIzU2RYNU1CUWsxTXY5ZkM3RXJ4Vm10K0ln?=
- =?utf-8?B?OFJ1VW0xTTgxdGwraDBjMFNBRThOYVM5N0p3Tlp3Vjk0MTh1NHpmcXlUMUZL?=
- =?utf-8?B?VGcwT2cra3VPMUhVYUpKZ29NYWVIM0w1TE1ZNlRFN0Q3c1FUZis2K1ZvMmJ0?=
- =?utf-8?B?eERFTU4yV3lPYkd4QmhFTzVqUnMwNU1JYW1SVGVFNitXSlBqbko5Nk1ObU9X?=
- =?utf-8?B?UW9pTFJtMVNRRCt3S3BDR0tUemUxTHUxR09zeHBJS3lwTkdrak9pcFMxRVRu?=
- =?utf-8?B?YzdwYkk3QURHei9PN2FuQ25obUNoVnhGaHRXUEliaEp4Z0pkZGhqK2dneHVK?=
- =?utf-8?B?WXA3WUJBU3Ayb3pXbzdWNVdyR09DYmttejlSTzdxY1RnQmM2VEhkUW51L3hB?=
- =?utf-8?B?R0craDNOV1JVa0xtTzhqbXNGQUtUL2J6NitFRXlpaG5pKyt1ZTU5SUtXNVpl?=
- =?utf-8?B?dGFMSG5rcDBvQ0d0a3RkdW5rNXVad3hVSHVseldJWVZpdndLNGwzMVo1YjRE?=
- =?utf-8?B?amwzTzc3N24zd0ZkQlVOZjhCNkxtb0FJMXZlOEpobGZ1V2tYbFUyWlJDNTdh?=
- =?utf-8?B?VWZNTE1ka3pCdlhkRkg1RkZ3SnlJTVYzSDFIbjNSdnF3bTBqSThxNjRud0tR?=
- =?utf-8?B?dzJaYkxweHNDN0tucDRTZXpadm8zY3gxdXNBUm1zb3FWMjhHMTRhSmFFMTJS?=
- =?utf-8?B?SDgyblhwbzdDTDIwaHVPbXJiOFgybDJ5ZG0xOXJwUy80d3B0ZFZxQW83aVVN?=
- =?utf-8?B?d3A3UHdtK2dsNmhyWDJJNld5NUEyZDVPb0kvOTRkNW9xZUgzSys3WHlhSVEz?=
- =?utf-8?Q?LjVyyA?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7716cd27-8ab4-42ad-eaf6-08da08416ceb
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1947.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 18:10:32.1518
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z1AKCK7v0U7XAwsEuHy8HF0IolW7emRGGdAbLbNX1ShIFED/6OWFPK6qFzQUBkAnMpQEp6LjOgCf0gLD5uKINw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR12MB5475
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Rust support
 
-On 2022-03-17 13:35, Rob Clark wrote:
-> On Thu, Mar 17, 2022 at 9:45 AM Christian König
-> <christian.koenig@amd.com> wrote:
->> Am 17.03.22 um 17:18 schrieb Rob Clark:
->>> On Thu, Mar 17, 2022 at 9:04 AM Christian König
->>> <christian.koenig@amd.com> wrote:
->>>> Am 17.03.22 um 16:10 schrieb Rob Clark:
->>>>> [SNIP]
->>>>> userspace frozen != kthread frozen .. that is what this patch is
->>>>> trying to address, so we aren't racing between shutting down the hw
->>>>> and the scheduler shoveling more jobs at us.
->>>> Well exactly that's the problem. The scheduler is supposed to shoveling
->>>> more jobs at us until it is empty.
->>>>
->>>> Thinking more about it we will then keep some dma_fence instance
->>>> unsignaled and that is and extremely bad idea since it can lead to
->>>> deadlocks during suspend.
->>> Hmm, perhaps that is true if you need to migrate things out of vram?
->>> It is at least not a problem when vram is not involved.
->> No, it's much wider than that.
->>
->> See what can happen is that the memory management shrinkers want to wait
->> for a dma_fence during suspend.
-> we don't wait on fences in shrinker, only purging or evicting things
-> that are already ready.  Actually, waiting on fences in shrinker path
-> sounds like a pretty bad idea.
->
->> And if you stop the scheduler they will just wait forever.
->>
->> What you need to do instead is to drain the scheduler, e.g. call
->> drm_sched_entity_flush() with a proper timeout for each entity you have
->> created.
-> yeah, it would work to drain the scheduler.. I guess that might be the
-> more portable approach as far as generic solution for suspend.
->
-> BR,
-> -R
+This is the patch series (v5) to add support for Rust as a second
+language to the Linux kernel.
+
+If you are interested in following this effort, please join us in
+the mailing list at:
+
+    rust-for-linux@vger.kernel.org
+
+and take a look at the project itself at:
+
+    https://github.com/Rust-for-Linux
+
+As usual, special thanks go to ISRG (Internet Security Research
+Group) and Google for their financial support on this endeavor.
+
+Cheers,
+Miguel
+
+--
+
+# Rust support
+
+This cover letter explains the major changes and updates done since
+the previous ones. For those, please see:
+
+    RFC: https://lore.kernel.org/lkml/20210414184604.23473-1-ojeda@kernel.org/
+    v1:  https://lore.kernel.org/lkml/20210704202756.29107-1-ojeda@kernel.org/
+    v2:  https://lore.kernel.org/lkml/20211206140313.5653-1-ojeda@kernel.org/
+    v3:  https://lore.kernel.org/lkml/20220117053349.6804-1-ojeda@kernel.org/
+    v4:  https://lore.kernel.org/lkml/20220212130410.6901-1-ojeda@kernel.org/
 
 
-I am not sure how this drains the scheduler ? Suppose we done the 
-waiting in drm_sched_entity_flush,
-what prevents someone to push right away another job into the same 
-entity's queue  right after that ?
-Shouldn't we first disable further pushing of jobs into entity before we 
-wait for  sched->job_scheduled ?
+## Infrastructure updates
 
-Andrey
+There have been several improvements to the overall Rust support:
+
+  - The toolchain and `alloc` have been upgraded to Rust 1.59.0.
+    This version stabilized `feature(global_asm)` as well as
+    the `-Csymbol-mangling-version=v0` flag.
+
+  - Added support for host programs written in Rust. This should
+    only be used in scenarios where Rust is required to be available.
+
+  - Target specification files are now generated on the fly based
+    on the kernel configuration, via a Rust script, instead of
+    having a few predefined files.
+
+    The content of the generated file has been simplified and,
+    for x86, all the options that can be specified through the
+    command-line have been moved to the architecture `Makefile`.
+
+    The goal is to reduce the content of the file as much as possible
+    for all architectures, and eventually, stop needing such a file.
+
+  - Added `HAVE_RUST` kernel option. This symbol should be selected
+    by an architecture if it supports Rust.
+
+  - Added documentation on `RUSTFLAGS*` and `KBUILD_RUST*` variables.
+
+  - Simplified tags and cross-references in the documentation.
+
+  - Other cleanups, fixes and improvements on the build system.
 
 
->
->> Regards,
->> Christian.
->>
->>>> So this patch here is an absolute clear NAK from my side. If amdgpu is
->>>> doing something similar that is a severe bug and needs to be addressed
->>>> somehow.
->>> I think amdgpu's use of kthread_park is not related to suspend, but
->>> didn't look too closely.
->>>
->>> And perhaps the solution for this problem is more complex in the case
->>> of amdgpu, I'm not super familiar with the constraints there.  But I
->>> think it is a fine solution for integrated GPUs.
->>>
->>> BR,
->>> -R
->>>
->>>> Regards,
->>>> Christian.
->>>>
->>>>> BR,
->>>>> -R
->>>>>
+## Abstractions and driver updates
+
+Some of the improvements to the abstractions and example drivers are:
+
+  - Added abstraction for the Hardware Random Number Generator.
+
+  - `%pA` rework in `vsprintf` following the review.
+
+  - The `sync` sample now shows how to use static mutexes and
+    conditional variables.
+
+  - Error codes can now be used without prefixing them with
+    `Error::`, which makes using them closer to C. For instance:
+
+        fn f(...) -> Result {
+            if ... {
+                return Err(EINVAL);
+            }
+            ...
+            Ok(())
+        }
+
+  - Added `CString` type for owned C strings.
+
+  - `miscdev` registration now holds an owned C string, which enables
+    scenarios when the device name is constructed at runtime.
+
+  - Added `Bool` trait meant to be used in type states to allow
+    boolean constraints in implementation blocks.
+
+  - Added `LockInfo` trait that lock "type states" must implement.
+    This allows the definition of additional writable type states.
+
+  - Simplification of the spin lock implementation by splitting
+    acquisition types. Type states are used to implement two versions
+    of the `Lock` trait: one which never modifies the interrupt state
+    and one that disables them (if they are enabled, then re-enables
+    on unlock).
+
+  - `Result::unwrap` can now be used in examples that are compiled,
+    linked and run.
+
+  - Merged `Formatter` and `Buffer` types.
+
+  - Added `IoMem::offset_ok` for runtime sizes.
+
+  - Other cleanups, fixes and improvements.
+
+
+## Patch series status
+
+The Rust support is still to be considered experimental. However,
+support is good enough that kernel developers can start working on the
+Rust abstractions for subsystems and write drivers and other modules.
+
+The current series has just arrived in `linux-next`, as usual.
+Similarly, the preview docs for this series can be seen at:
+
+    https://rust-for-linux.github.io/docs/kernel/
+
+As usual, please see the following link for the
+live list of unstable Rust features we are using:
+
+    https://github.com/Rust-for-Linux/linux/issues/2
+
+Note that this time the series depends on a patch queued in
+powerpc-next:
+
+    https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git/commit/?h=next&id=d4be60fe66b7380530868ceebe549f8eebccacc5
+
+
+## Acknowledgements
+
+The signatures in the main commits correspond to the people that
+wrote code that has ended up in them at the present time. For details
+on contributions to code and discussions, please see our repository:
+
+    https://github.com/Rust-for-Linux/linux
+
+However, we would like to give credit to everyone that has contributed
+in one way or another to the Rust for Linux project. Since the
+previous cover letter:
+
+  - Akira Yokosawa for a detailed review of the documentation and
+    suggesting several improvements.
+
+  - Petr Mladek and Rasmus Villemoes for their printing/formatting
+    review and suggestions.
+
+  - Russell King for his review of the Kconfig changes.
+
+  - Andy Shevchenko, Sergey Senozhatsky, John Paul Adrian Glaubitz
+    and David Laight for their reviews and feedback on the previous
+    round.
+
+  - bjorn3 for reviewing many PRs.
+
+  - As usual, bjorn3 and Gary Guo for all the input on Rust compiler
+    details and suggestions.
+
+  - Philip Li, Yujie Liu et al. for continuing their work on adding
+    Rust support to the Intel 0DAY/LKP kernel test robot. Also,
+    thanks to Nathan Chancellor and Nick Desaulniers for their input.
+
+  - Wei Liu for taking the time to answer questions from newcomers
+    in Zulip.
+
+  - Antoni Boucher (and his supporters) et al. for their ongoing
+    work on `rustc_codegen_gcc`.
+
+  - Philip Herrons (and his supporters Open Source Security and
+    Embecosm) et al. for their ongoing work on GCC Rust.
+
+  - Mats Larsen, Marc Poulhiès et al. for their ongoing work on
+    improving Rust support in Compiler Explorer.
+
+  - Many folks that have reported issues, tested the project,
+    helped spread the word, joined discussions and contributed in
+    other ways!
+
+Please see also the acknowledgements on the previous cover letters.
+
+Boqun Feng (1):
+  kallsyms: use the correct buffer size for symbols
+
+Gary Guo (2):
+  rust: add `build_error` crate
+  vsprintf: add new `%pA` format specifier
+
+Miguel Ojeda (13):
+  kallsyms: support "big" kernel symbols
+  kallsyms: increase maximum kernel symbol length to 512
+  rust: add C helpers
+  rust: add `compiler_builtins` crate
+  rust: add `alloc` crate
+  rust: add `macros` crate
+  rust: export generated symbols
+  scripts: add `generate_rust_analyzer.py`
+  scripts: decode_stacktrace: demangle Rust symbols
+  docs: add Rust documentation
+  Kbuild: add Rust support
+  samples: add Rust examples
+  MAINTAINERS: Rust
+
+Wedson Almeida Filho (4):
+  rust: add `kernel` crate's `sync` module
+  rust: add `kernel` crate
+  [RFC] drivers: gpio: PrimeCell PL061 in Rust
+  [RFC] drivers: android: Binder IPC in Rust
+
+ .gitignore                                   |    5 +
+ .rustfmt.toml                                |   12 +
+ Documentation/doc-guide/kernel-doc.rst       |    3 +
+ Documentation/index.rst                      |    1 +
+ Documentation/kbuild/kbuild.rst              |   17 +
+ Documentation/kbuild/makefiles.rst           |   50 +-
+ Documentation/process/changes.rst            |   41 +
+ Documentation/rust/arch-support.rst          |   34 +
+ Documentation/rust/coding-guidelines.rst     |  214 ++
+ Documentation/rust/general-information.rst   |   77 +
+ Documentation/rust/index.rst                 |   20 +
+ Documentation/rust/logo.svg                  |  357 ++
+ Documentation/rust/quick-start.rst           |  230 ++
+ MAINTAINERS                                  |   15 +
+ Makefile                                     |  173 +-
+ arch/Kconfig                                 |    6 +
+ arch/arm/Kconfig                             |    1 +
+ arch/arm64/Kconfig                           |    1 +
+ arch/powerpc/Kconfig                         |    1 +
+ arch/riscv/Kconfig                           |    1 +
+ arch/riscv/Makefile                          |    5 +
+ arch/x86/Kconfig                             |    1 +
+ arch/x86/Makefile                            |   14 +
+ drivers/android/Kconfig                      |    6 +
+ drivers/android/Makefile                     |    2 +
+ drivers/android/allocation.rs                |  266 ++
+ drivers/android/context.rs                   |   80 +
+ drivers/android/defs.rs                      |   99 +
+ drivers/android/node.rs                      |  476 +++
+ drivers/android/process.rs                   |  960 +++++
+ drivers/android/range_alloc.rs               |  189 +
+ drivers/android/rust_binder.rs               |  111 +
+ drivers/android/thread.rs                    |  870 +++++
+ drivers/android/transaction.rs               |  326 ++
+ drivers/gpio/Kconfig                         |    8 +
+ drivers/gpio/Makefile                        |    1 +
+ drivers/gpio/gpio_pl061_rust.rs              |  370 ++
+ include/linux/kallsyms.h                     |    2 +-
+ include/linux/spinlock.h                     |   17 +-
+ include/uapi/linux/android/binder.h          |   28 +-
+ init/Kconfig                                 |   44 +-
+ kernel/kallsyms.c                            |   26 +-
+ kernel/livepatch/core.c                      |    4 +-
+ lib/Kconfig.debug                            |  143 +
+ lib/vsprintf.c                               |   13 +
+ rust/.gitignore                              |    8 +
+ rust/Makefile                                |  376 ++
+ rust/alloc/README.md                         |   32 +
+ rust/alloc/alloc.rs                          |  440 +++
+ rust/alloc/borrow.rs                         |  498 +++
+ rust/alloc/boxed.rs                          | 2008 +++++++++++
+ rust/alloc/collections/mod.rs                |  156 +
+ rust/alloc/fmt.rs                            |  601 ++++
+ rust/alloc/lib.rs                            |  231 ++
+ rust/alloc/macros.rs                         |  126 +
+ rust/alloc/raw_vec.rs                        |  561 +++
+ rust/alloc/slice.rs                          | 1279 +++++++
+ rust/alloc/str.rs                            |  632 ++++
+ rust/alloc/string.rs                         | 2862 +++++++++++++++
+ rust/alloc/vec/drain.rs                      |  186 +
+ rust/alloc/vec/drain_filter.rs               |  145 +
+ rust/alloc/vec/into_iter.rs                  |  356 ++
+ rust/alloc/vec/is_zero.rs                    |  106 +
+ rust/alloc/vec/mod.rs                        | 3353 ++++++++++++++++++
+ rust/alloc/vec/partial_eq.rs                 |   49 +
+ rust/alloc/vec/set_len_on_drop.rs            |   30 +
+ rust/alloc/vec/spec_extend.rs                |  174 +
+ rust/bindgen_parameters                      |   13 +
+ rust/build_error.rs                          |   29 +
+ rust/compiler_builtins.rs                    |   57 +
+ rust/exports.c                               |   20 +
+ rust/helpers.c                               |  531 +++
+ rust/kernel/allocator.rs                     |   65 +
+ rust/kernel/amba.rs                          |  259 ++
+ rust/kernel/bindings.rs                      |   47 +
+ rust/kernel/bindings_helper.h                |   37 +
+ rust/kernel/build_assert.rs                  |   80 +
+ rust/kernel/c_types.rs                       |  119 +
+ rust/kernel/chrdev.rs                        |  207 ++
+ rust/kernel/clk.rs                           |   75 +
+ rust/kernel/cred.rs                          |   73 +
+ rust/kernel/device.rs                        |  554 +++
+ rust/kernel/driver.rs                        |  440 +++
+ rust/kernel/error.rs                         |  560 +++
+ rust/kernel/file.rs                          |  873 +++++
+ rust/kernel/gpio.rs                          |  478 +++
+ rust/kernel/hwrng.rs                         |  242 ++
+ rust/kernel/io_buffer.rs                     |  153 +
+ rust/kernel/io_mem.rs                        |  237 ++
+ rust/kernel/iov_iter.rs                      |   81 +
+ rust/kernel/irq.rs                           |  409 +++
+ rust/kernel/lib.rs                           |  260 ++
+ rust/kernel/linked_list.rs                   |  247 ++
+ rust/kernel/miscdev.rs                       |  291 ++
+ rust/kernel/mm.rs                            |  149 +
+ rust/kernel/module_param.rs                  |  498 +++
+ rust/kernel/of.rs                            |   63 +
+ rust/kernel/pages.rs                         |  144 +
+ rust/kernel/platform.rs                      |  224 ++
+ rust/kernel/power.rs                         |  118 +
+ rust/kernel/prelude.rs                       |   36 +
+ rust/kernel/print.rs                         |  414 +++
+ rust/kernel/random.rs                        |   50 +
+ rust/kernel/raw_list.rs                      |  361 ++
+ rust/kernel/rbtree.rs                        |  562 +++
+ rust/kernel/revocable.rs                     |  163 +
+ rust/kernel/security.rs                      |   36 +
+ rust/kernel/static_assert.rs                 |   39 +
+ rust/kernel/std_vendor.rs                    |  150 +
+ rust/kernel/str.rs                           |  592 ++++
+ rust/kernel/sync/arc.rs                      |  500 +++
+ rust/kernel/sync/condvar.rs                  |  138 +
+ rust/kernel/sync/guard.rs                    |  166 +
+ rust/kernel/sync/locked_by.rs                |  112 +
+ rust/kernel/sync/mod.rs                      |  157 +
+ rust/kernel/sync/mutex.rs                    |  114 +
+ rust/kernel/sync/revocable_mutex.rs          |  184 +
+ rust/kernel/sync/rwsem.rs                    |  149 +
+ rust/kernel/sync/seqlock.rs                  |  202 ++
+ rust/kernel/sync/spinlock.rs                 |  192 +
+ rust/kernel/sysctl.rs                        |  199 ++
+ rust/kernel/task.rs                          |  182 +
+ rust/kernel/types.rs                         |  569 +++
+ rust/kernel/user_ptr.rs                      |  175 +
+ rust/macros/helpers.rs                       |   79 +
+ rust/macros/lib.rs                           |   94 +
+ rust/macros/module.rs                        |  631 ++++
+ samples/Kconfig                              |    2 +
+ samples/Makefile                             |    1 +
+ samples/rust/Kconfig                         |  130 +
+ samples/rust/Makefile                        |   15 +
+ samples/rust/hostprogs/.gitignore            |    3 +
+ samples/rust/hostprogs/Makefile              |    5 +
+ samples/rust/hostprogs/a.rs                  |    7 +
+ samples/rust/hostprogs/b.rs                  |    5 +
+ samples/rust/hostprogs/single.rs             |   12 +
+ samples/rust/rust_chrdev.rs                  |   50 +
+ samples/rust/rust_minimal.rs                 |   35 +
+ samples/rust/rust_miscdev.rs                 |  143 +
+ samples/rust/rust_module_parameters.rs       |   69 +
+ samples/rust/rust_platform.rs                |   22 +
+ samples/rust/rust_print.rs                   |   54 +
+ samples/rust/rust_random.rs                  |   60 +
+ samples/rust/rust_semaphore.rs               |  171 +
+ samples/rust/rust_semaphore_c.c              |  212 ++
+ samples/rust/rust_stack_probing.rs           |   36 +
+ samples/rust/rust_sync.rs                    |   93 +
+ scripts/.gitignore                           |    1 +
+ scripts/Kconfig.include                      |    6 +-
+ scripts/Makefile                             |    3 +
+ scripts/Makefile.build                       |   60 +
+ scripts/Makefile.debug                       |   10 +
+ scripts/Makefile.host                        |   34 +-
+ scripts/Makefile.lib                         |   12 +
+ scripts/Makefile.modfinal                    |    8 +-
+ scripts/cc-version.sh                        |   12 +-
+ scripts/decode_stacktrace.sh                 |   14 +
+ scripts/generate_rust_analyzer.py            |  133 +
+ scripts/generate_rust_target.rs              |  227 ++
+ scripts/is_rust_module.sh                    |   13 +
+ scripts/kallsyms.c                           |   40 +-
+ scripts/kconfig/confdata.c                   |   75 +
+ scripts/min-tool-version.sh                  |    6 +
+ scripts/rust-is-available-bindgen-libclang.h |    2 +
+ scripts/rust-is-available.sh                 |  158 +
+ tools/include/linux/kallsyms.h               |    2 +-
+ tools/lib/perf/include/perf/event.h          |    2 +-
+ tools/lib/symbol/kallsyms.h                  |    2 +-
+ 168 files changed, 35290 insertions(+), 63 deletions(-)
+ create mode 100644 .rustfmt.toml
+ create mode 100644 Documentation/rust/arch-support.rst
+ create mode 100644 Documentation/rust/coding-guidelines.rst
+ create mode 100644 Documentation/rust/general-information.rst
+ create mode 100644 Documentation/rust/index.rst
+ create mode 100644 Documentation/rust/logo.svg
+ create mode 100644 Documentation/rust/quick-start.rst
+ create mode 100644 drivers/android/allocation.rs
+ create mode 100644 drivers/android/context.rs
+ create mode 100644 drivers/android/defs.rs
+ create mode 100644 drivers/android/node.rs
+ create mode 100644 drivers/android/process.rs
+ create mode 100644 drivers/android/range_alloc.rs
+ create mode 100644 drivers/android/rust_binder.rs
+ create mode 100644 drivers/android/thread.rs
+ create mode 100644 drivers/android/transaction.rs
+ create mode 100644 drivers/gpio/gpio_pl061_rust.rs
+ create mode 100644 rust/.gitignore
+ create mode 100644 rust/Makefile
+ create mode 100644 rust/alloc/README.md
+ create mode 100644 rust/alloc/alloc.rs
+ create mode 100644 rust/alloc/borrow.rs
+ create mode 100644 rust/alloc/boxed.rs
+ create mode 100644 rust/alloc/collections/mod.rs
+ create mode 100644 rust/alloc/fmt.rs
+ create mode 100644 rust/alloc/lib.rs
+ create mode 100644 rust/alloc/macros.rs
+ create mode 100644 rust/alloc/raw_vec.rs
+ create mode 100644 rust/alloc/slice.rs
+ create mode 100644 rust/alloc/str.rs
+ create mode 100644 rust/alloc/string.rs
+ create mode 100644 rust/alloc/vec/drain.rs
+ create mode 100644 rust/alloc/vec/drain_filter.rs
+ create mode 100644 rust/alloc/vec/into_iter.rs
+ create mode 100644 rust/alloc/vec/is_zero.rs
+ create mode 100644 rust/alloc/vec/mod.rs
+ create mode 100644 rust/alloc/vec/partial_eq.rs
+ create mode 100644 rust/alloc/vec/set_len_on_drop.rs
+ create mode 100644 rust/alloc/vec/spec_extend.rs
+ create mode 100644 rust/bindgen_parameters
+ create mode 100644 rust/build_error.rs
+ create mode 100644 rust/compiler_builtins.rs
+ create mode 100644 rust/exports.c
+ create mode 100644 rust/helpers.c
+ create mode 100644 rust/kernel/allocator.rs
+ create mode 100644 rust/kernel/amba.rs
+ create mode 100644 rust/kernel/bindings.rs
+ create mode 100644 rust/kernel/bindings_helper.h
+ create mode 100644 rust/kernel/build_assert.rs
+ create mode 100644 rust/kernel/c_types.rs
+ create mode 100644 rust/kernel/chrdev.rs
+ create mode 100644 rust/kernel/clk.rs
+ create mode 100644 rust/kernel/cred.rs
+ create mode 100644 rust/kernel/device.rs
+ create mode 100644 rust/kernel/driver.rs
+ create mode 100644 rust/kernel/error.rs
+ create mode 100644 rust/kernel/file.rs
+ create mode 100644 rust/kernel/gpio.rs
+ create mode 100644 rust/kernel/hwrng.rs
+ create mode 100644 rust/kernel/io_buffer.rs
+ create mode 100644 rust/kernel/io_mem.rs
+ create mode 100644 rust/kernel/iov_iter.rs
+ create mode 100644 rust/kernel/irq.rs
+ create mode 100644 rust/kernel/lib.rs
+ create mode 100644 rust/kernel/linked_list.rs
+ create mode 100644 rust/kernel/miscdev.rs
+ create mode 100644 rust/kernel/mm.rs
+ create mode 100644 rust/kernel/module_param.rs
+ create mode 100644 rust/kernel/of.rs
+ create mode 100644 rust/kernel/pages.rs
+ create mode 100644 rust/kernel/platform.rs
+ create mode 100644 rust/kernel/power.rs
+ create mode 100644 rust/kernel/prelude.rs
+ create mode 100644 rust/kernel/print.rs
+ create mode 100644 rust/kernel/random.rs
+ create mode 100644 rust/kernel/raw_list.rs
+ create mode 100644 rust/kernel/rbtree.rs
+ create mode 100644 rust/kernel/revocable.rs
+ create mode 100644 rust/kernel/security.rs
+ create mode 100644 rust/kernel/static_assert.rs
+ create mode 100644 rust/kernel/std_vendor.rs
+ create mode 100644 rust/kernel/str.rs
+ create mode 100644 rust/kernel/sync/arc.rs
+ create mode 100644 rust/kernel/sync/condvar.rs
+ create mode 100644 rust/kernel/sync/guard.rs
+ create mode 100644 rust/kernel/sync/locked_by.rs
+ create mode 100644 rust/kernel/sync/mod.rs
+ create mode 100644 rust/kernel/sync/mutex.rs
+ create mode 100644 rust/kernel/sync/revocable_mutex.rs
+ create mode 100644 rust/kernel/sync/rwsem.rs
+ create mode 100644 rust/kernel/sync/seqlock.rs
+ create mode 100644 rust/kernel/sync/spinlock.rs
+ create mode 100644 rust/kernel/sysctl.rs
+ create mode 100644 rust/kernel/task.rs
+ create mode 100644 rust/kernel/types.rs
+ create mode 100644 rust/kernel/user_ptr.rs
+ create mode 100644 rust/macros/helpers.rs
+ create mode 100644 rust/macros/lib.rs
+ create mode 100644 rust/macros/module.rs
+ create mode 100644 samples/rust/Kconfig
+ create mode 100644 samples/rust/Makefile
+ create mode 100644 samples/rust/hostprogs/.gitignore
+ create mode 100644 samples/rust/hostprogs/Makefile
+ create mode 100644 samples/rust/hostprogs/a.rs
+ create mode 100644 samples/rust/hostprogs/b.rs
+ create mode 100644 samples/rust/hostprogs/single.rs
+ create mode 100644 samples/rust/rust_chrdev.rs
+ create mode 100644 samples/rust/rust_minimal.rs
+ create mode 100644 samples/rust/rust_miscdev.rs
+ create mode 100644 samples/rust/rust_module_parameters.rs
+ create mode 100644 samples/rust/rust_platform.rs
+ create mode 100644 samples/rust/rust_print.rs
+ create mode 100644 samples/rust/rust_random.rs
+ create mode 100644 samples/rust/rust_semaphore.rs
+ create mode 100644 samples/rust/rust_semaphore_c.c
+ create mode 100644 samples/rust/rust_stack_probing.rs
+ create mode 100644 samples/rust/rust_sync.rs
+ create mode 100755 scripts/generate_rust_analyzer.py
+ create mode 100644 scripts/generate_rust_target.rs
+ create mode 100755 scripts/is_rust_module.sh
+ create mode 100644 scripts/rust-is-available-bindgen-libclang.h
+ create mode 100755 scripts/rust-is-available.sh
+
+
+base-commit: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+-- 
+2.35.1
+
