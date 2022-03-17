@@ -2,186 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C579BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D5C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 23:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiCQXC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 19:02:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        id S230093AbiCQXDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 19:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230082AbiCQXCP (ORCPT
+        with ESMTP id S229820AbiCQXDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 19:02:15 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AEB14FFCF
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:00:58 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id bn33so9201625ljb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:00:58 -0700 (PDT)
+        Thu, 17 Mar 2022 19:03:05 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA362B78E9
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:01:48 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id o5so12991932ybe.2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 16:01:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1h6v43X9Wm6mV5ATOpHxZMr+fhOw297iiR7I0VujGPQ=;
-        b=wsTHgw2VBBcm8YG8qFRGs1WpXu6JyF6Icf7SYw2oQ2KyRk6OOMy2lcGej02iEPfdBj
-         aaisFTjvISJ8vBPGrFZDgxnzDIAx2m9MvaNK3aXJy/1F7w1v+N6EGnDH2YwJmwJJrlwz
-         VTQI7fG36ROUtvLL9CDQgS193hnT7stsgy523VSeAkEVoyT1L1rgo0DhplRoubiltQM7
-         ut796lq+9aEWQHFf/n0TH5zDYRG0EaPaPuJVm5lO/Z2uOXTn40j63YijDtaxdnz4qaqz
-         PCpEV4UmXZKUZ2l7b23KU8nGmJO5l3L0ooot97t0ugw4djgP28PQWTI52F4wwS09BAiC
-         GLgQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BjpeHshr55oXVbRkRUel/sp4CJH7Ek81QT6z+rRB6S8=;
+        b=HtQ8698j/GkuPOZp01hGhOmnDThwuykSIVbzZT8HLyvOMehvriKXIHX3PT+MEnXiuu
+         9lwzZcsl1IkVVuTIBPZbV5ekm6upDD5S6p6Kl0b7eXclg6iINdHjGxQrKPXdldyuBUsg
+         h23/4Q6kkdZ+Etckx4W8ponNMzQ3iRuFDpKSS6Zd/JLP+p0lEYCynNvRPmlClU03Onro
+         grI/EMU8xcuHkARp5fDq1FopIwxeXkki1ZHaOsyS0ftNmZinm327BN43hb9lMeYXrq7z
+         uzc4oLY/xeBkyTT9bD5cv3Q4uvoEt6o3ccWfoYik6eiY20eZ0Uvsd/AniL+StFDalV+t
+         eXHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1h6v43X9Wm6mV5ATOpHxZMr+fhOw297iiR7I0VujGPQ=;
-        b=rxAo02hlqJMVUidsXYsNsmklgK3pRVCQEIYeHmiTveYIuHmcEiZaU3uHt5xebVipKg
-         ic5Cw5Zof0IE3BRtvSLcvo1ZGcMR/a+PBmW3p8JwOfFqGv1roCSPKYSURbRICJYfrWK0
-         Z713vJU35MriXW8X4ADuC5UEqIZVCfY2REdQu+u396LqgKIB9deFNrpjXgP7nG44X4/b
-         InRiSBM+fJc/8wYM/OTiwg7kRZSgOEow2xqLCJhCq9YnAlJc9TGvjDE3z08xpPYS8AyR
-         0kRSBLX0M0qDSuxGSEkipw6e7q5OiZxOSv/wzJNcPa9n2+7K/hvelym5+6tE5tTLqofW
-         6SYg==
-X-Gm-Message-State: AOAM531pa63u7HJBU3mycsbXH6h6EYdpFnfgdSdoQVbdqomcv0dYRtMS
-        xiVOio7DP6S5NSd2yj1qxlQFsfvPLlRHJg==
-X-Google-Smtp-Source: ABdhPJwsJWZmyw0Dj/XqEo3qOAjEFzd2Ly8PIdTH8f3QVrdumsfKQ80WpyvQczrfw2PPEZouvhCfVA==
-X-Received: by 2002:a05:651c:4c6:b0:249:68fe:916e with SMTP id e6-20020a05651c04c600b0024968fe916emr1409054lji.288.1647558056520;
-        Thu, 17 Mar 2022 16:00:56 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id 11-20020a2e154b000000b0024967cd674esm191876ljv.35.2022.03.17.16.00.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 16:00:56 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH 5/5 v2] dt-bindings: gnss: Rewrite Mediatek bindings in YAML
-Date:   Thu, 17 Mar 2022 23:58:44 +0100
-Message-Id: <20220317225844.1262643-5-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317225844.1262643-1-linus.walleij@linaro.org>
-References: <20220317225844.1262643-1-linus.walleij@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BjpeHshr55oXVbRkRUel/sp4CJH7Ek81QT6z+rRB6S8=;
+        b=3pE849znWXtZaBKtyqr+w0lRQnGvAul3TbuUJQ9+Ocoq5AtcKlN9jaoHqdbllEDKp4
+         KIDG0hE1SmMwYPLAOKvqiIZK+wRO/9tdj0TuOgq1e2qYDPx6TT2blJ66VDzb//7PBUss
+         3SrGy5oha9K5SuvADSrIKzWFBx9GhM+4udVvwiMHhUyfNJnJk0lnY9TUMtWrwifphhhk
+         gUtwIf0Tt/ee7uh4y2q6L08mEEoqtTICrMQp3qrEOfrQ9m8Behdv90I9FGMtZ6477pPd
+         ATWLfqrD7pOGDv91u+5HUC4KuXoklwEBYgudcsTWmO2Na+azgqWfFeyhxFZjeayIglya
+         nyQg==
+X-Gm-Message-State: AOAM531iVCUpWCEWeDxCEOh+0oqAAK2wEx0RwuyHIiHLYUlBMZOPRf8+
+        jYK1QShYotWhyHd5Zj79T7UxbVZLbJ6df7W8PTywsA==
+X-Google-Smtp-Source: ABdhPJxUH7FDJL8h8BnBMwdlrY2wLUcnT5H3QzKOyq8DCn5DLiSJpxwc/UeAB4reijZISa/1f6WVJpXdp16QsqcRX/Y=
+X-Received: by 2002:a25:ab64:0:b0:633:6d02:ebc8 with SMTP id
+ u91-20020a25ab64000000b006336d02ebc8mr7372536ybi.492.1647558107436; Thu, 17
+ Mar 2022 16:01:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220317115542.450032-1-krzysztof.kozlowski@canonical.com> <20220317115705.450427-6-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220317115705.450427-6-krzysztof.kozlowski@canonical.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 18 Mar 2022 00:01:35 +0100
+Message-ID: <CACRpkdafKz7hqinCgWrKuSQjefaN7cZgLbhiYUtVXg3=mrELow@mail.gmail.com>
+Subject: Re: [PATCH 07/18] dt-bindings: irqchip: intel,ixp4xx: include generic schema
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        =?UTF-8?Q?Andreas_F=C3=A4rber?= <afaerber@suse.de>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Linus Walleij <linusw@kernel.org>,
+        Imre Kaloz <kaloz@openwrt.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Michael Walle <michael@walle.cc>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
+        Daniel Palmer <daniel@thingy.jp>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Cristian Ciocaltea <cristian.ciocaltea@gmail.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Paul Burton <paulburton@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>,
+        John Crispin <john@phrozen.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Suman Anna <s-anna@ti.com>, Lokesh Vutla <lokeshvutla@ti.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-actions@lists.infradead.org, openbmc@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-oxnas@groups.io
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This rewrites the Mediatek GNSS bindings in YAML.
+On Thu, Mar 17, 2022 at 12:57 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
 
-Cc: devicetree@vger.kernel.org
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- New patch since Krzysztof pointed out there is really just
-  one more binding to convert, so why not.
----
- .../devicetree/bindings/gnss/mediatek.txt     | 35 ------------
- .../devicetree/bindings/gnss/mediatek.yaml    | 54 +++++++++++++++++++
- 2 files changed, 54 insertions(+), 35 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/gnss/mediatek.txt
- create mode 100644 Documentation/devicetree/bindings/gnss/mediatek.yaml
+> Include generic interrupt-controller.yaml schema, which enforces node
+> naming and other generic properties.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-diff --git a/Documentation/devicetree/bindings/gnss/mediatek.txt b/Documentation/devicetree/bindings/gnss/mediatek.txt
-deleted file mode 100644
-index 80cb802813c5..000000000000
---- a/Documentation/devicetree/bindings/gnss/mediatek.txt
-+++ /dev/null
-@@ -1,35 +0,0 @@
--Mediatek-based GNSS Receiver DT binding
--
--Mediatek chipsets are used in GNSS-receiver modules produced by several
--vendors and can use a UART interface.
--
--Please see Documentation/devicetree/bindings/gnss/gnss.txt for generic
--properties.
--
--Required properties:
--
--- compatible	: Must be
--
--			"globaltop,pa6h"
--
--- vcc-supply	: Main voltage regulator (pin name: VCC)
--
--Optional properties:
--
--- current-speed		: Default UART baud rate
--- gnss-fix-gpios	: GPIO used to determine device position fix state
--			  (pin name: FIX, 3D_FIX)
--- reset-gpios		: GPIO used to reset the device (pin name: RESET, NRESET)
--- timepulse-gpios	: Time pulse GPIO (pin name: PPS1, 1PPS)
--- vbackup-supply	: Backup voltage regulator (pin name: VBAT, VBACKUP)
--
--Example:
--
--serial@1234 {
--	compatible = "ns16550a";
--
--	gnss {
--		compatible = "globaltop,pa6h";
--		vcc-supply = <&vcc_3v3>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/gnss/mediatek.yaml b/Documentation/devicetree/bindings/gnss/mediatek.yaml
-new file mode 100644
-index 000000000000..273732225c1f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/gnss/mediatek.yaml
-@@ -0,0 +1,54 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/gnss/mediatek.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek GNSS Receiver Device Tree Bindings
-+
-+allOf:
-+  - $ref: gnss-common.yaml#
-+
-+maintainers:
-+  - Johan Hovold <johan@kernel.org>
-+
-+description:
-+  Mediatek chipsets are used in GNSS-receiver modules produced by several
-+  vendors and can use a UART interface.
-+
-+properties:
-+  compatible:
-+    const: globaltop,pa6h
-+
-+  vcc-supply:
-+    description:
-+      Main voltage regulator, pin name VCC.
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description: An optional reset line, with names such as RESET or NRESET.
-+      If the line is active low it should be flagged with GPIO_ACTIVE_LOW.
-+
-+  timepulse-gpios:
-+    description: Comes with pin names such as PPS1 or 1PPS.
-+
-+  vbackup-supply:
-+    description:
-+      Regulator providing backup voltage, pin names such as VBAT or VBACKUP.
-+
-+required:
-+  - compatible
-+  - vcc-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    serial {
-+        gnss {
-+            compatible = "globaltop,pa6h";
-+            vcc-supply = <&vcc_3v3>;
-+            reset-gpios = <&gpio 1 GPIO_ACTIVE_LOW>;
-+        };
-+    };
--- 
-2.35.1
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+Yours,
+Linus Walleij
