@@ -2,122 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D734C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 09:15:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231785AbiCQJQj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 05:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39232 "EHLO
+        id S231793AbiCQJRI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 05:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiCQJQi (ORCPT
+        with ESMTP id S231683AbiCQJRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 05:16:38 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFA810BBE8
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:15:21 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id 25so6365649ljv.10
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 02:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=1MUgYWtcEMVkgHdFAk3A3kJou2fD0d65pngloGRSNTQ=;
-        b=UsgH2ZiFOG8WemjFk1/D+1vka86khHzHKmc4laP4X1jZtVL8aJ8SoqtwVPiqCDANmT
-         2OWzjH1cE3PUBZgUzrHyA5tPWGzz82gxLItLvmCto71845Mu2vciRDLfm90YkAYXc+Q6
-         U2nuzqWB8rEZwjt/RSJdH2kuQhaTdcKb6yivGqWn0cvptPXmm3TMHG/pTRkwFPc0cjcJ
-         oLwHjBpfIO4JzfhzcN+PJfeMMMxFn/xsWWiRIp3KLry8qFPAbUG4VGClOsYuPB9wHwaL
-         Y+vwvZych5xzmqvNgvXNfuLUE0KAmJasopdkmwyht+2MrCPMI/AI0WYsutsYoUd4PLWO
-         Qy4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1MUgYWtcEMVkgHdFAk3A3kJou2fD0d65pngloGRSNTQ=;
-        b=lZCvKJ+Rtbxd0VBYeiY9imBMkyGynG0KPjQyY1QeinuXJbqrGv9pyjJ1cpic50G283
-         E9jGr9TeLDUC7Eo/cIw4zHc6LoLdgjrS2ADITS6dDpYo34eGIRZRAWBQl/tifh1FpOfG
-         jhT+GDoqYqAg06VSdeAEoCDpNcJLFtdWMNcmrHNi46buLA30chP9tBeD7Hx05u+SCPau
-         R3+Z0W9DeIlRPLUBsqvYM1WsrpHfoPMkdNckRLoYvijv0c7ouTHBT9/pm4bBSOWk8214
-         pDWQXagmiS/ugInlYvn5+wU0/baNFG+iDTSQ2HdlpOyMzu+8B5JmzB5s/nxPcIfxwrFT
-         EYGw==
-X-Gm-Message-State: AOAM532xIK2EksLjNWMigT8zlQ81YoNWzrLN6oJN9B818w/KedKuCIDp
-        fjMFPcAU7hIbQjbmR2aPXxOmeLUExJyTE47BlQuHPw==
-X-Google-Smtp-Source: ABdhPJw9R7+sMQZZJsKQqijXj5U15qGAtmGwCzEJRyOE9ZSoMgZpJsRHZbCoB4X8GqqCSvZHQzRj7MGalen9VOD8z6I=
-X-Received: by 2002:a2e:9cc5:0:b0:239:da6e:290d with SMTP id
- g5-20020a2e9cc5000000b00239da6e290dmr2322462ljj.4.1647508519646; Thu, 17 Mar
- 2022 02:15:19 -0700 (PDT)
+        Thu, 17 Mar 2022 05:17:07 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7C9E11D7AF;
+        Thu, 17 Mar 2022 02:15:50 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A277A1476;
+        Thu, 17 Mar 2022 02:15:50 -0700 (PDT)
+Received: from lpieralisi (unknown [10.57.43.22])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 137E33F766;
+        Thu, 17 Mar 2022 02:15:47 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 09:15:43 +0000
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Marc Zyngier <maz@kernel.org>,
+        dann frazier <dann.frazier@canonical.com>, robh@kernel.org
+Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com, Toan Le <toan@os.amperecomputing.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
+        dann frazier <dann.frazier@canonical.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [PATCH] PCI: xgene: Revert "PCI: xgene: Use inbound resources
+ for setup"
+Message-ID: <YjL8P0zkle2foxbk@lpieralisi>
+References: <20220314144429.1947610-1-maz@kernel.org>
 MIME-Version: 1.0
-References: <20220312044315.7994-1-michael@allwinnertech.com>
- <83edf9a1-1712-5388-a3fa-d685f1f581df@intel.com> <88e53cb9-791f-ee58-9be8-76ae9986e0e2@allwinnertech.com>
- <DM6PR04MB6575C3B87DFA920EDCD994CCFC0F9@DM6PR04MB6575.namprd04.prod.outlook.com>
- <32b29790-eb5c-dac0-1f91-aede38220914@allwinnertech.com> <DM6PR04MB6575A4A2A687A876EA5C04B7FC119@DM6PR04MB6575.namprd04.prod.outlook.com>
- <312d724c-e43f-d766-49fb-9c5b10fe8b07@intel.com> <7ec0cf3e316a4ed9987962b4cbf01604@hyperstone.com>
- <a1230f11-a2dd-1959-5444-28c57d3babf6@intel.com>
-In-Reply-To: <a1230f11-a2dd-1959-5444-28c57d3babf6@intel.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 17 Mar 2022 10:14:43 +0100
-Message-ID: <CAPDyKFpnR12+nrbiB-Ps-C4vn-WeHneRGJioQ_0b2ikk2CBChw@mail.gmail.com>
-Subject: Re: [PATCH] mmc: block: enable cache-flushing when mmc cache is on
-To:     Adrian Hunter <adrian.hunter@intel.com>
-Cc:     =?UTF-8?Q?Christian_L=C3=B6hle?= <CLoehle@hyperstone.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Michael Wu <michael@allwinnertech.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "porzio@gmail.com" <porzio@gmail.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        allwinner-opensource-support 
-        <allwinner-opensource-support@allwinnertech.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220314144429.1947610-1-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Mar 2022 at 17:08, Adrian Hunter <adrian.hunter@intel.com> wrote=
-:
->
-> On 16.3.2022 16.46, Christian L=C3=B6hle wrote:
-> >> So we are not going to let the block layer know about SD cache?
-> >> Or is it a separate change?
-> >
-> > I have some code for this laying around, but as it requires reading, pa=
-rsing and writing Function Registers,
-> > in particular PEH, it's a lot of boilerplate code to get the functional=
-ity, but I'll clean it up and send a patch in the coming weeks.
-> >
->
-> We have the sd cache flush.  We would presumably just need to call blk_qu=
-eue_write_cache()
-> for the !mmc_card_mmc(card) case e.g.
->
->         if (mmc_has_reliable_write(card)) {
->                 md->flags |=3D MMC_BLK_REL_WR;
->                 enable_fua =3D true;
->         }
->
->         if (mmc_cache_enabled(card->host))
->                 enable_cache =3D true;
->
->         blk_queue_write_cache(md->queue.queue, enable_cache, enable_fua);
+[removed CC stable]
 
-To me, this seems like the most reasonable thing to do.
+On Mon, Mar 14, 2022 at 02:44:29PM +0000, Marc Zyngier wrote:
+> Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+> killed PCIe on my XGene-1 box (a Mustang board). The machine itself
+> is still alive, but half of its storage (over NVMe) is gone, and the
+> NVMe driver just times out.
+> 
+> Note that this machine boots with a device tree provided by the
+> UEFI firmware (2016 vintage), which could well be non conformant
+> with the spec, hence the breakage.
+> 
+> With the patch reverted, the box boots 5.17-rc8 with flying colors.
+> 
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Toan Le <toan@os.amperecomputing.com>
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Cc: Krzysztof Wilczyński <kw@linux.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Stéphane Graber <stgraber@ubuntu.com>
+> Cc: dann frazier <dann.frazier@canonical.com>
+> Cc: Thorsten Leemhuis <regressions@leemhuis.info>
+> Cc: stable@vger.kernel.org>
+> ---
+>  drivers/pci/controller/pci-xgene.c | 33 ++++++++++++++++++++----------
+>  1 file changed, 22 insertions(+), 11 deletions(-)
 
-However, I have to admit that it's not clear to me, if there was a
-good reason to why commit f4c5522b0a88 ("mmc: Reliable write
-support.") also added support for REQ_FLUSH (write back cache) and why
-not only REQ_FUA. I assumed this was wrong too, right?
+Dann, Rob,
 
-When it comes to patches for stable kernels. mmc_cache_enabled() was
-introduced quite recently in v5.13, so for older kernels that call
-needs to be replaced with something else.
+does this fix the regression debated here:
 
-In any case, the relevant commits that can be considered as needs to
-be fixed seems like these:
-commit f4c5522b0a88 ("mmc: Reliable write support.")
-commit 881d1c25f765 ("mmc: core: Add cache control for eMMC4.5 device")
-commit 130206a615a9 ("mmc: core: Add support for cache ctrl for SD cards")
+https://lore.kernel.org/all/Yf2wTLjmcRj+AbDv@xps13.dannf
 
-[...]
+It is unclear in that thread what the conclusion reached was.
 
-Kind regards
-Uffe
+Thanks,
+Lorenzo
+
+> diff --git a/drivers/pci/controller/pci-xgene.c b/drivers/pci/controller/pci-xgene.c
+> index 0d5acbfc7143..aa41ceaf031f 100644
+> --- a/drivers/pci/controller/pci-xgene.c
+> +++ b/drivers/pci/controller/pci-xgene.c
+> @@ -479,28 +479,27 @@ static int xgene_pcie_select_ib_reg(u8 *ib_reg_mask, u64 size)
+>  }
+>  
+>  static void xgene_pcie_setup_ib_reg(struct xgene_pcie *port,
+> -				    struct resource_entry *entry,
+> -				    u8 *ib_reg_mask)
+> +				    struct of_pci_range *range, u8 *ib_reg_mask)
+>  {
+>  	void __iomem *cfg_base = port->cfg_base;
+>  	struct device *dev = port->dev;
+>  	void __iomem *bar_addr;
+>  	u32 pim_reg;
+> -	u64 cpu_addr = entry->res->start;
+> -	u64 pci_addr = cpu_addr - entry->offset;
+> -	u64 size = resource_size(entry->res);
+> +	u64 cpu_addr = range->cpu_addr;
+> +	u64 pci_addr = range->pci_addr;
+> +	u64 size = range->size;
+>  	u64 mask = ~(size - 1) | EN_REG;
+>  	u32 flags = PCI_BASE_ADDRESS_MEM_TYPE_64;
+>  	u32 bar_low;
+>  	int region;
+>  
+> -	region = xgene_pcie_select_ib_reg(ib_reg_mask, size);
+> +	region = xgene_pcie_select_ib_reg(ib_reg_mask, range->size);
+>  	if (region < 0) {
+>  		dev_warn(dev, "invalid pcie dma-range config\n");
+>  		return;
+>  	}
+>  
+> -	if (entry->res->flags & IORESOURCE_PREFETCH)
+> +	if (range->flags & IORESOURCE_PREFETCH)
+>  		flags |= PCI_BASE_ADDRESS_MEM_PREFETCH;
+>  
+>  	bar_low = pcie_bar_low_val((u32)cpu_addr, flags);
+> @@ -531,13 +530,25 @@ static void xgene_pcie_setup_ib_reg(struct xgene_pcie *port,
+>  
+>  static int xgene_pcie_parse_map_dma_ranges(struct xgene_pcie *port)
+>  {
+> -	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(port);
+> -	struct resource_entry *entry;
+> +	struct device_node *np = port->node;
+> +	struct of_pci_range range;
+> +	struct of_pci_range_parser parser;
+> +	struct device *dev = port->dev;
+>  	u8 ib_reg_mask = 0;
+>  
+> -	resource_list_for_each_entry(entry, &bridge->dma_ranges)
+> -		xgene_pcie_setup_ib_reg(port, entry, &ib_reg_mask);
+> +	if (of_pci_dma_range_parser_init(&parser, np)) {
+> +		dev_err(dev, "missing dma-ranges property\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Get the dma-ranges from DT */
+> +	for_each_of_pci_range(&parser, &range) {
+> +		u64 end = range.cpu_addr + range.size - 1;
+>  
+> +		dev_dbg(dev, "0x%08x 0x%016llx..0x%016llx -> 0x%016llx\n",
+> +			range.flags, range.cpu_addr, end, range.pci_addr);
+> +		xgene_pcie_setup_ib_reg(port, &range, &ib_reg_mask);
+> +	}
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.34.1
+> 
