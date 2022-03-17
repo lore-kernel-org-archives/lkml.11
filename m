@@ -2,206 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0177C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234484AbiCQNAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 09:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
+        id S234455AbiCQNAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 09:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234387AbiCQM4L (ORCPT
+        with ESMTP id S234473AbiCQM7p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:56:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085BEE9948;
-        Thu, 17 Mar 2022 05:54:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D5FF60F1B;
-        Thu, 17 Mar 2022 12:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A5FCC340E9;
-        Thu, 17 Mar 2022 12:54:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521660;
-        bh=Oiwz1Z86UsbOiF/D/+uZsqFlOG7gt+YtJPBjmB8q8KM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NBYwLnP8k7chZmwJ7Xz9+Z5MIr9RC1IvS7xIaqHnaouepDvgGMBAt5pC5pt1qpn04
-         VgG0/naTzcE4J4aBuJVLHyXqb/bttC8uBx1uVLzyS/WgRkfquj+/tI4p+1MLTxZ+6M
-         6MahGgb5mbd41EWHWvuBY+QraFf1ErpK4y40+aMs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.16 00/28] 5.16.16-rc1 review
-Date:   Thu, 17 Mar 2022 13:45:51 +0100
-Message-Id: <20220317124526.768423926@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 17 Mar 2022 08:59:45 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F24814752E
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:58:24 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id h126so10094777ybc.1
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:58:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=elCXN/aHOy7vPjpH18ylJ1cP6WgAx65RKk7fRU7ojZc=;
+        b=GrXcH3YkxDoDgi9fve1WKPFK7la+x9vkdTRO0op5C6EH2jHfAjBM+56Fd3CvmdBXLR
+         qsLlIug6rIODldHVTUojqYGPpTXNbTAvrzk04RueHmokWCxZigGXfhBQmTz3FpeG0NFy
+         qzgEB+pcquNbq3ZQ4HWPoUnQSr5Ry8KL4l+nz/saBiR4V3kUXOijDay3DgBoKGOw3T/f
+         syzjCZgr9O1rB+Zobo+MEfaNWjUjy7Yh9AzHZ3bruEkhzc2SGiYUdWte0sJUi+J2GpJp
+         tvQsXro/S4gKuAx/Pd967T+4V84Xt/Uhjk3P2EgKZIWm2ba0E48+j45xW2zKUXbuLzIx
+         IyoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=elCXN/aHOy7vPjpH18ylJ1cP6WgAx65RKk7fRU7ojZc=;
+        b=j3/GNyC4ihWWP/IXpvsp/d2Rz7N7uWfCRkTT/Ix8iv+nrvUY30Mzu651X6h4Br21Lz
+         /t2U6hFje2qrIr/XckvJxQQyDG+up72uzg1ylKBegF8pwwcDWraWkqMVrjTh2FjQNsnA
+         ITA+9AwQrbvRPUFBb1olUAv//08JlOXjL1omqXHokjR4h3CLWe2aoruj/ZrV9P7kY13j
+         fQuP5f6pFBC14MOt3k6Ph5JnjANb6aV/jg1RDXDM72qPBYUD8H2k/j7qyU3gzpNMfXje
+         1JD/MM7YWw/b/YmmoXPfh36ZxIvpbu9VOAgO8oexCp7FW1ZPYBvhZl16vCpczTQ8IsR3
+         gHLA==
+X-Gm-Message-State: AOAM532jofI2aIKhxdKkw9QRybUOuGuf+KN9JJN1TgTV+jqvGpqz+XIz
+        sG88Uuiytq4s076MwILn/1tocb43XL38RCdlz9U=
+X-Google-Smtp-Source: ABdhPJz1Ykr9LGD7q5P8uDMtLdaPy1Y+vDOsRPd9uK7+wdlC3B64z9irPK+tLnlndwYC4ruP0bohf1f0eFROT2CQsOs=
+X-Received: by 2002:a25:d512:0:b0:61d:aded:1743 with SMTP id
+ r18-20020a25d512000000b0061daded1743mr4517766ybe.526.1647521903702; Thu, 17
+ Mar 2022 05:58:23 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.16-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.16.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.16.16-rc1
-X-KernelTest-Deadline: 2022-03-19T12:45+00:00
-Content-Transfer-Encoding: 8bit
+References: <20220315073949.7541-1-jiangshanlai@gmail.com> <YjH+VdHIiHZM3maD@hirez.programming.kicks-ass.net>
+ <YjH+fAaH5yHGrxRu@hirez.programming.kicks-ass.net>
+In-Reply-To: <YjH+fAaH5yHGrxRu@hirez.programming.kicks-ass.net>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Thu, 17 Mar 2022 20:58:12 +0800
+Message-ID: <CAJhGHyDpa5oR7+cNv-Tj81uPFNmSKOqN2npCxfbo_zLwasVQrg@mail.gmail.com>
+Subject: Re: [PATCH V3 0/7] x86/entry: Clean up entry code
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.16.16 release.
-There are 28 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
-
-Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
-Anything received after that time might be too late.
-
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.16-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.16.16-rc1
-
-Ivan Vecera <ivecera@redhat.com>
-    ice: Fix race condition during interface enslave
-
-Chengming Zhou <zhouchengming@bytedance.com>
-    kselftest/vm: fix tests build with old libc
-
-Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-    bnx2: Fix an error message
-
-Niels Dossche <dossche.niels@gmail.com>
-    sfc: extend the locking on mcdi->seqno
-
-Eric Dumazet <edumazet@google.com>
-    tcp: make tcp_read_sock() more robust
-
-Sreeramya Soratkal <quic_ssramya@quicinc.com>
-    nl80211: Update bss channel on channel switch for P2P_CLIENT
-
-Manasi Navare <manasi.d.navare@intel.com>
-    drm/vrr: Set VRR capable prop only if it is attached to connector
-
-Golan Ben Ami <golan.ben.ami@intel.com>
-    iwlwifi: don't advertise TWT support
-
-Hans de Goede <hdegoede@redhat.com>
-    Input: goodix - workaround Cherry Trail devices with a bogus ACPI Interrupt() resource
-
-Hans de Goede <hdegoede@redhat.com>
-    Input: goodix - use the new soc_intel_is_byt() helper
-
-Florian Westphal <fw@strlen.de>
-    netfilter: egress: silence egress hook lockdep splats
-
-Jia-Ju Bai <baijiaju1990@gmail.com>
-    atm: firestream: check the return value of ioremap() in fs_init()
-
-Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-    can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: hci_core: Fix leaking sent_cmd skb
-
-Julian Braha <julianbraha@gmail.com>
-    ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
-
-Alexander Lobakin <alobakin@pm.me>
-    MIPS: smp: fill in sibling and core maps earlier
-
-Johannes Berg <johannes.berg@intel.com>
-    mac80211: refuse aggregations sessions before authorized
-
-Corentin Labbe <clabbe@baylibre.com>
-    ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
-
-Sascha Hauer <s.hauer@pengutronix.de>
-    ARM: dts: rockchip: reorder rk322x hmdi clocks
-
-Dinh Nguyen <dinguyen@kernel.org>
-    arm64: dts: agilex: use the compatible "intel,socfpga-agilex-hsotg"
-
-Sascha Hauer <s.hauer@pengutronix.de>
-    arm64: dts: rockchip: reorder rk3399 hdmi clocks
-
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-    arm64: dts: rockchip: align pl330 node name with dtschema
-
-Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
-    arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
-
-Yan Yan <evitayan@google.com>
-    xfrm: Fix xfrm migrate issues when address family changes
-
-Yan Yan <evitayan@google.com>
-    xfrm: Check if_id in xfrm_migrate
-
-Quentin Schulz <quentin.schulz@theobroma-systems.com>
-    arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-
-Frank Wunderlich <frank-w@public-files.de>
-    arm64: dts: rockchip: fix dma-controller node names on rk356x
-
-Kai Lueke <kailueke@linux.microsoft.com>
-    Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
+On Wed, Mar 16, 2022 at 11:13 PM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Wed, Mar 16, 2022 at 04:12:21PM +0100, Peter Zijlstra wrote:
+> > On Tue, Mar 15, 2022 at 03:39:42PM +0800, Lai Jiangshan wrote:
+> >
+> > > Lai Jiangshan (7):
+> > >   x86/entry: Use idtentry macro for entry_INT80_compat
+> > >   x86/traps: Move pt_regs only in fixup_bad_iret()
+> > >   x86/entry: Switch the stack after error_entry() returns
+> > >   x86/entry: move PUSH_AND_CLEAR_REGS out of error_entry
+> > >   x86/entry: Move cld to the start of idtentry
+> > >   x86/entry: Don't call error_entry for XENPV
+> > >   x86/entry: Convert SWAPGS to swapgs and remove the definition of
+> > >     SWAPGS
+> >
+> > So AFAICT these patches are indeed correct.
+> >
+> > I do however worry a little bit about the I$ impact of patch 4, and
+> > there's a few niggles, but otherwise looks good.
+> >
+> > I'd love for some of the other x86 people to also look at this, but a
+> > tentative ACK on this.
+> >
+>
+> Also, I forgot to mention; they no longer apply cleanly because I
+> sprinked ENDBR all over the place. Mostly trivial to fixup though.
 
 
--------------
-
-Diffstat:
-
- Makefile                                           |  4 +--
- arch/arm/boot/dts/rk322x.dtsi                      |  4 +--
- arch/arm/boot/dts/rk3288.dtsi                      |  2 +-
- arch/arm64/boot/dts/intel/socfpga_agilex.dtsi      |  4 +--
- arch/arm64/boot/dts/rockchip/px30.dtsi             |  2 +-
- arch/arm64/boot/dts/rockchip/rk3328.dtsi           |  2 +-
- .../arm64/boot/dts/rockchip/rk3399-puma-haikou.dts |  1 +
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      | 20 +++++++++++++
- arch/arm64/boot/dts/rockchip/rk3399.dtsi           |  6 ++--
- arch/arm64/boot/dts/rockchip/rk356x.dtsi           |  4 +--
- arch/mips/kernel/smp.c                             |  6 ++--
- drivers/atm/firestream.c                           |  2 ++
- drivers/gpu/drm/drm_connector.c                    |  3 ++
- drivers/input/touchscreen/goodix.c                 | 34 +++++++++++-----------
- drivers/net/can/rcar/rcar_canfd.c                  |  6 ++--
- drivers/net/ethernet/broadcom/bnx2.c               |  2 +-
- drivers/net/ethernet/intel/ice/ice.h               | 11 ++++++-
- drivers/net/ethernet/intel/ice/ice_main.c          | 12 +++++++-
- drivers/net/ethernet/sfc/mcdi.c                    |  2 +-
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |  3 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |  1 -
- include/linux/netfilter_netdev.h                   |  4 +++
- include/net/xfrm.h                                 |  5 ++--
- lib/Kconfig                                        |  1 -
- net/bluetooth/hci_core.c                           |  1 +
- net/ipv4/tcp.c                                     | 10 ++++---
- net/key/af_key.c                                   |  2 +-
- net/mac80211/agg-tx.c                              | 10 ++++++-
- net/wireless/nl80211.c                             |  3 +-
- net/xfrm/xfrm_policy.c                             | 14 +++++----
- net/xfrm/xfrm_state.c                              | 15 +++++++---
- net/xfrm/xfrm_user.c                               | 27 +++++------------
- tools/testing/selftests/vm/userfaultfd.c           |  1 +
- 33 files changed, 141 insertions(+), 83 deletions(-)
-
-
+They can still be applied to the newest tip/master which already has
+sprinked ENDBR.  Is there a more proper branch for me to rebase the
+patches onto?
