@@ -2,130 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A612EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233400AbiCQMFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35620 "EHLO
+        id S233409AbiCQMGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233333AbiCQMFe (ORCPT
+        with ESMTP id S231928AbiCQMGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:05:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ADDD19315E
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:04:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647518657;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FdTSBCWZfRB7gl4NcFBlztb/OOGHep3RIbzmatr6VFQ=;
-        b=doYa7O7SpvTlH0Wc3RixiVHVUzdCBa6XZU2S79U6dO8d989sNw1XMgkeizivEjoIyTQrWj
-        Hed6gl91pKO7Jv6Kmu71hTUKqaaTy8qO69S9mrs3IxoUhduJw1yPGQW3LwJnECXuo5ebU4
-        B9j1cAbqii6JCc1WlmPsWMEJS5yp4cQ=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-351-2LY7Ws31N6SK2Wq2T1FOJA-1; Thu, 17 Mar 2022 08:04:16 -0400
-X-MC-Unique: 2LY7Ws31N6SK2Wq2T1FOJA-1
-Received: by mail-lf1-f72.google.com with SMTP id y5-20020ac255a5000000b00448bc398d34so1363701lfg.15
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 05:04:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FdTSBCWZfRB7gl4NcFBlztb/OOGHep3RIbzmatr6VFQ=;
-        b=oyd2ra6/jRnI+bhHwSbiaP14NGSCVTHD/t87dHgGbEGW78ViLxgl44pMoJXaxWwjv8
-         YoEcB6pOGwxprlFQxVIOENA7X2ItTkPVaFmBp9WM/2RIlDqkEbZaMt991c4fqpz+ZWZ+
-         TKnNfYegI5Bm6GVoJ8VrbHT0KV7b4YTqHLPn98iH6iqLhXuK2wk+rWrETSV7onEDashK
-         MEs2x1BbHDOnu3E7Yc/sWO1vSELiDdy3TKM7YWW5InkbG165LthvXAxDl7tSSETqehWf
-         9VmJzJSoxSK3mG6KPg6AW2fBEC9S4PLUBvKuTQn3d7n+UCyVTPioKGBcmOCnCsVR37X4
-         aIjA==
-X-Gm-Message-State: AOAM531zZIV37l68bNiuCKh6l0DyWT8m1kZNlMxEihcVw9MOuWfPrtvV
-        1hlPUHIat9ebbTDfFuujBrMEwasCp0KAAi2TGOZRnOP7cIzjSVKSUsKzk9rqUaHXk2O8LfLtEld
-        nX5kbOyvZzyWDUpsV1tG3f/R3uj8V34ltbluLQiwb
-X-Received: by 2002:a05:6512:44f:b0:449:b929:a301 with SMTP id y15-20020a056512044f00b00449b929a301mr2699657lfk.180.1647518649511;
-        Thu, 17 Mar 2022 05:04:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwn2/gammYMEhSTgjHb3uCUKDlyraLf9N+wqpMA6XqrZ9+XtOOCoVlma0IkJ0zgfZJMfBknwy+BxtFxUgrIIYI=
-X-Received: by 2002:a05:6512:44f:b0:449:b929:a301 with SMTP id
- y15-20020a056512044f00b00449b929a301mr2699643lfk.180.1647518649298; Thu, 17
- Mar 2022 05:04:09 -0700 (PDT)
+        Thu, 17 Mar 2022 08:06:38 -0400
+Received: from smtp-bc0f.mail.infomaniak.ch (smtp-bc0f.mail.infomaniak.ch [IPv6:2001:1600:3:17::bc0f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D421A6E6A;
+        Thu, 17 Mar 2022 05:05:20 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KK5SH2RZ2zMqNN2;
+        Thu, 17 Mar 2022 13:05:19 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KK5SG3DNhzlhSMF;
+        Thu, 17 Mar 2022 13:05:18 +0100 (CET)
+Message-ID: <ebf1f65c-c0eb-c818-e3e4-46ad9292bdec@digikod.net>
+Date:   Thu, 17 Mar 2022 13:06:02 +0100
 MIME-Version: 1.0
-References: <20220316143646.13301-1-wander@redhat.com> <20220316143646.13301-3-wander@redhat.com>
- <ce8be768-6210-c3b-2131-de302a7757d@linux.intel.com>
-In-Reply-To: <ce8be768-6210-c3b-2131-de302a7757d@linux.intel.com>
-From:   Wander Costa <wcosta@redhat.com>
-Date:   Thu, 17 Mar 2022 09:03:55 -0300
-Message-ID: <CAAq0SU==UJpdTN2YNm_2KNGQmSKMOU97fFb-wTV2VM=vO5pPCw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/5] serial/8250: Use the cache value of the FCR register
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Wander Lairson Costa <wander@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        =?UTF-8?Q?Andr=C3=A9_Goddard_Rosa?= <andre.goddard@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        David Laight <David.Laight@aculab.com>,
-        Jon Hunter <jonathanh@nvidia.com>, phil@raspberrypi.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: 
+Content-Language: en-US
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>
+References: <20220221212522.320243-1-mic@digikod.net>
+ <20220221212522.320243-10-mic@digikod.net>
+ <CAHC9VhSmz1ga5NTu=vG3+Z+gxD8C+-W+k5UweUROe2p4BfjSTg@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v1 09/11] landlock: Document LANDLOCK_ACCESS_FS_REFER and
+ ABI versioning
+In-Reply-To: <CAHC9VhSmz1ga5NTu=vG3+Z+gxD8C+-W+k5UweUROe2p4BfjSTg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 5:31 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> On Wed, 16 Mar 2022, Wander Lairson Costa wrote:
->
-> > commit 5021d709b31b ("tty: serial: Use fifo in 8250 console driver")
-> > erroneous tries to read the FCR register content, but this register is
-> > write-only.
-> >
-> > This patch fixes that by reading the content from the port struct fcr
-> > field.
-> >
-> > Thanks to Jon Hunter and Jiri Slaby.
-> >
-> > Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-> > Reported-by: Jon Hunter <jonathanh@nvidia.com>
-> > Signed-off-by: Wander Lairson Costa <wander@redhat.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_port.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
-> > index 2abb3de11a48..9f3fa9fe2a4e 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -3410,7 +3410,7 @@ void serial8250_console_write(struct uart_8250_po=
-rt *up, const char *s,
-> >
-> >       use_fifo =3D (up->capabilities & UART_CAP_FIFO) &&
-> >               port->fifosize > 1 &&
-> > -             (serial_port_in(port, UART_FCR) & UART_FCR_ENABLE_FIFO) &=
-&
-> > +             (up->fcr & UART_FCR_ENABLE_FIFO) &&
->
-> Didn't you just add this line in 1/5? Please merge this kind of fixes tha=
-t
-> are due to development history of a change to the main patch itself.
->
 
-The reason is that 1/5 has been applied in 5.17 and then reverted, so
-I thought it would make it easier for reviewers if I sent the new
-fixes in different commits. If that's not the case, I can send a
-squashed version with the changelog described in 0/5.
+On 17/03/2022 02:27, Paul Moore wrote:
+> On Mon, Feb 21, 2022 at 4:15 PM Mickaël Salaün <mic@digikod.net> wrote:
+>>
+>> From: Mickaël Salaün <mic@linux.microsoft.com>
+>>
+>> Add LANDLOCK_ACCESS_FS_REFER in the example and properly check to only
+>> use it if the current kernel support it thanks to the Landlock ABI
+>> version.
+>>
+>> Move the file renaming and linking limitation to a new "Previous
+>> limitations" section.
+>>
+>> Improve documentation about the backward and forward compatibility,
+>> including the rational for ruleset's handled_access_fs.
+>>
+>> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
+>> Link: https://lore.kernel.org/r/20220221212522.320243-10-mic@digikod.net
+>> ---
+>>   Documentation/userspace-api/landlock.rst | 124 +++++++++++++++++++----
+>>   1 file changed, 104 insertions(+), 20 deletions(-)
+> 
+> Thanks for remembering to update the docs :)  I made a few phrasing
+> suggestions below, but otherwise it looks good to me.
 
+Thanks Paul! I'll take them.
+
+
+> 
+> Reviewed-by: Paul Moore <paul@paul-moore.com>
+> 
+>> diff --git a/Documentation/userspace-api/landlock.rst b/Documentation/userspace-api/landlock.rst
+>> index f35552ff19ba..97db09d36a5c 100644
+>> --- a/Documentation/userspace-api/landlock.rst
+>> +++ b/Documentation/userspace-api/landlock.rst
+>> @@ -281,6 +347,24 @@ Memory usage
+>>   Kernel memory allocated to create rulesets is accounted and can be restricted
+>>   by the Documentation/admin-guide/cgroup-v1/memory.rst.
+>>
+>> +Previous limitations
+>> +====================
+>> +
+>> +File renaming and linking (ABI 1)
+>> +---------------------------------
+>> +
+>> +Because Landlock targets unprivileged access controls, it is needed to properly
+>                                                            ^^^^^
+>                                             "... controls, it needs to ..."
+> 
+>> +handle composition of rules.  Such property also implies rules nesting.
+>> +Properly handling multiple layers of ruleset, each one of them able to restrict
+>                                          ^^^^^^^
+>                                        "rulesets,"
+> 
+>> +access to files, also implies to inherit the ruleset restrictions from a parent
+>                                   ^^^^^^^^^^
+>                      "... implies inheritance of the ..."
+> 
+>> +to its hierarchy.  Because files are identified and restricted by their
+>> +hierarchy, moving or linking a file from one directory to another implies to
+>> +propagate the hierarchy constraints.
+> 
+> "... one directory to another implies propagation of the hierarchy constraints."
+> 
+>> +                                     To protect against privilege escalations
+> 
+>> +through renaming or linking, and for the sake of simplicity, Landlock previously
+>> +limited linking and renaming to the same directory.  Starting with the Landlock
+>> +ABI version 2, it is now possible to securely control renaming and linking
+>> +thanks to the new `LANDLOCK_ACCESS_FS_REFER` access right.
+> 
+> --
+> paul-moore.com
