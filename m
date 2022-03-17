@@ -2,147 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1321C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60185C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235592AbiCQPBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
+        id S235600AbiCQPD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232430AbiCQPBq (ORCPT
+        with ESMTP id S231290AbiCQPD0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:01:46 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF75E7F64
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:00:30 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id h15so7749195wrc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:00:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=mpFvwfJ8r7mWj+dQzeS1Ko5nqxYOE3cL38S10CPksII=;
-        b=XJCgx6LcQEMvn4y144eWzm616B31j3LhXv3YVPLDtncBdhFDMGHb6IdRciS01qoO8w
-         EzRFbR36x4RiHc1iN1gaU6mzYBxAMmzGk9fBCccQRNyIj4esIOnFiHY5ZtZoELO9h4Bp
-         rlc61XZKAIdVRBuj9/l8UpjyvziqhICCMc+je8XH2pAtl5tyd+/U6j2XPM0H8kQ2kWx0
-         /upgNjAT/SCxhngehW+VAQB8skH550WyrN83Xsb6WirejteaiSrl4f1F41IdrjpT1eS8
-         DxBahdWDdMMrkqKlnmAOkcQOD9cJA3skIrIDIje8Fvm/JGW0QSg1iya2liLpVCVLCZiQ
-         oy4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=mpFvwfJ8r7mWj+dQzeS1Ko5nqxYOE3cL38S10CPksII=;
-        b=PUDftUEMFh0RyBQJzMtdO6ou9x9F2EFqhrAKmOdovFqA7KVYlVRmN65LPPBNah9wkc
-         iBUun5cI1Q6hHKZ4Gt6gQYmmIIb8qQ+BEdVJzmMUvJbbfEJrB9qmoWtv2UmyH+hwvcBw
-         nsHB/kll7gLhUva2kcBIQ8CWLX0iuhw2y0Xg6ptRDvcSg6ZzfgQRq2ygc9h1J432RR4A
-         DtvA8/KxwPf3Pvm1QbD1CzKqzAaGqraV8ooG0C/RyxXxaPY2UGtwHzH3APFo6ro5E/Fx
-         xBcuTSkc/aAtjEy5ovRXk7PzIEgI+rN77jii7jkB+K31L3Y+lNCngMCcx68/ClG24dQ/
-         SrIQ==
-X-Gm-Message-State: AOAM533hZfVT/Hkt0MO4zNyFfmMctHCbZLm8T76Dp6a7C0CBakbH8Wtu
-        hYRqDxpG8TX867kjj0ZqlYxSKw==
-X-Google-Smtp-Source: ABdhPJyTIEEopTwTo5wDmIQ/veXAigP05FDsUwMF53Y2w3XzFFiSf+9RPuGMNoeXf4um9LC9CA71Lw==
-X-Received: by 2002:a5d:6785:0:b0:203:723c:6b08 with SMTP id v5-20020a5d6785000000b00203723c6b08mr4181698wru.643.1647529228708;
-        Thu, 17 Mar 2022 08:00:28 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id 7-20020a05600c228700b00389865c646dsm5888347wmf.14.2022.03.17.08.00.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 08:00:27 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 15:00:25 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Felix Kuehling <felix.kuehling@amd.com>
-Cc:     David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Subject: Re: [PATCH 1/1] drm/amdkfd: Protect the Client whilst it is being
- operated on
-Message-ID: <YjNNCXc8harOvwqe@google.com>
-References: <20220317131610.554347-1-lee.jones@linaro.org>
- <8702f8a5-62a1-c07e-c7b7-e9378be069b6@amd.com>
+        Thu, 17 Mar 2022 11:03:26 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E0F4203A58;
+        Thu, 17 Mar 2022 08:02:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647529330; x=1679065330;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=igAx1K+VLoM7S36/is1LCPa675eznCJ8RDhWohRr6r4=;
+  b=PJC37VU3CDdCIgwbEsP6JOBzyrW5AWAuawqJeRZFEP5SfJHwqKJegEhI
+   fKJGY4Z7DzBgTtu3z5w6IruKk6w8PIGPRTioS+36PTTI/T8VWdrqUFYxF
+   E5gQZTVzyprgyUpPJJ5qqMlNw1c/k7R17lnu7VEqSRoe4Vxae9Ghx+u/S
+   l6RfC2Gr2tgUT7zxOxQbTukULkRu5sxB5SQ5TWOhgNml5VXUVyHqJujtk
+   bMChMt6zlRXklBz7Vri1WBjhKoiKW6degK+ns7XFjEAHLmU0MsfIzfEtj
+   Rnt8hqqQy+Is9WQfkqLbuUTTArZWq1HDjV7rNOI8DpsqWi2zB4/m2/szd
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="257070424"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="257070424"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 08:01:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="635386809"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 17 Mar 2022 08:01:25 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUrcz-000DmU-8s; Thu, 17 Mar 2022 15:01:25 +0000
+Date:   Thu, 17 Mar 2022 23:00:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Krishna Yarlagadda <kyarlagadda@nvidia.com>, broonie@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
+        ashishsingha@nvidia.com
+Cc:     kbuild-all@lists.01.org, skomatineni@nvidia.com,
+        ldewangan@nvidia.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krishna Yarlagadda <kyarlagadda@nvidia.com>
+Subject: Re: [PATCH 1/3] spi: tegra210-quad: Multi-cs support
+Message-ID: <202203172241.iGAq0qeH-lkp@intel.com>
+References: <20220317012006.15080-2-kyarlagadda@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8702f8a5-62a1-c07e-c7b7-e9378be069b6@amd.com>
+In-Reply-To: <20220317012006.15080-2-kyarlagadda@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Good afternoon Felix,
+Hi Krishna,
 
-Thanks for your review.
+Thank you for the patch! Yet something to improve:
 
-> Am 2022-03-17 um 09:16 schrieb Lee Jones:
-> > Presently the Client can be freed whilst still in use.
-> > 
-> > Use the already provided lock to prevent this.
-> > 
-> > Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-> > Cc: Alex Deucher <alexander.deucher@amd.com>
-> > Cc: "Christian König" <christian.koenig@amd.com>
-> > Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-> > Cc: David Airlie <airlied@linux.ie>
-> > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > Cc: amd-gfx@lists.freedesktop.org
-> > Cc: dri-devel@lists.freedesktop.org
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >   drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c | 6 ++++++
-> >   1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> > index e4beebb1c80a2..3b9ac1e87231f 100644
-> > --- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> > +++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> > @@ -145,8 +145,11 @@ static int kfd_smi_ev_release(struct inode *inode, struct file *filep)
-> >   	spin_unlock(&dev->smi_lock);
-> >   	synchronize_rcu();
-> > +
-> > +	spin_lock(&client->lock);
-> >   	kfifo_free(&client->fifo);
-> >   	kfree(client);
-> > +	spin_unlock(&client->lock);
-> 
-> The spin_unlock is after the spinlock data structure has been freed.
+[auto build test ERROR on broonie-spi/for-next]
+[also build test ERROR on next-20220316]
+[cannot apply to v5.17-rc8]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Good point.
+url:    https://github.com/0day-ci/linux/commits/Krishna-Yarlagadda/spi-tegra-quad-Add-Tegra-Grace-features/20220317-092247
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220317/202203172241.iGAq0qeH-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/38ff812651f89adc738066112000ec32eb73d106
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Krishna-Yarlagadda/spi-tegra-quad-Add-Tegra-Grace-features/20220317-092247
+        git checkout 38ff812651f89adc738066112000ec32eb73d106
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/spi/
 
-If we go forward with this approach the unlock should perhaps be moved
-to just before the kfree().
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> There
-> should be no concurrent users here, since we are freeing the data structure.
-> If there still are concurrent users at this point, they will crash anyway.
-> So the locking is unnecessary.
+All errors (new ones prefixed by >>):
 
-The users may well crash, as does the kernel unfortunately.
+>> drivers/spi/spi-tegra210-quad.c:1497:49: error: 'th500_qspi_soc_data' undeclared here (not in a function); did you mean 'tegra_qspi_soc_data'?
+    1497 |                 .driver_data = (kernel_ulong_t)&th500_qspi_soc_data,
+         |                                                 ^~~~~~~~~~~~~~~~~~~
+         |                                                 tegra_qspi_soc_data
 
-> >   	return 0;
-> >   }
-> > @@ -247,11 +250,13 @@ int kfd_smi_event_open(struct kfd_dev *dev, uint32_t *fd)
-> >   		return ret;
-> >   	}
-> > +	spin_lock(&client->lock);
-> 
-> The client was just allocated, and it wasn't added to the client list or
-> given to user mode yet. So there can be no concurrent users at this point.
-> The locking is unnecessary.
-> 
-> There could be potential issues if someone uses the file descriptor by dumb
-> luck before this function returns. So maybe we need to move the
-> anon_inode_getfd to the end of the function (just before list_add_rcu) so
-> that we only create the file descriptor after the client structure is fully
-> initialized.
 
-Bingo.  Well done. :)
+vim +1497 drivers/spi/spi-tegra210-quad.c
 
-I can move the function as suggested if that is the best route forward?
+  1483	
+  1484	#ifdef CONFIG_ACPI
+  1485	static const struct acpi_device_id tegra_qspi_acpi_match[] = {
+  1486		{
+  1487			.id = "NVDA1213",
+  1488			.driver_data = (kernel_ulong_t)&tegra210_qspi_soc_data,
+  1489		}, {
+  1490			.id = "NVDA1313",
+  1491			.driver_data = (kernel_ulong_t)&tegra186_qspi_soc_data,
+  1492		}, {
+  1493			.id = "NVDA1413",
+  1494			.driver_data = (kernel_ulong_t)&tegra234_qspi_soc_data,
+  1495		}, {
+  1496			.id = "NVDA1513",
+> 1497			.driver_data = (kernel_ulong_t)&th500_qspi_soc_data,
+  1498		},
+  1499		{}
+  1500	};
+  1501	
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
