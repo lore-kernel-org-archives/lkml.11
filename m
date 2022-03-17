@@ -2,116 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 637FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA22C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237567AbiCQSo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:44:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34190 "EHLO
+        id S237570AbiCQSqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237557AbiCQSoY (ORCPT
+        with ESMTP id S229482AbiCQSqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:44:24 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8519CD5563
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:43:06 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id p17so5172876plo.9
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:43:06 -0700 (PDT)
+        Thu, 17 Mar 2022 14:46:21 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E355AD5559;
+        Thu, 17 Mar 2022 11:45:03 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id s72so610246pgc.5;
+        Thu, 17 Mar 2022 11:45:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fQEW/lPQ6xfHE8z4NalMYFGcFuJD2YWjzJ3BRVmyjX4=;
-        b=LtDtw1Mu1QaThn5L7q9eGcDr/OkqkP4Yz2bLSdJllDcnWEeDAPFBsGkEX4JcRo+vFw
-         xPnTLroTxnNJphORWThfAlhHDDi+CJ2y93lKWGEyIkyCjDNSFc+cp10LeVOV2nHPlQWI
-         xlRT3LQepq3Re0yj766Rn7ODZTJi0wje6Aps8cqrUwqUaPF3RlpjiLKlAPvLvy/mSfHz
-         ZqY0bHuyzw7BRysyG5lnvfO/WSITOZ2arLJ9WlP/KfsD6SRYLQ/Rvo0I/ZbDHLnD0BnW
-         CpU7442ppE198PC7Lez+vyF1aOWeuXa1FmLAG1qBQocaS/VI2spsWsJGOg+RfpEV6/58
-         igHA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8frA8T51BfSTppCN6qAkZ99su7zckg/tQTH5hUyS8LQ=;
+        b=RyIndbofKYuCI2lbzTuwvX6FW6aLSdrSsTOTwX+0PpMG1tVUS6nBiZpd2wOMB7K7ay
+         4TXEw9HIMq4ArLr+GY+kFHSa3rtOKuWQ87s/u9R2D32lRmCq3j6CFhCFxtPjLOd7b/hs
+         DJMpaqjupWPONWXTRQ/l751ZZyaMTn81HGy5UFIHeDiX+ffcb16r2eiSWfF+XjtYoJZf
+         iy49l9+lkoIEIRCzKoPdQj6f3X7G7il+VGeOHiFvt6MQbKpAGVI/tIWH/GoBh+5/obmw
+         wmcY4pCIn1cM15qgfWs4J/FM/wtfVB0ze3e4oDlIlB2hRiPbQyL9YIGv9n6Gl0rtTJWn
+         V+CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fQEW/lPQ6xfHE8z4NalMYFGcFuJD2YWjzJ3BRVmyjX4=;
-        b=WndjNm19xvAeZqnAU5QYAz5Kgru0YV59YkVwliQYDljQrm5HeLAmnkDTcXTNhCmY8f
-         ncDJrgbzW5Z6Md7LFMlUALhvXinGrMkn3TvU4zolouyS5bL3nnscxaHXTrlH3eYxz53L
-         UJFXeV7MES89rkYjma7rSIMZAwPCXSyvWoktTkpzM9ux34lw1OMBi3qL82sp6rJbmmIr
-         CBgh0nJz+UO+FP3rQCg0oAVPmleIAyeZolvXNqXDzMi1eNGoOUvM2rvdTdahO7a9mmF/
-         xXpiuDx+8O8KyYJDFVheVdewKJSHGjJRXVc5ZWxfDay/P22byzOuM0XXpds8P0v5EivI
-         WPnA==
-X-Gm-Message-State: AOAM531CSo7AS8JEnwnNrcW9eiFTEYLEikREly/eXNk0wZ0U8NW7B02L
-        JpF2gw5XzLm5/caCyg0dWsp31cYKjgjlKkEx73LSFwP2yg==
-X-Google-Smtp-Source: ABdhPJyj88oCapvSqhQbCjXfNFcN+y+jnlhdujAJTp+yixW38jgW1DX5+1i7Bzl0OCZ+w5lDgMBX9OBbEIYHZMvMI8o=
-X-Received: by 2002:a17:902:ec89:b0:153:f480:5089 with SMTP id
- x9-20020a170902ec8900b00153f4805089mr3627171plg.166.1647542585558; Thu, 17
- Mar 2022 11:43:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8frA8T51BfSTppCN6qAkZ99su7zckg/tQTH5hUyS8LQ=;
+        b=eSNZt+r0Dy4O+9jJFa/cooGSBvv2Q7WAgJdrqoPGCADfGJL2Om7omHTZB5K/Du2NTq
+         Q9SYbucDJA4pLbOaOccL/vkU9W9fdTjmsaYgsFNwYXPaS1dn1EgXNHF4nXE2RlJ3xZD8
+         Q55JhwYg4FlZr6sRBa7tWxy7dDIOab3874H2g8hFkVOktZs4jQ7RJ84em6RhBPvzKonK
+         qdqXPy2Np3SAec5718Vx9oOZMjHEjV+IMQ7mE0opwhd2MAU0GtssZOeDbr3JWl2J5cFP
+         fi8lXZh2wfKprbfDxFV97q7q5Tdx4FJdb/lDPNYAnPbC1mUfZTcZNC306/C6mMxnHivh
+         qQaQ==
+X-Gm-Message-State: AOAM530s56f28d/VbtJHQTiXWAsvoNn26HyTH1eMd+Jkdr3RfoRncsTU
+        YwZn/Cnv7rnsfpy63NCbu7Q=
+X-Google-Smtp-Source: ABdhPJw2Sgwey2XM0AbmtVD8ylMFuv07FxKNo/PyLtYEDBPs6DlFa+Py7zEbtBRkZ2Tx6uUEyf0HUQ==
+X-Received: by 2002:a63:ab47:0:b0:375:5d05:9f79 with SMTP id k7-20020a63ab47000000b003755d059f79mr4900716pgp.192.1647542703366;
+        Thu, 17 Mar 2022 11:45:03 -0700 (PDT)
+Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
+        by smtp.gmail.com with ESMTPSA id r1-20020a17090a560100b001bf72b5af97sm6285380pjf.13.2022.03.17.11.45.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 11:45:02 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm: Add missing put_task_struct() in debugfs path
+Date:   Thu, 17 Mar 2022 11:45:49 -0700
+Message-Id: <20220317184550.227991-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220316213122.2352992-1-morbo@google.com> <9053a28a-0cc5-a35e-b613-c63689b9f8f7@infradead.org>
-In-Reply-To: <9053a28a-0cc5-a35e-b613-c63689b9f8f7@infradead.org>
-From:   Bill Wendling <morbo@google.com>
-Date:   Thu, 17 Mar 2022 11:42:54 -0700
-Message-ID: <CAGG=3QUmOg8KY9tkD744USFJ5Gd3He_Nzh6rz7=cUApeRvonQA@mail.gmail.com>
-Subject: Re: [PATCH] nfsd: use correct format characters
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-nfs@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:09 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Hi--
->
-> On 3/16/22 14:31, Bill Wendling wrote:
-> > When compiling with -Wformat, clang emits the following warnings:
-> >
-> > fs/nfsd/flexfilelayout.c:120:27: warning: format specifies type 'unsigned
-> > char' but the argument has type 'int' [-Wformat]
-> >                          "%s.%hhu.%hhu", addr, port >> 8, port & 0xff);
-> >                              ~~~~              ^~~~~~~~~
-> >                              %d
-> > fs/nfsd/flexfilelayout.c:120:38: warning: format specifies type 'unsigned
-> > char' but the argument has type 'int' [-Wformat]
-> >                          "%s.%hhu.%hhu", addr, port >> 8, port & 0xff);
-> >                                   ~~~~                    ^~~~~~~~~~~
-> >                                   %d
-> >
-> > The types of these arguments are unconditionally defined, so this patch
-> > updates the format character to the correct ones for ints and unsigned
-> > ints.
-> >
-> > Link: ClangBuiltLinux/linux#378
->
-> Please make the Link: more complete, such as a URL/URI.
->
-Done. I sent out v2 of the patch. Sorry about this oversight!
+From: Rob Clark <robdclark@chromium.org>
 
--bw
+Fixes: 25faf2f2e065 ("drm/msm: Show process names in gem_describe")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/msm_gem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> > Signed-off-by: Bill Wendling <morbo@google.com>
-> > ---
-> >  fs/nfsd/flexfilelayout.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/fs/nfsd/flexfilelayout.c b/fs/nfsd/flexfilelayout.c
-> > index 2e2f1d5e9f62..070f90ed09b6 100644
-> > --- a/fs/nfsd/flexfilelayout.c
-> > +++ b/fs/nfsd/flexfilelayout.c
-> > @@ -117,7 +117,7 @@ nfsd4_ff_proc_getdeviceinfo(struct super_block *sb, struct svc_rqst *rqstp,
-> >
-> >       da->netaddr.addr_len =
-> >               snprintf(da->netaddr.addr, FF_ADDR_LEN + 1,
-> > -                      "%s.%hhu.%hhu", addr, port >> 8, port & 0xff);
-> > +                      "%s.%d.%d", addr, port >> 8, port & 0xff);
-> >
-> >       da->tightly_coupled = false;
-> >
->
-> thanks.
-> --
-> ~Randy
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index 02b9ae65a96a..a4f61972667b 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -926,6 +926,7 @@ void msm_gem_describe(struct drm_gem_object *obj, struct seq_file *m,
+ 					get_pid_task(aspace->pid, PIDTYPE_PID);
+ 				if (task) {
+ 					comm = kstrdup(task->comm, GFP_KERNEL);
++					put_task_struct(task);
+ 				} else {
+ 					comm = NULL;
+ 				}
+-- 
+2.35.1
+
