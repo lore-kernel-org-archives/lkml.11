@@ -2,270 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C5BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233964AbiCQMvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37924 "EHLO
+        id S233974AbiCQMvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233945AbiCQMu5 (ORCPT
+        with ESMTP id S234007AbiCQMu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:50:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1321F1611;
-        Thu, 17 Mar 2022 05:48:57 -0700 (PDT)
+        Thu, 17 Mar 2022 08:50:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8C9125CB1;
+        Thu, 17 Mar 2022 05:48:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FC00B81DA1;
-        Thu, 17 Mar 2022 12:48:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7871EC340E9;
-        Thu, 17 Mar 2022 12:48:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84E5E60FFD;
+        Thu, 17 Mar 2022 12:48:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59A84C340E9;
+        Thu, 17 Mar 2022 12:48:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521335;
-        bh=ENui3h6TyIzSkBPbvuHfeNkachpM9GN40V9L8rZjtYc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hLlW6pH7fhGef4A56pzrTVpM5AQrdwD4ojhmeImVlGRjU1Nc3Bxh4gKz99CdIs4Ts
-         7AkisXuweBlmj2vPTx0EktvvvI4bC7G9ENEQNqNAg8rnYLOQ/GudcBCHkW8n886vuN
-         PVxrc5nEhswSfoXnpjeVkbg3D6JCdXK2wV/GvbBk=
+        s=korg; t=1647521332;
+        bh=+cxokiSWDNGkgJV69K4i42i95icDVJzTYZ/a7mWDWBw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Zxwrng6bFjWV8m3/5U2d2iLj79iJ5MMCjXN1TSHo2V0X4qrWb/9+8hOo+O8GpRKZw
+         RM0sJPMCtgruQzP2dPw7oOqH/UOyUGoDu/yhC0SLxrgeol2IHZZlHkFAtObAz+Z1zJ
+         RCyNCTTvbBDY39WcGdAvyOGmHQkVWTXTdssUpIEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.4 00/43] 5.4.186-rc1 review
-Date:   Thu, 17 Mar 2022 13:45:11 +0100
-Message-Id: <20220317124527.672236844@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 09/43] arm64: entry: Free up another register on kptis tramp_exit path
+Date:   Thu, 17 Mar 2022 13:45:20 +0100
+Message-Id: <20220317124527.935634376@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220317124527.672236844@linuxfoundation.org>
+References: <20220317124527.672236844@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.186-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.4.186-rc1
-X-KernelTest-Deadline: 2022-03-19T12:45+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.4.186 release.
-There are 43 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: James Morse <james.morse@arm.com>
 
-Responses should be made by Sat, 19 Mar 2022 12:45:16 +0000.
-Anything received after that time might be too late.
+commit 03aff3a77a58b5b52a77e00537a42090ad57b80b upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.186-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-and the diffstat can be found below.
+Kpti stashes x30 in far_el1 while it uses x30 for all its work.
 
-thanks,
+Making the vectors a per-cpu data structure will require a second
+register.
 
-greg k-h
+Allow tramp_exit two registers before it unmaps the kernel, by
+leaving x30 on the stack, and stashing x29 in far_el1.
 
--------------
-Pseudo-Shortlog of commits:
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: James Morse <james.morse@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/kernel/entry.S | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.4.186-rc1
+diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
+index a6dcd68ce7de..7e52b6991bf1 100644
+--- a/arch/arm64/kernel/entry.S
++++ b/arch/arm64/kernel/entry.S
+@@ -367,14 +367,16 @@ alternative_else_nop_endif
+ 	ldp	x24, x25, [sp, #16 * 12]
+ 	ldp	x26, x27, [sp, #16 * 13]
+ 	ldp	x28, x29, [sp, #16 * 14]
+-	ldr	lr, [sp, #S_LR]
+-	add	sp, sp, #S_FRAME_SIZE		// restore sp
+ 
+ 	.if	\el == 0
+-alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
++alternative_if_not ARM64_UNMAP_KERNEL_AT_EL0
++	ldr	lr, [sp, #S_LR]
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
++	eret
++alternative_else_nop_endif
+ #ifdef CONFIG_UNMAP_KERNEL_AT_EL0
+ 	bne	5f
+-	msr	far_el1, x30
++	msr	far_el1, x29
+ 	tramp_alias	x30, tramp_exit_native
+ 	br	x30
+ 5:
+@@ -382,6 +384,8 @@ alternative_insn eret, nop, ARM64_UNMAP_KERNEL_AT_EL0
+ 	br	x30
+ #endif
+ 	.else
++	ldr	lr, [sp, #S_LR]
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
+ 	eret
+ 	.endif
+ 	sb
+@@ -1092,10 +1096,12 @@ alternative_else_nop_endif
+ 	.macro tramp_exit, regsize = 64
+ 	adr	x30, tramp_vectors
+ 	msr	vbar_el1, x30
+-	tramp_unmap_kernel	x30
++	ldr	lr, [sp, #S_LR]
++	tramp_unmap_kernel	x29
+ 	.if	\regsize == 64
+-	mrs	x30, far_el1
++	mrs	x29, far_el1
+ 	.endif
++	add	sp, sp, #S_FRAME_SIZE		// restore sp
+ 	eret
+ 	sb
+ 	.endm
+-- 
+2.34.1
 
-Chengming Zhou <zhouchengming@bytedance.com>
-    kselftest/vm: fix tests build with old libc
-
-Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-    bnx2: Fix an error message
-
-Niels Dossche <dossche.niels@gmail.com>
-    sfc: extend the locking on mcdi->seqno
-
-Eric Dumazet <edumazet@google.com>
-    tcp: make tcp_read_sock() more robust
-
-Sreeramya Soratkal <quic_ssramya@quicinc.com>
-    nl80211: Update bss channel on channel switch for P2P_CLIENT
-
-Manasi Navare <manasi.d.navare@intel.com>
-    drm/vrr: Set VRR capable prop only if it is attached to connector
-
-Golan Ben Ami <golan.ben.ami@intel.com>
-    iwlwifi: don't advertise TWT support
-
-Jia-Ju Bai <baijiaju1990@gmail.com>
-    atm: firestream: check the return value of ioremap() in fs_init()
-
-Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-    can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-
-Julian Braha <julianbraha@gmail.com>
-    ARM: 9178/1: fix unmet dependency on BITREVERSE for HAVE_ARCH_BITREVERSE
-
-Alexander Lobakin <alobakin@pm.me>
-    MIPS: smp: fill in sibling and core maps earlier
-
-Johannes Berg <johannes.berg@intel.com>
-    mac80211: refuse aggregations sessions before authorized
-
-Corentin Labbe <clabbe@baylibre.com>
-    ARM: dts: rockchip: fix a typo on rk3288 crypto-controller
-
-Sascha Hauer <s.hauer@pengutronix.de>
-    ARM: dts: rockchip: reorder rk322x hmdi clocks
-
-Dinh Nguyen <dinguyen@kernel.org>
-    arm64: dts: agilex: use the compatible "intel,socfpga-agilex-hsotg"
-
-Sascha Hauer <s.hauer@pengutronix.de>
-    arm64: dts: rockchip: reorder rk3399 hdmi clocks
-
-Jakob Unterwurzacher <jakob.unterwurzacher@theobroma-systems.com>
-    arm64: dts: rockchip: fix rk3399-puma eMMC HS400 signal integrity
-
-Yan Yan <evitayan@google.com>
-    xfrm: Fix xfrm migrate issues when address family changes
-
-Yan Yan <evitayan@google.com>
-    xfrm: Check if_id in xfrm_migrate
-
-James Morse <james.morse@arm.com>
-    arm64: Use the clearbhb instruction in mitigations
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Allow SMCCC_ARCH_WORKAROUND_3 to be discovered and migrated
-
-James Morse <james.morse@arm.com>
-    arm64: Mitigate spectre style branch history side channels
-
-James Morse <james.morse@arm.com>
-    KVM: arm64: Add templates for BHB mitigation sequences
-
-James Morse <james.morse@arm.com>
-    arm64: proton-pack: Report Spectre-BHB vulnerabilities as part of Spectre-v2
-
-James Morse <james.morse@arm.com>
-    arm64: Add percpu vectors for EL1
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add macro for reading symbol addresses from the trampoline
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add vectors that have the bhb mitigation sequences
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Add non-kpti __bp_harden_el1_vectors for mitigations
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Allow the trampoline text to occupy multiple pages
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Make the kpti trampoline's kpti sequence optional
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Move trampoline macros out of ifdef'd section
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Don't assume tramp_vectors is the start of the vectors
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Allow tramp_alias to access symbols after the 4K boundary
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Move the trampoline data page before the text page
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Free up another register on kpti's tramp_exit path
-
-James Morse <james.morse@arm.com>
-    arm64: entry: Make the trampoline cleanup optional
-
-James Morse <james.morse@arm.com>
-    arm64: entry.S: Add ventry overflow sanity checks
-
-Anshuman Khandual <anshuman.khandual@arm.com>
-    arm64: Add Cortex-X2 CPU part definition
-
-Joey Gouly <joey.gouly@arm.com>
-    arm64: add ID_AA64ISAR2_EL1 sys register
-
-Suzuki K Poulose <suzuki.poulose@arm.com>
-    arm64: Add Neoverse-N2, Cortex-A710 CPU part definition
-
-Rob Herring <robh@kernel.org>
-    arm64: Add part number for Arm Cortex-A77
-
-Xin Long <lucien.xin@gmail.com>
-    sctp: fix the processing for INIT chunk
-
-Kai Lueke <kailueke@linux.microsoft.com>
-    Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |   4 +-
- arch/arm/boot/dts/rk322x.dtsi                      |   4 +-
- arch/arm/boot/dts/rk3288.dtsi                      |   2 +-
- arch/arm/include/asm/kvm_host.h                    |   7 +
- arch/arm/include/uapi/asm/kvm.h                    |   6 +
- arch/arm64/Kconfig                                 |   9 +
- arch/arm64/boot/dts/intel/socfpga_agilex.dtsi      |   4 +-
- arch/arm64/boot/dts/rockchip/rk3399-puma.dtsi      |   6 +
- arch/arm64/boot/dts/rockchip/rk3399.dtsi           |   6 +-
- arch/arm64/include/asm/assembler.h                 |  33 ++
- arch/arm64/include/asm/cpu.h                       |   1 +
- arch/arm64/include/asm/cpucaps.h                   |   3 +-
- arch/arm64/include/asm/cpufeature.h                |  40 +++
- arch/arm64/include/asm/cputype.h                   |  16 +
- arch/arm64/include/asm/fixmap.h                    |   6 +-
- arch/arm64/include/asm/kvm_host.h                  |   5 +
- arch/arm64/include/asm/kvm_mmu.h                   |   6 +-
- arch/arm64/include/asm/mmu.h                       |   8 +-
- arch/arm64/include/asm/sections.h                  |   5 +
- arch/arm64/include/asm/sysreg.h                    |  17 +
- arch/arm64/include/asm/vectors.h                   |  73 ++++
- arch/arm64/include/uapi/asm/kvm.h                  |   5 +
- arch/arm64/kernel/cpu_errata.c                     | 385 ++++++++++++++++++++-
- arch/arm64/kernel/cpufeature.c                     |  21 ++
- arch/arm64/kernel/cpuinfo.c                        |   1 +
- arch/arm64/kernel/entry.S                          | 213 +++++++++---
- arch/arm64/kernel/vmlinux.lds.S                    |   2 +-
- arch/arm64/kvm/hyp/hyp-entry.S                     |  64 ++++
- arch/arm64/kvm/hyp/switch.c                        |   8 +-
- arch/arm64/kvm/sys_regs.c                          |   2 +-
- arch/arm64/mm/mmu.c                                |  12 +-
- arch/mips/kernel/smp.c                             |   6 +-
- drivers/atm/firestream.c                           |   2 +
- drivers/gpu/drm/drm_connector.c                    |   3 +
- drivers/net/can/rcar/rcar_canfd.c                  |   6 +-
- drivers/net/ethernet/broadcom/bnx2.c               |   2 +-
- drivers/net/ethernet/sfc/mcdi.c                    |   2 +-
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |   3 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |   1 -
- include/linux/arm-smccc.h                          |   5 +
- include/net/xfrm.h                                 |   5 +-
- lib/Kconfig                                        |   1 -
- net/ipv4/tcp.c                                     |  10 +-
- net/key/af_key.c                                   |   2 +-
- net/mac80211/agg-tx.c                              |  10 +-
- net/sctp/sm_statefuns.c                            |  71 ++--
- net/wireless/nl80211.c                             |   3 +-
- net/xfrm/xfrm_policy.c                             |  14 +-
- net/xfrm/xfrm_state.c                              |  15 +-
- net/xfrm/xfrm_user.c                               |  27 +-
- tools/testing/selftests/vm/userfaultfd.c           |   1 +
- virt/kvm/arm/psci.c                                |  34 +-
- 52 files changed, 1037 insertions(+), 160 deletions(-)
 
 
