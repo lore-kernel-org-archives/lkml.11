@@ -2,255 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7137FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 22:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiCQWXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 18:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        id S229723AbiCQWYT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 18:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiCQWXv (ORCPT
+        with ESMTP id S229469AbiCQWYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 18:23:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDAA18DA98;
-        Thu, 17 Mar 2022 15:22:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2F4961AA3;
-        Thu, 17 Mar 2022 22:22:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 369BAC340E9;
-        Thu, 17 Mar 2022 22:22:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647555752;
-        bh=vHu8SzogjrGxcMqYwhkATlm7fi2ZvOY6UNpi69O19Go=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iGGxn2/ke6/oe02dZNeOIX5glmEZym9c/YHNq+QwF1ZaRLxMihJiiwvN2S6KpoPOu
-         /XRelefRqe4UXwJ4kIk1bPu4gMQJ0Je5975JZzo5mYcOxzazS3lVZsEV6vI8fqOFZo
-         exB8kCkJBRkL09u877eDDiNPHV/g4CBDhWPAyYFcQGfjZGpWLjKPG2ldmj88wQdZlG
-         4RVOGMQHGAuGQvhXy/gbXTJY8C3rGSUfKd+c5bV0GVByfXSA4oejcm5fdrZbQPukKP
-         S5O9nOaCK7CeNLBNKG4dAuk6cI3dnyJng3TbcvzttR2uZ/QaM+tQYOUgbqT+gHdMe3
-         mnL9cwzw4OLvQ==
-Date:   Fri, 18 Mar 2022 00:23:29 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Haitao Huang <haitao.huang@linux.intel.com>
-Cc:     Reinette Chatre <reinette.chatre@intel.com>,
-        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        nathaniel@profian.com
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-Message-ID: <YjO04SS7HClPqQAT@iki.fi>
-References: <97565fed-dc67-bab1-28d4-c40201c9f055@intel.com>
- <Yi6tPLLt9Q+ailQ3@iki.fi>
- <Yi6tinbF+Y7a66eQ@iki.fi>
- <Yi6va4dCaljiQ1WQ@iki.fi>
- <op.1i01q9s0wjvjmi@hhuan26-mobl1.mshome.net>
- <YjLcr9TwLNWUtwkS@iki.fi>
- <YjLfIMz4/Vx8Jm24@iki.fi>
- <op.1i6iegamwjvjmi@hhuan26-mobl1.mshome.net>
- <YjOtLp4f4nu18Fzx@iki.fi>
- <YjOvcbdM+YmYw37c@iki.fi>
+        Thu, 17 Mar 2022 18:24:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E43F3252
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:23:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647555779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sv3UUAVB2KPZ5L0mxg1wFQw0ov6G6R3jsnNctmpYwvw=;
+        b=U+9b2E5Hz2Uvl2zqJc+TZl2EzQIrOszHXDCUIXj55B9j3qQIl6J1RKOUOShjQfSFYOV7jK
+        MDT6Lxl6j/iCgcP06uoTSNzmTpOsygMg7B1RdMse9OlVzGg3GwLBR7+L+/MUaaMx1p8srm
+        YcKQ++C17dfMnuCa1WfS5b7KQcGU7Vs=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-461-bLuSU7yUO3iQoBArJLjhsg-1; Thu, 17 Mar 2022 18:22:58 -0400
+X-MC-Unique: bLuSU7yUO3iQoBArJLjhsg-1
+Received: by mail-qt1-f198.google.com with SMTP id t19-20020ac86a13000000b002e1fd2c4ce5so1381404qtr.5
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 15:22:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Sv3UUAVB2KPZ5L0mxg1wFQw0ov6G6R3jsnNctmpYwvw=;
+        b=2XWL2vfHvjzhJs1NAzJ/ixajZ/bHgErsOSo6euotH4weY5ajmIFwJHC07X0PD1UsKr
+         oH/tNGkZqAfd0wKT0Jd9AvfgVpzbemRAONnbgz/Y/MZrBf6mTI4+jWWpnmgS+x9dggk3
+         TjVoGcPj7Ga+yLqbIRbVYkfv28Aoe7TMW3RRsWDRGMVqAlhlrV88VX29/JIvqDXV5XkR
+         JSdd9bhaxwZMAsYz9RnyH1n9k9sRa0N6R6B1AvjppYiTUL9iwvH2yYOTFSnUSaXoFV8j
+         D5N75Teu82T91xBMrDAoO4mwVxJka/FdeU6i6Q/76Vop8BLNmhXJwcfqJY9syTMAmEtD
+         BQwA==
+X-Gm-Message-State: AOAM532zZT92xPkIKns4TA9mzsayvBbkDfUkURdV63Z6XpXgYt/H7Cj2
+        t0u9htxww4ERdVw7+prGv5JL4+OQD7FOJL/hOD93JzXN2Utac6YwSbDTzRQerH/tOi8QX3SJ0ig
+        qJKNDlKCGzq8KYloLClEYBgCP
+X-Received: by 2002:a05:620a:2481:b0:67b:39ef:b3eb with SMTP id i1-20020a05620a248100b0067b39efb3ebmr4245601qkn.188.1647555778245;
+        Thu, 17 Mar 2022 15:22:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzB5EHpzybgcaF3fhLBPNrQL4vv70Dh880xKSomJoQSZ34rgt+KARoQMjBGMUhTqVX0eNgzUA==
+X-Received: by 2002:a05:620a:2481:b0:67b:39ef:b3eb with SMTP id i1-20020a05620a248100b0067b39efb3ebmr4245596qkn.188.1647555778037;
+        Thu, 17 Mar 2022 15:22:58 -0700 (PDT)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id h2-20020ac85842000000b002e1ec550506sm3755079qth.87.2022.03.17.15.22.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 15:22:57 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 15:22:54 -0700
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-tip-commits@vger.kernel.org" 
+        <linux-tip-commits@vger.kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "x86@kernel.org" <x86@kernel.org>
+Subject: Re: [tip: x86/core] objtool: Find unused ENDBR instructions
+Message-ID: <20220317222254.lm2f2337jejcf3uu@treble>
+References: <20220308154319.763643193@infradead.org>
+ <164734101940.16921.11639161864874862247.tip-bot2@tip-bot2>
+ <a5fa50d9f00542de8a6ad7a3fe0c49b3@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YjOvcbdM+YmYw37c@iki.fi>
+In-Reply-To: <a5fa50d9f00542de8a6ad7a3fe0c49b3@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 12:00:17AM +0200, Jarkko Sakkinen wrote:
-> On Thu, Mar 17, 2022 at 11:50:41PM +0200, Jarkko Sakkinen wrote:
-> > On Thu, Mar 17, 2022 at 09:28:45AM -0500, Haitao Huang wrote:
-> > > Hi
-> > > 
-> > > On Thu, 17 Mar 2022 02:11:28 -0500, Jarkko Sakkinen <jarkko@kernel.org>
-> > > wrote:
-> > > 
-> > > > On Thu, Mar 17, 2022 at 09:01:07AM +0200, Jarkko Sakkinen wrote:
-> > > > > On Mon, Mar 14, 2022 at 10:39:36AM -0500, Haitao Huang wrote:
-> > > > > > Hi Jarkko
-> > > > > >
-> > > > > > On Sun, 13 Mar 2022 21:58:51 -0500, Jarkko Sakkinen
-> > > > > <jarkko@kernel.org>
-> > > > > > wrote:
-> > > > > >
-> > > > > > > On Mon, Mar 14, 2022 at 04:50:56AM +0200, Jarkko Sakkinen wrote:
-> > > > > > > > On Mon, Mar 14, 2022 at 04:49:37AM +0200, Jarkko Sakkinen wrote:
-> > > > > > > > > On Fri, Mar 11, 2022 at 09:53:29AM -0800, Reinette Chatre wrote:
-> > > > > > > > >
-> > > > > > > > > > I saw Haitao's note that EMODPE requires "Read access
-> > > > > permitted
-> > > > > > > > by enclave".
-> > > > > > > > > > This motivates that EMODPR->PROT_NONE should not be allowed
-> > > > > > > > since it would
-> > > > > > > > > > not be possible to relax permissions (run EMODPE) after that.
-> > > > > > > > Even so, I
-> > > > > > > > > > also found in the SDM that EACCEPT has the note "Read access
-> > > > > > > > permitted
-> > > > > > > > > > by enclave". That seems to indicate that EMODPR->PROT_NONE is
-> > > > > > > > not practical
-> > > > > > > > > > from that perspective either since the enclave will not be
-> > > > > able to
-> > > > > > > > > > EACCEPT the change. Does that match your understanding?
-> > > > > > > > >
-> > > > > > > > > Yes, PROT_NONE should not be allowed.
-> > > > > > > > >
-> > > > > > > > > This is however the real problem.
-> > > > > > > > >
-> > > > > > > > > The current kernel patch set has inconsistent API and EMODPR
-> > > > > ioctl is
-> > > > > > > > > simply unacceptable. It  also requires more concurrency
-> > > > > management
-> > > > > > > > from
-> > > > > > > > > user space run-time, which would be heck a lot easier to do
-> > > > > in the
-> > > > > > > > kernel.
-> > > > > > > > >
-> > > > > > > > > If you really want EMODPR as ioctl, then for consistencys sake,
-> > > > > > > > then EAUG
-> > > > > > > > > should be too. Like this when things go opposite directions,
-> > > > > this
-> > > > > > > > patch set
-> > > > > > > > > plain and simply will not work out.
-> > > > > > > > >
-> > > > > > > > > I would pick EAUG's strategy from these two as it requires half
-> > > > > > > > the back
-> > > > > > > > > calls to host from an enclave. I.e. please combine
-> > > > > mprotect() and
-> > > > > > > > EMODPR,
-> > > > > > > > > either in the #PF handler or as part of mprotect(), which ever
-> > > > > > > > suits you
-> > > > > > > > > best.
-> > > > > > > > >
-> > > > > > > > > I'll try demonstrate this with two examples.
-> > > > > > > > >
-> > > > > > > > > mmap() could go something like this() (simplified):
-> > > > > > > > > 1. Execution #UD's to SYSCALL.
-> > > > > > > > > 2. Host calls enclave's mmap() handler with mmap() parameters.
-> > > > > > > > > 3. Enclave up-calls host's mmap().
-> > > > > > > > > 4. Loops the range with EACCEPTCOPY.
-> > > > > > > > >
-> > > > > > > > > mprotect() has to be done like this:
-> > > > > > > > > 1. Execution #UD's to SYSCALL.
-> > > > > > > > > 2. Host calls enclave's mprotect() handler.
-> > > > > > > > > 3. Enclave up-calls host's mprotect().
-> > > > > > > > > 4. Enclave up-calls host's ioctl() to
-> > > > > SGX_IOC_ENCLAVE_PERMISSIONS.
-> > > > > >
-> > > > > > I assume up-calls here are ocalls as we call them in our
-> > > > > implementation,
-> > > > > > which are the calls enclave make to untrusted side via EEXIT.
-> > > > > >ar
-> > > > > > If so, can your implementation combine this two up-calls into one,
-> > > > > then host
-> > > > > > side just do ioctl() and mprotect to kernel? If so, would that
-> > > > > address your
-> > > > > > concern about extra up-calls?
-> > > > > >
-> > > > > >
-> > > > > > > > > 3. Loops the range with EACCEPT.
-> > > > > > > >   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > > > > > >   5. Loops the range with EACCEPT + EMODPE.
-> > > > > > > >
-> > > > > > > > > This is just terrible IMHO. I hope these examples bring some
-> > > > > insight.
-> > > > > > >
-> > > > > > > E.g. in Enarx we have to add a special up-call (so called
-> > > > > enarxcall in
-> > > > > > > intermediate that we call sallyport, which provides shared buffer to
-> > > > > > > communicate with the enclave) just for reseting the range with
-> > > > > PROT_READ.
-> > > > > > > Feel very redundant, adds ugly cruft and is completely opposite
-> > > > > strategy
-> > > > > > > to
-> > > > > > > what you've chosen to do with EAUG, which is I think correct
-> > > > > choice as
-> > > > > > > far
-> > > > > > > as API is concerned.
-> > > > > >
-> > > > > > The problem with EMODPR on #PF is that kernel needs to know what
-> > > > > permissions
-> > > > > > requested from enclave at the time of #PF. So enclave has to make
-> > > > > at least
-> > > > > > one call to kernel (again via ocall in our case, I assume up-call
-> > > > > in your
-> > > > > > case) to make the change.
-> > > > > 
-> > > > > The #PF handler should do unconditionally EMODPR with PROT_READ.
-> > > > 
-> > > > Or mprotect(), as long as secinfo contains PROT_READ. I don't care about
-> > > > this detail hugely anymore because it does not affect uapi.
-> > > > 
-> > > > Using EMODPR as a permission control mechanism is a ridiculous idea, and
-> > > > I cannot commit to maintain a broken uapi.
-> > > > 
-> > > 
-> > > Jarkko, how would automatically forcing PROT_READ on #PF work for this
-> > > sequence?
-> > > 
-> > > 1) EAUG a page (has to be RW)
-> > > 2) EACCEPT(RW)
-> > > 3) enclave copies some data to page
-> > > 4) enclave wants to change permission to R
-> > > 
-> > > If you are proposing mprotect, then as I indicated earlier, please address
-> > > concerns raised by Reinette:
-> > > https://lore.kernel.org/linux-sgx/e1c04077-0165-c5ec-53be-7fd732965e80@intel.com/
+On Tue, Mar 15, 2022 at 03:39:52PM +0000, David Laight wrote:
+> From: Peter Zijlstra
 > > 
-> > For EAUG you can choose between #PF handler and having it as part of
-> > mmap() with the same uapi.
+> > objtool: Find unused ENDBR instructions
 > > 
-> > For EMODPR clearly #PF handler would be tricky but nothing prevents
-> > resetting the permissions as part of mprotect() flow, which is trivial.
-> > 
-> > One good reason to have a fixed EMODPR is that e.g. emulating properly
-> > mprotect() is almost undoable if you don't do it otherwise. Specifically
+> > Find all ENDBR instructions which are never referenced and stick them
+> > in a section such that the kernel can poison them, sealing the
+> > functions from ever being an indirect call target.
 > 
-> s/don't//g
-> 
-> > the scenario where your address range spans through multiple adjacent
-> > VMAs. It's even without EMODPR complex enough scenario that you really
-> > don't want to ask yourself for more trouble than use EMODPR in a super
-> > conservative manner.
-> > 
-> > Having EMODPR fully exposed will only make more difficult API to do with
-> > extra round-trips. If you want to use ring-0 instructions fully exposed,
-> > please don't use a kernel. There's a bunch of hardware features in Intel
-> > CPUs for which Linux does not provide 1:1 all wide open interfaces.
+> Thought, what happens if the only indirect call is from
+> code in a module?
 
-I've now run a tweaked SGX2 v2 patch set [*] over 1,5 weeks and I'm really
-really confident about the stability. My laptop has not crashed a single
-time. For EAUG portion I'm probably rather sooner than later ready to give
-reviewed-by's because the API works just great.
+Then <boom>, I guess.  Is it safe to assume in-tree modules don't need
+to do indirect calls to exported functions?  I guess we'll find out :-)
 
-Just want to put a note that it is not the internals that I'm too concerned
-off. For v3 I'd suggest that it is sent as you see fit and not to get stuck
-to EMODPR.
+-- 
+Josh
 
-What I'll do, once I get it, is that I'll construct a small well-defined
-patch or perhaps patch set, which shows how I would change the EMODPR part.
-
-[*] I run it my 2020 XPS13 laptop, which is SGX2 capable, and created this
-    CI thing that produces periodically automated kernel package builds of
-    it for the Arch Linux: https://github.com/jarkkojs/aur-linux-sgx/actions.
-    It's distro kernel with the same config, Reinette's patches on top, and
-    my tweaks on top of them. When v3 comes out, I'll update the kernel
-    version and replaces the v2+ patches with them.
-
-BR, Jarkko
