@@ -2,143 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1A5C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbiCQPO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57330 "EHLO
+        id S235673AbiCQPO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiCQPO1 (ORCPT
+        with ESMTP id S235664AbiCQPOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:14:27 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1431A1EC6D
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:13:11 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id r7so3296133wmq.2
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:13:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=nQqbWtH5pfKnl7ntBQnMna6KGgKeLVbC9temYzdbrVk=;
-        b=jmPQuC0gcd7cVIo3rSP/TX3nT+TeQj+v9JPsb3+HNkEXYNGVZawetow5Z2hnZIlwz1
-         enueRIfh+3xPAy+wyBjmg6HTmAnGRTS3UNFVvjEzNOFZlbbcZIWJYIMWNfrAAiV18x1u
-         B04ZhhSUezK2Y6L6opNRDOzvXt3b8Zrp+G/nVdxhrldjtCvUcdT43gXRxBKtJSR6Fe2i
-         0GcLQmp/1a55cGSKTLClpOwxBvyHtdXqe31s0Zpm0GmUCGQejjSJnsXl49RplKJN086R
-         l0NlPTW8n9kOxKEUG5tBfu09d3hlUdyDsWjb/QEQPNEZVY+TBbECzQplDjsvwgPZ2Zam
-         APNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=nQqbWtH5pfKnl7ntBQnMna6KGgKeLVbC9temYzdbrVk=;
-        b=ZcS2raHSSPCir01HdrxC2mP5V9hsWCJTUUVogoW4X2qufcgDgy4wRiAzLdUGqABNmc
-         7lgjXu0UUKB2laD1tXCSkBYEnvd94oZdheZ/9DddTA6WCO6eDyo+jZPUYa8gKQST91nj
-         KLzDO+HZSyZ4EtB6qcnLFB/rBsYzTfA0+5p2jPo6wniC9rvwUffQCbCjy9MVVnP1/QpV
-         cm/VVTh3Apl98WTwITfMhz/322EIh5aUcqQtnQXD5OQsLADHewPxocBT7GaKwjU0VDbC
-         JjmzzUuIC7F1mqdGSa4e8agMxpCDZwCFtX5V9raOoUwvP77ZFbel5XgcLTfNwrgzTrWL
-         1Fbw==
-X-Gm-Message-State: AOAM530hwD1W1l7Brppo/94mwpU94Al9A3XKpd0ydGlvAIvouTsT1Nyu
-        1jiFRyz0Tl9/2VlwHGImtwjyXA==
-X-Google-Smtp-Source: ABdhPJzqUVa6RciYrP1Fyl38aF2HC6O1bKNmreDFYFmrsonBxUtm8n/rju3WMT43L8SJZFzSztNf3Q==
-X-Received: by 2002:a05:600c:27d0:b0:38c:6c01:9668 with SMTP id l16-20020a05600c27d000b0038c6c019668mr8492847wmb.59.1647529989621;
-        Thu, 17 Mar 2022 08:13:09 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id f7-20020a0560001a8700b00203c23e55e0sm4405777wry.78.2022.03.17.08.13.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 08:13:09 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 15:13:07 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Felix Kuehling <felix.kuehling@amd.com>
-Cc:     David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Subject: Re: [PATCH 1/1] drm/amdkfd: Protect the Client whilst it is being
- operated on
-Message-ID: <YjNQA80wkWpy+AmA@google.com>
-References: <20220317131610.554347-1-lee.jones@linaro.org>
- <8702f8a5-62a1-c07e-c7b7-e9378be069b6@amd.com>
- <YjNNCXc8harOvwqe@google.com>
- <1f003356-3cf9-7237-501e-950d0aa124d1@amd.com>
+        Thu, 17 Mar 2022 11:14:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090ED9A9B4;
+        Thu, 17 Mar 2022 08:13:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 89B56CE0622;
+        Thu, 17 Mar 2022 15:13:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B95AFC340E9;
+        Thu, 17 Mar 2022 15:13:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647530012;
+        bh=3Gzmo6yhg4CSO7pzc6bkyN6wEITFveIES9j5diOg5bY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y77D8UJroGPR3MjsxfvZyWLjdarxKWkr6hBcdmrX3n7XEHdnLK4AXrTJfPjopX6fx
+         Dm9Bn9pB+kfdUPw0NKU4fhuBnlbQUHf2oWQWTyq9+XVh84bekYdX3iaG2ZEXHe+B0h
+         PezUT/f77rz1bzwnxdhJRKouS712WpSY/9sI3kg5Y9ZDny+ME0Z49c3LszPXZRvq2W
+         n7wHBiLY3C1fygf0bS4mxepJmW8ab4djKpusbUX9tLYskYJoLKdK9pDJIdsIb4Qi3r
+         CwFi1xxmJo8r6wfJ0OZBIro0BoVN2jR/aRdPQ3mQiMQK+ZgqypiVR2HTi++39lHkDA
+         jHxS8JX7sMG7w==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nUrog-00FDYW-E2; Thu, 17 Mar 2022 15:13:30 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Date:   Thu, 17 Mar 2022 15:13:30 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Pierre Gondois <Pierre.Gondois@arm.com>
+Cc:     linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com,
+        Lukasz.Luba@arm.com, Morten.Rasmussen@arm.com,
+        Dietmar.Eggemann@arm.com, mka@chromium.org,
+        daniel.lezcano@linaro.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Fuad Tabba <tabba@google.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v1 2/3] cpufreq: CPPC: Add per_cpu efficiency_class
+In-Reply-To: <20220317133419.3901736-3-Pierre.Gondois@arm.com>
+References: <20220317133419.3901736-1-Pierre.Gondois@arm.com>
+ <20220317133419.3901736-3-Pierre.Gondois@arm.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <f4356101d8c8d209054566261b300a91@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <1f003356-3cf9-7237-501e-950d0aa124d1@amd.com>
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: Pierre.Gondois@arm.com, linux-kernel@vger.kernel.org, Ionela.Voinescu@arm.com, Lukasz.Luba@arm.com, Morten.Rasmussen@arm.com, Dietmar.Eggemann@arm.com, mka@chromium.org, daniel.lezcano@linaro.org, catalin.marinas@arm.com, will@kernel.org, rafael@kernel.org, viresh.kumar@linaro.org, mark.rutland@arm.com, ardb@kernel.org, tabba@google.com, valentin.schneider@arm.com, robh@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Mar 2022, Felix Kuehling wrote:
+On 2022-03-17 13:34, Pierre Gondois wrote:
+> In ACPI, describing power efficiency of CPUs can be done through the
+> following arm specific field:
+> ACPI 6.4, s5.2.12.14 'GIC CPU Interface (GICC) Structure',
+> 'Processor Power Efficiency Class field':
+>   Describes the relative power efficiency of the associated pro-
+>   cessor. Lower efficiency class numbers are more efficient than
+>   higher ones (e.g. efficiency class 0 should be treated as more
+>   efficient than efficiency class 1). However, absolute values
+>   of this number have no meaning: 2 isn’t necessarily half as
+>   efficient as 1.
+> 
+> The efficiency_class field is stored in the GicC structure of the
+> ACPI MADT table and it's currently supported in Linux for arm64 only.
+> Thus, this new functionality is introduced for arm64 only.
+> 
+> To allow the cppc_cpufreq driver to know and preprocess the
+> efficiency_class values of all the CPUs, add a per_cpu efficiency_class
+> variable to store them. Also add a static efficiency_class_populated
+> to let the driver know efficiency_class values are usable and register
+> an artificial Energy Model (EM) based on normalized class values.
+> 
+> At least 2 different efficiency classes must be present,
+> otherwise there is no use in creating an Energy Model.
+> 
+> The efficiency_class values are squeezed in [0:#efficiency_class-1]
+> while conserving the order. For instance, efficiency classes of:
+>   [111, 212, 250]
+> will be mapped to:
+>   [0 (was 111), 1 (was 212), 2 (was 250)].
+> 
+> Each policy being independently registered in the driver, populating
+> the per_cpu efficiency_class is done only once at the driver
+> initialization. This prevents from having each policy re-searching the
+> efficiency_class values of other CPUs.
+> 
+> The patch also exports acpi_cpu_get_madt_gicc() to fetch the GicC
+> structure of the ACPI MADT table for each CPU.
+> 
+> Signed-off-by: Pierre Gondois <Pierre.Gondois@arm.com>
+> ---
+>  arch/arm64/kernel/smp.c        |  1 +
+>  drivers/cpufreq/cppc_cpufreq.c | 55 ++++++++++++++++++++++++++++++++++
+>  2 files changed, 56 insertions(+)
+> 
+> diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+> index 27df5c1e6baa..56637cbea5d6 100644
+> --- a/arch/arm64/kernel/smp.c
+> +++ b/arch/arm64/kernel/smp.c
+> @@ -512,6 +512,7 @@ struct acpi_madt_generic_interrupt
+> *acpi_cpu_get_madt_gicc(int cpu)
+>  {
+>  	return &cpu_madt_gicc[cpu];
+>  }
+> +EXPORT_SYMBOL(acpi_cpu_get_madt_gicc);
+
+Why not EXPORT_SYMBOL_GPL()?
 
 > 
-> Am 2022-03-17 um 11:00 schrieb Lee Jones:
-> > Good afternoon Felix,
-> > 
-> > Thanks for your review.
-> > 
-> > > Am 2022-03-17 um 09:16 schrieb Lee Jones:
-> > > > Presently the Client can be freed whilst still in use.
-> > > > 
-> > > > Use the already provided lock to prevent this.
-> > > > 
-> > > > Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-> > > > Cc: Alex Deucher <alexander.deucher@amd.com>
-> > > > Cc: "Christian König" <christian.koenig@amd.com>
-> > > > Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
-> > > > Cc: David Airlie <airlied@linux.ie>
-> > > > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > > > Cc: amd-gfx@lists.freedesktop.org
-> > > > Cc: dri-devel@lists.freedesktop.org
-> > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > ---
-> > > >    drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c | 6 ++++++
-> > > >    1 file changed, 6 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> > > > index e4beebb1c80a2..3b9ac1e87231f 100644
-> > > > --- a/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> > > > +++ b/drivers/gpu/drm/amd/amdkfd/kfd_smi_events.c
-> > > > @@ -145,8 +145,11 @@ static int kfd_smi_ev_release(struct inode *inode, struct file *filep)
-> > > >    	spin_unlock(&dev->smi_lock);
-> > > >    	synchronize_rcu();
-> > > > +
-> > > > +	spin_lock(&client->lock);
-> > > >    	kfifo_free(&client->fifo);
-> > > >    	kfree(client);
-> > > > +	spin_unlock(&client->lock);
-> > > The spin_unlock is after the spinlock data structure has been freed.
-> > Good point.
-> > 
-> > If we go forward with this approach the unlock should perhaps be moved
-> > to just before the kfree().
-> > 
-> > > There
-> > > should be no concurrent users here, since we are freeing the data structure.
-> > > If there still are concurrent users at this point, they will crash anyway.
-> > > So the locking is unnecessary.
-> > The users may well crash, as does the kernel unfortunately.
-> We only get to kfd_smi_ev_release when the file descriptor is closed. User
-> mode has no way to use the client any more at this point. This function also
-> removes the client from the dev->smi_cllients list. So no more events will
-> be added to the client. Therefore it is safe to free the client.
+>  /*
+>   * acpi_map_gic_cpu_interface - parse processor MADT entry
+> diff --git a/drivers/cpufreq/cppc_cpufreq.c 
+> b/drivers/cpufreq/cppc_cpufreq.c
+> index 8f950fe72765..a6cd95c3b474 100644
+> --- a/drivers/cpufreq/cppc_cpufreq.c
+> +++ b/drivers/cpufreq/cppc_cpufreq.c
+> @@ -422,12 +422,66 @@ static unsigned int
+> cppc_cpufreq_get_transition_delay_us(unsigned int cpu)
+>  	return cppc_get_transition_latency(cpu) / NSEC_PER_USEC;
+>  }
 > 
-> If any of the above were not true, it would not be safe to kfree(client).
-> 
-> But if it is safe to kfree(client), then there is no need for the locking.
+> +static bool efficiency_class_populated;
+> +static DEFINE_PER_CPU(unsigned int, efficiency_class);
+> +
+> +static int populate_efficiency_class(void)
+> +{
+> +	unsigned int min = UINT_MAX, max = 0, class;
+> +	struct acpi_madt_generic_interrupt *gicc;
+> +	int cpu;
+> +
+> +	for_each_possible_cpu(cpu) {
+> +		gicc = acpi_cpu_get_madt_gicc(cpu);
+> +		if (!gicc)
+> +			return -ENODEV;
 
-I'm not keen to go into too much detail until it's been patched.
+How can that happen if you made it here using ACPI?
 
-However, there is a way to free the client while it is still in use.
+> +
+> +		per_cpu(efficiency_class, cpu) = gicc->efficiency_class;
+> +		min = min_t(unsigned int, min, gicc->efficiency_class);
+> +		max = max_t(unsigned int, max, gicc->efficiency_class);
+> +	}
 
-Remember we are multi-threaded.
+Why don't you use a temporary bitmap of 256 bits, tracking
+the classes that are actually being used?
 
+> +
+> +	if (min == max) {
+
+This would become (bitmap_weight(used_classes) <= 1). Then from
+the same construct you know how many different classes you have.
+You also have the min, max, and all the values in between.
+
+> +		pr_debug("Efficiency classes are all equal (=%d). "
+> +			"No EM registered", max);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/*
+> +	 * Squeeze efficiency class values on [0:#efficiency_class-1].
+> +	 * Values are per spec in [0:255].
+> +	 */
+> +	for (class = 0; class < 256; class++) {
+> +		unsigned int new_min, curr;
+> +
+> +		new_min = UINT_MAX;
+> +		for_each_possible_cpu(cpu) {
+> +			curr = per_cpu(efficiency_class, cpu);
+> +			if (curr == min)
+> +				per_cpu(efficiency_class, cpu) = class;
+> +			else if (curr > min)
+> +				new_min = min(new_min, curr);
+> +		}
+> +
+> +		if (new_min == UINT_MAX)
+> +			break;
+> +		min = new_min;
+> +	}
+
+I find it really hard to reason about this because you are
+dynamically rewriting the values you keep reevaluating.
+
+How about something like this, which I find more readable:
+
+	DECLARE_BITMAP(used_classes, 256) = {};
+	int class, index, cpu;
+
+	for_each_possible_cpu(cpu) {
+		unsigned int ec;
+
+		ec = acpi_cpu_get_madt_gicc(cpu)->efficiency_class & 0xff;
+		bitmap_set(ec, &used_classes);
+	}
+
+	if (bitmap_weight(&used_classes, 256) <= 1)
+		return;
+
+	index = 0;
+
+	for_each_set_bit(class, &used_classes, 256) {
+		for_each_possible_cpu(cpu) {
+			if (acpi_cpu_get_madt_gicc(cpu)->efficiency_class == class)
+				per_cpu(efficiency_class, cpu) = index;
+		}
+
+		index++;
+	}
+
+
+Thanks,
+
+         M.
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Jazz is not dead. It just smells funny...
