@@ -2,155 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C7AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46712C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 18:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237411AbiCQSVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 14:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34382 "EHLO
+        id S237412AbiCQSZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 14:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237357AbiCQSVH (ORCPT
+        with ESMTP id S237333AbiCQSY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 14:21:07 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27895220B0D;
-        Thu, 17 Mar 2022 11:19:51 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id v4so5584387pjh.2;
-        Thu, 17 Mar 2022 11:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+g2oRiO3uzZ+DA2WGg9ZB5KEZZCxlDqRy1Fc/qJpJHM=;
-        b=lkJD3Zm5NwTqW+OB6itNq0cJY20QN8LbaRZAYvK7alxragMTGwPhdS9iO7nmWkBOy2
-         MjsatpMGaQXFhOHpx1v6LjY+q+TCChmWqMxvOudQbXhc1UyIVR03eV7mjJeqwzF2sEta
-         b6PN3jGtXXncNejO64PCuaKIB28Ez7ZJe17gspBe8ubYbt9Yjnze0dFFMJGav/Hb0FBv
-         hbw8rEj0CzXMzDmNfqWiaCco1SwwYnt9GCLdKXMnlSErPfDrNnE07wRkVkLo+S2/Mwfj
-         Kg15gvo5MnjUcBcIQH3AWYfpO0pC/vfQFMzT3IY4p0/MX+i7I2DrkpThbDrq7unfDgWV
-         qQHQ==
+        Thu, 17 Mar 2022 14:24:59 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F52DCE23
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:23:41 -0700 (PDT)
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D278F3F191
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 18:23:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647541418;
+        bh=mAdVcJhToSrCB/a7t8Sh+35WYqrUG3pwc0slS8rIHHU=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Type:In-Reply-To;
+        b=nYNzwzs0EG1a39Yp6tbpDyEeG/DgC06ulQEGkx5zGuFUG6OLmLPsClTClxQ8HAgpE
+         PVtcdU/yYLEsQljfE5xfnXdzSyd5ILkyGi2SctNHaqRanXoTYIhTqFXNQnq1WZiQSS
+         fqbYREk6ZwP1uruwGlLjGHVMDLEN5auYy5JBB3lBHKtuBsPB+5N+3xw/UPxS3aFW+W
+         FcOF1y1IQaJxYmlKgyzIITfYC/jP6MVN2hlwulGOMdfKMGWoDRst1a3U2RGZRzq84G
+         qBoQUfF6GBtUCntzQHtNv1fQf5DHC5fSynecxlz8lkV+lzaN8tU0v6TrSL/XQj+14C
+         PQBfIXFUYl11A==
+Received: by mail-il1-f200.google.com with SMTP id g5-20020a92dd85000000b002c79aa519f4so3531614iln.10
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 11:23:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+g2oRiO3uzZ+DA2WGg9ZB5KEZZCxlDqRy1Fc/qJpJHM=;
-        b=jfiY9uIXQ6lbRkFnRtm6INNJ4KLCAObcuC91n4qlvPhae/gb1gQAf18jWqVmfIZRBc
-         /r0YYho8Mp5tOKUcawoBFYXbTOWHKq0r3eGFuHnUlWgRdGs4vPy1/wi6YXhuesfU9X3h
-         /zBmP8K5KhEm3oW36nCAV4d1USV5iCl4LZt7RgtKdwTEwBR7uPoMsGgKiOzMvqZSegM6
-         hxeKPrUa5b/z6qsacWRNDyD+zC1+8C4L7wT3MjZyTJziCp+11tk8xg/S85synIH2bE9Q
-         JyIr4KpBBFKeWMJP0IkL0aTODG6xOKnagtj1GzIpol/pcmYH+T024aVvfH7go+6Hnilj
-         niPQ==
-X-Gm-Message-State: AOAM531pA79YZqqK3JTYPaTynEiJtow8l1Q5wMZH0lcl0/BA6u0VacCe
-        5kzymHW5lWQl0GyWHfzIrIw=
-X-Google-Smtp-Source: ABdhPJwsbPBANPJBlFrJblkjlzz7zEPKAqYuZHhFZ20KssMtVJM6PS+PLrLUUJut6hAlL7oOBwoTKA==
-X-Received: by 2002:a17:90a:8581:b0:1b2:7541:af6c with SMTP id m1-20020a17090a858100b001b27541af6cmr7004158pjn.48.1647541190705;
-        Thu, 17 Mar 2022 11:19:50 -0700 (PDT)
-Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
-        by smtp.gmail.com with ESMTPSA id p10-20020a056a0026ca00b004fa06fa407asm7647668pfw.91.2022.03.17.11.19.47
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=mAdVcJhToSrCB/a7t8Sh+35WYqrUG3pwc0slS8rIHHU=;
+        b=WnWyEj7IJ85eLeFm9oOEPywkpd87YvhOAlp2cmgkOWzc5hFcwus0FLtGK+Ra7yDPAl
+         U1d6J+nSL+1XH1FYqSkxwtjwFRE/bGLtxDcl+QXQv1M46dRrHTKU6DFqfb0E/UWor2h6
+         sw2RoWdw29Is57v5Hdtf9AGXEdv4BdcPoPUNGKwQNNg58IUzfCqEmFtCaaS1tvxDge2j
+         lfJXMCSCAGeGxVC0IDAO+q5U9A7s0jqpJKd1v3JehQ2AJlunTjwb8SDEC+IgslOKiVgB
+         of8NeAe6vqGEK5dpNLZw15Dg3Heb6UjM64+gco7usZw4i0RrnGB9topo8DVqoJ7rDu4A
+         FG9w==
+X-Gm-Message-State: AOAM532hIgtNIvYg9alE4m4ncynhcWjNuT8ErXwsdZ6knBaM2HLDEEZj
+        v4EvWzpOW84fLBioUqe7ksfzR5UfCn9ZuByzcveRF/Kjq2I2Et2NoehVG7Gv+YQDcImk0yzfUrH
+        DJKG9HS1rEaS+lgP5uh+a27swCg8rrfSqxoTVrF/MPA==
+X-Received: by 2002:a05:6638:14c1:b0:319:dd1c:e179 with SMTP id l1-20020a05663814c100b00319dd1ce179mr2953219jak.64.1647541417552;
+        Thu, 17 Mar 2022 11:23:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJydmsovQdnsv6/vsumr0R6jzDnWMQIUt88oHLcsHXh5GhykfJlRwpHtRjlwxttQFLYXvPCreQ==
+X-Received: by 2002:a05:6638:14c1:b0:319:dd1c:e179 with SMTP id l1-20020a05663814c100b00319dd1ce179mr2953204jak.64.1647541417263;
+        Thu, 17 Mar 2022 11:23:37 -0700 (PDT)
+Received: from xps13.dannf (c-73-14-97-161.hsd1.co.comcast.net. [73.14.97.161])
+        by smtp.gmail.com with ESMTPSA id n5-20020a056e02148500b002c7aa9c389csm3840370ilk.32.2022.03.17.11.23.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 11:19:50 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 18:19:44 +0000
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Radoslaw Burny <rburny@google.com>, linux-arch@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH 2/2] locking: Apply contention tracepoints in the slow
- path
-Message-ID: <YjN7wPMEBVIuOiGN@ip-172-31-19-208.ap-northeast-1.compute.internal>
-References: <20220316224548.500123-1-namhyung@kernel.org>
- <20220316224548.500123-3-namhyung@kernel.org>
+        Thu, 17 Mar 2022 11:23:35 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 12:23:33 -0600
+From:   dann frazier <dann.frazier@canonical.com>
+To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc:     Marc Zyngier <maz@kernel.org>, robh@kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com, Toan Le <toan@os.amperecomputing.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [PATCH] PCI: xgene: Revert "PCI: xgene: Use inbound resources
+ for setup"
+Message-ID: <YjN8pT5e6/8cRohQ@xps13.dannf>
+References: <20220314144429.1947610-1-maz@kernel.org>
+ <YjL8P0zkle2foxbk@lpieralisi>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220316224548.500123-3-namhyung@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YjL8P0zkle2foxbk@lpieralisi>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 03:45:48PM -0700, Namhyung Kim wrote:
-> Adding the lock contention tracepoints in various lock function slow
-> paths.  Note that each arch can define spinlock differently, I only
-> added it only to the generic qspinlock for now.
+On Thu, Mar 17, 2022 at 09:15:43AM +0000, Lorenzo Pieralisi wrote:
+> [removed CC stable]
 > 
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  kernel/locking/mutex.c        |  3 +++
->  kernel/locking/percpu-rwsem.c |  3 +++
->  kernel/locking/qrwlock.c      |  9 +++++++++
->  kernel/locking/qspinlock.c    |  5 +++++
->  kernel/locking/rtmutex.c      | 11 +++++++++++
->  kernel/locking/rwbase_rt.c    |  3 +++
->  kernel/locking/rwsem.c        |  9 +++++++++
->  kernel/locking/semaphore.c    | 14 +++++++++++++-
->  8 files changed, 56 insertions(+), 1 deletion(-)
->
+> On Mon, Mar 14, 2022 at 02:44:29PM +0000, Marc Zyngier wrote:
+> > Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+> > killed PCIe on my XGene-1 box (a Mustang board). The machine itself
+> > is still alive, but half of its storage (over NVMe) is gone, and the
+> > NVMe driver just times out.
+> > 
+> > Note that this machine boots with a device tree provided by the
+> > UEFI firmware (2016 vintage), which could well be non conformant
+> > with the spec, hence the breakage.
+> > 
+> > With the patch reverted, the box boots 5.17-rc8 with flying colors.
+> > 
+> > Signed-off-by: Marc Zyngier <maz@kernel.org>
+> > Cc: Rob Herring <robh@kernel.org>
+> > Cc: Toan Le <toan@os.amperecomputing.com>
+> > Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > Cc: Krzysztof Wilczyński <kw@linux.com>
+> > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > Cc: Stéphane Graber <stgraber@ubuntu.com>
+> > Cc: dann frazier <dann.frazier@canonical.com>
+> > Cc: Thorsten Leemhuis <regressions@leemhuis.info>
+> > Cc: stable@vger.kernel.org>
+> > ---
+> >  drivers/pci/controller/pci-xgene.c | 33 ++++++++++++++++++++----------
+> >  1 file changed, 22 insertions(+), 11 deletions(-)
+> 
+> Dann, Rob,
+> 
+> does this fix the regression debated here:
+> 
+> https://lore.kernel.org/all/Yf2wTLjmcRj+AbDv@xps13.dannf
+> 
+> It is unclear in that thread what the conclusion reached was.
 
-[...]
+Thanks for checking in Lorenzo! Reverting that patch is required but
+not sufficient to get our m400s working. In addition, we'd also need
+to revert commit c7a75d07827a ("PCI: xgene: Fix IB window setup").
 
-> diff --git a/kernel/locking/semaphore.c b/kernel/locking/semaphore.c
-> index 9ee381e4d2a4..e3c19668dfee 100644
-> --- a/kernel/locking/semaphore.c
-> +++ b/kernel/locking/semaphore.c
-> @@ -32,6 +32,7 @@
->  #include <linux/semaphore.h>
->  #include <linux/spinlock.h>
->  #include <linux/ftrace.h>
-> +#include <trace/events/lock.h>
->  
->  static noinline void __down(struct semaphore *sem);
->  static noinline int __down_interruptible(struct semaphore *sem);
-> @@ -209,6 +210,7 @@ static inline int __sched __down_common(struct semaphore *sem, long state,
->  								long timeout)
->  {
->  	struct semaphore_waiter waiter;
-> +	bool tracing = false;
->  
->  	list_add_tail(&waiter.list, &sem->wait_list);
->  	waiter.task = current;
-> @@ -220,18 +222,28 @@ static inline int __sched __down_common(struct semaphore *sem, long state,
->  		if (unlikely(timeout <= 0))
->  			goto timed_out;
->  		__set_current_state(state);
-> +		if (!tracing) {
-> +			trace_contention_begin(sem, 0);
-> +			tracing = true;
-> +		}
->  		raw_spin_unlock_irq(&sem->lock);
->  		timeout = schedule_timeout(timeout);
->  		raw_spin_lock_irq(&sem->lock);
-> -		if (waiter.up)
-> +		if (waiter.up) {
-> +			trace_contention_end(sem, 0);
->  			return 0;
-> +		}
->  	}
->  
->   timed_out:
-> +	if (tracing)
-> +		trace_contention_end(sem, -ETIME);
->  	list_del(&waiter.list);
->  	return -ETIME;
->  
->   interrupted:
-> +	if (tracing)
-> +		trace_contention_end(sem, -EINTR);
->  	list_del(&waiter.list);
->  	return -EINTR;
->  }
+I believe if we revert both then it should return us to a state where
+Marc's Mustang, Stéphane's Merlins and our m400s all work again.
 
-why not simply remove tracing variable and call trace_contention_begin()
-earlier like in rwsem? we can ignore it if ret != 0.
+  -dann
 
--- 
-Thank you, You are awesome!
-Hyeonggon :-)
+> Thanks,
+> Lorenzo
+> 
+> > diff --git a/drivers/pci/controller/pci-xgene.c b/drivers/pci/controller/pci-xgene.c
+> > index 0d5acbfc7143..aa41ceaf031f 100644
+> > --- a/drivers/pci/controller/pci-xgene.c
+> > +++ b/drivers/pci/controller/pci-xgene.c
+> > @@ -479,28 +479,27 @@ static int xgene_pcie_select_ib_reg(u8 *ib_reg_mask, u64 size)
+> >  }
+> >  
+> >  static void xgene_pcie_setup_ib_reg(struct xgene_pcie *port,
+> > -				    struct resource_entry *entry,
+> > -				    u8 *ib_reg_mask)
+> > +				    struct of_pci_range *range, u8 *ib_reg_mask)
+> >  {
+> >  	void __iomem *cfg_base = port->cfg_base;
+> >  	struct device *dev = port->dev;
+> >  	void __iomem *bar_addr;
+> >  	u32 pim_reg;
+> > -	u64 cpu_addr = entry->res->start;
+> > -	u64 pci_addr = cpu_addr - entry->offset;
+> > -	u64 size = resource_size(entry->res);
+> > +	u64 cpu_addr = range->cpu_addr;
+> > +	u64 pci_addr = range->pci_addr;
+> > +	u64 size = range->size;
+> >  	u64 mask = ~(size - 1) | EN_REG;
+> >  	u32 flags = PCI_BASE_ADDRESS_MEM_TYPE_64;
+> >  	u32 bar_low;
+> >  	int region;
+> >  
+> > -	region = xgene_pcie_select_ib_reg(ib_reg_mask, size);
+> > +	region = xgene_pcie_select_ib_reg(ib_reg_mask, range->size);
+> >  	if (region < 0) {
+> >  		dev_warn(dev, "invalid pcie dma-range config\n");
+> >  		return;
+> >  	}
+> >  
+> > -	if (entry->res->flags & IORESOURCE_PREFETCH)
+> > +	if (range->flags & IORESOURCE_PREFETCH)
+> >  		flags |= PCI_BASE_ADDRESS_MEM_PREFETCH;
+> >  
+> >  	bar_low = pcie_bar_low_val((u32)cpu_addr, flags);
+> > @@ -531,13 +530,25 @@ static void xgene_pcie_setup_ib_reg(struct xgene_pcie *port,
+> >  
+> >  static int xgene_pcie_parse_map_dma_ranges(struct xgene_pcie *port)
+> >  {
+> > -	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(port);
+> > -	struct resource_entry *entry;
+> > +	struct device_node *np = port->node;
+> > +	struct of_pci_range range;
+> > +	struct of_pci_range_parser parser;
+> > +	struct device *dev = port->dev;
+> >  	u8 ib_reg_mask = 0;
+> >  
+> > -	resource_list_for_each_entry(entry, &bridge->dma_ranges)
+> > -		xgene_pcie_setup_ib_reg(port, entry, &ib_reg_mask);
+> > +	if (of_pci_dma_range_parser_init(&parser, np)) {
+> > +		dev_err(dev, "missing dma-ranges property\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	/* Get the dma-ranges from DT */
+> > +	for_each_of_pci_range(&parser, &range) {
+> > +		u64 end = range.cpu_addr + range.size - 1;
+> >  
+> > +		dev_dbg(dev, "0x%08x 0x%016llx..0x%016llx -> 0x%016llx\n",
+> > +			range.flags, range.cpu_addr, end, range.pci_addr);
+> > +		xgene_pcie_setup_ib_reg(port, &range, &ib_reg_mask);
+> > +	}
+> >  	return 0;
+> >  }
+> >  
