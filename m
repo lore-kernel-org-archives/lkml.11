@@ -2,87 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8284C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:29:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358335AbiCQB3S (ORCPT
+        id S1355294AbiCQBaP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 21:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
+        Wed, 16 Mar 2022 21:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358350AbiCQB26 (ORCPT
+        with ESMTP id S234279AbiCQBaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 21:28:58 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC061F61E
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:27:29 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id b24so4799255edu.10
-        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 18:27:29 -0700 (PDT)
+        Wed, 16 Mar 2022 21:30:12 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABFDB9D;
+        Wed, 16 Mar 2022 18:28:57 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id c11so1496746pgu.11;
+        Wed, 16 Mar 2022 18:28:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=LlTH+G09rcVN0vQqtM5Msv7WROSZnwcaeBZzTdA/4gI=;
-        b=Gta4TIZXLILirF7gfnrO7YgWEjB3SLjF0xn5PYqWfkcU3f2rCNOTAwttJ5RaOUYcEN
-         IL/KnKuzVML6tmQ5vNx6Ap7s9sIoztvAx0gKaohJj92FgLpdit9Te1NW94nXasoZy5Fb
-         Qt84EU51en3oFiIXYSC+LJ7o492gVsRWdYkYBopUBjvX5GKfniK5s/L+OJvs3ryFORot
-         iXYxbSOi+POCJUOGGgHqeR5CFkYkdDqODzhAKpdLp8MIIOb7aRdnaFMMtsVtHoWABfka
-         4LyicoGjRjJle5hDeV8yCwzQtUfAGLoC+FEpsveRZo15DyCtpJqy1/TCHChSDv3/XpNE
-         /R/A==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pGCixHA6fg7y035ihcncWdobFp35i0tw7IkkiWFxznA=;
+        b=Y6rSGiOsH4aikeNiovmhjNComtkDxnQ8g5RmELbMaWmWhPFANZSV/EuQUpLqzVUOtD
+         TbT4r/CvAkZHGJziWvqifLHG0Eho0IivDvdm9LqZcV7R67OFe9B06qRYaX4UdkdaRffl
+         tobPe4bzVISywjWarWD2qneRhU9uhoXcvTz8ZsZSmPeE9p7sEqQKxGdpsOrdhyhnEJKA
+         o1gBV5d7qehi5y8xjd9pUlcralw1x6dRXHQ6lGgMgBAuL2MHFVwZhVDB6WPRNAGxYYL0
+         Ibxf9XYscyQPbYsYsgwakRSVKhxdR/JrC1GOlPTvzWawkl6iryFgJtdIiyTpYTJ5J090
+         NxUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=LlTH+G09rcVN0vQqtM5Msv7WROSZnwcaeBZzTdA/4gI=;
-        b=sOZ78JIefa2g+w1in0lR8wJYr8QJ2Z1gg9y0bLpgpp1yAH5nQHDUzeM7TtyNtVseRF
-         WD3CQZ67w+txSSEUGKsDOjHrYP+sXzYqRgSdMC4Yi23ApSDeHQAMQxIoGUenOGdy/vI0
-         nS0vUJqoOi0jdNkxv4C27BQv/1mBpWsg0/RW9kRWbrlF8Bu5bBqAaLlYLuL5PSlePHKQ
-         w93Ofp+Vuge+Hpzup5KbC8c/TBgiUwn02kAlS9Unf39l+5qQLID8LI2XoDpKekrgIq5E
-         PesXyI8rGkfYXN4on8s3GijsaMYinteUByprGR/jEwtDi/joAqKXY+pYgCsDuezUOzls
-         G7Kw==
-X-Gm-Message-State: AOAM5321Q9VEo0QW9SlE83fOVLoEpxDPqIO54dYgrWxtiJZ3U8tOnCvn
-        +EwFceK5UI98uI57apwdVOl/Og7kZlZEJm3XXRmsQdspNA==
-X-Google-Smtp-Source: ABdhPJyQf6Sx+VLp9Inh3suxXELVVTMqKA2vmRoPnOq/6Us7RHLzOl0j0BC6mxnVRiSybuRb3t6MQT+Nyca7bV1qfBA=
-X-Received: by 2002:a05:6402:27ca:b0:418:93fe:da71 with SMTP id
- c10-20020a05640227ca00b0041893feda71mr1941793ede.409.1647480447687; Wed, 16
- Mar 2022 18:27:27 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pGCixHA6fg7y035ihcncWdobFp35i0tw7IkkiWFxznA=;
+        b=32WQtV3PTRZO7b90ad95cwPW6KqRYyS9d6TOabPfSarYwlhBSNPtpW+nC7iU3iZxi2
+         imYZUvKqRzQMqRqhJLEOQ+hRL2GioRxqpjwAt7UKVEpzPt7PXX2isxaNva4D5AYjPkvl
+         tMEEA0nnJBIOrvKdtzQEXm7WTIiABm6FDKwFHQQQv3b1eUjkM/4CxveznjpFQfiSw1JJ
+         Q2cgpel14+ZuL34Gc/Om32qTqw89t6ou5svWS2GA0G/RPTVT3I4TSpajBky8f7lvMK0Y
+         vqNde/aIxjDIFsAlEwxg0xe4DDst9LnNMAEIVbv6zvzwkOkgtOIeoiyYB/5J8AZYfvlH
+         Ajrw==
+X-Gm-Message-State: AOAM5311jltnuOleaZuAviDmJ64we4k/LbtRkRQnuLR+qzhmD362RH+s
+        +y/5BtFLAetgP6Z1LmuSVjfQJiHm4dk=
+X-Google-Smtp-Source: ABdhPJwuHlyPDn0otvZORZ61qmcPWgd3/z6y3WtuIDcokamJISjVZq2j3PEx9NZv7JfQO/LSgattyg==
+X-Received: by 2002:a05:6a00:1c5e:b0:4f7:e2a5:50f6 with SMTP id s30-20020a056a001c5e00b004f7e2a550f6mr2243598pfw.78.1647480536564;
+        Wed, 16 Mar 2022 18:28:56 -0700 (PDT)
+Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id t7-20020a056a0021c700b004f7916d44bcsm4609445pfj.220.2022.03.16.18.28.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 18:28:56 -0700 (PDT)
+From:   Doug Berger <opendmb@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
+Subject: [PATCH net] net: bcmgenet: skip invalid partial checksums
+Date:   Wed, 16 Mar 2022 18:28:12 -0700
+Message-Id: <20220317012812.1313196-1-opendmb@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220221212522.320243-1-mic@digikod.net> <20220221212522.320243-12-mic@digikod.net>
-In-Reply-To: <20220221212522.320243-12-mic@digikod.net>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 16 Mar 2022 21:27:16 -0400
-Message-ID: <CAHC9VhQM99=OVFBcpO72QM-9NSk5dBXy3_jVrwmG304ugjzSdQ@mail.gmail.com>
-Subject: Re: [PATCH v1 11/11] landlock: Add design choices documentation for
- filesystem access rights
-To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
-Cc:     James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
-        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 4:15 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
-wrote:
->
-> From: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
->
-> Signed-off-by: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
-> Link: https://lore.kernel.org/r/20220221212522.320243-12-mic@digikod.net
-> ---
->  Documentation/security/landlock.rst | 17 ++++++++++++++++-
->  1 file changed, 16 insertions(+), 1 deletion(-)
+The RXCHK block will return a partial checksum of 0 if it encounters
+a problem while receiving a packet. Since a 1's complement sum can
+only produce this result if no bits are set in the received data
+stream it is fair to treat it as an invalid partial checksum and
+not pass it up the stack.
 
-Reviewed-by: Paul Moore <paul@paul-moore.com>
+Fixes: 810155397890 ("net: bcmgenet: use CHECKSUM_COMPLETE for NETIF_F_RXCSUM")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+---
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---
-paul-moore.com
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 87f1056e29ff..2da804f84b48 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -2287,8 +2287,10 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
+ 		dma_length_status = status->length_status;
+ 		if (dev->features & NETIF_F_RXCSUM) {
+ 			rx_csum = (__force __be16)(status->rx_csum & 0xffff);
+-			skb->csum = (__force __wsum)ntohs(rx_csum);
+-			skb->ip_summed = CHECKSUM_COMPLETE;
++			if (rx_csum) {
++				skb->csum = (__force __wsum)ntohs(rx_csum);
++				skb->ip_summed = CHECKSUM_COMPLETE;
++			}
+ 		}
+ 
+ 		/* DMA flags and length are still valid no matter how
+-- 
+2.25.1
+
