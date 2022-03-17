@@ -2,87 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C66DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 01:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350425AbiCQB5Q (ORCPT
+        id S1353202AbiCQB63 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 16 Mar 2022 21:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        Wed, 16 Mar 2022 21:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232966AbiCQB5O (ORCPT
+        with ESMTP id S232966AbiCQB62 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 16 Mar 2022 21:57:14 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE041CB07;
-        Wed, 16 Mar 2022 18:55:57 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id n15so3298717plh.2;
-        Wed, 16 Mar 2022 18:55:57 -0700 (PDT)
+        Wed, 16 Mar 2022 21:58:28 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891B11CB1B;
+        Wed, 16 Mar 2022 18:57:13 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id q5so5420913ljb.11;
+        Wed, 16 Mar 2022 18:57:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cCQk19mph1BSQQbRy0W7Dk+XD4eO5zrAeFybxCC9egg=;
-        b=ElzKfEt6I6S0R2iDGmK4BrqQUPMtpKgQv9dW4pWHiC+Z6iVoKSvG9v41s3MdxrIQFH
-         GYKHd4YkDW9vMcn1SchFxvkpt11/2N3Bk2yaGyyiqBcVXmybCKi07EfLdg0EcO4ZwV+L
-         PrWs6w2WsHWs6tMx4VoZjn3lUy0meelIDWgeGeyiZ+zeCgyJgtnkfGi5VKTbasuRe0b2
-         sqF/yKYVHzV4ZiXxDRQRmaczdnhAt2hMREAB2vLqlYnT5Ot4n/0Wq8WhE52QW+BJ17km
-         Agra/qRqVPjsqZNb3eAcQCn8MAU/nVb0qRFEh12sxLainNXYC/5kDyfu4KGZOSNxl7r7
-         OtZg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D2eRtDhUiRlh6LC4tNmroWlfl0w9KefZzF7QC113Ymw=;
+        b=HWHhI+tJQb7NceqGVdfZf3qv6HHsoD0DK8KH+CJhB6W4ZWMx0h+SDyEEwnL25LMVQg
+         zKpt0ilsFTJWMEn+YotbBv+CHmhm5wz9RJm+gBH3YhHI/sHYQXOCtql1zNHK16BwRv2P
+         sGc0l127JfS/+cMODtL4iRAzr56VdQX3AYGKDR/BmEsAQPDNuYKFh+B1i0a2Px4TICyD
+         OWROAcrc5KqNBGAXvwAhOqXYkRgxfVHMf+b+Z1cYZBFcpkRErF0rm1jhR9xPhKPFUnbW
+         0XJsyPajRCCHhkCPbcMA0M0GcAvaVRxYsfyiDLT9zqaKO3jUS9WTDeci37Hs2h244u1Z
+         /FdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cCQk19mph1BSQQbRy0W7Dk+XD4eO5zrAeFybxCC9egg=;
-        b=79sCXvZASXQ3SXmkIveeFq8BUjSnEzx17/rA9u0ylbf8MdQRZ6TMjgNn8DrNyCjM4b
-         OX1f3hm5jbTNqTzYLzJ7Ha3cgtt7WotKe8akQYB4x8rDpoOsL3ZRLpTCNpMBt3aXXRkh
-         KTS1329sqwCsxieb/vp6Ba5IJZZLLJtS/q4RIWHYw8kzRHzQR7xKQE14Kardff8vLKpz
-         3yEYN9xwnClRR75uBRMY/PdSG1VgWlPloNN/9GE72chirmMuEQwaZo/FDiTJPtQoqhVv
-         uoa6jTGpa3J7zR71dt8/t/B/WXKOmuOnFodYwByDqvxCz1+wNkj6zJAZIoE4h1Or74KQ
-         etQQ==
-X-Gm-Message-State: AOAM532aO7JLKYqMfJM4AT454+LhFna6zivCVAEoPoYPrfPEf0IKI7X0
-        awb78QN3boQcaMS42CqmKj4=
-X-Google-Smtp-Source: ABdhPJwJbxGdMfcN9CTUn6aA06VML0lU1P1+VXDXZNa1jg6n4ZIW3UQ6K8wO/KYK8YyFBGvmaMEHtQ==
-X-Received: by 2002:a17:90b:4c8f:b0:1bc:a64b:805 with SMTP id my15-20020a17090b4c8f00b001bca64b0805mr2711271pjb.156.1647482156931;
-        Wed, 16 Mar 2022 18:55:56 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id me5-20020a17090b17c500b001c63699ff60sm8102769pjb.57.2022.03.16.18.55.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 18:55:56 -0700 (PDT)
-Message-ID: <23d2d5a4-9496-a836-735d-31f1b02ce495@gmail.com>
-Date:   Wed, 16 Mar 2022 18:55:54 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D2eRtDhUiRlh6LC4tNmroWlfl0w9KefZzF7QC113Ymw=;
+        b=PWlxqGLaegudeSlUyEronYsKHl3U0xDk79vXeZFovlK8kiB4MWeABDOT0C8DrB5za5
+         fQk9eODxH6cQyPeiOS2plK3kvWAe9c8m99O1wolgLRG/TLq8pzDuR1pMvh5O4ZPQ+vtl
+         z4H3xTlMcudd3nhfJY9jTPvrKvfozLoNf7E53/D+V76sAT9/DkwZgRzVD1WxN2snq+mB
+         fzszcb9RLugd0QFzmh0B1D5ZhPRbWCjg1BA/4JKZ4XjEU7x7sjRDhbPB9Ed1t2ip6rQo
+         GNqtebi79d8AeLeizIOEdNf0gcT0RHU5zvVziQ88qoHUaybyhYWI3xbICUlhqbnx4B9r
+         Fiog==
+X-Gm-Message-State: AOAM532f7KKR8TnCb7txfbfIDKaFwBuNZzwhEWHT+PUo+ftlOKarolbS
+        qYwWNpaMYb1YEf3cDvb77BBkVSU5TLCopR+84L0=
+X-Google-Smtp-Source: ABdhPJyFlkiIFXp5hQL4DLC4LGWzR86G2RzWAwiNyNiA38WnKp4DUP+0KDCKDRtO1/T4VA2hZDiQIlMOygIkkzfVeKY=
+X-Received: by 2002:a2e:9d86:0:b0:247:da0e:7c59 with SMTP id
+ c6-20020a2e9d86000000b00247da0e7c59mr1443340ljj.127.1647482231736; Wed, 16
+ Mar 2022 18:57:11 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net] net: bcmgenet: skip invalid partial checksums
-Content-Language: en-US
-To:     Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220317012812.1313196-1-opendmb@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220317012812.1313196-1-opendmb@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <3c576edf-89c3-ccf3-a43f-4ce2c1ced18d@zhaoxin.com>
+In-Reply-To: <3c576edf-89c3-ccf3-a43f-4ce2c1ced18d@zhaoxin.com>
+From:   Peter Chen <hzpeterchen@gmail.com>
+Date:   Thu, 17 Mar 2022 09:56:57 +0800
+Message-ID: <CAL411-pthKbSuUEjFPDJtRK=nWApRnJkPVH0C+qaqNRyf0u5yg@mail.gmail.com>
+Subject: Re: [PATCH] USB: Fix xhci ERDP update issue
+To:     "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
+Cc:     mathias.nyman@intel.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        USB list <linux-usb@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, CobeChen@zhaoxin.com,
+        TimGuo@zhaoxin.com, tonywwang@zhaoxin.com, weitaowang@zhaoxin.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Mar 17, 2022 at 1:30 AM WeitaoWang-oc@zhaoxin.com
+<WeitaoWang-oc@zhaoxin.com> wrote:
+>
+> On some situations, software handles TRB events slower than adding TRBs,
+> xhci_irq will not exit until all events are handled. If xhci_irq just
+> handles 256 TRBs and exit, the temp variable(event_ring_deq) driver
+> records in xhci irq is equal to driver current dequeue pointer. It will
+> cause driver not update ERDP and software dequeue pointer lost sync with
+> ERDP. On the next xhci_irq, the event ring is full but driver will not
+> update ERDP as software dequeue pointer is equal to ERDP.
+>
+> [  536.377115] xhci_hcd 0000:00:12.0: ERROR unknown event type 37
+> [  566.933173] sd 8:0:0:0: [sdb] tag#27 uas_eh_abort_handler 0 uas-tag 7
+> inflight: CMD OUT
+> [  566.933181] sd 8:0:0:0: [sdb] tag#27 CDB: Write(10) 2a 00 17 71 e6 78
+> 00 00 08 00
+> [  572.041186] xhci_hcd On some situataions,the0000:00:12.0: xHCI host
+> not responding to stop endpoint command.
+> [  572.057193] xhci_hcd 0000:00:12.0: Host halt failed, -110
+> [  572.057196] xhci_hcd 0000:00:12.0: xHCI host controller not
+> responding, assume dead
+> [  572.057236] sd 8:0:0:0: [sdb] tag#26 uas_eh_abort_handler 0 uas-tag 6
+> inflight: CMD
+> [  572.057240] sd 8:0:0:0: [sdb] tag#26 CDB: Write(10) 2a 00 38 eb cc d8
+> 00 00 08 00
+> [  572.057244] sd 8:0:0:0: [sdb] tag#25 uas_eh_abort_handler 0 uas-tag 5
+> inflight: CMD
+>
+> Fixed this issue by update software record temp variable when handles
+> 128 TRB events.
+>
+> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
 
+Reviewed-by: Peter Chen <peter.chen@kernel.org>
 
-On 3/16/2022 6:28 PM, Doug Berger wrote:
-> The RXCHK block will return a partial checksum of 0 if it encounters
-> a problem while receiving a packet. Since a 1's complement sum can
-> only produce this result if no bits are set in the received data
-> stream it is fair to treat it as an invalid partial checksum and
-> not pass it up the stack.
-> 
-> Fixes: 810155397890 ("net: bcmgenet: use CHECKSUM_COMPLETE for NETIF_F_RXCSUM")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
-
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> ---
+>   drivers/usb/host/xhci-ring.c | 1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+> index d0b6806..f970799 100644
+> --- a/drivers/usb/host/xhci-ring.c
+> +++ b/drivers/usb/host/xhci-ring.c
+> @@ -3141,6 +3141,7 @@ irqreturn_t xhci_irq(struct usb_hcd *hcd)
+>                  if (event_loop++ < TRBS_PER_SEGMENT / 2)
+>                          continue;
+>                  xhci_update_erst_dequeue(xhci, event_ring_deq);
+> +               event_ring_deq = xhci->event_ring->dequeue;
+>
+>                  /* ring is half-full, force isoc trbs to interrupt more
+> often */
+>                  if (xhci->isoc_bei_interval > AVOID_BEI_INTERVAL_MIN)
+> --
+> 2.7.4
