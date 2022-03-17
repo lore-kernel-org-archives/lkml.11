@@ -2,50 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38879C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1B62C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 06:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbiCQGWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 02:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
+        id S229920AbiCQGWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiCQGW3 (ORCPT
+        with ESMTP id S229921AbiCQGWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 02:22:29 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA37ED1CC0;
-        Wed, 16 Mar 2022 23:12:40 -0700 (PDT)
+        Thu, 17 Mar 2022 02:22:33 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7B7126F80;
+        Wed, 16 Mar 2022 23:12:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1647497560; x=1679033560;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=yAjKArgG+UzEZta3g6kqWrjnT6A3ODfHAc9WTuI1vFk=;
-  b=vTkTc2ESNlTbBvH1wTvMWx/23A94EtQBvGmxHELikZTrdNuAwa+70RIG
-   PIZfz5BH2K8Mk6GuOgDhw3o72QUCmDiixASvxfTe5rJlBHdzC+tF1MN4M
-   aPWzkSXHGMXmHvTi68yS2rGj+AFGksszKSZIgd3zc83WKzHdo6bRrKdjr
-   8=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 16 Mar 2022 23:12:39 -0700
+  t=1647497569; x=1679033569;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=OhR72xqFkzDx/cOjDRLsolT9JZibeLMb3xt2MB4DjB8=;
+  b=ntq4Tk/6g3xEtCt3TPN91zsWRBCAOOPb8Y8VP0b9j5SU+SzysNoLyIT6
+   mAseXIWtTTCxtAaPBQSHmeMNCZAH/3pLAbb3Xr70QTvCZLjIl1TNaSO1n
+   eFisc5x3XucReoWAp6p+ziqts3PyyhLA01GuOJ0IMKQ3hZ2YfJLs429W2
+   k=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 16 Mar 2022 23:12:49 -0700
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 23:12:38 -0700
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 23:12:48 -0700
 Received: from nalasex01c.na.qualcomm.com (10.47.97.35) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 16 Mar 2022 23:12:38 -0700
+ 15.2.986.22; Wed, 16 Mar 2022 23:12:48 -0700
 Received: from fenglinw-gv.qualcomm.com (10.80.80.8) by
  nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 16 Mar 2022 23:12:36 -0700
+ 15.2.986.22; Wed, 16 Mar 2022 23:12:45 -0700
 From:   Fenglin Wu <quic_fenglinw@quicinc.com>
 To:     <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sboyd@kernel.org>
+        <sboyd@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Abhijeet Dharmapurikar <adharmap@codeaurora.org>,
+        Kiran Gunda <kgunda@codeaurora.org>
 CC:     <collinsd@codeaurora.org>, <subbaram@codeaurora.org>,
         <quic_fenglinw@quicinc.com>, <tglx@linutronix.de>, <maz@kernel.org>
-Subject: [PATCH v6 00/10] A bunch of fix and optimization patches in spmi-pmic-arb.c
-Date:   Thu, 17 Mar 2022 14:12:05 +0800
-Message-ID: <1647497535-32151-1-git-send-email-quic_fenglinw@quicinc.com>
+Subject: [PATCH v6 03/10] spmi: pmic-arb: do not ack and clear peripheral interrupts in cleanup_irq
+Date:   Thu, 17 Mar 2022 14:12:08 +0800
+Message-ID: <1647497535-32151-4-git-send-email-quic_fenglinw@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1647497535-32151-1-git-send-email-quic_fenglinw@quicinc.com>
+References: <1647497535-32151-1-git-send-email-quic_fenglinw@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -55,61 +61,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v6:
-  Rebased [v5 08/10] on 
-    https://lore.kernel.org/linux-arm-msm/20211227170151.73116-1-david@ixit.cz/#t
+From: Subbaraman Narayanamurthy <subbaram@codeaurora.org>
 
-Changes in v5:
-  Drop [v4 11/11] because of a similar change is under review:
-    https://lore.kernel.org/linux-arm-msm/YdRJcv2kpp1vgUTb@robh.at.kernel.org/T/#t
+Currently, cleanup_irq() is invoked when a peripheral's interrupt
+fires and there is no mapping present in the interrupt domain of
+spmi interrupt controller.
 
-Changes in v4:
-  In [v4 02/11], separated spurious interrupt handling.
-  In [v4 03/11], added Fixes tag for ("spmi: pmic-arb: do not ack and clear peripheral").
-  In [v4 11/11], updated the binding to address few warnings in "make dtbs_check"
+The cleanup_irq clears the arbiter bit, clears the pmic interrupt
+and disables it at the pmic in that order. The last disable in
+cleanup_irq races with request_irq() in that it stomps over the
+enable issued by request_irq. Fix this by not writing to the pmic
+in cleanup_irq. The latched bit will be left set in the pmic,
+which will not send us more interrupts even if the enable bit
+stays enabled.
 
-Changes in v3:
-  Drop [v2 07/10] as this is no longer needed after this change:
-		50fc4c8cd240 ("spmi: spmi-pmic-arb: fix irq_set_type race condition")
-  In [v3 07/10], updated the author email to match with Signed-off-by.
-  In [v3 10/10], added the binding change in this series, and addressed issues in "make dt_binding_check"
+When a client wants to request an interrupt, use the activate
+callback on the irq_domain to clear latched bit. This ensures
+that the latched, if set due to the above changes in cleanup_irq
+or when the bootloader leaves it set, gets cleaned up, paving way
+for upcoming interrupts to trigger.
 
-Changes in v2:
-  In [v2 01/10], added code to handle spurious interrupt.
-  In [v2 03/10], adressed minor comments to update the code logic.
-  In [v2 04/10], minor update to detect spurious interrupt.
-  In [v2 05/10], added Fixes tag.
-  In [v2 07/10], added Fixes tag and updated commit text to explain the problem.
-  In [v2 08/10], added binding change to make interrupt properties as optional.
-  In [v2 09/10], updated to check presence of "interrupt-controller" property.
+With this, there is a possibility of unwanted triggering of
+interrupt right after the latched bit is cleared - the interrupt
+may be left enabled too. To avoid that, clear the enable first
+followed by clearing the latched bit in the activate callback.
 
+Fixes: 6bc546e71e50 ("spmi: pmic-arb: cleanup unrequested irqs")
+Fixes: 02abec3616c1 ("spmi: pmic-arb: rename pa_xx to pmic_arb_xx and other cleanup")
+Signed-off-by: Subbaraman Narayanamurthy <subbaram@codeaurora.org>
+[collinsd@codeaurora.org: fix merge conflict]
+Signed-off-by: David Collins <collinsd@codeaurora.org>
+Signed-off-by: Fenglin Wu <quic_fenglinw@quicinc.com>
+---
+ drivers/spmi/spmi-pmic-arb.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
-Abhijeet Dharmapurikar (1):
-  spmi: pmic-arb: add a print in cleanup_irq
-
-Ashay Jaiswal (1):
-  spmi: pmic-arb: add support to dispatch interrupt based on IRQ status
-
-David Collins (6):
-  spmi: pmic-arb: check apid against limits before calling irq handler
-  spmi: pmic-arb: correct duplicate APID to PPID mapping logic
-  spmi: pmic-arb: block access for invalid PMIC arbiter v5 SPMI writes
-  dt-bindings: spmi: spmi-pmic-arb: make interrupt properties as
-    optional
-  spmi: pmic-arb: make interrupt support optional
-  spmi: pmic-arb: increase SPMI transaction timeout delay
-
-Fenglin Wu (1):
-  spmi: pmic-arb: handle spurious interrupt
-
-Subbaraman Narayanamurthy (1):
-  spmi: pmic-arb: do not ack and clear peripheral interrupts in
-    cleanup_irq
-
- .../bindings/spmi/qcom,spmi-pmic-arb.yaml          |   3 -
- drivers/spmi/spmi-pmic-arb.c                       | 136 +++++++++++++++------
- 2 files changed, 96 insertions(+), 43 deletions(-)
-
+diff --git a/drivers/spmi/spmi-pmic-arb.c b/drivers/spmi/spmi-pmic-arb.c
+index 719bd73..2bc3b88 100644
+--- a/drivers/spmi/spmi-pmic-arb.c
++++ b/drivers/spmi/spmi-pmic-arb.c
+@@ -593,16 +593,6 @@ static void cleanup_irq(struct spmi_pmic_arb *pmic_arb, u16 apid, int id)
+ 	dev_err_ratelimited(&pmic_arb->spmic->dev, "%s apid=%d sid=0x%x per=0x%x irq=%d\n",
+ 			__func__, apid, sid, per, id);
+ 	writel_relaxed(irq_mask, pmic_arb->ver_ops->irq_clear(pmic_arb, apid));
+-
+-	if (pmic_arb_write_cmd(pmic_arb->spmic, SPMI_CMD_EXT_WRITEL, sid,
+-			(per << 8) + QPNPINT_REG_LATCHED_CLR, &irq_mask, 1))
+-		dev_err_ratelimited(&pmic_arb->spmic->dev, "failed to ack irq_mask = 0x%x for ppid = %x\n",
+-				irq_mask, ppid);
+-
+-	if (pmic_arb_write_cmd(pmic_arb->spmic, SPMI_CMD_EXT_WRITEL, sid,
+-			       (per << 8) + QPNPINT_REG_EN_CLR, &irq_mask, 1))
+-		dev_err_ratelimited(&pmic_arb->spmic->dev, "failed to ack irq_mask = 0x%x for ppid = %x\n",
+-				irq_mask, ppid);
+ }
+ 
+ static int periph_interrupt(struct spmi_pmic_arb *pmic_arb, u16 apid)
+@@ -780,6 +770,7 @@ static int qpnpint_irq_domain_activate(struct irq_domain *domain,
+ 	u16 apid = hwirq_to_apid(d->hwirq);
+ 	u16 sid = hwirq_to_sid(d->hwirq);
+ 	u16 irq = hwirq_to_irq(d->hwirq);
++	u8 buf;
+ 
+ 	if (pmic_arb->apid_data[apid].irq_ee != pmic_arb->ee) {
+ 		dev_err(&pmic_arb->spmic->dev, "failed to xlate sid = %#x, periph = %#x, irq = %u: ee=%u but owner=%u\n",
+@@ -788,6 +779,10 @@ static int qpnpint_irq_domain_activate(struct irq_domain *domain,
+ 		return -ENODEV;
+ 	}
+ 
++	buf = BIT(irq);
++	qpnpint_spmi_write(d, QPNPINT_REG_EN_CLR, &buf, 1);
++	qpnpint_spmi_write(d, QPNPINT_REG_LATCHED_CLR, &buf, 1);
++
+ 	return 0;
+ }
+ 
 -- 
 2.7.4
 
