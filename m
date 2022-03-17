@@ -2,185 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 464BBC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45711C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:29:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235890AbiCQP3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:29:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52948 "EHLO
+        id S235859AbiCQPaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235872AbiCQP3o (ORCPT
+        with ESMTP id S235772AbiCQPaR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:29:44 -0400
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8097916D8E5;
-        Thu, 17 Mar 2022 08:28:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=y4zQ1pCi+Ja432DNErfOtT8ZJqRK7E3h1dIL5wLYIWo=; b=cXeUQqNn5B0KNtRS5NtCm6/bMt
-        RTeN/8nFoPfSwopmAfR6IXzhHm540FMLa7leDFbGcIBe9YZYC11iCKl3ubpHfNF953XRkx+XweSMJ
-        Qcj0O5/mnIxTNfhOo+RWfxQc3Me+NrHykf7T19ZiGPI4DotI0oLe5lHzZyj/l/O9u6kw=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:59880 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1nUs33-0005pV-Ax; Thu, 17 Mar 2022 11:28:22 -0400
-Date:   Thu, 17 Mar 2022 11:28:20 -0400
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-rtc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <20220317112820.7617d0d68f50f24ad0c3739e@hugovil.com>
-In-Reply-To: <Yiplnqlz2DSXCvi8@piout.net>
-References: <20220309162301.61679-1-alexandre.belloni@bootlin.com>
-        <20220309162301.61679-11-alexandre.belloni@bootlin.com>
-        <20220310110918.41a681474f5a0e11abdedc39@hugovil.com>
-        <Yiplnqlz2DSXCvi8@piout.net>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 11/29] rtc: pcf2127: set RTC_FEATURE_ALARM_RES_2S
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 17 Mar 2022 11:30:17 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9010316F6CE
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:29:00 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id t25so9605379lfg.7
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=73OoSacSDvFhxxRgzZaXeE59BqLPs6obhzhzNPkozSw=;
+        b=QUREg4kHWnnp6zurzo6oI5HEMeBnr61/oZMWQty1m0hGnaSy6HHU+Pfz50LUnG6gNd
+         Jlu+274qPi6Az/jM03t9VrxgM7tpCFw83n6A31VPmmfesDnbJaQvy9j0DuaaQFPv7/fW
+         J4pbig/s1jI787oVJzsc3ZG992IfU2uLezW9/Bm3sTdMqIu7n/SsAq1ZBSTlPCcbwQp0
+         467sz6nDtQeedGX0wdjypIN4iy8ZKHc0QJOnV1voStHTwJEAUXaPBrh1XVvTi31wv6Z/
+         W8nRkm7wEamzAiiPu3qqVmHiEhTq1PcRspyNw+r+JJ0UM85EfKr+NBgKqwMek6EntNKl
+         7URg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=73OoSacSDvFhxxRgzZaXeE59BqLPs6obhzhzNPkozSw=;
+        b=qyyZ3h2YsEaZe6h6j2uH/ltW15Z6EdIBwsdqe+nyMmwZXDAQ6UWLdeqSadHCQSkh3K
+         12DOMh7V8kqSFVB2R6XHBqvzR/038FHTJe25BM5DtM4ku8OTR8VpI3iJpW24j6BxnXwA
+         CdG6yY/Wlm66bpDvRI/qiqCVx0t8kAj9q3YZLIhdAFbhP2P3NZAuh4sDcJKQZiZM7ge2
+         bDhlBw3eDxmHyF2C4VePIOm7eSUZRiDbKY2nS1cLrrWAayCRL4xPnQxKD2LN++MeJEPc
+         CyGcYn/V009BtNeOgaLzS64BRF2Z50ErgN72nmLO5HDhW/uulNm1iR4r0W8Js5+gHrAQ
+         Bw5w==
+X-Gm-Message-State: AOAM5320E+Jc/3emPbGoYb9yyQ0qV0Yo7Eyoz3/iHrtQKL2QHKz/1aJH
+        mVVuUkmawyzRYxxDz55ApYFhlQ==
+X-Google-Smtp-Source: ABdhPJzLmU0zY5O6Hkp9EoPU07swOYLlw9GI/BmLO8proJ4mupQjGZDCZFz2uFy/Qopw0Y92YU405A==
+X-Received: by 2002:a05:6512:2037:b0:448:92de:21de with SMTP id s23-20020a056512203700b0044892de21demr3216056lfs.52.1647530938721;
+        Thu, 17 Mar 2022 08:28:58 -0700 (PDT)
+Received: from localhost.localdomain (h-155-4-129-34.NA.cust.bahnhof.se. [155.4.129.34])
+        by smtp.gmail.com with ESMTPSA id m15-20020a2eb6cf000000b00247e82c1c32sm466565ljo.89.2022.03.17.08.28.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 08:28:57 -0700 (PDT)
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+To:     Kalle Valo <kvalo@kernel.org>, linux-wireless@vger.kernel.org
+Cc:     Yann Gautier <yann.gautier@foss.st.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Gustavo Padovan <gustavo.padovan@collabora.com>,
+        Adrian Ratiu <adrian.ratiu@collabora.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        brcm80211-dev-list.pdl@broadcom.com, linux-kernel@vger.kernel.org
+Subject: [PATCH] brcmfmac: Avoid keeping power to SDIO card unless WOWL is used
+Date:   Thu, 17 Mar 2022 16:28:46 +0100
+Message-Id: <20220317152846.246281-1-ulf.hansson@linaro.org>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Mar 2022 21:58:49 +0100
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+Keeping the power to the SDIO card during system wide suspend, consumes
+energy. Especially on battery driven embedded systems, this can be a
+problem. Therefore, let's change the behaviour into allowing the SDIO card
+to be powered off, unless WOWL is supported and enabled.
 
-> On 10/03/2022 11:09:18-0500, Hugo Villeneuve wrote:
-> > On Wed,  9 Mar 2022 17:22:42 +0100
-> > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
-> > 
-> > > The PCF2127 doesn't support UIE because setting an alarm to fire every
-> > > second confuses the chip and the fastest we can go is an alarm every 2
-> > > seconds.
-> > 
-> > Hi Alexandre,
-> > can you describe what "confuses the chip" means?
-> > 
-> > In my experimental PCF2131 driver, I activated UIE and it seems to be working fine at 1s intervals, but since it is similar to PCF2127, maybe there is still a problem and I just didn't see it.
-> > 
-> 
-> Did you remove uie_unsupported? Else, you may have been using uie
-> emulation. In my tests last year, the pcf2127 was failing to reassert
-> the interrupt if an alarm was set every second. The same happens on
-> other NXP based RTCs (i.e. including microcrystal ones).
-> 
-> I'm going to test again soon (and also reply to your series).
+Note that, the downside from this change, is that at system resume the SDIO
+card needs to be re-initialized and the FW must re-programmed. Even it that
+may take some time to complete, it should we worth it, rather than draining
+a battery.
 
-Hi,
-I have now access to a board with a PCF2129T.
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+---
 
-I have been able to test with it by sending ioctl RTC_UIE_ON and confirm that it exhibits the problem you reported. Basically, the first alarm triggers the IRQ after 1s, as expected, but the next configured alarm 1s into the future never triggers the IRQ again. But the time/date registers seem to be updating (incrementin) correctly after that.
+Please note that, I have only compile-tested this patch, so I am relying on help
+from Yann and others to run tests on real HW.
 
-Here is a log of my tests, adding dump of registers and a lot of debug traces:
+Kind regards
+Ulf Hansson
 
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [02] 00000000: 00                                               .
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [03] 00000000: 04 00 15 17 04 03 22                             ......"
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time: 15:00:04 (month=17)
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [02] 00000000: 00                                               .
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [03] 00000000: 04 00 15 17 04 03 22                             ......"
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time: 15:00:04 (month=17)
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [02] 00000000: 00                                               .
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [03] 00000000: 04 00 15 17 04 03 22                             ......"
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time: 15:00:04 (month=17)
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_set_alarm
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [01] 00000000: 04                                               .
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C gwrite: [0A] 00000000: 05 00 15 17 80                                   .....
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_alarm
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [01] 00000000: 04                                               .
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [0A] 00000000: 05 00 15 17 80                                   .....
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_alarm: 15:00:05 (month=17)
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [02] 00000000: 00                                               .
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [03] 00000000: 04 00 15 17 04 03 22                             ......"
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time: 15:00:04 (month=17)
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_alarm_irq_enable: enable = 1
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [01] 00000000: 04                                               .
-[Thu Mar 17 11:02:43 2022] rtc-pcf2127-i2c 4-0051: I2C write:  [01] 00000000: 06                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_irq: irq = 211
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [00] 00000000: 00 16 00 05 00 15 17 04 03 22 05 00 15 17 80 20  ........."..... 
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [00] 00000010: 82 00 80 00 00 00 00 00 00 08                    ..........
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [01] 00000000: 16                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [00] 00000000: 00                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C write:  [01] 00000000: 06                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [02] 00000000: 00                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [03] 00000000: 05 00 15 17 04 03 22                             ......"
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time: 15:00:05 (month=17)
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [02] 00000000: 00                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [03] 00000000: 05 00 15 17 04 03 22                             ......"
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time: 15:00:05 (month=17)
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_set_alarm
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [01] 00000000: 06                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C gwrite: [0A] 00000000: 06 00 15 17 80                                   .....
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_alarm
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [01] 00000000: 06                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [0A] 00000000: 06 00 15 17 80                                   .....
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_alarm: 15:00:06 (month=17)
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [02] 00000000: 00                                               .
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [03] 00000000: 05 00 15 17 04 03 22                             ......"
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_read_time: 15:00:05 (month=17)
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: pcf2127_rtc_alarm_irq_enable: enable = 1
-[Thu Mar 17 11:02:44 2022] rtc-pcf2127-i2c 4-0051: I2C read:   [01] 00000000: 06   
+---
+ .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 33 +++++++++++--------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
 
-Note: doing the same tests without dump and debug traces doesn't improve things.
-
-I even did some tests where, in pcf2127_rtc_set_alarm(), I disabled all the alarm registers (set to 0x80), except for the SECONDS alarm register. In this case, I observed that the IRQ is triggered after 61s. This seems to indicate that the alarm detection circuitry is still somewhat operating (AF flag / INT pin), but there is probably a bug in the IC when the configured alarm is close to current time after AF is set once...
-
-I also have done other tests by disabling then re-enabling AIE, stopping and restarting the oscillator (STOP bit), etc, but to no avail.
-
-However, in pcf2127_rtc_set_alarm(), if I set the alarm 2s past the current time, instead of 1s, then the IRQ is always triggered after 2s.
-
-I have opened a support case with NXP to investigate this strange behavior.
-
-Hugo.
-
-
-> > > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > > ---
-> > >  drivers/rtc/rtc-pcf2127.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
-> > > index f8469b134411..63b275b014bd 100644
-> > > --- a/drivers/rtc/rtc-pcf2127.c
-> > > +++ b/drivers/rtc/rtc-pcf2127.c
-> > > @@ -656,6 +656,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
-> > >  	pcf2127->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
-> > >  	pcf2127->rtc->range_max = RTC_TIMESTAMP_END_2099;
-> > >  	pcf2127->rtc->set_start_time = true; /* Sets actual start to 1970 */
-> > > +	set_bit(RTC_FEATURE_ALARM_RES_2S, pcf2127->rtc->features);
-> > >  	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, pcf2127->rtc->features);
-> > >  	clear_bit(RTC_FEATURE_ALARM, pcf2127->rtc->features);
-> > >  
-> > > -- 
-> > > 2.35.1
-> > > 
-> > 
-> > 
-> > -- 
-> > Hugo Villeneuve <hugo@hugovil.com>
-> 
-> -- 
-> Alexandre Belloni, co-owner and COO, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
-> 
-
-
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+index ac02244a6fdf..351886c9d68e 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+@@ -1119,9 +1119,21 @@ void brcmf_sdio_wowl_config(struct device *dev, bool enabled)
+ {
+ 	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
+ 	struct brcmf_sdio_dev *sdiodev = bus_if->bus_priv.sdio;
++	mmc_pm_flag_t pm_caps = sdio_get_host_pm_caps(sdiodev->func1);
+ 
+-	brcmf_dbg(SDIO, "Configuring WOWL, enabled=%d\n", enabled);
+-	sdiodev->wowl_enabled = enabled;
++	/* Power must be preserved to be able to support WOWL. */
++	if (!(pm_caps & MMC_PM_KEEP_POWER))
++		goto notsup;
++
++	if (sdiodev->settings->bus.sdio.oob_irq_supported ||
++	    pm_caps & MMC_PM_WAKE_SDIO_IRQ) {
++		sdiodev->wowl_enabled = enabled;
++		brcmf_dbg(SDIO, "Configuring WOWL, enabled=%d\n", enabled);
++		return;
++	}
++
++notsup:
++	brcmf_dbg(SDIO, "WOWL not supported\n");
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+@@ -1130,7 +1142,7 @@ static int brcmf_ops_sdio_suspend(struct device *dev)
+ 	struct sdio_func *func;
+ 	struct brcmf_bus *bus_if;
+ 	struct brcmf_sdio_dev *sdiodev;
+-	mmc_pm_flag_t pm_caps, sdio_flags;
++	mmc_pm_flag_t sdio_flags;
+ 	int ret = 0;
+ 
+ 	func = container_of(dev, struct sdio_func, dev);
+@@ -1142,20 +1154,15 @@ static int brcmf_ops_sdio_suspend(struct device *dev)
+ 	bus_if = dev_get_drvdata(dev);
+ 	sdiodev = bus_if->bus_priv.sdio;
+ 
+-	pm_caps = sdio_get_host_pm_caps(func);
+-
+-	if (pm_caps & MMC_PM_KEEP_POWER) {
+-		/* preserve card power during suspend */
++	if (sdiodev->wowl_enabled) {
+ 		brcmf_sdiod_freezer_on(sdiodev);
+ 		brcmf_sdio_wd_timer(sdiodev->bus, 0);
+ 
+ 		sdio_flags = MMC_PM_KEEP_POWER;
+-		if (sdiodev->wowl_enabled) {
+-			if (sdiodev->settings->bus.sdio.oob_irq_supported)
+-				enable_irq_wake(sdiodev->settings->bus.sdio.oob_irq_nr);
+-			else
+-				sdio_flags |= MMC_PM_WAKE_SDIO_IRQ;
+-		}
++		if (sdiodev->settings->bus.sdio.oob_irq_supported)
++			enable_irq_wake(sdiodev->settings->bus.sdio.oob_irq_nr);
++		else
++			sdio_flags |= MMC_PM_WAKE_SDIO_IRQ;
+ 
+ 		if (sdio_set_host_pm_flags(sdiodev->func1, sdio_flags))
+ 			brcmf_err("Failed to set pm_flags %x\n", sdio_flags);
 -- 
-Hugo Villeneuve <hugo@hugovil.com>
+2.25.1
+
