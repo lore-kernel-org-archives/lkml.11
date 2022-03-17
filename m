@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EFA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3306AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 12:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234350AbiCQM4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 08:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
+        id S234398AbiCQM4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 08:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234497AbiCQMxQ (ORCPT
+        with ESMTP id S234550AbiCQMxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 08:53:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536831FD2F0;
-        Thu, 17 Mar 2022 05:51:10 -0700 (PDT)
+        Thu, 17 Mar 2022 08:53:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA90E1FDFF1;
+        Thu, 17 Mar 2022 05:51:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81C4661021;
-        Thu, 17 Mar 2022 12:51:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89788C340E9;
-        Thu, 17 Mar 2022 12:51:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BDF161240;
+        Thu, 17 Mar 2022 12:51:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23D8EC340EF;
+        Thu, 17 Mar 2022 12:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647521468;
-        bh=xYDt82oztVLPKZHK4RGXMtKudy0jz5x/oNRMn0IWQ5M=;
+        s=korg; t=1647521472;
+        bh=18sop7HHeHWk2N9tOaxxTwb116X8umHAw2ytwpnKPGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V1mXoZnBy3nzmfwQwCEDyS4s9eOCK9as8aIIVqWC9AezUIrzZhL7OWk9srg/NCLE1
-         AMp0SwSt+TFvAvO2jPd51QFn6mcxe66YYglhIM979cwHRzVqkjKnRKXJOPF2k6gC3c
-         ISgQjJPItDl5/1Sh8o3asMJ+mH9fV/XwLbg1hdvc=
+        b=mn3KS5DFMzll3jRsoz5whsQVMqRyhuA2qMPfszOH8USfDzeeNDy5bqM2/rpm4F5PH
+         WNvHqZncCU63s1eVynEA7S/M4aBFkRmoU1NwJQ1eHUhzqtyOKa7s27bDX5wE52OaCM
+         9vaeI+D1oYnvDYbk0B7ddZ2+rUp/ORbsIe+W+k/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulrich Hecht <uli+renesas@fpond.eu>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Jia-Ju Bai <baijiaju1990@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 15/25] can: rcar_canfd: rcar_canfd_channel_probe(): register the CAN device when fully ready
-Date:   Thu, 17 Mar 2022 13:46:02 +0100
-Message-Id: <20220317124526.744846436@linuxfoundation.org>
+Subject: [PATCH 5.15 16/25] atm: firestream: check the return value of ioremap() in fs_init()
+Date:   Thu, 17 Mar 2022 13:46:03 +0100
+Message-Id: <20220317124526.773280934@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317124526.308079100@linuxfoundation.org>
 References: <20220317124526.308079100@linuxfoundation.org>
@@ -51,48 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit c5048a7b2c23ab589f3476a783bd586b663eda5b ]
+[ Upstream commit d4e26aaea7f82ba884dcb4acfe689406bc092dc3 ]
 
-Register the CAN device only when all the necessary initialization is
-completed. This patch makes sure all the data structures and locks are
-initialized before registering the CAN device.
+The function ioremap() in fs_init() can fail, so its return value should
+be checked.
 
-Link: https://lore.kernel.org/all/20220221225935.12300-1-prabhakar.mahadev-lad.rj@bp.renesas.com
-Reported-by: Pavel Machek <pavel@denx.de>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Pavel Machek <pavel@denx.de>
-Reviewed-by: Ulrich Hecht <uli+renesas@fpond.eu>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/rcar/rcar_canfd.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/atm/firestream.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index 388521e70837..2f44c567ebd7 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1720,15 +1720,15 @@ static int rcar_canfd_channel_probe(struct rcar_canfd_global *gpriv, u32 ch,
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index 3bc3c314a467..4f67404fe64c 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1676,6 +1676,8 @@ static int fs_init(struct fs_dev *dev)
+ 	dev->hw_base = pci_resource_start(pci_dev, 0);
  
- 	netif_napi_add(ndev, &priv->napi, rcar_canfd_rx_poll,
- 		       RCANFD_NAPI_WEIGHT);
-+	spin_lock_init(&priv->tx_lock);
-+	devm_can_led_init(ndev);
-+	gpriv->ch[priv->channel] = priv;
- 	err = register_candev(ndev);
- 	if (err) {
- 		dev_err(&pdev->dev,
- 			"register_candev() failed, error %d\n", err);
- 		goto fail_candev;
- 	}
--	spin_lock_init(&priv->tx_lock);
--	devm_can_led_init(ndev);
--	gpriv->ch[priv->channel] = priv;
- 	dev_info(&pdev->dev, "device registered (channel %u)\n", priv->channel);
- 	return 0;
+ 	dev->base = ioremap(dev->hw_base, 0x1000);
++	if (!dev->base)
++		return 1;
  
+ 	reset_chip (dev);
+   
 -- 
 2.34.1
 
