@@ -2,98 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C2A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237956AbiCQTRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 15:17:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
+        id S237976AbiCQTRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 15:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237955AbiCQTRP (ORCPT
+        with ESMTP id S237967AbiCQTRP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 17 Mar 2022 15:17:15 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74722261CA;
-        Thu, 17 Mar 2022 12:15:52 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id rm8-20020a17090b3ec800b001c55791fdb1so6356220pjb.1;
-        Thu, 17 Mar 2022 12:15:52 -0700 (PDT)
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F702274CC
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 12:15:53 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id mz9-20020a17090b378900b001c657559290so6138624pjb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 12:15:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ra3lig8Mw5jgrfIYORH6OPZQGSdQZUTC0lhaPMPwJKY=;
-        b=M4AvDjXI/NitZPtXNLOus/tMJ6/l+u6+pfomdfirI+wQmqSMdTDoI/O/PZPXJSj+b9
-         KLDjtwGI4mJga86llA0NxD1YdZMQE23lNYkgShZQTlJpU8i4CDveEVR4f4/KavMXqX6L
-         PBQTxnsS0gFUXD5pm/jtbVBQQ1ZxWOsnSYLBsPIaC5FZzZu+UheAbZZIexi70gE569ys
-         X7Dhp2n/ngtAI/QXcR30cBMLEZ2YxUNwl0MsO/azrk0MDrQChZghK3wWbriiYnj5yFCi
-         J0L0Z8biOyjoKGk6A7N4vTDG+Fd3W5CmxXWc3/zrU7mVJQTxM9h462oWG4sQ6AUGleKL
-         x+4w==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vB5f3WAF1j14ezOj7+5eexYupdGogMxyhohhnTpJG3I=;
+        b=rsLp6M4LC+ha3ufnaOhyywMK6wmY6Hf56U49g+9vNFfpqvMCyNPyBpiXhCkP4xvbFY
+         9E0p8IUr27FGHaoK7iyxQC3LZEG+aoMEI0eUOhXhY5l8IV7wep6uEjjREn4iPEyxIWfa
+         wbW2PSjskg54Dad/119rVJKOnZZ/dKg/Yf0disLS6nfuXqzpBD2K+wgg44U2t++ZNdaj
+         nwwN1p3XtunPwuDDi16+096nin1zKvJ1Iwz0M45yHJl5c4CRlf06irAv0f0VrmFpc5jp
+         GmsJaef8JdJ61XJO/g5QB+dOFOqwY55fZwTUT9FvXAolqNcCT0I12Uu8mpBgBGF9/QUB
+         MMuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ra3lig8Mw5jgrfIYORH6OPZQGSdQZUTC0lhaPMPwJKY=;
-        b=aCloF7s0oi0Q370wz/LLkeSVWSzQAGk3hP8BjbDOo23tmf8xKm7F9eyvOPluOfoG5h
-         LurCbAjTUJOlCnfYAleL3MwS7uF+hKVibAcF+HCL45GSrTKy4t6XxPoaGMR305NoaSlM
-         +CEs3kNqFd0taaaWpdcrpwn4oqx+gRPUGFg+iuNxdHne70byVYUoXWYyeII6DawEYeBb
-         vDFsGTvZsVnUA/DbUoHy5rNjywmcLdaAlMSeLJjiE4BsuAvvKVzy8jJiIuGzyy6a0kK/
-         9CKzTEWGRxgBa8QLtFosPHCfn2+V1a7jAJRkq3zXPJ4f+TL0qNkNtmk0lfegIj0ZraDc
-         o58Q==
-X-Gm-Message-State: AOAM530y8/RfsPxXnF/GrHY5mJHb5rBwupfz5QYqdlya3cDKpHBXqIvX
-        /1D6snZlxRFLgt6vbZqKOGQ=
-X-Google-Smtp-Source: ABdhPJzZrFOfTfDFR/A+MlW2V7H/O5+s8KWluMgYHWIxVUMEOBwUxz7hGpUNjliJLIqA0EyC3gBN2A==
-X-Received: by 2002:a17:90a:558b:b0:1c6:6f44:a36a with SMTP id c11-20020a17090a558b00b001c66f44a36amr7028417pji.141.1647544551687;
-        Thu, 17 Mar 2022 12:15:51 -0700 (PDT)
-Received: from localhost.localdomain ([122.161.51.18])
-        by smtp.gmail.com with ESMTPSA id d11-20020a056a0010cb00b004e1b76b09c0sm7623076pfu.74.2022.03.17.12.15.48
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=vB5f3WAF1j14ezOj7+5eexYupdGogMxyhohhnTpJG3I=;
+        b=j+dBmc7mIV6sU/u75lwwGBEML4PFiO0/yFKWEcJiE2hgBsmR+MkErfNhOtAz4f68pe
+         ERWzQE0EzqGo+Egr3NPGn1a1IQE+AaUwGmofMHcWuamz6iNDoYyQS4F8EtDyuRTBeCW7
+         d5S6IJ1pkdSaVFAliavr3ksIYBIKQs52x0pT24+vdlghpT2aX0WDxWGrbA1osjUmZ2kC
+         jF5ieK4y8TsbSWht3jLWesjY4YBVgigU5LDMz6GTbMlAOlzGW0lzdw7E/ynNw1/7USyL
+         Xha3ZwovEQjB5iAuY3qKe9PNVCOj/nLqfOsVIFaDn6FrBoO4UTPXik1gSiaZK6/CXMeR
+         6NUA==
+X-Gm-Message-State: AOAM532PMQRDPNpgPygvoJPk3LiSWdfZk/2a8bsSUNiD+7PHPnZBS+sC
+        uP3/jIsnwcnXV+wznHKa+94ygw==
+X-Google-Smtp-Source: ABdhPJwHtQFbcAMtkjIIk7TTag/gBPH400hGz9/wqUBz3Ag9FMPGaHQJZvaF1c312w1xdnvPWdUyvA==
+X-Received: by 2002:a17:90b:4d11:b0:1c2:1939:ca83 with SMTP id mw17-20020a17090b4d1100b001c21939ca83mr17770961pjb.65.1647544552516;
+        Thu, 17 Mar 2022 12:15:52 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id j12-20020a056a00234c00b004fa042e822bsm7558479pfj.14.2022.03.17.12.15.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Thu, 17 Mar 2022 12:15:51 -0700 (PDT)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Subject: [PATCH v2 3/3] ARM: dts: aspeed: Remove arch timer clocks property
-Date:   Fri, 18 Mar 2022 00:45:26 +0530
-Message-Id: <20220317191527.96237-4-singh.kuldeep87k@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220317191527.96237-1-singh.kuldeep87k@gmail.com>
-References: <20220317191527.96237-1-singh.kuldeep87k@gmail.com>
-MIME-Version: 1.0
+Date:   Thu, 17 Mar 2022 12:15:51 -0700 (PDT)
+X-Google-Original-Date: Thu, 17 Mar 2022 12:15:46 PDT (-0700)
+Subject:     Re: [PATCH 17/18] dt-bindings: irqchip: sifive: include generic schema
+In-Reply-To: <20220317115705.450427-16-krzysztof.kozlowski@canonical.com>
+CC:     tglx@linutronix.de, Marc Zyngier <maz@kernel.org>,
+        robh+dt@kernel.org, krzk+dt@kernel.org, afaerber@suse.de,
+        mani@kernel.org, linusw@kernel.org, kaloz@openwrt.org,
+        khalasa@piap.pl, michael@walle.cc, mark-pk.tsai@mediatek.com,
+        daniel@thingy.jp, j.neuschaefer@gmx.net,
+        Paul Walmsley <paul.walmsley@sifive.com>, nm@ti.com,
+        kristo@kernel.org, ssantosh@kernel.org, narmstrong@baylibre.com,
+        dinguyen@kernel.org, cristian.ciocaltea@gmail.com,
+        qiangqing.zhang@nxp.com, l.stach@pengutronix.de,
+        paul@crapouillou.net, jiaxun.yang@flygoat.com,
+        claudiu.beznea@microchip.com, jason@lakedaemon.net,
+        paulburton@kernel.org, tsbogend@alpha.franken.de,
+        mail@birger-koblitz.de, bert@biot.com, john@phrozen.org,
+        geert+renesas@glider.be, sagar.kadam@sifive.com, s-anna@ti.com,
+        lokeshvutla@ti.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-actions@lists.infradead.org, openbmc@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-oxnas@groups.io,
+        krzysztof.kozlowski@canonical.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     krzysztof.kozlowski@canonical.com
+Message-ID: <mhng-8f60f19c-40cb-4b5e-b392-9cdf8adc1d13@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Arch timer either require clock-frequency property or doesn't need to
-specify clock at all in DT. In general, frequency can be determined
-internally and in case of brokern firmwares, need to extend
-clock-frequency to pass info to driver.
+On Thu, 17 Mar 2022 04:57:04 PDT (-0700), krzysztof.kozlowski@canonical.com wrote:
+> Include generic interrupt-controller.yaml schema, which enforces node
+> naming and other generic properties.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml     | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> index 27092c6a86c4..e3c08cff89d2 100644
+> --- a/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> +++ b/Documentation/devicetree/bindings/interrupt-controller/sifive,plic-1.0.0.yaml
+> @@ -44,6 +44,9 @@ maintainers:
+>    - Paul Walmsley  <paul.walmsley@sifive.com>
+>    - Palmer Dabbelt <palmer@dabbelt.com>
+>
+> +allOf:
+> +  - $ref: /schemas/interrupt-controller.yaml#
+> +
+>  properties:
+>    compatible:
+>      oneOf:
+> @@ -91,7 +94,7 @@ required:
+>    - interrupts-extended
+>    - riscv,ndev
+>
+> -additionalProperties: false
+> +unevaluatedProperties: false
+>
+>  examples:
+>    - |
 
-Aspeed BMC is the platform which defines clocks property, an invalid
-entry which can be safely removed.
+Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 
-Moreover, clocks also matches incorrectly with the regex pattern.
-Remove this entry altogether to fix it.
-'clocks' does not match any of the regexes: 'pinctrl-[0-9]+'
+I'm assuming this is going in along with the others.
 
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
----
- arch/arm/boot/dts/aspeed-g6.dtsi | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..d5ef9aceb632 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -64,7 +64,6 @@ timer {
- 			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
- 			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>,
- 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_LOW)>;
--		clocks = <&syscon ASPEED_CLK_HPLL>;
- 		arm,cpu-registers-not-fw-configured;
- 		always-on;
- 	};
--- 
-2.25.1
-
+Thanks!
