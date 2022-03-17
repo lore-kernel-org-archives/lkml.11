@@ -2,118 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C72C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34700C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 15:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236001AbiCQPjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 11:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S235730AbiCQPkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 11:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235963AbiCQPjH (ORCPT
+        with ESMTP id S231924AbiCQPkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 11:39:07 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3F920C194
-        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 08:37:51 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 624F55C052D;
-        Thu, 17 Mar 2022 11:37:50 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Thu, 17 Mar 2022 11:37:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to
-        :reply-to:sender:subject:subject:to:to; s=fm3; bh=j1NPISH+l624H2
-        cG6MYTSkySP6eLhrxXfSj11vAvYwo=; b=OEg4pekKGsqANjnlRxk6Ne+AKRv5J0
-        gC7chvs4deAZLS0IGG5xg4Of1D65Fzamd9mUuCvUoLnYn4xlIxU9oAdXjwtjx0Ks
-        KC91J9kj4ZNhKl0fIA/YPwzLZsMzBWpDvUcjb7oTEGAof2YmbxeT3FVdSJK7sxal
-        Tpr1F0M/iwE4LeOgUl+wnkdzp/tco7LVCuNDOjZbWIMyVr8SFB/kC5FOIvnZx/uv
-        ciEb56hSR6EOpwJNPBnhlDFXfxF181IKRYFviVJHiX99j1Lb5awrIHtlkhq5XwOL
-        ckwWPvXlltzxHnBRF6thhp/0WWwIOgJ2FcGglXqhzkxL4Ynn3mtsD6CQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=j1NPISH+l624H2cG6MYTSkySP6eLhrxXfSj11vAvYwo=; b=fsPD+QP4
-        oVKblv83NDRSSHsq8ic1HamtNf556nGnG96rIRcy6U/kkmmrE+vgioPHL+eZ62Kn
-        bkau6+QzC2KZ7teDzNah5mv88yVVPNfr6C7KS3v7ZapCBkIJwD58Pc6OnvUYeBkz
-        FLtkRFb0DBWWFQKqdIZnxxgbxWqzn1vh8GmmPnly5Dxf4mwugmehI+sS3teVK+s+
-        aT6Twa4cwnVdahGFFZQ6TqSsy3cfeaiKb0X4hC3WanxU/LYsK/+6UKWwC1CZZEsK
-        qlsK9etDMocxMbQlOGzK9cGvj9a776nbLMw6AefiaBin5CF6KeoWCBBXRKloHMNR
-        NeW0X4AQWZ30Ig==
-X-ME-Sender: <xms:zVUzYm9mayJt5TpNk0vu9qE5KQUzuTZ9vJJE6qPurGsnTzV-SYBzTA>
-    <xme:zVUzYmtzDB40YZGMo9KJIlCKSu4U_tvp1Chx0VD6Snv2fWjeJEXubhifRxJ-OKrhn
-    S5A6ZnCxhRgT1x_-g>
-X-ME-Received: <xmr:zVUzYsCeAyOxdTVA1UoIcgufxJ68CAft14qRUSabpkFcywONCyC7HlLvPdtVDTB9D3rbiG9sCKRCJjSQvA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefgedgjeejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfrhgggfestdhqredtredttdenucfhrhhomhepkghiucgj
-    rghnuceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepieejue
-    dvueduuefhgefhheeiuedvtedvuefgieegveetueeiueehtdegudehfeelnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepiihirdihrghnsehsvg
-    hnthdrtghomh
-X-ME-Proxy: <xmx:zVUzYueDDkdQvVcTsY8rJPVgFbfokYc_HWqCuQ9i1zcLxSWuM_fQAQ>
-    <xmx:zVUzYrN353Ikh7oS8nFdYl5Cj16xDOc9EGNppahPFkLxDXG384pAyA>
-    <xmx:zVUzYollA_b2Eb__yMI4PWwBetcNKYBXJKEv5XXeW-snDoJ-XgM8aw>
-    <xmx:zlUzYmpseKnei9xDovW9v5iwid23SPpZudGziSqwNwTO96Kk8xiCaQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Mar 2022 11:37:49 -0400 (EDT)
-From:   Zi Yan <zi.yan@sent.com>
-To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Zi Yan <ziy@nvidia.com>
-Subject: [PATCH v8 5/5] drivers: virtio_mem: use pageblock size as the minimum virtio_mem size.
-Date:   Thu, 17 Mar 2022 11:37:33 -0400
-Message-Id: <20220317153733.2171277-6-zi.yan@sent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317153733.2171277-1-zi.yan@sent.com>
-References: <20220317153733.2171277-1-zi.yan@sent.com>
-Reply-To: Zi Yan <ziy@nvidia.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+        Thu, 17 Mar 2022 11:40:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1256F20C2E0;
+        Thu, 17 Mar 2022 08:39:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A37256199A;
+        Thu, 17 Mar 2022 15:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33E67C340E9;
+        Thu, 17 Mar 2022 15:39:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647531560;
+        bh=kAnUC1aavvusyWa+wFL6sbzRNu9ksr/TulLSJxlxVL8=;
+        h=From:To:Subject:Date:From;
+        b=syX9WOU1OyD5EzA6dIyZgD/DEBIhb1Bfem0i5y0y9fP0z9TLnbqKxkmWgkWUT0DL1
+         rcEOhYwMEVM6jtuI0GJefJevUgNMCqKLioJ0rtpdIFeBi/ZuKtXHASYu0G5IVUuPqB
+         ANVUCGbTaBX8KspC8/H3urbvthJvsLWbcUNru5ygQ97HXoDG1e5MUw1Y1zX+0lZRyN
+         Gtfi3Ij95S+gTsC+n46n5oT8dNNVecSuaj6CN6DDq4slIsjcz1DbCPN7Z9wRroqCQp
+         Uca2MxPc989aHEWjYceokpcIYAHSBlqNKZiud9eDGsrepAfIrNNqEKaWXpHC6whETP
+         pQ/pQ4+RrJdQw==
+From:   zanussi@kernel.org
+To:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Carsten Emde <C.Emde@osadl.org>,
+        John Kacur <jkacur@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Wagner <wagi@monom.org>,
+        Clark Williams <williams@redhat.com>,
+        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
+        Tom Zanussi <zanussi@kernel.org>
+Subject: [PATCH RT 0/2] Linux v5.4.182-rt72-rc1
+Date:   Thu, 17 Mar 2022 10:39:15 -0500
+Message-Id: <cover.1647531549.git.zanussi@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zi Yan <ziy@nvidia.com>
+From: Tom Zanussi <zanussi@kernel.org>
 
-alloc_contig_range() now only needs to be aligned to pageblock_order,
-drop virtio_mem size requirement that it needs to be the max of
-pageblock_order and MAX_ORDER.
+Dear RT Folks,
 
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- drivers/virtio/virtio_mem.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+This is the RT stable review cycle of patch 5.4.182-rt72-rc1.
 
-diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index e7d6b679596d..e07486f01999 100644
---- a/drivers/virtio/virtio_mem.c
-+++ b/drivers/virtio/virtio_mem.c
-@@ -2476,10 +2476,10 @@ static int virtio_mem_init_hotplug(struct virtio_me=
-m *vm)
- 				      VIRTIO_MEM_DEFAULT_OFFLINE_THRESHOLD);
-=20
- 	/*
--	 * TODO: once alloc_contig_range() works reliably with pageblock
--	 * granularity on ZONE_NORMAL, use pageblock_nr_pages instead.
-+	 * alloc_contig_range() works reliably with pageblock
-+	 * granularity on ZONE_NORMAL, use pageblock_nr_pages.
- 	 */
--	sb_size =3D PAGE_SIZE * MAX_ORDER_NR_PAGES;
-+	sb_size =3D PAGE_SIZE * pageblock_nr_pages;
- 	sb_size =3D max_t(uint64_t, vm->device_block_size, sb_size);
-=20
- 	if (sb_size < memory_block_size_bytes() && !force_bbm) {
---=20
-2.35.1
+Please scream at me if I messed something up. Please test the patches
+too.
+
+The -rc release will be uploaded to kernel.org and will be deleted
+when the final release is out. This is just a review release (or
+release candidate).
+
+The pre-releases will not be pushed to the git repository, only the
+final release is.
+
+If all goes well, this patch will be converted to the next main
+release on 2022-03-20.
+
+To build 5.4.182-rt72-rc1 directly, the following patches should be applied:
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.4.tar.xz
+
+  https://www.kernel.org/pub/linux/kernel/v5.x/patch-5.4.182.xz
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/patch-5.4.182-rt72-rc1.patch.xz
+
+You can also build from 5.4.182-rt71 by applying the incremental patch:
+
+  https://www.kernel.org/pub/linux/kernel/projects/rt/5.4/incr/patch-5.4.182-rt71-rt72-rc1.patch.xz
+
+
+Enjoy,
+
+-- Tom
+
+
+Tom Zanussi (2):
+  eventfd: Fix stable-rt v5.4.182-rt71 conflict fixup issue
+  Linux 5.4.182-rt72-rc1
+
+ include/linux/sched.h | 8 --------
+ localversion-rt       | 2 +-
+ 2 files changed, 1 insertion(+), 9 deletions(-)
+
+-- 
+2.17.1
 
