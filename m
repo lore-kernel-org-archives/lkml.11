@@ -2,83 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7863C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 11:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbiCQLNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 07:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53500 "EHLO
+        id S231835AbiCQLO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 07:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232900AbiCQLNH (ORCPT
+        with ESMTP id S230417AbiCQLO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 07:13:07 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E741E3184;
-        Thu, 17 Mar 2022 04:11:47 -0700 (PDT)
-Received: from kwepemi500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KK4Dm5bbBzfZ2q;
-        Thu, 17 Mar 2022 19:10:16 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500026.china.huawei.com (7.221.188.247) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 17 Mar 2022 19:11:45 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 17 Mar
- 2022 19:11:44 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <axboe@kernel.dk>, <mpatocka@redhat.com>, <snitzer@redhat.com>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
-Subject: [PATCH 1/3] block: don't show disk stats if io accounting is disabled
-Date:   Thu, 17 Mar 2022 19:26:51 +0800
-Message-ID: <20220317112653.1019490-2-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220317112653.1019490-1-yukuai3@huawei.com>
-References: <20220317112653.1019490-1-yukuai3@huawei.com>
+        Thu, 17 Mar 2022 07:14:26 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565F7A6E2A
+        for <linux-kernel@vger.kernel.org>; Thu, 17 Mar 2022 04:13:08 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id C41DF1C0B7F; Thu, 17 Mar 2022 12:13:06 +0100 (CET)
+Date:   Thu, 17 Mar 2022 12:13:05 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Tony Luck <tony.luck@intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Fenghua Yu <fenghua.yu@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH v2 1/2] x86/split_lock: Make life miserable for split
+ lockers
+Message-ID: <20220317111305.GB2237@amd>
+References: <20220217012721.9694-1-tony.luck@intel.com>
+ <20220310204854.31752-1-tony.luck@intel.com>
+ <20220310204854.31752-2-tony.luck@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="6sX45UoQRIJXqkqR"
+Content-Disposition: inline
+In-Reply-To: <20220310204854.31752-2-tony.luck@intel.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If io accounting is disabled, there is no point to handle such device
-in diskstats_show(), and it can be confused for users because all fields
-in iostat are zero while the disk is handling io.
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- block/genhd.c | 5 +++++
- 1 file changed, 5 insertions(+)
+--6sX45UoQRIJXqkqR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/block/genhd.c b/block/genhd.c
-index c3b32c665aec..e5307f512185 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -937,6 +937,9 @@ ssize_t part_stat_show(struct device *dev,
- 	struct disk_stats stat;
- 	unsigned int inflight;
- 
-+	if (!blk_queue_io_stat(q))
-+		return sprintf(buf, "io accounting is disabled\n");
-+
- 	if (queue_is_mq(q))
- 		inflight = blk_mq_in_flight(q, bdev);
- 	else
-@@ -1207,6 +1210,8 @@ static int diskstats_show(struct seq_file *seqf, void *v)
- 	xa_for_each(&gp->part_tbl, idx, hd) {
- 		if (bdev_is_partition(hd) && !bdev_nr_sectors(hd))
- 			continue;
-+		if (!blk_queue_io_stat(gp->queue))
-+			continue;
- 		if (queue_is_mq(gp->queue))
- 			inflight = blk_mq_in_flight(gp->queue, hd);
- 		else
--- 
-2.31.1
+Hi!
 
+> In https://lore.kernel.org/all/87y22uujkm.ffs@tglx/ Thomas
+> said:
+>=20
+>   Its's simply wishful thinking that stuff gets fixed because of a
+>   WARN_ONCE(). This has never worked. The only thing which works is to
+>   make stuff fail hard or slow it down in a way which makes it annoying
+>   enough to users to complain.
+>=20
+> He was talking about WBINVD. But it made me think about how we
+> use the split lock detection feature in Linux.
+>=20
+> Existing code has three options for applications:
+> 1) Don't enable split lock detection (allow arbitrary split locks)
+> 2) Warn once when a process uses split lock, but let the process
+>    keep running with split lock detection disabled
+> 3) Kill process that use split locks
+
+I'm not sure what split locks are, and if you want applications to
+stop doing that maybe documentation would help.
+
+Anyway, you can't really introduce regressions to userspace to "get
+stuff fixed" in applications.
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--6sX45UoQRIJXqkqR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAmIzF8EACgkQMOfwapXb+vLXtgCgu8hgn9uzvyozj3rvbJXWngQE
+huUAn2kdrz3cZJ4I3rLkm+d3qORv5dd+
+=nuYL
+-----END PGP SIGNATURE-----
+
+--6sX45UoQRIJXqkqR--
