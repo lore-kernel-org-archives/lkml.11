@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47881C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B836EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 19:21:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237949AbiCQTWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 15:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47728 "EHLO
+        id S237984AbiCQTWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 15:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232315AbiCQTWJ (ORCPT
+        with ESMTP id S236054AbiCQTWK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 15:22:09 -0400
+        Thu, 17 Mar 2022 15:22:10 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2AA217C4B;
-        Thu, 17 Mar 2022 12:20:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C8D21A8B3;
+        Thu, 17 Mar 2022 12:20:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647544851; x=1679080851;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7fZWSqYlT9W3vSMplyjhxJl5j4ia2hf7ih8pbhdlhjg=;
-  b=KXQAdkGCqDuduJ3/qb4cU8dNIFqHkonbR+UdpGl8WIkFbav1DlxvUvXG
-   rw+P9ZzEcL0/6axzHi/0K71/HHk2gg1gVX/L7caydRJbA4XIFr6zmgucN
-   ZwhFNjaTz0NNtgU2l4BrnBR3cQBoLXFq9oGUenXZKCj4v3ZZ6pzclCK5p
-   dhrZGukGMQt+su9MvgzEkbgCrLEe9aVpV+2ZAdWlfKPRjlF5Y4nnMxQ//
-   rIRcBQu19Tw4m7PaLn1U6hOwRnrt0vR4cPPuuyTjohD71hR+t0RiIVJn/
-   f/Fvtb+HR6v4BNWltM9V0fxpHkyryp4TCxSJSuvRiSQwOJjlyg5AuT/AO
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="257150092"
+  t=1647544853; x=1679080853;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=Q1TUQPfLOqJiY+H7s42JJmt7qOtLkdLcXdvqtfl9Y5o=;
+  b=CmeEAf049uXQbT7noIr7hT6sfe+iP3pMsXtmYyo9gTHh1lzJNTS/KkCA
+   d1/kJJPYW6oiJH7V8lrOS5WzH+UcQWze3G0WFsA/9SdkQHcSe1UFig+xt
+   tg0Of2Pxi1y0KncT8GUhHnHW3kURJUiaAX+2K/jVxeMQivCyKQJ4mYt10
+   M8m2OeMijifyRivsrvV+yPewr35d8Zj74+2DaRCe6hcZ15RnYUzooznt5
+   eRagrXyOOcssIhckIiCtI8BoPqBQGjh4JuonwC6xE9jS+ydz6ID6yjPRI
+   SMcKbMUplr4OWApgtctvCdJclgA4ChQTsSRtqpDsq1Pg+fd40MyCsR9lJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="257150094"
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="257150092"
+   d="scan'208";a="257150094"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 12:20:51 -0700
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 12:20:52 -0700
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="691054840"
+   d="scan'208";a="691054859"
 Received: from awyatt-mobl1.amr.corp.intel.com (HELO rpedgeco-desk.amr.corp.intel.com) ([10.212.178.193])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 12:20:51 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 12:20:52 -0700
 From:   Rick Edgecombe <rick.p.edgecombe@intel.com>
 To:     dave.hansen@intel.com, len.brown@intel.com, tony.luck@intel.com,
         rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
@@ -44,69 +44,169 @@ To:     dave.hansen@intel.com, len.brown@intel.com, tony.luck@intel.com,
         ebiederm@xmission.com, keescook@chromium.org
 Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/3] Regset cleanups
-Date:   Thu, 17 Mar 2022 12:20:10 -0700
-Message-Id: <20220317192013.13655-1-rick.p.edgecombe@intel.com>
+Subject: [PATCH v2 2/3] x86: Improve formatting of user_regset arrays
+Date:   Thu, 17 Mar 2022 12:20:12 -0700
+Message-Id: <20220317192013.13655-3-rick.p.edgecombe@intel.com>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220317192013.13655-1-rick.p.edgecombe@intel.com>
+References: <20220317192013.13655-1-rick.p.edgecombe@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-I’m looking for ack’s on the first two patches from Intel reviewer’s before
-this is ready for official submission to x86 maintainers. Patch 3 is in core
-code, and Kees has offered to take it separately or ack it with the feedback
-on the previous version. The first posting of this already got some nice
-community feedback. Changes from v1 are in the patches. If you are not an Intel
-reviewer, feel free to ignore this until it has had more review.
-
-While working on CET ptrace support, I found some suggested cleanups [0] [1] on
-past postings of that patch. So this small series is doing those cleanups and
-some related changes.
-
-Way back then, it was noticed that CET ptrace patches were aliasing names in the
-enum that indexes the regsets. It turns out this was partly because of a
-limitation in core dump code that reads the registers for dumping. But excluding
-gaps in the regset array also allows them to be smaller, so just fixing the core
-dump code doesn’t remove all need for the specially crafted enum. So series
-changes the way the enums are defined such that enum has to be less carefully
-crafted, and also fixes the core dump code.
-
-Patch 1 is improving the enums in x86 ptrace code.
-
-Patch 2 is some x86 ptrace code formatting changes suggested by Ingo. [0]
-
-Patch 3 is the fix to the core dump code. Just to be clear, there is no actual
-bug fixed. It would only overflow an array if the regset views were not laid out
-just so. But the regsets appear to be laid out so that the brittle code is not
-broken, from a quick scan of the archs.
-
-Testing consisted of doing some core dumps and seeing that notes were in the
-same position, and verifying that the enum’s generated the same ints using
-printks.
-
-Thanks,
-
-Rick
+Back in 2018, Ingo Molnar suggested[0] to improve the formatting of the
+struct user_regset arrays. They have multiple member initializations per
+line and some lines exceed 100 chars. Reformat them like he suggested.
 
 [0] https://lore.kernel.org/lkml/20180711102035.GB8574@gmail.com/
-[1] https://lore.kernel.org/lkml/A7775E11-8837-4727-921A-C88566FA01AF@amacapital.net/
 
-Rick Edgecombe (3):
-  x86: Separate out x86_regset for 32 and 64 bit
-  x86: Improve formatting of user_regset arrays
-  elf: Don't write past end of notes for regset gap
+Suggested-by: Ingo Molnar <mingo@redhat.com>
+Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+---
+ arch/x86/kernel/ptrace.c | 105 ++++++++++++++++++++++++---------------
+ 1 file changed, 64 insertions(+), 41 deletions(-)
 
- arch/x86/kernel/ptrace.c | 171 ++++++++++++++++++++++++---------------
- fs/binfmt_elf.c          |  24 +++---
- 2 files changed, 120 insertions(+), 75 deletions(-)
-
-
-base-commit: 09688c0166e76ce2fb85e86b9d99be8b0084cdf9
+diff --git a/arch/x86/kernel/ptrace.c b/arch/x86/kernel/ptrace.c
+index c6a4a4d0d804..d69e064e3e93 100644
+--- a/arch/x86/kernel/ptrace.c
++++ b/arch/x86/kernel/ptrace.c
+@@ -1235,28 +1235,37 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
+ 
+ static struct user_regset x86_64_regsets[] __ro_after_init = {
+ 	[REGSET64_GENERAL] = {
+-		.core_note_type = NT_PRSTATUS,
+-		.n = sizeof(struct user_regs_struct) / sizeof(long),
+-		.size = sizeof(long), .align = sizeof(long),
+-		.regset_get = genregs_get, .set = genregs_set
++		.core_note_type	= NT_PRSTATUS,
++		.n		= sizeof(struct user_regs_struct) / sizeof(long),
++		.size		= sizeof(long),
++		.align		= sizeof(long),
++		.regset_get	= genregs_get,
++		.set		= genregs_set
+ 	},
+ 	[REGSET64_FP] = {
+ 		.core_note_type = NT_PRFPREG,
+-		.n = sizeof(struct fxregs_state) / sizeof(long),
+-		.size = sizeof(long), .align = sizeof(long),
+-		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
++		.n		= sizeof(struct fxregs_state) / sizeof(long),
++		.size		= sizeof(long),
++		.align		= sizeof(long),
++		.active		= regset_xregset_fpregs_active,
++		.regset_get	= xfpregs_get,
++		.set		= xfpregs_set
+ 	},
+ 	[REGSET64_XSTATE] = {
+-		.core_note_type = NT_X86_XSTATE,
+-		.size = sizeof(u64), .align = sizeof(u64),
+-		.active = xstateregs_active, .regset_get = xstateregs_get,
+-		.set = xstateregs_set
++		.core_note_type	= NT_X86_XSTATE,
++		.size		= sizeof(u64),
++		.align		= sizeof(u64),
++		.active		= xstateregs_active,
++		.regset_get	= xstateregs_get,
++		.set		= xstateregs_set
+ 	},
+ 	[REGSET64_IOPERM] = {
+-		.core_note_type = NT_386_IOPERM,
+-		.n = IO_BITMAP_LONGS,
+-		.size = sizeof(long), .align = sizeof(long),
+-		.active = ioperm_active, .regset_get = ioperm_get
++		.core_note_type	= NT_386_IOPERM,
++		.n		= IO_BITMAP_LONGS,
++		.size		= sizeof(long),
++		.align		= sizeof(long),
++		.active		= ioperm_active,
++		.regset_get	= ioperm_get
+ 	},
+ };
+ 
+@@ -1276,42 +1285,56 @@ static const struct user_regset_view user_x86_64_view = {
+ #if defined CONFIG_X86_32 || defined CONFIG_IA32_EMULATION
+ static struct user_regset x86_32_regsets[] __ro_after_init = {
+ 	[REGSET32_GENERAL] = {
+-		.core_note_type = NT_PRSTATUS,
+-		.n = sizeof(struct user_regs_struct32) / sizeof(u32),
+-		.size = sizeof(u32), .align = sizeof(u32),
+-		.regset_get = genregs32_get, .set = genregs32_set
++		.core_note_type	= NT_PRSTATUS,
++		.n		= sizeof(struct user_regs_struct32) / sizeof(u32),
++		.size		= sizeof(u32),
++		.align		= sizeof(u32),
++		.regset_get	= genregs32_get,
++		.set		= genregs32_set
+ 	},
+ 	[REGSET32_FP] = {
+-		.core_note_type = NT_PRFPREG,
+-		.n = sizeof(struct user_i387_ia32_struct) / sizeof(u32),
+-		.size = sizeof(u32), .align = sizeof(u32),
+-		.active = regset_fpregs_active, .regset_get = fpregs_get, .set = fpregs_set
++		.core_note_type	= NT_PRFPREG,
++		.n		= sizeof(struct user_i387_ia32_struct) / sizeof(u32),
++		.size		= sizeof(u32),
++		.align		= sizeof(u32),
++		.active		= regset_fpregs_active,
++		.regset_get	= fpregs_get,
++		.set		= fpregs_set
+ 	},
+ 	[REGSET32_XFP] = {
+-		.core_note_type = NT_PRXFPREG,
+-		.n = sizeof(struct fxregs_state) / sizeof(u32),
+-		.size = sizeof(u32), .align = sizeof(u32),
+-		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
++		.core_note_type	= NT_PRXFPREG,
++		.n		= sizeof(struct fxregs_state) / sizeof(u32),
++		.size		= sizeof(u32),
++		.align		= sizeof(u32),
++		.active		= regset_xregset_fpregs_active,
++		.regset_get	= xfpregs_get,
++		.set		= xfpregs_set
+ 	},
+ 	[REGSET32_XSTATE] = {
+-		.core_note_type = NT_X86_XSTATE,
+-		.size = sizeof(u64), .align = sizeof(u64),
+-		.active = xstateregs_active, .regset_get = xstateregs_get,
+-		.set = xstateregs_set
++		.core_note_type	= NT_X86_XSTATE,
++		.size		= sizeof(u64),
++		.align		= sizeof(u64),
++		.active		= xstateregs_active,
++		.regset_get	= xstateregs_get,
++		.set		= xstateregs_set
+ 	},
+ 	[REGSET32_TLS] = {
+-		.core_note_type = NT_386_TLS,
+-		.n = GDT_ENTRY_TLS_ENTRIES, .bias = GDT_ENTRY_TLS_MIN,
+-		.size = sizeof(struct user_desc),
+-		.align = sizeof(struct user_desc),
+-		.active = regset_tls_active,
+-		.regset_get = regset_tls_get, .set = regset_tls_set
++		.core_note_type	= NT_386_TLS,
++		.n		= GDT_ENTRY_TLS_ENTRIES,
++		.bias		= GDT_ENTRY_TLS_MIN,
++		.size		= sizeof(struct user_desc),
++		.align		= sizeof(struct user_desc),
++		.active		= regset_tls_active,
++		.regset_get	= regset_tls_get,
++		.set		= regset_tls_set
+ 	},
+ 	[REGSET32_IOPERM] = {
+-		.core_note_type = NT_386_IOPERM,
+-		.n = IO_BITMAP_BYTES / sizeof(u32),
+-		.size = sizeof(u32), .align = sizeof(u32),
+-		.active = ioperm_active, .regset_get = ioperm_get
++		.core_note_type	= NT_386_IOPERM,
++		.n		= IO_BITMAP_BYTES / sizeof(u32),
++		.size		= sizeof(u32),
++		.align		= sizeof(u32),
++		.active		= ioperm_active,
++		.regset_get	= ioperm_get
+ 	},
+ };
+ 
 -- 
 2.17.1
 
