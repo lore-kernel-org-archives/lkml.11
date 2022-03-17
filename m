@@ -2,125 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF6D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D34FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 17 Mar 2022 05:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229523AbiCQFz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Mar 2022 01:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
+        id S229501AbiCQF4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 17 Mar 2022 01:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiCQFz0 (ORCPT
+        with ESMTP id S229546AbiCQF4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Mar 2022 01:55:26 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A282220EE;
-        Wed, 16 Mar 2022 22:27:58 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id B01A25FD05;
-        Thu, 17 Mar 2022 08:27:55 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1647494875;
-        bh=Ompi4xbRQbnpUpOJ16sHOJ+JWKY7vg+02Db2wCk8mCA=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=irhKgrfoFShVO8afiyTqqzR5u3hxZudUmTx7dEcPsaHh8ohvQUKsEito67HvQt9aT
-         zwxg1odSk5K6yC3jnDCFqUQYfQ1Z7MDjuVvYA458ebXxPEq8dzf4x9KQ7NLo8W7vVq
-         C3jnMT93zUWMDs3rAqkfT3ngfMsDeZ8oyqMxRx1o8UasHrr9Spjb9XEB2UEdeHGUZA
-         nvdauIlUwxPYZwStQtGo/pV2Iea1vToRKitC51AZMNyiLKKPPjfc7B4u9BHEf3V2oE
-         jQT1HsKAeALd9td8mJT4P7+5mieCmsw+kddX2GDC0ha2YgcQdRstDK3NniSWSfyGIf
-         l3W5yzny+Rd4w==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 17 Mar 2022 08:27:55 +0300 (MSK)
-From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v3 1/2] af_vsock: SOCK_SEQPACKET receive timeout test
-Thread-Topic: [PATCH net-next v3 1/2] af_vsock: SOCK_SEQPACKET receive timeout
- test
-Thread-Index: AQHYOb+Ukv8XF38YE06ap5RsA4YM1g==
-Date:   Thu, 17 Mar 2022 05:26:45 +0000
-Message-ID: <a3f95812-d5bb-86a0-46a0-78935651e39e@sberdevices.ru>
-In-Reply-To: <4ecfa306-a374-93f6-4e66-be62895ae4f7@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <92CA1A604E01A842AC5098FE117172E4@sberdevices.ru>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/17 01:49:00 #18989990
-X-KSMG-AntiVirus-Status: Clean, skipped
+        Thu, 17 Mar 2022 01:56:15 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44DEB2DCBFF
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:30:44 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id o26so1845025pgb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 16 Mar 2022 22:30:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=Gfg0sfM1yOZcobziVscETOqEbK+m4KH2STWY/RhzvKM=;
+        b=p/DaaFIBXMKLYKdMeigqMEbkNzz2UmwkZ1EFHnR+vGLGHiUzJ+oKoWCc75yRbblKlU
+         XY6wS1b4XYolAjRWWIbz2PyAx1bgYIMsc/BNIwUvTkGVTrriASyMjIxrZlTWbEkWFKc+
+         UXp4FsH2NtXkPBUVp8Hjm6oD+oW2I+mh6qhDStIhDHojgZEvqp48XO9zh0KiOf1HRfoK
+         3rmwCExGHErobvapU73Qay5djJ77vuKl037+x+eIuxYIb6IQBBkHSZEuQQzhEnbiHm4s
+         zHWtECJsTTjb2A09PYM3BfQlKkWw1gwtBiNSPD8mj3xWLFyCUcVjn8ySAgg4nMNupmoQ
+         uTcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Gfg0sfM1yOZcobziVscETOqEbK+m4KH2STWY/RhzvKM=;
+        b=i87FYNvJ0Fo9PE15NMKKryG9IjUzpzRq5lZTMpqGRKXpxLUIGP2vBAQrIlSZMvi3LV
+         SHAh8379f91eFjqeD+6tWE5DtfTef4EFL1kbha14BZh/5UVFUdmEwNnxe6wZH7rBFF1L
+         O+HMWyWdafPo1VZ10Q5cbXgljSN6ObSWSH4Lao3teQASSejbKTGt7OIgXVmdVmnzW7Pj
+         5+vkgyqs82tqo2aHIosnlq/ytK7Jn+TfVWENKOYHNlfDAy++TqOM0B0xCcRzEBeDioJZ
+         ElRF1Atuc5iLYD1X+mU1yWhU6u8xbpldwkBSCLAbO307Pp8ZWoBNzfJWGGrlWzhIKYpw
+         vIAA==
+X-Gm-Message-State: AOAM533YAlXh3awEsJohj84F/c+L1hIstBGp5WW1dJ/gBIBaWFb0rzZG
+        GW0gFXFLI087kwabyTCx78DAQ7RVCQg=
+X-Google-Smtp-Source: ABdhPJzkf6aRGNT4PCjsIj3xSQL7MwoZQSgaVrVC2ZHHBuegkwTvvtn8/goU3JG9vEQ+mi8RqnmORg==
+X-Received: by 2002:a63:1743:0:b0:381:42cf:187 with SMTP id 3-20020a631743000000b0038142cf0187mr2089420pgx.397.1647490701303;
+        Wed, 16 Mar 2022 21:18:21 -0700 (PDT)
+Received: from Asurada-Nvidia.nvidia.com ([12.154.207.45])
+        by smtp.gmail.com with ESMTPSA id h13-20020a056a00170d00b004f757a795fesm5047654pfc.219.2022.03.16.21.18.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 21:18:20 -0700 (PDT)
+From:   Nicolin Chen <nicoleotsuka@gmail.com>
+To:     broonie@kernel.org, shengjiu.wang@nxp.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Xiubo.Lee@gmail.com, festevam@gmail.com, lgirdwood@gmail.com,
+        shengjiu.wang@gmail.com
+Subject: [PATCH] MAINTAINERS: Add Shengjiu to maintainer list of sound/soc/fsl
+Date:   Wed, 16 Mar 2022 21:18:06 -0700
+Message-Id: <20220317041806.28230-1-nicoleotsuka@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGVzdCBmb3IgcmVjZWl2ZSB0aW1lb3V0IGNoZWNrOiBjb25uZWN0aW9uIGlzIGVzdGFibGlzaGVk
-LA0KcmVjZWl2ZXIgc2V0cyB0aW1lb3V0LCBidXQgc2VuZGVyIGRvZXMgbm90aGluZy4gUmVjZWl2
-ZXIncw0KJ3JlYWQoKScgY2FsbCBtdXN0IHJldHVybiBFQUdBSU4uDQoNClNpZ25lZC1vZmYtYnk6
-IEtyYXNub3YgQXJzZW5peSBWbGFkaW1pcm92aWNoIDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+
-DQotLS0NCiB2MiAtPiB2MzoNCiAxKSBVc2UgJ2ZwcmludGYoKScgaW5zdGVhZCBvZiAncGVycm9y
-KCknIHdoZXJlICdlcnJubycgdmFyaWFibGUNCiAgICBpcyBub3QgYWZmZWN0ZWQuDQogMikgUHJp
-bnQgJ3JlYWQoKScgb3ZlcmhlYWQuDQoNCiB0b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3Qu
-YyB8IDg0ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQogMSBmaWxlIGNoYW5nZWQs
-IDg0IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNv
-Y2tfdGVzdC5jIGIvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCmluZGV4IDJhMzYz
-OGMwYTAwOC4uZjU0OThkZTY3NTFkIDEwMDY0NA0KLS0tIGEvdG9vbHMvdGVzdGluZy92c29jay92
-c29ja190ZXN0LmMNCisrKyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jDQpAQCAt
-MTYsNiArMTYsNyBAQA0KICNpbmNsdWRlIDxsaW51eC9rZXJuZWwuaD4NCiAjaW5jbHVkZSA8c3lz
-L3R5cGVzLmg+DQogI2luY2x1ZGUgPHN5cy9zb2NrZXQuaD4NCisjaW5jbHVkZSA8dGltZS5oPg0K
-IA0KICNpbmNsdWRlICJ0aW1lb3V0LmgiDQogI2luY2x1ZGUgImNvbnRyb2wuaCINCkBAIC0zOTEs
-NiArMzkyLDg0IEBAIHN0YXRpYyB2b2lkIHRlc3Rfc2VxcGFja2V0X21zZ190cnVuY19zZXJ2ZXIo
-Y29uc3Qgc3RydWN0IHRlc3Rfb3B0cyAqb3B0cykNCiAJY2xvc2UoZmQpOw0KIH0NCiANCitzdGF0
-aWMgdGltZV90IGN1cnJlbnRfbnNlYyh2b2lkKQ0KK3sNCisJc3RydWN0IHRpbWVzcGVjIHRzOw0K
-Kw0KKwlpZiAoY2xvY2tfZ2V0dGltZShDTE9DS19SRUFMVElNRSwgJnRzKSkgew0KKwkJcGVycm9y
-KCJjbG9ja19nZXR0aW1lKDMpIGZhaWxlZCIpOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9
-DQorDQorCXJldHVybiAodHMudHZfc2VjICogMTAwMDAwMDAwMFVMTCkgKyB0cy50dl9uc2VjOw0K
-K30NCisNCisjZGVmaW5lIFJDVlRJTUVPX1RJTUVPVVRfU0VDIDENCisjZGVmaW5lIFJFQURfT1ZF
-UkhFQURfTlNFQyAyNTAwMDAwMDAgLyogMC4yNSBzZWMgKi8NCisNCitzdGF0aWMgdm9pZCB0ZXN0
-X3NlcXBhY2tldF90aW1lb3V0X2NsaWVudChjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0K
-K3sNCisJaW50IGZkOw0KKwlzdHJ1Y3QgdGltZXZhbCB0djsNCisJY2hhciBkdW1teTsNCisJdGlt
-ZV90IHJlYWRfZW50ZXJfbnM7DQorCXRpbWVfdCByZWFkX292ZXJoZWFkX25zOw0KKw0KKwlmZCA9
-IHZzb2NrX3NlcXBhY2tldF9jb25uZWN0KG9wdHMtPnBlZXJfY2lkLCAxMjM0KTsNCisJaWYgKGZk
-IDwgMCkgew0KKwkJcGVycm9yKCJjb25uZWN0Iik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQor
-CX0NCisNCisJdHYudHZfc2VjID0gUkNWVElNRU9fVElNRU9VVF9TRUM7DQorCXR2LnR2X3VzZWMg
-PSAwOw0KKw0KKwlpZiAoc2V0c29ja29wdChmZCwgU09MX1NPQ0tFVCwgU09fUkNWVElNRU8sICh2
-b2lkICopJnR2LCBzaXplb2YodHYpKSA9PSAtMSkgew0KKwkJcGVycm9yKCJzZXRzb2Nrb3B0ICdT
-T19SQ1ZUSU1FTyciKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlyZWFkX2Vu
-dGVyX25zID0gY3VycmVudF9uc2VjKCk7DQorDQorCWlmIChlcnJubyAhPSBFQUdBSU4pIHsNCisJ
-CXBlcnJvcigiRUFHQUlOIGV4cGVjdGVkIik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0N
-CisNCisJaWYgKHJlYWQoZmQsICZkdW1teSwgc2l6ZW9mKGR1bW15KSkgIT0gLTEpIHsNCisJCWZw
-cmludGYoc3RkZXJyLA0KKwkJCSJleHBlY3RlZCAnZHVtbXknIHJlYWQoMikgZmFpbHVyZVxuIik7
-DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJcmVhZF9vdmVyaGVhZF9ucyA9IGN1
-cnJlbnRfbnNlYygpIC0gcmVhZF9lbnRlcl9ucyAtDQorCQkJMTAwMDAwMDAwMFVMTCAqIFJDVlRJ
-TUVPX1RJTUVPVVRfU0VDOw0KKw0KKwlpZiAocmVhZF9vdmVyaGVhZF9ucyA+IFJFQURfT1ZFUkhF
-QURfTlNFQykgew0KKwkJZnByaW50ZihzdGRlcnIsDQorCQkJInRvbyBtdWNoIHRpbWUgaW4gcmVh
-ZCgyKSwgJWx1ID4gJWkgbnNcbiIsDQorCQkJcmVhZF9vdmVyaGVhZF9ucywgUkVBRF9PVkVSSEVB
-RF9OU0VDKTsNCisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwljb250cm9sX3dyaXRl
-bG4oIldBSVRET05FIik7DQorCWNsb3NlKGZkKTsNCit9DQorDQorc3RhdGljIHZvaWQgdGVzdF9z
-ZXFwYWNrZXRfdGltZW91dF9zZXJ2ZXIoY29uc3Qgc3RydWN0IHRlc3Rfb3B0cyAqb3B0cykNCit7
-DQorCWludCBmZDsNCisNCisJZmQgPSB2c29ja19zZXFwYWNrZXRfYWNjZXB0KFZNQUREUl9DSURf
-QU5ZLCAxMjM0LCBOVUxMKTsNCisJaWYgKGZkIDwgMCkgew0KKwkJcGVycm9yKCJhY2NlcHQiKTsN
-CisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwljb250cm9sX2V4cGVjdGxuKCJXQUlU
-RE9ORSIpOw0KKwljbG9zZShmZCk7DQorfQ0KKw0KIHN0YXRpYyBzdHJ1Y3QgdGVzdF9jYXNlIHRl
-c3RfY2FzZXNbXSA9IHsNCiAJew0KIAkJLm5hbWUgPSAiU09DS19TVFJFQU0gY29ubmVjdGlvbiBy
-ZXNldCIsDQpAQCAtNDMxLDYgKzUxMCwxMSBAQCBzdGF0aWMgc3RydWN0IHRlc3RfY2FzZSB0ZXN0
-X2Nhc2VzW10gPSB7DQogCQkucnVuX2NsaWVudCA9IHRlc3Rfc2VxcGFja2V0X21zZ190cnVuY19j
-bGllbnQsDQogCQkucnVuX3NlcnZlciA9IHRlc3Rfc2VxcGFja2V0X21zZ190cnVuY19zZXJ2ZXIs
-DQogCX0sDQorCXsNCisJCS5uYW1lID0gIlNPQ0tfU0VRUEFDS0VUIHRpbWVvdXQiLA0KKwkJLnJ1
-bl9jbGllbnQgPSB0ZXN0X3NlcXBhY2tldF90aW1lb3V0X2NsaWVudCwNCisJCS5ydW5fc2VydmVy
-ID0gdGVzdF9zZXFwYWNrZXRfdGltZW91dF9zZXJ2ZXIsDQorCX0sDQogCXt9LA0KIH07DQogDQot
-LSANCjIuMjUuMQ0K
+Shengjiu has been actively working on latest FSL platforms and
+keeping upstream effort as well, while I have been working on
+other subsystem lately and cannot guarantee audio patch review
+in the near term. So replacing with him in the maintainer list.
+
+Cc: Shengjiu Wang <shengjiu.wang@gmail.com>
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
+ MAINTAINERS | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 46ffe05eaeb7..bf7a0ae10d06 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7779,10 +7779,10 @@ F:	drivers/net/ethernet/freescale/fs_enet/
+ F:	include/linux/fs_enet_pd.h
+ 
+ FREESCALE SOC SOUND DRIVERS
+-M:	Nicolin Chen <nicoleotsuka@gmail.com>
++M:	Shengjiu Wang <shengjiu.wang@gmail.com>
+ M:	Xiubo Li <Xiubo.Lee@gmail.com>
+ R:	Fabio Estevam <festevam@gmail.com>
+-R:	Shengjiu Wang <shengjiu.wang@gmail.com>
++R:	Nicolin Chen <nicoleotsuka@gmail.com>
+ L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
+ L:	linuxppc-dev@lists.ozlabs.org
+ S:	Maintained
+-- 
+2.17.1
+
